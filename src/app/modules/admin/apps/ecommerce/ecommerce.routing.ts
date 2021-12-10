@@ -2,6 +2,9 @@ import { Route } from '@angular/router';
 import { InventoryComponent } from 'app/modules/admin/apps/ecommerce/inventory/inventory.component';
 import { InventoryListComponent } from 'app/modules/admin/apps/ecommerce/inventory/list/inventory.component';
 import { InventoryBrandsResolver, InventoryCategoriesResolver, InventoryProductsResolver, InventoryTagsResolver, InventoryVendorsResolver } from 'app/modules/admin/apps/ecommerce/inventory/inventory.resolvers';
+import { CustomersComponent } from 'app/modules/admin/apps/ecommerce/customers/customers.component';
+import { CustomersListComponent } from 'app/modules/admin/apps/ecommerce/customers/list/customers.component';
+import { CustomersBrandsResolver, CustomersCategoriesResolver, CustomersProductsResolver, CustomersTagsResolver, CustomersVendorsResolver } from 'app/modules/admin/apps/ecommerce/customers/customers.resolvers';
 
 export const ecommerceRoutes: Route[] = [
     {
@@ -46,5 +49,22 @@ export const ecommerceRoutes: Route[] = [
                 ]
             }
         ]*/
+    },
+    {
+        path     : 'customers',
+        component: CustomersComponent,
+        children : [
+            {
+                path     : '',
+                component: CustomersListComponent,
+                resolve  : {
+                    brands    : CustomersBrandsResolver,
+                    categories: CustomersCategoriesResolver,
+                    products  : CustomersProductsResolver,
+                    tags      : CustomersTagsResolver,
+                    vendors   : CustomersVendorsResolver
+                }
+            }
+        ]
     }
 ];

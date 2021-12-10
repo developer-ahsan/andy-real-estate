@@ -42,7 +42,7 @@ export const defaultNavigation: FuseNavigationItem[] = [
         title   : 'Customers',
         icon    : 'heroicons_outline:user-group',
         type: 'basic',
-        link : '/apps/customers',
+        link : '/apps/ecommerce/customers',
     },
     {
         id      : 'reports',
@@ -220,7 +220,14 @@ export const futuristicNavigation: FuseNavigationItem[] = [
                         title: 'Inventory',
                         type : 'basic',
                         link : '/apps/ecommerce/inventory'
-                    }
+                    },
+                    {
+                        id   : 'apps.customers',
+                        title: 'Customers',
+                        type : 'basic',
+                        icon : 'heroicons_outline:user-group',
+                        link : '/apps/ecommerce/customers'
+                    },
                 ]
             },
             {

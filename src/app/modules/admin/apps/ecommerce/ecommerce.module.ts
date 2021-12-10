@@ -18,11 +18,15 @@ import { SharedModule } from 'app/shared/shared.module';
 import { InventoryComponent } from 'app/modules/admin/apps/ecommerce/inventory/inventory.component';
 import { InventoryListComponent } from 'app/modules/admin/apps/ecommerce/inventory/list/inventory.component';
 import { ecommerceRoutes } from 'app/modules/admin/apps/ecommerce/ecommerce.routing';
+import { CustomersComponent } from 'app/modules/admin/apps/ecommerce/customers/customers.component';
+import { CustomersListComponent } from 'app/modules/admin/apps/ecommerce/customers/list/customers.component';
 
 @NgModule({
     declarations: [
         InventoryComponent,
-        InventoryListComponent
+        InventoryListComponent,
+        CustomersComponent,
+        CustomersListComponent
     ],
     imports     : [
         RouterModule.forChild(ecommerceRoutes),
