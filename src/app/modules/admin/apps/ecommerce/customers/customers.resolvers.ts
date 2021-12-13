@@ -88,7 +88,7 @@ export class CustomersProductResolver implements Resolve<any>
      */
     resolve(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<CustomersProduct>
     {
-        return this._inventoryService.getProductById(route.paramMap.get('id'))
+        return this._inventoryService.getCustomerById(route.paramMap.get('id'))
                    .pipe(
                        // Error here means the requested product is not available
                        catchError((error) => {
@@ -133,7 +133,7 @@ export class CustomersProductsResolver implements Resolve<any>
      */
     resolve(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<{ pagination: CustomersPagination; products: CustomersProduct[] }>
     {
-        return this._inventoryService.getProducts();
+        return this._inventoryService.getCustomers();
     }
 }
 

@@ -19,6 +19,11 @@ export interface CustomersProduct
     thumbnail: string;
     images: string[];
     active: boolean;
+    firstname: string;
+    lastname: string;
+    email: string;
+    store: string;
+    company: string;
 }
 
 export interface CustomersPagination

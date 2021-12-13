@@ -94,7 +94,7 @@ export class CustomersService
      */
     getBrands(): Observable<CustomersBrand[]>
     {
-        return this._httpClient.get<CustomersBrand[]>('api/apps/ecommerce/inventory/brands').pipe(
+        return this._httpClient.get<CustomersBrand[]>('api/apps/ecommerce/customers/brands').pipe(
             tap((brands) => {
                 this._brands.next(brands);
             })
@@ -106,7 +106,7 @@ export class CustomersService
      */
     getCategories(): Observable<CustomersCategory[]>
     {
-        return this._httpClient.get<CustomersCategory[]>('api/apps/ecommerce/inventory/categories').pipe(
+        return this._httpClient.get<CustomersCategory[]>('api/apps/ecommerce/customers/categories').pipe(
             tap((categories) => {
                 this._categories.next(categories);
             })
@@ -123,10 +123,10 @@ export class CustomersService
      * @param order
      * @param search
      */
-    getProducts(page: number = 0, size: number = 10, sort: string = 'name', order: 'asc' | 'desc' | '' = 'asc', search: string = ''):
+     getCustomers(page: number = 0, size: number = 10, sort: string = 'name', order: 'asc' | 'desc' | '' = 'asc', search: string = ''):
         Observable<{ pagination: CustomersPagination; products: CustomersProduct[] }>
     {
-        return this._httpClient.get<{ pagination: CustomersPagination; products: CustomersProduct[] }>('api/apps/ecommerce/inventory/products', {
+        return this._httpClient.get<{ pagination: CustomersPagination; products: CustomersProduct[] }>('api/apps/ecommerce/customers/customers', {
             params: {
                 page: '' + page,
                 size: '' + size,
@@ -145,7 +145,7 @@ export class CustomersService
     /**
      * Get product by id
      */
-    getProductById(id: string): Observable<CustomersProduct>
+     getCustomerById(id: string): Observable<CustomersProduct>
     {
         return this._products.pipe(
             take(1),
@@ -175,11 +175,11 @@ export class CustomersService
     /**
      * Create product
      */
-    createProduct(): Observable<CustomersProduct>
+     createCustomer(): Observable<CustomersProduct>
     {
         return this.products$.pipe(
             take(1),
-            switchMap(products => this._httpClient.post<CustomersProduct>('api/apps/ecommerce/inventory/product', {}).pipe(
+            switchMap(products => this._httpClient.post<CustomersProduct>('api/apps/ecommerce/customers/customer', {}).pipe(
                 map((newProduct) => {
 
                     // Update the products with the new product
@@ -198,11 +198,11 @@ export class CustomersService
      * @param id
      * @param product
      */
-    updateProduct(id: string, product: CustomersProduct): Observable<CustomersProduct>
+    updateCustomer(id: string, product: CustomersProduct): Observable<CustomersProduct>
     {
         return this.products$.pipe(
             take(1),
-            switchMap(products => this._httpClient.patch<CustomersProduct>('api/apps/ecommerce/inventory/product', {
+            switchMap(products => this._httpClient.patch<CustomersProduct>('api/apps/ecommerce/customers/customer', {
                 id,
                 product
             }).pipe(
@@ -241,11 +241,11 @@ export class CustomersService
      *
      * @param id
      */
-    deleteProduct(id: string): Observable<boolean>
+    deleteCustomer(id: string): Observable<boolean>
     {
         return this.products$.pipe(
             take(1),
-            switchMap(products => this._httpClient.delete('api/apps/ecommerce/inventory/product', {params: {id}}).pipe(
+            switchMap(products => this._httpClient.delete('api/apps/ecommerce/customers/customer', {params: {id}}).pipe(
                 map((isDeleted: boolean) => {
 
                     // Find the index of the deleted product
@@ -269,7 +269,7 @@ export class CustomersService
      */
     getTags(): Observable<CustomersTag[]>
     {
-        return this._httpClient.get<CustomersTag[]>('api/apps/ecommerce/inventory/tags').pipe(
+        return this._httpClient.get<CustomersTag[]>('api/apps/ecommerce/customers/tags').pipe(
             tap((tags) => {
                 this._tags.next(tags);
             })
@@ -285,7 +285,7 @@ export class CustomersService
     {
         return this.tags$.pipe(
             take(1),
-            switchMap(tags => this._httpClient.post<CustomersTag>('api/apps/ecommerce/inventory/tag', {tag}).pipe(
+            switchMap(tags => this._httpClient.post<CustomersTag>('api/apps/ecommerce/customers/tag', {tag}).pipe(
                 map((newTag) => {
 
                     // Update the tags with the new tag
@@ -308,7 +308,7 @@ export class CustomersService
     {
         return this.tags$.pipe(
             take(1),
-            switchMap(tags => this._httpClient.patch<CustomersTag>('api/apps/ecommerce/inventory/tag', {
+            switchMap(tags => this._httpClient.patch<CustomersTag>('api/apps/ecommerce/customers/tag', {
                 id,
                 tag
             }).pipe(
@@ -339,7 +339,7 @@ export class CustomersService
     {
         return this.tags$.pipe(
             take(1),
-            switchMap(tags => this._httpClient.delete('api/apps/ecommerce/inventory/tag', {params: {id}}).pipe(
+            switchMap(tags => this._httpClient.delete('api/apps/ecommerce/customers/tag', {params: {id}}).pipe(
                 map((isDeleted: boolean) => {
 
                     // Find the index of the deleted tag
@@ -384,7 +384,7 @@ export class CustomersService
      */
     getVendors(): Observable<CustomersVendor[]>
     {
-        return this._httpClient.get<CustomersVendor[]>('api/apps/ecommerce/inventory/vendors').pipe(
+        return this._httpClient.get<CustomersVendor[]>('api/apps/ecommerce/customers/vendors').pipe(
             tap((vendors) => {
                 this._vendors.next(vendors);
             })

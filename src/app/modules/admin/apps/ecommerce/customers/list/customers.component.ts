@@ -30,7 +30,7 @@ export class CustomersListComponent implements OnInit, AfterViewInit, OnDestroy
     isLoading: boolean = false;
     pagination: CustomersPagination;
     productsCount: number = 0;
-    productsTableColumns: string[] = ['sku', 'name', 'price', 'stock', 'active', 'details'];
+    customerTableColumns: string[] = ['_id', 'first_name', 'last_name', 'customer_email', 'customer_store', 'customer_company', 'details'];
     searchInputControl: FormControl = new FormControl();
     selectedProduct: CustomersProduct | null = null;
     selectedProductForm: FormGroup;
@@ -80,7 +80,8 @@ export class CustomersListComponent implements OnInit, AfterViewInit, OnDestroy
             thumbnail        : [''],
             images           : [[]],
             currentImageIndex: [0], // Image index that is currently being viewed
-            active           : [false]
+            active           : [false],
+            firstname        : [''],
         });
 
         // Get the brands
@@ -165,7 +166,7 @@ export class CustomersListComponent implements OnInit, AfterViewInit, OnDestroy
                 switchMap((query) => {
                     this.closeDetails();
                     this.isLoading = true;
-                    return this._inventoryService.getProducts(0, 10, 'name', 'asc', query);
+                    return this._inventoryService.getCustomers(0, 10, 'name', 'asc', query);
                 }),
                 map(() => {
                     this.isLoading = false;
@@ -195,7 +196,7 @@ export class CustomersListComponent implements OnInit, AfterViewInit, OnDestroy
             switchMap(() => {
                 this.closeDetails();
                 this.isLoading = true;
-                return this._inventoryService.getProducts(this._paginator.pageIndex, this._paginator.pageSize, this._sort.active, this._sort.direction);
+                return this._inventoryService.getCustomers(this._paginator.pageIndex, this._paginator.pageSize, this._sort.active, this._sort.direction);
             }),
             map(() => {
                 this.isLoading = false;
@@ -233,7 +234,7 @@ export class CustomersListComponent implements OnInit, AfterViewInit, OnDestroy
         }
 
         // Get the product by id
-        this._inventoryService.getProductById(productId)
+        this._inventoryService.getCustomerById(productId)
             .subscribe((product) => {
 
                 // Set the selected product
@@ -467,10 +468,10 @@ export class CustomersListComponent implements OnInit, AfterViewInit, OnDestroy
     /**
      * Create product
      */
-    createProduct(): void
+     createCustomer(): void
     {
         // Create the product
-        this._inventoryService.createProduct().subscribe((newProduct) => {
+        this._inventoryService.createCustomer().subscribe((newProduct) => {
 
             // Go to new product
             this.selectedProduct = newProduct;
@@ -486,7 +487,7 @@ export class CustomersListComponent implements OnInit, AfterViewInit, OnDestroy
     /**
      * Update the selected product using the form mock-api
      */
-    updateSelectedProduct(): void
+    updateCustomerProduct(): void
     {
         // Get the product object
         const product = this.selectedProductForm.getRawValue();
@@ -495,7 +496,7 @@ export class CustomersListComponent implements OnInit, AfterViewInit, OnDestroy
         delete product.currentImageIndex;
 
         // Update the product on the server
-        this._inventoryService.updateProduct(product.id, product).subscribe(() => {
+        this._inventoryService.updateCustomer(product.id, product).subscribe(() => {
 
             // Show a success message
             this.showFlashMessage('success');
@@ -505,13 +506,13 @@ export class CustomersListComponent implements OnInit, AfterViewInit, OnDestroy
     /**
      * Delete the selected product using the form mock-api
      */
-    deleteSelectedProduct(): void
+    deleteSelectedCustomer(): void
     {
         // Get the product object
         const product = this.selectedProductForm.getRawValue();
 
         // Delete the product on the server
-        this._inventoryService.deleteProduct(product.id).subscribe(() => {
+        this._inventoryService.deleteCustomer(product.id).subscribe(() => {
 
             // Close the details
             this.closeDetails();

@@ -28,7 +28,7 @@
                 class="ml-4"
                 mat-flat-button
                 [color]="'primary'"
-                (click)="createProduct()">
+                (click)="createCustomer()">
                 <mat-icon [svgIcon]="'heroicons_outline:plus'"></mat-icon>
                 <span class="ml-2 mr-1">Add Customer</span>
             </button>
@@ -62,9 +62,9 @@
                         [trackBy]="trackByFn">
 
                         <!-- id -->
-                        <ng-container matColumnDef="sku">
+                        <ng-container matColumnDef="_id">
                             <th
-                                class="w-20 bg-gray-50 dark:bg-black dark:bg-opacity-5"
+                                class="w-5 bg-gray-50 dark:bg-black dark:bg-opacity-5"
                                 mat-header-cell
                                 *matHeaderCellDef
                                 mat-sort-header
@@ -78,109 +78,101 @@
                                 {{product.id}}
                             </td>
                         </ng-container>
-                        <!-- Name -->
-                        <ng-container matColumnDef="name">
+                        
+                        <!-- First Name -->
+                        <ng-container matColumnDef="first_name">
                             <th
-                                class="bg-gray-50 dark:bg-black dark:bg-opacity-5"
+                                class="w-10 bg-gray-50 dark:bg-black dark:bg-opacity-5"
                                 mat-header-cell
                                 *matHeaderCellDef
                                 mat-sort-header
                                 disableClear>
-                                Name
+                                First Name
+                            </th>
+                            <td
+                                class="pr-8"
+                                mat-cell
+                                *matCellDef="let product">
+                                {{product.firstname}}
+                            </td>
+                        </ng-container>
+
+                        <!-- Last Name -->
+                        <ng-container matColumnDef="last_name">
+                            <th
+                                class="w-10 bg-gray-50 dark:bg-black dark:bg-opacity-5"
+                                mat-header-cell
+                                *matHeaderCellDef
+                                mat-sort-header
+                                disableClear>
+                                Last Name
+                            </th>
+                            <td
+                                class="pr-8"
+                                mat-cell
+                                *matCellDef="let product">
+                                {{product.lastname}}
+                            </td>
+                        </ng-container>
+
+                        <!-- Email -->
+                        <ng-container matColumnDef="customer_email">
+                            <th
+                                class="w-15 bg-gray-50 dark:bg-black dark:bg-opacity-5"
+                                mat-header-cell
+                                *matHeaderCellDef
+                                mat-sort-header
+                                disableClear>
+                                Email
                             </th>
                             <td
                                 class="pr-8 truncate"
                                 mat-cell
                                 *matCellDef="let product">
-                                {{product.name}}
+                                {{product.email}}
+                            </td>
+                        </ng-container>
+
+                        <!-- Store -->
+                        <ng-container matColumnDef="customer_store">
+                            <th
+                                class="w-10 bg-gray-50 dark:bg-black dark:bg-opacity-5"
+                                mat-header-cell
+                                *matHeaderCellDef
+                                mat-sort-header
+                                disableClear>
+                                Store
+                            </th>
+                            <td
+                                class="pr-8 truncate"
+                                mat-cell
+                                *matCellDef="let product">
+                                {{product.store}}
                             </td>
                         </ng-container>
 
                         <!-- Price -->
-                        <ng-container matColumnDef="price">
+                        <ng-container matColumnDef="customer_company">
                             <th
-                                class="w-40 bg-gray-50 dark:bg-black dark:bg-opacity-5"
+                                class="w-20 bg-gray-50 dark:bg-black dark:bg-opacity-5"
                                 mat-header-cell
                                 *matHeaderCellDef
                                 mat-sort-header
                                 disableClear>
-                                Price
+                                Company
                             </th>
                             <td
                                 class="pr-4"
                                 mat-cell
                                 *matCellDef="let product">
-                                {{product.price | currency:'USD':'symbol':'1.2-2'}}
-                            </td>
-                        </ng-container>
-
-                        <!-- Stock -->
-                        <ng-container matColumnDef="stock">
-                            <th
-                                class="w-24 bg-gray-50 dark:bg-black dark:bg-opacity-5"
-                                mat-header-cell
-                                *matHeaderCellDef
-                                mat-sort-header
-                                disableClear>
-                                Stock
-                            </th>
-                            <td
-                                class="pr-4"
-                                mat-cell
-                                *matCellDef="let product">
-                                <span class="flex items-center">
-                                    <span class="min-w-4">{{product.stock}}</span>
-                                    <!-- Low stock -->
-                                    <span
-                                        class="flex items-end ml-2 w-1 h-4 bg-red-200 rounded overflow-hidden"
-                                        *ngIf="product.stock < 20">
-                                        <span class="flex w-full h-1/3 bg-red-600"></span>
-                                    </span>
-                                    <!-- Medium stock -->
-                                    <span
-                                        class="flex items-end ml-2 w-1 h-4 bg-orange-200 rounded overflow-hidden"
-                                        *ngIf="product.stock >= 20 && product.stock < 30">
-                                        <span class="flex w-full h-2/4 bg-orange-400"></span>
-                                    </span>
-                                    <!-- High stock -->
-                                    <span
-                                        class="flex items-end ml-2 w-1 h-4 bg-green-100 rounded overflow-hidden"
-                                        *ngIf="product.stock >= 30">
-                                        <span class="flex w-full h-full bg-green-400"></span>
-                                    </span>
-                                </span>
-                            </td>
-                        </ng-container>
-
-                        <!-- Active -->
-                        <ng-container matColumnDef="active">
-                            <th
-                                class="w-24 bg-gray-50 dark:bg-black dark:bg-opacity-5"
-                                mat-header-cell
-                                *matHeaderCellDef
-                                mat-sort-header
-                                disableClear>
-                                Active
-                            </th>
-                            <td
-                                class="pr-4"
-                                mat-cell
-                                *matCellDef="let product">
-                                <mat-icon
-                                    class="text-green-400 icon-size-5"
-                                    *ngIf="product.active"
-                                    [svgIcon]="'heroicons_solid:check'"></mat-icon>
-                                <mat-icon
-                                    class="text-gray-400 icon-size-5"
-                                    *ngIf="!product.active"
-                                    [svgIcon]="'heroicons_solid:x'"></mat-icon>
+                                {{product.company}}
                             </td>
                         </ng-container>
 
                         <!-- Details -->
                         <ng-container matColumnDef="details">
                             <th
-                                class="w-24 pr-8 bg-gray-50 dark:bg-black dark:bg-opacity-5"
+                                class="w-10 pr-8 bg-gray-50 dark:bg-black dark:bg-opacity-5"
                                 mat-header-cell
                                 *matHeaderCellDef>
                                 Details
@@ -206,7 +198,7 @@
                                 class="p-0 border-b-0"
                                 mat-cell
                                 *matCellDef="let product"
-                                [attr.colspan]="productsTableColumns.length">
+                                [attr.colspan]="customerTableColumns.length">
                                 <div
                                     class="shadow-lg overflow-hidden"
                                     [@expandCollapse]="selectedProduct?.id === product.id ? 'expanded' : 'collapsed'">
@@ -217,52 +209,6 @@
                                             [formGroup]="selectedProductForm">
 
                                             <div class="flex p-8">
-
-                                                <!-- Product images and status -->
-                                                <div class="flex flex-col">
-                                                    <div class="flex flex-col items-center">
-                                                        <div class="p-3 border rounded">
-                                                            <ng-container *ngIf="selectedProductForm.get('images').value.length; else noImage">
-                                                                <img
-                                                                    class="w-30 min-w-30"
-                                                                    [src]="selectedProductForm.get('images').value[selectedProductForm.get('currentImageIndex').value]">
-                                                            </ng-container>
-                                                            <ng-template #noImage>
-                                                                <span class="flex items-center min-h-20 text-lg font-semibold">NO IMAGE</span>
-                                                            </ng-template>
-                                                        </div>
-                                                        <div
-                                                            class="flex items-center mt-2"
-                                                            *ngIf="selectedProductForm.get('images').value.length">
-                                                            <button
-                                                                mat-icon-button
-                                                                (click)="cycleImages(false)">
-                                                                <mat-icon
-                                                                    class="icon-size-5"
-                                                                    [svgIcon]="'heroicons_solid:arrow-narrow-left'"></mat-icon>
-                                                            </button>
-                                                            <span class="font-sm mx-2">
-                                                                {{selectedProductForm.get('currentImageIndex').value + 1}} of {{selectedProductForm.get('images').value.length}}
-                                                            </span>
-                                                            <button
-                                                                mat-icon-button
-                                                                (click)="cycleImages(true)">
-                                                                <mat-icon
-                                                                    class="icon-size-5"
-                                                                    [svgIcon]="'heroicons_solid:arrow-narrow-right'"></mat-icon>
-                                                            </button>
-                                                        </div>
-                                                    </div>
-                                                    <div class="flex flex-col mt-8">
-                                                        <span class="font-semibold mb-2">Product status</span>
-                                                        <mat-slide-toggle
-                                                            [formControlName]="'active'"
-                                                            [color]="'primary'">
-                                                            {{selectedProductForm.get('active').value === true ? 'Active' : 'Disabled'}}
-                                                        </mat-slide-toggle>
-                                                    </div>
-                                                </div>
-
                                                 <div class="flex flex-auto">
                                                     <div class="flex flex-col w-2/4 pl-8">
 
@@ -479,7 +425,7 @@
                                                     class="-ml-4"
                                                     mat-button
                                                     [color]="'warn'"
-                                                    (click)="deleteSelectedProduct()">
+                                                    (click)="deleteSelectedCustomer()">
                                                     Delete
                                                 </button>
                                                 <div class="flex items-center">
@@ -502,7 +448,7 @@
                                                     <button
                                                         mat-flat-button
                                                         [color]="'primary'"
-                                                        (click)="updateSelectedProduct()">
+                                                        (click)="updateCustomerProduct()">
                                                         Update
                                                     </button>
                                                 </div>
@@ -517,11 +463,11 @@
                         <tr
                             class="shadow"
                             mat-header-row
-                            *matHeaderRowDef="productsTableColumns; sticky: true"></tr>
+                            *matHeaderRowDef="customerTableColumns; sticky: true"></tr>
                         <tr
                             class="h-18 hover:bg-gray-100 dark:hover:bg-hover"
                             mat-row
-                            *matRowDef="let product; columns: productsTableColumns;"></tr>
+                            *matRowDef="let product; columns: customerTableColumns;"></tr>
                         <tr
                             class="h-0"
                             mat-row

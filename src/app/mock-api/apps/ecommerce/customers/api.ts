@@ -36,21 +36,21 @@ export class CustomersMockApi
         // @ Categories - GET
         // -----------------------------------------------------------------------------------------------------
         this._fuseMockApiService
-            .onGet('api/apps/ecommerce/inventory/categories')
+            .onGet('api/apps/ecommerce/customers/categories')
             .reply(() => [200, cloneDeep(this._categories)]);
 
         // -----------------------------------------------------------------------------------------------------
         // @ Brands - GET
         // -----------------------------------------------------------------------------------------------------
         this._fuseMockApiService
-            .onGet('api/apps/ecommerce/inventory/brands')
+            .onGet('api/apps/ecommerce/customers/brands')
             .reply(() => [200, cloneDeep(this._brands)]);
 
         // -----------------------------------------------------------------------------------------------------
         // @ Products - GET
         // -----------------------------------------------------------------------------------------------------
         this._fuseMockApiService
-            .onGet('api/apps/ecommerce/inventory/products', 625)
+            .onGet('api/apps/ecommerce/customers/customers', 625)
             .reply(({request}) => {
 
                 // Get available queries
@@ -136,7 +136,7 @@ export class CustomersMockApi
         // @ Product - GET
         // -----------------------------------------------------------------------------------------------------
         this._fuseMockApiService
-            .onGet('api/apps/ecommerce/inventory/product')
+            .onGet('api/apps/ecommerce/customers/customer')
             .reply(({request}) => {
 
                 // Get the id from the params
@@ -156,7 +156,7 @@ export class CustomersMockApi
         // @ Product - POST
         // -----------------------------------------------------------------------------------------------------
         this._fuseMockApiService
-            .onPost('api/apps/ecommerce/inventory/product')
+            .onPost('api/apps/ecommerce/customers/customer')
             .reply(() => {
 
                 // Generate a new product
@@ -193,7 +193,7 @@ export class CustomersMockApi
         // @ Product - PATCH
         // -----------------------------------------------------------------------------------------------------
         this._fuseMockApiService
-            .onPatch('api/apps/ecommerce/inventory/product')
+            .onPatch('api/apps/ecommerce/customers/customer')
             .reply(({request}) => {
 
                 // Get the id and product
@@ -224,7 +224,7 @@ export class CustomersMockApi
         // @ Product - DELETE
         // -----------------------------------------------------------------------------------------------------
         this._fuseMockApiService
-            .onDelete('api/apps/ecommerce/inventory/product')
+            .onDelete('api/apps/ecommerce/customers/customer')
             .reply(({request}) => {
 
                 // Get the id
@@ -247,14 +247,14 @@ export class CustomersMockApi
         // @ Tags - GET
         // -----------------------------------------------------------------------------------------------------
         this._fuseMockApiService
-            .onGet('api/apps/ecommerce/inventory/tags')
+            .onGet('api/apps/ecommerce/customers/tags')
             .reply(() => [200, cloneDeep(this._tags)]);
 
         // -----------------------------------------------------------------------------------------------------
         // @ Tags - POST
         // -----------------------------------------------------------------------------------------------------
         this._fuseMockApiService
-            .onPost('api/apps/ecommerce/inventory/tag')
+            .onPost('api/apps/ecommerce/customers/tag')
             .reply(({request}) => {
 
                 // Get the tag
@@ -274,7 +274,7 @@ export class CustomersMockApi
         // @ Tags - PATCH
         // -----------------------------------------------------------------------------------------------------
         this._fuseMockApiService
-            .onPatch('api/apps/ecommerce/inventory/tag')
+            .onPatch('api/apps/ecommerce/customers/tag')
             .reply(({request}) => {
 
                 // Get the id and tag
@@ -305,7 +305,7 @@ export class CustomersMockApi
         // @ Tag - DELETE
         // -----------------------------------------------------------------------------------------------------
         this._fuseMockApiService
-            .onDelete('api/apps/ecommerce/inventory/tag')
+            .onDelete('api/apps/ecommerce/customers/tag')
             .reply(({request}) => {
 
                 // Get the id
@@ -336,7 +336,7 @@ export class CustomersMockApi
         // @ Vendors - GET
         // -----------------------------------------------------------------------------------------------------
         this._fuseMockApiService
-            .onGet('api/apps/ecommerce/inventory/vendors')
+            .onGet('api/apps/ecommerce/customers/vendors')
             .reply(() => [200, cloneDeep(this._vendors)]);
     }
 }
