@@ -11,9 +11,22 @@
         <!-- Title -->
         <div class="text-4xl font-extrabold tracking-tight">Customer Details</div>
     </div>
+
+    <div class="px-5">
+        <mat-card>
+            <mat-card-title>{{selectedTab}}</mat-card-title>
+            <mat-card-content>
+                <b>Name: </b>{{selectedCustomer.firstname}} {{selectedCustomer.lastname}}
+                <b>Company: </b>{{selectedCustomer.company}}
+                <b>Email: </b>{{selectedCustomer.email}}
+                <b>Status: </b>{{selectedCustomer.active ? "Active" : "Inactive"}}
+                <b>Fax: </b>N/A
+            </mat-card-content>
+        </mat-card>
+    </div>
     
     <!-- Main -->
-    <div class="flex flex-auto">
+    <div class="flex flex-auto mt-6">
         <mat-tab-group #tabGroup (selectedTabChange)="tabChanged($event)" style="overflow-x: scroll;">
             <mat-tab label="User Info">
                 <div class="text-1xl font-semibold">General Information</div>

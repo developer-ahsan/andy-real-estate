@@ -15,6 +15,7 @@ import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { MatTableModule } from '@angular/material/table';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatTabsModule } from '@angular/material/tabs';
+import { MatCardModule } from '@angular/material/card';
 import { SharedModule } from 'app/shared/shared.module';
 import { InventoryComponent } from 'app/modules/admin/apps/ecommerce/inventory/inventory.component';
 import { InventoryListComponent } from 'app/modules/admin/apps/ecommerce/inventory/list/inventory.component';
@@ -50,7 +51,8 @@ import { UserAddressComponent } from './customers/tabs/user-address/user-address
         MatTableModule,
         MatTooltipModule,
         SharedModule,
-        MatTabsModule
+        MatTabsModule,
+        MatCardModule
     ]
 })
 export class ECommerceModule
