@@ -13,8 +13,8 @@ export class CustomersService
     private _brands: BehaviorSubject<CustomersBrand[] | null> = new BehaviorSubject(null);
     private _categories: BehaviorSubject<CustomersCategory[] | null> = new BehaviorSubject(null);
     private _pagination: BehaviorSubject<CustomersPagination | null> = new BehaviorSubject(null);
-    private _product: BehaviorSubject<CustomersProduct | null> = new BehaviorSubject(null);
-    private _products: BehaviorSubject<CustomersProduct[] | null> = new BehaviorSubject(null);
+    private _customer: BehaviorSubject<CustomersProduct | null> = new BehaviorSubject(null);
+    private _customers: BehaviorSubject<CustomersProduct[] | null> = new BehaviorSubject(null);
     private _tags: BehaviorSubject<CustomersTag[] | null> = new BehaviorSubject(null);
     private _vendors: BehaviorSubject<CustomersVendor[] | null> = new BehaviorSubject(null);
 
@@ -58,15 +58,15 @@ export class CustomersService
      */
     get product$(): Observable<CustomersProduct>
     {
-        return this._product.asObservable();
+        return this._customer.asObservable();
     }
 
     /**
      * Getter for products
      */
-    get products$(): Observable<CustomersProduct[]>
+    get customers$(): Observable<CustomersProduct[]>
     {
-        return this._products.asObservable();
+        return this._customers.asObservable();
     }
 
     /**
@@ -137,7 +137,7 @@ export class CustomersService
         }).pipe(
             tap((response) => {
                 this._pagination.next(response.pagination);
-                this._products.next(response.products);
+                this._customers.next(response.products);
             })
         );
     }
@@ -147,7 +147,7 @@ export class CustomersService
      */
      getCustomerById(id: string): Observable<CustomersProduct>
     {
-        return this._products.pipe(
+        return this._customers.pipe(
             take(1),
             map((products) => {
 
@@ -155,7 +155,7 @@ export class CustomersService
                 const product = products.find(item => item.id === id) || null;
 
                 // Update the product
-                this._product.next(product);
+                this._customer.next(product);
 
                 // Return the product
                 return product;
@@ -177,30 +177,30 @@ export class CustomersService
      */
      createCustomer(): Observable<CustomersProduct>
     {
-        return this.products$.pipe(
+        return this.customers$.pipe(
             take(1),
-            switchMap(products => this._httpClient.post<CustomersProduct>('api/apps/ecommerce/customers/customer', {}).pipe(
-                map((newProduct) => {
+            switchMap(customers => this._httpClient.post<CustomersProduct>('api/apps/ecommerce/customers/customer', {}).pipe(
+                map((newCustomer) => {
 
                     // Update the products with the new product
-                    this._products.next([newProduct, ...products]);
+                    this._customers.next([newCustomer, ...customers]);
 
                     // Return the new product
-                    return newProduct;
+                    return newCustomer;
                 })
             ))
         );
     }
 
     /**
-     * Update product
+     * Update customer
      *
      * @param id
      * @param product
      */
     updateCustomer(id: string, product: CustomersProduct): Observable<CustomersProduct>
     {
-        return this.products$.pipe(
+        return this.customers$.pipe(
             take(1),
             switchMap(products => this._httpClient.patch<CustomersProduct>('api/apps/ecommerce/customers/customer', {
                 id,
@@ -215,7 +215,7 @@ export class CustomersService
                     products[index] = updatedProduct;
 
                     // Update the products
-                    this._products.next(products);
+                    this._customers.next(products);
 
                     // Return the updated product
                     return updatedProduct;
@@ -226,7 +226,7 @@ export class CustomersService
                     tap(() => {
 
                         // Update the product if it's selected
-                        this._product.next(updatedProduct);
+                        this._customer.next(updatedProduct);
 
                         // Return the updated product
                         return updatedProduct;
@@ -243,7 +243,7 @@ export class CustomersService
      */
     deleteCustomer(id: string): Observable<boolean>
     {
-        return this.products$.pipe(
+        return this.customers$.pipe(
             take(1),
             switchMap(products => this._httpClient.delete('api/apps/ecommerce/customers/customer', {params: {id}}).pipe(
                 map((isDeleted: boolean) => {
@@ -255,7 +255,7 @@ export class CustomersService
                     products.splice(index, 1);
 
                     // Update the products
-                    this._products.next(products);
+                    this._customers.next(products);
 
                     // Return the deleted status
                     return isDeleted;
@@ -355,7 +355,7 @@ export class CustomersService
                     return isDeleted;
                 }),
                 filter(isDeleted => isDeleted),
-                switchMap(isDeleted => this.products$.pipe(
+                switchMap(isDeleted => this.customers$.pipe(
                     take(1),
                     map((products) => {
 

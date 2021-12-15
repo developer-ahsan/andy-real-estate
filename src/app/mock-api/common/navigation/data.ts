@@ -228,6 +228,12 @@ export const futuristicNavigation: FuseNavigationItem[] = [
                         icon : 'heroicons_outline:user-group',
                         link : '/apps/ecommerce/customers'
                     },
+                    {
+                        id  : 'customer',
+                        icon: 'heroicons_outline:user-group',
+                        type: 'basic',
+                        link: '/apps/ecommerce/customer',
+                    },
                 ]
             },
             {

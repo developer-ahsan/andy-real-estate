@@ -8,16 +8,16 @@ import { debounceTime, map, switchMap, takeUntil } from 'rxjs/operators';
 import { fuseAnimations } from '@fuse/animations';
 import { CustomersBrand, CustomersCategory, CustomersPagination, CustomersProduct, CustomersTag, CustomersVendor } from 'app/modules/admin/apps/ecommerce/customers/customers.types';
 import { CustomersService } from 'app/modules/admin/apps/ecommerce/customers/customers.service';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 
 @Component({
     selector       : 'customers',
-    templateUrl    : './customers.component.html',
+    templateUrl    : './customer.tabs.component.html',
     encapsulation  : ViewEncapsulation.None,
     changeDetection: ChangeDetectionStrategy.OnPush,
     animations     : fuseAnimations
 })
-export class CustomersListComponent implements OnInit, AfterViewInit, OnDestroy
+export class CustomersTabComponent implements OnInit, AfterViewInit, OnDestroy
 {
     @ViewChild(MatPaginator) private _paginator: MatPaginator;
     @ViewChild(MatSort) private _sort: MatSort;
@@ -38,6 +38,8 @@ export class CustomersListComponent implements OnInit, AfterViewInit, OnDestroy
     tags: CustomersTag[];
     tagsEditMode: boolean = false;
     vendors: CustomersVendor[];
+    selectedCustomerId: string = "";
+    selectedTab = "User Info"
     private _unsubscribeAll: Subject<any> = new Subject<any>();
 
     /**
@@ -48,6 +50,7 @@ export class CustomersListComponent implements OnInit, AfterViewInit, OnDestroy
         private _formBuilder: FormBuilder,
         private _customerService: CustomersService,
         private _router: Router,
+        private route: ActivatedRoute,
     )
     {
     }
@@ -61,6 +64,15 @@ export class CustomersListComponent implements OnInit, AfterViewInit, OnDestroy
      */
     ngOnInit(): void
     {
+        // get customerId from params
+        this.route.queryParamMap
+            .subscribe((parameters) => {
+                const obj = { ...parameters.keys, ...parameters };
+                const { customerId } = obj["params"];
+                this.selectedCustomerId = customerId;
+            }
+            );
+    
         // Create the selected product form
         this.selectedCustomerForm = this._formBuilder.group({
             id               : [''],
@@ -185,6 +197,8 @@ export class CustomersListComponent implements OnInit, AfterViewInit, OnDestroy
                 })
             )
             .subscribe();
+
+            this.toggleDetails(this.selectedCustomerId);
     }
 
     /**
@@ -193,27 +207,27 @@ export class CustomersListComponent implements OnInit, AfterViewInit, OnDestroy
     ngAfterViewInit(): void
     {
         // If the user changes the sort order...
-        this._sort.sortChange
-            .pipe(takeUntil(this._unsubscribeAll))
-            .subscribe(() => {
-                // Reset back to the first page
-                this._paginator.pageIndex = 0;
+        // this._sort.sortChange
+        //     .pipe(takeUntil(this._unsubscribeAll))
+        //     .subscribe(() => {
+        //         // Reset back to the first page
+        //         this._paginator.pageIndex = 0;
 
-                // Close the details
-                this.closeDetails();
-            });
+        //         // Close the details
+        //         this.closeDetails();
+        //     });
 
-        // Get products if sort or page changes
-        merge(this._sort.sortChange, this._paginator.page).pipe(
-            switchMap(() => {
-                this.closeDetails();
-                this.isLoading = true;
-                return this._customerService.getCustomers(this._paginator.pageIndex, this._paginator.pageSize, this._sort.active, this._sort.direction);
-            }),
-            map(() => {
-                this.isLoading = false;
-            })
-        ).subscribe();
+        // // Get products if sort or page changes
+        // merge(this._sort.sortChange, this._paginator.page).pipe(
+        //     switchMap(() => {
+        //         this.closeDetails();
+        //         this.isLoading = true;
+        //         return this._customerService.getCustomers(this._paginator.pageIndex, this._paginator.pageSize, this._sort.active, this._sort.direction);
+        //     }),
+        //     map(() => {
+        //         this.isLoading = false;
+        //     })
+        // ).subscribe();
     }
 
     /**
@@ -563,8 +577,7 @@ export class CustomersListComponent implements OnInit, AfterViewInit, OnDestroy
         return item.id || index;
     }
 
-    editCustomer(customer) {
-        let route = '/apps/ecommerce/customer';
-        this._router.navigate([route], { queryParams: { customerId: customer.id } });
-      }
+    tabChanged(tabChangeEvent): void {
+        this.selectedTab = tabChangeEvent.tab.textLabel
+    } 
 }

@@ -140,7 +140,14 @@ export const products = [
         lastname: 'Jones',
         email: 'jeffrey.jones@console.net',
         store: 'AirForceROTCShop',
-        company: 'Consolidus LLC'
+        company: 'Consolidus LLC',
+        title: 'CEO',
+        dateregistered: '11/12/2021',
+        ipaddress: '251.215.215.2',
+        department: 'Sales',
+        fax: '2451578421354',
+        website: 'abc@consolidus.com',
+        address: '52R, Johar Town, Lahore, Punjab'
     },
     {
         id         : '00b',
@@ -176,7 +183,14 @@ export const products = [
         lastname: 'Jones',
         email: 'jeffrey.jones@console.net',
         store: 'AirForceROTCShop',
-        company: 'Consolidus LLC'
+        company: 'Consolidus LLC',
+        title: 'CEO',
+        dateregistered: '11/12/2021',
+        ipaddress: '251.215.215.2',
+        department: 'Sales',
+        fax: '2451578421354',
+        website: 'abc@consolidus.com',
+        address: '52R, Johar Town, Lahore, Punjab'
     },
     {
         id         : '3f3',
@@ -212,7 +226,14 @@ export const products = [
         lastname: 'Jones',
         email: 'jeffrey.jones@console.net',
         store: 'MySummaShop',
-        company: 'Consolidus LLC'
+        company: 'Consolidus LLC',
+        title: 'CEO',
+        dateregistered: '11/12/2021',
+        ipaddress: '251.215.215.2',
+        department: 'Sales',
+        fax: '2451578421354',
+        website: 'abc@consolidus.com',
+        address: '52R, Johar Town, Lahore, Punjab'
     },
     {
         id         : '8fc',
@@ -248,7 +269,14 @@ export const products = [
         lastname: 'Jones',
         email: 'jeffrey.jones@console.net',
         store: 'AirForceROTCShop',
-        company: 'DCWIN'
+        company: 'DCWIN',
+        title: 'CEO',
+        dateregistered: '11/12/2021',
+        ipaddress: '251.215.215.2',
+        department: 'Sales',
+        fax: '2451578421354',
+        website: 'abc@consolidus.com',
+        address: '52R, Johar Town, Lahore, Punjab'
     },
     {
         id         : '100',
@@ -284,7 +312,14 @@ export const products = [
         lastname: 'Jones',
         email: 'jeffrey.jones@console.net',
         store: 'AirForceROTCShop',
-        company: 'Consolidus LLC'
+        company: 'Consolidus LLC',
+        title: 'CEO',
+        dateregistered: '11/12/2021',
+        ipaddress: '251.215.215.2',
+        department: 'Sales',
+        fax: '2451578421354',
+        website: 'abc@consolidus.com',
+        address: '52R, Johar Town, Lahore, Punjab'
     },
     {
         id         : '101',
@@ -320,7 +355,14 @@ export const products = [
         lastname: 'Jones',
         email: 'jeffrey.jones@console.net',
         store: 'AirForceROTCShop',
-        company: 'Consolidus LLC'
+        company: 'Consolidus LLC',
+        title: 'CEO',
+        dateregistered: '11/12/2021',
+        ipaddress: '251.215.215.2',
+        department: 'Sales',
+        fax: '2451578421354',
+        website: 'abc@consolidus.com',
+        address: '52R, Johar Town, Lahore, Punjab'
     },
     {
         id         : '102',
@@ -356,7 +398,14 @@ export const products = [
         lastname: 'Jones',
         email: 'jeffrey.jones@console.net',
         store: 'MySummaShop',
-        company: 'Consolidus LLC'
+        company: 'Consolidus LLC',
+        title: 'GENERAL MANAGER',
+        dateregistered: '11/12/2021',
+        ipaddress: '251.215.215.2',
+        department: 'Sales',
+        fax: '2451578421354',
+        website: 'abc@consolidus.com',
+        address: '52R, Johar Town, Lahore, Punjab'
     },
     {
         id         : '103',
@@ -392,7 +441,14 @@ export const products = [
         lastname: 'Jones',
         email: 'jeffrey.jones@console.net',
         store: 'AirForceROTCShop',
-        company: 'DCWIN'
+        company: 'DCWIN',
+        title: 'Supervisor',
+        dateregistered: '11/12/2021',
+        ipaddress: '251.215.215.2',
+        department: 'Sales',
+        fax: '2451578421354',
+        website: 'abc@consolidus.com',
+        address: '52R, Johar Town, Lahore, Punjab'
     },
     {
         id         : '104',
@@ -428,7 +484,14 @@ export const products = [
         lastname: 'Jones',
         email: 'jeffrey.jones@console.net',
         store: 'AirForceROTCShop',
-        company: 'DCWIN'
+        company: 'DCWIN',
+        title: 'Manager',
+        dateregistered: '11/12/2021',
+        ipaddress: '251.215.215.2',
+        department: 'Sales',
+        fax: '2451578421354',
+        website: 'abc@consolidus.com',
+        address: '52R, Johar Town, Lahore, Punjab'
     },
     {
         id         : '105',
@@ -464,7 +527,14 @@ export const products = [
         lastname: 'Jones',
         email: 'jeffrey.jones@console.net',
         store: 'AirForceROTCShop',
-        company: 'Consolidus LLC'
+        company: 'Consolidus LLC',
+        title: 'CEO',
+        dateregistered: '11/12/2021',
+        ipaddress: '251.215.215.2',
+        department: 'Sales',
+        fax: '2451578421354',
+        website: 'abc@consolidus.com',
+        address: '52R, Johar Town, Lahore, Punjab'
     },
     {
         id         : '106',
@@ -500,7 +570,14 @@ export const products = [
         lastname: 'Jones',
         email: 'jeffrey.jones@console.net',
         store: 'AirForceROTCShop',
-        company: 'Consolidus LLC'
+        company: 'Consolidus LLC',
+        title: 'CEO',
+        dateregistered: '11/12/2021',
+        ipaddress: '251.215.215.2',
+        department: 'Sales',
+        fax: '2451578421354',
+        website: 'abc@consolidus.com',
+        address: '52R, Johar Town, Lahore, Punjab'
     },
     {
         id         : '1012',
@@ -536,7 +613,14 @@ export const products = [
         lastname: 'Jones',
         email: 'jeffrey.jones@console.net',
         store: 'MySummaShop',
-        company: 'Consolidus LLC'
+        company: 'Consolidus LLC',
+        title: 'CEO',
+        dateregistered: '11/12/2021',
+        ipaddress: '251.215.215.2',
+        department: 'Sales',
+        fax: '2451578421354',
+        website: 'abc@consolidus.com',
+        address: '52R, Johar Town, Lahore, Punjab'
     },
     {
         id         : '107',
@@ -572,6 +656,13 @@ export const products = [
         lastname: 'Jones',
         email: 'jeffrey.jones@console.net',
         store: 'AirForceROTCShop',
-        company: 'DCWIN'
+        company: 'DCWIN',
+        title: 'CEO',
+        dateregistered: '11/12/2021',
+        ipaddress: '251.215.215.2',
+        department: 'Sales',
+        fax: '2451578421354',
+        website: 'abc@consolidus.com',
+        address: '52R, Johar Town, Lahore, Punjab'
     }
 ];

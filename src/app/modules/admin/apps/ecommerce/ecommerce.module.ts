@@ -14,19 +14,24 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { MatTableModule } from '@angular/material/table';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import { MatTabsModule } from '@angular/material/tabs';
 import { SharedModule } from 'app/shared/shared.module';
 import { InventoryComponent } from 'app/modules/admin/apps/ecommerce/inventory/inventory.component';
 import { InventoryListComponent } from 'app/modules/admin/apps/ecommerce/inventory/list/inventory.component';
 import { ecommerceRoutes } from 'app/modules/admin/apps/ecommerce/ecommerce.routing';
 import { CustomersComponent } from 'app/modules/admin/apps/ecommerce/customers/customers.component';
 import { CustomersListComponent } from 'app/modules/admin/apps/ecommerce/customers/list/customers.component';
+import { CustomersTabComponent } from 'app/modules/admin/apps/ecommerce/customers/tabs/customers.component';
+import { UserAddressComponent } from './customers/tabs/user-address/user-address.component';
 
 @NgModule({
     declarations: [
         InventoryComponent,
         InventoryListComponent,
         CustomersComponent,
-        CustomersListComponent
+        CustomersListComponent,
+        CustomersTabComponent,
+        UserAddressComponent
     ],
     imports     : [
         RouterModule.forChild(ecommerceRoutes),
@@ -44,7 +49,8 @@ import { CustomersListComponent } from 'app/modules/admin/apps/ecommerce/custome
         MatSlideToggleModule,
         MatTableModule,
         MatTooltipModule,
-        SharedModule
+        SharedModule,
+        MatTabsModule
     ]
 })
 export class ECommerceModule

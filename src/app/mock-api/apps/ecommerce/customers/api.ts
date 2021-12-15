@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { assign, cloneDeep } from 'lodash-es';
-import { FuseMockApiService, FuseMockApiUtils } from '@fuse/lib/mock-api';
+import { FuseMockApiService } from '@fuse/lib/mock-api';
 import { brands as brandsData, categories as categoriesData, products as productsData, tags as tagsData, vendors as vendorsData } from 'app/mock-api/apps/ecommerce/customers/data';
 
 @Injectable({
@@ -10,7 +10,7 @@ export class CustomersMockApi
 {
     private _categories: any[] = categoriesData;
     private _brands: any[] = brandsData;
-    private _products: any[] = productsData;
+    private _customers: any[] = productsData;
     private _tags: any[] = tagsData;
     private _vendors: any[] = vendorsData;
 
@@ -61,7 +61,7 @@ export class CustomersMockApi
                 const size = parseInt(request.params.get('size') ?? '10', 10);
 
                 // Clone the products
-                let products: any[] | null = cloneDeep(this._products);
+                let products: any[] | null = cloneDeep(this._customers);
 
                 // Sort the products
                 if ( sort === 'sku' || sort === 'name' || sort === 'active' )
@@ -143,7 +143,7 @@ export class CustomersMockApi
                 const id = request.params.get('id');
 
                 // Clone the products
-                const products = cloneDeep(this._products);
+                const products = cloneDeep(this._customers);
 
                 // Find the product
                 const product = products.find(item => item.id === id);
@@ -160,8 +160,8 @@ export class CustomersMockApi
             .reply(() => {
 
                 // Generate a new product
-                const newProduct = {
-                    id         : FuseMockApiUtils.guid(),
+                const newCustomer = {
+                    id         : Math.floor(Math.random()*(999-100+1)+100),
                     category   : '',
                     name       : 'A New Product',
                     description: '',
@@ -183,10 +183,10 @@ export class CustomersMockApi
                 };
 
                 // Unshift the new product
-                this._products.unshift(newProduct);
+                this._customers.unshift(newCustomer);
 
                 // Return the response
-                return [200, newProduct];
+                return [200, newCustomer];
             });
 
         // -----------------------------------------------------------------------------------------------------
@@ -204,7 +204,7 @@ export class CustomersMockApi
                 let updatedProduct = null;
 
                 // Find the product and update it
-                this._products.forEach((item, index, products) => {
+                this._customers.forEach((item, index, products) => {
 
                     if ( item.id === id )
                     {
@@ -231,11 +231,11 @@ export class CustomersMockApi
                 const id = request.params.get('id');
 
                 // Find the product and delete it
-                this._products.forEach((item, index) => {
+                this._customers.forEach((item, index) => {
 
                     if ( item.id === id )
                     {
-                        this._products.splice(index, 1);
+                        this._customers.splice(index, 1);
                     }
                 });
 
@@ -261,7 +261,7 @@ export class CustomersMockApi
                 const newTag = cloneDeep(request.body.tag);
 
                 // Generate a new GUID
-                newTag.id = FuseMockApiUtils.guid();
+                newTag.id = Math.floor(Math.random()*(999-100+1)+100);
 
                 // Unshift the new tag
                 this._tags.unshift(newTag);
@@ -321,7 +321,7 @@ export class CustomersMockApi
                 });
 
                 // Get the products that have the tag
-                const productsWithTag = this._products.filter(product => product.tags.indexOf(id) > -1);
+                const productsWithTag = this._customers.filter(product => product.tags.indexOf(id) > -1);
 
                 // Iterate through them and delete the tag
                 productsWithTag.forEach((product) => {

@@ -13,7 +13,7 @@ export class CustomersBrandsResolver implements Resolve<any>
     /**
      * Constructor
      */
-    constructor(private _inventoryService: CustomersService)
+    constructor(private _customerService: CustomersService)
     {
     }
 
@@ -29,7 +29,7 @@ export class CustomersBrandsResolver implements Resolve<any>
      */
     resolve(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<CustomersBrand[]>
     {
-        return this._inventoryService.getBrands();
+        return this._customerService.getBrands();
     }
 }
 
@@ -41,7 +41,7 @@ export class CustomersCategoriesResolver implements Resolve<any>
     /**
      * Constructor
      */
-    constructor(private _inventoryService: CustomersService)
+    constructor(private _customerService: CustomersService)
     {
     }
 
@@ -57,7 +57,7 @@ export class CustomersCategoriesResolver implements Resolve<any>
      */
     resolve(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<CustomersCategory[]>
     {
-        return this._inventoryService.getCategories();
+        return this._customerService.getCategories();
     }
 }
 
@@ -70,7 +70,7 @@ export class CustomersProductResolver implements Resolve<any>
      * Constructor
      */
     constructor(
-        private _inventoryService: CustomersService,
+        private _customerService: CustomersService,
         private _router: Router
     )
     {
@@ -88,7 +88,7 @@ export class CustomersProductResolver implements Resolve<any>
      */
     resolve(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<CustomersProduct>
     {
-        return this._inventoryService.getCustomerById(route.paramMap.get('id'))
+        return this._customerService.getCustomerById(route.paramMap.get('id'))
                    .pipe(
                        // Error here means the requested product is not available
                        catchError((error) => {
@@ -117,7 +117,7 @@ export class CustomersProductsResolver implements Resolve<any>
     /**
      * Constructor
      */
-    constructor(private _inventoryService: CustomersService)
+    constructor(private _customerService: CustomersService)
     {
     }
 
@@ -133,7 +133,7 @@ export class CustomersProductsResolver implements Resolve<any>
      */
     resolve(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<{ pagination: CustomersPagination; products: CustomersProduct[] }>
     {
-        return this._inventoryService.getCustomers();
+        return this._customerService.getCustomers();
     }
 }
 
@@ -145,7 +145,7 @@ export class CustomersTagsResolver implements Resolve<any>
     /**
      * Constructor
      */
-    constructor(private _inventoryService: CustomersService)
+    constructor(private _customerService: CustomersService)
     {
     }
 
@@ -161,7 +161,7 @@ export class CustomersTagsResolver implements Resolve<any>
      */
     resolve(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<CustomersTag[]>
     {
-        return this._inventoryService.getTags();
+        return this._customerService.getTags();
     }
 }
 
@@ -173,7 +173,7 @@ export class CustomersVendorsResolver implements Resolve<any>
     /**
      * Constructor
      */
-    constructor(private _inventoryService: CustomersService)
+    constructor(private _customerService: CustomersService)
     {
     }
 
@@ -189,6 +189,6 @@ export class CustomersVendorsResolver implements Resolve<any>
      */
     resolve(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<CustomersVendor[]>
     {
-        return this._inventoryService.getVendors();
+        return this._customerService.getVendors();
     }
 }

@@ -1,0 +1,168 @@
+<div class="absolute inset-0 flex flex-col min-w-0 overflow-hidden bg-card dark:bg-transparent">
+
+    <!-- Header -->
+    <div class="relative flex flex-col sm:flex-row flex-0 sm:items-center sm:justify-between py-8 px-6 md:px-8 border-b">
+        <!-- Loader -->
+        <div
+            class="absolute inset-x-0 bottom-0"
+            *ngIf="isLoading">
+            <mat-progress-bar [mode]="'indeterminate'"></mat-progress-bar>
+        </div>
+        <!-- Title -->
+        <div class="text-4xl font-extrabold tracking-tight">Customer Details</div>
+    </div>
+    
+    <!-- Main -->
+    <div class="flex flex-auto">
+        <mat-tab-group #tabGroup (selectedTabChange)="tabChanged($event)" style="overflow-x: scroll;">
+            <mat-tab label="User Info">
+                <div class="text-1xl font-semibold">General Information</div>
+                <form
+                    class="flex flex-col w-full pt-2"
+                    [formGroup]="selectedCustomerForm">
+
+                    <div class="flex pt-2">
+                        <div class="flex flex-auto">
+                            <div class="flex flex-col w-2/4 pl-8">
+
+                                <!-- Email -->
+                                <mat-form-field class="w-full">
+                                    <mat-label>Email</mat-label>
+                                    <input
+                                        matInput
+                                        [formControlName]="'email'">
+                                </mat-form-field>
+
+                                <!-- First Name and Last Name -->
+                                <div class="flex">
+                                    <mat-form-field class="w-2/3 pr-2">
+                                        <mat-label>First Name</mat-label>
+                                        <input
+                                            matInput
+                                            [formControlName]="'firstname'">
+                                    </mat-form-field>
+                                    <mat-form-field class="w-2/3 pl-2">
+                                        <mat-label>Last Name</mat-label>
+                                        <input
+                                            matInput
+                                            [formControlName]="'lastname'">
+                                    </mat-form-field>
+                                </div>
+
+                                <!-- First Name and Last Name -->
+                                <div class="flex">
+                                    <mat-form-field class="w-2/3 pr-2">
+                                        <mat-label>Store</mat-label>
+                                        <input
+                                            matInput
+                                            [formControlName]="'store'">
+                                    </mat-form-field>
+                                    <mat-form-field class="w-2/3 pl-2">
+                                        <mat-label>Company Name</mat-label>
+                                        <input
+                                            matInput
+                                            [formControlName]="'company'">
+                                    </mat-form-field>
+                                </div>
+                            </div>
+
+                            <!-- Cost, Base price, Tax & Price -->
+                            <div class="flex flex-col w-1/4 pl-8">
+                                <mat-form-field class="w-full">
+                                    <mat-label>Date Registered</mat-label>
+                                    <input
+                                        matInput
+                                        [formControlName]="'dateregistered'">
+                                </mat-form-field>
+                                <mat-form-field class="w-full">
+                                    <mat-label>Title</mat-label>
+                                    <input
+                                        matInput
+                                        [formControlName]="'title'">
+                                </mat-form-field>
+                                <mat-form-field class="w-full">
+                                    <mat-label>Fax</mat-label>
+                                    <input
+                                        matInput
+                                        [formControlName]="'fax'">
+                                </mat-form-field>
+                            </div>
+
+                            <!-- Weight & Tags -->
+                            <div class="flex flex-col w-1/4 pl-8">
+                                <mat-form-field class="w-full">
+                                    <mat-label>IP Address</mat-label>
+                                    <input
+                                        matInput
+                                        [formControlName]="'ipaddress'">
+                                </mat-form-field>
+                                <mat-form-field class="w-full">
+                                    <mat-label>Department</mat-label>
+                                    <input
+                                        matInput
+                                        [formControlName]="'department'">
+                                </mat-form-field>
+                                <mat-form-field class="w-full">
+                                    <mat-label>Website</mat-label>
+                                    <input
+                                        matInput
+                                        [formControlName]="'website'">
+                                </mat-form-field>
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                    <div class="flex items-center justify-between w-full border-t px-8 py-4">
+                        <div class="flex items-center">
+                            <div
+                                class="flex items-center mr-4"
+                                *ngIf="flashMessage">
+                                <ng-container *ngIf="flashMessage === 'success'">
+                                    <mat-icon
+                                        class="text-green-500"
+                                        [svgIcon]="'heroicons_outline:check'"></mat-icon>
+                                    <span class="ml-2">Customer updated</span>
+                                </ng-container>
+                                <ng-container *ngIf="flashMessage === 'error'">
+                                    <mat-icon
+                                        class="text-red-500"
+                                        [svgIcon]="'heroicons_outline:x'"></mat-icon>
+                                    <span class="ml-2">An error occurred, try again!</span>
+                                </ng-container>
+                            </div>
+                            <button
+                                mat-flat-button
+                                [color]="'primary'"
+                                (click)="updateCustomerProduct()">
+                                Update
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </mat-tab>
+            <mat-tab label="User Addresses">
+                <div class="text-1xl font-semibold"><app-user-address [currentSelectedCustomer]="selectedCustomer"></app-user-address></div>
+            </mat-tab>
+            <mat-tab label="Metrics">Metrics</mat-tab>
+            <mat-tab label="Credit Terms">Credit Terms</mat-tab>
+            <mat-tab label="Credits Applications">Credits Applications</mat-tab>
+            <mat-tab label="User Comments">User Comments</mat-tab>
+            <mat-tab label="FLPS Users">FLPS Users</mat-tab>
+            <mat-tab label="Locations">Locations</mat-tab>
+            <mat-tab label="Approval Contacts">Approval Contacts</mat-tab>
+            <mat-tab label="Reminders">Reminders</mat-tab>
+            <mat-tab label="Order History">Order History</mat-tab>
+            <mat-tab label="Fulfillment Orders">Fulfillment Orders</mat-tab>
+            <mat-tab label="Saved Carts">Saved Carts</mat-tab>
+            <mat-tab label="Quotes">Quotes</mat-tab>
+            <mat-tab label="Group Orders">Group Orders</mat-tab>
+            <mat-tab label="Logo Bank">Logo Bank</mat-tab>
+            <mat-tab label="Cashback">Cashback</mat-tab>
+            <mat-tab label="Store Usage">Store Usage</mat-tab>
+            <mat-tab label="Send Registration Emails">Registration Emails</mat-tab>
+        </mat-tab-group>
+    </div>
+
+</div>

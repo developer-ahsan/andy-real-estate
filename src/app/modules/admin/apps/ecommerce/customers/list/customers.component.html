@@ -21,9 +21,10 @@
                     matInput
                     [formControl]="searchInputControl"
                     [autocomplete]="'off'"
-                    [placeholder]="'Search customers'">
+                    [placeholder]="'Search Customers'">
             </mat-form-field>
-            <!-- Add product button -->
+            
+            <!-- Add Customer button -->
             <button
                 class="ml-4"
                 mat-flat-button
@@ -34,14 +35,13 @@
             </button>
         </div>
     </div>
-
+    
     <!-- Main -->
     <div class="flex flex-auto overflow-hidden">
-
         <!-- Products list -->
         <div class="flex flex-col flex-auto sm:mb-18 overflow-hidden">
 
-            <ng-container *ngIf="productsCount > 0; else noProducts">
+            <ng-container *ngIf="customersCount > 0; else noProducts">
 
                 <!-- Table wrapper -->
                 <div
@@ -58,7 +58,7 @@
                         [matSortDisableClear]="true"
                         [matSortDirection]="'asc'"
                         [multiTemplateDataRows]="true"
-                        [dataSource]="products$"
+                        [dataSource]="customers$"
                         [trackBy]="trackByFn">
 
                         <!-- id -->
@@ -74,7 +74,10 @@
                             <td
                                 class="pr-4"
                                 mat-cell
-                                *matCellDef="let product">
+                                *matCellDef="let product"
+                                (click)="editCustomer(product)"
+                                style="cursor: pointer;"
+                            >
                                 {{product.id}}
                             </td>
                         </ng-container>
@@ -92,7 +95,10 @@
                             <td
                                 class="pr-8"
                                 mat-cell
-                                *matCellDef="let product">
+                                *matCellDef="let product"
+                                (click)="editCustomer(product)"
+                                style="cursor: pointer;"
+                            >
                                 {{product.firstname}}
                             </td>
                         </ng-container>
@@ -110,11 +116,14 @@
                             <td
                                 class="pr-8"
                                 mat-cell
-                                *matCellDef="let product">
+                                *matCellDef="let product"
+                                (click)="editCustomer(product)"
+                                style="cursor: pointer;"
+                            >
                                 {{product.lastname}}
                             </td>
                         </ng-container>
-
+                        
                         <!-- Email -->
                         <ng-container matColumnDef="customer_email">
                             <th
@@ -128,7 +137,10 @@
                             <td
                                 class="pr-8 truncate"
                                 mat-cell
-                                *matCellDef="let product">
+                                *matCellDef="let product"
+                                (click)="editCustomer(product)"
+                                style="cursor: pointer;"
+                            >
                                 {{product.email}}
                             </td>
                         </ng-container>
@@ -146,7 +158,10 @@
                             <td
                                 class="pr-8 truncate"
                                 mat-cell
-                                *matCellDef="let product">
+                                *matCellDef="let product"
+                                (click)="editCustomer(product)"
+                                style="cursor: pointer;"
+                            >
                                 {{product.store}}
                             </td>
                         </ng-container>
@@ -154,7 +169,7 @@
                         <!-- Price -->
                         <ng-container matColumnDef="customer_company">
                             <th
-                                class="w-20 bg-gray-50 dark:bg-black dark:bg-opacity-5"
+                                class="w-10 bg-gray-50 dark:bg-black dark:bg-opacity-5"
                                 mat-header-cell
                                 *matHeaderCellDef
                                 mat-sort-header
@@ -164,7 +179,10 @@
                             <td
                                 class="pr-4"
                                 mat-cell
-                                *matCellDef="let product">
+                                *matCellDef="let product"
+                                (click)="editCustomer(product)"
+                                style="cursor: pointer;"
+                            >
                                 {{product.company}}
                             </td>
                         </ng-container>
@@ -187,13 +205,13 @@
                                     (click)="toggleDetails(product.id)">
                                     <mat-icon
                                         class="icon-size-5"
-                                        [svgIcon]="selectedProduct?.id === product.id ? 'heroicons_solid:chevron-up' : 'heroicons_solid:chevron-down'"></mat-icon>
+                                        [svgIcon]="selectedCustomer?.id === product.id ? 'heroicons_solid:chevron-up' : 'heroicons_solid:chevron-down'"></mat-icon>
                                 </button>
                             </td>
                         </ng-container>
 
                         <!-- Product details row -->
-                        <ng-container matColumnDef="productDetails">
+                        <ng-container matColumnDef="customerDetails">
                             <td
                                 class="p-0 border-b-0"
                                 mat-cell
@@ -201,90 +219,54 @@
                                 [attr.colspan]="customerTableColumns.length">
                                 <div
                                     class="shadow-lg overflow-hidden"
-                                    [@expandCollapse]="selectedProduct?.id === product.id ? 'expanded' : 'collapsed'">
+                                    [@expandCollapse]="selectedCustomer?.id === product.id ? 'expanded' : 'collapsed'">
                                     <div class="flex border-b">
                                         <!-- Selected product form -->
                                         <form
                                             class="flex flex-col w-full"
-                                            [formGroup]="selectedProductForm">
+                                            [formGroup]="selectedCustomerForm">
 
                                             <div class="flex p-8">
                                                 <div class="flex flex-auto">
                                                     <div class="flex flex-col w-2/4 pl-8">
 
-                                                        <!-- Name -->
+                                                        <!-- Email -->
                                                         <mat-form-field class="w-full">
-                                                            <mat-label>Name</mat-label>
+                                                            <mat-label>Email</mat-label>
                                                             <input
                                                                 matInput
-                                                                [formControlName]="'name'">
+                                                                [formControlName]="'email'">
                                                         </mat-form-field>
 
-                                                        <!-- SKU and Barcode -->
+                                                        <!-- First Name and Last Name -->
                                                         <div class="flex">
-                                                            <mat-form-field class="w-1/3 pr-2">
-                                                                <mat-label>SKU</mat-label>
+                                                            <mat-form-field class="w-2/3 pr-2">
+                                                                <mat-label>First Name</mat-label>
                                                                 <input
                                                                     matInput
-                                                                    [formControlName]="'sku'">
+                                                                    [formControlName]="'firstname'">
                                                             </mat-form-field>
                                                             <mat-form-field class="w-2/3 pl-2">
-                                                                <mat-label>Barcode</mat-label>
+                                                                <mat-label>Last Name</mat-label>
                                                                 <input
                                                                     matInput
-                                                                    [formControlName]="'barcode'">
+                                                                    [formControlName]="'lastname'">
                                                             </mat-form-field>
                                                         </div>
 
-                                                        <!-- Category, Brand & Vendor -->
+                                                        <!-- First Name and Last Name -->
                                                         <div class="flex">
-                                                            <mat-form-field class="w-1/3 pr-2">
-                                                                <mat-label>Category</mat-label>
-                                                                <mat-select [formControlName]="'category'">
-                                                                    <ng-container *ngFor="let category of categories">
-                                                                        <mat-option [value]="category.id">
-                                                                            {{category.name}}
-                                                                        </mat-option>
-                                                                    </ng-container>
-                                                                </mat-select>
-                                                            </mat-form-field>
-                                                            <mat-form-field class="w-1/3 px-2">
-                                                                <mat-label>Brand</mat-label>
-                                                                <mat-select [formControlName]="'brand'">
-                                                                    <ng-container *ngFor="let brand of brands">
-                                                                        <mat-option [value]="brand.id">
-                                                                            {{brand.name}}
-                                                                        </mat-option>
-                                                                    </ng-container>
-                                                                </mat-select>
-                                                            </mat-form-field>
-                                                            <mat-form-field class="w-1/3 pl-2">
-                                                                <mat-label>Vendor</mat-label>
-                                                                <mat-select [formControlName]="'vendor'">
-                                                                    <ng-container *ngFor="let vendor of vendors">
-                                                                        <mat-option [value]="vendor.id">
-                                                                            {{vendor.name}}
-                                                                        </mat-option>
-                                                                    </ng-container>
-                                                                </mat-select>
-                                                            </mat-form-field>
-                                                        </div>
-
-                                                        <!-- Stock and Reserved -->
-                                                        <div class="flex">
-                                                            <mat-form-field class="w-1/3 pr-2">
-                                                                <mat-label>Stock</mat-label>
+                                                            <mat-form-field class="w-2/3 pr-2">
+                                                                <mat-label>Store</mat-label>
                                                                 <input
-                                                                    type="number"
                                                                     matInput
-                                                                    [formControlName]="'stock'">
+                                                                    [formControlName]="'store'">
                                                             </mat-form-field>
-                                                            <mat-form-field class="w-1/3 pl-2">
-                                                                <mat-label>Reserved</mat-label>
+                                                            <mat-form-field class="w-2/3 pl-2">
+                                                                <mat-label>Company Name</mat-label>
                                                                 <input
-                                                                    type="number"
                                                                     matInput
-                                                                    [formControlName]="'reserved'">
+                                                                    [formControlName]="'company'">
                                                             </mat-form-field>
                                                         </div>
                                                     </div>
@@ -292,128 +274,45 @@
                                                     <!-- Cost, Base price, Tax & Price -->
                                                     <div class="flex flex-col w-1/4 pl-8">
                                                         <mat-form-field class="w-full">
-                                                            <mat-label>Cost</mat-label>
-                                                            <span matPrefix>$</span>
+                                                            <mat-label>Date Registered</mat-label>
                                                             <input
                                                                 matInput
-                                                                [formControlName]="'cost'">
+                                                                [formControlName]="'dateregistered'">
                                                         </mat-form-field>
                                                         <mat-form-field class="w-full">
-                                                            <mat-label>Base Price</mat-label>
-                                                            <span matPrefix>$</span>
+                                                            <mat-label>Title</mat-label>
                                                             <input
                                                                 matInput
-                                                                [formControlName]="'basePrice'">
+                                                                [formControlName]="'title'">
                                                         </mat-form-field>
                                                         <mat-form-field class="w-full">
-                                                            <mat-label>Tax</mat-label>
-                                                            <span matSuffix>%</span>
-                                                            <input
-                                                                type="number"
-                                                                matInput
-                                                                [formControlName]="'taxPercent'">
-                                                        </mat-form-field>
-                                                        <mat-form-field class="w-full">
-                                                            <mat-label>Price</mat-label>
-                                                            <span matSuffix>$</span>
+                                                            <mat-label>Fax</mat-label>
                                                             <input
                                                                 matInput
-                                                                [formControlName]="'price'">
+                                                                [formControlName]="'fax'">
                                                         </mat-form-field>
                                                     </div>
 
                                                     <!-- Weight & Tags -->
                                                     <div class="flex flex-col w-1/4 pl-8">
                                                         <mat-form-field class="w-full">
-                                                            <mat-label>Weight</mat-label>
-                                                            <span matSuffix>lbs.</span>
+                                                            <mat-label>IP Address</mat-label>
                                                             <input
                                                                 matInput
-                                                                [formControlName]="'weight'">
+                                                                [formControlName]="'ipaddress'">
                                                         </mat-form-field>
-
-                                                        <!-- Tags -->
-                                                        <ng-container *ngIf="selectedProduct && selectedProduct.tags.length">
-                                                            <span class="font-semibold">Tags</span>
-                                                            <div class="mt-1 rounded-md border shadow-sm overflow-hidden">
-                                                                <!-- Header -->
-                                                                <div class="flex items-center my-2 mx-3">
-                                                                    <div class="flex items-center flex-auto min-w-0">
-                                                                        <mat-icon
-                                                                            class="icon-size-5"
-                                                                            [svgIcon]="'heroicons_solid:search'"></mat-icon>
-                                                                        <input
-                                                                            class="min-w-0 ml-2 py-1 border-0"
-                                                                            type="text"
-                                                                            placeholder="Enter tag name"
-                                                                            (input)="filterTags($event)"
-                                                                            (keydown)="filterTagsInputKeyDown($event)"
-                                                                            [maxLength]="50"
-                                                                            #newTagInput>
-                                                                    </div>
-                                                                    <button
-                                                                        class="ml-3 w-8 h-8 min-h-8"
-                                                                        mat-icon-button
-                                                                        (click)="toggleTagsEditMode()">
-                                                                        <mat-icon
-                                                                            *ngIf="!tagsEditMode"
-                                                                            class="icon-size-5"
-                                                                            [svgIcon]="'heroicons_solid:pencil-alt'"></mat-icon>
-                                                                        <mat-icon
-                                                                            *ngIf="tagsEditMode"
-                                                                            class="icon-size-5"
-                                                                            [svgIcon]="'heroicons_solid:check'"></mat-icon>
-                                                                    </button>
-                                                                </div>
-                                                                <!-- Available tags -->
-                                                                <div class="max-h-40 leading-none overflow-y-auto border-t">
-                                                                    <!-- Tags -->
-                                                                    <ng-container *ngIf="!tagsEditMode">
-                                                                        <ng-container *ngFor="let tag of filteredTags; trackBy: trackByFn">
-                                                                            <mat-checkbox
-                                                                                class="flex items-center h-10 min-h-10 px-4"
-                                                                                [color]="'primary'"
-                                                                                [checked]="selectedProduct.tags.includes(tag.id)"
-                                                                                (change)="toggleProductTag(tag, $event)">
-                                                                                {{tag.title}}
-                                                                            </mat-checkbox>
-                                                                        </ng-container>
-                                                                    </ng-container>
-                                                                    <!-- Tags editing -->
-                                                                    <ng-container *ngIf="tagsEditMode">
-                                                                        <div class="p-4 space-y-2">
-                                                                            <ng-container *ngFor="let tag of filteredTags; trackBy: trackByFn">
-                                                                                <mat-form-field class="fuse-mat-dense fuse-mat-no-subscript w-full">
-                                                                                    <input
-                                                                                        matInput
-                                                                                        [value]="tag.title"
-                                                                                        (input)="updateTagTitle(tag, $event)">
-                                                                                    <button
-                                                                                        mat-icon-button
-                                                                                        (click)="deleteTag(tag)"
-                                                                                        matSuffix>
-                                                                                        <mat-icon
-                                                                                            class="icon-size-5"
-                                                                                            [svgIcon]="'heroicons_solid:trash'"></mat-icon>
-                                                                                    </button>
-                                                                                </mat-form-field>
-                                                                            </ng-container>
-                                                                        </div>
-                                                                    </ng-container>
-                                                                </div>
-                                                                <div
-                                                                    class="flex items-center h-10 min-h-10 -ml-0.5 pl-4 pr-3 leading-none cursor-pointer border-t hover:bg-gray-50 dark:hover:bg-hover"
-                                                                    *ngIf="shouldShowCreateTagButton(newTagInput.value)"
-                                                                    (click)="createTag(newTagInput.value); newTagInput.value = ''"
-                                                                    matRipple>
-                                                                    <mat-icon
-                                                                        class="mr-2 icon-size-5"
-                                                                        [svgIcon]="'heroicons_solid:plus-circle'"></mat-icon>
-                                                                    <div class="break-all">Create "<b>{{newTagInput.value}}</b>"</div>
-                                                                </div>
-                                                            </div>
-                                                        </ng-container>
-
+                                                        <mat-form-field class="w-full">
+                                                            <mat-label>Department</mat-label>
+                                                            <input
+                                                                matInput
+                                                                [formControlName]="'department'">
+                                                        </mat-form-field>
+                                                        <mat-form-field class="w-full">
+                                                            <mat-label>Website</mat-label>
+                                                            <input
+                                                                matInput
+                                                                [formControlName]="'website'">
+                                                        </mat-form-field>
                                                     </div>
 
                                                 </div>
@@ -436,7 +335,7 @@
                                                             <mat-icon
                                                                 class="text-green-500"
                                                                 [svgIcon]="'heroicons_outline:check'"></mat-icon>
-                                                            <span class="ml-2">Product updated</span>
+                                                            <span class="ml-2">Customer updated</span>
                                                         </ng-container>
                                                         <ng-container *ngIf="flashMessage === 'error'">
                                                             <mat-icon
@@ -471,7 +370,7 @@
                         <tr
                             class="h-0"
                             mat-row
-                            *matRowDef="let row; columns: ['productDetails']"></tr>
+                            *matRowDef="let row; columns: ['customerDetails']"></tr>
 
                     </table>
 
