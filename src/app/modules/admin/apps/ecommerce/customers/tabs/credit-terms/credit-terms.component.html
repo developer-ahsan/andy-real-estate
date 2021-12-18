@@ -1,0 +1,31 @@
+<div class="inset-0 min-w-50 overflow-hidden bg-card dark:bg-transparent">
+    <div class="border p-3 mt-3 h-80 overflow-x-auto">
+        <b>User Credit Terms:</b>
+        <mat-divider class="mb-2"></mat-divider>
+        <div class="min-w-40 max-w-50 w-50 py-2 px-2" style="display: inline;">
+            <div class="mobile-responsive-boxes">
+                <mat-radio-group
+                    aria-labelledby="example-radio-group-label"
+                    class="example-radio-group"
+                    [(ngModel)]="selected_credit_term">
+                        <mat-radio-button class="example-radio-button" *ngFor="let credit_term of credit_terms" [value]="credit_term">
+                            <b [ngStyle]=" credit_term == 'Expired' ? {'color':'red'} : {'color': 'black'}">{{credit_term}}</b> 
+                            <p>{{ credit_term == 'Expired' ? "(Your account's credit terms have expired)" : "" }}</p>
+                            <p>{{ credit_term == 'Upon application approval' 
+                                    ? "(No credit line has been set up for your account. You may still place an order; the order will be processed upon approval of your credit terms application)" 
+                                    : "" 
+                                }}
+                            </p>
+                        </mat-radio-button>
+                </mat-radio-group>
+            </div>
+        </div>
+        <mat-divider class="mb-2"></mat-divider>
+        <button
+            mat-flat-button
+            [color]="'primary'"
+        >
+            Update
+        </button>
+    </div>
+</div>

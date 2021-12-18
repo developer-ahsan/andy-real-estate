@@ -147,7 +147,8 @@ export const products = [
         department: 'Sales',
         fax: '2451578421354',
         website: 'abc@consolidus.com',
-        address: '52R, Johar Town, Lahore, Punjab'
+        address: '52R, Johar Town, Lahore, Punjab',
+        phone: "03404000488"
     },
     {
         id         : '00b',
@@ -190,7 +191,8 @@ export const products = [
         department: 'Sales',
         fax: '2451578421354',
         website: 'abc@consolidus.com',
-        address: '52R, Johar Town, Lahore, Punjab'
+        address: '52R, Johar Town, Lahore, Punjab',
+        phone: "03404000488"
     },
     {
         id         : '3f3',
@@ -233,7 +235,8 @@ export const products = [
         department: 'Sales',
         fax: '2451578421354',
         website: 'abc@consolidus.com',
-        address: '52R, Johar Town, Lahore, Punjab'
+        address: '52R, Johar Town, Lahore, Punjab',
+        phone: "03404000488"
     },
     {
         id         : '8fc',
@@ -276,7 +279,8 @@ export const products = [
         department: 'Sales',
         fax: '2451578421354',
         website: 'abc@consolidus.com',
-        address: '52R, Johar Town, Lahore, Punjab'
+        address: '52R, Johar Town, Lahore, Punjab',
+        phone: "03404000488"
     },
     {
         id         : '100',
@@ -319,7 +323,8 @@ export const products = [
         department: 'Sales',
         fax: '2451578421354',
         website: 'abc@consolidus.com',
-        address: '52R, Johar Town, Lahore, Punjab'
+        address: '52R, Johar Town, Lahore, Punjab',
+        phone: "03404000488"
     },
     {
         id         : '101',
@@ -362,7 +367,8 @@ export const products = [
         department: 'Sales',
         fax: '2451578421354',
         website: 'abc@consolidus.com',
-        address: '52R, Johar Town, Lahore, Punjab'
+        address: '52R, Johar Town, Lahore, Punjab',
+        phone: "03404000488"
     },
     {
         id         : '102',
@@ -405,7 +411,8 @@ export const products = [
         department: 'Sales',
         fax: '2451578421354',
         website: 'abc@consolidus.com',
-        address: '52R, Johar Town, Lahore, Punjab'
+        address: '52R, Johar Town, Lahore, Punjab',
+        phone: "03404000488"
     },
     {
         id         : '103',
@@ -448,7 +455,8 @@ export const products = [
         department: 'Sales',
         fax: '2451578421354',
         website: 'abc@consolidus.com',
-        address: '52R, Johar Town, Lahore, Punjab'
+        address: '52R, Johar Town, Lahore, Punjab',
+        phone: "03404000488"
     },
     {
         id         : '104',
@@ -491,7 +499,8 @@ export const products = [
         department: 'Sales',
         fax: '2451578421354',
         website: 'abc@consolidus.com',
-        address: '52R, Johar Town, Lahore, Punjab'
+        address: '52R, Johar Town, Lahore, Punjab',
+        phone: "03404000488"
     },
     {
         id         : '105',
@@ -534,7 +543,8 @@ export const products = [
         department: 'Sales',
         fax: '2451578421354',
         website: 'abc@consolidus.com',
-        address: '52R, Johar Town, Lahore, Punjab'
+        address: '52R, Johar Town, Lahore, Punjab',
+        phone: "03404000488"
     },
     {
         id         : '106',
@@ -577,7 +587,8 @@ export const products = [
         department: 'Sales',
         fax: '2451578421354',
         website: 'abc@consolidus.com',
-        address: '52R, Johar Town, Lahore, Punjab'
+        address: '52R, Johar Town, Lahore, Punjab',
+        phone: "03404000488"
     },
     {
         id         : '1012',
@@ -620,7 +631,8 @@ export const products = [
         department: 'Sales',
         fax: '2451578421354',
         website: 'abc@consolidus.com',
-        address: '52R, Johar Town, Lahore, Punjab'
+        address: '52R, Johar Town, Lahore, Punjab',
+        phone: "03404000488"
     },
     {
         id         : '107',
@@ -663,6 +675,7 @@ export const products = [
         department: 'Sales',
         fax: '2451578421354',
         website: 'abc@consolidus.com',
-        address: '52R, Johar Town, Lahore, Punjab'
+        address: '52R, Johar Town, Lahore, Punjab',
+        phone: "03404000488"
     }
 ];

@@ -1,7 +1,12 @@
-<div class="absolute inset-0 flex flex-col min-w-0 overflow-hidden bg-card dark:bg-transparent">
+<div class="inset-0 min-w-10 overflow-hidden bg-card dark:bg-transparent px-3">
     
-    <!-- Main -->
-    <div class="flex flex-col px-8 py-6 pb-4">
-        <div class="text-1xl font-semibold pt-2">Address: {{currentSelectedCustomer.address}}</div>
+    <div class="my-6">
+        <b>Address:</b>
+        <mat-divider class="mb-2"></mat-divider>
+        <mat-grid-list cols="{{breakpoint}}" rowHeight="60px" (window:resize)="onResize($event)">
+            <mat-grid-tile class="border">
+                <mat-grid-tile-header>{{currentSelectedCustomer.address}}</mat-grid-tile-header>
+            </mat-grid-tile>
+        </mat-grid-list>
     </div>
 </div>

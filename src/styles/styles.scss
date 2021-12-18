@@ -2,3 +2,74 @@
 /*  @ Import/write your custom styles here.
 /*  @ Styles from this file will override 'vendors.scss' and Fuse's base styles.
 /* ----------------------------------------------------------------------------------------------------- */
+.mat-grid-tile-content {
+  align-items: self-start !important;
+  justify-content: right !important;
+}
+
+.mat-grid-tile .mat-grid-tile-footer {
+  color: black !important;
+  background: transparent !important;
+  font-size: 12px;
+  position: relative !important;
+}
+
+.mobile-responsive-boxes {
+  width: 75%;
+}
+
+.half-to-full-with-boxes {
+  width: 50%;
+}
+
+.mat-grid-tile .mat-grid-tile-header {
+  font-weight: bold;
+  font-size: 13px;
+  background-color: transparent !important;
+  color: black !important;
+}
+
+.example-radio-group {
+  display: flex;
+  flex-direction: column;
+  margin: 15px 0;
+}
+
+.example-radio-button {
+  margin: 5px;
+}
+
+.font-smaller {
+  font-size: 11px !important;
+}
+
+.font-small {
+  font-size: 12px !important;
+}
+
+.font-medium {
+  font-size: 13px !important;
+}
+
+.font-large {
+  font-size: 14px !important;
+}
+
+.flex-to-block {
+  display: flex;
+}
+// Media Queries
+
+@media only screen and (max-width: 600px) {
+  .mobile-responsive-boxes {
+    width: 100%;
+  }
+
+  .half-to-full-with-boxes {
+    width: 100%;
+  }
+
+  .flex-to-block {
+    display: block;
+  }
+}

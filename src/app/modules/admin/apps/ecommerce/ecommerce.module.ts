@@ -16,6 +16,10 @@ import { MatTableModule } from '@angular/material/table';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatTabsModule } from '@angular/material/tabs';
 import { MatCardModule } from '@angular/material/card';
+import { MatGridListModule } from '@angular/material/grid-list';
+import { MatDividerModule } from '@angular/material/divider';
+import { MatRadioModule } from '@angular/material/radio';
+import { MatListModule } from '@angular/material/list';
 import { SharedModule } from 'app/shared/shared.module';
 import { InventoryComponent } from 'app/modules/admin/apps/ecommerce/inventory/inventory.component';
 import { InventoryListComponent } from 'app/modules/admin/apps/ecommerce/inventory/list/inventory.component';
@@ -24,6 +28,12 @@ import { CustomersComponent } from 'app/modules/admin/apps/ecommerce/customers/c
 import { CustomersListComponent } from 'app/modules/admin/apps/ecommerce/customers/list/customers.component';
 import { CustomersTabComponent } from 'app/modules/admin/apps/ecommerce/customers/tabs/customers.component';
 import { UserAddressComponent } from './customers/tabs/user-address/user-address.component';
+import { UserMetricsComponent } from './customers/tabs/user-metrics/user-metrics.component';
+import { CreditTermsComponent } from './customers/tabs/credit-terms/credit-terms.component';
+import { CreditApplicationsComponent } from './customers/tabs/credit-applications/credit-applications.component';
+import { UserCommentsComponent } from './customers/tabs/user-comments/user-comments.component';
+import { UserLocationsComponent } from './customers/tabs/user-locations/user-locations.component';
+import { ApprovalContactsComponent } from './customers/tabs/approval-contacts/approval-contacts.component';
 
 @NgModule({
     declarations: [
@@ -32,7 +42,13 @@ import { UserAddressComponent } from './customers/tabs/user-address/user-address
         CustomersComponent,
         CustomersListComponent,
         CustomersTabComponent,
-        UserAddressComponent
+        UserAddressComponent,
+        UserMetricsComponent,
+        CreditTermsComponent,
+        CreditApplicationsComponent,
+        UserCommentsComponent,
+        UserLocationsComponent,
+        ApprovalContactsComponent
     ],
     imports     : [
         RouterModule.forChild(ecommerceRoutes),
@@ -52,7 +68,11 @@ import { UserAddressComponent } from './customers/tabs/user-address/user-address
         MatTooltipModule,
         SharedModule,
         MatTabsModule,
-        MatCardModule
+        MatCardModule,
+        MatGridListModule,
+        MatDividerModule,
+        MatRadioModule,
+        MatListModule
     ]
 })
 export class ECommerceModule

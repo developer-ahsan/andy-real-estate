@@ -1,7 +1,7 @@
-<div class="absolute inset-0 flex flex-col min-w-0 overflow-hidden bg-card dark:bg-transparent">
+<div class="absolute inset-0 flex flex-col min-w-0 bg-card dark:bg-transparent" style="overflow-y: scroll;">
 
     <!-- Header -->
-    <div class="relative flex flex-col sm:flex-row flex-0 sm:items-center sm:justify-between py-8 px-6 md:px-8 border-b">
+    <div class="relative flex flex-col sm:flex-row flex-0 sm:items-center sm:justify-between py-4 px-6 md:px-8 border-b">
         <!-- Loader -->
         <div
             class="absolute inset-x-0 bottom-0"
@@ -12,15 +12,48 @@
         <div class="text-4xl font-extrabold tracking-tight">Customer Details</div>
     </div>
 
-    <div class="px-5">
+    <div class="px-5 pt-2">
         <mat-card>
-            <mat-card-title>{{selectedTab}}</mat-card-title>
+            <mat-card-subtitle class="text-2xl font-semibold">{{selectedTab}}</mat-card-subtitle>
             <mat-card-content>
-                <b>Name: </b>{{selectedCustomer.firstname}} {{selectedCustomer.lastname}}
-                <b>Company: </b>{{selectedCustomer.company}}
-                <b>Email: </b>{{selectedCustomer.email}}
-                <b>Status: </b>{{selectedCustomer.active ? "Active" : "Inactive"}}
-                <b>Fax: </b>N/A
+                <mat-grid-list cols="{{breakpoint}}" rowHeight="60px" (window:resize)="onResize($event)">
+                    <mat-grid-tile>
+                        <mat-grid-tile-header>ID: </mat-grid-tile-header>
+                        <mat-grid-tile-footer>{{selectedCustomer.id}}</mat-grid-tile-footer>
+                    </mat-grid-tile>
+                    <mat-grid-tile>
+                        <mat-grid-tile-header>Name: </mat-grid-tile-header>
+                        <mat-grid-tile-footer>{{selectedCustomer.firstname}} {{selectedCustomer.lastname}}</mat-grid-tile-footer>
+                    </mat-grid-tile>
+                    <mat-grid-tile>
+                        <mat-grid-tile-header>Company: </mat-grid-tile-header>
+                        <mat-grid-tile-footer>{{selectedCustomer.company}}</mat-grid-tile-footer>
+                    </mat-grid-tile>
+                    <mat-grid-tile>
+                        <mat-grid-tile-header>Email: </mat-grid-tile-header>
+                        <mat-grid-tile-footer>{{selectedCustomer.email}}</mat-grid-tile-footer>
+                    </mat-grid-tile>
+                    <mat-grid-tile>
+                        <mat-grid-tile-header>Phone: </mat-grid-tile-header>
+                        <mat-grid-tile-footer>03006548425</mat-grid-tile-footer>
+                    </mat-grid-tile>
+                    <mat-grid-tile>
+                        <mat-grid-tile-header>Location: </mat-grid-tile-header>
+                        <mat-grid-tile-footer>Main Campus - Consolidus</mat-grid-tile-footer>
+                    </mat-grid-tile>
+                    <mat-grid-tile>
+                        <mat-grid-tile-header>Fax: </mat-grid-tile-header>
+                        <mat-grid-tile-footer>N/A</mat-grid-tile-footer>
+                    </mat-grid-tile>
+                    <mat-grid-tile>
+                        <mat-grid-tile-header>Program manager: </mat-grid-tile-header>
+                        <mat-grid-tile-footer>Rhianne Smith</mat-grid-tile-footer>
+                    </mat-grid-tile>
+                    <mat-grid-tile>
+                        <mat-grid-tile-header>Status: </mat-grid-tile-header>
+                        <mat-grid-tile-footer>{{selectedCustomer.active ? "Active" : "Inactive"}}</mat-grid-tile-footer>
+                    </mat-grid-tile>
+                </mat-grid-list>
             </mat-card-content>
         </mat-card>
     </div>
@@ -30,10 +63,11 @@
         <mat-tab-group #tabGroup (selectedTabChange)="tabChanged($event)" style="overflow-x: scroll;">
             <mat-tab label="User Info">
                 <div class="text-1xl font-semibold">General Information</div>
+                <mat-divider></mat-divider>
                 <form
                     class="flex flex-col w-full pt-2"
-                    [formGroup]="selectedCustomerForm">
-
+                    [formGroup]="selectedCustomerForm"
+                >
                     <div class="flex pt-2">
                         <div class="flex flex-auto">
                             <div class="flex flex-col w-2/4 pl-8">
@@ -48,13 +82,13 @@
 
                                 <!-- First Name and Last Name -->
                                 <div class="flex">
-                                    <mat-form-field class="w-2/3 pr-2">
+                                    <mat-form-field class="w-full pr-2">
                                         <mat-label>First Name</mat-label>
                                         <input
                                             matInput
                                             [formControlName]="'firstname'">
                                     </mat-form-field>
-                                    <mat-form-field class="w-2/3 pl-2">
+                                    <mat-form-field class="w-full pl-2">
                                         <mat-label>Last Name</mat-label>
                                         <input
                                             matInput
@@ -64,13 +98,13 @@
 
                                 <!-- First Name and Last Name -->
                                 <div class="flex">
-                                    <mat-form-field class="w-2/3 pr-2">
+                                    <mat-form-field class="w-full pr-2">
                                         <mat-label>Store</mat-label>
                                         <input
                                             matInput
                                             [formControlName]="'store'">
                                     </mat-form-field>
-                                    <mat-form-field class="w-2/3 pl-2">
+                                    <mat-form-field class="w-full pl-2">
                                         <mat-label>Company Name</mat-label>
                                         <input
                                             matInput
@@ -156,15 +190,27 @@
                 </form>
             </mat-tab>
             <mat-tab label="User Addresses">
-                <div class="text-1xl font-semibold"><app-user-address [currentSelectedCustomer]="selectedCustomer"></app-user-address></div>
+                <app-user-address [currentSelectedCustomer]="selectedCustomer"></app-user-address>
             </mat-tab>
-            <mat-tab label="Metrics">Metrics</mat-tab>
-            <mat-tab label="Credit Terms">Credit Terms</mat-tab>
-            <mat-tab label="Credits Applications">Credits Applications</mat-tab>
-            <mat-tab label="User Comments">User Comments</mat-tab>
+            <mat-tab label="User Metrics">
+                <app-user-metrics [currentSelectedCustomer]="selectedCustomer"></app-user-metrics>
+            </mat-tab>
+            <mat-tab label="Credit Terms">
+                <app-credit-terms [currentSelectedCustomer]="selectedCustomer"></app-credit-terms>
+            </mat-tab>
+            <mat-tab label="Credit Applications">
+                <app-credit-applications [currentSelectedCustomer]="selectedCustomer"></app-credit-applications>
+            </mat-tab>
+            <mat-tab label="User Comments">
+                <app-user-comments [currentSelectedCustomer]="selectedCustomer"></app-user-comments>
+            </mat-tab>
             <mat-tab label="FLPS Users">FLPS Users</mat-tab>
-            <mat-tab label="Locations">Locations</mat-tab>
-            <mat-tab label="Approval Contacts">Approval Contacts</mat-tab>
+            <mat-tab label="Locations">
+                <app-user-locations [currentSelectedCustomer]="selectedCustomer"></app-user-locations>
+            </mat-tab>
+            <mat-tab label="Approval Contacts">
+                <app-approval-contacts [currentSelectedCustomer]="selectedCustomer"></app-approval-contacts>
+            </mat-tab>
             <mat-tab label="Reminders">Reminders</mat-tab>
             <mat-tab label="Order History">Order History</mat-tab>
             <mat-tab label="Fulfillment Orders">Fulfillment Orders</mat-tab>

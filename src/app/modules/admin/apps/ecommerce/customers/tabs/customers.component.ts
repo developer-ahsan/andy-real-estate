@@ -39,7 +39,8 @@ export class CustomersTabComponent implements OnInit, AfterViewInit, OnDestroy
     tagsEditMode: boolean = false;
     vendors: CustomersVendor[];
     selectedCustomerId: string = "";
-    selectedTab = "User Info"
+    selectedTab = "User Info";
+    breakpoint: number;
     private _unsubscribeAll: Subject<any> = new Subject<any>();
 
     /**
@@ -199,36 +200,13 @@ export class CustomersTabComponent implements OnInit, AfterViewInit, OnDestroy
             .subscribe();
 
             this.toggleDetails(this.selectedCustomerId);
+            this.breakpoint = (window.innerWidth <= 620) ? 1 : (window.innerWidth <= 800) ? 2 : 3;
     }
 
     /**
      * After view init
      */
-    ngAfterViewInit(): void
-    {
-        // If the user changes the sort order...
-        // this._sort.sortChange
-        //     .pipe(takeUntil(this._unsubscribeAll))
-        //     .subscribe(() => {
-        //         // Reset back to the first page
-        //         this._paginator.pageIndex = 0;
-
-        //         // Close the details
-        //         this.closeDetails();
-        //     });
-
-        // // Get products if sort or page changes
-        // merge(this._sort.sortChange, this._paginator.page).pipe(
-        //     switchMap(() => {
-        //         this.closeDetails();
-        //         this.isLoading = true;
-        //         return this._customerService.getCustomers(this._paginator.pageIndex, this._paginator.pageSize, this._sort.active, this._sort.direction);
-        //     }),
-        //     map(() => {
-        //         this.isLoading = false;
-        //     })
-        // ).subscribe();
-    }
+    ngAfterViewInit(): void{}
 
     /**
      * On destroy
@@ -243,6 +221,11 @@ export class CustomersTabComponent implements OnInit, AfterViewInit, OnDestroy
     // -----------------------------------------------------------------------------------------------------
     // @ Public methods
     // -----------------------------------------------------------------------------------------------------
+
+    // Resizing screen 
+    onResize(event) {
+        this.breakpoint = (event.target.innerWidth <= 620) ? 1  : (event.target.innerWidth <= 800) ? 2 : 3;
+    }
 
     /**
      * Toggle customer details

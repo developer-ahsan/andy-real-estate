@@ -1,0 +1,21 @@
+<div class="inset-0 min-w-50 overflow-hidden bg-card dark:bg-transparent">
+    <div class="border p-3 mt-3 h-60 overflow-x-auto">
+        <b>Art approval contact settings</b>
+        <mat-divider class="mb-2"></mat-divider>
+        <div class="min-w-40 max-w-50 w-50 py-2 px-2" style="display: inline;">
+            <div class="w-full">
+                {{approval_detail_text}}
+                <form>
+                    <mat-form-field class="w-full">
+                      <mat-label>Select a store</mat-label>
+                      <mat-select [(ngModel)]="selectedStore" name="store">
+                        <mat-option *ngFor="let store of stores" [value]="store">
+                          {{store}}
+                        </mat-option>
+                      </mat-select>
+                    </mat-form-field>
+                  </form>
+            </div>
+        </div>
+    </div>
+</div>
