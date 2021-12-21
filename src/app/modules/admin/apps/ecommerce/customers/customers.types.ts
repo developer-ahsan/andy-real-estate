@@ -55,6 +55,10 @@ export interface CustomersTag
 {
     id?: string;
     title?: string;
+    customerId?: string;
+    name?: string;
+    notes?: string | null;
+    alertOn?: string;
 }
 
 export interface CustomersVendor

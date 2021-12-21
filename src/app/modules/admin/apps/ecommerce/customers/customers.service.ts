@@ -164,7 +164,7 @@ export class CustomersService
 
                 if ( !product )
                 {
-                    return throwError('Could not found product with id of ' + id + '!');
+                    return throwError('Could not found customer with id of ' + id + '!');
                 }
 
                 return of(product);
@@ -173,7 +173,7 @@ export class CustomersService
     }
 
     /**
-     * Create product
+     * Create customer
      */
      createCustomer(): Observable<CustomersProduct>
     {

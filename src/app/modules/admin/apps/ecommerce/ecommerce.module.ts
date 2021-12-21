@@ -34,6 +34,7 @@ import { CreditApplicationsComponent } from './customers/tabs/credit-application
 import { UserCommentsComponent } from './customers/tabs/user-comments/user-comments.component';
 import { UserLocationsComponent } from './customers/tabs/user-locations/user-locations.component';
 import { ApprovalContactsComponent } from './customers/tabs/approval-contacts/approval-contacts.component';
+import { RemindersComponent } from './customers/tabs/reminders/reminders.component';
 
 @NgModule({
     declarations: [
@@ -48,7 +49,8 @@ import { ApprovalContactsComponent } from './customers/tabs/approval-contacts/ap
         CreditApplicationsComponent,
         UserCommentsComponent,
         UserLocationsComponent,
-        ApprovalContactsComponent
+        ApprovalContactsComponent,
+        RemindersComponent
     ],
     imports     : [
         RouterModule.forChild(ecommerceRoutes),

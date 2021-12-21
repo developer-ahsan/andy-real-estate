@@ -113,7 +113,7 @@ export class CustomersTabComponent implements OnInit, AfterViewInit, OnDestroy
         this._customerService.brands$
             .pipe(takeUntil(this._unsubscribeAll))
             .subscribe((brands: CustomersBrand[]) => {
-
+                
                 // Update the brands
                 this.brands = brands;
 

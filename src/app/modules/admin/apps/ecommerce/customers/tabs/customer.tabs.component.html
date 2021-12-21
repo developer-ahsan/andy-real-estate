@@ -12,56 +12,59 @@
         <div class="text-4xl font-extrabold tracking-tight">Customer Details</div>
     </div>
 
-    <div class="px-5 pt-2">
-        <mat-card>
+    <ng-template #myCard>
+        <div class="pt-2 mb-3">
+            <mat-card>
             <mat-card-subtitle class="text-2xl font-semibold">{{selectedTab}}</mat-card-subtitle>
-            <mat-card-content>
-                <mat-grid-list cols="{{breakpoint}}" rowHeight="60px" (window:resize)="onResize($event)">
-                    <mat-grid-tile>
-                        <mat-grid-tile-header>ID: </mat-grid-tile-header>
-                        <mat-grid-tile-footer>{{selectedCustomer.id}}</mat-grid-tile-footer>
-                    </mat-grid-tile>
-                    <mat-grid-tile>
-                        <mat-grid-tile-header>Name: </mat-grid-tile-header>
-                        <mat-grid-tile-footer>{{selectedCustomer.firstname}} {{selectedCustomer.lastname}}</mat-grid-tile-footer>
-                    </mat-grid-tile>
-                    <mat-grid-tile>
-                        <mat-grid-tile-header>Company: </mat-grid-tile-header>
-                        <mat-grid-tile-footer>{{selectedCustomer.company}}</mat-grid-tile-footer>
-                    </mat-grid-tile>
-                    <mat-grid-tile>
-                        <mat-grid-tile-header>Email: </mat-grid-tile-header>
-                        <mat-grid-tile-footer>{{selectedCustomer.email}}</mat-grid-tile-footer>
-                    </mat-grid-tile>
-                    <mat-grid-tile>
-                        <mat-grid-tile-header>Phone: </mat-grid-tile-header>
-                        <mat-grid-tile-footer>03006548425</mat-grid-tile-footer>
-                    </mat-grid-tile>
-                    <mat-grid-tile>
-                        <mat-grid-tile-header>Location: </mat-grid-tile-header>
-                        <mat-grid-tile-footer>Main Campus - Consolidus</mat-grid-tile-footer>
-                    </mat-grid-tile>
-                    <mat-grid-tile>
-                        <mat-grid-tile-header>Fax: </mat-grid-tile-header>
-                        <mat-grid-tile-footer>N/A</mat-grid-tile-footer>
-                    </mat-grid-tile>
-                    <mat-grid-tile>
-                        <mat-grid-tile-header>Program manager: </mat-grid-tile-header>
-                        <mat-grid-tile-footer>Rhianne Smith</mat-grid-tile-footer>
-                    </mat-grid-tile>
-                    <mat-grid-tile>
-                        <mat-grid-tile-header>Status: </mat-grid-tile-header>
-                        <mat-grid-tile-footer>{{selectedCustomer.active ? "Active" : "Inactive"}}</mat-grid-tile-footer>
-                    </mat-grid-tile>
-                </mat-grid-list>
-            </mat-card-content>
+                <mat-card-content>
+                    <mat-grid-list cols="{{breakpoint}}" rowHeight="60px" (window:resize)="onResize($event)">
+                        <mat-grid-tile>
+                            <mat-grid-tile-header>ID: </mat-grid-tile-header>
+                            <mat-grid-tile-footer>{{selectedCustomer.id}}</mat-grid-tile-footer>
+                        </mat-grid-tile>
+                        <mat-grid-tile>
+                            <mat-grid-tile-header>Name: </mat-grid-tile-header>
+                            <mat-grid-tile-footer>{{selectedCustomer.firstname}} {{selectedCustomer.lastname}}</mat-grid-tile-footer>
+                        </mat-grid-tile>
+                        <mat-grid-tile>
+                            <mat-grid-tile-header>Company: </mat-grid-tile-header>
+                            <mat-grid-tile-footer>{{selectedCustomer.company}}</mat-grid-tile-footer>
+                        </mat-grid-tile>
+                        <mat-grid-tile>
+                            <mat-grid-tile-header>Email: </mat-grid-tile-header>
+                            <mat-grid-tile-footer>{{selectedCustomer.email}}</mat-grid-tile-footer>
+                        </mat-grid-tile>
+                        <mat-grid-tile>
+                            <mat-grid-tile-header>Phone: </mat-grid-tile-header>
+                            <mat-grid-tile-footer>03006548425</mat-grid-tile-footer>
+                        </mat-grid-tile>
+                        <mat-grid-tile>
+                            <mat-grid-tile-header>Location: </mat-grid-tile-header>
+                            <mat-grid-tile-footer>Main Campus - Consolidus</mat-grid-tile-footer>
+                        </mat-grid-tile>
+                        <mat-grid-tile>
+                            <mat-grid-tile-header>Fax: </mat-grid-tile-header>
+                            <mat-grid-tile-footer>N/A</mat-grid-tile-footer>
+                        </mat-grid-tile>
+                        <mat-grid-tile>
+                            <mat-grid-tile-header>Program manager: </mat-grid-tile-header>
+                            <mat-grid-tile-footer>Rhianne Smith</mat-grid-tile-footer>
+                        </mat-grid-tile>
+                        <mat-grid-tile>
+                            <mat-grid-tile-header>Status: </mat-grid-tile-header>
+                            <mat-grid-tile-footer>{{selectedCustomer.active ? "Active" : "Inactive"}}</mat-grid-tile-footer>
+                        </mat-grid-tile>
+                    </mat-grid-list>
+                </mat-card-content>
         </mat-card>
-    </div>
+        </div>
+    </ng-template>
     
     <!-- Main -->
     <div class="flex flex-auto mt-6">
         <mat-tab-group #tabGroup (selectedTabChange)="tabChanged($event)" style="overflow-x: scroll;">
             <mat-tab label="User Info">
+                <ng-container *ngTemplateOutlet="myCard"></ng-container>
                 <div class="text-1xl font-semibold">General Information</div>
                 <mat-divider></mat-divider>
                 <form
@@ -190,37 +193,77 @@
                 </form>
             </mat-tab>
             <mat-tab label="User Addresses">
+                <ng-container *ngTemplateOutlet="myCard"></ng-container>
                 <app-user-address [currentSelectedCustomer]="selectedCustomer"></app-user-address>
             </mat-tab>
             <mat-tab label="User Metrics">
+                <ng-container *ngTemplateOutlet="myCard"></ng-container>
                 <app-user-metrics [currentSelectedCustomer]="selectedCustomer"></app-user-metrics>
             </mat-tab>
             <mat-tab label="Credit Terms">
+                <ng-container *ngTemplateOutlet="myCard"></ng-container>
                 <app-credit-terms [currentSelectedCustomer]="selectedCustomer"></app-credit-terms>
             </mat-tab>
             <mat-tab label="Credit Applications">
+                <ng-container *ngTemplateOutlet="myCard"></ng-container>
                 <app-credit-applications [currentSelectedCustomer]="selectedCustomer"></app-credit-applications>
             </mat-tab>
             <mat-tab label="User Comments">
+                <ng-container *ngTemplateOutlet="myCard"></ng-container>
                 <app-user-comments [currentSelectedCustomer]="selectedCustomer"></app-user-comments>
             </mat-tab>
-            <mat-tab label="FLPS Users">FLPS Users</mat-tab>
+            <mat-tab label="FLPS Users">
+                <ng-container *ngTemplateOutlet="myCard"></ng-container>
+                FLPS Users
+            </mat-tab>
             <mat-tab label="Locations">
+                <ng-container *ngTemplateOutlet="myCard"></ng-container>
                 <app-user-locations [currentSelectedCustomer]="selectedCustomer"></app-user-locations>
             </mat-tab>
             <mat-tab label="Approval Contacts">
+                <ng-container *ngTemplateOutlet="myCard"></ng-container>
                 <app-approval-contacts [currentSelectedCustomer]="selectedCustomer"></app-approval-contacts>
             </mat-tab>
-            <mat-tab label="Reminders">Reminders</mat-tab>
-            <mat-tab label="Order History">Order History</mat-tab>
-            <mat-tab label="Fulfillment Orders">Fulfillment Orders</mat-tab>
-            <mat-tab label="Saved Carts">Saved Carts</mat-tab>
-            <mat-tab label="Quotes">Quotes</mat-tab>
-            <mat-tab label="Group Orders">Group Orders</mat-tab>
-            <mat-tab label="Logo Bank">Logo Bank</mat-tab>
-            <mat-tab label="Cashback">Cashback</mat-tab>
-            <mat-tab label="Store Usage">Store Usage</mat-tab>
-            <mat-tab label="Send Registration Emails">Registration Emails</mat-tab>
+            <mat-tab label="Reminders">
+                <ng-container *ngTemplateOutlet="myCard"></ng-container>
+                <app-reminders [currentSelectedCustomer]="selectedCustomer"></app-reminders>
+            </mat-tab>
+            <mat-tab label="Order History">
+                <ng-container *ngTemplateOutlet="myCard"></ng-container>
+                Order History
+            </mat-tab>
+            <mat-tab label="Fulfillment Orders">
+                <ng-container *ngTemplateOutlet="myCard"></ng-container>
+                Fulfillment Orders
+            </mat-tab>
+            <mat-tab label="Saved Carts">
+                <ng-container *ngTemplateOutlet="myCard"></ng-container>
+                Saved Carts
+            </mat-tab>
+            <mat-tab label="Quotes">
+                <ng-container *ngTemplateOutlet="myCard"></ng-container>
+                Quotes
+            </mat-tab>
+            <mat-tab label="Group Orders">
+                <ng-container *ngTemplateOutlet="myCard"></ng-container>
+                Group Orders
+            </mat-tab>
+            <mat-tab label="Logo Bank">
+                <ng-container *ngTemplateOutlet="myCard"></ng-container>
+                Logo Bank
+            </mat-tab>
+            <mat-tab label="Cashback">
+                <ng-container *ngTemplateOutlet="myCard"></ng-container>
+                Cashback
+            </mat-tab>
+            <mat-tab label="Store Usage">
+                <ng-container *ngTemplateOutlet="myCard"></ng-container>
+                Store Usage
+            </mat-tab>
+            <mat-tab label="Send Registration Emails">
+                <ng-container *ngTemplateOutlet="myCard"></ng-container>
+                Registration Emails
+            </mat-tab>
         </mat-tab-group>
     </div>
 

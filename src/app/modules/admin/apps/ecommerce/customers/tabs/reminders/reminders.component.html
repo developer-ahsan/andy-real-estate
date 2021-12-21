@@ -1,0 +1,441 @@
+
+<div class="inset-0 min-w-50 overflow-hidden bg-card dark:bg-transparent">
+    <div class="border p-3 mt-2">
+        <b class="text-2xl">Create A Reminder</b>
+        <mat-divider class="mb-2"></mat-divider>
+        <div class="min-w-40 max-w-50 w-50" style="display: inline;">
+            <div class="w-full">
+                <form
+                    class="flex flex-col w-full p-1"
+                    [formGroup]="reminderForm"
+                >
+                    <div class="flex pt-2">
+                        <div class="flex flex-auto">
+                            <div class="flex flex-col w-full">
+
+                                <div class="flex">
+                                    <mat-form-field class="w-2/4 pr-1">
+                                        <mat-label>Name</mat-label>
+                                        <input
+                                            matInput
+                                            [formControlName]="'Name'">
+                                    </mat-form-field>
+                                    <mat-form-field class="w-2/4 pl-1">
+                                        <mat-label>Alert On</mat-label>
+                                        <input
+                                            matInput
+                                            type="datetime-local"
+                                            [formControlName]="'alertON'">
+                                    </mat-form-field>
+                                </div>
+                                <div class="flex">
+                                    <mat-form-field class="w-full">
+                                        <mat-label>Notes</mat-label>
+                                        <textarea 
+                                            matInput
+                                            rows="2"
+                                            [formControlName]="'notes'"
+                                        ></textarea>
+                                    </mat-form-field>
+                                </div>
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                    <div class="flex items-center justify-between w-full border-t px-2 pt-1">
+                        <div class="flex items-center">
+                            <div
+                                class="flex items-center mr-4"
+                                *ngIf="flashMessage">
+                                <ng-container *ngIf="flashMessage === 'success'">
+                                    <mat-icon
+                                        class="text-green-500"
+                                        [svgIcon]="'heroicons_outline:check'"></mat-icon>
+                                    <span class="ml-2">Reminder Created</span>
+                                </ng-container>
+                                <ng-container *ngIf="flashMessage === 'error'">
+                                    <mat-icon
+                                        class="text-red-500"
+                                        [svgIcon]="'heroicons_outline:x'"></mat-icon>
+                                    <span class="ml-2">An error occurred, try again!</span>
+                                </ng-container>
+                            </div>
+
+                            <!-- Add Reminder button -->
+                            <button
+                                mat-flat-button
+                                [color]="'primary'"
+                                (click)="createReminder()">
+                                <mat-icon [svgIcon]="'heroicons_outline:plus'"></mat-icon>
+                                <span class="ml-1 mr-1">Create Reminder</span>
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main -->
+    <div class="flex flex-auto overflow-hidden">
+        <!-- Products list -->
+        <div class="flex flex-col flex-auto sm:mb-18 overflow-hidden">
+
+            <ng-container *ngIf="remindersCount > 0; else noReminders">
+
+                <!-- Table wrapper -->
+                <div
+                    class="overflow-x-auto sm:overflow-y-auto"
+                    cdkScrollable>
+
+                    <!-- Table -->
+                    <table
+                        class="w-full min-w-320 table-fixed bg-transparent"
+                        [ngClass]="{'pointer-events-none': isLoading}"
+                        mat-table
+                        matSort
+                        [matSortActive]="'name'"
+                        [matSortDisableClear]="true"
+                        [matSortDirection]="'asc'"
+                        [multiTemplateDataRows]="true"
+                        [dataSource]="customers$"
+                        [trackBy]="trackByFn">
+
+                        <!-- id -->
+                        <ng-container matColumnDef="_id">
+                            <th
+                                class="w-5 bg-gray-50 dark:bg-black dark:bg-opacity-5"
+                                mat-header-cell
+                                *matHeaderCellDef
+                                mat-sort-header
+                                disableClear>
+                                ID
+                            </th>
+                            <td
+                                class="pr-4"
+                                mat-cell
+                                *matCellDef="let product"
+                                (click)="editCustomer(product)"
+                                style="cursor: pointer;"
+                            >
+                                {{product.id}}
+                            </td>
+                        </ng-container>
+                        
+                        <!-- First Name -->
+                        <ng-container matColumnDef="first_name">
+                            <th
+                                class="w-10 bg-gray-50 dark:bg-black dark:bg-opacity-5"
+                                mat-header-cell
+                                *matHeaderCellDef
+                                mat-sort-header
+                                disableClear>
+                                First Name
+                            </th>
+                            <td
+                                class="pr-8"
+                                mat-cell
+                                *matCellDef="let product"
+                                (click)="editCustomer(product)"
+                                style="cursor: pointer;"
+                            >
+                                {{product.firstname}}
+                            </td>
+                        </ng-container>
+
+                        <!-- Last Name -->
+                        <ng-container matColumnDef="last_name">
+                            <th
+                                class="w-10 bg-gray-50 dark:bg-black dark:bg-opacity-5"
+                                mat-header-cell
+                                *matHeaderCellDef
+                                mat-sort-header
+                                disableClear>
+                                Last Name
+                            </th>
+                            <td
+                                class="pr-8"
+                                mat-cell
+                                *matCellDef="let product"
+                                (click)="editCustomer(product)"
+                                style="cursor: pointer;"
+                            >
+                                {{product.lastname}}
+                            </td>
+                        </ng-container>
+                        
+                        <!-- Email -->
+                        <ng-container matColumnDef="customer_email">
+                            <th
+                                class="w-15 bg-gray-50 dark:bg-black dark:bg-opacity-5"
+                                mat-header-cell
+                                *matHeaderCellDef
+                                mat-sort-header
+                                disableClear>
+                                Email
+                            </th>
+                            <td
+                                class="pr-8 truncate"
+                                mat-cell
+                                *matCellDef="let product"
+                                (click)="editCustomer(product)"
+                                style="cursor: pointer;"
+                            >
+                                {{product.email}}
+                            </td>
+                        </ng-container>
+
+                        <!-- Store -->
+                        <ng-container matColumnDef="customer_store">
+                            <th
+                                class="w-10 bg-gray-50 dark:bg-black dark:bg-opacity-5"
+                                mat-header-cell
+                                *matHeaderCellDef
+                                mat-sort-header
+                                disableClear>
+                                Store
+                            </th>
+                            <td
+                                class="pr-8 truncate"
+                                mat-cell
+                                *matCellDef="let product"
+                                (click)="editCustomer(product)"
+                                style="cursor: pointer;"
+                            >
+                                {{product.store}}
+                            </td>
+                        </ng-container>
+
+                        <!-- Price -->
+                        <ng-container matColumnDef="customer_company">
+                            <th
+                                class="w-10 bg-gray-50 dark:bg-black dark:bg-opacity-5"
+                                mat-header-cell
+                                *matHeaderCellDef
+                                mat-sort-header
+                                disableClear>
+                                Company
+                            </th>
+                            <td
+                                class="pr-4"
+                                mat-cell
+                                *matCellDef="let product"
+                                (click)="editCustomer(product)"
+                                style="cursor: pointer;"
+                            >
+                                {{product.company}}
+                            </td>
+                        </ng-container>
+
+                        <!-- Details -->
+                        <ng-container matColumnDef="details">
+                            <th
+                                class="w-10 pr-8 bg-gray-50 dark:bg-black dark:bg-opacity-5"
+                                mat-header-cell
+                                *matHeaderCellDef>
+                                Details
+                            </th>
+                            <td
+                                class="pr-8"
+                                mat-cell
+                                *matCellDef="let product">
+                                <button
+                                    class="min-w-10 min-h-7 h-7 px-2 leading-6"
+                                    mat-stroked-button
+                                    (click)="toggleDetails(product.id)">
+                                    <mat-icon
+                                        class="icon-size-5"
+                                        [svgIcon]="selectedCustomer?.id === product.id ? 'heroicons_solid:chevron-up' : 'heroicons_solid:chevron-down'"></mat-icon>
+                                </button>
+                            </td>
+                        </ng-container>
+
+                        <!-- Product details row -->
+                        <ng-container matColumnDef="customerDetails">
+                            <td
+                                class="p-0 border-b-0"
+                                mat-cell
+                                *matCellDef="let product"
+                                [attr.colspan]="customerTableColumns.length">
+                                <div
+                                    class="shadow-lg overflow-hidden"
+                                    [@expandCollapse]="selectedCustomer?.id === product.id ? 'expanded' : 'collapsed'">
+                                    <div class="flex border-b">
+                                        <!-- Selected product form -->
+                                        <form
+                                            class="flex flex-col w-full"
+                                            [formGroup]="selectedCustomerForm">
+
+                                            <div class="flex p-8">
+                                                <div class="flex flex-auto">
+                                                    <div class="flex flex-col w-2/4 pl-8">
+
+                                                        <!-- Email -->
+                                                        <mat-form-field class="w-full">
+                                                            <mat-label>Email</mat-label>
+                                                            <input
+                                                                matInput
+                                                                [formControlName]="'email'">
+                                                        </mat-form-field>
+
+                                                        <!-- First Name and Last Name -->
+                                                        <div class="flex">
+                                                            <mat-form-field class="w-2/3 pr-2">
+                                                                <mat-label>First Name</mat-label>
+                                                                <input
+                                                                    matInput
+                                                                    [formControlName]="'firstname'">
+                                                            </mat-form-field>
+                                                            <mat-form-field class="w-2/3 pl-2">
+                                                                <mat-label>Last Name</mat-label>
+                                                                <input
+                                                                    matInput
+                                                                    [formControlName]="'lastname'">
+                                                            </mat-form-field>
+                                                        </div>
+
+                                                        <!-- First Name and Last Name -->
+                                                        <div class="flex">
+                                                            <mat-form-field class="w-2/3 pr-2">
+                                                                <mat-label>Store</mat-label>
+                                                                <input
+                                                                    matInput
+                                                                    [formControlName]="'store'">
+                                                            </mat-form-field>
+                                                            <mat-form-field class="w-2/3 pl-2">
+                                                                <mat-label>Company Name</mat-label>
+                                                                <input
+                                                                    matInput
+                                                                    [formControlName]="'company'">
+                                                            </mat-form-field>
+                                                        </div>
+                                                    </div>
+
+                                                    <!-- Cost, Base price, Tax & Price -->
+                                                    <div class="flex flex-col w-1/4 pl-8">
+                                                        <mat-form-field class="w-full">
+                                                            <mat-label>Date Registered</mat-label>
+                                                            <input
+                                                                matInput
+                                                                [formControlName]="'dateregistered'">
+                                                        </mat-form-field>
+                                                        <mat-form-field class="w-full">
+                                                            <mat-label>Title</mat-label>
+                                                            <input
+                                                                matInput
+                                                                [formControlName]="'title'">
+                                                        </mat-form-field>
+                                                        <mat-form-field class="w-full">
+                                                            <mat-label>Fax</mat-label>
+                                                            <input
+                                                                matInput
+                                                                [formControlName]="'fax'">
+                                                        </mat-form-field>
+                                                    </div>
+
+                                                    <!-- Weight & Tags -->
+                                                    <div class="flex flex-col w-1/4 pl-8">
+                                                        <mat-form-field class="w-full">
+                                                            <mat-label>IP Address</mat-label>
+                                                            <input
+                                                                matInput
+                                                                [formControlName]="'ipaddress'">
+                                                        </mat-form-field>
+                                                        <mat-form-field class="w-full">
+                                                            <mat-label>Department</mat-label>
+                                                            <input
+                                                                matInput
+                                                                [formControlName]="'department'">
+                                                        </mat-form-field>
+                                                        <mat-form-field class="w-full">
+                                                            <mat-label>Website</mat-label>
+                                                            <input
+                                                                matInput
+                                                                [formControlName]="'website'">
+                                                        </mat-form-field>
+                                                    </div>
+
+                                                </div>
+
+                                            </div>
+
+                                            <div class="flex items-center justify-between w-full border-t px-8 py-4">
+                                                <button
+                                                    class="-ml-4"
+                                                    mat-button
+                                                    [color]="'warn'"
+                                                    (click)="deleteSelectedCustomer()">
+                                                    Delete
+                                                </button>
+                                                <div class="flex items-center">
+                                                    <div
+                                                        class="flex items-center mr-4"
+                                                        *ngIf="flashMessage">
+                                                        <ng-container *ngIf="flashMessage === 'success'">
+                                                            <mat-icon
+                                                                class="text-green-500"
+                                                                [svgIcon]="'heroicons_outline:check'"></mat-icon>
+                                                            <span class="ml-2">Customer updated</span>
+                                                        </ng-container>
+                                                        <ng-container *ngIf="flashMessage === 'error'">
+                                                            <mat-icon
+                                                                class="text-red-500"
+                                                                [svgIcon]="'heroicons_outline:x'"></mat-icon>
+                                                            <span class="ml-2">An error occurred, try again!</span>
+                                                        </ng-container>
+                                                    </div>
+                                                    <button
+                                                        mat-flat-button
+                                                        [color]="'primary'"
+                                                        (click)="updateCustomerProduct()">
+                                                        Update
+                                                    </button>
+                                                </div>
+                                            </div>
+
+                                        </form>
+                                    </div>
+                                </div>
+                            </td>
+                        </ng-container>
+
+                        <tr
+                            class="shadow"
+                            mat-header-row
+                            *matHeaderRowDef="customerTableColumns; sticky: true"></tr>
+                        <tr
+                            class="h-18 hover:bg-gray-100 dark:hover:bg-hover"
+                            mat-row
+                            *matRowDef="let product; columns: customerTableColumns;"></tr>
+                        <tr
+                            class="h-0"
+                            mat-row
+                            *matRowDef="let row; columns: ['customerDetails']"></tr>
+
+                    </table>
+
+                </div>
+
+                <mat-paginator
+                    class="sm:absolute sm:inset-x-0 sm:bottom-0 border-b sm:border-t sm:border-b-0 z-10 bg-gray-50 dark:bg-transparent"
+                    [ngClass]="{'pointer-events-none': isLoading}"
+                    [length]="pagination.length"
+                    [pageIndex]="pagination.page"
+                    [pageSize]="pagination.size"
+                    [pageSizeOptions]="[5, 10, 25, 100]"
+                    [showFirstLastButtons]="true"></mat-paginator>
+
+            </ng-container>
+
+            <ng-template #noReminders>
+                <div class="p-8 sm:p-16 border-t text-2xl font-semibold tracking-tight text-center">
+                    There are currently no reminders set for this customer.
+                </div>
+            </ng-template>
+
+        </div>
+
+    </div>
+</div>
