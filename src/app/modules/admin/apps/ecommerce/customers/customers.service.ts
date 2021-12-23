@@ -113,6 +113,21 @@ export class CustomersService
         );
     }
 
+     /**
+     * Get customers
+     */
+      getCustomers(page: number = 0, size: number = 10, sort: string = 'firstName', order: 'asc' | 'desc' | '' = 'asc', search: string = ''):
+      Observable<CustomersProduct[]>
+    {
+        return this._httpClient.get<CustomersProduct[]>('https://consolidus-staging.azurewebsites.net/api/users?list=true').pipe(
+            tap((response) => {
+                let data = response["data"];
+                console.log(data);
+                this._customers.next(data);
+            })
+        );
+    }
+
     /**
      * Get products
      *
@@ -123,24 +138,26 @@ export class CustomersService
      * @param order
      * @param search
      */
-     getCustomers(page: number = 0, size: number = 10, sort: string = 'name', order: 'asc' | 'desc' | '' = 'asc', search: string = ''):
-        Observable<{ pagination: CustomersPagination; products: CustomersProduct[] }>
-    {
-        return this._httpClient.get<{ pagination: CustomersPagination; products: CustomersProduct[] }>('api/apps/ecommerce/customers/customers', {
-            params: {
-                page: '' + page,
-                size: '' + size,
-                sort,
-                order,
-                search
-            }
-        }).pipe(
-            tap((response) => {
-                this._pagination.next(response.pagination);
-                this._customers.next(response.products);
-            })
-        );
-    }
+    //  getCustomers(page: number = 0, size: number = 10, sort: string = 'name', order: 'asc' | 'desc' | '' = 'asc', search: string = ''):
+    //     Observable<{ pagination: CustomersPagination; products: CustomersProduct[] }>
+    // {
+    //     return this._httpClient.get<{ pagination: CustomersPagination; products: CustomersProduct[] }>('api/apps/ecommerce/customers/customers', {
+    //         params: {
+    //             page: '' + page,
+    //             size: '' + size,
+    //             sort,
+    //             order,
+    //             search,
+    //             list: true
+    //         }
+    //     }).pipe(
+    //         tap((response) => {
+    //             console.log(response)
+                // this._pagination.next(response.pagination);
+                // this._customers.next(response.products);
+    //         })
+    //     );
+    // }
 
     /**
      * Get product by id
@@ -150,13 +167,11 @@ export class CustomersService
         return this._customers.pipe(
             take(1),
             map((products) => {
-
                 // Find the product
-                const product = products.find(item => item.id === id) || null;
-
+                const product = products.find(item => item.pk_userID == id) || null;
+                
                 // Update the product
                 this._customer.next(product);
-
                 // Return the product
                 return product;
             }),
@@ -209,7 +224,7 @@ export class CustomersService
                 map((updatedProduct) => {
 
                     // Find the index of the updated product
-                    const index = products.findIndex(item => item.id === id);
+                    const index = products.findIndex(item => item.pk_userID === id);
 
                     // Update the product
                     products[index] = updatedProduct;
@@ -222,7 +237,7 @@ export class CustomersService
                 }),
                 switchMap(updatedProduct => this.product$.pipe(
                     take(1),
-                    filter(item => item && item.id === id),
+                    filter(item => item && item.pk_userID === id),
                     tap(() => {
 
                         // Update the product if it's selected
@@ -249,7 +264,7 @@ export class CustomersService
                 map((isDeleted: boolean) => {
 
                     // Find the index of the deleted product
-                    const index = products.findIndex(item => item.id === id);
+                    const index = products.findIndex(item => item.pk_userID === id);
 
                     // Delete the product
                     products.splice(index, 1);
@@ -362,12 +377,12 @@ export class CustomersService
                         // Iterate through the contacts
                         products.forEach((product) => {
 
-                            const tagIndex = product.tags.findIndex(tag => tag === id);
+                            const tagIndex = [].findIndex(tag => tag === id);
 
                             // If the contact has the tag, remove it
                             if ( tagIndex > -1 )
                             {
-                                product.tags.splice(tagIndex, 1);
+                                [].splice(tagIndex, 1);
                             }
                         });
 

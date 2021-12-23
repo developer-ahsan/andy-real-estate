@@ -1,29 +1,23 @@
 export interface CustomersProduct
 {
-    id: string;
-    category?: string;
-    name: string;
-    description?: string;
-    tags?: string[];
-    sku?: string | null;
-    barcode?: string | null;
-    brand?: string | null;
-    vendor: string | null;
-    stock: number;
-    reserved: number;
-    cost: number;
-    basePrice: number;
-    taxPercent: number;
-    price: number;
-    weight: number;
-    thumbnail: string;
-    images: string[];
-    active: boolean;
-    firstname: string;
-    lastname: string;
+    companyName: string;
+    dayPhone: string;
+    address1: string;
+    address2: string;
+    city: string;
+    state: string;
+    zipCode: string;
+    storeName: string;
+    storeID: string;
+    firstName: string;
+    lastName: string;
     email: string;
-    store: string;
-    company: string;
+    pk_userID: string;
+    date: string;
+    blnActive: boolean;
+    blnReminders: string;
+    RowNumber: number;
+    TotalRequests: number;
 }
 
 export interface CustomersPagination

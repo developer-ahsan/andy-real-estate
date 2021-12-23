@@ -3,7 +3,11 @@
 // The list of file replacements can be found in `angular.json`.
 
 export const environment = {
-    production: false
+    production: false,
+    firebaseConfig: {
+        apiKey: 'AIzaSyDdIDmQFMIa3aXSnoudkf3At_zQ9faFs2k',
+        verifyUserAuthDomain: 'https://www.googleapis.com/identitytoolkit/v3/relyingparty/verifyPassword'
+    }
 };
 
 /*

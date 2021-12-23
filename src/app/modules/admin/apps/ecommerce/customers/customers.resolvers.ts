@@ -131,11 +131,39 @@ export class CustomersProductsResolver implements Resolve<any>
      * @param route
      * @param state
      */
-    resolve(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<{ pagination: CustomersPagination; products: CustomersProduct[] }>
+    resolve(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<CustomersProduct[]>
     {
         return this._customerService.getCustomers();
     }
 }
+
+// @Injectable({
+//     providedIn: 'root'
+// })
+// export class CustomersProductsResolver implements Resolve<any>
+// {
+//     /**
+//      * Constructor
+//      */
+//     constructor(private _customerService: CustomersService)
+//     {
+//     }
+
+//     // -----------------------------------------------------------------------------------------------------
+//     // @ Public methods
+//     // -----------------------------------------------------------------------------------------------------
+
+//     /**
+//      * Resolver
+//      *
+//      * @param route
+//      * @param state
+//      */
+//     resolve(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<{ pagination: CustomersPagination; products: CustomersProduct[] }>
+//     {
+//         return this._customerService.getCustomers();
+//     }
+// }
 
 @Injectable({
     providedIn: 'root'

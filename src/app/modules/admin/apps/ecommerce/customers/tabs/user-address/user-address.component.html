@@ -1,12 +1,11 @@
-<div class="inset-0 min-w-10 overflow-hidden bg-card dark:bg-transparent px-3">
-    
-    <div class="my-6">
+<div class="inset-0 min-w-50 overflow-hidden bg-card dark:bg-transparent">
+    <div class="border p-3 mt-3 h-40 overflow-x-auto">
         <b>User Address:</b>
         <mat-divider class="mb-2"></mat-divider>
-        <mat-grid-list cols="{{breakpoint}}" rowHeight="60px" (window:resize)="onResize($event)">
-            <mat-grid-tile class="border">
-                <mat-grid-tile-header>{{currentSelectedCustomer.address}}</mat-grid-tile-header>
-            </mat-grid-tile>
-        </mat-grid-list>
+        <div class="min-w-40 max-w-50 w-50 py-2 px-2" style="display: inline;">
+            <div class="mobile-responsive-boxes">
+                {{currentSelectedCustomer.address2 || currentSelectedCustomer.address1}}
+            </div>
+        </div>
     </div>
 </div>

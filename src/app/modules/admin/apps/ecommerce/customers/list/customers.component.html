@@ -78,7 +78,7 @@
                                 (click)="editCustomer(product)"
                                 style="cursor: pointer;"
                             >
-                                {{product.id}}
+                                {{product?.pk_userID || not_available}}
                             </td>
                         </ng-container>
                         
@@ -99,7 +99,7 @@
                                 (click)="editCustomer(product)"
                                 style="cursor: pointer;"
                             >
-                                {{product.firstname}}
+                                {{product?.firstName || not_available}}
                             </td>
                         </ng-container>
 
@@ -120,7 +120,7 @@
                                 (click)="editCustomer(product)"
                                 style="cursor: pointer;"
                             >
-                                {{product.lastname}}
+                                {{product?.lastName || not_available}}
                             </td>
                         </ng-container>
                         
@@ -141,7 +141,7 @@
                                 (click)="editCustomer(product)"
                                 style="cursor: pointer;"
                             >
-                                {{product.email}}
+                                {{product?.email || not_available}}
                             </td>
                         </ng-container>
 
@@ -162,7 +162,7 @@
                                 (click)="editCustomer(product)"
                                 style="cursor: pointer;"
                             >
-                                {{product.store}}
+                                {{product?.storeName || not_available}}
                             </td>
                         </ng-container>
 
@@ -183,7 +183,7 @@
                                 (click)="editCustomer(product)"
                                 style="cursor: pointer;"
                             >
-                                {{product.company}}
+                                {{product?.companyName || not_available}}
                             </td>
                         </ng-container>
 
@@ -202,10 +202,10 @@
                                 <button
                                     class="min-w-10 min-h-7 h-7 px-2 leading-6"
                                     mat-stroked-button
-                                    (click)="toggleDetails(product.id)">
+                                    (click)="toggleDetails(product.pk_userID)">
                                     <mat-icon
                                         class="icon-size-5"
-                                        [svgIcon]="selectedCustomer?.id === product.id ? 'heroicons_solid:chevron-up' : 'heroicons_solid:chevron-down'"></mat-icon>
+                                        [svgIcon]="selectedCustomer?.pk_userID === product.pk_userID ? 'heroicons_solid:chevron-up' : 'heroicons_solid:chevron-down'"></mat-icon>
                                 </button>
                             </td>
                         </ng-container>
@@ -219,7 +219,7 @@
                                 [attr.colspan]="customerTableColumns.length">
                                 <div
                                     class="shadow-lg overflow-hidden"
-                                    [@expandCollapse]="selectedCustomer?.id === product.id ? 'expanded' : 'collapsed'">
+                                    [@expandCollapse]="selectedCustomer?.pk_userID === product.pk_userID ? 'expanded' : 'collapsed'">
                                     <div class="flex border-b">
                                         <!-- Selected product form -->
                                         <form
@@ -244,13 +244,13 @@
                                                                 <mat-label>First Name</mat-label>
                                                                 <input
                                                                     matInput
-                                                                    [formControlName]="'firstname'">
+                                                                    [formControlName]="'firstName'">
                                                             </mat-form-field>
                                                             <mat-form-field class="w-2/3 pl-2">
                                                                 <mat-label>Last Name</mat-label>
                                                                 <input
                                                                     matInput
-                                                                    [formControlName]="'lastname'">
+                                                                    [formControlName]="'lastName'">
                                                             </mat-form-field>
                                                         </div>
 
@@ -260,13 +260,13 @@
                                                                 <mat-label>Store</mat-label>
                                                                 <input
                                                                     matInput
-                                                                    [formControlName]="'store'">
+                                                                    [formControlName]="'storeName'">
                                                             </mat-form-field>
                                                             <mat-form-field class="w-2/3 pl-2">
                                                                 <mat-label>Company Name</mat-label>
                                                                 <input
                                                                     matInput
-                                                                    [formControlName]="'company'">
+                                                                    [formControlName]="'companyName'">
                                                             </mat-form-field>
                                                         </div>
                                                     </div>
@@ -277,7 +277,7 @@
                                                             <mat-label>Date Registered</mat-label>
                                                             <input
                                                                 matInput
-                                                                [formControlName]="'dateregistered'">
+                                                                [formControlName]="'date'">
                                                         </mat-form-field>
                                                         <mat-form-field class="w-full">
                                                             <mat-label>Title</mat-label>

@@ -20,39 +20,39 @@
                     <mat-grid-list cols="{{breakpoint}}" rowHeight="60px" (window:resize)="onResize($event)">
                         <mat-grid-tile>
                             <mat-grid-tile-header>ID: </mat-grid-tile-header>
-                            <mat-grid-tile-footer>{{selectedCustomer.id}}</mat-grid-tile-footer>
+                            <mat-grid-tile-footer>{{selectedCustomer?.pk_userID || not_available}}</mat-grid-tile-footer>
                         </mat-grid-tile>
                         <mat-grid-tile>
                             <mat-grid-tile-header>Name: </mat-grid-tile-header>
-                            <mat-grid-tile-footer>{{selectedCustomer.firstname}} {{selectedCustomer.lastname}}</mat-grid-tile-footer>
+                            <mat-grid-tile-footer>{{selectedCustomer?.firstName || not_available}} {{selectedCustomer?.lastName || not_available}}</mat-grid-tile-footer>
                         </mat-grid-tile>
                         <mat-grid-tile>
                             <mat-grid-tile-header>Company: </mat-grid-tile-header>
-                            <mat-grid-tile-footer>{{selectedCustomer.company}}</mat-grid-tile-footer>
+                            <mat-grid-tile-footer>{{selectedCustomer?.companyName || not_available}}</mat-grid-tile-footer>
                         </mat-grid-tile>
                         <mat-grid-tile>
                             <mat-grid-tile-header>Email: </mat-grid-tile-header>
-                            <mat-grid-tile-footer>{{selectedCustomer.email}}</mat-grid-tile-footer>
+                            <mat-grid-tile-footer>{{selectedCustomer?.email || not_available}}</mat-grid-tile-footer>
                         </mat-grid-tile>
                         <mat-grid-tile>
                             <mat-grid-tile-header>Phone: </mat-grid-tile-header>
-                            <mat-grid-tile-footer>03006548425</mat-grid-tile-footer>
+                            <mat-grid-tile-footer>{{selectedCustomer?.dayPhone || not_available}}</mat-grid-tile-footer>
                         </mat-grid-tile>
                         <mat-grid-tile>
                             <mat-grid-tile-header>Location: </mat-grid-tile-header>
-                            <mat-grid-tile-footer>Main Campus - Consolidus</mat-grid-tile-footer>
+                            <mat-grid-tile-footer>{{selectedCustomer?.address1 || not_available}}</mat-grid-tile-footer>
                         </mat-grid-tile>
                         <mat-grid-tile>
                             <mat-grid-tile-header>Fax: </mat-grid-tile-header>
-                            <mat-grid-tile-footer>N/A</mat-grid-tile-footer>
+                            <mat-grid-tile-footer>{{selectedCustomer?.fax || not_available}}</mat-grid-tile-footer>
                         </mat-grid-tile>
                         <mat-grid-tile>
                             <mat-grid-tile-header>Program manager: </mat-grid-tile-header>
-                            <mat-grid-tile-footer>Rhianne Smith</mat-grid-tile-footer>
+                            <mat-grid-tile-footer>{{selectedCustomer?.programManager || not_available}}</mat-grid-tile-footer>
                         </mat-grid-tile>
                         <mat-grid-tile>
                             <mat-grid-tile-header>Status: </mat-grid-tile-header>
-                            <mat-grid-tile-footer>{{selectedCustomer.active ? "Active" : "Inactive"}}</mat-grid-tile-footer>
+                            <mat-grid-tile-footer>{{selectedCustomer.blnActive ? "Active" : "Inactive"}}</mat-grid-tile-footer>
                         </mat-grid-tile>
                     </mat-grid-list>
                 </mat-card-content>
@@ -89,13 +89,13 @@
                                         <mat-label>First Name</mat-label>
                                         <input
                                             matInput
-                                            [formControlName]="'firstname'">
+                                            [formControlName]="'firstName'">
                                     </mat-form-field>
                                     <mat-form-field class="w-full pl-2">
                                         <mat-label>Last Name</mat-label>
                                         <input
                                             matInput
-                                            [formControlName]="'lastname'">
+                                            [formControlName]="'lastName'">
                                     </mat-form-field>
                                 </div>
 
@@ -105,13 +105,13 @@
                                         <mat-label>Store</mat-label>
                                         <input
                                             matInput
-                                            [formControlName]="'store'">
+                                            [formControlName]="'storeName'">
                                     </mat-form-field>
                                     <mat-form-field class="w-full pl-2">
                                         <mat-label>Company Name</mat-label>
                                         <input
                                             matInput
-                                            [formControlName]="'company'">
+                                            [formControlName]="'companyName'">
                                     </mat-form-field>
                                 </div>
                             </div>
@@ -122,7 +122,7 @@
                                     <mat-label>Date Registered</mat-label>
                                     <input
                                         matInput
-                                        [formControlName]="'dateregistered'">
+                                        [formControlName]="'date'">
                                 </mat-form-field>
                                 <mat-form-field class="w-full">
                                     <mat-label>Title</mat-label>

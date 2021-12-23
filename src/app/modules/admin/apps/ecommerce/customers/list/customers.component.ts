@@ -38,6 +38,7 @@ export class CustomersListComponent implements OnInit, AfterViewInit, OnDestroy
     tags: CustomersTag[];
     tagsEditMode: boolean = false;
     vendors: CustomersVendor[];
+    not_available = "N/A";
     private _unsubscribeAll: Subject<any> = new Subject<any>();
 
     /**
@@ -64,36 +65,19 @@ export class CustomersListComponent implements OnInit, AfterViewInit, OnDestroy
         // Create the selected product form
         this.selectedCustomerForm = this._formBuilder.group({
             id               : [''],
-            category         : [''],
-            name             : ['', [Validators.required]],
-            description      : [''],
-            tags             : [[]],
-            sku              : [''],
-            barcode          : [''],
-            brand            : [''],
-            vendor           : [''],
-            stock            : [''],
-            reserved         : [''],
-            cost             : [''],
-            basePrice        : [''],
-            taxPercent       : [''],
-            price            : [''],
-            weight           : [''],
-            thumbnail        : [''],
-            images           : [[]],
-            currentImageIndex: [0], // Image index that is currently being viewed
-            active           : [false],
-            firstname        : [''],
-            lastname         : [''],
+            firstName        : [''],
+            lastName         : [''],
             email            : [''],
-            company          : [''],
-            store            : [''],
+            companyName      : [''],
+            storeName        : [''],
             title            : [''],
-            dateregistered   : [''],
+            date             : [''],
             ipaddress        : [''],
-            department       : [''],
             fax              : [''],
-            website          : ['']
+            dayPhone         : [''],
+            blnActive        : [''],
+            website          : [''],
+            department       : ['']
         });
 
         // Get the brands
@@ -126,7 +110,15 @@ export class CustomersListComponent implements OnInit, AfterViewInit, OnDestroy
             .subscribe((pagination: CustomersPagination) => {
 
                 // Update the pagination
-                this.pagination = pagination;
+                this.pagination = {
+                    endIndex: 2,
+                    lastPage: 1,
+                    length: 3,
+                    page: 0,
+                    size: 3,
+                    startIndex: 0
+                };
+                console.log(this.pagination)
 
                 // Mark for check
                 this._changeDetectorRef.markForCheck();
@@ -140,6 +132,7 @@ export class CustomersListComponent implements OnInit, AfterViewInit, OnDestroy
 
                 // Update the counts
                 this.customersCount = products.length;
+                console.log(products)
 
                 // Mark for check
                 this._changeDetectorRef.markForCheck();
@@ -238,7 +231,7 @@ export class CustomersListComponent implements OnInit, AfterViewInit, OnDestroy
     toggleDetails(customerId: string): void
     {
         // If the customer is already selected...
-        if ( this.selectedCustomer && this.selectedCustomer.id === customerId )
+        if ( this.selectedCustomer && this.selectedCustomer.pk_userID === customerId )
         {
             // Close the details
             this.closeDetails();
@@ -346,7 +339,7 @@ export class CustomersListComponent implements OnInit, AfterViewInit, OnDestroy
 
         // If there is a tag...
         const tag = this.filteredTags[0];
-        const isTagApplied = this.selectedCustomer.tags.find(id => id === tag.id);
+        const isTagApplied = [].find(id => id === tag.id);
 
         // If the found tag is already applied to the contact...
         if ( isTagApplied )
@@ -423,10 +416,10 @@ export class CustomersListComponent implements OnInit, AfterViewInit, OnDestroy
     addTagToProduct(tag: CustomersTag): void
     {
         // Add the tag
-        this.selectedCustomer.tags.unshift(tag.id);
+        [].unshift(tag.id);
 
         // Update the selected product form
-        this.selectedCustomerForm.get('tags').patchValue(this.selectedCustomer.tags);
+        this.selectedCustomerForm.get('tags').patchValue([]);
 
         // Mark for check
         this._changeDetectorRef.markForCheck();
@@ -440,10 +433,10 @@ export class CustomersListComponent implements OnInit, AfterViewInit, OnDestroy
     removeTagFromProduct(tag: CustomersTag): void
     {
         // Remove the tag
-        this.selectedCustomer.tags.splice(this.selectedCustomer.tags.findIndex(item => item === tag.id), 1);
+        [].splice([].findIndex(item => item === tag.id), 1);
 
         // Update the selected product form
-        this.selectedCustomerForm.get('tags').patchValue(this.selectedCustomer.tags);
+        this.selectedCustomerForm.get('tags').patchValue([]);
 
         // Mark for check
         this._changeDetectorRef.markForCheck();
@@ -565,6 +558,6 @@ export class CustomersListComponent implements OnInit, AfterViewInit, OnDestroy
 
     editCustomer(customer) {
         let route = '/apps/ecommerce/customer';
-        this._router.navigate([route], { queryParams: { customerId: customer.id } });
+        this._router.navigate([route], { queryParams: { customerId: customer.pk_userID } });
       }
 }

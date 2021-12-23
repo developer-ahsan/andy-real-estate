@@ -41,6 +41,7 @@ export class CustomersTabComponent implements OnInit, AfterViewInit, OnDestroy
     selectedCustomerId: string = "";
     selectedTab = "User Info";
     breakpoint: number;
+    not_available = "N/A";
     private _unsubscribeAll: Subject<any> = new Subject<any>();
 
     /**
@@ -77,36 +78,19 @@ export class CustomersTabComponent implements OnInit, AfterViewInit, OnDestroy
         // Create the selected product form
         this.selectedCustomerForm = this._formBuilder.group({
             id               : [''],
-            category         : [''],
-            name             : ['', [Validators.required]],
-            description      : [''],
-            tags             : [[]],
-            sku              : [''],
-            barcode          : [''],
-            brand            : [''],
-            vendor           : [''],
-            stock            : [''],
-            reserved         : [''],
-            cost             : [''],
-            basePrice        : [''],
-            taxPercent       : [''],
-            price            : [''],
-            weight           : [''],
-            thumbnail        : [''],
-            images           : [[]],
-            currentImageIndex: [0], // Image index that is currently being viewed
-            active           : [false],
-            firstname        : [''],
-            lastname         : [''],
+            firstName        : [''],
+            lastName         : [''],
             email            : [''],
-            company          : [''],
-            store            : [''],
+            companyName      : [''],
+            storeName        : [''],
             title            : [''],
-            dateregistered   : [''],
+            date             : [''],
             ipaddress        : [''],
-            department       : [''],
             fax              : [''],
-            website          : ['']
+            dayPhone         : [''],
+            blnActive        : [''],
+            website          : [''],
+            department       : ['']
         });
 
         // Get the brands
@@ -235,7 +219,7 @@ export class CustomersTabComponent implements OnInit, AfterViewInit, OnDestroy
     toggleDetails(customerId: string): void
     {
         // If the customer is already selected...
-        if ( this.selectedCustomer && this.selectedCustomer.id === customerId )
+        if ( this.selectedCustomer && this.selectedCustomer.pk_userID === customerId )
         {
             // Close the details
             this.closeDetails();
@@ -343,7 +327,7 @@ export class CustomersTabComponent implements OnInit, AfterViewInit, OnDestroy
 
         // If there is a tag...
         const tag = this.filteredTags[0];
-        const isTagApplied = this.selectedCustomer.tags.find(id => id === tag.id);
+        const isTagApplied = [].find(id => id === tag.id);
 
         // If the found tag is already applied to the contact...
         if ( isTagApplied )
@@ -420,10 +404,10 @@ export class CustomersTabComponent implements OnInit, AfterViewInit, OnDestroy
     addTagToProduct(tag: CustomersTag): void
     {
         // Add the tag
-        this.selectedCustomer.tags.unshift(tag.id);
+        [].unshift(tag.id);
 
         // Update the selected product form
-        this.selectedCustomerForm.get('tags').patchValue(this.selectedCustomer.tags);
+        this.selectedCustomerForm.get('tags').patchValue([]);
 
         // Mark for check
         this._changeDetectorRef.markForCheck();
@@ -437,10 +421,10 @@ export class CustomersTabComponent implements OnInit, AfterViewInit, OnDestroy
     removeTagFromProduct(tag: CustomersTag): void
     {
         // Remove the tag
-        this.selectedCustomer.tags.splice(this.selectedCustomer.tags.findIndex(item => item === tag.id), 1);
+        [].splice([].findIndex(item => item === tag.id), 1);
 
         // Update the selected product form
-        this.selectedCustomerForm.get('tags').patchValue(this.selectedCustomer.tags);
+        this.selectedCustomerForm.get('tags').patchValue([]);
 
         // Mark for check
         this._changeDetectorRef.markForCheck();
