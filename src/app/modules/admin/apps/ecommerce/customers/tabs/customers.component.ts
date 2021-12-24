@@ -184,7 +184,7 @@ export class CustomersTabComponent implements OnInit, AfterViewInit, OnDestroy
             .subscribe();
 
             this.toggleDetails(this.selectedCustomerId);
-            this.breakpoint = (window.innerWidth <= 620) ? 1 : (window.innerWidth <= 800) ? 2 : 3;
+            this.breakpoint = (window.innerWidth <= 620) ? 1 : (window.innerWidth <= 800) ? 2 : 4;
     }
 
     /**
@@ -208,7 +208,7 @@ export class CustomersTabComponent implements OnInit, AfterViewInit, OnDestroy
 
     // Resizing screen 
     onResize(event) {
-        this.breakpoint = (event.target.innerWidth <= 620) ? 1  : (event.target.innerWidth <= 800) ? 2 : 3;
+        this.breakpoint = (event.target.innerWidth <= 620) ? 1  : (event.target.innerWidth <= 800) ? 2 : 4;
     }
 
     /**
