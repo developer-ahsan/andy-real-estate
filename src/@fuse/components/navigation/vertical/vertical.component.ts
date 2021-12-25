@@ -1,6 +1,6 @@
 import { AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, EventEmitter, HostBinding, HostListener, Input, OnChanges, OnDestroy, OnInit, Output, QueryList, Renderer2, SimpleChanges, ViewChild, ViewChildren, ViewEncapsulation } from '@angular/core';
 import { animate, AnimationBuilder, AnimationPlayer, style } from '@angular/animations';
-import { NavigationEnd, Router } from '@angular/router';
+import { NavigationCancel, NavigationEnd, NavigationStart, Router } from '@angular/router';
 import { ScrollStrategy, ScrollStrategyOptions } from '@angular/cdk/overlay';
 import { merge, ReplaySubject, Subject, Subscription } from 'rxjs';
 import { delay, filter, takeUntil } from 'rxjs/operators';
@@ -44,6 +44,7 @@ export class FuseVerticalNavigationComponent implements OnChanges, OnInit, After
     @ViewChild('navigationContent') private _navigationContentEl: ElementRef;
 
     activeAsideItemId: string | null = null;
+    isLoading: boolean = false;
     onCollapsableItemCollapsed: ReplaySubject<FuseNavigationItem> = new ReplaySubject<FuseNavigationItem>(1);
     onCollapsableItemExpanded: ReplaySubject<FuseNavigationItem> = new ReplaySubject<FuseNavigationItem>(1);
     onRefreshed: ReplaySubject<boolean> = new ReplaySubject<boolean>(1);
@@ -302,12 +303,16 @@ export class FuseVerticalNavigationComponent implements OnChanges, OnInit, After
 
         // Subscribe to the 'NavigationEnd' event
         this._router.events
-            .pipe(
-                filter(event => event instanceof NavigationEnd),
-                takeUntil(this._unsubscribeAll)
-            )
-            .subscribe(() => {
-
+            .subscribe((event) => {
+                if(event instanceof NavigationStart) {
+                    this.isLoading = true;
+                }
+                else if (
+                    event instanceof NavigationEnd || 
+                    event instanceof NavigationCancel
+                    ) {
+                    this.isLoading = false;
+                }
                 // If the mode is 'over' and the navigation is opened...
                 if ( this.mode === 'over' && this.opened )
                 {

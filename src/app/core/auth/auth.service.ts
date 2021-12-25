@@ -4,6 +4,7 @@ import { Observable, of, throwError } from 'rxjs';
 import { catchError, switchMap } from 'rxjs/operators';
 import { AuthUtils } from 'app/core/auth/auth.utils';
 import { UserService } from 'app/core/user/user.service';
+import { environment } from 'environments/environment';
 
 @Injectable()
 export class AuthService
@@ -74,53 +75,64 @@ export class AuthService
             return throwError('User is already logged in.');
         }
 
-        return this._httpClient.post('api/auth/sign-in', credentials).pipe(
+        return this._httpClient.post(environment.signInAuth,credentials)
+        .pipe(
             switchMap((response: any) => {
+                const payload = {
+                    accessToken: response["idToken"],
+                    tokenType  : 'bearer',
+                    user: {
+                        avatar: response["avatar"] || null,
+                        email: response["email"],
+                        id: response["localId"],
+                        name: response["displayName"],
+                        status: "online"
+                    }
+                };
 
                 // Store the access token in the local storage
-                this.accessToken = response.accessToken;
+                this.accessToken = payload.accessToken;
 
                 // Set the authenticated flag to true
                 this._authenticated = true;
 
                 // Store the user on the user service
-                this._userService.user = response.user;
+                this._userService.user = payload.user;
 
                 // Return a new observable with the response
-                return of(response);
+                return of(payload);
             })
         );
     }
+
+    /**
+     * Decode using the access token
+     */
+    parseJwt (token) {
+        var base64Url = token.split('.')[1];
+        var base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+        var jsonPayload = decodeURIComponent(atob(base64).split('').map(function(c) {
+            return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+        }).join(''));
+    
+        return JSON.parse(jsonPayload);
+    };
 
     /**
      * Sign in using the access token
      */
     signInUsingToken(): Observable<any>
     {
-        // Renew token
-        return this._httpClient.post('api/auth/refresh-access-token', {
-            accessToken: this.accessToken
-        }).pipe(
-            catchError(() =>
-
-                // Return false
-                of(false)
-            ),
-            switchMap((response: any) => {
-
-                // Store the access token in the local storage
-                this.accessToken = response.accessToken;
-
-                // Set the authenticated flag to true
-                this._authenticated = true;
-
-                // Store the user on the user service
-                this._userService.user = response.user;
-
-                // Return true
-                return of(true);
-            })
-        );
+        const user = {
+            avatar: this.parseJwt(this.accessToken)["avatar"] || null,
+            email: this.parseJwt(this.accessToken)["email"],
+            id: this.parseJwt(this.accessToken)["user_id"],
+            name: this.parseJwt(this.accessToken)["display_name"]
+        }
+        this.accessToken = this.accessToken;
+        this._userService.user = user;
+        this._authenticated = true;
+        return of(true);
     }
 
     /**

@@ -48,7 +48,7 @@ export class CustomersListComponent implements OnInit, AfterViewInit, OnDestroy
         private _changeDetectorRef: ChangeDetectorRef,
         private _formBuilder: FormBuilder,
         private _customerService: CustomersService,
-        private _router: Router,
+        private _router: Router
     )
     {
     }
@@ -118,21 +118,19 @@ export class CustomersListComponent implements OnInit, AfterViewInit, OnDestroy
                     size: 3,
                     startIndex: 0
                 };
-                console.log(this.pagination)
 
                 // Mark for check
                 this._changeDetectorRef.markForCheck();
             });
 
-        // Get the products
+        // Get the customers
         this.customers$ = this._customerService.customers$;
         this._customerService.customers$
             .pipe(takeUntil(this._unsubscribeAll))
-            .subscribe((products: CustomersProduct[]) => {
+            .subscribe((customers: CustomersProduct[]) => {
 
                 // Update the counts
-                this.customersCount = products.length;
-                console.log(products)
+                this.customersCount = customers.length;
 
                 // Mark for check
                 this._changeDetectorRef.markForCheck();
@@ -557,6 +555,7 @@ export class CustomersListComponent implements OnInit, AfterViewInit, OnDestroy
     }
 
     editCustomer(customer) {
+        this.isLoading = true;
         let route = '/apps/ecommerce/customer';
         this._router.navigate([route], { queryParams: { customerId: customer.pk_userID } });
       }

@@ -3,6 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { BehaviorSubject, Observable, of, throwError } from 'rxjs';
 import { filter, map, switchMap, take, tap } from 'rxjs/operators';
 import { CustomersBrand, CustomersCategory, CustomersPagination, CustomersProduct, CustomersTag, CustomersVendor } from 'app/modules/admin/apps/ecommerce/customers/customers.types';
+import { environment } from 'environments/environment';
 
 @Injectable({
     providedIn: 'root'
@@ -119,45 +120,41 @@ export class CustomersService
       getCustomers(page: number = 0, size: number = 10, sort: string = 'firstName', order: 'asc' | 'desc' | '' = 'asc', search: string = ''):
       Observable<CustomersProduct[]>
     {
-        return this._httpClient.get<CustomersProduct[]>('https://consolidus-staging.azurewebsites.net/api/users?list=true').pipe(
+        return this._httpClient.get<CustomersProduct[]>(environment.customerList, {
+            params: {
+                list: true
+            }
+        }).pipe(
             tap((response) => {
                 let data = response["data"];
-                console.log(data);
+                if(search){
+                    data = this.search(search, data);
+                }
                 this._customers.next(data);
             })
         );
     }
 
     /**
-     * Get products
-     *
-     *
-     * @param page
-     * @param size
-     * @param sort
-     * @param order
-     * @param search
+     * Search customers
      */
-    //  getCustomers(page: number = 0, size: number = 10, sort: string = 'name', order: 'asc' | 'desc' | '' = 'asc', search: string = ''):
-    //     Observable<{ pagination: CustomersPagination; products: CustomersProduct[] }>
-    // {
-    //     return this._httpClient.get<{ pagination: CustomersPagination; products: CustomersProduct[] }>('api/apps/ecommerce/customers/customers', {
-    //         params: {
-    //             page: '' + page,
-    //             size: '' + size,
-    //             sort,
-    //             order,
-    //             search,
-    //             list: true
-    //         }
-    //     }).pipe(
-    //         tap((response) => {
-    //             console.log(response)
-                // this._pagination.next(response.pagination);
-                // this._customers.next(response.products);
-    //         })
-    //     );
-    // }
+     search(key, customers){
+        return customers.filter(function (customer) { 
+            if(
+                customer.firstName?.toLowerCase().includes(key.toLowerCase()) ||
+                customer.lastName?.toLowerCase().includes(key.toLowerCase()) ||
+                customer.email?.toLowerCase().includes(key.toLowerCase()) ||
+                customer.companyName?.toLowerCase().includes(key.toLowerCase()) ||
+                customer.storeName?.toLowerCase().includes(key.toLowerCase()) ||
+                customer.city?.toLowerCase().includes(key.toLowerCase()) ||
+                customer.address1?.toLowerCase().includes(key.toLowerCase()) ||
+                customer.pk_userID == key
+            )
+            {
+                return customer;
+            } 
+        })
+    }
 
     /**
      * Get product by id

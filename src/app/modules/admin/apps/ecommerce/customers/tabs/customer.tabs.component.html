@@ -1,270 +1,284 @@
-<div class="absolute inset-0 flex flex-col min-w-0 bg-card dark:bg-transparent" style="overflow-y: scroll;">
+<div class="absolute inset-0 flex flex-col min-w-0 bg-card dark:bg-transparent">
 
     <!-- Header -->
     <div class="relative flex flex-col sm:flex-row flex-0 sm:items-center sm:justify-between py-4 px-6 md:px-8 border-b">
         <!-- Loader -->
         <div
-            class="absolute inset-x-0 bottom-0"
+            class="absolute inset-x-0 bottom-1"
             *ngIf="isLoading">
             <mat-progress-bar [mode]="'indeterminate'"></mat-progress-bar>
         </div>
         <!-- Title -->
         <div class="text-4xl font-extrabold tracking-tight">Customer Details</div>
+        <!-- Actions -->
+        <div class="flex flex-shrink-0 items-center mt-6 sm:mt-0 sm:ml-4">
+            <!-- Back to Customers Page button -->
+            <button
+                class="ml-4"
+                mat-flat-button
+                [color]="'primary'"
+                (click)="backToCustomersScreen()">
+                <mat-icon [svgIcon]="'heroicons_outline:arrow-narrow-left'"></mat-icon>
+                <span class="ml-2 mr-1">Back to Customers</span>
+            </button>
+        </div>
     </div>
 
-    <ng-template #myCard>
-        <div class="pt-2 mb-3">
-            <mat-card>
-            <mat-card-subtitle class="text-2xl font-semibold">{{selectedTab}}</mat-card-subtitle>
-                <mat-card-content>
-                    <mat-grid-list cols="{{breakpoint}}" rowHeight="60px" (window:resize)="onResize($event)">
-                        <mat-grid-tile>
-                            <mat-grid-tile-header>ID: </mat-grid-tile-header>
-                            <mat-grid-tile-footer>{{selectedCustomer?.pk_userID || not_available}}</mat-grid-tile-footer>
-                        </mat-grid-tile>
-                        <mat-grid-tile>
-                            <mat-grid-tile-header>Name: </mat-grid-tile-header>
-                            <mat-grid-tile-footer>{{selectedCustomer?.firstName || not_available}} {{selectedCustomer?.lastName || not_available}}</mat-grid-tile-footer>
-                        </mat-grid-tile>
-                        <mat-grid-tile>
-                            <mat-grid-tile-header>Company: </mat-grid-tile-header>
-                            <mat-grid-tile-footer>{{selectedCustomer?.companyName || not_available}}</mat-grid-tile-footer>
-                        </mat-grid-tile>
-                        <mat-grid-tile>
-                            <mat-grid-tile-header>Email: </mat-grid-tile-header>
-                            <mat-grid-tile-footer>{{selectedCustomer?.email || not_available}}</mat-grid-tile-footer>
-                        </mat-grid-tile>
-                        <mat-grid-tile>
-                            <mat-grid-tile-header>Phone: </mat-grid-tile-header>
-                            <mat-grid-tile-footer>{{selectedCustomer?.dayPhone || not_available}}</mat-grid-tile-footer>
-                        </mat-grid-tile>
-                        <mat-grid-tile>
-                            <mat-grid-tile-header>Location: </mat-grid-tile-header>
-                            <mat-grid-tile-footer>{{selectedCustomer?.address1 || not_available}}</mat-grid-tile-footer>
-                        </mat-grid-tile>
-                        <mat-grid-tile>
-                            <mat-grid-tile-header>Fax: </mat-grid-tile-header>
-                            <mat-grid-tile-footer>{{selectedCustomer?.fax || not_available}}</mat-grid-tile-footer>
-                        </mat-grid-tile>
-                        <mat-grid-tile>
-                            <mat-grid-tile-header>Program manager: </mat-grid-tile-header>
-                            <mat-grid-tile-footer>{{selectedCustomer?.programManager || not_available}}</mat-grid-tile-footer>
-                        </mat-grid-tile>
-                        <mat-grid-tile>
-                            <mat-grid-tile-header>Status: </mat-grid-tile-header>
-                            <mat-grid-tile-footer>{{selectedCustomer.blnActive ? "Active" : "Inactive"}}</mat-grid-tile-footer>
-                        </mat-grid-tile>
-                    </mat-grid-list>
-                </mat-card-content>
-        </mat-card>
-        </div>
-    </ng-template>
+    <div style="overflow-y: scroll;">
+        <ng-template #myCard>
+            <div class="pt-2 mb-3">
+                <mat-card>
+                <mat-card-subtitle class="text-2xl font-semibold">{{selectedTab}}</mat-card-subtitle>
+                    <mat-card-content>
+                        <mat-grid-list cols="{{breakpoint}}" rowHeight="60px" (window:resize)="onResize($event)">
+                            <mat-grid-tile>
+                                <mat-grid-tile-header>ID: </mat-grid-tile-header>
+                                <mat-grid-tile-footer>{{selectedCustomer?.pk_userID || not_available}}</mat-grid-tile-footer>
+                            </mat-grid-tile>
+                            <mat-grid-tile>
+                                <mat-grid-tile-header>Name: </mat-grid-tile-header>
+                                <mat-grid-tile-footer>{{selectedCustomer?.firstName || not_available}} {{selectedCustomer?.lastName || not_available}}</mat-grid-tile-footer>
+                            </mat-grid-tile>
+                            <mat-grid-tile>
+                                <mat-grid-tile-header>Company: </mat-grid-tile-header>
+                                <mat-grid-tile-footer>{{selectedCustomer?.companyName || not_available}}</mat-grid-tile-footer>
+                            </mat-grid-tile>
+                            <mat-grid-tile>
+                                <mat-grid-tile-header>Email: </mat-grid-tile-header>
+                                <mat-grid-tile-footer>{{selectedCustomer?.email || not_available}}</mat-grid-tile-footer>
+                            </mat-grid-tile>
+                            <mat-grid-tile>
+                                <mat-grid-tile-header>Phone: </mat-grid-tile-header>
+                                <mat-grid-tile-footer>{{selectedCustomer?.dayPhone || not_available}}</mat-grid-tile-footer>
+                            </mat-grid-tile>
+                            <mat-grid-tile>
+                                <mat-grid-tile-header>Location: </mat-grid-tile-header>
+                                <mat-grid-tile-footer>{{selectedCustomer?.address1 || not_available}}</mat-grid-tile-footer>
+                            </mat-grid-tile>
+                            <mat-grid-tile>
+                                <mat-grid-tile-header>Fax: </mat-grid-tile-header>
+                                <mat-grid-tile-footer>{{selectedCustomer?.fax || not_available}}</mat-grid-tile-footer>
+                            </mat-grid-tile>
+                            <mat-grid-tile>
+                                <mat-grid-tile-header>Program manager: </mat-grid-tile-header>
+                                <mat-grid-tile-footer>{{selectedCustomer?.programManager || not_available}}</mat-grid-tile-footer>
+                            </mat-grid-tile>
+                            <mat-grid-tile>
+                                <mat-grid-tile-header>Status: </mat-grid-tile-header>
+                                <mat-grid-tile-footer>{{selectedCustomer.blnActive ? "Active" : "Inactive"}}</mat-grid-tile-footer>
+                            </mat-grid-tile>
+                        </mat-grid-list>
+                    </mat-card-content>
+            </mat-card>
+            </div>
+        </ng-template>
+        
+        <!-- Main -->
+        <div class="flex flex-auto mt-6">
+            <mat-tab-group #tabGroup (selectedTabChange)="tabChanged($event)" style="overflow-x: scroll;">
+                <mat-tab label="User Info">
+                    <ng-container *ngTemplateOutlet="myCard"></ng-container>
+                    <div class="text-1xl font-semibold">General Information</div>
+                    <mat-divider></mat-divider>
+                    <form
+                        class="flex flex-col w-full pt-2"
+                        [formGroup]="selectedCustomerForm"
+                    >
+                        <div class="flex pt-2">
+                            <div class="flex flex-auto">
+                                <div class="flex flex-col w-2/4 pl-8">
     
-    <!-- Main -->
-    <div class="flex flex-auto mt-6">
-        <mat-tab-group #tabGroup (selectedTabChange)="tabChanged($event)" style="overflow-x: scroll;">
-            <mat-tab label="User Info">
-                <ng-container *ngTemplateOutlet="myCard"></ng-container>
-                <div class="text-1xl font-semibold">General Information</div>
-                <mat-divider></mat-divider>
-                <form
-                    class="flex flex-col w-full pt-2"
-                    [formGroup]="selectedCustomerForm"
-                >
-                    <div class="flex pt-2">
-                        <div class="flex flex-auto">
-                            <div class="flex flex-col w-2/4 pl-8">
-
-                                <!-- Email -->
-                                <mat-form-field class="w-full">
-                                    <mat-label>Email</mat-label>
-                                    <input
-                                        matInput
-                                        [formControlName]="'email'">
-                                </mat-form-field>
-
-                                <!-- First Name and Last Name -->
-                                <div class="flex">
-                                    <mat-form-field class="w-full pr-2">
-                                        <mat-label>First Name</mat-label>
+                                    <!-- Email -->
+                                    <mat-form-field class="w-full">
+                                        <mat-label>Email</mat-label>
                                         <input
                                             matInput
-                                            [formControlName]="'firstName'">
+                                            [formControlName]="'email'">
                                     </mat-form-field>
-                                    <mat-form-field class="w-full pl-2">
-                                        <mat-label>Last Name</mat-label>
+    
+                                    <!-- First Name and Last Name -->
+                                    <div class="flex">
+                                        <mat-form-field class="w-full pr-2">
+                                            <mat-label>First Name</mat-label>
+                                            <input
+                                                matInput
+                                                [formControlName]="'firstName'">
+                                        </mat-form-field>
+                                        <mat-form-field class="w-full pl-2">
+                                            <mat-label>Last Name</mat-label>
+                                            <input
+                                                matInput
+                                                [formControlName]="'lastName'">
+                                        </mat-form-field>
+                                    </div>
+    
+                                    <!-- First Name and Last Name -->
+                                    <div class="flex">
+                                        <mat-form-field class="w-full pr-2">
+                                            <mat-label>Store</mat-label>
+                                            <input
+                                                matInput
+                                                [formControlName]="'storeName'">
+                                        </mat-form-field>
+                                        <mat-form-field class="w-full pl-2">
+                                            <mat-label>Company Name</mat-label>
+                                            <input
+                                                matInput
+                                                [formControlName]="'companyName'">
+                                        </mat-form-field>
+                                    </div>
+                                </div>
+    
+                                <!-- Cost, Base price, Tax & Price -->
+                                <div class="flex flex-col w-1/4 pl-8">
+                                    <mat-form-field class="w-full">
+                                        <mat-label>Date Registered</mat-label>
                                         <input
                                             matInput
-                                            [formControlName]="'lastName'">
+                                            [formControlName]="'date'">
+                                    </mat-form-field>
+                                    <mat-form-field class="w-full">
+                                        <mat-label>Title</mat-label>
+                                        <input
+                                            matInput
+                                            [formControlName]="'title'">
+                                    </mat-form-field>
+                                    <mat-form-field class="w-full">
+                                        <mat-label>Fax</mat-label>
+                                        <input
+                                            matInput
+                                            [formControlName]="'fax'">
                                     </mat-form-field>
                                 </div>
-
-                                <!-- First Name and Last Name -->
-                                <div class="flex">
-                                    <mat-form-field class="w-full pr-2">
-                                        <mat-label>Store</mat-label>
+    
+                                <!-- Weight & Tags -->
+                                <div class="flex flex-col w-1/4 pl-8">
+                                    <mat-form-field class="w-full">
+                                        <mat-label>IP Address</mat-label>
                                         <input
                                             matInput
-                                            [formControlName]="'storeName'">
+                                            [formControlName]="'ipaddress'">
                                     </mat-form-field>
-                                    <mat-form-field class="w-full pl-2">
-                                        <mat-label>Company Name</mat-label>
+                                    <mat-form-field class="w-full">
+                                        <mat-label>Department</mat-label>
                                         <input
                                             matInput
-                                            [formControlName]="'companyName'">
+                                            [formControlName]="'department'">
+                                    </mat-form-field>
+                                    <mat-form-field class="w-full">
+                                        <mat-label>Website</mat-label>
+                                        <input
+                                            matInput
+                                            [formControlName]="'website'">
                                     </mat-form-field>
                                 </div>
+    
                             </div>
-
-                            <!-- Cost, Base price, Tax & Price -->
-                            <div class="flex flex-col w-1/4 pl-8">
-                                <mat-form-field class="w-full">
-                                    <mat-label>Date Registered</mat-label>
-                                    <input
-                                        matInput
-                                        [formControlName]="'date'">
-                                </mat-form-field>
-                                <mat-form-field class="w-full">
-                                    <mat-label>Title</mat-label>
-                                    <input
-                                        matInput
-                                        [formControlName]="'title'">
-                                </mat-form-field>
-                                <mat-form-field class="w-full">
-                                    <mat-label>Fax</mat-label>
-                                    <input
-                                        matInput
-                                        [formControlName]="'fax'">
-                                </mat-form-field>
-                            </div>
-
-                            <!-- Weight & Tags -->
-                            <div class="flex flex-col w-1/4 pl-8">
-                                <mat-form-field class="w-full">
-                                    <mat-label>IP Address</mat-label>
-                                    <input
-                                        matInput
-                                        [formControlName]="'ipaddress'">
-                                </mat-form-field>
-                                <mat-form-field class="w-full">
-                                    <mat-label>Department</mat-label>
-                                    <input
-                                        matInput
-                                        [formControlName]="'department'">
-                                </mat-form-field>
-                                <mat-form-field class="w-full">
-                                    <mat-label>Website</mat-label>
-                                    <input
-                                        matInput
-                                        [formControlName]="'website'">
-                                </mat-form-field>
-                            </div>
-
+    
                         </div>
-
-                    </div>
-
-                    <div class="flex items-center justify-between w-full border-t px-8 py-4">
-                        <div class="flex items-center">
-                            <div
-                                class="flex items-center mr-4"
-                                *ngIf="flashMessage">
-                                <ng-container *ngIf="flashMessage === 'success'">
-                                    <mat-icon
-                                        class="text-green-500"
-                                        [svgIcon]="'heroicons_outline:check'"></mat-icon>
-                                    <span class="ml-2">Customer updated</span>
-                                </ng-container>
-                                <ng-container *ngIf="flashMessage === 'error'">
-                                    <mat-icon
-                                        class="text-red-500"
-                                        [svgIcon]="'heroicons_outline:x'"></mat-icon>
-                                    <span class="ml-2">An error occurred, try again!</span>
-                                </ng-container>
+    
+                        <div class="flex items-center justify-between w-full border-t px-8 py-4">
+                            <div class="flex items-center">
+                                <div
+                                    class="flex items-center mr-4"
+                                    *ngIf="flashMessage">
+                                    <ng-container *ngIf="flashMessage === 'success'">
+                                        <mat-icon
+                                            class="text-green-500"
+                                            [svgIcon]="'heroicons_outline:check'"></mat-icon>
+                                        <span class="ml-2">Customer updated</span>
+                                    </ng-container>
+                                    <ng-container *ngIf="flashMessage === 'error'">
+                                        <mat-icon
+                                            class="text-red-500"
+                                            [svgIcon]="'heroicons_outline:x'"></mat-icon>
+                                        <span class="ml-2">An error occurred, try again!</span>
+                                    </ng-container>
+                                </div>
+                                <button
+                                    mat-flat-button
+                                    [color]="'primary'"
+                                    (click)="updateCustomerProduct()">
+                                    Update
+                                </button>
                             </div>
-                            <button
-                                mat-flat-button
-                                [color]="'primary'"
-                                (click)="updateCustomerProduct()">
-                                Update
-                            </button>
                         </div>
-                    </div>
-                </form>
-            </mat-tab>
-            <mat-tab label="User Addresses">
-                <ng-container *ngTemplateOutlet="myCard"></ng-container>
-                <app-user-address [currentSelectedCustomer]="selectedCustomer"></app-user-address>
-            </mat-tab>
-            <mat-tab label="User Metrics">
-                <ng-container *ngTemplateOutlet="myCard"></ng-container>
-                <app-user-metrics [currentSelectedCustomer]="selectedCustomer"></app-user-metrics>
-            </mat-tab>
-            <mat-tab label="Credit Terms">
-                <ng-container *ngTemplateOutlet="myCard"></ng-container>
-                <app-credit-terms [currentSelectedCustomer]="selectedCustomer"></app-credit-terms>
-            </mat-tab>
-            <mat-tab label="Credit Applications">
-                <ng-container *ngTemplateOutlet="myCard"></ng-container>
-                <app-credit-applications [currentSelectedCustomer]="selectedCustomer"></app-credit-applications>
-            </mat-tab>
-            <mat-tab label="User Comments">
-                <ng-container *ngTemplateOutlet="myCard"></ng-container>
-                <app-user-comments [currentSelectedCustomer]="selectedCustomer"></app-user-comments>
-            </mat-tab>
-            <mat-tab label="FLPS Users">
-                <ng-container *ngTemplateOutlet="myCard"></ng-container>
-                FLPS Users
-            </mat-tab>
-            <mat-tab label="Locations">
-                <ng-container *ngTemplateOutlet="myCard"></ng-container>
-                <app-user-locations [currentSelectedCustomer]="selectedCustomer"></app-user-locations>
-            </mat-tab>
-            <mat-tab label="Approval Contacts">
-                <ng-container *ngTemplateOutlet="myCard"></ng-container>
-                <app-approval-contacts [currentSelectedCustomer]="selectedCustomer"></app-approval-contacts>
-            </mat-tab>
-            <mat-tab label="Reminders">
-                <ng-container *ngTemplateOutlet="myCard"></ng-container>
-                <app-reminders [currentSelectedCustomer]="selectedCustomer"></app-reminders>
-            </mat-tab>
-            <mat-tab label="Order History">
-                <ng-container *ngTemplateOutlet="myCard"></ng-container>
-                Order History
-            </mat-tab>
-            <mat-tab label="Fulfillment Orders">
-                <ng-container *ngTemplateOutlet="myCard"></ng-container>
-                Fulfillment Orders
-            </mat-tab>
-            <mat-tab label="Saved Carts">
-                <ng-container *ngTemplateOutlet="myCard"></ng-container>
-                Saved Carts
-            </mat-tab>
-            <mat-tab label="Quotes">
-                <ng-container *ngTemplateOutlet="myCard"></ng-container>
-                Quotes
-            </mat-tab>
-            <mat-tab label="Group Orders">
-                <ng-container *ngTemplateOutlet="myCard"></ng-container>
-                Group Orders
-            </mat-tab>
-            <mat-tab label="Logo Bank">
-                <ng-container *ngTemplateOutlet="myCard"></ng-container>
-                Logo Bank
-            </mat-tab>
-            <mat-tab label="Cashback">
-                <ng-container *ngTemplateOutlet="myCard"></ng-container>
-                Cashback
-            </mat-tab>
-            <mat-tab label="Store Usage">
-                <ng-container *ngTemplateOutlet="myCard"></ng-container>
-                Store Usage
-            </mat-tab>
-            <mat-tab label="Send Registration Emails">
-                <ng-container *ngTemplateOutlet="myCard"></ng-container>
-                Registration Emails
-            </mat-tab>
-        </mat-tab-group>
+                    </form>
+                </mat-tab>
+                <mat-tab label="User Addresses">
+                    <ng-container *ngTemplateOutlet="myCard"></ng-container>
+                    <app-user-address [currentSelectedCustomer]="selectedCustomer"></app-user-address>
+                </mat-tab>
+                <mat-tab label="User Metrics">
+                    <ng-container *ngTemplateOutlet="myCard"></ng-container>
+                    <app-user-metrics [currentSelectedCustomer]="selectedCustomer"></app-user-metrics>
+                </mat-tab>
+                <mat-tab label="Credit Terms">
+                    <ng-container *ngTemplateOutlet="myCard"></ng-container>
+                    <app-credit-terms [currentSelectedCustomer]="selectedCustomer"></app-credit-terms>
+                </mat-tab>
+                <mat-tab label="Credit Applications">
+                    <ng-container *ngTemplateOutlet="myCard"></ng-container>
+                    <app-credit-applications [currentSelectedCustomer]="selectedCustomer"></app-credit-applications>
+                </mat-tab>
+                <mat-tab label="User Comments">
+                    <ng-container *ngTemplateOutlet="myCard"></ng-container>
+                    <app-user-comments [currentSelectedCustomer]="selectedCustomer"></app-user-comments>
+                </mat-tab>
+                <mat-tab label="FLPS Users">
+                    <ng-container *ngTemplateOutlet="myCard"></ng-container>
+                    FLPS Users
+                </mat-tab>
+                <mat-tab label="Locations">
+                    <ng-container *ngTemplateOutlet="myCard"></ng-container>
+                    <app-user-locations [currentSelectedCustomer]="selectedCustomer"></app-user-locations>
+                </mat-tab>
+                <mat-tab label="Approval Contacts">
+                    <ng-container *ngTemplateOutlet="myCard"></ng-container>
+                    <app-approval-contacts [currentSelectedCustomer]="selectedCustomer"></app-approval-contacts>
+                </mat-tab>
+                <mat-tab label="Reminders">
+                    <ng-container *ngTemplateOutlet="myCard"></ng-container>
+                    <app-reminders [currentSelectedCustomer]="selectedCustomer"></app-reminders>
+                </mat-tab>
+                <mat-tab label="Order History">
+                    <ng-container *ngTemplateOutlet="myCard"></ng-container>
+                    Order History
+                </mat-tab>
+                <mat-tab label="Fulfillment Orders">
+                    <ng-container *ngTemplateOutlet="myCard"></ng-container>
+                    Fulfillment Orders
+                </mat-tab>
+                <mat-tab label="Saved Carts">
+                    <ng-container *ngTemplateOutlet="myCard"></ng-container>
+                    Saved Carts
+                </mat-tab>
+                <mat-tab label="Quotes">
+                    <ng-container *ngTemplateOutlet="myCard"></ng-container>
+                    Quotes
+                </mat-tab>
+                <mat-tab label="Group Orders">
+                    <ng-container *ngTemplateOutlet="myCard"></ng-container>
+                    Group Orders
+                </mat-tab>
+                <mat-tab label="Logo Bank">
+                    <ng-container *ngTemplateOutlet="myCard"></ng-container>
+                    Logo Bank
+                </mat-tab>
+                <mat-tab label="Cashback">
+                    <ng-container *ngTemplateOutlet="myCard"></ng-container>
+                    Cashback
+                </mat-tab>
+                <mat-tab label="Store Usage">
+                    <ng-container *ngTemplateOutlet="myCard"></ng-container>
+                    Store Usage
+                </mat-tab>
+                <mat-tab label="Send Registration Emails">
+                    <ng-container *ngTemplateOutlet="myCard"></ng-container>
+                    Registration Emails
+                </mat-tab>
+            </mat-tab-group>
+        </div>
     </div>
 
 </div>

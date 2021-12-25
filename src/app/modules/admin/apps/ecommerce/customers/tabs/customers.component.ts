@@ -184,7 +184,7 @@ export class CustomersTabComponent implements OnInit, AfterViewInit, OnDestroy
             .subscribe();
 
             this.toggleDetails(this.selectedCustomerId);
-            this.breakpoint = (window.innerWidth <= 620) ? 1 : (window.innerWidth <= 800) ? 2 : 4;
+            this.breakpoint = (window.innerWidth <= 620) ? 1 : (window.innerWidth <= 820) ? 2 : (window.innerWidth <= 1300) ? 3 : 4;
     }
 
     /**
@@ -208,7 +208,7 @@ export class CustomersTabComponent implements OnInit, AfterViewInit, OnDestroy
 
     // Resizing screen 
     onResize(event) {
-        this.breakpoint = (event.target.innerWidth <= 620) ? 1  : (event.target.innerWidth <= 800) ? 2 : 4;
+        this.breakpoint = (event.target.innerWidth <= 620) ? 1  : (event.target.innerWidth <= 820) ? 2 : (window.innerWidth <= 1300) ? 3 : 4;
     }
 
     /**
@@ -547,4 +547,9 @@ export class CustomersTabComponent implements OnInit, AfterViewInit, OnDestroy
     tabChanged(tabChangeEvent): void {
         this.selectedTab = tabChangeEvent.tab.textLabel
     } 
+
+    backToCustomersScreen(): void {
+        this.isLoading = true;
+        this._router.navigate(['/apps/ecommerce/customers']);
+    }
 }
