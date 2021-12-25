@@ -93,6 +93,7 @@ export const appRoutes: Route[] = [
                 {path: 'notes', loadChildren: () => import('app/modules/admin/apps/notes/notes.module').then(m => m.NotesModule)},
                 {path: 'tasks', loadChildren: () => import('app/modules/admin/apps/tasks/tasks.module').then(m => m.TasksModule)},
                 {path: 'customers', loadChildren: () => import('app/modules/admin/apps/ecommerce/ecommerce.module').then(m => m.ECommerceModule)},
+                {path: 'orders', loadChildren: () => import('app/modules/admin/apps/orders/orders.module').then(m => m.OrdersModule)}
             ]},
 
             // Pages

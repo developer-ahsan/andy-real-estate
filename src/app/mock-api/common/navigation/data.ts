@@ -210,6 +210,13 @@ export const futuristicNavigation: FuseNavigationItem[] = [
                 link : '/apps/contacts'
             },
             {
+                id    : 'apps.orders',
+                title : 'Orders',
+                icon  : 'heroicons_outline:document-report',
+                type  : 'basic',
+                link  : '/apps/orders',
+            },
+            {
                 id      : 'apps.ecommerce',
                 title   : 'ECommerce',
                 type    : 'collapsable',
