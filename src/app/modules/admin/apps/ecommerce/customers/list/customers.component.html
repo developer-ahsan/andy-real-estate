@@ -42,7 +42,7 @@
         <!-- Products list -->
         <div class="flex flex-col flex-auto sm:mb-18 overflow-hidden">
 
-            <ng-container *ngIf="customersCount > 0; else noProducts">
+            <ng-container *ngIf="customersCount > 0; else noCustomers">
 
                 <!-- Table wrapper -->
                 <div
@@ -388,7 +388,7 @@
 
             </ng-container>
 
-            <ng-template #noProducts>
+            <ng-template #noCustomers>
                 <div class="p-8 sm:p-16 border-t text-4xl font-semibold tracking-tight text-center">There are no customers!</div>
             </ng-template>
 

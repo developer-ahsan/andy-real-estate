@@ -47,6 +47,11 @@
   font-size: 12px !important;
 }
 
+.icon-style {
+  width: 0px;
+  height: 0px;
+}
+
 .font-medium {
   font-size: 13px !important;
 }
@@ -76,4 +81,23 @@
 
 .mat-progress-bar {
   position: fixed !important;
+}
+
+.tag {
+  font-weight: normal;
+  color: white;
+  background-color: #475569;
+  text-align: center;
+  width: 20%;
+  border-radius: 18px;
+  line-height: 2;
+  text-transform: capitalize;
+  font-size: 12.5px;
+  margin-left: 10px;
+}
+
+.not-found-color {
+  color: #8692a4;
+  justify-content: center;
+  display: grid;
 }

@@ -450,4 +450,81 @@ export class CustomersService
             ))
         );
     }*/
+
+    /**
+    * Get addresses of customers
+    */
+    getCustomerAddresses(id: string)
+    {
+        return this._httpClient.get(environment.customerList, {
+            params: {
+                address: true,
+                user_id: id
+            }
+        })
+    }
+
+    /**
+    * Get stores of customers
+    */
+     getCustomerStores(id: string)
+     {
+         return this._httpClient.get(environment.customerList, {
+             params: {
+                store_usage: true,
+                user_id: id
+             }
+         })
+     }
+
+     /**
+    * Get register of customers
+    */
+      getCustomerRegisterInfo(id: string)
+      {
+          return this._httpClient.get(environment.customerList, {
+              params: {
+                 metrics: true,
+                 user_id: id
+              }
+          })
+      }
+
+    /**
+    * Get comments of customers
+    */
+     getCustomerComments(id: string)
+     {
+         return this._httpClient.get(environment.customerList, {
+             params: {
+                user_comment: true,
+                 user_id: id
+             }
+         })
+     }
+
+     /**
+    * get comments of credit-terms
+    */
+    getCreditTerms(id: string, )
+    {
+        return this._httpClient.get(environment.customerList, {
+            params: {
+                credit_term: true,
+                user_id: id
+            }
+        })
+    }
+
+     /**
+    * UPDATE comments of credit-terms
+    */
+    updateCreditTerm(id: string, )
+    {
+        console.log(id)
+        // return this._httpClient.put(environment.customerList, {
+        //     user_id: id,
+        //     credit_term: 
+        // })
+    }
 }

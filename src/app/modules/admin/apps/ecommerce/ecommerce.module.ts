@@ -35,6 +35,16 @@ import { UserCommentsComponent } from './customers/tabs/user-comments/user-comme
 import { UserLocationsComponent } from './customers/tabs/user-locations/user-locations.component';
 import { ApprovalContactsComponent } from './customers/tabs/approval-contacts/approval-contacts.component';
 import { RemindersComponent } from './customers/tabs/reminders/reminders.component';
+import { OrdersHistoryComponent } from './customers/tabs/orders-history/orders-history.component';
+import { FulfillmentOrdersComponent } from './customers/tabs/fulfillment-orders/fulfillment-orders.component';
+import { SendRegisterEmailsComponent } from './customers/tabs/send-register-emails/send-register-emails.component';
+import { StoreUsageComponent } from './customers/tabs/store-usage/store-usage.component';
+import { CashbackComponent } from './customers/tabs/cashback/cashback.component';
+import { LogoBankComponent } from './customers/tabs/logo-bank/logo-bank.component';
+import { GroupOrdersComponent } from './customers/tabs/group-orders/group-orders.component';
+import { QuotesComponent } from './customers/tabs/quotes/quotes.component';
+import { SavedCartsComponent } from './customers/tabs/saved-carts/saved-carts.component';
+import { NgxSkeletonLoaderModule } from 'ngx-skeleton-loader';
 
 @NgModule({
     declarations: [
@@ -50,7 +60,16 @@ import { RemindersComponent } from './customers/tabs/reminders/reminders.compone
         UserCommentsComponent,
         UserLocationsComponent,
         ApprovalContactsComponent,
-        RemindersComponent
+        RemindersComponent,
+        OrdersHistoryComponent,
+        FulfillmentOrdersComponent,
+        SendRegisterEmailsComponent,
+        StoreUsageComponent,
+        CashbackComponent,
+        LogoBankComponent,
+        GroupOrdersComponent,
+        QuotesComponent,
+        SavedCartsComponent
     ],
     imports     : [
         RouterModule.forChild(ecommerceRoutes),
@@ -74,7 +93,8 @@ import { RemindersComponent } from './customers/tabs/reminders/reminders.compone
         MatGridListModule,
         MatDividerModule,
         MatRadioModule,
-        MatListModule
+        MatListModule,
+        NgxSkeletonLoaderModule
     ]
 })
 export class ECommerceModule

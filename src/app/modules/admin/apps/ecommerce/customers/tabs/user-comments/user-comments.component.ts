@@ -1,4 +1,6 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input, OnInit, Output, EventEmitter } from '@angular/core';
+import { CustomersService } from 'app/modules/admin/apps/ecommerce/customers/customers.service';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-user-comments',
@@ -6,6 +8,12 @@ import { Component, Input, OnInit } from '@angular/core';
 })
 export class UserCommentsComponent implements OnInit {
   @Input() currentSelectedCustomer: any;
+  @Input() selectedTab: any;
+  @Input() isLoading: boolean;
+  @Output() isLoadingChange = new EventEmitter<boolean>();
+  private comments: Subscription;
+  adminComments: [];
+
   emails: string[] = [
     'alecia.moneypenny@consolidus.com',
     'billing@consolidus.com',
@@ -29,9 +37,21 @@ export class UserCommentsComponent implements OnInit {
     'troy.louis@consolidus.com'
   ];
 
-  constructor() { }
+  constructor(
+    private _customerService: CustomersService
+  ) { }
 
   ngOnInit(): void {
+    const { pk_userID } = this.currentSelectedCustomer;
+    this.comments = this._customerService.getCustomerComments(pk_userID)
+      .subscribe((addresses) => {
+          this.adminComments = addresses["data"][0].adminComments;
+          this.isLoadingChange.emit(false);
+      });
   }
-
+  
+  ngOnDestroy(): void {
+    this.comments.unsubscribe();
+    this.isLoadingChange.emit(false);
+  }
 }

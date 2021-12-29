@@ -1,39 +1,48 @@
 <div class="inset-0 min-w-50 overflow-hidden bg-card dark:bg-transparent">
-    <div class="border p-3 mt-3 h-40 overflow-x-auto">
-        <b>User Comments:</b>
-        <mat-divider class="mb-2"></mat-divider>
-        <div class="min-w-40 max-w-50 w-50 py-2 px-2" style="display: inline;">
-            <div class="mobile-responsive-boxes">
-                NO COMMENTS HAVE BEEN ENTERED FOR THIS USER.
+    <ngx-skeleton-loader
+        count="5"
+        appearance="line"
+        animation="pulse"
+        *ngIf="isLoading"
+    >
+    </ngx-skeleton-loader>
+    <div *ngIf="!isLoading">
+        <div class="border p-3 mt-3 h-40 overflow-x-auto">
+            <b>User Comments:</b>
+            <mat-divider class="mb-2"></mat-divider>
+            <div class="min-w-40 max-w-50 w-50 py-2 px-2" style="display: inline;">
+                <div class="mobile-responsive-boxes">
+                    {{adminComments ? adminComments : 'NO COMMENTS HAVE BEEN ENTERED FOR THIS USER.'}}
+                </div>
             </div>
         </div>
-    </div>
-    <div class="border p-3 mt-3 h-200 overflow-x-auto">
-        <b>New Comment:</b>
-        <p>Comments cannot be updated or deleted. Jeff will be the author.</p>
-        <p>All comments, including the new one will be emailed to the checked addresses, if any.</p>
-        <mat-divider class="mb-2"></mat-divider>
-        <div class="min-w-40 max-w-50 w-full py-2 px-2" style="display: inline;">
-            <div class="w-full">
-                <form>
-                    <span class="flex-to-block">
-                        <mat-form-field class="half-to-full-with-boxes px-2">
-                            <textarea matInput rows="10" placeholder="Add Comments here"></textarea>
-                          </mat-form-field>
-                          <mat-selection-list class="half-to-full-with-boxes px-2">
-                              <mat-list-option *ngFor="let email of emails">
-                                <p class="font-small">{{email}}</p>
-                              </mat-list-option>
-                          </mat-selection-list>
-                    </span>
-                    <mat-divider class="mb-2"></mat-divider>
-                    <button
-                        mat-flat-button
-                        [color]="'primary'"
-                    >
-                        Add
-                    </button>
-                </form>
+        <div class="border p-3 mt-3 h-300 overflow-x-auto">
+            <b>New Comment:</b>
+            <p>Comments cannot be updated or deleted. Jeff will be the author.</p>
+            <p>All comments, including the new one will be emailed to the checked addresses, if any.</p>
+            <mat-divider class="mb-2"></mat-divider>
+            <div class="min-w-40 max-w-50 w-full py-2 px-2" style="display: inline;">
+                <div class="w-full">
+                    <form>
+                        <span class="flex-to-block">
+                            <mat-form-field class="half-to-full-with-boxes px-2">
+                                <textarea matInput rows="10" placeholder="Add Comments here"></textarea>
+                              </mat-form-field>
+                              <mat-selection-list class="half-to-full-with-boxes px-2">
+                                  <mat-list-option *ngFor="let email of emails">
+                                    <p class="font-small">{{email}}</p>
+                                  </mat-list-option>
+                              </mat-selection-list>
+                        </span>
+                        <mat-divider class="mb-2"></mat-divider>
+                        <button
+                            mat-flat-button
+                            [color]="'primary'"
+                        >
+                            Add
+                        </button>
+                    </form>
+                </div>
             </div>
         </div>
     </div>

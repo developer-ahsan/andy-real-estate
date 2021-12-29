@@ -81,24 +81,36 @@ export class CustomersListComponent implements OnInit, AfterViewInit, OnDestroy
         });
 
         // Get the brands
-        this._customerService.brands$
-            .pipe(takeUntil(this._unsubscribeAll))
-            .subscribe((brands: CustomersBrand[]) => {
+        // this._customerService.brands$
+        //     .pipe(takeUntil(this._unsubscribeAll))
+        //     .subscribe((brands: CustomersBrand[]) => {
 
-                // Update the brands
-                this.brands = brands;
+        //         // Update the brands
+        //         this.brands = brands;
 
-                // Mark for check
-                this._changeDetectorRef.markForCheck();
-            });
+        //         // Mark for check
+        //         this._changeDetectorRef.markForCheck();
+        //     });
 
         // Get the categories
-        this._customerService.categories$
-            .pipe(takeUntil(this._unsubscribeAll))
-            .subscribe((categories: CustomersCategory[]) => {
+        // this._customerService.categories$
+        //     .pipe(takeUntil(this._unsubscribeAll))
+        //     .subscribe((categories: CustomersCategory[]) => {
 
-                // Update the categories
-                this.categories = categories;
+        //         // Update the categories
+        //         this.categories = categories;
+
+        //         // Mark for check
+        //         this._changeDetectorRef.markForCheck();
+        //     });
+
+        // Get the customers
+        this.customers$ = this._customerService.customers$;
+        this._customerService.customers$
+            .pipe(takeUntil(this._unsubscribeAll))
+            .subscribe((customers: CustomersProduct[]) => {
+                // Update the counts
+                this.customersCount = customers.length;
 
                 // Mark for check
                 this._changeDetectorRef.markForCheck();
@@ -108,14 +120,14 @@ export class CustomersListComponent implements OnInit, AfterViewInit, OnDestroy
         this._customerService.pagination$
             .pipe(takeUntil(this._unsubscribeAll))
             .subscribe((pagination: CustomersPagination) => {
-
+                
                 // Update the pagination
                 this.pagination = {
                     endIndex: 2,
                     lastPage: 1,
-                    length: 3,
+                    length: this.customersCount,
                     page: 0,
-                    size: 3,
+                    size: 10,
                     startIndex: 0
                 };
 
@@ -123,43 +135,30 @@ export class CustomersListComponent implements OnInit, AfterViewInit, OnDestroy
                 this._changeDetectorRef.markForCheck();
             });
 
-        // Get the customers
-        this.customers$ = this._customerService.customers$;
-        this._customerService.customers$
-            .pipe(takeUntil(this._unsubscribeAll))
-            .subscribe((customers: CustomersProduct[]) => {
-
-                // Update the counts
-                this.customersCount = customers.length;
-
-                // Mark for check
-                this._changeDetectorRef.markForCheck();
-            });
-
         // Get the tags
-        this._customerService.tags$
-            .pipe(takeUntil(this._unsubscribeAll))
-            .subscribe((tags: CustomersTag[]) => {
+        // this._customerService.tags$
+        //     .pipe(takeUntil(this._unsubscribeAll))
+        //     .subscribe((tags: CustomersTag[]) => {
 
-                // Update the tags
-                this.tags = tags;
-                this.filteredTags = tags;
+        //         // Update the tags
+        //         this.tags = tags;
+        //         this.filteredTags = tags;
 
-                // Mark for check
-                this._changeDetectorRef.markForCheck();
-            });
+        //         // Mark for check
+        //         this._changeDetectorRef.markForCheck();
+        //     });
 
         // Get the vendors
-        this._customerService.vendors$
-            .pipe(takeUntil(this._unsubscribeAll))
-            .subscribe((vendors: CustomersVendor[]) => {
+        // this._customerService.vendors$
+        //     .pipe(takeUntil(this._unsubscribeAll))
+        //     .subscribe((vendors: CustomersVendor[]) => {
 
-                // Update the vendors
-                this.vendors = vendors;
+        //         // Update the vendors
+        //         this.vendors = vendors;
 
-                // Mark for check
-                this._changeDetectorRef.markForCheck();
-            });
+        //         // Mark for check
+        //         this._changeDetectorRef.markForCheck();
+        //     });
 
         // Subscribe to search input field value changes
         this.searchInputControl.valueChanges

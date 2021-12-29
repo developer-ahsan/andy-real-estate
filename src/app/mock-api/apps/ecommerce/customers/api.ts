@@ -159,11 +159,11 @@ export class CustomersMockApi
             .onPost('api/apps/ecommerce/customers/customer')
             .reply(() => {
 
-                // Generate a new product
+                // Generate a new customer
                 const newCustomer = {
-                    id         : Math.floor(Math.random()*(999-100+1)+100),
+                    pk_userID  : Math.floor(Math.random()*(999-100+1)+100),
                     category   : '',
-                    name       : 'A New Product',
+                    companyName: 'Consolidus',
                     description: '',
                     tags       : [],
                     sku        : '',

@@ -42,6 +42,7 @@ export class CustomersTabComponent implements OnInit, AfterViewInit, OnDestroy
     selectedTab = "User Info";
     breakpoint: number;
     not_available = "N/A";
+    customerAddress: [];
     private _unsubscribeAll: Subject<any> = new Subject<any>();
 
     /**
@@ -545,7 +546,14 @@ export class CustomersTabComponent implements OnInit, AfterViewInit, OnDestroy
     }
 
     tabChanged(tabChangeEvent): void {
-        this.selectedTab = tabChangeEvent.tab.textLabel
+        this.selectedTab = tabChangeEvent.tab.textLabel;
+        if(
+            tabChangeEvent.tab.textLabel === "User Addresses" ||
+            tabChangeEvent.tab.textLabel === "User Comments" ||
+            tabChangeEvent.tab.textLabel === "User Metrics"
+        ) {
+            this.isLoading = true;
+        }
     } 
 
     backToCustomersScreen(): void {
