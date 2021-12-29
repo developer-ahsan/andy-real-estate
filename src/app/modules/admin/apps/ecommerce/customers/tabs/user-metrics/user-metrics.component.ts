@@ -24,7 +24,6 @@ export class UserMetricsComponent implements OnInit {
     this._customerService.getCustomerStores(pk_userID)
       .subscribe((stores) => {
           this.storeNames = stores["data"];
-          this.isLoadingChange.emit(false);
       });
     this.stores = this._customerService.getCustomerRegisterInfo(pk_userID)
       .subscribe((register) => {
