@@ -1,6 +1,6 @@
 <div class="inset-0 min-w-50 overflow-hidden bg-card dark:bg-transparent">
     <ngx-skeleton-loader
-        count="5"
+        count="7"
         appearance="line"
         animation="pulse"
         *ngIf="isLoading"
@@ -9,11 +9,13 @@
     
     <div *ngIf="!isLoading">
         <div class="border p-3 mt-3 h-auto overflow-x-auto">
-            <b>Stores Visited:</b>
+            <b class="text-2xl font-semibold">Stores Visited:</b>
             <mat-divider class="mb-2"></mat-divider>
             <div class="min-w-40 max-w-50 w-50 py-2 px-2" style="display: inline;">
                 <div class="mobile-responsive-boxes">
-                    <div style="float: left; width: 50%; font-weight: bold;">Stores Logged in</div>
+                    <div style="float: left; width: 50%; font-weight: bold;">
+                        User Credit Terms:
+                    </div>
                     <div 
                         style="float: right; width: 50%;"
                         *ngFor="let store of storeNames"
@@ -24,7 +26,7 @@
             </div>
         </div>
         <div class="border p-3 mt-3 h-auto">
-            <b>Registration Information:</b>
+            <b class="text-2xl font-semibold">Registration Information:</b>
             <mat-divider class="mb-2"></mat-divider>
             <div class="min-w-40 max-w-50 w-50 py-2 px-2 overflow-x-auto" style="display: inline;">
                 <div class="mobile-responsive-boxes" *ngFor="let register of registersInfo">

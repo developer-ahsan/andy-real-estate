@@ -1,4 +1,5 @@
 import { Component, Input, OnInit, Output, EventEmitter } from '@angular/core';
+import { FormBuilder, FormGroup } from '@angular/forms';
 import { CustomersService } from 'app/modules/admin/apps/ecommerce/customers/customers.service';
 import { Subscription } from 'rxjs';
 
@@ -13,32 +14,13 @@ export class UserCommentsComponent implements OnInit {
   @Output() isLoadingChange = new EventEmitter<boolean>();
   private comments: Subscription;
   adminComments: [];
-
-  emails: string[] = [
-    'alecia.moneypenny@consolidus.com',
-    'billing@consolidus.com',
-    'adam.b@consolidus.com',
-    'amanda.w@consolidus.com',
-    'brooke@consolidus.com',
-    'consolidusbill@gmail.com',
-    'content@consolidus.com',
-    'denise.cline@consolidus.com',
-    'evan.a@consolidus.com',
-    'jeffrey.jones@consolidus.com',
-    'krysti.horvat@consolidus.com',
-    'leilani.bever@consolidus.com',
-    'lindsey.myers@consolidus.com',
-    'matt.h@consolidus.com',
-    'nicole.a@consolidus.com',
-    'nolan.h@consolidus.com',
-    'rhianne.smith@consolidus.com',
-    'sara.m@consolidus.com',
-    'tony.cucolo@consolidus.com',
-    'troy.louis@consolidus.com'
-  ];
+  commentators: [];
+  commentAddingForm: FormGroup;
+  commentator_emails: string[];
 
   constructor(
-    private _customerService: CustomersService
+    private _customerService: CustomersService,
+    private _formBuilder: FormBuilder,
   ) { }
 
   ngOnInit(): void {
@@ -46,12 +28,31 @@ export class UserCommentsComponent implements OnInit {
     this.comments = this._customerService.getCustomerComments(pk_userID)
       .subscribe((addresses) => {
           this.adminComments = addresses["data"][0].adminComments;
-          this.isLoadingChange.emit(false);
+          this._customerService.getCommentators()
+            .subscribe((commentators) => {
+                this.commentators = commentators["data"];
+                this.isLoadingChange.emit(false);
+            });
       });
+    this.commentAddingForm = this._formBuilder.group({
+        comment: ['']
+    });
   }
   
   ngOnDestroy(): void {
     this.comments.unsubscribe();
     this.isLoadingChange.emit(false);
+  }
+
+  // Public functions
+  addComment() {
+    const { comment } = this.commentAddingForm.controls;
+    console.log("emailsArray ",this.commentator_emails)
+    console.log("comment ", comment.value)
+    return;
+  }
+
+  onAreaListControlChanged(list){
+    this.commentator_emails = list.selectedOptions.selected.map(item => item.value)
   }
 }

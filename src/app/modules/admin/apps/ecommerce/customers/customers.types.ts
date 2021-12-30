@@ -61,3 +61,20 @@ export interface CustomersVendor
     name: string;
     slug: string;
 }
+
+// Updated interfaces for customers
+export interface CreditTerm {
+    RowNumber?: string;
+    TotalRequests?: number;
+    UserTermSelected: boolean;
+    blnDefault: boolean;
+    creditTermName: string;
+    creditTermDesc: string;
+    pk_creditTermID: number;
+  }
+  
+  export interface UserCreditTerms {
+    user_id: number;
+    credit_term_id: number;
+    credit_term: boolean;
+  }

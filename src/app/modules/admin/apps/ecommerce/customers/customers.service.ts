@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { BehaviorSubject, Observable, of, throwError } from 'rxjs';
 import { filter, map, switchMap, take, tap } from 'rxjs/operators';
-import { CustomersBrand, CustomersCategory, CustomersPagination, CustomersProduct, CustomersTag, CustomersVendor } from 'app/modules/admin/apps/ecommerce/customers/customers.types';
+import { CustomersBrand, CustomersCategory, CustomersPagination, CustomersProduct, CustomersTag, CustomersVendor, UserCreditTerms } from 'app/modules/admin/apps/ecommerce/customers/customers.types';
 import { environment } from 'environments/environment';
 
 @Injectable({
@@ -504,13 +504,25 @@ export class CustomersService
      }
 
      /**
+    * Get Commentators of customers
+    */
+      getCommentators()
+      {
+          return this._httpClient.get(environment.customerList, {
+              params: {
+                commentor: true
+              }
+          })
+      }
+
+     /**
     * get comments of credit-terms
     */
     getCreditTerms(id: string, )
     {
         return this._httpClient.get(environment.customerList, {
             params: {
-                credit_term: true,
+                credit_terms: true,
                 user_id: id
             }
         })
@@ -519,12 +531,10 @@ export class CustomersService
      /**
     * UPDATE comments of credit-terms
     */
-    updateCreditTerm(id: string, )
+    updateCreditTerm(payload: UserCreditTerms)
     {
-        console.log(id)
-        // return this._httpClient.put(environment.customerList, {
-        //     user_id: id,
-        //     credit_term: 
-        // })
+        return this._httpClient.put(
+            'https://consolidus-staging.azurewebsites.net/api/users?credit_term=true', payload)
+            .subscribe(data => console.log("data", data));
     }
 }

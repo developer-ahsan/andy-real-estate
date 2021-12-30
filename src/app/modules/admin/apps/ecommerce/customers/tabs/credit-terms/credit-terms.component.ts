@@ -1,5 +1,7 @@
 import { Component, Input, OnInit, Output, EventEmitter } from '@angular/core';
 import { CustomersService } from 'app/modules/admin/apps/ecommerce/customers/customers.service';
+import { Subscription } from 'rxjs';
+import { CreditTerm, UserCreditTerms } from 'app/modules/admin/apps/ecommerce/customers/customers.types';
 
 @Component({
   selector: 'app-credit-terms',
@@ -11,27 +13,41 @@ export class CreditTermsComponent implements OnInit {
   @Input() isLoading: boolean;
   @Input() updateLoader: boolean;
   @Output() isLoadingChange = new EventEmitter<boolean>();
-
+  private fetchCreditTerms: Subscription;
   credit_terms: string[] = ['Expired', 'Upon application approval', 'Net 10 days after delivery date', 'Net 30'];
-  selected_credit_term: string = 'Expired';
-
+  credit_term_options = [];
+  credit_term_options_length: number;
+  selected_credit_term: CreditTerm | null = null;
   constructor(
     private _customerService: CustomersService
   ) { }
 
   ngOnInit(): void {
     this.isLoadingChange.emit(false);
-   
+    const { pk_userID } = this.currentSelectedCustomer;
+    this.fetchCreditTerms = this._customerService.getCreditTerms(pk_userID)
+      .subscribe((addresses) => {
+          this.credit_term_options = addresses["data"];
+          this.credit_term_options_length = this.credit_term_options.length;
+          this.selected_credit_term = this.credit_term_options.filter(function(credit_term){return credit_term.UserTermSelected == true})[0];
+          this.isLoadingChange.emit(false);
+      });
   }
 
-  updateCreditTerm(selected_credit_term: string): void {
-    console.log("selected_credit_term", selected_credit_term);
-    var index = this.credit_terms.findIndex(credit => credit === selected_credit_term);
-    console.log("index", index)
-    return;
-    const { pk_userID } = this.currentSelectedCustomer;
+  ngOnDestroy(): void {
+    this.fetchCreditTerms.unsubscribe();
+  }
+
+  updateCreditTerm(): void {
     this.updateLoader = true;
-    console.log(this._customerService.updateCreditTerm(pk_userID));
+    const { pk_userID } = this.currentSelectedCustomer;
+    const { pk_creditTermID } = this.selected_credit_term;
+    const payload : UserCreditTerms = {
+      user_id : pk_userID,
+      credit_term_id: pk_creditTermID,
+      credit_term: true
+    }
+    this._customerService.updateCreditTerm(payload);
     this.updateLoader = false;
   }
 }

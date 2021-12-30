@@ -13,6 +13,7 @@ export class UserMetricsComponent implements OnInit {
   @Output() isLoadingChange = new EventEmitter<boolean>();
   private stores: Subscription;
   storeNames: [];
+  storesCount: number;
   registersInfo: [];
 
   constructor(
@@ -21,14 +22,15 @@ export class UserMetricsComponent implements OnInit {
 
   ngOnInit(): void {
     const { pk_userID } = this.currentSelectedCustomer;
-    this._customerService.getCustomerStores(pk_userID)
+    this.stores = this._customerService.getCustomerStores(pk_userID)
       .subscribe((stores) => {
           this.storeNames = stores["data"];
-      });
-    this.stores = this._customerService.getCustomerRegisterInfo(pk_userID)
-      .subscribe((register) => {
-          this.registersInfo = register["data"];
-          this.isLoadingChange.emit(false);
+          this.storesCount = this.storeNames.length;
+            this._customerService.getCustomerRegisterInfo(pk_userID)
+            .subscribe((register) => {
+                this.registersInfo = register["data"];
+                this.isLoadingChange.emit(false);
+            });
       });
   }
 
