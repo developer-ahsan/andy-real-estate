@@ -78,3 +78,10 @@ export interface CreditTerm {
     credit_term_id: number;
     credit_term: boolean;
   }
+
+  export interface AddUserComment {
+    admin_comment: string,
+    user_id: number;
+    emails: string[];
+    user_comment: boolean;
+  }

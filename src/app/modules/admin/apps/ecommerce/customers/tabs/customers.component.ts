@@ -550,7 +550,7 @@ export class CustomersTabComponent implements OnInit, AfterViewInit, OnDestroy
         if(
             tabChangeEvent.tab.textLabel === "User Addresses" ||
             tabChangeEvent.tab.textLabel === "User Comments" ||
-            tabChangeEvent.tab.textLabel === "User Metrics" ||
+            tabChangeEvent.tab.textLabel === "Metrics" ||
             tabChangeEvent.tab.textLabel === "Credit Terms"
         ) {
             this.isLoading = true;

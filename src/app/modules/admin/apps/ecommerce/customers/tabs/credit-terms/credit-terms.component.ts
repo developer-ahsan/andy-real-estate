@@ -1,4 +1,4 @@
-import { Component, Input, OnInit, Output, EventEmitter } from '@angular/core';
+import { Component, Input, OnInit, Output, EventEmitter, ChangeDetectorRef } from '@angular/core';
 import { CustomersService } from 'app/modules/admin/apps/ecommerce/customers/customers.service';
 import { Subscription } from 'rxjs';
 import { CreditTerm, UserCreditTerms } from 'app/modules/admin/apps/ecommerce/customers/customers.types';
@@ -18,8 +18,11 @@ export class CreditTermsComponent implements OnInit {
   credit_term_options = [];
   credit_term_options_length: number;
   selected_credit_term: CreditTerm | null = null;
+  flashMessage: 'success' | 'error' | null = null;
+
   constructor(
-    private _customerService: CustomersService
+    private _customerService: CustomersService,
+    private _changeDetectorRef: ChangeDetectorRef
   ) { }
 
   ngOnInit(): void {
@@ -47,7 +50,36 @@ export class CreditTermsComponent implements OnInit {
       credit_term_id: pk_creditTermID,
       credit_term: true
     }
-    this._customerService.updateCreditTerm(payload);
-    this.updateLoader = false;
+    this.updateLoader = true;
+    this._customerService.updateCreditTerm(payload)
+      .subscribe((response: any) => {
+        this.showFlashMessage(
+          response["success"] === true ? 
+            'success' :
+            'error'
+        );
+        this.updateLoader = false;
+      });
   }
+
+  /**
+     * Show flash message
+     */
+   showFlashMessage(type: 'success' | 'error'): void
+   {
+       // Show the message
+       this.flashMessage = type;
+
+       // Mark for check
+       this._changeDetectorRef.markForCheck();
+
+       // Hide it after 3 seconds
+       setTimeout(() => {
+
+           this.flashMessage = null;
+
+           // Mark for check
+           this._changeDetectorRef.markForCheck();
+       }, 3000);
+   }
 }

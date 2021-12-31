@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { BehaviorSubject, Observable, of, throwError } from 'rxjs';
 import { filter, map, switchMap, take, tap } from 'rxjs/operators';
-import { CustomersBrand, CustomersCategory, CustomersPagination, CustomersProduct, CustomersTag, CustomersVendor, UserCreditTerms } from 'app/modules/admin/apps/ecommerce/customers/customers.types';
+import { CustomersBrand, CustomersCategory, CustomersPagination, CustomersProduct, CustomersTag, CustomersVendor, UserCreditTerms, AddUserComment } from 'app/modules/admin/apps/ecommerce/customers/customers.types';
 import { environment } from 'environments/environment';
 
 @Injectable({
@@ -514,9 +514,18 @@ export class CustomersService
               }
           })
       }
+    
+     /**
+    * UPDATE comments of credit-terms
+    */
+    updateUserComments(payload: AddUserComment)
+    {
+        return this._httpClient.put(
+            `${environment.customerList}?commentor=true`, payload);
+    }
 
      /**
-    * get comments of credit-terms
+    * get credit-terms
     */
     getCreditTerms(id: string, )
     {
@@ -529,12 +538,11 @@ export class CustomersService
     }
 
      /**
-    * UPDATE comments of credit-terms
+    * UPDATE credit-terms
     */
     updateCreditTerm(payload: UserCreditTerms)
     {
         return this._httpClient.put(
-            'https://consolidus-staging.azurewebsites.net/api/users?credit_term=true', payload)
-            .subscribe(data => console.log("data", data));
+            `${environment.customerList}?credit_term=true`, payload);
     }
 }
