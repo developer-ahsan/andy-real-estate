@@ -20,6 +20,7 @@ import { MatGridListModule } from '@angular/material/grid-list';
 import { MatDividerModule } from '@angular/material/divider';
 import { MatRadioModule } from '@angular/material/radio';
 import { MatListModule } from '@angular/material/list';
+import { MatStepperModule } from '@angular/material/stepper';
 import { SharedModule } from 'app/shared/shared.module';
 import { InventoryComponent } from 'app/modules/admin/apps/ecommerce/inventory/inventory.component';
 import { InventoryListComponent } from 'app/modules/admin/apps/ecommerce/inventory/list/inventory.component';
@@ -94,7 +95,8 @@ import { NgxSkeletonLoaderModule } from 'ngx-skeleton-loader';
         MatDividerModule,
         MatRadioModule,
         MatListModule,
-        NgxSkeletonLoaderModule
+        NgxSkeletonLoaderModule,
+        MatStepperModule
     ]
 })
 export class ECommerceModule

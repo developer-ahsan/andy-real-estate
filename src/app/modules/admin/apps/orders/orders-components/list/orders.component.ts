@@ -29,7 +29,7 @@ export class OrdersListComponent implements OnInit, AfterViewInit, OnDestroy
     flashMessage: 'success' | 'error' | null = null;
     isLoading: boolean = false;
     pagination: OrdersPagination;
-    productsCount: number = 0;
+    ordersCount: number = 0;
     productsTableColumns: string[] = ['sku', 'name', 'price', 'stock', 'active', 'details'];
     searchInputControl: FormControl = new FormControl();
     selectedProduct: OrdersProduct | null = null;
@@ -126,7 +126,7 @@ export class OrdersListComponent implements OnInit, AfterViewInit, OnDestroy
             .subscribe((products: OrdersProduct[]) => {
 
                 // Update the counts
-                this.productsCount = products.length;
+                this.ordersCount = products.length;
 
                 // Mark for check
                 this._changeDetectorRef.markForCheck();

@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { BehaviorSubject, Observable, of, throwError } from 'rxjs';
 import { filter, map, switchMap, take, tap } from 'rxjs/operators';
-import { CustomersBrand, CustomersCategory, CustomersPagination, CustomersProduct, CustomersTag, CustomersVendor, UserCreditTerms, AddUserComment } from 'app/modules/admin/apps/ecommerce/customers/customers.types';
+import { CustomersBrand, CustomersCategory, CustomersPagination, CustomersProduct, CustomersTag, CustomersVendor, UserCreditTerms, AddUserComment, AddUserLocation } from 'app/modules/admin/apps/ecommerce/customers/customers.types';
 import { environment } from 'environments/environment';
 
 @Injectable({
@@ -130,6 +130,86 @@ export class CustomersService
                 if(search){
                     data = this.search(search, data);
                 }
+                data.push({
+                    "companyName": "Consolidus",
+                    "dayPhone": "7249356683",
+                    "address1": "1516 West Carmen Avenue",
+                    "address2": "This thing",
+                    "city": "Chicago",
+                    "state": "IL        ",
+                    "zipCode": "60640",
+                    "storeName": "AirForceROTCShop.com",
+                    "storeID": 60,
+                    "firstName": "William",
+                    "lastName": "Harris",
+                    "email": "consolidusbill@gmail.com",
+                    "pk_userID": 1914,
+                    "date": null,
+                    "blnActive": true,
+                    "blnReminders": 0,
+                    "RowNumber": "1",
+                    "TotalRequests": 42
+                  },
+                  {
+                    "companyName": "Consolidus",
+                    "dayPhone": "7249356683",
+                    "address1": "1516 West Carmen Avenue",
+                    "address2": "This thing",
+                    "city": "Chicago",
+                    "state": "IL        ",
+                    "zipCode": "60640",
+                    "storeName": "ArmyROTCShop.com",
+                    "storeID": 64,
+                    "firstName": "William",
+                    "lastName": "Harris",
+                    "email": "consolidusbill@gmail.com",
+                    "pk_userID": 1914,
+                    "date": null,
+                    "blnActive": true,
+                    "blnReminders": 0,
+                    "RowNumber": "2",
+                    "TotalRequests": 42
+                  },
+                  {
+                    "companyName": "Consolidus",
+                    "dayPhone": "7249356683",
+                    "address1": "1516 West Carmen Avenue",
+                    "address2": "This thing",
+                    "city": "Chicago",
+                    "state": "IL        ",
+                    "zipCode": "60640",
+                    "storeName": null,
+                    "storeID": null,
+                    "firstName": "William",
+                    "lastName": "Harris",
+                    "email": "consolidusbill@gmail.com",
+                    "pk_userID": 1914,
+                    "date": null,
+                    "blnActive": true,
+                    "blnReminders": 0,
+                    "RowNumber": "3",
+                    "TotalRequests": 42
+                  },
+                  {
+                    "companyName": "Consolidus",
+                    "dayPhone": "7249356683",
+                    "address1": "1516 West Carmen Avenue",
+                    "address2": "This thing",
+                    "city": "Chicago",
+                    "state": "IL        ",
+                    "zipCode": "60640",
+                    "storeName": "MySummaShop.com",
+                    "storeID": 74,
+                    "firstName": "William",
+                    "lastName": "Harris",
+                    "email": "consolidusbill@gmail.com",
+                    "pk_userID": 1914,
+                    "date": null,
+                    "blnActive": true,
+                    "blnReminders": 0,
+                    "RowNumber": "4",
+                    "TotalRequests": 42
+                  })
                 this._customers.next(data);
             })
         );
@@ -545,4 +625,79 @@ export class CustomersService
         return this._httpClient.put(
             `${environment.customerList}?credit_term=true`, payload);
     }
+
+    /**
+    * get credit-applications
+    */
+     getCreditApplications(id: string, )
+     {
+         return this._httpClient.get(environment.customerList, {
+             params: {
+                   credit_application: true,
+                   user_id: id
+             }
+         })
+     }
+
+     /**
+    * get locations
+    */
+      getLocations(id: string, )
+      {
+          return this._httpClient.get(environment.customerList, {
+              params: {
+                    location: true,
+                    user_id: id
+              }
+          })
+      }
+
+    /**
+    * get available locations
+    */
+     getAvailableLocations(id: string)
+     {
+         return this._httpClient.get(environment.customerList, {
+             params: {
+                    available_location: true,
+                   user_id: id
+             }
+         })
+     }
+
+     /**
+    * get locations attributes
+    */
+      getLocationAttribute(store_id: string)
+      {
+          return this._httpClient.get(environment.customerList, {
+              params: {
+                    location_attribute: true,
+                    store_id: store_id
+              }
+          })
+      }
+
+    /**
+    * get locations for storeId
+    */
+    getStoresLocation(attr_id: string)
+    {
+        return this._httpClient.get(environment.customerList, {
+            params: {
+                    location: true,
+                    attribute_id: attr_id
+            }
+        })
+    }
+
+    /**
+    * add locations for user
+    */
+     addUserLocation(payload: AddUserLocation)
+     {
+         return this._httpClient.post(
+            `${environment.customerList}?user_location=true`, payload
+         );
+     }
 }

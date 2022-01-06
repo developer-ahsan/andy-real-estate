@@ -547,14 +547,7 @@ export class CustomersTabComponent implements OnInit, AfterViewInit, OnDestroy
 
     tabChanged(tabChangeEvent): void {
         this.selectedTab = tabChangeEvent.tab.textLabel;
-        if(
-            tabChangeEvent.tab.textLabel === "User Addresses" ||
-            tabChangeEvent.tab.textLabel === "User Comments" ||
-            tabChangeEvent.tab.textLabel === "Metrics" ||
-            tabChangeEvent.tab.textLabel === "Credit Terms"
-        ) {
-            this.isLoading = true;
-        }
+        this.isLoading = true;
     } 
 
     backToCustomersScreen(): void {

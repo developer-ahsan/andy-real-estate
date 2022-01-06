@@ -1,11 +1,366 @@
-<div class="inset-0 min-w-50 overflow-hidden bg-card dark:bg-transparent">
-    <div class="border p-3 mt-3 h-40 overflow-x-auto">
-        <b>Select a credit application:</b>
-        <mat-divider class="mb-2"></mat-divider>
-        <div class="min-w-40 max-w-50 w-50 py-2 px-2" style="display: inline;">
-            <div class="mobile-responsive-boxes">
-                This user does not have any credit applications.
-            </div>
+<div class="inset-0 bg-card dark:bg-transparent mt-3">
+    <ngx-skeleton-loader
+        count="8"
+        appearance="line"
+        animation="pulse"
+        *ngIf="isLoading"
+    >
+    </ngx-skeleton-loader>
+    <div *ngIf="!isLoading && !isUpdateCreditApplication" class="h-120">
+        <div class="border p-3 mt-3 h-auto overflow-x-auto">
+            <b class="text-2xl" style="color: #64748b">Select a credit application:</b>
+            <mat-divider class="mb-2"></mat-divider>
+            <ng-container *ngIf="credit_applications_length > 0; else noItems">
+                <table
+                    mat-table 
+                    [dataSource]="credit_applications" 
+                    class="w-full min-w-auto table-hover">
+                    <!-- Store Column -->
+                    <ng-container matColumnDef="storeName">
+                        <th mat-header-cell *matHeaderCellDef> Store </th>
+                        <td mat-cell *matCellDef="let element" style="cursor: pointer;"> {{element.storeName}} </td>
+                    </ng-container>
+                
+                    <!-- Signed By Column -->
+                    <ng-container matColumnDef="signature">
+                        <th mat-header-cell *matHeaderCellDef> Signed By	 </th>
+                        <td mat-cell *matCellDef="let element" style="cursor: pointer;"> {{element.signature}} </td>
+                    </ng-container>
+                
+                    <!-- Last Modified Column -->
+                    <ng-container matColumnDef="dateModified">
+                        <th mat-header-cell *matHeaderCellDef> Last Modified </th>
+                        <td mat-cell *matCellDef="let element" style="cursor: pointer;"> {{element.dateModified}} </td>
+                    </ng-container>
+                
+                    <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+                    <tr
+                        mat-row 
+                        (click)="onRowClick(row)"
+                        *matRowDef="let row; columns: displayedColumns;"></tr>
+                </table>
+                <mat-paginator 
+                    [length]="credit_applications_length"
+                    [pageSize]="pageSize"
+                    [pageSizeOptions]="pageSizeOptions"
+                    (page)="pageEvent = $event"
+                    aria-label="Select page"
+                    class="mt-20"
+                >
+                </mat-paginator>
+            </ng-container>
+            
+            <!-- <mat-form-field appearance="outline">
+                <mat-label>Search Application</mat-label>
+                <input matInput (keyup)="applyFilter($event)" placeholder="Ex. Store Name etc." #input>
+            </mat-form-field> -->
+            
+            <!-- No items template -->
+            <ng-template #noItems>
+                <div 
+                    class="p-8 sm:p-16 text-2xl font-semibold not-found-color">
+                    <img src="assets/gifs/not-found.gif" class="rounded-circle" style="width: 250px;">
+                    No Applications found!
+                </div>
+            </ng-template>
         </div>
+    </div>
+    <div *ngIf="isUpdateCreditApplication">
+        <button
+            class="ml-4"
+            mat-flat-button
+            [color]="'secondary'"
+            (click)="creditApplicationUpdateToggler()">
+            <mat-icon [svgIcon]="'heroicons_outline:arrow-narrow-left'"></mat-icon>
+            <span class="ml-2 mr-1">Back to Applications</span>
+        </button>
+        <mat-stepper 
+            #stepper 
+            class="h-full"
+            [orientation]="(stepperOrientation | async)!"
+        >
+            <mat-step [stepControl]="firstFormGroup">
+              <form [formGroup]="firstFormGroup">
+                <ng-template matStepLabel>Name/address</ng-template>
+                <mat-grid-list cols="{{breakpoint}}" rowHeight="80px" (window:resize)="onResize($event)">
+                    <mat-grid-tile>
+                        <mat-form-field appearance="outline" class="w-full px-1">
+                            <mat-label>First Name</mat-label>
+                            <input defaultValue="selectedCreditApplication.firstName" matInput placeholder="First name" formControlName="firstName" required>
+                        </mat-form-field>
+                    </mat-grid-tile>
+                    <mat-grid-tile>
+                        <mat-form-field appearance="outline" class="w-full px-1">
+                            <mat-label>Last Name</mat-label>
+                            <input defaultValue="selectedCreditApplication.lastName" matInput placeholder="Last name" formControlName="lastName" required>
+                        </mat-form-field>
+                    </mat-grid-tile>
+                    <mat-grid-tile>
+                        <mat-form-field appearance="outline" class="w-full px-1">
+                            <mat-label>Title</mat-label>
+                            <input matInput placeholder="Title" formControlName="title" required>
+                        </mat-form-field>
+                    </mat-grid-tile>
+                    <mat-grid-tile>
+                        <mat-form-field appearance="outline" class="w-full px-1">
+                            <mat-label>Name of business</mat-label>
+                            <input matInput placeholder="Name of business" formControlName="businessName" required>
+                        </mat-form-field>
+                    </mat-grid-tile>
+                    <mat-grid-tile>
+                        <mat-form-field appearance="outline" class="w-full px-1">
+                            <mat-label>Address</mat-label>
+                            <input matInput placeholder="Address" formControlName="address" required>
+                        </mat-form-field>
+                    </mat-grid-tile>
+                    <mat-grid-tile>
+                        <mat-form-field appearance="outline" class="w-full px-1">
+                            <mat-label>City</mat-label>
+                            <input matInput placeholder="City" formControlName="city" required>
+                        </mat-form-field>
+                    </mat-grid-tile>
+                    <mat-grid-tile>
+                        <mat-form-field appearance="outline" class="w-full px-1">
+                            <mat-label>State</mat-label>
+                            <input matInput placeholder="State" formControlName="state" required>
+                        </mat-form-field>
+                    </mat-grid-tile>
+                    <mat-grid-tile>
+                        <mat-form-field appearance="outline" class="w-full px-1">
+                            <mat-label>Zip</mat-label>
+                            <input matInput placeholder="Zip" formControlName="zip" required>
+                        </mat-form-field>
+                    </mat-grid-tile>
+                    <mat-grid-tile>
+                        <mat-form-field appearance="outline" class="w-full px-1">
+                            <mat-label>Phone</mat-label>
+                            <input matInput placeholder="Phone" formControlName="phone" required>
+                        </mat-form-field>
+                    </mat-grid-tile>
+                    <mat-grid-tile>
+                        <mat-form-field appearance="outline" class="w-full px-1">
+                            <mat-label>Website</mat-label>
+                            <input matInput placeholder="Website" formControlName="website" required>
+                        </mat-form-field>
+                    </mat-grid-tile>
+                    <mat-grid-tile>
+                        <mat-form-field appearance="outline" class="w-full px-1">
+                            <mat-label>Tax ID number</mat-label>
+                            <input matInput placeholder="Tax ID number" formControlName="taxId" required>
+                        </mat-form-field>
+                    </mat-grid-tile>
+                    <mat-grid-tile>
+                        <mat-form-field appearance="outline" class="w-full px-1">
+                            <mat-label>Amount requested</mat-label>
+                            <input matInput placeholder="Amount requested" formControlName="amount" required>
+                        </mat-form-field>
+                    </mat-grid-tile>
+                    <mat-grid-tile>
+                        <mat-form-field appearance="outline" class="w-full px-1">
+                            <mat-label>D+B Number</mat-label>
+                            <input matInput placeholder="D+B Number" formControlName="dbNumber" required>
+                        </mat-form-field>
+                    </mat-grid-tile>
+                </mat-grid-list>
+                <div>
+                  <button mat-button matStepperNext>Next</button>
+                </div>
+              </form>
+            </mat-step>
+            <mat-step [stepControl]="secondFormGroup">
+              <form [formGroup]="secondFormGroup">
+                <ng-template matStepLabel>Company information</ng-template>
+                <mat-grid-list cols="{{breakpoint}}" rowHeight="80px" (window:resize)="onResize($event)">
+                    <mat-grid-tile>
+                        <mat-form-field appearance="outline" class="w-full px-1">
+                            <mat-label>Type of business</mat-label>
+                            <input matInput placeholder="Type of business" formControlName="businessType" required>
+                        </mat-form-field>
+                    </mat-grid-tile>
+                    <mat-grid-tile>
+                        <mat-form-field appearance="outline" class="w-full px-1">
+                            <mat-label>In business since</mat-label>
+                            <input matInput placeholder="In business since" formControlName="businessSince" required>
+                        </mat-form-field>
+                    </mat-grid-tile>
+                    <mat-grid-tile>
+                        <mat-form-field appearance="outline" class="w-full px-1">
+                            <mat-label>Legal form</mat-label>
+                            <input matInput placeholder="Legal form" formControlName="legalForm" required>
+                        </mat-form-field>
+                    </mat-grid-tile>
+                    <mat-grid-tile>
+                        <mat-form-field appearance="outline" class="w-full px-1">
+                            <mat-label>If division/subsidiary, name of parent company:</mat-label>
+                            <input matInput placeholder="Parent company" formControlName="parentCompany" required>
+                        </mat-form-field>
+                    </mat-grid-tile>
+                    <mat-grid-tile>
+                        <mat-form-field appearance="outline" class="w-full px-1">
+                            <mat-label>In business since</mat-label>
+                            <input matInput placeholder="In business since" formControlName="parentBusinessSince" required>
+                        </mat-form-field>
+                    </mat-grid-tile>
+                    <mat-grid-tile>
+                        <mat-form-field appearance="outline" class="w-full px-1">
+                            <mat-label>Authorized buyer</mat-label>
+                            <input matInput placeholder="Authorized buyer" formControlName="authorizedBuyer" required>
+                        </mat-form-field>
+                    </mat-grid-tile>
+                    <mat-grid-tile>
+                        <mat-form-field appearance="outline" class="w-full px-1">
+                            <mat-label>Title</mat-label>
+                            <input matInput placeholder="Title" formControlName="authorizedBuyerTitle" required>
+                        </mat-form-field>
+                    </mat-grid-tile>
+                    <mat-grid-tile>
+                        <mat-form-field appearance="outline" class="w-full px-1">
+                            <mat-label>Email</mat-label>
+                            <input matInput placeholder="Email" formControlName="authorizedBuyerEmail" required>
+                        </mat-form-field>
+                    </mat-grid-tile>
+                    <mat-grid-tile>
+                        <mat-form-field appearance="outline" class="w-full px-1">
+                            <mat-label>Phone</mat-label>
+                            <input matInput placeholder="Phone" formControlName="authorizedBuyerPhone" required>
+                        </mat-form-field>
+                    </mat-grid-tile>
+                    <mat-grid-tile>
+                        <mat-form-field appearance="outline" class="w-full px-1">
+                            <mat-label>Billing contact (name)</mat-label>
+                            <input matInput placeholder="Billing Contact" formControlName="billingContactName" required>
+                        </mat-form-field>
+                    </mat-grid-tile>
+                    <mat-grid-tile>
+                        <mat-form-field appearance="outline" class="w-full px-1">
+                            <mat-label>Email</mat-label>
+                            <input matInput placeholder="Email" formControlName="billingContactEmail" required>
+                        </mat-form-field>
+                    </mat-grid-tile>
+                    <mat-grid-tile>
+                        <mat-form-field appearance="outline" class="w-full px-1">
+                            <mat-label>Phone</mat-label>
+                            <input matInput placeholder="Phone" formControlName="billingContactPhone" required>
+                        </mat-form-field>
+                    </mat-grid-tile>
+                </mat-grid-list>
+                <div>
+                  <button mat-button matStepperPrevious>Back</button>
+                  <button mat-button matStepperNext>Next</button>
+                </div>
+              </form>
+            </mat-step>
+            <mat-step [stepControl]="thirdFormGroup">
+                <form [formGroup]="thirdFormGroup">
+                  <ng-template matStepLabel>Bank reference</ng-template>
+                  <mat-grid-list cols="{{breakpoint}}" rowHeight="80px" (window:resize)="onResize($event)">
+                    <mat-grid-tile>
+                        <mat-form-field appearance="outline" class="w-full px-1">
+                            <mat-label>Institution name</mat-label>
+                            <input matInput placeholder="Institution name" formControlName="bankName" required>
+                        </mat-form-field>
+                    </mat-grid-tile>
+                    <mat-grid-tile>
+                        <mat-form-field appearance="outline" class="w-full px-1">
+                            <mat-label>Branch</mat-label>
+                            <input matInput placeholder="Branch" formControlName="branchName" required>
+                        </mat-form-field>
+                    </mat-grid-tile>
+                    <mat-grid-tile>
+                        <mat-form-field appearance="outline" class="w-full px-1">
+                            <mat-label>Contact Name</mat-label>
+                            <input matInput placeholder="Contact Name" formControlName="bankContactName" required>
+                        </mat-form-field>
+                    </mat-grid-tile>
+                    <mat-grid-tile>
+                        <mat-form-field appearance="outline" class="w-full px-1">
+                            <mat-label>Contact Phone</mat-label>
+                            <input matInput placeholder="Contact Phone" formControlName="bankContactPhone" required>
+                        </mat-form-field>
+                    </mat-grid-tile>
+                </mat-grid-list>
+                  <div>
+                    <button mat-button matStepperPrevious>Back</button>
+                    <button mat-button matStepperNext>Next</button>
+                  </div>
+                </form>
+              </mat-step>
+              <mat-step [stepControl]="fourthFormGroup">
+                <form [formGroup]="fourthFormGroup">
+                  <ng-template matStepLabel>Trade references</ng-template>
+                  <mat-grid-list cols="{{breakpoint}}" rowHeight="80px" (window:resize)="onResize($event)">
+                    <mat-grid-tile>
+                        <mat-form-field appearance="outline" class="w-full px-1">
+                            <mat-label>Company Name</mat-label>
+                            <input matInput placeholder="Company name" formControlName="tradeCompanyName1" required>
+                        </mat-form-field>
+                    </mat-grid-tile>
+                    <mat-grid-tile>
+                        <mat-form-field appearance="outline" class="w-full px-1">
+                            <mat-label>Contact Name</mat-label>
+                            <input matInput placeholder="Contact name" formControlName="tradeContactName1" required>
+                        </mat-form-field>
+                    </mat-grid-tile>
+                    <mat-grid-tile>
+                        <mat-form-field appearance="outline" class="w-full px-1">
+                            <mat-label>Address</mat-label>
+                            <input matInput placeholder="Address" formControlName="tradeAddress1" required>
+                        </mat-form-field>
+                    </mat-grid-tile>
+                    <mat-grid-tile>
+                        <mat-form-field appearance="outline" class="w-full px-1">
+                            <mat-label>Email</mat-label>
+                            <input matInput placeholder="Email" formControlName="tradeEmail1" required>
+                        </mat-form-field>
+                    </mat-grid-tile>
+                    <mat-grid-tile>
+                        <mat-form-field appearance="outline" class="w-full px-1">
+                            <mat-label>Phone</mat-label>
+                            <input matInput placeholder="Phone" formControlName="tradePhone1" required>
+                        </mat-form-field>
+                    </mat-grid-tile>
+                    <mat-grid-tile>
+                        <mat-form-field appearance="outline" class="w-full px-1">
+                            <mat-label>Credit Limit</mat-label>
+                            <input matInput placeholder="Credit Limit" formControlName="tradeCreditLimit1" required>
+                        </mat-form-field>
+                    </mat-grid-tile>
+                    <mat-grid-tile>
+                        <mat-form-field appearance="outline" class="w-full px-1">
+                            <mat-label>Current balance</mat-label>
+                            <input matInput placeholder="Current balance" formControlName="tradeCurrentBalance1" required>
+                        </mat-form-field>
+                    </mat-grid-tile>
+                </mat-grid-list>
+                  <div>
+                    <button mat-button matStepperPrevious>Back</button>
+                    <button mat-button matStepperNext>Next</button>
+                  </div>
+                </form>
+              </mat-step>
+            <mat-step>
+              <ng-template matStepLabel>Actions</ng-template>
+                <div class="h-40 mt-5 justify-between">
+                    <button
+                        class="ml-4 flex-auto"
+                        mat-flat-button
+                        [color]="'secondary'"
+                        (click)="approveCreditApplication()"
+                    >
+                        <mat-icon svgIcon="heroicons_outline:check"></mat-icon>
+                        <span class="ml-2 mr-1">Approve Credit Application</span>
+                    </button>
+                    <button
+                        class="ml-4 flex-auto"
+                        mat-flat-button
+                        [color]="'primary'"
+                        (click)="updateCreditApplication()"
+                    >
+                        <mat-icon svgIcon="mode_edit_outline"></mat-icon>
+                        <span class="ml-2 mr-1">Update Application</span>
+                    </button>
+                </div>
+            </mat-step>
+        </mat-stepper>
     </div>
 </div>

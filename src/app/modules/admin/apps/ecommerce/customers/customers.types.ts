@@ -85,3 +85,10 @@ export interface CreditTerm {
     emails: string[];
     user_comment: boolean;
   }
+
+export interface AddUserLocation
+{
+    user_location: boolean;
+    user_id: number;
+    location_id: number;
+}

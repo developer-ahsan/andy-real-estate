@@ -1,21 +1,77 @@
-<div class="inset-0 min-w-50 overflow-hidden bg-card dark:bg-transparent">
-    <div class="border p-3 mt-3 h-70 overflow-x-auto">
-        <b>Cashback for Jeff Jones:</b>
-        <mat-divider class="mb-2"></mat-divider>
-        <div class="min-w-40 max-w-50 w-50 py-2 px-2" style="display: inline;">
-            <div class="w-full">
-                <form>
-                    <mat-form-field class="w-full">
-                      <mat-label>Select a store to view cashback details for this user:
-                    </mat-label>
-                      <mat-select [(ngModel)]="selectedStore" name="store">
-                        <mat-option *ngFor="let store of stores" [value]="store">
-                          {{store}}
-                        </mat-option>
-                      </mat-select>
-                    </mat-form-field>
-                  </form>
+<div class="inset-0 min-w-50 h-200 overflow-hidden mt-5 bg-card dark:bg-transparent">
+  <ngx-skeleton-loader
+      count="8"
+      appearance="line"
+      animation="pulse"
+      *ngIf="isLoading"
+  >
+  </ngx-skeleton-loader>
+  <div *ngIf="!isLoading">
+    <b class="text-2xl" style="color: #64748b; line-height: 2;">Cashback</b>
+    <div class="border p-3 mt-3 h-auto overflow-x-auto">
+      <b>Cashback for {{currentSelectedCustomer.firstName}} {{currentSelectedCustomer.lastName}}:</b>
+      <mat-divider class="mb-2"></mat-divider>
+      <div class="min-w-40 max-w-50 w-50 py-2 px-2" style="display: inline;">
+          <div class="w-full">
+              <form>
+                  <mat-form-field class="w-full">
+                    <mat-label>Select a store to view cashback details for this user:</mat-label>
+                    <mat-select [(ngModel)]="selectedStore" name="store">
+                      <mat-option value="select_store" disabled>
+                        Select a store
+                      </mat-option>
+                      <mat-option (click)="storeSelection(store)" *ngFor="let store of stores" [value]="store">
+                        {{store}}
+                      </mat-option>
+                    </mat-select>
+                  </mat-form-field>
+                </form>
+          </div>
+      </div>
+      <div *ngIf="enableOtherForms">
+        <mat-grid-list cols="{{breakpoint}}" rowHeight="300px" (window:resize)="onResize($event)">
+          <mat-grid-tile>
+            <div class="border w-full p-3 mt-1 mx-2 h-150 overflow-x-auto">
+              <b>Current cashback amount on this store</b>
+              <button
+                mat-icon-button
+                matTooltip="Recalculating this customer's cashback total for this store will go through the entire order history for this customer (excluding cancelled orders), calculate the cashback per order (per the percentage defined at the store-level), and sum this to determine the customer's new total cashback credit. This action cannot be undone"
+                matTooltipClass="example-tooltip-red"
+              >
+                <mat-icon style="padding: 10px 0 0 8px;" svgIcon="heroicons_outline:question-mark-circle"></mat-icon>
+              </button>
+              <mat-divider class="mb-2"></mat-divider>
+              <div>
+                <p class="text-danger float-left font-semibold pt-3">$0.00</p>
+                <button
+                    class="float-right"
+                    mat-stroked-button
+                >
+                  <span class="ml-2 mr-1">Recalculate cashback amount</span>
+                </button>
+              </div>
             </div>
-        </div>
+          </mat-grid-tile>
+          <mat-grid-tile>
+            <div class="border w-full p-3 mt-1 mx-2 h-auto overflow-x-auto">
+              <b>Cashback settings for this user on this store</b>
+              <mat-divider class="mb-2"></mat-divider>
+                <mat-select class="my-3" [(value)]="selected">
+                  <mat-option value="allow" selected>Allow user to use cashback</mat-option>
+                  <mat-option value="dont-allow">Do not allw user to use cashback</mat-option>
+                </mat-select>
+                <mat-divider class="my-2"></mat-divider>
+                <button
+                  class="float-right"
+                  mat-stroked-button
+                >
+                  <mat-icon svgIcon="mode_edit_outline"></mat-icon>
+                  <span class="ml-2 mr-1">Update</span>
+                </button>
+            </div>
+          </mat-grid-tile>
+        </mat-grid-list>
+      </div>
     </div>
+  </div>
 </div>

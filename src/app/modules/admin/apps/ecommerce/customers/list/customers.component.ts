@@ -30,7 +30,7 @@ export class CustomersListComponent implements OnInit, AfterViewInit, OnDestroy
     flashMessage: 'success' | 'error' | null = null;
     isLoading: boolean = false;
     pagination: CustomersPagination;
-    customersCount: number = 0;
+    customersCount: number;
     customerTableColumns: string[] = ['_id', 'first_name', 'last_name', 'customer_email', 'customer_store', 'customer_company', 'details'];
     searchInputControl: FormControl = new FormControl();
     selectedCustomer: CustomersProduct | null = null;
@@ -110,7 +110,7 @@ export class CustomersListComponent implements OnInit, AfterViewInit, OnDestroy
             .pipe(takeUntil(this._unsubscribeAll))
             .subscribe((customers: CustomersProduct[]) => {
                 // Update the counts
-                this.customersCount = customers.length;
+                this.customersCount = customers?.length ? customers[0].TotalRequests : 0;
 
                 // Mark for check
                 this._changeDetectorRef.markForCheck();
