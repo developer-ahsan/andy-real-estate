@@ -6,7 +6,7 @@ import { MatSort } from '@angular/material/sort';
 import { merge, Observable, Subject } from 'rxjs';
 import { debounceTime, map, switchMap, takeUntil } from 'rxjs/operators';
 import { fuseAnimations } from '@fuse/animations';
-import { OrdersBrand, OrdersCategory, OrdersPagination, OrdersProduct, OrdersTag, OrdersVendor } from 'app/modules/admin/apps/orders/orders-components/orders.types';
+import { OrdersBrand, OrdersCategory, OrdersList, OrdersPagination, OrdersProduct, OrdersTag, OrdersVendor } from 'app/modules/admin/apps/orders/orders-components/orders.types';
 import { OrdersService } from 'app/modules/admin/apps/orders/orders-components/orders.service';
 
 @Component({
@@ -23,6 +23,8 @@ export class OrdersListComponent implements OnInit, AfterViewInit, OnDestroy
 
     products$: Observable<OrdersProduct[]>;
 
+    orders: OrdersList[];
+    ordersLength: number;
     brands: OrdersBrand[];
     categories: OrdersCategory[];
     filteredTags: OrdersTag[];
@@ -30,9 +32,10 @@ export class OrdersListComponent implements OnInit, AfterViewInit, OnDestroy
     isLoading: boolean = false;
     pagination: OrdersPagination;
     ordersCount: number = 0;
-    productsTableColumns: string[] = ['sku', 'name', 'price', 'stock', 'active', 'details'];
+    ordersTableColumns: string[] = ['sku', 'name', 'price', 'stock', 'active', 'details'];
     searchInputControl: FormControl = new FormControl();
     selectedProduct: OrdersProduct | null = null;
+    selectedOrder: OrdersList | null = null;
     selectedProductForm: FormGroup;
     tags: OrdersTag[];
     tagsEditMode: boolean = false;
@@ -45,7 +48,7 @@ export class OrdersListComponent implements OnInit, AfterViewInit, OnDestroy
     constructor(
         private _changeDetectorRef: ChangeDetectorRef,
         private _formBuilder: FormBuilder,
-        private _inventoryService: OrdersService
+        private _orderService: OrdersService
     )
     {
     }
@@ -80,11 +83,26 @@ export class OrdersListComponent implements OnInit, AfterViewInit, OnDestroy
             thumbnail        : [''],
             images           : [[]],
             currentImageIndex: [0], // Image index that is currently being viewed
-            active           : [false]
+            active           : [false],
+            firstName        : [''],
+            pk_orderID       : [''],
+            total            : [''],
+            companyName      : ['']
         });
 
         // Get the brands
-        this._inventoryService.brands$
+        this._orderService.orders$
+            .pipe(takeUntil(this._unsubscribeAll))
+            .subscribe((orders: OrdersList[]) => {
+                this.orders = orders["data"];
+                this.ordersLength = orders["totalRecords"];
+
+                // Mark for check
+                this._changeDetectorRef.markForCheck();
+            });
+
+        // Get the brands
+        this._orderService.brands$
             .pipe(takeUntil(this._unsubscribeAll))
             .subscribe((brands: OrdersBrand[]) => {
 
@@ -96,7 +114,7 @@ export class OrdersListComponent implements OnInit, AfterViewInit, OnDestroy
             });
 
         // Get the categories
-        this._inventoryService.categories$
+        this._orderService.categories$
             .pipe(takeUntil(this._unsubscribeAll))
             .subscribe((categories: OrdersCategory[]) => {
 
@@ -108,7 +126,7 @@ export class OrdersListComponent implements OnInit, AfterViewInit, OnDestroy
             });
 
         // Get the pagination
-        this._inventoryService.pagination$
+        this._orderService.pagination$
             .pipe(takeUntil(this._unsubscribeAll))
             .subscribe((pagination: OrdersPagination) => {
 
@@ -120,8 +138,8 @@ export class OrdersListComponent implements OnInit, AfterViewInit, OnDestroy
             });
 
         // Get the products
-        this.products$ = this._inventoryService.products$;
-        this._inventoryService.products$
+        this.products$ = this._orderService.products$;
+        this._orderService.products$
             .pipe(takeUntil(this._unsubscribeAll))
             .subscribe((products: OrdersProduct[]) => {
 
@@ -133,7 +151,7 @@ export class OrdersListComponent implements OnInit, AfterViewInit, OnDestroy
             });
 
         // Get the tags
-        this._inventoryService.tags$
+        this._orderService.tags$
             .pipe(takeUntil(this._unsubscribeAll))
             .subscribe((tags: OrdersTag[]) => {
 
@@ -146,7 +164,7 @@ export class OrdersListComponent implements OnInit, AfterViewInit, OnDestroy
             });
 
         // Get the vendors
-        this._inventoryService.vendors$
+        this._orderService.vendors$
             .pipe(takeUntil(this._unsubscribeAll))
             .subscribe((vendors: OrdersVendor[]) => {
 
@@ -165,7 +183,7 @@ export class OrdersListComponent implements OnInit, AfterViewInit, OnDestroy
                 switchMap((query) => {
                     this.closeDetails();
                     this.isLoading = true;
-                    return this._inventoryService.getProducts(0, 10, 'name', 'asc', query);
+                    return this._orderService.getProducts(0, 10, 'name', 'asc', query);
                 }),
                 map(() => {
                     this.isLoading = false;
@@ -195,7 +213,7 @@ export class OrdersListComponent implements OnInit, AfterViewInit, OnDestroy
             switchMap(() => {
                 this.closeDetails();
                 this.isLoading = true;
-                return this._inventoryService.getProducts(this._paginator.pageIndex, this._paginator.pageSize, this._sort.active, this._sort.direction);
+                return this._orderService.getProducts(this._paginator.pageIndex, this._paginator.pageSize, this._sort.active, this._sort.direction);
             }),
             map(() => {
                 this.isLoading = false;
@@ -233,7 +251,7 @@ export class OrdersListComponent implements OnInit, AfterViewInit, OnDestroy
         }
 
         // Get the product by id
-        this._inventoryService.getProductById(productId)
+        this._orderService.getProductById(productId)
             .subscribe((product) => {
 
                 // Set the selected product
@@ -249,6 +267,26 @@ export class OrdersListComponent implements OnInit, AfterViewInit, OnDestroy
                 this._changeDetectorRef.markForCheck();
             });
     }
+
+    /**
+     * Toggle product details
+     *
+     * @param orderId
+     */
+     toggleOrderDetails(orderId: number): void
+     {
+        //  If the order is already selected...
+         if ( this.selectedOrder && this.selectedOrder.pk_orderID === orderId )
+         {
+             // Close the details
+             this.closeDetails();
+             return;
+         }
+         this.selectedOrder = this.orders[this.orders.findIndex(x => x.pk_orderID === orderId)];
+         this._changeDetectorRef.markForCheck();
+         this.selectedProductForm.patchValue(this.selectedOrder);
+         this._changeDetectorRef.markForCheck();
+     }
 
     /**
      * Close the details
@@ -360,7 +398,7 @@ export class OrdersListComponent implements OnInit, AfterViewInit, OnDestroy
         };
 
         // Create tag on the server
-        this._inventoryService.createTag(tag)
+        this._orderService.createTag(tag)
             .subscribe((response) => {
 
                 // Add the tag to the product
@@ -380,7 +418,7 @@ export class OrdersListComponent implements OnInit, AfterViewInit, OnDestroy
         tag.title = event.target.value;
 
         // Update the tag on the server
-        this._inventoryService.updateTag(tag.id, tag)
+        this._orderService.updateTag(tag.id, tag)
             .pipe(debounceTime(300))
             .subscribe();
 
@@ -396,7 +434,7 @@ export class OrdersListComponent implements OnInit, AfterViewInit, OnDestroy
     deleteTag(tag: OrdersTag): void
     {
         // Delete the tag from the server
-        this._inventoryService.deleteTag(tag.id).subscribe();
+        this._orderService.deleteTag(tag.id).subscribe();
 
         // Mark for check
         this._changeDetectorRef.markForCheck();
@@ -470,7 +508,7 @@ export class OrdersListComponent implements OnInit, AfterViewInit, OnDestroy
     createProduct(): void
     {
         // Create the product
-        this._inventoryService.createProduct().subscribe((newProduct) => {
+        this._orderService.createProduct().subscribe((newProduct) => {
 
             // Go to new product
             this.selectedProduct = newProduct;
@@ -495,7 +533,7 @@ export class OrdersListComponent implements OnInit, AfterViewInit, OnDestroy
         delete product.currentImageIndex;
 
         // Update the product on the server
-        this._inventoryService.updateProduct(product.id, product).subscribe(() => {
+        this._orderService.updateProduct(product.id, product).subscribe(() => {
 
             // Show a success message
             this.showFlashMessage('success');
@@ -511,7 +549,7 @@ export class OrdersListComponent implements OnInit, AfterViewInit, OnDestroy
         const product = this.selectedProductForm.getRawValue();
 
         // Delete the product on the server
-        this._inventoryService.deleteProduct(product.id).subscribe(() => {
+        this._orderService.deleteProduct(product.id).subscribe(() => {
 
             // Close the details
             this.closeDetails();

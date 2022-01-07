@@ -29,7 +29,7 @@
           </div>
       </div>
       <div *ngIf="enableOtherForms">
-        <mat-grid-list cols="{{breakpoint}}" rowHeight="300px" (window:resize)="onResize($event)">
+        <mat-grid-list cols="{{breakpoint}}" rowHeight="fit" (window:resize)="onResize($event)">
           <mat-grid-tile>
             <div class="border w-full p-3 mt-1 mx-2 h-150 overflow-x-auto">
               <b>Current cashback amount on this store</b>
@@ -38,7 +38,7 @@
                 matTooltip="Recalculating this customer's cashback total for this store will go through the entire order history for this customer (excluding cancelled orders), calculate the cashback per order (per the percentage defined at the store-level), and sum this to determine the customer's new total cashback credit. This action cannot be undone"
                 matTooltipClass="example-tooltip-red"
               >
-                <mat-icon style="padding: 10px 0 0 8px;" svgIcon="heroicons_outline:question-mark-circle"></mat-icon>
+                <mat-icon style="padding: 10px 0 0 0;" svgIcon="heroicons_outline:question-mark-circle"></mat-icon>
               </button>
               <mat-divider class="mb-2"></mat-divider>
               <div>

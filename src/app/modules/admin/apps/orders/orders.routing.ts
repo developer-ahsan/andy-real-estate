@@ -1,7 +1,7 @@
 import { Route } from '@angular/router';
 import { OrdersComponent } from 'app/modules/admin/apps/orders/orders-components/orders.component';
 import { OrdersListComponent } from 'app/modules/admin/apps/orders/orders-components/list/orders.component';
-import { OrdersBrandsResolver, OrdersCategoriesResolver, OrdersProductsResolver, OrdersTagsResolver, OrdersVendorsResolver } from 'app/modules/admin/apps/orders/orders-components/orders.resolvers';
+import { OrdersBrandsResolver, OrdersCategoriesResolver, OrdersListResolver, OrdersProductsResolver, OrdersTagsResolver, OrdersVendorsResolver } from 'app/modules/admin/apps/orders/orders-components/orders.resolvers';
 import { CustomersComponent } from 'app/modules/admin/apps/ecommerce/customers/customers.component';
 import { CustomersListComponent } from 'app/modules/admin/apps/ecommerce/customers/list/customers.component';
 import { CustomersBrandsResolver, CustomersCategoriesResolver, CustomersProductsResolver, CustomersTagsResolver, CustomersVendorsResolver } from 'app/modules/admin/apps/ecommerce/customers/customers.resolvers';
@@ -20,7 +20,8 @@ export const ordersRoutes: Route[] = [
                     categories: OrdersCategoriesResolver,
                     products  : OrdersProductsResolver,
                     tags      : OrdersTagsResolver,
-                    vendors   : OrdersVendorsResolver
+                    vendors   : OrdersVendorsResolver,
+                    orders    : OrdersListResolver
                 }
             }
         ]

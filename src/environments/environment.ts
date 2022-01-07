@@ -5,8 +5,9 @@
 export const environment = {
     production: false,
     signInAuth: "https://www.googleapis.com/identitytoolkit/v3/relyingparty/verifyPassword?key=AIzaSyDdIDmQFMIa3aXSnoudkf3At_zQ9faFs2k",
-    customerList: "https://consolidus-staging.azurewebsites.net/api/users",
-    customer: "https://consolidus-staging.azurewebsites.net/api/user"
+    customerList: "http://localhost:7071/api/users",
+    customer: "http://localhost:7071/api/user",
+    orders: "http://localhost:7071/api/orders"
 };
 
 /*
@@ -17,3 +18,4 @@ export const environment = {
  * on performance if an error is thrown.
  */
 // import 'zone.js/plugins/zone-error';  // Included with Angular CLI.
+// https://consolidus-staging.azurewebsites.net/api

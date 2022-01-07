@@ -2,7 +2,8 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { BehaviorSubject, Observable, of, throwError } from 'rxjs';
 import { filter, map, switchMap, take, tap } from 'rxjs/operators';
-import { OrdersBrand, OrdersCategory, OrdersPagination, OrdersProduct, OrdersTag, OrdersVendor } from 'app/modules/admin/apps/orders/orders-components/orders.types';
+import { OrdersBrand, OrdersCategory, OrdersList, OrdersPagination, OrdersProduct, OrdersTag, OrdersVendor } from 'app/modules/admin/apps/orders/orders-components/orders.types';
+import { environment } from 'environments/environment';
 
 @Injectable({
     providedIn: 'root'
@@ -17,6 +18,7 @@ export class OrdersService
     private _products: BehaviorSubject<OrdersProduct[] | null> = new BehaviorSubject(null);
     private _tags: BehaviorSubject<OrdersTag[] | null> = new BehaviorSubject(null);
     private _vendors: BehaviorSubject<OrdersVendor[] | null> = new BehaviorSubject(null);
+    private _orders: BehaviorSubject<OrdersList[] | null> = new BehaviorSubject(null);
 
     /**
      * Constructor
@@ -85,9 +87,31 @@ export class OrdersService
         return this._vendors.asObservable();
     }
 
+    /**
+     * Getter for orders
+     */
+     get orders$(): Observable<OrdersList[]>
+     {
+         return this._orders.asObservable();
+     }
+
     // -----------------------------------------------------------------------------------------------------
     // @ Public methods
     // -----------------------------------------------------------------------------------------------------
+
+    
+
+    /**
+     * Get categories
+     */
+     getOrdersList(): Observable<OrdersList[]>
+     {
+         return this._httpClient.get<OrdersList[]>(`${environment.orders}?list=true`).pipe(
+             tap((orders) => {
+                 this._orders.next(orders);
+             })
+         );
+     }
 
     /**
      * Get brands

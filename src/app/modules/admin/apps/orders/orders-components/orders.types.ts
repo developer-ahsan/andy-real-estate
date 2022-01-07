@@ -58,3 +58,30 @@ export interface OrdersVendor
     name: string;
     slug: string;
 }
+
+export interface OrdersList
+{
+    pk_orderID?: number;
+    orderDate?: string,
+    fk_groupOrderID?: number | null,
+    storeCode?: string,
+    storeName?: string;
+    businessName?: string;
+    companyName?: string;
+    blnIgnore?: boolean;
+    blnReorderIgnore?: boolean;
+    blnReviewIgnore?: boolean;
+    blnCancelled?: boolean;
+    billingZip?: string;
+    paymentDate?: string;
+    billingStudentOrgCode?: string | null;
+    billingStudentOrgName?: string | null;
+    locationName?: string | null;
+    attributeName?: string | null;
+    firstName?: string;
+    lastName?: string;
+    total?: number;
+    royalties?: number;
+    RowNumber?: string;
+    TotalRequests?: number;
+}

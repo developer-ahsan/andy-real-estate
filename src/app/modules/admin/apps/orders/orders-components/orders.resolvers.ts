@@ -3,7 +3,7 @@ import { ActivatedRouteSnapshot, Resolve, Router, RouterStateSnapshot } from '@a
 import { Observable, throwError } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 import { OrdersService } from 'app/modules/admin/apps/orders/orders-components/orders.service';
-import { OrdersBrand, OrdersCategory, OrdersPagination, OrdersProduct, OrdersTag, OrdersVendor } from 'app/modules/admin/apps/orders/orders-components/orders.types';
+import { OrdersBrand, OrdersCategory, OrdersList, OrdersPagination, OrdersProduct, OrdersTag, OrdersVendor } from 'app/modules/admin/apps/orders/orders-components/orders.types';
 
 @Injectable({
     providedIn: 'root'
@@ -190,5 +190,33 @@ export class OrdersVendorsResolver implements Resolve<any>
     resolve(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<OrdersVendor[]>
     {
         return this._orderService.getVendors();
+    }
+}
+
+@Injectable({
+    providedIn: 'root'
+})
+export class OrdersListResolver implements Resolve<any>
+{
+    /**
+     * Constructor
+     */
+    constructor(private _orderService: OrdersService)
+    {
+    }
+
+    // -----------------------------------------------------------------------------------------------------
+    // @ Public methods
+    // -----------------------------------------------------------------------------------------------------
+
+    /**
+     * Resolver
+     *
+     * @param route
+     * @param state
+     */
+    resolve(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<OrdersList[]>
+    {
+        return this._orderService.getOrdersList();
     }
 }
