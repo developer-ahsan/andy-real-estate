@@ -28,6 +28,10 @@ import { ordersRoutes } from 'app/modules/admin/apps/orders/orders.routing';
 import { OrdersDetailsComponent } from 'app/modules/admin/apps/orders/orders-components/details/details.orders.component';
 import { OrdersSummaryComponent } from './orders-components/navigation/orders-summary/orders-summary.component';
 import { OrdersEntitiesListComponent } from './orders-components/navigation/orders-entities-list/orders-entities-list.component';
+import { OrdersReportComponent } from './orders-components/navigation/orders-report/orders-report.component';
+import { OrdersInvoiceComponent } from './orders-components/navigation/orders-invoice/orders-invoice.component';
+import { OrdersPurchasesComponent } from './orders-components/navigation/orders-purchases/orders-purchases.component';
+import { OrdersShippingReportsComponent } from './orders-components/navigation/orders-shipping-reports/orders-shipping-reports.component';
 
 @NgModule({
     declarations: [
@@ -35,7 +39,11 @@ import { OrdersEntitiesListComponent } from './orders-components/navigation/orde
         OrdersListComponent,
         OrdersDetailsComponent,
         OrdersSummaryComponent,
-        OrdersEntitiesListComponent
+        OrdersEntitiesListComponent,
+        OrdersReportComponent,
+        OrdersInvoiceComponent,
+        OrdersPurchasesComponent,
+        OrdersShippingReportsComponent
     ],
     imports     : [
         RouterModule.forChild(ordersRoutes),
