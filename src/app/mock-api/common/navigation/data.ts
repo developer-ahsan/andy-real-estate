@@ -28,7 +28,7 @@ export const defaultNavigation: FuseNavigationItem[] = [
         title   : 'Orders',
         icon    : 'heroicons_outline:document-report',
         type: 'basic',
-        link : '/apps/orders',
+        link : '/apps/orders'
     },
     {
         id      : 'vendors',
@@ -212,9 +212,9 @@ export const futuristicNavigation: FuseNavigationItem[] = [
             {
                 id    : 'apps.orders',
                 title : 'Orders',
-                icon  : 'heroicons_outline:document-report',
                 type  : 'basic',
-                link  : '/apps/orders',
+                icon  : 'heroicons_outline:document-report',
+                link : '/apps/orders'
             },
             {
                 id      : 'apps.ecommerce',

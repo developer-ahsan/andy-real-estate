@@ -1,11 +1,8 @@
 import { Route } from '@angular/router';
 import { OrdersComponent } from 'app/modules/admin/apps/orders/orders-components/orders.component';
 import { OrdersListComponent } from 'app/modules/admin/apps/orders/orders-components/list/orders.component';
+import { OrdersDetailsComponent } from 'app/modules/admin/apps/orders/orders-components/details/details.orders.component';
 import { OrdersBrandsResolver, OrdersCategoriesResolver, OrdersListResolver, OrdersProductsResolver, OrdersTagsResolver, OrdersVendorsResolver } from 'app/modules/admin/apps/orders/orders-components/orders.resolvers';
-import { CustomersComponent } from 'app/modules/admin/apps/ecommerce/customers/customers.component';
-import { CustomersListComponent } from 'app/modules/admin/apps/ecommerce/customers/list/customers.component';
-import { CustomersBrandsResolver, CustomersCategoriesResolver, CustomersProductsResolver, CustomersTagsResolver, CustomersVendorsResolver } from 'app/modules/admin/apps/ecommerce/customers/customers.resolvers';
-import { CustomersTabComponent } from 'app/modules/admin/apps/ecommerce/customers/tabs/customers.component';
 
 export const ordersRoutes: Route[] = [
     {
@@ -23,8 +20,20 @@ export const ordersRoutes: Route[] = [
                     vendors   : OrdersVendorsResolver,
                     orders    : OrdersListResolver
                 }
-            }
+            },
+            {
+                path     : ':id',
+                pathMatch: 'full',
+                component: OrdersDetailsComponent,
+                resolve  : {
+                    brands    : OrdersBrandsResolver,
+                    categories: OrdersCategoriesResolver,
+                    products  : OrdersProductsResolver,
+                    tags      : OrdersTagsResolver,
+                    vendors   : OrdersVendorsResolver,
+                    orders    : OrdersListResolver
+                }
+            },
         ]
-    },
-    
+    }
 ];

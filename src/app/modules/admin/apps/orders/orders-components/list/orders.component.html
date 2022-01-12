@@ -74,7 +74,10 @@
                             <td
                                 class="px-8"
                                 mat-cell
-                                *matCellDef="let order">
+                                *matCellDef="let order"
+                                (click)="orderDetails(order.pk_orderID)"
+                                style="cursor: pointer;"
+                            >
                                 <div class="flex items-center">
                                     <span class="truncate">{{order.orderDate}}</span>
                                 </div>
@@ -94,7 +97,10 @@
                             <td
                                 class="pr-8 truncate"
                                 mat-cell
-                                *matCellDef="let order">
+                                *matCellDef="let order"
+                                (click)="orderDetails(order.pk_orderID)"
+                                style="cursor: pointer;"
+                            >
                                 <b>{{order.firstName}} {{order.lastName}}</b>
                                 <p>{{order.companyName}}</p>
                                 <span><b>{{order.pk_orderID}}</b> - {{order.storeName}}</span>
@@ -114,7 +120,10 @@
                             <td
                                 class="pr-4"
                                 mat-cell
-                                *matCellDef="let order">
+                                *matCellDef="let order"
+                                (click)="orderDetails(order.pk_orderID)"
+                                style="cursor: pointer;"
+                            >
                                 ${{order.total}}
                             </td>
                         </ng-container>
@@ -132,7 +141,10 @@
                             <td
                                 class="pr-4"
                                 mat-cell
-                                *matCellDef="let order">
+                                *matCellDef="let order"
+                                (click)="orderDetails(order.pk_orderID)"
+                                style="cursor: pointer;"
+                            >
                                     <mat-icon
                                     class="text-gray-400 icon-size-5"
                                     *ngIf="order.fk_groupOrderID"
@@ -157,7 +169,10 @@
                             <td
                                 class="pr-4"
                                 mat-cell
-                                *matCellDef="let order">
+                                *matCellDef="let order"
+                                (click)="orderDetails(order.pk_orderID)"
+                                style="cursor: pointer;"
+                            >
                                 <mat-icon
                                     class="text-green-400 icon-size-5"
                                     *ngIf="order.blnCancelled"

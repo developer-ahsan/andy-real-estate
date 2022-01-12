@@ -19,16 +19,23 @@ import { MatCardModule } from '@angular/material/card';
 import { MatGridListModule } from '@angular/material/grid-list';
 import { MatDividerModule } from '@angular/material/divider';
 import { MatRadioModule } from '@angular/material/radio';
+import { MatSidenavModule } from '@angular/material/sidenav';
 import { MatListModule } from '@angular/material/list';
 import { SharedModule } from 'app/shared/shared.module';
 import { OrdersComponent } from 'app/modules/admin/apps/orders/orders-components/orders.component';
 import { OrdersListComponent } from 'app/modules/admin/apps/orders/orders-components/list/orders.component';
 import { ordersRoutes } from 'app/modules/admin/apps/orders/orders.routing';
+import { OrdersDetailsComponent } from 'app/modules/admin/apps/orders/orders-components/details/details.orders.component';
+import { OrdersSummaryComponent } from './orders-components/navigation/orders-summary/orders-summary.component';
+import { OrdersEntitiesListComponent } from './orders-components/navigation/orders-entities-list/orders-entities-list.component';
 
 @NgModule({
     declarations: [
         OrdersComponent,
-        OrdersListComponent
+        OrdersListComponent,
+        OrdersDetailsComponent,
+        OrdersSummaryComponent,
+        OrdersEntitiesListComponent
     ],
     imports     : [
         RouterModule.forChild(ordersRoutes),
@@ -52,7 +59,8 @@ import { ordersRoutes } from 'app/modules/admin/apps/orders/orders.routing';
         MatGridListModule,
         MatDividerModule,
         MatRadioModule,
-        MatListModule
+        MatListModule,
+        MatSidenavModule
     ]
 })
 export class OrdersModule

@@ -1,0 +1,71 @@
+<div class="absolute inset-0 flex flex-col min-w-0 overflow-y-auto bg-card dark:bg-transparent">
+    <!-- Header -->
+    <div class="relative bg-light flex flex-col sm:flex-row flex-0 sm:items-center sm:justify-between py-2 px-6 md:px-8 border-b">
+        <!-- Loader -->
+        <div
+            class="absolute inset-x-0 bottom-1"
+            *ngIf="isLoading">
+            <mat-progress-bar [mode]="'indeterminate'"></mat-progress-bar>
+        </div>
+        <!-- Title -->
+        <div class="text-3xl font-extrabold tracking-tight">Order Details</div>
+        <!-- Actions -->
+        <div class="flex flex-shrink-0 items-center mt-6 sm:mt-0 sm:ml-4">
+            <!-- Back to Customers Page button -->
+            <button
+                class="ml-4"
+                mat-flat-button
+                [color]="'primary'"
+                (click)="backToOrdersScreen()">
+                <mat-icon [svgIcon]="'heroicons_outline:arrow-narrow-left'"></mat-icon>
+                <span class="ml-2 mr-1">Back to Orders</span>
+            </button>
+        </div>
+    </div>
+
+    <mat-drawer-container class="sub-nav-component bg-light" autosize>
+        <mat-drawer
+            #drawer
+            class="sub-sidenav bg-light"
+            [mode]="drawerMode"
+            [opened]="drawerOpened"
+        >
+            <div *ngFor="let route of routes;let i = index">
+                <button
+                    [style.background-color]="i === selectedIndex ? '#e4e8ed' : 'transparent'"
+                    [ngClass]="i === selectedIndex ? 'opacity-1' : 'opacity-9'"
+                    mat-button
+                    class="w-full my-1 justify-content-start" 
+                    (click)="clicked(i)"
+                >
+                    <mat-icon svgIcon="{{route.icon}}" class="mr-1 opacity-8"></mat-icon>
+                    <span> {{route.title}} </span>
+                </button>
+            </div>
+        </mat-drawer>
+
+        <div class="sub-sidenav-content bg-light p-2">
+            <mat-icon class="subnav-menu-icon ml-2 mb-2" svgIcon="heroicons_outline:menu" (click)="toggleDrawer()"></mat-icon>
+            <ng-template [ngIf]="selectedIndex == 0">
+                <app-orders-summary [(isLoading)]="isLoading"></app-orders-summary>
+            </ng-template>
+            <ng-template [ngIf]="selectedIndex == 1">
+                <app-orders-entities-list [(isLoading)]="isLoading"></app-orders-entities-list>
+            </ng-template>
+            <ng-template [ngIf]="selectedIndex == 2">
+                <h2 class="text-info">Order Reports to be shown here</h2>
+            </ng-template>
+            <ng-template [ngIf]="selectedIndex == 3">
+                <h2 class="text-info">Invoices to be shown here</h2>
+            </ng-template>
+            <ng-template [ngIf]="selectedIndex == 4">
+                <h2 class="text-info">Purchase Orders to be shown here</h2>
+            </ng-template>
+            <ng-template [ngIf]="selectedIndex == 5">
+                <h2 class="text-info">Shipping Reports to be shown here</h2>
+            </ng-template>
+        </div>
+
+    </mat-drawer-container>
+
+</div>

@@ -8,6 +8,7 @@ import { debounceTime, map, switchMap, takeUntil } from 'rxjs/operators';
 import { fuseAnimations } from '@fuse/animations';
 import { OrdersBrand, OrdersCategory, OrdersList, OrdersPagination, OrdersProduct, OrdersTag, OrdersVendor } from 'app/modules/admin/apps/orders/orders-components/orders.types';
 import { OrdersService } from 'app/modules/admin/apps/orders/orders-components/orders.service';
+import { Router } from '@angular/router';
 
 @Component({
     selector       : 'orders-list',
@@ -48,7 +49,8 @@ export class OrdersListComponent implements OnInit, AfterViewInit, OnDestroy
     constructor(
         private _changeDetectorRef: ChangeDetectorRef,
         private _formBuilder: FormBuilder,
-        private _orderService: OrdersService
+        private _orderService: OrdersService,
+        private _router: Router
     )
     {
     }
@@ -575,6 +577,11 @@ export class OrdersListComponent implements OnInit, AfterViewInit, OnDestroy
             // Mark for check
             this._changeDetectorRef.markForCheck();
         }, 3000);
+    }
+
+    orderDetails(id) {
+        this.isLoading = true;
+        this._router.navigate([`/apps/orders/${id}`]);
     }
 
     /**

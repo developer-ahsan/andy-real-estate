@@ -19,6 +19,38 @@ export class OrdersService
     private _tags: BehaviorSubject<OrdersTag[] | null> = new BehaviorSubject(null);
     private _vendors: BehaviorSubject<OrdersVendor[] | null> = new BehaviorSubject(null);
     private _orders: BehaviorSubject<OrdersList[] | null> = new BehaviorSubject(null);
+    public navigationLabels = [
+        {
+            id      : 1,
+            title   : 'Summary',
+            icon    : 'heroicons_outline:document-report'
+        },
+        {
+            id      : 2,
+            title   : 'Entities List',
+            icon    : 'mat_solid:view_list',
+        },
+        {
+            id      : 3,
+            title   : 'Reports',
+            icon    : 'heroicons_outline:document-report',
+        },
+        {
+            id      : 4,
+            title   : 'Invoice',
+            icon    : 'mat_outline:inventory'
+        },
+        {
+            id      : 5,
+            title   : 'Purchase Orders',
+            icon    : 'mat_outline:featured_play_list',
+        },
+        {
+            id      : 6,
+            title   : 'Shipping Report',
+            icon    : 'mat_outline:local_shipping',
+        }
+    ]
 
     /**
      * Constructor
