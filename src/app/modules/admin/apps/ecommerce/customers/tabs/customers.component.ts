@@ -29,6 +29,7 @@ export class CustomersTabComponent implements OnInit, AfterViewInit, OnDestroy
     filteredTags: CustomersTag[];
     flashMessage: 'success' | 'error' | null = null;
     isLoading: boolean = false;
+    otherComponentLoading: boolean = false;
     pagination: CustomersPagination;
     customersCount: number = 0;
     customerTableColumns: string[] = ['_id', 'first_name', 'last_name', 'customer_email', 'customer_store', 'customer_company', 'details'];
@@ -548,6 +549,7 @@ export class CustomersTabComponent implements OnInit, AfterViewInit, OnDestroy
     tabChanged(tabChangeEvent): void {
         this.selectedTab = tabChangeEvent.tab.textLabel;
         this.isLoading = true;
+        this.otherComponentLoading = false;
     } 
 
     backToCustomersScreen(): void {

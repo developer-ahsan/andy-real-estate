@@ -1,4 +1,4 @@
-<div class="inset-0 bg-card dark:bg-transparent mt-3">
+<div class="inset-0 bg-card dark:bg-transparent mt-3" style="height: 50vh;">
     <ngx-skeleton-loader
         count="8"
         appearance="line"
@@ -6,7 +6,7 @@
         *ngIf="isLoading"
     >
     </ngx-skeleton-loader>
-    <div *ngIf="!isLoading">
+    <div *ngIf="!isLoading h-full">
         <div class="text-2xl font-semibold text-secondary">
             {{selectedTab}}
         </div>

@@ -1,4 +1,4 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input, OnInit, EventEmitter, Output } from '@angular/core';
 
 export interface PeriodicElement {
   name: string;
@@ -26,13 +26,21 @@ const ELEMENT_DATA: PeriodicElement[] = [
 })
 export class OrdersHistoryComponent implements OnInit {
   @Input() currentSelectedCustomer: any;
+  @Input() selectedTab: any;
+  @Input() isLoading: boolean;
+  @Output() isLoadingChange = new EventEmitter<boolean>();
   clickedRows = new Set<PeriodicElement>();
   displayedColumns: string[] = ['position', 'name', 'weight', 'symbol'];
   dataSource = ELEMENT_DATA;
+  ordersHistoryLength = 10;
+
+  pageSize = 10;
+  pageSizeOptions: number[] = [5, 10, 25, 100];
 
   constructor() { }
 
   ngOnInit(): void {  
+    this.isLoadingChange.emit(false);
   }
 
 }

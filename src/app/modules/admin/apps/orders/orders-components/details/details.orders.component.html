@@ -53,7 +53,7 @@
                 <app-orders-entities-list [(isLoading)]="isLoading"></app-orders-entities-list>
             </ng-template>
             <ng-template [ngIf]="selectedIndex == 2">
-                <h2 class="text-info">Order Reports to be shown here</h2>
+                <app-orders-report [(isLoading)]="isLoading"></app-orders-report>
             </ng-template>
             <ng-template [ngIf]="selectedIndex == 3">
                 <h2 class="text-info">Invoices to be shown here</h2>
@@ -63,6 +63,15 @@
             </ng-template>
             <ng-template [ngIf]="selectedIndex == 5">
                 <h2 class="text-info">Shipping Reports to be shown here</h2>
+            </ng-template>
+            <ng-template [ngIf]="selectedIndex == 6">
+                <h2 class="text-info">Cost Analysis to be shown here</h2>
+            </ng-template>
+            <ng-template [ngIf]="selectedIndex == 7">
+                <h2 class="text-info">Timeline data to be shown here</h2>
+            </ng-template>
+            <ng-template [ngIf]="selectedIndex == 8">
+                <h2 class="text-info">Incident Reports to be shown here</h2>
             </ng-template>
         </div>
 

@@ -1,12 +1,13 @@
 <div class="inset-0 min-w-50 h-200 overflow-hidden mt-5 bg-card dark:bg-transparent">
-  <ngx-skeleton-loader
-      count="8"
-      appearance="line"
-      animation="pulse"
-      *ngIf="isLoading"
-  >
-  </ngx-skeleton-loader>
-  <div *ngIf="!isLoading">
+  <!-- <ngx-skeleton-loader
+        count="8"
+        appearance="line"
+        animation="pulse"
+        *ngIf="isLoading"
+    >
+    </ngx-skeleton-loader> -->
+    <!-- <div *ngIf="!isLoading"> -->
+      <div>
     <b class="text-2xl" style="color: #64748b; line-height: 2;">Cashback</b>
     <div class="border p-3 mt-3 h-auto overflow-x-auto">
       <b>Cashback for {{currentSelectedCustomer.firstName}} {{currentSelectedCustomer.lastName}}:</b>
@@ -38,7 +39,7 @@
                 matTooltip="Recalculating this customer's cashback total for this store will go through the entire order history for this customer (excluding cancelled orders), calculate the cashback per order (per the percentage defined at the store-level), and sum this to determine the customer's new total cashback credit. This action cannot be undone"
                 matTooltipClass="example-tooltip-red"
               >
-                <mat-icon style="padding: 10px 0 0 0;" svgIcon="heroicons_outline:question-mark-circle"></mat-icon>
+                <i class="fas fa-question-circle"></i>
               </button>
               <mat-divider class="mb-2"></mat-divider>
               <div>

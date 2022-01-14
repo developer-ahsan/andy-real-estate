@@ -49,6 +49,21 @@ export class OrdersService
             id      : 6,
             title   : 'Shipping Report',
             icon    : 'mat_outline:local_shipping',
+        },
+        {
+            id      : 7,
+            title   : 'Cost Analysis',
+            icon    : 'mat_outline:price_change'
+        },
+        {
+            id      : 8,
+            title   : 'Timeline',
+            icon    : 'mat_solid:timeline',
+        },
+        {
+            id      : 9,
+            title   : 'Incident Reports',
+            icon    : 'heroicons_outline:document-report',
         }
     ]
 

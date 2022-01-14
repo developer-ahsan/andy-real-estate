@@ -1,5 +1,25 @@
-import { ChangeDetectorRef, Component, Input, OnInit } from '@angular/core';
-import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
+import { Component, Input, Output, OnInit, EventEmitter } from '@angular/core';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+
+export interface PeriodicElement {
+  name: string;
+  position: number;
+  weight: number;
+  symbol: string;
+}
+
+const ELEMENT_DATA: PeriodicElement[] = [
+  {position: 1, name: 'Hydrogen', weight: 1.0079, symbol: 'H'},
+  {position: 2, name: 'Helium', weight: 4.0026, symbol: 'He'},
+  {position: 3, name: 'Lithium', weight: 6.941, symbol: 'Li'},
+  {position: 4, name: 'Beryllium', weight: 9.0122, symbol: 'Be'},
+  {position: 5, name: 'Boron', weight: 10.811, symbol: 'B'},
+  {position: 6, name: 'Carbon', weight: 12.0107, symbol: 'C'},
+  {position: 7, name: 'Nitrogen', weight: 14.0067, symbol: 'N'},
+  {position: 8, name: 'Oxygen', weight: 15.9994, symbol: 'O'},
+  {position: 9, name: 'Fluorine', weight: 18.9984, symbol: 'F'},
+  {position: 10, name: 'Neon', weight: 20.1797, symbol: 'Ne'},
+];
 
 @Component({
   selector: 'app-reminders',
@@ -7,52 +27,41 @@ import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms'
 })
 export class RemindersComponent implements OnInit {
   @Input() currentSelectedCustomer: any;
-  flashMessage: 'success' | 'error' | null = null;
-  searchInputControl: FormControl = new FormControl();
+  @Input() selectedTab: any;
+  @Input() isLoading: boolean;
+  @Output() isLoadingChange = new EventEmitter<boolean>();
+
+  clickedRows = new Set<PeriodicElement>();
+  displayedColumns: string[] = ['position', 'name', 'weight', 'symbol'];
+  dataSource = ELEMENT_DATA;
+  logoBanksLength = 10;
+  logoForm = false;
   reminderForm: FormGroup;
-  remindersCount: number = 0;
-  isLoading: boolean = false;
+  selectedStore: string = 'select_store';
+  stores: string[] = [
+    'RaceWorldPromos.com',
+    'RaceWorldPromos.com',
+    'RaceWorldPromos.com'
+  ];
+  
+
+  pageSize = 10;
+  pageSizeOptions: number[] = [5, 10, 25, 100];
 
   constructor(
-    private _formBuilder: FormBuilder,
-    private _changeDetectorRef: ChangeDetectorRef,
+    private _formBuilder: FormBuilder
   ) { }
 
-  ngOnInit(): void {
+  ngOnInit(): void {  
+    this.isLoadingChange.emit(false);
     this.reminderForm = this._formBuilder.group({
-      Name: ['', Validators.required],
+      name: ['', Validators.required],
       alertON: ['', Validators.required],
       notes: ['']
     });
-    
   }
 
-  createReminder(): void
-  {
-      // Get the reminder object
-      console.log(this.reminderForm.getRawValue());
+  locationFormToggle(){
+    this.logoForm = !this.logoForm;
   }
-
-  
-    /**
-     * Show flash message
-     */
-     showFlashMessage(type: 'success' | 'error'): void
-     {
-        // Show the message
-        this.flashMessage = type;
-
-        // Mark for check
-        this._changeDetectorRef.markForCheck();
-
-        // Hide it after 3 seconds
-        setTimeout(() => {
-
-            this.flashMessage = null;
-
-            // Mark for check
-            this._changeDetectorRef.markForCheck();
-        }, 3000);
-    }
-
 }

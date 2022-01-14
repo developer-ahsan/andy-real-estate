@@ -259,10 +259,10 @@
                         </app-user-comments>
                     </ng-template>
                 </mat-tab>
-                <mat-tab label="FLPS Users">
+                <!-- <mat-tab label="FLPS Users">
                     <ng-container *ngTemplateOutlet="myCard"></ng-container>
                     FLPS Users
-                </mat-tab>
+                </mat-tab> -->
                 <mat-tab label="Locations">
                     <ng-template matTabContent>
                         <ng-container *ngTemplateOutlet="myCard"></ng-container>
@@ -273,34 +273,64 @@
                         </app-user-locations>
                     </ng-template>
                 </mat-tab>
-                <!-- <mat-tab label="Approval Contacts">
-                    <ng-container *ngTemplateOutlet="myCard"></ng-container>
-                    <app-approval-contacts [currentSelectedCustomer]="selectedCustomer"></app-approval-contacts>
+                <mat-tab label="Approval Contacts">
+                    <ng-template matTabContent>
+                        <ng-container *ngTemplateOutlet="myCard"></ng-container>
+                        <app-approval-contacts
+                            [currentSelectedCustomer]="selectedCustomer"
+                            [selectedTab]="selectedTab"
+                            [(isLoading)]="otherComponentLoading"
+                        ></app-approval-contacts>
+                    </ng-template>
                 </mat-tab>
                 <mat-tab label="Reminders">
                     <ng-container *ngTemplateOutlet="myCard"></ng-container>
-                    <app-reminders [currentSelectedCustomer]="selectedCustomer"></app-reminders>
+                    <app-reminders
+                        [currentSelectedCustomer]="selectedCustomer"
+                        [selectedTab]="selectedTab"
+                        [(isLoading)]="isLoading"
+                    ></app-reminders>
                 </mat-tab>
                 <mat-tab label="Order History">
                     <ng-container *ngTemplateOutlet="myCard"></ng-container>
-                    <app-orders-history></app-orders-history>
+                    <app-orders-history
+                        [currentSelectedCustomer]="selectedCustomer"
+                        [selectedTab]="selectedTab"
+                        [(isLoading)]="isLoading"
+                    ></app-orders-history>
                 </mat-tab>
                 <mat-tab label="Fulfillment Orders">
                     <ng-container *ngTemplateOutlet="myCard"></ng-container>
-                    <app-fulfillment-orders></app-fulfillment-orders>
+                    <app-fulfillment-orders
+                        [currentSelectedCustomer]="selectedCustomer"
+                        [selectedTab]="selectedTab"
+                        [(isLoading)]="isLoading"
+                    ></app-fulfillment-orders>
                 </mat-tab>
                 <mat-tab label="Saved Carts">
                     <ng-container *ngTemplateOutlet="myCard"></ng-container>
-                    <app-saved-carts></app-saved-carts>
+                    <app-saved-carts
+                        [currentSelectedCustomer]="selectedCustomer"
+                        [selectedTab]="selectedTab"
+                        [(isLoading)]="isLoading"
+                    ></app-saved-carts>
                 </mat-tab>
                 <mat-tab label="Quotes">
                     <ng-container *ngTemplateOutlet="myCard"></ng-container>
-                    <app-quotes></app-quotes>
+                    <app-quotes
+                        [currentSelectedCustomer]="selectedCustomer"
+                        [selectedTab]="selectedTab"
+                        [(isLoading)]="isLoading"
+                    ></app-quotes>
                 </mat-tab>
                 <mat-tab label="Group Orders">
                     <ng-container *ngTemplateOutlet="myCard"></ng-container>
-                    <app-group-orders></app-group-orders>
-                </mat-tab> -->
+                    <app-group-orders
+                        [currentSelectedCustomer]="selectedCustomer"
+                        [selectedTab]="selectedTab"
+                        [(isLoading)]="isLoading"
+                    ></app-group-orders>
+                </mat-tab>
                 <mat-tab label="Logo Bank">
                     <ng-template matTabContent>
                         <ng-container *ngTemplateOutlet="myCard"></ng-container>
@@ -323,11 +353,19 @@
                 </mat-tab>
                 <mat-tab label="Store Usage">
                     <ng-container *ngTemplateOutlet="myCard"></ng-container>
-                    <app-store-usage></app-store-usage>
+                    <app-store-usage
+                        [currentSelectedCustomer]="selectedCustomer"
+                        [selectedTab]="selectedTab"
+                        [(isLoading)]="isLoading"
+                    ></app-store-usage>
                 </mat-tab>
                 <mat-tab label="Send Registration Emails">
                     <ng-container *ngTemplateOutlet="myCard"></ng-container>
-                    <app-send-register-emails></app-send-register-emails>
+                    <app-send-register-emails
+                        [currentSelectedCustomer]="selectedCustomer"
+                        [selectedTab]="selectedTab"
+                        [(isLoading)]="isLoading"
+                    ></app-send-register-emails>
                 </mat-tab>
             </mat-tab-group>
         </div>
