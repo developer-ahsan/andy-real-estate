@@ -56,19 +56,19 @@
                 <app-orders-report [(isLoading)]="isLoading"></app-orders-report>
             </ng-template>
             <ng-template [ngIf]="selectedIndex == 3">
-                <h2 class="text-info">Invoices to be shown here</h2>
+                <app-invoices [(isLoading)]="isLoading"></app-invoices>
             </ng-template>
             <ng-template [ngIf]="selectedIndex == 4">
                 <h2 class="text-info">Purchase Orders to be shown here</h2>
             </ng-template>
             <ng-template [ngIf]="selectedIndex == 5">
-                <h2 class="text-info">Shipping Reports to be shown here</h2>
+                <app-orders-shipping-reports [(isLoading)]="isLoading"></app-orders-shipping-reports>
             </ng-template>
             <ng-template [ngIf]="selectedIndex == 6">
-                <h2 class="text-info">Cost Analysis to be shown here</h2>
+                <app-cost-analysis [(isLoading)]="isLoading"></app-cost-analysis>
             </ng-template>
             <ng-template [ngIf]="selectedIndex == 7">
-                <h2 class="text-info">Timeline data to be shown here</h2>
+                <app-timeline [(isLoading)]="isLoading"></app-timeline>
             </ng-template>
             <ng-template [ngIf]="selectedIndex == 8">
                 <h2 class="text-info">Incident Reports to be shown here</h2>

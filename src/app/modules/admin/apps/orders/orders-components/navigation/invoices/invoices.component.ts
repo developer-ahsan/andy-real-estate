@@ -1,10 +1,10 @@
 import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
 
 @Component({
-  selector: 'app-orders-shipping-reports',
-  templateUrl: './orders-shipping-reports.component.html'
+  selector: 'app-invoices',
+  templateUrl: './invoices.component.html'
 })
-export class OrdersShippingReportsComponent implements OnInit {
+export class InvoicesComponent implements OnInit {
   @Input() isLoading: boolean;
   @Output() isLoadingChange = new EventEmitter<boolean>();
 

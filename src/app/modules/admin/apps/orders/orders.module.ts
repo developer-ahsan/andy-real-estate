@@ -32,6 +32,9 @@ import { OrdersReportComponent } from './orders-components/navigation/orders-rep
 import { OrdersInvoiceComponent } from './orders-components/navigation/orders-invoice/orders-invoice.component';
 import { OrdersPurchasesComponent } from './orders-components/navigation/orders-purchases/orders-purchases.component';
 import { OrdersShippingReportsComponent } from './orders-components/navigation/orders-shipping-reports/orders-shipping-reports.component';
+import { InvoicesComponent } from './orders-components/navigation/invoices/invoices.component';
+import { CostAnalysisComponent } from './orders-components/navigation/cost-analysis/cost-analysis.component';
+import { TimelineComponent } from './orders-components/navigation/timeline/timeline.component';
 
 @NgModule({
     declarations: [
@@ -43,7 +46,10 @@ import { OrdersShippingReportsComponent } from './orders-components/navigation/o
         OrdersReportComponent,
         OrdersInvoiceComponent,
         OrdersPurchasesComponent,
-        OrdersShippingReportsComponent
+        OrdersShippingReportsComponent,
+        InvoicesComponent,
+        CostAnalysisComponent,
+        TimelineComponent
     ],
     imports     : [
         RouterModule.forChild(ordersRoutes),
