@@ -26,15 +26,16 @@ import { OrdersComponent } from 'app/modules/admin/apps/orders/orders-components
 import { OrdersListComponent } from 'app/modules/admin/apps/orders/orders-components/list/orders.component';
 import { ordersRoutes } from 'app/modules/admin/apps/orders/orders.routing';
 import { OrdersDetailsComponent } from 'app/modules/admin/apps/orders/orders-components/details/details.orders.component';
-import { OrdersSummaryComponent } from './orders-components/navigation/orders-summary/orders-summary.component';
-import { OrdersEntitiesListComponent } from './orders-components/navigation/orders-entities-list/orders-entities-list.component';
-import { OrdersReportComponent } from './orders-components/navigation/orders-report/orders-report.component';
-import { OrdersInvoiceComponent } from './orders-components/navigation/orders-invoice/orders-invoice.component';
-import { OrdersPurchasesComponent } from './orders-components/navigation/orders-purchases/orders-purchases.component';
-import { OrdersShippingReportsComponent } from './orders-components/navigation/orders-shipping-reports/orders-shipping-reports.component';
-import { InvoicesComponent } from './orders-components/navigation/invoices/invoices.component';
-import { CostAnalysisComponent } from './orders-components/navigation/cost-analysis/cost-analysis.component';
-import { TimelineComponent } from './orders-components/navigation/timeline/timeline.component';
+import { OrdersSummaryComponent } from 'app/modules/admin/apps/orders/orders-components/navigation/orders-summary/orders-summary.component';
+import { OrdersEntitiesListComponent } from 'app/modules/admin/apps/orders/orders-components/navigation/orders-entities-list/orders-entities-list.component';
+import { OrdersReportComponent } from 'app/modules/admin/apps/orders/orders-components/navigation/orders-report/orders-report.component';
+import { OrdersInvoiceComponent } from 'app/modules/admin/apps/orders/orders-components/navigation/orders-invoice/orders-invoice.component';
+import { OrdersPurchasesComponent } from 'app/modules/admin/apps/orders/orders-components/navigation/orders-purchases/orders-purchases.component';
+import { OrdersShippingReportsComponent } from 'app/modules/admin/apps/orders/orders-components/navigation/orders-shipping-reports/orders-shipping-reports.component';
+import { InvoicesComponent } from 'app/modules/admin/apps/orders/orders-components/navigation/invoices/invoices.component';
+import { CostAnalysisComponent } from 'app/modules/admin/apps/orders/orders-components/navigation/cost-analysis/cost-analysis.component';
+import { TimelineComponent } from 'app/modules/admin/apps/orders/orders-components/navigation/timeline/timeline.component';
+import { IncidentReportsComponent } from 'app/modules/admin/apps/orders/orders-components/navigation/incident-reports/incident-reports.component';
 
 @NgModule({
     declarations: [
@@ -49,9 +50,10 @@ import { TimelineComponent } from './orders-components/navigation/timeline/timel
         OrdersShippingReportsComponent,
         InvoicesComponent,
         CostAnalysisComponent,
-        TimelineComponent
+        TimelineComponent,
+        IncidentReportsComponent
     ],
-    imports     : [
+    imports: [
         RouterModule.forChild(ordersRoutes),
         MatButtonModule,
         MatCheckboxModule,
@@ -77,6 +79,5 @@ import { TimelineComponent } from './orders-components/navigation/timeline/timel
         MatSidenavModule
     ]
 })
-export class OrdersModule
-{
+export class OrdersModule {
 }
