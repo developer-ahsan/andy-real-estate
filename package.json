@@ -34,6 +34,7 @@
         "apexcharts": "3.26.2",
         "crypto-js": "3.3.0",
         "highlight.js": "10.7.2",
+        "jspdf": "^2.5.0",
         "lodash-es": "4.17.21",
         "moment": "2.29.1",
         "ng-apexcharts": "1.5.9",
