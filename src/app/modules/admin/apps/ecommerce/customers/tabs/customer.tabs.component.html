@@ -1,11 +1,10 @@
 <div class="absolute inset-0 flex flex-col min-w-0 bg-card dark:bg-transparent">
 
     <!-- Header -->
-    <div class="relative flex flex-col sm:flex-row flex-0 sm:items-center sm:justify-between py-2 px-6 md:px-8 border-b">
+    <div
+        class="relative flex flex-col sm:flex-row flex-0 sm:items-center sm:justify-between py-2 px-6 md:px-8 border-b">
         <!-- Loader -->
-        <div
-            class="absolute inset-x-0 bottom-1"
-            *ngIf="isLoading">
+        <div class="absolute inset-x-0 bottom-1" *ngIf="isLoading">
             <mat-progress-bar [mode]="'indeterminate'"></mat-progress-bar>
         </div>
         <!-- Title -->
@@ -13,11 +12,7 @@
         <!-- Actions -->
         <div class="flex flex-shrink-0 items-center mt-6 sm:mt-0 sm:ml-4">
             <!-- Back to Customers Page button -->
-            <button
-                class="ml-4"
-                mat-flat-button
-                [color]="'primary'"
-                (click)="backToCustomersScreen()">
+            <button class="ml-4" mat-flat-button [color]="'primary'" (click)="backToCustomersScreen()">
                 <mat-icon [svgIcon]="'heroicons_outline:arrow-narrow-left'"></mat-icon>
                 <span class="ml-2 mr-1">Back to Customers</span>
             </button>
@@ -28,32 +23,39 @@
         <ng-template #myCard>
             <div class="mb-2">
                 <mat-card>
-                <mat-card-subtitle class="text-1xl font-semibold" style="color: black;">Customer General Information</mat-card-subtitle>
+                    <mat-card-subtitle class="text-1xl font-semibold" style="color: black;">Customer General Information
+                    </mat-card-subtitle>
                     <mat-card-content>
                         <mat-grid-list cols="{{breakpoint}}" rowHeight="35px" (window:resize)="onResize($event)">
                             <mat-grid-tile>
                                 <mat-grid-tile-header>ID: </mat-grid-tile-header>
-                                <mat-grid-tile-footer>{{selectedCustomer?.pk_userID || not_available}}</mat-grid-tile-footer>
+                                <mat-grid-tile-footer>{{selectedCustomer?.pk_userID || not_available}}
+                                </mat-grid-tile-footer>
                             </mat-grid-tile>
                             <mat-grid-tile>
                                 <mat-grid-tile-header>Name: </mat-grid-tile-header>
-                                <mat-grid-tile-footer>{{selectedCustomer?.firstName || not_available}} {{selectedCustomer?.lastName || not_available}}</mat-grid-tile-footer>
+                                <mat-grid-tile-footer>{{selectedCustomer?.firstName || not_available}}
+                                    {{selectedCustomer?.lastName || not_available}}</mat-grid-tile-footer>
                             </mat-grid-tile>
                             <mat-grid-tile>
                                 <mat-grid-tile-header>Company: </mat-grid-tile-header>
-                                <mat-grid-tile-footer>{{selectedCustomer?.companyName || not_available}}</mat-grid-tile-footer>
+                                <mat-grid-tile-footer>{{selectedCustomer?.companyName || not_available}}
+                                </mat-grid-tile-footer>
                             </mat-grid-tile>
                             <mat-grid-tile>
                                 <mat-grid-tile-header>Email: </mat-grid-tile-header>
-                                <mat-grid-tile-footer>{{selectedCustomer?.email || not_available}}</mat-grid-tile-footer>
+                                <mat-grid-tile-footer>{{selectedCustomer?.email || not_available}}
+                                </mat-grid-tile-footer>
                             </mat-grid-tile>
                             <mat-grid-tile>
                                 <mat-grid-tile-header>Phone: </mat-grid-tile-header>
-                                <mat-grid-tile-footer>{{selectedCustomer?.dayPhone || not_available}}</mat-grid-tile-footer>
+                                <mat-grid-tile-footer>{{selectedCustomer?.dayPhone || not_available}}
+                                </mat-grid-tile-footer>
                             </mat-grid-tile>
                             <mat-grid-tile>
                                 <mat-grid-tile-header>Location: </mat-grid-tile-header>
-                                <mat-grid-tile-footer>{{selectedCustomer?.address1 || not_available}}</mat-grid-tile-footer>
+                                <mat-grid-tile-footer>{{selectedCustomer?.address1 || not_available}}
+                                </mat-grid-tile-footer>
                             </mat-grid-tile>
                             <mat-grid-tile>
                                 <mat-grid-tile-header>Fax: </mat-grid-tile-header>
@@ -61,148 +63,113 @@
                             </mat-grid-tile>
                             <mat-grid-tile>
                                 <mat-grid-tile-header>Program manager: </mat-grid-tile-header>
-                                <mat-grid-tile-footer>{{selectedCustomer?.programManager || not_available}}</mat-grid-tile-footer>
+                                <mat-grid-tile-footer>{{selectedCustomer?.programManager || not_available}}
+                                </mat-grid-tile-footer>
                             </mat-grid-tile>
                             <mat-grid-tile>
                                 <mat-grid-tile-header>Status: </mat-grid-tile-header>
-                                <mat-grid-tile-footer>{{selectedCustomer.blnActive ? "Active" : "Inactive"}}</mat-grid-tile-footer>
+                                <mat-grid-tile-footer>{{selectedCustomer.blnActive ? "Active" : "Inactive"}}
+                                </mat-grid-tile-footer>
                             </mat-grid-tile>
                         </mat-grid-list>
                     </mat-card-content>
-            </mat-card>
+                </mat-card>
             </div>
         </ng-template>
-        
+
         <!-- Main -->
         <div class="flex flex-auto mt-2">
-            <mat-tab-group 
-                #tabGroup 
-                (selectedTabChange)="tabChanged($event)"
-                style="overflow-x: scroll;"
-            >
+            <mat-tab-group #tabGroup (selectedTabChange)="tabChanged($event)" style="overflow-x: scroll;">
                 <mat-tab label="User Info">
                     <ng-container *ngTemplateOutlet="myCard"></ng-container>
                     <div class="text-2xl font-semibold" style="color: #64748b;">User Info</div>
                     <mat-divider></mat-divider>
-                    <form
-                        class="flex flex-col w-full pt-2"
-                        [formGroup]="selectedCustomerForm"
-                    >
+                    <form class="flex flex-col w-full pt-2" [formGroup]="selectedCustomerForm">
                         <div class="flex pt-2">
                             <div class="flex flex-auto">
                                 <div class="flex flex-col w-2/4 pl-8">
-    
+
                                     <!-- Email -->
                                     <mat-form-field class="w-full">
                                         <mat-label>Email</mat-label>
-                                        <input
-                                            matInput
-                                            [formControlName]="'email'">
+                                        <input matInput [formControlName]="'email'">
                                     </mat-form-field>
-    
+
                                     <!-- First Name and Last Name -->
                                     <div class="flex">
                                         <mat-form-field class="w-full pr-2">
                                             <mat-label>First Name</mat-label>
-                                            <input
-                                                matInput
-                                                [formControlName]="'firstName'">
+                                            <input matInput [formControlName]="'firstName'">
                                         </mat-form-field>
                                         <mat-form-field class="w-full pl-2">
                                             <mat-label>Last Name</mat-label>
-                                            <input
-                                                matInput
-                                                [formControlName]="'lastName'">
+                                            <input matInput [formControlName]="'lastName'">
                                         </mat-form-field>
                                     </div>
-    
+
                                     <!-- First Name and Last Name -->
                                     <div class="flex">
                                         <mat-form-field class="w-full pr-2">
                                             <mat-label>Store</mat-label>
-                                            <input
-                                                matInput
-                                                [formControlName]="'storeName'">
+                                            <input matInput [formControlName]="'storeName'">
                                         </mat-form-field>
                                         <mat-form-field class="w-full pl-2">
                                             <mat-label>Company Name</mat-label>
-                                            <input
-                                                matInput
-                                                [formControlName]="'companyName'">
+                                            <input matInput [formControlName]="'companyName'">
                                         </mat-form-field>
                                     </div>
                                 </div>
-    
+
                                 <!-- Cost, Base price, Tax & Price -->
                                 <div class="flex flex-col w-1/4 pl-8">
                                     <mat-form-field class="w-full">
                                         <mat-label>Date Registered</mat-label>
-                                        <input
-                                            matInput
-                                            [formControlName]="'date'">
+                                        <input matInput [formControlName]="'date'">
                                     </mat-form-field>
                                     <mat-form-field class="w-full">
                                         <mat-label>Title</mat-label>
-                                        <input
-                                            matInput
-                                            [formControlName]="'title'">
+                                        <input matInput [formControlName]="'title'">
                                     </mat-form-field>
                                     <mat-form-field class="w-full">
                                         <mat-label>Fax</mat-label>
-                                        <input
-                                            matInput
-                                            [formControlName]="'fax'">
+                                        <input matInput [formControlName]="'fax'">
                                     </mat-form-field>
                                 </div>
-    
+
                                 <!-- Weight & Tags -->
                                 <div class="flex flex-col w-1/4 pl-8">
                                     <mat-form-field class="w-full">
                                         <mat-label>IP Address</mat-label>
-                                        <input
-                                            matInput
-                                            [formControlName]="'ipaddress'">
+                                        <input matInput [formControlName]="'ipaddress'">
                                     </mat-form-field>
                                     <mat-form-field class="w-full">
                                         <mat-label>Department</mat-label>
-                                        <input
-                                            matInput
-                                            [formControlName]="'department'">
+                                        <input matInput [formControlName]="'department'">
                                     </mat-form-field>
                                     <mat-form-field class="w-full">
                                         <mat-label>Website</mat-label>
-                                        <input
-                                            matInput
-                                            [formControlName]="'website'">
+                                        <input matInput [formControlName]="'website'">
                                     </mat-form-field>
                                 </div>
-    
+
                             </div>
-    
+
                         </div>
-    
+
                         <div class="flex items-center justify-between w-full border-t px-8 py-4">
                             <div class="flex items-center">
-                                <div
-                                    class="flex items-center mr-4"
-                                    *ngIf="flashMessage">
+                                <div class="flex items-center mr-4" *ngIf="flashMessage">
                                     <ng-container *ngIf="flashMessage === 'success'">
-                                        <mat-icon
-                                            class="text-green-500"
-                                            [svgIcon]="'heroicons_outline:check'"></mat-icon>
+                                        <mat-icon class="text-green-500" [svgIcon]="'heroicons_outline:check'">
+                                        </mat-icon>
                                         <span class="ml-2">Customer updated</span>
                                     </ng-container>
                                     <ng-container *ngIf="flashMessage === 'error'">
-                                        <mat-icon
-                                            class="text-red-500"
-                                            [svgIcon]="'heroicons_outline:x'"></mat-icon>
+                                        <mat-icon class="text-red-500" [svgIcon]="'heroicons_outline:x'"></mat-icon>
                                         <span class="ml-2">An error occurred, try again!</span>
                                     </ng-container>
                                 </div>
-                                <button
-                                    mat-flat-button
-                                    [color]="'primary'"
-                                    (click)="updateCustomerProduct()">
+                                <button mat-flat-button [color]="'primary'" (click)="updateCustomerProduct()">
                                     Update
                                 </button>
                             </div>
@@ -212,9 +179,7 @@
                 <mat-tab label="User Addresses">
                     <ng-template matTabContent>
                         <ng-container *ngTemplateOutlet="myCard"></ng-container>
-                        <app-user-address 
-                            [currentSelectedCustomer]="selectedCustomer"
-                            [selectedTab]="selectedTab"
+                        <app-user-address [currentSelectedCustomer]="selectedCustomer" [selectedTab]="selectedTab"
                             [(isLoading)]="isLoading">
                         </app-user-address>
                     </ng-template>
@@ -222,9 +187,7 @@
                 <mat-tab label="Metrics">
                     <ng-template matTabContent>
                         <ng-container *ngTemplateOutlet="myCard"></ng-container>
-                        <app-user-metrics
-                            [currentSelectedCustomer]="selectedCustomer"
-                            [selectedTab]="selectedTab"
+                        <app-user-metrics [currentSelectedCustomer]="selectedCustomer" [selectedTab]="selectedTab"
                             [(isLoading)]="isLoading">
                         </app-user-metrics>
                     </ng-template>
@@ -232,9 +195,7 @@
                 <mat-tab label="Credit Terms">
                     <ng-template matTabContent>
                         <ng-container *ngTemplateOutlet="myCard"></ng-container>
-                        <app-credit-terms 
-                            [currentSelectedCustomer]="selectedCustomer"
-                            [selectedTab]="selectedTab"
+                        <app-credit-terms [currentSelectedCustomer]="selectedCustomer" [selectedTab]="selectedTab"
                             [(isLoading)]="isLoading">
                         </app-credit-terms>
                     </ng-template>
@@ -242,19 +203,15 @@
                 <mat-tab label="Credit Applications">
                     <ng-template matTabContent>
                         <ng-container *ngTemplateOutlet="myCard"></ng-container>
-                        <app-credit-applications
-                            [currentSelectedCustomer]="selectedCustomer"
-                            [selectedTab]="selectedTab"
-                            [(isLoading)]="isLoading">
+                        <app-credit-applications [currentSelectedCustomer]="selectedCustomer"
+                            [selectedTab]="selectedTab" [(isLoading)]="isLoading">
                         </app-credit-applications>
                     </ng-template>
                 </mat-tab>
                 <mat-tab label="User Comments">
                     <ng-template matTabContent>
                         <ng-container *ngTemplateOutlet="myCard"></ng-container>
-                        <app-user-comments 
-                            [currentSelectedCustomer]="selectedCustomer"
-                            [selectedTab]="selectedTab"
+                        <app-user-comments [currentSelectedCustomer]="selectedCustomer" [selectedTab]="selectedTab"
                             [(isLoading)]="isLoading">
                         </app-user-comments>
                     </ng-template>
@@ -266,9 +223,7 @@
                 <mat-tab label="Locations">
                     <ng-template matTabContent>
                         <ng-container *ngTemplateOutlet="myCard"></ng-container>
-                        <app-user-locations 
-                            [currentSelectedCustomer]="selectedCustomer"
-                            [selectedTab]="selectedTab"
+                        <app-user-locations [currentSelectedCustomer]="selectedCustomer" [selectedTab]="selectedTab"
                             [(isLoading)]="isLoading">
                         </app-user-locations>
                     </ng-template>
@@ -276,67 +231,44 @@
                 <mat-tab label="Approval Contacts">
                     <ng-template matTabContent>
                         <ng-container *ngTemplateOutlet="myCard"></ng-container>
-                        <app-approval-contacts
-                            [currentSelectedCustomer]="selectedCustomer"
-                            [selectedTab]="selectedTab"
-                            [(isLoading)]="otherComponentLoading"
-                        ></app-approval-contacts>
+                        <app-approval-contacts [currentSelectedCustomer]="selectedCustomer" [selectedTab]="selectedTab"
+                            [(isLoading)]="otherComponentLoading"></app-approval-contacts>
                     </ng-template>
                 </mat-tab>
                 <mat-tab label="Reminders">
                     <ng-container *ngTemplateOutlet="myCard"></ng-container>
-                    <app-reminders
-                        [currentSelectedCustomer]="selectedCustomer"
-                        [selectedTab]="selectedTab"
-                        [(isLoading)]="isLoading"
-                    ></app-reminders>
+                    <app-reminders [currentSelectedCustomer]="selectedCustomer" [selectedTab]="selectedTab"
+                        [(isLoading)]="isLoading"></app-reminders>
                 </mat-tab>
                 <mat-tab label="Order History">
                     <ng-container *ngTemplateOutlet="myCard"></ng-container>
-                    <app-orders-history
-                        [currentSelectedCustomer]="selectedCustomer"
-                        [selectedTab]="selectedTab"
-                        [(isLoading)]="isLoading"
-                    ></app-orders-history>
+                    <app-orders-history [currentSelectedCustomer]="selectedCustomer" [selectedTab]="selectedTab"
+                        [(isLoading)]="isLoading"></app-orders-history>
                 </mat-tab>
                 <mat-tab label="Fulfillment Orders">
                     <ng-container *ngTemplateOutlet="myCard"></ng-container>
-                    <app-fulfillment-orders
-                        [currentSelectedCustomer]="selectedCustomer"
-                        [selectedTab]="selectedTab"
-                        [(isLoading)]="isLoading"
-                    ></app-fulfillment-orders>
+                    <app-fulfillment-orders [currentSelectedCustomer]="selectedCustomer" [selectedTab]="selectedTab"
+                        [(isLoading)]="isLoading"></app-fulfillment-orders>
                 </mat-tab>
                 <mat-tab label="Saved Carts">
                     <ng-container *ngTemplateOutlet="myCard"></ng-container>
-                    <app-saved-carts
-                        [currentSelectedCustomer]="selectedCustomer"
-                        [selectedTab]="selectedTab"
-                        [(isLoading)]="isLoading"
-                    ></app-saved-carts>
+                    <app-saved-carts [currentSelectedCustomer]="selectedCustomer" [selectedTab]="selectedTab"
+                        [(isLoading)]="isLoading"></app-saved-carts>
                 </mat-tab>
                 <mat-tab label="Quotes">
                     <ng-container *ngTemplateOutlet="myCard"></ng-container>
-                    <app-quotes
-                        [currentSelectedCustomer]="selectedCustomer"
-                        [selectedTab]="selectedTab"
-                        [(isLoading)]="isLoading"
-                    ></app-quotes>
+                    <app-quotes [currentSelectedCustomer]="selectedCustomer" [selectedTab]="selectedTab"
+                        [(isLoading)]="isLoading"></app-quotes>
                 </mat-tab>
                 <mat-tab label="Group Orders">
                     <ng-container *ngTemplateOutlet="myCard"></ng-container>
-                    <app-group-orders
-                        [currentSelectedCustomer]="selectedCustomer"
-                        [selectedTab]="selectedTab"
-                        [(isLoading)]="isLoading"
-                    ></app-group-orders>
+                    <app-group-orders [currentSelectedCustomer]="selectedCustomer" [selectedTab]="selectedTab"
+                        [(isLoading)]="isLoading"></app-group-orders>
                 </mat-tab>
                 <mat-tab label="Logo Bank">
                     <ng-template matTabContent>
                         <ng-container *ngTemplateOutlet="myCard"></ng-container>
-                        <app-logo-bank 
-                            [currentSelectedCustomer]="selectedCustomer"
-                            [selectedTab]="selectedTab"
+                        <app-logo-bank [currentSelectedCustomer]="selectedCustomer" [selectedTab]="selectedTab"
                             [(isLoading)]="isLoading">
                         </app-logo-bank>
                     </ng-template>
@@ -344,28 +276,20 @@
                 <mat-tab label="Cashback">
                     <ng-template matTabContent>
                         <ng-container *ngTemplateOutlet="myCard"></ng-container>
-                        <app-cashback 
-                            [currentSelectedCustomer]="selectedCustomer"
-                            [selectedTab]="selectedTab"
+                        <app-cashback [currentSelectedCustomer]="selectedCustomer" [selectedTab]="selectedTab"
                             [(isLoading)]="isLoading">
                         </app-cashback>
                     </ng-template>
                 </mat-tab>
                 <mat-tab label="Store Usage">
                     <ng-container *ngTemplateOutlet="myCard"></ng-container>
-                    <app-store-usage
-                        [currentSelectedCustomer]="selectedCustomer"
-                        [selectedTab]="selectedTab"
-                        [(isLoading)]="isLoading"
-                    ></app-store-usage>
+                    <app-store-usage [currentSelectedCustomer]="selectedCustomer" [selectedTab]="selectedTab"
+                        [(isLoading)]="isLoading"></app-store-usage>
                 </mat-tab>
                 <mat-tab label="Send Registration Emails">
                     <ng-container *ngTemplateOutlet="myCard"></ng-container>
-                    <app-send-register-emails
-                        [currentSelectedCustomer]="selectedCustomer"
-                        [selectedTab]="selectedTab"
-                        [(isLoading)]="isLoading"
-                    ></app-send-register-emails>
+                    <app-send-register-emails [currentSelectedCustomer]="selectedCustomer" [selectedTab]="selectedTab"
+                        [(isLoading)]="isLoading"></app-send-register-emails>
                 </mat-tab>
             </mat-tab-group>
         </div>

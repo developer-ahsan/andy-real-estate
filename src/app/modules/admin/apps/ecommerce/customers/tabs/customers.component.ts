@@ -11,14 +11,13 @@ import { CustomersService } from 'app/modules/admin/apps/ecommerce/customers/cus
 import { ActivatedRoute, Router } from '@angular/router';
 
 @Component({
-    selector       : 'customers',
-    templateUrl    : './customer.tabs.component.html',
-    encapsulation  : ViewEncapsulation.None,
+    selector: 'customers',
+    templateUrl: './customer.tabs.component.html',
+    encapsulation: ViewEncapsulation.None,
     changeDetection: ChangeDetectionStrategy.OnPush,
-    animations     : fuseAnimations
+    animations: fuseAnimations
 })
-export class CustomersTabComponent implements OnInit, AfterViewInit, OnDestroy
-{
+export class CustomersTabComponent implements OnInit, AfterViewInit, OnDestroy {
     @ViewChild(MatPaginator) private _paginator: MatPaginator;
     @ViewChild(MatSort) private _sort: MatSort;
 
@@ -55,8 +54,7 @@ export class CustomersTabComponent implements OnInit, AfterViewInit, OnDestroy
         private _customerService: CustomersService,
         private _router: Router,
         private route: ActivatedRoute,
-    )
-    {
+    ) {
     }
 
     // -----------------------------------------------------------------------------------------------------
@@ -66,8 +64,7 @@ export class CustomersTabComponent implements OnInit, AfterViewInit, OnDestroy
     /**
      * On init
      */
-    ngOnInit(): void
-    {
+    ngOnInit(): void {
         // get customerId from params
         this.route.queryParamMap
             .subscribe((parameters) => {
@@ -76,30 +73,30 @@ export class CustomersTabComponent implements OnInit, AfterViewInit, OnDestroy
                 this.selectedCustomerId = customerId;
             }
             );
-    
+
         // Create the selected product form
         this.selectedCustomerForm = this._formBuilder.group({
-            id               : [''],
-            firstName        : [''],
-            lastName         : [''],
-            email            : [''],
-            companyName      : [''],
-            storeName        : [''],
-            title            : [''],
-            date             : [''],
-            ipaddress        : [''],
-            fax              : [''],
-            dayPhone         : [''],
-            blnActive        : [''],
-            website          : [''],
-            department       : ['']
+            id: [''],
+            firstName: [''],
+            lastName: [''],
+            email: [''],
+            companyName: [''],
+            storeName: [''],
+            title: [''],
+            date: [''],
+            ipaddress: [''],
+            fax: [''],
+            dayPhone: [''],
+            blnActive: [''],
+            website: [''],
+            department: ['']
         });
 
         // Get the brands
         this._customerService.brands$
             .pipe(takeUntil(this._unsubscribeAll))
             .subscribe((brands: CustomersBrand[]) => {
-                
+
                 // Update the brands
                 this.brands = brands;
 
@@ -185,20 +182,19 @@ export class CustomersTabComponent implements OnInit, AfterViewInit, OnDestroy
             )
             .subscribe();
 
-            this.toggleDetails(this.selectedCustomerId);
-            this.breakpoint = (window.innerWidth <= 620) ? 1 : (window.innerWidth <= 820) ? 2 : (window.innerWidth <= 1300) ? 3 : 4;
+        this.toggleDetails(this.selectedCustomerId);
+        this.breakpoint = (window.innerWidth <= 620) ? 1 : (window.innerWidth <= 820) ? 2 : (window.innerWidth <= 1300) ? 3 : 4;
     }
 
     /**
      * After view init
      */
-    ngAfterViewInit(): void{}
+    ngAfterViewInit(): void { }
 
     /**
      * On destroy
      */
-    ngOnDestroy(): void
-    {
+    ngOnDestroy(): void {
         // Unsubscribe from all subscriptions
         this._unsubscribeAll.next();
         this._unsubscribeAll.complete();
@@ -210,7 +206,7 @@ export class CustomersTabComponent implements OnInit, AfterViewInit, OnDestroy
 
     // Resizing screen 
     onResize(event) {
-        this.breakpoint = (event.target.innerWidth <= 620) ? 1  : (event.target.innerWidth <= 820) ? 2 : (window.innerWidth <= 1300) ? 3 : 4;
+        this.breakpoint = (event.target.innerWidth <= 620) ? 1 : (event.target.innerWidth <= 820) ? 2 : (window.innerWidth <= 1300) ? 3 : 4;
     }
 
     /**
@@ -218,18 +214,16 @@ export class CustomersTabComponent implements OnInit, AfterViewInit, OnDestroy
      *
      * @param customerId
      */
-    toggleDetails(customerId: string): void
-    {
+    toggleDetails(customerId: string): void {
         // If the customer is already selected...
-        if ( this.selectedCustomer && this.selectedCustomer.pk_userID === customerId )
-        {
+        if (this.selectedCustomer && this.selectedCustomer.pk_userID === customerId) {
             // Close the details
             this.closeDetails();
             return;
         }
 
         // Get the customer by id
-        this._customerService.getCustomerById(customerId)
+        this._customerService.getSingleCustomerDetails(customerId)
             .subscribe((customer) => {
 
                 // Set the selected customer
@@ -249,16 +243,14 @@ export class CustomersTabComponent implements OnInit, AfterViewInit, OnDestroy
     /**
      * Close the details
      */
-    closeDetails(): void
-    {
+    closeDetails(): void {
         this.selectedCustomer = null;
     }
 
     /**
      * Cycle through images of selected product
      */
-    cycleImages(forward: boolean = true): void
-    {
+    cycleImages(forward: boolean = true): void {
         // Get the image count and current image index
         const count = this.selectedCustomerForm.get('images').value.length;
         const currentIndex = this.selectedCustomerForm.get('currentImageIndex').value;
@@ -268,13 +260,11 @@ export class CustomersTabComponent implements OnInit, AfterViewInit, OnDestroy
         const prevIndex = currentIndex - 1 < 0 ? count - 1 : currentIndex - 1;
 
         // If cycling forward...
-        if ( forward )
-        {
+        if (forward) {
             this.selectedCustomerForm.get('currentImageIndex').setValue(nextIndex);
         }
         // If cycling backwards...
-        else
-        {
+        else {
             this.selectedCustomerForm.get('currentImageIndex').setValue(prevIndex);
         }
     }
@@ -282,8 +272,7 @@ export class CustomersTabComponent implements OnInit, AfterViewInit, OnDestroy
     /**
      * Toggle the tags edit mode
      */
-    toggleTagsEditMode(): void
-    {
+    toggleTagsEditMode(): void {
         this.tagsEditMode = !this.tagsEditMode;
     }
 
@@ -292,8 +281,7 @@ export class CustomersTabComponent implements OnInit, AfterViewInit, OnDestroy
      *
      * @param event
      */
-    filterTags(event): void
-    {
+    filterTags(event): void {
         // Get the value
         const value = event.target.value.toLowerCase();
 
@@ -306,17 +294,14 @@ export class CustomersTabComponent implements OnInit, AfterViewInit, OnDestroy
      *
      * @param event
      */
-    filterTagsInputKeyDown(event): void
-    {
+    filterTagsInputKeyDown(event): void {
         // Return if the pressed key is not 'Enter'
-        if ( event.key !== 'Enter' )
-        {
+        if (event.key !== 'Enter') {
             return;
         }
 
         // If there is no tag available...
-        if ( this.filteredTags.length === 0 )
-        {
+        if (this.filteredTags.length === 0) {
             // Create the tag
             this.createTag(event.target.value);
 
@@ -332,13 +317,11 @@ export class CustomersTabComponent implements OnInit, AfterViewInit, OnDestroy
         const isTagApplied = [].find(id => id === tag.id);
 
         // If the found tag is already applied to the contact...
-        if ( isTagApplied )
-        {
+        if (isTagApplied) {
             // Remove the tag from the contact
             this.removeTagFromProduct(tag);
         }
-        else
-        {
+        else {
             // Otherwise add the tag to the contact
             this.addTagToProduct(tag);
         }
@@ -349,8 +332,7 @@ export class CustomersTabComponent implements OnInit, AfterViewInit, OnDestroy
      *
      * @param title
      */
-    createTag(title: string): void
-    {
+    createTag(title: string): void {
         const tag = {
             title
         };
@@ -370,8 +352,7 @@ export class CustomersTabComponent implements OnInit, AfterViewInit, OnDestroy
      * @param tag
      * @param event
      */
-    updateTagTitle(tag: CustomersTag, event): void
-    {
+    updateTagTitle(tag: CustomersTag, event): void {
         // Update the title on the tag
         tag.title = event.target.value;
 
@@ -389,8 +370,7 @@ export class CustomersTabComponent implements OnInit, AfterViewInit, OnDestroy
      *
      * @param tag
      */
-    deleteTag(tag: CustomersTag): void
-    {
+    deleteTag(tag: CustomersTag): void {
         // Delete the tag from the server
         this._customerService.deleteTag(tag.id).subscribe();
 
@@ -403,8 +383,7 @@ export class CustomersTabComponent implements OnInit, AfterViewInit, OnDestroy
      *
      * @param tag
      */
-    addTagToProduct(tag: CustomersTag): void
-    {
+    addTagToProduct(tag: CustomersTag): void {
         // Add the tag
         [].unshift(tag.id);
 
@@ -420,8 +399,7 @@ export class CustomersTabComponent implements OnInit, AfterViewInit, OnDestroy
      *
      * @param tag
      */
-    removeTagFromProduct(tag: CustomersTag): void
-    {
+    removeTagFromProduct(tag: CustomersTag): void {
         // Remove the tag
         [].splice([].findIndex(item => item === tag.id), 1);
 
@@ -438,14 +416,11 @@ export class CustomersTabComponent implements OnInit, AfterViewInit, OnDestroy
      * @param tag
      * @param change
      */
-    toggleProductTag(tag: CustomersTag, change: MatCheckboxChange): void
-    {
-        if ( change.checked )
-        {
+    toggleProductTag(tag: CustomersTag, change: MatCheckboxChange): void {
+        if (change.checked) {
             this.addTagToProduct(tag);
         }
-        else
-        {
+        else {
             this.removeTagFromProduct(tag);
         }
     }
@@ -455,16 +430,14 @@ export class CustomersTabComponent implements OnInit, AfterViewInit, OnDestroy
      *
      * @param inputValue
      */
-    shouldShowCreateTagButton(inputValue: string): boolean
-    {
+    shouldShowCreateTagButton(inputValue: string): boolean {
         return !!!(inputValue === '' || this.tags.findIndex(tag => tag.title.toLowerCase() === inputValue.toLowerCase()) > -1);
     }
 
     /**
      * Create product
      */
-     createCustomer(): void
-    {
+    createCustomer(): void {
         // Create the product
         this._customerService.createCustomer().subscribe((newCustomer) => {
 
@@ -482,8 +455,7 @@ export class CustomersTabComponent implements OnInit, AfterViewInit, OnDestroy
     /**
      * Update the selected product using the form mock-api
      */
-    updateCustomerProduct(): void
-    {
+    updateCustomerProduct(): void {
         // Get the product object
         const product = this.selectedCustomerForm.getRawValue();
 
@@ -501,8 +473,7 @@ export class CustomersTabComponent implements OnInit, AfterViewInit, OnDestroy
     /**
      * Delete the selected product using the form mock-api
      */
-    deleteSelectedCustomer(): void
-    {
+    deleteSelectedCustomer(): void {
         // Get the product object
         const product = this.selectedCustomerForm.getRawValue();
 
@@ -517,8 +488,7 @@ export class CustomersTabComponent implements OnInit, AfterViewInit, OnDestroy
     /**
      * Show flash message
      */
-    showFlashMessage(type: 'success' | 'error'): void
-    {
+    showFlashMessage(type: 'success' | 'error'): void {
         // Show the message
         this.flashMessage = type;
 
@@ -541,8 +511,7 @@ export class CustomersTabComponent implements OnInit, AfterViewInit, OnDestroy
      * @param index
      * @param item
      */
-    trackByFn(index: number, item: any): any
-    {
+    trackByFn(index: number, item: any): any {
         return item.id || index;
     }
 
@@ -550,7 +519,7 @@ export class CustomersTabComponent implements OnInit, AfterViewInit, OnDestroy
         this.selectedTab = tabChangeEvent.tab.textLabel;
         this.isLoading = true;
         this.otherComponentLoading = false;
-    } 
+    }
 
     backToCustomersScreen(): void {
         this.isLoading = true;

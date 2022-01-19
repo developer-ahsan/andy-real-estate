@@ -126,86 +126,6 @@ export class CustomersService {
                 if (search) {
                     data = this.search(search, data);
                 }
-                data.push({
-                    "companyName": "Consolidus",
-                    "dayPhone": "7249356683",
-                    "address1": "1516 West Carmen Avenue",
-                    "address2": "This thing",
-                    "city": "Chicago",
-                    "state": "IL        ",
-                    "zipCode": "60640",
-                    "storeName": "AirForceROTCShop.com",
-                    "storeID": 60,
-                    "firstName": "William",
-                    "lastName": "Harris",
-                    "email": "consolidusbill@gmail.com",
-                    "pk_userID": 1914,
-                    "date": null,
-                    "blnActive": true,
-                    "blnReminders": 0,
-                    "RowNumber": "1",
-                    "TotalRequests": 42
-                },
-                    {
-                        "companyName": "Consolidus",
-                        "dayPhone": "7249356683",
-                        "address1": "1516 West Carmen Avenue",
-                        "address2": "This thing",
-                        "city": "Chicago",
-                        "state": "IL        ",
-                        "zipCode": "60640",
-                        "storeName": "ArmyROTCShop.com",
-                        "storeID": 64,
-                        "firstName": "William",
-                        "lastName": "Harris",
-                        "email": "consolidusbill@gmail.com",
-                        "pk_userID": 1914,
-                        "date": null,
-                        "blnActive": true,
-                        "blnReminders": 0,
-                        "RowNumber": "2",
-                        "TotalRequests": 42
-                    },
-                    {
-                        "companyName": "Consolidus",
-                        "dayPhone": "7249356683",
-                        "address1": "1516 West Carmen Avenue",
-                        "address2": "This thing",
-                        "city": "Chicago",
-                        "state": "IL        ",
-                        "zipCode": "60640",
-                        "storeName": null,
-                        "storeID": null,
-                        "firstName": "William",
-                        "lastName": "Harris",
-                        "email": "consolidusbill@gmail.com",
-                        "pk_userID": 1914,
-                        "date": null,
-                        "blnActive": true,
-                        "blnReminders": 0,
-                        "RowNumber": "3",
-                        "TotalRequests": 42
-                    },
-                    {
-                        "companyName": "Consolidus",
-                        "dayPhone": "7249356683",
-                        "address1": "1516 West Carmen Avenue",
-                        "address2": "This thing",
-                        "city": "Chicago",
-                        "state": "IL        ",
-                        "zipCode": "60640",
-                        "storeName": "MySummaShop.com",
-                        "storeID": 74,
-                        "firstName": "William",
-                        "lastName": "Harris",
-                        "email": "consolidusbill@gmail.com",
-                        "pk_userID": 1914,
-                        "date": null,
-                        "blnActive": true,
-                        "blnReminders": 0,
-                        "RowNumber": "4",
-                        "TotalRequests": 42
-                    })
                 this._customers.next(data);
             })
         );
@@ -229,6 +149,24 @@ export class CustomersService {
                 return customer;
             }
         })
+    }
+
+    getSingleCustomerDetails(id: string): Observable<CustomersProduct> {
+        return this._customers.pipe(
+            take(1),
+            map((customers) => {
+                const customer = customers["data"].find(item => item.pk_userID == id) || null;
+                return customer;
+            }),
+            switchMap((customer) => {
+
+                if (!customer) {
+                    return throwError('Could not found customer with id of ' + id + '!');
+                }
+
+                return of(customer);
+            })
+        );
     }
 
     /**
