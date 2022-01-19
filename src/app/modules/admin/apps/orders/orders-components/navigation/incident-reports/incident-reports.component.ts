@@ -22,6 +22,13 @@ export class IncidentReportsComponent implements OnInit {
   ];
   isView: boolean = false;
   isViewCreateIncidentReportForm: boolean = false;
+  selectedorder: string = 'select_order';
+  orders: string[] = [
+    'YES',
+    'NO',
+    'TBD'
+  ];
+  isButtonLoader: boolean = false;
 
   constructor() { }
 
@@ -34,6 +41,10 @@ export class IncidentReportsComponent implements OnInit {
 
   viewCreateIncidentReportForm(): void {
     this.isViewCreateIncidentReportForm = !this.isViewCreateIncidentReportForm;
+  }
+
+  createIncidentReport(): void {
+    this.isButtonLoader = !this.isButtonLoader;
   }
 }
 

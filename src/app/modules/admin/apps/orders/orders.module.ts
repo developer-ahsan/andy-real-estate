@@ -20,6 +20,7 @@ import { MatGridListModule } from '@angular/material/grid-list';
 import { MatDividerModule } from '@angular/material/divider';
 import { MatRadioModule } from '@angular/material/radio';
 import { MatSidenavModule } from '@angular/material/sidenav';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatListModule } from '@angular/material/list';
 import { SharedModule } from 'app/shared/shared.module';
 import { OrdersComponent } from 'app/modules/admin/apps/orders/orders-components/orders.component';
@@ -76,7 +77,8 @@ import { IncidentReportsComponent } from 'app/modules/admin/apps/orders/orders-c
         MatDividerModule,
         MatRadioModule,
         MatListModule,
-        MatSidenavModule
+        MatSidenavModule,
+        MatProgressSpinnerModule
     ]
 })
 export class OrdersModule {

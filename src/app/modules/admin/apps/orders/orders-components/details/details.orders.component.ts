@@ -21,7 +21,7 @@ export class OrdersDetailsComponent implements OnInit, OnDestroy {
     selectedOrder: OrdersList | null = null;
     private _unsubscribeAll: Subject<any> = new Subject<any>();
     routes = [];
-    selectedIndex: number = 8;
+    selectedIndex: number = 0;
 
     // Sidebar stuff
     drawerMode: 'over' | 'side' = 'side';
