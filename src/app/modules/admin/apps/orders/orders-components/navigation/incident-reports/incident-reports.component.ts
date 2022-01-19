@@ -21,6 +21,7 @@ export class IncidentReportsComponent implements OnInit {
     { id: '215', created: "10/31/2016", created_by: "false", store: "LeadingAgeOhioShop.com", source: "Supplier", source_entities: "Hit Promotional Products" }
   ];
   isView: boolean = false;
+  isViewCreateIncidentReportForm: boolean = false;
 
   constructor() { }
 
@@ -31,5 +32,8 @@ export class IncidentReportsComponent implements OnInit {
     this.isView = !this.isView;
   }
 
+  viewCreateIncidentReportForm(): void {
+    this.isViewCreateIncidentReportForm = !this.isViewCreateIncidentReportForm;
+  }
 }
 

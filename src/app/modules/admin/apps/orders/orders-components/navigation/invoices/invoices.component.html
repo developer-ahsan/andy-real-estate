@@ -1,11 +1,6 @@
-<div
-    class="absolute mt-10 inset-0 min-w-0 text-center print:overflow-visible"
-    cdkScrollable>
+<div class="absolute mt-10 inset-0 min-w-0 text-center print:overflow-visible" cdkScrollable>
 
-    <button
-        class="float-right mr-10"
-        mat-stroked-button
-    >
+    <button class="float-right mr-10" mat-stroked-button [matTooltip]="'Save report as PDF'">
         <mat-icon svgIcon="mat_outline:picture_as_pdf"></mat-icon>
         <span class="ml-2 mr-1">PDF</span>
     </button>
@@ -14,7 +9,8 @@
     <div class="inline-block p-6 sm:p-10 text-left print:p-0">
 
         <!-- Invoice -->
-        <div class="w-240 min-w-240 p-5 rounded-2xl shadow bg-card print:w-auto print:p-0 print:rounded-none print:shadow-none print:bg-transparent">
+        <div
+            class="w-240 min-w-240 p-5 rounded-2xl shadow bg-card print:w-auto print:p-0 print:rounded-none print:shadow-none print:bg-transparent">
 
             <div class="flex items-start">
                 <div class="grid grid-rows-2 place-items-start gap-y-12 mt-10">
@@ -81,7 +77,8 @@
                 <div class="col-span-8">
                     <div class="text-lg font-medium">Prototype & Design</div>
                     <div class="mt-2 text-md text-secondary">
-                        Prototyping of the application's general workflow and the detailed design of its 72 screens as a working prototype.
+                        Prototyping of the application's general workflow and the detailed design of its 72 screens as a
+                        working prototype.
                     </div>
                 </div>
                 <div class="self-center text-right">$75.00</div>
@@ -95,7 +92,8 @@
                 <div class="col-span-8">
                     <div class="text-lg font-medium">Development</div>
                     <div class="mt-2 text-md text-secondary">
-                        The web and mobile development of the application using appropriate tools and registering it to major application stores.
+                        The web and mobile development of the application using appropriate tools and registering it to
+                        major application stores.
                     </div>
                 </div>
                 <div class="self-center text-right">$60.50</div>
@@ -109,7 +107,8 @@
                 <div class="col-span-8">
                     <div class="text-lg font-medium">Testing</div>
                     <div class="mt-2 text-md text-secondary">
-                        Extensive testing of the application using various mobile and desktop devices with different operating systems.
+                        Extensive testing of the application using various mobile and desktop devices with different
+                        operating systems.
                     </div>
                 </div>
                 <div class="self-center text-right">$25.00</div>
@@ -123,7 +122,8 @@
                 <div class="col-span-8">
                     <div class="text-lg font-medium">Documentation & Training</div>
                     <div class="mt-2 text-md text-secondary">
-                        Development of the detailed documentation, preparing guides and instructional videos and extensive training of 2 people.
+                        Development of the detailed documentation, preparing guides and instructional videos and
+                        extensive training of 2 people.
                     </div>
                 </div>
                 <div class="self-center text-right">$26.50</div>
@@ -161,9 +161,7 @@
 
             <div class="mt-10">
                 <div style="text-align: -webkit-center;">
-                    <img
-                        class="w-40"
-                        src="assets/images/logo/consolidus-logo.jpeg">
+                    <img class="w-40" src="assets/images/logo/consolidus-logo.jpeg">
                 </div>
             </div>
         </div>

@@ -1,11 +1,6 @@
-<div
-    class="absolute mt-10 inset-0 min-w-0 text-center print:overflow-visible"
-    cdkScrollable>
+<div class="absolute mt-10 inset-0 min-w-0 text-center print:overflow-visible" cdkScrollable>
 
-    <button
-        class="float-right mr-10"
-        mat-stroked-button
-    >
+    <button class="float-right mr-10" mat-stroked-button [matTooltip]="'Save report as PDF'">
         <mat-icon svgIcon="mat_outline:picture_as_pdf"></mat-icon>
         <span class="ml-2 mr-1">PDF</span>
     </button>
@@ -14,7 +9,8 @@
     <div class="inline-block p-6 sm:p-10 text-left print:p-0">
 
         <!-- Invoice -->
-        <div class="w-240 min-w-240 p-5 rounded-2xl shadow bg-card print:w-auto print:p-0 print:rounded-none print:shadow-none print:bg-transparent">
+        <div
+            class="w-240 min-w-240 p-5 rounded-2xl shadow bg-card print:w-auto print:p-0 print:rounded-none print:shadow-none print:bg-transparent">
 
             <div class="flex items-start">
                 <div class="grid grid-rows-1 mt-5">
@@ -50,7 +46,8 @@
                 <div class="col-span-8">
                     <div class="text-lg font-medium">(18016) H332: 3-Ply Disposable Face Mask Level 3 ASTM</div>
                     <div class="mt-2 text-md text-secondary">
-                        Prototyping of the application's general workflow and the detailed design of its 72 screens as a working prototype.
+                        Prototyping of the application's general workflow and the detailed design of its 72 screens as a
+                        working prototype.
                     </div>
                     <div class="mt-2 text-md text-secondary">
                         Expected: 1 package X 20.00lbs/package = 20.00lbs.
@@ -71,7 +68,7 @@
 
                 <!-- Divider -->
                 <div class="col-span-12 my-3 border-b"></div>
-                
+
                 <!-- Discount -->
                 <div class="col-span-10 self-center font-medium tracking-tight text-secondary">TOTAL DISCOUNT</div>
                 <div class="col-span-2 text-right text-lg">$180.75</div>
@@ -80,12 +77,12 @@
                 <div class="col-span-10 self-center font-medium tracking-tight text-secondary">ADJUSTMENTS</div>
                 <div class="col-span-2 text-right text-lg">$2,365.75</div>
 
-                
+
                 <!-- B.T -->
                 <div class="col-span-10 self-center font-medium tracking-tight text-secondary">TOTAL B.T</div>
                 <div class="col-span-2 text-right text-lg">$2,365.75</div>
 
-                
+
                 <!-- Tax -->
                 <div class="col-span-10 self-center font-medium tracking-tight text-secondary">TAX</div>
                 <div class="col-span-2 text-right text-lg">$2,365.75</div>
@@ -102,9 +99,7 @@
 
             <div class="mt-10">
                 <div style="text-align: -webkit-center;">
-                    <img
-                        class="w-40"
-                        src="assets/images/logo/consolidus-logo.jpeg">
+                    <img class="w-40" src="assets/images/logo/consolidus-logo.jpeg">
                 </div>
             </div>
         </div>
