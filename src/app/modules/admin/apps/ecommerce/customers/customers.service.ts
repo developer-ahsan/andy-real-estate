@@ -8,8 +8,7 @@ import { environment } from 'environments/environment';
 @Injectable({
     providedIn: 'root'
 })
-export class CustomersService
-{
+export class CustomersService {
     // Private
     private _brands: BehaviorSubject<CustomersBrand[] | null> = new BehaviorSubject(null);
     private _categories: BehaviorSubject<CustomersCategory[] | null> = new BehaviorSubject(null);
@@ -22,8 +21,7 @@ export class CustomersService
     /**
      * Constructor
      */
-    constructor(private _httpClient: HttpClient)
-    {
+    constructor(private _httpClient: HttpClient) {
     }
 
     // -----------------------------------------------------------------------------------------------------
@@ -33,56 +31,49 @@ export class CustomersService
     /**
      * Getter for brands
      */
-    get brands$(): Observable<CustomersBrand[]>
-    {
+    get brands$(): Observable<CustomersBrand[]> {
         return this._brands.asObservable();
     }
 
     /**
      * Getter for categories
      */
-    get categories$(): Observable<CustomersCategory[]>
-    {
+    get categories$(): Observable<CustomersCategory[]> {
         return this._categories.asObservable();
     }
 
     /**
      * Getter for pagination
      */
-    get pagination$(): Observable<CustomersPagination>
-    {
+    get pagination$(): Observable<CustomersPagination> {
         return this._pagination.asObservable();
     }
 
     /**
      * Getter for product
      */
-    get product$(): Observable<CustomersProduct>
-    {
+    get product$(): Observable<CustomersProduct> {
         return this._customer.asObservable();
     }
 
     /**
      * Getter for products
      */
-    get customers$(): Observable<CustomersProduct[]>
-    {
+    get customers$(): Observable<CustomersProduct[]> {
         return this._customers.asObservable();
     }
 
     /**
      * Getter for tags
      */
-    get tags$(): Observable<CustomersTag[]>
-    {
+    get tags$(): Observable<CustomersTag[]> {
         return this._tags.asObservable();
     }
 
     /**
      * Getter for vendors
      */
-    get vendors$(): Observable<CustomersVendor[]>
-    {
+    get vendors$(): Observable<CustomersVendor[]> {
         return this._vendors.asObservable();
     }
 
@@ -93,8 +84,7 @@ export class CustomersService
     /**
      * Get brands
      */
-    getBrands(): Observable<CustomersBrand[]>
-    {
+    getBrands(): Observable<CustomersBrand[]> {
         return this._httpClient.get<CustomersBrand[]>('api/apps/ecommerce/customers/brands').pipe(
             tap((brands) => {
                 this._brands.next(brands);
@@ -105,8 +95,7 @@ export class CustomersService
     /**
      * Get categories
      */
-    getCategories(): Observable<CustomersCategory[]>
-    {
+    getCategories(): Observable<CustomersCategory[]> {
         return this._httpClient.get<CustomersCategory[]>('api/apps/ecommerce/customers/categories').pipe(
             tap((categories) => {
                 this._categories.next(categories);
@@ -114,12 +103,19 @@ export class CustomersService
         );
     }
 
-     /**
-     * Get customers
-     */
-      getCustomers(page: number = 0, size: number = 10, sort: string = 'firstName', order: 'asc' | 'desc' | '' = 'asc', search: string = ''):
-      Observable<CustomersProduct[]>
-    {
+    getCustomersList(size, pageNumber): Observable<CustomersProduct[]> {
+        return this._httpClient.get<CustomersProduct[]>(`${environment.customerList}?list=true&size=${size}&page=${pageNumber}`).pipe(
+            tap((customers) => {
+                this._customers.next(customers);
+            })
+        );
+    }
+
+    /**
+    * Get customers
+    */
+    getCustomers(page: number = 0, size: number = 10, sort: string = 'firstName', order: 'asc' | 'desc' | '' = 'asc', search: string = ''):
+        Observable<CustomersProduct[]> {
         return this._httpClient.get<CustomersProduct[]>(environment.customerList, {
             params: {
                 list: true
@@ -127,7 +123,7 @@ export class CustomersService
         }).pipe(
             tap((response) => {
                 let data = response["data"];
-                if(search){
+                if (search) {
                     data = this.search(search, data);
                 }
                 data.push({
@@ -149,67 +145,67 @@ export class CustomersService
                     "blnReminders": 0,
                     "RowNumber": "1",
                     "TotalRequests": 42
-                  },
-                  {
-                    "companyName": "Consolidus",
-                    "dayPhone": "7249356683",
-                    "address1": "1516 West Carmen Avenue",
-                    "address2": "This thing",
-                    "city": "Chicago",
-                    "state": "IL        ",
-                    "zipCode": "60640",
-                    "storeName": "ArmyROTCShop.com",
-                    "storeID": 64,
-                    "firstName": "William",
-                    "lastName": "Harris",
-                    "email": "consolidusbill@gmail.com",
-                    "pk_userID": 1914,
-                    "date": null,
-                    "blnActive": true,
-                    "blnReminders": 0,
-                    "RowNumber": "2",
-                    "TotalRequests": 42
-                  },
-                  {
-                    "companyName": "Consolidus",
-                    "dayPhone": "7249356683",
-                    "address1": "1516 West Carmen Avenue",
-                    "address2": "This thing",
-                    "city": "Chicago",
-                    "state": "IL        ",
-                    "zipCode": "60640",
-                    "storeName": null,
-                    "storeID": null,
-                    "firstName": "William",
-                    "lastName": "Harris",
-                    "email": "consolidusbill@gmail.com",
-                    "pk_userID": 1914,
-                    "date": null,
-                    "blnActive": true,
-                    "blnReminders": 0,
-                    "RowNumber": "3",
-                    "TotalRequests": 42
-                  },
-                  {
-                    "companyName": "Consolidus",
-                    "dayPhone": "7249356683",
-                    "address1": "1516 West Carmen Avenue",
-                    "address2": "This thing",
-                    "city": "Chicago",
-                    "state": "IL        ",
-                    "zipCode": "60640",
-                    "storeName": "MySummaShop.com",
-                    "storeID": 74,
-                    "firstName": "William",
-                    "lastName": "Harris",
-                    "email": "consolidusbill@gmail.com",
-                    "pk_userID": 1914,
-                    "date": null,
-                    "blnActive": true,
-                    "blnReminders": 0,
-                    "RowNumber": "4",
-                    "TotalRequests": 42
-                  })
+                },
+                    {
+                        "companyName": "Consolidus",
+                        "dayPhone": "7249356683",
+                        "address1": "1516 West Carmen Avenue",
+                        "address2": "This thing",
+                        "city": "Chicago",
+                        "state": "IL        ",
+                        "zipCode": "60640",
+                        "storeName": "ArmyROTCShop.com",
+                        "storeID": 64,
+                        "firstName": "William",
+                        "lastName": "Harris",
+                        "email": "consolidusbill@gmail.com",
+                        "pk_userID": 1914,
+                        "date": null,
+                        "blnActive": true,
+                        "blnReminders": 0,
+                        "RowNumber": "2",
+                        "TotalRequests": 42
+                    },
+                    {
+                        "companyName": "Consolidus",
+                        "dayPhone": "7249356683",
+                        "address1": "1516 West Carmen Avenue",
+                        "address2": "This thing",
+                        "city": "Chicago",
+                        "state": "IL        ",
+                        "zipCode": "60640",
+                        "storeName": null,
+                        "storeID": null,
+                        "firstName": "William",
+                        "lastName": "Harris",
+                        "email": "consolidusbill@gmail.com",
+                        "pk_userID": 1914,
+                        "date": null,
+                        "blnActive": true,
+                        "blnReminders": 0,
+                        "RowNumber": "3",
+                        "TotalRequests": 42
+                    },
+                    {
+                        "companyName": "Consolidus",
+                        "dayPhone": "7249356683",
+                        "address1": "1516 West Carmen Avenue",
+                        "address2": "This thing",
+                        "city": "Chicago",
+                        "state": "IL        ",
+                        "zipCode": "60640",
+                        "storeName": "MySummaShop.com",
+                        "storeID": 74,
+                        "firstName": "William",
+                        "lastName": "Harris",
+                        "email": "consolidusbill@gmail.com",
+                        "pk_userID": 1914,
+                        "date": null,
+                        "blnActive": true,
+                        "blnReminders": 0,
+                        "RowNumber": "4",
+                        "TotalRequests": 42
+                    })
                 this._customers.next(data);
             })
         );
@@ -218,9 +214,9 @@ export class CustomersService
     /**
      * Search customers
      */
-     search(key, customers){
-        return customers.filter(function (customer) { 
-            if(
+    search(key, customers) {
+        return customers.filter(function (customer) {
+            if (
                 customer.firstName?.toLowerCase().includes(key.toLowerCase()) ||
                 customer.lastName?.toLowerCase().includes(key.toLowerCase()) ||
                 customer.email?.toLowerCase().includes(key.toLowerCase()) ||
@@ -229,24 +225,22 @@ export class CustomersService
                 customer.city?.toLowerCase().includes(key.toLowerCase()) ||
                 customer.address1?.toLowerCase().includes(key.toLowerCase()) ||
                 customer.pk_userID == key
-            )
-            {
+            ) {
                 return customer;
-            } 
+            }
         })
     }
 
     /**
      * Get product by id
      */
-     getCustomerById(id: string): Observable<CustomersProduct>
-    {
+    getCustomerById(id: string): Observable<CustomersProduct> {
         return this._customers.pipe(
             take(1),
             map((products) => {
                 // Find the product
                 const product = products.find(item => item.pk_userID == id) || null;
-                
+
                 // Update the product
                 this._customer.next(product);
                 // Return the product
@@ -254,8 +248,7 @@ export class CustomersService
             }),
             switchMap((product) => {
 
-                if ( !product )
-                {
+                if (!product) {
                     return throwError('Could not found customer with id of ' + id + '!');
                 }
 
@@ -267,8 +260,7 @@ export class CustomersService
     /**
      * Create customer
      */
-     createCustomer(): Observable<CustomersProduct>
-    {
+    createCustomer(): Observable<CustomersProduct> {
         return this.customers$.pipe(
             take(1),
             switchMap(customers => this._httpClient.post<CustomersProduct>('api/apps/ecommerce/customers/customer', {}).pipe(
@@ -290,8 +282,7 @@ export class CustomersService
      * @param id
      * @param product
      */
-    updateCustomer(id: string, product: CustomersProduct): Observable<CustomersProduct>
-    {
+    updateCustomer(id: string, product: CustomersProduct): Observable<CustomersProduct> {
         return this.customers$.pipe(
             take(1),
             switchMap(products => this._httpClient.patch<CustomersProduct>('api/apps/ecommerce/customers/customer', {
@@ -333,11 +324,10 @@ export class CustomersService
      *
      * @param id
      */
-    deleteCustomer(id: string): Observable<boolean>
-    {
+    deleteCustomer(id: string): Observable<boolean> {
         return this.customers$.pipe(
             take(1),
-            switchMap(products => this._httpClient.delete('api/apps/ecommerce/customers/customer', {params: {id}}).pipe(
+            switchMap(products => this._httpClient.delete('api/apps/ecommerce/customers/customer', { params: { id } }).pipe(
                 map((isDeleted: boolean) => {
 
                     // Find the index of the deleted product
@@ -359,8 +349,7 @@ export class CustomersService
     /**
      * Get tags
      */
-    getTags(): Observable<CustomersTag[]>
-    {
+    getTags(): Observable<CustomersTag[]> {
         return this._httpClient.get<CustomersTag[]>('api/apps/ecommerce/customers/tags').pipe(
             tap((tags) => {
                 this._tags.next(tags);
@@ -373,11 +362,10 @@ export class CustomersService
      *
      * @param tag
      */
-    createTag(tag: CustomersTag): Observable<CustomersTag>
-    {
+    createTag(tag: CustomersTag): Observable<CustomersTag> {
         return this.tags$.pipe(
             take(1),
-            switchMap(tags => this._httpClient.post<CustomersTag>('api/apps/ecommerce/customers/tag', {tag}).pipe(
+            switchMap(tags => this._httpClient.post<CustomersTag>('api/apps/ecommerce/customers/tag', { tag }).pipe(
                 map((newTag) => {
 
                     // Update the tags with the new tag
@@ -396,8 +384,7 @@ export class CustomersService
      * @param id
      * @param tag
      */
-    updateTag(id: string, tag: CustomersTag): Observable<CustomersTag>
-    {
+    updateTag(id: string, tag: CustomersTag): Observable<CustomersTag> {
         return this.tags$.pipe(
             take(1),
             switchMap(tags => this._httpClient.patch<CustomersTag>('api/apps/ecommerce/customers/tag', {
@@ -427,11 +414,10 @@ export class CustomersService
      *
      * @param id
      */
-    deleteTag(id: string): Observable<boolean>
-    {
+    deleteTag(id: string): Observable<boolean> {
         return this.tags$.pipe(
             take(1),
-            switchMap(tags => this._httpClient.delete('api/apps/ecommerce/customers/tag', {params: {id}}).pipe(
+            switchMap(tags => this._httpClient.delete('api/apps/ecommerce/customers/tag', { params: { id } }).pipe(
                 map((isDeleted: boolean) => {
 
                     // Find the index of the deleted tag
@@ -457,8 +443,7 @@ export class CustomersService
                             const tagIndex = [].findIndex(tag => tag === id);
 
                             // If the contact has the tag, remove it
-                            if ( tagIndex > -1 )
-                            {
+                            if (tagIndex > -1) {
                                 [].splice(tagIndex, 1);
                             }
                         });
@@ -474,8 +459,7 @@ export class CustomersService
     /**
      * Get vendors
      */
-    getVendors(): Observable<CustomersVendor[]>
-    {
+    getVendors(): Observable<CustomersVendor[]> {
         return this._httpClient.get<CustomersVendor[]>('api/apps/ecommerce/customers/vendors').pipe(
             tap((vendors) => {
                 this._vendors.next(vendors);
@@ -534,8 +518,7 @@ export class CustomersService
     /**
     * Get addresses of customers
     */
-    getCustomerAddresses(id: string)
-    {
+    getCustomerAddresses(id: string) {
         return this._httpClient.get(environment.customerList, {
             params: {
                 address: true,
@@ -547,68 +530,62 @@ export class CustomersService
     /**
     * Get stores of customers
     */
-     getCustomerStores(id: string)
-     {
-         return this._httpClient.get(environment.customerList, {
-             params: {
+    getCustomerStores(id: string) {
+        return this._httpClient.get(environment.customerList, {
+            params: {
                 store_usage: true,
                 user_id: id
-             }
-         })
-     }
+            }
+        })
+    }
 
-     /**
-    * Get register of customers
-    */
-      getCustomerRegisterInfo(id: string)
-      {
-          return this._httpClient.get(environment.customerList, {
-              params: {
-                 metrics: true,
-                 user_id: id
-              }
-          })
-      }
+    /**
+   * Get register of customers
+   */
+    getCustomerRegisterInfo(id: string) {
+        return this._httpClient.get(environment.customerList, {
+            params: {
+                metrics: true,
+                user_id: id
+            }
+        })
+    }
 
     /**
     * Get comments of customers
     */
-     getCustomerComments(id: string)
-     {
-         return this._httpClient.get(environment.customerList, {
-             params: {
+    getCustomerComments(id: string) {
+        return this._httpClient.get(environment.customerList, {
+            params: {
                 user_comment: true,
-                 user_id: id
-             }
-         })
-     }
+                user_id: id
+            }
+        })
+    }
 
-     /**
-    * Get Commentators of customers
-    */
-      getCommentators()
-      {
-          return this._httpClient.get(environment.customerList, {
-              params: {
+    /**
+   * Get Commentators of customers
+   */
+    getCommentators() {
+        return this._httpClient.get(environment.customerList, {
+            params: {
                 commentor: true
-              }
-          })
-      }
-    
-     /**
-    * UPDATE comments of credit-terms
-    */
-    updateUserComments(payload: AddUserComment)
-    {
+            }
+        })
+    }
+
+    /**
+   * UPDATE comments of credit-terms
+   */
+    updateUserComments(payload: AddUserComment) {
         return this._httpClient.put(
             `${environment.customerList}?commentor=true`, payload);
     }
 
-     /**
-    * get credit-terms
-    */
-    getCreditTerms(id: string, )
-    {
+    /**
+   * get credit-terms
+   */
+    getCreditTerms(id: string,) {
         return this._httpClient.get(environment.customerList, {
             params: {
                 credit_terms: true,
@@ -617,11 +594,10 @@ export class CustomersService
         })
     }
 
-     /**
-    * UPDATE credit-terms
-    */
-    updateCreditTerm(payload: UserCreditTerms)
-    {
+    /**
+   * UPDATE credit-terms
+   */
+    updateCreditTerm(payload: UserCreditTerms) {
         return this._httpClient.put(
             `${environment.customerList}?credit_term=true`, payload);
     }
@@ -629,64 +605,59 @@ export class CustomersService
     /**
     * get credit-applications
     */
-     getCreditApplications(id: string, )
-     {
-         return this._httpClient.get(environment.customerList, {
-             params: {
-                   credit_application: true,
-                   user_id: id
-             }
-         })
-     }
+    getCreditApplications(id: string,) {
+        return this._httpClient.get(environment.customerList, {
+            params: {
+                credit_application: true,
+                user_id: id
+            }
+        })
+    }
 
-     /**
-    * get locations
-    */
-      getLocations(id: string, )
-      {
-          return this._httpClient.get(environment.customerList, {
-              params: {
-                    location: true,
-                    user_id: id
-              }
-          })
-      }
+    /**
+   * get locations
+   */
+    getLocations(id: string,) {
+        return this._httpClient.get(environment.customerList, {
+            params: {
+                location: true,
+                user_id: id
+            }
+        })
+    }
 
     /**
     * get available locations
     */
-     getAvailableLocations(id: string)
-     {
-         return this._httpClient.get(environment.customerList, {
-             params: {
-                    available_location: true,
-                   user_id: id
-             }
-         })
-     }
+    getAvailableLocations(id: string) {
+        return this._httpClient.get(environment.customerList, {
+            params: {
+                available_location: true,
+                user_id: id
+            }
+        })
+    }
 
-     /**
-    * get locations attributes
-    */
-      getLocationAttribute(store_id: string)
-      {
-          return this._httpClient.get(environment.customerList, {
-              params: {
-                    location_attribute: true,
-                    store_id: store_id
-              }
-          })
-      }
+    /**
+   * get locations attributes
+   */
+    getLocationAttribute(store_id: string) {
+        return this._httpClient.get(environment.customerList, {
+            params: {
+                location_attribute: true,
+                store_id: store_id
+            }
+        })
+    }
 
     /**
     * get locations for storeId
     */
-    getStoresLocation(attr_id: string)
-    {
+    getStoresLocation(attr_id: string) {
         return this._httpClient.get(environment.customerList, {
             params: {
-                    location: true,
-                    attribute_id: attr_id
+                location: true,
+                attribute_id: attr_id
             }
         })
     }
@@ -694,10 +665,9 @@ export class CustomersService
     /**
     * add locations for user
     */
-     addUserLocation(payload: AddUserLocation)
-     {
-         return this._httpClient.post(
+    addUserLocation(payload: AddUserLocation) {
+        return this._httpClient.post(
             `${environment.customerList}?user_location=true`, payload
-         );
-     }
+        );
+    }
 }

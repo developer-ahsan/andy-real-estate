@@ -11,14 +11,13 @@ import { CustomersService } from 'app/modules/admin/apps/ecommerce/customers/cus
 import { Router } from '@angular/router';
 
 @Component({
-    selector       : 'customers',
-    templateUrl    : './customers.component.html',
-    encapsulation  : ViewEncapsulation.None,
+    selector: 'customers',
+    templateUrl: './customers.component.html',
+    encapsulation: ViewEncapsulation.None,
     changeDetection: ChangeDetectionStrategy.OnPush,
-    animations     : fuseAnimations
+    animations: fuseAnimations
 })
-export class CustomersListComponent implements OnInit, AfterViewInit, OnDestroy
-{
+export class CustomersListComponent implements OnInit, AfterViewInit, OnDestroy {
     @ViewChild(MatPaginator) private _paginator: MatPaginator;
     @ViewChild(MatSort) private _sort: MatSort;
 
@@ -41,6 +40,9 @@ export class CustomersListComponent implements OnInit, AfterViewInit, OnDestroy
     not_available = "N/A";
     private _unsubscribeAll: Subject<any> = new Subject<any>();
 
+    pageSize: number;
+    pageNo: number;
+
     /**
      * Constructor
      */
@@ -49,8 +51,7 @@ export class CustomersListComponent implements OnInit, AfterViewInit, OnDestroy
         private _formBuilder: FormBuilder,
         private _customerService: CustomersService,
         private _router: Router
-    )
-    {
+    ) {
     }
 
     // -----------------------------------------------------------------------------------------------------
@@ -60,105 +61,40 @@ export class CustomersListComponent implements OnInit, AfterViewInit, OnDestroy
     /**
      * On init
      */
-    ngOnInit(): void
-    {
-        // Create the selected product form
+    ngOnInit(): void {
+        this.pageSize = 10;
+        this.pageNo = 0;
+
+        // Create the selected customer form
         this.selectedCustomerForm = this._formBuilder.group({
-            id               : [''],
-            firstName        : [''],
-            lastName         : [''],
-            email            : [''],
-            companyName      : [''],
-            storeName        : [''],
-            title            : [''],
-            date             : [''],
-            ipaddress        : [''],
-            fax              : [''],
-            dayPhone         : [''],
-            blnActive        : [''],
-            website          : [''],
-            department       : ['']
+            id: [''],
+            firstName: [''],
+            lastName: [''],
+            email: [''],
+            companyName: [''],
+            storeName: [''],
+            title: [''],
+            date: [''],
+            ipaddress: [''],
+            fax: [''],
+            dayPhone: [''],
+            blnActive: [''],
+            website: [''],
+            department: ['']
         });
-
-        // Get the brands
-        // this._customerService.brands$
-        //     .pipe(takeUntil(this._unsubscribeAll))
-        //     .subscribe((brands: CustomersBrand[]) => {
-
-        //         // Update the brands
-        //         this.brands = brands;
-
-        //         // Mark for check
-        //         this._changeDetectorRef.markForCheck();
-        //     });
-
-        // Get the categories
-        // this._customerService.categories$
-        //     .pipe(takeUntil(this._unsubscribeAll))
-        //     .subscribe((categories: CustomersCategory[]) => {
-
-        //         // Update the categories
-        //         this.categories = categories;
-
-        //         // Mark for check
-        //         this._changeDetectorRef.markForCheck();
-        //     });
 
         // Get the customers
         this.customers$ = this._customerService.customers$;
         this._customerService.customers$
             .pipe(takeUntil(this._unsubscribeAll))
             .subscribe((customers: CustomersProduct[]) => {
-                // Update the counts
-                this.customersCount = customers?.length ? customers[0].TotalRequests : 0;
+
+                this.customers$ = customers["data"];
+                this.customersCount = customers["totalRecords"];
 
                 // Mark for check
                 this._changeDetectorRef.markForCheck();
             });
-
-        // Get the pagination
-        this._customerService.pagination$
-            .pipe(takeUntil(this._unsubscribeAll))
-            .subscribe((pagination: CustomersPagination) => {
-                
-                // Update the pagination
-                this.pagination = {
-                    endIndex: 2,
-                    lastPage: 1,
-                    length: this.customersCount,
-                    page: 0,
-                    size: 10,
-                    startIndex: 0
-                };
-
-                // Mark for check
-                this._changeDetectorRef.markForCheck();
-            });
-
-        // Get the tags
-        // this._customerService.tags$
-        //     .pipe(takeUntil(this._unsubscribeAll))
-        //     .subscribe((tags: CustomersTag[]) => {
-
-        //         // Update the tags
-        //         this.tags = tags;
-        //         this.filteredTags = tags;
-
-        //         // Mark for check
-        //         this._changeDetectorRef.markForCheck();
-        //     });
-
-        // Get the vendors
-        // this._customerService.vendors$
-        //     .pipe(takeUntil(this._unsubscribeAll))
-        //     .subscribe((vendors: CustomersVendor[]) => {
-
-        //         // Update the vendors
-        //         this.vendors = vendors;
-
-        //         // Mark for check
-        //         this._changeDetectorRef.markForCheck();
-        //     });
 
         // Subscribe to search input field value changes
         this.searchInputControl.valueChanges
@@ -180,8 +116,7 @@ export class CustomersListComponent implements OnInit, AfterViewInit, OnDestroy
     /**
      * After view init
      */
-    ngAfterViewInit(): void
-    {
+    ngAfterViewInit(): void {
         // If the user changes the sort order...
         this._sort.sortChange
             .pipe(takeUntil(this._unsubscribeAll))
@@ -209,8 +144,7 @@ export class CustomersListComponent implements OnInit, AfterViewInit, OnDestroy
     /**
      * On destroy
      */
-    ngOnDestroy(): void
-    {
+    ngOnDestroy(): void {
         // Unsubscribe from all subscriptions
         this._unsubscribeAll.next();
         this._unsubscribeAll.complete();
@@ -220,16 +154,49 @@ export class CustomersListComponent implements OnInit, AfterViewInit, OnDestroy
     // @ Public methods
     // -----------------------------------------------------------------------------------------------------
 
+    getCustomersList(size, pageNo) {
+        this._customerService.getCustomersList(size, pageNo)
+            .pipe(takeUntil(this._unsubscribeAll))
+            .subscribe((customers) => {
+                this.customers$ = customers["data"];
+
+                // Mark for check
+                this._changeDetectorRef.markForCheck();
+            });
+    };
+
+    pageEvents(event: any) {
+        const { pageSize, pageIndex } = event;
+
+        if (pageSize !== this.pageSize) {
+            if (this.pageNo === 0) {
+                this.pageNo = 1;
+            }
+            this.getCustomersList(pageSize, this.pageNo);
+            return;
+        }
+
+        if (pageIndex > this.pageNo) {
+            if (this.pageNo === 0) {
+                this.pageNo = 2;
+            } else {
+                this.pageNo++;
+            }
+        } else {
+            this.pageNo--;
+        };
+
+        this.getCustomersList(this.pageSize, this.pageNo);
+    }
+
     /**
      * Toggle customer details
      *
      * @param customerId
      */
-    toggleDetails(customerId: string): void
-    {
+    toggleDetails(customerId: string): void {
         // If the customer is already selected...
-        if ( this.selectedCustomer && this.selectedCustomer.pk_userID === customerId )
-        {
+        if (this.selectedCustomer && this.selectedCustomer.pk_userID === customerId) {
             // Close the details
             this.closeDetails();
             return;
@@ -256,16 +223,14 @@ export class CustomersListComponent implements OnInit, AfterViewInit, OnDestroy
     /**
      * Close the details
      */
-    closeDetails(): void
-    {
+    closeDetails(): void {
         this.selectedCustomer = null;
     }
 
     /**
      * Cycle through images of selected product
      */
-    cycleImages(forward: boolean = true): void
-    {
+    cycleImages(forward: boolean = true): void {
         // Get the image count and current image index
         const count = this.selectedCustomerForm.get('images').value.length;
         const currentIndex = this.selectedCustomerForm.get('currentImageIndex').value;
@@ -275,13 +240,11 @@ export class CustomersListComponent implements OnInit, AfterViewInit, OnDestroy
         const prevIndex = currentIndex - 1 < 0 ? count - 1 : currentIndex - 1;
 
         // If cycling forward...
-        if ( forward )
-        {
+        if (forward) {
             this.selectedCustomerForm.get('currentImageIndex').setValue(nextIndex);
         }
         // If cycling backwards...
-        else
-        {
+        else {
             this.selectedCustomerForm.get('currentImageIndex').setValue(prevIndex);
         }
     }
@@ -289,8 +252,7 @@ export class CustomersListComponent implements OnInit, AfterViewInit, OnDestroy
     /**
      * Toggle the tags edit mode
      */
-    toggleTagsEditMode(): void
-    {
+    toggleTagsEditMode(): void {
         this.tagsEditMode = !this.tagsEditMode;
     }
 
@@ -299,8 +261,7 @@ export class CustomersListComponent implements OnInit, AfterViewInit, OnDestroy
      *
      * @param event
      */
-    filterTags(event): void
-    {
+    filterTags(event): void {
         // Get the value
         const value = event.target.value.toLowerCase();
 
@@ -313,17 +274,14 @@ export class CustomersListComponent implements OnInit, AfterViewInit, OnDestroy
      *
      * @param event
      */
-    filterTagsInputKeyDown(event): void
-    {
+    filterTagsInputKeyDown(event): void {
         // Return if the pressed key is not 'Enter'
-        if ( event.key !== 'Enter' )
-        {
+        if (event.key !== 'Enter') {
             return;
         }
 
         // If there is no tag available...
-        if ( this.filteredTags.length === 0 )
-        {
+        if (this.filteredTags.length === 0) {
             // Create the tag
             this.createTag(event.target.value);
 
@@ -339,13 +297,11 @@ export class CustomersListComponent implements OnInit, AfterViewInit, OnDestroy
         const isTagApplied = [].find(id => id === tag.id);
 
         // If the found tag is already applied to the contact...
-        if ( isTagApplied )
-        {
+        if (isTagApplied) {
             // Remove the tag from the contact
             this.removeTagFromProduct(tag);
         }
-        else
-        {
+        else {
             // Otherwise add the tag to the contact
             this.addTagToProduct(tag);
         }
@@ -356,8 +312,7 @@ export class CustomersListComponent implements OnInit, AfterViewInit, OnDestroy
      *
      * @param title
      */
-    createTag(title: string): void
-    {
+    createTag(title: string): void {
         const tag = {
             title
         };
@@ -377,8 +332,7 @@ export class CustomersListComponent implements OnInit, AfterViewInit, OnDestroy
      * @param tag
      * @param event
      */
-    updateTagTitle(tag: CustomersTag, event): void
-    {
+    updateTagTitle(tag: CustomersTag, event): void {
         // Update the title on the tag
         tag.title = event.target.value;
 
@@ -396,8 +350,7 @@ export class CustomersListComponent implements OnInit, AfterViewInit, OnDestroy
      *
      * @param tag
      */
-    deleteTag(tag: CustomersTag): void
-    {
+    deleteTag(tag: CustomersTag): void {
         // Delete the tag from the server
         this._customerService.deleteTag(tag.id).subscribe();
 
@@ -410,8 +363,7 @@ export class CustomersListComponent implements OnInit, AfterViewInit, OnDestroy
      *
      * @param tag
      */
-    addTagToProduct(tag: CustomersTag): void
-    {
+    addTagToProduct(tag: CustomersTag): void {
         // Add the tag
         [].unshift(tag.id);
 
@@ -427,8 +379,7 @@ export class CustomersListComponent implements OnInit, AfterViewInit, OnDestroy
      *
      * @param tag
      */
-    removeTagFromProduct(tag: CustomersTag): void
-    {
+    removeTagFromProduct(tag: CustomersTag): void {
         // Remove the tag
         [].splice([].findIndex(item => item === tag.id), 1);
 
@@ -445,14 +396,11 @@ export class CustomersListComponent implements OnInit, AfterViewInit, OnDestroy
      * @param tag
      * @param change
      */
-    toggleProductTag(tag: CustomersTag, change: MatCheckboxChange): void
-    {
-        if ( change.checked )
-        {
+    toggleProductTag(tag: CustomersTag, change: MatCheckboxChange): void {
+        if (change.checked) {
             this.addTagToProduct(tag);
         }
-        else
-        {
+        else {
             this.removeTagFromProduct(tag);
         }
     }
@@ -462,16 +410,14 @@ export class CustomersListComponent implements OnInit, AfterViewInit, OnDestroy
      *
      * @param inputValue
      */
-    shouldShowCreateTagButton(inputValue: string): boolean
-    {
+    shouldShowCreateTagButton(inputValue: string): boolean {
         return !!!(inputValue === '' || this.tags.findIndex(tag => tag.title.toLowerCase() === inputValue.toLowerCase()) > -1);
     }
 
     /**
      * Create product
      */
-     createCustomer(): void
-    {
+    createCustomer(): void {
         // Create the product
         this._customerService.createCustomer().subscribe((newCustomer) => {
 
@@ -489,8 +435,7 @@ export class CustomersListComponent implements OnInit, AfterViewInit, OnDestroy
     /**
      * Update the selected product using the form mock-api
      */
-    updateCustomerProduct(): void
-    {
+    updateCustomerProduct(): void {
         // Get the product object
         const product = this.selectedCustomerForm.getRawValue();
 
@@ -508,8 +453,7 @@ export class CustomersListComponent implements OnInit, AfterViewInit, OnDestroy
     /**
      * Delete the selected product using the form mock-api
      */
-    deleteSelectedCustomer(): void
-    {
+    deleteSelectedCustomer(): void {
         // Get the product object
         const product = this.selectedCustomerForm.getRawValue();
 
@@ -524,8 +468,7 @@ export class CustomersListComponent implements OnInit, AfterViewInit, OnDestroy
     /**
      * Show flash message
      */
-    showFlashMessage(type: 'success' | 'error'): void
-    {
+    showFlashMessage(type: 'success' | 'error'): void {
         // Show the message
         this.flashMessage = type;
 
@@ -548,8 +491,7 @@ export class CustomersListComponent implements OnInit, AfterViewInit, OnDestroy
      * @param index
      * @param item
      */
-    trackByFn(index: number, item: any): any
-    {
+    trackByFn(index: number, item: any): any {
         return item.id || index;
     }
 
@@ -557,5 +499,5 @@ export class CustomersListComponent implements OnInit, AfterViewInit, OnDestroy
         this.isLoading = true;
         let route = '/apps/ecommerce/customer';
         this._router.navigate([route], { queryParams: { customerId: customer.pk_userID } });
-      }
+    }
 }

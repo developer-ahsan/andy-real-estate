@@ -8,8 +8,7 @@ import { environment } from 'environments/environment';
 @Injectable({
     providedIn: 'root'
 })
-export class OrdersService
-{
+export class OrdersService {
     // Private
     private _brands: BehaviorSubject<OrdersBrand[] | null> = new BehaviorSubject(null);
     private _categories: BehaviorSubject<OrdersCategory[] | null> = new BehaviorSubject(null);
@@ -21,57 +20,56 @@ export class OrdersService
     private _orders: BehaviorSubject<OrdersList[] | null> = new BehaviorSubject(null);
     public navigationLabels = [
         {
-            id      : 1,
-            title   : 'Summary',
-            icon    : 'heroicons_outline:document-report'
+            id: 1,
+            title: 'Summary',
+            icon: 'heroicons_outline:document-report'
         },
         {
-            id      : 2,
-            title   : 'Entities List',
-            icon    : 'mat_solid:view_list',
+            id: 2,
+            title: 'Entities List',
+            icon: 'mat_solid:view_list',
         },
         {
-            id      : 3,
-            title   : 'Reports',
-            icon    : 'heroicons_outline:document-report',
+            id: 3,
+            title: 'Reports',
+            icon: 'heroicons_outline:document-report',
         },
         {
-            id      : 4,
-            title   : 'Invoice',
-            icon    : 'mat_outline:inventory'
+            id: 4,
+            title: 'Invoice',
+            icon: 'mat_outline:inventory'
         },
         {
-            id      : 5,
-            title   : 'Purchase Orders',
-            icon    : 'mat_outline:featured_play_list',
+            id: 5,
+            title: 'Purchase Orders',
+            icon: 'mat_outline:featured_play_list',
         },
         {
-            id      : 6,
-            title   : 'Shipping Report',
-            icon    : 'mat_outline:local_shipping',
+            id: 6,
+            title: 'Shipping Report',
+            icon: 'mat_outline:local_shipping',
         },
         {
-            id      : 7,
-            title   : 'Cost Analysis',
-            icon    : 'mat_outline:price_change'
+            id: 7,
+            title: 'Cost Analysis',
+            icon: 'mat_outline:price_change'
         },
         {
-            id      : 8,
-            title   : 'Timeline',
-            icon    : 'mat_solid:timeline',
+            id: 8,
+            title: 'Timeline',
+            icon: 'mat_solid:timeline',
         },
         {
-            id      : 9,
-            title   : 'Incident Reports',
-            icon    : 'heroicons_outline:document-report',
+            id: 9,
+            title: 'Incident Reports',
+            icon: 'heroicons_outline:document-report',
         }
     ]
 
     /**
      * Constructor
      */
-    constructor(private _httpClient: HttpClient)
-    {
+    constructor(private _httpClient: HttpClient) {
     }
 
     // -----------------------------------------------------------------------------------------------------
@@ -81,90 +79,77 @@ export class OrdersService
     /**
      * Getter for brands
      */
-    get brands$(): Observable<OrdersBrand[]>
-    {
+    get brands$(): Observable<OrdersBrand[]> {
         return this._brands.asObservable();
     }
 
     /**
      * Getter for categories
      */
-    get categories$(): Observable<OrdersCategory[]>
-    {
+    get categories$(): Observable<OrdersCategory[]> {
         return this._categories.asObservable();
     }
 
     /**
      * Getter for pagination
      */
-    get pagination$(): Observable<OrdersPagination>
-    {
+    get pagination$(): Observable<OrdersPagination> {
         return this._pagination.asObservable();
     }
 
     /**
      * Getter for product
      */
-    get product$(): Observable<OrdersProduct>
-    {
+    get product$(): Observable<OrdersProduct> {
         return this._product.asObservable();
     }
 
     /**
      * Getter for products
      */
-    get products$(): Observable<OrdersProduct[]>
-    {
+    get products$(): Observable<OrdersProduct[]> {
         return this._products.asObservable();
     }
 
     /**
      * Getter for tags
      */
-    get tags$(): Observable<OrdersTag[]>
-    {
+    get tags$(): Observable<OrdersTag[]> {
         return this._tags.asObservable();
     }
 
     /**
      * Getter for vendors
      */
-    get vendors$(): Observable<OrdersVendor[]>
-    {
+    get vendors$(): Observable<OrdersVendor[]> {
         return this._vendors.asObservable();
     }
 
     /**
      * Getter for orders
      */
-     get orders$(): Observable<OrdersList[]>
-     {
-         return this._orders.asObservable();
-     }
+    get orders$(): Observable<OrdersList[]> {
+        return this._orders.asObservable();
+    }
 
     // -----------------------------------------------------------------------------------------------------
     // @ Public methods
     // -----------------------------------------------------------------------------------------------------
 
-    
 
-    /**
-     * Get categories
-     */
-     getOrdersList(): Observable<OrdersList[]>
-     {
-         return this._httpClient.get<OrdersList[]>(`${environment.orders}?list=true`).pipe(
-             tap((orders) => {
-                 this._orders.next(orders);
-             })
-         );
-     }
+    getOrders(size, pageNumber): Observable<OrdersList[]> {
+        console.log("recieved", size, pageNumber);
+        return this._httpClient.get<OrdersList[]>(`${environment.orders}?list=true&size=${size}&page=${pageNumber}`).pipe(
+            tap((orders) => {
+                this._orders.next(orders);
+            })
+        );
+    }
 
     /**
      * Get brands
      */
-    getBrands(): Observable<OrdersBrand[]>
-    {
+    getBrands(): Observable<OrdersBrand[]> {
         return this._httpClient.get<OrdersBrand[]>('api/apps/ecommerce/inventory/brands').pipe(
             tap((brands) => {
                 this._brands.next(brands);
@@ -175,8 +160,7 @@ export class OrdersService
     /**
      * Get categories
      */
-    getCategories(): Observable<OrdersCategory[]>
-    {
+    getCategories(): Observable<OrdersCategory[]> {
         return this._httpClient.get<OrdersCategory[]>('api/apps/ecommerce/inventory/categories').pipe(
             tap((categories) => {
                 this._categories.next(categories);
@@ -195,8 +179,7 @@ export class OrdersService
      * @param search
      */
     getProducts(page: number = 0, size: number = 10, sort: string = 'name', order: 'asc' | 'desc' | '' = 'asc', search: string = ''):
-        Observable<{ pagination: OrdersPagination; products: OrdersProduct[] }>
-    {
+        Observable<{ pagination: OrdersPagination; products: OrdersProduct[] }> {
         return this._httpClient.get<{ pagination: OrdersPagination; products: OrdersProduct[] }>('api/apps/ecommerce/inventory/products', {
             params: {
                 page: '' + page,
@@ -216,8 +199,7 @@ export class OrdersService
     /**
      * Get product by id
      */
-    getProductById(id: string): Observable<OrdersProduct>
-    {
+    getProductById(id: string): Observable<OrdersProduct> {
         return this._products.pipe(
             take(1),
             map((products) => {
@@ -233,8 +215,7 @@ export class OrdersService
             }),
             switchMap((product) => {
 
-                if ( !product )
-                {
+                if (!product) {
                     return throwError('Could not found product with id of ' + id + '!');
                 }
 
@@ -246,8 +227,7 @@ export class OrdersService
     /**
      * Create product
      */
-    createProduct(): Observable<OrdersProduct>
-    {
+    createProduct(): Observable<OrdersProduct> {
         return this.products$.pipe(
             take(1),
             switchMap(products => this._httpClient.post<OrdersProduct>('api/apps/ecommerce/inventory/product', {}).pipe(
@@ -269,8 +249,7 @@ export class OrdersService
      * @param id
      * @param product
      */
-    updateProduct(id: string, product: OrdersProduct): Observable<OrdersProduct>
-    {
+    updateProduct(id: string, product: OrdersProduct): Observable<OrdersProduct> {
         return this.products$.pipe(
             take(1),
             switchMap(products => this._httpClient.patch<OrdersProduct>('api/apps/ecommerce/inventory/product', {
@@ -312,11 +291,10 @@ export class OrdersService
      *
      * @param id
      */
-    deleteProduct(id: string): Observable<boolean>
-    {
+    deleteProduct(id: string): Observable<boolean> {
         return this.products$.pipe(
             take(1),
-            switchMap(products => this._httpClient.delete('api/apps/ecommerce/inventory/product', {params: {id}}).pipe(
+            switchMap(products => this._httpClient.delete('api/apps/ecommerce/inventory/product', { params: { id } }).pipe(
                 map((isDeleted: boolean) => {
 
                     // Find the index of the deleted product
@@ -338,8 +316,7 @@ export class OrdersService
     /**
      * Get tags
      */
-    getTags(): Observable<OrdersTag[]>
-    {
+    getTags(): Observable<OrdersTag[]> {
         return this._httpClient.get<OrdersTag[]>('api/apps/ecommerce/inventory/tags').pipe(
             tap((tags) => {
                 this._tags.next(tags);
@@ -352,11 +329,10 @@ export class OrdersService
      *
      * @param tag
      */
-    createTag(tag: OrdersTag): Observable<OrdersTag>
-    {
+    createTag(tag: OrdersTag): Observable<OrdersTag> {
         return this.tags$.pipe(
             take(1),
-            switchMap(tags => this._httpClient.post<OrdersTag>('api/apps/ecommerce/inventory/tag', {tag}).pipe(
+            switchMap(tags => this._httpClient.post<OrdersTag>('api/apps/ecommerce/inventory/tag', { tag }).pipe(
                 map((newTag) => {
 
                     // Update the tags with the new tag
@@ -375,8 +351,7 @@ export class OrdersService
      * @param id
      * @param tag
      */
-    updateTag(id: string, tag: OrdersTag): Observable<OrdersTag>
-    {
+    updateTag(id: string, tag: OrdersTag): Observable<OrdersTag> {
         return this.tags$.pipe(
             take(1),
             switchMap(tags => this._httpClient.patch<OrdersTag>('api/apps/ecommerce/inventory/tag', {
@@ -406,11 +381,10 @@ export class OrdersService
      *
      * @param id
      */
-    deleteTag(id: string): Observable<boolean>
-    {
+    deleteTag(id: string): Observable<boolean> {
         return this.tags$.pipe(
             take(1),
-            switchMap(tags => this._httpClient.delete('api/apps/ecommerce/inventory/tag', {params: {id}}).pipe(
+            switchMap(tags => this._httpClient.delete('api/apps/ecommerce/inventory/tag', { params: { id } }).pipe(
                 map((isDeleted: boolean) => {
 
                     // Find the index of the deleted tag
@@ -436,8 +410,7 @@ export class OrdersService
                             const tagIndex = product.tags.findIndex(tag => tag === id);
 
                             // If the contact has the tag, remove it
-                            if ( tagIndex > -1 )
-                            {
+                            if (tagIndex > -1) {
                                 product.tags.splice(tagIndex, 1);
                             }
                         });
@@ -453,8 +426,7 @@ export class OrdersService
     /**
      * Get vendors
      */
-    getVendors(): Observable<OrdersVendor[]>
-    {
+    getVendors(): Observable<OrdersVendor[]> {
         return this._httpClient.get<OrdersVendor[]>('api/apps/ecommerce/inventory/vendors').pipe(
             tap((vendors) => {
                 this._vendors.next(vendors);

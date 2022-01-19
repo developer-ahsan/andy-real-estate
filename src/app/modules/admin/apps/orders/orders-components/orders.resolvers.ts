@@ -13,8 +13,7 @@ export class OrdersBrandsResolver implements Resolve<any>
     /**
      * Constructor
      */
-    constructor(private _orderService: OrdersService)
-    {
+    constructor(private _orderService: OrdersService) {
     }
 
     // -----------------------------------------------------------------------------------------------------
@@ -27,8 +26,7 @@ export class OrdersBrandsResolver implements Resolve<any>
      * @param route
      * @param state
      */
-    resolve(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<OrdersBrand[]>
-    {
+    resolve(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<OrdersBrand[]> {
         return this._orderService.getBrands();
     }
 }
@@ -41,8 +39,7 @@ export class OrdersCategoriesResolver implements Resolve<any>
     /**
      * Constructor
      */
-    constructor(private _orderService: OrdersService)
-    {
+    constructor(private _orderService: OrdersService) {
     }
 
     // -----------------------------------------------------------------------------------------------------
@@ -55,8 +52,7 @@ export class OrdersCategoriesResolver implements Resolve<any>
      * @param route
      * @param state
      */
-    resolve(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<OrdersCategory[]>
-    {
+    resolve(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<OrdersCategory[]> {
         return this._orderService.getCategories();
     }
 }
@@ -72,8 +68,7 @@ export class OrdersProductResolver implements Resolve<any>
     constructor(
         private _orderService: OrdersService,
         private _router: Router
-    )
-    {
+    ) {
     }
 
     // -----------------------------------------------------------------------------------------------------
@@ -86,26 +81,25 @@ export class OrdersProductResolver implements Resolve<any>
      * @param route
      * @param state
      */
-    resolve(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<OrdersProduct>
-    {
+    resolve(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<OrdersProduct> {
         return this._orderService.getProductById(route.paramMap.get('id'))
-                   .pipe(
-                       // Error here means the requested product is not available
-                       catchError((error) => {
+            .pipe(
+                // Error here means the requested product is not available
+                catchError((error) => {
 
-                           // Log the error
-                           console.error(error);
+                    // Log the error
+                    console.error(error);
 
-                           // Get the parent url
-                           const parentUrl = state.url.split('/').slice(0, -1).join('/');
+                    // Get the parent url
+                    const parentUrl = state.url.split('/').slice(0, -1).join('/');
 
-                           // Navigate to there
-                           this._router.navigateByUrl(parentUrl);
+                    // Navigate to there
+                    this._router.navigateByUrl(parentUrl);
 
-                           // Throw an error
-                           return throwError(error);
-                       })
-                   );
+                    // Throw an error
+                    return throwError(error);
+                })
+            );
     }
 }
 
@@ -117,8 +111,7 @@ export class OrdersProductsResolver implements Resolve<any>
     /**
      * Constructor
      */
-    constructor(private _orderService: OrdersService)
-    {
+    constructor(private _orderService: OrdersService) {
     }
 
     // -----------------------------------------------------------------------------------------------------
@@ -131,8 +124,7 @@ export class OrdersProductsResolver implements Resolve<any>
      * @param route
      * @param state
      */
-    resolve(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<{ pagination: OrdersPagination; products: OrdersProduct[] }>
-    {
+    resolve(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<{ pagination: OrdersPagination; products: OrdersProduct[] }> {
         return this._orderService.getProducts();
     }
 }
@@ -145,8 +137,7 @@ export class OrdersTagsResolver implements Resolve<any>
     /**
      * Constructor
      */
-    constructor(private _orderService: OrdersService)
-    {
+    constructor(private _orderService: OrdersService) {
     }
 
     // -----------------------------------------------------------------------------------------------------
@@ -159,8 +150,7 @@ export class OrdersTagsResolver implements Resolve<any>
      * @param route
      * @param state
      */
-    resolve(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<OrdersTag[]>
-    {
+    resolve(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<OrdersTag[]> {
         return this._orderService.getTags();
     }
 }
@@ -173,8 +163,7 @@ export class OrdersVendorsResolver implements Resolve<any>
     /**
      * Constructor
      */
-    constructor(private _orderService: OrdersService)
-    {
+    constructor(private _orderService: OrdersService) {
     }
 
     // -----------------------------------------------------------------------------------------------------
@@ -187,8 +176,7 @@ export class OrdersVendorsResolver implements Resolve<any>
      * @param route
      * @param state
      */
-    resolve(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<OrdersVendor[]>
-    {
+    resolve(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<OrdersVendor[]> {
         return this._orderService.getVendors();
     }
 }
@@ -201,8 +189,7 @@ export class OrdersListResolver implements Resolve<any>
     /**
      * Constructor
      */
-    constructor(private _orderService: OrdersService)
-    {
+    constructor(private _orderService: OrdersService) {
     }
 
     // -----------------------------------------------------------------------------------------------------
@@ -215,8 +202,7 @@ export class OrdersListResolver implements Resolve<any>
      * @param route
      * @param state
      */
-    resolve(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<OrdersList[]>
-    {
-        return this._orderService.getOrdersList();
+    resolve(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<OrdersList[]> {
+        return this._orderService.getOrders(10, 1);
     }
 }

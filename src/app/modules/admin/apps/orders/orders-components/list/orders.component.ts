@@ -11,14 +11,13 @@ import { OrdersService } from 'app/modules/admin/apps/orders/orders-components/o
 import { Router } from '@angular/router';
 
 @Component({
-    selector       : 'orders-list',
-    templateUrl    : './orders.component.html',
-    encapsulation  : ViewEncapsulation.None,
+    selector: 'orders-list',
+    templateUrl: './orders.component.html',
+    encapsulation: ViewEncapsulation.None,
     changeDetection: ChangeDetectionStrategy.OnPush,
-    animations     : fuseAnimations
+    animations: fuseAnimations
 })
-export class OrdersListComponent implements OnInit, AfterViewInit, OnDestroy
-{
+export class OrdersListComponent implements OnInit, AfterViewInit, OnDestroy {
     @ViewChild(MatPaginator) private _paginator: MatPaginator;
     @ViewChild(MatSort) private _sort: MatSort;
 
@@ -43,6 +42,9 @@ export class OrdersListComponent implements OnInit, AfterViewInit, OnDestroy
     vendors: OrdersVendor[];
     private _unsubscribeAll: Subject<any> = new Subject<any>();
 
+    pageSize: number;
+    pageNo: number;
+
     /**
      * Constructor
      */
@@ -51,8 +53,7 @@ export class OrdersListComponent implements OnInit, AfterViewInit, OnDestroy
         private _formBuilder: FormBuilder,
         private _orderService: OrdersService,
         private _router: Router
-    )
-    {
+    ) {
     }
 
     // -----------------------------------------------------------------------------------------------------
@@ -62,34 +63,37 @@ export class OrdersListComponent implements OnInit, AfterViewInit, OnDestroy
     /**
      * On init
      */
-    ngOnInit(): void
-    {
-        // Create the selected product form
+    ngOnInit(): void {
+
+        this.pageSize = 10;
+        this.pageNo = 0;
+
+        // Create the selected order form
         this.selectedProductForm = this._formBuilder.group({
-            id               : [''],
-            category         : [''],
-            name             : ['', [Validators.required]],
-            description      : [''],
-            tags             : [[]],
-            sku              : [''],
-            barcode          : [''],
-            brand            : [''],
-            vendor           : [''],
-            stock            : [''],
-            reserved         : [''],
-            cost             : [''],
-            basePrice        : [''],
-            taxPercent       : [''],
-            price            : [''],
-            weight           : [''],
-            thumbnail        : [''],
-            images           : [[]],
+            id: [''],
+            category: [''],
+            name: ['', [Validators.required]],
+            description: [''],
+            tags: [[]],
+            sku: [''],
+            barcode: [''],
+            brand: [''],
+            vendor: [''],
+            stock: [''],
+            reserved: [''],
+            cost: [''],
+            basePrice: [''],
+            taxPercent: [''],
+            price: [''],
+            weight: [''],
+            thumbnail: [''],
+            images: [[]],
             currentImageIndex: [0], // Image index that is currently being viewed
-            active           : [false],
-            firstName        : [''],
-            pk_orderID       : [''],
-            total            : [''],
-            companyName      : ['']
+            active: [false],
+            firstName: [''],
+            pk_orderID: [''],
+            total: [''],
+            companyName: ['']
         });
 
         // Get the brands
@@ -98,80 +102,6 @@ export class OrdersListComponent implements OnInit, AfterViewInit, OnDestroy
             .subscribe((orders: OrdersList[]) => {
                 this.orders = orders["data"];
                 this.ordersLength = orders["totalRecords"];
-
-                // Mark for check
-                this._changeDetectorRef.markForCheck();
-            });
-
-        // Get the brands
-        this._orderService.brands$
-            .pipe(takeUntil(this._unsubscribeAll))
-            .subscribe((brands: OrdersBrand[]) => {
-
-                // Update the brands
-                this.brands = brands;
-
-                // Mark for check
-                this._changeDetectorRef.markForCheck();
-            });
-
-        // Get the categories
-        this._orderService.categories$
-            .pipe(takeUntil(this._unsubscribeAll))
-            .subscribe((categories: OrdersCategory[]) => {
-
-                // Update the categories
-                this.categories = categories;
-
-                // Mark for check
-                this._changeDetectorRef.markForCheck();
-            });
-
-        // Get the pagination
-        this._orderService.pagination$
-            .pipe(takeUntil(this._unsubscribeAll))
-            .subscribe((pagination: OrdersPagination) => {
-
-                // Update the pagination
-                this.pagination = pagination;
-
-                // Mark for check
-                this._changeDetectorRef.markForCheck();
-            });
-
-        // Get the products
-        this.products$ = this._orderService.products$;
-        this._orderService.products$
-            .pipe(takeUntil(this._unsubscribeAll))
-            .subscribe((products: OrdersProduct[]) => {
-
-                // Update the counts
-                this.ordersCount = products.length;
-
-                // Mark for check
-                this._changeDetectorRef.markForCheck();
-            });
-
-        // Get the tags
-        this._orderService.tags$
-            .pipe(takeUntil(this._unsubscribeAll))
-            .subscribe((tags: OrdersTag[]) => {
-
-                // Update the tags
-                this.tags = tags;
-                this.filteredTags = tags;
-
-                // Mark for check
-                this._changeDetectorRef.markForCheck();
-            });
-
-        // Get the vendors
-        this._orderService.vendors$
-            .pipe(takeUntil(this._unsubscribeAll))
-            .subscribe((vendors: OrdersVendor[]) => {
-
-                // Update the vendors
-                this.vendors = vendors;
 
                 // Mark for check
                 this._changeDetectorRef.markForCheck();
@@ -197,8 +127,7 @@ export class OrdersListComponent implements OnInit, AfterViewInit, OnDestroy
     /**
      * After view init
      */
-    ngAfterViewInit(): void
-    {
+    ngAfterViewInit(): void {
         // If the user changes the sort order...
         this._sort.sortChange
             .pipe(takeUntil(this._unsubscribeAll))
@@ -226,8 +155,7 @@ export class OrdersListComponent implements OnInit, AfterViewInit, OnDestroy
     /**
      * On destroy
      */
-    ngOnDestroy(): void
-    {
+    ngOnDestroy(): void {
         // Unsubscribe from all subscriptions
         this._unsubscribeAll.next();
         this._unsubscribeAll.complete();
@@ -237,16 +165,25 @@ export class OrdersListComponent implements OnInit, AfterViewInit, OnDestroy
     // @ Public methods
     // -----------------------------------------------------------------------------------------------------
 
+    getOrders(size, pageNo) {
+        this._orderService.getOrders(size, pageNo)
+            .pipe(takeUntil(this._unsubscribeAll))
+            .subscribe((orders) => {
+                this.orders = orders["data"];
+
+                // Mark for check
+                this._changeDetectorRef.markForCheck();
+            });
+    };
+
     /**
-     * Toggle product details
+     * Toggle order details
      *
      * @param productId
      */
-    toggleDetails(productId: string): void
-    {
+    toggleDetails(productId: string): void {
         // If the product is already selected...
-        if ( this.selectedProduct && this.selectedProduct.id === productId )
-        {
+        if (this.selectedProduct && this.selectedProduct.id === productId) {
             // Close the details
             this.closeDetails();
             return;
@@ -275,34 +212,54 @@ export class OrdersListComponent implements OnInit, AfterViewInit, OnDestroy
      *
      * @param orderId
      */
-     toggleOrderDetails(orderId: number): void
-     {
+    toggleOrderDetails(orderId: number): void {
         //  If the order is already selected...
-         if ( this.selectedOrder && this.selectedOrder.pk_orderID === orderId )
-         {
-             // Close the details
-             this.closeDetails();
-             return;
-         }
-         this.selectedOrder = this.orders[this.orders.findIndex(x => x.pk_orderID === orderId)];
-         this._changeDetectorRef.markForCheck();
-         this.selectedProductForm.patchValue(this.selectedOrder);
-         this._changeDetectorRef.markForCheck();
-     }
+        if (this.selectedOrder && this.selectedOrder.pk_orderID === orderId) {
+            // Close the details
+            this.closeDetails();
+            return;
+        }
+        this.selectedOrder = this.orders[this.orders.findIndex(x => x.pk_orderID === orderId)];
+        this._changeDetectorRef.markForCheck();
+        this.selectedProductForm.patchValue(this.selectedOrder);
+        this._changeDetectorRef.markForCheck();
+    }
+
+    pageEvents(event: any) {
+        const { pageSize, pageIndex } = event;
+
+        if (pageSize !== this.pageSize) {
+            if (this.pageNo === 0) {
+                this.pageNo = 1;
+            }
+            this.getOrders(pageSize, this.pageNo);
+            return;
+        }
+
+        if (pageIndex > this.pageNo) {
+            if (this.pageNo === 0) {
+                this.pageNo = 2;
+            } else {
+                this.pageNo++;
+            }
+        } else {
+            this.pageNo--;
+        };
+
+        this.getOrders(this.pageSize, this.pageNo);
+    }
 
     /**
      * Close the details
      */
-    closeDetails(): void
-    {
+    closeDetails(): void {
         this.selectedProduct = null;
     }
 
     /**
      * Cycle through images of selected product
      */
-    cycleImages(forward: boolean = true): void
-    {
+    cycleImages(forward: boolean = true): void {
         // Get the image count and current image index
         const count = this.selectedProductForm.get('images').value.length;
         const currentIndex = this.selectedProductForm.get('currentImageIndex').value;
@@ -312,13 +269,11 @@ export class OrdersListComponent implements OnInit, AfterViewInit, OnDestroy
         const prevIndex = currentIndex - 1 < 0 ? count - 1 : currentIndex - 1;
 
         // If cycling forward...
-        if ( forward )
-        {
+        if (forward) {
             this.selectedProductForm.get('currentImageIndex').setValue(nextIndex);
         }
         // If cycling backwards...
-        else
-        {
+        else {
             this.selectedProductForm.get('currentImageIndex').setValue(prevIndex);
         }
     }
@@ -326,8 +281,7 @@ export class OrdersListComponent implements OnInit, AfterViewInit, OnDestroy
     /**
      * Toggle the tags edit mode
      */
-    toggleTagsEditMode(): void
-    {
+    toggleTagsEditMode(): void {
         this.tagsEditMode = !this.tagsEditMode;
     }
 
@@ -336,8 +290,7 @@ export class OrdersListComponent implements OnInit, AfterViewInit, OnDestroy
      *
      * @param event
      */
-    filterTags(event): void
-    {
+    filterTags(event): void {
         // Get the value
         const value = event.target.value.toLowerCase();
 
@@ -350,17 +303,14 @@ export class OrdersListComponent implements OnInit, AfterViewInit, OnDestroy
      *
      * @param event
      */
-    filterTagsInputKeyDown(event): void
-    {
+    filterTagsInputKeyDown(event): void {
         // Return if the pressed key is not 'Enter'
-        if ( event.key !== 'Enter' )
-        {
+        if (event.key !== 'Enter') {
             return;
         }
 
         // If there is no tag available...
-        if ( this.filteredTags.length === 0 )
-        {
+        if (this.filteredTags.length === 0) {
             // Create the tag
             this.createTag(event.target.value);
 
@@ -376,13 +326,11 @@ export class OrdersListComponent implements OnInit, AfterViewInit, OnDestroy
         const isTagApplied = this.selectedProduct.tags.find(id => id === tag.id);
 
         // If the found tag is already applied to the contact...
-        if ( isTagApplied )
-        {
+        if (isTagApplied) {
             // Remove the tag from the contact
             this.removeTagFromProduct(tag);
         }
-        else
-        {
+        else {
             // Otherwise add the tag to the contact
             this.addTagToProduct(tag);
         }
@@ -393,8 +341,7 @@ export class OrdersListComponent implements OnInit, AfterViewInit, OnDestroy
      *
      * @param title
      */
-    createTag(title: string): void
-    {
+    createTag(title: string): void {
         const tag = {
             title
         };
@@ -414,8 +361,7 @@ export class OrdersListComponent implements OnInit, AfterViewInit, OnDestroy
      * @param tag
      * @param event
      */
-    updateTagTitle(tag: OrdersTag, event): void
-    {
+    updateTagTitle(tag: OrdersTag, event): void {
         // Update the title on the tag
         tag.title = event.target.value;
 
@@ -433,8 +379,7 @@ export class OrdersListComponent implements OnInit, AfterViewInit, OnDestroy
      *
      * @param tag
      */
-    deleteTag(tag: OrdersTag): void
-    {
+    deleteTag(tag: OrdersTag): void {
         // Delete the tag from the server
         this._orderService.deleteTag(tag.id).subscribe();
 
@@ -447,8 +392,7 @@ export class OrdersListComponent implements OnInit, AfterViewInit, OnDestroy
      *
      * @param tag
      */
-    addTagToProduct(tag: OrdersTag): void
-    {
+    addTagToProduct(tag: OrdersTag): void {
         // Add the tag
         this.selectedProduct.tags.unshift(tag.id);
 
@@ -464,8 +408,7 @@ export class OrdersListComponent implements OnInit, AfterViewInit, OnDestroy
      *
      * @param tag
      */
-    removeTagFromProduct(tag: OrdersTag): void
-    {
+    removeTagFromProduct(tag: OrdersTag): void {
         // Remove the tag
         this.selectedProduct.tags.splice(this.selectedProduct.tags.findIndex(item => item === tag.id), 1);
 
@@ -482,14 +425,11 @@ export class OrdersListComponent implements OnInit, AfterViewInit, OnDestroy
      * @param tag
      * @param change
      */
-    toggleProductTag(tag: OrdersTag, change: MatCheckboxChange): void
-    {
-        if ( change.checked )
-        {
+    toggleProductTag(tag: OrdersTag, change: MatCheckboxChange): void {
+        if (change.checked) {
             this.addTagToProduct(tag);
         }
-        else
-        {
+        else {
             this.removeTagFromProduct(tag);
         }
     }
@@ -499,16 +439,14 @@ export class OrdersListComponent implements OnInit, AfterViewInit, OnDestroy
      *
      * @param inputValue
      */
-    shouldShowCreateTagButton(inputValue: string): boolean
-    {
+    shouldShowCreateTagButton(inputValue: string): boolean {
         return !!!(inputValue === '' || this.tags.findIndex(tag => tag.title.toLowerCase() === inputValue.toLowerCase()) > -1);
     }
 
     /**
      * Create product
      */
-    createProduct(): void
-    {
+    createProduct(): void {
         // Create the product
         this._orderService.createProduct().subscribe((newProduct) => {
 
@@ -526,8 +464,7 @@ export class OrdersListComponent implements OnInit, AfterViewInit, OnDestroy
     /**
      * Update the selected product using the form mock-api
      */
-    updateSelectedProduct(): void
-    {
+    updateSelectedProduct(): void {
         // Get the product object
         const product = this.selectedProductForm.getRawValue();
 
@@ -545,8 +482,7 @@ export class OrdersListComponent implements OnInit, AfterViewInit, OnDestroy
     /**
      * Delete the selected product using the form mock-api
      */
-    deleteSelectedProduct(): void
-    {
+    deleteSelectedProduct(): void {
         // Get the product object
         const product = this.selectedProductForm.getRawValue();
 
@@ -561,8 +497,7 @@ export class OrdersListComponent implements OnInit, AfterViewInit, OnDestroy
     /**
      * Show flash message
      */
-    showFlashMessage(type: 'success' | 'error'): void
-    {
+    showFlashMessage(type: 'success' | 'error'): void {
         // Show the message
         this.flashMessage = type;
 
@@ -590,8 +525,7 @@ export class OrdersListComponent implements OnInit, AfterViewInit, OnDestroy
      * @param index
      * @param item
      */
-    trackByFn(index: number, item: any): any
-    {
+    trackByFn(index: number, item: any): any {
         return item.id || index;
     }
 }
