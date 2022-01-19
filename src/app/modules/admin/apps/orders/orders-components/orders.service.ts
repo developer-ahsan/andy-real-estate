@@ -138,7 +138,6 @@ export class OrdersService {
 
 
     getOrders(size, pageNumber): Observable<OrdersList[]> {
-        console.log("recieved", size, pageNumber);
         return this._httpClient.get<OrdersList[]>(`${environment.orders}?list=true&size=${size}&page=${pageNumber}`).pipe(
             tap((orders) => {
                 this._orders.next(orders);
