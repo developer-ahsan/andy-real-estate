@@ -517,7 +517,7 @@ export class CustomersTabComponent implements OnInit, AfterViewInit, OnDestroy {
 
     tabChanged(tabChangeEvent): void {
         this.selectedTab = tabChangeEvent.tab.textLabel;
-        this.isLoading = true;
+        this.isLoading = this.selectedTab === "Logo Bank" ? false : true;
         this.otherComponentLoading = false;
     }
 

@@ -1,5 +1,4 @@
-export interface CustomersProduct
-{
+export interface CustomersProduct {
     companyName: string;
     dayPhone: string;
     address1: string;
@@ -20,8 +19,7 @@ export interface CustomersProduct
     TotalRequests: number;
 }
 
-export interface CustomersPagination
-{
+export interface CustomersPagination {
     length: number;
     size: number;
     page: number;
@@ -30,23 +28,20 @@ export interface CustomersPagination
     endIndex: number;
 }
 
-export interface CustomersCategory
-{
+export interface CustomersCategory {
     id: string;
     parentId: string;
     name: string;
     slug: string;
 }
 
-export interface CustomersBrand
-{
+export interface CustomersBrand {
     id: string;
     name: string;
     slug: string;
 }
 
-export interface CustomersTag
-{
+export interface CustomersTag {
     id?: string;
     title?: string;
     customerId?: string;
@@ -55,8 +50,7 @@ export interface CustomersTag
     alertOn?: string;
 }
 
-export interface CustomersVendor
-{
+export interface CustomersVendor {
     id: string;
     name: string;
     slug: string;
@@ -71,24 +65,49 @@ export interface CreditTerm {
     creditTermName: string;
     creditTermDesc: string;
     pk_creditTermID: number;
-  }
-  
-  export interface UserCreditTerms {
+}
+
+export interface UserCreditTerms {
     user_id: number;
     credit_term_id: number;
     credit_term: boolean;
-  }
+}
 
-  export interface AddUserComment {
+export interface AddUserComment {
     admin_comment: string,
     user_id: number;
     emails: string[];
     user_comment: boolean;
-  }
+}
 
-export interface AddUserLocation
-{
+export interface AddUserLocation {
     user_location: boolean;
     user_id: number;
     location_id: number;
+}
+
+export interface StoresList {
+    store_id: number;
+    storeUserID: number;
+    RowNumber: number;
+    TotalRequests: number;
+    storeName: string;
+}
+
+export interface Reminders {
+    pk_reminderID: number;
+    fk_userID: number;
+    createdOn: string;
+    remindOn: string;
+    fk_adminUserID: number;
+    notes: string;
+    name: string;
+    blnActive: boolean;
+    firstName: string;
+    lastName: string;
+    email: string;
+    companyName: string;
+    dayPhone: string;
+    RowNumber: number;
+    TotalRequests: number;
 }

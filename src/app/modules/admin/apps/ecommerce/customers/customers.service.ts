@@ -608,4 +608,92 @@ export class CustomersService {
             `${environment.customerList}?user_location=true`, payload
         );
     }
+
+    /**
+   * get stores
+   */
+    getStores(id: string, storeId) {
+        return this._httpClient.get(environment.customerList, {
+            params: {
+                approval_contact: true,
+                user_id: id,
+                store_id: storeId
+            }
+        })
+    }
+
+    /**
+   * Get reminders of customers
+   */
+    getReminders(id: string) {
+        return this._httpClient.get(environment.customerList, {
+            params: {
+                reminder: true,
+                user_id: id
+            }
+        })
+    }
+
+    /**
+  * Get carts of customers
+  */
+    getCarts(id: string) {
+        return this._httpClient.get(environment.customerList, {
+            params: {
+                cart: true,
+                user_id: id
+            }
+        })
+    }
+
+    /**
+  * Get carts of customers
+  */
+    getQuotes(id: string) {
+        return this._httpClient.get(environment.customerList, {
+            params: {
+                cart: true,
+                user_id: id,
+                bln_quote: 1
+            }
+        })
+    }
+
+    /**
+  * Get orders history of customers
+  */
+    getOrderHistory(id: string) {
+        return this._httpClient.get(environment.orders, {
+            params: {
+                list: true,
+                user_id: id
+            }
+        })
+    }
+
+    /**
+     * Get fulfillment orders of customers
+     */
+    getFulfillmentOrders(id: string) {
+        return this._httpClient.get(environment.orders, {
+            params: {
+                list: true,
+                user_id: id,
+                order_type: 2
+            }
+        })
+    }
+
+    /**
+     * Get group orders of customers
+     */
+    getGroupOrders(id: string) {
+        return this._httpClient.get(environment.orders, {
+            params: {
+                list: true,
+                user_id: id,
+                group_order: true
+            }
+        })
+    }
 }

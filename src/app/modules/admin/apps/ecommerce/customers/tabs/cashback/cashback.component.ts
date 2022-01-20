@@ -1,19 +1,25 @@
-import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { ChangeDetectorRef, Component, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angular/core';
 import { CustomersService } from 'app/modules/admin/apps/ecommerce/customers/customers.service';
-import { Subscription } from 'rxjs';
+import { Subject } from 'rxjs';
+import { StoresList } from 'app/modules/admin/apps/ecommerce/customers/customers.types';
+import { takeUntil } from 'rxjs/operators';
 
 @Component({
   selector: 'app-cashback',
   templateUrl: './cashback.component.html'
 })
-export class CashbackComponent implements OnInit {
+export class CashbackComponent implements OnInit, OnDestroy {
   @Input() currentSelectedCustomer: any;
   @Input() selectedTab: any;
   @Input() isLoading: boolean;
   @Output() isLoadingChange = new EventEmitter<boolean>();
-  private fetchLocations: Subscription;
+  private _unsubscribeAll: Subject<any> = new Subject<any>();
+
   breakpoint: number;
-  selectedStore = "select_store";
+  selectedStore: StoresList = null;
+  storesList: StoresList[] = [];
+  storesListLength: number = 0;
+
   stores: string[] = [
     'AirForceROTCShop.com',
     'ArmyROTCShop.com',
@@ -26,36 +32,44 @@ export class CashbackComponent implements OnInit {
   selected = "dont-allow";
 
   constructor(
-    private _customerService: CustomersService
+    private _customerService: CustomersService,
+    private _changeDetectorRef: ChangeDetectorRef
   ) { }
 
   ngOnInit(): void {
     this.breakpoint = (window.innerWidth <= 800) ? 1 : 2;
-    const { pk_userID } = this.currentSelectedCustomer;
-    this.fetchLocations = this._customerService.getLocations(pk_userID)
-      .subscribe((locations) => {
-        console.log("locations", locations)
+    const { pk_userID, storeId } = this.currentSelectedCustomer;
+    this._customerService.getStores(pk_userID, storeId)
+      .pipe(takeUntil(this._unsubscribeAll))
+      .subscribe((stores) => {
+        this.storesList = stores["data"];
+        this.storesListLength = stores["totalRecords"];
         this.isLoadingChange.emit(false);
+
+        this._changeDetectorRef.markForCheck();
       });
 
-      this._customerService.getAvailableLocations(pk_userID)
-      .subscribe((available_locations) => {
-        console.log("locations", available_locations)
-      });
+    // this._customerService.getAvailableLocations(pk_userID)
+    //   .subscribe((available_locations) => {
+    //     console.log("locations", available_locations)
+    //   });
   }
 
   onResize(event) {
     this.breakpoint = (event.target.innerWidth <= 800) ? 1 : 2;
   }
-  
-  storeSelection(){
+
+  storeSelection(store: StoresList) {
     this.enableOtherForms = true;
+    console.log("store selected", store)
   }
 
   ngOnDestroy(): void {
-    this.fetchLocations.unsubscribe();
+    // Unsubscribe from all subscriptions
+    this._unsubscribeAll.next();
+    this._unsubscribeAll.complete();
   }
-  
+
 }
 
 
