@@ -15,13 +15,15 @@ import { FuseMediaWatcherService } from '@fuse/services/media-watcher';
     animations: fuseAnimations
 })
 export class OrdersDetailsComponent implements OnInit, OnDestroy {
+
     isLoading: boolean = false;
     pagination: OrdersPagination;
     ordersCount: number = 0;
-    selectedOrder: OrdersList | null = null;
+    selectedOrder: OrdersList = null;
     private _unsubscribeAll: Subject<any> = new Subject<any>();
     routes = [];
     selectedIndex: number = 0;
+    not_available: string = 'N/A';
 
     // Sidebar stuff
     drawerMode: 'over' | 'side' = 'side';
@@ -34,7 +36,7 @@ export class OrdersDetailsComponent implements OnInit, OnDestroy {
         private _changeDetectorRef: ChangeDetectorRef,
         private _orderService: OrdersService,
         private _router: Router,
-        private _fuseMediaWatcherService: FuseMediaWatcherService
+        private _fuseMediaWatcherService: FuseMediaWatcherService,
     ) {
     }
 
@@ -46,9 +48,20 @@ export class OrdersDetailsComponent implements OnInit, OnDestroy {
      * On init
      */
     ngOnInit(): void {
+        // Get the order
+        this._orderService.orders$
+            .pipe(takeUntil(this._unsubscribeAll))
+            .subscribe((orders: OrdersList[]) => {
+                this.selectedOrder = orders["data"].find(x => x.pk_orderID == location.pathname.split('/')[3]);
+
+                // Mark for check
+                this._changeDetectorRef.markForCheck();
+            });
+
+        console.log("this.selectedOrder", this.selectedOrder);
+
         // this.drawerMode = "side";
         this.routes = this._orderService.navigationLabels;
-
         // Subscribe to media changes
         this._fuseMediaWatcherService.onMediaChange$
             .pipe(takeUntil(this._unsubscribeAll))

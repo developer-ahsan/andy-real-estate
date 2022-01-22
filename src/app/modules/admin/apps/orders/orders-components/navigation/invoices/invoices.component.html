@@ -1,17 +1,16 @@
-<div class="absolute mt-10 inset-0 min-w-0 text-center print:overflow-visible" cdkScrollable>
+<div class="mt-5 inset-0 min-w-0 text-center print:overflow-visible" cdkScrollable>
 
-    <button class="float-right mr-10" (click)="exportHtmlToPDF()" mat-stroked-button
-        [matTooltip]="'Save report as PDF'">
+    <button class="float-right mr-3" (click)="exportHtmlToPDF()" mat-stroked-button [matTooltip]="'Save report as PDF'">
         <mat-icon svgIcon="mat_outline:picture_as_pdf"></mat-icon>
         <span class="ml-2 mr-1">PDF</span>
     </button>
 
     <!-- Main -->
-    <div class="inline-block p-6 sm:p-10 text-left print:p-0" id="htmltable" #htmltable>
+    <div class="inline-block p-6 sm:p-6 text-left print:p-0" id="htmltable" #htmltable>
 
         <!-- Invoice -->
         <div
-            class="w-240 min-w-240 p-5 rounded-2xl shadow bg-card print:w-auto print:p-0 print:rounded-none print:shadow-none print:bg-transparent">
+            class="min-w-240 p-5 rounded-2xl shadow bg-card print:w-auto print:p-0 print:rounded-none print:shadow-none print:bg-transparent">
 
             <div class="flex items-start">
                 <div class="grid grid-rows-2 place-items-start gap-y-12 mt-10">

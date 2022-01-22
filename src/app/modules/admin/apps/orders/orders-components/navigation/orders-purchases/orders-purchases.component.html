@@ -1,8 +1,8 @@
-<mat-tab-group mat-align-tabs="start">
+<mat-tab-group mat-align-tabs="start" class="mt-5">
     <mat-tab label="Purchase Orders">
-        <div class="row w-full">
+        <div class="row">
             <div class="col-12 mt-2" *ngIf="!isView">
-                <mat-card>
+                <mat-card class="rounded-2xl shadow-lg">
                     <mat-card-subtitle class="text-right font-semibold">#56165 - Group Order</mat-card-subtitle>
                     <mat-card-content>
                         <table mat-table [dataSource]="transactions" class="w-full">
@@ -91,17 +91,21 @@
                     </div>
                 </div>
 
-                <div class="absolute mt-10 inset-0 min-w-0 text-center print:overflow-visible" cdkScrollable
-                    id="htmltable" #htmltable>
+                <div class="absolute mt-10 inset-0 min-w-0 text-center print:overflow-visible" cdkScrollable>
                     <!-- Main -->
-                    <div class="inline-block p-6 sm:p-10 text-left print:p-0">
+                    <div class="inline-block p-6 sm:p-6 text-left print:p-0" id="htmltable" #htmltable>
 
-                        <!-- Invoice -->
+                        <!-- Shipping Report -->
                         <div
-                            class="w-240 min-w-240 p-5 rounded-2xl shadow bg-card print:w-auto print:p-0 print:rounded-none print:shadow-none print:bg-transparent">
+                            class="min-w-240 p-3 rounded-2xl shadow bg-card print:w-auto print:p-0 print:rounded-none print:shadow-none print:bg-transparent">
 
                             <div class="flex items-start">
                                 <div class="grid grid-rows-1 mt-5">
+                                    <div class="grid auto-cols-max grid-flow-col gap-x-2">
+                                        <div class="w-100 text-left text-2xl text-secondary">
+                                            Confidential Purchases Report
+                                        </div>
+                                    </div>
                                     <div class="grid grid-flow-col mt-5">
                                         <div class="place-self-center w-24 text-center text-2xl text-secondary">
                                             Ship To
@@ -116,8 +120,7 @@
                                     </div>
                                 </div>
                                 <div class="grid grid-cols-2 gap-x-4 gap-y-1 ml-auto pr-16">
-                                    <div class="justify-self-start font-semibold text-3xl tracking-tight">Purchase Order
-                                    </div>
+                                    <div class="justify-self-start font-semibold text-3xl tracking-tight">Order</div>
                                     <div class="justify-self-start text-3xl font-semibold">#56165</div>
                                     <div class="justify-self-start font-medium tracking-tight text-secondary">ORDER DATE
                                     </div>
@@ -147,7 +150,8 @@
                                         ASTM</div>
                                     <div class="mt-2 text-md text-secondary">
                                         Prototyping of the application's general workflow and the detailed design of its
-                                        72 screens as a working prototype.
+                                        72 screens as a
+                                        working prototype.
                                     </div>
                                     <div class="mt-2 text-md text-secondary">
                                         Expected: 1 package X 20.00lbs/package = 20.00lbs.
@@ -187,7 +191,7 @@
     <mat-tab label="Sent Purchase Orders">
         <div class="p-8 sm:p-16 text-2xl font-semibold not-found-color">
             <img src="assets/gifs/not-found.gif" class="rounded-circle" style="width: 250px;">
-            No purchase orders sent for this order!
+            No purchase orders sent!
         </div>
     </mat-tab>
 </mat-tab-group>

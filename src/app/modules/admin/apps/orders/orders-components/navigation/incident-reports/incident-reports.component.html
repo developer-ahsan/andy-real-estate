@@ -1,19 +1,19 @@
-<div class="row w-full justify-content-end px-5" *ngIf="!isView && !isViewCreateIncidentReportForm">
+<div class="row w-full justify-content-end px-5 mt-5" *ngIf="!isView && !isViewCreateIncidentReportForm">
     <button mat-stroked-button [matTooltip]="'Create an incident report'" (click)="viewCreateIncidentReportForm()">
         <mat-icon class="icon-size-5 text-current" [svgIcon]="'heroicons_solid:plus'"></mat-icon>
         <span class="ml-2"> Create Incident Report </span>
     </button>
 </div>
-<div class="row w-full">
-    <div class="col-12 mt-2" *ngIf="!isView && !isViewCreateIncidentReportForm">
-        <mat-card class="p-0 h-100 overflow-auto">
+<div class="row">
+    <div class="col-12 p-6 mt-2" *ngIf="!isView && !isViewCreateIncidentReportForm">
+        <mat-card class="p-0 h-100 overflow-auto shadow-lg rounded-2xl">
             <mat-card-content>
                 <table mat-table [dataSource]="transactions" class="w-full"
                     *ngIf="transactions.length > 0; else noReports">
 
                     <!-- ID Column -->
                     <ng-container matColumnDef="id">
-                        <th mat-header-cell *matHeaderCellDef class="bg-light min-w-24"> Id </th>
+                        <th mat-header-cell *matHeaderCellDef class="min-w-24"> Id </th>
                         <td mat-cell *matCellDef="let transaction" (click)="viewIncidentReport()"
                             style="cursor: pointer;">
                             {{transaction.id}}
@@ -22,7 +22,7 @@
 
                     <!-- ID Column -->
                     <ng-container matColumnDef="created">
-                        <th mat-header-cell *matHeaderCellDef class="bg-light min-w-24"> Created </th>
+                        <th mat-header-cell *matHeaderCellDef class="min-w-24"> Created </th>
                         <td mat-cell *matCellDef="let transaction" (click)="viewIncidentReport()"
                             style="cursor: pointer;">
                             {{transaction.created}}
@@ -31,7 +31,7 @@
 
                     <!-- ID Column -->
                     <ng-container matColumnDef="created_by">
-                        <th mat-header-cell *matHeaderCellDef class="bg-light min-w-24"> Created By </th>
+                        <th mat-header-cell *matHeaderCellDef class="min-w-24"> Created By </th>
                         <td mat-cell *matCellDef="let transaction" (click)="viewIncidentReport()"
                             style="cursor: pointer;">
                             {{transaction.created_by}}
@@ -40,7 +40,7 @@
 
                     <!-- ID Column -->
                     <ng-container matColumnDef="store">
-                        <th mat-header-cell *matHeaderCellDef class="bg-light min-w-50 w-50"> Store </th>
+                        <th mat-header-cell *matHeaderCellDef class="min-w-50 w-50"> Store </th>
                         <td mat-cell *matCellDef="let transaction" (click)="viewIncidentReport()"
                             style="cursor: pointer;">
                             {{transaction.store}}
@@ -49,7 +49,7 @@
 
                     <!-- ID Column -->
                     <ng-container matColumnDef="source">
-                        <th mat-header-cell *matHeaderCellDef class="bg-light min-w-24"> Source </th>
+                        <th mat-header-cell *matHeaderCellDef class="min-w-24"> Source </th>
                         <td mat-cell *matCellDef="let transaction" (click)="viewIncidentReport()"
                             style="cursor: pointer;">
                             {{transaction.source}}
@@ -58,14 +58,14 @@
 
                     <!-- ID Column -->
                     <ng-container matColumnDef="source_entities">
-                        <th mat-header-cell *matHeaderCellDef class="bg-light min-w-50 w-50"> Source Entities </th>
+                        <th mat-header-cell *matHeaderCellDef class="min-w-50 w-50"> Source Entities </th>
                         <td mat-cell *matCellDef="let transaction" (click)="viewIncidentReport()"
                             style="cursor: pointer;">
                             {{transaction.source_entities}}
                         </td>
                     </ng-container>
 
-                    <tr mat-header-row *matHeaderRowDef="displayedColumns" class="h-18"></tr>
+                    <tr mat-header-row *matHeaderRowDef="displayedColumns" class="h-18 bg-light"></tr>
                     <tr mat-row *matRowDef="let row; columns: displayedColumns;"
                         class="h-12 hover:bg-gray-100 dark:hover:bg-hover"></tr>
                 </table>
