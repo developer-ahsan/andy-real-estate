@@ -1,5 +1,7 @@
-<div class="p-2">
-  <div class="row mt-2">
+<div class="mt-3">
+  <ngx-skeleton-loader count="8" appearance="line" animation="pulse" *ngIf="isLoading">
+  </ngx-skeleton-loader>
+  <div class="row">
     <div class="col-12">
       <mat-card class="shadow-lg rounded-2xl">
         <mat-card-title class="font-semibold text-secondary">Timeline</mat-card-title>

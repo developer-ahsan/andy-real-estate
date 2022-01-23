@@ -1,5 +1,4 @@
-export interface OrdersProduct
-{
+export interface OrdersProduct {
     id: string;
     category?: string;
     name: string;
@@ -21,8 +20,7 @@ export interface OrdersProduct
     active: boolean;
 }
 
-export interface OrdersPagination
-{
+export interface OrdersPagination {
     length: number;
     size: number;
     page: number;
@@ -31,36 +29,31 @@ export interface OrdersPagination
     endIndex: number;
 }
 
-export interface OrdersCategory
-{
+export interface OrdersCategory {
     id: string;
     parentId: string;
     name: string;
     slug: string;
 }
 
-export interface OrdersBrand
-{
+export interface OrdersBrand {
     id: string;
     name: string;
     slug: string;
 }
 
-export interface OrdersTag
-{
+export interface OrdersTag {
     id?: string;
     title?: string;
 }
 
-export interface OrdersVendor
-{
+export interface OrdersVendor {
     id: string;
     name: string;
     slug: string;
 }
 
-export interface OrdersList
-{
+export interface OrdersList {
     pk_orderID?: number;
     orderDate?: string,
     fk_groupOrderID?: number | null,
@@ -84,4 +77,6 @@ export interface OrdersList
     royalties?: number;
     RowNumber?: string;
     TotalRequests?: number;
+    inHandsDate?: string;
+    currentTotal?: number;
 }

@@ -35,7 +35,12 @@
             <mat-icon class="subnav-menu-icon ml-2 mb-2" svgIcon="heroicons_outline:menu" (click)="toggleDrawer()">
             </mat-icon>
             <div class="row">
-                <div class="bg-card ml-6 mr-6 w-full rounded-2xl shadow-lg">
+                <ngx-skeleton-loader count="8" appearance="line" animation="pulse">
+                </ngx-skeleton-loader>
+            </div>
+
+            <ng-template #myCard>
+                <div class="bg-card rounded-2xl shadow-lg">
                     <div class="row w-full px-10 py-3">
                         <b class="w-full text-lg border-b float-left text-info pb-3">Order</b>
                     </div>
@@ -66,7 +71,7 @@
                         </div>
                         <div class="col-lg-4 col-12">
                             <b class="text-secondary">Total:</b>
-                            <p class="float-right">{{selectedOrder.total || not_available}}</p>
+                            <p class="float-right">${{selectedOrder.total || not_available}}</p>
                         </div>
                         <div class="col-lg-4 col-12">
                             <b class="text-secondary">Customer:</b>
@@ -86,34 +91,57 @@
                         </div>
                     </div>
                 </div>
+            </ng-template>
+            <div class="row">
+                <div class="col-12">
+                    <ng-container *ngTemplateOutlet="myCard"></ng-container>
+                </div>
+                <div class="col-12">
+                    <ng-template [ngIf]="selectedIndex == 0">
+                        <app-orders-summary [(isLoading)]="isLoading"></app-orders-summary>
+                    </ng-template>
+                </div>
+                <div class="col-12">
+                    <ng-template [ngIf]="selectedIndex == 1">
+                        <app-orders-entities-list [(isLoading)]="isLoading"></app-orders-entities-list>
+                    </ng-template>
+                </div>
+                <div class="col-12">
+                    <ng-template [ngIf]="selectedIndex == 2">
+                        <app-orders-report [(isLoading)]="isLoading"></app-orders-report>
+                    </ng-template>
+                </div>
+                <div class="col-12">
+                    <ng-template [ngIf]="selectedIndex == 3">
+                        <app-invoices [(isLoading)]="isLoading"></app-invoices>
+                    </ng-template>
+                </div>
+                <div class="col-12">
+                    <ng-template [ngIf]="selectedIndex == 4">
+                        <app-orders-purchases [(isLoading)]="isLoading"></app-orders-purchases>
+                    </ng-template>
+                </div>
+                <div class="col-12">
+                    <ng-template [ngIf]="selectedIndex == 5">
+                        <app-orders-shipping-reports [(isLoading)]="isLoading"></app-orders-shipping-reports>
+                    </ng-template>
+                </div>
+                <div class="col-12">
+                    <ng-template [ngIf]="selectedIndex == 6">
+                        <app-cost-analysis [(isLoading)]="isLoading"></app-cost-analysis>
+                    </ng-template>
+                </div>
+                <div class="col-12">
+                    <ng-template [ngIf]="selectedIndex == 7">
+                        <app-timeline [(isLoading)]="isLoading"></app-timeline>
+                    </ng-template>
+                </div>
+                <div class="col-12">
+                    <ng-template [ngIf]="selectedIndex == 8">
+                        <app-incident-reports [(isLoading)]="isLoading"></app-incident-reports>
+                    </ng-template>
+                </div>
             </div>
-            <ng-template [ngIf]="selectedIndex == 0">
-                <app-orders-summary [(isLoading)]="isLoading"></app-orders-summary>
-            </ng-template>
-            <ng-template [ngIf]="selectedIndex == 1">
-                <app-orders-entities-list [(isLoading)]="isLoading"></app-orders-entities-list>
-            </ng-template>
-            <ng-template [ngIf]="selectedIndex == 2">
-                <app-orders-report [(isLoading)]="isLoading"></app-orders-report>
-            </ng-template>
-            <ng-template [ngIf]="selectedIndex == 3">
-                <app-invoices [(isLoading)]="isLoading"></app-invoices>
-            </ng-template>
-            <ng-template [ngIf]="selectedIndex == 4">
-                <app-orders-purchases [(isLoading)]="isLoading"></app-orders-purchases>
-            </ng-template>
-            <ng-template [ngIf]="selectedIndex == 5">
-                <app-orders-shipping-reports [(isLoading)]="isLoading"></app-orders-shipping-reports>
-            </ng-template>
-            <ng-template [ngIf]="selectedIndex == 6">
-                <app-cost-analysis [(isLoading)]="isLoading"></app-cost-analysis>
-            </ng-template>
-            <ng-template [ngIf]="selectedIndex == 7">
-                <app-timeline [(isLoading)]="isLoading"></app-timeline>
-            </ng-template>
-            <ng-template [ngIf]="selectedIndex == 8">
-                <app-incident-reports [(isLoading)]="isLoading"></app-incident-reports>
-            </ng-template>
         </div>
 
     </mat-drawer-container>

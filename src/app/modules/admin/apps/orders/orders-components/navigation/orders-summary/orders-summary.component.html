@@ -1,205 +1,208 @@
-<div class="p-2">
-    <div class="row">
-        <div class="col-lg-4 col-md-4 col-6 my-1">
-            <mat-card class="w-full p-2 h-40 rounded-2xl shadow-lg">
-                <mat-card-title class="text-info font-size-medium">
-                    <i class="fas fa-history"></i>
-                    Status
-                </mat-card-title>
-                <mat-divider></mat-divider>
-                <mat-card-content class="text-secondary py-4 font-semibold text-center">
-                    Processing
-                </mat-card-content>
-            </mat-card>
+<div class="mt-3">
+    <ngx-skeleton-loader count="8" appearance="line" animation="pulse" *ngIf="isLoading">
+    </ngx-skeleton-loader>
+    <div *ngIf="!isLoading">
+        <div class="row">
+            <div class="col-lg-4 col-md-4 col-6 my-1">
+                <mat-card class="w-full p-2 h-40 rounded-2xl shadow-lg">
+                    <mat-card-title class="text-info font-size-medium">
+                        <i class="fas fa-history"></i>
+                        Status
+                    </mat-card-title>
+                    <mat-divider></mat-divider>
+                    <mat-card-content class="text-secondary py-4 font-semibold text-center">
+                        Processing
+                    </mat-card-content>
+                </mat-card>
+            </div>
+            <div class="col-lg-4 col-md-4 col-6 my-1">
+                <mat-card class="w-full p-2 h-40 rounded-2xl shadow-lg">
+                    <mat-card-title class="text-info font-size-medium">
+                        <i class='fas fa-calendar-check'></i>
+                        Payment Date
+                    </mat-card-title>
+                    <mat-divider></mat-divider>
+                    <mat-card-content class="text-secondary py-4 font-semibold text-center">
+                        {{selectedOrder.paymentDate || not_available}}
+                    </mat-card-content>
+                </mat-card>
+            </div>
+            <div class="col-lg-4 col-md-4 col-6 my-1">
+                <mat-card class="w-full p-2 h-40 rounded-2xl shadow-lg">
+                    <mat-card-title class="text-info font-size-medium">
+                        <i class='far fa-calendar-alt'></i>
+                        In-Hands Date
+                    </mat-card-title>
+                    <mat-divider></mat-divider>
+                    <mat-card-content class="text-secondary py-4 font-semibold text-center">
+                        {{selectedOrder.inHandsDate || not_available}}
+                    </mat-card-content>
+                </mat-card>
+            </div>
+            <div class="col-lg-4 col-md-4 col-6 my-1">
+                <mat-card class="w-full p-2 h-40 rounded-2xl shadow-lg">
+                    <mat-card-title class="text-info font-size-medium">
+                        <mat-icon svgIcon="mat_outline:payments"></mat-icon>
+                        Total Payments
+                    </mat-card-title>
+                    <mat-divider></mat-divider>
+                    <mat-card-content class="text-danger py-4 font-semibold text-center">
+                        ${{selectedOrder.total || not_available_price}}
+                    </mat-card-content>
+                </mat-card>
+            </div>
+            <div class="col-lg-4 col-md-4 col-6 my-1">
+                <mat-card class="w-full p-2 h-40 rounded-2xl shadow-lg">
+                    <mat-card-title class="text-info font-size-medium">
+                        <mat-icon svgIcon="mat_solid:price_check"></mat-icon>
+                        Paid
+                    </mat-card-title>
+                    <mat-divider></mat-divider>
+                    <mat-card-content class="text-danger py-4 font-semibold text-center">
+                        ${{selectedOrder.currentTotal || not_available_price}}
+                    </mat-card-content>
+                </mat-card>
+            </div>
+            <div class="col-lg-4 col-md-4 col-6 my-1">
+                <mat-card class="w-full p-2 h-40 rounded-2xl shadow-lg">
+                    <mat-card-title class="text-info font-size-medium">
+                        <i class="fas fa-landmark"></i>
+                        Balance Due
+                    </mat-card-title>
+                    <mat-divider></mat-divider>
+                    <mat-card-content class="text-danger py-4 font-semibold text-center">
+                        ${{selectedOrder.total - selectedOrder.currentTotal || not_available_price}}
+                    </mat-card-content>
+                </mat-card>
+            </div>
         </div>
-        <div class="col-lg-4 col-md-4 col-6 my-1">
-            <mat-card class="w-full p-2 h-40 rounded-2xl shadow-lg">
-                <mat-card-title class="text-info font-size-medium">
-                    <i class='fas fa-calendar-check'></i>
-                    Payment Date
-                </mat-card-title>
-                <mat-divider></mat-divider>
-                <mat-card-content class="text-secondary py-4 font-semibold text-center">
-                    ---
-                </mat-card-content>
-            </mat-card>
-        </div>
-        <div class="col-lg-4 col-md-4 col-6 my-1">
-            <mat-card class="w-full p-2 h-40 rounded-2xl shadow-lg">
-                <mat-card-title class="text-info font-size-medium">
-                    <i class='far fa-calendar-alt'></i>
-                    In-Hands Date
-                </mat-card-title>
-                <mat-divider></mat-divider>
-                <mat-card-content class="text-secondary py-4 font-semibold text-center">
-                    ---
-                </mat-card-content>
-            </mat-card>
-        </div>
-        <div class="col-lg-4 col-md-4 col-6 my-1">
-            <mat-card class="w-full p-2 h-40 rounded-2xl shadow-lg">
-                <mat-card-title class="text-info font-size-medium">
-                    <mat-icon svgIcon="mat_outline:payments"></mat-icon>
-                    Total Payments
-                </mat-card-title>
-                <mat-divider></mat-divider>
-                <mat-card-content class="text-danger py-4 font-semibold text-center">
-                    $470.35
-                </mat-card-content>
-            </mat-card>
-        </div>
-        <div class="col-lg-4 col-md-4 col-6 my-1">
-            <mat-card class="w-full p-2 h-40 rounded-2xl shadow-lg">
-                <mat-card-title class="text-info font-size-medium">
-                    <mat-icon svgIcon="mat_solid:price_check"></mat-icon>
-                    Paid
-                </mat-card-title>
-                <mat-divider></mat-divider>
-                <mat-card-content class="text-danger py-4 font-semibold text-center">
-                    $0.00
-                </mat-card-content>
-            </mat-card>
-        </div>
-        <div class="col-lg-4 col-md-4 col-6 my-1">
-            <mat-card class="w-full p-2 h-40 rounded-2xl shadow-lg">
-                <mat-card-title class="text-info font-size-medium">
-                    <i class="fas fa-landmark"></i>
-                    Balance Due
-                </mat-card-title>
-                <mat-divider></mat-divider>
-                <mat-card-content class="text-danger py-4 font-semibold text-center">
-                    $470.35
-                </mat-card-content>
-            </mat-card>
-        </div>
-    </div>
 
-    <div class="row mt-2">
-        <div class="col-12">
-            <mat-card class="w-full p-2 h-60 rounded-2xl shadow-lg">
-                <mat-card-title class="text-info font-size-medium">Additional Information</mat-card-title>
-                <mat-divider></mat-divider>
-                <div class="row w-full">
-                    <div class="col-lg-6 col-md-6 col-12 my-1">
-                        <div class="row">
-                            <div class="col-6">
-                                <b>Instructions</b>
+        <div class="row mt-2">
+            <div class="col-12">
+                <mat-card class="w-full p-2 h-60 rounded-2xl shadow-lg">
+                    <mat-card-title class="text-info font-size-medium">Additional Information</mat-card-title>
+                    <mat-divider></mat-divider>
+                    <div class="row w-full">
+                        <div class="col-lg-6 col-md-6 col-12 my-1">
+                            <div class="row">
+                                <div class="col-6">
+                                    <b>Instructions</b>
+                                </div>
+                                <div class="col-6">
+                                    N/A
+                                </div>
                             </div>
-                            <div class="col-6">
-                                N/A
+                        </div>
+                        <div class="col-lg-6 col-md-6 col-12 my-1">
+                            <div class="row">
+                                <div class="col-6">
+                                    <b>Promocode</b>
+                                </div>
+                                <div class="col-6">
+                                    N/A
+                                </div>
                             </div>
                         </div>
                     </div>
-                    <div class="col-lg-6 col-md-6 col-12 my-1">
-                        <div class="row">
-                            <div class="col-6">
-                                <b>Promocode</b>
+                    <div class="row w-full">
+                        <div class="col-lg-6 col-md-6 col-12 my-1">
+                            <div class="row">
+                                <div class="col-6">
+                                    <b>Purchase Order</b>
+                                </div>
+                                <div class="col-6">
+                                    N/A
+                                </div>
                             </div>
-                            <div class="col-6">
-                                N/A
+                        </div>
+                        <div class="col-lg-6 col-md-6 col-12 my-1">
+                            <div class="row">
+                                <div class="col-6">
+                                    <b>Additional Status</b>
+                                </div>
+                                <div class="col-6">
+                                    N/A
+                                </div>
                             </div>
                         </div>
                     </div>
-                </div>
-                <div class="row w-full">
-                    <div class="col-lg-6 col-md-6 col-12 my-1">
-                        <div class="row">
-                            <div class="col-6">
-                                <b>Purchase Order</b>
+                    <div class="row w-full">
+                        <div class="col-lg-6 col-md-6 col-12 my-1">
+                            <div class="row">
+                                <div class="col-6">
+                                    <b>Account/charge Code</b>
+                                </div>
+                                <div class="col-6">
+                                    N/A
+                                </div>
                             </div>
-                            <div class="col-6">
-                                N/A
+                        </div>
+                        <div class="col-lg-6 col-md-6 col-12 my-1">
+                            <div class="row">
+                                <div class="col-6">
+                                    <b>Shipping</b>
+                                </div>
+                                <div class="col-6">
+                                    UPS / UPS Ground
+                                </div>
                             </div>
                         </div>
                     </div>
-                    <div class="col-lg-6 col-md-6 col-12 my-1">
-                        <div class="row">
-                            <div class="col-6">
-                                <b>Additional Status</b>
-                            </div>
-                            <div class="col-6">
-                                N/A
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="row w-full">
-                    <div class="col-lg-6 col-md-6 col-12 my-1">
-                        <div class="row">
-                            <div class="col-6">
-                                <b>Account/charge Code</b>
-                            </div>
-                            <div class="col-6">
-                                N/A
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-lg-6 col-md-6 col-12 my-1">
-                        <div class="row">
-                            <div class="col-6">
-                                <b>Shipping</b>
-                            </div>
-                            <div class="col-6">
-                                UPS / UPS Ground
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </mat-card>
+                </mat-card>
+            </div>
         </div>
-    </div>
 
-    <div class="row">
-        <div class="col-lg-6 col-md-6 mt-2">
-            <mat-card class="w-full p-2 h-full rounded-2xl shadow-lg">
-                <mat-card-title class="text-info font-size-medium">Order comments</mat-card-title>
-                <mat-divider></mat-divider>
-                <mat-card-content class="text-secondary py-4 font-semibold h-80 overflow-auto">
-                    Admin said on Mar 25 2021 | 07:59:41
-                    <p class="text-warning">Contact information updated by Bilal Malik.</p>
-                </mat-card-content>
-                <mat-divider></mat-divider>
-                <mat-card-actions class="p-2 mb-1 float-right">
-                    <button mat-stroked-button>
-                        <mat-icon svgIcon="heroicons_outline:plus"></mat-icon>
-                        <span class="ml-2">Add Comment</span>
-                    </button>
-                </mat-card-actions>
-            </mat-card>
-        </div>
-        <div class="col-lg-6 col-md-6 mt-2">
-            <mat-card class="w-full p-2 h-full rounded-2xl shadow-lg">
-                <mat-card-title class="text-info font-size-medium">Customer Information</mat-card-title>
-                <mat-divider></mat-divider>
-                <mat-card-content class="text-secondary py-4 font-semibold h-80 overflow-auto">
-                    <span class="flex justify-between">
-                        <h2>
-                            <mat-icon svgIcon="mat_solid:person"></mat-icon>
-                        </h2>
-                        <h2 style="line-height: 2;">TheCHCStore .</h2>
-                    </span>
-                    <span class="flex justify-between">
-                        <h2>
-                            <mat-icon svgIcon="mat_solid:local_phone"></mat-icon>
-                        </h2>
-                        <h2 class="text-height-2">3305104384 </h2>
-                    </span>
-                    <span class="flex justify-between">
-                        <h2>
-                            <mat-icon svgIcon="mat_solid:email"></mat-icon>
-                        </h2>
-                        <h2 style="text-decoration: underline; color: blueviolet; cursor: pointer; line-height: 2;">
-                            service@thechcstore.com</h2>
-                    </span>
-                </mat-card-content>
-                <mat-divider></mat-divider>
-                <mat-card-actions class="p-2 mb-1 float-right">
-                    <button mat-stroked-button>
-                        <mat-icon svgIcon="heroicons_outline:eye"></mat-icon>
-                        <span class="ml-2">View Customer</span>
-                    </button>
-                </mat-card-actions>
-            </mat-card>
+        <div class="row">
+            <div class="col-lg-6 col-md-6 mt-2">
+                <mat-card class="w-full p-2 h-full rounded-2xl shadow-lg">
+                    <mat-card-title class="text-info font-size-medium">Order comments</mat-card-title>
+                    <mat-divider></mat-divider>
+                    <mat-card-content class="text-secondary py-4 font-semibold h-80 overflow-auto">
+                        {{selectedOrder.internalComments || not_available}}
+                    </mat-card-content>
+                    <mat-divider></mat-divider>
+                    <mat-card-actions class="p-2 mb-1 float-right">
+                        <button mat-stroked-button>
+                            <mat-icon svgIcon="heroicons_outline:plus"></mat-icon>
+                            <span class="ml-2">Add Comment</span>
+                        </button>
+                    </mat-card-actions>
+                </mat-card>
+            </div>
+            <div class="col-lg-6 col-md-6 mt-2">
+                <mat-card class="w-full p-2 h-full rounded-2xl shadow-lg">
+                    <mat-card-title class="text-info font-size-medium">Customer Information</mat-card-title>
+                    <mat-divider></mat-divider>
+                    <mat-card-content class="text-secondary py-4 font-semibold h-80 overflow-auto">
+                        <span class="flex justify-between">
+                            <h2>
+                                <mat-icon svgIcon="mat_solid:person"></mat-icon>
+                            </h2>
+                            <h2 style="line-height: 2;">TheCHCStore .</h2>
+                        </span>
+                        <span class="flex justify-between">
+                            <h2>
+                                <mat-icon svgIcon="mat_solid:local_phone"></mat-icon>
+                            </h2>
+                            <h2 class="text-height-2">3305104384 </h2>
+                        </span>
+                        <span class="flex justify-between">
+                            <h2>
+                                <mat-icon svgIcon="mat_solid:email"></mat-icon>
+                            </h2>
+                            <h2 style="text-decoration: underline; color: blueviolet; cursor: pointer; line-height: 2;">
+                                service@thechcstore.com</h2>
+                        </span>
+                    </mat-card-content>
+                    <mat-divider></mat-divider>
+                    <mat-card-actions class="p-2 mb-1 float-right">
+                        <button mat-stroked-button>
+                            <mat-icon svgIcon="heroicons_outline:eye"></mat-icon>
+                            <span class="ml-2">View Customer</span>
+                        </button>
+                    </mat-card-actions>
+                </mat-card>
+            </div>
         </div>
     </div>
 </div>

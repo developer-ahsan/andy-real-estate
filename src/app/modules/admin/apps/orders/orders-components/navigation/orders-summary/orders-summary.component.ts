@@ -15,6 +15,7 @@ export class OrdersSummaryComponent implements OnInit {
 
   selectedOrder: OrdersList = null;
   not_available: string = 'N/A';
+  not_available_price: string = '0';
 
   constructor(
     private _changeDetectorRef: ChangeDetectorRef,
@@ -32,7 +33,6 @@ export class OrdersSummaryComponent implements OnInit {
         // Mark for check
         this._changeDetectorRef.markForCheck();
       });
-    this.isLoading = false;
   }
 
 }

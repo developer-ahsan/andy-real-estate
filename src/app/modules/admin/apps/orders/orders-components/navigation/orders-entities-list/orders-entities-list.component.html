@@ -1,5 +1,7 @@
-<div class="p-2">
-    <div class="row mt-2">
+<div class="mt-3">
+    <ngx-skeleton-loader count="8" appearance="line" animation="pulse" *ngIf="isLoading">
+    </ngx-skeleton-loader>
+    <div class="row">
         <div class="col-12">
             <mat-card class="w-full p-2 shadow-lg rounded-2xl">
                 <mat-card-title class="text-info font-size-medium">Entities List</mat-card-title>
@@ -16,7 +18,7 @@
                             <div class="col-6">
                                 <p
                                     style="text-decoration: underline; color: blueviolet; cursor: pointer; line-height: 2;">
-                                    theCHCstore.com
+                                    {{selectedOrder.storeName || not_available}}
                                 </p>
                             </div>
                         </div>
@@ -31,7 +33,7 @@
                             <div class="col-6">
                                 <p
                                     style="text-decoration: underline; color: blueviolet; cursor: pointer; line-height: 2;">
-                                    TheCHCStore
+                                    {{selectedOrder.companyName || not_available}}
                                 </p>
                             </div>
                         </div>

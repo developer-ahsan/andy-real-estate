@@ -58,8 +58,6 @@ export class OrdersDetailsComponent implements OnInit, OnDestroy {
                 this._changeDetectorRef.markForCheck();
             });
 
-        console.log("this.selectedOrder", this.selectedOrder);
-
         // this.drawerMode = "side";
         this.routes = this._orderService.navigationLabels;
         // Subscribe to media changes
@@ -95,7 +93,9 @@ export class OrdersDetailsComponent implements OnInit, OnDestroy {
     // @ Public methods
     // -----------------------------------------------------------------------------------------------------
     clicked(index) {
+        this.isLoading = true;
         this.selectedIndex = index;
+        this.isLoading = false;
     }
 
     toggleDrawer() {

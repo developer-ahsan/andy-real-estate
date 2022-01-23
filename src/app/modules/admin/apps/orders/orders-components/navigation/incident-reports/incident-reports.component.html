@@ -5,7 +5,7 @@
     </button>
 </div>
 <div class="row">
-    <div class="col-12 p-6 mt-2" *ngIf="!isView && !isViewCreateIncidentReportForm">
+    <div class="col-12 mt-2" *ngIf="!isView && !isViewCreateIncidentReportForm">
         <mat-card class="p-0 h-100 overflow-auto shadow-lg rounded-2xl">
             <mat-card-content>
                 <table mat-table [dataSource]="transactions" class="w-full"
@@ -80,7 +80,7 @@
             <!-- Title -->
             <div class="text-1xl font-semibold">View Order # 56165</div>
             <!-- Actions -->
-            <div class="flex flex-shrink-0 items-center mt-4 sm:mt-0 sm:ml-4">
+            <div class="flex flex-shrink-0 items-center mt-8 sm:mt-0 sm:ml-4">
                 <!-- Back to Incident Reports page button -->
                 <button [matTooltip]="'Go to Incident reports list'" class="ml-4" mat-stroked-button [color]="'primary'"
                     (click)="viewIncidentReport()">
