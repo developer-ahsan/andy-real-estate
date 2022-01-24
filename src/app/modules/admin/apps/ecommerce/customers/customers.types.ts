@@ -87,7 +87,7 @@ export interface AddUserLocation {
 }
 
 export interface StoresList {
-    store_id: number;
+    storeID: number;
     storeUserID: number;
     RowNumber: number;
     TotalRequests: number;
@@ -110,4 +110,40 @@ export interface Reminders {
     dayPhone: string;
     RowNumber: number;
     TotalRequests: number;
+}
+
+export interface ApprovalContact {
+    store_user_id: number;
+    list_order: number;
+    first_name: string;
+    last_name: string;
+    email: string;
+    bln_emails: boolean;
+    bln_royalties: boolean;
+    store_id: number;
+    student_org_code: string;
+    student_org_name: string;
+    approval_contact: boolean;
+}
+
+export interface AddReminder {
+    user_id: number;
+    created_on: string;
+    remind_on: string;
+    admin_user_id: number;
+    name: string;
+    notes: string;
+}
+
+export interface UpdateCashback {
+    cash_back: boolean;
+    user_id: number;
+    store_id: number;
+    cash_back_status: boolean;
+}
+
+export interface CreateStore {
+    user_id: number;
+    store_id: number;
+    store_usage: boolean;
 }

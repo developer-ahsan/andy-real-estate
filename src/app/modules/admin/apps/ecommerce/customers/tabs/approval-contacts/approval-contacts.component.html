@@ -33,56 +33,91 @@
           </form>
         </div>
         <div class="w-full" *ngIf="enableAddRequest">
-          <h2 class="text-warning ml-3">
-            <i class="fa fa-info-circle"></i> There are currently no contacts defined for this customer on this store.
+          <h2 class="text-info ml-3">
+            <i class="fa fa-info-circle"></i> *There are currently no contacts defined for this customer on this store.
             Add
             them below
           </h2>
         </div>
       </div>
-      <div class="min-w-40 max-w-50 w-50 py-2 px-2" style="display: inline;" *ngIf="enableForm">
-        <div class="row px-4">
-          <form>
-            <div class="row">
-              <div class="col-lg-4 col-md-4 col-12">
-                <mat-form-field appearance="outline" class="w-full">
-                  <input matInput placeholder="First Name">
-                </mat-form-field>
-              </div>
-              <div class="col-lg-4 col-md-4 col-12">
-                <mat-form-field appearance="outline" class="w-full">
-                  <input matInput placeholder="Last Name">
-                </mat-form-field>
-              </div>
-              <div class="col-lg-4 col-md-4 col-12">
-                <mat-form-field appearance="outline" class="w-full">
-                  <input matInput placeholder="Email">
-                </mat-form-field>
-              </div>
-              <div class="col-lg-4 col-md-4 col-12">
-                <mat-form-field appearance="outline" class="w-full">
-                  <input matInput placeholder="Organization Code">
-                </mat-form-field>
-              </div>
-              <div class="col-lg-4 col-md-4 col-12">
-                <mat-form-field appearance="outline" class="w-full">
-                  <input matInput placeholder="Organization Name">
-                </mat-form-field>
-              </div>
-              <div class="col-lg-4 col-md-4 col-12">
-                <mat-form-field appearance="outline" class="w-full">
-                  <input matInput placeholder="First Name">
-                </mat-form-field>
-              </div>
-              <div class="col-lg-3 col-md-3 col-12 float-right">
-                <button class="mt-4 w-full" mat-flat-button [color]="'primary'">
-                  <mat-icon [svgIcon]="'heroicons_outline:plus'"></mat-icon>
-                  <span class="ml-2 mr-1">Add</span>
-                </button>
-              </div>
+      <div *ngIf="enableForm">
+        <form [formGroup]="selectedCustomerForm">
+          <div class="row">
+            <div class="col-lg-4 col-md-4 col-12">
+              <mat-form-field class="w-full">
+                <mat-label>First Name</mat-label>
+                <input matInput placeholder="First Name" [formControlName]="'first_name'">
+                <mat-error>
+                  First Name is required
+                </mat-error>
+              </mat-form-field>
             </div>
-          </form>
-        </div>
+            <div class="col-lg-4 col-md-4 col-12">
+              <mat-form-field class="w-full">
+                <mat-label>Last Name</mat-label>
+                <input matInput placeholder="Last Name" [formControlName]="'last_name'">
+                <mat-error>
+                  Last Name is required
+                </mat-error>
+              </mat-form-field>
+            </div>
+            <div class="col-lg-4 col-md-4 col-12">
+              <mat-form-field class="w-full">
+                <mat-label>Email</mat-label>
+                <input matInput placeholder="Email" [formControlName]="'email'">
+                <mat-error>
+                  Enter Valid Email Address
+                </mat-error>
+              </mat-form-field>
+            </div>
+            <div class="col-lg-4 col-md-4 col-12">
+              <mat-form-field class="w-full">
+                <mat-label>Organization Code</mat-label>
+                <input matInput placeholder="Organization Code" [formControlName]="'student_org_code'">
+              </mat-form-field>
+            </div>
+            <div class="col-lg-4 col-md-4 col-12">
+              <mat-form-field class="w-full">
+                <mat-label>Organization Name</mat-label>
+                <input matInput placeholder="Organization Name" [formControlName]="'student_org_name'">
+              </mat-form-field>
+            </div>
+            <div class="col-lg-2 col-md-6">
+              <mat-checkbox [formControlName]="'bln_emails'">E
+                <button mat-icon-button matTooltip="{{e_check}}" matTooltipClass="example-tooltip-red">
+                  <i class="fas fa-question-circle"></i>
+                </button>
+              </mat-checkbox>
+            </div>
+            <div class="col-lg-2 col-md-6">
+              <mat-checkbox [formControlName]="'bln_royalties'">R
+                <button mat-icon-button matTooltip="{{r_check}}" matTooltipClass="example-tooltip-red">
+                  <i class="fas fa-question-circle"></i>
+                </button>
+              </mat-checkbox>
+            </div>
+          </div>
+          <mat-divider class="mb-2"></mat-divider>
+          <div class="row mt-3 mr-3 float-right">
+            <div class="flex items-center mr-4" *ngIf="flashMessage">
+              <ng-container *ngIf="flashMessage === 'success'">
+                <mat-icon class="text-green-500" [svgIcon]="'heroicons_outline:check'"></mat-icon>
+                <span class="ml-2">User approval contact added successfully</span>
+              </ng-container>
+              <ng-container *ngIf="flashMessage === 'error'">
+                <mat-icon class="text-red-500" [svgIcon]="'heroicons_outline:x'"></mat-icon>
+                <span class="ml-2">An error occurred, try again!</span>
+              </ng-container>
+            </div>
+            <button class="min-w-24" mat-stroked-button [matTooltip]="'Add Approval Contact'"
+              (click)="addApprovalContact()" [disabled]="addApprovalLoader">
+              <mat-progress-spinner *ngIf="addApprovalLoader" [diameter]="24" [mode]="'indeterminate'">
+              </mat-progress-spinner>
+              <mat-icon *ngIf="!addApprovalLoader" [svgIcon]="'heroicons_outline:plus'"></mat-icon>
+              <span *ngIf="!addApprovalLoader" class="ml-1 mr-1">Add</span>
+            </button>
+          </div>
+        </form>
       </div>
     </div>
   </div>

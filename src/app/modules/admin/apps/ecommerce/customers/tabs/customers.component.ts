@@ -87,6 +87,8 @@ export class CustomersTabComponent implements OnInit, AfterViewInit, OnDestroy {
             ipaddress: [''],
             fax: [''],
             dayPhone: [''],
+            zipCode: [''],
+            city: [''],
             blnActive: [''],
             website: [''],
             department: ['']
@@ -457,17 +459,20 @@ export class CustomersTabComponent implements OnInit, AfterViewInit, OnDestroy {
      */
     updateCustomerProduct(): void {
         // Get the product object
-        const product = this.selectedCustomerForm.getRawValue();
+        const customer = this.selectedCustomerForm.getRawValue();
+        console.log("customer values => ", customer);
 
-        // Remove the currentImageIndex field
-        delete product.currentImageIndex;
+        this.showFlashMessage('success');
 
-        // Update the product on the server
-        this._customerService.updateCustomer(product.id, product).subscribe(() => {
+        // // Remove the currentImageIndex field
+        // delete customer.currentImageIndex;
 
-            // Show a success message
-            this.showFlashMessage('success');
-        });
+        // // Update the customer on the server
+        // this._customerService.updateCustomer(customer.id, customer).subscribe(() => {
+
+        //     // Show a success message
+        //     this.showFlashMessage('success');
+        // });
     }
 
     /**

@@ -30,10 +30,10 @@ export class CreditTermsComponent implements OnInit {
     const { pk_userID } = this.currentSelectedCustomer;
     this.fetchCreditTerms = this._customerService.getCreditTerms(pk_userID)
       .subscribe((addresses) => {
-          this.credit_term_options = addresses["data"];
-          this.credit_term_options_length = this.credit_term_options.length;
-          this.selected_credit_term = this.credit_term_options.filter(function(credit_term){return credit_term.UserTermSelected == true})[0];
-          this.isLoadingChange.emit(false);
+        this.credit_term_options = addresses["data"];
+        this.credit_term_options_length = this.credit_term_options.length;
+        this.selected_credit_term = this.credit_term_options.filter(function (credit_term) { return credit_term.UserTermSelected == true })[0];
+        this.isLoadingChange.emit(false);
       });
   }
 
@@ -45,16 +45,15 @@ export class CreditTermsComponent implements OnInit {
     this.updateLoader = true;
     const { pk_userID } = this.currentSelectedCustomer;
     const { pk_creditTermID } = this.selected_credit_term;
-    const payload : UserCreditTerms = {
-      user_id : pk_userID,
+    const payload: UserCreditTerms = {
+      user_id: pk_userID,
       credit_term_id: pk_creditTermID,
       credit_term: true
     }
-    this.updateLoader = true;
     this._customerService.updateCreditTerm(payload)
       .subscribe((response: any) => {
         this.showFlashMessage(
-          response["success"] === true ? 
+          response["success"] === true ?
             'success' :
             'error'
         );
@@ -65,21 +64,20 @@ export class CreditTermsComponent implements OnInit {
   /**
      * Show flash message
      */
-   showFlashMessage(type: 'success' | 'error'): void
-   {
-       // Show the message
-       this.flashMessage = type;
+  showFlashMessage(type: 'success' | 'error'): void {
+    // Show the message
+    this.flashMessage = type;
 
-       // Mark for check
-       this._changeDetectorRef.markForCheck();
+    // Mark for check
+    this._changeDetectorRef.markForCheck();
 
-       // Hide it after 3 seconds
-       setTimeout(() => {
+    // Hide it after 3 seconds
+    setTimeout(() => {
 
-           this.flashMessage = null;
+      this.flashMessage = null;
 
-           // Mark for check
-           this._changeDetectorRef.markForCheck();
-       }, 3000);
-   }
+      // Mark for check
+      this._changeDetectorRef.markForCheck();
+    }, 3000);
+  }
 }

@@ -254,7 +254,7 @@
                 <mat-paginator
                     class="sm:absolute sm:inset-x-0 sm:bottom-0 border-b sm:border-t sm:border-b-0 z-10 bg-gray-50 dark:bg-transparent"
                     [ngClass]="{'pointer-events-none': isLoading}" [length]="customersCount" [pageIndex]="pageNo"
-                    [pageSize]="pageSize" [pageSizeOptions]="[5, 10, 25, 100]" (page)="pageEvents($event)">
+                    [pageSize]="pageSize" [pageSizeOptions]="[10, 25]" (page)="pageEvents($event)">
                 </mat-paginator>
 
             </ng-container>

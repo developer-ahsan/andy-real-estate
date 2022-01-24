@@ -20,16 +20,12 @@ export class CashbackComponent implements OnInit, OnDestroy {
   storesList: StoresList[] = [];
   storesListLength: number = 0;
 
-  stores: string[] = [
-    'AirForceROTCShop.com',
-    'ArmyROTCShop.com',
-    'BrandItShop.com',
-    'FunnelPromos.com',
-    'MySummaShop.com',
-    'universitypromosandprint.com'
-  ];
+  updateLoader = false;
   enableOtherForms = false;
   selected = "dont-allow";
+  flashMessage: 'success' | 'error' | null = null;
+
+  commentUpdateLoader = false;
 
   constructor(
     private _customerService: CustomersService,
@@ -48,11 +44,6 @@ export class CashbackComponent implements OnInit, OnDestroy {
 
         this._changeDetectorRef.markForCheck();
       });
-
-    // this._customerService.getAvailableLocations(pk_userID)
-    //   .subscribe((available_locations) => {
-    //     console.log("locations", available_locations)
-    //   });
   }
 
   onResize(event) {
@@ -61,9 +52,48 @@ export class CashbackComponent implements OnInit, OnDestroy {
 
   storeSelection(store: StoresList) {
     this.enableOtherForms = true;
-    console.log("store selected", store)
+    this.selectedStore = store;
   }
 
+  updateCashback(): void {
+    const { storeID } = this.selectedStore;
+    const payload = {
+      cash_back: true,
+      user_id: this.currentSelectedCustomer.pk_userID,
+      store_id: storeID,
+      cash_back_status: this.selected === 'allow' ? true : false
+    }
+    this.commentUpdateLoader = true;
+    this._customerService.updateCashback(payload)
+      .subscribe((response: any) => {
+        this.showFlashMessage(
+          response["success"] === true ?
+            'success' :
+            'error'
+        );
+        this.commentUpdateLoader = false;
+      });
+  }
+
+  /**
+   * Show flash message
+   */
+  showFlashMessage(type: 'success' | 'error'): void {
+    // Show the message
+    this.flashMessage = type;
+
+    // Mark for check
+    this._changeDetectorRef.markForCheck();
+
+    // Hide it after 3 seconds
+    setTimeout(() => {
+
+      this.flashMessage = null;
+
+      // Mark for check
+      this._changeDetectorRef.markForCheck();
+    }, 3000);
+  }
   ngOnDestroy(): void {
     // Unsubscribe from all subscriptions
     this._unsubscribeAll.next();

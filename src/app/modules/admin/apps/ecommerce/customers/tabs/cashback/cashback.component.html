@@ -25,10 +25,12 @@
               matTooltipClass="example-tooltip-red">
               <i class="fas fa-question-circle"></i>
             </button>
-            <mat-divider class="mb-2"></mat-divider>
+            <mat-divider class="my-2"></mat-divider>
+            <p class="text-danger font-semibold pt-3">$0.00</p>
+            <mat-divider class="my-2"></mat-divider>
             <div>
-              <p class="text-danger float-left font-semibold pt-3">$0.00</p>
               <button class="float-right" mat-stroked-button>
+                <mat-icon svgIcon="heroicons_outline:calculator"></mat-icon>
                 <span class="ml-2 mr-1" [matTooltip]="'Recalculate total amount'">Recalculate cashback amount</span>
               </button>
             </div>
@@ -43,10 +45,27 @@
               <mat-option value="dont-allow">Do not allow user to use cashback</mat-option>
             </mat-select>
             <mat-divider class="my-2"></mat-divider>
-            <button class="float-right" mat-stroked-button [matTooltip]="'Update Cashback Restriction'">
-              <mat-icon svgIcon="mode_edit_outline"></mat-icon>
-              <span class="ml-2 mr-1">Update</span>
-            </button>
+            <div class="flex items-center justify-end w-full">
+              <div class="flex items-center">
+                <div class="flex items-center mr-4" *ngIf="flashMessage">
+                  <ng-container *ngIf="flashMessage === 'success'">
+                    <mat-icon class="text-green-500" [svgIcon]="'heroicons_outline:check'"></mat-icon>
+                    <span class="ml-2">Updated successfully</span>
+                  </ng-container>
+                  <ng-container *ngIf="flashMessage === 'error'">
+                    <mat-icon class="text-red-500" [svgIcon]="'heroicons_outline:x'"></mat-icon>
+                    <span class="ml-2">An error occurred, try again!</span>
+                  </ng-container>
+                </div>
+                <button class="min-w-40" mat-stroked-button [matTooltip]="'Update Cashback Restriction'"
+                  (click)="updateCashback()" [disabled]="commentUpdateLoader">
+                  <mat-progress-spinner *ngIf="commentUpdateLoader" [diameter]="24" [mode]="'indeterminate'">
+                  </mat-progress-spinner>
+                  <mat-icon *ngIf="!commentUpdateLoader" svgIcon="mode_edit_outline"></mat-icon>
+                  <span *ngIf="!commentUpdateLoader" class="ml-1 mr-1">Update</span>
+                </button>
+              </div>
+            </div>
           </div>
         </div>
       </div>

@@ -1,4 +1,5 @@
 import { Component, Input, Output, OnInit, EventEmitter, OnDestroy, ChangeDetectorRef } from '@angular/core';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { CustomersService } from 'app/modules/admin/apps/ecommerce/customers/customers.service';
 import { StoresList } from 'app/modules/admin/apps/ecommerce/customers/customers.types';
 import { Subject } from 'rxjs';
@@ -14,7 +15,10 @@ export class ApprovalContactsComponent implements OnInit, OnDestroy {
   @Input() isLoading: boolean;
   @Output() isLoadingChange = new EventEmitter<boolean>();
 
+  flashMessage: 'success' | 'error' | null = null;
   approval_detail_text: string = "Define any additional artwork approval contacts in the fields below. Approval contacts defined here will run specific to this user, in additional to any approval contacts defined at the store level. These approval contacts below only apply if the store approval contacts are set to include the customer-level approval contacts."
+  e_check: string = "Determines whether to include any additional emails defined below when proofs are sent to this contact."
+  r_check: string = "Determines whether this approval contact as ability to designate royalities during approval."
   selectedStore: StoresList = null;
   stores: string[] = [
     'RaceWorldPromos.com',
@@ -26,10 +30,13 @@ export class ApprovalContactsComponent implements OnInit, OnDestroy {
   enableAddRequest = false;
   enableBackNavigation = false;
   enableForm = false;
+  selectedCustomerForm: FormGroup;
+  addApprovalLoader = false;
   private _unsubscribeAll: Subject<any> = new Subject<any>();
 
   constructor(
     private _customerService: CustomersService,
+    private _formBuilder: FormBuilder,
     private _changeDetectorRef: ChangeDetectorRef
   ) { }
 
@@ -44,10 +51,22 @@ export class ApprovalContactsComponent implements OnInit, OnDestroy {
 
         this._changeDetectorRef.markForCheck();
       });
+
+    let emailregex: RegExp = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+
+    // Create the selected product form
+    this.selectedCustomerForm = this._formBuilder.group({
+      first_name: ['', [Validators.required]],
+      last_name: ['', [Validators.required]],
+      email: ['', [Validators.required, Validators.pattern(emailregex)]],
+      student_org_code: [''],
+      student_org_name: [''],
+      bln_emails: false,
+      bln_royalties: false
+    });
   }
 
-  storeSelection(store) {
-    console.log("store selected", store);
+  storeSelection() {
     this.enableAddRequest = true;
   }
 
@@ -60,7 +79,60 @@ export class ApprovalContactsComponent implements OnInit, OnDestroy {
     this.enableForm = !this.enableForm;
     this.enableBackNavigation = !this.enableBackNavigation;
     this.enableAddRequest = false;
+    this.selectedCustomerForm.reset();
     this.selectedStore = null;
+  }
+
+  /**
+     * Update the selected product using the form mock-api
+     */
+  addApprovalContact(): void {
+    const { storeID, storeUserID } = this.selectedStore;
+    const customer = this.selectedCustomerForm.getRawValue();
+    const { first_name, last_name, email, bln_emails, bln_royalties, student_org_code, student_org_name } = customer;
+    const payload = {
+      store_user_id: storeUserID,
+      list_order: 10,
+      first_name: first_name,
+      last_name: last_name,
+      email: email,
+      bln_emails: bln_emails,
+      bln_royalties: bln_royalties,
+      store_id: storeID,
+      student_org_code: student_org_code,
+      student_org_name: student_org_name,
+      approval_contact: true
+    }
+    this.addApprovalLoader = true;
+    this._customerService.addApprovalRequest(payload)
+      .subscribe((response: any) => {
+        this.showFlashMessage(
+          response["success"] === true ?
+            'success' :
+            'error'
+        );
+        this.addApprovalLoader = false;
+      });
+  }
+
+  /**
+     * Show flash message
+     */
+  showFlashMessage(type: 'success' | 'error'): void {
+    // Show the message
+    this.flashMessage = type;
+
+    // Mark for check
+    this._changeDetectorRef.markForCheck();
+
+    // Hide it after 3 seconds
+    setTimeout(() => {
+
+      this.flashMessage = null;
+
+      // Mark for check
+      this._changeDetectorRef.markForCheck();
+    }, 3000);
   }
 
   ngOnDestroy(): void {

@@ -145,6 +145,10 @@ export class OrdersService {
         );
     }
 
+    getOrderDetails(id) {
+        return this._httpClient.get(`${environment.orders}?list=true&order_id=${id}`)
+    }
+
     /**
      * Get brands
      */

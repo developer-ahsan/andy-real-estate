@@ -29,7 +29,9 @@ export class RemindersComponent implements OnInit, OnDestroy {
     'RaceWorldPromos.com'
   ];
   private _unsubscribeAll: Subject<any> = new Subject<any>();
+  flashMessage: 'success' | 'error' | null = null;
 
+  commentUpdateLoader = false;
 
   pageSize = 10;
   pageSizeOptions: number[] = [5, 10, 25, 100];
@@ -47,7 +49,6 @@ export class RemindersComponent implements OnInit, OnDestroy {
       reminderOn: ['', Validators.required],
       notes: ['']
     });
-
     const { pk_userID } = this.currentSelectedCustomer;
     this._customerService.getReminders(pk_userID)
       .pipe(takeUntil(this._unsubscribeAll))
@@ -62,6 +63,56 @@ export class RemindersComponent implements OnInit, OnDestroy {
 
   locationFormToggle() {
     this.logoForm = !this.logoForm;
+  }
+
+  createReminder(): void {
+    const payload = {
+      user_id: this.currentSelectedCustomer.pk_userID,
+      created_on: Date.now().toString(),
+      remind_on: this.reminderForm.getRawValue().reminderOn,
+      admin_user_id: 866,
+      name: this.reminderForm.getRawValue().name,
+      notes: this.reminderForm.getRawValue().notes,
+      reminder: true
+    }
+
+    console.log("payload", payload)
+    this.commentUpdateLoader = true;
+    this._customerService.addReminder(payload)
+      .subscribe((response: any) => {
+        this.showFlashMessage(
+          response["success"] === true ?
+            'success' :
+            'error'
+        );
+        this._customerService.getReminders(this.currentSelectedCustomer.pk_userID)
+          .pipe(takeUntil(this._unsubscribeAll))
+          .subscribe((reminders: Reminders) => {
+            this.dataSource = reminders["data"];
+            this.remindersLength = reminders["totalRecords"];
+            this.commentUpdateLoader = false;
+          });
+      });
+  }
+
+  /**
+   * Show flash message
+   */
+  showFlashMessage(type: 'success' | 'error'): void {
+    // Show the message
+    this.flashMessage = type;
+
+    // Mark for check
+    this._changeDetectorRef.markForCheck();
+
+    // Hide it after 3 seconds
+    setTimeout(() => {
+
+      this.flashMessage = null;
+
+      // Mark for check
+      this._changeDetectorRef.markForCheck();
+    }, 3000);
   }
 
   ngOnDestroy(): void {

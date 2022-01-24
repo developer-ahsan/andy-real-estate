@@ -4,8 +4,8 @@
             <div class="col-12">
                 Select a group order participant:
                 <mat-form-field class="w-full">
-                    <mat-select [(ngModel)]="selectedorder" name="order">
-                        <mat-option value="select_order" disabled>
+                    <mat-select name="order">
+                        <mat-option value="" disabled>
                             Click to select
                         </mat-option>
                         <mat-option (click)="orderSelection(order)" *ngFor="let order of orders" [value]="order">
@@ -15,25 +15,27 @@
                 </mat-form-field>
             </div>
 
-            <div class="col-12 mt-2">
+            <div class="col-12 mt-2" *ngIf="showForm">
                 <mat-card class="rounded-2xl shadow-lg">
                     <mat-card-title class="font-semibold text-secondary">CONFIDENTIAL ORDER REPORT</mat-card-title>
-                    <mat-card-subtitle>#56165 - Group Order</mat-card-subtitle>
+                    <mat-card-subtitle>#{{selectedOrder.pk_orderID}} - Group Order</mat-card-subtitle>
                     <mat-card-content>
-                        <table mat-table [dataSource]="transactions" class="w-full">
+                        <table mat-table [dataSource]="selectedOrderDetails" class="w-full">
                             <!-- Item Column -->
                             <ng-container matColumnDef="item">
                                 <th mat-header-cell *matHeaderCellDef class="bg-light"> Item </th>
-                                <td mat-cell *matCellDef="let transaction"> {{transaction.item}} </td>
+                                <td mat-cell *matCellDef="let transaction"> {{transaction.productName}} </td>
                                 <td mat-footer-cell *matFooterCellDef class="font-semibold bg-light"> Total </td>
                             </ng-container>
 
                             <!-- Cost Column -->
                             <ng-container matColumnDef="cost">
                                 <th mat-header-cell *matHeaderCellDef class="bg-light"> Cost </th>
-                                <td mat-cell *matCellDef="let transaction"> {{transaction.cost | currency}} </td>
-                                <td mat-footer-cell *matFooterCellDef class="font-semibold bg-light"> {{getTotalCost() |
-                                    currency}} </td>
+                                <td mat-cell *matCellDef="let transaction"> {{transaction.orderCost | currency}} </td>
+                                <td mat-footer-cell *matFooterCellDef class="font-semibold bg-light">
+                                    <!-- {{getTotalCost() | currency}} -->
+                                    $470.35
+                                </td>
                             </ng-container>
 
                             <!-- Item Description Column -->
@@ -70,7 +72,7 @@
                     </mat-card-content>
                 </mat-card>
             </div>
-            <div class="col-12 mt-2">
+            <div class="col-12 mt-2" *ngIf="showForm">
                 <mat-card class="p-2 h-40 shadow-lg rounded-2xl">
                     <mat-card-title class="text-info font-size-medium">Internal comments</mat-card-title>
                     <mat-divider></mat-divider>
@@ -80,7 +82,7 @@
                     </mat-card-content>
                 </mat-card>
             </div>
-            <div class="col-12 mt-2">
+            <div class="col-12 mt-2" *ngIf="showForm">
                 <mat-card class="p-2 h-60 shadow-lg rounded-2xl">
                     <mat-card-title class="text-info font-size-medium">Details</mat-card-title>
                     <mat-divider></mat-divider>

@@ -68,7 +68,7 @@
                             </mat-grid-tile>
                             <mat-grid-tile>
                                 <mat-grid-tile-header>Status: </mat-grid-tile-header>
-                                <mat-grid-tile-footer>{{selectedCustomer.blnActive ? "Active" : "Inactive"}}
+                                <mat-grid-tile-footer>{{selectedCustomer?.blnActive ? "Active" : "Inactive"}}
                                 </mat-grid-tile-footer>
                             </mat-grid-tile>
                         </mat-grid-list>
@@ -82,97 +82,92 @@
             <mat-tab-group #tabGroup (selectedTabChange)="tabChanged($event)" style="overflow-x: scroll;">
                 <mat-tab label="User Info">
                     <ng-container *ngTemplateOutlet="myCard"></ng-container>
-                    <div class="text-2xl font-semibold" style="color: #64748b;">User Info</div>
+                    <div class="text-2xl font-semibold mt-3" style="color: #64748b;">User Info</div>
                     <mat-divider></mat-divider>
-                    <form class="flex flex-col w-full pt-2" [formGroup]="selectedCustomerForm">
-                        <div class="flex pt-2">
-                            <div class="flex flex-auto">
-                                <div class="flex flex-col w-2/4 pl-8">
-
-                                    <!-- Email -->
-                                    <mat-form-field class="w-full">
-                                        <mat-label>Email</mat-label>
-                                        <input matInput [formControlName]="'email'">
-                                    </mat-form-field>
-
-                                    <!-- First Name and Last Name -->
-                                    <div class="flex">
-                                        <mat-form-field class="w-full pr-2">
-                                            <mat-label>First Name</mat-label>
-                                            <input matInput [formControlName]="'firstName'">
-                                        </mat-form-field>
-                                        <mat-form-field class="w-full pl-2">
-                                            <mat-label>Last Name</mat-label>
-                                            <input matInput [formControlName]="'lastName'">
-                                        </mat-form-field>
-                                    </div>
-
-                                    <!-- First Name and Last Name -->
-                                    <div class="flex">
-                                        <mat-form-field class="w-full pr-2">
-                                            <mat-label>Store</mat-label>
-                                            <input matInput [formControlName]="'storeName'">
-                                        </mat-form-field>
-                                        <mat-form-field class="w-full pl-2">
-                                            <mat-label>Company Name</mat-label>
-                                            <input matInput [formControlName]="'companyName'">
-                                        </mat-form-field>
-                                    </div>
-                                </div>
-
-                                <!-- Cost, Base price, Tax & Price -->
-                                <div class="flex flex-col w-1/4 pl-8">
-                                    <mat-form-field class="w-full">
-                                        <mat-label>Date Registered</mat-label>
-                                        <input matInput [formControlName]="'date'">
-                                    </mat-form-field>
-                                    <mat-form-field class="w-full">
-                                        <mat-label>Title</mat-label>
-                                        <input matInput [formControlName]="'title'">
-                                    </mat-form-field>
-                                    <mat-form-field class="w-full">
-                                        <mat-label>Fax</mat-label>
-                                        <input matInput [formControlName]="'fax'">
-                                    </mat-form-field>
-                                </div>
-
-                                <!-- Weight & Tags -->
-                                <div class="flex flex-col w-1/4 pl-8">
-                                    <mat-form-field class="w-full">
-                                        <mat-label>IP Address</mat-label>
-                                        <input matInput [formControlName]="'ipaddress'">
-                                    </mat-form-field>
-                                    <mat-form-field class="w-full">
-                                        <mat-label>Department</mat-label>
-                                        <input matInput [formControlName]="'department'">
-                                    </mat-form-field>
-                                    <mat-form-field class="w-full">
-                                        <mat-label>Website</mat-label>
-                                        <input matInput [formControlName]="'website'">
-                                    </mat-form-field>
-                                </div>
-
+                    <form class="w-full pt-2" [formGroup]="selectedCustomerForm">
+                        <div class="row mb-3">
+                            <div class="col-6 flex">
+                                <p class="font-semibold mr-2">Date Registered:</p>
+                                <p>{{selectedCustomer?.date || not_available}}</p>
                             </div>
-
+                            <div class="col-6 flex">
+                                <p class="font-semibold mr-2">IP Address:</p>
+                                <p>{{selectedCustomer?.address2 || not_available}}</p>
+                            </div>
                         </div>
-
-                        <div class="flex items-center justify-between w-full border-t px-8 py-4">
-                            <div class="flex items-center">
-                                <div class="flex items-center mr-4" *ngIf="flashMessage">
-                                    <ng-container *ngIf="flashMessage === 'success'">
-                                        <mat-icon class="text-green-500" [svgIcon]="'heroicons_outline:check'">
-                                        </mat-icon>
-                                        <span class="ml-2">Customer updated</span>
-                                    </ng-container>
-                                    <ng-container *ngIf="flashMessage === 'error'">
-                                        <mat-icon class="text-red-500" [svgIcon]="'heroicons_outline:x'"></mat-icon>
-                                        <span class="ml-2">An error occurred, try again!</span>
-                                    </ng-container>
-                                </div>
-                                <button mat-flat-button [color]="'primary'" (click)="updateCustomerProduct()">
-                                    Update
-                                </button>
+                        <div class="row">
+                            <div class="col-lg-4 col-12">
+                                <mat-form-field class="w-full">
+                                    <mat-label>Email</mat-label>
+                                    <input matInput [formControlName]="'email'" placeholder="Email">
+                                </mat-form-field>
                             </div>
+                            <div class="col-lg-4 col-6">
+                                <mat-form-field class="w-full">
+                                    <mat-label>First Name</mat-label>
+                                    <input matInput [formControlName]="'firstName'" placeholder="First Name">
+                                </mat-form-field>
+                            </div>
+                            <div class="col-lg-4 col-6">
+                                <mat-form-field class="w-full">
+                                    <mat-label>Last Name</mat-label>
+                                    <input matInput [formControlName]="'lastName'" placeholder="Last Name">
+                                </mat-form-field>
+                            </div>
+                            <div class="col-lg-4 col-6">
+                                <mat-form-field class="w-full">
+                                    <mat-label>Company Name</mat-label>
+                                    <input matInput [formControlName]="'companyName'" placeholder="Company">
+                                </mat-form-field>
+                            </div>
+                            <div class="col-lg-4 col-6">
+                                <mat-form-field class="w-full">
+                                    <mat-label>Store</mat-label>
+                                    <input matInput [formControlName]="'storeName'" placeholder="Store">
+                                </mat-form-field>
+                            </div>
+                            <div class="col-lg-4 col-6">
+                                <mat-form-field class="w-full">
+                                    <mat-label>Title</mat-label>
+                                    <input matInput [formControlName]="'title'" placeholder="Title">
+                                </mat-form-field>
+                            </div>
+                            <div class="col-lg-4 col-6">
+                                <mat-form-field class="w-full">
+                                    <mat-label>Fax</mat-label>
+                                    <input matInput [formControlName]="'fax'" placeholder="Fax">
+                                </mat-form-field>
+                            </div>
+                            <div class="col-lg-4 col-6">
+                                <mat-form-field class="w-full">
+                                    <mat-label>Website</mat-label>
+                                    <input matInput [formControlName]="'website'" placeholder="Website">
+                                </mat-form-field>
+                            </div>
+                            <div class="col-lg-4 col-6">
+                                <mat-form-field class="w-full">
+                                    <mat-label>Department</mat-label>
+                                    <input matInput [formControlName]="'department'" placeholder="Department">
+                                </mat-form-field>
+                            </div>
+                        </div>
+                        <mat-divider></mat-divider>
+                        <div class="row mt-3 mr-3 float-right">
+                            <div class="flex items-center mr-4" *ngIf="flashMessage">
+                                <ng-container *ngIf="flashMessage === 'success'">
+                                    <mat-icon class="text-green-500" [svgIcon]="'heroicons_outline:check'">
+                                    </mat-icon>
+                                    <span class="ml-2">Customer updated</span>
+                                </ng-container>
+                                <ng-container *ngIf="flashMessage === 'error'">
+                                    <mat-icon class="text-red-500" [svgIcon]="'heroicons_outline:x'"></mat-icon>
+                                    <span class="ml-2">An error occurred, try again!</span>
+                                </ng-container>
+                            </div>
+                            <button mat-flat-button [color]="'primary'" (click)="updateCustomerProduct()">
+                                <mat-icon svgIcon="mat_outline:edit"></mat-icon>
+                                <span class="ml-2">Update</span>
+                            </button>
                         </div>
                     </form>
                 </mat-tab>

@@ -47,45 +47,40 @@
         <div class="border p-3 mt-2" *ngIf="addStoreForm">
             <b class="text-1xl">Add A Store</b>
             <mat-divider class="mb-2"></mat-divider>
-            <div class="w-full">
-                <form>
-                    <div class="row w-full">
-                        <div class="col-12">
-                            <mat-form-field class="w-full">
-                                <mat-select [(ngModel)]="selectedStore" name="store">
-                                    <mat-option value="select_store" disabled>
-                                        Select a store
-                                    </mat-option>
-                                    <mat-option (click)="storeSelection(store)" *ngFor="let store of stores"
-                                        [value]="store">
-                                        {{store}}
-                                    </mat-option>
-                                </mat-select>
-                            </mat-form-field>
-                        </div>
+            <form>
+                <div class="row w-full">
+                    <div class="col-12">
+                        <mat-form-field class="w-full">
+                            <mat-label>Select a store</mat-label>
+                            <mat-select [(ngModel)]="selectedStore" name="store">
+                                <mat-option *ngFor="let store of allStores" [value]="store">
+                                    {{store.storeName}}
+                                </mat-option>
+                            </mat-select>
+                        </mat-form-field>
                     </div>
-                    <div class="border-t">
-                        <div class="flex items-center mt-2 justify-content-end">
-                            <div class="flex items-center mr-4" *ngIf="flashMessage">
-                                <ng-container *ngIf="flashMessage === 'success'">
-                                    <mat-icon class="text-green-500" [svgIcon]="'heroicons_outline:check'"></mat-icon>
-                                    <span class="ml-2">Store Added</span>
-                                </ng-container>
-                                <ng-container *ngIf="flashMessage === 'error'">
-                                    <mat-icon class="text-red-500" [svgIcon]="'heroicons_outline:x'"></mat-icon>
-                                    <span class="ml-2">An error occurred, try again!</span>
-                                </ng-container>
-                            </div>
-
-                            <!-- Add Reminder button -->
-                            <button mat-flat-button [color]="'primary'" (click)="createStore()">
-                                <mat-icon [svgIcon]="'heroicons_outline:plus'"></mat-icon>
-                                <span class="ml-1 mr-1">Add Store</span>
-                            </button>
-                        </div>
+                </div>
+                <mat-divider class="my-2"></mat-divider>
+                <div class="flex items-center justify-end w-full">
+                    <div class="flex items-center mr-4" *ngIf="flashMessage">
+                        <ng-container *ngIf="flashMessage === 'success'">
+                            <mat-icon class="text-green-500" [svgIcon]="'heroicons_outline:check'"></mat-icon>
+                            <span class="ml-2">Store Created successfully</span>
+                        </ng-container>
+                        <ng-container *ngIf="flashMessage === 'error'">
+                            <mat-icon class="text-red-500" [svgIcon]="'heroicons_outline:x'"></mat-icon>
+                            <span class="ml-2">An error occurred, try again!</span>
+                        </ng-container>
                     </div>
-                </form>
-            </div>
+                    <button class="min-w-40" mat-stroked-button [matTooltip]="'Create Store'" (click)="createStore()"
+                        [disabled]="commentUpdateLoader">
+                        <mat-progress-spinner *ngIf="commentUpdateLoader" [diameter]="24" [mode]="'indeterminate'">
+                        </mat-progress-spinner>
+                        <mat-icon *ngIf="!commentUpdateLoader" [svgIcon]="'heroicons_outline:plus'"></mat-icon>
+                        <span *ngIf="!commentUpdateLoader" class="ml-1 mr-1">Create Store</span>
+                    </button>
+                </div>
+            </form>
         </div>
     </div>
 </div>

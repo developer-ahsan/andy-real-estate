@@ -20,6 +20,7 @@ import { MatGridListModule } from '@angular/material/grid-list';
 import { MatDividerModule } from '@angular/material/divider';
 import { MatRadioModule } from '@angular/material/radio';
 import { MatListModule } from '@angular/material/list';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatStepperModule } from '@angular/material/stepper';
 import { SharedModule } from 'app/shared/shared.module';
 import { InventoryComponent } from 'app/modules/admin/apps/ecommerce/inventory/inventory.component';
@@ -72,7 +73,7 @@ import { NgxSkeletonLoaderModule } from 'ngx-skeleton-loader';
         QuotesComponent,
         SavedCartsComponent
     ],
-    imports     : [
+    imports: [
         RouterModule.forChild(ecommerceRoutes),
         MatButtonModule,
         MatCheckboxModule,
@@ -96,9 +97,9 @@ import { NgxSkeletonLoaderModule } from 'ngx-skeleton-loader';
         MatRadioModule,
         MatListModule,
         NgxSkeletonLoaderModule,
-        MatStepperModule
+        MatStepperModule,
+        MatProgressSpinnerModule
     ]
 })
-export class ECommerceModule
-{
+export class ECommerceModule {
 }

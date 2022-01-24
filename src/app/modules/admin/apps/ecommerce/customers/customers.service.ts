@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { BehaviorSubject, Observable, of, throwError } from 'rxjs';
 import { filter, map, switchMap, take, tap } from 'rxjs/operators';
-import { CustomersBrand, CustomersCategory, CustomersPagination, CustomersProduct, CustomersTag, CustomersVendor, UserCreditTerms, AddUserComment, AddUserLocation } from 'app/modules/admin/apps/ecommerce/customers/customers.types';
+import { CustomersBrand, CustomersCategory, CustomersPagination, CustomersProduct, CustomersTag, CustomersVendor, UserCreditTerms, AddUserComment, AddUserLocation, ApprovalContact, AddReminder, UpdateCashback, CreateStore } from 'app/modules/admin/apps/ecommerce/customers/customers.types';
 import { environment } from 'environments/environment';
 
 @Injectable({
@@ -623,6 +623,17 @@ export class CustomersService {
     }
 
     /**
+   * get All stores
+   */
+    getAllStores() {
+        return this._httpClient.get(environment.stores, {
+            params: {
+                list: true
+            }
+        })
+    }
+
+    /**
    * Get reminders of customers
    */
     getReminders(id: string) {
@@ -695,5 +706,39 @@ export class CustomersService {
                 group_order: true
             }
         })
+    }
+
+    /**
+    * add approved request for user
+    */
+    addApprovalRequest(payload: ApprovalContact) {
+        return this._httpClient.post(
+            `${environment.customerList}`, payload
+        );
+    }
+
+    /**
+    * add approved request for user
+    */
+    addReminder(payload: AddReminder) {
+        return this._httpClient.post(
+            `${environment.customerList}`, payload
+        );
+    }
+
+    /**
+   * UPDATE cash-back
+   */
+    updateCashback(payload: UpdateCashback) {
+        return this._httpClient.put(
+            `${environment.customerList}`, payload);
+    }
+
+    /**
+   * create store
+   */
+    createStore(payload: CreateStore) {
+        return this._httpClient.post(
+            `${environment.customerList}`, payload);
     }
 }
