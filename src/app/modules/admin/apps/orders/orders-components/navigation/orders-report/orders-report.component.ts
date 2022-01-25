@@ -42,18 +42,17 @@ export class OrdersReportComponent implements OnInit {
       .pipe(takeUntil(this._unsubscribeAll))
       .subscribe((orders: OrdersList[]) => {
         this.selectedOrder = orders["data"].find(x => x.pk_orderID == location.pathname.split('/')[3]);
-        console.log("this.selectedOrder", this.selectedOrder)
         this._orderService.getOrderDetails(this.selectedOrder.pk_orderID)
           .pipe(takeUntil(this._unsubscribeAll))
           .subscribe((orderDetails) => {
             this.selectedOrderDetails = orderDetails["data"];
 
             console.log("selectedOrderDetails", this.selectedOrderDetails);
-            this.isLoadingChange.emit(false);
 
             this._changeDetectorRef.markForCheck();
           });
       });
+    this.isLoadingChange.emit(false);
   }
 
   orderSelection(order) {

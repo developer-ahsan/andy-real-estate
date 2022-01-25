@@ -95,7 +95,6 @@ export class OrdersDetailsComponent implements OnInit, OnDestroy {
     clicked(index) {
         this.isLoading = true;
         this.selectedIndex = index;
-        this.isLoading = false;
     }
 
     toggleDrawer() {
