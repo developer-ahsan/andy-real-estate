@@ -32,7 +32,7 @@ export class OrdersListComponent implements OnInit, AfterViewInit, OnDestroy {
     isLoading: boolean = false;
     pagination: OrdersPagination;
     ordersCount: number = 0;
-    ordersTableColumns: string[] = ['sku', 'name', 'price', 'stock', 'active', 'details'];
+    ordersTableColumns: string[] = ['sku', 'name', 'price', 'stock', 'active'];
     searchInputControl: FormControl = new FormControl();
     selectedProduct: OrdersProduct | null = null;
     selectedOrder: OrdersList | null = null;
@@ -93,7 +93,9 @@ export class OrdersListComponent implements OnInit, AfterViewInit, OnDestroy {
             firstName: [''],
             pk_orderID: [''],
             total: [''],
-            companyName: ['']
+            companyName: [''],
+            storeName: [''],
+            orderDate: ['']
         });
 
         // Get the brands
@@ -213,10 +215,10 @@ export class OrdersListComponent implements OnInit, AfterViewInit, OnDestroy {
      * @param orderId
      */
     toggleOrderDetails(orderId: number): void {
+
         //  If the order is already selected...
         if (this.selectedOrder && this.selectedOrder.pk_orderID === orderId) {
-            // Close the details
-            this.closeDetails();
+            this.selectedOrder = null;
             return;
         }
         this.selectedOrder = this.orders[this.orders.findIndex(x => x.pk_orderID === orderId)];

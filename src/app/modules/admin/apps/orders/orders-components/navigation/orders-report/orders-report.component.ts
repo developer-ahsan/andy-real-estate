@@ -3,6 +3,8 @@ import { OrdersService } from 'app/modules/admin/apps/orders/orders-components/o
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { OrdersList } from 'app/modules/admin/apps/orders/orders-components/orders.types';
+import { jsPDF } from "jspdf";
+import html2canvas from 'html2canvas';
 
 interface Transaction {
   item: string;
@@ -20,6 +22,10 @@ export class OrdersReportComponent implements OnInit {
 
   selectedOrder: OrdersList = null;
   selectedOrderDetails = [];
+  selectedOrderTotals: Object = null;
+  htmlComment: string = '';
+  not_available = 'N/A';
+  showReport = false;
   orders: string[] = [
     'COMBINED ORDER REPORT',
     'The CHC Store - Initiator'
@@ -37,11 +43,18 @@ export class OrdersReportComponent implements OnInit {
   ) { }
 
   ngOnInit(): void {
-    // Get the order
+
     this._orderService.orders$
       .pipe(takeUntil(this._unsubscribeAll))
       .subscribe((orders: OrdersList[]) => {
         this.selectedOrder = orders["data"].find(x => x.pk_orderID == location.pathname.split('/')[3]);
+        this.htmlComment = this.selectedOrder["internalComments"];
+
+        if (this.selectedOrder["fk_groupOrderID"]) {
+          this.showReport = true;
+        }
+
+        console.log("selectedOrder", this.selectedOrder);
         this._orderService.getOrderDetails(this.selectedOrder.pk_orderID)
           .pipe(takeUntil(this._unsubscribeAll))
           .subscribe((orderDetails) => {
@@ -52,6 +65,17 @@ export class OrdersReportComponent implements OnInit {
             this._changeDetectorRef.markForCheck();
           });
       });
+
+    this._orderService.getOrderTotals(this.selectedOrder.pk_orderID)
+      .pipe(takeUntil(this._unsubscribeAll))
+      .subscribe((orderTotals) => {
+
+        this.selectedOrderTotals = orderTotals["data"][0];
+        console.log("orderTotals", this.selectedOrderTotals);
+
+        this._changeDetectorRef.markForCheck();
+      });
+
     this.isLoadingChange.emit(false);
   }
 
@@ -62,6 +86,24 @@ export class OrdersReportComponent implements OnInit {
 
   getTotalCost() {
     return this.transactions.map(t => t.cost).reduce((acc, value) => acc + value * 2000, 0);
+  }
+
+  public exportHtmlToPDF() {
+    const { pk_orderID } = this.selectedOrder;
+    let data = document.getElementById('htmltable');
+    const file_name = `OrderReport_${pk_orderID}.pdf`;
+    html2canvas(data).then(canvas => {
+
+      let docWidth = 208;
+      let docHeight = canvas.height * docWidth / canvas.width;
+
+      const contentDataURL = canvas.toDataURL('image/png')
+      let doc = new jsPDF('p', 'mm', 'a4');
+      let position = 0;
+      doc.addImage(contentDataURL, 'PNG', 0, position, docWidth, docHeight)
+
+      doc.save(file_name);
+    });
   }
 
 }

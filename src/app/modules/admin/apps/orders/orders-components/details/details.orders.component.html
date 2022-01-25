@@ -47,15 +47,15 @@
                     <div class="row w-full px-5 pb-3">
                         <div class="col-lg-4 col-12">
                             <b class="text-secondary">Order Date:</b>
-                            <p class="float-right">{{selectedOrder.orderDate || not_available}}</p>
+                            <p class="float-right">{{selectedOrder?.orderDate || not_available}}</p>
                         </div>
                         <div class="col-lg-4 col-12">
                             <b class="text-secondary">Payment Date:</b>
-                            <p class="float-right">{{selectedOrder.paymentDate || not_available}}</p>
+                            <p class="float-right">{{selectedOrder?.paymentDate || not_available}}</p>
                         </div>
                         <div class="col-lg-4 col-12">
                             <b class="text-secondary">Store:</b>
-                            <p class="float-right">{{selectedOrder.storeName || not_available}}</p>
+                            <p class="float-right">{{selectedOrder?.storeName || not_available}}</p>
                         </div>
                         <div class="col-lg-4 col-12">
                             <b class="text-secondary">Status:</b>
@@ -67,23 +67,23 @@
                         </div>
                         <div class="col-lg-4 col-12">
                             <b class="text-secondary">Group Order ID:</b>
-                            <p class="float-right">{{selectedOrder.fk_groupOrderID || not_available}}</p>
+                            <p class="float-right">{{selectedOrder?.fk_groupOrderID || not_available}}</p>
                         </div>
                         <div class="col-lg-4 col-12">
                             <b class="text-secondary">Total:</b>
-                            <p class="float-right">${{selectedOrder.total || not_available}}</p>
+                            <p class="float-right">${{selectedOrder?.total || not_available}}</p>
                         </div>
                         <div class="col-lg-4 col-12">
                             <b class="text-secondary">Customer:</b>
-                            <p class="float-right">{{selectedOrder.firstName || not_available}}</p>
+                            <p class="float-right">{{selectedOrder?.firstName || not_available}}</p>
                         </div>
                         <div class="col-lg-4 col-12">
                             <b class="text-secondary">Company:</b>
-                            <p class="float-right">{{selectedOrder.companyName || not_available}}</p>
+                            <p class="float-right">{{selectedOrder?.companyName || not_available}}</p>
                         </div>
                         <div class="col-lg-4 col-12">
                             <b class="text-secondary">Location:</b>
-                            <p class="float-right">{{selectedOrder.locationName || not_available}}</p>
+                            <p class="float-right">{{selectedOrder?.locationName || not_available}}</p>
                         </div>
                         <div class="col-lg-4 col-12">
                             <b class="text-secondary">Cart/Quote ID:</b>

@@ -158,7 +158,7 @@
                     <mat-card-title class="text-info font-size-medium">Order comments</mat-card-title>
                     <mat-divider></mat-divider>
                     <mat-card-content class="text-secondary py-4 font-semibold h-80 overflow-auto">
-                        {{selectedOrder.internalComments || not_available}}
+                        <div [innerHTML]="htmlComment"></div>
                     </mat-card-content>
                     <mat-divider></mat-divider>
                     <mat-card-actions class="p-2 mb-1 float-right">

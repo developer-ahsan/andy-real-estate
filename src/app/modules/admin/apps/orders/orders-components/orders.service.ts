@@ -149,6 +149,10 @@ export class OrdersService {
         return this._httpClient.get(`${environment.orders}?list=true&order_id=${id}`)
     }
 
+    getOrderTotals(id) {
+        return this._httpClient.get(`${environment.orders}?order_total=true&order_id=${id}`)
+    }
+
     /**
      * Get brands
      */

@@ -16,6 +16,7 @@ export class OrdersSummaryComponent implements OnInit {
   selectedOrder: OrdersList = null;
   not_available: string = 'N/A';
   not_available_price: string = '0';
+  htmlComment: string = '';
 
   constructor(
     private _changeDetectorRef: ChangeDetectorRef,
@@ -29,6 +30,7 @@ export class OrdersSummaryComponent implements OnInit {
       .pipe(takeUntil(this._unsubscribeAll))
       .subscribe((orders: OrdersList[]) => {
         this.selectedOrder = orders["data"].find(x => x.pk_orderID == location.pathname.split('/')[3]);
+        this.htmlComment = this.selectedOrder["internalComments"];
 
         // Mark for check
         this._changeDetectorRef.markForCheck();
