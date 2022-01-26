@@ -47,11 +47,14 @@ import { GroupOrdersComponent } from './customers/tabs/group-orders/group-orders
 import { QuotesComponent } from './customers/tabs/quotes/quotes.component';
 import { SavedCartsComponent } from './customers/tabs/saved-carts/saved-carts.component';
 import { NgxSkeletonLoaderModule } from 'ngx-skeleton-loader';
+import { ProductDetailsComponent } from 'app/modules/admin/apps/ecommerce/inventory/details/product-details/product-details.component';
+import { MatSidenavModule } from '@angular/material/sidenav';
 
 @NgModule({
     declarations: [
         InventoryComponent,
         InventoryListComponent,
+        ProductDetailsComponent,
         CustomersComponent,
         CustomersListComponent,
         CustomersTabComponent,
@@ -71,7 +74,8 @@ import { NgxSkeletonLoaderModule } from 'ngx-skeleton-loader';
         LogoBankComponent,
         GroupOrdersComponent,
         QuotesComponent,
-        SavedCartsComponent
+        SavedCartsComponent,
+        ProductDetailsComponent
     ],
     imports: [
         RouterModule.forChild(ecommerceRoutes),
@@ -98,7 +102,8 @@ import { NgxSkeletonLoaderModule } from 'ngx-skeleton-loader';
         MatListModule,
         NgxSkeletonLoaderModule,
         MatStepperModule,
-        MatProgressSpinnerModule
+        MatProgressSpinnerModule,
+        MatSidenavModule
     ]
 })
 export class ECommerceModule {

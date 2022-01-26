@@ -153,6 +153,16 @@ export class OrdersService {
         return this._httpClient.get(`${environment.orders}?order_total=true&order_id=${id}`)
     }
 
+    getOrderParticipants(id) {
+        return this._httpClient.get(environment.orders, {
+            params: {
+                group_order: true,
+                participants: true,
+                order_id: id
+            }
+        })
+    }
+
     /**
      * Get brands
      */

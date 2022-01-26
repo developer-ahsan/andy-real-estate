@@ -36,6 +36,8 @@ export class OrdersReportComponent implements OnInit {
   ];
   showForm: boolean = false;
 
+  orderParticipants = [];
+
 
   constructor(
     private _orderService: OrdersService,
@@ -52,16 +54,25 @@ export class OrdersReportComponent implements OnInit {
 
         if (this.selectedOrder["fk_groupOrderID"]) {
           this.showReport = true;
+          this._orderService.getOrderParticipants(this.selectedOrder.pk_orderID)
+            .pipe(takeUntil(this._unsubscribeAll))
+            .subscribe((orderParticipants) => {
+              const firstOption = {
+                billingFirstName: "COMBINED ORDER REPORT",
+                billingLastName: "",
+                billingEmail: ""
+              };
+              const combinedParticipants = [firstOption].concat(orderParticipants["data"]);
+              this.orderParticipants = combinedParticipants;
+
+              this._changeDetectorRef.markForCheck();
+            });
         }
 
-        console.log("selectedOrder", this.selectedOrder);
         this._orderService.getOrderDetails(this.selectedOrder.pk_orderID)
           .pipe(takeUntil(this._unsubscribeAll))
           .subscribe((orderDetails) => {
             this.selectedOrderDetails = orderDetails["data"];
-
-            console.log("selectedOrderDetails", this.selectedOrderDetails);
-
             this._changeDetectorRef.markForCheck();
           });
       });
@@ -69,10 +80,7 @@ export class OrdersReportComponent implements OnInit {
     this._orderService.getOrderTotals(this.selectedOrder.pk_orderID)
       .pipe(takeUntil(this._unsubscribeAll))
       .subscribe((orderTotals) => {
-
         this.selectedOrderTotals = orderTotals["data"][0];
-        console.log("orderTotals", this.selectedOrderTotals);
-
         this._changeDetectorRef.markForCheck();
       });
 
@@ -80,7 +88,6 @@ export class OrdersReportComponent implements OnInit {
   }
 
   orderSelection(order) {
-    console.log("order selected", order);
     this.showForm = true;
   }
 

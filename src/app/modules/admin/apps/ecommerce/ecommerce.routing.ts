@@ -1,86 +1,70 @@
 import { Route } from '@angular/router';
 import { InventoryComponent } from 'app/modules/admin/apps/ecommerce/inventory/inventory.component';
 import { InventoryListComponent } from 'app/modules/admin/apps/ecommerce/inventory/list/inventory.component';
-import { InventoryBrandsResolver, InventoryCategoriesResolver, InventoryProductsResolver, InventoryTagsResolver, InventoryVendorsResolver } from 'app/modules/admin/apps/ecommerce/inventory/inventory.resolvers';
+import { ProductsListsResolver } from 'app/modules/admin/apps/ecommerce/inventory/inventory.resolvers';
 import { CustomersComponent } from 'app/modules/admin/apps/ecommerce/customers/customers.component';
 import { CustomersListComponent } from 'app/modules/admin/apps/ecommerce/customers/list/customers.component';
 import { CustomersBrandsResolver, CustomersCategoriesResolver, CustomersProductsResolver, CustomersTagsResolver, CustomersVendorsResolver } from 'app/modules/admin/apps/ecommerce/customers/customers.resolvers';
 import { CustomersTabComponent } from 'app/modules/admin/apps/ecommerce/customers/tabs/customers.component';
+import { ProductDetailsComponent } from 'app/modules/admin/apps/ecommerce/inventory/details/product-details/product-details.component';
 
 export const ecommerceRoutes: Route[] = [
     {
-        path      : '',
-        pathMatch : 'full',
+        path: '',
+        pathMatch: 'full',
         redirectTo: 'inventory'
     },
     {
-        path     : 'inventory',
+        path: 'inventory',
         component: InventoryComponent,
-        children : [
+        children: [
             {
-                path     : '',
+                path: '',
                 component: InventoryListComponent,
-                resolve  : {
-                    brands    : InventoryBrandsResolver,
-                    categories: InventoryCategoriesResolver,
-                    products  : InventoryProductsResolver,
-                    tags      : InventoryTagsResolver,
-                    vendors   : InventoryVendorsResolver
+                resolve: {
+                    products: ProductsListsResolver,
                 }
-            }
-        ]
-        /*children : [
+            },
             {
-                path     : '',
-                component: ContactsListComponent,
-                resolve  : {
-                    tasks    : ContactsResolver,
-                    countries: ContactsCountriesResolver
-                },
-                children : [
-                    {
-                        path         : ':id',
-                        component    : ContactsDetailsComponent,
-                        resolve      : {
-                            task     : ContactsContactResolver,
-                            countries: ContactsCountriesResolver
-                        },
-                        canDeactivate: [CanDeactivateContactsDetails]
-                    }
-                ]
-            }
-        ]*/
+                path: ':id',
+                pathMatch: 'full',
+                component: ProductDetailsComponent,
+                resolve: {
+                    products: ProductsListsResolver
+                }
+            },
+        ]
     },
     {
-        path     : 'customers',
+        path: 'customers',
         component: CustomersComponent,
-        children : [
+        children: [
             {
-                path     : '',
+                path: '',
                 component: CustomersListComponent,
-                resolve  : {
-                    brands    : CustomersBrandsResolver,
+                resolve: {
+                    brands: CustomersBrandsResolver,
                     categories: CustomersCategoriesResolver,
-                    products  : CustomersProductsResolver,
-                    tags      : CustomersTagsResolver,
-                    vendors   : CustomersVendorsResolver
+                    products: CustomersProductsResolver,
+                    tags: CustomersTagsResolver,
+                    vendors: CustomersVendorsResolver
                 }
             }
         ]
     },
     {
-        path     : 'customer',
+        path: 'customer',
         component: CustomersComponent,
-        children : [
+        children: [
             {
-                path     : '',
+                path: '',
                 component: CustomersTabComponent,
-                resolve  : {
-                    brands    : CustomersBrandsResolver,
+                resolve: {
+                    brands: CustomersBrandsResolver,
                     categories: CustomersCategoriesResolver,
-                    products  : CustomersProductsResolver,
-                    tags      : CustomersTagsResolver,
-                    vendors   : CustomersVendorsResolver
+                    products: CustomersProductsResolver,
+                    tags: CustomersTagsResolver,
+                    vendors: CustomersVendorsResolver
                 }
             }
         ]

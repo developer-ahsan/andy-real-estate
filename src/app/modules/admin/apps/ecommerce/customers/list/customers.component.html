@@ -14,15 +14,15 @@
             <!-- Search -->
             <mat-form-field class="fuse-mat-dense fuse-mat-no-subscript min-w-50">
                 <mat-icon matPrefix [svgIcon]="'heroicons_outline:search'"></mat-icon>
-                <input matInput [formControl]="searchInputControl" [autocomplete]="'off'"
+                <input matInput (keyup.enter)="searchKeyword($event)" [autocomplete]="'off'"
                     [placeholder]="'Search Customers'">
             </mat-form-field>
 
             <!-- Add Customer button -->
-            <button class="ml-4" mat-flat-button [color]="'primary'" (click)="createCustomer()">
+            <!-- <button class="ml-4" mat-flat-button [color]="'primary'" (click)="createCustomer()">
                 <mat-icon [svgIcon]="'heroicons_outline:plus'"></mat-icon>
                 <span class="ml-2 mr-1">Add Customer</span>
-            </button>
+            </button> -->
         </div>
     </div>
 

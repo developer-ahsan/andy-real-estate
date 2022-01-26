@@ -154,8 +154,8 @@ export class CustomersListComponent implements OnInit, AfterViewInit, OnDestroy 
     // @ Public methods
     // -----------------------------------------------------------------------------------------------------
 
-    getCustomersList(size, pageNo) {
-        this._customerService.getCustomersList(size, pageNo)
+    getCustomersList(size: number, pageNo: number, keyword?: string) {
+        this._customerService.getCustomersList(size, pageNo, keyword)
             .pipe(takeUntil(this._unsubscribeAll))
             .subscribe((customers) => {
                 this.customers$ = customers["data"];
@@ -187,6 +187,25 @@ export class CustomersListComponent implements OnInit, AfterViewInit, OnDestroy 
         };
 
         this.getCustomersList(this.pageSize, this.pageNo);
+    }
+
+    searchKeyword(event): void {
+        this.isLoading = true;
+        let keyword;
+        if (event.target.value) {
+            keyword = event.target.value;
+        } else {
+            keyword = '';
+        }
+
+        this._customerService.getCustomersList(10, 1, keyword)
+            .pipe(takeUntil(this._unsubscribeAll))
+            .subscribe((customers) => {
+                this.customers$ = customers["data"];
+                this.isLoading = false;
+                // Mark for check
+                this._changeDetectorRef.markForCheck();
+            });
     }
 
     /**

@@ -103,8 +103,9 @@ export class CustomersService {
         );
     }
 
-    getCustomersList(size, pageNumber): Observable<CustomersProduct[]> {
-        return this._httpClient.get<CustomersProduct[]>(`${environment.customerList}?list=true&size=${size}&page=${pageNumber}`).pipe(
+    getCustomersList(size, pageNumber, keyword?: string): Observable<CustomersProduct[]> {
+        const search = keyword ? keyword : '';
+        return this._httpClient.get<CustomersProduct[]>(`${environment.customerList}?list=true&size=${size}&page=${pageNumber}&keyword=${search}`).pipe(
             tap((customers) => {
                 this._customers.next(customers);
             })

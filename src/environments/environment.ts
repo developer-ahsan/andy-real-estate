@@ -8,7 +8,8 @@ export const environment = {
     customerList: "https://consolidus-staging.azurewebsites.net/api/users",
     customer: "https://consolidus-staging.azurewebsites.net/api/user",
     orders: "https://consolidus-staging.azurewebsites.net/api/orders",
-    stores: "https://consolidus-staging.azurewebsites.net/api/stores"
+    stores: "https://consolidus-staging.azurewebsites.net/api/stores",
+    products: "https://consolidus-staging.azurewebsites.net/api/products"
 };
 
 /*
