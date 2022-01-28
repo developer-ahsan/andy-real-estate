@@ -102,6 +102,7 @@ export class OrdersListComponent implements OnInit, AfterViewInit, OnDestroy {
         this._orderService.orders$
             .pipe(takeUntil(this._unsubscribeAll))
             .subscribe((orders: OrdersList[]) => {
+                console.log("orders on first time =>", orders);
                 this.orders = orders["data"];
                 this.ordersLength = orders["totalRecords"];
 
@@ -519,6 +520,28 @@ export class OrdersListComponent implements OnInit, AfterViewInit, OnDestroy {
     orderDetails(id) {
         this.isLoading = true;
         this._router.navigate([`/apps/orders/${id}`]);
+    }
+
+    searchKeyword(event): void {
+        this.isLoading = true;
+        let keyword;
+        if (event.target.value) {
+            keyword = event.target.value;
+        } else {
+            keyword = '';
+        }
+
+        this._orderService.getOrderDetails(keyword)
+            .pipe(takeUntil(this._unsubscribeAll))
+            .subscribe((orders) => {
+                console.log("orders on search =>", orders);
+                this.orders = orders["data"];
+                this.ordersLength = orders["totalRecords"];
+                this.isLoading = false;
+
+                // Mark for check
+                this._changeDetectorRef.markForCheck();
+            });
     }
 
     /**

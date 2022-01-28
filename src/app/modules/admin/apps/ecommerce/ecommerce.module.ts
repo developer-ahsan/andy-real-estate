@@ -47,8 +47,12 @@ import { GroupOrdersComponent } from './customers/tabs/group-orders/group-orders
 import { QuotesComponent } from './customers/tabs/quotes/quotes.component';
 import { SavedCartsComponent } from './customers/tabs/saved-carts/saved-carts.component';
 import { NgxSkeletonLoaderModule } from 'ngx-skeleton-loader';
-import { ProductDetailsComponent } from 'app/modules/admin/apps/ecommerce/inventory/details/product-details/product-details.component';
+import { ProductDetailsComponent } from 'app/modules/admin/apps/ecommerce/inventory/details/product-details.component';
 import { MatSidenavModule } from '@angular/material/sidenav';
+import { ProductsDescriptionComponent } from './inventory/navigation/products-description/products-description.component';
+import { ProductsPhysicsComponent } from './inventory/navigation/products-physics/products-physics.component';
+import { NetCostComponent } from './inventory/navigation/net-cost/net-cost.component';
+import { ProductsStatusComponent } from './inventory/navigation/products-status/products-status.component';
 
 @NgModule({
     declarations: [
@@ -75,7 +79,11 @@ import { MatSidenavModule } from '@angular/material/sidenav';
         GroupOrdersComponent,
         QuotesComponent,
         SavedCartsComponent,
-        ProductDetailsComponent
+        ProductDetailsComponent,
+        ProductsDescriptionComponent,
+        ProductsPhysicsComponent,
+        NetCostComponent,
+        ProductsStatusComponent
     ],
     imports: [
         RouterModule.forChild(ecommerceRoutes),

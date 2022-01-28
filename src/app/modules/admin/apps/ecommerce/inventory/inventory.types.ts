@@ -60,3 +60,12 @@ export interface ProductsList {
     RowNumber: number;
     TotalRequests: number;
 }
+
+export interface ProductsDetails {
+    pk_productID: number;
+    productNumber: string;
+    productName: string;
+    RowNumber: number;
+    TotalRequests: number;
+
+}

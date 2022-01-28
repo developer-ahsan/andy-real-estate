@@ -136,9 +136,10 @@ export class OrdersService {
     // @ Public methods
     // -----------------------------------------------------------------------------------------------------
 
-
-    getOrders(size, pageNumber): Observable<OrdersList[]> {
-        return this._httpClient.get<OrdersList[]>(`${environment.orders}?list=true&size=${size}&page=${pageNumber}`).pipe(
+    getOrders(size, pageNumber, keyword?: string): Observable<OrdersList[]> {
+        const search = keyword ? keyword : '';
+        const url = `${environment.orders}?list=true&size=${size}&page=${pageNumber}&keyword=${search}`;
+        return this._httpClient.get<OrdersList[]>(url).pipe(
             tap((orders) => {
                 this._orders.next(orders);
             })
@@ -158,6 +159,15 @@ export class OrdersService {
             params: {
                 group_order: true,
                 participants: true,
+                order_id: id
+            }
+        })
+    }
+
+    getOrderPurchases(id) {
+        return this._httpClient.get(environment.orders, {
+            params: {
+                purchase_order: true,
                 order_id: id
             }
         })

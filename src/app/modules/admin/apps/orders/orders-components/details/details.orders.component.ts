@@ -48,11 +48,16 @@ export class OrdersDetailsComponent implements OnInit, OnDestroy {
      * On init
      */
     ngOnInit(): void {
-        // Get the order
-        this._orderService.orders$
+        this.isLoading = true;
+
+        const orderId = location.pathname.split('/')[3];
+
+        this._orderService.getOrderDetails(orderId)
             .pipe(takeUntil(this._unsubscribeAll))
-            .subscribe((orders: OrdersList[]) => {
-                this.selectedOrder = orders["data"].find(x => x.pk_orderID == location.pathname.split('/')[3]);
+            .subscribe((orders) => {
+                console.log("orders detailing", orders["data"][0]);
+                this.selectedOrder = orders["data"][0];
+                this.isLoading = false;
 
                 // Mark for check
                 this._changeDetectorRef.markForCheck();
@@ -93,7 +98,9 @@ export class OrdersDetailsComponent implements OnInit, OnDestroy {
     // @ Public methods
     // -----------------------------------------------------------------------------------------------------
     clicked(index) {
-        this.isLoading = true;
+        if (index !== 1) {
+            this.isLoading = true;
+        }
         this.selectedIndex = index;
     }
 

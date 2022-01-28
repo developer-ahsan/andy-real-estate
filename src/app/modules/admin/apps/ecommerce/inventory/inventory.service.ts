@@ -20,8 +20,8 @@ export class InventoryService {
     public navigationLabels = [
         {
             id: 1,
-            title: 'Status',
-            icon: 'heroicons_outline:status-online'
+            title: 'Store Versions',
+            icon: 'mat_outline:sd_storage'
         },
         {
             id: 2,
@@ -131,10 +131,27 @@ export class InventoryService {
         const search = keyword ? keyword : '';
         return this._httpClient.get<ProductsList[]>(`${environment.products}?list=true&size=${size}&page=${pageNumber}&keyword=${search}`).pipe(
             tap((products) => {
-                console.log("products", products)
                 this._products.next(products);
             })
         );
+    }
+
+    getProductByProductId(productId): Observable<ProductsList[]> {
+        return this._httpClient.get<ProductsList[]>(environment.products, {
+            params: {
+                list: true,
+                product_id: productId
+            }
+        });
+    }
+
+    getProductDescription(productId): Observable<any[]> {
+        return this._httpClient.get<any[]>(environment.products, {
+            params: {
+                description: true,
+                product_id: productId
+            }
+        });
     }
 
     /**

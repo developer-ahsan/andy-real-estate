@@ -2,11 +2,10 @@ import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnIni
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { fuseAnimations } from '@fuse/animations';
-import { OrdersList, OrdersPagination } from 'app/modules/admin/apps/orders/orders-components/orders.types';
-import { OrdersService } from 'app/modules/admin/apps/orders/orders-components/orders.service';
 import { Router } from '@angular/router';
 import { FuseMediaWatcherService } from '@fuse/services/media-watcher';
 import { InventoryService } from 'app/modules/admin/apps/ecommerce/inventory/inventory.service';
+import { ProductsDetails } from 'app/modules/admin/apps/ecommerce/inventory/inventory.types';
 
 @Component({
   selector: 'app-product-details',
@@ -17,10 +16,10 @@ import { InventoryService } from 'app/modules/admin/apps/ecommerce/inventory/inv
 })
 export class ProductDetailsComponent implements OnInit, OnDestroy {
 
-  isLoading: boolean = false;
-  pagination: OrdersPagination;
+  isLoading: boolean = true;
+  isProductFetched: boolean = true;
   ordersCount: number = 0;
-  selectedOrder: OrdersList = null;
+  selectedProduct: ProductsDetails = null;
   private _unsubscribeAll: Subject<any> = new Subject<any>();
   routes = [];
   selectedIndex: number = 0;
@@ -35,7 +34,6 @@ export class ProductDetailsComponent implements OnInit, OnDestroy {
    */
   constructor(
     private _changeDetectorRef: ChangeDetectorRef,
-    private _orderService: OrdersService,
     private _inventoryService: InventoryService,
     private _router: Router,
     private _fuseMediaWatcherService: FuseMediaWatcherService,
@@ -50,15 +48,19 @@ export class ProductDetailsComponent implements OnInit, OnDestroy {
    * On init
    */
   ngOnInit(): void {
-    // Get the order
-    this._orderService.orders$
+    const productId = location.pathname.split('/')[4];
+    this._inventoryService.getProductByProductId(productId)
       .pipe(takeUntil(this._unsubscribeAll))
-      .subscribe((orders: OrdersList[]) => {
-        this.selectedOrder = orders["data"].find(x => x.pk_orderID == location.pathname.split('/')[3]);
+      .subscribe((product) => {
+        this.selectedProduct = product["data"][0];
+        console.log("this.selectedProduct", this.selectedProduct)
+        this.isProductFetched = false;
+        this.isLoading = false;
 
         // Mark for check
         this._changeDetectorRef.markForCheck();
       });
+
 
     // this.drawerMode = "side";
     this.routes = this._inventoryService.navigationLabels;
@@ -95,7 +97,7 @@ export class ProductDetailsComponent implements OnInit, OnDestroy {
   // @ Public methods
   // -----------------------------------------------------------------------------------------------------
   clicked(index) {
-    this.isLoading = false;
+    this.isLoading = true;
     this.selectedIndex = index;
   }
 
@@ -103,8 +105,8 @@ export class ProductDetailsComponent implements OnInit, OnDestroy {
     this.drawerOpened = !this.drawerOpened;
   }
 
-  backToOrdersScreen(): void {
+  backToProductsScreen(): void {
     this.isLoading = true;
-    this._router.navigate(['/apps/orders']);
+    this._router.navigate(['/apps/ecommerce/inventory']);
   }
 }

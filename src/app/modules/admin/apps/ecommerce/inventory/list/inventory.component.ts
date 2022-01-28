@@ -274,7 +274,7 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
             keyword = '';
         }
 
-        this._inventoryService.getProductsList(10, 1, keyword)
+        this._inventoryService.getProductByProductId(keyword)
             .pipe(takeUntil(this._unsubscribeAll))
             .subscribe((products) => {
                 this.products = products["data"];

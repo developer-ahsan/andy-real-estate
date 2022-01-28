@@ -6,7 +6,7 @@ import { CustomersComponent } from 'app/modules/admin/apps/ecommerce/customers/c
 import { CustomersListComponent } from 'app/modules/admin/apps/ecommerce/customers/list/customers.component';
 import { CustomersBrandsResolver, CustomersCategoriesResolver, CustomersProductsResolver, CustomersTagsResolver, CustomersVendorsResolver } from 'app/modules/admin/apps/ecommerce/customers/customers.resolvers';
 import { CustomersTabComponent } from 'app/modules/admin/apps/ecommerce/customers/tabs/customers.component';
-import { ProductDetailsComponent } from 'app/modules/admin/apps/ecommerce/inventory/details/product-details/product-details.component';
+import { ProductDetailsComponent } from 'app/modules/admin/apps/ecommerce/inventory/details/product-details.component';
 
 export const ecommerceRoutes: Route[] = [
     {

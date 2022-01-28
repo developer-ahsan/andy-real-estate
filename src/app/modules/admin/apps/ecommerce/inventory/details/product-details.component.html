@@ -7,19 +7,22 @@
             <mat-progress-bar [mode]="'indeterminate'"></mat-progress-bar>
         </div>
         <!-- Title -->
-        <div class="text-3xl font-extrabold tracking-tight">Order Details</div>
+        <div class="text-3xl font-extrabold tracking-tight">Product Details</div>
         <!-- Actions -->
         <div class="flex flex-shrink-0 items-center mt-6 sm:mt-0 sm:ml-4">
             <!-- Back to Customers Page button -->
-            <button class="ml-4" mat-flat-button [color]="'primary'" (click)="backToOrdersScreen()"
-                [matTooltip]="'Go to orders list'">
+            <button class="ml-4" mat-flat-button [color]="'primary'" (click)="backToProductsScreen()"
+                [matTooltip]="'Go to products list'">
                 <mat-icon [svgIcon]="'heroicons_outline:arrow-narrow-left'"></mat-icon>
-                <span class="ml-2 mr-1">Back to Orders</span>
+                <span class="ml-2 mr-1">Back to Products</span>
             </button>
         </div>
     </div>
 
-    <mat-drawer-container class="sub-nav-component bg-light" autosize>
+    <ngx-skeleton-loader count="14" appearance="line" animation="pulse" class="p-5" *ngIf="isProductFetched">
+    </ngx-skeleton-loader>
+
+    <mat-drawer-container class="sub-nav-component bg-light" autosize *ngIf="!isProductFetched">
         <mat-drawer #drawer class="sub-sidenav bg-light" [mode]="drawerMode" [opened]="drawerOpened">
             <div *ngFor="let route of routes;let i = index">
                 <button [style.background-color]="i === selectedIndex ? '#e4e8ed' : 'transparent'"
@@ -32,12 +35,8 @@
         </mat-drawer>
 
         <div class="sub-sidenav-content bg-light p-5">
-            <mat-icon class="subnav-menu-icon ml-2 mb-2" svgIcon="heroicons_outline:menu" (click)="toggleDrawer()">
+            <mat-icon class="subnav-menu-icon ml-2" svgIcon="heroicons_outline:menu" (click)="toggleDrawer()">
             </mat-icon>
-            <div class="row">
-                <ngx-skeleton-loader count="8" appearance="line" animation="pulse">
-                </ngx-skeleton-loader>
-            </div>
 
             <ng-template #myCard>
                 <div class="bg-card rounded-2xl shadow-lg">
@@ -47,15 +46,18 @@
                     <div class="row w-full px-5 pb-3">
                         <div class="col-lg-4 col-12">
                             <b class="text-secondary">PID:</b>
-                            <p class="float-right">19428</p>
+                            <p class="float-right">{{selectedProduct?.pk_productID || not_available}}</p>
                         </div>
                         <div class="col-lg-4 col-12">
                             <b class="text-secondary">Supplier:</b>
-                            <p class="float-right">02/09/2021 by Nicole Alvey</p>
+                            <p class="float-right" style="color: blue; text-decoration: underline; cursor: pointer;">
+                                Show Down Displays
+                            </p>
                         </div>
                         <div class="col-lg-4 col-12">
                             <b class="text-secondary">Product Link:</b>
-                            <p class="float-right"> Mike Brothers</p>
+                            <p class="float-right" style="color: blue; text-decoration: underline; cursor: pointer;">
+                                Click Here </p>
                         </div>
                         <div class="col-lg-4 col-12">
                             <b class="text-secondary">Supplier Relationship:</b>
@@ -63,72 +65,75 @@
                         </div>
                         <div class="col-lg-4 col-12">
                             <b class="text-secondary">Last Updated:</b>
-                            <p class="float-right">02/09/2021</p>
+                            <p class="float-right">{{selectedProduct?.lastUpdatedDate || not_available}}</p>
+                        </div>
+                        <div class="col-lg-4 col-12">
+                            <b class="text-secondary">Last Ordered By:</b>
+                            <p class="float-right">{{selectedProduct?.lastUpdatedBy || not_available}}</p>
                         </div>
                         <div class="col-lg-4 col-12">
                             <b class="text-secondary">Current Co-Op Program:</b>
-                            <p class="float-right">NONE</p>
-                        </div>
-                        <div class="col-lg-4 col-12">
-                            <b class="text-secondary">Last Ordered On:</b>
-                            <p class="float-right">02/09/2021</p>
+                            <p class="float-right">{{selectedProduct?.fk_coopID || 'NONE'}}</p>
                         </div>
                         <div class="col-lg-4 col-12">
                             <b class="text-secondary">Core Product:</b>
-                            <p class="float-right">NO</p>
+                            <p class="float-right">{{selectedProduct?.blnCore ? 'YES' : 'NO' }}</p>
                         </div>
                         <div class="col-lg-4 col-12">
                             <b class="text-secondary">Status:</b>
-                            <p class="float-right">Active</p>
+                            <p class="float-right">{{selectedProduct?.blnActive ? 'Active' : 'Inactive' }}</p>
                         </div>
                     </div>
                 </div>
             </ng-template>
             <div class="row">
-                <div class="col-12">
+                <div class="col-12 mb-3">
                     <ng-container *ngTemplateOutlet="myCard"></ng-container>
                 </div>
                 <div class="col-12">
                     <ng-template [ngIf]="selectedIndex == 0">
-                        <app-orders-summary [(isLoading)]="isLoading"></app-orders-summary>
+                        <app-products-status [(isLoading)]="isLoading" [selectedProduct]="selectedProduct">
+                        </app-products-status>
                     </ng-template>
                 </div>
                 <div class="col-12">
                     <ng-template [ngIf]="selectedIndex == 1">
-                        <app-orders-entities-list [(isLoading)]="isLoading"></app-orders-entities-list>
+                        <app-products-description [(isLoading)]="isLoading" [selectedProduct]="selectedProduct">
+                        </app-products-description>
                     </ng-template>
                 </div>
                 <div class="col-12">
                     <ng-template [ngIf]="selectedIndex == 2">
-                        <app-orders-report [(isLoading)]="isLoading"></app-orders-report>
+                        <app-products-physics [(isLoading)]="isLoading" [selectedProduct]="selectedProduct">
+                        </app-products-physics>
                     </ng-template>
                 </div>
                 <div class="col-12">
                     <ng-template [ngIf]="selectedIndex == 3">
-                        <app-invoices [(isLoading)]="isLoading"></app-invoices>
+                        <app-net-cost [(isLoading)]="isLoading" [selectedProduct]="selectedProduct"></app-net-cost>
                     </ng-template>
                 </div>
-                <div class="col-12">
+                <div class="col-12 my-3">
                     <ng-template [ngIf]="selectedIndex == 4">
                         <app-orders-purchases [(isLoading)]="isLoading"></app-orders-purchases>
                     </ng-template>
                 </div>
-                <div class="col-12">
+                <div class="col-12 my-3">
                     <ng-template [ngIf]="selectedIndex == 5">
                         <app-orders-shipping-reports [(isLoading)]="isLoading"></app-orders-shipping-reports>
                     </ng-template>
                 </div>
-                <div class="col-12">
+                <div class="col-12 my-3">
                     <ng-template [ngIf]="selectedIndex == 6">
                         <app-cost-analysis [(isLoading)]="isLoading"></app-cost-analysis>
                     </ng-template>
                 </div>
-                <div class="col-12">
+                <div class="col-12 my-3">
                     <ng-template [ngIf]="selectedIndex == 7">
                         <app-timeline [(isLoading)]="isLoading"></app-timeline>
                     </ng-template>
                 </div>
-                <div class="col-12">
+                <div class="col-12 my-3">
                     <ng-template [ngIf]="selectedIndex == 8">
                         <app-incident-reports [(isLoading)]="isLoading"></app-incident-reports>
                     </ng-template>

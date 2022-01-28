@@ -1,171 +1,377 @@
-<div class="mt-5 inset-0 min-w-0 text-center print:overflow-visible" cdkScrollable>
-
-    <button class="float-right mr-3" (click)="exportHtmlToPDF()" mat-stroked-button [matTooltip]="'Save report as PDF'">
-        <mat-icon svgIcon="mat_outline:picture_as_pdf"></mat-icon>
-        <span class="ml-2 mr-1">PDF</span>
-    </button>
-
-    <!-- Main -->
-    <div class="inline-block p-6 sm:p-6 text-left print:p-0" id="htmltable" #htmltable>
-
-        <!-- Invoice -->
-        <div
-            class="min-w-240 p-5 rounded-2xl shadow bg-card print:w-auto print:p-0 print:rounded-none print:shadow-none print:bg-transparent">
-
-            <div class="flex items-start">
-                <div class="grid grid-rows-2 place-items-start gap-y-12 mt-10">
-                    <div class="grid auto-cols-max grid-flow-col gap-x-2">
-                        <div class="place-self-center w-24 text-center text-2xl text-secondary">
-                            Bill To
-                        </div>
-                        <div class="pl-6 border-l text-md">
-                            <div class="font-medium">TheCHCStore RAKSHANI</div>
-                            <div>526 South Main Street, Akron, OH, USA</div>
-                            <div>Akron US, OH 44311</div>
-                            <div>3305104384</div>
-                            <div>service@thechcstore.com</div>
-                        </div>
-                    </div>
-                    <div class="grid auto-cols-max grid-flow-col gap-x-2">
-                        <div class="place-self-center w-24 text-center text-2xl text-secondary">
-                            Ship To
-                        </div>
-                        <div class="pl-6 border-l text-md">
-                            <div class="font-medium">HAMAD</div>
-                            <div>526 South Main Street, Akron, OH, USA</div>
-                            <div>Akron US, OH 44311</div>
-                            <div>3305104384</div>
-                            <div>service@thechcstore.com</div>
-                        </div>
-                    </div>
-                    <div class="grid auto-cols-max grid-flow-col gap-x-2">
-                        <div class="place-self-center w-24 text-center text-2xl text-secondary">
-                            Order By
-                        </div>
-                        <div class="pl-6 border-l text-md">
-                            <div class="font-medium">TheCHCStore</div>
-                            <div>52 Calle de Ercilla</div>
-                            <div>Madrid MD , 28005</div>
-                            <div>3305104384</div>
-                            <div>service@thechcstore.com</div>
-                        </div>
-                    </div>
-                </div>
-                <div class="grid grid-cols-2 gap-x-4 gap-y-1 ml-auto pr-16">
-                    <div class="justify-self-start font-semibold text-3xl tracking-tight">Order</div>
-                    <div class="justify-self-start text-3xl font-semibold">#56165</div>
-                    <div class="justify-self-start font-medium tracking-tight text-secondary">ORDER DATE</div>
-                    <div class="font-medium">Feb 19, 2022</div>
-                    <div class="justify-self-start font-medium tracking-tight text-secondary">DUE DATE</div>
-                    <div class="font-medium">Aug 19, 2022</div>
-                    <div class="justify-self-start font-medium tracking-tight text-secondary">TOTAL DUE</div>
-                    <div class="font-medium">$49,000.00</div>
-                </div>
-            </div>
-
-            <div class="grid grid-cols-12 gap-x-1 mt-16">
-                <!-- Columns -->
-                <div class="col-span-8 font-medium text-md text-secondary">SERVICE</div>
-                <div class="font-medium text-md text-right text-secondary">RATE</div>
-                <div class="font-medium text-md text-right text-secondary">QTY</div>
-                <div class="col-span-2 font-medium text-md text-right text-secondary">TOTAL</div>
-
-                <!-- Divider -->
-                <div class="col-span-12 my-4 border-b"></div>
-
-                <!-- Item -->
-                <div class="col-span-8">
-                    <div class="text-lg font-medium">Prototype & Design</div>
-                    <div class="mt-2 text-md text-secondary">
-                        Prototyping of the application's general workflow and the detailed design of its 72 screens as a
-                        working prototype.
-                    </div>
-                </div>
-                <div class="self-center text-right">$75.00</div>
-                <div class="self-center text-right">240</div>
-                <div class="col-span-2 self-center text-right">$18,000.00</div>
-
-                <!-- Divider -->
-                <div class="col-span-12 my-4 border-b"></div>
-
-                <!-- Item -->
-                <div class="col-span-8">
-                    <div class="text-lg font-medium">Development</div>
-                    <div class="mt-2 text-md text-secondary">
-                        The web and mobile development of the application using appropriate tools and registering it to
-                        major application stores.
-                    </div>
-                </div>
-                <div class="self-center text-right">$60.50</div>
-                <div class="self-center text-right">350</div>
-                <div class="col-span-2 self-center text-right">$21,175.00</div>
-
-                <!-- Divider -->
-                <div class="col-span-12 my-4 border-b"></div>
-
-                <!-- Item -->
-                <div class="col-span-8">
-                    <div class="text-lg font-medium">Testing</div>
-                    <div class="mt-2 text-md text-secondary">
-                        Extensive testing of the application using various mobile and desktop devices with different
-                        operating systems.
-                    </div>
-                </div>
-                <div class="self-center text-right">$25.00</div>
-                <div class="self-center text-right">50</div>
-                <div class="col-span-2 self-center text-right">$1,250.00</div>
-
-                <!-- Divider -->
-                <div class="col-span-12 my-4 border-b"></div>
-
-                <!-- Item -->
-                <div class="col-span-8">
-                    <div class="text-lg font-medium">Documentation & Training</div>
-                    <div class="mt-2 text-md text-secondary">
-                        Development of the detailed documentation, preparing guides and instructional videos and
-                        extensive training of 2 people.
-                    </div>
-                </div>
-                <div class="self-center text-right">$26.50</div>
-                <div class="self-center text-right">260</div>
-                <div class="col-span-2 self-center text-right">$6,890.00</div>
-
-                <!-- Spacer -->
-                <div class="col-span-12 mt-16"></div>
-
-                <!-- Subtotal -->
-                <div class="col-span-10 self-center font-medium tracking-tight text-secondary">SUBTOTAL</div>
-                <div class="col-span-2 text-right text-lg">$47,315.00</div>
-
-                <!-- Divider -->
-                <div class="col-span-12 my-3 border-b"></div>
-
-                <!-- Tax -->
-                <div class="col-span-10 self-center font-medium tracking-tight text-secondary">TAX</div>
-                <div class="col-span-2 text-right text-lg">$2,365.75</div>
-
-                <!-- Divider -->
-                <div class="col-span-12 my-3 border-b"></div>
-
-                <!-- Discount -->
-                <div class="col-span-10 self-center font-medium tracking-tight text-secondary">DISCOUNT</div>
-                <div class="col-span-2 text-right text-lg">$180.75</div>
-
-                <!-- Divider -->
-                <div class="col-span-12 my-3 border-b"></div>
-
-                <!-- Total -->
-                <div class="col-span-10 self-center text-2xl font-medium tracking-tight text-secondary">TOTAL</div>
-                <div class="col-span-2 text-right text-2xl font-medium">$49,000.00</div>
-            </div>
-
-            <div class="mt-10">
-                <div style="text-align: -webkit-center;">
-                    <img class="w-40" src="assets/images/logo/consolidus-logo.jpeg">
-                </div>
+<div class="mt-5">
+    <ngx-skeleton-loader count="15" appearance="line" animation="pulse" *ngIf="isLoading">
+    </ngx-skeleton-loader>
+    <div class="row" *ngIf="!isLoading">
+        <div class="w-full" *ngIf="showReport;else other_content">
+            <div class="col-12">
+                Select a group order participant:
+                <mat-form-field class="w-full">
+                    <mat-select name="order">
+                        <mat-option (click)="orderSelection(order)" *ngFor="let order of orderParticipants;"
+                            [value]="order">
+                            *INITIATOR - {{order?.billingFirstName}} {{order?.billingLastName}}
+                            ({{order?.billingEmail}})
+                        </mat-option>
+                    </mat-select>
+                </mat-form-field>
             </div>
         </div>
 
-    </div>
+        <ng-template #other_content>
+            <div class="col-12 mt-2">
+                <button (click)="exportHtmlToPDF()" class="float-right mr-3" mat-stroked-button
+                    [matTooltip]="'Save report as PDF'">
+                    <mat-icon svgIcon="mat_outline:picture_as_pdf"></mat-icon>
+                    <span class="ml-2 mr-1">PDF</span>
+                </button>
 
+                <!-- Main -->
+                <div class="inline-block p-6 sm:p-6 text-left print:p-0" id="htmltable" #htmltable>
+
+                    <!-- Invoice -->
+                    <div
+                        class="min-w-240 p-5 rounded-2xl shadow bg-card print:w-auto print:p-0 print:rounded-none print:shadow-none print:bg-transparent">
+
+                        <div class="flex items-start">
+                            <div class="grid grid-rows-2 place-items-start gap-y-12 mt-10">
+                                <div class="grid auto-cols-max grid-flow-col gap-x-2">
+                                    <div class="place-self-center w-24 text-center text-2xl text-secondary">
+                                        Bill To
+                                    </div>
+                                    <div class="pl-6 border-l text-md">
+                                        <div class="font-medium">TheCHCStore RAKSHANI</div>
+                                        <div>526 South Main Street, Akron, OH, USA</div>
+                                        <div>Akron US, OH 44311</div>
+                                        <div>3305104384</div>
+                                        <div>service@thechcstore.com</div>
+                                    </div>
+                                </div>
+                                <div class="grid auto-cols-max grid-flow-col gap-x-2">
+                                    <div class="place-self-center w-24 text-center text-2xl text-secondary">
+                                        Ship To
+                                    </div>
+                                    <div class="pl-6 border-l text-md">
+                                        <div class="font-medium">HAMAD</div>
+                                        <div>526 South Main Street, Akron, OH, USA</div>
+                                        <div>Akron US, OH 44311</div>
+                                        <div>3305104384</div>
+                                        <div>service@thechcstore.com</div>
+                                    </div>
+                                </div>
+                                <div class="grid auto-cols-max grid-flow-col gap-x-2">
+                                    <div class="place-self-center w-24 text-center text-2xl text-secondary">
+                                        Order By
+                                    </div>
+                                    <div class="pl-6 border-l text-md">
+                                        <div class="font-medium">TheCHCStore</div>
+                                        <div>52 Calle de Ercilla</div>
+                                        <div>Madrid MD , 28005</div>
+                                        <div>3305104384</div>
+                                        <div>service@thechcstore.com</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="grid grid-cols-2 gap-x-4 gap-y-1 ml-auto pr-16">
+                                <div class="justify-self-start font-semibold text-3xl tracking-tight">Order</div>
+                                <div class="justify-self-start text-3xl font-semibold">#56165</div>
+                                <div class="justify-self-start font-medium tracking-tight text-secondary">ORDER DATE
+                                </div>
+                                <div class="font-medium">Feb 19, 2022</div>
+                                <div class="justify-self-start font-medium tracking-tight text-secondary">DUE DATE</div>
+                                <div class="font-medium">Aug 19, 2022</div>
+                                <div class="justify-self-start font-medium tracking-tight text-secondary">TOTAL DUE
+                                </div>
+                                <div class="font-medium">$49,000.00</div>
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-12 gap-x-1 mt-16">
+                            <!-- Columns -->
+                            <div class="col-span-8 font-medium text-md text-secondary">SERVICE</div>
+                            <div class="font-medium text-md text-right text-secondary">RATE</div>
+                            <div class="font-medium text-md text-right text-secondary">QTY</div>
+                            <div class="col-span-2 font-medium text-md text-right text-secondary">TOTAL</div>
+
+                            <!-- Divider -->
+                            <div class="col-span-12 my-4 border-b"></div>
+
+                            <!-- Item -->
+                            <div class="col-span-8">
+                                <div class="text-lg font-medium">Prototype & Design</div>
+                                <div class="mt-2 text-md text-secondary">
+                                    Prototyping of the application's general workflow and the detailed design of its 72
+                                    screens as a
+                                    working prototype.
+                                </div>
+                            </div>
+                            <div class="self-center text-right">$75.00</div>
+                            <div class="self-center text-right">240</div>
+                            <div class="col-span-2 self-center text-right">$18,000.00</div>
+
+                            <!-- Divider -->
+                            <div class="col-span-12 my-4 border-b"></div>
+
+                            <!-- Item -->
+                            <div class="col-span-8">
+                                <div class="text-lg font-medium">Development</div>
+                                <div class="mt-2 text-md text-secondary">
+                                    The web and mobile development of the application using appropriate tools and
+                                    registering it to
+                                    major application stores.
+                                </div>
+                            </div>
+                            <div class="self-center text-right">$60.50</div>
+                            <div class="self-center text-right">350</div>
+                            <div class="col-span-2 self-center text-right">$21,175.00</div>
+
+                            <!-- Divider -->
+                            <div class="col-span-12 my-4 border-b"></div>
+
+                            <!-- Item -->
+                            <div class="col-span-8">
+                                <div class="text-lg font-medium">Testing</div>
+                                <div class="mt-2 text-md text-secondary">
+                                    Extensive testing of the application using various mobile and desktop devices with
+                                    different
+                                    operating systems.
+                                </div>
+                            </div>
+                            <div class="self-center text-right">$25.00</div>
+                            <div class="self-center text-right">50</div>
+                            <div class="col-span-2 self-center text-right">$1,250.00</div>
+
+                            <!-- Divider -->
+                            <div class="col-span-12 my-4 border-b"></div>
+
+                            <!-- Item -->
+                            <div class="col-span-8">
+                                <div class="text-lg font-medium">Documentation & Training</div>
+                                <div class="mt-2 text-md text-secondary">
+                                    Development of the detailed documentation, preparing guides and instructional videos
+                                    and
+                                    extensive training of 2 people.
+                                </div>
+                            </div>
+                            <div class="self-center text-right">$26.50</div>
+                            <div class="self-center text-right">260</div>
+                            <div class="col-span-2 self-center text-right">$6,890.00</div>
+
+                            <!-- Spacer -->
+                            <div class="col-span-12 mt-16"></div>
+
+                            <!-- Subtotal -->
+                            <div class="col-span-10 self-center font-medium tracking-tight text-secondary">SUBTOTAL
+                            </div>
+                            <div class="col-span-2 text-right text-lg">$47,315.00</div>
+
+                            <!-- Divider -->
+                            <div class="col-span-12 my-3 border-b"></div>
+
+                            <!-- Tax -->
+                            <div class="col-span-10 self-center font-medium tracking-tight text-secondary">TAX</div>
+                            <div class="col-span-2 text-right text-lg">$2,365.75</div>
+
+                            <!-- Divider -->
+                            <div class="col-span-12 my-3 border-b"></div>
+
+                            <!-- Discount -->
+                            <div class="col-span-10 self-center font-medium tracking-tight text-secondary">DISCOUNT
+                            </div>
+                            <div class="col-span-2 text-right text-lg">$180.75</div>
+
+                            <!-- Divider -->
+                            <div class="col-span-12 my-3 border-b"></div>
+
+                            <!-- Total -->
+                            <div class="col-span-10 self-center text-2xl font-medium tracking-tight text-secondary">
+                                TOTAL</div>
+                            <div class="col-span-2 text-right text-2xl font-medium">$49,000.00</div>
+                        </div>
+
+                        <div class="mt-10">
+                            <div style="text-align: -webkit-center;">
+                                <img class="w-40" src="assets/images/logo/consolidus-logo.jpeg">
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </ng-template>
+
+        <div class="col-12 mt-2" *ngIf="showForm">
+            <button (click)="exportHtmlToPDF()" class="float-right mr-3" mat-stroked-button
+                [matTooltip]="'Save report as PDF'">
+                <mat-icon svgIcon="mat_outline:picture_as_pdf"></mat-icon>
+                <span class="ml-2 mr-1">PDF</span>
+            </button>
+
+            <!-- Main -->
+            <div class="inline-block p-6 sm:p-6 text-left print:p-0" id="htmltable" #htmltable>
+
+                <!-- Invoice -->
+                <div
+                    class="min-w-240 p-5 rounded-2xl shadow bg-card print:w-auto print:p-0 print:rounded-none print:shadow-none print:bg-transparent">
+
+                    <div class="flex items-start">
+                        <div class="grid grid-rows-2 place-items-start gap-y-12 mt-10">
+                            <div class="grid auto-cols-max grid-flow-col gap-x-2">
+                                <div class="place-self-center w-24 text-center text-2xl text-secondary">
+                                    Bill To
+                                </div>
+                                <div class="pl-6 border-l text-md">
+                                    <div class="font-medium">TheCHCStore RAKSHANI</div>
+                                    <div>526 South Main Street, Akron, OH, USA</div>
+                                    <div>Akron US, OH 44311</div>
+                                    <div>3305104384</div>
+                                    <div>service@thechcstore.com</div>
+                                </div>
+                            </div>
+                            <div class="grid auto-cols-max grid-flow-col gap-x-2">
+                                <div class="place-self-center w-24 text-center text-2xl text-secondary">
+                                    Ship To
+                                </div>
+                                <div class="pl-6 border-l text-md">
+                                    <div class="font-medium">HAMAD</div>
+                                    <div>526 South Main Street, Akron, OH, USA</div>
+                                    <div>Akron US, OH 44311</div>
+                                    <div>3305104384</div>
+                                    <div>service@thechcstore.com</div>
+                                </div>
+                            </div>
+                            <div class="grid auto-cols-max grid-flow-col gap-x-2">
+                                <div class="place-self-center w-24 text-center text-2xl text-secondary">
+                                    Order By
+                                </div>
+                                <div class="pl-6 border-l text-md">
+                                    <div class="font-medium">TheCHCStore</div>
+                                    <div>52 Calle de Ercilla</div>
+                                    <div>Madrid MD , 28005</div>
+                                    <div>3305104384</div>
+                                    <div>service@thechcstore.com</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="grid grid-cols-2 gap-x-4 gap-y-1 ml-auto pr-16">
+                            <div class="justify-self-start font-semibold text-3xl tracking-tight">Order</div>
+                            <div class="justify-self-start text-3xl font-semibold">#56165</div>
+                            <div class="justify-self-start font-medium tracking-tight text-secondary">ORDER DATE</div>
+                            <div class="font-medium">Feb 19, 2022</div>
+                            <div class="justify-self-start font-medium tracking-tight text-secondary">DUE DATE</div>
+                            <div class="font-medium">Aug 19, 2022</div>
+                            <div class="justify-self-start font-medium tracking-tight text-secondary">TOTAL DUE</div>
+                            <div class="font-medium">$49,000.00</div>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-12 gap-x-1 mt-16">
+                        <!-- Columns -->
+                        <div class="col-span-8 font-medium text-md text-secondary">SERVICE</div>
+                        <div class="font-medium text-md text-right text-secondary">RATE</div>
+                        <div class="font-medium text-md text-right text-secondary">QTY</div>
+                        <div class="col-span-2 font-medium text-md text-right text-secondary">TOTAL</div>
+
+                        <!-- Divider -->
+                        <div class="col-span-12 my-4 border-b"></div>
+
+                        <!-- Item -->
+                        <div class="col-span-8">
+                            <div class="text-lg font-medium">Prototype & Design</div>
+                            <div class="mt-2 text-md text-secondary">
+                                Prototyping of the application's general workflow and the detailed design of its 72
+                                screens as a
+                                working prototype.
+                            </div>
+                        </div>
+                        <div class="self-center text-right">$75.00</div>
+                        <div class="self-center text-right">240</div>
+                        <div class="col-span-2 self-center text-right">$18,000.00</div>
+
+                        <!-- Divider -->
+                        <div class="col-span-12 my-4 border-b"></div>
+
+                        <!-- Item -->
+                        <div class="col-span-8">
+                            <div class="text-lg font-medium">Development</div>
+                            <div class="mt-2 text-md text-secondary">
+                                The web and mobile development of the application using appropriate tools and
+                                registering it to
+                                major application stores.
+                            </div>
+                        </div>
+                        <div class="self-center text-right">$60.50</div>
+                        <div class="self-center text-right">350</div>
+                        <div class="col-span-2 self-center text-right">$21,175.00</div>
+
+                        <!-- Divider -->
+                        <div class="col-span-12 my-4 border-b"></div>
+
+                        <!-- Item -->
+                        <div class="col-span-8">
+                            <div class="text-lg font-medium">Testing</div>
+                            <div class="mt-2 text-md text-secondary">
+                                Extensive testing of the application using various mobile and desktop devices with
+                                different
+                                operating systems.
+                            </div>
+                        </div>
+                        <div class="self-center text-right">$25.00</div>
+                        <div class="self-center text-right">50</div>
+                        <div class="col-span-2 self-center text-right">$1,250.00</div>
+
+                        <!-- Divider -->
+                        <div class="col-span-12 my-4 border-b"></div>
+
+                        <!-- Item -->
+                        <div class="col-span-8">
+                            <div class="text-lg font-medium">Documentation & Training</div>
+                            <div class="mt-2 text-md text-secondary">
+                                Development of the detailed documentation, preparing guides and instructional videos and
+                                extensive training of 2 people.
+                            </div>
+                        </div>
+                        <div class="self-center text-right">$26.50</div>
+                        <div class="self-center text-right">260</div>
+                        <div class="col-span-2 self-center text-right">$6,890.00</div>
+
+                        <!-- Spacer -->
+                        <div class="col-span-12 mt-16"></div>
+
+                        <!-- Subtotal -->
+                        <div class="col-span-10 self-center font-medium tracking-tight text-secondary">SUBTOTAL</div>
+                        <div class="col-span-2 text-right text-lg">$47,315.00</div>
+
+                        <!-- Divider -->
+                        <div class="col-span-12 my-3 border-b"></div>
+
+                        <!-- Tax -->
+                        <div class="col-span-10 self-center font-medium tracking-tight text-secondary">TAX</div>
+                        <div class="col-span-2 text-right text-lg">$2,365.75</div>
+
+                        <!-- Divider -->
+                        <div class="col-span-12 my-3 border-b"></div>
+
+                        <!-- Discount -->
+                        <div class="col-span-10 self-center font-medium tracking-tight text-secondary">DISCOUNT</div>
+                        <div class="col-span-2 text-right text-lg">$180.75</div>
+
+                        <!-- Divider -->
+                        <div class="col-span-12 my-3 border-b"></div>
+
+                        <!-- Total -->
+                        <div class="col-span-10 self-center text-2xl font-medium tracking-tight text-secondary">TOTAL
+                        </div>
+                        <div class="col-span-2 text-right text-2xl font-medium">$49,000.00</div>
+                    </div>
+
+                    <div class="mt-10">
+                        <div style="text-align: -webkit-center;">
+                            <img class="w-40" src="assets/images/logo/consolidus-logo.jpeg">
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
 </div>

@@ -31,8 +31,8 @@ export class OrdersEntitiesListComponent implements OnInit {
 
         // Mark for check
         this._changeDetectorRef.markForCheck();
-        // this.isLoadingChange.emit(false);
       });
+    this.isLoadingChange.emit(false);
   }
 
 }

@@ -1,6 +1,10 @@
-import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
+import { Component, OnInit, Input, Output, EventEmitter, ChangeDetectorRef } from '@angular/core';
+import { OrdersService } from 'app/modules/admin/apps/orders/orders-components/orders.service';
 import { jsPDF } from "jspdf";
 import html2canvas from 'html2canvas';
+import { takeUntil } from 'rxjs/operators';
+import { OrdersList } from 'app/modules/admin/apps/orders/orders-components/orders.types';
+import { Subject } from 'rxjs';
 
 interface OrdersPurchases {
   company: string;
@@ -17,16 +21,41 @@ interface OrdersPurchases {
 export class OrdersPurchasesComponent implements OnInit {
   @Input() isLoading: boolean;
   @Output() isLoadingChange = new EventEmitter<boolean>();
+  private _unsubscribeAll: Subject<any> = new Subject<any>();
+
+  selectedOrder: OrdersList = null;
   displayedColumns: string[] = ['company', 'supplies', 'decorates', 'digitizes', 'total'];
   transactions: OrdersPurchases[] = [
-    { company: 'ARTWORK', supplies: true, decorates: false, digitizes: false, total: 255 },
-    { company: 'HI-ORDER', supplies: false, decorates: false, digitizes: true, total: 58 },
+    { company: 'ARTWORK', supplies: true, decorates: false, digitizes: false, total: 255 }
   ];
   isView: boolean = false;
 
-  constructor() { }
+  constructor(
+    private _orderService: OrdersService,
+    private _changeDetectorRef: ChangeDetectorRef
+  ) { }
 
   ngOnInit(): void {
+
+    this._orderService.orders$
+      .pipe(takeUntil(this._unsubscribeAll))
+      .subscribe((orders: OrdersList[]) => {
+        this.selectedOrder = orders["data"].find(x => x.pk_orderID == location.pathname.split('/')[3]);
+
+        this._changeDetectorRef.markForCheck();
+      });
+
+
+
+    this._orderService.getOrderPurchases(this.selectedOrder.pk_orderID)
+      .pipe(takeUntil(this._unsubscribeAll))
+      .subscribe((purchases) => {
+        console.log("purchases => ", purchases);
+
+        this._changeDetectorRef.markForCheck();
+      });
+
+    this.isLoadingChange.emit(false);
   }
 
   getTotalCost() {
