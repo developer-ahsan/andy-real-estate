@@ -154,6 +154,16 @@ export class InventoryService {
         });
     }
 
+    getPhysicsAndDimension(productId): Observable<any[]> {
+        return this._httpClient.get<any[]>(environment.products, {
+            params: {
+                physics: true,
+                case_dimension: true,
+                product_id: productId
+            }
+        });
+    }
+
     /**
      * Get products
      *

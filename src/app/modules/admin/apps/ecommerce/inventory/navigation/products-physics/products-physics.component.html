@@ -1,4 +1,6 @@
-<div class="row mb-3">
+<ngx-skeleton-loader count="8" appearance="line" animation="pulse" *ngIf="isLoading">
+</ngx-skeleton-loader>
+<div class="row mb-3" *ngIf="!isLoading">
     <div class="col-12">
         <mat-card class="w-full p-2 h-full rounded-2xl shadow-lg">
             <mat-card-title class="text-info font-size-medium">Physics & Shipping</mat-card-title>
@@ -9,12 +11,14 @@
                 </div>
                 <div class="col-6">
                     <mat-form-field class="w-full">
-                        <input matInput><small class="text-secondary font-semibold"> lbs </small>
+                        <input matInput><small class="text-secondary font-semibold">
+                            lbs </small>
                     </mat-form-field>
                 </div>
                 <div class="col-6">
                     <mat-form-field class="w-full">
-                        <input matInput><small class="text-secondary font-semibold"> unit(s) </small>
+                        <input matInput><small class="text-secondary font-semibold">
+                            unit(s) </small>
                     </mat-form-field>
                 </div>
                 <div class="col-lg-4 col-12">
@@ -81,8 +85,10 @@
                 <div class="col-12 mb-2">
                     <p class="bg-light text-info font-semibold px-5 py-3">
                         <i class="fa fa-info-circle"></i>
-                        Entering a flat rate shipping cost here will override any shipping calculations from UPS. This
-                        amount is not marked up, so enter the full shipping cost here. Leaving it blank will remove the
+                        Entering a flat rate shipping cost here will override any shipping calculations from UPS.
+                        This
+                        amount is not marked up, so enter the full shipping cost here. Leaving it blank will remove
+                        the
                         flat rate shipping from this product and calculate UPS rates instead.
                     </p>
                 </div>
@@ -115,19 +121,22 @@
                 <div class="col-lg-4 col-12">
                     <mat-form-field class="w-full">
                         <mat-label>Height</mat-label>
-                        <input matInput><small class="text-secondary font-semibold"> inches </small>
+                        <input matInput><small class="text-secondary font-semibold">
+                            inches </small>
                     </mat-form-field>
                 </div>
                 <div class="col-lg-4 col-12">
                     <mat-form-field class="w-full">
                         <mat-label>Width</mat-label>
-                        <input matInput><small class="text-secondary font-semibold"> inches </small>
+                        <input matInput><small class="text-secondary font-semibold">
+                            inches </small>
                     </mat-form-field>
                 </div>
                 <div class="col-lg-4 col-12">
                     <mat-form-field class="w-full">
                         <mat-label>Length</mat-label>
-                        <input matInput><small class="text-secondary font-semibold"> inches </small>
+                        <input matInput><small class="text-secondary font-semibold">
+                            inches </small>
                     </mat-form-field>
                 </div>
             </div>
@@ -152,9 +161,11 @@
                 <div class="col-12 mb-2">
                     <p class="bg-light text-info font-semibold px-5 py-3">
                         <i class="fa fa-info-circle"></i>
-                        Specify up to 6 case quantities. Leave blank for no case quantities. Designate how many pieces
+                        Specify up to 6 case quantities. Leave blank for no case quantities. Designate how many
+                        pieces
                         there are per case. Doing this forces customers to order certain multiples of product. For
-                        instance, drinkware is usually packaged 36 pieces to a box, so customers must order in multiples
+                        instance, drinkware is usually packaged 36 pieces to a box, so customers must order in
+                        multiples
                         of 36. Enter quantities in multiples, i.e: 36, 72, 108, etc.
                     </p>
                 </div>
