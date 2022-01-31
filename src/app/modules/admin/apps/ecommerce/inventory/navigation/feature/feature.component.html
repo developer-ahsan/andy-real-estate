@@ -1,0 +1,72 @@
+<ngx-skeleton-loader count="8" appearance="line" animation="pulse" *ngIf="isLoading">
+</ngx-skeleton-loader>
+<div class="row" *ngIf="!isLoading">
+    <div class="col-12">
+        <mat-card class="w-full p-2 mb-10 h-full rounded-2xl shadow-lg">
+            <mat-card-title class="text-info font-size-medium">
+                Current Features
+            </mat-card-title>
+
+            <table mat-table [dataSource]="dataSource" class="w-full border-t">
+
+                <!-- Checkbox Column -->
+                <ng-container matColumnDef="select">
+                    <th mat-header-cell *matHeaderCellDef class="w-10 min-w-10">
+                        <mat-checkbox></mat-checkbox>
+                    </th>
+                    <td mat-cell *matCellDef="let row">
+                        <mat-checkbox (click)="$event.stopPropagation()"></mat-checkbox>
+                    </td>
+                </ng-container>
+
+                <!-- Color Column -->
+                <ng-container matColumnDef="order">
+                    <th mat-header-cell *matHeaderCellDef class="w-15 min-w-15"> Order </th>
+                    <td mat-cell *matCellDef="let element"> {{element.listOrder}} </td>
+                </ng-container>
+
+                <!-- Run Column -->
+                <ng-container matColumnDef="feature">
+                    <th mat-header-cell *matHeaderCellDef class="w-40 min-w-40"> Feature </th>
+                    <td mat-cell *matCellDef="let element"> {{element.attributeText}} </td>
+                </ng-container>
+
+                <tr mat-header-row *matHeaderRowDef="displayedColumns;" class="h-18"></tr>
+                <tr mat-row *matRowDef="let row; columns: displayedColumns;"
+                    class="h-14 hover:bg-gray-100 dark:hover:bg-hover" style="cursor: pointer;"
+                    (click)="selection.toggle(row)">
+                </tr>
+            </table>
+        </mat-card>
+    </div>
+</div>
+
+<div class="row mt-3" *ngIf="!isLoading">
+    <div class="col-12">
+        <mat-card class="w-full p-2 h-full rounded-2xl shadow-lg">
+            <mat-card-title class="text-info font-size-medium">
+                Add Feature
+            </mat-card-title>
+            <div class="row">
+                <div class="col-12">
+                    <mat-form-field class="w-full">
+                        <mat-label>Order</mat-label>
+                        <input matInput>
+                    </mat-form-field>
+                </div>
+                <div class="col-12">
+                    <mat-form-field class="w-full">
+                        <mat-label>Feature</mat-label>
+                        <input matInput>
+                    </mat-form-field>
+                </div>
+                <div class="col-12">
+                    <button class="float-right" mat-stroked-button [matTooltip]="'Add New Feature'">
+                        <mat-icon [svgIcon]="'heroicons_outline:plus'"></mat-icon>
+                        <span class="ml-1 mr-1">Add Feature</span>
+                    </button>
+                </div>
+            </div>
+        </mat-card>
+    </div>
+</div>

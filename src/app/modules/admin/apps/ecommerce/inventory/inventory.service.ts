@@ -40,29 +40,29 @@ export class InventoryService {
         },
         {
             id: 5,
-            title: 'Imprints',
-            icon: 'mat_outline:settings',
-        },
-        {
-            id: 6,
             title: 'Colors',
             icon: 'mat_outline:color_lens',
         },
         {
-            id: 7,
+            id: 6,
             title: 'Features',
             icon: 'mat_outline:checklist'
         },
         {
-            id: 8,
-            title: 'Default Images',
+            id: 7,
+            title: 'Default Margins',
             icon: 'mat_outline:image',
         },
         {
-            id: 9,
+            id: 8,
             title: 'Pack & Accessories',
             icon: 'mat_outline:checklist',
-        }
+        },
+        // {
+        //     id: 9,
+        //     title: 'Imprints',
+        //     icon: 'mat_outline:settings',
+        // },
     ]
 
     /**
@@ -159,6 +159,24 @@ export class InventoryService {
             params: {
                 physics: true,
                 case_dimension: true,
+                product_id: productId
+            }
+        });
+    }
+
+    getColors(productId): Observable<any[]> {
+        return this._httpClient.get<any[]>(environment.products, {
+            params: {
+                color: true,
+                product_id: productId
+            }
+        });
+    }
+
+    getFeatures(productId): Observable<any[]> {
+        return this._httpClient.get<any[]>(environment.products, {
+            params: {
+                feature: true,
                 product_id: productId
             }
         });

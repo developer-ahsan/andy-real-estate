@@ -53,6 +53,9 @@ import { ProductsDescriptionComponent } from './inventory/navigation/products-de
 import { ProductsPhysicsComponent } from './inventory/navigation/products-physics/products-physics.component';
 import { NetCostComponent } from './inventory/navigation/net-cost/net-cost.component';
 import { ProductsStatusComponent } from './inventory/navigation/products-status/products-status.component';
+import { ColorComponent } from './inventory/navigation/color/color.component';
+import { FeatureComponent } from './inventory/navigation/feature/feature.component';
+import { DefaultMarginsComponent } from './inventory/navigation/default-margins/default-margins.component';
 
 @NgModule({
     declarations: [
@@ -83,7 +86,10 @@ import { ProductsStatusComponent } from './inventory/navigation/products-status/
         ProductsDescriptionComponent,
         ProductsPhysicsComponent,
         NetCostComponent,
-        ProductsStatusComponent
+        ProductsStatusComponent,
+        ColorComponent,
+        FeatureComponent,
+        DefaultMarginsComponent
     ],
     imports: [
         RouterModule.forChild(ecommerceRoutes),

@@ -67,5 +67,24 @@ export interface ProductsDetails {
     productName: string;
     RowNumber: number;
     TotalRequests: number;
+}
 
+export interface Colors {
+    fk_productID: number;
+    fk_colorID: number;
+    setup: number;
+    run: number;
+    rgb: string;
+    colorName: string;
+    RowNumber: number;
+    TotalRequests: number
+}
+
+export interface Features {
+    fk_attributeID: number;
+    attributeText: string;
+    fk_attributeTypeID: number;
+    listOrder: number;
+    RowNumber: number;
+    TotalRequests: number
 }

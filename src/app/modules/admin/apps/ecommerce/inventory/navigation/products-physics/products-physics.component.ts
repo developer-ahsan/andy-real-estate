@@ -17,6 +17,9 @@ export class ProductsPhysicsComponent implements OnInit {
 
   productPhysics = [];
   productPhysicsForm: FormGroup;
+  caseDimensionForm: FormGroup;
+  flatRateShippingForm: FormGroup;
+
   selectedorder: string = 'select_order';
   products: string[] = [
     'YES',
@@ -36,48 +39,33 @@ export class ProductsPhysicsComponent implements OnInit {
       weight: [''],
       unitsInWeight: [''],
       dimensions: [''],
-      shippingUnit: [''],
-      overPackingCharges: [''],
-      flatRate: [''],
+      unitsInShippingPackage: [''],
+      overPackCharge: ['']
+    });
+
+    this.caseDimensionForm = this._formBuilder.group({
       caseHeight: [''],
       caseWidth: [''],
       caseLength: [''],
-      caseQuantityOne: [''],
-      caseQuantityTwo: [''],
-      caseQuantityThree: [''],
-      caseQuantityFour: [''],
-      caseQuantityFive: [''],
-      caseQuantitySix: ['']
+    });
+
+    this.flatRateShippingForm = this._formBuilder.group({
+      flatRateShipping: ['']
     });
 
     const { pk_productID, weight, unitsInWeight, dimensions, unitsInShippingPackage, overPackCharge, flatRateShipping } = this.selectedProduct;
     this._inventoryService.getPhysicsAndDimension(pk_productID)
       .pipe(takeUntil(this._unsubscribeAll))
       .subscribe((caseDimensions) => {
-        const caseDimension = caseDimensions["data"][0];
-        const { caseLength, caseWidth, caseHeight } = caseDimension;
 
-        const obj = {
-          weight: weight,
-          unitsInWeight: unitsInWeight,
-          dimensions: dimensions,
-          shippingUnit: unitsInShippingPackage,
-          overPackingCharges: overPackCharge,
-          flatRate: flatRateShipping,
-          caseHeight: caseHeight,
-          caseWidth: caseWidth,
-          caseLength: caseLength,
-          caseQuantityOne: null,
-          caseQuantityTwo: null,
-          caseQuantityThree: null,
-          caseQuantityFour: null,
-          caseQuantityFive: null,
-          caseQuantitySix: null
-        }
+        // Fill dimesnion form
+        this.caseDimensionForm.patchValue(caseDimensions["data"][0]);
 
-        console.log("obj => ", obj)
+        // Fill flat rate form
+        this.flatRateShippingForm.patchValue(this.selectedProduct);
+
         // Fill the form
-        // this.productPhysicsForm.patchValue(obj);
+        this.productPhysicsForm.patchValue(this.selectedProduct);
 
         // Mark for check
         this._changeDetectorRef.markForCheck();

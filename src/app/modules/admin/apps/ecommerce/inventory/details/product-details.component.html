@@ -113,19 +113,20 @@
                         <app-net-cost [(isLoading)]="isLoading" [selectedProduct]="selectedProduct"></app-net-cost>
                     </ng-template>
                 </div>
-                <div class="col-12 my-3">
+                <div class="col-12">
                     <ng-template [ngIf]="selectedIndex == 4">
-                        <app-orders-purchases [(isLoading)]="isLoading"></app-orders-purchases>
+                        <app-color [(isLoading)]="isLoading" [selectedProduct]="selectedProduct"></app-color>
                     </ng-template>
                 </div>
-                <div class="col-12 my-3">
+                <div class="col-12">
                     <ng-template [ngIf]="selectedIndex == 5">
-                        <app-orders-shipping-reports [(isLoading)]="isLoading"></app-orders-shipping-reports>
+                        <app-feature [(isLoading)]="isLoading" [selectedProduct]="selectedProduct"></app-feature>
                     </ng-template>
                 </div>
-                <div class="col-12 my-3">
+                <div class="col-12">
                     <ng-template [ngIf]="selectedIndex == 6">
-                        <app-cost-analysis [(isLoading)]="isLoading"></app-cost-analysis>
+                        <app-default-margins [(isLoading)]="isLoading" [selectedProduct]="selectedProduct">
+                        </app-default-margins>
                     </ng-template>
                 </div>
                 <div class="col-12 my-3">

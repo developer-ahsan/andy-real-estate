@@ -1,0 +1,54 @@
+<ngx-skeleton-loader count="8" appearance="line" animation="pulse" *ngIf="isLoading">
+</ngx-skeleton-loader>
+<div class="row mb-3" *ngIf="!isLoading">
+    <div class="col-12 mt-5">
+        <mat-card class="w-full p-2 h-full rounded-2xl shadow-lg">
+            <mat-card-title class="text-info font-size-medium">
+                <button
+                    [matTooltip]="'These margins will override the margins set when populating a store from the core products list.To remove margins, leave all fields below blank.Enter percentages below.'">
+                    <i class="fa fa-info-circle"></i>
+                </button>
+                Default Product Margins (%)
+            </mat-card-title>
+            <mat-divider></mat-divider>
+            <div class="row mt-5">
+                <div class="col-lg-4 col-6">
+                    <mat-form-field class="w-full">
+                        <input matInput>
+                    </mat-form-field>
+                </div>
+                <div class="col-lg-4 col-6">
+                    <mat-form-field class="w-full">
+                        <input matInput>
+                    </mat-form-field>
+                </div>
+                <div class="col-lg-4 col-6">
+                    <mat-form-field class="w-full">
+                        <input matInput>
+                    </mat-form-field>
+                </div>
+                <div class="col-lg-4 col-6">
+                    <mat-form-field class="w-full">
+                        <input matInput>
+                    </mat-form-field>
+                </div>
+                <div class="col-lg-4 col-6">
+                    <mat-form-field class="w-full">
+                        <input matInput>
+                    </mat-form-field>
+                </div>
+                <div class="col-lg-4 col-6">
+                    <mat-form-field class="w-full">
+                        <input matInput>
+                    </mat-form-field>
+                </div>
+                <div class="col-12">
+                    <button class="float-right" mat-stroked-button [matTooltip]="'Update product margins'">
+                        <mat-icon [svgIcon]="'mat_outline:edit'"></mat-icon>
+                        <span class="ml-1 mr-1">Update</span>
+                    </button>
+                </div>
+            </div>
+        </mat-card>
+    </div>
+</div>
