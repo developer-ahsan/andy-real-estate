@@ -31,7 +31,7 @@
                     <td mat-cell *matCellDef="let element"> {{element.attributeText}} </td>
                 </ng-container>
 
-                <tr mat-header-row *matHeaderRowDef="displayedColumns;" class="h-18"></tr>
+                <tr mat-header-row *matHeaderRowDef="displayedColumns;" class="h-18 bg-light"></tr>
                 <tr mat-row *matRowDef="let row; columns: displayedColumns;"
                     class="h-14 hover:bg-gray-100 dark:hover:bg-hover" style="cursor: pointer;"
                     (click)="selection.toggle(row)">
@@ -41,14 +41,14 @@
     </div>
 </div>
 
-<div class="row mt-3" *ngIf="!isLoading">
+<div class="row my-3" *ngIf="!isLoading">
     <div class="col-12">
         <mat-card class="w-full p-2 h-full rounded-2xl shadow-lg">
             <mat-card-title class="text-info font-size-medium">
                 Add Feature
             </mat-card-title>
-            <div class="row">
-                <div class="col-12">
+            <div class="row border-t p-2">
+                <div class="col-12 mt-3">
                     <mat-form-field class="w-full">
                         <mat-label>Order</mat-label>
                         <input matInput>

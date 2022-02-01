@@ -129,14 +129,15 @@
                         </app-default-margins>
                     </ng-template>
                 </div>
-                <div class="col-12 my-3">
+                <div class="col-12">
                     <ng-template [ngIf]="selectedIndex == 7">
-                        <app-timeline [(isLoading)]="isLoading"></app-timeline>
+                        <app-package [(isLoading)]="isLoading" [selectedProduct]="selectedProduct"></app-package>
                     </ng-template>
                 </div>
-                <div class="col-12 my-3">
+                <div class="col-12">
                     <ng-template [ngIf]="selectedIndex == 8">
-                        <app-incident-reports [(isLoading)]="isLoading"></app-incident-reports>
+                        <app-default-image [(isLoading)]="isLoading" [selectedProduct]="selectedProduct">
+                        </app-default-image>
                     </ng-template>
                 </div>
             </div>

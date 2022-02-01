@@ -51,18 +51,18 @@ export class InventoryService {
         {
             id: 7,
             title: 'Default Margins',
-            icon: 'mat_outline:image',
+            icon: 'mat_outline:settings',
         },
         {
             id: 8,
             title: 'Pack & Accessories',
             icon: 'mat_outline:checklist',
         },
-        // {
-        //     id: 9,
-        //     title: 'Imprints',
-        //     icon: 'mat_outline:settings',
-        // },
+        {
+            id: 9,
+            title: 'Default Images',
+            icon: 'mat_outline:image',
+        }
     ]
 
     /**
@@ -177,6 +177,25 @@ export class InventoryService {
         return this._httpClient.get<any[]>(environment.products, {
             params: {
                 feature: true,
+                product_id: productId
+            }
+        });
+    }
+
+    getAllPackages(size?: number, pageNo?: number): Observable<any[]> {
+        return this._httpClient.get<any[]>(environment.products, {
+            params: {
+                packaging: true,
+                page: pageNo === 0 ? 1 : pageNo,
+                size: size
+            }
+        });
+    }
+
+    getPackageyProductId(productId): Observable<any[]> {
+        return this._httpClient.get<any[]>(environment.products, {
+            params: {
+                packaging: true,
                 product_id: productId
             }
         });

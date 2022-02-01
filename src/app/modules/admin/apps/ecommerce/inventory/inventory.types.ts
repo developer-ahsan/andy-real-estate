@@ -88,3 +88,16 @@ export interface Features {
     RowNumber: number;
     TotalRequests: number
 }
+
+export interface Package {
+    fk_productID: number;
+    fk_packagingProductID: number;
+    fk_packagingID: number;
+    setup: number;
+    run: number;
+    unitsPerPackage: number;
+    blnDecoratorPO: boolean;
+    packagingName: string;
+    RowNumber: number;
+    TotalRequests: number
+}

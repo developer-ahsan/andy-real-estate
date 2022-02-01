@@ -56,6 +56,9 @@ import { ProductsStatusComponent } from './inventory/navigation/products-status/
 import { ColorComponent } from './inventory/navigation/color/color.component';
 import { FeatureComponent } from './inventory/navigation/feature/feature.component';
 import { DefaultMarginsComponent } from './inventory/navigation/default-margins/default-margins.component';
+import { PackageComponent } from './inventory/navigation/package/package.component';
+import { NgxDropzoneModule } from 'ngx-dropzone';
+import { DefaultImageComponent } from './inventory/navigation/default-image/default-image.component';
 
 @NgModule({
     declarations: [
@@ -89,7 +92,9 @@ import { DefaultMarginsComponent } from './inventory/navigation/default-margins/
         ProductsStatusComponent,
         ColorComponent,
         FeatureComponent,
-        DefaultMarginsComponent
+        DefaultMarginsComponent,
+        PackageComponent,
+        DefaultImageComponent
     ],
     imports: [
         RouterModule.forChild(ecommerceRoutes),
@@ -117,7 +122,8 @@ import { DefaultMarginsComponent } from './inventory/navigation/default-margins/
         NgxSkeletonLoaderModule,
         MatStepperModule,
         MatProgressSpinnerModule,
-        MatSidenavModule
+        MatSidenavModule,
+        NgxDropzoneModule
     ]
 })
 export class ECommerceModule {
