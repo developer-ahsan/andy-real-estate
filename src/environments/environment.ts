@@ -20,4 +20,4 @@ export const environment = {
  * on performance if an error is thrown.
  */
 // import 'zone.js/plugins/zone-error';  // Included with Angular CLI.
-// https://consolidus-staging.azurewebsites.net/api
+// https://consolidus-staging.azurewebsites.net/api/

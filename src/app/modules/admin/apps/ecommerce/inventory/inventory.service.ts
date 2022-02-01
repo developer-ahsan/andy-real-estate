@@ -201,6 +201,24 @@ export class InventoryService {
         });
     }
 
+    getAllStores(): Observable<any[]> {
+        return this._httpClient.get<any[]>(environment.stores, {
+            params: {
+                list: true,
+                size: 500
+            }
+        });
+    }
+
+    getMarginsByProductId(productId): Observable<any[]> {
+        return this._httpClient.get<any[]>(environment.products, {
+            params: {
+                margin: true,
+                product_id: productId
+            }
+        });
+    }
+
     /**
      * Get products
      *

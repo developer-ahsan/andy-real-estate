@@ -28,6 +28,7 @@ export class ProductDetailsComponent implements OnInit, OnDestroy {
   // Sidebar stuff
   drawerMode: 'over' | 'side' = 'side';
   drawerOpened: boolean = true;
+  storesData = [];
 
   /**
    * Constructor
@@ -52,15 +53,19 @@ export class ProductDetailsComponent implements OnInit, OnDestroy {
     this._inventoryService.getProductByProductId(productId)
       .pipe(takeUntil(this._unsubscribeAll))
       .subscribe((product) => {
-        this.selectedProduct = product["data"][0];
-        console.log("this.selectedProduct", this.selectedProduct)
-        this.isProductFetched = false;
-        this.isLoading = false;
+        this._inventoryService.getAllStores()
+          .pipe(takeUntil(this._unsubscribeAll))
+          .subscribe((stores) => {
+            this.storesData = stores["data"];
+            this.selectedProduct = product["data"][0];
+            console.log("this.selectedProduct", this.selectedProduct)
+            this.isProductFetched = false;
+            this.isLoading = false;
 
-        // Mark for check
-        this._changeDetectorRef.markForCheck();
+            // Mark for check
+            this._changeDetectorRef.markForCheck();
+          });
       });
-
 
     // this.drawerMode = "side";
     this.routes = this._inventoryService.navigationLabels;

@@ -1,4 +1,6 @@
-<div class="row">
+<ngx-skeleton-loader count="8" appearance="line" animation="pulse" *ngIf="isLoading">
+</ngx-skeleton-loader>
+<div class="row" *ngIf="!isLoading">
     <div class="col-12 mb-3">
         <mat-card class="w-full p-2 h-full rounded-2xl shadow-lg">
             <mat-card-title class="text-info font-size-medium">Assign to a new store</mat-card-title>
@@ -29,8 +31,8 @@
                 </div>
             </div>
             <div class="row mb-5 px-3">
-                <div class="col-lg-4 col-md-4 col-6" *ngFor="let email of emails">
-                    <mat-checkbox> {{email}} </mat-checkbox>
+                <div class="col-lg-4 col-md-4 col-6" *ngFor="let store of storesData">
+                    <mat-checkbox style="font-size: 12px;"> {{store.storeName}} </mat-checkbox>
                 </div>
             </div>
             <mat-divider></mat-divider>

@@ -92,7 +92,8 @@
                 </div>
                 <div class="col-12">
                     <ng-template [ngIf]="selectedIndex == 0">
-                        <app-products-status [(isLoading)]="isLoading" [selectedProduct]="selectedProduct">
+                        <app-products-status [(isLoading)]="isLoading" [selectedProduct]="selectedProduct"
+                            [storesData]="storesData">
                         </app-products-status>
                     </ng-template>
                 </div>
