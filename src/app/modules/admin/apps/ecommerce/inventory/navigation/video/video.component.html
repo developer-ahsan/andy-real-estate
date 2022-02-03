@@ -1,0 +1,66 @@
+<ngx-skeleton-loader count="8" appearance="line" animation="pulse" *ngIf="isLoading">
+</ngx-skeleton-loader>
+<div class="row my-3" *ngIf="!isLoading">
+    <div class="col-12">
+        <mat-card class="w-full p-2 h-full rounded-2xl shadow-lg">
+            <mat-card-title class="text-info font-size-medium">
+                <button [matTooltip]="'Videos must be free from any vendor branding'">
+                    <i class="fa fa-info-circle"></i>
+                </button>
+                Enter the embed URL for the video in the space below.
+            </mat-card-title>
+            <mat-divider></mat-divider>
+            <form [formGroup]="videoUploadForm">
+                <div class="row p-3">
+                    <div class="col-12 text-secondary font-extrabold">
+                        - There are total of {{videosLength}} videos in our system.
+                    </div>
+                    <div class="col-12 text-info">
+                        <p>When the video service, such as Vimeo or Youtube, gives you the embed code, you will only
+                            want to enter the part of the code that is after the "src=" part that is in quotes. Entering
+                            the entire code below will not work.</p>
+                    </div>
+                    <div class="col-12 text-info">
+                        DO NOT include any "http://" or "https://" in the URL. Remove these before adding.
+                    </div>
+                    <div class="col-12 text-info">
+                        Try to remove any "autorun" variables in the URL. Usually they look like "&autorun=1"
+                    </div>
+                    <div class="col-12 font-semibold">
+                        Usually the video service will give you options for embedding a video. Make sure that you select
+                        any sort of "autorun" settting.
+                    </div>
+                    <div class="col-12 my-2">
+                        <mat-divider></mat-divider>
+                    </div>
+                    <div class="col-2 font-semibold text-info">Video URL</div>
+                    <div class="col-10">
+                        <p class="text-danger font-semibold"
+                            style="text-align: right; opacity: 0.8; text-decoration: underline; cursor: pointer;"
+                            *ngIf="videoLength > 0"> View
+                            Video </p>
+                    </div>
+                    <div class="col-12">
+                        <mat-form-field class="w-full">
+                            <input matInput [formControlName]="'video'">
+                        </mat-form-field>
+                    </div>
+                    <div class="col-12 font-semibold text-info">
+                        Play Button Image: (355px W by 209px H, JPG ONLY)
+                    </div>
+                    <div class="col-12">
+                        <input type="file" accept=".jpg" (change)="upload($event)" style="line-height: 2.5;" />
+                        <small class="text-danger font-semibold"> {{imageRequired}} </small>
+                    </div>
+                    <div class="col-12">
+                        <button (click)="uploadImage()" class="float-right" mat-stroked-button
+                            [matTooltip]="'Videos must be free from any vendor branding'">
+                            <mat-icon [svgIcon]="'mat_outline:edit'"></mat-icon>
+                            <span class="ml-1 mr-1">Update</span>
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </mat-card>
+    </div>
+</div>

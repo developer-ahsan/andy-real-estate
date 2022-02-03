@@ -62,7 +62,42 @@ export class InventoryService {
             id: 9,
             title: 'Default Images',
             icon: 'mat_outline:image',
+        },
+        {
+            id: 10,
+            title: 'Video',
+            icon: 'mat_solid:video_settings',
+        },
+        {
+            id: 11,
+            title: 'Artwork Template',
+            icon: 'heroicons_outline:template',
+        },
+        {
+            id: 12,
+            title: 'Product Reviews',
+            icon: 'mat_outline:reviews',
+        },
+        {
+            id: 13,
+            title: 'Warehouse Options',
+            icon: 'mat_outline:house_siding',
+        },
+        {
+            id: 14,
+            title: 'Core Products',
+            icon: 'mat_outline:group_work',
         }
+        // {
+        //     id: 13,
+        //     title: 'Dietary Information',
+        //     icon: 'mat_outline:info',
+        // },
+        // {
+        //     id: 14,
+        //     title: 'Lisencing Term',
+        //     icon: 'mat_outline:picture_in_picture',
+        // },
     ]
 
     /**
@@ -214,6 +249,60 @@ export class InventoryService {
         return this._httpClient.get<any[]>(environment.products, {
             params: {
                 margin: true,
+                product_id: productId
+            }
+        });
+    }
+
+    getVideoByProductId(productId): Observable<any[]> {
+        return this._httpClient.get<any[]>(environment.products, {
+            params: {
+                video: true,
+                product_id: productId
+            }
+        });
+    }
+
+    getVideos(): Observable<any[]> {
+        return this._httpClient.get<any[]>(environment.products, {
+            params: {
+                video: true
+            }
+        });
+    }
+
+    getArtworkTemplateByProductId(productId): Observable<any[]> {
+        return this._httpClient.get<any[]>(environment.products, {
+            params: {
+                artwork_template: true,
+                product_id: productId
+            }
+        });
+    }
+
+    getReviewByProductId(productId): Observable<any[]> {
+        return this._httpClient.get<any[]>(environment.products, {
+            params: {
+                review: true,
+                product_id: productId
+            }
+        });
+    }
+
+    getWarehouseByProductId(productId): Observable<any[]> {
+        return this._httpClient.get<any[]>(environment.products, {
+            params: {
+                warehouse: true,
+                product_id: productId
+            }
+        });
+    }
+
+    getCoresByProductId(productId): Observable<any[]> {
+        return this._httpClient.get<any[]>(environment.products, {
+            params: {
+                core: true,
+                products: true,
                 product_id: productId
             }
         });

@@ -1,0 +1,57 @@
+<ngx-skeleton-loader count="8" appearance="line" animation="pulse" *ngIf="isLoading">
+</ngx-skeleton-loader>
+
+<div class="row my-3" *ngIf="!isLoading">
+    <div class="col-12">
+        <mat-card class="w-full p-2 h-full rounded-2xl shadow-lg">
+            <mat-card-title class="text-info font-size-medium">
+                <button [matTooltip]="'PDF, EPS, AI, PSD, and JPG file formats only!'">
+                    <i class="fa fa-info-circle"></i>
+                </button>
+                Upload Artwork Template
+            </mat-card-title>
+            <mat-divider></mat-divider>
+            <form [formGroup]="imageUploadForm">
+                <div class="row my-5">
+                    <div class="col-lg-8 col-12">
+                        <input type="file" accept=".jpg" [formControlName]="'image'" (change)="upload($event)"
+                            style="line-height: 2.5;" />
+                        <small class="text-danger font-semibold"> {{imageRequired}} </small>
+                    </div>
+                    <div class="col-lg-4 col-12">
+                        <button (click)="uploadImage()" mat-stroked-button
+                            [matTooltip]="'PDF, EPS, AI, PSD, and JPG file formats only!'">
+                            <mat-icon [svgIcon]="'heroicons_outline:upload'"></mat-icon>
+                            <span class="ml-1 mr-1">Upload Network Template</span>
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </mat-card>
+    </div>
+</div>
+
+<div class="row my-3" *ngIf="!isLoading">
+    <div class="col-12">
+        <mat-card class="w-full p-2 h-full rounded-2xl shadow-lg">
+            <mat-card-title class="text-info font-size-medium">
+                Current artwork templates
+            </mat-card-title>
+            <mat-divider></mat-divider>
+            <div class="row p-2">
+                <div class="col-lg-4 col-12">
+                    <fuse-card class="flex flex-col items-center w-full p-8 filter-info bg-light rounded-2xl">
+                        <div class="flex items-center justify-center p-5 rounded-full bg-primary-100 dark:bg-gray-600">
+                            <mat-icon class="icon-size-10 text-primary-500 dark:text-primary-300"
+                                style="cursor: pointer;" svgIcon="mat_outline:file_present"></mat-icon>
+                        </div>
+                        <button class="px-6 mt-8" mat-stroked-button>
+                            <mat-icon svgIcon="mat_outline:remove_circle_outline"></mat-icon>
+                            <span class="ml-2">Remove</span>
+                        </button>
+                    </fuse-card>
+                </div>
+            </div>
+        </mat-card>
+    </div>
+</div>

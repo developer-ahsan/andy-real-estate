@@ -101,3 +101,16 @@ export interface Package {
     RowNumber: number;
     TotalRequests: number
 }
+
+export interface Reviews {
+    pk_reviewID: number;
+    fk_storeProductID: number;
+    name: string;
+    date: string;
+    rating: number;
+    comment: string;
+    storeName: string;
+    pk_storeID: number;
+    RowNumber: number;
+    TotalRequests: number
+}

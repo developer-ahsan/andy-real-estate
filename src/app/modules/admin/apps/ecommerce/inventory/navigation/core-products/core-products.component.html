@@ -1,0 +1,72 @@
+<ngx-skeleton-loader count="8" appearance="line" animation="pulse" *ngIf="isLoading">
+</ngx-skeleton-loader>
+<div class="row" *ngIf="!isLoading">
+    <div class="col-12">
+        <mat-card class="w-full p-0 mb-10 h-full rounded-2xl shadow-lg">
+            <mat-card-title class="text-info font-size-medium p-2">
+                Current Core Product Options
+            </mat-card-title>
+
+            <table mat-table [dataSource]="dataSource" class="w-full border-t">
+
+                <!-- Core Column -->
+                <ng-container matColumnDef="core">
+                    <th mat-header-cell *matHeaderCellDef class="w-24 min-w-24"> Core </th>
+                    <td mat-cell *matCellDef="let element"> {{element.coreName}} </td>
+                </ng-container>
+
+                <!-- Cateogory Column -->
+                <ng-container matColumnDef="category">
+                    <th mat-header-cell *matHeaderCellDef class="w-24 min-w-24"> Cateogory </th>
+                    <td mat-cell *matCellDef="let element"> {{element.categoryName}} </td>
+                </ng-container>
+
+                <!-- SUBCATEGORY Column -->
+                <ng-container matColumnDef="sub_category">
+                    <th mat-header-cell *matHeaderCellDef class="w-24 min-w-24"> SUBCATEGORY </th>
+                    <td mat-cell *matCellDef="let element"> {{element.subCategoryName}} </td>
+                </ng-container>
+
+                <tr mat-header-row *matHeaderRowDef="displayedColumns;" class="h-18 bg-light"></tr>
+                <tr mat-row *matRowDef="let row; columns: displayedColumns;"
+                    class="h-14 hover:bg-gray-100 dark:hover:bg-hover" style="cursor: pointer;"
+                    (click)="selection.toggle(row)">
+                </tr>
+            </table>
+        </mat-card>
+    </div>
+</div>
+
+<!-- <div class="row my-3" *ngIf="!isLoading">
+    <div class="col-12">
+        <mat-card class="w-full p-2 h-full rounded-2xl shadow-lg">
+            <mat-card-title class="text-info font-size-medium">
+                <button
+                    [matTooltip]="'A product can only be in a subcategory once. Sub categories that already have this product in them will not be available in the list below.'">
+                    <i class="fa fa-info-circle"></i>
+                </button>
+                Add To Core
+            </mat-card-title>
+            <div class="row border-t p-2">
+                <div class="col-12 mt-3">
+                    <mat-form-field class="w-full">
+                        <mat-label>Order</mat-label>
+                        <input matInput>
+                    </mat-form-field>
+                </div>
+                <div class="col-12">
+                    <mat-form-field class="w-full">
+                        <mat-label>Feature</mat-label>
+                        <input matInput>
+                    </mat-form-field>
+                </div>
+                <div class="col-12">
+                    <button class="float-right" mat-stroked-button [matTooltip]="'Add New Feature'">
+                        <mat-icon [svgIcon]="'heroicons_outline:plus'"></mat-icon>
+                        <span class="ml-1 mr-1">Add Feature</span>
+                    </button>
+                </div>
+            </div>
+        </mat-card>
+    </div>
+</div> -->

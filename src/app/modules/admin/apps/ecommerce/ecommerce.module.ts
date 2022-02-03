@@ -59,6 +59,13 @@ import { DefaultMarginsComponent } from './inventory/navigation/default-margins/
 import { PackageComponent } from './inventory/navigation/package/package.component';
 import { NgxDropzoneModule } from 'ngx-dropzone';
 import { DefaultImageComponent } from './inventory/navigation/default-image/default-image.component';
+import { VideoComponent } from './inventory/navigation/video/video.component';
+import { ArtworkComponent } from './inventory/navigation/artwork/artwork.component';
+import { ReviewsComponent } from './inventory/navigation/reviews/reviews.component';
+import { DietaryInfoComponent } from './inventory/navigation/dietary-info/dietary-info.component';
+import { LicensingTermComponent } from './inventory/navigation/licensing-term/licensing-term.component';
+import { WarehouseComponent } from './inventory/navigation/warehouse/warehouse.component';
+import { CoreProductsComponent } from './inventory/navigation/core-products/core-products.component';
 
 @NgModule({
     declarations: [
@@ -94,7 +101,14 @@ import { DefaultImageComponent } from './inventory/navigation/default-image/defa
         FeatureComponent,
         DefaultMarginsComponent,
         PackageComponent,
-        DefaultImageComponent
+        DefaultImageComponent,
+        VideoComponent,
+        ArtworkComponent,
+        ReviewsComponent,
+        DietaryInfoComponent,
+        LicensingTermComponent,
+        WarehouseComponent,
+        CoreProductsComponent
     ],
     imports: [
         RouterModule.forChild(ecommerceRoutes),

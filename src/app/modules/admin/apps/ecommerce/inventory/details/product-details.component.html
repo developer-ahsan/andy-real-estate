@@ -34,7 +34,7 @@
             </div>
         </mat-drawer>
 
-        <div class="sub-sidenav-content bg-light p-5">
+        <div class="sub-sidenav-content bg-light px-3 py-5">
             <mat-icon class="subnav-menu-icon ml-2" svgIcon="heroicons_outline:menu" (click)="toggleDrawer()">
             </mat-icon>
 
@@ -139,6 +139,32 @@
                     <ng-template [ngIf]="selectedIndex == 8">
                         <app-default-image [(isLoading)]="isLoading" [selectedProduct]="selectedProduct">
                         </app-default-image>
+                    </ng-template>
+                </div>
+                <div class="col-12">
+                    <ng-template [ngIf]="selectedIndex == 9">
+                        <app-video [(isLoading)]="isLoading" [selectedProduct]="selectedProduct"></app-video>
+                    </ng-template>
+                </div>
+                <div class="col-12">
+                    <ng-template [ngIf]="selectedIndex == 10">
+                        <app-artwork [(isLoading)]="isLoading" [selectedProduct]="selectedProduct"></app-artwork>
+                    </ng-template>
+                </div>
+                <div class="col-12">
+                    <ng-template [ngIf]="selectedIndex == 11">
+                        <app-reviews [(isLoading)]="isLoading" [selectedProduct]="selectedProduct"></app-reviews>
+                    </ng-template>
+                </div>
+                <div class="col-12">
+                    <ng-template [ngIf]="selectedIndex == 12">
+                        <app-warehouse [(isLoading)]="isLoading" [selectedProduct]="selectedProduct"></app-warehouse>
+                    </ng-template>
+                </div>
+                <div class="col-12">
+                    <ng-template [ngIf]="selectedIndex == 13">
+                        <app-core-products [(isLoading)]="isLoading" [selectedProduct]="selectedProduct">
+                        </app-core-products>
                     </ng-template>
                 </div>
             </div>
