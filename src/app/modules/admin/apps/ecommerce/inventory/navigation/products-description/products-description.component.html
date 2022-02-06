@@ -70,7 +70,7 @@
                     <div class="col-lg-4 col-12">
                         <small class="text-secondary font-semibold">Update all store product permalinks?</small>
                         <mat-form-field class="w-full">
-                            <mat-select [(ngModel)]="selectedorder" name="order">
+                            <mat-select [(ngModel)]="selectedorder" name="order" [formControlName]="'selectOrder'">
                                 <mat-option value="select_order" disabled>
                                     Click to select
                                 </mat-option>
@@ -96,12 +96,26 @@
                 </div>
             </form>
             <mat-divider></mat-divider>
-            <div class="row p-3 justify-content-end">
-                <!-- Assign Store button -->
-                <button mat-stroked-button (click)="updateDescription()">
-                    <mat-icon [svgIcon]="'mat_outline:edit'"></mat-icon>
-                    <span class="ml-1 mr-1">Update</span>
-                </button>
+            <div class="flex items-center justify-end w-full">
+                <div class="flex items-center my-2">
+                    <div class="flex items-center mr-4" *ngIf="flashMessage">
+                        <ng-container *ngIf="flashMessage === 'success'">
+                            <mat-icon class="text-green-500" [svgIcon]="'heroicons_outline:check'"></mat-icon>
+                            <span class="ml-2">Updated successfully</span>
+                        </ng-container>
+                        <ng-container *ngIf="flashMessage === 'error'">
+                            <mat-icon class="text-red-500" [svgIcon]="'heroicons_outline:x'"></mat-icon>
+                            <span class="ml-2">An error occurred, try again!</span>
+                        </ng-container>
+                    </div>
+                    <button class="min-w-40" mat-stroked-button [matTooltip]="'Update Description'"
+                        (click)="updateDescription()" [disabled]="descriptionLoader">
+                        <mat-progress-spinner *ngIf="descriptionLoader" [diameter]="24" [mode]="'indeterminate'">
+                        </mat-progress-spinner>
+                        <mat-icon *ngIf="!descriptionLoader" svgIcon="mode_edit_outline"></mat-icon>
+                        <span *ngIf="!descriptionLoader" class="ml-1 mr-1">Update</span>
+                    </button>
+                </div>
             </div>
         </mat-card>
     </div>

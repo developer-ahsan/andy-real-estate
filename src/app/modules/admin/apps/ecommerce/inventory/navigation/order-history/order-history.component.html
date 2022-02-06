@@ -1,0 +1,57 @@
+<ngx-skeleton-loader count="8" appearance="line" animation="pulse" *ngIf="isLoading">
+</ngx-skeleton-loader>
+<div class="row my-3 mx-0" *ngIf="!isLoading">
+    <mat-card class="w-full h-full rounded-2xl shadow-lg">
+        <mat-card-title class="text-info font-size-medium">Orders History</mat-card-title>
+        <mat-divider></mat-divider>
+        <mat-card-content class="text-secondary">
+            <div class="row">
+                <div class="col-12">
+                    <table mat-table [dataSource]="order_history" class="w-full my-3">
+                        <!-- Item Column -->
+                        <ng-container matColumnDef="pk_orderID">
+                            <th mat-header-cell *matHeaderCellDef> Order Id </th>
+                            <td mat-cell *matCellDef="let transaction"> {{transaction.pk_orderID}} </td>
+                            <td mat-footer-cell *matFooterCellDef> Total </td>
+                        </ng-container>
+
+                        <!-- Quantity Column -->
+                        <ng-container matColumnDef="quantity">
+                            <th mat-header-cell *matHeaderCellDef> Quantity </th>
+                            <td mat-cell *matCellDef="let transaction"> {{transaction.quantity}} </td>
+                        </ng-container>
+
+                        <!-- Quantity Column -->
+                        <ng-container matColumnDef="companyName">
+                            <th mat-header-cell *matHeaderCellDef> Company </th>
+                            <td mat-cell *matCellDef="let transaction"> {{transaction.companyName}} </td>
+                        </ng-container>
+
+                        <!-- Quantity Column -->
+                        <ng-container matColumnDef="orderDate">
+                            <th mat-header-cell *matHeaderCellDef> Date </th>
+                            <td mat-cell *matCellDef="let transaction"> {{transaction.orderDate}} </td>
+                        </ng-container>
+
+                        <!-- Quantity Column -->
+                        <ng-container matColumnDef="storeName">
+                            <th mat-header-cell *matHeaderCellDef> Store </th>
+                            <td mat-cell *matCellDef="let transaction"> {{transaction.storeName}} </td>
+                        </ng-container>
+
+                        <!-- Cost Column -->
+                        <ng-container matColumnDef="orderTotal">
+                            <th mat-header-cell *matHeaderCellDef> Total </th>
+                            <td mat-cell *matCellDef="let transaction"> {{transaction.orderTotal | currency}} </td>
+                            <td mat-footer-cell *matFooterCellDef> 123231 </td>
+                        </ng-container>
+
+                        <tr mat-header-row *matHeaderRowDef="displayedColumns" class="bg-light h-18"></tr>
+                        <tr mat-row *matRowDef="let row; columns: displayedColumns;" class="h-12"></tr>
+                        <!-- <tr mat-footer-row *matFooterRowDef="displayedColumns" class="bg-light"></tr> -->
+                    </table>
+                </div>
+            </div>
+        </mat-card-content>
+    </mat-card>
+</div>

@@ -1,7 +1,7 @@
 import { Component, Input, OnInit, Output, EventEmitter, ChangeDetectorRef } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { InventoryService } from 'app/modules/admin/apps/ecommerce/inventory/inventory.service';
-import { Colors } from 'app/modules/admin/apps/ecommerce/inventory/inventory.types';
+import { Colors, AvailableCores } from 'app/modules/admin/apps/ecommerce/inventory/inventory.types';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { SelectionModel } from '@angular/cdk/collections';
@@ -19,6 +19,12 @@ export class CoreProductsComponent implements OnInit {
   displayedColumns: string[] = ['core', 'category', 'sub_category'];
   dataSource: Colors[] = [];
   selection;
+  selectedorder: string = 'select_order';
+  products: string[] = [
+    'YES',
+    'NO'
+  ];
+  available_cores: AvailableCores[] = [];
 
   /** Whether the number of selected elements matches the total number of rows. */
   isAllSelected() {
@@ -60,6 +66,16 @@ export class CoreProductsComponent implements OnInit {
 
         console.log("features ", cores)
         this.dataSource = cores["data"];
+        this._changeDetectorRef.markForCheck();
+      });
+
+    this._inventoryService.getAvailableCoresProductId(pk_productID)
+      .pipe(takeUntil(this._unsubscribeAll))
+      .subscribe((available_core) => {
+
+        this.available_cores = available_core["data"];
+
+        console.log("available_cores ", this.available_cores)
         this._changeDetectorRef.markForCheck();
       });
     this.isLoadingChange.emit(false);

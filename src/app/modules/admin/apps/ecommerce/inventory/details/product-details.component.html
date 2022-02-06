@@ -167,6 +167,29 @@
                         </app-core-products>
                     </ng-template>
                 </div>
+                <div class="col-12">
+                    <ng-template [ngIf]="selectedIndex == 14">
+                        <app-update-history [(isLoading)]="isLoading" [selectedProduct]="selectedProduct">
+                        </app-update-history>
+                    </ng-template>
+                </div>
+                <div class="col-12">
+                    <ng-template [ngIf]="selectedIndex == 15">
+                        <app-order-history [(isLoading)]="isLoading" [selectedProduct]="selectedProduct">
+                        </app-order-history>
+                    </ng-template>
+                </div>
+                <div class="col-12">
+                    <ng-template [ngIf]="selectedIndex == 16">
+                        <app-internal-notes [(isLoading)]="isLoading" [selectedProduct]="selectedProduct">
+                        </app-internal-notes>
+                    </ng-template>
+                </div>
+                <div class="col-12">
+                    <ng-template [ngIf]="selectedIndex == 17">
+                        <app-duplicate [(isLoading)]="isLoading" [selectedProduct]="selectedProduct"></app-duplicate>
+                    </ng-template>
+                </div>
             </div>
         </div>
 

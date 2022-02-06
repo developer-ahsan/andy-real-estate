@@ -114,3 +114,27 @@ export interface Reviews {
     RowNumber: number;
     TotalRequests: number
 }
+
+export interface productDescription {
+    description: boolean;
+    product_desc: string;
+    mini_desc: string;
+    keywords: string;
+    notes: string;
+    supplier_link: string;
+    meta_desc: string;
+    sex: string;
+    search_keywords: string;
+    purchase_order_notes: string;
+    last_update_by: string;
+    last_update_date: string;
+    update_history: string;
+    product_id: number;
+}
+
+export interface AvailableCores {
+    pk_coreID: number;
+    coreName: string;
+    RowNumber: string;
+    TotalRequests: number;
+}

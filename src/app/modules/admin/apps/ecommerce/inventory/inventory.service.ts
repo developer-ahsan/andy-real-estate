@@ -4,6 +4,7 @@ import { BehaviorSubject, Observable, of, throwError } from 'rxjs';
 import { filter, map, switchMap, take, tap } from 'rxjs/operators';
 import { InventoryBrand, InventoryCategory, InventoryPagination, InventoryTag, InventoryVendor, ProductsList } from 'app/modules/admin/apps/ecommerce/inventory/inventory.types';
 import { environment } from 'environments/environment';
+import { productDescription } from 'app/modules/admin/apps/ecommerce/inventory/inventory.types';
 
 @Injectable({
     providedIn: 'root'
@@ -87,6 +88,26 @@ export class InventoryService {
             id: 14,
             title: 'Core Products',
             icon: 'mat_outline:group_work',
+        },
+        {
+            id: 15,
+            title: 'Update History',
+            icon: 'mat_outline:history',
+        },
+        {
+            id: 16,
+            title: 'Order History',
+            icon: 'mat_outline:history',
+        },
+        {
+            id: 17,
+            title: 'Internal Notes',
+            icon: 'mat_outline:notes',
+        },
+        {
+            id: 18,
+            title: 'Duplicate',
+            icon: 'heroicons_outline:duplicate'
         }
         // {
         //     id: 13,
@@ -306,6 +327,59 @@ export class InventoryService {
                 product_id: productId
             }
         });
+    }
+
+    getAvailableCoresProductId(productId): Observable<any[]> {
+        return this._httpClient.get<any[]>(environment.products, {
+            params: {
+                core: true,
+                available_core: true,
+                product_id: productId
+            }
+        });
+    }
+
+    getOrderHistoryByProductId(productId): Observable<any[]> {
+        return this._httpClient.get<any[]>(environment.products, {
+            params: {
+                order_history: true,
+                product_id: productId
+            }
+        });
+    }
+
+    getUpdateHistoryByProductId(productId): Observable<any[]> {
+        return this._httpClient.get<any[]>(environment.products, {
+            params: {
+                update_history: true,
+                product_id: productId
+            }
+        });
+    }
+
+    getCommentByProductId(productId): Observable<any[]> {
+        return this._httpClient.get<any[]>(environment.products, {
+            params: {
+                comment: true,
+                product_id: productId
+            }
+        });
+    }
+
+    getCommentators() {
+        return this._httpClient.get(environment.customerList, {
+            params: {
+                commentor: true
+            }
+        })
+    }
+
+    /**
+   * UPDATE cash-back
+   */
+    updatePhysicsAndDescription(payload: productDescription) {
+        return this._httpClient.put(
+            `${environment.products}`, payload);
     }
 
     /**

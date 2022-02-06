@@ -1,0 +1,35 @@
+<ngx-skeleton-loader count="8" appearance="line" animation="pulse" *ngIf="isLoading">
+</ngx-skeleton-loader>
+<div class="row my-3 mx-0" *ngIf="!isLoading">
+    <mat-card class="w-full h-full rounded-2xl shadow-lg">
+        <mat-card-title class="text-info font-size-medium">
+            <button [matTooltip]="'*Enter the necessary information below to duplicate the product'">
+                <i class="fa fa-info-circle"></i>
+            </button>
+            Duplicate Product
+        </mat-card-title>
+        <mat-divider></mat-divider>
+        <mat-card-content>
+            <div class="row my-3">
+                <div class="col-12">
+                    <mat-form-field class="w-full">
+                        <mat-label>New Manufacturer Number</mat-label>
+                        <input matInput>
+                    </mat-form-field>
+                </div>
+                <div class="col-12">
+                    <mat-form-field class="w-full">
+                        <mat-label>New Name</mat-label>
+                        <input matInput>
+                    </mat-form-field>
+                </div>
+                <div class="col-12" style="text-align: end;">
+                    <button mat-stroked-button [matTooltip]="'Duplicate Product'">
+                        <mat-icon svgIcon="heroicons_outline:duplicate"></mat-icon>
+                        <span class="ml-1 mr-1">Duplicate Product</span>
+                    </button>
+                </div>
+            </div>
+        </mat-card-content>
+    </mat-card>
+</div>

@@ -66,6 +66,10 @@ import { DietaryInfoComponent } from './inventory/navigation/dietary-info/dietar
 import { LicensingTermComponent } from './inventory/navigation/licensing-term/licensing-term.component';
 import { WarehouseComponent } from './inventory/navigation/warehouse/warehouse.component';
 import { CoreProductsComponent } from './inventory/navigation/core-products/core-products.component';
+import { UpdateHistoryComponent } from './inventory/navigation/update-history/update-history.component';
+import { OrderHistoryComponent } from './inventory/navigation/order-history/order-history.component';
+import { InternalNotesComponent } from './inventory/navigation/internal-notes/internal-notes.component';
+import { DuplicateComponent } from './inventory/navigation/duplicate/duplicate.component';
 
 @NgModule({
     declarations: [
@@ -108,7 +112,11 @@ import { CoreProductsComponent } from './inventory/navigation/core-products/core
         DietaryInfoComponent,
         LicensingTermComponent,
         WarehouseComponent,
-        CoreProductsComponent
+        CoreProductsComponent,
+        UpdateHistoryComponent,
+        OrderHistoryComponent,
+        InternalNotesComponent,
+        DuplicateComponent
     ],
     imports: [
         RouterModule.forChild(ecommerceRoutes),

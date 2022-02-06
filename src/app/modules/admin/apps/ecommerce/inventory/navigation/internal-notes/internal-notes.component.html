@@ -1,0 +1,62 @@
+<ngx-skeleton-loader count="8" appearance="line" animation="pulse" *ngIf="isLoading">
+</ngx-skeleton-loader>
+<div class="row my-3 mx-0" *ngIf="!isLoading">
+    <mat-card class="w-full p-2 h-full rounded-2xl shadow-lg">
+        <mat-card-title class="text-info font-size-medium">Current Comments</mat-card-title>
+        <mat-divider></mat-divider>
+        <mat-card-content class="text-secondary py-4">
+            <div class="row">
+                <div class="col-12" *ngFor="let comment of comments;let i = index">
+                    <fuse-card
+                        class="flex flex-col md:flex-row items-center justify-between w-full filter-testimonial p-4 border-b">
+                        <div class="flex flex-col flex-auto justify-center">
+                            <div class="text-md text-primary leading-relaxed">
+                                {{comment?.comment}}
+                            </div>
+                            <div class="text-md font-medium text-primary mt-2" style="font-variant: titling-caps;">
+                                &#8212; {{comment?.name}} <span class="text-sm text-info">on
+                                    {{comment?.theTimestamp}}</span>
+                            </div>
+                        </div>
+                    </fuse-card>
+                </div>
+            </div>
+        </mat-card-content>
+    </mat-card>
+</div>
+<div class="row mb-3 mx-0" *ngIf="!isLoading">
+    <mat-card class="w-full p-2 h-full rounded-2xl shadow-lg">
+        <mat-card-title class="text-info font-size-medium">Add a comment</mat-card-title>
+        <mat-divider></mat-divider>
+        <mat-card-content class="text-secondary py-4">
+            <form>
+                <div class="row">
+                    <div class="col-lg-7 col-12">
+                        <mat-form-field class="w-full">
+                            <textarea matInput rows="10" placeholder="Add Comments here..."></textarea>
+                        </mat-form-field>
+                    </div>
+                    <div class="col-lg-5 col-12">
+                        <mat-selection-list #list>
+                            <mat-list-option *ngFor="let commentator of commentators" (click)="selectOption(list)"
+                                [value]="commentator.email" [selected]="allSelected">
+                                <p class="font-small">{{commentator.email}}</p>
+                            </mat-list-option>
+                            <mat-list-option (click)="selectAll()">
+                                <p class="font-medium font-semibold text-secondary">Select All</p>
+                            </mat-list-option>
+                        </mat-selection-list>
+                    </div>
+                    <div class="col-12 mb-3">
+                        <mat-divider></mat-divider>
+                    </div>
+                    <div class="col-12" style="text-align: end;">
+                        <button mat-stroked-button>
+                            Add Comment
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </mat-card-content>
+    </mat-card>
+</div>
