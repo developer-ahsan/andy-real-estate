@@ -138,3 +138,32 @@ export interface AvailableCores {
     RowNumber: string;
     TotalRequests: number;
 }
+
+export interface PhysicsObj {
+    product_id: number;
+    weight: number;
+    weight_in_units: number;
+    dimensions: string;
+    over_pack_charge: number;
+    physics: boolean;
+}
+
+export interface FlatRateShippingObj {
+    product_id: number;
+    flat_rate_shipping: number;
+    flat_rate: boolean;
+}
+
+export interface CaseQuantityObj {
+    product_id: number;
+    case_quantities: string;
+    case_quantity: boolean;
+}
+
+export interface CaseDimensionObj {
+    product_id: number;
+    case_height: number;
+    case_width: number;
+    case_length: number;
+    case_dimension: boolean;
+}

@@ -1,4 +1,5 @@
 import { Component, Input, OnInit, Output, EventEmitter, ChangeDetectorRef } from '@angular/core';
+import { FormBuilder, FormGroup } from '@angular/forms';
 import { InventoryService } from 'app/modules/admin/apps/ecommerce/inventory/inventory.service';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
@@ -14,6 +15,7 @@ export class NetCostComponent implements OnInit {
   private _unsubscribeAll: Subject<any> = new Subject<any>();
 
   selectedorder: string = 'select_order';
+  netCostForm: FormGroup;
   products: string[] = [
     'YES',
     'NO'
@@ -21,11 +23,16 @@ export class NetCostComponent implements OnInit {
 
   constructor(
     private _changeDetectorRef: ChangeDetectorRef,
-    private _inventoryService: InventoryService
+    private _inventoryService: InventoryService,
+    private _formBuilder: FormBuilder
   ) { }
 
   ngOnInit(): void {
     const { pk_productID } = this.selectedProduct;
+
+    this.netCostForm = this._formBuilder.group({
+    });
+
     this._inventoryService.getPackageyProductId(pk_productID)
       .pipe(takeUntil(this._unsubscribeAll))
       .subscribe((pack) => {

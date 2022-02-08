@@ -2,9 +2,10 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { BehaviorSubject, Observable, of, throwError } from 'rxjs';
 import { filter, map, switchMap, take, tap } from 'rxjs/operators';
-import { InventoryBrand, InventoryCategory, InventoryPagination, InventoryTag, InventoryVendor, ProductsList } from 'app/modules/admin/apps/ecommerce/inventory/inventory.types';
+import { CaseDimensionObj, CaseQuantityObj, FlatRateShippingObj, InventoryBrand, InventoryCategory, InventoryPagination, InventoryTag, InventoryVendor, PhysicsObj, ProductsList } from 'app/modules/admin/apps/ecommerce/inventory/inventory.types';
 import { environment } from 'environments/environment';
 import { productDescription } from 'app/modules/admin/apps/ecommerce/inventory/inventory.types';
+import { AuthService } from 'app/core/auth/auth.service';
 
 @Injectable({
     providedIn: 'root'
@@ -124,7 +125,10 @@ export class InventoryService {
     /**
      * Constructor
      */
-    constructor(private _httpClient: HttpClient) {
+    constructor(
+        private _httpClient: HttpClient,
+        private _authService: AuthService
+    ) {
     }
 
     // -----------------------------------------------------------------------------------------------------
@@ -205,6 +209,16 @@ export class InventoryService {
         return this._httpClient.get<any[]>(environment.products, {
             params: {
                 description: true,
+                product_id: productId
+            }
+        });
+    }
+
+    getCaseQuantities(productId): Observable<any[]> {
+        return this._httpClient.get<any[]>(environment.products, {
+            params: {
+                case_quantity: true,
+                physics: true,
                 product_id: productId
             }
         });
@@ -375,11 +389,48 @@ export class InventoryService {
     }
 
     /**
-   * UPDATE cash-back
+   * UPDATE description
    */
     updatePhysicsAndDescription(payload: productDescription) {
+        const headers = { 'Authorization': `Bearer ${this._authService.accessToken}` };
         return this._httpClient.put(
-            `${environment.products}`, payload);
+            `${environment.products}`, payload, { headers });
+    }
+
+    /**
+   * UPDATE cash-back
+   */
+    updateFlatRateShipping(payload: FlatRateShippingObj) {
+        const headers = { 'Authorization': `Bearer ${this._authService.accessToken}` };
+        return this._httpClient.put(
+            `${environment.products}`, payload, { headers });
+    }
+
+    /**
+   * UPDATE physics
+   */
+    updatePhysics(payload: PhysicsObj) {
+        const headers = { 'Authorization': `Bearer ${this._authService.accessToken}` };
+        return this._httpClient.put(
+            `${environment.products}`, payload, { headers });
+    }
+
+    /**
+   * UPDATE case dimension
+   */
+    updateCaseDimensions(payload: CaseDimensionObj) {
+        const headers = { 'Authorization': `Bearer ${this._authService.accessToken}` };
+        return this._httpClient.put(
+            `${environment.products}`, payload, { headers });
+    }
+
+    /**
+   * UPDATE case quantity
+   */
+    updateCaseQuantity(payload: CaseQuantityObj) {
+        const headers = { 'Authorization': `Bearer ${this._authService.accessToken}` };
+        return this._httpClient.put(
+            `${environment.products}`, payload, { headers });
     }
 
     /**

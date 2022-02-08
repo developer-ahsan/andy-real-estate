@@ -39,6 +39,7 @@ export class ProductsDescriptionComponent implements OnInit {
       name: [''],
       productNO: [''],
       keywords: [''],
+      internalKeywords: [''],
       metaDesc: [''],
       supplierLink: [''],
       sex: [''],
@@ -49,7 +50,8 @@ export class ProductsDescriptionComponent implements OnInit {
       notes: [''],
       miniDesc: [''],
       technoLogoSKU: [''],
-      selectOrder: ['']
+      selectOrder: [''],
+      purchase_order_notes: ['']
     });
 
     const { pk_productID, productName, productNumber, technoLogoSKU } = this.selectedProduct;
@@ -57,6 +59,7 @@ export class ProductsDescriptionComponent implements OnInit {
       .pipe(takeUntil(this._unsubscribeAll))
       .subscribe((description) => {
         this.productDescription = description["data"][0];
+        console.log("description", description["data"][0])
         this.productDescription["name"] = productName;
         this.productDescription["productNO"] = productNumber;
         this.productDescription["technoLogoSKU"] = technoLogoSKU;
@@ -72,6 +75,7 @@ export class ProductsDescriptionComponent implements OnInit {
 
   updateDescription(): void {
     const formValues = this.productDescriptionForm.getRawValue();
+    console.log("formValues", formValues)
     const payload = {
       product_desc: formValues.productDesc || '',
       mini_desc: formValues.miniDesc || '',
@@ -79,33 +83,17 @@ export class ProductsDescriptionComponent implements OnInit {
       notes: formValues.notes || '',
       supplier_link: formValues.supplierLink || '',
       meta_desc: formValues.metaDesc || '',
-      sex: formValues.sex || '',
-      search_keywords: formValues.notes || '',
-      purchase_order_notes: formValues.notes || '',
+      sex: formValues.sex || 0,
+      search_keywords: formValues.internalKeywords || '',
+      purchase_order_notes: formValues.purchase_order_notes || '',
       last_update_by: "" || '',
       last_update_date: "" || '',
       update_history: "" || '',
       product_id: formValues.fk_productID,
       description: true
     }
-    console.log("payload => ", payload)
     this.descriptionLoader = true;
-    this._inventoryService.updatePhysicsAndDescription({
-      "description": true,
-      "keywords": "bottle,sport,USA,drinkingbottle,sport,USA,drinking",
-      "last_update_by": "",
-      "last_update_date": "",
-      "meta_desc": "bottle,sport,USA,drinkingbottle,sport,USA,drinking",
-      "mini_desc": "USA-made, BPA-free sports bottle is made with recycled materials.USA-made, BPA-free sports bottle is made with recycled materials.",
-      "notes": "USA-made, BPA-free sports bottle is made with ",
-      "product_desc": "USA-made, BPA-free sports bottle is made with recycled materials. Twist-on lid with push/pull drinking spout. CPSIA Certified, Phthalate-free, Non-Toxic and Lead-free.USA-made, BPA-free sports bottle is made with recycled materials. Twist-on lid with push/pull drinking spout. CPSIA Certified, Phthalate-free, Non-Toxic and Lead-free.",
-      "product_id": 6196,
-      "purchase_order_notes": "",
-      "search_keywords": "bottle,sport,USA,drinking",
-      "sex": "",
-      "supplier_link": "USA-made, BPA-free sports bottle is made with ",
-      "update_history": ""
-    })
+    this._inventoryService.updatePhysicsAndDescription(payload)
       .subscribe((response: any) => {
         console.log("response", response)
         this.showFlashMessage(
