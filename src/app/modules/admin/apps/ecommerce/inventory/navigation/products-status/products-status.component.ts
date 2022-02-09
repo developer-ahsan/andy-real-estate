@@ -10,28 +10,26 @@ import { takeUntil } from 'rxjs/operators';
 })
 export class ProductsStatusComponent implements OnInit {
   @Input() selectedProduct: any;
-  @Input() storesData: any;
   @Input() isLoading: boolean;
   @Output() isLoadingChange = new EventEmitter<boolean>();
   private _unsubscribeAll: Subject<any> = new Subject<any>();
 
+
+  storesData = [];
   constructor(
     private _changeDetectorRef: ChangeDetectorRef,
     private _inventoryService: InventoryService
   ) { }
 
   ngOnInit(): void {
-    // const { pk_productID } = this.selectedProduct;
-    // this._inventoryService.getAllStores()
-    //   .pipe(takeUntil(this._unsubscribeAll))
-    //   .subscribe((stores) => {
-    //     this.stores = stores["data"];
-    //     console.log("stores ", this.stores)
+    this._inventoryService.getAllStores()
+      .pipe(takeUntil(this._unsubscribeAll))
+      .subscribe((stores) => {
+        this.storesData = stores["data"];
 
-    //     this._changeDetectorRef.markForCheck();
-    //   });
-
-    this.isLoadingChange.emit(false);
+        this._changeDetectorRef.markForCheck();
+        this.isLoadingChange.emit(false);
+      });
   }
 
   assignStore(): void {

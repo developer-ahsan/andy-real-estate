@@ -53,18 +53,12 @@ export class ProductDetailsComponent implements OnInit, OnDestroy {
     this._inventoryService.getProductByProductId(productId)
       .pipe(takeUntil(this._unsubscribeAll))
       .subscribe((product) => {
-        this._inventoryService.getAllStores()
-          .pipe(takeUntil(this._unsubscribeAll))
-          .subscribe((stores) => {
-            this.storesData = stores["data"];
-            this.selectedProduct = product["data"][0];
-            console.log("this.selectedProduct", this.selectedProduct)
-            this.isProductFetched = false;
-            this.isLoading = false;
+        this.selectedProduct = product["data"][0];
+        console.log("this.selectedProduct", this.selectedProduct)
+        this.isProductFetched = false;
 
-            // Mark for check
-            this._changeDetectorRef.markForCheck();
-          });
+        // Mark for check
+        this._changeDetectorRef.markForCheck();
       });
 
     // this.drawerMode = "side";

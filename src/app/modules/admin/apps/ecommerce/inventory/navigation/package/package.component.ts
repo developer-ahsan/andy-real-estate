@@ -66,7 +66,7 @@ export class PackageComponent implements OnInit {
         this._changeDetectorRef.markForCheck();
       });
 
-    this._inventoryService.getPackageyProductId(pk_productID)
+    this._inventoryService.getPackageByProductId(pk_productID)
       .pipe(takeUntil(this._unsubscribeAll))
       .subscribe((pack) => {
 

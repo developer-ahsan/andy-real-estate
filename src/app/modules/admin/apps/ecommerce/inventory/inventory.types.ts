@@ -167,3 +167,15 @@ export interface CaseDimensionObj {
     case_length: number;
     case_dimension: boolean;
 }
+
+export interface NetCostUpdate {
+    product_id: number;
+    quantity_list: string;
+    cost_list: string;
+    blank_cost_list: string;
+    cost_comment: string;
+    live_cost_comment: string;
+    coop_id: number;
+    msrp: number;
+    net_cost: boolean;
+}

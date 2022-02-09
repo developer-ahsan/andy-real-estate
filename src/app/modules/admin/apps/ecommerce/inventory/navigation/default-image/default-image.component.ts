@@ -32,7 +32,7 @@ export class DefaultImageComponent implements OnInit {
     });
 
     const { pk_productID } = this.selectedProduct;
-    this._inventoryService.getPackageyProductId(pk_productID)
+    this._inventoryService.getPackageByProductId(pk_productID)
       .pipe(takeUntil(this._unsubscribeAll))
       .subscribe((pack) => {
 

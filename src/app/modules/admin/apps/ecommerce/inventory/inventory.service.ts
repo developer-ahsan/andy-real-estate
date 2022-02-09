@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { BehaviorSubject, Observable, of, throwError } from 'rxjs';
 import { filter, map, switchMap, take, tap } from 'rxjs/operators';
-import { CaseDimensionObj, CaseQuantityObj, FlatRateShippingObj, InventoryBrand, InventoryCategory, InventoryPagination, InventoryTag, InventoryVendor, PhysicsObj, ProductsList } from 'app/modules/admin/apps/ecommerce/inventory/inventory.types';
+import { CaseDimensionObj, CaseQuantityObj, FlatRateShippingObj, InventoryBrand, InventoryCategory, InventoryPagination, InventoryTag, InventoryVendor, NetCostUpdate, PhysicsObj, ProductsList } from 'app/modules/admin/apps/ecommerce/inventory/inventory.types';
 import { environment } from 'environments/environment';
 import { productDescription } from 'app/modules/admin/apps/ecommerce/inventory/inventory.types';
 import { AuthService } from 'app/core/auth/auth.service';
@@ -262,13 +262,42 @@ export class InventoryService {
         });
     }
 
-    getPackageyProductId(productId): Observable<any[]> {
+    getPackageByProductId(productId): Observable<any[]> {
         return this._httpClient.get<any[]>(environment.products, {
             params: {
                 packaging: true,
                 product_id: productId
             }
         });
+    }
+
+    getNetCost(productId): Observable<any[]> {
+        return this._httpClient.get<any[]>(environment.products, {
+            params: {
+                net_cost: true,
+                cost: true,
+                product_id: productId
+            }
+        });
+    }
+
+    getDiscountCodes(productId): Observable<any[]> {
+        return this._httpClient.get<any[]>(environment.products, {
+            params: {
+                net_cost: true,
+                discount_code: true,
+                product_id: productId
+            }
+        });
+    }
+
+    /**
+   * UPDATE net cost
+   */
+    updateNetCost(payload: NetCostUpdate) {
+        const headers = { 'Authorization': `Bearer ${this._authService.accessToken}` };
+        return this._httpClient.put(
+            `${environment.products}`, payload, { headers });
     }
 
     getAllStores(): Observable<any[]> {
