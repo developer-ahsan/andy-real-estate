@@ -43,6 +43,7 @@ export class CustomersTabComponent implements OnInit, AfterViewInit, OnDestroy {
     breakpoint: number;
     not_available = "N/A";
     customerAddress: [];
+    updateUserLoader = false;
     private _unsubscribeAll: Subject<any> = new Subject<any>();
 
     /**
@@ -460,19 +461,29 @@ export class CustomersTabComponent implements OnInit, AfterViewInit, OnDestroy {
     updateCustomerProduct(): void {
         // Get the product object
         const customer = this.selectedCustomerForm.getRawValue();
-        console.log("customer values => ", customer);
+        const payload = {
+            user_role: "admin",
+            email: customer.email,
+            user_name: `${customer.firstName} ${customer.lastName}`,
+            first_name: customer.firstName,
+            last_name: customer.lastName,
+            user_id: parseInt(this.selectedCustomer.pk_userID),
+            bln_active: this.selectedCustomer.blnActive,
+            user: true
+        };
 
-        this.showFlashMessage('success');
-
-        // // Remove the currentImageIndex field
-        // delete customer.currentImageIndex;
-
-        // // Update the customer on the server
-        // this._customerService.updateCustomer(customer.id, customer).subscribe(() => {
-
-        //     // Show a success message
-        //     this.showFlashMessage('success');
-        // });
+        console.log("payload", payload);
+        this.updateUserLoader = true;
+        this._customerService.upgradeUser(payload)
+            .subscribe((response: any) => {
+                console.log("response", response);
+                this.showFlashMessage(
+                    response["success"] === true ?
+                        'success' :
+                        'error'
+                );
+                this.updateUserLoader = false;
+            });
     }
 
     /**

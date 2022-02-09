@@ -164,9 +164,12 @@
                                     <span class="ml-2">An error occurred, try again!</span>
                                 </ng-container>
                             </div>
-                            <button mat-flat-button [color]="'primary'" (click)="updateCustomerProduct()">
-                                <mat-icon svgIcon="mat_outline:edit"></mat-icon>
-                                <span class="ml-2">Update</span>
+                            <button class="min-w-40" mat-stroked-button [matTooltip]="'Update User Info'"
+                                (click)="updateCustomerProduct()" [disabled]="updateUserLoader">
+                                <mat-progress-spinner *ngIf="updateUserLoader" [diameter]="24" [mode]="'indeterminate'">
+                                </mat-progress-spinner>
+                                <mat-icon *ngIf="!updateUserLoader" svgIcon="mode_edit_outline"></mat-icon>
+                                <span *ngIf="!updateUserLoader" class="ml-1 mr-1">Update</span>
                             </button>
                         </div>
                     </form>

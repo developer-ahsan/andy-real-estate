@@ -147,3 +147,16 @@ export interface CreateStore {
     store_id: number;
     store_usage: boolean;
 }
+
+export interface UpdateUser {
+    user_role: string;
+    email: string;
+    user_name: string;
+    first_name: string;
+    last_name: string;
+    bln_admin_user?: boolean;
+    admin_user_id?: number;
+    user_id: number;
+    bln_active: boolean;
+    user: boolean;
+}
