@@ -9,6 +9,8 @@ import { fuseAnimations } from '@fuse/animations';
 import { InventoryBrand, InventoryCategory, InventoryPagination, InventoryProduct, InventoryTag, InventoryVendor, ProductsList } from 'app/modules/admin/apps/ecommerce/inventory/inventory.types';
 import { InventoryService } from 'app/modules/admin/apps/ecommerce/inventory/inventory.service';
 import { Router } from '@angular/router';
+import { BreakpointObserver } from '@angular/cdk/layout';
+import { StepperOrientation } from '@angular/material/stepper';
 
 @Component({
     selector: 'inventory-list',
@@ -38,11 +40,48 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
     selectedProductForm: FormGroup;
     tags: InventoryTag[];
     tagsEditMode: boolean = false;
+    enableProductAddForm = false;
     vendors: InventoryVendor[];
     private _unsubscribeAll: Subject<any> = new Subject<any>();
 
     pageSize: number;
     pageNo: number;
+
+    firstFormGroup = this._formBuilder.group({
+        supplierValue: ['', Validators.required],
+        radio: ['', Validators.required]
+    });
+    secondFormGroup = this._formBuilder.group({
+        productName: ['', Validators.required],
+        productNumber: ['', Validators.required],
+        caseHeight: [''],
+        caseWidth: [''],
+        caseLength: [''],
+        perPackageShippingUnit: [''],
+        overPackageCharge: [''],
+        technoLogo: [''],
+        supplierLink: [''],
+        mainDescription: [''],
+        miniDescription: [''],
+        keywords: [''],
+        internalKeywords: ['']
+    });
+    netCostForm = this._formBuilder.group({
+    });
+    imprintForm = this._formBuilder.group({
+    });
+    colorForm = this._formBuilder.group({
+    });
+    featureForm = this._formBuilder.group({
+    });
+
+    stepperOrientation: Observable<StepperOrientation>;
+    suppliers = ["albert.eisntein", "leonardo_da_vinci",
+        "jagadish_chandra_bose@ya", "alan_turing", "srinivasa.ramanujan",
+        "bjarne_stroustrup", "max.planck", "nikola.tesla",
+        "galileo_galilei", "a.p.j.abdul.kalam", "richard.stallman@inbox.com", "devin.guffy@yandex.com"];
+    favoriteSeason: string;
+    seasons: string[] = ['Normal Promotional Material', 'Apparel Item', 'Service Item'];
 
     /**
      * Constructor
@@ -51,8 +90,12 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
         private _changeDetectorRef: ChangeDetectorRef,
         private _formBuilder: FormBuilder,
         private _inventoryService: InventoryService,
-        private _router: Router
+        private _router: Router,
+        breakpointObserver: BreakpointObserver
     ) {
+        this.stepperOrientation = breakpointObserver
+            .observe('(min-width: 800px)')
+            .pipe(map(({ matches }) => (matches ? 'horizontal' : 'vertical')));
     }
 
     // -----------------------------------------------------------------------------------------------------
@@ -297,5 +340,9 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
      */
     trackByFn(index: number, item: any): any {
         return item.id || index;
+    }
+
+    enableProductAddFormFn(): void {
+        this.enableProductAddForm = !this.enableProductAddForm;
     }
 }

@@ -20,6 +20,7 @@ export class NetCostComponent implements OnInit {
   netCostForm: FormGroup;
   products: string[] = [];
   netCostLoader = false;
+  validationCheckMessage = ""
 
   constructor(
     private _changeDetectorRef: ChangeDetectorRef,
@@ -120,13 +121,31 @@ export class NetCostComponent implements OnInit {
     this.isLoadingChange.emit(false);
   }
 
+  removeNull(array) {
+    return array.filter(x => x !== null)
+  };
+
   updateNetCost(): void {
     const formValues = this.netCostForm.getRawValue();
+    const quantityListArray = [parseInt(formValues.quantityOne) || null, parseInt(formValues.quantityTwo) || null, parseInt(formValues.quantityThree) || null, parseInt(formValues.quantityFour) || null, parseInt(formValues.quantityFive) || null, parseInt(formValues.quantitySix) || null];
+    const blankListArray = [parseInt(formValues.blankCostOne) || null, parseInt(formValues.blankCostTwo) || null, parseInt(formValues.blankCostThree) || null, parseInt(formValues.blankCostFour) || null, parseInt(formValues.blankCostFive) || null, parseInt(formValues.blankCostSix) || null];
+    const standardCostList = [parseInt(formValues.standardCostOne) || null, parseInt(formValues.standardCostTwo) || null, parseInt(formValues.standardCostThree) || null, parseInt(formValues.standardCostFour) || null, parseInt(formValues.standardCostFive) || null, parseInt(formValues.standardCostSix) || null];
+    const realQuantityList = this.removeNull(quantityListArray);
+    const realBlankList = this.removeNull(blankListArray);
+    const realStandardCostList = this.removeNull(standardCostList);
+
+    // If length of quantities and blanks list is not equal then return
+    if (realQuantityList?.length !== realBlankList?.length) {
+      this.validationCheckMessage = "Number of quantity breaks does not match the number of blank cost amounts";
+      this.showFlashMessage('error');
+      return;
+    }
+
     const payload = {
       product_id: parseInt(this.selectedProduct.pk_productID),
-      quantity_list: `${formValues.quantityOne},${formValues.quantityTwo},${formValues.quantityThree},${formValues.quantityFour},${formValues.quantityFive},${formValues.quantitySix}`,
-      cost_list: `${formValues.standardCostOne},${formValues.standardCostTwo},${formValues.standardCostThree},${formValues.standardCostFour},${formValues.standardCostFive},${formValues.standardCostSix}`,
-      blank_cost_list: `${formValues.blankCostOne},${formValues.blankCostTwo},${formValues.blankCostThree},${formValues.blankCostFour},${formValues.blankCostFive},${formValues.blankCostSix}`,
+      quantity_list: realQuantityList,
+      cost_list: realStandardCostList,
+      blank_cost_list: realBlankList,
       cost_comment: formValues.internalComments,
       live_cost_comment: formValues.redPriceComment,
       coop_id: parseInt(formValues.coOp),
@@ -156,13 +175,13 @@ export class NetCostComponent implements OnInit {
     // Mark for check
     this._changeDetectorRef.markForCheck();
 
-    // Hide it after 3 seconds
+    // Hide it after 3.5 seconds
     setTimeout(() => {
 
       this.flashMessage = null;
 
       // Mark for check
       this._changeDetectorRef.markForCheck();
-    }, 1500);
+    }, 3500);
   }
 }

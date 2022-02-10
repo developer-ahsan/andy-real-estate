@@ -170,9 +170,9 @@ export interface CaseDimensionObj {
 
 export interface NetCostUpdate {
     product_id: number;
-    quantity_list: string;
-    cost_list: string;
-    blank_cost_list: string;
+    quantity_list: number[];
+    cost_list: number[];
+    blank_cost_list: number[];
     cost_comment: string;
     live_cost_comment: string;
     coop_id: number;
