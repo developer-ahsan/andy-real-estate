@@ -189,6 +189,11 @@
                         <app-duplicate [(isLoading)]="isLoading" [selectedProduct]="selectedProduct"></app-duplicate>
                     </ng-template>
                 </div>
+                <div class="col-12">
+                    <ng-template [ngIf]="selectedIndex == 18">
+                        <app-imprint [(isLoading)]="isLoading" [selectedProduct]="selectedProduct"></app-imprint>
+                    </ng-template>
+                </div>
             </div>
         </div>
 

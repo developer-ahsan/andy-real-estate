@@ -109,7 +109,12 @@ export class InventoryService {
             id: 18,
             title: 'Duplicate',
             icon: 'heroicons_outline:duplicate'
-        }
+        },
+        {
+            id: 19,
+            title: 'Imprints',
+            icon: 'mat_outline:checklist',
+        },
         // {
         //     id: 13,
         //     title: 'Dietary Information',
@@ -377,6 +382,15 @@ export class InventoryService {
             params: {
                 core: true,
                 available_core: true,
+                product_id: productId
+            }
+        });
+    }
+
+    getImprints(productId): Observable<any[]> {
+        return this._httpClient.get<any[]>(environment.products, {
+            params: {
+                imprint: true,
                 product_id: productId
             }
         });

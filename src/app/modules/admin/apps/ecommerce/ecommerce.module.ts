@@ -70,6 +70,8 @@ import { UpdateHistoryComponent } from './inventory/navigation/update-history/up
 import { OrderHistoryComponent } from './inventory/navigation/order-history/order-history.component';
 import { InternalNotesComponent } from './inventory/navigation/internal-notes/internal-notes.component';
 import { DuplicateComponent } from './inventory/navigation/duplicate/duplicate.component';
+import { ImprintComponent } from './inventory/navigation/imprint/imprint.component';
+import { MatAutocompleteModule } from '@angular/material/autocomplete';
 
 @NgModule({
     declarations: [
@@ -116,7 +118,8 @@ import { DuplicateComponent } from './inventory/navigation/duplicate/duplicate.c
         UpdateHistoryComponent,
         OrderHistoryComponent,
         InternalNotesComponent,
-        DuplicateComponent
+        DuplicateComponent,
+        ImprintComponent
     ],
     imports: [
         RouterModule.forChild(ecommerceRoutes),
@@ -145,7 +148,8 @@ import { DuplicateComponent } from './inventory/navigation/duplicate/duplicate.c
         MatStepperModule,
         MatProgressSpinnerModule,
         MatSidenavModule,
-        NgxDropzoneModule
+        NgxDropzoneModule,
+        MatAutocompleteModule
     ]
 })
 export class ECommerceModule {
