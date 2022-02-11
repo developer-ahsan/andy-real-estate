@@ -20,10 +20,10 @@
                             want to enter the part of the code that is after the "src=" part that is in quotes. Entering
                             the entire code below will not work.</p>
                     </div>
-                    <div class="col-12 text-info">
+                    <div class="col-12 text-danger mt-3">
                         DO NOT include any "http://" or "https://" in the URL. Remove these before adding.
                     </div>
-                    <div class="col-12 text-info">
+                    <div class="col-12 text-danger mb-3">
                         Try to remove any "autorun" variables in the URL. Usually they look like "&autorun=1"
                     </div>
                     <div class="col-12 font-semibold">
@@ -37,12 +37,14 @@
                     <div class="col-10">
                         <p class="text-danger font-semibold"
                             style="text-align: right; opacity: 0.8; text-decoration: underline; cursor: pointer;"
-                            *ngIf="videoLength > 0"> View
-                            Video </p>
+                            *ngIf="videoLength > 0">
+                            <a href="{{videoLink}}" target="_blank">View Video</a>
+                        </p>
                     </div>
                     <div class="col-12">
                         <mat-form-field class="w-full">
                             <input matInput [formControlName]="'video'">
+                            <mat-error>Please fill this field</mat-error>
                         </mat-form-field>
                     </div>
                     <div class="col-12 font-semibold text-info">
@@ -50,14 +52,32 @@
                     </div>
                     <div class="col-12">
                         <input type="file" accept=".jpg" (change)="upload($event)" style="line-height: 2.5;" />
-                        <small class="text-danger font-semibold"> {{imageRequired}} </small>
                     </div>
                     <div class="col-12">
-                        <button (click)="uploadImage()" class="float-right" mat-stroked-button
-                            [matTooltip]="'Videos must be free from any vendor branding'">
-                            <mat-icon [svgIcon]="'mat_outline:edit'"></mat-icon>
-                            <span class="ml-1 mr-1">Update</span>
-                        </button>
+                        <div class="flex items-center justify-end w-full">
+                            <div class="flex items-center my-2">
+                                <div class="flex items-center mr-4" *ngIf="flashMessage">
+                                    <ng-container *ngIf="flashMessage === 'success'">
+                                        <mat-icon class="text-green-500" [svgIcon]="'heroicons_outline:check'">
+                                        </mat-icon>
+                                        <span class="ml-2">Video updated successfully</span>
+                                    </ng-container>
+                                    <ng-container *ngIf="flashMessage === 'error'">
+                                        <mat-icon class="text-red-500" [svgIcon]="'heroicons_outline:x'"></mat-icon>
+                                        <span class="ml-2">An error occurred, try again!</span>
+                                    </ng-container>
+                                </div>
+                                <button class="min-w-40" mat-stroked-button
+                                    [matTooltip]="'Videos must be free from any vendor branding'"
+                                    (click)="uploadImage()" [disabled]="videoUpdateLoader">
+                                    <mat-progress-spinner *ngIf="videoUpdateLoader" [diameter]="24"
+                                        [mode]="'indeterminate'">
+                                    </mat-progress-spinner>
+                                    <mat-icon *ngIf="!videoUpdateLoader" svgIcon="mode_edit_outline"></mat-icon>
+                                    <span *ngIf="!videoUpdateLoader" class="ml-1 mr-1">Update</span>
+                                </button>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </form>

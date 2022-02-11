@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { BehaviorSubject, Observable, of, throwError } from 'rxjs';
 import { filter, map, switchMap, take, tap } from 'rxjs/operators';
-import { CaseDimensionObj, CaseQuantityObj, FlatRateShippingObj, InventoryBrand, InventoryCategory, InventoryPagination, InventoryTag, InventoryVendor, NetCostUpdate, PhysicsObj, ProductsList } from 'app/modules/admin/apps/ecommerce/inventory/inventory.types';
+import { CaseDimensionObj, CaseQuantityObj, FlatRateShippingObj, InventoryBrand, InventoryCategory, InventoryPagination, InventoryTag, InventoryVendor, NetCostUpdate, PhysicsObj, ProductsList, videoObj } from 'app/modules/admin/apps/ecommerce/inventory/inventory.types';
 import { environment } from 'environments/environment';
 import { productDescription } from 'app/modules/admin/apps/ecommerce/inventory/inventory.types';
 import { AuthService } from 'app/core/auth/auth.service';
@@ -461,6 +461,16 @@ export class InventoryService {
         return this._httpClient.put(
             `${environment.products}`, payload, { headers });
     }
+
+    /**
+   * UPDATE Video
+   */
+    updateVideo(payload: videoObj) {
+        const headers = { 'Authorization': `Bearer ${this._authService.accessToken}` };
+        return this._httpClient.put(
+            `https://consolidus-staging.azurewebsites.net/api/products`, payload, { headers });
+    }
+
 
     /**
      * Get products

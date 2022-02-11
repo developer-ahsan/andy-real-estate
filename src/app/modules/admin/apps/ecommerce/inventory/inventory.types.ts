@@ -179,3 +179,17 @@ export interface NetCostUpdate {
     msrp: number;
     net_cost: boolean;
 }
+
+export interface updateColorObj {
+    product_id: number;
+    color_id: number[];
+    the_run: string[];
+    rgb: string[];
+}
+
+export interface videoObj {
+    video: string;
+    button: string;
+    product_id: number;
+    videos: boolean;
+}
