@@ -47,15 +47,43 @@ export class DefaultMarginsComponent implements OnInit {
             margin[i + 1] = this.defaultMargins[i].margin
           }
         }
-        console.log("margin ", margin)
         this.defaultMarginForm.patchValue(margin);
         this._changeDetectorRef.markForCheck();
       });
     this.isLoadingChange.emit(false);
   }
 
+  removeNull(array) {
+    return array.filter(x => x !== null)
+  };
+
   updateMargins(): void {
-    console.log("defaultMarginForm", this.defaultMarginForm.getRawValue());
+    const { pk_productID } = this.selectedProduct;
+    const margins = [
+      this.defaultMarginForm.getRawValue()["1"] || null,
+      this.defaultMarginForm.getRawValue()["2"] || null,
+      this.defaultMarginForm.getRawValue()["3"] || null,
+      this.defaultMarginForm.getRawValue()["4"] || null,
+      this.defaultMarginForm.getRawValue()["5"] || null,
+      this.defaultMarginForm.getRawValue()["6"] || null,
+    ];
+    const realMargins = this.removeNull(margins);
+    const payload = {
+      product_id: pk_productID,
+      margins: realMargins,
+      margin: true
+    }
+    console.log("payload", payload);
+    this.defaultMarginUpdate = true;
+    this._inventoryService.updateMargins(payload)
+      .subscribe((response) => {
+        this.showFlashMessage(
+          response["success"] === true ?
+            'success' :
+            'error'
+        );
+        this.defaultMarginUpdate = false;
+      });
   }
 
   /**

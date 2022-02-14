@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { BehaviorSubject, Observable, of, throwError } from 'rxjs';
 import { filter, map, switchMap, take, tap } from 'rxjs/operators';
-import { AddFeature, CaseDimensionObj, CaseQuantityObj, FlatRateShippingObj, InventoryBrand, InventoryCategory, InventoryPagination, InventoryTag, InventoryVendor, NetCostUpdate, PhysicsObj, ProductsList, videoObj } from 'app/modules/admin/apps/ecommerce/inventory/inventory.types';
+import { AddFeature, AddPackage, CaseDimensionObj, CaseQuantityObj, FlatRateShippingObj, InventoryBrand, InventoryCategory, InventoryPagination, InventoryTag, InventoryVendor, NetCostUpdate, PhysicsObj, ProductsList, UpdateMargin, videoObj } from 'app/modules/admin/apps/ecommerce/inventory/inventory.types';
 import { environment } from 'environments/environment';
 import { productDescription } from 'app/modules/admin/apps/ecommerce/inventory/inventory.types';
 import { AuthService } from 'app/core/auth/auth.service';
@@ -320,6 +320,24 @@ export class InventoryService {
     updateNetCost(payload: NetCostUpdate) {
         const headers = { 'Authorization': `Bearer ${this._authService.accessToken}` };
         return this._httpClient.put(
+            `${environment.products}`, payload, { headers });
+    }
+
+    /**
+  * UPDATE margins
+  */
+    updateMargins(payload: UpdateMargin) {
+        const headers = { 'Authorization': `Bearer ${this._authService.accessToken}` };
+        return this._httpClient.put(
+            `${environment.products}`, payload, { headers });
+    }
+
+    /**
+  * Post package
+  */
+    addPackage(payload: AddPackage) {
+        const headers = { 'Authorization': `Bearer ${this._authService.accessToken}` };
+        return this._httpClient.post(
             `${environment.products}`, payload, { headers });
     }
 

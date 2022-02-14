@@ -3,7 +3,7 @@ import { Package } from 'app/modules/admin/apps/ecommerce/inventory/inventory.ty
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { InventoryService } from 'app/modules/admin/apps/ecommerce/inventory/inventory.service';
-import { SelectionModel } from '@angular/cdk/collections';
+import { COMMA, ENTER } from '@angular/cdk/keycodes';
 
 @Component({
   selector: 'app-package',
@@ -15,12 +15,15 @@ export class PackageComponent implements OnInit {
   @Output() isLoadingChange = new EventEmitter<boolean>();
   private _unsubscribeAll: Subject<any> = new Subject<any>();
 
-  displayedColumns: string[] = ['select', 'packaging', 'run', 'setup', 'packagingUnit', 'po'];
+  displayedColumns: string[] = ['packaging', 'run', 'setup', 'packagingUnit', 'po'];
   dataSource: Package[] = [];
   dataSourceLength: number = 0;
   pageSize: number = 10;
   pageNo: number = 0;
   selection;
+  zeroLengthCheckMessage = false;
+  flashMessage: 'success' | 'error' | null = null;
+  packageAddLoader = false;
 
   dataLoader = false;
 
@@ -89,7 +92,80 @@ export class PackageComponent implements OnInit {
 
         this.dataLoader = false;
       });
-
   }
 
+  addOnBlur = true;
+  readonly separatorKeysCodes = [ENTER, COMMA] as const;
+  fruits = [];
+
+  add(event): void {
+    const value = (event.value || '').trim();
+
+    // Add our fruit
+    if (value) {
+      this.fruits.push({ name: value });
+    }
+
+    // Clear the input value
+    event.chipInput!.clear();
+  }
+
+  remove(fruit): void {
+    const index = this.fruits.indexOf(fruit);
+
+    if (index >= 0) {
+      this.fruits.splice(index, 1);
+    }
+  }
+
+  addPackage(): void {
+    const list = [];
+    if (!this.fruits?.length) {
+      this.zeroLengthCheckMessage = true;
+
+      setTimeout(() => {
+        this.zeroLengthCheckMessage = false;
+      }, 2000)
+      return;
+    }
+    for (const fruit of this.fruits) {
+      list.push(fruit.name);
+    };
+
+    const payload = {
+      package_name_list: list,
+      packaging: true
+    };
+    this.packageAddLoader = true;
+    this._inventoryService.addPackage(payload)
+      .subscribe((response) => {
+        this.showFlashMessage(
+          response["success"] === true ?
+            'success' :
+            'error'
+        );
+        this.packageAddLoader = false;
+      });
+  }
+
+
+  /**
+ * Show flash message
+ */
+  showFlashMessage(type: 'success' | 'error'): void {
+    // Show the message
+    this.flashMessage = type;
+
+    // Mark for check
+    this._changeDetectorRef.markForCheck();
+
+    // Hide it after 3.5 seconds
+    setTimeout(() => {
+
+      this.flashMessage = null;
+
+      // Mark for check
+      this._changeDetectorRef.markForCheck();
+    }, 3500);
+  }
 }

@@ -202,3 +202,14 @@ export interface AddFeature {
     order: number;
     feature: boolean;
 }
+
+export interface UpdateMargin {
+    product_id: number;
+    margins: number[];
+    margin: boolean;
+}
+
+export interface AddPackage {
+    package_name_list: string[];
+    packaging: boolean;
+}

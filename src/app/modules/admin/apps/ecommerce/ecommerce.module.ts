@@ -72,6 +72,7 @@ import { InternalNotesComponent } from './inventory/navigation/internal-notes/in
 import { DuplicateComponent } from './inventory/navigation/duplicate/duplicate.component';
 import { ImprintComponent } from './inventory/navigation/imprint/imprint.component';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
+import { MatChipsModule } from '@angular/material/chips';
 
 @NgModule({
     declarations: [
@@ -149,7 +150,8 @@ import { MatAutocompleteModule } from '@angular/material/autocomplete';
         MatProgressSpinnerModule,
         MatSidenavModule,
         NgxDropzoneModule,
-        MatAutocompleteModule
+        MatAutocompleteModule,
+        MatChipsModule
     ]
 })
 export class ECommerceModule {
