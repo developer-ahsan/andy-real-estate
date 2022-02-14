@@ -14,8 +14,15 @@ export class ImprintComponent implements OnInit {
   @Output() isLoadingChange = new EventEmitter<boolean>();
   private _unsubscribeAll: Subject<any> = new Subject<any>();
 
-  displayedColumns: string[] = ['location', 'method', 'decorator'];
+  displayedColumns: string[] = ['location', 'method', 'decorator', 'active'];
+  imprintDisplayedColumns: string[] = ['id', 'name', 'decorator', 'order', 'action'];
   dataSource = [];
+  selectedValue: string;
+  foods = [
+    { value: 'steak-0', viewValue: 'Steak' },
+    { value: 'pizza-1', viewValue: 'Pizza' },
+    { value: 'tacos-2', viewValue: 'Tacos' },
+  ];
 
   imprints = [];
   constructor(
@@ -29,10 +36,15 @@ export class ImprintComponent implements OnInit {
       .pipe(takeUntil(this._unsubscribeAll))
       .subscribe((imprint) => {
         this.dataSource = imprint["data"];
+        console.log("this.dataSource", this.dataSource)
         this._changeDetectorRef.markForCheck();
       });
 
     this.isLoadingChange.emit(false);
+  }
+
+  updateImprintDisplay(data): void {
+    console.log("imprint order", data);
   }
 
 }

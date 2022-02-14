@@ -193,3 +193,12 @@ export interface videoObj {
     product_id: number;
     videos: boolean;
 }
+
+export interface AddFeature {
+    attribute_type_id: number;
+    attribute_text: string;
+    supplier_id: number;
+    product_id: number;
+    order: number;
+    feature: boolean;
+}

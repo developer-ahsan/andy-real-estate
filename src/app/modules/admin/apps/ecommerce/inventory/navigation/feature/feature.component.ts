@@ -1,7 +1,7 @@
 import { Component, Input, OnInit, Output, EventEmitter, ChangeDetectorRef } from '@angular/core';
-import { FormBuilder, FormGroup } from '@angular/forms';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { InventoryService } from 'app/modules/admin/apps/ecommerce/inventory/inventory.service';
-import { Colors } from 'app/modules/admin/apps/ecommerce/inventory/inventory.types';
+import { AddFeature } from 'app/modules/admin/apps/ecommerce/inventory/inventory.types';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { SelectionModel } from '@angular/cdk/collections';
@@ -17,8 +17,12 @@ export class FeatureComponent implements OnInit {
   private _unsubscribeAll: Subject<any> = new Subject<any>();
 
   displayedColumns: string[] = ['select', 'order', 'feature'];
-  dataSource: Colors[] = [];
+  dataSource = [];
   selection;
+  featureForm: FormGroup;
+  featureType = null;
+  flashMessage: 'success' | 'error' | null = null;
+  featureAddLoader = false;
 
   /** Whether the number of selected elements matches the total number of rows. */
   isAllSelected() {
@@ -54,19 +58,84 @@ export class FeatureComponent implements OnInit {
   ngOnInit(): void {
 
     const { pk_productID } = this.selectedProduct;
+
+    this.featureForm = this._formBuilder.group({
+      order: ['1'],
+      feature: ['', Validators.required]
+    });
     this._inventoryService.getFeatures(pk_productID)
       .pipe(takeUntil(this._unsubscribeAll))
       .subscribe((features) => {
-
-        console.log("features ", features)
         this.dataSource = features["data"];
         this._changeDetectorRef.markForCheck();
+      });
+
+    this._inventoryService.getFeaturesSupplierAndType(pk_productID)
+      .pipe(takeUntil(this._unsubscribeAll))
+      .subscribe((type) => {
+        this.featureType = type["data"][0];
       });
     this.isLoadingChange.emit(false);
   }
 
   uploadImage(): void {
     console.log("uploadImage");
+  }
+
+  addFeature(): void {
+    const { pk_productID, fk_supplierID } = this.selectedProduct;
+    const { pk_attributeTypeID } = this.featureType;
+    const { order, feature } = this.featureForm.getRawValue();
+    const payload = {
+      attribute_type_id: parseInt(pk_attributeTypeID),
+      attribute_text: feature,
+      supplier_id: parseInt(fk_supplierID),
+      product_id: parseInt(pk_productID),
+      order: parseInt(order),
+      feature: true
+    };
+    console.log("payload", payload);
+    this.featureAddLoader = true;
+    this._inventoryService.addFeature(payload)
+      .subscribe((response) => {
+        this.showFlashMessage(
+          response["success"] === true ?
+            'success' :
+            'error'
+        );
+        this._inventoryService.getFeatures(pk_productID)
+          .pipe(takeUntil(this._unsubscribeAll))
+          .subscribe((features) => {
+            this.dataSource = features["data"];
+            this.featureAddLoader = false;
+          });
+        this.featureForm.reset({
+          order: 1,
+          feature: ''
+        });
+        this.featureAddLoader = false;
+      });
+  }
+
+
+  /**
+ * Show flash message
+ */
+  showFlashMessage(type: 'success' | 'error'): void {
+    // Show the message
+    this.flashMessage = type;
+
+    // Mark for check
+    this._changeDetectorRef.markForCheck();
+
+    // Hide it after 3.5 seconds
+    setTimeout(() => {
+
+      this.flashMessage = null;
+
+      // Mark for check
+      this._changeDetectorRef.markForCheck();
+    }, 3500);
   }
 
 }

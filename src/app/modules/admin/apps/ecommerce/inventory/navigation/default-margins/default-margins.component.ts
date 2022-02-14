@@ -17,6 +17,8 @@ export class DefaultMarginsComponent implements OnInit {
 
   defaultMargins = [];
   defaultMarginForm: FormGroup;
+  defaultMarginUpdate = false;
+  flashMessage: 'success' | 'error' | null = null;
 
   constructor(
     private _changeDetectorRef: ChangeDetectorRef,
@@ -52,4 +54,27 @@ export class DefaultMarginsComponent implements OnInit {
     this.isLoadingChange.emit(false);
   }
 
+  updateMargins(): void {
+    console.log("defaultMarginForm", this.defaultMarginForm.getRawValue());
+  }
+
+  /**
+ * Show flash message
+ */
+  showFlashMessage(type: 'success' | 'error'): void {
+    // Show the message
+    this.flashMessage = type;
+
+    // Mark for check
+    this._changeDetectorRef.markForCheck();
+
+    // Hide it after 3.5 seconds
+    setTimeout(() => {
+
+      this.flashMessage = null;
+
+      // Mark for check
+      this._changeDetectorRef.markForCheck();
+    }, 3500);
+  }
 }

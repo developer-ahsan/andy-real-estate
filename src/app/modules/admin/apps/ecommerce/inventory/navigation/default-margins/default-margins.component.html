@@ -13,41 +13,60 @@
                 </mat-card-title>
                 <mat-divider></mat-divider>
                 <div class="row mt-5">
-                    <div class="col-lg-4 col-6">
+                    <div class="col-lg-2 col-6">
                         <mat-form-field class="w-full">
                             <input matInput [formControlName]="'1'">
                         </mat-form-field>
                     </div>
-                    <div class="col-lg-4 col-6">
+                    <div class="col-lg-2 col-6">
                         <mat-form-field class="w-full">
                             <input matInput [formControlName]="'2'">
                         </mat-form-field>
                     </div>
-                    <div class="col-lg-4 col-6">
+                    <div class="col-lg-2 col-6">
                         <mat-form-field class="w-full">
                             <input matInput [formControlName]="'3'">
                         </mat-form-field>
                     </div>
-                    <div class="col-lg-4 col-6">
+                    <div class="col-lg-2 col-6">
                         <mat-form-field class="w-full">
                             <input matInput [formControlName]="'4'">
                         </mat-form-field>
                     </div>
-                    <div class="col-lg-4 col-6">
+                    <div class="col-lg-2 col-6">
                         <mat-form-field class="w-full">
                             <input matInput [formControlName]="'5'">
                         </mat-form-field>
                     </div>
-                    <div class="col-lg-4 col-6">
+                    <div class="col-lg-2 col-6">
                         <mat-form-field class="w-full">
                             <input matInput [formControlName]="'6'">
                         </mat-form-field>
                     </div>
                     <div class="col-12">
-                        <button class="float-right" mat-stroked-button [matTooltip]="'Update product margins'">
-                            <mat-icon [svgIcon]="'mat_outline:edit'"></mat-icon>
-                            <span class="ml-1 mr-1">Update</span>
-                        </button>
+                        <div class="flex items-center justify-end w-full">
+                            <div class="flex items-center my-2">
+                                <div class="flex items-center mr-4" *ngIf="flashMessage">
+                                    <ng-container *ngIf="flashMessage === 'success'">
+                                        <mat-icon class="text-green-500" [svgIcon]="'heroicons_outline:check'">
+                                        </mat-icon>
+                                        <span class="ml-2">Product feature added successfully</span>
+                                    </ng-container>
+                                    <ng-container *ngIf="flashMessage === 'error'">
+                                        <mat-icon class="text-red-500" [svgIcon]="'heroicons_outline:x'"></mat-icon>
+                                        <span class="ml-2">An error occurred, try again!</span>
+                                    </ng-container>
+                                </div>
+                                <button class="min-w-40" mat-stroked-button [matTooltip]="'Update product margins'"
+                                    (click)="updateMargins()" [disabled]="defaultMarginUpdate">
+                                    <mat-progress-spinner *ngIf="defaultMarginUpdate" [diameter]="24"
+                                        [mode]="'indeterminate'">
+                                    </mat-progress-spinner>
+                                    <mat-icon *ngIf="!defaultMarginUpdate" [svgIcon]="'mat_outline:edit'"></mat-icon>
+                                    <span *ngIf="!defaultMarginUpdate" class="ml-1 mr-1">Update</span>
+                                </button>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </mat-card>
