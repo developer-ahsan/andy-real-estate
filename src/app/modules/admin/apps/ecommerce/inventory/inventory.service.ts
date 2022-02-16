@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { BehaviorSubject, Observable, of, throwError } from 'rxjs';
 import { filter, map, switchMap, take, tap } from 'rxjs/operators';
-import { AddFeature, AddPackage, CaseDimensionObj, CaseQuantityObj, FlatRateShippingObj, InventoryBrand, InventoryCategory, InventoryPagination, InventoryTag, InventoryVendor, NetCostUpdate, PhysicsObj, ProductsList, UpdateMargin, videoObj } from 'app/modules/admin/apps/ecommerce/inventory/inventory.types';
+import { AddFeature, AddPackage, CaseDimensionObj, CaseQuantityObj, Comment, FlatRateShippingObj, InventoryBrand, InventoryCategory, InventoryPagination, InventoryTag, InventoryVendor, NetCostUpdate, PhysicsObj, ProductsList, UpdateMargin, videoObj, Warehouse } from 'app/modules/admin/apps/ecommerce/inventory/inventory.types';
 import { environment } from 'environments/environment';
 import { productDescription } from 'app/modules/admin/apps/ecommerce/inventory/inventory.types';
 import { AuthService } from 'app/core/auth/auth.service';
@@ -115,16 +115,16 @@ export class InventoryService {
             title: 'Imprints',
             icon: 'mat_outline:checklist',
         },
-        // {
-        //     id: 13,
-        //     title: 'Dietary Information',
-        //     icon: 'mat_outline:info',
-        // },
-        // {
-        //     id: 14,
-        //     title: 'Lisencing Term',
-        //     icon: 'mat_outline:picture_in_picture',
-        // },
+        {
+            id: 20,
+            title: 'Dietary Information',
+            icon: 'mat_outline:info',
+        },
+        {
+            id: 21,
+            title: 'Lisencing Term',
+            icon: 'mat_outline:picture_in_picture',
+        },
     ]
 
     /**
@@ -266,15 +266,6 @@ export class InventoryService {
         });
     }
 
-    /**
-   * Add feature
-   */
-    addFeature(payload: AddFeature) {
-        const headers = { 'Authorization': `Bearer ${this._authService.accessToken}` };
-        return this._httpClient.post(
-            `${environment.products}`, payload, { headers });
-    }
-
     getAllPackages(size?: number, pageNo?: number): Observable<any[]> {
         return this._httpClient.get<any[]>(environment.products, {
             params: {
@@ -312,33 +303,6 @@ export class InventoryService {
                 product_id: productId
             }
         });
-    }
-
-    /**
-   * UPDATE net cost
-   */
-    updateNetCost(payload: NetCostUpdate) {
-        const headers = { 'Authorization': `Bearer ${this._authService.accessToken}` };
-        return this._httpClient.put(
-            `${environment.products}`, payload, { headers });
-    }
-
-    /**
-  * UPDATE margins
-  */
-    updateMargins(payload: UpdateMargin) {
-        const headers = { 'Authorization': `Bearer ${this._authService.accessToken}` };
-        return this._httpClient.put(
-            `${environment.products}`, payload, { headers });
-    }
-
-    /**
-  * Post package
-  */
-    addPackage(payload: AddPackage) {
-        const headers = { 'Authorization': `Bearer ${this._authService.accessToken}` };
-        return this._httpClient.post(
-            `${environment.products}`, payload, { headers });
     }
 
     getAllStores(): Observable<any[]> {
@@ -467,6 +431,79 @@ export class InventoryService {
         })
     }
 
+    getLicensingCompany() {
+        return this._httpClient.get(environment.products, {
+            params: {
+                licensing_company: true
+            }
+        })
+    }
+
+    getLicensingTerms(productId): Observable<any[]> {
+        return this._httpClient.get<any[]>("https://consolidus-staging.azurewebsites.net/api/products", {
+            params: {
+                licensing_term: true,
+                product_id: productId
+            }
+        });
+    }
+
+    // POST CALLS
+    /**
+   * Add feature
+   */
+    addFeature(payload: AddFeature) {
+        const headers = { 'Authorization': `Bearer ${this._authService.accessToken}` };
+        return this._httpClient.post(
+            `${environment.products}`, payload, { headers });
+    }
+
+    /**
+  * Post package
+  */
+    addPackage(payload: AddPackage) {
+        const headers = { 'Authorization': `Bearer ${this._authService.accessToken}` };
+        return this._httpClient.post(
+            `${environment.products}`, payload, { headers });
+    }
+    /**
+     * post comment
+    **/
+    updateComment(payload: Comment) {
+        const headers = { 'Authorization': `Bearer ${this._authService.accessToken}` };
+        return this._httpClient.post(
+            `${environment.products}`, payload, { headers });
+    }
+
+    // PUT CALLS
+
+    /**
+     * update wareHouse
+    **/
+    updateWarehouse(payload: Warehouse) {
+        const headers = { 'Authorization': `Bearer ${this._authService.accessToken}` };
+        return this._httpClient.put(
+            `${environment.products}`, payload, { headers });
+    }
+
+    /**
+   * UPDATE net cost
+   */
+    updateNetCost(payload: NetCostUpdate) {
+        const headers = { 'Authorization': `Bearer ${this._authService.accessToken}` };
+        return this._httpClient.put(
+            `${environment.products}`, payload, { headers });
+    }
+
+    /**
+  * UPDATE margins
+  */
+    updateMargins(payload: UpdateMargin) {
+        const headers = { 'Authorization': `Bearer ${this._authService.accessToken}` };
+        return this._httpClient.put(
+            `${environment.products}`, payload, { headers });
+    }
+
     /**
    * UPDATE description
    */
@@ -520,8 +557,6 @@ export class InventoryService {
         return this._httpClient.put(
             `https://consolidus-staging.azurewebsites.net/api/products`, payload, { headers });
     }
-
-
     /**
      * Get products
      *

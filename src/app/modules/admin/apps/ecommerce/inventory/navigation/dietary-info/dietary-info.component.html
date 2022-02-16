@@ -1,1 +1,49 @@
-<p>dietary-info works!</p>
+<ngx-skeleton-loader count="8" appearance="line" animation="pulse" *ngIf="isLoading">
+</ngx-skeleton-loader>
+<div class="row my-3" *ngIf="!isLoading">
+    <div class="col-12">
+        <mat-card class="w-full p-2 h-full rounded-2xl shadow-lg">
+            <mat-card-title class="text-info font-size-medium">
+                <button [matTooltip]="'You can only have maximum of five blank images per product.'">
+                    <i class="fa fa-info-circle"></i>
+                </button>
+                Dietary Information
+            </mat-card-title>
+            <mat-divider></mat-divider>
+            <div class="row p-2">
+                <div class="col-12">
+                    There is no dietary information PDF sheet uploaded for this product.
+                </div>
+            </div>
+        </mat-card>
+    </div>
+</div>
+
+<div class="row my-3" *ngIf="!isLoading">
+    <div class="col-12">
+        <mat-card class="w-full p-2 h-full rounded-2xl shadow-lg">
+            <mat-card-title class="text-info font-size-medium">
+                Upload Dietary Information Sheet (PDF ONLY)
+            </mat-card-title>
+            <mat-divider></mat-divider>
+            <form [formGroup]="imageUploadForm">
+                <div class="row p-2">
+                    <div class="col-lg-10 col-md-10 col-12">
+                        <input type="file" accept=".jpg" [formControlName]="'image'" (change)="upload($event)"
+                            style="line-height: 2.5;" />
+                    </div>
+                    <div class="col-lg-2 col-md-2 col-12">
+                        <button (click)="uploadImage()" class="float-right" mat-stroked-button
+                            [matTooltip]="'(600px X 600px JPG only!)'">
+                            <mat-icon [svgIcon]="'heroicons_outline:plus'"></mat-icon>
+                            <span class="ml-1 mr-1">Add Image</span>
+                        </button>
+                    </div>
+                    <div class="col-12">
+                        <small class="text-danger font-semibold"> {{imageRequired}} </small>
+                    </div>
+                </div>
+            </form>
+        </mat-card>
+    </div>
+</div>

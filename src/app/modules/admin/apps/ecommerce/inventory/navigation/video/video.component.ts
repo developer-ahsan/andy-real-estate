@@ -18,6 +18,7 @@ export class VideoComponent implements OnInit {
   videosLength: number = 0;
   videoLength: number = 0;
   videoUploadForm: FormGroup;
+  embeddedLink: string = "";
   images: FileList = null;
   videoLink: string = "";
   imageRequired: string = '';
@@ -43,7 +44,10 @@ export class VideoComponent implements OnInit {
       .subscribe((video) => {
         if (video["data"]?.length) {
           this.videoLink = video["data"][0].video;
+          this.embeddedLink = this.getId(this.videoLink);
+          console.log("this.embeddedLink", this.embeddedLink)
         };
+        console.log("video", video["data"])
         this.videoLength = video["totalRecords"];
         this.videoUploadForm.patchValue(video["data"][0]);
         this._changeDetectorRef.markForCheck();
@@ -57,6 +61,15 @@ export class VideoComponent implements OnInit {
         this._changeDetectorRef.markForCheck();
       });
     this.isLoadingChange.emit(false);
+  }
+
+  getId(url) {
+    const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=)([^#&?]*).*/;
+    const match = url.match(regExp);
+
+    return (match && match[2].length === 11)
+      ? match[2]
+      : null;
   }
 
   goToLink(url: string) {

@@ -11,7 +11,7 @@
             </mat-card-title>
             <mat-divider></mat-divider>
             <form [formGroup]="videoUploadForm">
-                <div class="row p-3">
+                <div class="row p-2">
                     <div class="col-12 text-secondary font-extrabold">
                         - There are total of {{videosLength}} videos in our system.
                     </div>
@@ -30,28 +30,24 @@
                         Usually the video service will give you options for embedding a video. Make sure that you select
                         any sort of "autorun" settting.
                     </div>
-                    <div class="col-12 my-2">
-                        <mat-divider></mat-divider>
-                    </div>
-                    <div class="col-2 font-semibold text-info">Video URL</div>
-                    <div class="col-10">
-                        <p class="text-danger font-semibold"
-                            style="text-align: right; opacity: 0.8; text-decoration: underline; cursor: pointer;"
-                            *ngIf="videoLength > 0">
-                            <a href="{{videoLink}}" target="_blank">View Video</a>
-                        </p>
-                    </div>
+                </div>
+                <mat-divider></mat-divider>
+                <div class="row p-2">
                     <div class="col-12">
+                        <div class="font-semibold text-info">
+                            Play Button Image: (355px W by 209px H, JPG ONLY)
+                        </div>
+                        <input type="file" accept=".jpg" (change)="upload($event)" style="line-height: 2.5;" />
+                        <div class="font-semibold text-info mt-2">Video URL</div>
                         <mat-form-field class="w-full">
                             <input matInput [formControlName]="'video'">
                             <mat-error>Please fill this field</mat-error>
                         </mat-form-field>
                     </div>
-                    <div class="col-12 font-semibold text-info">
-                        Play Button Image: (355px W by 209px H, JPG ONLY)
-                    </div>
-                    <div class="col-12">
-                        <input type="file" accept=".jpg" (change)="upload($event)" style="line-height: 2.5;" />
+                    <div class="col-lg-2 col-12"></div>
+                    <div class="col-lg-8 col-12 mt-2" *ngIf="videoLength > 0" style="height: 350px;">
+                        <iframe src="//www.youtube.com/embed/9YffrCViTVk"
+                            style="width: -webkit-fill-available; height: -webkit-fill-available;"></iframe>
                     </div>
                     <div class="col-12">
                         <div class="flex items-center justify-end w-full">

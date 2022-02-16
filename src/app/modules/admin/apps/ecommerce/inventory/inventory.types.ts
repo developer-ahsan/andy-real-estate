@@ -213,3 +213,29 @@ export interface AddPackage {
     package_name_list: string[];
     packaging: boolean;
 }
+
+export interface Warehouse {
+    inventory: number;
+    inventory_threshold: number;
+    warehousing_cost: number;
+    handling_cost: number;
+    delivery_options: string;
+    delivery_fees: number;
+    delivery_note: string;
+    max_quantity: number;
+    ware_house_code: string;
+    product_id: number;
+    call_type: string;
+    warehouse: boolean;
+}
+
+export interface Comment {
+    comment_id?: number;
+    product_id: number;
+    comment: string;
+    admin_user_id: number;
+    name: string;
+    emails: string[];
+    call_type: string;
+    internal_comment: boolean;
+}

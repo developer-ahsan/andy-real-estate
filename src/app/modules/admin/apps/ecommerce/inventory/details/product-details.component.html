@@ -25,11 +25,12 @@
     <mat-drawer-container class="sub-nav-component bg-light" autosize *ngIf="!isProductFetched">
         <mat-drawer #drawer class="sub-sidenav bg-light" [mode]="drawerMode" [opened]="drawerOpened">
             <div *ngFor="let route of routes;let i = index">
-                <button [style.background-color]="i === selectedIndex ? '#e4e8ed' : 'transparent'"
+                <button style="padding: 15px;"
+                    [style.background-color]="i === selectedIndex ? '#e4e8ed' : 'transparent'"
                     [ngClass]="i === selectedIndex ? 'opacity-1' : 'opacity-9'" mat-button
-                    class="w-full my-1 justify-content-start" (click)="clicked(i)">
+                    class="w-full my-1 mr-2 justify-content-start" (click)="clicked(i)">
                     <mat-icon svgIcon="{{route.icon}}" class="mr-1 opacity-8"></mat-icon>
-                    <span> {{route.title}} </span>
+                    <span style="font-size: 13px;"> {{route.title}} </span>
                 </button>
             </div>
         </mat-drawer>
@@ -192,6 +193,18 @@
                 <div class="col-12">
                     <ng-template [ngIf]="selectedIndex == 18">
                         <app-imprint [(isLoading)]="isLoading" [selectedProduct]="selectedProduct"></app-imprint>
+                    </ng-template>
+                </div>
+                <div class="col-12">
+                    <ng-template [ngIf]="selectedIndex == 19">
+                        <app-dietary-info [(isLoading)]="isLoading" [selectedProduct]="selectedProduct">
+                        </app-dietary-info>
+                    </ng-template>
+                </div>
+                <div class="col-12">
+                    <ng-template [ngIf]="selectedIndex == 20">
+                        <app-licensing-term [(isLoading)]="isLoading" [selectedProduct]="selectedProduct">
+                        </app-licensing-term>
                     </ng-template>
                 </div>
             </div>
