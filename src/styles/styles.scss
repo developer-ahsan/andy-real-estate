@@ -127,6 +127,7 @@
 .sub-sidenav-content {
   height: 100vh;
   width: 100%;
+  overflow-x: clip;
 }
 
 .sub-sidenav {
@@ -154,4 +155,9 @@
 
 .subnav-menu-icon:hover {
   background-color: #eaedf1;
+}
+
+.mat-drawer-inner-container {
+  height: auto !important;
+  overflow: hidden !important;
 }

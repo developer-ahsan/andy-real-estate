@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { BehaviorSubject, Observable, of, throwError } from 'rxjs';
 import { filter, map, switchMap, take, tap } from 'rxjs/operators';
-import { AddFeature, AddPackage, CaseDimensionObj, CaseQuantityObj, Comment, FlatRateShippingObj, InventoryBrand, InventoryCategory, InventoryPagination, InventoryTag, InventoryVendor, NetCostUpdate, PhysicsObj, ProductsList, UpdateMargin, videoObj, Warehouse } from 'app/modules/admin/apps/ecommerce/inventory/inventory.types';
+import { AddFeature, AddPackage, CaseDimensionObj, CaseQuantityObj, Comment, DeleteComment, FlatRateShippingObj, InventoryBrand, InventoryCategory, InventoryPagination, InventoryTag, InventoryVendor, NetCostUpdate, PhysicsObj, ProductsList, UpdateMargin, videoObj, Warehouse } from 'app/modules/admin/apps/ecommerce/inventory/inventory.types';
 import { environment } from 'environments/environment';
 import { productDescription } from 'app/modules/admin/apps/ecommerce/inventory/inventory.types';
 import { AuthService } from 'app/core/auth/auth.service';
@@ -443,9 +443,15 @@ export class InventoryService {
         return this._httpClient.get<any[]>("https://consolidus-staging.azurewebsites.net/api/products", {
             params: {
                 licensing_term: true,
-                product_id: productId
+                product_id: productId,
+                size: 500
             }
         });
+    }
+
+    // DELETE CALLS
+    deleteComment(payload: DeleteComment) {
+        return this._httpClient.post(environment.products, payload);
     }
 
     // POST CALLS

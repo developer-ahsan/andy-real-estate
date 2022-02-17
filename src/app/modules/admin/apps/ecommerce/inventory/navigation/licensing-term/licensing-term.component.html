@@ -6,10 +6,10 @@
             <mat-card-title class="text-info font-size-medium">
                 Licensing Terms
             </mat-card-title>
-            <mat-divider class="mb-2"></mat-divider>
+            <mat-divider></mat-divider>
             <form [formGroup]="licensingForm">
                 <div class="row" *ngIf="!radioButtonForm">
-                    <div class="col-12">
+                    <div class="col-12 my-3">
                         <mat-form-field class="w-full" appearance="fill">
                             <mat-label>Select licensing company</mat-label>
                             <mat-select [formControlName]="'select'">
@@ -28,17 +28,19 @@
                     </div>
                 </div>
                 <div class="row" *ngIf="radioButtonForm">
-                    <div class="col-12">
+                    <div class="col-12 my-3">
                         <mat-radio-group [formControlName]="'radio'">
-                            <mat-radio-button *ngFor="let season of seasons" [value]="season">
-                                {{season}}
+                            <mat-radio-button style="min-width: -webkit-fill-available;"
+                                *ngFor="let license of licensingTerms" [value]="license">
+                                {{license.term}}
                             </mat-radio-button>
                         </mat-radio-group>
                     </div>
-                    <div class="col-lg-11 col-12"></div>
-                    <div class="col-1">
+                    <div class="col-lg-10 col-12"></div>
+                    <div class="col-2">
                         <button mat-stroked-button>
-                            <span>Save</span>
+                            <mat-icon svgIcon="mat_outline:edit"></mat-icon>
+                            <span class="ml-1">Update</span>
                         </button>
                     </div>
                 </div>

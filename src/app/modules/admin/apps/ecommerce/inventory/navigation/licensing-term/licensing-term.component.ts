@@ -20,8 +20,7 @@ export class LicensingTermComponent implements OnInit {
   licensingForm: FormGroup;
 
   radioButtonForm = false;
-  seasons: string[] = ['Winter', 'Spring', 'Summer', 'Autumn'];
-  favoriteSeason: string;
+  seasons = [];
 
   constructor(
     private _changeDetectorRef: ChangeDetectorRef,

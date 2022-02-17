@@ -239,3 +239,8 @@ export interface Comment {
     call_type: string;
     internal_comment: boolean;
 }
+
+export interface DeleteComment {
+    comment_id: number;
+    call_type: string;
+}

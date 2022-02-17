@@ -4,6 +4,8 @@ import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { InventoryService } from 'app/modules/admin/apps/ecommerce/inventory/inventory.service';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { UserService } from 'app/core/user/user.service';
+import { User } from 'app/core/user/user.model';
 
 @Component({
   selector: 'app-internal-notes',
@@ -23,10 +25,12 @@ export class InternalNotesComponent implements OnInit {
   allSelected = false;
   commentators: [];
   loader = false;
+  user: User;
 
   constructor(
     private _changeDetectorRef: ChangeDetectorRef,
     private _inventoryService: InventoryService,
+    private _userService: UserService,
     private _formBuilder: FormBuilder
   ) { }
 
@@ -36,6 +40,16 @@ export class InternalNotesComponent implements OnInit {
     this.internalNote = this._formBuilder.group({
       comment: [''],
     });
+
+    // Get login user details
+    this._userService.user$
+      .pipe(takeUntil(this._unsubscribeAll))
+      .subscribe((user: User) => {
+        this.user = user;
+
+        // Mark for check
+        this._changeDetectorRef.markForCheck();
+      });
 
     this._inventoryService.getCommentByProductId(pk_productID)
       .pipe(takeUntil(this._unsubscribeAll))
@@ -102,7 +116,7 @@ export class InternalNotesComponent implements OnInit {
       product_id: pk_productID,
       comment: comment,
       admin_user_id: 866,
-      name: "Talha Ramzan",
+      name: this.user?.name,
       emails: this.commentator_emails || [],
       call_type: "post",
       internal_comment: true,
@@ -117,6 +131,7 @@ export class InternalNotesComponent implements OnInit {
             'success' :
             'error'
         );
+        this.internalNote.reset();
         this.loader = false;
       });
     this._inventoryService.getCommentByProductId(pk_productID)
@@ -125,6 +140,19 @@ export class InternalNotesComponent implements OnInit {
         this.comments = comment["data"];
       });
   }
-}
 
+  deleteComment(comment): void {
+    const { pk_commentID } = comment;
+    const payload = {
+      comment_id: pk_commentID,
+      call_type: "delete"
+    };
+    console.log("payload", payload);
+    this._inventoryService.deleteComment(payload)
+      .subscribe((response) => {
+        console.log("Response deleted", response)
+      });
+  }
+
+}
 

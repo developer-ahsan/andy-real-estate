@@ -1,10 +1,11 @@
 <ngx-skeleton-loader count="8" appearance="line" animation="pulse" *ngIf="isLoading">
 </ngx-skeleton-loader>
+
 <div class="row my-3 mx-0" *ngIf="!isLoading">
     <mat-card class="w-full p-2 h-full rounded-2xl shadow-lg">
         <mat-card-title class="text-info font-size-medium">Add a comment</mat-card-title>
         <mat-divider></mat-divider>
-        <mat-card-content class="text-secondary py-4">
+        <mat-card-content class="text-secondary py-2">
             <div class="row">
                 <div class="col-lg-7 col-12">
                     <form [formGroup]="internalNote">
@@ -25,10 +26,10 @@
                         </mat-list-option>
                     </mat-selection-list>
                 </div>
-                <div class="col-12 mb-3">
+                <div class="col-12">
                     <mat-divider></mat-divider>
                     <div class="flex items-center justify-end w-full mr-2">
-                        <div class="flex items-center my-2">
+                        <div class="flex items-center mt-2">
                             <div class="flex items-center mr-4" *ngIf="isCommentNull">
                                 <ng-container>
                                     <mat-icon class="text-red-500" [svgIcon]="'heroicons_outline:x'"></mat-icon>
@@ -60,25 +61,28 @@
         </mat-card-content>
     </mat-card>
 </div>
-<div class="row mx-0" *ngIf="!isLoading">
+
+<div class="row mx-0 mb-3" *ngIf="!isLoading">
     <mat-card class="w-full p-2 h-full rounded-2xl shadow-lg">
-        <mat-card-title class="text-info font-size-medium">Current Comments</mat-card-title>
+        <mat-card-title class="text-info font-size-medium">Comments</mat-card-title>
         <mat-divider></mat-divider>
-        <mat-card-content class="text-secondary py-4">
-            <div class="row">
-                <div class="col-12" *ngFor="let comment of comments;let i = index">
-                    <fuse-card
-                        class="flex flex-col md:flex-row items-center justify-between w-full filter-testimonial p-4 border-b">
-                        <div class="flex flex-col flex-auto justify-center">
-                            <div class="text-md text-primary leading-relaxed">
-                                {{comment?.comment}}
-                            </div>
-                            <div class="text-md font-medium text-primary mt-2" style="font-variant: titling-caps;">
-                                &#8212; {{comment?.name}} <span class="text-sm text-info">on
-                                    {{comment?.theTimestamp}}</span>
-                            </div>
+        <mat-card-content class="text-secondary py-2">
+            <div class="row mx-3">
+                <div class="flex items-start mt-8 w-full" *ngFor="let comment of comments;let i = index">
+                    <img class="w-8 h-8 rounded-full mr-4" src="assets/images/avatars/person.jpg"
+                        alt="Card cover image">
+                    <div class="flex flex-col mt-0.5">
+                        <span>
+                            <b>{{comment?.name}}</b> {{comment?.comment}}
+                        </span>
+                        <div class="flex items-center text-sm text-secondary mt-2">
+                            <a class="mr-2 hover:underline" style="cursor: pointer;"
+                                (click)="deleteComment(comment)">Delete
+                            </a>
+                            <span class="mr-2">&bull;</span>
+                            <span>{{comment?.theTimestamp}}</span>
                         </div>
-                    </fuse-card>
+                    </div>
                 </div>
             </div>
         </mat-card-content>
