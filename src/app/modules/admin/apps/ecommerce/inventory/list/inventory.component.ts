@@ -4,7 +4,7 @@ import { MatCheckboxChange } from '@angular/material/checkbox';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { merge, Observable, Subject } from 'rxjs';
-import { debounceTime, map, switchMap, takeUntil } from 'rxjs/operators';
+import { debounceTime, map, startWith, switchMap, takeUntil } from 'rxjs/operators';
 import { fuseAnimations } from '@fuse/animations';
 import { InventoryBrand, InventoryCategory, InventoryPagination, InventoryProduct, InventoryTag, InventoryVendor, ProductsList } from 'app/modules/admin/apps/ecommerce/inventory/inventory.types';
 import { InventoryService } from 'app/modules/admin/apps/ecommerce/inventory/inventory.service';
@@ -44,6 +44,9 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
     vendors: InventoryVendor[];
     private _unsubscribeAll: Subject<any> = new Subject<any>();
 
+    options: string[] = ['One', 'Two', 'Three'];
+    filteredOptions: Observable<string[]>;
+
     pageSize: number;
     pageNo: number;
 
@@ -67,6 +70,28 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
         internalKeywords: ['']
     });
     netCostForm = this._formBuilder.group({
+        quantityOne: [''],
+        quantityTwo: [''],
+        quantityThree: [''],
+        quantityFour: [''],
+        quantityFive: [''],
+        quantitySix: [''],
+        standardCostOne: [''],
+        standardCostTwo: [''],
+        standardCostThree: [''],
+        standardCostFour: [''],
+        standardCostFive: [''],
+        standardCostSix: [''],
+        standardCostDropOne: [''],
+        standardCostDropTwo: [''],
+        standardCostDropThree: [''],
+        standardCostDropFour: [''],
+        standardCostDropFive: [''],
+        standardCostDropSix: [''],
+        msrp: [''],
+        internalComments: [''],
+        redPriceComment: [''],
+        coOp: [""]
     });
     imprintForm = this._formBuilder.group({
     });
@@ -108,6 +133,11 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
     ngOnInit(): void {
         this.pageSize = 10;
         this.pageNo = 0;
+
+        this.filteredOptions = this.netCostForm.valueChanges.pipe(
+            startWith(''),
+            map(value => this._filter(value)),
+        );
 
         // Create the selected product form
         this.selectedProductForm = this._formBuilder.group({
@@ -163,6 +193,12 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
                 })
             )
             .subscribe();
+    }
+
+    private _filter(value: string): string[] {
+        const filterValue = value.toLowerCase();
+
+        return this.options.filter(option => option.toLowerCase().includes(filterValue));
     }
 
     /**

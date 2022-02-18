@@ -98,22 +98,21 @@ export class FeatureComponent implements OnInit {
     this.featureAddLoader = true;
     this._inventoryService.addFeature(payload)
       .subscribe((response) => {
-        this.showFlashMessage(
-          response["success"] === true ?
-            'success' :
-            'error'
-        );
         this._inventoryService.getFeatures(pk_productID)
           .pipe(takeUntil(this._unsubscribeAll))
           .subscribe((features) => {
             this.dataSource = features["data"];
             this.featureAddLoader = false;
+            this.featureForm.reset({
+              order: 1,
+              feature: ''
+            });
+            this.showFlashMessage(
+              response["success"] === true ?
+                'success' :
+                'error'
+            );
           });
-        this.featureForm.reset({
-          order: 1,
-          feature: ''
-        });
-        this.featureAddLoader = false;
       });
   }
 

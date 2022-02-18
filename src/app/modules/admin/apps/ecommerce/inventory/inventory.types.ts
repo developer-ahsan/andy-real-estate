@@ -139,6 +139,27 @@ export interface AvailableCores {
     TotalRequests: number;
 }
 
+export interface Categories {
+    pk_categoryID: number;
+    categoryName: string;
+    RowNumber: number;
+    TotalRequests: number
+}
+
+export interface SubCategories {
+    pk_subCategoryID: number;
+    fk_categoryID: number;
+    subCategoryName: string;
+    RowNumber: number;
+    TotalRequests: number
+}
+
+export interface AddCore {
+    product_id: number;
+    sub_category_id: number;
+    core: boolean;
+}
+
 export interface PhysicsObj {
     product_id: number;
     weight: number;

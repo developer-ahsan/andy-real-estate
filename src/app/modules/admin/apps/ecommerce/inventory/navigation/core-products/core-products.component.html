@@ -13,12 +13,10 @@
             <div class="row border-t p-2">
                 <div class="col-lg-4 col-12">
                     <mat-form-field class="w-full">
-                        <mat-select [(ngModel)]="selectedorder" name="order">
-                            <mat-option value="select_order" disabled>
-                                Select a core
-                            </mat-option>
-                            <mat-option (click)="orderSelection(order)" *ngFor="let available_core of available_cores"
-                                [value]="available_core">
+                        <mat-label>Select a core</mat-label>
+                        <mat-select [(ngModel)]="selectedCore" name="order">
+                            <mat-option (click)="coreSelection(available_core)"
+                                *ngFor="let available_core of available_cores" [value]="available_core">
                                 {{available_core.coreName}}
                             </mat-option>
                         </mat-select>
@@ -26,36 +24,54 @@
                 </div>
                 <div class="col-lg-4 col-12">
                     <mat-form-field class="w-full">
-                        <mat-select [(ngModel)]="selectedorder" name="order">
-                            <mat-option value="select_order" disabled>
-                                Select a category
-                            </mat-option>
-                            <mat-option (click)="orderSelection(order)" *ngFor="let option of products"
-                                [value]="option">
-                                {{option}}
+                        <mat-label>Select a category</mat-label>
+                        <mat-select [(ngModel)]="selectedCategory" [disabled]="categories.length ? false : true"
+                            name="order">
+                            <mat-option (click)="categorySelection(category)" *ngFor="let category of categories"
+                                [value]="category">
+                                {{category.categoryName}}
                             </mat-option>
                         </mat-select>
                     </mat-form-field>
                 </div>
                 <div class="col-lg-4 col-12">
                     <mat-form-field class="w-full">
-                        <mat-select [(ngModel)]="selectedorder" name="order">
-                            <mat-option value="select_order" disabled>
-                                Select a subcategory
-                            </mat-option>
-                            <mat-option (click)="orderSelection(order)" *ngFor="let option of products"
-                                [value]="option">
-                                {{option}}
+                        <mat-label>Select a subcategory</mat-label>
+                        <mat-select [(ngModel)]="selectedSubCategory" [disabled]="subCategory.length ? false : true"
+                            name="order">
+                            <mat-option (click)="subCategorySelection(category)" *ngFor="let category of subCategory"
+                                [value]="category">
+                                {{category.subCategoryName}}
                             </mat-option>
                         </mat-select>
                     </mat-form-field>
                 </div>
                 <div class="col-12">
-                    <button class="float-right" mat-stroked-button
-                        [matTooltip]="'A product can only be in a subcategory once. Sub categories that already have this product in them will not be available in the list below.'">
-                        <mat-icon [svgIcon]="'heroicons_outline:plus'"></mat-icon>
-                        <span class="ml-1 mr-1">Add To Core</span>
-                    </button>
+                    <div class="flex items-center justify-end w-full">
+                        <div class="flex items-center my-2">
+                            <div class="flex items-center mr-4" *ngIf="flashMessage">
+                                <ng-container *ngIf="flashMessage === 'success'">
+                                    <mat-icon class="text-green-500" [svgIcon]="'heroicons_outline:check'">
+                                    </mat-icon>
+                                    <span class="ml-2">Core added successfully</span>
+                                </ng-container>
+                                <ng-container *ngIf="flashMessage === 'error'">
+                                    <mat-icon class="text-red-500" [svgIcon]="'heroicons_outline:x'"></mat-icon>
+                                    <span class="ml-2">
+                                        An error occurred, try again!
+                                    </span>
+                                </ng-container>
+                            </div>
+                            <button class="min-w-40" mat-stroked-button
+                                [matTooltip]="'A product can only be in a subcategory once. Sub categories that already have this product in them will not be available in the list below.'"
+                                (click)="addCore()" [disabled]="coreAddLoader">
+                                <mat-progress-spinner *ngIf="coreAddLoader" [diameter]="24" [mode]="'indeterminate'">
+                                </mat-progress-spinner>
+                                <mat-icon *ngIf="!coreAddLoader" [svgIcon]="'heroicons_outline:plus'"></mat-icon>
+                                <span *ngIf="!coreAddLoader" class="ml-1 mr-1">Add Core</span>
+                            </button>
+                        </div>
+                    </div>
                 </div>
             </div>
         </mat-card>

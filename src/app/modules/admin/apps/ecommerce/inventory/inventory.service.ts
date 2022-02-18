@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { BehaviorSubject, Observable, of, throwError } from 'rxjs';
 import { filter, map, switchMap, take, tap } from 'rxjs/operators';
-import { AddFeature, AddPackage, CaseDimensionObj, CaseQuantityObj, Comment, DeleteComment, FlatRateShippingObj, InventoryBrand, InventoryCategory, InventoryPagination, InventoryTag, InventoryVendor, NetCostUpdate, PhysicsObj, ProductsList, UpdateMargin, videoObj, Warehouse } from 'app/modules/admin/apps/ecommerce/inventory/inventory.types';
+import { AddCore, AddFeature, AddPackage, CaseDimensionObj, CaseQuantityObj, Comment, DeleteComment, FlatRateShippingObj, InventoryBrand, InventoryCategory, InventoryPagination, InventoryTag, InventoryVendor, NetCostUpdate, PhysicsObj, ProductsList, UpdateMargin, videoObj, Warehouse } from 'app/modules/admin/apps/ecommerce/inventory/inventory.types';
 import { environment } from 'environments/environment';
 import { productDescription } from 'app/modules/admin/apps/ecommerce/inventory/inventory.types';
 import { AuthService } from 'app/core/auth/auth.service';
@@ -380,9 +380,28 @@ export class InventoryService {
     getAvailableCoresProductId(productId): Observable<any[]> {
         return this._httpClient.get<any[]>(environment.products, {
             params: {
-                core: true,
-                available_core: true,
+                main_core: true,
                 product_id: productId
+            }
+        });
+    }
+
+    getCategoriesByCoreId(coreId): Observable<any[]> {
+        return this._httpClient.get<any[]>(environment.products, {
+            params: {
+                core: true,
+                categories: true,
+                core_id: coreId
+            }
+        });
+    }
+
+    getSubCategoriesByCoreId(subCategoryId): Observable<any[]> {
+        return this._httpClient.get<any[]>(environment.products, {
+            params: {
+                core: true,
+                sub_categories: true,
+                core_category_id: subCategoryId
             }
         });
     }
@@ -455,6 +474,23 @@ export class InventoryService {
     }
 
     // POST CALLS
+
+    // ADD CORE
+    addCore(payload: AddCore) {
+        const headers = { 'Authorization': `Bearer ${this._authService.accessToken}` };
+        return this._httpClient.post(
+            `${environment.products}`, payload, { headers });
+    }
+
+    // ADD DEFAULT IMAGE
+    addDefaultImage(payload) {
+        const headers = {
+            'Content-Type': 'application/x-www-form-urlencoded',
+            'Access-Control-Allow-Origin': '*',
+        };
+        return this._httpClient.post(
+            `${environment.mediaAccessUrl}`, payload, { headers });
+    }
     /**
    * Add feature
    */

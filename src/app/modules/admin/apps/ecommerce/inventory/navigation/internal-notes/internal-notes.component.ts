@@ -126,18 +126,19 @@ export class InternalNotesComponent implements OnInit {
     this.loader = true;
     this._inventoryService.updateComment(payload)
       .subscribe((response) => {
-        this.showFlashMessage(
-          response["success"] === true ?
-            'success' :
-            'error'
-        );
-        this.internalNote.reset();
-        this.loader = false;
-      });
-    this._inventoryService.getCommentByProductId(pk_productID)
-      .pipe(takeUntil(this._unsubscribeAll))
-      .subscribe((comment) => {
-        this.comments = comment["data"];
+        this._inventoryService.getCommentByProductId(pk_productID)
+          .pipe(takeUntil(this._unsubscribeAll))
+          .subscribe((comment) => {
+            this.showFlashMessage(
+              response["success"] === true ?
+                'success' :
+                'error'
+            );
+            this.internalNote.reset();
+            this.loader = false;
+            this.comments = comment["data"];
+          });
+
       });
   }
 

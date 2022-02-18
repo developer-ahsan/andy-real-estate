@@ -11,8 +11,19 @@
             </mat-card-title>
             <mat-divider></mat-divider>
             <div class="row p-2">
-                <div class="col-12">
-                    There are currently no blank images associated with this product.
+                <div class="col-lg-4 col-12">
+                    <!-- There are currently no blank images associated with this product. -->
+                    <fuse-card class="flex flex-col max-w-80 w-full filter-shopping">
+                        <div class="relative">
+                            <div class="absolute flex flex-col top-0 right-0 p-3">
+                                <button mat-icon-button>
+                                    <mat-icon class="icon-size-5 text-danger text-opacity-50"
+                                        [svgIcon]="'heroicons_solid:trash'"></mat-icon>
+                                </button>
+                            </div>
+                            <img class="object-cover" src="{{imageUrl}}" alt="Card cover image">
+                        </div>
+                    </fuse-card>
                 </div>
             </div>
         </mat-card>
