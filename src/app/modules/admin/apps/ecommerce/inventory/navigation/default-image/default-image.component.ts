@@ -1,10 +1,10 @@
 import { Component, Input, OnInit, Output, EventEmitter, ChangeDetectorRef } from '@angular/core';
-import { Package } from 'app/modules/admin/apps/ecommerce/inventory/inventory.types';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { InventoryService } from 'app/modules/admin/apps/ecommerce/inventory/inventory.service';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { environment } from 'environments/environment';
+import * as _ from 'lodash';
 
 @Component({
   selector: 'app-default-image',
@@ -19,8 +19,11 @@ export class DefaultImageComponent implements OnInit {
   imageUrl = "";
   imageUploadForm: FormGroup;
   images = null;
-  imageRequired: string = '';
   fileName: string = "";
+
+  imageError = "";
+  isImageSaved: boolean;
+  cardImageBase64 = "";
 
   constructor(
     private _changeDetectorRef: ChangeDetectorRef,
@@ -37,7 +40,7 @@ export class DefaultImageComponent implements OnInit {
     const { pk_productID } = this.selectedProduct;
 
     this.imageUrl = `https://assets.consolidus.com/globalAssets/Products/defaultImage/11718/11718-1.jpg`;
-    console.log("imageUrl", this.imageUrl);
+    // console.log("imageUrl", this.imageUrl);
 
     this._inventoryService.getPackageByProductId(pk_productID)
       .pipe(takeUntil(this._unsubscribeAll))
@@ -56,8 +59,7 @@ export class DefaultImageComponent implements OnInit {
     reader.onload = () => {
       this.images = reader.result;
     };
-
-  }
+  };
 
   // getImage(p_id) {
   //   return import(`https://assets.consolidus.com/globalAssets/Products/defaultImage/${p_id}`)
@@ -70,23 +72,41 @@ export class DefaultImageComponent implements OnInit {
   // }
 
   uploadImage(): void {
+    this.imageError = null;
     if (!this.images) {
-      this.imageRequired = "*Please attach an image and continue"
+      this.imageError = "*Please attach an image and continue";
       return;
-    }
-    const { pk_productID } = this.selectedProduct;
-    this.imageRequired = '';
-    const base64 = this.images.split(",")[1];
-    const payload = {
-      imageFile: base64,
-      key: environment.mediaKey,
-      filePath: `/globalAssets/Products/defaultImage./${pk_productID}/${pk_productID}-${this.fileName}`
     };
 
-    console.log("payload", payload);
-    this._inventoryService.addDefaultImage(payload)
-      .subscribe((response) => {
-        console.log("response => ", response)
-      })
+    let image = new Image;
+    image.src = this.images;
+    image.onload = () => {
+      const base64Data = this.images;
+      const allowed_types = ['jpg', 'jpeg'];
+      const [, type] = base64Data.split(';')[0].split('/');
+      if (!_.includes(allowed_types, type)) {
+        this.imageError = 'Image extensions are allowed in JPG';
+        return;
+      }
+
+      if (image.width !== 600 && image.width !== 600) {
+        this.imageError = 'Dimentions allowed are 600px x 600px';
+        return;
+      };
+
+      const { pk_productID } = this.selectedProduct;
+      const base64 = this.images.split(",")[1];
+      const payload = {
+        imageFile: base64,
+        key: environment.mediaKey,
+        filePath: `/globalAssets/Products/defaultImage./${pk_productID}/${pk_productID}-${this.fileName}`
+      };
+
+      console.log("payload", payload);
+      this._inventoryService.addDefaultImage(payload)
+        .subscribe((response) => {
+          console.log("response => ", response)
+        })
+    };
   }
 }

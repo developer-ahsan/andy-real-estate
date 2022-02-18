@@ -37,7 +37,7 @@
         "highlight.js": "10.7.2",
         "jspdf": "^2.5.0",
         "lodash-es": "4.17.21",
-        "moment": "2.29.1",
+        "moment": "^2.29.1",
         "ng-apexcharts": "1.5.9",
         "ngx-dropzone": "^3.0.0",
         "ngx-markdown": "11.1.3",

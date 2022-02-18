@@ -6,6 +6,7 @@ import { Router } from '@angular/router';
 import { FuseMediaWatcherService } from '@fuse/services/media-watcher';
 import { InventoryService } from 'app/modules/admin/apps/ecommerce/inventory/inventory.service';
 import { ProductsDetails } from 'app/modules/admin/apps/ecommerce/inventory/inventory.types';
+import moment from 'moment';
 
 @Component({
   selector: 'app-product-details',
@@ -24,6 +25,7 @@ export class ProductDetailsComponent implements OnInit, OnDestroy {
   routes = [];
   selectedIndex: number = 0;
   not_available: string = 'N/A';
+  last_updated = "";
 
   // Sidebar stuff
   drawerMode: 'over' | 'side' = 'side';
@@ -54,6 +56,7 @@ export class ProductDetailsComponent implements OnInit, OnDestroy {
       .pipe(takeUntil(this._unsubscribeAll))
       .subscribe((product) => {
         this.selectedProduct = product["data"][0];
+        this.last_updated = moment.utc(product["data"][0]?.lastUpdatedDate).format("lll")
         console.log("this.selectedProduct", this.selectedProduct)
         this.isProductFetched = false;
 

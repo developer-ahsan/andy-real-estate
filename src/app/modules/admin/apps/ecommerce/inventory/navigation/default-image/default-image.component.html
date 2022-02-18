@@ -34,7 +34,7 @@
     <div class="col-12">
         <mat-card class="w-full p-2 h-full rounded-2xl shadow-lg">
             <mat-card-title class="text-info font-size-medium">
-                Add Image
+                Add Image <span class="text-danger text-sm">(600px X 600px JPG only!)</span>
             </mat-card-title>
             <mat-divider></mat-divider>
             <form [formGroup]="imageUploadForm">
@@ -51,7 +51,7 @@
                         </button>
                     </div>
                     <div class="col-12">
-                        <small class="text-danger font-semibold"> {{imageRequired}} </small>
+                        <small class="text-danger font-semibold"> {{imageError}} </small>
                     </div>
                 </div>
             </form>

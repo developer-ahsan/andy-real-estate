@@ -36,18 +36,19 @@ export class LicensingTermComponent implements OnInit {
     });
 
     const { pk_productID } = this.selectedProduct;
-    this._inventoryService.getLicensingCompany()
-      .pipe(takeUntil(this._unsubscribeAll))
-      .subscribe((licensingCompany) => {
-        this.foods = licensingCompany["data"];
-        this._changeDetectorRef.markForCheck();
-      });
 
     this._inventoryService.getLicensingTerms(pk_productID)
       .pipe(takeUntil(this._unsubscribeAll))
       .subscribe((licensingTerms) => {
         this.licensingTerms = licensingTerms["data"];
         console.log("this.licensingTerms", this.licensingTerms)
+        this._changeDetectorRef.markForCheck();
+      });
+
+    this._inventoryService.getLicensingCompany()
+      .pipe(takeUntil(this._unsubscribeAll))
+      .subscribe((licensingCompany) => {
+        this.foods = licensingCompany["data"];
         this._changeDetectorRef.markForCheck();
       });
 
