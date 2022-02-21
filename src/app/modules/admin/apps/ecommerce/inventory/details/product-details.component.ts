@@ -56,8 +56,7 @@ export class ProductDetailsComponent implements OnInit, OnDestroy {
       .pipe(takeUntil(this._unsubscribeAll))
       .subscribe((product) => {
         this.selectedProduct = product["data"][0];
-        this.last_updated = moment.utc(product["data"][0]?.lastUpdatedDate).format("lll")
-        console.log("this.selectedProduct", this.selectedProduct)
+        this.last_updated = moment.utc(product["data"][0]?.lastUpdatedDate).format("lll");
         this.isProductFetched = false;
 
         // Mark for check

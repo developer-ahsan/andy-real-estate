@@ -2,31 +2,30 @@
 </ngx-skeleton-loader>
 <div class="row my-3" *ngIf="!isLoading">
     <div class="col-12">
-        <mat-card class="w-full p-2 h-full rounded-2xl shadow-lg">
-            <mat-card-title class="text-info font-size-medium">
-                <button [matTooltip]="'You can only have maximum of five blank images per product.'">
-                    <i class="fa fa-info-circle"></i>
-                </button>
-                Current Blank Images
-            </mat-card-title>
-            <mat-divider></mat-divider>
-            <div class="row p-2">
-                <div class="col-lg-4 col-12">
-                    <!-- There are currently no blank images associated with this product. -->
-                    <fuse-card class="flex flex-col max-w-80 w-full filter-shopping">
-                        <div class="relative">
-                            <div class="absolute flex flex-col top-0 right-0 p-3">
-                                <button mat-icon-button>
-                                    <mat-icon class="icon-size-5 text-danger text-opacity-50"
-                                        [svgIcon]="'heroicons_solid:trash'"></mat-icon>
-                                </button>
-                            </div>
-                            <img class="object-cover" src="{{imageUrl}}" alt="Card cover image">
-                        </div>
-                    </fuse-card>
-                </div>
+        <div class="p-2">
+            <div class="text-info font-size-medium">Current Blank Images</div>
+            <div class="text-md font-semibold pt-2">*You can only have maximum of five blank images per product.</div>
+        </div>
+        <div class="p-2" *ngIf="!imagesArray.length">
+            <div class="font-semibold text-danger">
+                There are currently no blank images associated with this product.
             </div>
-        </mat-card>
+        </div>
+        <div class="row p-2" *ngIf="imagesArray.length">
+            <div class="col-lg-4 col-12" *ngFor="let image of imagesArray">
+                <fuse-card class="flex flex-col my-1 w-full filter-shopping hover: cursor-pointer">
+                    <div class="relative">
+                        <div class="absolute flex flex-col top-0 right-0 p-3">
+                            <button mat-icon-button>
+                                <mat-icon class="icon-size-5 text-danger text-opacity-50"
+                                    [svgIcon]="'heroicons_solid:trash'"></mat-icon>
+                            </button>
+                        </div>
+                        <img class="object-cover rounded-2xl shadow-sm" src="{{image}}">
+                    </div>
+                </fuse-card>
+            </div>
+        </div>
     </div>
 </div>
 

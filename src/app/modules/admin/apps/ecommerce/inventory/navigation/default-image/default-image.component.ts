@@ -16,10 +16,10 @@ export class DefaultImageComponent implements OnInit {
   @Output() isLoadingChange = new EventEmitter<boolean>();
   private _unsubscribeAll: Subject<any> = new Subject<any>();
 
-  imageUrl = "";
   imageUploadForm: FormGroup;
   images = null;
   fileName: string = "";
+  imagesArray = [];
 
   imageError = "";
   isImageSaved: boolean;
@@ -38,20 +38,40 @@ export class DefaultImageComponent implements OnInit {
     });
 
     const { pk_productID } = this.selectedProduct;
-
-    this.imageUrl = `https://assets.consolidus.com/globalAssets/Products/defaultImage/11718/11718-1.jpg`;
-    // console.log("imageUrl", this.imageUrl);
-
     this._inventoryService.getPackageByProductId(pk_productID)
       .pipe(takeUntil(this._unsubscribeAll))
       .subscribe((pack) => {
         this._changeDetectorRef.markForCheck();
       });
 
+    // 11718
+    for (let i = 1; i <= 10; i++) {
+      let url = `https://assets.consolidus.com/globalAssets/Products/defaultImage/${pk_productID}/${pk_productID}-${i}.jpg`;
+      this.checkIfImageExists(url);
+    };
+
     this.isLoadingChange.emit(false);
   }
 
+  checkIfImageExists(url) {
+    const img = new Image();
+    img.src = url;
+
+    if (img.complete) {
+      this.imagesArray.push(url);
+    } else {
+      img.onload = () => {
+        this.imagesArray.push(url);
+      };
+
+      img.onerror = () => {
+        return;
+      };
+    }
+  }
+
   upload(event) {
+    console.log("this.imagesArray", this.imagesArray)
     const file = event.target.files[0];
     this.fileName = file["name"];
     const reader = new FileReader();
@@ -60,16 +80,6 @@ export class DefaultImageComponent implements OnInit {
       this.images = reader.result;
     };
   };
-
-  // getImage(p_id) {
-  //   return import(`https://assets.consolidus.com/globalAssets/Products/defaultImage/${p_id}`)
-  //     .then((module) => {
-  //       console.log("module => ", module);
-  //     })
-  //     .catch((err) => {
-  //       console.log(err);
-  //     })
-  // }
 
   uploadImage(): void {
     this.imageError = null;
