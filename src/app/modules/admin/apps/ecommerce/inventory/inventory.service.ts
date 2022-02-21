@@ -456,6 +456,17 @@ export class InventoryService {
                 licensing_company: true
             }
         })
+    };
+
+    getLicensingSubCategory(termId) {
+        return this._httpClient.get(environment.products, {
+            params: {
+                licensing_term: true,
+                sub_category: true,
+                licensing_term_id: termId,
+                size: 100
+            }
+        })
     }
 
     getLicensingTerms(productId): Observable<any[]> {

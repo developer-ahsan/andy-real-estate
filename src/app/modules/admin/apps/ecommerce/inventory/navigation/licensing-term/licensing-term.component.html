@@ -28,13 +28,22 @@
                     </div>
                 </div>
                 <div class="row" *ngIf="radioButtonForm">
-                    <div class="col-12 my-3">
+                    <div class="col-lg-6 col-12 my-3">
+                        <div class="text-info font-semibold">
+                            Terms
+                        </div>
                         <mat-radio-group [formControlName]="'radio'">
                             <mat-radio-button style="min-width: -webkit-fill-available;"
-                                *ngFor="let license of licensingTerms" [value]="license">
+                                *ngFor="let license of licensingTerms;" [value]="license" [checked]="license.Selected">
                                 {{license.term}}
                             </mat-radio-button>
                         </mat-radio-group>
+                    </div>
+                    <div class="col-lg-6 col-12 my-3">
+                        <div class="text-info font-semibold">
+                            Sub Categories
+                        </div>
+                        <ng-container *ngTemplateOutlet="myCard"></ng-container>
                     </div>
                     <div class="col-lg-10 col-12"></div>
                     <div class="col-2">
@@ -49,20 +58,9 @@
     </div>
 </div>
 
-
-<!-- <div class="row p-2">
-    <div class="col-lg-10 col-md-10 col-12">
-        <input type="file" accept=".jpg" [formControlName]="'image'" (change)="upload($event)"
-            style="line-height: 2.5;" />
-    </div>
-    <div class="col-lg-2 col-md-2 col-12">
-        <button (click)="uploadImage()" class="float-right" mat-stroked-button
-            [matTooltip]="'(600px X 600px JPG only!)'">
-            <mat-icon [svgIcon]="'heroicons_outline:plus'"></mat-icon>
-            <span class="ml-1 mr-1">Add Image</span>
-        </button>
-    </div>
-    <div class="col-12">
-        <small class="text-danger font-semibold"> {{imageRequired}} </small>
-    </div>
-</div> -->
+<ng-template #myCard>
+    <mat-radio-button style="min-width: -webkit-fill-available;" *ngFor="let item of subCategoryItems" [value]="item"
+        [checked]="item.Selected">
+        {{item.name}}
+    </mat-radio-button>
+</ng-template>

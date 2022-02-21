@@ -3,6 +3,7 @@ import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { InventoryService } from 'app/modules/admin/apps/ecommerce/inventory/inventory.service';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { I } from '@angular/cdk/keycodes';
 
 @Component({
   selector: 'app-licensing-term',
@@ -15,11 +16,13 @@ export class LicensingTermComponent implements OnInit {
   private _unsubscribeAll: Subject<any> = new Subject<any>();
 
   selected;
+  selectedTermId;
+  subCategoryItems = [];
   foods = [];
   licensingTerms = [];
   licensingForm: FormGroup;
 
-  radioButtonForm = false;
+  radioButtonForm: boolean;
   seasons = [];
 
   constructor(
@@ -41,7 +44,6 @@ export class LicensingTermComponent implements OnInit {
       .pipe(takeUntil(this._unsubscribeAll))
       .subscribe((licensingTerms) => {
         this.licensingTerms = licensingTerms["data"];
-        console.log("this.licensingTerms", this.licensingTerms)
         this._changeDetectorRef.markForCheck();
       });
 
@@ -57,6 +59,19 @@ export class LicensingTermComponent implements OnInit {
 
   continue(): void {
     console.log(this.licensingForm.getRawValue());
-    this.radioButtonForm = true;
+    for (const term of this.licensingTerms) {
+      if (term.Selected === "true") {
+        this.selectedTermId = term.pk_licensingTermID
+      }
+    }
+    console.log("this.selectedTermId", this.selectedTermId);
+    this.radioButtonForm = false;
+    this._inventoryService.getLicensingSubCategory(this.selectedTermId)
+      .pipe(takeUntil(this._unsubscribeAll))
+      .subscribe((subCategories) => {
+        this.radioButtonForm = true;
+        this.subCategoryItems = subCategories["data"];
+        console.log("this.subCategoryItems", this.subCategoryItems);
+      });
   }
 }
