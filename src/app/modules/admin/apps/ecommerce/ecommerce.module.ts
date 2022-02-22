@@ -73,6 +73,7 @@ import { DuplicateComponent } from './inventory/navigation/duplicate/duplicate.c
 import { ImprintComponent } from './inventory/navigation/imprint/imprint.component';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { MatChipsModule } from '@angular/material/chips';
+import { MatExpansionModule } from '@angular/material/expansion';
 
 @NgModule({
     declarations: [
@@ -151,7 +152,8 @@ import { MatChipsModule } from '@angular/material/chips';
         MatSidenavModule,
         NgxDropzoneModule,
         MatAutocompleteModule,
-        MatChipsModule
+        MatChipsModule,
+        MatExpansionModule
     ]
 })
 export class ECommerceModule {

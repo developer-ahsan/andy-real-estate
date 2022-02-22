@@ -450,6 +450,15 @@ export class InventoryService {
         })
     }
 
+    getLicensingCompanyByProductId(productId) {
+        return this._httpClient.get(environment.products, {
+            params: {
+                licensing_company: true,
+                product_id: productId
+            }
+        })
+    };
+
     getLicensingCompany() {
         return this._httpClient.get(environment.products, {
             params: {

@@ -1,5 +1,23 @@
 <ngx-skeleton-loader count="8" appearance="line" animation="pulse" *ngIf="isLoading">
 </ngx-skeleton-loader>
+<div class="row my-3" *ngIf="!isLoading && selectedTerm">
+    <div class="col-12">
+        <mat-card class="w-full p-2 h-full rounded-2xl shadow-lg">
+            <mat-card-title class="text-info font-size-medium">
+                Selected Licensing Term
+            </mat-card-title>
+            <mat-divider></mat-divider>
+            <mat-expansion-panel class="mt-5 rounded-2xl" [expanded]="true">
+                <mat-expansion-panel-header>
+                    <mat-panel-title class="font-semibold">
+                        {{selectedTerm.term}}
+                    </mat-panel-title>
+                </mat-expansion-panel-header>
+                <ng-container *ngTemplateOutlet="myCard"></ng-container>
+            </mat-expansion-panel>
+        </mat-card>
+    </div>
+</div>
 <div class="row my-3" *ngIf="!isLoading">
     <div class="col-12">
         <mat-card class="w-full p-2 h-full rounded-2xl shadow-lg">
@@ -29,22 +47,23 @@
                     </div>
                 </div>
                 <div class="row" *ngIf="radioButtonForm">
-                    <div class="col-lg-6 col-12 my-3">
-                        <div class="text-info font-semibold">
-                            Terms
-                        </div>
-                        <mat-radio-group [formControlName]="'radio'">
-                            <mat-radio-button style="min-width: -webkit-fill-available;"
-                                *ngFor="let license of licensingTerms;" [value]="license" [checked]="license.Selected">
-                                {{license.term}}
-                            </mat-radio-button>
-                        </mat-radio-group>
-                    </div>
-                    <div class="col-lg-6 col-12 my-3">
-                        <div class="text-info font-semibold">
-                            Sub Categories
-                        </div>
-                        <ng-container *ngTemplateOutlet="myCard"></ng-container>
+                    <div class="col-12 my-3">
+                        <mat-accordion multi>
+                            <div class="row">
+                                <div class="col-lg-6 col-12" *ngFor="let license of licensingTerms;">
+                                    <mat-expansion-panel class="my-2"
+                                        [ngStyle]="license.Selected ? {'background-color':'rgba(15,23,42,0.36)'} : {'background-color': 'transparent'}">
+                                        <mat-expansion-panel-header>
+                                            <mat-panel-title
+                                                [ngStyle]="license.Selected ? {'color':'white'} : {'color': 'black'}">
+                                                {{license.term}}
+                                            </mat-panel-title>
+                                        </mat-expansion-panel-header>
+                                        <ng-container *ngTemplateOutlet="myCard"></ng-container>
+                                    </mat-expansion-panel>
+                                </div>
+                            </div>
+                        </mat-accordion>
                     </div>
                     <div class="col-lg-10 col-12"></div>
                     <div class="col-2">

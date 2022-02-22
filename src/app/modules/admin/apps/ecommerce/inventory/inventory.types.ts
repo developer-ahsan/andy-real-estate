@@ -265,3 +265,11 @@ export interface DeleteComment {
     comment_id: number;
     call_type: string;
 }
+
+export interface Licensing {
+    product_id: number;
+    licensing_term_id: number;
+    sub_category_id: number;
+    call_type: string;
+    licensing_term: boolean;
+}

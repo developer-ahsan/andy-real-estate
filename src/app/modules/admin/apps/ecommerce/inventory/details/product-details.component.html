@@ -46,43 +46,45 @@
                     </div>
                     <div class="row w-full px-5 pb-3">
                         <div class="col-lg-4 col-12">
-                            <b class="text-secondary">PID:</b>
-                            <p class="float-right">{{selectedProduct?.pk_productID || not_available}}</p>
+                            <b class="text-secondary text-sm">PID:</b>
+                            <p class="float-right text-sm">{{selectedProduct?.pk_productID || not_available}}</p>
                         </div>
                         <div class="col-lg-4 col-12">
-                            <b class="text-secondary">Supplier:</b>
-                            <p class="float-right" style="color: #959595; text-decoration: underline; cursor: pointer;">
+                            <b class="text-secondary text-sm">Supplier:</b>
+                            <p class="float-right text-sm"
+                                style="color: #959595; text-decoration: underline; cursor: pointer;">
                                 Show Down Displays
                             </p>
                         </div>
                         <div class="col-lg-4 col-12">
-                            <b class="text-secondary">Product Link:</b>
-                            <p class="float-right" style="color: #959595; text-decoration: underline; cursor: pointer;">
+                            <b class="text-secondary text-sm">Product Link:</b>
+                            <p class="float-right text-sm"
+                                style="color: #959595; text-decoration: underline; cursor: pointer;">
                                 Click Here </p>
                         </div>
                         <div class="col-lg-4 col-12">
-                            <b class="text-secondary">Supplier Relationship:</b>
-                            <p class="float-right">Preferred</p>
+                            <b class="text-secondary text-sm">Supplier Relationship:</b>
+                            <p class="float-right text-sm">Preferred</p>
                         </div>
                         <div class="col-lg-4 col-12">
-                            <b class="text-secondary">Last Updated:</b>
-                            <p class="float-right">{{last_updated || not_available}}</p>
+                            <b class="text-secondary text-sm">Last Updated:</b>
+                            <p class="float-right text-sm">{{last_updated || not_available}}</p>
                         </div>
                         <div class="col-lg-4 col-12">
-                            <b class="text-secondary">Last Ordered By:</b>
-                            <p class="float-right">{{selectedProduct?.lastUpdatedBy || not_available}}</p>
+                            <b class="text-secondary text-sm">Last Ordered By:</b>
+                            <p class="float-right text-sm">{{selectedProduct?.lastUpdatedBy || not_available}}</p>
                         </div>
                         <div class="col-lg-4 col-12">
-                            <b class="text-secondary">Current Co-Op Program:</b>
-                            <p class="float-right">{{selectedProduct?.fk_coopID || 'NONE'}}</p>
+                            <b class="text-secondary text-sm">Current Co-Op Program:</b>
+                            <p class="float-right text-sm">{{selectedProduct?.fk_coopID || 'NONE'}}</p>
                         </div>
                         <div class="col-lg-4 col-12">
-                            <b class="text-secondary">Core Product:</b>
-                            <p class="float-right">{{selectedProduct?.blnCore ? 'YES' : 'NO' }}</p>
+                            <b class="text-secondary text-sm">Core Product:</b>
+                            <p class="float-right text-sm">{{selectedProduct?.blnCore ? 'YES' : 'NO' }}</p>
                         </div>
                         <div class="col-lg-4 col-12">
-                            <b class="text-secondary">Status:</b>
-                            <p class="float-right">{{selectedProduct?.blnActive ? 'Active' : 'Inactive' }}</p>
+                            <b class="text-secondary text-sm">Status:</b>
+                            <p class="float-right text-sm">{{selectedProduct?.blnActive ? 'Active' : 'Inactive' }}</p>
                         </div>
                     </div>
                 </div>
