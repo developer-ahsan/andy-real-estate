@@ -19,11 +19,12 @@
                             </mat-select>
                         </mat-form-field>
                     </div>
-                    <div class="col-lg-10 col-12"></div>
-                    <div class="col-2">
-                        <button mat-stroked-button (click)="continue()">
-                            <span class="mr-2">Continue</span>
-                            <mat-icon svgIcon="heroicons_outline:arrow-sm-right"></mat-icon>
+                    <div class="col-12 my-1 text-right">
+                        <button class="min-w-40 w-40" mat-stroked-button (click)="continue()">
+                            <span *ngIf="!radioButtonForm" class="mr-2">Continue</span>
+                            <mat-icon *ngIf="!radioButtonForm" svgIcon="heroicons_outline:arrow-sm-right"></mat-icon>
+                            <mat-progress-spinner *ngIf="radioButtonForm" [diameter]="24" [mode]="'indeterminate'">
+                            </mat-progress-spinner>
                         </button>
                     </div>
                 </div>

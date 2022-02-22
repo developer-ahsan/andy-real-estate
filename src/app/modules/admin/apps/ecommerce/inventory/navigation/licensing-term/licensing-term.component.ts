@@ -21,8 +21,9 @@ export class LicensingTermComponent implements OnInit {
   foods = [];
   licensingTerms = [];
   licensingForm: FormGroup;
+  loader = false;
 
-  radioButtonForm: boolean;
+  radioButtonForm = false;
   seasons = [];
 
   constructor(
@@ -40,38 +41,55 @@ export class LicensingTermComponent implements OnInit {
 
     const { pk_productID } = this.selectedProduct;
 
-    this._inventoryService.getLicensingTerms(pk_productID)
-      .pipe(takeUntil(this._unsubscribeAll))
-      .subscribe((licensingTerms) => {
-        this.licensingTerms = licensingTerms["data"];
-        this._changeDetectorRef.markForCheck();
-      });
-
     this._inventoryService.getLicensingCompany()
       .pipe(takeUntil(this._unsubscribeAll))
       .subscribe((licensingCompany) => {
         this.foods = licensingCompany["data"];
+        console.log("this.getLicensingCompany", this.foods);
         this._changeDetectorRef.markForCheck();
       });
+
+    this._inventoryService.getLicensingTerms(pk_productID)
+      .pipe(takeUntil(this._unsubscribeAll))
+      .subscribe((licensingTerms) => {
+        this.licensingTerms = licensingTerms["data"];
+        for (const term of this.licensingTerms) {
+          if (term.Selected === "true") {
+            this.selectedTermId = term.pk_licensingTermID
+          }
+        }
+        console.log("this.licensingTerms", this.licensingTerms, this.selectedTermId);
+        this._inventoryService.getLicensingSubCategory(this.selectedTermId)
+          .pipe(takeUntil(this._unsubscribeAll))
+          .subscribe((subCategories) => {
+            this.subCategoryItems = subCategories["data"];
+            this._changeDetectorRef.markForCheck();
+            console.log("this.subCategoryItems", this.subCategoryItems);
+          });
+        this._changeDetectorRef.markForCheck();
+      });
+
 
     this.isLoadingChange.emit(false);
   }
 
   continue(): void {
-    console.log(this.licensingForm.getRawValue());
-    for (const term of this.licensingTerms) {
-      if (term.Selected === "true") {
-        this.selectedTermId = term.pk_licensingTermID
-      }
-    }
-    console.log("this.selectedTermId", this.selectedTermId);
-    this.radioButtonForm = false;
-    this._inventoryService.getLicensingSubCategory(this.selectedTermId)
-      .pipe(takeUntil(this._unsubscribeAll))
-      .subscribe((subCategories) => {
-        this.radioButtonForm = true;
-        this.subCategoryItems = subCategories["data"];
-        console.log("this.subCategoryItems", this.subCategoryItems);
-      });
+    // console.log(this.licensingForm.getRawValue());
+    this.radioButtonForm = true;
+    // for (const term of this.licensingTerms) {
+    //   if (term.Selected === "true") {
+    //     this.selectedTermId = term.pk_licensingTermID
+    //   }
+    // }
+    // console.log("this.selectedTermId", this.selectedTermId);
+    // this.loader = true;
+    // this._inventoryService.getLicensingSubCategory(this.selectedTermId)
+    //   .pipe(takeUntil(this._unsubscribeAll))
+    //   .subscribe((subCategories) => {
+    //     this.subCategoryItems = subCategories["data"];
+    //     // this.loader = false;
+    //     this.radioButtonForm = true;
+    //     console.log("this.subCategoryItems", this.subCategoryItems);
+    //   });
   }
 }
