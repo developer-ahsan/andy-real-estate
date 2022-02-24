@@ -273,3 +273,64 @@ export interface Licensing {
     call_type: string;
     licensing_term: boolean;
 }
+
+export interface CreateProduct {
+    supplier_id: number;
+    item_type: number;
+    technologo_sku: string;
+    bln_group_run: boolean;
+    permalink: string;
+    physics: physicsObj;
+    flat_rate: flatRateShippingObj;
+    case_dimension: caseDimensionsObj;
+    case_quantities: caseQuantitiesObj;
+    shipping: shippingObj;
+    description: string;
+    net_cost: netCostObj;
+}
+
+export interface physicsObj {
+    product_id: number;
+    weight: number;
+    weight_in_units: number;
+    dimensions: string;
+    over_pack_charge: number;
+    bln_apparel: boolean;
+    shipping: shippingObj;
+}
+
+export interface shippingObj {
+    prod_time_min: number;
+    prod_time_max: number;
+    units_in_shipping_package: number;
+    bln_include_shipping: number;
+    fob_location_list: number[];
+}
+
+export interface flatRateShippingObj {
+    product_id: number;
+    flat_rate_shipping: number;
+}
+
+export interface caseDimensionsObj {
+    product_id: number;
+    case_height: number;
+    case_width: number;
+    case_length: number;
+}
+
+export interface caseQuantitiesObj {
+    product_id: number;
+    case_quantities: string;
+}
+
+export interface netCostObj {
+    product_id: number;
+    quantity_list: number[];
+    cost_list: number[];
+    blank_cost_list: number[];
+    cost_comment: string;
+    live_cost_comment: string;
+    coop_id: number;
+    msrp: number;
+}

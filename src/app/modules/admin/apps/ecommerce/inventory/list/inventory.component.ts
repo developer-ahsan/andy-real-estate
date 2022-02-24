@@ -11,7 +11,9 @@ import { InventoryService } from 'app/modules/admin/apps/ecommerce/inventory/inv
 import { Router } from '@angular/router';
 import { BreakpointObserver } from '@angular/cdk/layout';
 import { StepperOrientation } from '@angular/material/stepper';
-import * as Excel from 'exceljs/dist/exceljs.min.js'
+import * as Excel from 'exceljs/dist/exceljs.min.js';
+import { MatChipInputEvent } from '@angular/material/chips';
+import { COMMA, ENTER } from '@angular/cdk/keycodes';
 
 @Component({
     selector: 'inventory-list',
@@ -46,11 +48,85 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
     vendors: InventoryVendor[];
     private _unsubscribeAll: Subject<any> = new Subject<any>();
 
-    options: string[] = ['One', 'Two', 'Three'];
-    filteredOptions: Observable<string[]>;
-
     pageSize: number;
     pageNo: number;
+
+    firstFormLoader = false;
+    options: any[] = [{ name: 'Mary' }, { name: 'Shelley' }, { name: 'Igor' }];
+    filteredOptions: Observable<any[]>;
+
+    filteredStates: Observable<any[]>;
+
+    states: any[] = [
+        {
+            name: 'Price does not include imprint. You may add desired imprint(s) during the checkout process for an additional cost.'
+        },
+        {
+            name: 'Price does not include imprint and is based on the white color option. You may add desired imprint(s) during the checkout process for an additional cost.'
+        },
+        {
+            name: 'Price includes a one color/one location imprint. Setups and any other additional fees may apply and will be disclosed prior to checkout.'
+        },
+        {
+            name: 'Price includes a laser engraved/one location imprint. Setups and any other additional fees may apply andwill be disclosed prior to checkout.'
+        },
+        {
+            name: 'Price includes a laser etched/one location imprint. Setups and any other additional fees may apply and will be disclosed prior to checkout.'
+        },
+        {
+            name: 'Price does not include imprint and is based on the white color option. You may add desired imprint(s) during the checkout process for an additional cost.'
+        },
+        {
+            name: 'Price includes a full color/one location imprint. Setups and any other additional fees may apply and will be disclosed prior to checkout'
+        },
+        {
+            name: 'Price includes imprint, setup, and run fees'
+        },
+        {
+            name: 'Setups and any other additional fees may apply and will be disclosed prior to checkout'
+        },
+        {
+            name: 'Item is sold blank.'
+        }
+    ];
+
+    createProductLoader = false;
+    stepperOrientation: Observable<StepperOrientation>;
+    favoriteSeason: string;
+    addProductTypeRadios = [
+        {
+            name: 'Normal Promotional Material',
+            helperText: ''
+        },
+        {
+            name: 'Apparel Item',
+            helperText: 'Weight per units is determined in the "sizes" section for apparel, after the item has been added.'
+        }
+    ];
+
+    addOnBlur = true;
+    readonly separatorKeysCodes = [ENTER, COMMA] as const;
+    fruits = [];
+
+    add(event): void {
+        const value = (event.value || '').trim();
+
+        // Add our fruit
+        if (value) {
+            this.fruits.push({ name: value });
+        }
+
+        // Clear the input value
+        event.chipInput!.clear();
+    }
+
+    remove(fruit): void {
+        const index = this.fruits.indexOf(fruit);
+
+        if (index >= 0) {
+            this.fruits.splice(index, 1);
+        }
+    }
 
     firstFormGroup = this._formBuilder.group({
         supplierValue: ['', Validators.required],
@@ -62,14 +138,24 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
         caseHeight: [''],
         caseWidth: [''],
         caseLength: [''],
-        perPackageShippingUnit: [''],
+        productHeight: [''],
+        productWidth: [''],
+        productLength: [''],
+        weight: [''],
+        doChargesApply: ['No'],
+        brandName: [''],
         overPackageCharge: [''],
         technoLogo: [''],
         supplierLink: [''],
         mainDescription: [''],
         miniDescription: [''],
         keywords: [''],
-        internalKeywords: ['']
+        quantityOne: [''],
+        quantityTwo: [''],
+        quantityThree: [''],
+        quantityFour: [''],
+        quantityFive: [''],
+        quantitySix: ['']
     });
     netCostForm = this._formBuilder.group({
         quantityOne: [''],
@@ -95,20 +181,10 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
         redPriceComment: [''],
         coOp: [""]
     });
-    imprintForm = this._formBuilder.group({
-    });
-    colorForm = this._formBuilder.group({
-    });
     featureForm = this._formBuilder.group({
+        order: ['1'],
+        feature: ['', Validators.required]
     });
-
-    stepperOrientation: Observable<StepperOrientation>;
-    suppliers = ["albert.eisntein", "leonardo_da_vinci",
-        "jagadish_chandra_bose@ya", "alan_turing", "srinivasa.ramanujan",
-        "bjarne_stroustrup", "max.planck", "nikola.tesla",
-        "galileo_galilei", "a.p.j.abdul.kalam", "richard.stallman@inbox.com", "devin.guffy@yandex.com"];
-    favoriteSeason: string;
-    seasons: string[] = ['Normal Promotional Material', 'Apparel Item', 'Service Item'];
 
     /**
      * Constructor
@@ -136,9 +212,15 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
         this.pageSize = 10;
         this.pageNo = 0;
 
-        this.filteredOptions = this.netCostForm.valueChanges.pipe(
+        this.filteredOptions = this.firstFormGroup.get("supplierValue").valueChanges.pipe(
             startWith(''),
-            map(value => this._filter(value)),
+            map(value => (typeof value === 'string' ? value : value.storeName)),
+            map(storeName => (storeName ? this._filter(storeName) : this.options.slice())),
+        );
+
+        this.filteredStates = this.netCostForm.get("redPriceComment").valueChanges.pipe(
+            startWith(''),
+            map(state => (state ? this._filterStates(state) : this.states.slice())),
         );
 
         // Create the selected product form
@@ -196,10 +278,24 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
             .subscribe();
     }
 
-    private _filter(value: string): string[] {
+    redPriceDisplayFn(user): string {
+        return user && user.name ? user.name : '';
+    }
+
+    private _filterStates(value: string): any[] {
         const filterValue = value.toLowerCase();
 
-        return this.options.filter(option => option.toLowerCase().includes(filterValue));
+        return this.states.filter(state => state.name.toLowerCase().includes(filterValue));
+    }
+
+    displayFn(user): string {
+        return user && user.storeName ? user.storeName : '';
+    }
+
+    private _filter(storeName: string): any[] {
+        const filterValue = storeName.toLowerCase();
+
+        return this.options.filter(option => option.storeName.toLowerCase().includes(filterValue));
     }
 
     /**
@@ -243,87 +339,92 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
     // @ Public methods
     // -----------------------------------------------------------------------------------------------------
 
-    /**
-     * Toggle product details
-     *
-     * @param productId
-     */
-    toggleDetails(productId: string): void {
-        // If the product is already selected...
-        // if (this.selectedProduct && this.selectedProduct.pk_productID === productId) {
-        //     // Close the details
-        //     this.closeDetails();
-        //     return;
-        // }
+    createProduct(): void {
+        const featureForm = this.featureForm.getRawValue();
+        const netCostForm = this.netCostForm.getRawValue();
+        const secondFormGroup = this.secondFormGroup.getRawValue();
+        const firstFormGroup = this.firstFormGroup.getRawValue();
+        // console.log("featureForm", featureForm)
+        // console.log("netCostForm", netCostForm)
+        // console.log("secondFormGroup", secondFormGroup)
+        // console.log("firstFormGroup", firstFormGroup)
 
-        // // Get the product by id
-        // this._inventoryService.getProductById(productId)
-        //     .subscribe((product) => {
+        const { supplierValue, radio } = firstFormGroup;
+        const { technoLogo, supplierLink, mainDescription, weight, productWidth, productLength, productHeight, caseWidth, caseLength, caseHeight, overPackageCharge } = secondFormGroup;
 
-        //         // Set the selected product
-        //         this.selectedProduct = product;
-
-        //         // Mark for check
-        //         this._changeDetectorRef.markForCheck();
-
-        //         // Fill the form
-        //         this.selectedProductForm.patchValue(product);
-
-        //         // Mark for check
-        //         this._changeDetectorRef.markForCheck();
-        //     });
+        const productId = null;
+        const payload = {
+            supplier_id: supplierValue.pk_storeID,
+            item_type: radio.name === "Apparel Item" ? 2 : 1,
+            technologo_sku: technoLogo,
+            bln_group_run: false,
+            permalink: supplierLink,
+            description: mainDescription,
+            physics: {
+                product_id: productId,
+                weight: weight,
+                weight_in_units: 1,
+                dimensions: `${productWidth},${productLength},${productHeight}`,
+                over_pack_charge: overPackageCharge,
+                bln_apparel: true,
+                shipping: {
+                    prod_time_min: 0,
+                    prod_time_max: 5,
+                    units_in_shipping_package: 1,
+                    bln_include_shipping: 1,
+                    fob_location_list: [1, 2]
+                },
+            },
+            flat_rate: {
+                product_id: productId,
+                flat_rate_shipping: 1
+            },
+            case_dimension: {
+                product_id: productId,
+                case_height: caseHeight,
+                case_width: caseWidth,
+                case_length: caseLength
+            },
+            case_quantities: {
+                product_id: productId,
+                case_quantities: `${secondFormGroup.quantityOne},${secondFormGroup.quantityTwo},${secondFormGroup.quantityThree},${secondFormGroup.quantityFour},${secondFormGroup.quantityFive},${secondFormGroup.quantitySix}`
+            },
+            shipping: {
+                prod_time_min: 0,
+                prod_time_max: 5,
+                units_in_shipping_package: 1,
+                bln_include_shipping: 1,
+                fob_location_list: [1, 2]
+            },
+            net_cost: {
+                product_id: productId,
+                quantity_list: [1, 2, 3],
+                cost_list: [1, 2, 3],
+                blank_cost_list: [1, 2, 3],
+                cost_comment: "string",
+                live_cost_comment: netCostForm.internalComments,
+                coop_id: netCostForm.coOp,
+                msrp: netCostForm.msrp
+            }
+        };
+        console.log("payload =>", payload);
+        // this.createProductLoader = true;
+        //     this._inventoryService.addProduct(payload)
+        //   .subscribe((response) => {
+        //     this.createProductLoader = false;
+        //     this.showFlashMessage(
+        //         response["succcess"] === true ?
+        //           'success' :
+        //           'error'
+        //       );
+        //   });
     }
-
     /**
      * Close the details
      */
     closeDetails(): void {
         this.selectedProduct = null;
     }
-
-    /**
-     * Cycle through images of selected product
-     */
-    cycleImages(forward: boolean = true): void {
-        // Get the image count and current image index
-        // const count = this.selectedProductForm.get('images').value.length;
-        // const currentIndex = this.selectedProductForm.get('currentImageIndex').value;
-
-        // // Calculate the next and previous index
-        // const nextIndex = currentIndex + 1 === count ? 0 : currentIndex + 1;
-        // const prevIndex = currentIndex - 1 < 0 ? count - 1 : currentIndex - 1;
-
-        // // If cycling forward...
-        // if (forward) {
-        //     this.selectedProductForm.get('currentImageIndex').setValue(nextIndex);
-        // }
-        // // If cycling backwards...
-        // else {
-        //     this.selectedProductForm.get('currentImageIndex').setValue(prevIndex);
-        // }
-    }
-
-
-
-    /**
-     * Create product
-     */
-    createProduct(): void {
-        // Create the product
-        // this._inventoryService.createProduct().subscribe((newProduct) => {
-
-        //     // Go to new product
-        //     this.selectedProduct = newProduct;
-
-        //     // Fill the form
-        //     this.selectedProductForm.patchValue(newProduct);
-
-        //     // Mark for check
-        //     this._changeDetectorRef.markForCheck();
-        // });
-    }
-
-
 
     /**
      * Show flash message
@@ -380,7 +481,15 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
     }
 
     enableProductAddFormFn(): void {
-        this.enableProductAddForm = !this.enableProductAddForm;
+        this.firstFormLoader = true;
+        this._inventoryService.getAllStores()
+            .pipe(takeUntil(this._unsubscribeAll))
+            .subscribe((supplier) => {
+                this.firstFormLoader = false;
+                this.options = supplier["data"];
+                this.enableProductAddForm = !this.enableProductAddForm;
+                console.log("supplier", this.options);
+            })
     };
 
     exportLoaderToggle(): void {

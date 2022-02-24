@@ -519,6 +519,14 @@ export class InventoryService {
         return this._httpClient.post(
             `${environment.mediaAccessUrl}`, payload, { headers });
     }
+
+    // Add Product
+    addProduct(payload: AddFeature) {
+        const headers = { 'Authorization': `Bearer ${this._authService.accessToken}` };
+        return this._httpClient.post(
+            `${environment.products}`, payload, { headers });
+    }
+
     /**
    * Add feature
    */
