@@ -19,6 +19,15 @@
                     [placeholder]="'Search Products'">
             </mat-form-field>
 
+            <!-- Export products button -->
+            <button class="ml-4 min-w-50" mat-flat-button [color]="'primary'" [matTooltip]="'Export All Products'"
+                (click)="exportProducts()" [disabled]="exportLoader">
+                <mat-progress-spinner *ngIf="exportLoader" [diameter]="24" [mode]="'indeterminate'">
+                </mat-progress-spinner>
+                <span *ngIf="!exportLoader"><i class='fas fa-cloud-download-alt'></i></span>
+                <span class="ml-2 mr-1" *ngIf="!exportLoader">Export Products</span>
+            </button>
+
             <!-- Add product button -->
             <button class="ml-4" mat-flat-button [color]="'primary'" [matTooltip]="'Add new product'"
                 (click)="enableProductAddFormFn()">

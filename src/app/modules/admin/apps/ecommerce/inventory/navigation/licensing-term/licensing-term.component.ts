@@ -96,23 +96,10 @@ export class LicensingTermComponent implements OnInit {
       })
   }
 
+  expansionOpened(license): void {
+    console.log("license", license);
+  }
   continue(): void {
-    // console.log(this.licensingForm.getRawValue());
     this.radioButtonForm = true;
-    // for (const term of this.licensingTerms) {
-    //   if (term.Selected === "true") {
-    //     this.selectedTerm = term.pk_licensingTermID
-    //   }
-    // }
-    // console.log("this.selectedTerm", this.selectedTerm);
-    // this.loader = true;
-    // this._inventoryService.getLicensingSubCategory(this.selectedTerm)
-    //   .pipe(takeUntil(this._unsubscribeAll))
-    //   .subscribe((subCategories) => {
-    //     this.subCategoryItems = subCategories["data"];
-    //     // this.loader = false;
-    //     this.radioButtonForm = true;
-    //     console.log("this.subCategoryItems", this.subCategoryItems);
-    //   });
   }
 }

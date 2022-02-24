@@ -2,20 +2,14 @@
 </ngx-skeleton-loader>
 <div class="row my-3" *ngIf="!isLoading && selectedTerm">
     <div class="col-12">
-        <mat-card class="w-full p-2 h-full rounded-2xl shadow-lg">
-            <mat-card-title class="text-info font-size-medium">
-                Selected Licensing Term
-            </mat-card-title>
-            <mat-divider></mat-divider>
-            <mat-expansion-panel class="mt-5 rounded-2xl" [expanded]="true">
-                <mat-expansion-panel-header>
-                    <mat-panel-title class="font-semibold">
-                        {{selectedTerm.term}}
-                    </mat-panel-title>
-                </mat-expansion-panel-header>
-                <ng-container *ngTemplateOutlet="myCard"></ng-container>
-            </mat-expansion-panel>
-        </mat-card>
+        <mat-expansion-panel [expanded]="true">
+            <mat-expansion-panel-header>
+                <mat-panel-title class="text-info font-size-medium">
+                    Selected Term - {{selectedTerm.term}}
+                </mat-panel-title>
+            </mat-expansion-panel-header>
+            <ng-container *ngTemplateOutlet="selectedCard"></ng-container>
+        </mat-expansion-panel>
     </div>
 </div>
 <div class="row my-3" *ngIf="!isLoading">
@@ -51,7 +45,7 @@
                         <mat-accordion multi>
                             <div class="row">
                                 <div class="col-lg-6 col-12" *ngFor="let license of licensingTerms;">
-                                    <mat-expansion-panel class="my-2"
+                                    <mat-expansion-panel class="my-2" (opened)="expansionOpened(license)"
                                         [ngStyle]="license.Selected ? {'background-color':'rgba(15,23,42,0.36)'} : {'background-color': 'transparent'}">
                                         <mat-expansion-panel-header>
                                             <mat-panel-title
@@ -79,8 +73,23 @@
 </div>
 
 <ng-template #myCard>
-    <mat-radio-button style="min-width: -webkit-fill-available;" *ngFor="let item of subCategoryItems" [value]="item"
-        [checked]="item.Selected">
-        {{item.name}}
-    </mat-radio-button>
+    <div class="row">
+        <!-- <ngx-skeleton-loader count="4" appearance="line" animation="pulse">
+        </ngx-skeleton-loader> -->
+        <div class="col-lg-6 col-12" *ngFor="let item of subCategoryItems">
+            <mat-radio-button style="min-width: -webkit-fill-available;" [value]="item" [checked]="item.Selected">
+                <span class="text-sm">{{item.name}}</span>
+            </mat-radio-button>
+        </div>
+    </div>
+</ng-template>
+
+<ng-template #selectedCard>
+    <div class="row">
+        <div class="col-lg-4 col-6" *ngFor="let item of subCategoryItems">
+            <mat-radio-button style="min-width: -webkit-fill-available;" [value]="item" [checked]="item.Selected">
+                <span class="text-sm">{{item.name}}</span>
+            </mat-radio-button>
+        </div>
+    </div>
 </ng-template>

@@ -11,6 +11,7 @@ import { InventoryService } from 'app/modules/admin/apps/ecommerce/inventory/inv
 import { Router } from '@angular/router';
 import { BreakpointObserver } from '@angular/cdk/layout';
 import { StepperOrientation } from '@angular/material/stepper';
+import * as Excel from 'exceljs/dist/exceljs.min.js'
 
 @Component({
     selector: 'inventory-list',
@@ -27,6 +28,7 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
 
     products: ProductsList[];
 
+    exportLoader = false;
     brands: InventoryBrand[];
     categories: InventoryCategory[];
     filteredTags: InventoryTag[];
@@ -172,7 +174,6 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
             .subscribe((products: ProductsList[]) => {
                 this.products = products["data"];
                 this.productsCount = products["totalRecords"];
-                // this.productsCount = 0;
 
                 // Mark for check
                 this._changeDetectorRef.markForCheck();
@@ -380,5 +381,62 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
 
     enableProductAddFormFn(): void {
         this.enableProductAddForm = !this.enableProductAddForm;
+    };
+
+    exportLoaderToggle(): void {
+        this.exportLoader = !this.exportLoader;
+    }
+
+    exportProducts(): void {
+        const size = this.productsCount;
+        this.exportLoaderToggle();
+        this._inventoryService.getProductsForExporting(size)
+            .pipe(takeUntil(this._unsubscribeAll))
+            .subscribe((products) => {
+                this.exportLoaderToggle();
+                const data = products["data"];
+                const today = new Date();
+                const month = today.getMonth() + 1; // This method returns count from 0 to 11. It means the value 0 refers to January and so on
+                const date = today.getDate();
+                const year = today.getFullYear();
+                const hours = today.getHours();
+                const minutes = today.getMinutes();
+                const seconds = today.getSeconds();
+                const fileName = `Products_${month}_${date}_${year}_${hours}_${minutes}_${seconds}`;
+                const workbook = new Excel.Workbook();
+                const worksheet = workbook.addWorksheet("My Sheet");
+
+                worksheet.columns = [
+                    { header: "ID", key: "pk_productID", width: 10 },
+                    { header: "PRODUCTNUMBER", key: "productNumber", width: 20 },
+                    { header: "PRODUCTNAME", key: "productName", width: 32 },
+                    { header: "PRODUCTDESCRIPTION", key: "productDesc", width: 120 },
+                    { header: "MINIDESC", key: "miniDesc", width: 20 },
+                    { header: "KEYWORDS", key: "keywords", width: 32 },
+                    { header: "PERMALINK", key: "permalink", width: 10 },
+                    { header: "PRICINGLASTUPDATEDDATE", key: "pricingLastUpdatedDate", width: 32 }
+                ];
+
+                for (const obj of data) {
+                    worksheet.addRow(obj);
+                }
+
+                workbook.xlsx.writeBuffer().then((data: any) => {
+                    console.log("buffer");
+                    const blob = new Blob([data], {
+                        type:
+                            "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+                    });
+                    let url = window.URL.createObjectURL(blob);
+                    let a = document.createElement("a");
+                    document.body.appendChild(a);
+                    a.setAttribute("style", "display: none");
+                    a.href = url;
+                    a.download = `${fileName}.xlsx`;
+                    a.click();
+                    window.URL.revokeObjectURL(url);
+                    a.remove();
+                });
+            })
     }
 }

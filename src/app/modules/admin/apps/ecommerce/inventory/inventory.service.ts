@@ -201,6 +201,14 @@ export class InventoryService {
         );
     }
 
+    getProductsForExporting(size): Observable<ProductsList[]> {
+        return this._httpClient.get<ProductsList[]>(environment.products, {
+            params: {
+                export: true
+            }
+        });
+    }
+
     getProductByProductId(productId): Observable<ProductsList[]> {
         return this._httpClient.get<ProductsList[]>(environment.products, {
             params: {
@@ -646,5 +654,4 @@ export class InventoryService {
             })
         );
     }
-
 }
