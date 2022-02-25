@@ -346,78 +346,183 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
         const firstFormGroup = this.firstFormGroup.getRawValue();
         // console.log("featureForm", featureForm)
         // console.log("netCostForm", netCostForm)
-        // console.log("secondFormGroup", secondFormGroup)
+        console.log("secondFormGroup", secondFormGroup)
         // console.log("firstFormGroup", firstFormGroup)
 
         const { supplierValue, radio } = firstFormGroup;
         const { technoLogo, supplierLink, mainDescription, weight, productWidth, productLength, productHeight, caseWidth, caseLength, caseHeight, overPackageCharge } = secondFormGroup;
 
         const productId = null;
+
+        const shipping = {
+            prod_time_min: 0 || null,
+            prod_time_max: 5 || null,
+            units_in_shipping_package: 1 || null,
+            bln_include_shipping: 1 || null,
+            fob_location_list: [1, 2]
+        };
+
+        const physics = {
+            product_id: productId,
+            weight: weight || null,
+            weight_in_units: 1 || null,
+            dimensions: `${productWidth},${productLength},${productHeight}` || null,
+            over_pack_charge: overPackageCharge || null,
+            bln_apparel: true,
+            shipping: shipping || null
+        };
+
+        const flatRate = {
+            product_id: productId,
+            flat_rate_shipping: 1
+        };
+
+        const caseDimension = {
+            product_id: productId,
+            case_height: caseHeight || null,
+            case_width: caseWidth || null,
+            case_length: caseLength || null
+        };
+        // `${secondFormGroup.quantityOne},${secondFormGroup.quantityTwo},${secondFormGroup.quantityThree},${secondFormGroup.quantityFour},${secondFormGroup.quantityFive},${secondFormGroup.quantitySix}`
+        const caseQuantities = {
+            product_id: productId,
+            case_quantities: [1, 2, 3] || null
+        };
+
+        const netCost = {
+            product_id: productId,
+            quantity_list: [1, 2, 3],
+            cost_list: [1, 2, 3],
+            blank_cost_list: [1, 2, 3],
+            cost_comment: null,
+            live_cost_comment: netCostForm.internalComments || null,
+            coop_id: netCostForm.coOp || null,
+            msrp: netCostForm.msrp || null
+        };
+
+        const description = {
+            name: "test",
+            product_number: "12354",
+            product_desc: secondFormGroup.mainDescription || null,
+            mini_desc: secondFormGroup.miniDescription || null,
+            keywords: secondFormGroup.keywords || null,
+            notes: null,
+            supplier_link: secondFormGroup.supplierLink || null,
+            meta_desc: secondFormGroup.string || null,
+            sex: null,
+            search_keywords: secondFormGroup.keywords || null,
+            purchase_order_notes: null,
+            last_update_by: null,
+            last_update_date: null,
+            update_history: null,
+            product_id: productId
+        };
+
         const payload = {
-            supplier_id: supplierValue.pk_storeID,
+            product: true,
+            supplier_id: supplierValue.pk_storeID || null,
             item_type: radio.name === "Apparel Item" ? 2 : 1,
-            technologo_sku: technoLogo,
+            technologo_sku: technoLogo || null,
+            bln_group_run: false || null,
+            permalink: secondFormGroup.supplierLink || null,
+            description: description,
+            physics: physics,
+            flat_rate: flatRate,
+            case_dimension: caseDimension,
+            case_quantities: caseQuantities,
+            shipping: shipping,
+            net_cost: netCost
+        };
+        // console.log("netCost =>", netCost);
+        // console.log("caseQuantities =>", caseQuantities);
+        // console.log("caseDimension =>", caseDimension);
+        // console.log("flatRate =>", flatRate);
+        // console.log("physics =>", physics);
+        // console.log("shipping =>", shipping);
+        console.log("payload =>", payload);
+        const data = {
+            product: true,
+            supplier_id: 160,
+            item_type: 2,
+            technologo_sku: null,
             bln_group_run: false,
-            permalink: supplierLink,
-            description: mainDescription,
+            permalink: "",
+            description: {
+                name: "adding new product",
+                product_number: "654321",
+                description: true,
+                product_desc: "test description",
+                mini_desc: null,
+                keywords: null,
+                notes: null,
+                supplier_link: null,
+                meta_desc: null,
+                sex: null,
+                search_keywords: null,
+                purchase_order_notes: null,
+                last_update_by: null,
+                last_update_date: null,
+                update_history: null,
+                product_id: null
+            },
             physics: {
-                product_id: productId,
-                weight: weight,
-                weight_in_units: 1,
-                dimensions: `${productWidth},${productLength},${productHeight}`,
-                over_pack_charge: overPackageCharge,
                 bln_apparel: true,
+                dimensions: ",,",
+                over_pack_charge: "",
+                product_id: null,
                 shipping: {
-                    prod_time_min: 0,
-                    prod_time_max: 5,
-                    units_in_shipping_package: 1,
                     bln_include_shipping: 1,
-                    fob_location_list: [1, 2]
+                    fob_location_list: [1, 2],
+                    prod_time_max: 5,
+                    prod_time_min: 0,
+                    units_in_shipping_package: 1
                 },
+                weight: null,
+                weight_in_units: null
             },
             flat_rate: {
-                product_id: productId,
-                flat_rate_shipping: 1
+                flat_rate_shipping: 1,
+                product_id: null
             },
             case_dimension: {
-                product_id: productId,
-                case_height: caseHeight,
-                case_width: caseWidth,
-                case_length: caseLength
+                case_height: null,
+                case_length: null,
+                case_width: null,
+                product_id: null
             },
             case_quantities: {
-                product_id: productId,
-                case_quantities: `${secondFormGroup.quantityOne},${secondFormGroup.quantityTwo},${secondFormGroup.quantityThree},${secondFormGroup.quantityFour},${secondFormGroup.quantityFive},${secondFormGroup.quantitySix}`
+                case_quantities: [1, 2, 3, 4],
+                product_id: null
             },
             shipping: {
-                prod_time_min: 0,
-                prod_time_max: 5,
-                units_in_shipping_package: 1,
                 bln_include_shipping: 1,
-                fob_location_list: [1, 2]
+                fob_location_list: [2, 4],
+                prod_time_max: 5,
+                prod_time_min: 0,
+                units_in_shipping_package: 1
             },
             net_cost: {
-                product_id: productId,
-                quantity_list: [1, 2, 3],
+                blank_cost_list: [0, 1, 2],
+                coop_id: "",
+                cost_comment: "",
                 cost_list: [1, 2, 3],
-                blank_cost_list: [1, 2, 3],
-                cost_comment: "string",
-                live_cost_comment: netCostForm.internalComments,
-                coop_id: netCostForm.coOp,
-                msrp: netCostForm.msrp
+                live_cost_comment: "",
+                msrp: "",
+                product_id: null,
+                quantity_list: [1, 2, 3]
             }
         };
-        console.log("payload =>", payload);
-        // this.createProductLoader = true;
-        //     this._inventoryService.addProduct(payload)
-        //   .subscribe((response) => {
-        //     this.createProductLoader = false;
-        //     this.showFlashMessage(
-        //         response["succcess"] === true ?
-        //           'success' :
-        //           'error'
-        //       );
-        //   });
+
+        this.createProductLoader = true;
+        this._inventoryService.addProduct(data)
+            .subscribe((response) => {
+                this.createProductLoader = false;
+                this.showFlashMessage(
+                    response["succcess"] === true ?
+                        'success' :
+                        'error'
+                );
+            });
     }
     /**
      * Close the details

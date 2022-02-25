@@ -3,7 +3,7 @@ import { Package } from 'app/modules/admin/apps/ecommerce/inventory/inventory.ty
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { InventoryService } from 'app/modules/admin/apps/ecommerce/inventory/inventory.service';
-import { FormBuilder } from '@angular/forms';
+import { FormBuilder, Validators } from '@angular/forms';
 
 @Component({
   selector: 'app-duplicate',
@@ -14,9 +14,12 @@ export class DuplicateComponent implements OnInit {
   @Input() isLoading: boolean;
   @Output() isLoadingChange = new EventEmitter<boolean>();
   private _unsubscribeAll: Subject<any> = new Subject<any>();
+
+  duplicateLoader = false;
+  flashMessage: 'success' | 'error' | null = null;
   firstFormGroup = this._formBuilder.group({
-    number: [''],
-    name: ['6 Value Lite Table Throw (White Imprint)']
+    number: ['', Validators.required],
+    name: ['', Validators.required]
   });
 
   constructor(
@@ -38,4 +41,45 @@ export class DuplicateComponent implements OnInit {
     this.isLoadingChange.emit(false);
   }
 
+  addDuplicate(): void {
+    const formValues = this.firstFormGroup.getRawValue();
+    const { pk_productID } = this.selectedProduct;
+
+    const payload = {
+      product_id: pk_productID,
+      product_number: formValues.number,
+      product_name: formValues.name,
+      duplicate_product: true
+    };
+    this.duplicateLoader = true;
+    this._inventoryService.addDuplicate(payload)
+      .subscribe((response) => {
+        this.showFlashMessage(
+          response["success"] === true ?
+            'success' :
+            'error'
+        );
+        this.duplicateLoader = false;
+      });
+  }
+
+  /**
+* Show flash message
+*/
+  showFlashMessage(type: 'success' | 'error'): void {
+    // Show the message
+    this.flashMessage = type;
+
+    // Mark for check
+    this._changeDetectorRef.markForCheck();
+
+    // Hide it after 3.5 seconds
+    setTimeout(() => {
+
+      this.flashMessage = null;
+
+      // Mark for check
+      this._changeDetectorRef.markForCheck();
+    }, 3500);
+  }
 }

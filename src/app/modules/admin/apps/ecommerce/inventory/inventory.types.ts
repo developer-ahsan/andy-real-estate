@@ -285,8 +285,27 @@ export interface CreateProduct {
     case_dimension: caseDimensionsObj;
     case_quantities: caseQuantitiesObj;
     shipping: shippingObj;
-    description: string;
+    description: productDescriptions;
     net_cost: netCostObj;
+    product: boolean;
+}
+
+export interface productDescriptions {
+    name: string;
+    product_number: string;
+    product_desc: string;
+    mini_desc: string;
+    keywords: string;
+    notes: string;
+    supplier_link: string;
+    meta_desc: string;
+    sex: number;
+    search_keywords: string;
+    purchase_order_notes: string;
+    last_update_by: string;
+    last_update_date: string;
+    update_history: string;
+    product_id: number;
 }
 
 export interface physicsObj {
@@ -321,7 +340,7 @@ export interface caseDimensionsObj {
 
 export interface caseQuantitiesObj {
     product_id: number;
-    case_quantities: string;
+    case_quantities: number[];
 }
 
 export interface netCostObj {
@@ -333,4 +352,11 @@ export interface netCostObj {
     live_cost_comment: string;
     coop_id: number;
     msrp: number;
+}
+
+export interface duplicateObj {
+    product_id: number;
+    product_number: number;
+    product_name: string;
+    duplicate_product: boolean;
 }

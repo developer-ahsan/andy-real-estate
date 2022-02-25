@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { BehaviorSubject, Observable, of, throwError } from 'rxjs';
 import { filter, map, switchMap, take, tap } from 'rxjs/operators';
-import { AddCore, AddFeature, AddPackage, CaseDimensionObj, CaseQuantityObj, Comment, DeleteComment, FlatRateShippingObj, InventoryBrand, InventoryCategory, InventoryPagination, InventoryTag, InventoryVendor, NetCostUpdate, PhysicsObj, ProductsList, UpdateMargin, videoObj, Warehouse } from 'app/modules/admin/apps/ecommerce/inventory/inventory.types';
+import { AddCore, AddFeature, AddPackage, CaseDimensionObj, CaseQuantityObj, Comment, CreateProduct, DeleteComment, duplicateObj, FlatRateShippingObj, InventoryBrand, InventoryCategory, InventoryPagination, InventoryTag, InventoryVendor, NetCostUpdate, PhysicsObj, ProductsList, UpdateMargin, videoObj, Warehouse } from 'app/modules/admin/apps/ecommerce/inventory/inventory.types';
 import { environment } from 'environments/environment';
 import { productDescription } from 'app/modules/admin/apps/ecommerce/inventory/inventory.types';
 import { AuthService } from 'app/core/auth/auth.service';
@@ -521,7 +521,7 @@ export class InventoryService {
     }
 
     // Add Product
-    addProduct(payload: AddFeature) {
+    addProduct(payload) {
         const headers = { 'Authorization': `Bearer ${this._authService.accessToken}` };
         return this._httpClient.post(
             `${environment.products}`, payload, { headers });
@@ -540,6 +540,15 @@ export class InventoryService {
   * Post package
   */
     addPackage(payload: AddPackage) {
+        const headers = { 'Authorization': `Bearer ${this._authService.accessToken}` };
+        return this._httpClient.post(
+            `${environment.products}`, payload, { headers });
+    }
+
+    /**
+     * Post duplicate
+     */
+    addDuplicate(payload: duplicateObj) {
         const headers = { 'Authorization': `Bearer ${this._authService.accessToken}` };
         return this._httpClient.post(
             `${environment.products}`, payload, { headers });

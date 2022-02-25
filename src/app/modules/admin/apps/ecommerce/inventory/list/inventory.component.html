@@ -865,23 +865,36 @@
                                     <ng-template matStepLabel>Review</ng-template>
                                     <p>You are now done.</p>
                                 </div>
-                            </div>
 
-                            <div class="row">
-                                <div class="col-lg-9 col-12"></div>
-                                <div class="col-lg-3 col-12">
-                                    <!-- <button class="w-full" mat-stroked-button matStepperPrevious>Back</button> -->
-                                    <!-- Add product button -->
-                                    <button class="ml-4 min-w-50" mat-flat-button [color]="'primary'"
-                                        [matTooltip]="'Add product'" (click)="createProduct()"
-                                        [disabled]="createProductLoader">
-                                        <mat-progress-spinner *ngIf="createProductLoader" [diameter]="24"
-                                            [mode]="'indeterminate'">
-                                        </mat-progress-spinner>
-                                        <mat-icon [svgIcon]="'heroicons_outline:plus'" *ngIf="!createProductLoader">
-                                        </mat-icon>
-                                        <span class="ml-2 mr-1" *ngIf="!createProductLoader">Create Product</span>
-                                    </button>
+                                <mat-divider></mat-divider>
+                                <div class="col-12">
+                                    <div class="flex items-center justify-end w-full">
+                                        <div class="flex items-center my-2">
+                                            <div class="flex items-center mr-4" *ngIf="flashMessage">
+                                                <ng-container *ngIf="flashMessage === 'success'">
+                                                    <mat-icon class="text-green-500"
+                                                        [svgIcon]="'heroicons_outline:check'">
+                                                    </mat-icon>
+                                                    <span class="ml-2">Product created successfully</span>
+                                                </ng-container>
+                                                <ng-container *ngIf="flashMessage === 'error'">
+                                                    <mat-icon class="text-red-500" [svgIcon]="'heroicons_outline:x'">
+                                                    </mat-icon>
+                                                    <span class="ml-2">An error occurred, try again!</span>
+                                                </ng-container>
+                                            </div>
+                                            <button class="min-w-40" mat-stroked-button [matTooltip]="'Add New Feature'"
+                                                (click)="createProduct()" [disabled]="createProductLoader">
+                                                <mat-progress-spinner *ngIf="createProductLoader" [diameter]="24"
+                                                    [mode]="'indeterminate'">
+                                                </mat-progress-spinner>
+                                                <mat-icon [svgIcon]="'heroicons_outline:plus'"
+                                                    *ngIf="!createProductLoader"></mat-icon>
+                                                <span *ngIf="!createProductLoader" class="ml-1 mr-1">Create
+                                                    Product</span>
+                                            </button>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </mat-step>
