@@ -475,12 +475,13 @@ export class InventoryService {
         })
     };
 
-    getLicensingSubCategory(termId) {
+    getLicensingSubCategory(termId, productId) {
         return this._httpClient.get(environment.products, {
             params: {
                 licensing_term: true,
                 sub_category: true,
                 licensing_term_id: termId,
+                product_id: productId,
                 size: 100
             }
         })

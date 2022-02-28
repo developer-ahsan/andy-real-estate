@@ -59,12 +59,30 @@
                             </div>
                         </mat-accordion>
                     </div>
-                    <div class="col-lg-10 col-12"></div>
-                    <div class="col-2">
-                        <button mat-stroked-button>
-                            <mat-icon svgIcon="mat_outline:edit"></mat-icon>
-                            <span class="ml-1">Update</span>
-                        </button>
+                    <div class="col-12">
+                        <div class="flex items-center justify-end w-full">
+                            <div class="flex items-center my-2">
+                                <div class="flex items-center mr-4" *ngIf="flashMessage">
+                                    <ng-container *ngIf="flashMessage === 'success'">
+                                        <mat-icon class="text-green-500" [svgIcon]="'heroicons_outline:check'">
+                                        </mat-icon>
+                                        <span class="ml-2">Licensing term Updated successfully</span>
+                                    </ng-container>
+                                    <ng-container *ngIf="flashMessage === 'error'">
+                                        <mat-icon class="text-red-500" [svgIcon]="'heroicons_outline:x'"></mat-icon>
+                                        <span class="ml-2">An error occurred, try again!</span>
+                                    </ng-container>
+                                </div>
+                                <button class="min-w-40" mat-stroked-button [matTooltip]="'Update Licensing Term'"
+                                    (click)="updateTerm()" [disabled]="termUpdateLoader">
+                                    <mat-progress-spinner *ngIf="termUpdateLoader" [diameter]="24"
+                                        [mode]="'indeterminate'">
+                                    </mat-progress-spinner>
+                                    <mat-icon *ngIf="!termUpdateLoader" [svgIcon]="'mat_outline:edit'"></mat-icon>
+                                    <span *ngIf="!termUpdateLoader" class="ml-1 mr-1">Update</span>
+                                </button>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </form>
@@ -73,13 +91,15 @@
 </div>
 
 <ng-template #myCard>
-    <div class="row">
-        <!-- <ngx-skeleton-loader count="4" appearance="line" animation="pulse">
-        </ngx-skeleton-loader> -->
+    <ngx-skeleton-loader count="4" appearance="line" animation="pulse" *ngIf="expansionLoader">
+    </ngx-skeleton-loader>
+    <div class="row" *ngIf="!expansionLoader">
         <div class="col-lg-6 col-12" *ngFor="let item of subCategoryItems">
-            <mat-radio-button style="min-width: -webkit-fill-available;" [value]="item" [checked]="item.Selected">
-                <span class="text-sm">{{item.name}}</span>
-            </mat-radio-button>
+            <mat-radio-group name="opListInternal">
+                <mat-radio-button style="min-width: -webkit-fill-available;" [checked]="item.Selected" [value]="item"
+                    name="opListInternal" (change)="selectedRadio($event)"><span class="text-sm">{{item.name}}</span>
+                </mat-radio-button>
+            </mat-radio-group>
         </div>
     </div>
 </ng-template>
@@ -87,9 +107,12 @@
 <ng-template #selectedCard>
     <div class="row">
         <div class="col-lg-4 col-6" *ngFor="let item of subCategoryItems">
-            <mat-radio-button style="min-width: -webkit-fill-available;" [value]="item" [checked]="item.Selected">
-                <span class="text-sm">{{item.name}}</span>
-            </mat-radio-button>
+            <mat-radio-group name="opList">
+                <mat-radio-button style="min-width: -webkit-fill-available;" [checked]="item.Selected" [value]="item"
+                    name="opList" (change)="selectedRadio($event)">
+                    <span class="text-sm">{{item.name}}</span>
+                </mat-radio-button>
+            </mat-radio-group>
         </div>
     </div>
 </ng-template>

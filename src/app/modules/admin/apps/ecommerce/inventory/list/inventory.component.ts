@@ -43,6 +43,7 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
     selectedProduct: ProductsList | null = null;
     selectedProductForm: FormGroup;
     tags: InventoryTag[];
+    backListLoader = false;
     tagsEditMode: boolean = false;
     enableProductAddForm = false;
     vendors: InventoryVendor[];
@@ -143,7 +144,7 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
         productLength: [''],
         weight: [''],
         doChargesApply: ['No'],
-        brandName: [''],
+        brandName: ['', Validators.required],
         overPackageCharge: [''],
         technoLogo: [''],
         supplierLink: [''],
@@ -448,8 +449,8 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
             bln_group_run: false,
             permalink: "",
             description: {
-                name: "adding new product",
-                product_number: "654321",
+                name: secondFormGroup.productName,
+                product_number: secondFormGroup.productNumber,
                 description: true,
                 product_desc: "test description",
                 mini_desc: null,
@@ -513,6 +514,7 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
             }
         };
 
+        console.log("data", data)
         this.createProductLoader = true;
         this._inventoryService.addProduct(data)
             .subscribe((response) => {
@@ -585,6 +587,19 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
         return item.id || index;
     }
 
+    getList(): void {
+        this.backListLoader = true;
+        // Get the products
+        this._inventoryService.getProductsList(10, 1)
+            .pipe(takeUntil(this._unsubscribeAll))
+            .subscribe((products: ProductsList[]) => {
+                this.products = products["data"];
+                this.productsCount = products["totalRecords"];
+                this.backListLoader = true;
+                this.firstFormLoader = false;
+                this.enableProductAddForm = false;
+            });
+    }
     enableProductAddFormFn(): void {
         this.firstFormLoader = true;
         this._inventoryService.getAllStores()

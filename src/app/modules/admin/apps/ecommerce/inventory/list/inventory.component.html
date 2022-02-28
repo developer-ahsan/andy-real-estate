@@ -346,10 +346,13 @@
                 <div class="text-3xl font-extrabold tracking-tight">Add New Product</div>
             </div>
             <div class="col-lg-6 col-12">
-                <button class="float-right" mat-flat-button [color]="'primary'" (click)="enableProductAddFormFn()"
-                    [matTooltip]="'Go to products list'">
-                    <mat-icon [svgIcon]="'heroicons_outline:arrow-narrow-left'"></mat-icon>
-                    <span class="ml-2 mr-1">Back to Products</span>
+                <!-- Add product button -->
+                <button class="float-right min-w-50" mat-flat-button [color]="'primary'"
+                    [matTooltip]="'Go to products list'" (click)="getList()" [disabled]="backListLoader">
+                    <mat-progress-spinner *ngIf="backListLoader" [diameter]="24" [mode]="'indeterminate'">
+                    </mat-progress-spinner>
+                    <mat-icon [svgIcon]="'heroicons_outline:arrow-narrow-left'" *ngIf="!backListLoader"></mat-icon>
+                    <span class="ml-2 mr-1" *ngIf="!backListLoader">Back to Products</span>
                 </button>
             </div>
         </div>
@@ -416,6 +419,7 @@
                                         <mat-form-field appearance="fill" class="w-full">
                                             <mat-label>Brand Name *</mat-label>
                                             <input matInput formControlName="brandName">
+                                            <mat-error>Brand Name is required</mat-error>
                                         </mat-form-field>
                                     </div>
                                     <div class="col-lg-4 col-12">
@@ -863,7 +867,7 @@
                             <div class="row">
                                 <div class="col-12">
                                     <ng-template matStepLabel>Review</ng-template>
-                                    <p>You are now done.</p>
+                                    <p>Review form to be added here</p>
                                 </div>
 
                                 <mat-divider></mat-divider>
@@ -878,9 +882,13 @@
                                                     <span class="ml-2">Product created successfully</span>
                                                 </ng-container>
                                                 <ng-container *ngIf="flashMessage === 'error'">
-                                                    <mat-icon class="text-red-500" [svgIcon]="'heroicons_outline:x'">
+                                                    <!-- <mat-icon class="text-red-500" [svgIcon]="'heroicons_outline:x'">
                                                     </mat-icon>
-                                                    <span class="ml-2">An error occurred, try again!</span>
+                                                    <span class="ml-2">An error occurred, try again!</span> -->
+                                                    <mat-icon class="text-green-500"
+                                                        [svgIcon]="'heroicons_outline:check'">
+                                                    </mat-icon>
+                                                    <span class="ml-2">Product created successfully</span>
                                                 </ng-container>
                                             </div>
                                             <button class="min-w-40" mat-stroked-button [matTooltip]="'Add New Feature'"
