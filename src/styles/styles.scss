@@ -169,3 +169,21 @@
 body.light .mat-expansion-panel-header.mat-expanded, body .light .mat-expansion-panel-header.mat-expanded {
   height: 42px !important;
 }
+
+.custom-slider .ngx-slider .ngx-slider-limit {
+  font-weight: 500;
+  font-size: 12px;
+  color: black !important;
+}
+
+.ngx-slider .ngx-slider-bubble {
+  bottom: 20px;
+  padding: 1px 8px !important;
+  color: #37486a;
+  font-size: 13px !important;
+  font-weight: 500;
+}
+
+.custom-slider .ngx-slider .ngx-slider-pointer {
+  background-color: #6e5399;
+}

@@ -74,6 +74,7 @@ import { ImprintComponent } from './inventory/navigation/imprint/imprint.compone
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { MatChipsModule } from '@angular/material/chips';
 import { MatExpansionModule } from '@angular/material/expansion';
+import { NgxSliderModule } from '@angular-slider/ngx-slider';
 
 @NgModule({
     declarations: [
@@ -153,7 +154,8 @@ import { MatExpansionModule } from '@angular/material/expansion';
         NgxDropzoneModule,
         MatAutocompleteModule,
         MatChipsModule,
-        MatExpansionModule
+        MatExpansionModule,
+        NgxSliderModule
     ]
 })
 export class ECommerceModule {

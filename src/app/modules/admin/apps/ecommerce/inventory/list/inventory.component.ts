@@ -14,6 +14,7 @@ import { StepperOrientation } from '@angular/material/stepper';
 import * as Excel from 'exceljs/dist/exceljs.min.js';
 import { MatChipInputEvent } from '@angular/material/chips';
 import { COMMA, ENTER } from '@angular/cdk/keycodes';
+import { LabelType, Options } from '@angular-slider/ngx-slider';
 
 @Component({
     selector: 'inventory-list',
@@ -48,6 +49,14 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
     enableProductAddForm = false;
     vendors: InventoryVendor[];
     private _unsubscribeAll: Subject<any> = new Subject<any>();
+
+    // Slider
+    sliderMinValue: number = 10;
+    sliderMaxValue: number = 50;
+    sliderOptions: Options = {
+        floor: 1,
+        ceil: 120
+    };
 
     pageSize: number;
     pageNo: number;
@@ -133,6 +142,7 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
         supplierValue: ['', Validators.required],
         radio: ['', Validators.required]
     });
+
     secondFormGroup = this._formBuilder.group({
         productName: ['', Validators.required],
         productNumber: ['', Validators.required],
@@ -213,10 +223,14 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
         this.pageSize = 10;
         this.pageNo = 0;
 
+        this.firstFormGroup = this._formBuilder.group({
+            supplierValue: ['', Validators.required],
+            radio: [this.addProductTypeRadios[0], Validators.required]
+        });
         this.filteredOptions = this.firstFormGroup.get("supplierValue").valueChanges.pipe(
             startWith(''),
-            map(value => (typeof value === 'string' ? value : value.storeName)),
-            map(storeName => (storeName ? this._filter(storeName) : this.options.slice())),
+            map(value => (typeof value === 'string' ? value : value.companyName)),
+            map(companyName => (companyName ? this._filter(companyName) : this.options.slice())),
         );
 
         this.filteredStates = this.netCostForm.get("redPriceComment").valueChanges.pipe(
@@ -290,13 +304,13 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
     }
 
     displayFn(user): string {
-        return user && user.storeName ? user.storeName : '';
+        return user && user.companyName ? user.companyName : '';
     }
 
-    private _filter(storeName: string): any[] {
-        const filterValue = storeName.toLowerCase();
+    private _filter(companyName: string): any[] {
+        const filterValue = companyName.toLowerCase();
 
-        return this.options.filter(option => option.storeName.toLowerCase().includes(filterValue));
+        return this.options.filter(option => option.companyName.toLowerCase().includes(filterValue));
     }
 
     /**
@@ -345,74 +359,72 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
         const netCostForm = this.netCostForm.getRawValue();
         const secondFormGroup = this.secondFormGroup.getRawValue();
         const firstFormGroup = this.firstFormGroup.getRawValue();
-        // console.log("featureForm", featureForm)
-        // console.log("netCostForm", netCostForm)
-        console.log("secondFormGroup", secondFormGroup)
-        // console.log("firstFormGroup", firstFormGroup)
 
         const { supplierValue, radio } = firstFormGroup;
-        const { technoLogo, supplierLink, mainDescription, weight, productWidth, productLength, productHeight, caseWidth, caseLength, caseHeight, overPackageCharge } = secondFormGroup;
+        const { technoLogo, supplierLink, mainDescription, miniDescription, weight, productWidth, productLength, productHeight, caseWidth, caseLength, caseHeight, overPackageCharge, keywords, productNumber, productName } = secondFormGroup;
+        const { msrp, coOp, internalComments } = netCostForm;
 
         const productId = null;
 
         const shipping = {
-            prod_time_min: 0 || null,
-            prod_time_max: 5 || null,
-            units_in_shipping_package: 1 || null,
-            bln_include_shipping: 1 || null,
-            fob_location_list: [1, 2]
+            bln_include_shipping: 1,
+            fob_location_list: [],
+            prod_time_max: this.sliderMaxValue || 10,
+            prod_time_min: this.sliderMinValue || 7,
+            units_in_shipping_package: 1
         };
 
         const physics = {
-            product_id: productId,
-            weight: weight || null,
-            weight_in_units: 1 || null,
-            dimensions: `${productWidth},${productLength},${productHeight}` || null,
+            bln_apparel: radio.name === "Apparel Item" ? true : false,
+            dimensions: null,
             over_pack_charge: overPackageCharge || null,
-            bln_apparel: true,
-            shipping: shipping || null
+            product_id: productId,
+            shipping: shipping,
+            weight: weight || null,
+            weight_in_units: null
         };
 
         const flatRate = {
-            product_id: productId,
-            flat_rate_shipping: 1
+            flat_rate_shipping: 1,
+            product_id: null
         };
 
         const caseDimension = {
-            product_id: productId,
             case_height: caseHeight || null,
+            case_length: caseLength || null,
             case_width: caseWidth || null,
-            case_length: caseLength || null
+            product_id: null
         };
-        // `${secondFormGroup.quantityOne},${secondFormGroup.quantityTwo},${secondFormGroup.quantityThree},${secondFormGroup.quantityFour},${secondFormGroup.quantityFive},${secondFormGroup.quantitySix}`
+
         const caseQuantities = {
-            product_id: productId,
-            case_quantities: [1, 2, 3] || null
+            case_quantities: [1, 2, 3, 4],
+            product_id: null
         };
 
         const netCost = {
-            product_id: productId,
-            quantity_list: [1, 2, 3],
+            blank_cost_list: [0, 1, 2],
+            coop_id: coOp || "",
+            cost_comment: internalComments || "",
             cost_list: [1, 2, 3],
-            blank_cost_list: [1, 2, 3],
-            cost_comment: null,
-            live_cost_comment: netCostForm.internalComments || null,
-            coop_id: netCostForm.coOp || null,
-            msrp: netCostForm.msrp || null
+            live_cost_comment: internalComments || "",
+            msrp: msrp || "",
+            product_id: productId,
+            quantity_list: [1, 2, 3]
         };
 
         const description = {
-            name: "test",
-            product_number: "12354",
-            product_desc: secondFormGroup.mainDescription || null,
-            mini_desc: secondFormGroup.miniDescription || null,
-            keywords: secondFormGroup.keywords || null,
+            name: productName,
+            product_number: productNumber,
+            description: true,
+            product_desc: mainDescription || " ",
+            mini_desc: miniDescription || null,
+            keywords: keywords || null,
             notes: null,
-            supplier_link: secondFormGroup.supplierLink || null,
-            meta_desc: secondFormGroup.string || null,
-            sex: null,
-            search_keywords: secondFormGroup.keywords || null,
             purchase_order_notes: null,
+            supplier_link: supplierLink || null,
+            meta_desc: miniDescription || null,
+            sex: null,
+            search_keywords: keywords || null,
             last_update_by: null,
             last_update_date: null,
             update_history: null,
@@ -421,11 +433,11 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
 
         const payload = {
             product: true,
-            supplier_id: supplierValue.pk_storeID || null,
+            supplier_id: supplierValue.pk_companyID,
             item_type: radio.name === "Apparel Item" ? 2 : 1,
             technologo_sku: technoLogo || null,
-            bln_group_run: false || null,
-            permalink: secondFormGroup.supplierLink || null,
+            bln_group_run: false,
+            permalink: null,
             description: description,
             physics: physics,
             flat_rate: flatRate,
@@ -434,89 +446,10 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
             shipping: shipping,
             net_cost: netCost
         };
-        // console.log("netCost =>", netCost);
-        // console.log("caseQuantities =>", caseQuantities);
-        // console.log("caseDimension =>", caseDimension);
-        // console.log("flatRate =>", flatRate);
-        // console.log("physics =>", physics);
-        // console.log("shipping =>", shipping);
-        console.log("payload =>", payload);
-        const data = {
-            product: true,
-            supplier_id: 160,
-            item_type: 2,
-            technologo_sku: null,
-            bln_group_run: false,
-            permalink: "",
-            description: {
-                name: secondFormGroup.productName,
-                product_number: secondFormGroup.productNumber,
-                description: true,
-                product_desc: "test description",
-                mini_desc: null,
-                keywords: null,
-                notes: null,
-                supplier_link: null,
-                meta_desc: null,
-                sex: null,
-                search_keywords: null,
-                purchase_order_notes: null,
-                last_update_by: null,
-                last_update_date: null,
-                update_history: null,
-                product_id: null
-            },
-            physics: {
-                bln_apparel: true,
-                dimensions: ",,",
-                over_pack_charge: "",
-                product_id: null,
-                shipping: {
-                    bln_include_shipping: 1,
-                    fob_location_list: [1, 2],
-                    prod_time_max: 5,
-                    prod_time_min: 0,
-                    units_in_shipping_package: 1
-                },
-                weight: null,
-                weight_in_units: null
-            },
-            flat_rate: {
-                flat_rate_shipping: 1,
-                product_id: null
-            },
-            case_dimension: {
-                case_height: null,
-                case_length: null,
-                case_width: null,
-                product_id: null
-            },
-            case_quantities: {
-                case_quantities: [1, 2, 3, 4],
-                product_id: null
-            },
-            shipping: {
-                bln_include_shipping: 1,
-                fob_location_list: [2, 4],
-                prod_time_max: 5,
-                prod_time_min: 0,
-                units_in_shipping_package: 1
-            },
-            net_cost: {
-                blank_cost_list: [0, 1, 2],
-                coop_id: "",
-                cost_comment: "",
-                cost_list: [1, 2, 3],
-                live_cost_comment: "",
-                msrp: "",
-                product_id: null,
-                quantity_list: [1, 2, 3]
-            }
-        };
+        console.log("payload", payload);
 
-        console.log("data", data)
         this.createProductLoader = true;
-        this._inventoryService.addProduct(data)
+        this._inventoryService.addProduct(payload)
             .subscribe((response) => {
                 this.createProductLoader = false;
                 this.showFlashMessage(
@@ -602,13 +535,13 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
     }
     enableProductAddFormFn(): void {
         this.firstFormLoader = true;
-        this._inventoryService.getAllStores()
+        this._inventoryService.getAllSuppliers()
             .pipe(takeUntil(this._unsubscribeAll))
             .subscribe((supplier) => {
+                console.log("supplier", supplier)
                 this.firstFormLoader = false;
                 this.options = supplier["data"];
                 this.enableProductAddForm = !this.enableProductAddForm;
-                console.log("supplier", this.options);
             })
     };
 

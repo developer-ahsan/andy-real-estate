@@ -322,6 +322,16 @@ export class InventoryService {
         });
     }
 
+    getAllSuppliers(): Observable<any[]> {
+        return this._httpClient.get<any[]>(environment.stores, {
+            params: {
+                supplier: true,
+                bln_active: 1,
+                size: 2000
+            }
+        });
+    }
+
     getMarginsByProductId(productId): Observable<any[]> {
         return this._httpClient.get<any[]>(environment.products, {
             params: {
@@ -515,7 +525,7 @@ export class InventoryService {
     addDefaultImage(payload) {
         const headers = {
             'Content-Type': 'application/x-www-form-urlencoded',
-            'Access-Control-Allow-Origin': '*',
+            'Access-Control-Allow-Origin': '*'
         };
         return this._httpClient.post(
             `${environment.mediaAccessUrl}`, payload, { headers });
