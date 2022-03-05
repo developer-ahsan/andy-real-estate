@@ -2,7 +2,7 @@ import { AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, O
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { MatCheckboxChange } from '@angular/material/checkbox';
 import { MatPaginator } from '@angular/material/paginator';
-import { MatSort } from '@angular/material/sort';
+import { MatSort, Sort } from '@angular/material/sort';
 import { merge, Observable, Subject } from 'rxjs';
 import { debounceTime, map, startWith, switchMap, takeUntil } from 'rxjs/operators';
 import { fuseAnimations } from '@fuse/animations';
@@ -138,6 +138,58 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
         }
     }
 
+    reviewForm = this._formBuilder.group({
+        supplierValue: ['', Validators.required],
+        radio: ['', Validators.required],
+        productName: ['', Validators.required],
+        productNumber: ['', Validators.required],
+        caseHeight: [''],
+        caseWidth: [''],
+        caseLength: [''],
+        productHeight: [''],
+        productWidth: [''],
+        productLength: [''],
+        weight: [''],
+        doChargesApply: ['No'],
+        brandName: ['', Validators.required],
+        overPackageCharge: [''],
+        technoLogo: [''],
+        supplierLink: [''],
+        mainDescription: [''],
+        miniDescription: [''],
+        keywords: [''],
+        quantityOne: [''],
+        quantityTwo: [''],
+        quantityThree: [''],
+        quantityFour: [''],
+        quantityFive: [''],
+        quantitySix: [''],
+        firstQuantity: [''],
+        secondQuantity: [''],
+        thirdQuantity: [''],
+        fourthQuantity: [''],
+        fifthQuantity: [''],
+        sixthQuantity: [''],
+        standardCostOne: [''],
+        standardCostTwo: [''],
+        standardCostThree: [''],
+        standardCostFour: [''],
+        standardCostFive: [''],
+        standardCostSix: [''],
+        standardCostDropOne: [''],
+        standardCostDropTwo: [''],
+        standardCostDropThree: [''],
+        standardCostDropFour: [''],
+        standardCostDropFive: [''],
+        standardCostDropSix: [''],
+        msrp: [''],
+        internalComments: [''],
+        redPriceComment: [''],
+        coOp: [""],
+        order: ['1'],
+        feature: ['', Validators.required]
+    });
+
     firstFormGroup = this._formBuilder.group({
         supplierValue: ['', Validators.required],
         radio: ['', Validators.required]
@@ -169,12 +221,12 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
         quantitySix: ['']
     });
     netCostForm = this._formBuilder.group({
-        quantityOne: [''],
-        quantityTwo: [''],
-        quantityThree: [''],
-        quantityFour: [''],
-        quantityFive: [''],
-        quantitySix: [''],
+        firstQuantity: [''],
+        secondQuantity: [''],
+        thirdQuantity: [''],
+        fourthQuantity: [''],
+        fifthQuantity: [''],
+        sixthQuantity: [''],
         standardCostOne: [''],
         standardCostTwo: [''],
         standardCostThree: [''],
@@ -223,10 +275,7 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
         this.pageSize = 10;
         this.pageNo = 0;
 
-        this.firstFormGroup = this._formBuilder.group({
-            supplierValue: ['', Validators.required],
-            radio: [this.addProductTypeRadios[0], Validators.required]
-        });
+        this.firstFormGroup.controls['radio'].setValue(this.addProductTypeRadios[0]);
         this.filteredOptions = this.firstFormGroup.get("supplierValue").valueChanges.pipe(
             startWith(''),
             map(value => (typeof value === 'string' ? value : value.companyName)),
@@ -317,28 +366,6 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
      * After view init
      */
     ngAfterViewInit(): void {
-        // If the user changes the sort order...
-        this._sort.sortChange
-            .pipe(takeUntil(this._unsubscribeAll))
-            .subscribe(() => {
-                // Reset back to the first page
-                this._paginator.pageIndex = 0;
-
-                // Close the details
-                this.closeDetails();
-            });
-
-        // Get products if sort or page changes
-        merge(this._sort.sortChange, this._paginator.page).pipe(
-            switchMap(() => {
-                this.closeDetails();
-                this.isLoading = true;
-                return this._inventoryService.getProducts(this._paginator.pageIndex, this._paginator.pageSize, this._sort.active, this._sort.direction);
-            }),
-            map(() => {
-                this.isLoading = false;
-            })
-        ).subscribe();
     }
 
     /**
@@ -359,10 +386,9 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
         const netCostForm = this.netCostForm.getRawValue();
         const secondFormGroup = this.secondFormGroup.getRawValue();
         const firstFormGroup = this.firstFormGroup.getRawValue();
+        const finalForm = this.reviewForm.getRawValue();
 
-        const { supplierValue, radio } = firstFormGroup;
-        const { technoLogo, supplierLink, mainDescription, miniDescription, weight, productWidth, productLength, productHeight, caseWidth, caseLength, caseHeight, overPackageCharge, keywords, productNumber, productName } = secondFormGroup;
-        const { msrp, coOp, internalComments } = netCostForm;
+        const { supplierValue, radio, technoLogo, supplierLink, mainDescription, miniDescription, weight, caseWidth, caseLength, caseHeight, overPackageCharge, keywords, productNumber, productName, msrp, coOp, internalComments } = finalForm;
 
         const productId = null;
 
@@ -453,7 +479,7 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
             .subscribe((response) => {
                 this.createProductLoader = false;
                 this.showFlashMessage(
-                    response["succcess"] === true ?
+                    response["success"] === true ?
                         'success' :
                         'error'
                 );
@@ -466,6 +492,50 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
         this.selectedProduct = null;
     }
 
+    selectionChange(event) {
+        const { selectedIndex } = event;
+        if (selectedIndex === 4) {
+            const firstForm = this.firstFormGroup.value;
+            const secondForm = this.secondFormGroup.value;
+            const thirdForm = this.netCostForm.value;
+            const fourthForm = this.featureForm.value;
+            const finalForm = {
+                ...firstForm,
+                ...secondForm,
+                ...thirdForm,
+                ...fourthForm
+            };
+            console.log("finalForm", finalForm)
+            this.reviewForm.patchValue(finalForm);
+        }
+    }
+
+    compare(a: number | string, b: number | string, isAsc: boolean) {
+        return (a < b ? -1 : 1) * (isAsc ? 1 : -1);
+    }
+
+    sortData(sort: Sort) {
+        let sortedData = this.products.slice();
+        const data = this.products.slice();
+        if (!sort.active || sort.direction === '') {
+            sortedData = data;
+            return;
+        }
+
+        sortedData = data.sort((a, b) => {
+            const isAsc = sort.direction === 'asc';
+            switch (sort.active) {
+                case 'pk_productID':
+                    return this.compare(a.pk_productID, b.pk_productID, isAsc);
+                case 'productName':
+                    return this.compare(a.productName, b.productName, isAsc);
+                default:
+                    return 0;
+            }
+        });
+        this.products = sortedData;
+        this.productsCount = sortedData.length;
+    }
     /**
      * Show flash message
      */
@@ -495,10 +565,11 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
             keyword = '';
         }
 
-        this._inventoryService.getProductByProductId(keyword)
+        this._inventoryService.searchProductKeywords(keyword)
             .pipe(takeUntil(this._unsubscribeAll))
             .subscribe((products) => {
                 this.products = products["data"];
+                this.productsCount = products["totalRecords"];
                 this.isLoading = false;
                 // Mark for check
                 this._changeDetectorRef.markForCheck();
@@ -508,20 +579,13 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
     productDetails(productId) {
         this.isLoading = true;
         this._router.navigate([`/apps/ecommerce/inventory/${productId}`]);
-    }
+    };
 
-    /**
-     * Track by function for ngFor loops
-     *
-     * @param index
-     * @param item
-     */
-    trackByFn(index: number, item: any): any {
-        return item.id || index;
-    }
+    getProductsList(): void {
+        // Add products form multi stepper back to products
 
-    getList(): void {
-        this.backListLoader = true;
+        this.backListLoader = true;  // Loader for the button
+
         // Get the products
         this._inventoryService.getProductsList(10, 1)
             .pipe(takeUntil(this._unsubscribeAll))
@@ -529,19 +593,19 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
                 this.products = products["data"];
                 this.productsCount = products["totalRecords"];
                 this.backListLoader = true;
-                this.firstFormLoader = false;
                 this.enableProductAddForm = false;
+                this.firstFormLoader = false;
             });
-    }
+    };
+
     enableProductAddFormFn(): void {
         this.firstFormLoader = true;
         this._inventoryService.getAllSuppliers()
             .pipe(takeUntil(this._unsubscribeAll))
             .subscribe((supplier) => {
-                console.log("supplier", supplier)
-                this.firstFormLoader = false;
                 this.options = supplier["data"];
-                this.enableProductAddForm = !this.enableProductAddForm;
+                this.firstFormLoader = false;
+                this.enableProductAddForm = true;
             })
     };
 

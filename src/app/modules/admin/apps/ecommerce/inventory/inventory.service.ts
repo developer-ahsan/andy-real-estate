@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { BehaviorSubject, Observable, of, throwError } from 'rxjs';
 import { filter, map, switchMap, take, tap } from 'rxjs/operators';
-import { AddCore, AddFeature, AddPackage, CaseDimensionObj, CaseQuantityObj, Comment, CreateProduct, DeleteComment, duplicateObj, FlatRateShippingObj, InventoryBrand, InventoryCategory, InventoryPagination, InventoryTag, InventoryVendor, NetCostUpdate, PhysicsObj, ProductsList, UpdateMargin, videoObj, Warehouse } from 'app/modules/admin/apps/ecommerce/inventory/inventory.types';
+import { AddCore, AddFeature, AddPackage, CaseDimensionObj, CaseQuantityObj, Comment, CreateProduct, DeleteComment, duplicateObj, FlatRateShippingObj, InventoryBrand, InventoryCategory, InventoryPagination, InventoryTag, InventoryVendor, Licensing, NetCostUpdate, PhysicsObj, ProductsList, UpdateMargin, videoObj, Warehouse } from 'app/modules/admin/apps/ecommerce/inventory/inventory.types';
 import { environment } from 'environments/environment';
 import { productDescription } from 'app/modules/admin/apps/ecommerce/inventory/inventory.types';
 import { AuthService } from 'app/core/auth/auth.service';
@@ -214,6 +214,15 @@ export class InventoryService {
             params: {
                 list: true,
                 product_id: productId
+            }
+        });
+    }
+
+    searchProductKeywords(keyword): Observable<ProductsList[]> {
+        return this._httpClient.get<ProductsList[]>(environment.products, {
+            params: {
+                list: true,
+                keyword: keyword
             }
         });
     }
@@ -644,7 +653,7 @@ export class InventoryService {
     updateCaseQuantity(payload: CaseQuantityObj) {
         const headers = { 'Authorization': `Bearer ${this._authService.accessToken}` };
         return this._httpClient.put(
-            `${environment.products}`, payload, { headers });
+            environment.products, payload, { headers });
     }
 
     /**
@@ -653,7 +662,16 @@ export class InventoryService {
     updateVideo(payload: videoObj) {
         const headers = { 'Authorization': `Bearer ${this._authService.accessToken}` };
         return this._httpClient.put(
-            `https://consolidus-staging.azurewebsites.net/api/products`, payload, { headers });
+            environment.products, payload, { headers });
+    }
+
+    /**
+   * UPDATE licensing terms
+   */
+    updateLicensingTerms(payload: Licensing) {
+        const headers = { 'Authorization': `Bearer ${this._authService.accessToken}` };
+        return this._httpClient.put(
+            environment.products, payload, { headers });
     }
     /**
      * Get products

@@ -15,26 +15,21 @@ export class LicensingTermComponent implements OnInit {
   @Output() isLoadingChange = new EventEmitter<boolean>();
   private _unsubscribeAll: Subject<any> = new Subject<any>();
 
-  panelOpenState = false;
-
-  selected;
   selectedTerm;
+  selectedSubCategItems = [];
   subCategoryItems = [];
-  foods = [];
+  licensingCompanies = [];
   licensingTerms = [];
   licensingForm: FormGroup;
   loader = false;
-
   expansionLoader = false;
-
   selectedTermObject = null;
-
   selectedRadioOption = null;
-
   termUpdateLoader = false;
-
+  selectedTermUpdateLoader = false;
   radioButtonForm = false;
-  seasons = [];
+
+  flashMessage: 'success' | 'error' | null = null;
 
   constructor(
     private _changeDetectorRef: ChangeDetectorRef,
@@ -56,22 +51,29 @@ export class LicensingTermComponent implements OnInit {
       .subscribe((companyTerms) => {
         if (companyTerms["data"]?.length) {
           this.radioButtonForm = true;
+
+          // Mark for check
+          this._changeDetectorRef.markForCheck();
           this._inventoryService.getLicensingTerms(pk_productID)
             .pipe(takeUntil(this._unsubscribeAll))
             .subscribe((licensingTerms) => {
               this.licensingTerms = licensingTerms["data"];
+              // Mark for check
+              this._changeDetectorRef.markForCheck();
               for (const term of this.licensingTerms) {
                 if (term.Selected === "true") {
-                  this.selectedTerm = term
+                  this.selectedTerm = term;
+                  this.selectedTermObject = term;
                 }
               }
-              console.log("this.licensingTerms", this.licensingTerms, this.selectedTerm);
+              console.log("this.selectedTerm 1", this.selectedTerm);
               this._inventoryService.getLicensingSubCategory(this.selectedTerm.pk_licensingTermID, pk_productID)
                 .pipe(takeUntil(this._unsubscribeAll))
                 .subscribe((subCategories) => {
-                  this.subCategoryItems = subCategories["data"];
-                  console.log("this.subCategoryItems 1", this.subCategoryItems);
-                  // this._changeDetectorRef.markForCheck();
+                  this.selectedSubCategItems = subCategories["data"];
+
+                  // Mark for check
+                  this._changeDetectorRef.markForCheck();
                   this.isLoadingChange.emit(false);
                 });
             });
@@ -79,24 +81,30 @@ export class LicensingTermComponent implements OnInit {
           this._inventoryService.getLicensingCompany()
             .pipe(takeUntil(this._unsubscribeAll))
             .subscribe((licensingCompany) => {
-              this.foods = licensingCompany["data"];
-              console.log("this.getLicensingCompany", this.foods);
+              this.licensingCompanies = licensingCompany["data"];
+              // Mark for check
+              this._changeDetectorRef.markForCheck();
               this._inventoryService.getLicensingTerms(pk_productID)
                 .pipe(takeUntil(this._unsubscribeAll))
                 .subscribe((licensingTerms) => {
                   this.licensingTerms = licensingTerms["data"];
+
+                  console.log("this.licensingTerms 2", this.licensingTerms);
+                  // Mark for check
+                  this._changeDetectorRef.markForCheck();
                   for (const term of this.licensingTerms) {
                     if (term.Selected === "true") {
-                      this.selectedTerm = term.pk_licensingTermID
+                      this.selectedTerm = term;
+                      this.selectedTermObject = term;
                     }
                   }
-                  console.log("this.licensingTerms", this.licensingTerms, this.selectedTerm);
+                  console.log("this.selectedTerm 2", this.selectedTerm);
                   this._inventoryService.getLicensingSubCategory(this.selectedTerm.pk_licensingTermID, pk_productID)
                     .pipe(takeUntil(this._unsubscribeAll))
                     .subscribe((subCategories) => {
-                      this.subCategoryItems = subCategories["data"];
-                      console.log("this.subCategoryItems 2", this.subCategoryItems);
-                      // this._changeDetectorRef.markForCheck();
+                      this.selectedSubCategItems = subCategories["data"];
+                      // Mark for check
+                      this._changeDetectorRef.markForCheck();
                       this.isLoadingChange.emit(false);
                     });
                 });
@@ -114,24 +122,53 @@ export class LicensingTermComponent implements OnInit {
   }
 
   expansionOpened(license): void {
-    if (this.selectedTerm.pk_licensingTermID === license.pk_licensingTermID) {
-      return;
-    }
-    console.log("license", license);
+    // if (this.selectedTerm.pk_licensingTermID === license.pk_licensingTermID) {
+    //   this.subCategoryItems = this.selectedSubCategItems;
+    //   return;
+    // };
     this.selectedTermObject = license;
     const { pk_licensingTermID } = license;
     const { pk_productID } = this.selectedProduct;
-    this.toggleExpansionLoader();
+    this.expansionLoader = true;
     this._inventoryService.getLicensingSubCategory(pk_licensingTermID, pk_productID)
       .pipe(takeUntil(this._unsubscribeAll))
       .subscribe((subCategories) => {
-        this.toggleExpansionLoader();
         this.subCategoryItems = subCategories["data"];
-        console.log("this.subCategoryItems 3", this.subCategoryItems);
+        this.expansionLoader = false;
+
+        // Mark for check
+        this._changeDetectorRef.markForCheck();
+        console.log("this.subCategoryItems", this.subCategoryItems);
       });
   }
   continue(): void {
     this.radioButtonForm = true;
+  }
+
+  updateSelectedTerm(): void {
+    const { pk_productID } = this.selectedProduct;
+    const { pk_licensingTermID } = this.selectedTerm;
+
+    const payload = {
+      product_id: pk_productID,
+      licensing_term_id: pk_licensingTermID,
+      sub_category_id: this.selectedRadioOption?.pk_licensingTermSubCategoryID || 0,
+      call_type: "update",
+      licensing_term: true
+    };
+
+    console.log("payload", payload);
+    this.selectedTermUpdateLoader = true;
+    this._inventoryService.updateLicensingTerms(payload)
+      .subscribe((response) => {
+        this.selectedTermUpdateLoader = false;
+        this.showFlashMessage(
+          response["success"] === true ?
+            'success' :
+            'error'
+        );
+        this.ngOnInit();
+      });
   }
 
   updateTerm(): void {
@@ -142,12 +179,41 @@ export class LicensingTermComponent implements OnInit {
       product_id: pk_productID,
       licensing_term_id: this.selectedTermObject?.pk_licensingTermID || pk_licensingTermID,
       sub_category_id: this.selectedRadioOption?.pk_licensingTermSubCategoryID || 0,
-      call_type: "put",
+      call_type: "update",
       licensing_term: true
     };
 
-    this.termUpdateLoader = true;
     console.log("payload", payload);
-    this.termUpdateLoader = false;
+    this.termUpdateLoader = true;
+    this._inventoryService.updateLicensingTerms(payload)
+      .subscribe((response) => {
+        this.termUpdateLoader = false;
+        this.showFlashMessage(
+          response["success"] === true ?
+            'success' :
+            'error'
+        );
+        this.ngOnInit();
+      });
+  }
+
+  /**
+     * Show flash message
+     */
+  showFlashMessage(type: 'success' | 'error'): void {
+    // Show the message
+    this.flashMessage = type;
+
+    // Mark for check
+    this._changeDetectorRef.markForCheck();
+
+    // Hide it after 3 seconds
+    setTimeout(() => {
+
+      this.flashMessage = null;
+
+      // Mark for check
+      this._changeDetectorRef.markForCheck();
+    }, 3000);
   }
 }
