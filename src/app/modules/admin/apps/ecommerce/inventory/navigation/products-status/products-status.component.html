@@ -7,22 +7,23 @@
             <mat-divider></mat-divider>
             <div class="row my-5 px-3">
                 <div class="col-lg-3 col-md-3 col-6">
-                    <mat-checkbox> Un/select all </mat-checkbox>
+                    <mat-checkbox (click)="selectAll()"> Un/select all </mat-checkbox>
                 </div>
                 <div class="col-lg-3 col-md-3 col-6">
-                    <mat-checkbox> Copy Image </mat-checkbox>
+                    <mat-checkbox (click)="copyImageToggle()"> Copy Image </mat-checkbox>
                 </div>
                 <div class="col-lg-3 col-md-3 col-6">
-                    <mat-checkbox> Take Online </mat-checkbox>
+                    <mat-checkbox [disabled]="true"> Take Online </mat-checkbox>
                 </div>
                 <div class="col-lg-3 col-md-3 col-6">
-                    <mat-checkbox> Add to rapid build </mat-checkbox>
+                    <mat-checkbox [checked]="isRapidBuild" (click)="rapidBuildToggle()"> Add to rapid build
+                    </mat-checkbox>
                 </div>
                 <div class="col-lg-4 col-md- 4 col-12">
                     <mat-checkbox> Copy Margins from last store </mat-checkbox>
                 </div>
             </div>
-            <div class="row px-3">
+            <div class="row px-3" *ngIf="isRapidBuild">
                 <div class="col-12">
                     <mat-form-field class="w-full">
                         <mat-label>RapidBuild Comments:</mat-label>
@@ -30,9 +31,26 @@
                     </mat-form-field>
                 </div>
             </div>
+            <div class="row px-3" *ngIf="isCopyImage">
+                <div class="col-12">
+                    <mat-form-field class="w-full">
+                        <mat-label>Select store to pull image from:</mat-label>
+                        <mat-select [(value)]="selected">
+                            <mat-option>None</mat-option>
+                            <mat-option value="option1">Option 1</mat-option>
+                            <mat-option value="option2">Option 2</mat-option>
+                            <mat-option value="option3">Option 3</mat-option>
+                        </mat-select>
+                    </mat-form-field>
+                </div>
+            </div>
+            <div class="row mb-5 px-3">
+                <mat-divider></mat-divider>
+            </div>
             <div class="row mb-5 px-3">
                 <div class="col-lg-3 col-md-3 col-6" *ngFor="let store of storesData">
-                    <mat-checkbox style="font-size: 10.5px;"> {{store.storeName}} </mat-checkbox>
+                    <mat-checkbox [checked]="allSelected" style="font-size: 10.5px;"> {{store.storeName}}
+                    </mat-checkbox>
                 </div>
             </div>
             <mat-divider></mat-divider>

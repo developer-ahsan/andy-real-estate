@@ -42,18 +42,18 @@ export class InventoryService {
         },
         {
             id: 5,
+            title: 'Imprints',
+            icon: 'mat_outline:checklist',
+        },
+        {
+            id: 6,
             title: 'Colors',
             icon: 'mat_outline:color_lens',
         },
         {
-            id: 6,
+            id: 7,
             title: 'Features',
             icon: 'mat_outline:checklist'
-        },
-        {
-            id: 7,
-            title: 'Default Margins',
-            icon: 'mat_outline:settings',
         },
         {
             id: 8,
@@ -67,64 +67,69 @@ export class InventoryService {
         },
         {
             id: 10,
+            title: 'Default Margins',
+            icon: 'mat_outline:settings',
+        },
+        {
+            id: 11,
             title: 'Video',
             icon: 'mat_solid:video_settings',
         },
         {
-            id: 11,
+            id: 12,
+            title: 'Swatches',
+            icon: 'mat_outline:image',
+        },
+        {
+            id: 13,
             title: 'Artwork Template',
             icon: 'heroicons_outline:template',
         },
         {
-            id: 12,
+            id: 15,
             title: 'Product Reviews',
             icon: 'mat_outline:reviews',
         },
         {
-            id: 13,
-            title: 'Warehouse Options',
-            icon: 'mat_outline:house_siding',
-        },
-        {
-            id: 14,
-            title: 'Core Products',
-            icon: 'mat_outline:group_work',
-        },
-        {
-            id: 15,
-            title: 'Update History',
-            icon: 'mat_outline:history',
-        },
-        {
             id: 16,
-            title: 'Order History',
-            icon: 'mat_outline:history',
-        },
-        {
-            id: 17,
-            title: 'Internal Notes',
-            icon: 'mat_outline:notes',
-        },
-        {
-            id: 18,
-            title: 'Duplicate',
-            icon: 'heroicons_outline:duplicate'
-        },
-        {
-            id: 19,
-            title: 'Imprints',
-            icon: 'mat_outline:checklist',
-        },
-        {
-            id: 20,
             title: 'Dietary Information',
             icon: 'mat_outline:info',
         },
         {
-            id: 21,
+            id: 17,
             title: 'Lisencing Term',
             icon: 'mat_outline:picture_in_picture',
         },
+        {
+            id: 18,
+            title: 'Warehouse Options',
+            icon: 'mat_outline:house_siding',
+        },
+        {
+            id: 19,
+            title: 'Update History',
+            icon: 'mat_outline:history',
+        },
+        {
+            id: 20,
+            title: 'Order History',
+            icon: 'mat_outline:history',
+        },
+        {
+            id: 21,
+            title: 'Internal Notes',
+            icon: 'mat_outline:notes',
+        },
+        {
+            id: 22,
+            title: 'Core Products',
+            icon: 'mat_outline:group_work',
+        },
+        {
+            id: 23,
+            title: 'Duplicate',
+            icon: 'heroicons_outline:duplicate'
+        }
     ]
 
     /**

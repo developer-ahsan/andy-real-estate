@@ -1,0 +1,59 @@
+<ngx-skeleton-loader count="8" appearance="line" animation="pulse" *ngIf="isLoading">
+</ngx-skeleton-loader>
+<div class="row my-3" *ngIf="!isLoading">
+    <div class="col-12">
+        <div class="p-2">
+            <div class="text-info font-size-medium">Current Color/Swatch Images</div>
+            <div class="text-md font-semibold pt-2">*You can only have maximum of five blank images per product.</div>
+        </div>
+        <div class="p-2" *ngIf="!imagesArray.length">
+            <div class="font-semibold text-danger">
+                No swatch/color image for this product.
+            </div>
+        </div>
+        <div class="row p-2" *ngIf="imagesArray.length">
+            <div class="col-lg-4 col-12" *ngFor="let image of imagesArray">
+                <fuse-card class="flex flex-col my-1 w-full filter-shopping hover: cursor-pointer">
+                    <div class="relative">
+                        <div class="absolute flex flex-col top-0 right-0 p-3">
+                            <button mat-icon-button>
+                                <mat-icon class="icon-size-5 text-danger text-opacity-50"
+                                    [svgIcon]="'heroicons_solid:trash'"></mat-icon>
+                            </button>
+                        </div>
+                        <img class="object-cover rounded-2xl shadow-sm" src="{{image}}">
+                    </div>
+                </fuse-card>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row my-3" *ngIf="!isLoading">
+    <div class="col-12">
+        <mat-card class="w-full p-2 h-full rounded-2xl shadow-lg">
+            <mat-card-title class="text-info font-size-medium">
+                Add a new Swatch Image <span class="text-danger text-sm">(JPG only!)</span>
+            </mat-card-title>
+            <mat-divider></mat-divider>
+            <form [formGroup]="imageUploadForm">
+                <div class="row p-2">
+                    <div class="col-lg-10 col-md-10 col-12">
+                        <input type="file" accept=".jpg" [formControlName]="'image'" (change)="upload($event)"
+                            style="line-height: 2.5;" />
+                    </div>
+                    <div class="col-lg-2 col-md-2 col-12">
+                        <button (click)="uploadImage()" class="float-right" mat-stroked-button
+                            [matTooltip]="'(JPG only!)'">
+                            <mat-icon [svgIcon]="'heroicons_outline:plus'"></mat-icon>
+                            <span class="ml-1 mr-1">Add swatch Image</span>
+                        </button>
+                    </div>
+                    <div class="col-12">
+                        <small class="text-danger font-semibold"> {{imageError}} </small>
+                    </div>
+                </div>
+            </form>
+        </mat-card>
+    </div>
+</div>

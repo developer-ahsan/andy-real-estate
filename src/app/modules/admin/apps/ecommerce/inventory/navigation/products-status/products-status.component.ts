@@ -14,8 +14,14 @@ export class ProductsStatusComponent implements OnInit {
   @Output() isLoadingChange = new EventEmitter<boolean>();
   private _unsubscribeAll: Subject<any> = new Subject<any>();
 
-
+  allStoresSelected = [];
   storesData = [];
+
+  // Boolean
+  isRapidBuild = true;
+  allSelected = false;
+  isCopyImage = false;
+
   constructor(
     private _changeDetectorRef: ChangeDetectorRef,
     private _inventoryService: InventoryService
@@ -35,5 +41,21 @@ export class ProductsStatusComponent implements OnInit {
   assignStore(): void {
     console.log("assigned store");
   }
+
+  selectAll(): void {
+    this.allSelected = !this.allSelected;
+    console.log("clicked selected/un")
+    this.allStoresSelected = this.allSelected ? this.storesData.map(function (item) {
+      return item;
+    }) : [];
+  };
+
+  rapidBuildToggle(): void {
+    this.isRapidBuild = !this.isRapidBuild;
+  };
+
+  copyImageToggle(): void {
+    this.isCopyImage = !this.isCopyImage;
+  };
 
 }

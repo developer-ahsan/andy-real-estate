@@ -23,7 +23,7 @@ export class ProductDetailsComponent implements OnInit, OnDestroy {
   selectedProduct: ProductsDetails = null;
   private _unsubscribeAll: Subject<any> = new Subject<any>();
   routes = [];
-  selectedIndex: number = 0;
+  selectedIndex: string = "Store Versions";
   not_available: string = 'N/A';
   last_updated = "";
 
@@ -98,8 +98,9 @@ export class ProductDetailsComponent implements OnInit, OnDestroy {
   // @ Public methods
   // -----------------------------------------------------------------------------------------------------
   clicked(index) {
+    const { title } = index;
     this.isLoading = true;
-    this.selectedIndex = index;
+    this.selectedIndex = title;
   }
 
   toggleDrawer() {
