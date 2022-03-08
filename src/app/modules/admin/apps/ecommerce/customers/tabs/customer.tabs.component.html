@@ -19,295 +19,279 @@
         </div>
     </div>
 
-    <div style="overflow-y: scroll;">
-        <ng-template #myCard>
-            <div class="mb-2">
-                <mat-card>
-                    <mat-card-subtitle class="text-1xl font-semibold" style="color: black;">Customer General Information
-                    </mat-card-subtitle>
-                    <mat-card-content>
-                        <mat-grid-list cols="{{breakpoint}}" rowHeight="35px" (window:resize)="onResize($event)">
-                            <mat-grid-tile>
-                                <mat-grid-tile-header>ID: </mat-grid-tile-header>
-                                <mat-grid-tile-footer>{{selectedCustomer?.pk_userID || not_available}}
-                                </mat-grid-tile-footer>
-                            </mat-grid-tile>
-                            <mat-grid-tile>
-                                <mat-grid-tile-header>Name: </mat-grid-tile-header>
-                                <mat-grid-tile-footer>{{selectedCustomer?.firstName || not_available}}
-                                    {{selectedCustomer?.lastName || not_available}}</mat-grid-tile-footer>
-                            </mat-grid-tile>
-                            <mat-grid-tile>
-                                <mat-grid-tile-header>Company: </mat-grid-tile-header>
-                                <mat-grid-tile-footer>{{selectedCustomer?.companyName || not_available}}
-                                </mat-grid-tile-footer>
-                            </mat-grid-tile>
-                            <mat-grid-tile>
-                                <mat-grid-tile-header>Email: </mat-grid-tile-header>
-                                <mat-grid-tile-footer>{{selectedCustomer?.email || not_available}}
-                                </mat-grid-tile-footer>
-                            </mat-grid-tile>
-                            <mat-grid-tile>
-                                <mat-grid-tile-header>Phone: </mat-grid-tile-header>
-                                <mat-grid-tile-footer>{{selectedCustomer?.dayPhone || not_available}}
-                                </mat-grid-tile-footer>
-                            </mat-grid-tile>
-                            <mat-grid-tile>
-                                <mat-grid-tile-header>Location: </mat-grid-tile-header>
-                                <mat-grid-tile-footer>{{selectedCustomer?.address1 || not_available}}
-                                </mat-grid-tile-footer>
-                            </mat-grid-tile>
-                            <mat-grid-tile>
-                                <mat-grid-tile-header>Fax: </mat-grid-tile-header>
-                                <mat-grid-tile-footer>{{selectedCustomer?.fax || not_available}}</mat-grid-tile-footer>
-                            </mat-grid-tile>
-                            <mat-grid-tile>
-                                <mat-grid-tile-header>Program manager: </mat-grid-tile-header>
-                                <mat-grid-tile-footer>{{selectedCustomer?.programManager || not_available}}
-                                </mat-grid-tile-footer>
-                            </mat-grid-tile>
-                            <mat-grid-tile>
-                                <mat-grid-tile-header>Status: </mat-grid-tile-header>
-                                <mat-grid-tile-footer>{{selectedCustomer?.blnActive ? "Active" : "Inactive"}}
-                                </mat-grid-tile-footer>
-                            </mat-grid-tile>
-                        </mat-grid-list>
-                    </mat-card-content>
-                </mat-card>
+    <mat-drawer-container class="sub-nav-component bg-light" autosize>
+        <mat-drawer #drawer class="sub-sidenav bg-light" [mode]="drawerMode" [opened]="drawerOpened">
+            <div *ngFor="let route of routes;let i = index">
+                <button style="padding: 15px;"
+                    [style.background-color]="i === selectedIndex ? '#e4e8ed' : 'transparent'"
+                    [ngClass]="i === selectedIndex ? 'opacity-1' : 'opacity-9'" mat-button
+                    class="w-full my-1 mr-2 justify-content-start" (click)="clicked(route)">
+                    <mat-icon svgIcon="{{route.icon}}" class="mr-1 opacity-8"></mat-icon>
+                    <span style="font-size: 13px;"> {{route.title}} </span>
+                </button>
             </div>
-        </ng-template>
+        </mat-drawer>
 
-        <!-- Main -->
-        <div class="flex flex-auto mt-2">
-            <mat-tab-group #tabGroup (selectedTabChange)="tabChanged($event)" style="overflow-x: scroll;">
-                <mat-tab label="User Info">
+        <div class="sub-sidenav-content bg-light p-2">
+            <mat-icon class="subnav-menu-icon ml-1" svgIcon="heroicons_outline:menu" (click)="toggleDrawer()">
+            </mat-icon>
+
+            <ng-template #myCard>
+                <div class="bg-card shadow-lg p-4">
+                    <div class="flex items-center">
+                        <div class="text-2xl font-bold">Customer General Information</div>
+                    </div>
+                    <div class="row w-full">
+                        <div class="col-lg-4 col-md-6 col-12">
+                            <b class="text-secondary text-sm">ID</b>
+                            <p class="float-right text-sm">{{selectedCustomer?.pk_userID || not_available}}</p>
+                        </div>
+                        <div class="col-lg-4 col-md-6 col-12">
+                            <b class="text-secondary text-sm">Name</b>
+                            <p class="float-right text-sm">
+                                {{selectedCustomer?.firstName || not_available}}
+                                {{selectedCustomer?.lastName || not_available}}
+                            </p>
+                        </div>
+                        <div class="col-lg-4 col-md-6 col-12">
+                            <b class="text-secondary text-sm">Company Name</b>
+                            <p class="float-right text-sm">{{selectedCustomer?.companyName || not_available}}</p>
+                        </div>
+                        <div class="col-lg-4 col-md-6 col-12">
+                            <b class="text-secondary text-sm">Email</b>
+                            <p class="float-right text-sm">{{selectedCustomer?.email || not_available}}</p>
+                        </div>
+                        <div class="col-lg-4 col-md-6 col-12">
+                            <b class="text-secondary text-sm">Phone</b>
+                            <p class="float-right text-sm">{{selectedCustomer?.dayPhone || not_available}}</p>
+                        </div>
+                        <div class="col-lg-4 col-md-6 col-12">
+                            <b class="text-secondary text-sm">Address</b>
+                            <p class="float-right text-sm">{{selectedCustomer?.address1 || not_available}}</p>
+                        </div>
+                        <div class="col-lg-4 col-md-6 col-12">
+                            <b class="text-secondary text-sm">Fax</b>
+                            <p class="float-right text-sm">{{selectedCustomer?.fax || not_available}}</p>
+                        </div>
+                        <div class="col-lg-4 col-md-6 col-12">
+                            <b class="text-secondary text-sm">Program Manager</b>
+                            <p class="float-right text-sm">{{selectedCustomer?.programManager || not_available}}</p>
+                        </div>
+                    </div>
+                </div>
+            </ng-template>
+            <div class="row">
+                <div class="col-12 mb-3">
                     <ng-container *ngTemplateOutlet="myCard"></ng-container>
-                    <div class="text-2xl font-semibold mt-3" style="color: #64748b;">User Info</div>
-                    <mat-divider></mat-divider>
-                    <form class="w-full pt-2" [formGroup]="selectedCustomerForm">
-                        <div class="row mb-3">
-                            <div class="col-6 flex">
-                                <p class="font-semibold mr-2">Date Registered:</p>
-                                <p>{{selectedCustomer?.date || not_available}}</p>
+                </div>
+                <div class="col-12">
+                    <ng-template [ngIf]="selectedIndex === 'User Info'">
+                        <div class="text-2xl font-semibold mt-3" style="color: #64748b;">User Info</div>
+                        <form class="w-full pt-2" [formGroup]="selectedCustomerForm">
+                            <div class="row mb-3">
+                                <div class="col-6 flex">
+                                    <p class="font-semibold mr-2">Date Registered:</p>
+                                    <p>{{selectedCustomer?.date || not_available}}</p>
+                                </div>
+                                <div class="col-6 flex">
+                                    <p class="font-semibold mr-2">IP Address:</p>
+                                    <p>{{selectedCustomer?.address2 || not_available}}</p>
+                                </div>
                             </div>
-                            <div class="col-6 flex">
-                                <p class="font-semibold mr-2">IP Address:</p>
-                                <p>{{selectedCustomer?.address2 || not_available}}</p>
+                            <div class="row">
+                                <div class="col-lg-4 col-12">
+                                    <mat-form-field class="w-full">
+                                        <mat-label>Email</mat-label>
+                                        <input matInput [formControlName]="'email'" placeholder="Email">
+                                    </mat-form-field>
+                                </div>
+                                <div class="col-lg-4 col-6">
+                                    <mat-form-field class="w-full">
+                                        <mat-label>First Name</mat-label>
+                                        <input matInput [formControlName]="'firstName'" placeholder="First Name">
+                                    </mat-form-field>
+                                </div>
+                                <div class="col-lg-4 col-6">
+                                    <mat-form-field class="w-full">
+                                        <mat-label>Last Name</mat-label>
+                                        <input matInput [formControlName]="'lastName'" placeholder="Last Name">
+                                    </mat-form-field>
+                                </div>
+                                <div class="col-lg-4 col-6">
+                                    <mat-form-field class="w-full">
+                                        <mat-label>Company Name</mat-label>
+                                        <input matInput [formControlName]="'companyName'" placeholder="Company">
+                                    </mat-form-field>
+                                </div>
+                                <div class="col-lg-4 col-6">
+                                    <mat-form-field class="w-full">
+                                        <mat-label>Store</mat-label>
+                                        <input matInput [formControlName]="'storeName'" placeholder="Store">
+                                    </mat-form-field>
+                                </div>
+                                <div class="col-lg-4 col-6">
+                                    <mat-form-field class="w-full">
+                                        <mat-label>Title</mat-label>
+                                        <input matInput [formControlName]="'title'" placeholder="Title">
+                                    </mat-form-field>
+                                </div>
+                                <div class="col-lg-4 col-6">
+                                    <mat-form-field class="w-full">
+                                        <mat-label>Fax</mat-label>
+                                        <input matInput [formControlName]="'fax'" placeholder="Fax">
+                                    </mat-form-field>
+                                </div>
+                                <div class="col-lg-4 col-6">
+                                    <mat-form-field class="w-full">
+                                        <mat-label>Website</mat-label>
+                                        <input matInput [formControlName]="'website'" placeholder="Website">
+                                    </mat-form-field>
+                                </div>
+                                <div class="col-lg-4 col-6">
+                                    <mat-form-field class="w-full">
+                                        <mat-label>Department</mat-label>
+                                        <input matInput [formControlName]="'department'" placeholder="Department">
+                                    </mat-form-field>
+                                </div>
                             </div>
-                        </div>
-                        <div class="row">
-                            <div class="col-lg-4 col-12">
-                                <mat-form-field class="w-full">
-                                    <mat-label>Email</mat-label>
-                                    <input matInput [formControlName]="'email'" placeholder="Email">
-                                </mat-form-field>
+                            <mat-divider></mat-divider>
+                            <div class="row mt-3 mr-3 float-right">
+                                <div class="flex items-center mr-4" *ngIf="flashMessage">
+                                    <ng-container *ngIf="flashMessage === 'success'">
+                                        <mat-icon class="text-green-500" [svgIcon]="'heroicons_outline:check'">
+                                        </mat-icon>
+                                        <span class="ml-2">Customer updated</span>
+                                    </ng-container>
+                                    <ng-container *ngIf="flashMessage === 'error'">
+                                        <mat-icon class="text-red-500" [svgIcon]="'heroicons_outline:x'"></mat-icon>
+                                        <span class="ml-2">An error occurred, try again!</span>
+                                    </ng-container>
+                                </div>
+                                <button class="min-w-40" mat-stroked-button [matTooltip]="'Update User Info'"
+                                    (click)="updateCustomerProduct()" [disabled]="updateUserLoader">
+                                    <mat-progress-spinner *ngIf="updateUserLoader" [diameter]="24"
+                                        [mode]="'indeterminate'">
+                                    </mat-progress-spinner>
+                                    <mat-icon *ngIf="!updateUserLoader" svgIcon="mode_edit_outline"></mat-icon>
+                                    <span *ngIf="!updateUserLoader" class="ml-1 mr-1">Update</span>
+                                </button>
                             </div>
-                            <div class="col-lg-4 col-6">
-                                <mat-form-field class="w-full">
-                                    <mat-label>First Name</mat-label>
-                                    <input matInput [formControlName]="'firstName'" placeholder="First Name">
-                                </mat-form-field>
-                            </div>
-                            <div class="col-lg-4 col-6">
-                                <mat-form-field class="w-full">
-                                    <mat-label>Last Name</mat-label>
-                                    <input matInput [formControlName]="'lastName'" placeholder="Last Name">
-                                </mat-form-field>
-                            </div>
-                            <div class="col-lg-4 col-6">
-                                <mat-form-field class="w-full">
-                                    <mat-label>Company Name</mat-label>
-                                    <input matInput [formControlName]="'companyName'" placeholder="Company">
-                                </mat-form-field>
-                            </div>
-                            <div class="col-lg-4 col-6">
-                                <mat-form-field class="w-full">
-                                    <mat-label>Store</mat-label>
-                                    <input matInput [formControlName]="'storeName'" placeholder="Store">
-                                </mat-form-field>
-                            </div>
-                            <div class="col-lg-4 col-6">
-                                <mat-form-field class="w-full">
-                                    <mat-label>Title</mat-label>
-                                    <input matInput [formControlName]="'title'" placeholder="Title">
-                                </mat-form-field>
-                            </div>
-                            <div class="col-lg-4 col-6">
-                                <mat-form-field class="w-full">
-                                    <mat-label>Fax</mat-label>
-                                    <input matInput [formControlName]="'fax'" placeholder="Fax">
-                                </mat-form-field>
-                            </div>
-                            <div class="col-lg-4 col-6">
-                                <mat-form-field class="w-full">
-                                    <mat-label>Website</mat-label>
-                                    <input matInput [formControlName]="'website'" placeholder="Website">
-                                </mat-form-field>
-                            </div>
-                            <div class="col-lg-4 col-6">
-                                <mat-form-field class="w-full">
-                                    <mat-label>Department</mat-label>
-                                    <input matInput [formControlName]="'department'" placeholder="Department">
-                                </mat-form-field>
-                            </div>
-                        </div>
-                        <mat-divider></mat-divider>
-                        <div class="row mt-3 mr-3 float-right">
-                            <div class="flex items-center mr-4" *ngIf="flashMessage">
-                                <ng-container *ngIf="flashMessage === 'success'">
-                                    <mat-icon class="text-green-500" [svgIcon]="'heroicons_outline:check'">
-                                    </mat-icon>
-                                    <span class="ml-2">Customer updated</span>
-                                </ng-container>
-                                <ng-container *ngIf="flashMessage === 'error'">
-                                    <mat-icon class="text-red-500" [svgIcon]="'heroicons_outline:x'"></mat-icon>
-                                    <span class="ml-2">An error occurred, try again!</span>
-                                </ng-container>
-                            </div>
-                            <button class="min-w-40" mat-stroked-button [matTooltip]="'Update User Info'"
-                                (click)="updateCustomerProduct()" [disabled]="updateUserLoader">
-                                <mat-progress-spinner *ngIf="updateUserLoader" [diameter]="24" [mode]="'indeterminate'">
-                                </mat-progress-spinner>
-                                <mat-icon *ngIf="!updateUserLoader" svgIcon="mode_edit_outline"></mat-icon>
-                                <span *ngIf="!updateUserLoader" class="ml-1 mr-1">Update</span>
-                            </button>
-                        </div>
-                    </form>
-                </mat-tab>
-                <mat-tab label="User Addresses">
-                    <ng-template matTabContent>
-                        <ng-container *ngTemplateOutlet="myCard"></ng-container>
+                        </form>
+                    </ng-template>
+                </div>
+                <div class="col-12">
+                    <ng-template [ngIf]="selectedIndex === 'User Addresses'">
                         <app-user-address [currentSelectedCustomer]="selectedCustomer" [selectedTab]="selectedTab"
                             [(isLoading)]="isLoading">
                         </app-user-address>
                     </ng-template>
-                </mat-tab>
-                <mat-tab label="Metrics">
-                    <ng-template matTabContent>
-                        <ng-container *ngTemplateOutlet="myCard"></ng-container>
+                </div>
+                <div class="col-12">
+                    <ng-template [ngIf]="selectedIndex === 'Metrics'">
                         <app-user-metrics [currentSelectedCustomer]="selectedCustomer" [selectedTab]="selectedTab"
                             [(isLoading)]="isLoading">
                         </app-user-metrics>
                     </ng-template>
-                </mat-tab>
-                <mat-tab label="Credit Terms">
-                    <ng-template matTabContent>
-                        <ng-container *ngTemplateOutlet="myCard"></ng-container>
+                </div>
+                <div class="col-12">
+                    <ng-template [ngIf]="selectedIndex === 'Credit Terms'">
                         <app-credit-terms [currentSelectedCustomer]="selectedCustomer" [selectedTab]="selectedTab"
                             [(isLoading)]="isLoading">
                         </app-credit-terms>
                     </ng-template>
-                </mat-tab>
-                <mat-tab label="Credit Applications">
-                    <ng-template matTabContent>
-                        <ng-container *ngTemplateOutlet="myCard"></ng-container>
+                </div>
+                <div class="col-12">
+                    <ng-template [ngIf]="selectedIndex === 'Credit Applications'">
                         <app-credit-applications [currentSelectedCustomer]="selectedCustomer"
                             [selectedTab]="selectedTab" [(isLoading)]="isLoading">
                         </app-credit-applications>
                     </ng-template>
-                </mat-tab>
-                <mat-tab label="User Comments">
-                    <ng-template matTabContent>
-                        <ng-container *ngTemplateOutlet="myCard"></ng-container>
+                </div>
+                <div class="col-12">
+                    <ng-template [ngIf]="selectedIndex === 'User Comments'">
                         <app-user-comments [currentSelectedCustomer]="selectedCustomer" [selectedTab]="selectedTab"
                             [(isLoading)]="isLoading">
                         </app-user-comments>
                     </ng-template>
-                </mat-tab>
-                <!-- <mat-tab label="FLPS Users">
-                    <ng-container *ngTemplateOutlet="myCard"></ng-container>
-                    FLPS Users
-                </mat-tab> -->
-                <mat-tab label="Locations">
-                    <ng-template matTabContent>
-                        <ng-container *ngTemplateOutlet="myCard"></ng-container>
+                </div>
+                <div class="col-12">
+                    <ng-template [ngIf]="selectedIndex === 'Locations'">
                         <app-user-locations [currentSelectedCustomer]="selectedCustomer" [selectedTab]="selectedTab"
                             [(isLoading)]="isLoading">
                         </app-user-locations>
                     </ng-template>
-                </mat-tab>
-                <mat-tab label="Approval Contacts">
-                    <ng-template matTabContent>
-                        <ng-container *ngTemplateOutlet="myCard"></ng-container>
+                </div>
+                <div class="col-12">
+                    <ng-template [ngIf]="selectedIndex === 'Approval Contacts'">
                         <app-approval-contacts [currentSelectedCustomer]="selectedCustomer" [selectedTab]="selectedTab"
                             [(isLoading)]="isLoading"></app-approval-contacts>
                     </ng-template>
-                </mat-tab>
-                <mat-tab label="Reminders">
-                    <ng-template matTabContent>
-                        <ng-container *ngTemplateOutlet="myCard"></ng-container>
+                </div>
+
+                <div class="col-12">
+                    <ng-template [ngIf]="selectedIndex === 'Reminders'">
                         <app-reminders [currentSelectedCustomer]="selectedCustomer" [selectedTab]="selectedTab"
                             [(isLoading)]="isLoading"></app-reminders>
                     </ng-template>
-                </mat-tab>
-                <mat-tab label="Order History">
-                    <ng-template matTabContent>
-                        <ng-container *ngTemplateOutlet="myCard"></ng-container>
+                </div>
+                <div class="col-12">
+                    <ng-template [ngIf]="selectedIndex === 'Order History'">
                         <app-orders-history [currentSelectedCustomer]="selectedCustomer" [selectedTab]="selectedTab"
                             [(isLoading)]="isLoading"></app-orders-history>
                     </ng-template>
-
-                </mat-tab>
-                <mat-tab label="Fulfillment Orders">
-                    <ng-template matTabContent>
-                        <ng-container *ngTemplateOutlet="myCard"></ng-container>
+                </div>
+                <div class="col-12">
+                    <ng-template [ngIf]="selectedIndex === 'Fulfillment Orders'">
                         <app-fulfillment-orders [currentSelectedCustomer]="selectedCustomer" [selectedTab]="selectedTab"
                             [(isLoading)]="isLoading"></app-fulfillment-orders>
                     </ng-template>
-                </mat-tab>
-                <mat-tab label="Saved Carts">
-                    <ng-template matTabContent>
-                        <ng-container *ngTemplateOutlet="myCard"></ng-container>
+                </div>
+                <div class="col-12">
+                    <ng-template [ngIf]="selectedIndex === 'Saved Carts'">
                         <app-saved-carts [currentSelectedCustomer]="selectedCustomer" [selectedTab]="selectedTab"
                             [(isLoading)]="isLoading"></app-saved-carts>
                     </ng-template>
-                </mat-tab>
-                <mat-tab label="Quotes">
-                    <ng-template matTabContent>
-                        <ng-container *ngTemplateOutlet="myCard"></ng-container>
+                </div>
+                <div class="col-12">
+                    <ng-template [ngIf]="selectedIndex === 'Quotes'">
                         <app-quotes [currentSelectedCustomer]="selectedCustomer" [selectedTab]="selectedTab"
                             [(isLoading)]="isLoading"></app-quotes>
                     </ng-template>
-                </mat-tab>
-                <mat-tab label="Group Orders">
-                    <ng-template matTabContent>
-                        <ng-container *ngTemplateOutlet="myCard"></ng-container>
+                </div>
+                <div class="col-12">
+                    <ng-template [ngIf]="selectedIndex === 'Group Orders'">
                         <app-group-orders [currentSelectedCustomer]="selectedCustomer" [selectedTab]="selectedTab"
                             [(isLoading)]="isLoading"></app-group-orders>
                     </ng-template>
-                </mat-tab>
-                <mat-tab label="Logo Bank">
-                    <ng-template matTabContent>
-                        <ng-container *ngTemplateOutlet="myCard"></ng-container>
+                </div>
+                <div class="col-12">
+                    <ng-template [ngIf]="selectedIndex === 'Logo Bank'">
                         <app-logo-bank [currentSelectedCustomer]="selectedCustomer" [selectedTab]="selectedTab"
                             [(isLoading)]="isLoading">
                         </app-logo-bank>
                     </ng-template>
-                </mat-tab>
-                <mat-tab label="Cashback">
-                    <ng-template matTabContent>
-                        <ng-container *ngTemplateOutlet="myCard"></ng-container>
+                </div>
+                <div class="col-12">
+                    <ng-template [ngIf]="selectedIndex === 'Cashback'">
                         <app-cashback [currentSelectedCustomer]="selectedCustomer" [selectedTab]="selectedTab"
                             [(isLoading)]="isLoading">
                         </app-cashback>
                     </ng-template>
-                </mat-tab>
-                <mat-tab label="Store Usage">
-                    <ng-template matTabContent>
-                        <ng-container *ngTemplateOutlet="myCard"></ng-container>
+                </div>
+                <div class="col-12">
+                    <ng-template [ngIf]="selectedIndex === 'Store Usage'">
                         <app-store-usage [currentSelectedCustomer]="selectedCustomer" [selectedTab]="selectedTab"
                             [(isLoading)]="isLoading"></app-store-usage>
                     </ng-template>
-                </mat-tab>
-                <mat-tab label="Send Registration Emails">
-                    <ng-template matTabContent>
-                        <ng-container *ngTemplateOutlet="myCard"></ng-container>
+                </div>
+                <div class="col-12">
+                    <ng-template [ngIf]="selectedIndex === 'Send Registration Emails'">
                         <app-send-register-emails [currentSelectedCustomer]="selectedCustomer"
                             [selectedTab]="selectedTab" [(isLoading)]="isLoading"></app-send-register-emails>
                     </ng-template>
-                </mat-tab>
-            </mat-tab-group>
+                </div>
+            </div>
         </div>
-    </div>
+    </mat-drawer-container>
 
 </div>

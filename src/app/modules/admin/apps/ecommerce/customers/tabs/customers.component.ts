@@ -9,6 +9,7 @@ import { fuseAnimations } from '@fuse/animations';
 import { CustomersBrand, CustomersCategory, CustomersPagination, CustomersProduct, CustomersTag, CustomersVendor } from 'app/modules/admin/apps/ecommerce/customers/customers.types';
 import { CustomersService } from 'app/modules/admin/apps/ecommerce/customers/customers.service';
 import { ActivatedRoute, Router } from '@angular/router';
+import { FuseMediaWatcherService } from '@fuse/services/media-watcher';
 
 @Component({
     selector: 'customers',
@@ -46,6 +47,12 @@ export class CustomersTabComponent implements OnInit, AfterViewInit, OnDestroy {
     updateUserLoader = false;
     private _unsubscribeAll: Subject<any> = new Subject<any>();
 
+    selectedIndex: string = "User Info";
+    // Sidebar stuff
+    routes = [];
+    drawerMode: 'over' | 'side' = 'side';
+    drawerOpened: boolean = true;
+
     /**
      * Constructor
      */
@@ -55,6 +62,7 @@ export class CustomersTabComponent implements OnInit, AfterViewInit, OnDestroy {
         private _customerService: CustomersService,
         private _router: Router,
         private route: ActivatedRoute,
+        private _fuseMediaWatcherService: FuseMediaWatcherService
     ) {
     }
 
@@ -74,6 +82,27 @@ export class CustomersTabComponent implements OnInit, AfterViewInit, OnDestroy {
                 this.selectedCustomerId = customerId;
             }
             );
+
+        this.routes = this._customerService.navigationLabels;
+
+        // Subscribe to media changes
+        this._fuseMediaWatcherService.onMediaChange$
+            .pipe(takeUntil(this._unsubscribeAll))
+            .subscribe(({ matchingAliases }) => {
+
+                // Set the drawerMode and drawerOpened if the given breakpoint is active
+                if (matchingAliases.includes('lg')) {
+                    this.drawerMode = 'side';
+                    this.drawerOpened = true;
+                }
+                else {
+                    this.drawerMode = 'over';
+                    this.drawerOpened = false;
+                }
+
+                // Mark for check
+                this._changeDetectorRef.markForCheck();
+            });
 
         // Create the selected product form
         this.selectedCustomerForm = this._formBuilder.group({
@@ -210,6 +239,16 @@ export class CustomersTabComponent implements OnInit, AfterViewInit, OnDestroy {
     // Resizing screen 
     onResize(event) {
         this.breakpoint = (event.target.innerWidth <= 620) ? 1 : (event.target.innerWidth <= 820) ? 2 : (window.innerWidth <= 1300) ? 3 : 4;
+    }
+
+    toggleDrawer() {
+        this.drawerOpened = !this.drawerOpened;
+    };
+
+    clicked(index) {
+        const { title } = index;
+        this.isLoading = true;
+        this.selectedIndex = title;
     }
 
     /**

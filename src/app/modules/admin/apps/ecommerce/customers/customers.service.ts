@@ -19,6 +19,99 @@ export class CustomersService {
     private _tags: BehaviorSubject<CustomersTag[] | null> = new BehaviorSubject(null);
     private _vendors: BehaviorSubject<CustomersVendor[] | null> = new BehaviorSubject(null);
 
+    public navigationLabels = [
+        {
+            id: 1,
+            title: 'User Info',
+            icon: 'mat_outline:sd_storage'
+        },
+        {
+            id: 2,
+            title: 'User Addresses',
+            icon: 'mat_outline:details',
+        },
+        {
+            id: 3,
+            title: 'Metrics',
+            icon: 'mat_outline:local_shipping',
+        },
+        {
+            id: 4,
+            title: 'Credit Terms',
+            icon: 'mat_outline:price_change'
+        },
+        {
+            id: 5,
+            title: 'Credit Applications',
+            icon: 'mat_outline:checklist',
+        },
+        {
+            id: 6,
+            title: 'User Comments',
+            icon: 'mat_outline:color_lens',
+        },
+        {
+            id: 7,
+            title: 'Locations',
+            icon: 'mat_outline:checklist'
+        },
+        {
+            id: 8,
+            title: 'Approval Contacts',
+            icon: 'mat_outline:checklist',
+        },
+        {
+            id: 9,
+            title: 'Reminders',
+            icon: 'mat_outline:image',
+        },
+        {
+            id: 10,
+            title: 'Order History',
+            icon: 'mat_outline:history',
+        },
+        {
+            id: 11,
+            title: 'Fulfillment Orders',
+            icon: 'mat_solid:video_settings',
+        },
+        {
+            id: 12,
+            title: 'Saved Carts',
+            icon: 'mat_outline:image',
+        },
+        {
+            id: 13,
+            title: 'Quotes',
+            icon: 'heroicons_outline:template',
+        },
+        {
+            id: 15,
+            title: 'Group Orders',
+            icon: 'mat_outline:reviews',
+        },
+        {
+            id: 16,
+            title: 'Logo Bank',
+            icon: 'mat_outline:info',
+        },
+        {
+            id: 17,
+            title: 'Cashback',
+            icon: 'mat_outline:picture_in_picture',
+        },
+        {
+            id: 18,
+            title: 'Store Usage',
+            icon: 'mat_outline:house_siding',
+        },
+        {
+            id: 19,
+            title: 'Send Registration Emails',
+            icon: 'mat_outline:email',
+        }
+    ]
+
     /**
      * Constructor
      */
