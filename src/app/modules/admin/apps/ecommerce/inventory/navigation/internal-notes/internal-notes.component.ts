@@ -21,6 +21,7 @@ export class InternalNotesComponent implements OnInit {
   isCommentNull = false;
   internalNote: FormGroup;
   comments = [];
+  commentsCount = 0;
   commentator_emails: string[];
   allSelected = false;
   commentators: [];
@@ -55,6 +56,7 @@ export class InternalNotesComponent implements OnInit {
       .pipe(takeUntil(this._unsubscribeAll))
       .subscribe((comment) => {
         this.comments = comment["data"];
+        this.commentsCount = comment["totalRecords"];
         console.log("this.comments", this.comments)
         this._changeDetectorRef.markForCheck();
       });

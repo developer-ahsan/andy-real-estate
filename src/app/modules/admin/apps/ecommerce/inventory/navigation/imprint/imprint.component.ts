@@ -25,6 +25,11 @@ export class ImprintComponent implements OnInit {
   ];
 
   imprints = [];
+
+  // boolean
+  priceInclusionLoader = false;
+  updateLoader = false;
+
   constructor(
     private _changeDetectorRef: ChangeDetectorRef,
     private _inventoryService: InventoryService
@@ -41,10 +46,17 @@ export class ImprintComponent implements OnInit {
       });
 
     this.isLoadingChange.emit(false);
-  }
+  };
 
   updateImprintDisplay(data): void {
     console.log("imprint order", data);
-  }
+  };
 
+  updatePriceInclusion(): void {
+    console.log("updatePriceInclusion");
+  };
+
+  updateData(): void {
+    console.log("update data");
+  }
 }

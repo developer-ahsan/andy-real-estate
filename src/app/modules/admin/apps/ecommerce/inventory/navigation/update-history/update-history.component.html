@@ -1,11 +1,17 @@
 <ngx-skeleton-loader count="8" appearance="line" animation="pulse" *ngIf="isLoading">
 </ngx-skeleton-loader>
-<div class="row my-3 mx-0" *ngIf="!isLoading">
-    <mat-card class="w-full p-2 h-full rounded-2xl shadow-lg">
-        <mat-card-title class="text-info font-size-medium">Update History</mat-card-title>
-        <mat-divider></mat-divider>
-        <mat-card-content class="text-secondary py-4">
-            <div [innerHTML]="htmlHistory" style="font-size: 12px;"></div>
-        </mat-card-content>
-    </mat-card>
+<div class="row" *ngIf="!isLoading">
+    <div class="col-12 my-2">
+        <fuse-card class="rounded-2xl bg-card flex flex-col lg:flex-row w-full">
+            <div class="p-6 sm:p-8 lg:p-10 w-full">
+                <div class="text-2xl font-bold">
+                    Update History
+                </div>
+                <!-- Update history -->
+                <div class="gap-y-4">
+                    <div [innerHTML]="htmlHistory" class="text-sm"></div>
+                </div>
+            </div>
+        </fuse-card>
+    </div>
 </div>

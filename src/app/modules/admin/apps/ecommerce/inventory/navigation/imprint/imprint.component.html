@@ -3,15 +3,15 @@
 <div class="row mb-2" *ngIf="!isLoading">
     <div class="col-lg-8 col-12"></div>
     <div class="col-lg-2 col-6">
-        <button mat-flat-button class="w-full" [color]="'primary'" [matTooltip]="'Add Print'">
-            <mat-icon svgIcon="heroicons_outline:plus"></mat-icon>
-            <span class="ml-1 mr-1">Add Imprint</span>
+        <button mat-stroked-button class="w-full" [matTooltip]="'Remove All'">
+            <mat-icon svgIcon="heroicons_outline:trash"></mat-icon>
+            <span class="ml-1 mr-1">Remove All</span>
         </button>
     </div>
     <div class="col-lg-2 col-6">
-        <button mat-flat-button class="w-full" [color]="'primary'" [matTooltip]="'Remove All'">
-            <mat-icon svgIcon="heroicons_outline:trash"></mat-icon>
-            <span class="ml-1 mr-1">Remove All</span>
+        <button mat-flat-button class="w-full" [color]="'primary'" [matTooltip]="'Add Print'">
+            <mat-icon svgIcon="heroicons_outline:plus"></mat-icon>
+            <span class="ml-1 mr-1">Add Imprint</span>
         </button>
     </div>
 </div>
@@ -37,55 +37,63 @@
     <div class="row">
         <div class="col-12">
             <mat-card class="w-full mb-10 p-0 h-full rounded-2xl shadow-lg">
-                <mat-card-title class="text-info font-size-medium p-2">
+                <div class="text-2xl font-bold p-5">
                     Imprints
-                </mat-card-title>
+                </div>
 
-                <table mat-table [dataSource]="dataSource" class="w-full border-t">
+                <div *ngIf="dataSource.length > 0;else other_content">
+                    <table mat-table [dataSource]="dataSource" class="w-full border-t">
 
-                    <!-- Color Column -->
-                    <ng-container matColumnDef="location">
-                        <th mat-header-cell *matHeaderCellDef
-                            class="w-24 min-w-24 bg-gray-50 dark:bg-black dark:bg-opacity-5"> Location </th>
-                        <td mat-cell *matCellDef="let element"> {{element.locationName}} </td>
-                    </ng-container>
+                        <!-- Color Column -->
+                        <ng-container matColumnDef="location">
+                            <th mat-header-cell *matHeaderCellDef
+                                class="w-24 min-w-24 bg-gray-50 dark:bg-black dark:bg-opacity-5"> Location </th>
+                            <td mat-cell *matCellDef="let element"> {{element.locationName}} </td>
+                        </ng-container>
 
-                    <!-- Run Column -->
-                    <ng-container matColumnDef="method">
-                        <th mat-header-cell *matHeaderCellDef
-                            class="w-24 min-w-24 bg-gray-50 dark:bg-black dark:bg-opacity-5"> Method </th>
-                        <td mat-cell *matCellDef="let element"> {{element.methodName}} </td>
-                    </ng-container>
+                        <!-- Run Column -->
+                        <ng-container matColumnDef="method">
+                            <th mat-header-cell *matHeaderCellDef
+                                class="w-24 min-w-24 bg-gray-50 dark:bg-black dark:bg-opacity-5"> Method </th>
+                            <td mat-cell *matCellDef="let element"> {{element.methodName}} </td>
+                        </ng-container>
 
-                    <!-- Hex Column -->
-                    <ng-container matColumnDef="decorator">
-                        <th mat-header-cell *matHeaderCellDef
-                            class="w-40 min-w-40 bg-gray-50 dark:bg-black dark:bg-opacity-5"> Decorator </th>
-                        <td mat-cell *matCellDef="let element"> {{element.companyName}} </td>
-                    </ng-container>
+                        <!-- Hex Column -->
+                        <ng-container matColumnDef="decorator">
+                            <th mat-header-cell *matHeaderCellDef
+                                class="w-40 min-w-40 bg-gray-50 dark:bg-black dark:bg-opacity-5"> Decorator </th>
+                            <td mat-cell *matCellDef="let element"> {{element.companyName}} </td>
+                        </ng-container>
 
-                    <!-- Active -->
-                    <ng-container matColumnDef="active">
-                        <th mat-header-cell *matHeaderCellDef
-                            class="w-10 min-w-10 bg-gray-50 dark:bg-black dark:bg-opacity-5"> Status </th>
-                        <td mat-cell *matCellDef="let element">
-                            <mat-icon class="text-green-400 icon-size-5" *ngIf="element.blnActive"
-                                [svgIcon]="'heroicons_solid:check'"></mat-icon>
-                            <mat-icon class="text-red-400 icon-size-5" *ngIf="!element.blnActive"
-                                [svgIcon]="'heroicons_solid:x'"></mat-icon>
-                        </td>
-                    </ng-container>
+                        <!-- Active -->
+                        <ng-container matColumnDef="active">
+                            <th mat-header-cell *matHeaderCellDef
+                                class="w-10 min-w-10 bg-gray-50 dark:bg-black dark:bg-opacity-5"> Status </th>
+                            <td mat-cell *matCellDef="let element">
+                                <mat-icon class="text-green-400 icon-size-5" *ngIf="element.blnActive"
+                                    [svgIcon]="'heroicons_solid:check'"></mat-icon>
+                                <mat-icon class="text-red-400 icon-size-5" *ngIf="!element.blnActive"
+                                    [svgIcon]="'heroicons_solid:x'"></mat-icon>
+                            </td>
+                        </ng-container>
 
-                    <tr mat-header-row *matHeaderRowDef="displayedColumns;" class="h-18"></tr>
-                    <tr mat-row *matRowDef="let row; columns: displayedColumns;"
-                        class="h-14 hover:bg-gray-100 dark:hover:bg-hover" style="cursor: pointer;">
-                    </tr>
-                </table>
-                <mat-paginator
-                    class="sm:absolute sm:inset-x-0 border-b sm:border-t sm:border-b-0 z-10 bg-gray-50 dark:bg-transparent"
-                    [ngClass]="{'pointer-events-none': isLoading}" [length]="dataSource.length" [pageIndex]="0"
-                    [pageSize]="5" [pageSizeOptions]="[10, 25]">
-                </mat-paginator>
+                        <tr mat-header-row *matHeaderRowDef="displayedColumns;" class="h-18"></tr>
+                        <tr mat-row *matRowDef="let row; columns: displayedColumns;"
+                            class="h-14 hover:bg-gray-100 dark:hover:bg-hover" style="cursor: pointer;">
+                        </tr>
+                    </table>
+                    <mat-paginator
+                        class="sm:absolute sm:inset-x-0 border-b sm:border-t sm:border-b-0 z-10 bg-gray-50 dark:bg-transparent"
+                        [ngClass]="{'pointer-events-none': isLoading}" [length]="dataSource.length" [pageIndex]="0"
+                        [pageSize]="5" [pageSizeOptions]="[10, 25]">
+                    </mat-paginator>
+                </div>
+
+                <ng-template #other_content>
+                    <div class="text-secondary font-semibold p-5">
+                        *No imprint list for this product.
+                    </div>
+                </ng-template>
             </mat-card>
         </div>
     </div>
@@ -95,64 +103,73 @@
     <div class="row">
         <div class="col-12">
             <mat-card class="w-full mb-10 p-0 h-full rounded-2xl shadow-lg">
-                <mat-card-title class="text-info font-size-medium p-2">
+                <div class="text-2xl font-bold p-5">
                     Imprint Display Order
-                </mat-card-title>
+                </div>
 
-                <table mat-table [dataSource]="dataSource" class="w-full border-t">
+                <div *ngIf="dataSource.length > 0;else other_content1">
+                    <table mat-table [dataSource]="dataSource" class="w-full border-t">
 
-                    <!-- Color Column -->
-                    <ng-container matColumnDef="id">
-                        <th mat-header-cell *matHeaderCellDef
-                            class="w-24 min-w-24 bg-gray-50 dark:bg-black dark:bg-opacity-5"> ID </th>
-                        <td mat-cell *matCellDef="let element"> {{element.pk_imprintID}} </td>
-                    </ng-container>
+                        <!-- Color Column -->
+                        <ng-container matColumnDef="id">
+                            <th mat-header-cell *matHeaderCellDef
+                                class="w-24 min-w-24 bg-gray-50 dark:bg-black dark:bg-opacity-5"> ID </th>
+                            <td mat-cell *matCellDef="let element"> {{element.pk_imprintID}} </td>
+                        </ng-container>
 
-                    <!-- Run Column -->
-                    <ng-container matColumnDef="name">
-                        <th mat-header-cell *matHeaderCellDef
-                            class="w-24 min-w-24 bg-gray-50 dark:bg-black dark:bg-opacity-5"> Name </th>
-                        <td mat-cell *matCellDef="let element"> {{element.methodName}}/{{element.locationName}} </td>
-                    </ng-container>
+                        <!-- Run Column -->
+                        <ng-container matColumnDef="name">
+                            <th mat-header-cell *matHeaderCellDef
+                                class="w-24 min-w-24 bg-gray-50 dark:bg-black dark:bg-opacity-5"> Name </th>
+                            <td mat-cell *matCellDef="let element"> {{element.methodName}}/{{element.locationName}}
+                            </td>
+                        </ng-container>
 
-                    <!-- Hex Column -->
-                    <ng-container matColumnDef="decorator">
-                        <th mat-header-cell *matHeaderCellDef
-                            class="w-24 min-w-24 bg-gray-50 dark:bg-black dark:bg-opacity-5"> Decorator </th>
-                        <td mat-cell *matCellDef="let element"> {{element.companyName}} </td>
-                    </ng-container>
+                        <!-- Hex Column -->
+                        <ng-container matColumnDef="decorator">
+                            <th mat-header-cell *matHeaderCellDef
+                                class="w-24 min-w-24 bg-gray-50 dark:bg-black dark:bg-opacity-5"> Decorator </th>
+                            <td mat-cell *matCellDef="let element"> {{element.companyName}} </td>
+                        </ng-container>
 
-                    <!-- Active -->
-                    <ng-container matColumnDef="order">
-                        <th mat-header-cell *matHeaderCellDef
-                            class="w-10 min-w-10 bg-gray-50 dark:bg-black dark:bg-opacity-5"> Order </th>
-                        <td mat-cell *matCellDef="let element">
-                            <mat-form-field class="w-2/3 mt-2" appearance="fill">
-                                <input matInput placeholder="Order#" value="{{element.displayOrder}}">
-                            </mat-form-field>
-                        </td>
-                    </ng-container>
+                        <!-- Active -->
+                        <ng-container matColumnDef="order">
+                            <th mat-header-cell *matHeaderCellDef
+                                class="w-10 min-w-10 bg-gray-50 dark:bg-black dark:bg-opacity-5"> Order </th>
+                            <td mat-cell *matCellDef="let element">
+                                <mat-form-field class="w-2/3 mt-2" appearance="fill">
+                                    <input matInput placeholder="Order#" value="{{element.displayOrder}}">
+                                </mat-form-field>
+                            </td>
+                        </ng-container>
 
-                    <!-- Action -->
-                    <ng-container matColumnDef="action">
-                        <th mat-header-cell *matHeaderCellDef
-                            class="w-10 min-w-10 bg-gray-50 dark:bg-black dark:bg-opacity-5"> Action </th>
-                        <td mat-cell *matCellDef="let element">
-                            <mat-icon svgIcon="mat_outline:edit" class="ml-3" (click)="updateImprintDisplay(element)">
-                            </mat-icon>
-                        </td>
-                    </ng-container>
+                        <!-- Action -->
+                        <ng-container matColumnDef="action">
+                            <th mat-header-cell *matHeaderCellDef
+                                class="w-10 min-w-10 bg-gray-50 dark:bg-black dark:bg-opacity-5"> Action </th>
+                            <td mat-cell *matCellDef="let element">
+                                <mat-icon svgIcon="mat_outline:edit" class="ml-3"
+                                    (click)="updateImprintDisplay(element)">
+                                </mat-icon>
+                            </td>
+                        </ng-container>
 
-                    <tr mat-header-row *matHeaderRowDef="imprintDisplayedColumns;" class="h-18"></tr>
-                    <tr mat-row *matRowDef="let row; columns: imprintDisplayedColumns;"
-                        class="h-14 hover:bg-gray-100 dark:hover:bg-hover" style="cursor: pointer;">
-                    </tr>
-                </table>
-                <mat-paginator
-                    class="sm:absolute sm:inset-x-0 border-b sm:border-t sm:border-b-0 z-10 bg-gray-50 dark:bg-transparent"
-                    [ngClass]="{'pointer-events-none': isLoading}" [length]="dataSource.length" [pageIndex]="0"
-                    [pageSize]="5" [pageSizeOptions]="[10, 25]">
-                </mat-paginator>
+                        <tr mat-header-row *matHeaderRowDef="imprintDisplayedColumns;" class="h-18"></tr>
+                        <tr mat-row *matRowDef="let row; columns: imprintDisplayedColumns;"
+                            class="h-14 hover:bg-gray-100 dark:hover:bg-hover" style="cursor: pointer;">
+                        </tr>
+                    </table>
+                    <mat-paginator
+                        class="sm:absolute sm:inset-x-0 border-b sm:border-t sm:border-b-0 z-10 bg-gray-50 dark:bg-transparent"
+                        [ngClass]="{'pointer-events-none': isLoading}" [length]="dataSource.length" [pageIndex]="0"
+                        [pageSize]="5" [pageSizeOptions]="[10, 25]">
+                    </mat-paginator>
+                </div>
+                <ng-template #other_content1>
+                    <div class="text-secondary font-semibold p-5">
+                        *No imprint display orders for this product.
+                    </div>
+                </ng-template>
             </mat-card>
         </div>
     </div>
@@ -160,85 +177,112 @@
 
 <ng-template #priceInclusion>
     <div class="row">
-        <div class="col-12">
-            <mat-card class="w-full mb-10 p-0 h-full rounded-2xl shadow-lg">
-                <mat-card-title class="text-info font-size-medium p-2">
-                    Price Inclusion
-                </mat-card-title>
-                <mat-divider></mat-divider>
-                <mat-card-content>
-                    <div class="row p-2">
-                        <div class="col-12">
-                            <mat-checkbox formControlName="pepperoni">
-                                FRONT/SCREEN PRINT - SHOWDOWN DISPLAYS
-                            </mat-checkbox>
+        <div class="col-12 my-2">
+            <fuse-card class="rounded-2xl bg-card flex flex-col lg:flex-row w-full">
+                <div class="p-6 sm:p-8 lg:p-10 w-full">
+                    <div class="text-2xl font-bold">
+                        Price Inclusion
+                    </div>
+                    <!-- Features -->
+                    <div class="gap-y-4 mt-6">
+                        <div class="row">
+                            <div class="col-12">
+                                <mat-checkbox formControlName="pepperoni">
+                                    FRONT/SCREEN PRINT - SHOWDOWN DISPLAYS
+                                </mat-checkbox>
+                            </div>
                         </div>
                     </div>
-                </mat-card-content>
-                <mat-divider class="mb-2"></mat-divider>
-                <mat-card_actions>
-                    <div class="row">
-                        <div class="col-lg-9 col-12"></div>
-                        <div class="col-lg-3 col-12">
-                            <button mat-stroked-button class="w-full" [matTooltip]="'Update'">
-                                <mat-icon svgIcon="mat_outline:edit"></mat-icon>
-                                <span class="ml-1 mr-1">Update</span>
+                    <div class="flex items-center justify-end w-full">
+                        <div class="flex items-center my-2">
+                            <div class="flex items-center mr-4" *ngIf="flashMessage">
+                                <ng-container *ngIf="flashMessage === 'success'">
+                                    <mat-icon class="text-green-500" [svgIcon]="'heroicons_outline:check'">
+                                    </mat-icon>
+                                    <span class="ml-2">Price Inclusion Updated successfully</span>
+                                </ng-container>
+                                <ng-container *ngIf="flashMessage === 'error'">
+                                    <mat-icon class="text-red-500" [svgIcon]="'heroicons_outline:x'"></mat-icon>
+                                    <span class="ml-2">An error occurred, try again!</span>
+                                </ng-container>
+                            </div>
+                            <button class="min-w-40" mat-stroked-button [matTooltip]="'Update Price Inclusion'"
+                                (click)="updatePriceInclusion()" [disabled]="priceInclusionLoader">
+                                <mat-progress-spinner *ngIf="priceInclusionLoader" [diameter]="24"
+                                    [mode]="'indeterminate'">
+                                </mat-progress-spinner>
+                                <mat-icon *ngIf="!priceInclusionLoader" [svgIcon]="'mat_outline:edit'"></mat-icon>
+                                <span *ngIf="!priceInclusionLoader" class="ml-1 mr-1">Update</span>
                             </button>
                         </div>
                     </div>
-                </mat-card_actions>
-            </mat-card>
+                </div>
+            </fuse-card>
         </div>
     </div>
 </ng-template>
 
 <ng-template #testPricing>
     <div class="row">
-        <div class="col-12">
-            <mat-card class="w-full mb-10 p-0 h-full rounded-2xl shadow-lg">
-                <mat-card-title class="text-info font-size-medium p-2">
-                    Select one or more Imprints
-                </mat-card-title>
-                <mat-divider></mat-divider>
-                <mat-card-content>
-                    <div class="row p-2">
-                        <div class="col-12">
-                            <small class="text-info font-semibold">*The process number is required. (eg. 2 colors, 9000
-                                stitches, 1 engraving, 1 debossing...)</small>
-                        </div>
-                        <div class="col-lg-8 col-12">
-                            <mat-form-field class="w-full" appearance="fill">
-                                <mat-select [(ngModel)]="selectedValue" name="food">
-                                    <mat-option *ngFor="let food of foods" [value]="food.value">
-                                        {{food.viewValue}}
-                                    </mat-option>
-                                </mat-select>
-                            </mat-form-field>
-                        </div>
-                        <div class="col-lg-4 col-12">
-                            <mat-form-field class="w-full" appearance="fill">
-                                <mat-select [(ngModel)]="selectedValue" name="food">
-                                    <mat-option *ngFor="let food of foods" [value]="food.value">
-                                        {{food.viewValue}}
-                                    </mat-option>
-                                </mat-select>
-                            </mat-form-field>
+        <div class="col-12 my-2">
+            <fuse-card class="rounded-2xl bg-card flex flex-col lg:flex-row w-full">
+                <div class="p-6 sm:p-8 lg:p-10 w-full">
+                    <div class="text-2xl font-bold">
+                        Select one or more Imprints
+                    </div>
+                    <!-- Features -->
+                    <div class="gap-y-4 mt-6">
+                        <div class="row">
+                            <div class="col-12">
+                                <small class="leading-relaxed text-secondary font-semibold">*The process number is
+                                    required. (eg. 2 colors,
+                                    9000
+                                    stitches, 1 engraving, 1 debossing...)</small>
+                            </div>
+                            <div class="col-lg-8 col-12">
+                                <mat-form-field class="w-full" appearance="fill">
+                                    <mat-select [(ngModel)]="selectedValue" name="food">
+                                        <mat-option *ngFor="let food of foods" [value]="food.value">
+                                            {{food.viewValue}}
+                                        </mat-option>
+                                    </mat-select>
+                                </mat-form-field>
+                            </div>
+                            <div class="col-lg-4 col-12">
+                                <mat-form-field class="w-full" appearance="fill">
+                                    <mat-select [(ngModel)]="selectedValue" name="food">
+                                        <mat-option *ngFor="let food of foods" [value]="food.value">
+                                            {{food.viewValue}}
+                                        </mat-option>
+                                    </mat-select>
+                                </mat-form-field>
+                            </div>
                         </div>
                     </div>
-                </mat-card-content>
-                <mat-divider class="mb-2"></mat-divider>
-                <mat-card_actions>
-                    <div class="row">
-                        <div class="col-lg-9 col-12"></div>
-                        <div class="col-lg-3 col-12">
-                            <button mat-stroked-button class="w-full" [matTooltip]="'Update'">
-                                <mat-icon svgIcon="mat_outline:edit"></mat-icon>
-                                <span class="ml-1 mr-1">Update</span>
+                    <div class="flex items-center justify-end w-full">
+                        <div class="flex items-center my-2">
+                            <div class="flex items-center mr-4" *ngIf="flashMessage">
+                                <ng-container *ngIf="flashMessage === 'success'">
+                                    <mat-icon class="text-green-500" [svgIcon]="'heroicons_outline:check'">
+                                    </mat-icon>
+                                    <span class="ml-2">Updated successfully</span>
+                                </ng-container>
+                                <ng-container *ngIf="flashMessage === 'error'">
+                                    <mat-icon class="text-red-500" [svgIcon]="'heroicons_outline:x'"></mat-icon>
+                                    <span class="ml-2">An error occurred, try again!</span>
+                                </ng-container>
+                            </div>
+                            <button class="min-w-40" mat-stroked-button [matTooltip]="'Update'" (click)="updateData()"
+                                [disabled]="updateLoader">
+                                <mat-progress-spinner *ngIf="updateLoader" [diameter]="24" [mode]="'indeterminate'">
+                                </mat-progress-spinner>
+                                <mat-icon *ngIf="!updateLoader" [svgIcon]="'mat_outline:edit'"></mat-icon>
+                                <span *ngIf="!updateLoader" class="ml-1 mr-1">Update</span>
                             </button>
                         </div>
                     </div>
-                </mat-card_actions>
-            </mat-card>
+                </div>
+            </fuse-card>
         </div>
     </div>
 </ng-template>

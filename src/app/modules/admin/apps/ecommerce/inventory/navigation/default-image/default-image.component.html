@@ -29,31 +29,38 @@
     </div>
 </div>
 
-<div class="row my-3" *ngIf="!isLoading">
-    <div class="col-12">
-        <mat-card class="w-full p-2 h-full rounded-2xl shadow-lg">
-            <mat-card-title class="text-info font-size-medium">
-                Add Image <span class="text-danger text-sm">(600px X 600px JPG only!)</span>
-            </mat-card-title>
-            <mat-divider></mat-divider>
-            <form [formGroup]="imageUploadForm">
-                <div class="row p-2">
-                    <div class="col-lg-10 col-md-10 col-12">
-                        <input type="file" accept=".jpg" [formControlName]="'image'" (change)="upload($event)"
-                            style="line-height: 2.5;" />
-                    </div>
-                    <div class="col-lg-2 col-md-2 col-12">
-                        <button (click)="uploadImage()" class="float-right" mat-stroked-button
-                            [matTooltip]="'(600px X 600px JPG only!)'">
-                            <mat-icon [svgIcon]="'heroicons_outline:plus'"></mat-icon>
-                            <span class="ml-1 mr-1">Add Image</span>
-                        </button>
-                    </div>
-                    <div class="col-12">
-                        <small class="text-danger font-semibold"> {{imageError}} </small>
-                    </div>
+<div class="row" *ngIf="!isLoading">
+    <div class="col-12 my-2">
+        <fuse-card class="rounded-2xl bg-card flex flex-col lg:flex-row w-full">
+            <div class="p-6 sm:p-8 lg:p-10 w-full">
+                <div class="text-2xl font-bold">
+                    <button [matTooltip]="'600px X 600px JPG only!'">
+                        <i class="fa fa-info-circle"></i>
+                    </button>
+                    Add Image
                 </div>
-            </form>
-        </mat-card>
+                <!-- Package -->
+                <div class="gap-y-4 mt-6">
+                    <form [formGroup]="imageUploadForm">
+                        <div class="row">
+                            <div class="col-lg-10 col-md-10 col-12">
+                                <input type="file" accept=".jpg" [formControlName]="'image'" (change)="upload($event)"
+                                    style="line-height: 2.5;" />
+                            </div>
+                            <div class="col-lg-2 col-md-2 col-12">
+                                <button (click)="uploadImage()" class="float-right" mat-stroked-button
+                                    [matTooltip]="'(600px X 600px JPG only!)'">
+                                    <mat-icon [svgIcon]="'heroicons_outline:plus'"></mat-icon>
+                                    <span class="ml-1 mr-1">Add Image</span>
+                                </button>
+                            </div>
+                            <div class="col-12">
+                                <small class="text-danger font-semibold"> {{imageError}} </small>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </fuse-card>
     </div>
 </div>

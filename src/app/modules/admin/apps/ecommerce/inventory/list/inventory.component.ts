@@ -663,6 +663,9 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
                     window.URL.revokeObjectURL(url);
                     a.remove();
                 });
+
+                // Mark for check
+                this._changeDetectorRef.markForCheck();
             })
     }
 }

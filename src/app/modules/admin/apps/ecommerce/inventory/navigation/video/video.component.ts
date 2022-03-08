@@ -4,6 +4,7 @@ import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { InventoryService } from 'app/modules/admin/apps/ecommerce/inventory/inventory.service';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 
 @Component({
   selector: 'app-video',
@@ -25,10 +26,13 @@ export class VideoComponent implements OnInit {
   videoUpdateLoader = false;
   flashMessage: 'success' | 'error' | null = null;
 
+  url: SafeResourceUrl;
+
   constructor(
     private _changeDetectorRef: ChangeDetectorRef,
     private _inventoryService: InventoryService,
-    private _formBuilder: FormBuilder
+    private _formBuilder: FormBuilder,
+    private sanitizer: DomSanitizer
   ) { }
 
   ngOnInit(): void {
@@ -44,10 +48,9 @@ export class VideoComponent implements OnInit {
       .subscribe((video) => {
         if (video["data"]?.length) {
           this.videoLink = video["data"][0].video;
-          this.embeddedLink = this.getId(this.videoLink);
-          console.log("this.embeddedLink", this.embeddedLink)
+          this.embeddedLink = `//www.youtube.com/embed/${this.getId(this.videoLink)}`;
+          this.url = this.sanitizer.bypassSecurityTrustResourceUrl(this.embeddedLink);
         };
-        console.log("video", video["data"])
         this.videoLength = video["totalRecords"];
         this.videoUploadForm.patchValue(video["data"][0]);
         this._changeDetectorRef.markForCheck();
@@ -88,23 +91,25 @@ export class VideoComponent implements OnInit {
 
   uploadImage(): void {
     const button = this.images?.length ? this.images[0].name : '';
+    const videoLink = this.videoUploadForm.getRawValue().video;
     const payload = {
-      video: this.videoUploadForm.getRawValue().video,
+      video: videoLink ? this.removeHttp(videoLink) : '',
       button: "",
       product_id: this.selectedProduct.pk_productID,
       videos: true
     };
-    console.log("payload => ", payload);
     this.videoUpdateLoader = true;
     this._inventoryService.updateVideo(payload)
       .subscribe((response: any) => {
-        console.log("response", response)
         this.showFlashMessage(
           response["success"] === true ?
             'success' :
             'error'
         );
         this.videoUpdateLoader = false;
+
+        this.ngOnInit();
+        this._changeDetectorRef.markForCheck();
       });
   }
 

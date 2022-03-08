@@ -20,6 +20,7 @@ export class OrderHistoryComponent implements OnInit {
   private _unsubscribeAll: Subject<any> = new Subject<any>();
 
   order_history = [];
+  orderHistoryLength = 0;
   displayedColumns: string[] = ['pk_orderID', 'quantity', 'companyName', 'orderDate', 'storeName', 'orderTotal'];
   transactions: Transaction[] = [
     { item: 'Beach ball', cost: 4 },
@@ -43,6 +44,7 @@ export class OrderHistoryComponent implements OnInit {
 
         console.log("order history ", history)
         this.order_history = history["data"];
+        this.orderHistoryLength = history["totalRecords"];
         this._changeDetectorRef.markForCheck();
       });
 

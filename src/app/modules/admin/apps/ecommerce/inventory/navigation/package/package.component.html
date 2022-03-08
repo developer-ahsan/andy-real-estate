@@ -2,10 +2,10 @@
 </ngx-skeleton-loader>
 <div class="row" *ngIf="!isLoading">
     <div class="col-12">
-        <mat-card class="w-full p-0 mb-10 h-full rounded-2xl shadow-lg">
-            <mat-card-title class="text-info pt-3 px-3 font-size-medium">
+        <mat-card class="w-full p-0 mb-10 h-full rounded-2xl">
+            <div class="text-2xl font-bold p-5">
                 Pack & Accessories
-            </mat-card-title>
+            </div>
 
             <table mat-table [dataSource]="dataSource" class="w-full border-t mb-18">
 
@@ -54,15 +54,17 @@
     </div>
 </div>
 
-<div class="row my-3" *ngIf="!isLoading">
-    <div class="col-12">
-        <mat-card class="w-full p-2 h-full rounded-2xl shadow-lg">
-            <mat-card-title class="text-info font-size-medium">
-                Add Package
-            </mat-card-title>
-            <div class="row border-t">
-                <div class="col-12 mt-3">
-                    <mat-form-field class="example-chip-list w-full" appearance="fill">
+<div class="row" *ngIf="!isLoading">
+    <div class="col-12 my-2">
+        <fuse-card class="rounded-2xl bg-card flex flex-col lg:flex-row w-full">
+            <div class="p-6 sm:p-8 lg:p-10 w-full">
+                <div class="text-2xl font-bold">
+                    Add Package
+                </div>
+                <!-- Package -->
+                <div class="gap-y-4 mt-6">
+                    <mat-form-field class="example-chip-list w-full">
+                        <mat-label>Package Name</mat-label>
                         <mat-chip-list #chipList aria-label="Fruit selection">
                             <mat-chip *ngFor="let fruit of fruits" (removed)="remove(fruit)">
                                 {{fruit.name}}
@@ -76,39 +78,37 @@
                         </mat-chip-list>
                     </mat-form-field>
                 </div>
-                <div class="col-12">
-                    <div class="flex items-center justify-end w-full">
-                        <div class="flex items-center my-2">
-                            <div class="flex items-center mr-4" *ngIf="zeroLengthCheckMessage">
+                <div class="flex items-center justify-end w-full">
+                    <div class="flex items-center my-2">
+                        <div class="flex items-center mr-4" *ngIf="zeroLengthCheckMessage">
+                            <mat-icon class="text-red-500" [svgIcon]="'heroicons_outline:x'"></mat-icon>
+                            <span class="ml-2">
+                                Please add atleast one package
+                            </span>
+                        </div>
+                        <div class="flex items-center mr-4" *ngIf="flashMessage">
+                            <ng-container *ngIf="flashMessage === 'success'">
+                                <mat-icon class="text-green-500" [svgIcon]="'heroicons_outline:check'">
+                                </mat-icon>
+                                <span class="ml-2">Package added successfully</span>
+                            </ng-container>
+                            <ng-container *ngIf="flashMessage === 'error'">
                                 <mat-icon class="text-red-500" [svgIcon]="'heroicons_outline:x'"></mat-icon>
                                 <span class="ml-2">
-                                    Please add atleast one package
+                                    An error occurred, try again!
                                 </span>
-                            </div>
-                            <div class="flex items-center mr-4" *ngIf="flashMessage">
-                                <ng-container *ngIf="flashMessage === 'success'">
-                                    <mat-icon class="text-green-500" [svgIcon]="'heroicons_outline:check'">
-                                    </mat-icon>
-                                    <span class="ml-2">Package added successfully</span>
-                                </ng-container>
-                                <ng-container *ngIf="flashMessage === 'error'">
-                                    <mat-icon class="text-red-500" [svgIcon]="'heroicons_outline:x'"></mat-icon>
-                                    <span class="ml-2">
-                                        An error occurred, try again!
-                                    </span>
-                                </ng-container>
-                            </div>
-                            <button class="min-w-40" mat-stroked-button [matTooltip]="'Add New Package'"
-                                (click)="addPackage()" [disabled]="packageAddLoader">
-                                <mat-progress-spinner *ngIf="packageAddLoader" [diameter]="24" [mode]="'indeterminate'">
-                                </mat-progress-spinner>
-                                <mat-icon *ngIf="!packageAddLoader" [svgIcon]="'heroicons_outline:plus'"></mat-icon>
-                                <span *ngIf="!packageAddLoader" class="ml-1 mr-1">Add Package</span>
-                            </button>
+                            </ng-container>
                         </div>
+                        <button class="min-w-40" mat-stroked-button [matTooltip]="'Add New Package'"
+                            (click)="addPackage()" [disabled]="packageAddLoader">
+                            <mat-progress-spinner *ngIf="packageAddLoader" [diameter]="24" [mode]="'indeterminate'">
+                            </mat-progress-spinner>
+                            <mat-icon *ngIf="!packageAddLoader" [svgIcon]="'heroicons_outline:plus'"></mat-icon>
+                            <span *ngIf="!packageAddLoader" class="ml-1 mr-1">Add Package</span>
+                        </button>
                     </div>
                 </div>
             </div>
-        </mat-card>
+        </fuse-card>
     </div>
 </div>

@@ -2,17 +2,16 @@
 </ngx-skeleton-loader>
 <div class="row mb-3" *ngIf="!isLoading">
     <div class="col-12">
-        <mat-card class="w-full p-2 mb-10 h-full rounded-2xl shadow-lg">
-            <mat-card-title class="text-info font-size-medium">
-                <button (click)="uploadImage()"
+        <mat-card class="w-full mb-10 h-full rounded-2xl">
+            <div class="text-2xl font-bold">
+                <button
                     [matTooltip]="'Product color images must be: 1.) at least 600 x 600px, 2.) no larger than 1500 x 1500 px, 3.) Must be perfect squares (i.e. same width and height), and 4.) must be a JPG.Only colors that are checked will update. Anything not checked will not be modified at all.For swatch colors, you can enter up to 5 hex values separated by commas'">
                     <i class="fa fa-info-circle"></i>
                 </button>
                 Colors
-            </mat-card-title>
+            </div>
 
             <table mat-table [dataSource]="dataSource" class="w-full border-t">
-
                 <!-- Checkbox Column -->
                 <ng-container matColumnDef="select">
                     <th mat-header-cell *matHeaderCellDef class="w-15 min-w-15">
@@ -67,36 +66,56 @@
         </mat-card>
     </div>
 
-    <div class="col-12 mt-5">
-        <mat-card class="w-full p-2 h-full rounded-2xl shadow-lg">
-            <mat-card-title class="text-info font-size-medium">
-                <button (click)="uploadImage()"
-                    [matTooltip]="'The combo tool allows you to define two separate lists of color attributes. The system will then automatically combine them. For example, if you have a pen that has two color attributes: body and trim, you can specify the body colors in the first list, and the trim colors in the second list and they will be combined. Make sure to separate all colors with commas.The final list will show up in the new color field above.'">
-                    <i class="fa fa-info-circle"></i>
-                </button>
-                Combo Tool
-            </mat-card-title>
-            <mat-divider></mat-divider>
-            <div class="row">
-                <div class="col-12 mt-3">
-                    <mat-form-field class="w-full">
-                        <mat-label>List 1</mat-label>
-                        <input matInput>
-                    </mat-form-field>
-                </div>
-                <div class="col-12">
-                    <mat-form-field class="w-full">
-                        <mat-label>List 2</mat-label>
-                        <input matInput>
-                    </mat-form-field>
-                </div>
-                <div class="col-12">
-                    <button class="float-right" mat-stroked-button (click)="uploadImage()"
-                        [matTooltip]="'Run Combo Tool'">
-                        <span class="ml-1 mr-1">Run Combo Tool</span>
+    <div class="col-12 my-2">
+        <fuse-card class="rounded-2xl bg-card flex flex-col lg:flex-row w-full">
+            <div class="p-6 sm:p-8 lg:p-10 w-full">
+                <div class="text-2xl font-bold">
+                    <button
+                        [matTooltip]="'The combo tool allows you to define two separate lists of color attributes. The system will then automatically combine them. For example, if you have a pen that has two color attributes: body and trim, you can specify the body colors in the first list, and the trim colors in the second list and they will be combined. Make sure to separate all colors with commas.The final list will show up in the new color field above.'">
+                        <i class="fa fa-info-circle"></i>
                     </button>
+                    Combo Tool
+                </div>
+                <!-- Features -->
+                <div class="gap-y-4 mt-6">
+                    <div class="row">
+                        <div class="col-12 mt-3">
+                            <mat-form-field class="w-full">
+                                <mat-label>List 1</mat-label>
+                                <input matInput>
+                            </mat-form-field>
+                        </div>
+                        <div class="col-12">
+                            <mat-form-field class="w-full">
+                                <mat-label>List 2</mat-label>
+                                <input matInput>
+                            </mat-form-field>
+                        </div>
+                    </div>
+                </div>
+                <div class="flex items-center justify-end w-full">
+                    <div class="flex items-center my-2">
+                        <div class="flex items-center mr-4" *ngIf="flashMessage">
+                            <ng-container *ngIf="flashMessage === 'success'">
+                                <mat-icon class="text-green-500" [svgIcon]="'heroicons_outline:check'">
+                                </mat-icon>
+                                <span class="ml-2">Run successfully</span>
+                            </ng-container>
+                            <ng-container *ngIf="flashMessage === 'error'">
+                                <mat-icon class="text-red-500" [svgIcon]="'heroicons_outline:x'"></mat-icon>
+                                <span class="ml-2">An error occurred, try again!</span>
+                            </ng-container>
+                        </div>
+                        <button class="min-w-40" mat-stroked-button [matTooltip]="'Run Combo Tool'"
+                            (click)="uploadImage()" [disabled]="selectedTermUpdateLoader">
+                            <mat-progress-spinner *ngIf="selectedTermUpdateLoader" [diameter]="24"
+                                [mode]="'indeterminate'">
+                            </mat-progress-spinner>
+                            <span *ngIf="!selectedTermUpdateLoader" class="ml-1 mr-1">Run Combo Tool</span>
+                        </button>
+                    </div>
                 </div>
             </div>
-        </mat-card>
+        </fuse-card>
     </div>
 </div>

@@ -1,343 +1,349 @@
 <ngx-skeleton-loader count="8" appearance="line" animation="pulse" *ngIf="isLoading">
 </ngx-skeleton-loader>
-<div class="row mb-3" *ngIf="!isLoading">
-    <div class="col-12">
-        <mat-card class="w-full p-2 h-full rounded-2xl shadow-lg">
-            <mat-card-title class="text-info font-size-medium">Net Cost</mat-card-title>
-            <mat-divider></mat-divider>
-            <form [formGroup]="netCostForm">
-                <div class="row my-5 px-3">
-                    <div class="col-12 mt-5">
-                        <b>Quantity</b>
-                    </div>
-                    <div class="col-lg-2 col-4">
-                        <mat-form-field class="w-full">
-                            <input matInput [formControlName]="'quantityOne'"><small
-                                class="text-secondary font-semibold"> 1 </small>
-                        </mat-form-field>
-                    </div>
-                    <div class="col-lg-2 col-4">
-                        <mat-form-field class="w-full">
-                            <input matInput [formControlName]="'quantityTwo'"><small
-                                class="text-secondary font-semibold"> 2 </small>
-                        </mat-form-field>
-                    </div>
-                    <div class="col-lg-2 col-4">
-                        <mat-form-field class="w-full">
-                            <input matInput [formControlName]="'quantityThree'"><small
-                                class="text-secondary font-semibold"> 3 </small>
-                        </mat-form-field>
-                    </div>
-                    <div class="col-lg-2 col-4">
-                        <mat-form-field class="w-full">
-                            <input matInput [formControlName]="'quantityFour'"><small
-                                class="text-secondary font-semibold"> 4 </small>
-                        </mat-form-field>
-                    </div>
-                    <div class="col-lg-2 col-4">
-                        <mat-form-field class="w-full">
-                            <input matInput [formControlName]="'quantityFive'"><small
-                                class="text-secondary font-semibold"> 5 </small>
-                        </mat-form-field>
-                    </div>
-                    <div class="col-lg-2 col-4">
-                        <mat-form-field class="w-full">
-                            <input matInput [formControlName]="'quantitySix'"><small
-                                class="text-secondary font-semibold"> 6 </small>
-                        </mat-form-field>
-                    </div>
-                    <div class="col-12 mt-2">
-                        <mat-divider></mat-divider>
-                    </div>
-                    <!-- Standard COST -->
-                    <div class="col-12 mt-5">
-                        <b>Standard Cost</b>
-                    </div>
-                    <div class="col-lg-2 col-4">
-                        <mat-form-field class="w-full">
-                            <input matInput [formControlName]="'standardCostOne'"><small
-                                class="text-secondary font-semibold"> 1 </small>
-                        </mat-form-field>
-                    </div>
-                    <div class="col-lg-2 col-4">
-                        <mat-form-field class="w-full">
-                            <input matInput [formControlName]="'standardCostTwo'"><small
-                                class="text-secondary font-semibold"> 2 </small>
-                        </mat-form-field>
-                    </div>
-                    <div class="col-lg-2 col-4">
-                        <mat-form-field class="w-full">
-                            <input matInput [formControlName]="'standardCostThree'"><small
-                                class="text-secondary font-semibold"> 3 </small>
-                        </mat-form-field>
-                    </div>
-                    <div class="col-lg-2 col-4">
-                        <mat-form-field class="w-full">
-                            <input matInput [formControlName]="'standardCostFour'"><small
-                                class="text-secondary font-semibold"> 4 </small>
-                        </mat-form-field>
-                    </div>
-                    <div class="col-lg-2 col-4">
-                        <mat-form-field class="w-full">
-                            <input matInput [formControlName]="'standardCostFive'"><small
-                                class="text-secondary font-semibold"> 5 </small>
-                        </mat-form-field>
-                    </div>
-                    <div class="col-lg-2 col-4">
-                        <mat-form-field class="w-full">
-                            <input matInput [formControlName]="'standardCostSix'"><small
-                                class="text-secondary font-semibold"> 6 </small>
-                        </mat-form-field>
-                    </div>
-                    <div class="col-lg-2 col-4">
-                        <mat-form-field class="w-full">
-                            <mat-select name="order" [formControlName]="'standardCostDropOne'">
-                                <mat-option value="select_order" disabled>
-                                    COST
-                                </mat-option>
-                                <mat-option *ngFor="let option of products" [value]="option">
-                                    {{option.distrDiscountCode}}
-                                </mat-option>
-                            </mat-select>
-                        </mat-form-field>
-                    </div>
-                    <div class="col-lg-2 col-4">
-                        <mat-form-field class="w-full">
-                            <mat-select name="order" [formControlName]="'standardCostDropTwo'">
-                                <mat-option value="select_order" disabled>
-                                    COST
-                                </mat-option>
-                                <mat-option *ngFor="let option of products" [value]="option">
-                                    {{option.distrDiscountCode}}
-                                </mat-option>
-                            </mat-select>
-                        </mat-form-field>
-                    </div>
-                    <div class="col-lg-2 col-4">
-                        <mat-form-field class="w-full">
-                            <mat-select name="order" [formControlName]="'standardCostDropThree'">
-                                <mat-option value="select_order" disabled>
-                                    COST
-                                </mat-option>
-                                <mat-option *ngFor="let option of products" [value]="option">
-                                    {{option.distrDiscountCode}}
-                                </mat-option>
-                            </mat-select>
-                        </mat-form-field>
-                    </div>
-                    <div class="col-lg-2 col-4">
-                        <mat-form-field class="w-full">
-                            <mat-select name="order" [formControlName]="'standardCostDropFour'">
-                                <mat-option value="select_order" disabled>
-                                    COST
-                                </mat-option>
-                                <mat-option *ngFor="let option of products" [value]="option">
-                                    {{option.distrDiscountCode}}
-                                </mat-option>
-                            </mat-select>
-                        </mat-form-field>
-                    </div>
-                    <div class="col-lg-2 col-4">
-                        <mat-form-field class="w-full">
-                            <mat-select name="order" [formControlName]="'standardCostDropFive'">
-                                <mat-option value="select_order" disabled>
-                                    COST
-                                </mat-option>
-                                <mat-option *ngFor="let option of products" [value]="option">
-                                    {{option.distrDiscountCode}}
-                                </mat-option>
-                            </mat-select>
-                        </mat-form-field>
-                    </div>
-                    <div class="col-lg-2 col-4">
-                        <mat-form-field class="w-full">
-                            <mat-select name="order" [formControlName]="'standardCostDropSix'">
-                                <mat-option value="select_order" disabled>
-                                    COST
-                                </mat-option>
-                                <mat-option *ngFor="let option of products" [value]="option">
-                                    {{option.distrDiscountCode}}
-                                </mat-option>
-                            </mat-select>
-                        </mat-form-field>
-                    </div>
-                    <div class="col-12 mt-2">
-                        <mat-divider></mat-divider>
-                    </div>
-
-                    <!-- Blank COST -->
-                    <div class="col-12 mt-5">
-                        <b>Blank Cost</b>
-                    </div>
-                    <div class="col-lg-2 col-4">
-                        <mat-form-field class="w-full">
-                            <input matInput [formControlName]="'blankCostOne'"><small
-                                class="text-secondary font-semibold"> 1 </small>
-                        </mat-form-field>
-                    </div>
-                    <div class="col-lg-2 col-4">
-                        <mat-form-field class="w-full">
-                            <input matInput [formControlName]="'blankCostTwo'"><small
-                                class="text-secondary font-semibold"> 2 </small>
-                        </mat-form-field>
-                    </div>
-                    <div class="col-lg-2 col-4">
-                        <mat-form-field class="w-full">
-                            <input matInput [formControlName]="'blankCostThree'"><small
-                                class="text-secondary font-semibold"> 3 </small>
-                        </mat-form-field>
-                    </div>
-                    <div class="col-lg-2 col-4">
-                        <mat-form-field class="w-full">
-                            <input matInput [formControlName]="'blankCostFour'"><small
-                                class="text-secondary font-semibold"> 4 </small>
-                        </mat-form-field>
-                    </div>
-                    <div class="col-lg-2 col-4">
-                        <mat-form-field class="w-full">
-                            <input matInput [formControlName]="'blankCostFive'"><small
-                                class="text-secondary font-semibold"> 5 </small>
-                        </mat-form-field>
-                    </div>
-                    <div class="col-lg-2 col-4">
-                        <mat-form-field class="w-full">
-                            <input matInput [formControlName]="'blankCostSix'"><small
-                                class="text-secondary font-semibold"> 6 </small>
-                        </mat-form-field>
-                    </div>
-                    <div class="col-lg-2 col-4">
-                        <mat-form-field class="w-full">
-                            <mat-select name="order" [formControlName]="'blankCostDropOne'">
-                                <mat-option value="select_order" disabled>
-                                    COST
-                                </mat-option>
-                                <mat-option *ngFor="let option of products" [value]="option">
-                                    {{option.distrDiscountCode}}
-                                </mat-option>
-                            </mat-select>
-                        </mat-form-field>
-                    </div>
-                    <div class="col-lg-2 col-4">
-                        <mat-form-field class="w-full">
-                            <mat-select name="order" [formControlName]="'blankCostDropTwo'">
-                                <mat-option value="select_order" disabled>
-                                    COST
-                                </mat-option>
-                                <mat-option *ngFor="let option of products" [value]="option">
-                                    {{option.distrDiscountCode}}
-                                </mat-option>
-                            </mat-select>
-                        </mat-form-field>
-                    </div>
-                    <div class="col-lg-2 col-4">
-                        <mat-form-field class="w-full">
-                            <mat-select name="order" [formControlName]="'blankCostDropThree'">
-                                <mat-option value="select_order" disabled>
-                                    COST
-                                </mat-option>
-                                <mat-option *ngFor="let option of products" [value]="option">
-                                    {{option.distrDiscountCode}}
-                                </mat-option>
-                            </mat-select>
-                        </mat-form-field>
-                    </div>
-                    <div class="col-lg-2 col-4">
-                        <mat-form-field class="w-full">
-                            <mat-select name="order" [formControlName]="'blankCostDropFour'">
-                                <mat-option value="select_order" disabled>
-                                    COST
-                                </mat-option>
-                                <mat-option *ngFor="let option of products" [value]="option">
-                                    {{option.distrDiscountCode}}
-                                </mat-option>
-                            </mat-select>
-                        </mat-form-field>
-                    </div>
-                    <div class="col-lg-2 col-4">
-                        <mat-form-field class="w-full">
-                            <mat-select name="order" [formControlName]="'blankCostDropFive'">
-                                <mat-option value="select_order" disabled>
-                                    COST
-                                </mat-option>
-                                <mat-option *ngFor="let option of products" [value]="option">
-                                    {{option.distrDiscountCode}}
-                                </mat-option>
-                            </mat-select>
-                        </mat-form-field>
-                    </div>
-                    <div class="col-lg-2 col-4">
-                        <mat-form-field class="w-full">
-                            <mat-select name="order" [formControlName]="'blankCostDropSix'">
-                                <mat-option value="select_order" disabled>
-                                    COST
-                                </mat-option>
-                                <mat-option *ngFor="let option of products" [value]="option">
-                                    {{option.distrDiscountCode}}
-                                </mat-option>
-                            </mat-select>
-                        </mat-form-field>
-                    </div>
-                    <div class="col-12 mt-2">
-                        <mat-divider></mat-divider>
-                    </div>
-
-                    <!-- Other Form -->
-                    <div class="col-lg-6 col-12 mt-5">
-                        <p class="font-semibold">Co-op Program</p>
-                        <mat-form-field class="w-full">
-                            <mat-select name="order" [formControlName]="'coOp'">
-                                <mat-option value="select_order" disabled>
-                                    NONE
-                                </mat-option>
-                                <mat-option *ngFor="let option of products" [value]="option">
-                                    {{option.distrDiscountCode}}
-                                </mat-option>
-                            </mat-select>
-                        </mat-form-field>
-                    </div>
-                    <div class="col-lg-6 col-12 mt-4">
-                        <mat-form-field class="w-full">
-                            <mat-label>MSRP</mat-label>
-                            <input matInput [formControlName]="'msrp'">
-                        </mat-form-field>
-                    </div>
-                    <div class="col-12">
-                        <mat-form-field class="w-full">
-                            <mat-label>Internal Comments</mat-label>
-                            <input matInput [formControlName]="'internalComments'">
-                        </mat-form-field>
-                    </div>
-                    <div class="col-12">
-                        <mat-form-field class="w-full">
-                            <mat-label>Red Price Comment</mat-label>
-                            <input matInput [formControlName]="'redPriceComment'">
-                        </mat-form-field>
-                    </div>
+<div class="row" *ngIf="!isLoading">
+    <div class="col-12 my-2">
+        <fuse-card class="rounded-2xl bg-card flex flex-col lg:flex-row w-full">
+            <div class="p-6 sm:p-8 lg:p-10 w-full">
+                <div class="text-2xl font-bold">
+                    Net Cost
                 </div>
-            </form>
-            <mat-divider></mat-divider>
-            <div class="flex items-center justify-end w-full">
-                <div class="flex items-center my-2">
-                    <div class="flex items-center mr-4" *ngIf="flashMessage">
-                        <ng-container *ngIf="flashMessage === 'success'">
-                            <mat-icon class="text-green-500" [svgIcon]="'heroicons_outline:check'"></mat-icon>
-                            <span class="ml-2">Net cost updated successfully</span>
-                        </ng-container>
-                        <ng-container *ngIf="flashMessage === 'error'">
-                            <mat-icon class="text-red-500" [svgIcon]="'heroicons_outline:x'"></mat-icon>
-                            <span class="ml-2" *ngIf="validationCheckMessage"> {{validationCheckMessage}} </span>
-                            <span class="ml-2" *ngIf="!validationCheckMessage">An error occurred, try again!</span>
-                        </ng-container>
+
+                <!-- Net Cost Form -->
+                <div class="gap-y-4">
+                    <form [formGroup]="netCostForm">
+                        <div class="row">
+                            <div class="col-12 mt-5">
+                                <b>Quantity</b>
+                            </div>
+                            <div class="col-lg-2 col-4">
+                                <mat-form-field class="w-full">
+                                    <input matInput [formControlName]="'quantityOne'"><small
+                                        class="text-secondary font-semibold"> 1 </small>
+                                </mat-form-field>
+                            </div>
+                            <div class="col-lg-2 col-4">
+                                <mat-form-field class="w-full">
+                                    <input matInput [formControlName]="'quantityTwo'"><small
+                                        class="text-secondary font-semibold"> 2 </small>
+                                </mat-form-field>
+                            </div>
+                            <div class="col-lg-2 col-4">
+                                <mat-form-field class="w-full">
+                                    <input matInput [formControlName]="'quantityThree'"><small
+                                        class="text-secondary font-semibold"> 3 </small>
+                                </mat-form-field>
+                            </div>
+                            <div class="col-lg-2 col-4">
+                                <mat-form-field class="w-full">
+                                    <input matInput [formControlName]="'quantityFour'"><small
+                                        class="text-secondary font-semibold"> 4 </small>
+                                </mat-form-field>
+                            </div>
+                            <div class="col-lg-2 col-4">
+                                <mat-form-field class="w-full">
+                                    <input matInput [formControlName]="'quantityFive'"><small
+                                        class="text-secondary font-semibold"> 5 </small>
+                                </mat-form-field>
+                            </div>
+                            <div class="col-lg-2 col-4">
+                                <mat-form-field class="w-full">
+                                    <input matInput [formControlName]="'quantitySix'"><small
+                                        class="text-secondary font-semibold"> 6 </small>
+                                </mat-form-field>
+                            </div>
+                            <div class="col-12 mt-2">
+                                <mat-divider></mat-divider>
+                            </div>
+                            <!-- Standard COST -->
+                            <div class="col-12 mt-5">
+                                <b>Standard Cost</b>
+                            </div>
+                            <div class="col-lg-2 col-4">
+                                <mat-form-field class="w-full">
+                                    <input matInput [formControlName]="'standardCostOne'"><small
+                                        class="text-secondary font-semibold"> 1 </small>
+                                </mat-form-field>
+                            </div>
+                            <div class="col-lg-2 col-4">
+                                <mat-form-field class="w-full">
+                                    <input matInput [formControlName]="'standardCostTwo'"><small
+                                        class="text-secondary font-semibold"> 2 </small>
+                                </mat-form-field>
+                            </div>
+                            <div class="col-lg-2 col-4">
+                                <mat-form-field class="w-full">
+                                    <input matInput [formControlName]="'standardCostThree'"><small
+                                        class="text-secondary font-semibold"> 3 </small>
+                                </mat-form-field>
+                            </div>
+                            <div class="col-lg-2 col-4">
+                                <mat-form-field class="w-full">
+                                    <input matInput [formControlName]="'standardCostFour'"><small
+                                        class="text-secondary font-semibold"> 4 </small>
+                                </mat-form-field>
+                            </div>
+                            <div class="col-lg-2 col-4">
+                                <mat-form-field class="w-full">
+                                    <input matInput [formControlName]="'standardCostFive'"><small
+                                        class="text-secondary font-semibold"> 5 </small>
+                                </mat-form-field>
+                            </div>
+                            <div class="col-lg-2 col-4">
+                                <mat-form-field class="w-full">
+                                    <input matInput [formControlName]="'standardCostSix'"><small
+                                        class="text-secondary font-semibold"> 6 </small>
+                                </mat-form-field>
+                            </div>
+                            <div class="col-lg-2 col-4">
+                                <mat-form-field class="w-full">
+                                    <mat-select name="order" [formControlName]="'standardCostDropOne'">
+                                        <mat-option value="select_order" disabled>
+                                            COST
+                                        </mat-option>
+                                        <mat-option *ngFor="let option of products" [value]="option">
+                                            {{option.distrDiscountCode}}
+                                        </mat-option>
+                                    </mat-select>
+                                </mat-form-field>
+                            </div>
+                            <div class="col-lg-2 col-4">
+                                <mat-form-field class="w-full">
+                                    <mat-select name="order" [formControlName]="'standardCostDropTwo'">
+                                        <mat-option value="select_order" disabled>
+                                            COST
+                                        </mat-option>
+                                        <mat-option *ngFor="let option of products" [value]="option">
+                                            {{option.distrDiscountCode}}
+                                        </mat-option>
+                                    </mat-select>
+                                </mat-form-field>
+                            </div>
+                            <div class="col-lg-2 col-4">
+                                <mat-form-field class="w-full">
+                                    <mat-select name="order" [formControlName]="'standardCostDropThree'">
+                                        <mat-option value="select_order" disabled>
+                                            COST
+                                        </mat-option>
+                                        <mat-option *ngFor="let option of products" [value]="option">
+                                            {{option.distrDiscountCode}}
+                                        </mat-option>
+                                    </mat-select>
+                                </mat-form-field>
+                            </div>
+                            <div class="col-lg-2 col-4">
+                                <mat-form-field class="w-full">
+                                    <mat-select name="order" [formControlName]="'standardCostDropFour'">
+                                        <mat-option value="select_order" disabled>
+                                            COST
+                                        </mat-option>
+                                        <mat-option *ngFor="let option of products" [value]="option">
+                                            {{option.distrDiscountCode}}
+                                        </mat-option>
+                                    </mat-select>
+                                </mat-form-field>
+                            </div>
+                            <div class="col-lg-2 col-4">
+                                <mat-form-field class="w-full">
+                                    <mat-select name="order" [formControlName]="'standardCostDropFive'">
+                                        <mat-option value="select_order" disabled>
+                                            COST
+                                        </mat-option>
+                                        <mat-option *ngFor="let option of products" [value]="option">
+                                            {{option.distrDiscountCode}}
+                                        </mat-option>
+                                    </mat-select>
+                                </mat-form-field>
+                            </div>
+                            <div class="col-lg-2 col-4">
+                                <mat-form-field class="w-full">
+                                    <mat-select name="order" [formControlName]="'standardCostDropSix'">
+                                        <mat-option value="select_order" disabled>
+                                            COST
+                                        </mat-option>
+                                        <mat-option *ngFor="let option of products" [value]="option">
+                                            {{option.distrDiscountCode}}
+                                        </mat-option>
+                                    </mat-select>
+                                </mat-form-field>
+                            </div>
+                            <div class="col-12 mt-2">
+                                <mat-divider></mat-divider>
+                            </div>
+
+                            <!-- Blank COST -->
+                            <div class="col-12 mt-5">
+                                <b>Blank Cost</b>
+                            </div>
+                            <div class="col-lg-2 col-4">
+                                <mat-form-field class="w-full">
+                                    <input matInput [formControlName]="'blankCostOne'"><small
+                                        class="text-secondary font-semibold"> 1 </small>
+                                </mat-form-field>
+                            </div>
+                            <div class="col-lg-2 col-4">
+                                <mat-form-field class="w-full">
+                                    <input matInput [formControlName]="'blankCostTwo'"><small
+                                        class="text-secondary font-semibold"> 2 </small>
+                                </mat-form-field>
+                            </div>
+                            <div class="col-lg-2 col-4">
+                                <mat-form-field class="w-full">
+                                    <input matInput [formControlName]="'blankCostThree'"><small
+                                        class="text-secondary font-semibold"> 3 </small>
+                                </mat-form-field>
+                            </div>
+                            <div class="col-lg-2 col-4">
+                                <mat-form-field class="w-full">
+                                    <input matInput [formControlName]="'blankCostFour'"><small
+                                        class="text-secondary font-semibold"> 4 </small>
+                                </mat-form-field>
+                            </div>
+                            <div class="col-lg-2 col-4">
+                                <mat-form-field class="w-full">
+                                    <input matInput [formControlName]="'blankCostFive'"><small
+                                        class="text-secondary font-semibold"> 5 </small>
+                                </mat-form-field>
+                            </div>
+                            <div class="col-lg-2 col-4">
+                                <mat-form-field class="w-full">
+                                    <input matInput [formControlName]="'blankCostSix'"><small
+                                        class="text-secondary font-semibold"> 6 </small>
+                                </mat-form-field>
+                            </div>
+                            <div class="col-lg-2 col-4">
+                                <mat-form-field class="w-full">
+                                    <mat-select name="order" [formControlName]="'blankCostDropOne'">
+                                        <mat-option value="select_order" disabled>
+                                            COST
+                                        </mat-option>
+                                        <mat-option *ngFor="let option of products" [value]="option">
+                                            {{option.distrDiscountCode}}
+                                        </mat-option>
+                                    </mat-select>
+                                </mat-form-field>
+                            </div>
+                            <div class="col-lg-2 col-4">
+                                <mat-form-field class="w-full">
+                                    <mat-select name="order" [formControlName]="'blankCostDropTwo'">
+                                        <mat-option value="select_order" disabled>
+                                            COST
+                                        </mat-option>
+                                        <mat-option *ngFor="let option of products" [value]="option">
+                                            {{option.distrDiscountCode}}
+                                        </mat-option>
+                                    </mat-select>
+                                </mat-form-field>
+                            </div>
+                            <div class="col-lg-2 col-4">
+                                <mat-form-field class="w-full">
+                                    <mat-select name="order" [formControlName]="'blankCostDropThree'">
+                                        <mat-option value="select_order" disabled>
+                                            COST
+                                        </mat-option>
+                                        <mat-option *ngFor="let option of products" [value]="option">
+                                            {{option.distrDiscountCode}}
+                                        </mat-option>
+                                    </mat-select>
+                                </mat-form-field>
+                            </div>
+                            <div class="col-lg-2 col-4">
+                                <mat-form-field class="w-full">
+                                    <mat-select name="order" [formControlName]="'blankCostDropFour'">
+                                        <mat-option value="select_order" disabled>
+                                            COST
+                                        </mat-option>
+                                        <mat-option *ngFor="let option of products" [value]="option">
+                                            {{option.distrDiscountCode}}
+                                        </mat-option>
+                                    </mat-select>
+                                </mat-form-field>
+                            </div>
+                            <div class="col-lg-2 col-4">
+                                <mat-form-field class="w-full">
+                                    <mat-select name="order" [formControlName]="'blankCostDropFive'">
+                                        <mat-option value="select_order" disabled>
+                                            COST
+                                        </mat-option>
+                                        <mat-option *ngFor="let option of products" [value]="option">
+                                            {{option.distrDiscountCode}}
+                                        </mat-option>
+                                    </mat-select>
+                                </mat-form-field>
+                            </div>
+                            <div class="col-lg-2 col-4">
+                                <mat-form-field class="w-full">
+                                    <mat-select name="order" [formControlName]="'blankCostDropSix'">
+                                        <mat-option value="select_order" disabled>
+                                            COST
+                                        </mat-option>
+                                        <mat-option *ngFor="let option of products" [value]="option">
+                                            {{option.distrDiscountCode}}
+                                        </mat-option>
+                                    </mat-select>
+                                </mat-form-field>
+                            </div>
+                            <div class="col-12 mt-2">
+                                <mat-divider></mat-divider>
+                            </div>
+
+                            <!-- Other Form -->
+                            <div class="col-lg-6 col-12 mt-5">
+                                <p class="font-semibold">Co-op Program</p>
+                                <mat-form-field class="w-full">
+                                    <mat-select name="order" [formControlName]="'coOp'">
+                                        <mat-option value="select_order" disabled>
+                                            NONE
+                                        </mat-option>
+                                        <mat-option *ngFor="let option of products" [value]="option">
+                                            {{option.distrDiscountCode}}
+                                        </mat-option>
+                                    </mat-select>
+                                </mat-form-field>
+                            </div>
+                            <div class="col-lg-6 col-12 mt-4">
+                                <mat-form-field class="w-full">
+                                    <mat-label>MSRP</mat-label>
+                                    <input matInput [formControlName]="'msrp'">
+                                </mat-form-field>
+                            </div>
+                            <div class="col-12">
+                                <mat-form-field class="w-full">
+                                    <mat-label>Internal Comments</mat-label>
+                                    <input matInput [formControlName]="'internalComments'">
+                                </mat-form-field>
+                            </div>
+                            <div class="col-12">
+                                <mat-form-field class="w-full">
+                                    <mat-label>Red Price Comment</mat-label>
+                                    <input matInput [formControlName]="'redPriceComment'">
+                                </mat-form-field>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="flex items-center justify-end w-full">
+                    <div class="flex items-center my-2">
+                        <div class="flex items-center mr-4" *ngIf="flashMessage">
+                            <ng-container *ngIf="flashMessage === 'success'">
+                                <mat-icon class="text-green-500" [svgIcon]="'heroicons_outline:check'"></mat-icon>
+                                <span class="ml-2">Net cost updated successfully</span>
+                            </ng-container>
+                            <ng-container *ngIf="flashMessage === 'error'">
+                                <mat-icon class="text-red-500" [svgIcon]="'heroicons_outline:x'"></mat-icon>
+                                <span class="ml-2" *ngIf="validationCheckMessage"> {{validationCheckMessage}} </span>
+                                <span class="ml-2" *ngIf="!validationCheckMessage">An error occurred, try again!</span>
+                            </ng-container>
+                        </div>
+                        <button class="min-w-40" mat-stroked-button [matTooltip]="'Update Net Cost'"
+                            (click)="updateNetCost()" [disabled]="netCostLoader">
+                            <mat-progress-spinner *ngIf="netCostLoader" [diameter]="24" [mode]="'indeterminate'">
+                            </mat-progress-spinner>
+                            <mat-icon *ngIf="!netCostLoader" svgIcon="mode_edit_outline"></mat-icon>
+                            <span *ngIf="!netCostLoader" class="ml-1 mr-1">Update</span>
+                        </button>
                     </div>
-                    <button class="min-w-40" mat-stroked-button [matTooltip]="'Update Net Cost'"
-                        (click)="updateNetCost()" [disabled]="netCostLoader">
-                        <mat-progress-spinner *ngIf="netCostLoader" [diameter]="24" [mode]="'indeterminate'">
-                        </mat-progress-spinner>
-                        <mat-icon *ngIf="!netCostLoader" svgIcon="mode_edit_outline"></mat-icon>
-                        <span *ngIf="!netCostLoader" class="ml-1 mr-1">Update Cost</span>
-                    </button>
                 </div>
             </div>
-        </mat-card>
+        </fuse-card>
     </div>
 </div>

@@ -98,6 +98,8 @@ export class CoreProductsComponent implements OnInit {
       .pipe(takeUntil(this._unsubscribeAll))
       .subscribe((categories) => {
         this.categories = categories["data"];
+
+        this._changeDetectorRef.markForCheck();
       });
   }
 
@@ -108,6 +110,8 @@ export class CoreProductsComponent implements OnInit {
       .pipe(takeUntil(this._unsubscribeAll))
       .subscribe((subCategories) => {
         this.subCategory = subCategories["data"];
+
+        this._changeDetectorRef.markForCheck();
       });
   }
 
@@ -134,6 +138,14 @@ export class CoreProductsComponent implements OnInit {
             'error'
         );
         this.coreAddLoader = false;
+
+        this.ngOnInit();
+        this.selectedSubCategory = "";
+        this.selectedCategory = "";
+        this.selectedCore = "";
+
+        // Mark for check
+        this._changeDetectorRef.markForCheck();
       });
   }
 

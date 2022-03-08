@@ -83,6 +83,9 @@ export class DefaultMarginsComponent implements OnInit {
             'error'
         );
         this.defaultMarginUpdate = false;
+        this._changeDetectorRef.markForCheck();
+
+        this.ngOnInit();
       });
   }
 

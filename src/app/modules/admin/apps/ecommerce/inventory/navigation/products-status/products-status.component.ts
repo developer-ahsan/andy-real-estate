@@ -18,7 +18,7 @@ export class ProductsStatusComponent implements OnInit {
   storesData = [];
 
   // Boolean
-  isRapidBuild = true;
+  isRapidBuild: boolean;
   allSelected = false;
   isCopyImage = false;
 
@@ -28,6 +28,8 @@ export class ProductsStatusComponent implements OnInit {
   ) { }
 
   ngOnInit(): void {
+    this.isRapidBuild = true;
+
     this._inventoryService.getAllStores()
       .pipe(takeUntil(this._unsubscribeAll))
       .subscribe((stores) => {
@@ -48,14 +50,20 @@ export class ProductsStatusComponent implements OnInit {
     this.allStoresSelected = this.allSelected ? this.storesData.map(function (item) {
       return item;
     }) : [];
+
+    this._changeDetectorRef.markForCheck();
   };
 
   rapidBuildToggle(): void {
     this.isRapidBuild = !this.isRapidBuild;
+
+    this._changeDetectorRef.markForCheck();
   };
 
   copyImageToggle(): void {
     this.isCopyImage = !this.isCopyImage;
+
+    this._changeDetectorRef.markForCheck();
   };
 
 }

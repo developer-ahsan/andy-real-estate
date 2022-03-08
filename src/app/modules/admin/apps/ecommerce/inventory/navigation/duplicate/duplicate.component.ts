@@ -15,12 +15,15 @@ export class DuplicateComponent implements OnInit {
   @Output() isLoadingChange = new EventEmitter<boolean>();
   private _unsubscribeAll: Subject<any> = new Subject<any>();
 
-  duplicateLoader = false;
   flashMessage: 'success' | 'error' | null = null;
   firstFormGroup = this._formBuilder.group({
     number: ['', Validators.required],
     name: ['', Validators.required]
   });
+
+  // boolean
+  duplicateLoader = false;
+  emptyValidationCheck = false;
 
   constructor(
     private _changeDetectorRef: ChangeDetectorRef,
@@ -45,6 +48,12 @@ export class DuplicateComponent implements OnInit {
     const formValues = this.firstFormGroup.getRawValue();
     const { pk_productID } = this.selectedProduct;
 
+    if (!formValues.number || !formValues.name) {
+      this.emptyValidationCheck = true;
+      this.showFlashMessage('error');
+      return;
+    }
+
     const payload = {
       product_id: pk_productID,
       product_number: formValues.number,
@@ -60,6 +69,10 @@ export class DuplicateComponent implements OnInit {
             'error'
         );
         this.duplicateLoader = false;
+
+        this.firstFormGroup.reset();
+        // Mark for check
+        this._changeDetectorRef.markForCheck();
       });
   }
 

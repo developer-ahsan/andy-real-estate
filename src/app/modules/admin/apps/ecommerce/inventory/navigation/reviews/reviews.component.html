@@ -1,97 +1,67 @@
 <ngx-skeleton-loader count="8" appearance="line" animation="pulse" *ngIf="isLoading">
 </ngx-skeleton-loader>
-<!-- <div class="row my-3" *ngIf="!isLoading">
-    <div class="col-12">
-        <mat-card class="w-full p-2 h-full rounded-2xl shadow-lg">
-            <mat-card-title class="text-info font-size-medium">
-                <button [matTooltip]="'You can only have maximum of five blank images per product.'">
-                    <i class="fa fa-info-circle"></i>
-                </button>
-                Current Blank Images
-            </mat-card-title>
-            <mat-divider></mat-divider>
-            <div class="row p-2">
-                <div class="col-12">
-                    There are currently no blank images associated with this product.
-                </div>
-            </div>
-        </mat-card>
-    </div>
-</div> -->
 
-<div class="row my-3" *ngIf="!isLoading">
-    <div class="col-12">
-        <mat-card class="w-full p-2 h-full rounded-2xl shadow-lg">
-            <mat-card-title class="text-info font-size-medium">
-                Reviews for {{selectedProduct?.productName}}
-            </mat-card-title>
-            <mat-divider class="mb-3"></mat-divider>
-            <div class="row mb-5" *ngIf="reviewsDataLength > 0;else other_content">
-                <div class="col-lg-6 col-md-6 col-12 my-1" *ngFor="let review of reviewsData">
-                    <fuse-card class="flex flex-col w-full p-3 bg-light rounded-2xl">
-                        <div class="row">
-                            <div class="col-12" style="min-height: 50px;">
-                                <p class="text-lg font-semibold leading-tight">By {{review?.name}} on
-                                    {{review?.storeName}}</p>
-                            </div>
-                            <div class="row m-2" style="min-height: 140px;">
-                                <div class="col-3">
-                                    <p class="text-secondary font-semibold">Name:</p>
+<div class="row" *ngIf="!isLoading">
+    <div class="col-12 my-2">
+        <fuse-card class="rounded-2xl bg-card flex flex-col lg:flex-row w-full">
+            <div class="p-6 sm:p-8 lg:p-10 w-full">
+                <div class="text-2xl font-bold">
+                    Reviews for {{selectedProduct?.productName}}
+                </div>
+
+                <!-- Reviews -->
+                <div class="gap-y-4 mt-6">
+                    <div class="row mb-5" *ngIf="reviewsDataLength > 0;else other_content">
+                        <div class="col-lg-6 col-md-6 col-12 my-1" *ngFor="let review of reviewsData">
+                            <fuse-card class="flex flex-col w-full p-3 bg-light rounded-2xl">
+                                <div class="row">
+                                    <div class="col-12" style="min-height: 50px;">
+                                        <p class="text-lg font-semibold leading-tight">By {{review?.name}} on
+                                            {{review?.storeName}}</p>
+                                    </div>
+                                    <div class="row m-2" style="min-height: 140px;">
+                                        <div class="col-3">
+                                            <p class="text-secondary font-semibold">Name:</p>
+                                        </div>
+                                        <div class="col-9">
+                                            <p class="text-secondary font-semibold">{{review?.name}}</p>
+                                        </div>
+                                        <div class="col-3">
+                                            <p class="text-secondary font-semibold">Date:</p>
+                                        </div>
+                                        <div class="col-9">
+                                            <p class="text-secondary font-semibold">{{review?.date}}</p>
+                                        </div>
+                                        <div class="col-3">
+                                            <p class="text-secondary font-semibold">Comment:</p>
+                                        </div>
+                                        <div class="col-9">
+                                            <p class="text-secondary font-semibold">{{review?.comment}}</p>
+                                        </div>
+                                        <div class="col-3">
+                                            <p class="text-secondary font-semibold">Rating:</p>
+                                        </div>
+                                        <div class="col-9">
+                                            <p class="text-secondary font-semibold">{{review?.rating}}</p>
+                                        </div>
+                                    </div>
                                 </div>
-                                <div class="col-9">
-                                    <p class="text-secondary font-semibold">{{review?.name}}</p>
-                                </div>
-                                <div class="col-3">
-                                    <p class="text-secondary font-semibold">Date:</p>
-                                </div>
-                                <div class="col-9">
-                                    <p class="text-secondary font-semibold">{{review?.date}}</p>
-                                </div>
-                                <div class="col-3">
-                                    <p class="text-secondary font-semibold">Comment:</p>
-                                </div>
-                                <div class="col-9">
-                                    <p class="text-secondary font-semibold">{{review?.comment}}</p>
-                                </div>
-                                <div class="col-3">
-                                    <p class="text-secondary font-semibold">Rating:</p>
-                                </div>
-                                <div class="col-9">
-                                    <p class="text-secondary font-semibold">{{review?.rating}}</p>
-                                </div>
-                            </div>
-                        </div>
-                        <!-- <button class="px-6 mt-8" mat-flat-button [color]="'primary'">
+                                <!-- <button class="px-6 mt-8" mat-flat-button [color]="'primary'">
                             View/Edit
                         </button> -->
-                    </fuse-card>
+                            </fuse-card>
+                        </div>
+                    </div>
+
+                    <ng-template #other_content>
+                        <p class="text-secondary font-semibold my-5">
+                            *There are currently no product reviews for this product, or the filter you applied returned
+                            no
+                            results.
+                        </p>
+                    </ng-template>
                 </div>
             </div>
-
-            <ng-template #other_content>
-                <p class="text-secondary font-semibold my-5">
-                    *There are currently no product reviews for this product, or the filter you applied returned no
-                    results.
-                </p>
-            </ng-template>
-            <!-- <form [formGroup]="imageUploadForm">
-                <div class="row p-2">
-                    <div class="col-lg-10 col-md-10 col-12">
-                        <input type="file" accept=".jpg" [formControlName]="'image'" (change)="upload($event)"
-                            style="line-height: 2.5;" />
-                    </div>
-                    <div class="col-lg-2 col-md-2 col-12">
-                        <button (click)="uploadImage()" class="float-right" mat-stroked-button
-                            [matTooltip]="'(600px X 600px JPG only!)'">
-                            <mat-icon [svgIcon]="'heroicons_outline:plus'"></mat-icon>
-                            <span class="ml-1 mr-1">Add Image</span>
-                        </button>
-                    </div>
-                    <div class="col-12">
-                        <small class="text-danger font-semibold"> {{imageRequired}} </small>
-                    </div>
-                </div>
-            </form> -->
-        </mat-card>
+        </fuse-card>
     </div>
 </div>

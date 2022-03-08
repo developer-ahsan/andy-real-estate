@@ -95,13 +95,15 @@ export class ProductsDescriptionComponent implements OnInit {
     this.descriptionLoader = true;
     this._inventoryService.updatePhysicsAndDescription(payload)
       .subscribe((response: any) => {
-        console.log("response", response)
         this.showFlashMessage(
           response["success"] === true ?
             'success' :
             'error'
         );
         this.descriptionLoader = false;
+
+        // Mark for check
+        this._changeDetectorRef.markForCheck();
       });
   }
 

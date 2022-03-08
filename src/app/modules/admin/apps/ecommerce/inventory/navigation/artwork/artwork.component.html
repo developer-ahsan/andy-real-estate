@@ -1,64 +1,71 @@
 <ngx-skeleton-loader count="8" appearance="line" animation="pulse" *ngIf="isLoading">
 </ngx-skeleton-loader>
 
-<div class="row my-3" *ngIf="!isLoading">
-    <div class="col-12">
-        <mat-card class="w-full p-2 h-full rounded-2xl shadow-lg">
-            <mat-card-title class="text-info font-size-medium">
-                <button [matTooltip]="'PDF, EPS, AI, PSD, and JPG file formats only!'">
-                    <i class="fa fa-info-circle"></i>
-                </button>
-                Upload Artwork Template
-            </mat-card-title>
-            <mat-divider></mat-divider>
-            <form [formGroup]="imageUploadForm">
-                <div class="row my-5">
-                    <div class="col-lg-8 col-12">
-                        <input type="file" accept=".jpg" [formControlName]="'image'" (change)="upload($event)"
-                            style="line-height: 2.5;" />
-                        <small class="text-danger font-semibold"> {{imageRequired}} </small>
-                    </div>
-                    <div class="col-lg-4 col-12">
-                        <button (click)="uploadImage()" mat-stroked-button
-                            [matTooltip]="'PDF, EPS, AI, PSD, and JPG file formats only!'">
-                            <mat-icon [svgIcon]="'heroicons_outline:upload'"></mat-icon>
-                            <span class="ml-1 mr-1">Upload Network Template</span>
-                        </button>
-                    </div>
+<div class="row" *ngIf="!isLoading">
+    <div class="col-12 my-2">
+        <fuse-card class="rounded-2xl bg-card flex flex-col lg:flex-row w-full">
+            <div class="p-6 sm:p-8 lg:p-10 w-full">
+                <div class="text-2xl font-bold">
+                    <button [matTooltip]="'PDF, EPS, AI, PSD, and JPG file formats only!'">
+                        <i class="fa fa-info-circle"></i>
+                    </button>
+                    Upload Artwork Template
                 </div>
-            </form>
-        </mat-card>
+                <!-- Artwork template -->
+                <div class="gap-y-4 mt-6">
+                    <form [formGroup]="imageUploadForm">
+                        <div class="row">
+                            <div class="col-lg-8 col-12 mt-2">
+                                <input type="file" accept=".jpg" [formControlName]="'image'" (change)="upload($event)"
+                                    style="line-height: 2.5;" />
+                                <small class="text-danger font-semibold"> {{imageRequired}} </small>
+                            </div>
+                            <div class="col-lg-4 col-12 mt-2">
+                                <button (click)="uploadImage()" mat-stroked-button
+                                    [matTooltip]="'PDF, EPS, AI, PSD, and JPG file formats only!'">
+                                    <mat-icon [svgIcon]="'heroicons_outline:upload'"></mat-icon>
+                                    <span class="ml-1 mr-1">Upload Network Template</span>
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </fuse-card>
     </div>
 </div>
 
-<div class="row my-3" *ngIf="!isLoading">
-    <div class="col-12">
-        <mat-card class="w-full p-2 h-full rounded-2xl shadow-lg">
-            <mat-card-title class="text-info font-size-medium">
-                Current artwork templates
-            </mat-card-title>
-            <mat-divider></mat-divider>
-            <div class="row p-2" *ngIf="artWorkData.length > 0;else other_content">
-                <div class="col-lg-4 col-12" *ngFor="let artWork of artWorkData">
-                    <fuse-card class="flex flex-col items-center w-full p-8 filter-info bg-light rounded-2xl">
-                        <div class="flex items-center justify-center p-5 rounded-full bg-primary-100 dark:bg-gray-600 hover:cursor-pointer hover:opacity-80"
-                            (click)="openPdf(artWork)">
-                            <mat-icon class="icon-size-10 text-primary-500 dark:text-primary-300"
-                                style="cursor: pointer;" svgIcon="mat_outline:file_present">
-                            </mat-icon>
+<div class="row" *ngIf="!isLoading">
+    <div class="col-12 my-2">
+        <fuse-card class="rounded-2xl bg-card flex flex-col lg:flex-row w-full">
+            <div class="p-6 sm:p-8 lg:p-10 w-full">
+                <div class="text-2xl font-bold">
+                    Current artwork templates
+                </div>
+                <!-- Artwork template -->
+                <div class="gap-y-4 mt-6">
+                    <div class="row p-2" *ngIf="artWorkData.length > 0;else other_content">
+                        <div class="col-lg-4 col-12" *ngFor="let artWork of artWorkData">
+                            <fuse-card class="flex flex-col items-center w-full p-8 filter-info bg-light rounded-2xl">
+                                <div class="flex items-center justify-center p-5 rounded-full bg-primary-100 dark:bg-gray-600 hover:cursor-pointer hover:opacity-80"
+                                    style="cursor: pointer;" (click)="openPdf(artWork)">
+                                    <mat-icon class="icon-size-10 text-primary-500 dark:text-primary-300"
+                                        svgIcon="mat_solid:picture_as_pdf"></mat-icon>
+                                </div>
+                                <button class="px-6 mt-8" mat-stroked-button>
+                                    <mat-icon svgIcon="mat_outline:remove_circle_outline"></mat-icon>
+                                    <span class="ml-2">Remove</span>
+                                </button>
+                            </fuse-card>
                         </div>
-                        <button class="px-6 mt-8" mat-stroked-button>
-                            <mat-icon svgIcon="mat_outline:remove_circle_outline"></mat-icon>
-                            <span class="ml-2">Remove</span>
-                        </button>
-                    </fuse-card>
+                    </div>
+                    <ng-template #other_content>
+                        <p class="text-secondary font-semibold my-5">
+                            *There are currently no artwork templates uploaded for this product.
+                        </p>
+                    </ng-template>
                 </div>
             </div>
-            <ng-template #other_content>
-                <p class="text-secondary font-semibold my-5">
-                    *There are currently no artwork templates uploaded for this product.
-                </p>
-            </ng-template>
-        </mat-card>
+        </fuse-card>
     </div>
 </div>
