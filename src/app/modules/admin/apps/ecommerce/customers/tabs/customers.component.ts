@@ -74,17 +74,8 @@ export class CustomersTabComponent implements OnInit, AfterViewInit, OnDestroy {
      * On init
      */
     ngOnInit(): void {
-        // get customerId from params
-        this.route.queryParamMap
-            .subscribe((parameters) => {
-                const obj = { ...parameters.keys, ...parameters };
-                const { customerId } = obj["params"];
-                this.selectedCustomerId = customerId;
-            }
-            );
 
-        this.routes = this._customerService.navigationLabels;
-
+        this.breakpoint = (window.innerWidth <= 620) ? 1 : (window.innerWidth <= 820) ? 2 : (window.innerWidth <= 1300) ? 3 : 4;
         // Subscribe to media changes
         this._fuseMediaWatcherService.onMediaChange$
             .pipe(takeUntil(this._unsubscribeAll))
@@ -103,6 +94,17 @@ export class CustomersTabComponent implements OnInit, AfterViewInit, OnDestroy {
                 // Mark for check
                 this._changeDetectorRef.markForCheck();
             });
+
+        // get customerId from params
+        this.route.queryParamMap
+            .subscribe((parameters) => {
+                const obj = { ...parameters.keys, ...parameters };
+                const { customerId } = obj["params"];
+                this.selectedCustomerId = customerId;
+            }
+            );
+
+        this.routes = this._customerService.navigationLabels;
 
         // Create the selected product form
         this.selectedCustomerForm = this._formBuilder.group({
@@ -215,7 +217,6 @@ export class CustomersTabComponent implements OnInit, AfterViewInit, OnDestroy {
             .subscribe();
 
         this.toggleDetails(this.selectedCustomerId);
-        this.breakpoint = (window.innerWidth <= 620) ? 1 : (window.innerWidth <= 820) ? 2 : (window.innerWidth <= 1300) ? 3 : 4;
     }
 
     /**

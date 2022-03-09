@@ -1,12 +1,13 @@
-<div class="inset-0 min-w-50 overflow-hidden bg-card dark:bg-transparent" style="height: 100vh">
-    <ngx-skeleton-loader count="8" appearance="line" animation="pulse" *ngIf="isLoading">
-    </ngx-skeleton-loader>
-    <div *ngIf="!isLoading">
-        <div class="border p-3 mt-3 h-95 overflow-x-auto">
-            <b class="text-2xl font-semibold">User Credit Terms:</b>
-            <mat-divider class="mb-2"></mat-divider>
-            <div class="min-w-40 max-w-50 w-50 py-2 px-2" style="display: inline;">
-                <div class="mobile-responsive-boxes">
+<ngx-skeleton-loader count="8" appearance="line" animation="pulse" *ngIf="isLoading && credit_term_options_length < 1">
+</ngx-skeleton-loader>
+<div class="row" *ngIf="!isLoading && credit_term_options_length > 0">
+    <div class="col-12 my-2">
+        <fuse-card class="flex flex-col lg:flex-row bg-card rounded-2xl filter-pricing shadow">
+            <div class="p-6 sm:p-8 lg:p-10 w-full">
+                <div class="text-3xl font-bold">User Credit Terms</div>
+
+                <!-- Credit Term Options -->
+                <div class="grid grid-cols-1 gap-y-4 mt-6">
                     <mat-radio-group aria-labelledby="example-radio-group-label" class="example-radio-group"
                         [(ngModel)]="selected_credit_term">
                         <mat-radio-button class="example-radio-button" *ngFor="let credit_term of credit_term_options;"
@@ -16,32 +17,34 @@
                                 {'color': 'black'}">
                                 {{credit_term.creditTermName}}
                             </b>
-                            <p>{{credit_term.creditTermDesc && "(" + credit_term.creditTermDesc + ")"}}</p>
+                            <span *ngIf="credit_term.creditTermDesc?.length">
+                                <i class="fa fa-question-circle" matTooltip="{{credit_term.creditTermDesc}}"></i>
+                            </span>
                         </mat-radio-button>
                     </mat-radio-group>
-                </div>
-            </div>
-            <mat-divider class="mb-2"></mat-divider>
-            <div class="flex items-center justify-end w-full px-8 py-4">
-                <div class="flex items-center">
-                    <div class="flex items-center mr-4" *ngIf="flashMessage">
-                        <ng-container *ngIf="flashMessage === 'success'">
-                            <mat-icon class="text-green-500" [svgIcon]="'heroicons_outline:check'"></mat-icon>
-                            <span class="ml-2">Credt term updated successfully</span>
-                        </ng-container>
-                        <ng-container *ngIf="flashMessage === 'error'">
-                            <mat-icon class="text-red-500" [svgIcon]="'heroicons_outline:x'"></mat-icon>
-                            <span class="ml-2">An error occurred, try again!</span>
-                        </ng-container>
+
+                    <div class="flex items-center justify-end w-full px-8 py-4">
+                        <div class="flex items-center">
+                            <div class="flex items-center mr-4" *ngIf="flashMessage">
+                                <ng-container *ngIf="flashMessage === 'success'">
+                                    <mat-icon class="text-green-500" [svgIcon]="'heroicons_outline:check'"></mat-icon>
+                                    <span class="ml-2">Credit term updated successfully</span>
+                                </ng-container>
+                                <ng-container *ngIf="flashMessage === 'error'">
+                                    <mat-icon class="text-red-500" [svgIcon]="'heroicons_outline:x'"></mat-icon>
+                                    <span class="ml-2">An error occurred, try again!</span>
+                                </ng-container>
+                            </div>
+                            <button class="w-40" mat-stroked-button (click)="updateCreditTerm()"
+                                [disabled]="updateLoader">
+                                <mat-progress-spinner *ngIf="updateLoader" [diameter]="24" [mode]="'indeterminate'">
+                                </mat-progress-spinner>
+                                <span *ngIf="!updateLoader">Update</span>
+                            </button>
+                        </div>
                     </div>
-                    <button class="w-60" mat-flat-button [color]="'primary'" (click)="updateCreditTerm()"
-                        [disabled]="updateLoader">
-                        <mat-progress-spinner *ngIf="updateLoader" [diameter]="24" [mode]="'indeterminate'">
-                        </mat-progress-spinner>
-                        <span *ngIf="!updateLoader">Update</span>
-                    </button>
                 </div>
             </div>
-        </div>
+        </fuse-card>
     </div>
 </div>

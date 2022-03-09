@@ -76,6 +76,7 @@ import { MatChipsModule } from '@angular/material/chips';
 import { MatExpansionModule } from '@angular/material/expansion';
 import { NgxSliderModule } from '@angular-slider/ngx-slider';
 import { SwatchesComponent } from './inventory/navigation/swatches/swatches.component';
+import { UserInfoComponent } from './customers/tabs/user-info/user-info.component';
 
 @NgModule({
     declarations: [
@@ -124,7 +125,8 @@ import { SwatchesComponent } from './inventory/navigation/swatches/swatches.comp
         InternalNotesComponent,
         DuplicateComponent,
         ImprintComponent,
-        SwatchesComponent
+        SwatchesComponent,
+        UserInfoComponent
     ],
     imports: [
         RouterModule.forChild(ecommerceRoutes),

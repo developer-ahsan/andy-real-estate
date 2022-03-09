@@ -23,17 +23,17 @@ export class CustomersService {
         {
             id: 1,
             title: 'User Info',
-            icon: 'mat_outline:sd_storage'
+            icon: 'heroicons_outline:user-circle'
         },
         {
             id: 2,
             title: 'User Addresses',
-            icon: 'mat_outline:details',
+            icon: 'mat_outline:location_city',
         },
         {
             id: 3,
             title: 'Metrics',
-            icon: 'mat_outline:local_shipping',
+            icon: 'mat_outline:analytics',
         },
         {
             id: 4,
@@ -43,27 +43,27 @@ export class CustomersService {
         {
             id: 5,
             title: 'Credit Applications',
-            icon: 'mat_outline:checklist',
+            icon: 'mat_outline:settings_applications',
         },
         {
             id: 6,
             title: 'User Comments',
-            icon: 'mat_outline:color_lens',
+            icon: 'mat_outline:comment_bank',
         },
         {
             id: 7,
             title: 'Locations',
-            icon: 'mat_outline:checklist'
+            icon: 'mat_outline:location_on'
         },
         {
             id: 8,
             title: 'Approval Contacts',
-            icon: 'mat_outline:checklist',
+            icon: 'mat_outline:approval',
         },
         {
             id: 9,
             title: 'Reminders',
-            icon: 'mat_outline:image',
+            icon: 'mat_outline:doorbell',
         },
         {
             id: 10,
@@ -73,42 +73,42 @@ export class CustomersService {
         {
             id: 11,
             title: 'Fulfillment Orders',
-            icon: 'mat_solid:video_settings',
+            icon: 'mat_outline:reorder',
         },
         {
             id: 12,
             title: 'Saved Carts',
-            icon: 'mat_outline:image',
+            icon: 'mat_outline:shopping_cart',
         },
         {
             id: 13,
             title: 'Quotes',
-            icon: 'heroicons_outline:template',
+            icon: 'mat_outline:format_quote',
         },
         {
             id: 15,
             title: 'Group Orders',
-            icon: 'mat_outline:reviews',
+            icon: 'mat_outline:groups',
         },
         {
             id: 16,
             title: 'Logo Bank',
-            icon: 'mat_outline:info',
+            icon: 'mat_outline:book',
         },
         {
             id: 17,
             title: 'Cashback',
-            icon: 'mat_outline:picture_in_picture',
+            icon: 'heroicons_outline:cash',
         },
         {
             id: 18,
             title: 'Store Usage',
-            icon: 'mat_outline:house_siding',
+            icon: 'mat_outline:store',
         },
         {
             id: 19,
             title: 'Send Registration Emails',
-            icon: 'mat_outline:email',
+            icon: 'mat_outline:attach_email',
         }
     ]
 

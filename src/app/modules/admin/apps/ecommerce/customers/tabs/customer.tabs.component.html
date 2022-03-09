@@ -86,116 +86,28 @@
                 </div>
                 <div class="col-12">
                     <ng-template [ngIf]="selectedIndex === 'User Info'">
-                        <div class="text-2xl font-semibold mt-3" style="color: #64748b;">User Info</div>
-                        <form class="w-full pt-2" [formGroup]="selectedCustomerForm">
-                            <div class="row mb-3">
-                                <div class="col-6 flex">
-                                    <p class="font-semibold mr-2">Date Registered:</p>
-                                    <p>{{selectedCustomer?.date || not_available}}</p>
-                                </div>
-                                <div class="col-6 flex">
-                                    <p class="font-semibold mr-2">IP Address:</p>
-                                    <p>{{selectedCustomer?.address2 || not_available}}</p>
-                                </div>
-                            </div>
-                            <div class="row">
-                                <div class="col-lg-4 col-12">
-                                    <mat-form-field class="w-full">
-                                        <mat-label>Email</mat-label>
-                                        <input matInput [formControlName]="'email'" placeholder="Email">
-                                    </mat-form-field>
-                                </div>
-                                <div class="col-lg-4 col-6">
-                                    <mat-form-field class="w-full">
-                                        <mat-label>First Name</mat-label>
-                                        <input matInput [formControlName]="'firstName'" placeholder="First Name">
-                                    </mat-form-field>
-                                </div>
-                                <div class="col-lg-4 col-6">
-                                    <mat-form-field class="w-full">
-                                        <mat-label>Last Name</mat-label>
-                                        <input matInput [formControlName]="'lastName'" placeholder="Last Name">
-                                    </mat-form-field>
-                                </div>
-                                <div class="col-lg-4 col-6">
-                                    <mat-form-field class="w-full">
-                                        <mat-label>Company Name</mat-label>
-                                        <input matInput [formControlName]="'companyName'" placeholder="Company">
-                                    </mat-form-field>
-                                </div>
-                                <div class="col-lg-4 col-6">
-                                    <mat-form-field class="w-full">
-                                        <mat-label>Store</mat-label>
-                                        <input matInput [formControlName]="'storeName'" placeholder="Store">
-                                    </mat-form-field>
-                                </div>
-                                <div class="col-lg-4 col-6">
-                                    <mat-form-field class="w-full">
-                                        <mat-label>Title</mat-label>
-                                        <input matInput [formControlName]="'title'" placeholder="Title">
-                                    </mat-form-field>
-                                </div>
-                                <div class="col-lg-4 col-6">
-                                    <mat-form-field class="w-full">
-                                        <mat-label>Fax</mat-label>
-                                        <input matInput [formControlName]="'fax'" placeholder="Fax">
-                                    </mat-form-field>
-                                </div>
-                                <div class="col-lg-4 col-6">
-                                    <mat-form-field class="w-full">
-                                        <mat-label>Website</mat-label>
-                                        <input matInput [formControlName]="'website'" placeholder="Website">
-                                    </mat-form-field>
-                                </div>
-                                <div class="col-lg-4 col-6">
-                                    <mat-form-field class="w-full">
-                                        <mat-label>Department</mat-label>
-                                        <input matInput [formControlName]="'department'" placeholder="Department">
-                                    </mat-form-field>
-                                </div>
-                            </div>
-                            <mat-divider></mat-divider>
-                            <div class="row mt-3 mr-3 float-right">
-                                <div class="flex items-center mr-4" *ngIf="flashMessage">
-                                    <ng-container *ngIf="flashMessage === 'success'">
-                                        <mat-icon class="text-green-500" [svgIcon]="'heroicons_outline:check'">
-                                        </mat-icon>
-                                        <span class="ml-2">Customer updated</span>
-                                    </ng-container>
-                                    <ng-container *ngIf="flashMessage === 'error'">
-                                        <mat-icon class="text-red-500" [svgIcon]="'heroicons_outline:x'"></mat-icon>
-                                        <span class="ml-2">An error occurred, try again!</span>
-                                    </ng-container>
-                                </div>
-                                <button class="min-w-40" mat-stroked-button [matTooltip]="'Update User Info'"
-                                    (click)="updateCustomerProduct()" [disabled]="updateUserLoader">
-                                    <mat-progress-spinner *ngIf="updateUserLoader" [diameter]="24"
-                                        [mode]="'indeterminate'">
-                                    </mat-progress-spinner>
-                                    <mat-icon *ngIf="!updateUserLoader" svgIcon="mode_edit_outline"></mat-icon>
-                                    <span *ngIf="!updateUserLoader" class="ml-1 mr-1">Update</span>
-                                </button>
-                            </div>
-                        </form>
+                        <app-user-info [currentSelectedCustomer]="selectedCustomer" [selectedTab]="selectedIndex"
+                            [(isLoading)]="isLoading">
+                        </app-user-info>
                     </ng-template>
                 </div>
                 <div class="col-12">
                     <ng-template [ngIf]="selectedIndex === 'User Addresses'">
-                        <app-user-address [currentSelectedCustomer]="selectedCustomer" [selectedTab]="selectedTab"
+                        <app-user-address [currentSelectedCustomer]="selectedCustomer" [selectedTab]="selectedIndex"
                             [(isLoading)]="isLoading">
                         </app-user-address>
                     </ng-template>
                 </div>
                 <div class="col-12">
                     <ng-template [ngIf]="selectedIndex === 'Metrics'">
-                        <app-user-metrics [currentSelectedCustomer]="selectedCustomer" [selectedTab]="selectedTab"
+                        <app-user-metrics [currentSelectedCustomer]="selectedCustomer" [selectedTab]="selectedIndex"
                             [(isLoading)]="isLoading">
                         </app-user-metrics>
                     </ng-template>
                 </div>
                 <div class="col-12">
                     <ng-template [ngIf]="selectedIndex === 'Credit Terms'">
-                        <app-credit-terms [currentSelectedCustomer]="selectedCustomer" [selectedTab]="selectedTab"
+                        <app-credit-terms [currentSelectedCustomer]="selectedCustomer" [selectedTab]="selectedIndex"
                             [(isLoading)]="isLoading">
                         </app-credit-terms>
                     </ng-template>
@@ -203,91 +115,91 @@
                 <div class="col-12">
                     <ng-template [ngIf]="selectedIndex === 'Credit Applications'">
                         <app-credit-applications [currentSelectedCustomer]="selectedCustomer"
-                            [selectedTab]="selectedTab" [(isLoading)]="isLoading">
+                            [selectedTab]="selectedIndex" [(isLoading)]="isLoading">
                         </app-credit-applications>
                     </ng-template>
                 </div>
                 <div class="col-12">
                     <ng-template [ngIf]="selectedIndex === 'User Comments'">
-                        <app-user-comments [currentSelectedCustomer]="selectedCustomer" [selectedTab]="selectedTab"
+                        <app-user-comments [currentSelectedCustomer]="selectedCustomer" [selectedTab]="selectedIndex"
                             [(isLoading)]="isLoading">
                         </app-user-comments>
                     </ng-template>
                 </div>
                 <div class="col-12">
                     <ng-template [ngIf]="selectedIndex === 'Locations'">
-                        <app-user-locations [currentSelectedCustomer]="selectedCustomer" [selectedTab]="selectedTab"
+                        <app-user-locations [currentSelectedCustomer]="selectedCustomer" [selectedTab]="selectedIndex"
                             [(isLoading)]="isLoading">
                         </app-user-locations>
                     </ng-template>
                 </div>
                 <div class="col-12">
                     <ng-template [ngIf]="selectedIndex === 'Approval Contacts'">
-                        <app-approval-contacts [currentSelectedCustomer]="selectedCustomer" [selectedTab]="selectedTab"
-                            [(isLoading)]="isLoading"></app-approval-contacts>
+                        <app-approval-contacts [currentSelectedCustomer]="selectedCustomer"
+                            [selectedTab]="selectedIndex" [(isLoading)]="isLoading"></app-approval-contacts>
                     </ng-template>
                 </div>
 
                 <div class="col-12">
                     <ng-template [ngIf]="selectedIndex === 'Reminders'">
-                        <app-reminders [currentSelectedCustomer]="selectedCustomer" [selectedTab]="selectedTab"
+                        <app-reminders [currentSelectedCustomer]="selectedCustomer" [selectedTab]="selectedIndex"
                             [(isLoading)]="isLoading"></app-reminders>
                     </ng-template>
                 </div>
                 <div class="col-12">
                     <ng-template [ngIf]="selectedIndex === 'Order History'">
-                        <app-orders-history [currentSelectedCustomer]="selectedCustomer" [selectedTab]="selectedTab"
+                        <app-orders-history [currentSelectedCustomer]="selectedCustomer" [selectedTab]="selectedIndex"
                             [(isLoading)]="isLoading"></app-orders-history>
                     </ng-template>
                 </div>
                 <div class="col-12">
                     <ng-template [ngIf]="selectedIndex === 'Fulfillment Orders'">
-                        <app-fulfillment-orders [currentSelectedCustomer]="selectedCustomer" [selectedTab]="selectedTab"
-                            [(isLoading)]="isLoading"></app-fulfillment-orders>
+                        <app-fulfillment-orders [currentSelectedCustomer]="selectedCustomer"
+                            [selectedTab]="selectedIndex" [(isLoading)]="isLoading"></app-fulfillment-orders>
                     </ng-template>
                 </div>
                 <div class="col-12">
                     <ng-template [ngIf]="selectedIndex === 'Saved Carts'">
-                        <app-saved-carts [currentSelectedCustomer]="selectedCustomer" [selectedTab]="selectedTab"
+                        <app-saved-carts [currentSelectedCustomer]="selectedCustomer" [selectedTab]="selectedIndex"
                             [(isLoading)]="isLoading"></app-saved-carts>
                     </ng-template>
                 </div>
                 <div class="col-12">
                     <ng-template [ngIf]="selectedIndex === 'Quotes'">
-                        <app-quotes [currentSelectedCustomer]="selectedCustomer" [selectedTab]="selectedTab"
+                        <app-quotes [currentSelectedCustomer]="selectedCustomer" [selectedTab]="selectedIndex"
                             [(isLoading)]="isLoading"></app-quotes>
                     </ng-template>
                 </div>
                 <div class="col-12">
                     <ng-template [ngIf]="selectedIndex === 'Group Orders'">
-                        <app-group-orders [currentSelectedCustomer]="selectedCustomer" [selectedTab]="selectedTab"
+                        <app-group-orders [currentSelectedCustomer]="selectedCustomer" [selectedTab]="selectedIndex"
                             [(isLoading)]="isLoading"></app-group-orders>
                     </ng-template>
                 </div>
                 <div class="col-12">
                     <ng-template [ngIf]="selectedIndex === 'Logo Bank'">
-                        <app-logo-bank [currentSelectedCustomer]="selectedCustomer" [selectedTab]="selectedTab"
+                        <app-logo-bank [currentSelectedCustomer]="selectedCustomer" [selectedTab]="selectedIndex"
                             [(isLoading)]="isLoading">
                         </app-logo-bank>
                     </ng-template>
                 </div>
                 <div class="col-12">
                     <ng-template [ngIf]="selectedIndex === 'Cashback'">
-                        <app-cashback [currentSelectedCustomer]="selectedCustomer" [selectedTab]="selectedTab"
+                        <app-cashback [currentSelectedCustomer]="selectedCustomer" [selectedTab]="selectedIndex"
                             [(isLoading)]="isLoading">
                         </app-cashback>
                     </ng-template>
                 </div>
                 <div class="col-12">
                     <ng-template [ngIf]="selectedIndex === 'Store Usage'">
-                        <app-store-usage [currentSelectedCustomer]="selectedCustomer" [selectedTab]="selectedTab"
+                        <app-store-usage [currentSelectedCustomer]="selectedCustomer" [selectedTab]="selectedIndex"
                             [(isLoading)]="isLoading"></app-store-usage>
                     </ng-template>
                 </div>
                 <div class="col-12">
                     <ng-template [ngIf]="selectedIndex === 'Send Registration Emails'">
                         <app-send-register-emails [currentSelectedCustomer]="selectedCustomer"
-                            [selectedTab]="selectedTab" [(isLoading)]="isLoading"></app-send-register-emails>
+                            [selectedTab]="selectedIndex" [(isLoading)]="isLoading"></app-send-register-emails>
                     </ng-template>
                 </div>
             </div>

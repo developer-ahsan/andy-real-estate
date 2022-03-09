@@ -1,53 +1,54 @@
-<div class="inset-0 bg-card dark:bg-transparent mt-3" style="height: 50vh;">
-    <ngx-skeleton-loader
-        count="8"
-        appearance="line"
-        animation="pulse"
-        *ngIf="isLoading"
-    >
-    </ngx-skeleton-loader>
-    <div *ngIf="!isLoading h-full">
-        <div class="text-2xl font-semibold text-secondary">
-            {{selectedTab}}
-        </div>
-        <ng-container *ngIf="addressCount > 0; else noAddresses">
-            <mat-grid-list cols="{{breakpoint}}" rowHeight="210px" (window:resize)="onResize($event)">
-                <mat-grid-tile *ngFor="let address of customerAddresses; index as i">
-                    <div class="border p-3 mt-1" style="width: 100%;">
-                        <span style="display: flex; margin-bottom: 10px;">
-                            <b class="mr-2">Address:</b>
-                            <p>{{address.address1}}</p>
-                        </span>
-                        <mat-divider class="mb-2"></mat-divider>
-                        <div class="min-w-50 max-w-100 w-80 py-2" style="display: grid;">
-                            <span class="icon-style">
-                                <mat-icon [inline]="true" class="mr-2" svgIcon="heroicons_outline:location-marker"></mat-icon>
-                            </span> 
-                            <span style="font-size: 15px; margin-left: 40px;">
-                                {{address.fullAddress}}
-                            </span>
-                        </div>
-                        <div class="min-w-50 max-w-100 w-80 py-2" style="display: grid;">
-                            <span class="icon-style">
-                                <mat-icon [inline]="true" class="mr-2" svgIcon="heroicons_outline:phone"></mat-icon>
-                            </span> 
-                            <span style="font-size: 15px; margin-left: 40px;">
-                                {{address.phone}}
-                            </span>
-                        </div>
-                        <mat-divider class="mb-2"></mat-divider>
-                        <p class="tag">{{address.addressType}}</p>
-                    </div>
-                </mat-grid-tile>
-            </mat-grid-list>
-        </ng-container>
+<ngx-skeleton-loader count="8" appearance="line" animation="pulse" *ngIf="isLoading">
+</ngx-skeleton-loader>
+<div class="row" *ngIf="!isLoading">
+    <div class="col-12 my-2">
+        <fuse-card class="rounded-2xl bg-light flex flex-col lg:flex-row w-full">
+            <div class="p-6 sm:p-8 lg:p-10 w-full">
+                <div class="text-2xl font-bold">
+                    {{selectedTab}}
+                </div>
 
-        <ng-template #noAddresses>
-            <div 
-                class="p-8 sm:p-16 border-t text-2xl font-semibold not-found-color">
-                    <img src="assets/gifs/not-found.gif" class="rounded-circle" style="width: 250px;">
-                    No addressess found!
+                <!-- User Info -->
+                <div class="gap-y-4 mt-6">
+                    <div class="row" *ngIf="addressCount > 0; else noAddresses">
+                        <div class="col-lg-4 col-md-6 col-12" *ngFor="let address of customerAddresses; index as i">
+                            <!-- Card #38 -->
+                            <fuse-card class="flex flex-col bg-card w-full p-8 filter-info rounded-2xl shadow-lg">
+                                <div class="text-2xl font-semibold leading-tight">Address</div>
+                                <div class="mt-4">
+                                    {{address.address1}}
+                                </div>
+                                <hr class="w-full border-t my-6">
+                                <div class="flex flex-col">
+                                    <div class="flex items-center">
+                                        <mat-icon class="icon-size-5 mr-3"
+                                            [svgIcon]="'heroicons_solid:location-marker'">
+                                        </mat-icon>
+                                        <span class="leading-none">{{address.fullAddress}}</span>
+                                    </div>
+                                    <div class="flex items-center mt-4">
+                                        <mat-icon class="icon-size-5 mr-3" [svgIcon]="'heroicons_solid:phone'">
+                                        </mat-icon>
+                                        <span class="leading-none">{{address.phone}}</span>
+                                    </div>
+                                </div>
+                                <div class="mt-5 w-full text-center bg-primary">
+                                    <div class="py-3 text-white">
+                                        {{address.addressType}}
+                                    </div>
+                                </div>
+                            </fuse-card>
+                        </div>
+                    </div>
+
+                    <ng-template #noAddresses>
+                        <div class="p-8 sm:p-16 border-t text-2xl font-semibold not-found-color">
+                            <img src="assets/gifs/not-found.gif" class="rounded-circle" style="width: 250px;">
+                            No addressess found!
+                        </div>
+                    </ng-template>
+                </div>
             </div>
-        </ng-template>
+        </fuse-card>
     </div>
 </div>

@@ -16,7 +16,7 @@ export class CreditTermsComponent implements OnInit {
   private fetchCreditTerms: Subscription;
   credit_terms: string[] = ['Expired', 'Upon application approval', 'Net 10 days after delivery date', 'Net 30'];
   credit_term_options = [];
-  credit_term_options_length: number;
+  credit_term_options_length = 0;
   selected_credit_term: CreditTerm | null = null;
   flashMessage: 'success' | 'error' | null = null;
 
@@ -33,8 +33,14 @@ export class CreditTermsComponent implements OnInit {
         this.credit_term_options = addresses["data"];
         this.credit_term_options_length = this.credit_term_options.length;
         this.selected_credit_term = this.credit_term_options.filter(function (credit_term) { return credit_term.UserTermSelected == true })[0];
-        this.isLoadingChange.emit(false);
+
+        console.log("this.credit_term_options", this.credit_term_options)
+        // Mark for check
+        this._changeDetectorRef.markForCheck();
       });
+
+
+    this.isLoadingChange.emit(false);
   }
 
   ngOnDestroy(): void {
