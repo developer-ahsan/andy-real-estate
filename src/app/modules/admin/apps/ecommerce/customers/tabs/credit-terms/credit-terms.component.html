@@ -1,10 +1,15 @@
-<ngx-skeleton-loader count="8" appearance="line" animation="pulse" *ngIf="isLoading && credit_term_options_length < 1">
+<ngx-skeleton-loader count="8" appearance="line" animation="pulse" *ngIf="credit_term_options_length < 1">
 </ngx-skeleton-loader>
-<div class="row" *ngIf="!isLoading && credit_term_options_length > 0">
+<div class="row" *ngIf="credit_term_options_length > 0">
+    <div class="p-6 w-full">
+        <div class="text-3xl font-bold">
+            Credit Terms
+        </div>
+    </div>
     <div class="col-12 my-2">
         <fuse-card class="flex flex-col lg:flex-row bg-card rounded-2xl filter-pricing shadow">
             <div class="p-6 sm:p-8 lg:p-10 w-full">
-                <div class="text-3xl font-bold">User Credit Terms</div>
+                <div class="text-2xl font-bold">User Credit Terms</div>
 
                 <!-- Credit Term Options -->
                 <div class="grid grid-cols-1 gap-y-4 mt-6">
@@ -12,14 +17,14 @@
                         [(ngModel)]="selected_credit_term">
                         <mat-radio-button class="example-radio-button" *ngFor="let credit_term of credit_term_options;"
                             [value]="credit_term">
-                            <b [ngStyle]="credit_term.creditTermName === 'Expired' ?
-                                {'color':'red'} : 
-                                {'color': 'black'}">
+                            <p [ngStyle]="credit_term.creditTermName === 'Expired' ?
+                                {'color':'#d9534f'} : 
+                                {'color': '#292b2c'}">
                                 {{credit_term.creditTermName}}
-                            </b>
-                            <span *ngIf="credit_term.creditTermDesc?.length">
-                                <i class="fa fa-question-circle" matTooltip="{{credit_term.creditTermDesc}}"></i>
-                            </span>
+                                <span class="ml-2" *ngIf="credit_term.creditTermDesc?.length">
+                                    <i class="fa fa-question-circle" matTooltip="{{credit_term.creditTermDesc}}"></i>
+                                </span>
+                            </p>
                         </mat-radio-button>
                     </mat-radio-group>
 

@@ -32,18 +32,21 @@ export class UserCommentsComponent implements OnInit {
     const { pk_userID } = this.currentSelectedCustomer;
     this.comments = this._customerService.getCustomerComments(pk_userID)
       .subscribe((addresses) => {
-          this.adminComment = addresses["data"][0].adminComments;
-          this._customerService.getCommentators()
-            .subscribe((commentators) => {
-                this.commentators = commentators["data"];
-                this.isLoadingChange.emit(false);
-            });
+        this.adminComment = addresses["data"][0].adminComments;
+        this._customerService.getCommentators()
+          .subscribe((commentators) => {
+            this.commentators = commentators["data"];
+            this.isLoadingChange.emit(false);
+
+            // Mark for check
+            this._changeDetectorRef.markForCheck();
+          });
       });
     this.commentAddingForm = this._formBuilder.group({
-        comment: ['']
+      comment: ['']
     });
   }
-  
+
   ngOnDestroy(): void {
     this.comments.unsubscribe();
     this.isLoadingChange.emit(false);
@@ -54,7 +57,7 @@ export class UserCommentsComponent implements OnInit {
     const { pk_userID } = this.currentSelectedCustomer;
     const { comment } = this.commentAddingForm.controls;
     const payload = {
-      admin_comment : comment.value || 'This is a test comment meant to received by development team',
+      admin_comment: comment.value || 'This is a test comment meant to received by development team',
       user_id: pk_userID,
       emails: this.commentator_emails?.length ?
         this.commentator_emails :
@@ -65,22 +68,27 @@ export class UserCommentsComponent implements OnInit {
     return this._customerService.updateUserComments((payload))
       .subscribe((response: any) => {
         this.showFlashMessage(
-          response["success"] === true ? 
+          response["success"] === true ?
             'success' :
             'error'
         );
         this.adminComment = payload.admin_comment;
         this.commentUpdateLoader = false;
+
+        this.ngOnInit();
+
+        // Mark for check
+        this._changeDetectorRef.markForCheck();
       });
   }
 
-  selectOption(list){
+  selectOption(list) {
     this.commentator_emails = list.selectedOptions.selected.map(item => item.value)
   }
 
-  selectAll(){
+  selectAll() {
     this.allSelected = !this.allSelected;
-    this.commentator_emails = this.allSelected ? this.commentators.map(function(item) {
+    this.commentator_emails = this.allSelected ? this.commentators.map(function (item) {
       return item['email'];
     }) : [];
   }
@@ -88,21 +96,20 @@ export class UserCommentsComponent implements OnInit {
   /**
      * Show flash message
      */
-   showFlashMessage(type: 'success' | 'error'): void
-   {
-       // Show the message
-       this.flashMessage = type;
+  showFlashMessage(type: 'success' | 'error'): void {
+    // Show the message
+    this.flashMessage = type;
 
-       // Mark for check
-       this._changeDetectorRef.markForCheck();
+    // Mark for check
+    this._changeDetectorRef.markForCheck();
 
-       // Hide it after 3 seconds
-       setTimeout(() => {
+    // Hide it after 3 seconds
+    setTimeout(() => {
 
-           this.flashMessage = null;
+      this.flashMessage = null;
 
-           // Mark for check
-           this._changeDetectorRef.markForCheck();
-       }, 3000);
-   }
+      // Mark for check
+      this._changeDetectorRef.markForCheck();
+    }, 3000);
+  }
 }

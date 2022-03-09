@@ -34,7 +34,6 @@ export class CreditTermsComponent implements OnInit {
         this.credit_term_options_length = this.credit_term_options.length;
         this.selected_credit_term = this.credit_term_options.filter(function (credit_term) { return credit_term.UserTermSelected == true })[0];
 
-        console.log("this.credit_term_options", this.credit_term_options)
         // Mark for check
         this._changeDetectorRef.markForCheck();
       });
@@ -64,6 +63,9 @@ export class CreditTermsComponent implements OnInit {
             'error'
         );
         this.updateLoader = false;
+
+        // Mark for check
+        this._changeDetectorRef.markForCheck();
       });
   }
 
