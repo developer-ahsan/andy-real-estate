@@ -79,6 +79,7 @@ export class NetCostComponent implements OnInit {
     this._inventoryService.getNetCost(pk_productID)
       .pipe(takeUntil(this._unsubscribeAll))
       .subscribe((netCost) => {
+        console.log("netCost", netCost["data"])
         const formValues = {
           quantityOne: netCost["data"][0]?.quantity || "",
           quantityTwo: netCost["data"][1]?.quantity || "",
@@ -115,6 +116,7 @@ export class NetCostComponent implements OnInit {
           redPriceComment: liveCostComment || "",
           coOp: fk_coopID || 0
         };
+        console.log("formValues", formValues);
         this.netCostForm.patchValue(formValues);
         this._changeDetectorRef.markForCheck();
       });

@@ -44,11 +44,9 @@ export class SwatchesComponent implements OnInit {
         this._changeDetectorRef.markForCheck();
       });
 
-    // 11718
-    for (let i = 1; i <= 10; i++) {
-      let url = `https://assets.consolidus.com/globalAssets/Products/defaultImage/${pk_productID}/${pk_productID}-${i}.jpg`;
-      this.checkIfImageExists(url);
-    };
+    let url = `https://assets.consolidus.com/globalAssets/Products/Swatch/22670.jpg`;
+    console.log("url", url)
+    this.checkIfImageExists(url);
 
     this.isLoadingChange.emit(false);
   }

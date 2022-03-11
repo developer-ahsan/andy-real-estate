@@ -78,6 +78,7 @@ import { NgxSliderModule } from '@angular-slider/ngx-slider';
 import { SwatchesComponent } from './inventory/navigation/swatches/swatches.component';
 import { UserInfoComponent } from './customers/tabs/user-info/user-info.component';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
+import { MatButtonToggleModule } from '@angular/material/button-toggle';
 
 @NgModule({
     declarations: [
@@ -161,7 +162,8 @@ import { MatSnackBarModule } from '@angular/material/snack-bar';
         MatChipsModule,
         MatExpansionModule,
         NgxSliderModule,
-        MatSnackBarModule
+        MatSnackBarModule,
+        MatButtonToggleModule
     ]
 })
 export class ECommerceModule {

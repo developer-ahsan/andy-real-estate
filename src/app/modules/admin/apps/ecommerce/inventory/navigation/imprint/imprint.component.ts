@@ -4,6 +4,7 @@ import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { InventoryService } from 'app/modules/admin/apps/ecommerce/inventory/inventory.service';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { FormBuilder, FormGroup } from '@angular/forms';
 
 @Component({
   selector: 'app-imprint',
@@ -28,20 +29,36 @@ export class ImprintComponent implements OnInit {
   imprints = [];
   flashMessage: 'success' | 'error' | null = null;
 
+  priceInclusionForm: FormGroup;
+  testPricingForm: FormGroup;
+
   // boolean
   priceInclusionLoader = false;
   updateLoader = false;
   deleteLoader = false;
 
-  showImprintScreen = "Imprints";
+  showImprintScreen = "";
 
   constructor(
     private _changeDetectorRef: ChangeDetectorRef,
     private _inventoryService: InventoryService,
-    private _snackBar: MatSnackBar
+    private _snackBar: MatSnackBar,
+    private _formBuilder: FormBuilder
   ) { }
 
   ngOnInit(): void {
+
+    this.priceInclusionForm = this._formBuilder.group({
+      checkBox: ['']
+    })
+
+    this.testPricingForm = this._formBuilder.group({
+      option1: [''],
+      option2: ['']
+    })
+    // Defalut selected button toggle
+    this.showImprintScreen = 'Imprints';
+
     const { pk_productID } = this.selectedProduct;
     this._inventoryService.getImprints(pk_productID)
       .pipe(takeUntil(this._unsubscribeAll))

@@ -1,32 +1,30 @@
 <ngx-skeleton-loader count="8" appearance="line" animation="pulse" *ngIf="isLoading">
 </ngx-skeleton-loader>
-<div class="row mb-2" *ngIf="!isLoading">
-    <div class="col-12 text-right">
-        <button mat-icon-button [matMenuTriggerFor]="menu" aria-label="Example icon-button with a menu">
-            <mat-icon svgIcon="heroicons_outline:menu"></mat-icon>
-        </button>
+<div class="row my-2 py-5 overflow-auto" *ngIf="!isLoading">
+    <div class="col-12">
+        <mat-button-toggle-group #group="matButtonToggleGroup" [value]="showImprintScreen"
+            (change)="calledScreen(group.value)">
+            <mat-button-toggle value="Imprints">
+                Imprints
+            </mat-button-toggle>
+            <mat-button-toggle value="Add Imprint">
+                Add Imprint
+            </mat-button-toggle>
+            <mat-button-toggle value="Display Order">
+                Display Order
+            </mat-button-toggle>
+            <mat-button-toggle value="Overlapping" [disabled]="true">
+                Overlapping
+            </mat-button-toggle>
+            <mat-button-toggle value="Price Inclusion">
+                Price Inclusion
+            </mat-button-toggle>
+            <mat-button-toggle value="Test Pricing">
+                Test Pricing
+            </mat-button-toggle>
+        </mat-button-toggle-group>
     </div>
 </div>
-<mat-menu #menu="matMenu" xPosition="after">
-    <button mat-menu-item (click)="calledScreen('Imprints')">
-        <span>Imprints</span>
-    </button>
-    <button mat-menu-item (click)="calledScreen('Add Imprint')">
-        <span>Add Imprint</span>
-    </button>
-    <button mat-menu-item (click)="calledScreen('Display Order')">
-        <span>Display Order</span>
-    </button>
-    <!-- <button mat-menu-item (click)="calledScreen('Overlapping')">
-        <span>Overlapping</span>
-    </button> -->
-    <button mat-menu-item (click)="calledScreen('Price Inclusion')">
-        <span>Price Inclusion</span>
-    </button>
-    <button mat-menu-item (click)="calledScreen('Test Pricing')">
-        <span>Test Pricing</span>
-    </button>
-</mat-menu>
 
 <!-- Add Imprint -->
 <div *ngIf="!isLoading && showImprintScreen == 'Add Imprint'">
@@ -104,32 +102,34 @@
                     </div>
                     <!-- Features -->
                     <div class="gap-y-4 mt-6">
-                        <div class="row">
-                            <div class="col-12">
-                                <small class="leading-relaxed text-secondary font-semibold">*The process number is
-                                    required. (eg. 2 colors,
-                                    9000
-                                    stitches, 1 engraving, 1 debossing...)</small>
+                        <form [formGroup]="testPricingForm">
+                            <div class="row">
+                                <div class="col-12">
+                                    <small class="leading-relaxed text-secondary font-semibold">*The process number is
+                                        required. (eg. 2 colors,
+                                        9000
+                                        stitches, 1 engraving, 1 debossing...)</small>
+                                </div>
+                                <div class="col-lg-8 col-12">
+                                    <mat-form-field class="w-full" appearance="fill">
+                                        <mat-select name="food" [formControlName]="'option1'">
+                                            <mat-option *ngFor="let food of foods" [value]="food.value">
+                                                {{food.viewValue}}
+                                            </mat-option>
+                                        </mat-select>
+                                    </mat-form-field>
+                                </div>
+                                <div class="col-lg-4 col-12">
+                                    <mat-form-field class="w-full" appearance="fill">
+                                        <mat-select name="food" [formControlName]="'option2'">
+                                            <mat-option *ngFor="let food of foods" [value]="food.value">
+                                                {{food.viewValue}}
+                                            </mat-option>
+                                        </mat-select>
+                                    </mat-form-field>
+                                </div>
                             </div>
-                            <div class="col-lg-8 col-12">
-                                <mat-form-field class="w-full" appearance="fill">
-                                    <mat-select [(ngModel)]="selectedValue" name="food">
-                                        <mat-option *ngFor="let food of foods" [value]="food.value">
-                                            {{food.viewValue}}
-                                        </mat-option>
-                                    </mat-select>
-                                </mat-form-field>
-                            </div>
-                            <div class="col-lg-4 col-12">
-                                <mat-form-field class="w-full" appearance="fill">
-                                    <mat-select [(ngModel)]="selectedValue" name="food">
-                                        <mat-option *ngFor="let food of foods" [value]="food.value">
-                                            {{food.viewValue}}
-                                        </mat-option>
-                                    </mat-select>
-                                </mat-form-field>
-                            </div>
-                        </div>
+                        </form>
                     </div>
                     <div class="flex items-center justify-end w-full">
                         <div class="flex items-center my-2">
@@ -170,13 +170,15 @@
                     </div>
                     <!-- Features -->
                     <div class="gap-y-4 mt-6">
-                        <div class="row">
-                            <div class="col-12">
-                                <mat-checkbox formControlName="pepperoni">
-                                    FRONT/SCREEN PRINT - SHOWDOWN DISPLAYS
-                                </mat-checkbox>
+                        <form [formGroup]="priceInclusionForm">
+                            <div class="row">
+                                <div class="col-12">
+                                    <mat-checkbox [formControlName]="'checkBox'">
+                                        FRONT/SCREEN PRINT - SHOWDOWN DISPLAYS
+                                    </mat-checkbox>
+                                </div>
                             </div>
-                        </div>
+                        </form>
                     </div>
                     <div class="flex items-center justify-end w-full">
                         <div class="flex items-center my-2">
