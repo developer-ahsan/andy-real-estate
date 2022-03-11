@@ -77,6 +77,7 @@ import { MatExpansionModule } from '@angular/material/expansion';
 import { NgxSliderModule } from '@angular-slider/ngx-slider';
 import { SwatchesComponent } from './inventory/navigation/swatches/swatches.component';
 import { UserInfoComponent } from './customers/tabs/user-info/user-info.component';
+import { MatSnackBarModule } from '@angular/material/snack-bar';
 
 @NgModule({
     declarations: [
@@ -159,7 +160,8 @@ import { UserInfoComponent } from './customers/tabs/user-info/user-info.componen
         MatAutocompleteModule,
         MatChipsModule,
         MatExpansionModule,
-        NgxSliderModule
+        NgxSliderModule,
+        MatSnackBarModule
     ]
 })
 export class ECommerceModule {

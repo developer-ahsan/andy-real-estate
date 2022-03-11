@@ -589,6 +589,17 @@ export class InventoryService {
 
     // PUT CALLS
 
+    // Delete Imprints
+    deleteImprints(product_id: string) {
+        const payload = {
+            product_id: product_id,
+            delete_imprint: true
+        };
+        const headers = { 'Authorization': `Bearer ${this._authService.accessToken}` };
+        return this._httpClient.put(
+            "https://consolidus-staging.azurewebsites.net/api/products", payload, { headers });
+    }
+
     /**
      * update wareHouse
     **/

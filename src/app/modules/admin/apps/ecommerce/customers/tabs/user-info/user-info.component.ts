@@ -68,18 +68,22 @@ export class UserInfoComponent implements OnInit {
      */
   updateCustomerProduct(): void {
     const { pk_userID, blnActive } = this.currentSelectedCustomer;
-
     // Get the product object
-    const customer = this.selectedCustomerForm.getRawValue();
+    const customerForm = this.selectedCustomerForm.getRawValue();
+
+    console.log("this.currentSelectedCustomer", this.currentSelectedCustomer);
+    console.log("this.selectedCustomerForm", customerForm);
+
     const payload = {
+      user: true,
       user_role: "admin",
-      email: customer.email,
-      user_name: `${customer.firstName} ${customer.lastName}`,
-      first_name: customer.firstName,
-      last_name: customer.lastName,
+      email: customerForm.email,
+      user_name: `${customerForm.firstName} ${customerForm.lastName}`,
+      first_name: customerForm.firstName,
+      last_name: customerForm.lastName,
       user_id: parseInt(pk_userID),
-      bln_active: blnActive,
-      user: true
+      password: "password",
+      user_type: "admin",
     };
 
     console.log("payload", payload);

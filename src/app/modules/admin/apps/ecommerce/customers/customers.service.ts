@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { BehaviorSubject, Observable, of, throwError } from 'rxjs';
 import { filter, map, switchMap, take, tap } from 'rxjs/operators';
-import { CustomersBrand, CustomersCategory, CustomersPagination, CustomersProduct, CustomersTag, CustomersVendor, UserCreditTerms, AddUserComment, AddUserLocation, ApprovalContact, AddReminder, UpdateCashback, CreateStore, UpdateUser } from 'app/modules/admin/apps/ecommerce/customers/customers.types';
+import { CustomersBrand, CustomersCategory, CustomersPagination, CustomersProduct, CustomersTag, CustomersVendor, UserCreditTerms, AddUserComment, AddUserLocation, ApprovalContact, AddReminder, UpdateCashback, CreateStore, UserUpdateObject } from 'app/modules/admin/apps/ecommerce/customers/customers.types';
 import { environment } from 'environments/environment';
 import { AuthService } from 'app/core/auth/auth.service';
 
@@ -33,7 +33,7 @@ export class CustomersService {
         {
             id: 3,
             title: 'Metrics',
-            icon: 'mat_outline:analytics',
+            icon: 'heroicons_solid:trending-up',
         },
         {
             id: 4,
@@ -313,7 +313,7 @@ export class CustomersService {
     }
 
     // PUT CALL CUSTOMER
-    upgradeUser(payload: UpdateUser) {
+    upgradeUser(payload: UserUpdateObject) {
         const headers = { 'Authorization': `Bearer ${this._authService.accessToken}` };
         return this._httpClient.put(environment.customerList, payload, { headers });
     }
