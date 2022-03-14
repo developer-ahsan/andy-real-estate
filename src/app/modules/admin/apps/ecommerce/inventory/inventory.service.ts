@@ -199,11 +199,28 @@ export class InventoryService {
     // -----------------------------------------------------------------------------------------------------
     getProductsList(size, pageNumber, keyword?: string): Observable<ProductsList[]> {
         const search = keyword ? keyword : '';
-        return this._httpClient.get<ProductsList[]>(`${environment.products}?list=true&size=${size}&page=${pageNumber}&keyword=${search}`).pipe(
+        return this._httpClient.get<ProductsList[]>(environment.products, {
+            params: {
+                list: true,
+                size: 20,
+                page: pageNumber,
+                keyword: search
+            }
+        }).pipe(
             tap((products) => {
                 this._products.next(products);
             })
         );
+    }
+
+    getProductsByPagination(page: number): Observable<ProductsList[]> {
+        return this._httpClient.get<ProductsList[]>(environment.products, {
+            params: {
+                list: true,
+                size: 20,
+                page: page
+            }
+        });
     }
 
     getProductsForExporting(size): Observable<ProductsList[]> {
@@ -438,11 +455,14 @@ export class InventoryService {
         });
     }
 
-    getImprints(productId): Observable<any[]> {
+    getImprints(productId, page?: number): Observable<any[]> {
+        console.log("page", page)
         return this._httpClient.get<any[]>(environment.products, {
             params: {
                 imprint: true,
-                product_id: productId
+                product_id: productId,
+                size: 10,
+                page: page
             }
         });
     }

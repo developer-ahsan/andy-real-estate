@@ -19,6 +19,7 @@ export class ImprintComponent implements OnInit {
   displayedColumns: string[] = ['location', 'method', 'decorator', 'active'];
   imprintDisplayedColumns: string[] = ['id', 'name', 'decorator', 'order', 'action'];
   dataSource = [];
+  dataSource2 = [];
   selectedValue: string;
   foods = [
     { value: 'steak-0', viewValue: 'Steak' },
@@ -27,12 +28,24 @@ export class ImprintComponent implements OnInit {
   ];
 
   imprints = [];
+  dataSourceLength: number = 0;
+  dataSource2Length: number = 0;
+  page: number = 1;
   flashMessage: 'success' | 'error' | null = null;
 
   priceInclusionForm: FormGroup;
   testPricingForm: FormGroup;
 
+  favoriteSeason: string;
+  seasons: string[] = [
+    'Per color (i.e. silk screening, pad printing, etc.)',
+    'Per Stitch (embroidering)',
+    'Simple Process (i.e. laser engraving, full color, etc.)'
+  ];
+
   // boolean
+  imprintList = true;
+  displayList = true;
   priceInclusionLoader = false;
   updateLoader = false;
   deleteLoader = false;
@@ -58,15 +71,7 @@ export class ImprintComponent implements OnInit {
     })
     // Defalut selected button toggle
     this.showImprintScreen = 'Imprints';
-
-    const { pk_productID } = this.selectedProduct;
-    this._inventoryService.getImprints(pk_productID)
-      .pipe(takeUntil(this._unsubscribeAll))
-      .subscribe((imprint) => {
-        this.dataSource = imprint["data"];
-        console.log("this.dataSource", this.dataSource)
-        this._changeDetectorRef.markForCheck();
-      });
+    this.getImprints(this.page);
 
     this.isLoadingChange.emit(false);
   };
@@ -74,6 +79,32 @@ export class ImprintComponent implements OnInit {
   updateImprintDisplay(data): void {
     console.log("imprint order", data);
   };
+
+  getImprints(page?: number) {
+    const { pk_productID } = this.selectedProduct;
+    this._inventoryService.getImprints(pk_productID, page)
+      .pipe(takeUntil(this._unsubscribeAll))
+      .subscribe((imprint) => {
+        if (this.imprintList && this.displayList) {
+          this.dataSource = imprint["data"];
+          this.dataSourceLength = imprint["totalRecords"];
+          this.dataSource2 = imprint["data"];
+          this.dataSource2Length = imprint["totalRecords"];
+        }
+
+        if (this.imprintList && !this.displayList) {
+          this.dataSource = imprint["data"];
+          this.dataSourceLength = imprint["totalRecords"];
+        }
+
+        if (!this.imprintList && this.displayList) {
+          this.dataSource2 = imprint["data"];
+          this.dataSource2Length = imprint["totalRecords"];
+        }
+        console.log("this.dataSource", this.dataSource)
+        this._changeDetectorRef.markForCheck();
+      });
+  }
 
   updatePriceInclusion(): void {
     console.log("updatePriceInclusion");
@@ -130,6 +161,34 @@ export class ImprintComponent implements OnInit {
   };
 
   calledScreen(screenName): void {
+    if (screenName === "Display Order" || screenName === "Imprints") {
+      this.page = 1;
+      this.getImprints(this.page);
+    }
     this.showImprintScreen = screenName;
+  }
+
+  getNextData(event) {
+    const { previousPageIndex, pageIndex } = event;
+    if (pageIndex > previousPageIndex) {
+      this.page++;
+    } else {
+      this.page--;
+    };
+    this.displayList = false;
+    this.imprintList = true;
+    this.getImprints(this.page);
+  }
+
+  getDisplayNextData(event) {
+    const { previousPageIndex, pageIndex } = event;
+    if (pageIndex > previousPageIndex) {
+      this.page++;
+    } else {
+      this.page--;
+    };
+    this.displayList = true;
+    this.imprintList = false;
+    this.getImprints(this.page);
   }
 }

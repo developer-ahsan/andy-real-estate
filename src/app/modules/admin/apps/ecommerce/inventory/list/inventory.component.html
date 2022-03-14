@@ -10,14 +10,20 @@
         </div>
         <!-- Title -->
         <div class="text-4xl font-extrabold tracking-tight">Products</div>
-        <!-- Actions -->
-        <div class="flex flex-shrink-0 items-center mt-6 sm:mt-0 sm:ml-4">
+    </div>
+
+    <div class="row mx-2">
+        <div class="col-lg-6 col-12 p-3">
+
             <!-- Search -->
-            <mat-form-field class="fuse-mat-dense fuse-mat-no-subscript min-w-50">
+            <mat-form-field class="fuse-mat-dense fuse-mat-no-subscript w-full">
                 <mat-icon matPrefix [svgIcon]="'heroicons_outline:search'"></mat-icon>
                 <input matInput (keyup.enter)="searchKeyword($event)" [autocomplete]="'off'"
                     [placeholder]="'Search Products'">
             </mat-form-field>
+        </div>
+
+        <div class="col-lg-3 col-6 p-3">
 
             <!-- Export products button -->
             <button class="ml-4 min-w-50" mat-stroked-button [matTooltip]="'Export All Products'"
@@ -27,6 +33,9 @@
                 <span *ngIf="!exportLoader"><i class='fas fa-cloud-download-alt'></i></span>
                 <span class="ml-2 mr-1" *ngIf="!exportLoader">Export Products</span>
             </button>
+        </div>
+
+        <div class="col-lg-3 col-6 p-3">
 
             <!-- Add product button -->
             <button class="ml-4 min-w-50" mat-flat-button [color]="'primary'" [matTooltip]="'Add new product'"
@@ -315,7 +324,7 @@
                 <mat-paginator
                     class="sm:absolute sm:inset-x-0 sm:bottom-0 border-b sm:border-t sm:border-b-0 z-10 bg-gray-50 dark:bg-transparent"
                     [ngClass]="{'pointer-events-none': isLoading}" [length]="productsCount" [pageIndex]="pageNo"
-                    [pageSize]="pageSize" [pageSizeOptions]="[10, 25]"></mat-paginator>
+                    [pageSize]="20" (page)="getNextData($event)" [hidePageSize]="true"></mat-paginator>
 
             </ng-container>
 

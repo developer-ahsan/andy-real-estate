@@ -49,6 +49,7 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
     enableProductAddForm = false;
     vendors: InventoryVendor[];
     private _unsubscribeAll: Subject<any> = new Subject<any>();
+    page = 1;
 
     // Slider
     sliderMinValue: number = 10;
@@ -58,7 +59,6 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
         ceil: 120
     };
 
-    pageSize: number;
     pageNo: number;
 
     firstFormLoader = false;
@@ -272,7 +272,6 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
      * On init
      */
     ngOnInit(): void {
-        this.pageSize = 10;
         this.pageNo = 0;
 
         this.firstFormGroup.controls['radio'].setValue(this.addProductTypeRadios[0]);
@@ -472,7 +471,6 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
             shipping: shipping,
             net_cost: netCost
         };
-        console.log("payload", payload);
 
         this.createProductLoader = true;
         this._inventoryService.addProduct(payload)
@@ -587,7 +585,7 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
         this.backListLoader = true;  // Loader for the button
 
         // Get the products
-        this._inventoryService.getProductsList(10, 1)
+        this._inventoryService.getProductsList(20, 1)
             .pipe(takeUntil(this._unsubscribeAll))
             .subscribe((products: ProductsList[]) => {
                 this.products = products["data"];
@@ -648,7 +646,6 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
                 }
 
                 workbook.xlsx.writeBuffer().then((data: any) => {
-                    console.log("buffer");
                     const blob = new Blob([data], {
                         type:
                             "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
@@ -667,5 +664,29 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
                 // Mark for check
                 this._changeDetectorRef.markForCheck();
             })
+    }
+
+    getProducts(page: number): void {
+        this._inventoryService.getProductsByPagination(page)
+            .pipe(takeUntil(this._unsubscribeAll))
+            .subscribe((products) => {
+                this.products = products["data"];
+                this.isLoading = false;
+
+                // Mark for check
+                this._changeDetectorRef.markForCheck();
+            })
+    };
+
+    getNextData(event) {
+        this.isLoading = true;
+        const { previousPageIndex, pageIndex } = event;
+
+        if (pageIndex > previousPageIndex) {
+            this.page++;
+        } else {
+            this.page--;
+        };
+        this.getProducts(this.page);
     }
 }
