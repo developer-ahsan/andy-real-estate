@@ -473,6 +473,7 @@
 <!-- Imprints List -->
 <div *ngIf="!isLoading && showImprintScreen == 'Imprints'">
     <div class="row my-2">
+        <div class="col-lg-8 col-12"></div>
         <div class="col-lg-2 col-6" *ngIf="dataSource.length">
             <button class="min-w-40" mat-stroked-button [matTooltip]="'Remove All Imprints'"
                 (click)="deletAllImprints()" [disabled]="deleteLoader">

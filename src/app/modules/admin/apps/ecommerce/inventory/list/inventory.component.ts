@@ -61,6 +61,10 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
 
     pageNo: number;
 
+    // Filter dropdowns
+    suppliers = [];
+    stores = [];
+
     firstFormLoader = false;
     options: any[] = [{ name: 'Mary' }, { name: 'Shelley' }, { name: 'Igor' }];
     filteredOptions: Observable<any[]>;
@@ -313,6 +317,27 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
             pk_productID: [''],
         });
 
+        // Get the suppliers
+        this._inventoryService.getAllSuppliers()
+            .pipe(takeUntil(this._unsubscribeAll))
+            .subscribe((supplier) => {
+                this.options = supplier["data"];
+                this.suppliers = supplier["data"];
+
+                // Mark for check
+                this._changeDetectorRef.markForCheck();
+            })
+
+        // Get the stores
+        this._inventoryService.getAllStores()
+            .pipe(takeUntil(this._unsubscribeAll))
+            .subscribe((stores) => {
+                this.stores = stores["data"];
+
+                // Mark for check
+                this._changeDetectorRef.markForCheck();
+            })
+
         // Get the products
         this._inventoryService.products$
             .pipe(takeUntil(this._unsubscribeAll))
@@ -380,6 +405,26 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
     // @ Public methods
     // -----------------------------------------------------------------------------------------------------
 
+    selectByStore(event): void {
+        console.log(event)
+    }
+
+    selectBySupplier(event): void {
+        const { pk_companyID } = event;
+
+        this.isLoading = true;
+        // Get the products by selected suppliers
+        this._inventoryService.getProductsBySupplierId(pk_companyID)
+            .pipe(takeUntil(this._unsubscribeAll))
+            .subscribe((products: ProductsList[]) => {
+                this.products = products["data"];
+                this.productsCount = products["totalRecords"];
+                this.isLoading = false;
+
+                // Mark for check
+                this._changeDetectorRef.markForCheck();
+            });
+    }
     createProduct(): void {
         const featureForm = this.featureForm.getRawValue();
         const netCostForm = this.netCostForm.getRawValue();
@@ -597,14 +642,15 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
     };
 
     enableProductAddFormFn(): void {
-        this.firstFormLoader = true;
-        this._inventoryService.getAllSuppliers()
-            .pipe(takeUntil(this._unsubscribeAll))
-            .subscribe((supplier) => {
-                this.options = supplier["data"];
-                this.firstFormLoader = false;
-                this.enableProductAddForm = true;
-            })
+        this.enableProductAddForm = true;
+        // this.firstFormLoader = true;
+        // this._inventoryService.getAllSuppliers()
+        //     .pipe(takeUntil(this._unsubscribeAll))
+        //     .subscribe((supplier) => {
+        //         this.options = supplier["data"];
+        //         this.firstFormLoader = false;
+        //         this.enableProductAddForm = true;
+        //     })
     };
 
     exportLoaderToggle(): void {

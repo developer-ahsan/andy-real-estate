@@ -1,5 +1,4 @@
-<div class="absolute inset-0 flex flex-col min-w-0 overflow-hidden bg-card dark:bg-transparent"
-    *ngIf="!enableProductAddForm">
+<div class="absolute inset-0 flex flex-col min-w-0 bg-card dark:bg-transparent" *ngIf="!enableProductAddForm">
 
     <!-- Header -->
     <div
@@ -8,44 +7,75 @@
         <div class="absolute inset-x-0 bottom-1" *ngIf="isLoading">
             <mat-progress-bar [mode]="'indeterminate'"></mat-progress-bar>
         </div>
-        <!-- Title -->
-        <div class="text-4xl font-extrabold tracking-tight">Products</div>
+
+        <div class="row w-full">
+            <div class="col-lg-6 col-12">
+                <!-- Title -->
+                <div class="text-4xl font-extrabold tracking-tight">Products</div>
+            </div>
+
+            <div class="col-lg-3 col-6">
+
+                <!-- Export products button -->
+                <button class="min-w-40 w-full" mat-stroked-button [matTooltip]="'Export Products'"
+                    (click)="exportProducts()" [disabled]="exportLoader">
+                    <mat-progress-spinner *ngIf="exportLoader" [diameter]="24" [mode]="'indeterminate'">
+                    </mat-progress-spinner>
+                    <span *ngIf="!exportLoader"><i class='fas fa-cloud-download-alt'></i></span>
+                    <span class="ml-2 mr-1" *ngIf="!exportLoader">Export Products</span>
+                </button>
+            </div>
+
+            <div class="col-lg-3 col-6">
+
+                <!-- Add product button -->
+                <button class="min-w-40 w-full" mat-flat-button [color]="'primary'" [matTooltip]="'Add new product'"
+                    (click)="enableProductAddFormFn()" [disabled]="firstFormLoader">
+                    <mat-progress-spinner *ngIf="firstFormLoader" [diameter]="24" [mode]="'indeterminate'">
+                    </mat-progress-spinner>
+                    <mat-icon [svgIcon]="'heroicons_outline:plus'" *ngIf="!firstFormLoader"></mat-icon>
+                    <span class="ml-2 mr-1" *ngIf="!firstFormLoader">Add Product</span>
+                </button>
+            </div>
+        </div>
     </div>
 
-    <div class="row mx-2">
-        <div class="col-lg-6 col-12 p-3">
+    <div class="row m-2">
 
+        <div class="col-lg-4 col-12 p-2">
             <!-- Search -->
             <mat-form-field class="fuse-mat-dense fuse-mat-no-subscript w-full">
+                <mat-label>Search Products</mat-label>
                 <mat-icon matPrefix [svgIcon]="'heroicons_outline:search'"></mat-icon>
-                <input matInput (keyup.enter)="searchKeyword($event)" [autocomplete]="'off'"
-                    [placeholder]="'Search Products'">
+                <input class="h-6" matInput (keyup.enter)="searchKeyword($event)" [autocomplete]="'off'"
+                    [placeholder]="'Search Products...'">
             </mat-form-field>
         </div>
 
-        <div class="col-lg-3 col-6 p-3">
-
-            <!-- Export products button -->
-            <button class="ml-4 min-w-50" mat-stroked-button [matTooltip]="'Export All Products'"
-                (click)="exportProducts()" [disabled]="exportLoader">
-                <mat-progress-spinner *ngIf="exportLoader" [diameter]="24" [mode]="'indeterminate'">
-                </mat-progress-spinner>
-                <span *ngIf="!exportLoader"><i class='fas fa-cloud-download-alt'></i></span>
-                <span class="ml-2 mr-1" *ngIf="!exportLoader">Export Products</span>
-            </button>
+        <div class="col-lg-4 col-12 p-2">
+            <!-- Search Products By Supplier -->
+            <mat-form-field appearance="fill" class="w-full">
+                <mat-label>Search Products By Supplier</mat-label>
+                <mat-select disableRipple>
+                    <mat-option (click)="selectBySupplier(option)" value="{{option}}" *ngFor="let option of options">
+                        {{option.companyName}}
+                    </mat-option>
+                </mat-select>
+            </mat-form-field>
         </div>
 
-        <div class="col-lg-3 col-6 p-3">
+        <!-- <div class="col-lg-4 col-12 p-2"> -->
+        <!-- Search Products By Store -->
+        <!-- <mat-form-field appearance="fill" class="w-full">
+                <mat-label>Search Products By Store</mat-label>
+                <mat-select disableRipple (selectionChange)="selectByStore($event)">
+                    <mat-option value="store" *ngFor="let store of stores">
+                        {{store.storeName}}
+                    </mat-option>
+                </mat-select>
+            </mat-form-field>
+        </div> -->
 
-            <!-- Add product button -->
-            <button class="ml-4 min-w-50" mat-flat-button [color]="'primary'" [matTooltip]="'Add new product'"
-                (click)="enableProductAddFormFn()" [disabled]="firstFormLoader">
-                <mat-progress-spinner *ngIf="firstFormLoader" [diameter]="24" [mode]="'indeterminate'">
-                </mat-progress-spinner>
-                <mat-icon [svgIcon]="'heroicons_outline:plus'" *ngIf="!firstFormLoader"></mat-icon>
-                <span class="ml-2 mr-1" *ngIf="!firstFormLoader">Add Product</span>
-            </button>
-        </div>
     </div>
 
     <!-- Main -->
@@ -60,9 +90,9 @@
                 <div class="overflow-auto" cdkScrollable>
 
                     <!-- Table -->
-                    <table class="w-full w-full table-fixed bg-transparent"
-                        [ngClass]="{'pointer-events-none': isLoading}" mat-table matSort
-                        (matSortChange)="sortData($event)" [multiTemplateDataRows]="true" [dataSource]="products">
+                    <table class="w-full table-fixed bg-transparent" [ngClass]="{'pointer-events-none': isLoading}"
+                        mat-table matSort (matSortChange)="sortData($event)" [multiTemplateDataRows]="true"
+                        [dataSource]="products">
 
                         <!-- SKU -->
                         <ng-container matColumnDef="pk_productID">
@@ -87,64 +117,6 @@
                                 <b>#{{product.productNumber}}</b> - {{product.productName}}
                             </td>
                         </ng-container>
-
-                        <!-- Stock -->
-                        <!-- <ng-container matColumnDef="stock">
-                            <th class="w-24 bg-gray-50 dark:bg-black dark:bg-opacity-5" mat-header-cell
-                                *matHeaderCellDef mat-sort-header disableClear>
-                                Stock
-                            </th>
-                            <td class="pr-4" mat-cell *matCellDef="let product">
-                                <span class="flex items-center">
-                                    <span class="min-w-4">{{product.stock}}</span> -->
-                        <!-- Low stock -->
-                        <!-- <span class="flex items-end ml-2 w-1 h-4 bg-red-200 rounded overflow-hidden"
-                                        *ngIf="product.stock < 20">
-                                        <span class="flex w-full h-1/3 bg-red-600"></span>
-                                    </span> -->
-                        <!-- Medium stock -->
-                        <!-- <span class="flex items-end ml-2 w-1 h-4 bg-orange-200 rounded overflow-hidden"
-                                        *ngIf="product.stock >= 20 && product.stock < 30">
-                                        <span class="flex w-full h-2/4 bg-orange-400"></span>
-                                    </span> -->
-                        <!-- High stock -->
-                        <!-- <span class="flex items-end ml-2 w-1 h-4 bg-green-100 rounded overflow-hidden"
-                                        *ngIf="product.stock >= 30">
-                                        <span class="flex w-full h-full bg-green-400"></span>
-                                    </span>
-                                </span>
-                            </td>
-                        </ng-container> -->
-
-                        <!-- Active -->
-                        <!-- <ng-container matColumnDef="active">
-                            <th class="w-24 bg-gray-50 dark:bg-black dark:bg-opacity-5" mat-header-cell
-                                *matHeaderCellDef mat-sort-header disableClear>
-                                Active
-                            </th>
-                            <td class="pr-4" mat-cell *matCellDef="let product">
-                                <mat-icon class="text-green-400 icon-size-5" *ngIf="product.active"
-                                    [svgIcon]="'heroicons_solid:check'"></mat-icon>
-                                <mat-icon class="text-gray-400 icon-size-5" *ngIf="!product.active"
-                                    [svgIcon]="'heroicons_solid:x'"></mat-icon>
-                            </td>
-                        </ng-container> -->
-
-                        <!-- Details -->
-                        <!-- <ng-container matColumnDef="details">
-                            <th class="w-24 pr-8 bg-gray-50 dark:bg-black dark:bg-opacity-5" mat-header-cell
-                                *matHeaderCellDef>
-                                Details
-                            </th>
-                            <td class="pr-8" mat-cell *matCellDef="let product">
-                                <button class="min-w-10 min-h-7 h-7 px-2 leading-6" mat-stroked-button
-                                    (click)="toggleDetails(product.id)">
-                                    <mat-icon class="icon-size-5"
-                                        [svgIcon]="selectedProduct?.id === product.id ? 'heroicons_solid:chevron-up' : 'heroicons_solid:chevron-down'">
-                                    </mat-icon>
-                                </button>
-                            </td>
-                        </ng-container> -->
 
                         <!-- Product details row -->
                         <ng-container matColumnDef="productDetails">
@@ -318,7 +290,6 @@
                         <tr class="h-0" mat-row *matRowDef="let row; columns: ['productDetails']"></tr>
 
                     </table>
-
                 </div>
 
                 <mat-paginator

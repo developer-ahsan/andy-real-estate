@@ -348,7 +348,17 @@ export class InventoryService {
         return this._httpClient.get<any[]>(environment.stores, {
             params: {
                 list: true,
-                size: 500
+                size: 2000
+            }
+        });
+    }
+
+    getProductsBySupplierId(supplierId: string): Observable<any[]> {
+        return this._httpClient.get<any[]>(environment.products, {
+            params: {
+                list: true,
+                size: 20,
+                supplier_id: supplierId
             }
         });
     }
