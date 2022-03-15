@@ -287,11 +287,13 @@ export class InventoryService {
         });
     }
 
-    getFeatures(productId): Observable<any[]> {
+    getFeatures(productId, page): Observable<any[]> {
         return this._httpClient.get<any[]>(environment.products, {
             params: {
                 feature: true,
-                product_id: productId
+                product_id: productId,
+                size: 20,
+                page: page
             }
         });
     }
@@ -572,7 +574,7 @@ export class InventoryService {
             'Access-Control-Allow-Origin': '*'
         };
         return this._httpClient.post(
-            `${environment.mediaAccessUrl}`, payload, { headers });
+            environment.mediaAccessUrl, payload, { headers });
     }
 
     // Add Product

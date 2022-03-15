@@ -24,6 +24,9 @@ export class FeatureComponent implements OnInit {
   flashMessage: 'success' | 'error' | null = null;
   featureAddLoader = false;
 
+  featuresSelected = [];
+  page = 1;
+
   /** Whether the number of selected elements matches the total number of rows. */
   isAllSelected() {
     const numSelected = this.selection.selected.length;
@@ -63,12 +66,8 @@ export class FeatureComponent implements OnInit {
       order: ['1'],
       feature: ['', Validators.required]
     });
-    this._inventoryService.getFeatures(pk_productID)
-      .pipe(takeUntil(this._unsubscribeAll))
-      .subscribe((features) => {
-        this.dataSource = features["data"];
-        this._changeDetectorRef.markForCheck();
-      });
+
+    this.getFeatures(1);
 
     this._inventoryService.getFeaturesSupplierAndType(pk_productID)
       .pipe(takeUntil(this._unsubscribeAll))
@@ -78,8 +77,45 @@ export class FeatureComponent implements OnInit {
     this.isLoadingChange.emit(false);
   }
 
+  getFeatures(page: number): void {
+    const { pk_productID } = this.selectedProduct;
+    this._inventoryService.getFeatures(pk_productID, page)
+      .pipe(takeUntil(this._unsubscribeAll))
+      .subscribe((features) => {
+        this.dataSource = features["data"];
+        this._changeDetectorRef.markForCheck();
+      });
+  }
+
   uploadImage(): void {
     console.log("uploadImage");
+  }
+
+  selectFeatureRow(data): void {
+    const { fk_attributeID } = data;
+    if (this.featuresSelected?.length) {
+      if (this.featuresSelected.some(feature => feature.fk_attributeID == fk_attributeID)) {
+        let removeIndex = this.featuresSelected.map(item => item.fk_attributeID).indexOf(fk_attributeID);
+        this.featuresSelected.splice(removeIndex, 1);
+      } else {
+        this.featuresSelected.push(data);
+      }
+    } else {
+      this.featuresSelected.push(data);
+    }
+
+    console.log("this.featuresSelected", this.featuresSelected);
+  };
+
+  getNextData(event) {
+    const { previousPageIndex, pageIndex } = event;
+
+    if (pageIndex > previousPageIndex) {
+      this.page++;
+    } else {
+      this.page--;
+    };
+    this.getFeatures(this.page);
   }
 
   addFeature(): void {
@@ -98,21 +134,20 @@ export class FeatureComponent implements OnInit {
     this.featureAddLoader = true;
     this._inventoryService.addFeature(payload)
       .subscribe((response) => {
-        this._inventoryService.getFeatures(pk_productID)
-          .pipe(takeUntil(this._unsubscribeAll))
-          .subscribe((features) => {
-            this.dataSource = features["data"];
-            this.featureAddLoader = false;
-            this.featureForm.reset({
-              order: 1,
-              feature: ''
-            });
-            this.showFlashMessage(
-              response["success"] === true ?
-                'success' :
-                'error'
-            );
-          });
+        this.featureAddLoader = false;
+        this.featureForm.reset({
+          order: 1,
+          feature: ''
+        });
+        this.showFlashMessage(
+          response["success"] === true ?
+            'success' :
+            'error'
+        );
+        this.ngOnInit();
+
+        // Mark for check
+        this._changeDetectorRef.markForCheck();
       });
   }
 
