@@ -1,7 +1,6 @@
 import { Component, Input, OnInit, Output, EventEmitter, ChangeDetectorRef } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { InventoryService } from 'app/modules/admin/apps/ecommerce/inventory/inventory.service';
-import { productDescription } from 'app/modules/admin/apps/ecommerce/inventory/inventory.types';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 
@@ -59,7 +58,6 @@ export class ProductsDescriptionComponent implements OnInit {
       .pipe(takeUntil(this._unsubscribeAll))
       .subscribe((description) => {
         this.productDescription = description["data"][0];
-        console.log("description", description["data"][0])
         this.productDescription["name"] = productName;
         this.productDescription["productNO"] = productNumber;
         this.productDescription["technoLogoSKU"] = technoLogoSKU;
@@ -105,6 +103,15 @@ export class ProductsDescriptionComponent implements OnInit {
         // Mark for check
         this._changeDetectorRef.markForCheck();
       });
+  };
+
+  copyDescriptionToMeta(): void {
+
+    // Copy main desceiprion to meta description
+    this.productDescription["metaDesc"] = this.productDescription["productDesc"];
+
+    // Fill the form
+    this.productDescriptionForm.patchValue(this.productDescription);
   }
 
   /**
@@ -125,6 +132,6 @@ export class ProductsDescriptionComponent implements OnInit {
       // Mark for check
       this._changeDetectorRef.markForCheck();
     }, 3000);
-  }
+  };
 
 }

@@ -2,7 +2,7 @@
 </ngx-skeleton-loader>
 <div class="row" *ngIf="!isLoading">
     <div class="col-12 my-2">
-        <fuse-card class="rounded-2xl bg-card flex flex-col lg:flex-row w-full">
+        <fuse-card class="rounded-2xl shadow bg-card flex flex-col lg:flex-row w-full">
             <div class="p-6 sm:p-8 lg:p-10 w-full">
                 <div class="text-2xl font-bold">
                     Add Feature
@@ -69,8 +69,8 @@
                     </div>
                 </div>
                 <div class="col-lg-3 col-6" *ngIf="dataSource.length">
-                    <button class="min-w-40 w-full" mat-stroked-button [color]="'primary'"
-                        [matTooltip]="'Remove Selected'">
+                    <button class="min-w-40 w-full" [disabled]="!this.selectedRowsLength" mat-stroked-button
+                        [color]="'primary'" (click)="deleteFeatureRow()" [matTooltip]="'Remove Selected'">
                         <span class="ml-1 mr-1">Remove Selected</span>
                     </button>
                 </div>
@@ -88,9 +88,18 @@
 
                     <!-- Checkbox Column -->
                     <ng-container matColumnDef="select">
-                        <th mat-header-cell *matHeaderCellDef class="w-15 min-w-15"> Select </th>
-                        <td mat-cell *matCellDef="let element">
-                            <mat-checkbox (click)="selectFeatureRow(element)"></mat-checkbox>
+                        <th mat-header-cell *matHeaderCellDef class="w-15 min-w-15">
+                            <mat-checkbox (change)="$event ? masterToggle() : null"
+                                [checked]="selection.hasValue() && isAllSelected()"
+                                [indeterminate]="selection.hasValue() && !isAllSelected()"
+                                [aria-label]="checkboxLabel()">
+                            </mat-checkbox>
+                        </th>
+                        <td mat-cell *matCellDef="let row">
+                            <mat-checkbox (click)="$event.stopPropagation()"
+                                (change)="$event ? selection.toggle(row) : null" [checked]="selection.isSelected(row)"
+                                [aria-label]="checkboxLabel(row)">
+                            </mat-checkbox>
                         </td>
                     </ng-container>
 
@@ -116,7 +125,8 @@
 
                     <tr mat-header-row *matHeaderRowDef="displayedColumns;" class="h-18 bg-light"></tr>
                     <tr mat-row *matRowDef="let row; columns: displayedColumns;"
-                        class="h-14 hover:bg-gray-100 dark:hover:bg-hover" style="cursor: pointer;">
+                        class="h-14 hover:bg-gray-100 dark:hover:bg-hover" style="cursor: pointer;"
+                        (click)="selection.toggle(row)">
                     </tr>
                 </table>
                 <mat-paginator

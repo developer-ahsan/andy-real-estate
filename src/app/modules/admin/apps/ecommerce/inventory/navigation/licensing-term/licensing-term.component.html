@@ -2,7 +2,7 @@
 </ngx-skeleton-loader>
 <div class="row my-3" *ngIf="!isLoading && selectedTerm">
     <div class="col-12">
-        <fuse-card class="rounded-2xl bg-card flex flex-col lg:flex-row w-full">
+        <fuse-card class="rounded-2xl shadow bg-card flex flex-col lg:flex-row w-full">
             <div class="p-6 sm:p-8 lg:p-10 w-full">
                 <div class="text-2xl font-bold">
                     Selected Licensing Term
@@ -52,9 +52,9 @@
 <div class="row my-3" *ngIf="!isLoading">
     <div class="col-12">
         <mat-card class="w-full p-2 h-full rounded-2xl shadow-lg">
-            <mat-card-title class="text-info font-size-medium">
+            <div class="text-2xl font-bold p-6 sm:p-8 lg:p-10 w-full">
                 Licensing Terms
-            </mat-card-title>
+            </div>
             <mat-divider></mat-divider>
             <form [formGroup]="licensingForm">
                 <div class="row" *ngIf="!radioButtonForm">
