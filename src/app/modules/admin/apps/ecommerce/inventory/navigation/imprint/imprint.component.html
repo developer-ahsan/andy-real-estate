@@ -10,25 +10,93 @@
             <mat-button-toggle value="Display Order">
                 Display Order
             </mat-button-toggle>
-            <mat-button-toggle value="Overlapping" [disabled]="true">
-                Overlapping
-            </mat-button-toggle>
-            <mat-button-toggle value="Price Inclusion">
-                Price Inclusion
-            </mat-button-toggle>
-            <mat-button-toggle value="Test Pricing">
-                Test Pricing
-            </mat-button-toggle>
             <mat-button-toggle value="Add Imprint">
                 Add Imprint
+            </mat-button-toggle>
+            <mat-button-toggle value="Standard Imprints">
+                Standard Imprints
+            </mat-button-toggle>
+            <mat-button-toggle value="Overlapping" [disabled]="mainButtonToggleDisable">
+                Overlapping
+            </mat-button-toggle>
+            <mat-button-toggle value="Price Inclusion" [disabled]="mainButtonToggleDisable">
+                Price Inclusion
+            </mat-button-toggle>
+            <mat-button-toggle value="Test Pricing" [disabled]="mainButtonToggleDisable">
+                Test Pricing
             </mat-button-toggle>
         </mat-button-toggle-group>
     </div>
 </div>
 
+<!-- Standard Imprints -->
+<div *ngIf="!isLoading && showImprintScreen == 'Standard Imprints'">
+    <fuse-card class="rounded-2xl mb-2 shadow bg-card flex flex-col lg:flex-row w-full">
+        <div class="p-6 sm:p-8 lg:p-10 w-full">
+            <ngx-skeleton-loader count="8" appearance="line" animation="pulse" *ngIf="standardImprintLoader">
+            </ngx-skeleton-loader>
+            <div class="row" *ngIf="!standardImprintLoader">
+                <div class="col-lg-9 col-12">
+                    <div class="text-2xl font-bold">
+                        Standard Imprints
+                    </div>
+                </div>
+                <div class="col-lg-3 col-12">
+                    <button class="w-full" mat-stroked-button [matTooltip]="'Clear all options'"
+                        (click)="clearAllStandardImprintOptions()">
+                        Un/Select All
+                    </button>
+                </div>
+            </div>
+            <div class="gap-y-4 mt-6" *ngIf="!standardImprintLoader">
+                <div class="row border-b-2 py-5" *ngFor="let standard of standardImprints">
+                    <div class="col-12 mb-3">
+                        <b class="my-5 text-secondary">
+                            {{standard.standard_imprints.name}}
+                        </b>
+                        <b class="text-secondary float-right cursor-pointer" (click)="selectCheckedOption(standard)">
+                            <u>Un/Select</u>
+                        </b>
+                    </div>
+                    <div class="col-lg-4 col-md-6 col-12" *ngFor="let subStandard of standard.sub_standard_imprints">
+                        <mat-checkbox (change)="subStandard.isChecked = !subStandard.isChecked"
+                            [checked]='subStandard.isChecked'>
+                            <div class="font-medium text-sm">{{subStandard.name}}</div>
+                        </mat-checkbox>
+                    </div>
+                </div>
+
+                <div class="flex items-center justify-end w-full">
+                    <div class="flex items-center my-2">
+                        <div class="flex items-center mr-4" *ngIf="flashMessage">
+                            <ng-container *ngIf="flashMessage === 'success'">
+                                <mat-icon class="text-green-500" [svgIcon]="'heroicons_outline:check'">
+                                </mat-icon>
+                                <span class="ml-2">Standard Imprints Added successfully</span>
+                            </ng-container>
+                            <ng-container *ngIf="flashMessage === 'error'">
+                                <mat-icon class="text-red-500" [svgIcon]="'heroicons_outline:x'"></mat-icon>
+                                <span class="ml-2">An error occurred, try again!</span>
+                            </ng-container>
+                            <ng-container *ngIf="flashMessage === 'countError'">
+                                <mat-icon class="text-red-500" [svgIcon]="'heroicons_outline:x'"></mat-icon>
+                                <span class="ml-2">Please select atleast one imprint option!</span>
+                            </ng-container>
+                        </div>
+                        <button class="min-w-40" mat-flat-button [color]="'primary'" [matTooltip]="'Save Imprints'"
+                            (click)="saveStandardImprints()">
+                            <span class="ml-1 mr-1">Save Imprints</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </fuse-card>
+</div>
+
 <!-- Add Imprint -->
 <div *ngIf="!isLoading && showImprintScreen == 'Add Imprint'">
-    <fuse-card class="rounded-2xl bg-card flex flex-col lg:flex-row w-full">
+    <fuse-card class="rounded-2xl shadow bg-card flex flex-col lg:flex-row w-full">
         <div class="p-6 sm:p-8 lg:p-10 w-full">
             <div class="text-2xl font-bold">
                 Add Imprint
@@ -273,132 +341,317 @@
 
 <!-- Test Pricing -->
 <div *ngIf="!isLoading && showImprintScreen == 'Test Pricing'">
-    <div class="row">
-        <div class="col-12 my-2">
-            <fuse-card class="rounded-2xl bg-card flex flex-col lg:flex-row w-full">
-                <div class="p-6 sm:p-8 lg:p-10 w-full">
-                    <div class="text-2xl font-bold">
-                        Select one or more Imprints
-                    </div>
-                    <!-- Features -->
-                    <div class="gap-y-4 mt-6">
-                        <form [formGroup]="testPricingForm">
-                            <div class="row">
-                                <div class="col-12">
-                                    <small class="leading-relaxed text-secondary font-semibold">*The process number is
-                                        required. (eg. 2 colors,
-                                        9000
-                                        stitches, 1 engraving, 1 debossing...)</small>
-                                </div>
-                                <div class="col-lg-8 col-12">
-                                    <mat-form-field class="w-full" appearance="fill">
-                                        <mat-select name="food" [formControlName]="'option1'">
-                                            <mat-option *ngFor="let food of foods" [value]="food.value">
-                                                {{food.viewValue}}
-                                            </mat-option>
-                                        </mat-select>
-                                    </mat-form-field>
-                                </div>
-                                <div class="col-lg-4 col-12">
-                                    <mat-form-field class="w-full" appearance="fill">
-                                        <mat-select name="food" [formControlName]="'option2'">
-                                            <mat-option *ngFor="let food of foods" [value]="food.value">
-                                                {{food.viewValue}}
-                                            </mat-option>
-                                        </mat-select>
-                                    </mat-form-field>
-                                </div>
-                            </div>
-                        </form>
-                    </div>
-                    <div class="flex items-center justify-end w-full">
-                        <div class="flex items-center my-2">
-                            <div class="flex items-center mr-4" *ngIf="flashMessage">
-                                <ng-container *ngIf="flashMessage === 'success'">
-                                    <mat-icon class="text-green-500" [svgIcon]="'heroicons_outline:check'">
-                                    </mat-icon>
-                                    <span class="ml-2">Updated successfully</span>
-                                </ng-container>
-                                <ng-container *ngIf="flashMessage === 'error'">
-                                    <mat-icon class="text-red-500" [svgIcon]="'heroicons_outline:x'"></mat-icon>
-                                    <span class="ml-2">An error occurred, try again!</span>
-                                </ng-container>
-                            </div>
-                            <button class="min-w-40" mat-stroked-button [matTooltip]="'Update'" (click)="updateData()"
-                                [disabled]="updateLoader">
-                                <mat-progress-spinner *ngIf="updateLoader" [diameter]="24" [mode]="'indeterminate'">
-                                </mat-progress-spinner>
-                                <mat-icon *ngIf="!updateLoader" [svgIcon]="'mat_outline:edit'"></mat-icon>
-                                <span *ngIf="!updateLoader" class="ml-1 mr-1">Update</span>
-                            </button>
+    <fuse-card class="rounded-2xl shadow bg-card flex flex-col lg:flex-row w-full">
+        <div class="p-6 sm:p-8 lg:p-10 w-full">
+            <ngx-skeleton-loader count="8" appearance="line" animation="pulse" *ngIf="testPricingLoader">
+            </ngx-skeleton-loader>
+            <div class="text-2xl font-bold" *ngIf="!testPricingLoader">
+                Select one or more Imprints
+            </div>
+            <!-- Features -->
+            <div class="gap-y-4 mt-6" *ngIf="!testPricingLoader">
+                <form [formGroup]="testPricingForm">
+                    <div class="row w-full mb-5">
+                        <div class="col-12">
+                            <small class="leading-relaxed text-secondary font-semibold">*The process number is
+                                required. (eg. 2 colors,
+                                9000
+                                stitches, 1 engraving, 1 debossing...)</small>
                         </div>
                     </div>
+                    <div class="row w-full border-b py-1" *ngIf="testPricingDataSourceLength > 0">
+                        <div class="col-lg-8 col-12">
+                            <mat-form-field class="w-full" appearance="fill">
+                                <mat-select name="data" [formControlName]="'optionOneFirst'">
+                                    <mat-option *ngFor="let data of testPricingDataSource" [value]="data">
+                                        {{data.locationName}} ({{data.methodName}})
+                                    </mat-option>
+                                </mat-select>
+                            </mat-form-field>
+                        </div>
+                        <div class="col-lg-4 col-12">
+                            <mat-form-field class="w-full" appearance="fill">
+                                <mat-select name="number" [formControlName]="'optionOneSecond'">
+                                    <mat-option *ngFor="let number of testPricingNumbers" [value]="number">
+                                        {{number}}
+                                    </mat-option>
+                                </mat-select>
+                            </mat-form-field>
+                        </div>
+                    </div>
+                    <div class="row w-full border-b my-2" *ngIf="testPricingDataSourceLength > 1">
+                        <div class="col-lg-8 col-12">
+                            <mat-form-field class="w-full" appearance="fill">
+                                <mat-select name="data" [formControlName]="'optionTwoFirst'">
+                                    <mat-option *ngFor="let data of testPricingDataSource" [value]="data">
+                                        {{data.locationName}} ({{data.methodName}})
+                                    </mat-option>
+                                </mat-select>
+                            </mat-form-field>
+                        </div>
+                        <div class="col-lg-4 col-12">
+                            <mat-form-field class="w-full" appearance="fill">
+                                <mat-select name="number" [formControlName]="'optionTwoSecond'">
+                                    <mat-option *ngFor="let number of testPricingNumbers" [value]="number">
+                                        {{number}}
+                                    </mat-option>
+                                </mat-select>
+                            </mat-form-field>
+                        </div>
+                    </div>
+                    <div class="row w-full border-b my-2" *ngIf="testPricingDataSourceLength > 2">
+                        <div class="col-lg-8 col-12">
+                            <mat-form-field class="w-full" appearance="fill">
+                                <mat-select name="data" [formControlName]="'optionThreeFirst'">
+                                    <mat-option *ngFor="let data of testPricingDataSource" [value]="data">
+                                        {{data.locationName}} ({{data.methodName}})
+                                    </mat-option>
+                                </mat-select>
+                            </mat-form-field>
+                        </div>
+                        <div class="col-lg-4 col-12">
+                            <mat-form-field class="w-full" appearance="fill">
+                                <mat-select name="number" [formControlName]="'optionThreeSecond'">
+                                    <mat-option *ngFor="let number of testPricingNumbers" [value]="number">
+                                        {{number}}
+                                    </mat-option>
+                                </mat-select>
+                            </mat-form-field>
+                        </div>
+                    </div>
+                    <div class="row w-full border-b my-2" *ngIf="testPricingDataSourceLength > 3">
+                        <div class="col-lg-8 col-12">
+                            <mat-form-field class="w-full" appearance="fill">
+                                <mat-select name="data" [formControlName]="'optionFourFirst'">
+                                    <mat-option *ngFor="let data of testPricingDataSource" [value]="data">
+                                        {{data.locationName}} ({{data.methodName}})
+                                    </mat-option>
+                                </mat-select>
+                            </mat-form-field>
+                        </div>
+                        <div class="col-lg-4 col-12">
+                            <mat-form-field class="w-full" appearance="fill">
+                                <mat-select name="number" [formControlName]="'optionFourSecond'">
+                                    <mat-option *ngFor="let number of testPricingNumbers" [value]="number">
+                                        {{number}}
+                                    </mat-option>
+                                </mat-select>
+                            </mat-form-field>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="flex items-center justify-end w-full" *ngIf="!testPricingLoader">
+                <div class="flex items-center my-2">
+                    <div class="flex items-center mr-4" *ngIf="flashMessage">
+                        <ng-container *ngIf="flashMessage === 'success'">
+                            <mat-icon class="text-green-500" [svgIcon]="'heroicons_outline:check'">
+                            </mat-icon>
+                            <span class="ml-2">Updated successfully</span>
+                        </ng-container>
+                        <ng-container *ngIf="flashMessage === 'error'">
+                            <mat-icon class="text-red-500" [svgIcon]="'heroicons_outline:x'"></mat-icon>
+                            <span class="ml-2">An error occurred, try again!</span>
+                        </ng-container>
+                    </div>
+                    <button class="min-w-40" mat-stroked-button [matTooltip]="'Update'" (click)="updateData()"
+                        [disabled]="updateLoader">
+                        <mat-progress-spinner *ngIf="updateLoader" [diameter]="24" [mode]="'indeterminate'">
+                        </mat-progress-spinner>
+                        <mat-icon *ngIf="!updateLoader" [svgIcon]="'mat_outline:edit'"></mat-icon>
+                        <span *ngIf="!updateLoader" class="ml-1 mr-1">Update</span>
+                    </button>
                 </div>
-            </fuse-card>
+            </div>
         </div>
-    </div>
+    </fuse-card>
 </div>
 
 <!-- Price Inclusion -->
 <div *ngIf="!isLoading && showImprintScreen == 'Price Inclusion'">
-    <div class="row">
-        <div class="col-12 my-2">
-            <fuse-card class="rounded-2xl bg-card flex flex-col lg:flex-row w-full">
-                <div class="p-6 sm:p-8 lg:p-10 w-full">
-                    <div class="text-2xl font-bold">
-                        Price Inclusion
-                    </div>
-                    <!-- Features -->
-                    <div class="gap-y-4 mt-6">
-                        <form [formGroup]="priceInclusionForm">
+    <fuse-card class="rounded-2xl shadow bg-card flex flex-col lg:flex-row w-full">
+        <div class="p-6 sm:p-8 lg:p-10 w-full">
+            <ngx-skeleton-loader count="8" appearance="line" animation="pulse" *ngIf="priceInclusionDataLoader">
+            </ngx-skeleton-loader>
+            <div class="text-2xl font-bold" *ngIf="!priceInclusionDataLoader">
+                Price Inclusion
+            </div>
+            <!-- Features -->
+            <div class="gap-y-4 mt-6" *ngIf="!priceInclusionDataLoader">
+                <form [formGroup]="priceInclusionForm">
+                    <div class="row border-b" *ngFor="let data of priceInclusionFinalArray">
+                        <div class="col-12 my-5">
+                            <mat-checkbox [formControlName]="'checkBox'">
+                                <b class="my-5 text-secondary">
+                                    {{data.imprintObj.locationName}}/{{data.imprintObj.methodName}} -
+                                    {{data.imprintObj.companyName}}
+                                </b>
+                            </mat-checkbox>
                             <div class="row">
-                                <div class="col-12">
-                                    <mat-checkbox [formControlName]="'checkBox'">
-                                        FRONT/SCREEN PRINT - SHOWDOWN DISPLAYS
-                                    </mat-checkbox>
+                                <div class="col-lg-3 col-12">
+                                    <b class="text-center">Setup</b>
+                                    <table class="my-5">
+                                        <tr>
+                                            <td></td>
+                                            <th scope="col" class="bg-primary text-white text-center p-3">
+                                                {{data.setup[0].productQuantity}}
+                                            </th>
+                                        </tr>
+                                        <tr *ngFor="let setup of data.setup">
+                                            <th scope="row" class="bg-primary text-white text-center p-3">
+                                                {{setup.processQuantity}}</th>
+                                            <td class="p-3">{{setup.charge}}</td>
+                                        </tr>
+                                    </table>
+                                </div>
+                                <div class="col-lg-9 col-12">
+                                    <b class="text-center">Run</b>
+                                    <table class="my-5">
+                                        <tr>
+                                            <td></td>
+                                            <th scope="col">1</th>
+                                            <th scope="col">2</th>
+                                            <th scope="col">3</th>
+                                            <th scope="col">4</th>
+                                            <th scope="col">5</th>
+                                        </tr>
+                                        <tr>
+                                            <th scope="row">1</th>
+                                            <td>Closed</td>
+                                            <td>Open</td>
+                                            <td>Open</td>
+                                            <td>Closed</td>
+                                            <td>Closed</td>
+                                        </tr>
+                                        <tr>
+                                            <th scope="row">2</th>
+                                            <td>Open</td>
+                                            <td>Open</td>
+                                            <td>Closed</td>
+                                            <td>Closed</td>
+                                            <td>Closed</td>
+                                        </tr>
+                                        <tr>
+                                            <th scope="row">3</th>
+                                            <td>Open</td>
+                                            <td>Open</td>
+                                            <td>Closed</td>
+                                            <td>Closed</td>
+                                            <td>Closed</td>
+                                        </tr>
+                                        <tr>
+                                            <th scope="row">4</th>
+                                            <td>Open</td>
+                                            <td>Open</td>
+                                            <td>Closed</td>
+                                            <td>Closed</td>
+                                            <td>Closed</td>
+                                        </tr>
+                                        <tr>
+                                            <th scope="row">5</th>
+                                            <td>Open</td>
+                                            <td>Open</td>
+                                            <td>Closed</td>
+                                            <td>Closed</td>
+                                            <td>Closed</td>
+                                        </tr>
+                                    </table>
                                 </div>
                             </div>
-                        </form>
-                    </div>
-                    <div class="flex items-center justify-end w-full">
-                        <div class="flex items-center my-2">
-                            <div class="flex items-center mr-4" *ngIf="flashMessage">
-                                <ng-container *ngIf="flashMessage === 'success'">
-                                    <mat-icon class="text-green-500" [svgIcon]="'heroicons_outline:check'">
-                                    </mat-icon>
-                                    <span class="ml-2">Price Inclusion Updated successfully</span>
-                                </ng-container>
-                                <ng-container *ngIf="flashMessage === 'error'">
-                                    <mat-icon class="text-red-500" [svgIcon]="'heroicons_outline:x'"></mat-icon>
-                                    <span class="ml-2">An error occurred, try again!</span>
-                                </ng-container>
-                            </div>
-                            <button class="min-w-40" mat-stroked-button [matTooltip]="'Update Price Inclusion'"
-                                (click)="updatePriceInclusion()" [disabled]="priceInclusionLoader">
-                                <mat-progress-spinner *ngIf="priceInclusionLoader" [diameter]="24"
-                                    [mode]="'indeterminate'">
-                                </mat-progress-spinner>
-                                <mat-icon *ngIf="!priceInclusionLoader" [svgIcon]="'mat_outline:edit'"></mat-icon>
-                                <span *ngIf="!priceInclusionLoader" class="ml-1 mr-1">Update</span>
-                            </button>
                         </div>
                     </div>
+                </form>
+            </div>
+            <div class="flex items-center justify-end w-full" *ngIf="!priceInclusionDataLoader">
+                <div class="flex items-center my-2">
+                    <div class="flex items-center mr-4" *ngIf="flashMessage">
+                        <ng-container *ngIf="flashMessage === 'success'">
+                            <mat-icon class="text-green-500" [svgIcon]="'heroicons_outline:check'">
+                            </mat-icon>
+                            <span class="ml-2">Price Inclusion Updated successfully</span>
+                        </ng-container>
+                        <ng-container *ngIf="flashMessage === 'error'">
+                            <mat-icon class="text-red-500" [svgIcon]="'heroicons_outline:x'"></mat-icon>
+                            <span class="ml-2">An error occurred, try again!</span>
+                        </ng-container>
+                    </div>
+                    <button class="min-w-40" mat-stroked-button [matTooltip]="'Update Price Inclusion'"
+                        (click)="updatePriceInclusion()" [disabled]="priceInclusionLoader">
+                        <mat-progress-spinner *ngIf="priceInclusionLoader" [diameter]="24" [mode]="'indeterminate'">
+                        </mat-progress-spinner>
+                        <mat-icon *ngIf="!priceInclusionLoader" [svgIcon]="'mat_outline:edit'"></mat-icon>
+                        <span *ngIf="!priceInclusionLoader" class="ml-1 mr-1">Update</span>
+                    </button>
                 </div>
-            </fuse-card>
+            </div>
         </div>
-    </div>
+    </fuse-card>
 </div>
 
 <!-- Overlapping -->
 <div *ngIf="!isLoading && showImprintScreen == 'Overlapping'">
-
+    <fuse-card class="rounded-2xl shadow bg-card flex flex-col lg:flex-row w-full">
+        <div class="p-6 sm:p-8 lg:p-10 w-full">
+            <ngx-skeleton-loader count="8" appearance="line" animation="pulse"
+                *ngIf="testPricingLoader || priceInclusionDataLoader">
+            </ngx-skeleton-loader>
+            <div class="text-2xl font-bold" *ngIf="!testPricingLoader || !priceInclusionDataLoader">
+                Overlapping
+            </div>
+            <!-- Features -->
+            <div class="gap-y-4 mt-6" *ngIf="!testPricingLoader || !priceInclusionDataLoader">
+                <div class="row">
+                    <div class="col-12">
+                        <table class="my-5">
+                            <tr class="border-b">
+                                <td></td>
+                                <th scope="col" class="my-5" *ngFor="let data of testPricingDataSource">
+                                    <p class="text-sm text-secondary">{{data.locationName}}</p>
+                                </th>
+                            </tr>
+                            <tr *ngFor="let data of testPricingDataSource">
+                                <th scope="row">
+                                    <p class="text-sm text-secondary">{{data.locationName}}</p>
+                                </th>
+                                <td *ngFor="let subData of testPricingDataSource">
+                                    <mat-checkbox [checked]='data.locationName === subData.locationName'></mat-checkbox>
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            <div class="flex items-center justify-end w-full" *ngIf="!testPricingLoader || !priceInclusionDataLoader">
+                <div class="flex items-center my-2">
+                    <div class="flex items-center mr-4" *ngIf="flashMessage">
+                        <ng-container *ngIf="flashMessage === 'success'">
+                            <mat-icon class="text-green-500" [svgIcon]="'heroicons_outline:check'">
+                            </mat-icon>
+                            <span class="ml-2">Price Inclusion Updated successfully</span>
+                        </ng-container>
+                        <ng-container *ngIf="flashMessage === 'error'">
+                            <mat-icon class="text-red-500" [svgIcon]="'heroicons_outline:x'"></mat-icon>
+                            <span class="ml-2">An error occurred, try again!</span>
+                        </ng-container>
+                    </div>
+                    <button class="min-w-40" mat-stroked-button [matTooltip]="'Update Price Inclusion'"
+                        (click)="updatePriceInclusion()" [disabled]="priceInclusionLoader">
+                        <mat-progress-spinner *ngIf="priceInclusionLoader" [diameter]="24" [mode]="'indeterminate'">
+                        </mat-progress-spinner>
+                        <mat-icon *ngIf="!priceInclusionLoader" [svgIcon]="'mat_outline:edit'"></mat-icon>
+                        <span *ngIf="!priceInclusionLoader" class="ml-1 mr-1">Update</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </fuse-card>
 </div>
 
 <!-- Display Order -->
 <div *ngIf="!isLoading && showImprintScreen == 'Display Order'">
     <div class="row">
         <div class="col-12">
-            <mat-card class="w-full mb-10 p-0 h-full rounded-2xl shadow-lg">
+            <mat-card class="w-full mb-10 p-0 h-full rounded-2xl shadow">
                 <div class="text-2xl font-bold p-5">
                     Imprint Display Order
                 </div>
@@ -434,7 +687,8 @@
                                 class="w-10 min-w-10 bg-gray-50 dark:bg-black dark:bg-opacity-5"> Order </th>
                             <td mat-cell *matCellDef="let element">
                                 <mat-form-field class="w-2/3 mt-2" appearance="fill">
-                                    <input matInput placeholder="Order#" value="{{element.displayOrder}}">
+                                    <input matInput placeholder="Order#" (change)="onChangeEvent($event)"
+                                        value="{{element.displayOrder}}">
                                 </mat-form-field>
                             </td>
                         </ng-container>
@@ -444,9 +698,9 @@
                             <th mat-header-cell *matHeaderCellDef
                                 class="w-10 min-w-10 bg-gray-50 dark:bg-black dark:bg-opacity-5"> Action </th>
                             <td mat-cell *matCellDef="let element">
-                                <mat-icon svgIcon="mat_outline:edit" class="ml-3"
-                                    (click)="updateImprintDisplay(element)">
-                                </mat-icon>
+                                <button class="w-full" mat-stroked-button (click)="updateImprintDisplay(element)">
+                                    <span>Update</span>
+                                </button>
                             </td>
                         </ng-container>
 
@@ -458,7 +712,7 @@
                     <mat-paginator
                         class="sm:absolute sm:inset-x-0 border-b sm:border-t sm:border-b-0 z-10 bg-gray-50 dark:bg-transparent"
                         [ngClass]="{'pointer-events-none': isLoading}" [length]="dataSource2Length" [pageIndex]="0"
-                        [pageSize]="10" (page)="getDisplayNextData($event)" [pageSizeOptions]="[10, 25]">
+                        [pageSize]="10" (page)="getDisplayNextData($event)" [hidePageSize]="true">
                     </mat-paginator>
                 </div>
                 <ng-template #other_content1>
@@ -472,26 +726,21 @@
 </div>
 <!-- Imprints List -->
 <div *ngIf="!isLoading && showImprintScreen == 'Imprints'">
-    <div class="row my-2">
-        <div class="col-lg-8 col-12"></div>
-        <div class="col-lg-2 col-6" *ngIf="dataSource.length">
-            <button class="min-w-40" mat-stroked-button [matTooltip]="'Remove All Imprints'"
-                (click)="deletAllImprints()" [disabled]="deleteLoader">
+    <div class="row my-2 mx-4">
+        <div class="col-lg-9 col-12"></div>
+        <div class="col-lg-3 col-6">
+            <button class="min-w-40 w-full" mat-stroked-button [matTooltip]="'Remove All Imprints'"
+                (click)="deletAllImprints()" [disabled]="deleteLoader || !dataSource.length">
                 <mat-progress-spinner *ngIf="deleteLoader" [diameter]="24" [mode]="'indeterminate'">
                 </mat-progress-spinner>
                 <mat-icon *ngIf="!deleteLoader" svgIcon="heroicons_outline:trash"></mat-icon>
                 <span *ngIf="!deleteLoader" class="ml-1 mr-1">Remove All</span>
             </button>
         </div>
-        <div class="col-lg-2 col-6">
-            <button mat-flat-button [color]="'primary'" [matTooltip]="'Standard Imprints'">
-                <span class="ml-1 mr-1">Standard Imprints</span>
-            </button>
-        </div>
     </div>
     <div class="row">
         <div class="col-12">
-            <mat-card class="w-full mb-10 p-0 h-full rounded-2xl shadow-lg">
+            <mat-card class="w-full mb-10 p-0 h-full rounded-2xl shadow">
                 <div class="row">
                     <div class="col-12">
                         <div class="text-2xl font-bold p-5">

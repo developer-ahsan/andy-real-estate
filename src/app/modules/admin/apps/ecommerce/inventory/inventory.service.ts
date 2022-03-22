@@ -47,41 +47,46 @@ export class InventoryService {
         },
         {
             id: 6,
+            title: 'Sizes',
+            icon: 'iconsmind:resize',
+        },
+        {
+            id: 7,
             title: 'Colors',
             icon: 'mat_outline:color_lens',
         },
         {
-            id: 7,
+            id: 8,
             title: 'Features',
             icon: 'mat_outline:checklist'
         },
         {
-            id: 8,
+            id: 9,
             title: 'Pack & Accessories',
             icon: 'mat_outline:checklist',
         },
         {
-            id: 9,
+            id: 10,
             title: 'Default Images',
             icon: 'mat_outline:image',
         },
         {
-            id: 10,
+            id: 11,
             title: 'Default Margins',
             icon: 'mat_outline:settings',
         },
         {
-            id: 11,
+            id: 12,
             title: 'Video',
             icon: 'mat_solid:video_settings',
         },
         {
-            id: 12,
+            id: 13,
             title: 'Swatches',
             icon: 'mat_outline:image',
         },
         {
-            id: 13,
+            id: 14,
             title: 'Artwork Template',
             icon: 'heroicons_outline:template',
         },
@@ -197,14 +202,12 @@ export class InventoryService {
     // -----------------------------------------------------------------------------------------------------
     // @ Public methods
     // -----------------------------------------------------------------------------------------------------
-    getProductsList(size, pageNumber, keyword?: string): Observable<ProductsList[]> {
-        const search = keyword ? keyword : '';
+    getProductsList(page): Observable<ProductsList[]> {
         return this._httpClient.get<ProductsList[]>(environment.products, {
             params: {
                 list: true,
-                size: 20,
-                page: pageNumber,
-                keyword: search
+                page: page,
+                size: 20
             }
         }).pipe(
             tap((products) => {
@@ -241,6 +244,7 @@ export class InventoryService {
     }
 
     searchProductKeywords(keyword): Observable<ProductsList[]> {
+        console.log("testing")
         return this._httpClient.get<ProductsList[]>(environment.products, {
             params: {
                 list: true,
@@ -307,12 +311,12 @@ export class InventoryService {
         });
     }
 
-    getAllPackages(size?: number, pageNo?: number): Observable<any[]> {
+    getAllPackages(pageNo?: number): Observable<any[]> {
         return this._httpClient.get<any[]>(environment.products, {
             params: {
                 packaging: true,
-                page: pageNo === 0 ? 1 : pageNo,
-                size: size
+                page: pageNo,
+                size: 20
             }
         });
     }
@@ -468,7 +472,6 @@ export class InventoryService {
     }
 
     getImprints(productId, page?: number): Observable<any[]> {
-        console.log("page", page)
         return this._httpClient.get<any[]>(environment.products, {
             params: {
                 imprint: true,
@@ -477,7 +480,49 @@ export class InventoryService {
                 page: page
             }
         });
-    }
+    };
+
+    getAllImprints(productId): Observable<any[]> {
+        return this._httpClient.get<any[]>(environment.products, {
+            params: {
+                imprint: true,
+                product_id: productId,
+                size: 500
+            }
+        });
+    };
+
+    getPriceInclusionImprints(setupChargeId, runChargeId, productId): Observable<any[]> {
+        return this._httpClient.get<any[]>(environment.products, {
+            params: {
+                imprint: true,
+                price_inclusion: true,
+                setup_charge_id: setupChargeId,
+                run_charge_id: runChargeId,
+                product_id: productId
+            }
+        });
+    };
+
+    getStandardImprints(): Observable<any[]> {
+        return this._httpClient.get<any[]>(environment.products, {
+            params: {
+                imprint: true,
+                standard_group: true,
+                size: 1000
+            }
+        });
+    };
+
+    getSubStandardImprints(): Observable<any[]> {
+        return this._httpClient.get<any[]>(environment.products, {
+            params: {
+                imprint: true,
+                standard_imprint: true,
+                size: 1000
+            }
+        });
+    };
 
     getOrderHistoryByProductId(productId): Observable<any[]> {
         return this._httpClient.get<any[]>(environment.products, {
@@ -544,11 +589,21 @@ export class InventoryService {
     }
 
     getLicensingTerms(productId): Observable<any[]> {
-        return this._httpClient.get<any[]>("https://consolidus-staging.azurewebsites.net/api/products", {
+        return this._httpClient.get<any[]>(environment.products, {
             params: {
                 licensing_term: true,
                 product_id: productId,
                 size: 500
+            }
+        });
+    }
+
+    getSizes(page): Observable<any[]> {
+        return this._httpClient.get<any[]>(environment.products, {
+            params: {
+                sizes: true,
+                size: 20,
+                page: page
             }
         });
     }

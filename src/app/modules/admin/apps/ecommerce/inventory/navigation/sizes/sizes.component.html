@@ -1,0 +1,98 @@
+<ngx-skeleton-loader count="8" appearance="line" animation="pulse" *ngIf="isLoading">
+</ngx-skeleton-loader>
+<div class="row my-3" *ngIf="!isLoading">
+    <div class="col-12">
+        <mat-card class="w-full p-0 mb-10 h-full rounded-2xl">
+            <div class="row p-5">
+                <div class="col-lg-9 col-12">
+                    <div class="text-2xl font-bold">
+                        Sizes
+                    </div>
+                </div>
+                <div class="col-lg-3 col-6" *ngIf="dataSource.length">
+                    <button class="min-w-40 w-full" mat-flat-button [color]="'primary'"
+                        [matTooltip]="'Update Selected'">
+                        <mat-icon svgIcon="mat_outline:edit"></mat-icon>
+                        <span class="ml-1 mr-1">Update</span>
+                    </button>
+                </div>
+            </div>
+
+            <div *ngIf="dataSource.length > 0;else other_content">
+                <table mat-table [dataSource]="dataSource" class="w-full border-t">
+
+                    <!-- Checkbox Column -->
+                    <ng-container matColumnDef="select">
+                        <th mat-header-cell *matHeaderCellDef class="w-15 min-w-15">
+                            <mat-checkbox (change)="$event ? masterToggle() : null"
+                                [checked]="selection.hasValue() && isAllSelected()"
+                                [indeterminate]="selection.hasValue() && !isAllSelected()"
+                                [aria-label]="checkboxLabel()">
+                            </mat-checkbox>
+                        </th>
+                        <td mat-cell *matCellDef="let row">
+                            <mat-checkbox (click)="$event.stopPropagation()"
+                                (change)="$event ? selection.toggle(row) : null" [checked]="selection.isSelected(row)"
+                                [aria-label]="checkboxLabel(row)">
+                            </mat-checkbox>
+                        </td>
+                    </ng-container>
+
+                    <!-- Size Column -->
+                    <ng-container matColumnDef="sizeName">
+                        <th mat-header-cell *matHeaderCellDef class="w-24 min-w-24"> Size </th>
+                        <td mat-cell *matCellDef="let element"> {{element.sizeName}} </td>
+                    </ng-container>
+
+                    <!-- Run Column -->
+                    <ng-container matColumnDef="run">
+                        <th mat-header-cell *matHeaderCellDef class="w-24 min-w-24"> Run </th>
+                        <td mat-cell *matCellDef="let element">
+                            <mat-form-field class="w-2/3 mt-2" appearance="fill">
+                                <input matInput placeholder="Run">
+                            </mat-form-field>
+                        </td>
+                    </ng-container>
+
+                    <!-- Weight Column -->
+                    <ng-container matColumnDef="weight">
+                        <th mat-header-cell *matHeaderCellDef class="w-24 min-w-24"> Weight </th>
+                        <td mat-cell *matCellDef="let element">
+                            <mat-form-field class="w-2/3 mt-2" appearance="fill">
+                                <input matInput placeholder="Weight">
+                            </mat-form-field>
+                        </td>
+                    </ng-container>
+
+
+
+                    <!-- Units Column -->
+                    <ng-container matColumnDef="unitsPerWeight">
+                        <th mat-header-cell *matHeaderCellDef class="w-40 min-w-40"> Weight per unit </th>
+                        <td mat-cell *matCellDef="let element">
+                            <mat-form-field class="w-2/3 mt-2" appearance="fill">
+                                <input matInput placeholder="Weight per unit">
+                            </mat-form-field>
+                        </td>
+                    </ng-container>
+
+                    <tr mat-header-row *matHeaderRowDef="displayedColumns;" class="h-18 bg-light"></tr>
+                    <tr mat-row *matRowDef="let row; columns: displayedColumns;"
+                        class="h-14 hover:bg-gray-100 dark:hover:bg-hover" style="cursor: pointer;"
+                        (click)="selection.toggle(row)">
+                    </tr>
+                </table>
+                <mat-paginator
+                    class="sm:absolute sm:inset-x-0 border-b sm:border-t sm:border-b-0 z-10 bg-gray-50 dark:bg-transparent"
+                    [ngClass]="{'pointer-events-none': isLoading}" [length]="sizesLength" [pageIndex]="0"
+                    [pageSize]="20" (page)="getNextData($event)" [hidePageSize]="true">
+                </mat-paginator>
+            </div>
+            <ng-template #other_content>
+                <div class="text-secondary font-semibold p-5">
+                    No sizes found.
+                </div>
+            </ng-template>
+        </mat-card>
+    </div>
+</div>

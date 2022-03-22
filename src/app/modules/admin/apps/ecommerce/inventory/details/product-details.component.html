@@ -26,8 +26,8 @@
         <mat-drawer #drawer class="sub-sidenav bg-light" [mode]="drawerMode" [opened]="drawerOpened">
             <div *ngFor="let route of routes;let i = index">
                 <button style="padding: 15px;"
-                    [style.background-color]="i === selectedIndex ? '#e4e8ed' : 'transparent'"
-                    [ngClass]="i === selectedIndex ? 'opacity-1' : 'opacity-9'" mat-button
+                    [style.background-color]="route.title === selectedIndex ? '#d4d7dd' : 'transparent'"
+                    [ngClass]="route.title === selectedIndex ? 'opacity-1' : 'opacity-9'" mat-button
                     class="w-full my-1 mr-2 justify-content-start" (click)="clicked(route)">
                     <mat-icon svgIcon="{{route.icon}}" class="mr-1 opacity-8"></mat-icon>
                     <span style="font-size: 13px;"> {{route.title}} </span>
@@ -114,6 +114,11 @@
                 <div class="col-12">
                     <ng-template [ngIf]="selectedIndex === 'Net Cost'">
                         <app-net-cost [(isLoading)]="isLoading" [selectedProduct]="selectedProduct"></app-net-cost>
+                    </ng-template>
+                </div>
+                <div class="col-12">
+                    <ng-template [ngIf]="selectedIndex === 'Sizes'">
+                        <app-sizes [(isLoading)]="isLoading" [selectedProduct]="selectedProduct"></app-sizes>
                     </ng-template>
                 </div>
                 <div class="col-12">

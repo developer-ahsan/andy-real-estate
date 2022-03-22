@@ -6,18 +6,18 @@ import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 
 @Component({
-  selector: 'app-feature',
-  templateUrl: './feature.component.html'
+  selector: 'app-sizes',
+  templateUrl: './sizes.component.html'
 })
-export class FeatureComponent implements OnInit {
+export class SizesComponent implements OnInit {
   @Input() selectedProduct: any;
   @Input() isLoading: boolean;
   @Output() isLoadingChange = new EventEmitter<boolean>();
   private _unsubscribeAll: Subject<any> = new Subject<any>();
 
-  displayedColumns: string[] = ['select', 'order', 'feature'];
+  displayedColumns: string[] = ['select', 'sizeName', 'run', 'weight', 'unitsPerWeight'];
   dataSource = [];
-  featuresLength: number = 0;
+  sizesLength: number = 0;
 
   selection = new SelectionModel<any>(true, []);
 
@@ -39,40 +39,21 @@ export class FeatureComponent implements OnInit {
   ) { }
 
   ngOnInit(): void {
-
-    const { pk_productID } = this.selectedProduct;
-
     this.featureForm = this._formBuilder.group({
       order: ['1'],
       feature: ['', Validators.required]
     });
 
-    this._inventoryService.getFeatures(pk_productID, 1)
-      .pipe(takeUntil(this._unsubscribeAll))
-      .subscribe((features) => {
-        this._inventoryService.getFeaturesSupplierAndType(pk_productID)
-          .pipe(takeUntil(this._unsubscribeAll))
-          .subscribe((type) => {
-            this.featureType = type["data"][0];
-            this.dataSource = features["data"];
-            this.featuresLength = features["totalRecords"];
-
-            // Mark for check
-            this._changeDetectorRef.markForCheck();
-          });
-      });
-
-
+    this.getSizes(this.page);
     this.isLoadingChange.emit(false);
-  }
+  };
 
-  getFeatures(page: number): void {
-    const { pk_productID } = this.selectedProduct;
-    this._inventoryService.getFeatures(pk_productID, page)
+  getSizes(page: number): void {
+    this._inventoryService.getSizes(page)
       .pipe(takeUntil(this._unsubscribeAll))
-      .subscribe((features) => {
-        this.dataSource = features["data"];
-        this.featuresLength = features["totalRecords"];
+      .subscribe((sizes) => {
+        this.dataSource = sizes["data"];
+        this.sizesLength = sizes["totalRecords"];
 
         // Mark for check
         this._changeDetectorRef.markForCheck();
@@ -105,10 +86,6 @@ export class FeatureComponent implements OnInit {
     return `${this.selection.isSelected(row) ? 'deselect' : 'select'} row ${row.position + 1}`;
   }
 
-  deleteFeatureRow(): void {
-    console.log("selected", this.selection.selected);
-  };
-
   getNextData(event) {
     const { previousPageIndex, pageIndex } = event;
 
@@ -117,7 +94,7 @@ export class FeatureComponent implements OnInit {
     } else {
       this.page--;
     };
-    this.getFeatures(this.page);
+    this.getSizes(this.page);
   };
 
   addFeature(): void {

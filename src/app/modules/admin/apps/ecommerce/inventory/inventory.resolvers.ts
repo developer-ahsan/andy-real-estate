@@ -26,7 +26,7 @@ export class ProductsListsResolver implements Resolve<any>
      * @param state
      */
     resolve(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<ProductsList[]> {
-        return this._inventoryService.getProductsList(10, 1);
+        return this._inventoryService.getProductsList(1);
     }
 }
 

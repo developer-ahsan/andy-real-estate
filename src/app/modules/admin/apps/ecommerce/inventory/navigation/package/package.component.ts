@@ -19,13 +19,14 @@ export class PackageComponent implements OnInit {
   dataSource: Package[] = [];
   dataSourceLength: number = 0;
   pageSize: number = 10;
-  pageNo: number = 0;
+  pageNo: number = 1;
   selection;
   zeroLengthCheckMessage = false;
   flashMessage: 'success' | 'error' | null = null;
   packageAddLoader = false;
 
   dataLoader = false;
+  domain = "true";
 
   /** Whether the number of selected elements matches the total number of rows. */
   isAllSelected() {
@@ -59,15 +60,8 @@ export class PackageComponent implements OnInit {
 
   ngOnInit(): void {
     const { pk_productID } = this.selectedProduct;
-    this._inventoryService.getAllPackages(this.pageSize, this.pageNo)
-      .pipe(takeUntil(this._unsubscribeAll))
-      .subscribe((packages) => {
 
-        console.log("packages ", packages)
-        this.dataSource = packages["data"];
-        this.dataSourceLength = packages["totalRecords"];
-        this._changeDetectorRef.markForCheck();
-      });
+    this.getPackAndAccessories();
 
     this._inventoryService.getPackageByProductId(pk_productID)
       .pipe(takeUntil(this._unsubscribeAll))
@@ -76,23 +70,32 @@ export class PackageComponent implements OnInit {
         console.log("pack ", pack)
         this._changeDetectorRef.markForCheck();
       });
-    this.isLoadingChange.emit(false);
-  }
+  };
 
-  pageEvents(event: any) {
-    this.dataLoader = true;
-    const { pageSize, pageIndex } = event;
-    this._inventoryService.getAllPackages(pageSize, pageIndex)
+  getPackAndAccessories(): void {
+    this._inventoryService.getAllPackages(this.pageNo)
       .pipe(takeUntil(this._unsubscribeAll))
       .subscribe((packages) => {
-
-        console.log("packages found", packages)
+        let tempArray = [];
         this.dataSource = packages["data"];
+        for (const packages of this.dataSource) {
+          tempArray.push(packages)
+          const { blnDecoratorPO } = packages;
+          if (blnDecoratorPO) {
+            this.domain = "true"
+          } else {
+            this.domain = "false"
+          }
+          packages["isDecorator"] = this.domain;
+          tempArray.push(packages);
+        };
         this.dataSourceLength = packages["totalRecords"];
+        this.isLoadingChange.emit(false);
 
-        this.dataLoader = false;
+        // Mark for check
+        this._changeDetectorRef.markForCheck();
       });
-  }
+  };
 
   addOnBlur = true;
   readonly separatorKeysCodes = [ENTER, COMMA] as const;
@@ -167,5 +170,16 @@ export class PackageComponent implements OnInit {
       // Mark for check
       this._changeDetectorRef.markForCheck();
     }, 3500);
+  };
+
+  getDisplayNextData(event) {
+    const { previousPageIndex, pageIndex } = event;
+    if (pageIndex > previousPageIndex) {
+      this.pageNo++;
+    } else {
+      this.pageNo--;
+    };
+
+    this.getPackAndAccessories();
   }
 }

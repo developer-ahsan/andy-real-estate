@@ -630,7 +630,7 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
         this.backListLoader = true;  // Loader for the button
 
         // Get the products
-        this._inventoryService.getProductsList(20, 1)
+        this._inventoryService.getProductsList(1)
             .pipe(takeUntil(this._unsubscribeAll))
             .subscribe((products: ProductsList[]) => {
                 this.products = products["data"];

@@ -99,6 +99,9 @@ export class ProductDetailsComponent implements OnInit, OnDestroy {
   // -----------------------------------------------------------------------------------------------------
   clicked(index) {
     const { title } = index;
+    if (title === this.selectedIndex) {
+      return;
+    }
     this.isLoading = true;
     this.selectedIndex = title;
   }

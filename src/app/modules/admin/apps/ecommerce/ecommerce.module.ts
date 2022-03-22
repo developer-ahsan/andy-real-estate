@@ -79,6 +79,7 @@ import { SwatchesComponent } from './inventory/navigation/swatches/swatches.comp
 import { UserInfoComponent } from './customers/tabs/user-info/user-info.component';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatButtonToggleModule } from '@angular/material/button-toggle';
+import { SizesComponent } from './inventory/navigation/sizes/sizes.component';
 
 @NgModule({
     declarations: [
@@ -128,7 +129,8 @@ import { MatButtonToggleModule } from '@angular/material/button-toggle';
         DuplicateComponent,
         ImprintComponent,
         SwatchesComponent,
-        UserInfoComponent
+        UserInfoComponent,
+        SizesComponent
     ],
     imports: [
         RouterModule.forChild(ecommerceRoutes),
