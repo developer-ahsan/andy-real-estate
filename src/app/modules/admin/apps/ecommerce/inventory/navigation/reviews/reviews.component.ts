@@ -20,6 +20,9 @@ export class ReviewsComponent implements OnInit {
   imageRequired: string = '';
   reviewsData: Reviews = null;
   reviewsDataLength: number = 0;
+  storeDataLoader = false;
+
+  storesData = [];
 
   constructor(
     private _changeDetectorRef: ChangeDetectorRef,
@@ -37,12 +40,17 @@ export class ReviewsComponent implements OnInit {
     this._inventoryService.getReviewByProductId(pk_productID)
       .pipe(takeUntil(this._unsubscribeAll))
       .subscribe((reviewsData) => {
-        this.reviewsData = reviewsData["data"];
-        this.reviewsDataLength = reviewsData["totalRecords"];
 
-        console.log("reviews ", this.reviewsData)
+        this._inventoryService.getAllStores()
+          .pipe(takeUntil(this._unsubscribeAll))
+          .subscribe((stores) => {
+            this.storesData = stores["data"];
+            this.reviewsData = reviewsData["data"];
+            this.reviewsDataLength = reviewsData["totalRecords"];
 
-        this._changeDetectorRef.markForCheck();
+            // Mark for check
+            this._changeDetectorRef.markForCheck();
+          });
       });
 
     this.isLoadingChange.emit(false);
@@ -52,7 +60,39 @@ export class ReviewsComponent implements OnInit {
     const target = event.target as HTMLInputElement;
     const files = target.files as FileList;
     this.images = files;
-  }
+  };
+
+  selectByStore(event): void {
+    const { pk_storeID } = event;
+    const { pk_productID } = this.selectedProduct;
+    this.storeDataLoader = true;
+
+    this._inventoryService.getReviewByStoreAndProductId(pk_productID, pk_storeID)
+      .pipe(takeUntil(this._unsubscribeAll))
+      .subscribe((reviewsData) => {
+        this.reviewsData = reviewsData["data"];
+        this.reviewsDataLength = reviewsData["totalRecords"];
+        this.storeDataLoader = false;
+
+        // Mark for check
+        this._changeDetectorRef.markForCheck();
+      });
+  };
+
+  selectByAllStores(): void {
+    this.storeDataLoader = true;
+    const { pk_productID } = this.selectedProduct;
+    this._inventoryService.getReviewByProductId(pk_productID)
+      .pipe(takeUntil(this._unsubscribeAll))
+      .subscribe((reviewsData) => {
+        this.reviewsData = reviewsData["data"];
+        this.reviewsDataLength = reviewsData["totalRecords"];
+        this.storeDataLoader = false;
+
+        // Mark for check
+        this._changeDetectorRef.markForCheck();
+      });
+  };
 
   uploadImage(): void {
     if (!this.images) {

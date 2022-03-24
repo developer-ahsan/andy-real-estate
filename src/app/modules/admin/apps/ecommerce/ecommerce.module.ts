@@ -80,6 +80,7 @@ import { UserInfoComponent } from './customers/tabs/user-info/user-info.componen
 import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatButtonToggleModule } from '@angular/material/button-toggle';
 import { SizesComponent } from './inventory/navigation/sizes/sizes.component';
+import { QuillModule } from 'ngx-quill'
 
 @NgModule({
     declarations: [
@@ -165,7 +166,8 @@ import { SizesComponent } from './inventory/navigation/sizes/sizes.component';
         MatExpansionModule,
         NgxSliderModule,
         MatSnackBarModule,
-        MatButtonToggleModule
+        MatButtonToggleModule,
+        QuillModule.forRoot(),
     ]
 })
 export class ECommerceModule {

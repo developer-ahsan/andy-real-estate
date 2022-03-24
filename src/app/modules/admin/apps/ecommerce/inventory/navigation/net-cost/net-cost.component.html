@@ -291,11 +291,11 @@
                                 <p class="font-semibold">Co-op Program</p>
                                 <mat-form-field class="w-full">
                                     <mat-select name="order" [formControlName]="'coOp'">
-                                        <mat-option value="select_order" disabled>
+                                        <mat-option value="select_order" aria-selected="true">
                                             NONE
                                         </mat-option>
                                         <mat-option *ngFor="let option of products" [value]="option">
-                                            {{option.distrDiscountCode}}
+                                            {{option.name}}
                                         </mat-option>
                                     </mat-select>
                                 </mat-form-field>

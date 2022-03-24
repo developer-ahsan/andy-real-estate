@@ -3,6 +3,7 @@ import { FormBuilder, FormGroup } from '@angular/forms';
 import { InventoryService } from 'app/modules/admin/apps/ecommerce/inventory/inventory.service';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
+import { Options } from '@angular-slider/ngx-slider';
 
 @Component({
   selector: 'app-products-physics',
@@ -30,6 +31,14 @@ export class ProductsPhysicsComponent implements OnInit {
     'YES',
     'NO'
   ];
+
+  // Slider
+  sliderMinValue: number = 10;
+  sliderMaxValue: number = 50;
+  sliderOptions: Options = {
+    floor: 1,
+    ceil: 120
+  };
 
   constructor(
     private _changeDetectorRef: ChangeDetectorRef,
@@ -130,16 +139,17 @@ export class ProductsPhysicsComponent implements OnInit {
       over_pack_charge: this.productPhysicsForm.getRawValue().unitsInShippingPackage,
       physics: true
     }
-    this.physicsLoader = true;
-    this._inventoryService.updatePhysics(payload)
-      .subscribe((response) => {
-        this.showFlashMessage(
-          response["success"] === true ?
-            'success' :
-            'error'
-        );
-        this.physicsLoader = false;
-      });
+    console.log("payload", payload)
+    // this.physicsLoader = true;
+    // this._inventoryService.updatePhysics(payload)
+    //   .subscribe((response) => {
+    //     this.showFlashMessage(
+    //       response["success"] === true ?
+    //         'success' :
+    //         'error'
+    //     );
+    //     this.physicsLoader = false;
+    //   });
   }
 
   updateCaseDimension(): void {

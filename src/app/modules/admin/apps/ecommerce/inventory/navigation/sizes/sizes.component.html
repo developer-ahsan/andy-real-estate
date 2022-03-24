@@ -9,9 +9,9 @@
                         Sizes
                     </div>
                 </div>
-                <div class="col-lg-3 col-6" *ngIf="dataSource.length">
-                    <button class="min-w-40 w-full" mat-flat-button [color]="'primary'"
-                        [matTooltip]="'Update Selected'">
+                <div class="col-lg-3 col-12">
+                    <button class="min-w-40 w-full" *ngIf="dataSource.length" mat-flat-button [color]="'primary'"
+                        [matTooltip]="'Update Selected'" (click)="updateSizes()">
                         <mat-icon svgIcon="mat_outline:edit"></mat-icon>
                         <span class="ml-1 mr-1">Update</span>
                     </button>
@@ -24,15 +24,12 @@
                     <!-- Checkbox Column -->
                     <ng-container matColumnDef="select">
                         <th mat-header-cell *matHeaderCellDef class="w-15 min-w-15">
-                            <mat-checkbox (change)="$event ? masterToggle() : null"
-                                [checked]="selection.hasValue() && isAllSelected()"
-                                [indeterminate]="selection.hasValue() && !isAllSelected()"
-                                [aria-label]="checkboxLabel()">
-                            </mat-checkbox>
+                            Select
                         </th>
                         <td mat-cell *matCellDef="let row">
                             <mat-checkbox (click)="$event.stopPropagation()"
-                                (change)="$event ? selection.toggle(row) : null" [checked]="selection.isSelected(row)"
+                                (change)="$event ? selection.toggle(row) : null"
+                                [checked]="selection.isSelected(row) || row.isSelected"
                                 [aria-label]="checkboxLabel(row)">
                             </mat-checkbox>
                         </td>
@@ -49,7 +46,8 @@
                         <th mat-header-cell *matHeaderCellDef class="w-24 min-w-24"> Run </th>
                         <td mat-cell *matCellDef="let element">
                             <mat-form-field class="w-2/3 mt-2" appearance="fill">
-                                <input matInput placeholder="Run">
+                                <input matInput type="number" min="0.000" placeholder="Run" value="{{element.run}}"
+                                    (input)="rowUpdate(element, 'run', $event)">
                             </mat-form-field>
                         </td>
                     </ng-container>
@@ -59,19 +57,20 @@
                         <th mat-header-cell *matHeaderCellDef class="w-24 min-w-24"> Weight </th>
                         <td mat-cell *matCellDef="let element">
                             <mat-form-field class="w-2/3 mt-2" appearance="fill">
-                                <input matInput placeholder="Weight">
+                                <input matInput type="number" min="0" placeholder="Weight" value="{{element.weight}}"
+                                    (input)="rowUpdate(element, 'weight', $event)">
                             </mat-form-field>
                         </td>
                     </ng-container>
-
-
 
                     <!-- Units Column -->
                     <ng-container matColumnDef="unitsPerWeight">
                         <th mat-header-cell *matHeaderCellDef class="w-40 min-w-40"> Weight per unit </th>
                         <td mat-cell *matCellDef="let element">
                             <mat-form-field class="w-2/3 mt-2" appearance="fill">
-                                <input matInput placeholder="Weight per unit">
+                                <input matInput type="number" min="0" placeholder="Weight per unit"
+                                    value="{{element.unitsPerWeight}}"
+                                    (input)="rowUpdate(element, 'unitsPerWeight', $event)">
                             </mat-form-field>
                         </td>
                     </ng-container>
@@ -85,7 +84,7 @@
                 <mat-paginator
                     class="sm:absolute sm:inset-x-0 border-b sm:border-t sm:border-b-0 z-10 bg-gray-50 dark:bg-transparent"
                     [ngClass]="{'pointer-events-none': isLoading}" [length]="sizesLength" [pageIndex]="0"
-                    [pageSize]="20" (page)="getNextData($event)" [hidePageSize]="true">
+                    [pageSize]="dataSource.length" (page)="getNextData($event)" [hidePageSize]="true">
                 </mat-paginator>
             </div>
             <ng-template #other_content>

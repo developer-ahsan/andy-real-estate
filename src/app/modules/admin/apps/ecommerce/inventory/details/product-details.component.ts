@@ -59,12 +59,21 @@ export class ProductDetailsComponent implements OnInit, OnDestroy {
         this.last_updated = moment.utc(product["data"][0]?.lastUpdatedDate).format("lll");
         this.isProductFetched = false;
 
+        this.routes = this._inventoryService.navigationLabels;
+        const { blnService, blnApparel } = this.selectedProduct;
+
+        if (blnService) {
+          this.routes = this.filterNavigation(this.routes, 'Imprints');
+        };
+
+        if (!blnApparel) {
+          this.routes = this.filterNavigation(this.routes, 'Sizes')
+        };
+
         // Mark for check
         this._changeDetectorRef.markForCheck();
       });
 
-    // this.drawerMode = "side";
-    this.routes = this._inventoryService.navigationLabels;
     // Subscribe to media changes
     this._fuseMediaWatcherService.onMediaChange$
       .pipe(takeUntil(this._unsubscribeAll))
@@ -104,11 +113,17 @@ export class ProductDetailsComponent implements OnInit, OnDestroy {
     }
     this.isLoading = true;
     this.selectedIndex = title;
-  }
+  };
 
   toggleDrawer() {
     this.drawerOpened = !this.drawerOpened;
-  }
+  };
+
+  filterNavigation(navigations, title) {
+    return navigations.filter(function (obj) {
+      return obj.title !== title;
+    });
+  };
 
   backToProductsScreen(): void {
     this.isLoading = true;

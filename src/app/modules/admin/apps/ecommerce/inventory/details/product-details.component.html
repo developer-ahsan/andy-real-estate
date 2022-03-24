@@ -27,10 +27,10 @@
             <div *ngFor="let route of routes;let i = index">
                 <button style="padding: 15px;"
                     [style.background-color]="route.title === selectedIndex ? '#d4d7dd' : 'transparent'"
-                    [ngClass]="route.title === selectedIndex ? 'opacity-1' : 'opacity-9'" mat-button
+                    [ngClass]="route.title === selectedIndex ? 'opacity-100' : 'opacity-80'" mat-button
                     class="w-full my-1 mr-2 justify-content-start" (click)="clicked(route)">
-                    <mat-icon svgIcon="{{route.icon}}" class="mr-1 opacity-8"></mat-icon>
-                    <span style="font-size: 13px;"> {{route.title}} </span>
+                    <mat-icon svgIcon="{{route.icon}}" class="icon-size-5 text-primary"></mat-icon>
+                    <span style="font-size: 13px; font-weight: bold; margin-left: 10px;"> {{route.title}} </span>
                 </button>
             </div>
         </mat-drawer>

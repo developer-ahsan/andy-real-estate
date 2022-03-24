@@ -7,59 +7,76 @@
             <div class="p-6 sm:p-8 lg:p-10 w-full">
                 <div class="text-2xl font-bold">
                     Reviews for {{selectedProduct?.productName}}
+
+                    <!-- Search Products By Store -->
+                    <mat-form-field appearance="fill" class="w-full">
+                        <mat-label>Filter by store</mat-label>
+                        <mat-select disableRipple>
+                            <mat-option (click)="selectByAllStores()">All Stores</mat-option>
+                            <mat-option (click)="selectByStore(store)" value="{{store}}"
+                                *ngFor="let store of storesData">
+                                {{store.storeName}}
+                            </mat-option>
+                        </mat-select>
+                    </mat-form-field>
                 </div>
 
                 <!-- Reviews -->
                 <div class="gap-y-4 mt-6">
-                    <div class="row mb-5" *ngIf="reviewsDataLength > 0;else other_content">
-                        <div class="col-lg-6 col-md-6 col-12 my-1" *ngFor="let review of reviewsData">
-                            <fuse-card class="flex flex-col w-full p-3 bg-light rounded-2xl">
-                                <div class="row">
-                                    <div class="col-12" style="min-height: 50px;">
-                                        <p class="text-lg font-semibold leading-tight">By {{review?.name}} on
-                                            {{review?.storeName}}</p>
+                    <ngx-skeleton-loader count="8" appearance="line" animation="pulse" *ngIf="storeDataLoader">
+                    </ngx-skeleton-loader>
+                    <div *ngIf="!storeDataLoader">
+                        <div class="row mb-5" *ngIf="reviewsDataLength > 0;else other_content">
+                            <div class="col-lg-6 col-md-6 col-12 my-1" *ngFor="let review of reviewsData">
+                                <fuse-card class="flex flex-col w-full p-3 bg-light rounded-2xl">
+                                    <div class="row">
+                                        <div class="col-12" style="min-height: 50px;">
+                                            <p class="text-lg font-semibold leading-tight">By {{review?.name}} on
+                                                {{review?.storeName}}</p>
+                                        </div>
+                                        <div class="row m-2" style="min-height: 140px;">
+                                            <div class="col-3">
+                                                <p class="text-secondary font-semibold">Name:</p>
+                                            </div>
+                                            <div class="col-9">
+                                                <p class="text-secondary font-semibold">{{review?.name}}</p>
+                                            </div>
+                                            <div class="col-3">
+                                                <p class="text-secondary font-semibold">Date:</p>
+                                            </div>
+                                            <div class="col-9">
+                                                <p class="text-secondary font-semibold">{{review?.date}}</p>
+                                            </div>
+                                            <div class="col-3">
+                                                <p class="text-secondary font-semibold">Comment:</p>
+                                            </div>
+                                            <div class="col-9">
+                                                <p class="text-secondary font-semibold">{{review?.comment}}</p>
+                                            </div>
+                                            <div class="col-3">
+                                                <p class="text-secondary font-semibold">Rating:</p>
+                                            </div>
+                                            <div class="col-9">
+                                                <p class="text-secondary font-semibold">{{review?.rating}}</p>
+                                            </div>
+                                        </div>
                                     </div>
-                                    <div class="row m-2" style="min-height: 140px;">
-                                        <div class="col-3">
-                                            <p class="text-secondary font-semibold">Name:</p>
-                                        </div>
-                                        <div class="col-9">
-                                            <p class="text-secondary font-semibold">{{review?.name}}</p>
-                                        </div>
-                                        <div class="col-3">
-                                            <p class="text-secondary font-semibold">Date:</p>
-                                        </div>
-                                        <div class="col-9">
-                                            <p class="text-secondary font-semibold">{{review?.date}}</p>
-                                        </div>
-                                        <div class="col-3">
-                                            <p class="text-secondary font-semibold">Comment:</p>
-                                        </div>
-                                        <div class="col-9">
-                                            <p class="text-secondary font-semibold">{{review?.comment}}</p>
-                                        </div>
-                                        <div class="col-3">
-                                            <p class="text-secondary font-semibold">Rating:</p>
-                                        </div>
-                                        <div class="col-9">
-                                            <p class="text-secondary font-semibold">{{review?.rating}}</p>
-                                        </div>
-                                    </div>
-                                </div>
-                                <!-- <button class="px-6 mt-8" mat-flat-button [color]="'primary'">
-                            View/Edit
-                        </button> -->
-                            </fuse-card>
+                                    <!-- <button class="px-6 mt-8" mat-flat-button [color]="'primary'">
+                                View/Edit
+                            </button> -->
+                                </fuse-card>
+                            </div>
                         </div>
-                    </div>
 
-                    <ng-template #other_content>
-                        <p class="text-secondary font-semibold my-5">
-                            *There are currently no product reviews for this product, or the filter you applied returned
-                            no
-                            results.
-                        </p>
-                    </ng-template>
+                        <ng-template #other_content>
+                            <p class="text-secondary font-semibold my-5">
+                                *There are currently no product reviews for this product, or the filter you applied
+                                returned
+                                no
+                                results.
+                            </p>
+                        </ng-template>
+                    </div>
                 </div>
             </div>
         </fuse-card>

@@ -28,7 +28,7 @@ export class InventoryService {
         {
             id: 2,
             title: 'Name & Description',
-            icon: 'mat_outline:details',
+            icon: 'mat_outline:edit_note',
         },
         {
             id: 3,
@@ -47,18 +47,18 @@ export class InventoryService {
         },
         {
             id: 6,
-            title: 'Sizes',
-            icon: 'iconsmind:resize',
-        },
-        {
-            id: 7,
             title: 'Colors',
             icon: 'mat_outline:color_lens',
         },
         {
+            id: 7,
+            title: 'Sizes',
+            icon: 'heroicons_outline:arrows-expand',
+        },
+        {
             id: 8,
             title: 'Features',
-            icon: 'mat_outline:checklist'
+            icon: 'mat_outline:settings_input_component'
         },
         {
             id: 9,
@@ -123,7 +123,7 @@ export class InventoryService {
         {
             id: 21,
             title: 'Internal Notes',
-            icon: 'mat_outline:notes',
+            icon: 'mat_outline:speaker_notes',
         },
         {
             id: 22,
@@ -348,7 +348,17 @@ export class InventoryService {
                 product_id: productId
             }
         });
-    }
+    };
+
+    getCoOp(companyId): Observable<any[]> {
+        return this._httpClient.get<any[]>(environment.stores, {
+            params: {
+                coop_program: true,
+                bln_active: 1,
+                company_id: companyId
+            }
+        });
+    };
 
     getAllStores(): Observable<any[]> {
         return this._httpClient.get<any[]>(environment.stores, {
@@ -418,6 +428,16 @@ export class InventoryService {
         return this._httpClient.get<any[]>(environment.products, {
             params: {
                 review: true,
+                product_id: productId
+            }
+        });
+    };
+
+    getReviewByStoreAndProductId(productId, storeId): Observable<any[]> {
+        return this._httpClient.get<any[]>(environment.products, {
+            params: {
+                review: true,
+                store_id: storeId,
                 product_id: productId
             }
         });
@@ -598,9 +618,10 @@ export class InventoryService {
         });
     }
 
-    getSizes(page): Observable<any[]> {
+    getSizes(productId, page): Observable<any[]> {
         return this._httpClient.get<any[]>(environment.products, {
             params: {
+                product_id: productId,
                 sizes: true,
                 size: 20,
                 page: page

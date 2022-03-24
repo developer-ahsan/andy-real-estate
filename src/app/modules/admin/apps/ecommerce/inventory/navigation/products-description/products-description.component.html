@@ -4,6 +4,24 @@
     <div class="col-12 my-2">
         <fuse-card class="rounded-2xl shadow bg-card flex flex-col lg:flex-row w-full">
             <div class="p-6 sm:p-8 lg:p-10 w-full">
+                <!-- Search Products By Supplier -->
+                <mat-form-field appearance="fill" class="w-full">
+                    <mat-label>Select a supplier</mat-label>
+                    <mat-select disableRipple>
+                        <mat-option (click)="selectBySupplier(supplier)" value="{{supplier}}"
+                            *ngFor="let supplier of suppliers">
+                            {{supplier.companyName}}
+                        </mat-option>
+                    </mat-select>
+                </mat-form-field>
+            </div>
+        </fuse-card>
+    </div>
+</div>
+<div class="row" *ngIf="!isLoading">
+    <div class="col-12 my-2">
+        <fuse-card class="rounded-2xl shadow bg-card flex flex-col lg:flex-row w-full">
+            <div class="p-6 sm:p-8 lg:p-10 w-full">
                 <div class="text-2xl font-bold">
                     Name & Description
                 </div>
@@ -12,19 +30,19 @@
                 <div class="gap-y-4 mt-6">
                     <form [formGroup]="productDescriptionForm">
                         <div class="row my-5">
-                            <div class="col-lg-4 col-12">
+                            <div class="col-lg-6 col-12">
                                 <mat-form-field class="w-full">
                                     <mat-label>Name (100) </mat-label>
                                     <input matInput [formControlName]="'name'">
                                 </mat-form-field>
                             </div>
-                            <div class="col-lg-4 col-12">
+                            <div class="col-lg-6 col-12">
                                 <mat-form-field class="w-full">
                                     <mat-label>Product Number (40)</mat-label>
                                     <input matInput [formControlName]="'productNO'">
                                 </mat-form-field>
                             </div>
-                            <div class="col-lg-4 col-12">
+                            <div class="col-12">
                                 <mat-form-field class="w-full">
                                     <mat-label>Permalink (300)</mat-label>
                                     <input matInput [formControlName]="'permalink'">
@@ -43,18 +61,18 @@
                                 </mat-form-field>
                             </div>
                             <div class="col-12">
-                                <mat-form-field class="w-full">
-                                    <mat-label>Description</mat-label>
-                                    <textarea matInput rows="7" [formControlName]="'productDesc'"></textarea>
-                                </mat-form-field>
+                                <quill-editor class="mt-2" [formControlName]="'productDesc'" [modules]="quillModules">
+                                </quill-editor>
                             </div>
-                            <div class="col-lg-6 col-12">
+                        </div>
+                        <div class="row mt-top-30px">
+                            <div class="col-lg-6 col-12 mt-6">
                                 <mat-form-field class="w-full">
                                     <mat-label>Mini Descr. (150)</mat-label>
                                     <textarea matInput rows="5" [formControlName]="'miniDesc'"></textarea>
                                 </mat-form-field>
                             </div>
-                            <div class="col-lg-6 col-12">
+                            <div class="col-lg-6 col-12 mt-6">
                                 <mat-form-field class="w-full">
                                     <mat-label>Meta desc (160)</mat-label>
                                     <textarea matInput rows="5" [formControlName]="'metaDesc'"></textarea>

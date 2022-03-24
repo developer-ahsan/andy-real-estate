@@ -65,6 +65,8 @@ export interface ProductsDetails {
     pk_productID: number;
     productNumber: string;
     productName: string;
+    blnService: boolean;
+    blnApparel: boolean;
     RowNumber: number;
     TotalRequests: number;
 }

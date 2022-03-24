@@ -29,7 +29,7 @@ export class NetCostComponent implements OnInit {
   ) { }
 
   ngOnInit(): void {
-    const { pk_productID, msrp, liveCostComment, costComment, fk_coopID } = this.selectedProduct;
+    const { pk_productID, msrp, liveCostComment, costComment, fk_coopID, fk_supplierID } = this.selectedProduct;
 
     this.netCostForm = this._formBuilder.group({
       quantityOne: [''],
@@ -69,10 +69,12 @@ export class NetCostComponent implements OnInit {
     });
     // this.netCostForm.patchValue(customer);
 
-    this._inventoryService.getDiscountCodes(pk_productID)
+    this._inventoryService.getCoOp(fk_supplierID)
       .pipe(takeUntil(this._unsubscribeAll))
-      .subscribe((discountCode) => {
-        this.products = discountCode["data"];
+      .subscribe((coOp) => {
+        this.products = coOp["data"];
+
+        // Mark for check
         this._changeDetectorRef.markForCheck();
       })
 

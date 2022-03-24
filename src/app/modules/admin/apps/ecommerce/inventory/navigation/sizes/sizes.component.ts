@@ -23,10 +23,12 @@ export class SizesComponent implements OnInit {
 
   featureForm: FormGroup;
   featureType = null;
-  flashMessage: 'success' | 'error' | null = null;
+  flashMessage: 'success' | 'error' | 'missing' | null = null;
 
   selectedRowsLength: number;
   page = 1;
+
+  arrayToUpdate = [];
 
   // boolean
   featureAddLoader = false;
@@ -45,15 +47,21 @@ export class SizesComponent implements OnInit {
     });
 
     this.getSizes(this.page);
-    this.isLoadingChange.emit(false);
   };
 
   getSizes(page: number): void {
-    this._inventoryService.getSizes(page)
+    const { pk_productID } = this.selectedProduct;
+
+    this._inventoryService.getSizes(pk_productID, page)
       .pipe(takeUntil(this._unsubscribeAll))
       .subscribe((sizes) => {
-        this.dataSource = sizes["data"];
+        const { selected, unSelected } = sizes["data"];
+        for (const selectedObj of selected) {
+          selectedObj["isSelected"] = true;
+        }
+        this.dataSource = selected.concat(unSelected);
         this.sizesLength = sizes["totalRecords"];
+        this.isLoadingChange.emit(false);
 
         // Mark for check
         this._changeDetectorRef.markForCheck();
@@ -76,7 +84,7 @@ export class SizesComponent implements OnInit {
     }
 
     this.selection.select(...this.dataSource);
-  }
+  };
 
   /** The label for the checkbox on the passed row */
   checkboxLabel(row?: any): string {
@@ -84,7 +92,44 @@ export class SizesComponent implements OnInit {
       return `${this.isAllSelected() ? 'deselect' : 'select'} all`;
     }
     return `${this.selection.isSelected(row) ? 'deselect' : 'select'} row ${row.position + 1}`;
-  }
+  };
+
+  updateSizes() {
+    // console.log("Data", data);
+    // const { selected } = this.selection;
+    // console.log("this.selection", selected)
+
+    for (const size of this.arrayToUpdate) {
+      const { run, weight, unitsPerWeight } = size;
+      if (!run || !weight || !unitsPerWeight) {
+        return this.showFlashMessage('missing');
+      }
+    };
+    this.showFlashMessage('success');
+    console.log("array", this.arrayToUpdate);
+  };
+
+  rowUpdate(sizeObj, title, event) {
+    const { value } = event.target;
+    const { sizeName } = sizeObj;
+
+    if (title === 'unitsPerWeight') {
+      sizeObj.unitsPerWeight = parseInt(value);
+    } else if (title === 'weight') {
+      sizeObj.weight = parseInt(value);
+    } else if (title === 'run') {
+      sizeObj.run = parseFloat(value);
+    }
+
+    if (!this.arrayToUpdate?.length) {
+      this.arrayToUpdate.push(sizeObj);
+    } else {
+      let obj = this.arrayToUpdate.find(o => o.sizeName === sizeName);
+      if (!obj) {
+        this.arrayToUpdate.push(sizeObj);
+      }
+    };
+  };
 
   getNextData(event) {
     const { previousPageIndex, pageIndex } = event;
@@ -134,7 +179,7 @@ export class SizesComponent implements OnInit {
   /**
  * Show flash message
  */
-  showFlashMessage(type: 'success' | 'error'): void {
+  showFlashMessage(type: 'success' | 'error' | 'missing'): void {
     // Show the message
     this.flashMessage = type;
 
