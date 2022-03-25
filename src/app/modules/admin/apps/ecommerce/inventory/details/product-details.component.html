@@ -51,10 +51,9 @@
                         </div>
                         <div class="col-lg-4 col-md-6 col-12">
                             <b class="text-secondary text-sm">Supplier</b>
-                            <p class="float-right text-sm"
-                                style="color: #959595; text-decoration: underline; cursor: pointer;">
-                                Show Down Displays
-                            </p>
+                            <a class="float-right text-sm" href="{{selectedProduct?.websiteURL}}" target="_blank">
+                                {{selectedProduct?.companyName || not_available}}
+                            </a>
                         </div>
                         <div class="col-lg-4 col-md-6 col-12">
                             <b class="text-secondary text-sm">Product Link</b>
@@ -68,7 +67,7 @@
                         </div>
                         <div class="col-lg-4 col-md-6 col-12">
                             <b class="text-secondary text-sm">Last Updated</b>
-                            <p class="float-right text-sm">{{last_updated || not_available}}</p>
+                            <p class="float-right text-sm">{{last_updated}}</p>
                         </div>
                         <div class="col-lg-4 col-md-6 col-12">
                             <b class="text-secondary text-sm">Last Ordered By</b>

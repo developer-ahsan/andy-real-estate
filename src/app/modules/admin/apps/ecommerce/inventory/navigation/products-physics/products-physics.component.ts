@@ -1,5 +1,5 @@
 import { Component, Input, OnInit, Output, EventEmitter, ChangeDetectorRef } from '@angular/core';
-import { FormBuilder, FormGroup } from '@angular/forms';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { InventoryService } from 'app/modules/admin/apps/ecommerce/inventory/inventory.service';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
@@ -24,14 +24,18 @@ export class ProductsPhysicsComponent implements OnInit {
   physicsLoader = false;
   caseQTYLoader = false;
   caseDimensionLoader = false;
-  flashMessage: 'success' | 'error' | null = null;
+  flashMessage: 'success' | 'error' | 'errorMessage' | null = null;
+
+  physicsValidationMessage = '';
+
+  fob = [];
 
   selectedorder: string = 'select_order';
-  products: string[] = [
+  bln_include_shipping: string[] = [
     'YES',
     'NO'
   ];
-
+  blnShipingValue: string = "";
   // Slider
   sliderMinValue: number = 10;
   sliderMaxValue: number = 50;
@@ -39,6 +43,8 @@ export class ProductsPhysicsComponent implements OnInit {
     floor: 1,
     ceil: 120
   };
+
+  shipsFromCheck = false;
 
   constructor(
     private _changeDetectorRef: ChangeDetectorRef,
@@ -48,11 +54,10 @@ export class ProductsPhysicsComponent implements OnInit {
 
   ngOnInit(): void {
     const { pk_productID } = this.selectedProduct;
-
     // Create the selected product shipping form
     this.productPhysicsForm = this._formBuilder.group({
-      weight: [''],
-      unitsInWeight: [''],
+      weight: ['', Validators.required],
+      unitsInWeight: ['', Validators.required],
       dimensions: [''],
       unitsInShippingPackage: [''],
       overPackCharge: ['']
@@ -86,6 +91,11 @@ export class ProductsPhysicsComponent implements OnInit {
         // Fill flat rate form
         this.flatRateShippingForm.patchValue(this.selectedProduct);
 
+        const { blnIncludeShipping, prodTimeMax, prodTimeMin } = this.selectedProduct;
+        this.sliderMaxValue = prodTimeMax;
+        this.sliderMinValue = prodTimeMin;
+        this.blnShipingValue = blnIncludeShipping ? 'YES' : 'NO';
+
         // Fill the form
         this.productPhysicsForm.patchValue(this.selectedProduct);
 
@@ -95,21 +105,36 @@ export class ProductsPhysicsComponent implements OnInit {
     this._inventoryService.getCaseQuantities(pk_productID)
       .pipe(takeUntil(this._unsubscribeAll))
       .subscribe((caseQuantity) => {
-        const formValue = {
-          quantityOne: caseQuantity["data"][0].quantity,
-          quantityTwo: caseQuantity["data"][1].quantity,
-          quantityThree: caseQuantity["data"][2].quantity,
-          quantityFour: caseQuantity["data"][3].quantity,
-          quantityFive: caseQuantity["data"][4].quantity,
-          quantitySix: caseQuantity["data"][5].quantity
-        };
-        this.caseQuantitiesForm.patchValue(formValue);
+        if (caseQuantity["data"]?.length) {
+          const formValue = {
+            quantityOne: caseQuantity["data"][0].quantity,
+            quantityTwo: caseQuantity["data"][1].quantity,
+            quantityThree: caseQuantity["data"][2].quantity,
+            quantityFour: caseQuantity["data"][3].quantity,
+            quantityFive: caseQuantity["data"][4].quantity,
+            quantitySix: caseQuantity["data"][5].quantity
+          };
+          this.caseQuantitiesForm.patchValue(formValue);
+        }
+
+        // Mark for check
+        this._changeDetectorRef.markForCheck();
+      });
+
+    this._inventoryService.getFobLocation(pk_productID)
+      .pipe(takeUntil(this._unsubscribeAll))
+      .subscribe((fob_location) => {
+        this.fob = fob_location["data"];
 
         // Mark for check
         this._changeDetectorRef.markForCheck();
       });
 
     this.isLoadingChange.emit(false);
+  };
+
+  showOptions(event): void {
+    this.shipsFromCheck = event.checked;
   }
 
   updateFlatRateShipping(): void {
@@ -128,28 +153,64 @@ export class ProductsPhysicsComponent implements OnInit {
         );
         this.flatRateLoader = false;
       });
-  }
+  };
+
+  onShippingChargesChange(event) {
+    const { value } = event;
+    this.blnShipingValue = value;
+  };
 
   updatePhysics(): void {
+    const { blnApparel, pk_productID } = this.selectedProduct;
+
     const payload = {
-      product_id: this.selectedProduct.pk_productID,
-      weight: this.productPhysicsForm.getRawValue().weight,
-      weight_in_units: this.productPhysicsForm.getRawValue().unitsInWeight,
-      dimensions: this.productPhysicsForm.getRawValue().dimensions,
-      over_pack_charge: this.productPhysicsForm.getRawValue().unitsInShippingPackage,
+      product_id: pk_productID,
+      weight: this.productPhysicsForm.getRawValue().weight || null,
+      weight_in_units: this.productPhysicsForm.getRawValue().unitsInWeight || null,
+      dimensions: this.productPhysicsForm.getRawValue().dimensions || null,
+      over_pack_charge: this.productPhysicsForm.getRawValue().overPackCharge,
+      bln_apparel: blnApparel,
+      shipping: {
+        prod_time_min: this.sliderMinValue,
+        prod_time_max: this.sliderMaxValue,
+        units_in_shipping_package: this.productPhysicsForm.getRawValue().unitsInShippingPackage,
+        bln_include_shipping: this.blnShipingValue === 'YES' ? 1 : 0,
+        fob_location_list: this.fob?.length
+          ? this.fob.map(({ fk_FOBLocationID }) => fk_FOBLocationID)
+          : []
+      },
       physics: true
     }
     console.log("payload", payload)
-    // this.physicsLoader = true;
-    // this._inventoryService.updatePhysics(payload)
-    //   .subscribe((response) => {
-    //     this.showFlashMessage(
-    //       response["success"] === true ?
-    //         'success' :
-    //         'error'
-    //     );
-    //     this.physicsLoader = false;
-    //   });
+
+    if (payload.weight < 1 || !payload.weight) {
+      this.physicsValidationMessage = "Please enter weight with non-zero positive number"
+      this.showFlashMessage('errorMessage');
+      return;
+    };
+
+    if (payload.weight_in_units < 1 || !payload.weight_in_units) {
+      this.physicsValidationMessage = "Please enter non-zero positive weights in units"
+      this.showFlashMessage('errorMessage');
+      return;
+    };
+
+    if (!this.shipsFromCheck) {
+      this.physicsValidationMessage = "At least one shipment F.O.B. location is required"
+      this.showFlashMessage('errorMessage');
+      return;
+    };
+
+    this.physicsLoader = true;
+    this._inventoryService.updatePhysics(payload)
+      .subscribe((response) => {
+        this.showFlashMessage(
+          response["success"] === true ?
+            'success' :
+            'error'
+        );
+        this.physicsLoader = false;
+      });
   }
 
   updateCaseDimension(): void {
@@ -202,7 +263,7 @@ export class ProductsPhysicsComponent implements OnInit {
   /**
  * Show flash message
  */
-  showFlashMessage(type: 'success' | 'error'): void {
+  showFlashMessage(type: 'success' | 'error' | 'errorMessage'): void {
     // Show the message
     this.flashMessage = type;
 

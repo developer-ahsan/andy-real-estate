@@ -56,9 +56,11 @@ export class ProductDetailsComponent implements OnInit, OnDestroy {
       .pipe(takeUntil(this._unsubscribeAll))
       .subscribe((product) => {
         this.selectedProduct = product["data"][0];
-        this.last_updated = moment.utc(product["data"][0]?.lastUpdatedDate).format("lll");
+        this.last_updated = product["data"][0]?.lastUpdatedDate
+          ? moment.utc(product["data"][0]?.lastUpdatedDate).format("lll")
+          : 'N/A';
         this.isProductFetched = false;
-
+        console.log("selectedProduct", this.selectedProduct)
         this.routes = this._inventoryService.navigationLabels;
         const { blnService, blnApparel } = this.selectedProduct;
 

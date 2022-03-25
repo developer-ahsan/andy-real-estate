@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { BehaviorSubject, Observable, of, throwError } from 'rxjs';
 import { filter, map, switchMap, take, tap } from 'rxjs/operators';
-import { AddCore, AddFeature, AddPackage, CaseDimensionObj, CaseQuantityObj, Comment, CreateProduct, DeleteComment, duplicateObj, FlatRateShippingObj, InventoryBrand, InventoryCategory, InventoryPagination, InventoryTag, InventoryVendor, Licensing, NetCostUpdate, PhysicsObj, ProductsList, UpdateMargin, videoObj, Warehouse } from 'app/modules/admin/apps/ecommerce/inventory/inventory.types';
+import { AddCore, AddFeature, AddPackage, CaseDimensionObj, CaseQuantityObj, Comment, CreateProduct, DeleteComment, duplicateObj, FlatRateShippingObj, InventoryBrand, InventoryCategory, InventoryPagination, InventoryTag, InventoryVendor, Licensing, NetCostUpdate, PhysicsObj, physicsUpdateObject, ProductsList, UpdateMargin, videoObj, Warehouse } from 'app/modules/admin/apps/ecommerce/inventory/inventory.types';
 import { environment } from 'environments/environment';
 import { productDescription } from 'app/modules/admin/apps/ecommerce/inventory/inventory.types';
 import { AuthService } from 'app/core/auth/auth.service';
@@ -58,12 +58,12 @@ export class InventoryService {
         {
             id: 8,
             title: 'Features',
-            icon: 'mat_outline:settings_input_component'
+            icon: 'mat_outline:checklist'
         },
         {
             id: 9,
             title: 'Pack & Accessories',
-            icon: 'mat_outline:checklist',
+            icon: 'feather:package',
         },
         {
             id: 10,
@@ -73,12 +73,12 @@ export class InventoryService {
         {
             id: 11,
             title: 'Default Margins',
-            icon: 'mat_outline:settings',
+            icon: 'mat_outline:margin',
         },
         {
             id: 12,
             title: 'Video',
-            icon: 'mat_solid:video_settings',
+            icon: 'mat_outline:play_circle_filled',
         },
         {
             id: 13,
@@ -270,7 +270,7 @@ export class InventoryService {
                 product_id: productId
             }
         });
-    }
+    };
 
     getPhysicsAndDimension(productId): Observable<any[]> {
         return this._httpClient.get<any[]>(environment.products, {
@@ -280,7 +280,17 @@ export class InventoryService {
                 product_id: productId
             }
         });
-    }
+    };
+
+    getFobLocation(productId): Observable<any[]> {
+        return this._httpClient.get<any[]>(environment.products, {
+            params: {
+                physics: true,
+                fob_location: true,
+                product_id: productId
+            }
+        });
+    };
 
     getColors(productId): Observable<any[]> {
         return this._httpClient.get<any[]>(environment.products, {
@@ -319,7 +329,17 @@ export class InventoryService {
                 size: 20
             }
         });
-    }
+    };
+
+    getPackageByKeyword(keyword: string): Observable<any[]> {
+        return this._httpClient.get<any[]>(environment.products, {
+            params: {
+                packaging: true,
+                keyword: keyword,
+                size: 20
+            }
+        });
+    };
 
     getPackageByProductId(productId): Observable<any[]> {
         return this._httpClient.get<any[]>(environment.products, {
@@ -428,6 +448,16 @@ export class InventoryService {
         return this._httpClient.get<any[]>(environment.products, {
             params: {
                 review: true,
+                product_id: productId
+            }
+        });
+    };
+
+    getReviewStore(productId): Observable<any[]> {
+        return this._httpClient.get<any[]>(environment.products, {
+            params: {
+                review: true,
+                store: true,
                 product_id: productId
             }
         });
@@ -756,10 +786,10 @@ export class InventoryService {
     /**
    * UPDATE physics
    */
-    updatePhysics(payload: PhysicsObj) {
+    updatePhysics(payload: physicsUpdateObject) {
         const headers = { 'Authorization': `Bearer ${this._authService.accessToken}` };
         return this._httpClient.put(
-            `${environment.products}`, payload, { headers });
+            environment.products, payload, { headers });
     }
 
     /**

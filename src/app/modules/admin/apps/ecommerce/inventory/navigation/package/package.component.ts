@@ -28,6 +28,7 @@ export class PackageComponent implements OnInit {
   dataLoader = false;
   domain = "true";
 
+  searchLoader = false;
   /** Whether the number of selected elements matches the total number of rows. */
   isAllSelected() {
     const numSelected = this.selection.selected.length;
@@ -63,13 +64,13 @@ export class PackageComponent implements OnInit {
 
     this.getPackAndAccessories();
 
-    this._inventoryService.getPackageByProductId(pk_productID)
-      .pipe(takeUntil(this._unsubscribeAll))
-      .subscribe((pack) => {
+    // this._inventoryService.getPackageByProductId(pk_productID)
+    //   .pipe(takeUntil(this._unsubscribeAll))
+    //   .subscribe((pack) => {
 
-        console.log("pack ", pack)
-        this._changeDetectorRef.markForCheck();
-      });
+    //     console.log("pack ", pack)
+    //     this._changeDetectorRef.markForCheck();
+    //   });
   };
 
   getPackAndAccessories(): void {
@@ -111,7 +112,35 @@ export class PackageComponent implements OnInit {
 
     // Clear the input value
     event.chipInput!.clear();
-  }
+  };
+
+  searchKeyword(event): void {
+    const { value } = event.target;
+
+    this.searchLoader = true;
+    this._inventoryService.getPackageByKeyword(value)
+      .pipe(takeUntil(this._unsubscribeAll))
+      .subscribe((packages) => {
+        let tempArray = [];
+        this.dataSource = packages["data"];
+        for (const packages of this.dataSource) {
+          tempArray.push(packages)
+          const { blnDecoratorPO } = packages;
+          if (blnDecoratorPO) {
+            this.domain = "true"
+          } else {
+            this.domain = "false"
+          }
+          packages["isDecorator"] = this.domain;
+          tempArray.push(packages);
+        };
+        this.dataSourceLength = packages["totalRecords"];
+        this.searchLoader = false;
+
+        // Mark for check
+        this._changeDetectorRef.markForCheck();
+      });
+  };
 
   remove(fruit): void {
     const index = this.fruits.indexOf(fruit);

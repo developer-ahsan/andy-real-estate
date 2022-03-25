@@ -171,6 +171,23 @@ export interface PhysicsObj {
     physics: boolean;
 }
 
+export interface physicsUpdateObject {
+    product_id: number;
+    weight: number;
+    weight_in_units: number;
+    dimensions: string;
+    over_pack_charge: number;
+    bln_apparel: boolean;
+    shipping: {
+        prod_time_min: number;
+        prod_time_max: number;
+        units_in_shipping_package: number;
+        bln_include_shipping: number;
+        fob_location_list: number[];
+    };
+    physics: boolean;
+}
+
 export interface FlatRateShippingObj {
     product_id: number;
     flat_rate_shipping: number;

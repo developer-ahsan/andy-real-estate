@@ -4,6 +4,7 @@ import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { InventoryService } from 'app/modules/admin/apps/ecommerce/inventory/inventory.service';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import moment from 'moment';
 
 @Component({
   selector: 'app-reviews',
@@ -41,19 +42,32 @@ export class ReviewsComponent implements OnInit {
       .pipe(takeUntil(this._unsubscribeAll))
       .subscribe((reviewsData) => {
 
-        this._inventoryService.getAllStores()
+        this._inventoryService.getReviewStore(pk_productID)
           .pipe(takeUntil(this._unsubscribeAll))
           .subscribe((stores) => {
             this.storesData = stores["data"];
-            this.reviewsData = reviewsData["data"];
             this.reviewsDataLength = reviewsData["totalRecords"];
+            this.reviewsData = reviewsData["data"].map(item => {
+              const container = {};
+              container["pk_reviewID"] = item.pk_reviewID,
+                container["fk_storeProductID"] = item.fk_storeProductID,
+                container["name"] = item.name,
+                container["date"] = moment.utc(item.date).format("lll"),
+                container["rating"] = item.rating,
+                container["comment"] = item.comment,
+                container["storeName"] = item.storeName,
+                container["pk_storeID"] = item.pk_storeID,
+                container["RowNumber"] = item.RowNumber,
+                container["TotalRequests"] = item.TotalRequests
 
+              return container;
+            });
+
+            this.isLoadingChange.emit(false);
             // Mark for check
             this._changeDetectorRef.markForCheck();
           });
       });
-
-    this.isLoadingChange.emit(false);
   }
 
   upload(event: Event) {
