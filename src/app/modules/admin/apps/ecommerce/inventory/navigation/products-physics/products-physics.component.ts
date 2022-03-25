@@ -183,19 +183,19 @@ export class ProductsPhysicsComponent implements OnInit {
     }
     console.log("payload", payload)
 
-    if (payload.weight < 1 || !payload.weight) {
-      this.physicsValidationMessage = "Please enter weight with non-zero positive number"
-      this.showFlashMessage('errorMessage');
-      return;
-    };
-
-    if (payload.weight_in_units < 1 || !payload.weight_in_units) {
-      this.physicsValidationMessage = "Please enter non-zero positive weights in units"
-      this.showFlashMessage('errorMessage');
-      return;
-    };
-
     if (!blnApparel) {
+      if (payload.weight < 1 || !payload.weight) {
+        this.physicsValidationMessage = "Please enter weight with non-zero positive number"
+        this.showFlashMessage('errorMessage');
+        return;
+      };
+
+      if (payload.weight_in_units < 1 || !payload.weight_in_units) {
+        this.physicsValidationMessage = "Please enter non-zero positive weights in units"
+        this.showFlashMessage('errorMessage');
+        return;
+      };
+
       if (!this.shipsFromCheck) {
         this.physicsValidationMessage = "At least one shipment F.O.B. location is required"
         this.showFlashMessage('errorMessage');
