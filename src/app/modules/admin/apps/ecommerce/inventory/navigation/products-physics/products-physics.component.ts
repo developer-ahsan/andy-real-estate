@@ -195,10 +195,12 @@ export class ProductsPhysicsComponent implements OnInit {
       return;
     };
 
-    if (!this.shipsFromCheck) {
-      this.physicsValidationMessage = "At least one shipment F.O.B. location is required"
-      this.showFlashMessage('errorMessage');
-      return;
+    if (!blnApparel) {
+      if (!this.shipsFromCheck) {
+        this.physicsValidationMessage = "At least one shipment F.O.B. location is required"
+        this.showFlashMessage('errorMessage');
+        return;
+      };
     };
 
     this.physicsLoader = true;
