@@ -421,4 +421,14 @@ export interface updateColorObj {
     the_run: string[];
     rgb: string[];
     color: boolean;
+    call_type: string;
+}
+
+export interface createColorObj {
+    color: boolean;
+    color_name: string[];
+    product_id: number;
+    color_id: number[];
+    the_run: string[];
+    rgb: string[];
 }

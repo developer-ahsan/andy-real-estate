@@ -7,26 +7,6 @@ import { takeUntil } from 'rxjs/operators';
 import { SelectionModel } from '@angular/cdk/collections';
 import { MatSnackBar } from '@angular/material/snack-bar';
 
-export interface PeriodicElement {
-  name: string;
-  position: number;
-  weight: number;
-  symbol: string;
-}
-
-const ELEMENT_DATA: PeriodicElement[] = [
-  { position: 1, name: 'Hydrogen', weight: 1.0079, symbol: 'H' },
-  { position: 2, name: 'Helium', weight: 4.0026, symbol: 'He' },
-  { position: 3, name: 'Lithium', weight: 6.941, symbol: 'Li' },
-  { position: 4, name: 'Beryllium', weight: 9.0122, symbol: 'Be' },
-  { position: 5, name: 'Boron', weight: 10.811, symbol: 'B' },
-  { position: 6, name: 'Carbon', weight: 12.0107, symbol: 'C' },
-  { position: 7, name: 'Nitrogen', weight: 14.0067, symbol: 'N' },
-  { position: 8, name: 'Oxygen', weight: 15.9994, symbol: 'O' },
-  { position: 9, name: 'Fluorine', weight: 18.9984, symbol: 'F' },
-  { position: 10, name: 'Neon', weight: 20.1797, symbol: 'Ne' },
-];
-
 @Component({
   selector: 'app-color',
   templateUrl: './color.component.html'
@@ -40,14 +20,18 @@ export class ColorComponent implements OnInit {
   colors: Colors[] = [];
   displayedColumns: string[] = ['select', 'color', 'run', 'hex', 'upload'];
   dataSource: Colors[] = [];
-  selection = new SelectionModel<PeriodicElement>(true, []);
+  selection = new SelectionModel<any>(true, []);
 
   arrayToUpdate = [];
   colorForm: FormGroup;
   colorValue = '#000000';
   hexColor;
+  flashMessage: 'success' | 'error' | null = null;
+
   // Boolean
   colorUpdateLoader = false;
+  colorAddLoader = false;
+  deleteLoader = false;
 
   /** Whether the number of selected elements matches the total number of rows. */
   isAllSelected() {
@@ -67,7 +51,7 @@ export class ColorComponent implements OnInit {
   }
 
   /** The label for the checkbox on the passed row */
-  checkboxLabel(row?: PeriodicElement): void {
+  checkboxLabel(row?: any): void {
     // if (!row) {
     //   return `${this.isAllSelected() ? 'deselect' : 'select'} all`;
     // }
@@ -85,8 +69,10 @@ export class ColorComponent implements OnInit {
     const { pk_productID } = this.selectedProduct;
 
     this.colorForm = this._formBuilder.group({
-      order: ['1'],
-      feature: ['', Validators.required]
+      colors: ['', Validators.required],
+      run: [''],
+      setup: [''],
+      hex: ['']
     });
 
     this._inventoryService.getColors(pk_productID)
@@ -128,17 +114,6 @@ export class ColorComponent implements OnInit {
     };
   };
 
-  deleteFeatures() {
-    const arrayTodelete = this.selection.selected;
-    if (!arrayTodelete.length) {
-      return this._snackBar.open("Please select rows to delete", '', {
-        horizontalPosition: 'center',
-        verticalPosition: 'bottom',
-        duration: 3500
-      });
-    };
-    console.log("arrayTodelete", arrayTodelete)
-  }
   updateColor() {
     const { pk_productID } = this.selectedProduct;
     let tempColorArray = [];
@@ -166,7 +141,8 @@ export class ColorComponent implements OnInit {
       color_id: tempColorArray.map(a => a.fk_colorID),
       the_run: tempColorArray.map(a => `${a.run}`),
       rgb: tempColorArray.map(a => a.rgb),
-      color: true
+      color: true,
+      call_type: "update"
     };
 
     console.log("payload", payload);
@@ -193,4 +169,130 @@ export class ColorComponent implements OnInit {
     this.hexColor = this.colorValue
   };
 
+  addColor() {
+    const { pk_productID } = this.selectedProduct;
+    const { colors, run, hex, setup } = this.colorForm.getRawValue();
+    var colorTempArray = colors?.length ? colors.split(',') : [];
+    let colorArr = [];
+    if (colorTempArray.length) {
+      for (const color of colorTempArray) {
+        colorArr.push(color.replace(/[^\w]/g, ""));
+      }
+    };
+
+    const payload = {
+      product_id: pk_productID,
+      color_name: colorArr?.length ? colorArr : [],
+      color_id: [],
+      the_run: [run],
+      rgb: [hex || this.hexColor],
+      color: true
+    };
+
+    console.log("payload", payload)
+    this.colorAddLoader = true;
+    this._inventoryService.addColors(payload)
+      .subscribe((response) => {
+        this._inventoryService.getColors(pk_productID)
+          .pipe(takeUntil(this._unsubscribeAll))
+          .subscribe((colors) => {
+            this.dataSource = colors["data"];
+            this.colorAddLoader = false;
+            this.showFlashMessage(
+              response["success"] === true ?
+                'success' :
+                'error'
+            );
+
+            // Mark for check
+            this._changeDetectorRef.markForCheck();
+          });
+      });
+  };
+
+  deleteColors() {
+    const arrayTodelete = this.selection.selected;
+    if (!arrayTodelete.length) {
+      return this._snackBar.open("Please select rows to delete", '', {
+        horizontalPosition: 'center',
+        verticalPosition: 'bottom',
+        duration: 3500
+      });
+    };
+
+    const { pk_productID } = this.selectedProduct;
+    let tempColorArray = [];
+    for (const color of arrayTodelete) {
+      const { run, rgb, fk_colorID } = color;
+      if (isNaN(run) || !rgb?.length) {
+        return this._snackBar.open('A value appears to be missing', '', {
+          horizontalPosition: 'center',
+          verticalPosition: 'bottom',
+          duration: 3500
+        });
+      }
+      let obj = {
+        fk_colorID: fk_colorID,
+        rgb: rgb,
+        run: run
+      };
+      tempColorArray.push(obj);
+    };
+
+    console.log("tempColor", tempColorArray)
+
+    const payload = {
+      product_id: pk_productID,
+      color_id: tempColorArray.map(a => a.fk_colorID),
+      the_run: tempColorArray.map(a => `${a.run}`),
+      rgb: tempColorArray.map(a => a.rgb),
+      color: true,
+      call_type: "delete"
+    };
+
+    console.log("payload", payload);
+
+    this.deleteLoader = true;
+    this._inventoryService.updateColors(payload)
+      .subscribe((response) => {
+        this._inventoryService.getColors(pk_productID)
+          .pipe(takeUntil(this._unsubscribeAll))
+          .subscribe((colors) => {
+            this.dataSource = colors["data"];
+            this.deleteLoader = false;
+            const message = response["success"] === true
+              ? "Colors deleted successfully"
+              : "Some error occured. Please try again";
+
+            this._snackBar.open(message, '', {
+              horizontalPosition: 'center',
+              verticalPosition: 'bottom',
+              duration: 3500
+            });
+
+            // Mark for check
+            this._changeDetectorRef.markForCheck();
+          });
+      });
+  }
+
+  /**
+ * Show flash message
+ */
+  showFlashMessage(type: 'success' | 'error'): void {
+    // Show the message
+    this.flashMessage = type;
+
+    // Mark for check
+    this._changeDetectorRef.markForCheck();
+
+    // Hide it after 3.5 seconds
+    setTimeout(() => {
+
+      this.flashMessage = null;
+
+      // Mark for check
+      this._changeDetectorRef.markForCheck();
+    }, 3500);
+  }
 }

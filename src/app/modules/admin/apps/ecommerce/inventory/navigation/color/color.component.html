@@ -18,21 +18,30 @@
                 </div>
                 <!-- Colors -->
                 <div class="gap-y-4 mt-6">
-                    <form>
+                    <form [formGroup]="colorForm">
                         <div class="row">
                             <div class="col-lg-5 col-12">
                                 <mat-form-field class="w-full">
                                     <mat-label>
                                         <span class="ml-1">Color</span>
                                     </mat-label>
-                                    <input matInput placeholder="Enter list of colors, spearated by comma">
+                                    <input matInput [formControlName]="'colors'"
+                                        placeholder="Enter list of colors, spearated by comma">
+                                    <mat-error>This field is required</mat-error>
+                                </mat-form-field>
+                            </div>
+                            <div class="col-lg-2 col-12">
+                                <mat-form-field class="w-full">
+                                    <mat-label>Setup</mat-label>
+                                    <input matInput [formControlName]="'setup'" type="number" value="0"
+                                        placeholder="Setup">
                                 </mat-form-field>
                             </div>
                             <div class="col-lg-2 col-12">
                                 <mat-form-field class="w-full">
                                     <mat-label>Run</mat-label>
-                                    <input matInput type="number" min="0" value="0.000" placeholder="Run">
-                                    <mat-error>This field is required</mat-error>
+                                    <input matInput [formControlName]="'run'" type="number" value="0.00"
+                                        placeholder="Run">
                                 </mat-form-field>
                             </div>
                             <div class="col-lg-3 col-12">
@@ -42,7 +51,7 @@
                                 </button>
                                 <span class="ml-1">Hex</span>
                                 <mat-form-field class="w-full">
-                                    <input matInput value="{{hexColor}}" placeholder="Hex">
+                                    <input matInput [formControlName]="'hex'" value="{{hexColor}}" placeholder="Hex">
                                     <mat-icon class="icon-size-5 text-secondary ml-2" style="cursor: pointer;"
                                         (click)="copyColorToHex()" [matTooltip]="'Copy hex from color palette'"
                                         svgIcon="mat_outline:content_copy">
@@ -66,12 +75,12 @@
                                 <span class="ml-2">An error occurred, try again!</span>
                             </ng-container>
                         </div>
-                        <button class="min-w-40" mat-stroked-button [matTooltip]="'Add New Feature'"
-                            (click)="addFeature()" [disabled]="featureAddLoader">
-                            <mat-progress-spinner *ngIf="featureAddLoader" [diameter]="24" [mode]="'indeterminate'">
+                        <button class="min-w-40" mat-stroked-button [matTooltip]="'Add New Color'" (click)="addColor()"
+                            [disabled]="colorAddLoader">
+                            <mat-progress-spinner *ngIf="colorAddLoader" [diameter]="24" [mode]="'indeterminate'">
                             </mat-progress-spinner>
-                            <mat-icon *ngIf="!featureAddLoader" [svgIcon]="'heroicons_outline:plus'"></mat-icon>
-                            <span *ngIf="!featureAddLoader" class="ml-1 mr-1">Add Color</span>
+                            <mat-icon *ngIf="!colorAddLoader" [svgIcon]="'heroicons_outline:plus'"></mat-icon>
+                            <span *ngIf="!colorAddLoader" class="ml-1 mr-1">Add Color</span>
                         </button>
                     </div>
                 </div>
@@ -94,8 +103,8 @@
                     </div>
                 </div>
                 <div class="col-lg-3 col-6" *ngIf="dataSource.length">
-                    <button class="min-w-40 w-full" mat-stroked-button [matTooltip]="'Delete Selected Features'"
-                        (click)="deleteFeatures()" [disabled]="deleteLoader">
+                    <button class="min-w-40 w-full" mat-stroked-button [matTooltip]="'Delete Selected Colors'"
+                        (click)="deleteColors()" [disabled]="deleteLoader">
                         <mat-progress-spinner *ngIf="deleteLoader" [diameter]="24" [mode]="'indeterminate'">
                         </mat-progress-spinner>
                         <span *ngIf="!deleteLoader" class="ml-1 mr-1">Remove Selected</span>

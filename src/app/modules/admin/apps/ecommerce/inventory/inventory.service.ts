@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { BehaviorSubject, Observable, of, throwError } from 'rxjs';
 import { filter, map, switchMap, take, tap } from 'rxjs/operators';
-import { AddCore, AddFeature, AddPackage, CaseDimensionObj, CaseQuantityObj, Comment, CreateProduct, DeleteComment, duplicateObj, featureUpdateObj, FlatRateShippingObj, InventoryBrand, InventoryCategory, InventoryPagination, InventoryTag, InventoryVendor, Licensing, NetCostUpdate, PhysicsObj, physicsUpdateObject, ProductsList, updateColorObj, UpdateMargin, updateSize, videoObj, Warehouse } from 'app/modules/admin/apps/ecommerce/inventory/inventory.types';
+import { AddCore, AddFeature, AddPackage, CaseDimensionObj, CaseQuantityObj, Comment, createColorObj, CreateProduct, DeleteComment, duplicateObj, featureUpdateObj, FlatRateShippingObj, InventoryBrand, InventoryCategory, InventoryPagination, InventoryTag, InventoryVendor, Licensing, NetCostUpdate, PhysicsObj, physicsUpdateObject, ProductsList, updateColorObj, UpdateMargin, updateSize, videoObj, Warehouse } from 'app/modules/admin/apps/ecommerce/inventory/inventory.types';
 import { environment } from 'environments/environment';
 import { productDescription } from 'app/modules/admin/apps/ecommerce/inventory/inventory.types';
 import { AuthService } from 'app/core/auth/auth.service';
@@ -716,6 +716,16 @@ export class InventoryService {
         return this._httpClient.post(
             environment.products, payload, { headers });
     }
+
+    /**
+   * Create Colors
+   */
+    addColors(payload: createColorObj) {
+        const headers = { 'Authorization': `Bearer ${this._authService.accessToken}` };
+        return this._httpClient.put(
+            environment.products, payload, { headers });
+    };
+
     /**
      * post comment
     **/
