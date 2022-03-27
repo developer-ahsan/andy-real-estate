@@ -11,9 +11,11 @@
                 </div>
                 <div class="col-lg-3 col-12">
                     <button class="min-w-40 w-full" *ngIf="dataSource.length" mat-flat-button [color]="'primary'"
-                        [matTooltip]="'Update Selected'" (click)="updateSizes()">
-                        <mat-icon svgIcon="mat_outline:edit"></mat-icon>
-                        <span class="ml-1 mr-1">Update</span>
+                        [matTooltip]="'Update Selected Sizes'" (click)="updateSizes()" [disabled]="sizeUpdateLoader">
+                        <mat-progress-spinner *ngIf="sizeUpdateLoader" [diameter]="24" [mode]="'indeterminate'">
+                        </mat-progress-spinner>
+                        <mat-icon *ngIf="!sizeUpdateLoader" svgIcon="mat_outline:edit"></mat-icon>
+                        <span *ngIf="!sizeUpdateLoader" class="ml-1 mr-1">Update</span>
                     </button>
                 </div>
             </div>
@@ -78,7 +80,7 @@
                     <tr mat-header-row *matHeaderRowDef="displayedColumns;" class="h-18 bg-light"></tr>
                     <tr mat-row *matRowDef="let row; columns: displayedColumns;"
                         class="h-14 hover:bg-gray-100 dark:hover:bg-hover" style="cursor: pointer;"
-                        (click)="selection.toggle(row)">
+                        (click)="selection.select(row)">
                     </tr>
                 </table>
                 <mat-paginator

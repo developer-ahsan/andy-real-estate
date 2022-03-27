@@ -81,14 +81,37 @@ export class ProductsDescriptionComponent implements OnInit {
       .pipe(takeUntil(this._unsubscribeAll))
       .subscribe((description) => {
 
+        const { keywords, metaDesc, miniDesc, productDesc, supplierLink, sex, notes, searchKeywords, optionsGuidelines } = description["data"][0];
         this.productDescription = description["data"][0];
         this.productDescription["name"] = productName;
         this.productDescription["productNO"] = productNumber;
         this.productDescription["technoLogoSKU"] = technoLogoSKU;
         this.productDescription["permalink"] = this.convertToSlug(productName);
 
+        const descriptionObj = {
+          fk_productID: pk_productID,
+          name: productName,
+          productNO: productNumber,
+          keywords: keywords || '',
+          internalKeywords: keywords || '',
+          metaDesc: metaDesc || '',
+          supplierLink: supplierLink || '',
+          sex: sex || '',
+          searchKeywords: searchKeywords || '',
+          productDesc: productDesc || '',
+          permalink: this.convertToSlug(productName),
+          optionsGuidelines: optionsGuidelines || '',
+          notes: notes || '',
+          miniDesc: miniDesc || '',
+          technoLogoSKU: technoLogoSKU,
+          selectOrder: '',
+          purchase_order_notes: ''
+        };
+
+        console.log("descriptionObj", descriptionObj)
+
         // Fill the form
-        this.productDescriptionForm.patchValue(this.productDescription);
+        this.productDescriptionForm.patchValue(descriptionObj);
 
         // Mark for check
         this._changeDetectorRef.markForCheck();

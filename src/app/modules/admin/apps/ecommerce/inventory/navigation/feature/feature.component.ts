@@ -1,6 +1,7 @@
 import { SelectionModel } from '@angular/cdk/collections';
 import { Component, Input, OnInit, Output, EventEmitter, ChangeDetectorRef } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { MatSnackBar } from '@angular/material/snack-bar';
 import { InventoryService } from 'app/modules/admin/apps/ecommerce/inventory/inventory.service';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
@@ -28,14 +29,18 @@ export class FeatureComponent implements OnInit {
   selectedRowsLength: number;
   page = 1;
 
+  arrayToUpdate = [];
+
   // boolean
   featureAddLoader = false;
-
+  featureUpdateLoader = false;
+  deleteLoader = false;
 
   constructor(
     private _changeDetectorRef: ChangeDetectorRef,
     private _inventoryService: InventoryService,
-    private _formBuilder: FormBuilder
+    private _formBuilder: FormBuilder,
+    private _snackBar: MatSnackBar,
   ) { }
 
   ngOnInit(): void {
@@ -64,7 +69,136 @@ export class FeatureComponent implements OnInit {
 
 
     this.isLoadingChange.emit(false);
+  };
+
+  rowUpdate(featureObj, title, event) {
+    const { value } = event.target;
+    const { fk_attributeID } = featureObj;
+
+    console.log("featureObj", featureObj)
+
+    if (title === 'listOrder') {
+      featureObj.listOrder = parseInt(value);
+    } else if (title === 'attributeText') {
+      featureObj.attributeText = value;
+    };
+
+    if (!this.arrayToUpdate?.length) {
+      this.arrayToUpdate.push(featureObj);
+    } else {
+      let obj = this.arrayToUpdate.find(o => o.fk_attributeID === fk_attributeID);
+      if (!obj) {
+        this.arrayToUpdate.push(featureObj);
+      }
+    };
+  };
+
+  deleteFeatures() {
+    const arrayTodelete = this.selection.selected;
+    if (!arrayTodelete.length) {
+      return this._snackBar.open("Please select rows to delete", '', {
+        horizontalPosition: 'center',
+        verticalPosition: 'bottom',
+        duration: 3500
+      });
+    };
+    const { pk_productID } = this.selectedProduct;
+    let tempFeatureArray = [];
+    for (const feature of arrayTodelete) {
+      const { fk_attributeTypeID, attributeText, fk_attributeID, listOrder } = feature;
+      let obj = {
+        attribute_type_id: fk_attributeTypeID,
+        attribute_text: attributeText,
+        attribute_id: fk_attributeID,
+        order: listOrder
+      };
+      tempFeatureArray.push(obj);
+    };
+
+    const payload = {
+      product_id: pk_productID,
+      update_type: "delete",
+      feature: tempFeatureArray,
+      features: true
+    };
+
+    this.deleteLoader = true;
+    this._inventoryService.updateFeatures(payload)
+      .subscribe((response) => {
+        this._inventoryService.getFeatures(pk_productID, 1)
+          .pipe(takeUntil(this._unsubscribeAll))
+          .subscribe((features) => {
+            this._inventoryService.getFeaturesSupplierAndType(pk_productID)
+              .pipe(takeUntil(this._unsubscribeAll))
+              .subscribe((type) => {
+                this.featureType = type["data"][0];
+                this.dataSource = features["data"];
+                this.featuresLength = features["totalRecords"];
+                this.deleteLoader = false;
+                const message = response["success"] === true
+                  ? "Attribute were deleted successfully"
+                  : "Some error occured. Please try again";
+
+                this._snackBar.open(message, '', {
+                  horizontalPosition: 'center',
+                  verticalPosition: 'bottom',
+                  duration: 3500
+                });
+                // Mark for check
+                this._changeDetectorRef.markForCheck();
+              });
+          });
+      });
   }
+
+  updateFeatures() {
+    const { pk_productID } = this.selectedProduct;
+    let tempFeatureArray = [];
+    for (const feature of this.arrayToUpdate) {
+      const { fk_attributeTypeID, attributeText, fk_attributeID, listOrder } = feature;
+      if (!listOrder || !attributeText?.length) {
+        return this._snackBar.open('A value appears to be missing', '', {
+          horizontalPosition: 'center',
+          verticalPosition: 'bottom',
+          duration: 3500
+        });
+      }
+      let obj = {
+        attribute_type_id: fk_attributeTypeID,
+        attribute_text: attributeText,
+        attribute_id: fk_attributeID,
+        order: listOrder
+      };
+      tempFeatureArray.push(obj);
+    };
+
+    const payload = {
+      product_id: pk_productID,
+      update_type: "update",
+      feature: tempFeatureArray,
+      features: true
+    }
+
+    console.log("payload", payload);
+
+    this.featureUpdateLoader = true;
+    this._inventoryService.updateFeatures(payload)
+      .subscribe((response) => {
+        this.featureUpdateLoader = false;
+        const message = response["success"] === true
+          ? "Attribute was added successfully"
+          : "Some error occured. Please try again";
+
+        this._snackBar.open(message, '', {
+          horizontalPosition: 'center',
+          verticalPosition: 'bottom',
+          duration: 3500
+        });
+
+        // Mark for check
+        this._changeDetectorRef.markForCheck();
+      });
+  };
 
   getFeatures(page: number): void {
     const { pk_productID } = this.selectedProduct;
@@ -105,10 +239,6 @@ export class FeatureComponent implements OnInit {
     return `${this.selection.isSelected(row) ? 'deselect' : 'select'} row ${row.position + 1}`;
   }
 
-  deleteFeatureRow(): void {
-    console.log("selected", this.selection.selected);
-  };
-
   getNextData(event) {
     const { previousPageIndex, pageIndex } = event;
 
@@ -136,20 +266,41 @@ export class FeatureComponent implements OnInit {
     this.featureAddLoader = true;
     this._inventoryService.addFeature(payload)
       .subscribe((response) => {
-        this.featureAddLoader = false;
-        this.featureForm.reset({
-          order: 1,
-          feature: ''
-        });
-        this.ngOnInit();
-        this.showFlashMessage(
-          response["success"] === true ?
-            'success' :
-            'error'
-        );
+        this._inventoryService.getFeatures(pk_productID, 1)
+          .pipe(takeUntil(this._unsubscribeAll))
+          .subscribe((features) => {
+            this._inventoryService.getFeaturesSupplierAndType(pk_productID)
+              .pipe(takeUntil(this._unsubscribeAll))
+              .subscribe((type) => {
+                this.featureType = type["data"][0];
+                this.dataSource = features["data"];
+                this.featuresLength = features["totalRecords"];
+                this.featureAddLoader = false;
+                this.featureForm.reset({
+                  order: 1,
+                  feature: ''
+                });
 
-        // Mark for check
-        this._changeDetectorRef.markForCheck();
+                if (response["success"] === false) {
+                  if (response["message"] === 'Data already exists in Database') {
+                    return this._snackBar.open(`Unable to add feature. ${response["message"]}`, '', {
+                      horizontalPosition: 'center',
+                      verticalPosition: 'bottom',
+                      duration: 5000
+                    });
+                  };
+                };
+
+                this.showFlashMessage(
+                  response["success"] === true ?
+                    'success' :
+                    'error'
+                );
+
+                // Mark for check
+                this._changeDetectorRef.markForCheck();
+              });
+          });
       });
   };
 

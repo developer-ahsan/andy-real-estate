@@ -180,8 +180,7 @@ export class ProductsPhysicsComponent implements OnInit {
           : []
       },
       physics: true
-    }
-    console.log("payload", payload)
+    };
 
     if (!blnApparel) {
       if (payload.weight < 1 || !payload.weight) {

@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { BehaviorSubject, Observable, of, throwError } from 'rxjs';
 import { filter, map, switchMap, take, tap } from 'rxjs/operators';
-import { AddCore, AddFeature, AddPackage, CaseDimensionObj, CaseQuantityObj, Comment, CreateProduct, DeleteComment, duplicateObj, FlatRateShippingObj, InventoryBrand, InventoryCategory, InventoryPagination, InventoryTag, InventoryVendor, Licensing, NetCostUpdate, PhysicsObj, physicsUpdateObject, ProductsList, UpdateMargin, videoObj, Warehouse } from 'app/modules/admin/apps/ecommerce/inventory/inventory.types';
+import { AddCore, AddFeature, AddPackage, CaseDimensionObj, CaseQuantityObj, Comment, CreateProduct, DeleteComment, duplicateObj, featureUpdateObj, FlatRateShippingObj, InventoryBrand, InventoryCategory, InventoryPagination, InventoryTag, InventoryVendor, Licensing, NetCostUpdate, PhysicsObj, physicsUpdateObject, ProductsList, UpdateMargin, updateSize, videoObj, Warehouse } from 'app/modules/admin/apps/ecommerce/inventory/inventory.types';
 import { environment } from 'environments/environment';
 import { productDescription } from 'app/modules/admin/apps/ecommerce/inventory/inventory.types';
 import { AuthService } from 'app/core/auth/auth.service';
@@ -135,7 +135,7 @@ export class InventoryService {
             title: 'Duplicate',
             icon: 'heroicons_outline:duplicate'
         }
-    ]
+    ];
 
     /**
      * Constructor
@@ -155,21 +155,21 @@ export class InventoryService {
      */
     get brands$(): Observable<InventoryBrand[]> {
         return this._brands.asObservable();
-    }
+    };
 
     /**
      * Getter for categories
      */
     get categories$(): Observable<InventoryCategory[]> {
         return this._categories.asObservable();
-    }
+    };
 
     /**
      * Getter for pagination
      */
     get pagination$(): Observable<InventoryPagination> {
         return this._pagination.asObservable();
-    }
+    };
 
     /**
      * Getter for product
@@ -183,21 +183,21 @@ export class InventoryService {
      */
     get products$(): Observable<ProductsList[]> {
         return this._products.asObservable();
-    }
+    };
 
     /**
      * Getter for tags
      */
     get tags$(): Observable<InventoryTag[]> {
         return this._tags.asObservable();
-    }
+    };
 
     /**
      * Getter for vendors
      */
     get vendors$(): Observable<InventoryVendor[]> {
         return this._vendors.asObservable();
-    }
+    };
 
     // -----------------------------------------------------------------------------------------------------
     // @ Public methods
@@ -214,7 +214,7 @@ export class InventoryService {
                 this._products.next(products);
             })
         );
-    }
+    };
 
     getProductsByPagination(page: number): Observable<ProductsList[]> {
         return this._httpClient.get<ProductsList[]>(environment.products, {
@@ -224,7 +224,7 @@ export class InventoryService {
                 page: page
             }
         });
-    }
+    };
 
     getProductsForExporting(size): Observable<ProductsList[]> {
         return this._httpClient.get<ProductsList[]>(environment.products, {
@@ -232,7 +232,7 @@ export class InventoryService {
                 export: true
             }
         });
-    }
+    };
 
     getProductByProductId(productId): Observable<ProductsList[]> {
         return this._httpClient.get<ProductsList[]>(environment.products, {
@@ -241,7 +241,7 @@ export class InventoryService {
                 product_id: productId
             }
         });
-    }
+    };
 
     searchProductKeywords(keyword): Observable<ProductsList[]> {
         console.log("testing")
@@ -251,7 +251,7 @@ export class InventoryService {
                 keyword: keyword
             }
         });
-    }
+    };
 
     getProductDescription(productId): Observable<any[]> {
         return this._httpClient.get<any[]>(environment.products, {
@@ -260,7 +260,7 @@ export class InventoryService {
                 product_id: productId
             }
         });
-    }
+    };
 
     getCaseQuantities(productId): Observable<any[]> {
         return this._httpClient.get<any[]>(environment.products, {
@@ -299,7 +299,7 @@ export class InventoryService {
                 product_id: productId
             }
         });
-    }
+    };
 
     getFeatures(productId, page): Observable<any[]> {
         return this._httpClient.get<any[]>(environment.products, {
@@ -310,7 +310,7 @@ export class InventoryService {
                 page: page
             }
         });
-    }
+    };
 
     getFeaturesSupplierAndType(productId): Observable<any[]> {
         return this._httpClient.get<any[]>(environment.products, {
@@ -319,7 +319,7 @@ export class InventoryService {
                 type: true
             }
         });
-    }
+    };
 
     getAllPackages(pageNo?: number): Observable<any[]> {
         return this._httpClient.get<any[]>(environment.products, {
@@ -348,7 +348,7 @@ export class InventoryService {
                 product_id: productId
             }
         });
-    }
+    };
 
     getNetCost(productId): Observable<any[]> {
         return this._httpClient.get<any[]>(environment.products, {
@@ -358,7 +358,7 @@ export class InventoryService {
                 product_id: productId
             }
         });
-    }
+    };
 
     getDiscountCodes(productId): Observable<any[]> {
         return this._httpClient.get<any[]>(environment.products, {
@@ -387,7 +387,7 @@ export class InventoryService {
                 size: 2000
             }
         });
-    }
+    };
 
     getProductsBySupplierId(supplierId: string): Observable<any[]> {
         return this._httpClient.get<any[]>(environment.products, {
@@ -397,7 +397,7 @@ export class InventoryService {
                 supplier_id: supplierId
             }
         });
-    }
+    };
 
     getAllSuppliers(): Observable<any[]> {
         return this._httpClient.get<any[]>(environment.stores, {
@@ -407,7 +407,7 @@ export class InventoryService {
                 size: 2000
             }
         });
-    }
+    };
 
     getMarginsByProductId(productId): Observable<any[]> {
         return this._httpClient.get<any[]>(environment.products, {
@@ -416,7 +416,7 @@ export class InventoryService {
                 product_id: productId
             }
         });
-    }
+    };
 
     getVideoByProductId(productId): Observable<any[]> {
         return this._httpClient.get<any[]>(environment.products, {
@@ -425,7 +425,7 @@ export class InventoryService {
                 product_id: productId
             }
         });
-    }
+    };
 
     getVideos(): Observable<any[]> {
         return this._httpClient.get<any[]>(environment.products, {
@@ -433,7 +433,7 @@ export class InventoryService {
                 video: true
             }
         });
-    }
+    };
 
     getArtworkTemplateByProductId(productId): Observable<any[]> {
         return this._httpClient.get<any[]>(environment.products, {
@@ -442,7 +442,7 @@ export class InventoryService {
                 product_id: productId
             }
         });
-    }
+    };
 
     getReviewByProductId(productId): Observable<any[]> {
         return this._httpClient.get<any[]>(environment.products, {
@@ -471,7 +471,7 @@ export class InventoryService {
                 product_id: productId
             }
         });
-    }
+    };
 
     getWarehouseByProductId(productId): Observable<any[]> {
         return this._httpClient.get<any[]>(environment.products, {
@@ -480,7 +480,7 @@ export class InventoryService {
                 product_id: productId
             }
         });
-    }
+    };
 
     getCoresByProductId(productId): Observable<any[]> {
         return this._httpClient.get<any[]>(environment.products, {
@@ -490,7 +490,7 @@ export class InventoryService {
                 product_id: productId
             }
         });
-    }
+    };
 
     getAvailableCoresProductId(productId): Observable<any[]> {
         return this._httpClient.get<any[]>(environment.products, {
@@ -499,7 +499,7 @@ export class InventoryService {
                 product_id: productId
             }
         });
-    }
+    };
 
     getCategoriesByCoreId(coreId): Observable<any[]> {
         return this._httpClient.get<any[]>(environment.products, {
@@ -509,7 +509,7 @@ export class InventoryService {
                 core_id: coreId
             }
         });
-    }
+    };
 
     getSubCategoriesByCoreId(subCategoryId): Observable<any[]> {
         return this._httpClient.get<any[]>(environment.products, {
@@ -519,7 +519,7 @@ export class InventoryService {
                 core_category_id: subCategoryId
             }
         });
-    }
+    };
 
     getImprints(productId, page?: number): Observable<any[]> {
         return this._httpClient.get<any[]>(environment.products, {
@@ -581,7 +581,7 @@ export class InventoryService {
                 product_id: productId
             }
         });
-    }
+    };
 
     getUpdateHistoryByProductId(productId): Observable<any[]> {
         return this._httpClient.get<any[]>(environment.products, {
@@ -590,7 +590,7 @@ export class InventoryService {
                 product_id: productId
             }
         });
-    }
+    };
 
     getCommentByProductId(productId): Observable<any[]> {
         return this._httpClient.get<any[]>(environment.products, {
@@ -599,7 +599,7 @@ export class InventoryService {
                 product_id: productId
             }
         });
-    }
+    };
 
     getCommentators() {
         return this._httpClient.get(environment.customerList, {
@@ -607,7 +607,7 @@ export class InventoryService {
                 commentor: true
             }
         })
-    }
+    };
 
     getLicensingCompanyByProductId(productId) {
         return this._httpClient.get(environment.products, {
@@ -636,7 +636,7 @@ export class InventoryService {
                 size: 100
             }
         })
-    }
+    };
 
     getLicensingTerms(productId): Observable<any[]> {
         return this._httpClient.get<any[]>(environment.products, {
@@ -646,7 +646,7 @@ export class InventoryService {
                 size: 500
             }
         });
-    }
+    };
 
     getSizes(productId, page): Observable<any[]> {
         return this._httpClient.get<any[]>(environment.products, {
@@ -657,12 +657,12 @@ export class InventoryService {
                 page: page
             }
         });
-    }
+    };
 
     // DELETE CALLS
     deleteComment(payload: DeleteComment) {
         return this._httpClient.post(environment.products, payload);
-    }
+    };
 
     // POST CALLS
 
@@ -670,8 +670,8 @@ export class InventoryService {
     addCore(payload: AddCore) {
         const headers = { 'Authorization': `Bearer ${this._authService.accessToken}` };
         return this._httpClient.post(
-            `${environment.products}`, payload, { headers });
-    }
+            environment.products, payload, { headers });
+    };
 
     // ADD DEFAULT IMAGE
     addDefaultImage(payload) {
@@ -681,14 +681,14 @@ export class InventoryService {
         };
         return this._httpClient.post(
             environment.mediaAccessUrl, payload, { headers });
-    }
+    };
 
     // Add Product
     addProduct(payload) {
         const headers = { 'Authorization': `Bearer ${this._authService.accessToken}` };
         return this._httpClient.post(
-            `${environment.products}`, payload, { headers });
-    }
+            environment.products, payload, { headers });
+    };
 
     /**
    * Add feature
@@ -696,7 +696,7 @@ export class InventoryService {
     addFeature(payload: AddFeature) {
         const headers = { 'Authorization': `Bearer ${this._authService.accessToken}` };
         return this._httpClient.post(
-            `${environment.products}`, payload, { headers });
+            environment.products, payload, { headers });
     }
 
     /**
@@ -705,8 +705,8 @@ export class InventoryService {
     addPackage(payload: AddPackage) {
         const headers = { 'Authorization': `Bearer ${this._authService.accessToken}` };
         return this._httpClient.post(
-            `${environment.products}`, payload, { headers });
-    }
+            environment.products, payload, { headers });
+    };
 
     /**
      * Post duplicate
@@ -714,7 +714,7 @@ export class InventoryService {
     addDuplicate(payload: duplicateObj) {
         const headers = { 'Authorization': `Bearer ${this._authService.accessToken}` };
         return this._httpClient.post(
-            `${environment.products}`, payload, { headers });
+            environment.products, payload, { headers });
     }
     /**
      * post comment
@@ -722,7 +722,7 @@ export class InventoryService {
     updateComment(payload: Comment) {
         const headers = { 'Authorization': `Bearer ${this._authService.accessToken}` };
         return this._httpClient.post(
-            `${environment.products}`, payload, { headers });
+            environment.products, payload, { headers });
     }
 
     // PUT CALLS
@@ -744,7 +744,7 @@ export class InventoryService {
     updateWarehouse(payload: Warehouse) {
         const headers = { 'Authorization': `Bearer ${this._authService.accessToken}` };
         return this._httpClient.put(
-            `${environment.products}`, payload, { headers });
+            environment.products, payload, { headers });
     }
 
     /**
@@ -753,7 +753,7 @@ export class InventoryService {
     updateNetCost(payload: NetCostUpdate) {
         const headers = { 'Authorization': `Bearer ${this._authService.accessToken}` };
         return this._httpClient.put(
-            `${environment.products}`, payload, { headers });
+            environment.products, payload, { headers });
     }
 
     /**
@@ -762,7 +762,7 @@ export class InventoryService {
     updateMargins(payload: UpdateMargin) {
         const headers = { 'Authorization': `Bearer ${this._authService.accessToken}` };
         return this._httpClient.put(
-            `${environment.products}`, payload, { headers });
+            environment.products, payload, { headers });
     }
 
     /**
@@ -771,7 +771,7 @@ export class InventoryService {
     updatePhysicsAndDescription(payload: productDescription) {
         const headers = { 'Authorization': `Bearer ${this._authService.accessToken}` };
         return this._httpClient.put(
-            `${environment.products}`, payload, { headers });
+            environment.products, payload, { headers });
     }
 
     /**
@@ -780,7 +780,7 @@ export class InventoryService {
     updateFlatRateShipping(payload: FlatRateShippingObj) {
         const headers = { 'Authorization': `Bearer ${this._authService.accessToken}` };
         return this._httpClient.put(
-            `${environment.products}`, payload, { headers });
+            environment.products, payload, { headers });
     }
 
     /**
@@ -798,7 +798,7 @@ export class InventoryService {
     updateCaseDimensions(payload: CaseDimensionObj) {
         const headers = { 'Authorization': `Bearer ${this._authService.accessToken}` };
         return this._httpClient.put(
-            `${environment.products}`, payload, { headers });
+            environment.products, payload, { headers });
     }
 
     /**
@@ -817,7 +817,7 @@ export class InventoryService {
         const headers = { 'Authorization': `Bearer ${this._authService.accessToken}` };
         return this._httpClient.put(
             environment.products, payload, { headers });
-    }
+    };
 
     /**
    * UPDATE licensing terms
@@ -826,7 +826,26 @@ export class InventoryService {
         const headers = { 'Authorization': `Bearer ${this._authService.accessToken}` };
         return this._httpClient.put(
             environment.products, payload, { headers });
-    }
+    };
+
+    /**
+   * UPDATE Sizes
+   */
+    updateSizes(payload: updateSize) {
+        const headers = { 'Authorization': `Bearer ${this._authService.accessToken}` };
+        return this._httpClient.put(
+            environment.products, payload, { headers });
+    };
+
+    /**
+   * UPDATE Features
+   */
+    updateFeatures(payload: featureUpdateObj) {
+        const headers = { 'Authorization': `Bearer ${this._authService.accessToken}` };
+        return this._httpClient.put(
+            environment.products, payload, { headers });
+    };
+
     /**
      * Get products
      *
@@ -853,5 +872,5 @@ export class InventoryService {
                 this._products.next(response.products);
             })
         );
-    }
+    };
 }

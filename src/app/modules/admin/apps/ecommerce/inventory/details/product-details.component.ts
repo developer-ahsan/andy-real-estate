@@ -60,7 +60,7 @@ export class ProductDetailsComponent implements OnInit, OnDestroy {
           ? moment.utc(product["data"][0]?.lastUpdatedDate).format("lll")
           : 'N/A';
         this.isProductFetched = false;
-        console.log("selectedProduct", this.selectedProduct)
+
         this.routes = this._inventoryService.navigationLabels;
         const { blnService, blnApparel } = this.selectedProduct;
 

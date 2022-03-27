@@ -4,6 +4,8 @@ import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { InventoryService } from 'app/modules/admin/apps/ecommerce/inventory/inventory.service';
 import { COMMA, ENTER } from '@angular/cdk/keycodes';
+import { SelectionModel } from '@angular/cdk/collections';
+import { MatSnackBar } from '@angular/material/snack-bar';
 
 @Component({
   selector: 'app-package',
@@ -15,48 +17,55 @@ export class PackageComponent implements OnInit {
   @Output() isLoadingChange = new EventEmitter<boolean>();
   private _unsubscribeAll: Subject<any> = new Subject<any>();
 
-  displayedColumns: string[] = ['packaging', 'run', 'setup', 'packagingUnit', 'po'];
+  displayedColumns: string[] = ['select', 'packaging', 'run', 'setup', 'packagingUnit', 'po'];
   dataSource: Package[] = [];
   dataSourceLength: number = 0;
   pageSize: number = 10;
   pageNo: number = 1;
-  selection;
   zeroLengthCheckMessage = false;
   flashMessage: 'success' | 'error' | null = null;
   packageAddLoader = false;
+
+  selection = new SelectionModel<any>(true, []);
+  selectedRowsLength: number;
+
+  arrayToUpdate = [];
 
   dataLoader = false;
   domain = "true";
 
   searchLoader = false;
+
   /** Whether the number of selected elements matches the total number of rows. */
   isAllSelected() {
+    this.selectedRowsLength = this.selection.selected.length;
     const numSelected = this.selection.selected.length;
-    // const numRows = this.dataSource.data.length;
-    // return numSelected === numRows;
+    const numRows = this.dataSource.length;
+    return numSelected === numRows;
   }
 
   /** Selects all rows if they are not all selected; otherwise clear selection. */
   masterToggle() {
-    // if (this.isAllSelected()) {
-    //   this.selection.clear();
-    //   return;
-    // }
+    if (this.isAllSelected()) {
+      this.selection.clear();
+      return;
+    }
 
-    // this.selection.select(...this.dataSource.data);
-  }
+    this.selection.select(...this.dataSource);
+  };
 
   /** The label for the checkbox on the passed row */
-  checkboxLabel(row): void {
-    // if (!row) {
-    //   return `${this.isAllSelected() ? 'deselect' : 'select'} all`;
-    // }
-    // return `${this.selection.isSelected(row) ? 'deselect' : 'select'} row ${row.position + 1}`;
-  }
+  checkboxLabel(row?: any): string {
+    if (!row) {
+      return `${this.isAllSelected() ? 'deselect' : 'select'} all`;
+    }
+    return `${this.selection.isSelected(row) ? 'deselect' : 'select'} row ${row.position + 1}`;
+  };
 
   constructor(
     private _changeDetectorRef: ChangeDetectorRef,
-    private _inventoryService: InventoryService
+    private _inventoryService: InventoryService,
+    private _snackBar: MatSnackBar
   ) { }
 
   ngOnInit(): void {
@@ -71,6 +80,55 @@ export class PackageComponent implements OnInit {
     //     console.log("pack ", pack)
     //     this._changeDetectorRef.markForCheck();
     //   });
+  };
+
+  updatePackage() {
+    console.log("this.arrayToUpdate", this.arrayToUpdate)
+    // const { pk_productID } = this.selectedProduct;
+
+    // let tempPackageArray = [];
+    // for (const packages of this.arrayToUpdate) {
+    //   const { fk_packagingID, setup, run, unitsPerPackage, blnDecoratorPO } = packages;
+    //   let obj = {
+    //     packaging_id: fk_packagingID,
+    //     setup: setup,
+    //     run: run,
+    //     units_per_package: unitsPerPackage,
+    //     bln_decorator: blnDecoratorPO ? 1 : 0
+    //   };
+    //   tempPackageArray.push(obj);
+    // };
+
+    // const payload = {
+    //   product_id: pk_productID,
+    //   packaging: true,
+    //   package: tempPackageArray
+    // }
+    // console.log("payload", payload);
+    // return this._snackBar.open('Product packagings were updated successfully', '', {
+    //   horizontalPosition: 'center',
+    //   verticalPosition: 'bottom',
+    //   duration: 3500
+    // });
+  };
+
+  rowUpdate(packageObj, title, event) {
+    const { value } = title !== 'blnDecoratorPO' ? event.target : event;
+
+    if (title === 'run') {
+      packageObj.unitsPerWeight = parseInt(value);
+    } else if (title === 'setup') {
+      packageObj.weight = parseInt(value);
+    } else if (title === 'unitsPerPackage') {
+      packageObj.run = parseFloat(value);
+    } else if (title === 'blnDecoratorPO') {
+      const { blnDecoratorPO, isDecorator, ...rest } = packageObj;
+      rest.blnDecoratorPO = value === "true" ? true : false;
+      this.arrayToUpdate.push(rest);
+      return;
+    }
+
+    this.arrayToUpdate.push(packageObj);
   };
 
   getPackAndAccessories(): void {

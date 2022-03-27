@@ -379,3 +379,45 @@ export interface duplicateObj {
     product_name: string;
     duplicate_product: boolean;
 }
+
+export interface updateSize {
+    product_id: number;
+    product_size: productSizeObj[];
+    size: boolean;
+}
+
+export interface productSizeObj {
+    size_id: number;
+    run: number;
+    weight: number;
+    unit_per_weight: number;
+}
+
+export interface featureUpdateObj {
+    product_id: number;
+    update_type: string;
+    feature: updateFeaturev2Obj[];
+    features: boolean;
+}
+
+export interface updateFeaturev2Obj {
+    attribute_type_id: number;
+    attribute_text: string;
+    attribute_id: number;
+    order: number;
+}
+
+export interface updatePackageObj {
+    product_id: number;
+    package: objArr[];
+    packaging: boolean;
+}
+
+
+export interface objArr {
+    packaging_id: number;
+    setup: number;
+    run: number;
+    units_per_package: number;
+    bln_decorator: number;
+}

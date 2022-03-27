@@ -1,6 +1,7 @@
 import { SelectionModel } from '@angular/cdk/collections';
 import { Component, Input, OnInit, Output, EventEmitter, ChangeDetectorRef } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { MatSnackBar } from '@angular/material/snack-bar';
 import { InventoryService } from 'app/modules/admin/apps/ecommerce/inventory/inventory.service';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
@@ -32,12 +33,14 @@ export class SizesComponent implements OnInit {
 
   // boolean
   featureAddLoader = false;
+  sizeUpdateLoader = false;
 
 
   constructor(
     private _changeDetectorRef: ChangeDetectorRef,
     private _inventoryService: InventoryService,
-    private _formBuilder: FormBuilder
+    private _formBuilder: FormBuilder,
+    private _snackBar: MatSnackBar
   ) { }
 
   ngOnInit(): void {
@@ -95,18 +98,52 @@ export class SizesComponent implements OnInit {
   };
 
   updateSizes() {
-    // console.log("Data", data);
-    // const { selected } = this.selection;
-    // console.log("this.selection", selected)
-
+    const { pk_productID } = this.selectedProduct;
+    let tempSizeArray = [];
     for (const size of this.arrayToUpdate) {
-      const { run, weight, unitsPerWeight } = size;
-      if (!run || !weight || !unitsPerWeight) {
-        return this.showFlashMessage('missing');
+      console.log("size", size)
+      const { run, weight, unitsPerWeight, fk_sizeID, pk_sizeID } = size;
+      if (isNaN(run) || isNaN(weight) || isNaN(unitsPerWeight)) {
+        return this._snackBar.open('A value appears to be missing', '', {
+          horizontalPosition: 'center',
+          verticalPosition: 'bottom',
+          duration: 3500
+        });
       }
+      let obj = {
+        size_id: pk_sizeID || fk_sizeID,
+        run: run,
+        weight: weight,
+        unit_per_weight: unitsPerWeight
+      };
+      tempSizeArray.push(obj);
     };
-    this.showFlashMessage('success');
-    console.log("array", this.arrayToUpdate);
+
+    const payload = {
+      product_id: pk_productID,
+      product_size: tempSizeArray,
+      size: true
+    };
+
+    console.log("payload", payload);
+
+    this.sizeUpdateLoader = true;
+    this._inventoryService.updateSizes(payload)
+      .subscribe((response) => {
+        this.sizeUpdateLoader = false;
+        const message = response["success"] === true
+          ? "Product sizes were updated successfully"
+          : "Some error occured. Please try again";
+
+        this._snackBar.open(message, '', {
+          horizontalPosition: 'center',
+          verticalPosition: 'bottom',
+          duration: 3500
+        });
+
+        // Mark for check
+        this._changeDetectorRef.markForCheck();
+      });
   };
 
   rowUpdate(sizeObj, title, event) {
