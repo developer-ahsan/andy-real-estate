@@ -45,6 +45,7 @@ export class ColorComponent implements OnInit {
   arrayToUpdate = [];
   colorForm: FormGroup;
   colorValue = '#000000';
+  hexColor;
   // Boolean
   colorUpdateLoader = false;
 
@@ -188,5 +189,8 @@ export class ColorComponent implements OnInit {
         this._changeDetectorRef.markForCheck();
       });
   }
+  copyColorToHex() {
+    this.hexColor = this.colorValue
+  };
 
 }

@@ -42,7 +42,11 @@
                                 </button>
                                 <span class="ml-1">Hex</span>
                                 <mat-form-field class="w-full">
-                                    <input matInput value="{{hexColor}}" placeholder="Hex spearated by comma">
+                                    <input matInput value="{{hexColor}}" placeholder="Hex">
+                                    <mat-icon class="icon-size-5 text-secondary ml-2" style="cursor: pointer;"
+                                        (click)="copyColorToHex()" [matTooltip]="'Copy hex from color palette'"
+                                        svgIcon="mat_outline:content_copy">
+                                    </mat-icon>
                                     <mat-error>This field is required</mat-error>
                                 </mat-form-field>
                             </div>
