@@ -220,13 +220,6 @@ export interface NetCostUpdate {
     net_cost: boolean;
 }
 
-export interface updateColorObj {
-    product_id: number;
-    color_id: number[];
-    the_run: string[];
-    rgb: string[];
-}
-
 export interface videoObj {
     video: string;
     button: string;
@@ -420,4 +413,12 @@ export interface objArr {
     run: number;
     units_per_package: number;
     bln_decorator: number;
+}
+
+export interface updateColorObj {
+    product_id: number;
+    color_id: number[];
+    the_run: string[];
+    rgb: string[];
+    color: boolean;
 }
