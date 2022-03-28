@@ -216,6 +216,16 @@ export class InventoryService {
         );
     };
 
+    getProductsListing(page): Observable<ProductsList[]> {
+        return this._httpClient.get<ProductsList[]>(environment.products, {
+            params: {
+                list: true,
+                page: page,
+                size: 20
+            }
+        })
+    };
+
     getProductsByPagination(page: number): Observable<ProductsList[]> {
         return this._httpClient.get<ProductsList[]>(environment.products, {
             params: {
@@ -638,11 +648,31 @@ export class InventoryService {
         })
     };
 
+    addProductGetLicensingSubCategory(termId,) {
+        return this._httpClient.get(environment.products, {
+            params: {
+                licensing_term: true,
+                sub_category: true,
+                licensing_term_id: termId,
+                size: 100
+            }
+        })
+    };
+
     getLicensingTerms(productId): Observable<any[]> {
         return this._httpClient.get<any[]>(environment.products, {
             params: {
                 licensing_term: true,
                 product_id: productId,
+                size: 500
+            }
+        });
+    };
+
+    addProductGetLicensingTerms(): Observable<any[]> {
+        return this._httpClient.get<any[]>(environment.products, {
+            params: {
+                licensing_term: true,
                 size: 500
             }
         });
@@ -722,7 +752,7 @@ export class InventoryService {
    */
     addColors(payload: createColorObj) {
         const headers = { 'Authorization': `Bearer ${this._authService.accessToken}` };
-        return this._httpClient.put(
+        return this._httpClient.post(
             environment.products, payload, { headers });
     };
 

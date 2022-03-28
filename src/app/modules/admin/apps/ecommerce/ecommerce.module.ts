@@ -81,6 +81,7 @@ import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatButtonToggleModule } from '@angular/material/button-toggle';
 import { SizesComponent } from './inventory/navigation/sizes/sizes.component';
 import { QuillModule } from 'ngx-quill';
+import { AutocompleteLibModule } from 'angular-ng-autocomplete';
 
 @NgModule({
     declarations: [
@@ -167,7 +168,8 @@ import { QuillModule } from 'ngx-quill';
         NgxSliderModule,
         MatSnackBarModule,
         MatButtonToggleModule,
-        QuillModule.forRoot()
+        QuillModule.forRoot(),
+        AutocompleteLibModule
     ]
 })
 export class ECommerceModule {
