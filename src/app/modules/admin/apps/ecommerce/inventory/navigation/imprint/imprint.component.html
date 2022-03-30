@@ -7,16 +7,16 @@
             <mat-button-toggle value="Imprints">
                 Imprints
             </mat-button-toggle>
-            <mat-button-toggle value="Display Order">
-                Display Order
-            </mat-button-toggle>
             <mat-button-toggle value="Add Imprint">
                 Add Imprint
+            </mat-button-toggle>
+            <mat-button-toggle value="Display Order">
+                Display Order
             </mat-button-toggle>
             <mat-button-toggle value="Standard Imprints">
                 Standard Imprints
             </mat-button-toggle>
-            <mat-button-toggle value="Overlapping" [disabled]="mainButtonToggleDisable">
+            <mat-button-toggle value="Overlapping" [disabled]="mainButtonToggleDisable || dataSource.length < 2">
                 Overlapping
             </mat-button-toggle>
             <mat-button-toggle value="Price Inclusion" [disabled]="mainButtonToggleDisable">
@@ -84,8 +84,12 @@
                             </ng-container>
                         </div>
                         <button class="min-w-40" mat-flat-button [color]="'primary'" [matTooltip]="'Save Imprints'"
-                            (click)="saveStandardImprints()">
-                            <span class="ml-1 mr-1">Save Imprints</span>
+                            (click)="saveStandardImprints()" [disabled]="standardImprintAddLoader">
+                            <mat-progress-spinner *ngIf="standardImprintAddLoader" [diameter]="24"
+                                [mode]="'indeterminate'">
+                            </mat-progress-spinner>
+                            <mat-icon *ngIf="!standardImprintAddLoader" [svgIcon]="'heroicons_outline:plus'"></mat-icon>
+                            <span *ngIf="!standardImprintAddLoader" class="ml-1 mr-1">Save Imprints</span>
                         </button>
                     </div>
                 </div>
@@ -106,13 +110,15 @@
                 <div class="row">
                     <!-- Decorator -->
                     <div class="col-12">
-                        <b>Decorator</b>
+                        <b>Decorator <span *ngIf="!suppliers.length" class="text-sm text-secondary font-semibold ml-2">
+                                (Fetching Decorators...) </span> </b>
                     </div>
                     <div class="col-12">
                         <mat-form-field class="w-full" appearance="fill">
-                            <mat-select [(ngModel)]="selectedValue" name="food">
-                                <mat-option *ngFor="let food of foods" [value]="food.value">
-                                    {{food.viewValue}}
+                            <mat-select [(ngModel)]="selectedSupplier" name="supplier"
+                                [disabled]="suppliers.length ? false : true">
+                                <mat-option *ngFor="let supplier of suppliers" [value]="supplier">
+                                    <small>{{supplier.companyName}}</small>
                                 </mat-option>
                             </mat-select>
                         </mat-form-field>
@@ -125,14 +131,16 @@
                                 [matTooltip]="'To add a new method, select (NEW METHOD) in the menu and then enter the name in the box to the right'">
                                 <i class="fa fa-info-circle"></i>
                             </button>
-                            Imprint Method
+                            Imprint Method <span *ngIf="!addImprintMethods.length"
+                                class="text-sm text-secondary font-semibold ml-2"> (Fetching Methods...) </span>
                         </b>
                     </div>
                     <div class="col-lg-6 col-12">
                         <mat-form-field class="w-full" appearance="fill">
-                            <mat-select [(ngModel)]="selectedValue" name="food">
-                                <mat-option *ngFor="let food of foods" [value]="food.value">
-                                    {{food.viewValue}}
+                            <mat-select [(ngModel)]="selectedMethod" name="method"
+                                [disabled]="addImprintMethods.length ? false : true">
+                                <mat-option *ngFor="let method of addImprintMethods" [value]="method">
+                                    <small>{{method.methodName}} ({{method.pk_methodID}})</small>
                                 </mat-option>
                             </mat-select>
                         </mat-form-field>
@@ -150,14 +158,16 @@
                                 [matTooltip]="'To add a new location, select (NEW LOCATION) in the menu and then enter the name in the box to the right'">
                                 <i class="fa fa-info-circle"></i>
                             </button>
-                            Location
+                            Location <span *ngIf="!addImprintLocations.length"
+                                class="text-sm text-secondary font-semibold ml-2"> (Fetching Locations...) </span>
                         </b>
                     </div>
                     <div class="col-lg-6 col-12">
                         <mat-form-field class="w-full" appearance="fill">
-                            <mat-select [(ngModel)]="selectedValue" name="food">
-                                <mat-option *ngFor="let food of foods" [value]="food.value">
-                                    {{food.viewValue}}
+                            <mat-select [(ngModel)]="selectedLocation" name="location"
+                                [disabled]="addImprintLocations.length ? false : true">
+                                <mat-option *ngFor="let location of addImprintLocations" [value]="location">
+                                    <small>{{location.locationName}} ({{location.pk_locationID}})</small>
                                 </mat-option>
                             </mat-select>
                         </mat-form-field>
@@ -174,7 +184,7 @@
                     </div>
                     <div class="col-12">
                         <mat-form-field appearance="fill" class="w-full">
-                            <input matInput>
+                            <input matInput (input)="addArea($event.target.value)">
                         </mat-form-field>
                     </div>
 
@@ -191,34 +201,144 @@
                             </mat-radio-button>
                         </mat-radio-group>
                     </div>
-                    <div class="col-12">
+
+                    <div class="col-12 py-3">
+                        <!-- Quantity restrictions -->
+
+                        <div class="row"
+                            *ngIf="favoriteSeason === 'Per color (i.e. silk screening, pad printing, etc.)'">
+                            <div class="col-12">
+                                <button
+                                    [matTooltip]="'Set all quantities to1 if no restrictions. Use quantity=1 instead of product minimum quantity'">
+                                    <i class="fa fa-info-circle"></i>
+                                </button>
+                                <b class="pl-1">Quantity restrictions for multiple colors</b>
+                            </div>
+                        </div>
+                        <div class="row my-2"
+                            *ngIf="favoriteSeason === 'Per color (i.e. silk screening, pad printing, etc.)'">
+                            <div class="col-3">
+                                <b class="text-secondary"># of Colors</b>
+                            </div>
+                            <div class="col-2">
+                                <b class="text-secondary">Two</b>
+                            </div>
+                            <div class="col-2">
+                                <b class="text-secondary">Three</b>
+                            </div>
+                            <div class="col-2">
+                                <b class="text-secondary">Four</b>
+                            </div>
+                            <div class="col-2">
+                                <b class="text-secondary">Five</b>
+                            </div>
+
+                            <form [formGroup]="values">
+                                <div class="row">
+                                    <div class="col-3">
+                                        <p class="font-semibold" style="line-height: 3.5;">Min Product Qty</p>
+                                    </div>
+                                    <div class="col-2">
+                                        <mat-form-field appearance="fill" class="w-full">
+                                            <input matInput type="number" min="1" value="1"
+                                                [formControlName]="'twoColorQ'">
+                                        </mat-form-field>
+                                    </div>
+                                    <div class="col-2">
+                                        <mat-form-field appearance="fill" class="w-full">
+                                            <input matInput type="number" min="1" value="1"
+                                                [formControlName]="'threeColorQ'">
+                                        </mat-form-field>
+                                    </div>
+                                    <div class="col-2">
+                                        <mat-form-field appearance="fill" class="w-full">
+                                            <input matInput type="number" min="1" value="1"
+                                                [formControlName]="'fourColorQ'">
+                                        </mat-form-field>
+                                    </div>
+                                    <div class="col-2">
+                                        <mat-form-field appearance="fill" class="w-full">
+                                            <input matInput type="number" min="1" value="1"
+                                                [formControlName]="'fiveColorQ'">
+                                        </mat-form-field>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+
+                        <!-- Digitizer -->
+                        <div class="row" *ngIf="favoriteSeason === 'Per Stitch (embroidering)'">
+                            <div class="col-12">
+                                <b>Digitizer</b>
+                            </div>
+                        </div>
+                        <div class="row" *ngIf="favoriteSeason === 'Per Stitch (embroidering)'">
+                            <div class="col-12">
+                                <mat-form-field class="w-full" appearance="fill">
+                                    <mat-select [(ngModel)]="selectedDigitizer" name="food"
+                                        [disabled]="addImprintDigitizers.length ? false : true">
+                                        <mat-option *ngFor="let digitzier of addImprintDigitizers" [value]="digitzier">
+                                            {{digitzier.companyName}}
+                                        </mat-option>
+                                    </mat-select>
+                                </mat-form-field>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-12 mt-2">
                         <b>Does the user need to specify imprint colors?</b>
                     </div>
                     <div class="col-12">
-                        <mat-radio-group aria-labelledby="example-radio-group-label" class="example-radio-group">
-                            <mat-radio-button class="example-radio-button" [value]="Yes">
-                                Yes
-                            </mat-radio-button>
-                            <mat-radio-button class="example-radio-button" [value]="No">
-                                No
+                        <mat-radio-group aria-labelledby="example-radio-group-label" class="example-radio-group"
+                            [(ngModel)]="defaultImprintColorSpecification">
+                            <mat-radio-button class="example-radio-button"
+                                *ngFor="let imprintOption of specifyImrpintArray" [value]="imprintOption">
+                                {{imprintOption}}
                             </mat-radio-button>
                         </mat-radio-group>
                     </div>
-                    <div class="col-12">
-                        <b>Max Colors</b>
+                    <div class="col-12 my-2" *ngIf="defaultImprintColorSpecification === 'Yes'">
+                        <mat-form-field class="w-full">
+                            <mat-label>Max Colors</mat-label>
+                            <mat-select [(ngModel)]="maxColorSelected" name="maxColor">
+                                <mat-option *ngFor="let maxColor of maxColors" [value]="maxColor">
+                                    {{maxColor}}
+                                </mat-option>
+                            </mat-select>
+                        </mat-form-field>
                     </div>
-                    <div class="col-12">
-                        <mat-form-field class="w-full" appearance="fill">
-                            <mat-select [(ngModel)]="selectedValue" name="food">
-                                <mat-option *ngFor="let food of foods" [value]="food.value">
-                                    {{food.viewValue}}
+
+                    <div class="col-12 my-2" *ngIf="defaultImprintColorSpecification === 'Yes'">
+                        <button class="min-w-40" mat-flat-button [color]="'primary'"
+                            [matTooltip]="'Get Imprint Color Collection Ids'" (click)="generateCollectionId()"
+                            [disabled]="getImprintColorCollectionLoader">
+                            <mat-progress-spinner *ngIf="getImprintColorCollectionLoader" [diameter]="24"
+                                [mode]="'indeterminate'">
+                            </mat-progress-spinner>
+                            <span *ngIf="!getImprintColorCollectionLoader" class="ml-1 mr-1">
+                                Color Collection ID
+                            </span>
+                        </button>
+                    </div>
+                    <div class="col-12 my-2" *ngIf="defaultImprintColorSpecification === 'Yes'">
+                        <small class="font-semibold" *ngIf="!collectionIdsArray.length">
+                            * No collections avaiable. Click on the above button to generate list of collections
+                        </small>
+                        <mat-form-field class="w-full" *ngIf="collectionIdsArray.length">
+                            <mat-label>
+                                IMPRINT COLOR COLLECTIONS
+                            </mat-label>
+                            <mat-select [(ngModel)]="selectedCollectionId" name="collection">
+                                <mat-option *ngFor="let collection of collectionIdsArray" [value]="collection">
+                                    <small>{{collection.collectionName}} ({{collection.fk_collectionID}})</small>
                                 </mat-option>
                             </mat-select>
                         </mat-form-field>
                     </div>
 
                     <!-- Imprint order itself -->
-                    <div class="col-12">
+                    <div class="col-12 my-2 mt-4">
                         <b>Can this imprint be ordered by itself?</b>
                     </div>
                     <div class="col-12">
@@ -229,27 +349,25 @@
                         </small>
                     </div>
                     <div class="col-12">
-                        <mat-radio-group aria-labelledby="example-radio-group-label" class="example-radio-group">
-                            <mat-radio-button class="example-radio-button" [value]="Yes">
-                                Yes, this imprint can be ordered by itself.
-                            </mat-radio-button>
-                            <mat-radio-button class="example-radio-button" [value]="No">
-                                No, this imprint cannot be ordered by itself.
+                        <mat-radio-group aria-labelledby="example-radio-group-label" class="example-radio-group"
+                            [(ngModel)]="imprintItselfSelected">
+                            <mat-radio-button class="example-radio-button"
+                                *ngFor="let imprintItselfVal of imprintItself" [value]="imprintItselfVal">
+                                {{imprintItselfVal.imprintItselfText}}
                             </mat-radio-button>
                         </mat-radio-group>
                     </div>
 
                     <!-- Imprint order itself -->
                     <div class="col-12">
-                        <b>Price Inclusion</b>
+                        <b>Price Inclusion?</b>
                     </div>
                     <div class="col-12">
-                        <mat-radio-group aria-labelledby="example-radio-group-label" class="example-radio-group">
-                            <mat-radio-button class="example-radio-button" [value]="Yes">
-                                Yes, when it's the only imprint, the first process is included in the product price.
-                            </mat-radio-button>
-                            <mat-radio-button class="example-radio-button" [value]="No">
-                                No, all processes, including the first are extra.
+                        <mat-radio-group aria-labelledby="example-radio-group-label" class="example-radio-group"
+                            [(ngModel)]="priceInclusionSelected">
+                            <mat-radio-button class="example-radio-button"
+                                *ngFor="let priceInclusion of priceInclusionArray" [value]="priceInclusion">
+                                {{priceInclusion.priceInclusionText}}
                             </mat-radio-button>
                         </mat-radio-group>
                     </div>
@@ -266,7 +384,8 @@
                     </div>
                     <div class="col-12">
                         <mat-form-field appearance="fill" class="w-full">
-                            <input matInput value="1">
+                            <input matInput value="{{minValue}}" type="number"
+                                (input)="addMinQuantity($event.target.value)">
                         </mat-form-field>
                     </div>
 
@@ -278,7 +397,8 @@
                     </div>
                     <div class="col-12">
                         <mat-form-field appearance="fill" class="w-full">
-                            <textarea matInput rows="5"></textarea>
+                            <textarea value="{{commentText}}" maxlength="250"
+                                (input)="addImprintComments($event.target.value)" matInput rows="5"></textarea>
                         </mat-form-field>
                     </div>
 
@@ -297,10 +417,8 @@
                             an imprint location.
                         </small>
                     </div>
-                    <div class="col-12">
-                        <mat-form-field appearance="fill" class="w-full">
-                            <textarea matInput rows="5"></textarea>
-                        </mat-form-field>
+                    <div class="col-12 my-3" style="line-height: 3.5;">
+                        <input type="file" (change)="uploadFile($event)">
                     </div>
 
                     <!-- Display Order -->
@@ -309,7 +427,8 @@
                     </div>
                     <div class="col-12">
                         <mat-form-field appearance="fill" class="w-full">
-                            <input matInput value="1">
+                            <input matInput value="{{displayOrder}}" type="number" min="1"
+                                (input)="addImprintDisplayOrder($event.target.value)">
                         </mat-form-field>
                     </div>
                 </div>
@@ -320,7 +439,7 @@
                         <ng-container *ngIf="flashMessage === 'success'">
                             <mat-icon class="text-green-500" [svgIcon]="'heroicons_outline:check'">
                             </mat-icon>
-                            <span class="ml-2">Product Margins Added successfully</span>
+                            <span class="ml-2">Imprint Added successfully</span>
                         </ng-container>
                         <ng-container *ngIf="flashMessage === 'error'">
                             <mat-icon class="text-red-500" [svgIcon]="'heroicons_outline:x'"></mat-icon>
@@ -328,9 +447,11 @@
                         </ng-container>
                     </div>
                     <button class="min-w-40" mat-flat-button [color]="'primary'" [matTooltip]="'Add Imprint'"
-                        (click)="addImprint()">
-                        <mat-icon svgIcon="heroicons_outline:plus"></mat-icon>
-                        <span class="ml-1 mr-1">Add Imprint</span>
+                        (click)="addImprint()" [disabled]="addImprintLoader">
+                        <mat-progress-spinner *ngIf="addImprintLoader" [diameter]="24" [mode]="'indeterminate'">
+                        </mat-progress-spinner>
+                        <mat-icon *ngIf="!addImprintLoader" svgIcon="heroicons_outline:plus"></mat-icon>
+                        <span *ngIf="!addImprintLoader" class="ml-1 mr-1">Add Imprint</span>
                     </button>
                 </div>
             </div>
@@ -478,89 +599,55 @@
             </div>
             <!-- Features -->
             <div class="gap-y-4 mt-6" *ngIf="!priceInclusionDataLoader">
-                <form [formGroup]="priceInclusionForm">
-                    <div class="row border-b" *ngFor="let data of priceInclusionFinalArray">
-                        <div class="col-12 my-5">
-                            <mat-checkbox [formControlName]="'checkBox'">
-                                <b class="my-5 text-secondary">
-                                    {{data.imprintObj.locationName}}/{{data.imprintObj.methodName}} -
-                                    {{data.imprintObj.companyName}}
-                                </b>
-                            </mat-checkbox>
-                            <div class="row">
-                                <div class="col-lg-3 col-12">
-                                    <b class="text-center">Setup</b>
-                                    <table class="my-5">
-                                        <tr>
-                                            <td></td>
-                                            <th scope="col" class="bg-primary text-white text-center p-3">
-                                                {{data.setup[0].productQuantity}}
-                                            </th>
-                                        </tr>
-                                        <tr *ngFor="let setup of data.setup">
-                                            <th scope="row" class="bg-primary text-white text-center p-3">
-                                                {{setup.processQuantity}}</th>
-                                            <td class="p-3">{{setup.charge}}</td>
-                                        </tr>
-                                    </table>
-                                </div>
-                                <div class="col-lg-9 col-12">
-                                    <b class="text-center">Run</b>
-                                    <table class="my-5">
-                                        <tr>
-                                            <td></td>
-                                            <th scope="col">1</th>
-                                            <th scope="col">2</th>
-                                            <th scope="col">3</th>
-                                            <th scope="col">4</th>
-                                            <th scope="col">5</th>
-                                        </tr>
-                                        <tr>
-                                            <th scope="row">1</th>
-                                            <td>Closed</td>
-                                            <td>Open</td>
-                                            <td>Open</td>
-                                            <td>Closed</td>
-                                            <td>Closed</td>
-                                        </tr>
-                                        <tr>
-                                            <th scope="row">2</th>
-                                            <td>Open</td>
-                                            <td>Open</td>
-                                            <td>Closed</td>
-                                            <td>Closed</td>
-                                            <td>Closed</td>
-                                        </tr>
-                                        <tr>
-                                            <th scope="row">3</th>
-                                            <td>Open</td>
-                                            <td>Open</td>
-                                            <td>Closed</td>
-                                            <td>Closed</td>
-                                            <td>Closed</td>
-                                        </tr>
-                                        <tr>
-                                            <th scope="row">4</th>
-                                            <td>Open</td>
-                                            <td>Open</td>
-                                            <td>Closed</td>
-                                            <td>Closed</td>
-                                            <td>Closed</td>
-                                        </tr>
-                                        <tr>
-                                            <th scope="row">5</th>
-                                            <td>Open</td>
-                                            <td>Open</td>
-                                            <td>Closed</td>
-                                            <td>Closed</td>
-                                            <td>Closed</td>
-                                        </tr>
-                                    </table>
-                                </div>
+                <div class="row border-b" *ngFor="let data of priceInclusionFinalArray" style="overflow-x: auto;">
+                    <div class="col-12 my-5">
+                        <mat-checkbox [(ngModel)]="data.imprintObj.blnIncludable" (change)="selectPriceInclusion(data)">
+                            <b class="my-5 text-secondary">
+                                {{data.imprintObj.locationName}}/{{data.imprintObj.methodName}} -
+                                {{data.imprintObj.companyName}}
+                            </b>
+                        </mat-checkbox>
+                        <div class="row">
+                            <div class="col-lg-3 col-12">
+                                <b class="text-center">Setup</b>
+                                <table class="my-5">
+                                    <tr>
+                                        <td></td>
+                                        <th scope="col" class="bg-primary text-white text-center p-3">
+                                            {{data.setup[0].productQuantity}}
+                                        </th>
+                                    </tr>
+                                    <tr *ngFor="let setup of data.setup">
+                                        <th scope="row" class="bg-primary text-white text-center p-3">
+                                            {{setup.processQuantity}}</th>
+                                        <td class="p-3 bg-gray-50">{{setup.charge}}</td>
+                                    </tr>
+                                </table>
+                            </div>
+                            <div class="col-lg-9 col-12">
+                                <b class="text-center">Run</b>
+                                <table class="my-5">
+                                    <tr>
+                                        <td></td>
+                                        <th scope="col" class="bg-primary text-white text-center p-3"
+                                            *ngFor="let horizontal of data.horizontalRunHeaders">
+                                            <span class="px-2">{{horizontal}}</span>
+                                        </th>
+                                    </tr>
+                                    <tr *ngFor="let values of data.combinedRunHeaders">
+                                        <th scope="row" class="bg-primary text-white text-center p-3">
+                                            {{values.verticalColumnValue}}
+                                        </th>
+                                        <td class="text-center bg-gray-50 p-3"
+                                            *ngFor="let chargeValue of values.combinationArray">
+                                            {{chargeValue[2]}}
+                                        </td>
+                                    </tr>
+                                </table>
                             </div>
                         </div>
                     </div>
-                </form>
+                </div>
             </div>
             <div class="flex items-center justify-end w-full" *ngIf="!priceInclusionDataLoader">
                 <div class="flex items-center my-2">
@@ -576,11 +663,12 @@
                         </ng-container>
                     </div>
                     <button class="min-w-40" mat-stroked-button [matTooltip]="'Update Price Inclusion'"
-                        (click)="updatePriceInclusion()" [disabled]="priceInclusionLoader">
-                        <mat-progress-spinner *ngIf="priceInclusionLoader" [diameter]="24" [mode]="'indeterminate'">
+                        (click)="updatePriceInclusion()" [disabled]="priceInclusionUpdateLoader">
+                        <mat-progress-spinner *ngIf="priceInclusionUpdateLoader" [diameter]="24"
+                            [mode]="'indeterminate'">
                         </mat-progress-spinner>
-                        <mat-icon *ngIf="!priceInclusionLoader" [svgIcon]="'mat_outline:edit'"></mat-icon>
-                        <span *ngIf="!priceInclusionLoader" class="ml-1 mr-1">Update</span>
+                        <mat-icon *ngIf="!priceInclusionUpdateLoader" [svgIcon]="'mat_outline:edit'"></mat-icon>
+                        <span *ngIf="!priceInclusionUpdateLoader" class="ml-1 mr-1">Update</span>
                     </button>
                 </div>
             </div>
@@ -592,54 +680,47 @@
 <div *ngIf="!isLoading && showImprintScreen == 'Overlapping'">
     <fuse-card class="rounded-2xl shadow bg-card flex flex-col lg:flex-row w-full">
         <div class="p-6 sm:p-8 lg:p-10 w-full">
-            <ngx-skeleton-loader count="8" appearance="line" animation="pulse"
-                *ngIf="testPricingLoader || priceInclusionDataLoader">
-            </ngx-skeleton-loader>
-            <div class="text-2xl font-bold" *ngIf="!testPricingLoader || !priceInclusionDataLoader">
+            <div class="text-2xl font-bold">
                 Overlapping
             </div>
             <!-- Features -->
-            <div class="gap-y-4 mt-6" *ngIf="!testPricingLoader || !priceInclusionDataLoader">
-                <div class="row">
-                    <div class="col-12">
-                        <table class="my-5">
-                            <tr class="border-b">
-                                <td></td>
-                                <th scope="col" class="my-5" *ngFor="let data of testPricingDataSource">
-                                    <p class="text-sm text-secondary">{{data.locationName}}</p>
-                                </th>
-                            </tr>
-                            <tr *ngFor="let data of testPricingDataSource">
-                                <th scope="row">
-                                    <p class="text-sm text-secondary">{{data.locationName}}</p>
-                                </th>
-                                <td *ngFor="let subData of testPricingDataSource">
-                                    <mat-checkbox [checked]='data.locationName === subData.locationName'></mat-checkbox>
-                                </td>
-                            </tr>
-                        </table>
+            <div class="gap-y-4 mt-6">
+                <div class="row my-5 border-b" *ngFor="let data of testPricingDataSource">
+                    <div class="col-lg-3 col-12 my-5 px-3">
+                        {{data.locationName}}
+                    </div>
+                    <div class="col-lg-9 col-12 my-5 px-3">
+                        <mat-form-field appearance="fill" class="w-full">
+                            <mat-label>Location Names (To be overlaped) </mat-label>
+                            <mat-select multiple (selectionChange)="overlapingData(data, $event.value)">
+                                <mat-option *ngFor="let destination of testPricingDataSource"
+                                    [disabled]="data.pk_imprintID === destination.pk_imprintID" [value]="destination">
+                                    {{destination.locationName}}
+                                </mat-option>
+                            </mat-select>
+                        </mat-form-field>
                     </div>
                 </div>
             </div>
-            <div class="flex items-center justify-end w-full" *ngIf="!testPricingLoader || !priceInclusionDataLoader">
+            <div class="flex items-center justify-end w-full">
                 <div class="flex items-center my-2">
                     <div class="flex items-center mr-4" *ngIf="flashMessage">
                         <ng-container *ngIf="flashMessage === 'success'">
                             <mat-icon class="text-green-500" [svgIcon]="'heroicons_outline:check'">
                             </mat-icon>
-                            <span class="ml-2">Price Inclusion Updated successfully</span>
+                            <span class="ml-2">Imprints Overlapped successfully</span>
                         </ng-container>
                         <ng-container *ngIf="flashMessage === 'error'">
                             <mat-icon class="text-red-500" [svgIcon]="'heroicons_outline:x'"></mat-icon>
                             <span class="ml-2">An error occurred, try again!</span>
                         </ng-container>
                     </div>
-                    <button class="min-w-40" mat-stroked-button [matTooltip]="'Update Price Inclusion'"
-                        (click)="updatePriceInclusion()" [disabled]="priceInclusionLoader">
-                        <mat-progress-spinner *ngIf="priceInclusionLoader" [diameter]="24" [mode]="'indeterminate'">
+                    <button class="min-w-40" mat-stroked-button [matTooltip]="'Overlap the locations'"
+                        (click)="updateOverlapping()" [disabled]="overlappingUpdateLoader">
+                        <mat-progress-spinner *ngIf="overlappingUpdateLoader" [diameter]="24" [mode]="'indeterminate'">
                         </mat-progress-spinner>
-                        <mat-icon *ngIf="!priceInclusionLoader" [svgIcon]="'mat_outline:edit'"></mat-icon>
-                        <span *ngIf="!priceInclusionLoader" class="ml-1 mr-1">Update</span>
+                        <mat-icon *ngIf="!overlappingUpdateLoader" [svgIcon]="'mat_outline:edit'"></mat-icon>
+                        <span *ngIf="!overlappingUpdateLoader" class="ml-1 mr-1">Update</span>
                     </button>
                 </div>
             </div>
@@ -652,10 +733,24 @@
     <div class="row">
         <div class="col-12">
             <mat-card class="w-full mb-10 p-0 h-full rounded-2xl shadow">
-                <div class="text-2xl font-bold p-5">
-                    Imprint Display Order
+                <div class="row">
+                    <div class="col-lg-9 col-12">
+                        <div class="text-2xl font-bold p-5">
+                            Imprint Display Order
+                        </div>
+                    </div>
+                    <div class="col-lg-3 col-12 p-5" *ngIf="dataSource2.length">
+                        <button class="min-w-40 w-full" mat-flat-button [color]="'primary'"
+                            [matTooltip]="'Update Imprints Display Order'" (click)="updateImprintDisplay()"
+                            [disabled]="displayOrderUpdateLoader">
+                            <mat-progress-spinner *ngIf="displayOrderUpdateLoader" [diameter]="24"
+                                [mode]="'indeterminate'">
+                            </mat-progress-spinner>
+                            <mat-icon *ngIf="!displayOrderUpdateLoader" svgIcon="mat_outline:edit"></mat-icon>
+                            <span *ngIf="!displayOrderUpdateLoader" class="ml-1 mr-1">Update</span>
+                        </button>
+                    </div>
                 </div>
-
                 <div *ngIf="dataSource2.length > 0;else other_content1">
                     <table mat-table [dataSource]="dataSource2" class="w-full border-t">
 
@@ -687,20 +782,9 @@
                                 class="w-10 min-w-10 bg-gray-50 dark:bg-black dark:bg-opacity-5"> Order </th>
                             <td mat-cell *matCellDef="let element">
                                 <mat-form-field class="w-2/3 mt-2" appearance="fill">
-                                    <input matInput placeholder="Order#" (change)="onChangeEvent($event)"
-                                        value="{{element.displayOrder}}">
+                                    <input matInput type="number" placeholder="Order#"
+                                        (change)="onChangeEvent($event, element)" value="{{element.displayOrder}}">
                                 </mat-form-field>
-                            </td>
-                        </ng-container>
-
-                        <!-- Action -->
-                        <ng-container matColumnDef="action">
-                            <th mat-header-cell *matHeaderCellDef
-                                class="w-10 min-w-10 bg-gray-50 dark:bg-black dark:bg-opacity-5"> Action </th>
-                            <td mat-cell *matCellDef="let element">
-                                <button class="w-full" mat-stroked-button (click)="updateImprintDisplay(element)">
-                                    <span>Update</span>
-                                </button>
                             </td>
                         </ng-container>
 
@@ -726,10 +810,387 @@
 </div>
 <!-- Imprints List -->
 <div *ngIf="!isLoading && showImprintScreen == 'Imprints'">
-    <div class="row my-2 mx-4">
+    <fuse-card class="rounded-2xl shadow bg-card flex flex-col lg:flex-row w-full" *ngIf="isEditImprintScreen">
+        <div class="p-6 sm:p-8 lg:p-10 w-full">
+            <div class="row">
+                <div class="col-lg-10 col-12">
+                    <div class="text-2xl font-bold">
+                        Edit Imprint
+                    </div>
+                </div>
+                <div class="col-lg-2 col-12">
+                    <div class="text-2xl font-bold text-secondary">
+                        #{{editImprintObj.pk_imprintID}}
+                    </div>
+                </div>
+            </div>
+            <div class="row my-2 justify-end">
+                <div class="col-3">
+                    <button class="min-w-40 w-full" mat-flat-button [color]="'primary'"
+                        [matTooltip]="'Back to imprints list'" (click)="showImprintList()">
+                        <span>Back to Imprints</span>
+                    </button>
+                </div>
+            </div>
+            <!-- Features -->
+            <div class="gap-y-4 mt-6">
+                <div class="row">
+                    <!-- Decorator -->
+                    <div class="col-12">
+                        <b>Decorator <span *ngIf="!suppliers.length" class="text-sm text-secondary font-semibold ml-2">
+                                (Fetching Decorators...) </span> </b>
+                    </div>
+                    <div class="col-12">
+                        <mat-form-field class="w-full" appearance="fill">
+                            <mat-select [(ngModel)]="selectedSupplier" name="supplier"
+                                [disabled]="suppliers.length ? false : true">
+                                <mat-option *ngFor="let supplier of suppliers" [value]="supplier">
+                                    <small>{{supplier.companyName}}</small>
+                                </mat-option>
+                            </mat-select>
+                        </mat-form-field>
+                    </div>
+
+                    <!-- Imprint Method -->
+                    <div class="col-12">
+                        <b>
+                            <button
+                                [matTooltip]="'To add a new method, select (NEW METHOD) in the menu and then enter the name in the box to the right'">
+                                <i class="fa fa-info-circle"></i>
+                            </button>
+                            Imprint Method <span *ngIf="!addImprintMethods.length"
+                                class="text-sm text-secondary font-semibold ml-2"> (Fetching Methods...) </span>
+                        </b>
+                    </div>
+                    <div class="col-lg-6 col-12">
+                        <mat-form-field class="w-full" appearance="fill">
+                            <mat-select [(ngModel)]="selectedMethod" name="method"
+                                [disabled]="addImprintMethods.length ? false : true">
+                                <mat-option *ngFor="let method of addImprintMethods" [value]="method">
+                                    <small>{{method.methodName}} ({{method.pk_methodID}})</small>
+                                </mat-option>
+                            </mat-select>
+                        </mat-form-field>
+                    </div>
+                    <div class="col-lg-6 col-12">
+                        <mat-form-field appearance="fill" class="w-full">
+                            <input matInput placeholder="New Method Name">
+                        </mat-form-field>
+                    </div>
+
+                    <!-- Location -->
+                    <div class="col-12">
+                        <b>
+                            <button
+                                [matTooltip]="'To add a new location, select (NEW LOCATION) in the menu and then enter the name in the box to the right'">
+                                <i class="fa fa-info-circle"></i>
+                            </button>
+                            Location <span *ngIf="!addImprintLocations.length"
+                                class="text-sm text-secondary font-semibold ml-2"> (Fetching Locations...) </span>
+                        </b>
+                    </div>
+                    <div class="col-lg-6 col-12">
+                        <mat-form-field class="w-full" appearance="fill">
+                            <mat-select [(ngModel)]="selectedLocation" name="location"
+                                [disabled]="addImprintLocations.length ? false : true">
+                                <mat-option *ngFor="let location of addImprintLocations" [value]="location">
+                                    <small>{{location.locationName}} ({{location.pk_locationID}})</small>
+                                </mat-option>
+                            </mat-select>
+                        </mat-form-field>
+                    </div>
+                    <div class="col-lg-6 col-12">
+                        <mat-form-field appearance="fill" class="w-full">
+                            <input matInput placeholder="New Location Name">
+                        </mat-form-field>
+                    </div>
+
+                    <!-- Imprint Area -->
+                    <div class="col-12">
+                        <b>Imprint Area (max)</b>
+                    </div>
+                    <div class="col-12">
+                        <mat-form-field appearance="fill" class="w-full">
+                            <input matInput (input)="addArea($event.target.value)">
+                        </mat-form-field>
+                    </div>
+
+                    <!-- Details -->
+                    <div class="col-12">
+                        <b>How are the charges applied?</b>
+                    </div>
+                    <div class="col-12">
+                        <mat-radio-group aria-labelledby="example-radio-group-label" class="example-radio-group"
+                            [(ngModel)]="favoriteSeason">
+                            <mat-radio-button class="example-radio-button" *ngFor="let season of seasons"
+                                [value]="season">
+                                {{season}}
+                            </mat-radio-button>
+                        </mat-radio-group>
+                    </div>
+
+                    <div class="col-12 py-3">
+                        <!-- Quantity restrictions -->
+
+                        <div class="row"
+                            *ngIf="favoriteSeason === 'Per color (i.e. silk screening, pad printing, etc.)'">
+                            <div class="col-12">
+                                <button
+                                    [matTooltip]="'Set all quantities to1 if no restrictions. Use quantity=1 instead of product minimum quantity'">
+                                    <i class="fa fa-info-circle"></i>
+                                </button>
+                                <b class="pl-1">Quantity restrictions for multiple colors</b>
+                            </div>
+                        </div>
+                        <div class="row my-2"
+                            *ngIf="favoriteSeason === 'Per color (i.e. silk screening, pad printing, etc.)'">
+                            <div class="col-3">
+                                <b class="text-secondary"># of Colors</b>
+                            </div>
+                            <div class="col-2">
+                                <b class="text-secondary">Two</b>
+                            </div>
+                            <div class="col-2">
+                                <b class="text-secondary">Three</b>
+                            </div>
+                            <div class="col-2">
+                                <b class="text-secondary">Four</b>
+                            </div>
+                            <div class="col-2">
+                                <b class="text-secondary">Five</b>
+                            </div>
+
+                            <form [formGroup]="values">
+                                <div class="row">
+                                    <div class="col-3">
+                                        <p class="font-semibold" style="line-height: 3.5;">Min Product Qty</p>
+                                    </div>
+                                    <div class="col-2">
+                                        <mat-form-field appearance="fill" class="w-full">
+                                            <input matInput type="number" min="1" value="1"
+                                                [formControlName]="'twoColorQ'">
+                                        </mat-form-field>
+                                    </div>
+                                    <div class="col-2">
+                                        <mat-form-field appearance="fill" class="w-full">
+                                            <input matInput type="number" min="1" value="1"
+                                                [formControlName]="'threeColorQ'">
+                                        </mat-form-field>
+                                    </div>
+                                    <div class="col-2">
+                                        <mat-form-field appearance="fill" class="w-full">
+                                            <input matInput type="number" min="1" value="1"
+                                                [formControlName]="'fourColorQ'">
+                                        </mat-form-field>
+                                    </div>
+                                    <div class="col-2">
+                                        <mat-form-field appearance="fill" class="w-full">
+                                            <input matInput type="number" min="1" value="1"
+                                                [formControlName]="'fiveColorQ'">
+                                        </mat-form-field>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+
+                        <!-- Digitizer -->
+                        <div class="row" *ngIf="favoriteSeason === 'Per Stitch (embroidering)'">
+                            <div class="col-12">
+                                <b>Digitizer</b>
+                            </div>
+                        </div>
+                        <div class="row" *ngIf="favoriteSeason === 'Per Stitch (embroidering)'">
+                            <div class="col-12">
+                                <mat-form-field class="w-full" appearance="fill">
+                                    <mat-select [(ngModel)]="selectedDigitizer" name="food"
+                                        [disabled]="addImprintDigitizers.length ? false : true">
+                                        <mat-option *ngFor="let digitzier of addImprintDigitizers" [value]="digitzier">
+                                            {{digitzier.companyName}}
+                                        </mat-option>
+                                    </mat-select>
+                                </mat-form-field>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-12 mt-2">
+                        <b>Does the user need to specify imprint colors?</b>
+                    </div>
+                    <div class="col-12">
+                        <mat-radio-group aria-labelledby="example-radio-group-label" class="example-radio-group"
+                            [(ngModel)]="defaultImprintColorSpecification">
+                            <mat-radio-button class="example-radio-button"
+                                *ngFor="let imprintOption of specifyImrpintArray" [value]="imprintOption">
+                                {{imprintOption}}
+                            </mat-radio-button>
+                        </mat-radio-group>
+                    </div>
+                    <div class="col-12 my-2" *ngIf="defaultImprintColorSpecification === 'Yes'">
+                        <mat-form-field class="w-full">
+                            <mat-label>Max Colors</mat-label>
+                            <mat-select [(ngModel)]="maxColorSelected" name="maxColor">
+                                <mat-option *ngFor="let maxColor of maxColors" [value]="maxColor">
+                                    {{maxColor}}
+                                </mat-option>
+                            </mat-select>
+                        </mat-form-field>
+                    </div>
+
+                    <div class="col-12 my-2" *ngIf="defaultImprintColorSpecification === 'Yes'">
+                        <button class="min-w-40" mat-flat-button [color]="'primary'"
+                            [matTooltip]="'Get Imprint Color Collection Ids'" (click)="generateCollectionId()"
+                            [disabled]="getImprintColorCollectionLoader">
+                            <mat-progress-spinner *ngIf="getImprintColorCollectionLoader" [diameter]="24"
+                                [mode]="'indeterminate'">
+                            </mat-progress-spinner>
+                            <span *ngIf="!getImprintColorCollectionLoader" class="ml-1 mr-1">
+                                Color Collection ID
+                            </span>
+                        </button>
+                    </div>
+                    <div class="col-12 my-2" *ngIf="defaultImprintColorSpecification === 'Yes'">
+                        <small class="font-semibold" *ngIf="!collectionIdsArray.length">
+                            * No collections avaiable. Click on the above button to generate list of collections
+                        </small>
+                        <mat-form-field class="w-full" *ngIf="collectionIdsArray.length">
+                            <mat-label>
+                                IMPRINT COLOR COLLECTIONS
+                            </mat-label>
+                            <mat-select [(ngModel)]="selectedCollectionId" name="collection">
+                                <mat-option *ngFor="let collection of collectionIdsArray" [value]="collection">
+                                    <small>{{collection.collectionName}} ({{collection.fk_collectionID}})</small>
+                                </mat-option>
+                            </mat-select>
+                        </mat-form-field>
+                    </div>
+
+                    <!-- Imprint order itself -->
+                    <div class="col-12 my-2 mt-4">
+                        <b>Can this imprint be ordered by itself?</b>
+                    </div>
+                    <div class="col-12">
+                        <small class="leading-relaxed text-secondary font-semibold">
+                            *This option determines whether this imprint can be ordered by itself. For example, if the
+                            location of this imprint is "second side," this implies that there must be a first side, and
+                            so it cannot be ordered by itself.
+                        </small>
+                    </div>
+                    <div class="col-12">
+                        <mat-radio-group aria-labelledby="example-radio-group-label" class="example-radio-group"
+                            [(ngModel)]="imprintItselfSelected">
+                            <mat-radio-button class="example-radio-button"
+                                *ngFor="let imprintItselfVal of imprintItself" [value]="imprintItselfVal">
+                                {{imprintItselfVal.imprintItselfText}}
+                            </mat-radio-button>
+                        </mat-radio-group>
+                    </div>
+
+                    <!-- Imprint order itself -->
+                    <div class="col-12">
+                        <b>Price Inclusion?</b>
+                    </div>
+                    <div class="col-12">
+                        <mat-radio-group aria-labelledby="example-radio-group-label" class="example-radio-group"
+                            [(ngModel)]="priceInclusionSelected">
+                            <mat-radio-button class="example-radio-button"
+                                *ngFor="let priceInclusion of priceInclusionArray" [value]="priceInclusion">
+                                {{priceInclusion.priceInclusionText}}
+                            </mat-radio-button>
+                        </mat-radio-group>
+                    </div>
+
+                    <!-- Minimum Product Quantity -->
+                    <div class="col-12">
+                        <b>
+                            <button
+                                [matTooltip]="'Other than one (1) only if this imprint requires a product qty more than the min'">
+                                <i class="fa fa-info-circle"></i>
+                            </button>
+                            Minimum Product Quantity
+                        </b>
+                    </div>
+                    <div class="col-12">
+                        <mat-form-field appearance="fill" class="w-full">
+                            <input matInput value="{{minValue}}" type="number"
+                                (input)="addMinQuantity($event.target.value)">
+                        </mat-form-field>
+                    </div>
+
+                    <!-- Live Imprint Comments -->
+                    <div class="col-12">
+                        <b>
+                            Live Imprint Comments - 250 charecters max
+                        </b>
+                    </div>
+                    <div class="col-12">
+                        <mat-form-field appearance="fill" class="w-full">
+                            <textarea value="{{commentText}}" maxlength="250"
+                                (input)="addImprintComments($event.target.value)" matInput rows="5"></textarea>
+                        </mat-form-field>
+                    </div>
+
+                    <!-- Image -->
+                    <div class="col-12">
+                        <b>
+                            <button [matTooltip]="'JPG, GIF, and PNG file types only!'">
+                                <i class="fa fa-info-circle"></i>
+                            </button>
+                            Image (optional)
+                        </b>
+                    </div>
+                    <div class="col-12">
+                        <small class="leading-relaxed text-secondary font-semibold">
+                            Add an image that will accompany the imprint for the user to use as reference when choosing
+                            an imprint location.
+                        </small>
+                    </div>
+                    <div class="col-12 my-3" style="line-height: 3.5;">
+                        <input type="file" (change)="uploadFile($event)">
+                    </div>
+
+                    <!-- Display Order -->
+                    <div class="col-12">
+                        <b>Display Order</b>
+                    </div>
+                    <div class="col-12">
+                        <mat-form-field appearance="fill" class="w-full">
+                            <input matInput value="{{displayOrder}}" type="number" min="1"
+                                (input)="addImprintDisplayOrder($event.target.value)">
+                        </mat-form-field>
+                    </div>
+                </div>
+            </div>
+            <div class="flex items-center justify-end w-full">
+                <div class="flex items-center my-2">
+                    <div class="flex items-center mr-4" *ngIf="flashMessage">
+                        <ng-container *ngIf="flashMessage === 'success'">
+                            <mat-icon class="text-green-500" [svgIcon]="'heroicons_outline:check'">
+                            </mat-icon>
+                            <span class="ml-2">Imprint Updated successfully</span>
+                        </ng-container>
+                        <ng-container *ngIf="flashMessage === 'error'">
+                            <mat-icon class="text-red-500" [svgIcon]="'heroicons_outline:x'"></mat-icon>
+                            <span class="ml-2">An error occurred, try again!</span>
+                        </ng-container>
+                    </div>
+                    <button class="min-w-40" mat-flat-button [color]="'primary'" [matTooltip]="'Update Imprint'"
+                        (click)="updateImprint()" [disabled]="updateImprintLoader">
+                        <mat-progress-spinner *ngIf="updateImprintLoader" [diameter]="24" [mode]="'indeterminate'">
+                        </mat-progress-spinner>
+                        <mat-icon *ngIf="!updateImprintLoader" svgIcon="heroicons_outline:plus"></mat-icon>
+                        <span *ngIf="!updateImprintLoader" class="ml-1 mr-1">Update Imprint</span>
+                    </button>
+                </div>
+            </div>
+
+        </div>
+    </fuse-card>
+
+
+    <div class="row my-2 mx-4" *ngIf="!isEditImprintScreen">
         <div class="col-lg-9 col-12"></div>
         <div class="col-lg-3 col-6">
-            <button class="min-w-40 w-full" mat-stroked-button [matTooltip]="'Remove All Imprints'"
+            <button class="min-w-40 w-full" mat-flat-button color="'primary'" [matTooltip]="'Remove All Imprints'"
                 (click)="deletAllImprints()" [disabled]="deleteLoader || !dataSource.length">
                 <mat-progress-spinner *ngIf="deleteLoader" [diameter]="24" [mode]="'indeterminate'">
                 </mat-progress-spinner>
@@ -738,7 +1199,7 @@
             </button>
         </div>
     </div>
-    <div class="row">
+    <div class="row" *ngIf="!isEditImprintScreen">
         <div class="col-12">
             <mat-card class="w-full mb-10 p-0 h-full rounded-2xl shadow">
                 <div class="row">
@@ -781,6 +1242,18 @@
                                     [svgIcon]="'heroicons_solid:check'"></mat-icon>
                                 <mat-icon class="text-red-400 icon-size-5" *ngIf="!element.blnActive"
                                     [svgIcon]="'heroicons_solid:x'"></mat-icon>
+                            </td>
+                        </ng-container>
+
+                        <!-- Action -->
+                        <ng-container matColumnDef="action">
+                            <th mat-header-cell *matHeaderCellDef
+                                class="w-10 min-w-10 bg-gray-50 dark:bg-black dark:bg-opacity-5"> Action </th>
+                            <td mat-cell *matCellDef="let element">
+                                <button class="px-3 mr-1" mat-button (click)="editImprint(element)">
+                                    <mat-icon class="icon-size-2 text-gray-500" svgIcon="mat_outline:edit">
+                                    </mat-icon>
+                                </button>
                             </td>
                         </ng-container>
 

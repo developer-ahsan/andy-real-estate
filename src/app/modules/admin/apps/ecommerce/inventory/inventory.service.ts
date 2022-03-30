@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { BehaviorSubject, Observable, of, throwError } from 'rxjs';
 import { filter, map, switchMap, take, tap } from 'rxjs/operators';
-import { AddCore, AddFeature, AddPackage, CaseDimensionObj, CaseQuantityObj, Comment, createColorObj, CreateProduct, DeleteComment, duplicateObj, featureUpdateObj, FlatRateShippingObj, InventoryBrand, InventoryCategory, InventoryPagination, InventoryTag, InventoryVendor, Licensing, NetCostUpdate, PhysicsObj, physicsUpdateObject, ProductsList, updateColorObj, UpdateMargin, updateSize, videoObj, Warehouse } from 'app/modules/admin/apps/ecommerce/inventory/inventory.types';
+import { AddCore, AddFeature, AddPackage, CaseDimensionObj, CaseQuantityObj, Comment, createColorObj, CreateProduct, DeleteComment, displayOrderObj, duplicateObj, featureUpdateObj, FlatRateShippingObj, InventoryBrand, InventoryCategory, InventoryPagination, InventoryTag, InventoryVendor, Licensing, NetCostUpdate, overlapUpdateObj, PhysicsObj, physicsUpdateObject, priceInclusionObj, ProductsList, updateColorObj, updateImprintObj, UpdateMargin, updateSize, videoObj, Warehouse } from 'app/modules/admin/apps/ecommerce/inventory/inventory.types';
 import { environment } from 'environments/environment';
 import { productDescription } from 'app/modules/admin/apps/ecommerce/inventory/inventory.types';
 import { AuthService } from 'app/core/auth/auth.service';
@@ -331,11 +331,11 @@ export class InventoryService {
         });
     };
 
-    getAllPackages(pageNo?: number): Observable<any[]> {
+    getAllPackages(productId): Observable<any[]> {
         return this._httpClient.get<any[]>(environment.products, {
             params: {
                 packaging: true,
-                page: pageNo,
+                product_id: productId,
                 size: 20
             }
         });
@@ -547,7 +547,57 @@ export class InventoryService {
             params: {
                 imprint: true,
                 product_id: productId,
-                size: 500
+                size: 200
+            }
+        });
+    };
+
+    getAllImprintLocations(): Observable<any[]> {
+        return this._httpClient.get<any[]>(environment.products, {
+            params: {
+                imprint: true,
+                location: true
+            }
+        });
+    };
+
+    getAllImprintMethods(): Observable<any[]> {
+        return this._httpClient.get<any[]>(environment.products, {
+            params: {
+                imprint: true,
+                method: true
+            }
+        });
+    };
+
+    getAllDigitizers(): Observable<any[]> {
+        return this._httpClient.get<any[]>(environment.products, {
+            params: {
+                imprint: true,
+                digitizer: true
+            }
+        });
+    };
+
+    getMultiColorValue(two, three, four, five): Observable<any[]> {
+        return this._httpClient.get<any[]>(environment.products, {
+            params: {
+                multi_color: true,
+                two_color_q: two,
+                three_color_q: three,
+                four_color_q: four,
+                five_color_q: five
+            }
+        });
+    };
+
+    getCollectionIds(companyId): Observable<any[]> {
+        return this._httpClient.get<any[]>(environment.products, {
+            params: {
+                imprint: true,
+                decoration: true,
+                collection: true,
+                decorator_id: companyId
             }
         });
     };
@@ -696,6 +746,13 @@ export class InventoryService {
 
     // POST CALLS
 
+    // ADD Imprint
+    addImprintObj(payload: updateImprintObj) {
+        const headers = { 'Authorization': `Bearer ${this._authService.accessToken}` };
+        return this._httpClient.post(
+            environment.products, payload, { headers });
+    };
+
     // ADD CORE
     addCore(payload: AddCore) {
         const headers = { 'Authorization': `Bearer ${this._authService.accessToken}` };
@@ -756,6 +813,14 @@ export class InventoryService {
             environment.products, payload, { headers });
     };
 
+    // Add imprints standard
+    addStandardImprints(payload) {
+        const headers = { 'Authorization': `Bearer ${this._authService.accessToken}` };
+        return this._httpClient.post(
+            environment.products, payload, { headers });
+    };
+
+
     /**
      * post comment
     **/
@@ -775,13 +840,38 @@ export class InventoryService {
         };
         const headers = { 'Authorization': `Bearer ${this._authService.accessToken}` };
         return this._httpClient.put(
-            "https://consolidus-staging.azurewebsites.net/api/products", payload, { headers });
+            environment.products, payload, { headers });
     }
 
     /**
      * update wareHouse
     **/
     updateWarehouse(payload: Warehouse) {
+        const headers = { 'Authorization': `Bearer ${this._authService.accessToken}` };
+        return this._httpClient.put(
+            environment.products, payload, { headers });
+    }
+
+    // Update Imprint
+    updateImprintObj(payload: updateImprintObj) {
+        const headers = { 'Authorization': `Bearer ${this._authService.accessToken}` };
+        return this._httpClient.post(
+            environment.products, payload, { headers });
+    };
+
+    /**
+   * UPDATE price inclusion
+   */
+    updatePriceInclusion(payload: priceInclusionObj) {
+        const headers = { 'Authorization': `Bearer ${this._authService.accessToken}` };
+        return this._httpClient.put(
+            environment.products, payload, { headers });
+    }
+
+    /**
+   * UPDATE overlaping
+   */
+    updateImprintOverlapping(payload: overlapUpdateObj) {
         const headers = { 'Authorization': `Bearer ${this._authService.accessToken}` };
         return this._httpClient.put(
             environment.products, payload, { headers });
@@ -881,6 +971,15 @@ export class InventoryService {
    * UPDATE Colors
    */
     updateColors(payload: updateColorObj) {
+        const headers = { 'Authorization': `Bearer ${this._authService.accessToken}` };
+        return this._httpClient.put(
+            environment.products, payload, { headers });
+    };
+
+    /**
+   * UPDATE Colors
+   */
+    updateDisplayOrder(payload: displayOrderObj) {
         const headers = { 'Authorization': `Bearer ${this._authService.accessToken}` };
         return this._httpClient.put(
             environment.products, payload, { headers });

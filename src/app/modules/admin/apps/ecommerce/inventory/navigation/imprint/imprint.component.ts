@@ -3,7 +3,7 @@ import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { InventoryService } from 'app/modules/admin/apps/ecommerce/inventory/inventory.service';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { FormBuilder, FormGroup } from '@angular/forms';
+import { FormBuilder, FormControl, FormGroup } from '@angular/forms';
 
 @Component({
   selector: 'app-imprint',
@@ -15,17 +15,30 @@ export class ImprintComponent implements OnInit {
   @Output() isLoadingChange = new EventEmitter<boolean>();
   private _unsubscribeAll: Subject<any> = new Subject<any>();
 
-  displayedColumns: string[] = ['location', 'method', 'decorator', 'active'];
-  imprintDisplayedColumns: string[] = ['id', 'name', 'decorator', 'order', 'action'];
+  displayedColumns: string[] = ['location', 'method', 'decorator', 'active', 'action'];
+  imprintDisplayedColumns: string[] = ['id', 'name', 'decorator', 'order'];
   dataSource = [];
   dataSource2 = [];
-  selectedValue: string;
+  overlappingPayloadArray = [];
+  overlappingUpdateLoader = false;
+
+  toppings = new FormControl();
+
+  toppingList: string[] = ['Extra cheese', 'Mushroom', 'Onion', 'Pepperoni', 'Sausage', 'Tomato'];
+
   foods = [
     { value: 'steak-0', viewValue: 'Steak' },
     { value: 'pizza-1', viewValue: 'Pizza' },
     { value: 'tacos-2', viewValue: 'Tacos' },
   ];
+  values: FormGroup;
 
+  selectedSupplier;
+  selectedMethod;
+  selectedLocation;
+  selectedDigitizer;
+
+  files;
   imprints = [];
   dataSourceLength: number = 0;
   dataSource2Length: number = 0;
@@ -35,12 +48,60 @@ export class ImprintComponent implements OnInit {
   priceInclusionForm: FormGroup;
   testPricingForm: FormGroup;
 
-  favoriteSeason: string;
+  standardImprintAddLoader = false;
+
+  suppliers = [];
+  addImprintLocations = [];
+  addImprintMethods = [];
+  addImprintDigitizers = [];
+
+  favoriteSeason: string = "Per color (i.e. silk screening, pad printing, etc.)";
+  defaultImprintColorSpecification = "Yes";
+
   seasons: string[] = [
     'Per color (i.e. silk screening, pad printing, etc.)',
     'Per Stitch (embroidering)',
     'Simple Process (i.e. laser engraving, full color, etc.)'
   ];
+
+  specifyImrpintArray: string[] = [
+    'Yes',
+    'No'
+  ];
+
+  priceInclusionArray = [
+    {
+      priceInclusionText: "Yes, when it's the only imprint, the first process is included in the product price.",
+      value: "Yes"
+    },
+    {
+      priceInclusionText: "No, all processes, including the first are extra.",
+      value: "No"
+    }
+  ]
+
+  priceInclusionSelected = this.priceInclusionArray[0];
+  minValue: number = 1;
+  displayOrder: number = 1;
+  commentText = "";
+
+  imprintItself = [
+    {
+      imprintItselfText: "Yes, this imprint can be ordered by itself.",
+      value: "Yes"
+    },
+    {
+      imprintItselfText: "No, this imprint cannot be ordered by itself.",
+      value: "No"
+    }
+  ];
+  areaValue;
+  minQuantity: number;
+  addImprintComment;
+  addImprintDisplayOrderValue;
+
+  imprintItselfSelected = this.imprintItself[0];
+
   standardImprints = [];
   testPricingDataSource = [];
   testPricingDataSourceLength: number;
@@ -52,17 +113,30 @@ export class ImprintComponent implements OnInit {
 
   priceInclusionFinalArray = [];
 
+  priceInclusionIdsArraytoUpdate = [];
+
+  collectionIdsArray = [];
+  selectedCollectionId;
+
+  maxColors = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12];
+  maxColorSelected = 1;
+
   testPricingNumbers = [
     1, 2, 3, 4, 5, 6, 7, 8, 1000, 2000, 3000, 4000, 5000, 6000, 7000, 8000, 9000, 10000,
     11000, 12000, 13000, 14000, 15000, 16000, 17000, 18000, 19000, 20000,
     21000, 22000, 23000, 24000, 25000, 26000, 27000, 28000, 29000, 30000
   ];
   isCountZero = false;
+  editImprintObj;
+
+  imprintDisplayOrderArray = [];
 
   isSelectAll = false;
   isSubValuesSelectAll = false;
 
   // boolean
+  displayOrderUpdateLoader = false;
+  updateImprintLoader = false;
   imprintList = true;
   displayList = true;
   priceInclusionLoader = false;
@@ -72,8 +146,13 @@ export class ImprintComponent implements OnInit {
   testPricingLoader = false;
   mainButtonToggleDisable = false;
   standardImprintLoader = false;
+  addImprintLoader = false;
+  getImprintColorCollectionLoader = false;
 
   isPriceInclusionToggleButtonDisable = true;
+  priceInclusionUpdateLoader = false;
+
+  isEditImprintScreen = false;
 
   showImprintScreen = "";
 
@@ -89,10 +168,18 @@ export class ImprintComponent implements OnInit {
     // Defalut selected button toggle
     this.showImprintScreen = 'Imprints';
     this.getImprints(this.page);
+    this.getSuppliers();
     this.getAllImprints();
 
     this.priceInclusionForm = this._formBuilder.group({
       checkBox: ['']
+    })
+
+    this.values = this._formBuilder.group({
+      twoColorQ: [1],
+      threeColorQ: [1],
+      fourColorQ: [1],
+      fiveColorQ: [1]
     })
 
     this.testPricingForm = this._formBuilder.group({
@@ -105,10 +192,6 @@ export class ImprintComponent implements OnInit {
       optionFourFirst: [''],
       optionFourSecond: ['']
     });
-  };
-
-  updateImprintDisplay(data): void {
-    console.log("imprint order", data);
   };
 
   getStandardImprints(): void {
@@ -143,7 +226,6 @@ export class ImprintComponent implements OnInit {
                 sub_standard["isChecked"] = false;
               };
             };
-            console.log("this.standardImprints", this.standardImprints)
             this.standardImprintLoader = false;
 
             // Mark for Check
@@ -151,6 +233,58 @@ export class ImprintComponent implements OnInit {
           });
       });
   };
+
+  overlapingData(source, destination) {
+    const { pk_locationID } = source;
+    const overlapObj = {
+      source: source,
+      destination: destination
+    };
+
+    const objFound = this.overlappingPayloadArray.find(x => x.source.pk_locationID === pk_locationID);
+    if (objFound) {
+      objFound.destination = destination;
+    } else {
+      this.overlappingPayloadArray.push(overlapObj);
+    };
+  };
+
+  updateOverlapping() {
+    const { pk_productID } = this.selectedProduct;
+    let tempArray: any = [];
+    for (const overlapObj of this.overlappingPayloadArray) {
+      const { source, destination } = overlapObj;
+      const { pk_locationID } = source;
+      for (const des of destination) {
+        const obj = {
+          loc_1: pk_locationID,
+          loc_2: des.pk_locationID
+        }
+        tempArray.push(obj);
+      }
+    }
+
+    const payload = {
+      product_id: pk_productID,
+      pairs: tempArray,
+      imprint_overlap: true
+    };
+
+    console.log("payload", payload)
+    this.overlappingUpdateLoader = true;
+    this._inventoryService.updateImprintOverlapping(payload)
+      .subscribe((response) => {
+        this.overlappingUpdateLoader = false;
+        this.showFlashMessage(
+          response["success"] === true ?
+            'success' :
+            'error'
+        );
+
+        // Mark for check
+        this._changeDetectorRef.markForCheck();
+      });
+  }
 
   clearAllStandardImprintOptions(): void {
     this.isSelectAll = !this.isSelectAll;
@@ -173,17 +307,90 @@ export class ImprintComponent implements OnInit {
 
   saveStandardImprints(): void {
     let count = 0;
+    let imprintsToUpdate = [];
     for (const standardImprint of this.standardImprints) {
       const { sub_standard_imprints } = standardImprint;
+      for (const sub_standard_imprint of sub_standard_imprints) {
+        if (sub_standard_imprint.isChecked) {
+          imprintsToUpdate.push(sub_standard_imprint);
+        }
+      }
       count = count + sub_standard_imprints.filter(function (s) { return s.isChecked }).length;
     };
-    console.log("count", count)
+
     if (!count) {
       this.showFlashMessage('countError');
       return;
     }
 
-    console.log("this.standardImprints saveStandardImprints", this.standardImprints);
+    const { pk_productID } = this.selectedProduct;
+    const finalImprintPaylaod = [];
+    for (const imprint of imprintsToUpdate) {
+      const {
+        fk_decoratorID,
+        fk_methodID,
+        fk_locationID,
+        fk_setupChargeID,
+        fk_runChargeID,
+        blnIncludable,
+        area,
+        blnUserColorSelection,
+        maxColors,
+        fk_multiColorMinQID,
+        fk_collectionID,
+        blnSingleProcess,
+        minProductQty,
+        imprintComments,
+        fk_digitizerID,
+        blnActive,
+        blnSingleton,
+        pk_standardImprintID,
+        displayOrder
+      } = imprint;
+      const imprintObj = {
+        product_id: pk_productID,
+        decorator_id: fk_decoratorID,
+        method_id: fk_methodID,
+        location_id: fk_locationID,
+        setup_charge_id: fk_setupChargeID,
+        run_charge_id: fk_runChargeID,
+        bln_includable: blnIncludable,
+        area: area,
+        bln_user_color_selection: blnUserColorSelection,
+        max_colors: maxColors,
+        multi_color_min_id: fk_multiColorMinQID,
+        collection_id: fk_collectionID,
+        bln_process_mode: blnSingleProcess,
+        min_product_qty: minProductQty,
+        imprint_comments: imprintComments,
+        digitizer_id: fk_digitizerID,
+        bln_active: blnActive,
+        bln_singleton: blnSingleton,
+        bln_color_selection: blnUserColorSelection,
+        imprint_id: pk_standardImprintID,
+        store_product_id_list: [],
+        display_order: displayOrder
+      };
+      finalImprintPaylaod.push(imprintObj);
+    }
+
+    const payload = {
+      standard_imprint: true,
+      imprint_obj: finalImprintPaylaod
+    };
+
+    this.standardImprintAddLoader = true;
+    this._inventoryService.addStandardImprints(payload)
+      .subscribe((response) => {
+        this.standardImprintAddLoader = false;
+        this.showFlashMessage(
+          response["success"] === true ?
+            'success' :
+            'error'
+        );
+        // Mark for check
+        this._changeDetectorRef.markForCheck();
+      })
   }
 
   getImprints(page?: number) {
@@ -210,6 +417,10 @@ export class ImprintComponent implements OnInit {
           this.dataSource2 = imprint["data"];
           this.dataSource2Length = imprint["totalRecords"];
         };
+
+        this.isLoadingChange.emit(false);
+
+        // Mark for check
         this._changeDetectorRef.markForCheck();
       });
   }
@@ -222,7 +433,6 @@ export class ImprintComponent implements OnInit {
         this.testPricingDataSource = imprint["data"];
         this.testPricingLoader = false;
         this.testPricingDataSourceLength = imprint["totalRecords"];
-        this.isLoadingChange.emit(false);
 
         // Mark for check
         this._changeDetectorRef.markForCheck();
@@ -265,12 +475,34 @@ export class ImprintComponent implements OnInit {
             run: runDataFiltering[`${imprintId}`],
             setup: setupDataFiltering[`${imprintId}`]
           };
+          obj["horizontalRunHeaders"] = obj.run.map(a => a.productQuantity);
+          obj["verticalRunHeaders"] = obj.run.map(a => a.processQuantity);
+          obj["horizontalRunHeaders"] = obj["horizontalRunHeaders"].filter(function (item, pos) {
+            return obj["horizontalRunHeaders"].indexOf(item) == pos;
+          })
+          obj["verticalRunHeaders"] = obj["verticalRunHeaders"].filter(function (item, pos) {
+            return obj["verticalRunHeaders"].indexOf(item) == pos;
+          });
+
+          let temp = [];
+          for (let i = 0; i < obj["verticalRunHeaders"].length; i++) {
+            let combinedChunkArray = [];
+            for (let j = 0; j < obj["horizontalRunHeaders"].length; j++) {
+              const data = this.returnChargeValueForRunTable(obj["verticalRunHeaders"][i], obj["horizontalRunHeaders"][j], obj.run);
+              combinedChunkArray.push([obj["verticalRunHeaders"][i], obj["horizontalRunHeaders"][j], data[0].charge])
+            }
+            let object = {
+              verticalColumnValue: obj["verticalRunHeaders"][i],
+              combinationArray: combinedChunkArray
+            }
+            temp.push(object)
+          };
+
+          obj["combinedRunHeaders"] = temp;
           tempArray.push(obj);
         };
 
         this.priceInclusionFinalArray = tempArray;
-
-        console.log("this.priceInclusionFinalArray", this.priceInclusionFinalArray);
         this.priceInclusionDataLoader = false;
 
         // Mark for check
@@ -278,18 +510,117 @@ export class ImprintComponent implements OnInit {
       });
   }
 
-  onChangeEvent(event: any) {
+  onChangeEvent(event, data) {
+    const { pk_imprintID } = data;
+    const { value } = event.target;
+    const intOrderValue = parseInt(value);
+    const displayObj = {
+      display_order: intOrderValue,
+      imprint_id: pk_imprintID
+    };
 
-    console.log(event.target.value);
+    let obj = this.imprintDisplayOrderArray.find(o => o.imprint_id === pk_imprintID);
+    if (!obj) {
+      this.imprintDisplayOrderArray.push(displayObj);
+    } else {
+      let objIndex = this.imprintDisplayOrderArray.findIndex((obj => obj.imprint_id == pk_imprintID));
+      this.imprintDisplayOrderArray[objIndex].display_order = intOrderValue;
+    }
+  };
 
+  findIndex(data, keyfield, value) {
+    return data.indexOf(data.find(function (el, index) {
+      return el[keyfield] === value;
+    }));
+  }
+
+  updateImprintDisplay(): void {
+    const payload = {
+      display_order: this.imprintDisplayOrderArray,
+      imprint_display_order: true
+    };
+
+    this.displayOrderUpdateLoader = true;
+    this._inventoryService.updateDisplayOrder(payload)
+      .subscribe((response) => {
+        this.displayOrderUpdateLoader = false;
+        const message = response["success"] === true
+          ? "Imprint display order updated successfully."
+          : "Some error occured. Please try again";
+
+        this._snackBar.open(message, '', {
+          horizontalPosition: 'center',
+          verticalPosition: 'bottom',
+          duration: 3500
+        });
+
+        // Mark for check
+        this._changeDetectorRef.markForCheck();
+      });
   };
 
   updatePriceInclusion(): void {
-    console.log("updatePriceInclusion");
+    const { pk_productID } = this.selectedProduct;
+    let idsAlreadySelected = [];
+    for (const data of this.dataSource) {
+      const { pk_imprintID, blnIncludable } = data;
+      if (blnIncludable) {
+        idsAlreadySelected.push(pk_imprintID)
+      }
+    };
+
+    let tempArray = [];
+    for (const imprint_id of this.priceInclusionIdsArraytoUpdate) {
+      let obj = {
+        imprint_id: imprint_id
+      };
+      obj["bln_include"] = idsAlreadySelected.includes(imprint_id) ? 0 : 1;
+      tempArray.push(obj)
+    }
+
+    const payload = {
+      product_id: pk_productID,
+      imprint_list: tempArray,
+      imprint_price_inclusion: true
+    }
+
+    this.priceInclusionUpdateLoader = true;
+    this._inventoryService.updatePriceInclusion(payload)
+      .subscribe((response) => {
+        this.priceInclusionUpdateLoader = false;
+        this.showFlashMessage(
+          response["success"] === true ?
+            'success' :
+            'error'
+        );
+
+        // Mark for check
+        this._changeDetectorRef.markForCheck();
+      });
+  };
+
+  selectPriceInclusion(data) {
+    const { imprintObj } = data;
+    const { pk_imprintID } = imprintObj;
+
+    if (!this.priceInclusionIdsArraytoUpdate.includes(pk_imprintID)) {
+      this.priceInclusionIdsArraytoUpdate.push(pk_imprintID)
+    } else {
+      var index = this.priceInclusionIdsArraytoUpdate.indexOf(pk_imprintID);
+      if (index !== -1) {
+        this.priceInclusionIdsArraytoUpdate.splice(index, 1);
+      }
+    }
   };
 
   updateData(): void {
     console.log("update data");
+  }
+
+  returnChargeValueForRunTable(processQuantity, productQuantity, run) {
+    return run.filter(function (currentElement) {
+      return currentElement.processQuantity === processQuantity && currentElement.productQuantity === productQuantity;
+    });
   }
 
   deletAllImprints(): void {
@@ -340,6 +671,7 @@ export class ImprintComponent implements OnInit {
 
   calledScreen(screenName): void {
     if (screenName === "Display Order" || screenName === "Imprints") {
+      this.isEditImprintScreen = false;
       this.page = 1;
       this.getImprints(this.page);
     }
@@ -358,6 +690,17 @@ export class ImprintComponent implements OnInit {
       }
     }
 
+    if (screenName === "Add Imprint") {
+      this.selectedDigitizer = [];
+      this.selectedMethod = [];
+      this.selectedLocation = [];
+      this.selectedSupplier = [];
+      this.getSuppliers();
+      this.getAddImprintLocations();
+      this.getAddImprintMethods();
+      this.getAddImprintDigitizers();
+    }
+
     if (screenName === "Standard Imprints") {
       if (!this.standardImprints.length) {
         this.standardImprintLoader = true;
@@ -365,7 +708,348 @@ export class ImprintComponent implements OnInit {
       }
     }
     this.showImprintScreen = screenName;
+  };
+
+  addArea(value: string): void {
+    this.areaValue = value;
   }
+
+  addMinQuantity(value: number): void {
+    this.minQuantity = value;
+  }
+
+  addImprintComments(value: string): void {
+    this.addImprintComment = value;
+  }
+
+  addImprintDisplayOrder(value: number): void {
+    this.addImprintDisplayOrderValue = value;
+  }
+
+  generateCollectionId() {
+    this.getImprintColorCollectionLoader = true;
+    const { pk_companyID } = this.selectedSupplier;
+    this._inventoryService.getCollectionIds(pk_companyID)
+      .pipe(takeUntil(this._unsubscribeAll))
+      .subscribe((collection_ids) => {
+        this.collectionIdsArray = collection_ids["data"];
+        if (this.collectionIdsArray.length) {
+          this.selectedCollectionId = this.collectionIdsArray[0]
+        }
+        this.getImprintColorCollectionLoader = false;
+
+        // Mark for check
+        this._changeDetectorRef.markForCheck();
+      });
+  };
+
+  uploadFile(event) {
+    this.files = event.target.files;
+  };
+
+  addImprint() {
+    const { pk_productID } = this.selectedProduct;
+    this.addImprintLoader = true;
+    let processMode;
+    if (this.favoriteSeason === 'Per color (i.e. silk screening, pad printing, etc.)') {
+      processMode = 0;
+    } else if (this.favoriteSeason === 'Per Stitch (embroidering)') {
+      processMode = 1;
+    } else if (this.favoriteSeason === 'Simple Process (i.e. laser engraving, full color, etc.)') {
+      processMode = 2;
+    };
+
+    let second, third, fourth, fifth;
+    let multiValue;
+    if (processMode === 0) {
+      const {
+        twoColorQ,
+        threeColorQ,
+        fourColorQ,
+        fiveColorQ
+      } = this.values.getRawValue();
+      second = twoColorQ;
+      third = threeColorQ;
+      fourth = fourColorQ;
+      fifth = fiveColorQ;
+    };
+
+    const payload = {
+      product_id: pk_productID,
+      decorator_id: this.selectedSupplier.pk_companyID || null,
+      method_id: this.selectedMethod.pk_methodID || null,
+      location_id: this.selectedLocation.pk_locationID || null,
+      digitizer_id: this.selectedDigitizer.pfk_digitizerID || null,
+      setup_charge_id: 1,  //
+      run_charge_id: 1,   //
+      bln_includable: this.priceInclusionSelected.value === 'Yes' ? 1 : 0,
+      area: this.areaValue || "",
+      multi_color_min_id: 1,
+      bln_user_color_selection: this.defaultImprintColorSpecification === 'Yes' ? 1 : 0,
+      max_colors: this.defaultImprintColorSpecification === 'Yes' ? this.maxColorSelected : null,
+      collection_id: this.collectionIdsArray.length ? this.selectedCollectionId.fk_collectionID : null,
+      bln_process_mode: processMode,
+      min_product_qty: this.minQuantity || 1,
+      imprint_comments: this.addImprintComment || "",
+      bln_active: 1,
+      bln_singleton: this.imprintItselfSelected.value === 'Yes' ? true : false,
+      bln_color_selection: this.defaultImprintColorSpecification === 'Yes' ? true : false,
+      imprint_id: null,
+      store_product_id_list: [],
+      imprint_image: this.files || null,
+      display_order: this.addImprintDisplayOrderValue || 1,
+      imprint: true
+    };
+
+    if (payload.bln_process_mode === 0) {
+      this._inventoryService.getMultiColorValue(second, third, fourth, fifth)
+        .pipe(takeUntil(this._unsubscribeAll))
+        .subscribe((multi_color) => {
+          multiValue = multi_color["data"];
+          payload.multi_color_min_id = multiValue?.length ? multiValue[0].pk_multiColorMinQID : 1;
+
+          this._inventoryService.addImprintObj(payload)
+            .subscribe((response) => {
+              this.showFlashMessage(
+                response["success"] === true ?
+                  'success' :
+                  'error'
+              );
+              this.addImprintLoader = false;
+
+              // Mark for check
+              this._changeDetectorRef.markForCheck();
+            });
+        });
+      return;
+    };
+
+    this._inventoryService.addImprintObj(payload)
+      .subscribe((response) => {
+        this.showFlashMessage(
+          response["success"] === true ?
+            'success' :
+            'error'
+        );
+        this.addImprintLoader = false;
+
+        // Mark for check
+        this._changeDetectorRef.markForCheck();
+      });
+
+  };
+
+  showImprintList() {
+    this.isEditImprintScreen = false;
+  };
+
+  updateImprint() {
+    const { pk_productID } = this.selectedProduct;
+    const { pk_imprintID } = this.editImprintObj;
+
+    this.updateImprintLoader = true;
+    let processMode;
+    if (this.favoriteSeason === 'Per color (i.e. silk screening, pad printing, etc.)') {
+      processMode = 0;
+    } else if (this.favoriteSeason === 'Per Stitch (embroidering)') {
+      processMode = 1;
+    } else if (this.favoriteSeason === 'Simple Process (i.e. laser engraving, full color, etc.)') {
+      processMode = 2;
+    };
+
+    let second, third, fourth, fifth;
+    let multiValue;
+    if (processMode === 0) {
+      const {
+        twoColorQ,
+        threeColorQ,
+        fourColorQ,
+        fiveColorQ
+      } = this.values.getRawValue();
+      second = twoColorQ;
+      third = threeColorQ;
+      fourth = fourColorQ;
+      fifth = fiveColorQ;
+    };
+
+    const payload = {
+      product_id: pk_productID,
+      decorator_id: this.selectedSupplier.pk_companyID || null,
+      method_id: this.selectedMethod.pk_methodID || null,
+      location_id: this.selectedLocation.pk_locationID || null,
+      digitizer_id: this.selectedDigitizer.pfk_digitizerID || null,
+      setup_charge_id: 1,  //
+      run_charge_id: 1,   //
+      bln_includable: this.priceInclusionSelected.value === 'Yes' ? 1 : 0,
+      area: this.areaValue || "",
+      multi_color_min_id: 1,
+      bln_user_color_selection: this.defaultImprintColorSpecification === 'Yes' ? 1 : 0,
+      max_colors: this.defaultImprintColorSpecification === 'Yes' ? this.maxColorSelected : null,
+      collection_id: this.collectionIdsArray.length ? this.selectedCollectionId.fk_collectionID : null,
+      bln_process_mode: processMode,
+      min_product_qty: this.minQuantity || 1,
+      imprint_comments: this.addImprintComment || "",
+      bln_active: 1,
+      bln_singleton: this.imprintItselfSelected.value === 'Yes' ? true : false,
+      bln_color_selection: this.defaultImprintColorSpecification === 'Yes' ? true : false,
+      imprint_id: pk_imprintID,
+      store_product_id_list: [],
+      imprint_image: this.files || null,
+      display_order: this.addImprintDisplayOrderValue || 1,
+      imprint: true
+    };
+
+    if (payload.bln_process_mode === 0) {
+      this._inventoryService.getMultiColorValue(second, third, fourth, fifth)
+        .pipe(takeUntil(this._unsubscribeAll))
+        .subscribe((multi_color) => {
+          multiValue = multi_color["data"];
+          payload.multi_color_min_id = multiValue?.length ? multiValue[0].pk_multiColorMinQID : 1;
+
+          this._inventoryService.updateImprintObj(payload)
+            .subscribe((response) => {
+              this.showFlashMessage(
+                response["success"] === true ?
+                  'success' :
+                  'error'
+              );
+              this.updateImprintLoader = false;
+
+              // Mark for check
+              this._changeDetectorRef.markForCheck();
+            });
+        });
+      return;
+    };
+
+    this._inventoryService.updateImprintObj(payload)
+      .subscribe((response) => {
+        this.showFlashMessage(
+          response["success"] === true ?
+            'success' :
+            'error'
+        );
+        this.updateImprintLoader = false;
+
+        // Mark for check
+        this._changeDetectorRef.markForCheck();
+      });
+  }
+
+  editImprint(imprint) {
+    this.editImprintObj = imprint;
+    this.isEditImprintScreen = true;
+
+    this.selectedDigitizer = [];
+    this.selectedMethod = [];
+    this.selectedLocation = [];
+    this.selectedSupplier = [];
+
+    this.getSuppliers(imprint);
+    this.getAddImprintMethods(imprint);
+    this.getAddImprintLocations(imprint);
+    this.getAddImprintDigitizers(imprint);
+
+    const {
+      area,
+      blnUserColorSelection,
+      maxColors,
+      blnSingleton,
+      blnIncludable,
+      minProductQty,
+      displayOrder,
+      imprintComments,
+      blnColorProcess,
+      blnStitchProcess,
+      blnSingleProcess
+    } = imprint;
+
+    if (blnColorProcess) {
+      this.favoriteSeason = this.seasons[0];
+    } else if (blnStitchProcess) {
+      this.favoriteSeason = this.seasons[1];
+    } else if (blnSingleProcess) {
+      this.favoriteSeason = this.seasons[2];
+    }
+
+    this.areaValue = area;
+    this.defaultImprintColorSpecification = blnUserColorSelection ? 'Yes' : 'No';
+    this.maxColorSelected = maxColors;
+    this.imprintItselfSelected = blnSingleton ? this.imprintItself[0] : this.imprintItself[1];
+    this.priceInclusionSelected = blnIncludable ? this.priceInclusionArray[0] : this.priceInclusionArray[1];
+    this.minValue = minProductQty || 1;
+    this.displayOrder = displayOrder || 1;
+    this.commentText = imprintComments
+  };
+
+  getSuppliers(data?: any) {
+    this._inventoryService.getAllSuppliers()
+      .pipe(takeUntil(this._unsubscribeAll))
+      .subscribe((suppliers) => {
+        this.suppliers = suppliers["data"];
+        this.selectedSupplier = this.suppliers[2];
+        if (data) {
+          const { pk_companyID } = data
+          this.selectedSupplier = this.suppliers.find(x => x.pk_companyID === pk_companyID) || this.suppliers[2]
+        }
+
+        // Mark for check
+        this._changeDetectorRef.markForCheck();
+      });
+  }
+
+  getAddImprintLocations(data?: any) {
+    this._inventoryService.getAllImprintLocations()
+      .pipe(takeUntil(this._unsubscribeAll))
+      .subscribe((location) => {
+        this.addImprintLocations = location["data"];
+        this.selectedLocation = this.addImprintLocations.find(x => x.pk_locationID === 419) || this.addImprintLocations[0];
+        if (data) {
+          const { pk_locationID } = data
+          this.selectedLocation = this.addImprintLocations.find(x => x.pk_locationID === pk_locationID) || this.addImprintLocations[0];
+        }
+
+        // Mark for check
+        this._changeDetectorRef.markForCheck();
+      });
+  }
+
+  getAddImprintMethods(data?: any) {
+    setTimeout(() => {
+      this._inventoryService.getAllImprintMethods()
+        .pipe(takeUntil(this._unsubscribeAll))
+        .subscribe((methods) => {
+          this.addImprintMethods = methods["data"];
+          this.selectedMethod = this.addImprintMethods.find(x => x.pk_methodID === 254) || this.addImprintMethods[0];
+          if (data) {
+            const { pk_methodID } = data
+            this.selectedMethod = this.addImprintMethods.find(x => x.pk_methodID === pk_methodID) || this.addImprintMethods[0];
+          }
+
+          // Mark for check
+          this._changeDetectorRef.markForCheck();
+        });
+    }, 2000)
+  };
+
+  getAddImprintDigitizers(data?: any) {
+    setTimeout(() => {
+      this._inventoryService.getAllDigitizers()
+        .pipe(takeUntil(this._unsubscribeAll))
+        .subscribe((digitizers) => {
+          this.addImprintDigitizers = digitizers["data"];
+          this.selectedDigitizer = this.addImprintDigitizers[0];
+
+          if (data) {
+            const { fk_digitizerID } = data
+            this.selectedDigitizer = this.addImprintDigitizers.find(x => x.pfk_digitizerID === fk_digitizerID) || this.addImprintDigitizers[0];
+          }
+
+          // Mark for check
+          this._changeDetectorRef.markForCheck();
+        });
+    }, 4000)
+  };
 
   getNextData(event) {
     const { previousPageIndex, pageIndex } = event;

@@ -432,3 +432,58 @@ export interface createColorObj {
     the_run: string[];
     rgb: string[];
 }
+
+export interface priceInclusionObj {
+    product_id: number;
+    imprint_list: imprintInclusionObj[];
+    imprint_price_inclusion: boolean;
+}
+
+export interface imprintInclusionObj {
+    imprint_id: number;
+    bln_include: number;
+}
+
+export interface displayOrderObj {
+    display_order: displayOrderUpdate[];
+    imprint_display_order: boolean;
+}
+
+export interface displayOrderUpdate {
+    display_order: number;
+    imprint_id: number;
+}
+
+
+export interface updateImprintObj {
+    product_id: number;
+    decorator_id: number;
+    method_id: number;
+    location_id: number;
+    digitizer_id: number;
+    setup_charge_id: number;
+    run_charge_id: number;
+    bln_includable: number;
+    area: string;
+    bln_user_color_selection: number;
+    max_colors: number;
+    multi_color_min_id: number;
+    collection_id: number;
+    bln_process_mode: number;
+    min_product_qty: number;
+    imprint_comments: string;
+    bln_active: number;
+    bln_singleton: boolean;
+    bln_color_selection: boolean;
+    imprint_id: number;
+    store_product_id_list: number[];
+    imprint_image: File;
+    display_order: number;
+    imprint: boolean;
+}
+
+export interface overlapUpdateObj {
+    product_id: number;
+    pairs: [];
+    imprint_overlap: boolean;
+}

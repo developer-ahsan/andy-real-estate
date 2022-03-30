@@ -132,23 +132,25 @@ export class PackageComponent implements OnInit {
   };
 
   getPackAndAccessories(): void {
-    this._inventoryService.getAllPackages(this.pageNo)
+    const { pk_productID } = this.selectedProduct;
+    this._inventoryService.getAllPackages(pk_productID)
       .pipe(takeUntil(this._unsubscribeAll))
       .subscribe((packages) => {
-        let tempArray = [];
-        this.dataSource = packages["data"];
-        for (const packages of this.dataSource) {
-          tempArray.push(packages)
-          const { blnDecoratorPO } = packages;
-          if (blnDecoratorPO) {
-            this.domain = "true"
-          } else {
-            this.domain = "false"
-          }
-          packages["isDecorator"] = this.domain;
-          tempArray.push(packages);
-        };
-        this.dataSourceLength = packages["totalRecords"];
+        console.log("packages", packages["data"])
+        // let tempArray = [];
+        // this.dataSource = packages["data"];
+        // for (const packages of this.dataSource) {
+        //   tempArray.push(packages)
+        //   const { blnDecoratorPO } = packages;
+        //   if (blnDecoratorPO) {
+        //     this.domain = "true"
+        //   } else {
+        //     this.domain = "false"
+        //   }
+        //   packages["isDecorator"] = this.domain;
+        //   tempArray.push(packages);
+        // };
+        // this.dataSourceLength = packages["totalRecords"];
         this.isLoadingChange.emit(false);
 
         // Mark for check
