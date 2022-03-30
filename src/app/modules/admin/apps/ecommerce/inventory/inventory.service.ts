@@ -855,7 +855,7 @@ export class InventoryService {
     // Update Imprint
     updateImprintObj(payload: updateImprintObj) {
         const headers = { 'Authorization': `Bearer ${this._authService.accessToken}` };
-        return this._httpClient.post(
+        return this._httpClient.put(
             environment.products, payload, { headers });
     };
 
