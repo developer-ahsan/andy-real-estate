@@ -38,6 +38,11 @@ export class ImprintComponent implements OnInit {
   selectedLocation;
   selectedDigitizer;
 
+  runSetupLoaderFetching = false;
+  getChargesLoader = false;
+  runSetupDistributorCodes = [];
+  selectedDiscountCode;
+
   files;
   imprints = [];
   dataSourceLength: number = 0;
@@ -280,6 +285,32 @@ export class ImprintComponent implements OnInit {
             'success' :
             'error'
         );
+
+        // Mark for check
+        this._changeDetectorRef.markForCheck();
+      });
+  }
+
+  getRunSetup() {
+    this.runSetupLoaderFetching = true;
+    this._inventoryService.getSystemDistributorCodes()
+      .subscribe((response) => {
+        this.runSetupLoaderFetching = false;
+        this.runSetupDistributorCodes = response["data"];
+        console.log(response)
+
+        // Mark for check
+        this._changeDetectorRef.markForCheck();
+      });
+  };
+
+  getCharges() {
+    this.getChargesLoader = true;
+    this._inventoryService.getSystemDistributorCodes()
+      .subscribe((response) => {
+        this.getChargesLoader = false;
+        this.runSetupDistributorCodes = response["data"];
+        console.log(response)
 
         // Mark for check
         this._changeDetectorRef.markForCheck();

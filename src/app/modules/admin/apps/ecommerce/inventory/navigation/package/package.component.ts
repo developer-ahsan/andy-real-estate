@@ -19,6 +19,7 @@ export class PackageComponent implements OnInit {
 
   displayedColumns: string[] = ['select', 'packaging', 'run', 'setup', 'packagingUnit', 'po'];
   dataSource: Package[] = [];
+  dataSource1: Package[] = [];
   dataSourceLength: number = 0;
   pageSize: number = 10;
   pageNo: number = 1;
@@ -26,10 +27,15 @@ export class PackageComponent implements OnInit {
   flashMessage: 'success' | 'error' | null = null;
   packageAddLoader = false;
 
+  packageUpdateLoader = false;
+  packagePostLoader = false;
+  deleteLoader = false;
+
   selection = new SelectionModel<any>(true, []);
   selectedRowsLength: number;
 
   arrayToUpdate = [];
+  arrayToPost = [];
 
   dataLoader = false;
   domain = "true";
@@ -69,66 +75,187 @@ export class PackageComponent implements OnInit {
   ) { }
 
   ngOnInit(): void {
-    const { pk_productID } = this.selectedProduct;
-
     this.getPackAndAccessories();
-
-    // this._inventoryService.getPackageByProductId(pk_productID)
-    //   .pipe(takeUntil(this._unsubscribeAll))
-    //   .subscribe((pack) => {
-
-    //     console.log("pack ", pack)
-    //     this._changeDetectorRef.markForCheck();
-    //   });
   };
 
   updatePackage() {
     console.log("this.arrayToUpdate", this.arrayToUpdate)
-    // const { pk_productID } = this.selectedProduct;
+    const { pk_productID } = this.selectedProduct;
 
-    // let tempPackageArray = [];
-    // for (const packages of this.arrayToUpdate) {
-    //   const { fk_packagingID, setup, run, unitsPerPackage, blnDecoratorPO } = packages;
-    //   let obj = {
-    //     packaging_id: fk_packagingID,
-    //     setup: setup,
-    //     run: run,
-    //     units_per_package: unitsPerPackage,
-    //     bln_decorator: blnDecoratorPO ? 1 : 0
-    //   };
-    //   tempPackageArray.push(obj);
-    // };
+    let tempPackageArray = [];
+    for (const packages of this.arrayToUpdate) {
+      const { fk_packagingID, setup, run, unitsPerPackage, blnDecoratorPO, isDecorator } = packages;
+      let obj = {
+        packaging_id: fk_packagingID,
+        setup: setup,
+        run: run,
+        units_per_package: unitsPerPackage,
+        bln_decorator: isDecorator === "true" ? 1 : 0
+      };
+      tempPackageArray.push(obj);
+    };
 
-    // const payload = {
-    //   product_id: pk_productID,
-    //   packaging: true,
-    //   package: tempPackageArray
-    // }
-    // console.log("payload", payload);
-    // return this._snackBar.open('Product packagings were updated successfully', '', {
-    //   horizontalPosition: 'center',
-    //   verticalPosition: 'bottom',
-    //   duration: 3500
-    // });
+    const payload = {
+      product_id: pk_productID,
+      packaging: true,
+      package: tempPackageArray,
+      call_type: "put"
+    }
+    console.log("payload", payload);
+
+    this.packageUpdateLoader = true;
+    this._inventoryService.updatePackage(payload)
+      .subscribe((response) => {
+        this.packageUpdateLoader = false;
+        const message = response["success"] === true
+          ? "Product packagings were updated successfully"
+          : "Some error occured. Please try again";
+
+        this._snackBar.open(message, '', {
+          horizontalPosition: 'center',
+          verticalPosition: 'bottom',
+          duration: 3500
+        });
+
+        // Mark for check
+        this._changeDetectorRef.markForCheck();
+      });
   };
 
   rowUpdate(packageObj, title, event) {
     const { value } = title !== 'blnDecoratorPO' ? event.target : event;
 
     if (title === 'run') {
-      packageObj.unitsPerWeight = parseInt(value);
+      packageObj.run = parseInt(value);
     } else if (title === 'setup') {
-      packageObj.weight = parseInt(value);
+      packageObj.setup = parseInt(value);
     } else if (title === 'unitsPerPackage') {
-      packageObj.run = parseFloat(value);
-    } else if (title === 'blnDecoratorPO') {
-      const { blnDecoratorPO, isDecorator, ...rest } = packageObj;
-      rest.blnDecoratorPO = value === "true" ? true : false;
-      this.arrayToUpdate.push(rest);
-      return;
+      packageObj.unitsPerPackage = parseFloat(value);
     }
 
-    this.arrayToUpdate.push(packageObj);
+    if (!this.arrayToUpdate?.length) {
+      this.arrayToUpdate.push(packageObj);
+    } else {
+      let obj = this.arrayToUpdate.find(o => o.fk_packagingID === packageObj.fk_packagingID);
+      if (!obj) {
+        this.arrayToUpdate.push(packageObj);
+      }
+    };
+  };
+
+  rowAddPackage(packageObj, title, event) {
+    const { value } = title !== 'blnDecoratorPO' ? event.target : event;
+    console.log("packageObj", packageObj)
+
+    if (title === 'run') {
+      packageObj.run = parseInt(value);
+    } else if (title === 'setup') {
+      packageObj.setup = parseInt(value);
+    } else if (title === 'unitsPerPackage') {
+      packageObj.unitsPerPackage = parseFloat(value);
+    }
+
+    if (!this.arrayToPost?.length) {
+      this.arrayToPost.push(packageObj);
+    } else {
+      let obj = this.arrayToPost.find(o => o.pk_packagingID === packageObj.pk_packagingID);
+      if (!obj) {
+        this.arrayToPost.push(packageObj);
+      }
+    };
+  };
+
+  deletePackages() {
+    const arrayTodelete = this.selection.selected;
+    if (!arrayTodelete.length) {
+      return this._snackBar.open("Please select rows to delete", '', {
+        horizontalPosition: 'center',
+        verticalPosition: 'bottom',
+        duration: 3500
+      });
+    };
+    const { pk_productID } = this.selectedProduct;
+
+    let tempPackageArray = [];
+    for (const packages of this.arrayToPost) {
+      const { pk_packagingID, setup, run, unitsPerPackage, blnDecoratorPO, isDecorator } = packages;
+      let obj = {
+        packaging_id: pk_packagingID,
+        setup: setup,
+        run: run,
+        units_per_package: unitsPerPackage,
+        bln_decorator: isDecorator === "true" ? 1 : 0
+      };
+      tempPackageArray.push(obj);
+    };
+
+    const payload = {
+      product_id: pk_productID,
+      packaging: true,
+      package: tempPackageArray,
+      call_type: "delete"
+    }
+    console.log("payload", payload);
+    this.deleteLoader = true;
+    this._inventoryService.updatePackage(payload)
+      .subscribe((response) => {
+        this.deleteLoader = false;
+        const message = response["success"] === true
+          ? "Product packagings were updated successfully"
+          : "Some error occured. Please try again";
+        this.getPackAndAccessories()
+        this._snackBar.open(message, '', {
+          horizontalPosition: 'center',
+          verticalPosition: 'bottom',
+          duration: 3500
+        });
+
+        // Mark for check
+        this._changeDetectorRef.markForCheck();
+      });
+  }
+  addListPackage() {
+    console.log("this.arrayToPost", this.arrayToPost)
+    const { pk_productID } = this.selectedProduct;
+
+    let tempPackageArray = [];
+    for (const packages of this.arrayToPost) {
+      const { pk_packagingID, setup, run, unitsPerPackage, blnDecoratorPO, isDecorator } = packages;
+      let obj = {
+        packaging_id: pk_packagingID,
+        setup: setup,
+        run: run,
+        units_per_package: unitsPerPackage,
+        bln_decorator: isDecorator === "true" ? 1 : 0
+      };
+      tempPackageArray.push(obj);
+    };
+
+    const payload = {
+      product_id: pk_productID,
+      packaging: true,
+      package: tempPackageArray,
+      call_type: "post"
+    }
+    console.log("payload", payload);
+
+    this.packagePostLoader = true;
+    this._inventoryService.updatePackage(payload)
+      .subscribe((response) => {
+        this.packagePostLoader = false;
+        const message = response["success"] === true
+          ? "Product packagings were added successfully"
+          : "Some error occured. Please try again";
+        this.getPackAndAccessories()
+        this._snackBar.open(message, '', {
+          horizontalPosition: 'center',
+          verticalPosition: 'bottom',
+          duration: 3500
+        });
+
+        // Mark for check
+        this._changeDetectorRef.markForCheck();
+      });
   };
 
   getPackAndAccessories(): void {
@@ -136,21 +263,36 @@ export class PackageComponent implements OnInit {
     this._inventoryService.getAllPackages(pk_productID)
       .pipe(takeUntil(this._unsubscribeAll))
       .subscribe((packages) => {
-        console.log("packages", packages["data"])
-        // let tempArray = [];
-        // this.dataSource = packages["data"];
-        // for (const packages of this.dataSource) {
-        //   tempArray.push(packages)
-        //   const { blnDecoratorPO } = packages;
-        //   if (blnDecoratorPO) {
-        //     this.domain = "true"
-        //   } else {
-        //     this.domain = "false"
-        //   }
-        //   packages["isDecorator"] = this.domain;
-        //   tempArray.push(packages);
-        // };
-        // this.dataSourceLength = packages["totalRecords"];
+        const { list, selected } = packages["data"];
+        let tempArray = [];
+        let tempArray2 = [];
+        this.dataSource = list;
+        this.dataSource1 = selected;
+        for (const packages of this.dataSource) {
+          tempArray.push(packages)
+          const { blnDecoratorPO } = packages;
+          if (blnDecoratorPO) {
+            this.domain = "true"
+          } else {
+            this.domain = "false"
+          }
+          packages["isDecorator"] = this.domain;
+          tempArray.push(packages);
+        };
+
+        for (const packages of this.dataSource1) {
+          tempArray2.push(packages)
+          const { blnDecoratorPO } = packages;
+          if (blnDecoratorPO) {
+            this.domain = "true"
+          } else {
+            this.domain = "false"
+          }
+          packages["isDecorator"] = this.domain;
+          tempArray2.push(packages);
+        };
+
+        this.dataSourceLength = packages["totalRecords"];
         this.isLoadingChange.emit(false);
 
         // Mark for check
@@ -181,8 +323,9 @@ export class PackageComponent implements OnInit {
     this._inventoryService.getPackageByKeyword(value)
       .pipe(takeUntil(this._unsubscribeAll))
       .subscribe((packages) => {
+        const { list } = packages["data"];
         let tempArray = [];
-        this.dataSource = packages["data"];
+        this.dataSource = list;
         for (const packages of this.dataSource) {
           tempArray.push(packages)
           const { blnDecoratorPO } = packages;

@@ -12,6 +12,7 @@ export const environment = {
     orders: "https://consolidus-staging.azurewebsites.net/api/orders",
     stores: "https://consolidus-staging.azurewebsites.net/api/stores",
     products: "https://consolidus-staging.azurewebsites.net/api/products",
+    system: "https://consolidus-staging.azurewebsites.net/api/system"
 };
 
 /*

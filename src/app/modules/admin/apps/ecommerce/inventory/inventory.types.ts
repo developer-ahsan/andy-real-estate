@@ -404,6 +404,7 @@ export interface updatePackageObj {
     product_id: number;
     package: objArr[];
     packaging: boolean;
+    call_type: string;
 }
 
 

@@ -75,8 +75,6 @@ export class FeatureComponent implements OnInit {
     const { value } = event.target;
     const { fk_attributeID } = featureObj;
 
-    console.log("featureObj", featureObj)
-
     if (title === 'listOrder') {
       featureObj.listOrder = parseInt(value);
     } else if (title === 'attributeText') {
@@ -177,9 +175,7 @@ export class FeatureComponent implements OnInit {
       update_type: "update",
       feature: tempFeatureArray,
       features: true
-    }
-
-    console.log("payload", payload);
+    };
 
     this.featureUpdateLoader = true;
     this._inventoryService.updateFeatures(payload)
@@ -262,7 +258,7 @@ export class FeatureComponent implements OnInit {
       order: parseInt(order),
       feature: true
     };
-    console.log("payload", payload);
+
     this.featureAddLoader = true;
     this._inventoryService.addFeature(payload)
       .subscribe((response) => {

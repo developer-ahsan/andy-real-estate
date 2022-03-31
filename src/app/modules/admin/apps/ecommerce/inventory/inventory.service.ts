@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { BehaviorSubject, Observable, of, throwError } from 'rxjs';
 import { filter, map, switchMap, take, tap } from 'rxjs/operators';
-import { AddCore, AddFeature, AddPackage, CaseDimensionObj, CaseQuantityObj, Comment, createColorObj, CreateProduct, DeleteComment, displayOrderObj, duplicateObj, featureUpdateObj, FlatRateShippingObj, InventoryBrand, InventoryCategory, InventoryPagination, InventoryTag, InventoryVendor, Licensing, NetCostUpdate, overlapUpdateObj, PhysicsObj, physicsUpdateObject, priceInclusionObj, ProductsList, updateColorObj, updateImprintObj, UpdateMargin, updateSize, videoObj, Warehouse } from 'app/modules/admin/apps/ecommerce/inventory/inventory.types';
+import { AddCore, AddFeature, AddPackage, CaseDimensionObj, CaseQuantityObj, Comment, createColorObj, CreateProduct, DeleteComment, displayOrderObj, duplicateObj, featureUpdateObj, FlatRateShippingObj, InventoryBrand, InventoryCategory, InventoryPagination, InventoryTag, InventoryVendor, Licensing, NetCostUpdate, overlapUpdateObj, PhysicsObj, physicsUpdateObject, priceInclusionObj, ProductsList, updateColorObj, updateImprintObj, UpdateMargin, updatePackageObj, updateSize, videoObj, Warehouse } from 'app/modules/admin/apps/ecommerce/inventory/inventory.types';
 import { environment } from 'environments/environment';
 import { productDescription } from 'app/modules/admin/apps/ecommerce/inventory/inventory.types';
 import { AuthService } from 'app/core/auth/auth.service';
@@ -698,7 +698,25 @@ export class InventoryService {
         })
     };
 
-    addProductGetLicensingSubCategory(termId,) {
+    getSystemDistributorCodes() {
+        return this._httpClient.get(environment.system, {
+            params: {
+                distributor_code: true,
+                size: 100
+            }
+        })
+    }
+
+    getChargeValue(value) {
+        return this._httpClient.get(environment.system, {
+            params: {
+                charge: true,
+                charge_value: 100
+            }
+        })
+    }
+
+    addProductGetLicensingSubCategory(termId) {
         return this._httpClient.get(environment.products, {
             params: {
                 licensing_term: true,
@@ -863,6 +881,15 @@ export class InventoryService {
    * UPDATE price inclusion
    */
     updatePriceInclusion(payload: priceInclusionObj) {
+        const headers = { 'Authorization': `Bearer ${this._authService.accessToken}` };
+        return this._httpClient.put(
+            environment.products, payload, { headers });
+    }
+
+    /**
+   * UPDATE package
+   */
+    updatePackage(payload: updatePackageObj) {
         const headers = { 'Authorization': `Bearer ${this._authService.accessToken}` };
         return this._httpClient.put(
             environment.products, payload, { headers });
