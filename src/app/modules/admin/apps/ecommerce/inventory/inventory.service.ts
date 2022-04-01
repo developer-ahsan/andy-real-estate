@@ -708,13 +708,25 @@ export class InventoryService {
     }
 
     getChargeValue(value) {
-        return this._httpClient.get(environment.system, {
+        return this._httpClient.get(environment.products, {
             params: {
                 charge: true,
-                charge_value: 100
+                charge_value: value,
+                size: 100
             }
         })
-    }
+    };
+
+    getChargeValuesData(text) {
+        return this._httpClient.get(environment.products, {
+            params: {
+                charge: true,
+                price_inclusion: true,
+                charge_id: text,
+                size: 1000
+            }
+        })
+    };
 
     addProductGetLicensingSubCategory(termId) {
         return this._httpClient.get(environment.products, {

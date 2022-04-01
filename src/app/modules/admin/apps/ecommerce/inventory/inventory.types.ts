@@ -118,20 +118,23 @@ export interface Reviews {
 }
 
 export interface productDescription {
-    description: boolean;
+    name: string;
+    product_number: string;
     product_desc: string;
     mini_desc: string;
     keywords: string;
     notes: string;
     supplier_link: string;
     meta_desc: string;
-    sex: string;
+    sex: number;
     search_keywords: string;
     purchase_order_notes: string;
     last_update_by: string;
     last_update_date: string;
     update_history: string;
     product_id: number;
+    supplier_id: number;
+    description: boolean
 }
 
 export interface AvailableCores {

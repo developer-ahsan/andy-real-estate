@@ -217,21 +217,10 @@
                         </div>
                         <div class="row my-2"
                             *ngIf="favoriteSeason === 'Per color (i.e. silk screening, pad printing, etc.)'">
-                            <div class="col-3">
+                            <div class="col-lg-3 col-12">
                                 <b class="text-secondary"># of Colors</b>
                             </div>
-                            <div class="col-2">
-                                <b class="text-secondary">Two</b>
-                            </div>
-                            <div class="col-2">
-                                <b class="text-secondary">Three</b>
-                            </div>
-                            <div class="col-2">
-                                <b class="text-secondary">Four</b>
-                            </div>
-                            <div class="col-2">
-                                <b class="text-secondary">Five</b>
-                            </div>
+                            <div class="col-9"></div>
 
                             <form [formGroup]="values">
                                 <div class="row">
@@ -240,24 +229,28 @@
                                     </div>
                                     <div class="col-2">
                                         <mat-form-field appearance="fill" class="w-full">
+                                            <mat-label>Two</mat-label>
                                             <input matInput type="number" min="1" value="1"
                                                 [formControlName]="'twoColorQ'">
                                         </mat-form-field>
                                     </div>
                                     <div class="col-2">
                                         <mat-form-field appearance="fill" class="w-full">
+                                            <mat-label>Three</mat-label>
                                             <input matInput type="number" min="1" value="1"
                                                 [formControlName]="'threeColorQ'">
                                         </mat-form-field>
                                     </div>
                                     <div class="col-2">
                                         <mat-form-field appearance="fill" class="w-full">
+                                            <mat-label>Four</mat-label>
                                             <input matInput type="number" min="1" value="1"
                                                 [formControlName]="'fourColorQ'">
                                         </mat-form-field>
                                     </div>
                                     <div class="col-2">
                                         <mat-form-field appearance="fill" class="w-full">
+                                            <mat-label>Five</mat-label>
                                             <input matInput type="number" min="1" value="1"
                                                 [formControlName]="'fiveColorQ'">
                                         </mat-form-field>
@@ -320,11 +313,11 @@
                                 Color Collection ID
                             </span>
                         </button>
+                        <small class="font-semibold ml-3" *ngIf="!collectionIdsArray.length">
+                            * No collections avaiable. Click on the button to generate list of collections
+                        </small>
                     </div>
                     <div class="col-12 my-2" *ngIf="defaultImprintColorSpecification === 'Yes'">
-                        <small class="font-semibold" *ngIf="!collectionIdsArray.length">
-                            * No collections avaiable. Click on the above button to generate list of collections
-                        </small>
                         <mat-form-field class="w-full" *ngIf="collectionIdsArray.length">
                             <mat-label>
                                 IMPRINT COLOR COLLECTIONS
@@ -372,8 +365,118 @@
                         </mat-radio-group>
                     </div>
 
-                    <!-- Minimum Product Quantity -->
+                    <!-- Charge Distributions -->
+                    <div class="col-12 my-2">
+                        <button [matTooltip]="'Enter an imprint charge and corresponding discount code to find existing charge
+                                distributions that include it. For example for a silk-screened additional color/location
+                                charge of $0.25(G), enter 0.25, select G and click the button.'">
+                            <i class="fa fa-info-circle"></i>
+                        </button>
+                        <b class="pl-1">Charge Distributions</b>
+                    </div>
                     <div class="col-12">
+                        <small class="text-danger font-semibold">
+                            * When setup/run charges are $0.00, please type code "17" in the respective field.
+                        </small>
+                    </div>
+                    <div class="col-lg-3 col-12 my-2" *ngIf="!runSetupDistributorCodes.length">
+                        <button class="w-full" mat-flat-button [color]="'primary'" [matTooltip]="'Add run/setup'"
+                            (click)="getRunSetup()" [disabled]="runSetupLoaderFetching">
+                            <mat-progress-spinner *ngIf="runSetupLoaderFetching" [diameter]="24"
+                                [mode]="'indeterminate'">
+                            </mat-progress-spinner>
+                            <span *ngIf="!runSetupLoaderFetching" class="ml-1 mr-1">
+                                Add Run/Setup
+                            </span>
+                        </button>
+                    </div>
+                    <div class="col-lg-9 col-12"></div>
+                    <div class="col-lg-4 my-2" *ngIf="runSetupDistributorCodes.length">
+                        <form [formGroup]="chargeDistribution">
+                            <mat-form-field appearance="fill" class="w-full">
+                                <mat-label>Charge</mat-label>
+                                <input matInput [formControlName]="'charge'" type="number" value="0">
+                            </mat-form-field>
+                        </form>
+                    </div>
+                    <div class="col-lg-4 my-2" *ngIf="runSetupDistributorCodes.length">
+                        <mat-form-field class="w-full">
+                            <mat-label>Cost</mat-label>
+                            <mat-select [(ngModel)]="selectedDiscountCode" name="collection">
+                                <mat-option *ngFor="let code of runSetupDistributorCodes" [value]="code">
+                                    <small>{{code.distrDiscountCode}}</small>
+                                </mat-option>
+                            </mat-select>
+                        </mat-form-field>
+                    </div>
+                    <div class="col-lg-4 col-12 lg:mt-4 lg:pt-5" *ngIf="runSetupDistributorCodes.length">
+                        <button class="w-full" mat-flat-button [color]="'primary'" [matTooltip]="'Get all charges'"
+                            (click)="getCharges()" [disabled]="getChargesLoader">
+                            <mat-progress-spinner *ngIf="getChargesLoader" [diameter]="24" [mode]="'indeterminate'">
+                            </mat-progress-spinner>
+                            <span *ngIf="!getChargesLoader" class="ml-1 mr-1">
+                                Get Charges
+                            </span>
+                        </button>
+                    </div>
+
+                    <form [formGroup]="runSetup" class="w-full">
+                        <div class="row px-4">
+                            <div class="col-lg-6 col-12 my-2">
+                                <mat-form-field appearance="fill" class="w-full">
+                                    <mat-label>Setup</mat-label>
+                                    <input matInput [formControlName]="'setup'" type="number">
+                                </mat-form-field>
+                            </div>
+                            <div class="col-lg-6 col-12 my-2">
+                                <mat-form-field appearance="fill" class="w-full">
+                                    <mat-label>Run</mat-label>
+                                    <input matInput [formControlName]="'run'" type="number">
+                                </mat-form-field>
+                            </div>
+                        </div>
+                    </form>
+
+                    <div class="col-12 p-5 my-5 border-2 d-flex overflow-x-auto" style="max-height: 400px;"
+                        *ngIf="chargesTableArray.length">
+                        <div class="border-2 mx-2 min-w-60" *ngFor="let chargeData of chargesTableArray">
+                            <div class="row">
+                                <div class="col-12">
+                                    <p class="text-1xl font-semibold text-center bg-gray-100 p-3">
+                                        {{chargeData.chargeId}}
+                                    </p>
+                                </div>
+                                <div class="col-12">
+                                    <a href="" class="mr-2" (click)="setRun($event,chargeData.chargeId)"> + Run</a>
+                                    <a href="" class="ml-2" (click)="setSetup($event,chargeData.chargeId)"> + Setup</a>
+                                </div>
+                            </div>
+                            <table class="m-2 w-2/4">
+                                <col>
+                                <colgroup span="1"></colgroup>
+                                <colgroup span="1"></colgroup>
+                                <tr>
+                                    <th scope="col" class="bg-primary text-white text-center"></th>
+                                    <th scope="col" class="bg-primary text-white text-center p-3"
+                                        *ngFor="let productQuantity of chargeData.uniqueProductQuantities">
+                                        {{productQuantity}}
+                                    </th>
+                                </tr>
+                                <tr *ngFor="let rowFill of chargeData.rowsRendering">
+                                    <th scope="row" class="bg-primary text-white text-center p-3">
+                                        {{rowFill.verticalColumnName}}
+                                    </th>
+                                    <td class="p-3 bg-gray-50 text-center"
+                                        *ngFor="let rowChargeValue of rowFill.renderedArray">
+                                        {{rowChargeValue[2]}}
+                                    </td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- Minimum Product Quantity -->
+                    <div class="col-12 mt-3">
                         <b>
                             <button
                                 [matTooltip]="'Other than one (1) only if this imprint requires a product qty more than the min'">
@@ -1047,11 +1150,11 @@
                                 Color Collection ID
                             </span>
                         </button>
+                        <small class="font-semibold ml-3" *ngIf="!collectionIdsArray.length">
+                            * No collections avaiable. Click on the button to generate list of collections
+                        </small>
                     </div>
                     <div class="col-12 my-2" *ngIf="defaultImprintColorSpecification === 'Yes'">
-                        <small class="font-semibold" *ngIf="!collectionIdsArray.length">
-                            * No collections avaiable. Click on the above button to generate list of collections
-                        </small>
                         <mat-form-field class="w-full" *ngIf="collectionIdsArray.length">
                             <mat-label>
                                 IMPRINT COLOR COLLECTIONS
@@ -1099,8 +1202,77 @@
                         </mat-radio-group>
                     </div>
 
-                    <!-- Minimum Product Quantity -->
+                    <!-- Charge Distributions -->
+                    <div class="col-12 my-2">
+                        <button [matTooltip]="'Enter an imprint charge and corresponding discount code to find existing charge
+                                distributions that include it. For example for a silk-screened additional color/location
+                                charge of $0.25(G), enter 0.25, select G and click the button.'">
+                            <i class="fa fa-info-circle"></i>
+                        </button>
+                        <b class="pl-1">Charge Distributions</b>
+                    </div>
                     <div class="col-12">
+                        <small class="text-danger font-semibold">
+                            * When setup/run charges are $0.00, please type code "17" in the respective field.
+                        </small>
+                    </div>
+                    <div class="col-lg-3 col-12 my-2" *ngIf="!runSetupDistributorCodes.length">
+                        <button class="w-full" mat-flat-button [color]="'primary'" [matTooltip]="'Add run/setup'"
+                            (click)="getRunSetup()" [disabled]="runSetupLoaderFetching">
+                            <mat-progress-spinner *ngIf="runSetupLoaderFetching" [diameter]="24"
+                                [mode]="'indeterminate'">
+                            </mat-progress-spinner>
+                            <span *ngIf="!runSetupLoaderFetching" class="ml-1 mr-1">
+                                Add Run/Setup
+                            </span>
+                        </button>
+                    </div>
+                    <div class="col-lg-9 col-12"></div>
+                    <div class="col-lg-7 my-2" *ngIf="runSetupDistributorCodes.length">
+                        <form [formGroup]="chargeDistribution">
+                            <mat-form-field appearance="fill" class="w-full">
+                                <mat-label>Charge</mat-label>
+                                <input matInput [formControlName]="'charge'" type="number" value="0">
+                            </mat-form-field>
+                        </form>
+                    </div>
+                    <div class="col-lg-3 my-2" *ngIf="runSetupDistributorCodes.length">
+                        <mat-form-field class="w-full">
+                            <mat-label>Cost</mat-label>
+                            <mat-select [(ngModel)]="selectedDiscountCode" name="collection">
+                                <mat-option *ngFor="let code of runSetupDistributorCodes" [value]="code">
+                                    <small>{{code.distrDiscountCode}}</small>
+                                </mat-option>
+                            </mat-select>
+                        </mat-form-field>
+                    </div>
+                    <div class="col-lg-2 col-12 mt-4 pt-5" *ngIf="runSetupDistributorCodes.length">
+                        <button class="w-full" mat-flat-button [color]="'primary'" [matTooltip]="'Add run/setup'"
+                            (click)="getCharges()" [disabled]="runSetupLoaderFetching">
+                            <mat-progress-spinner *ngIf="runSetupLoaderFetching" [diameter]="24"
+                                [mode]="'indeterminate'">
+                            </mat-progress-spinner>
+                            <span *ngIf="!runSetupLoaderFetching" class="ml-1 mr-1">
+                                Get Charges
+                            </span>
+                        </button>
+                    </div>
+
+                    <div class="col-lg-6 col-12 my-2" *ngIf="runSetupDistributorCodes.length">
+                        <mat-form-field appearance="fill" class="w-full">
+                            <mat-label>Setup</mat-label>
+                            <input matInput type="number">
+                        </mat-form-field>
+                    </div>
+                    <div class="col-lg-6 col-12 my-2" *ngIf="runSetupDistributorCodes.length">
+                        <mat-form-field appearance="fill" class="w-full">
+                            <mat-label>Run</mat-label>
+                            <input matInput type="number">
+                        </mat-form-field>
+                    </div>
+
+                    <!-- Minimum Product Quantity -->
+                    <div class="col-12 mt-3">
                         <b>
                             <button
                                 [matTooltip]="'Other than one (1) only if this imprint requires a product qty more than the min'">

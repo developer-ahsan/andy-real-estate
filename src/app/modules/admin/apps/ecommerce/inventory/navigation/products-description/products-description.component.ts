@@ -129,8 +129,11 @@ export class ProductsDescriptionComponent implements OnInit {
 
   updateDescription(): void {
     const formValues = this.productDescriptionForm.getRawValue();
-    console.log("formValues", formValues)
+    const { pk_productID, fk_supplierID } = this.selectedProduct;
+
     const payload = {
+      name: formValues.name || '',
+      product_number: formValues.productNO || '',
       product_desc: formValues.productDesc || '',
       mini_desc: formValues.miniDesc || '',
       keywords: formValues.keywords || '',
@@ -143,9 +146,11 @@ export class ProductsDescriptionComponent implements OnInit {
       last_update_by: "" || '',
       last_update_date: "" || '',
       update_history: "" || '',
-      product_id: formValues.fk_productID,
+      product_id: pk_productID,
+      supplier_id: fk_supplierID,
       description: true
-    }
+    };
+
     this.descriptionLoader = true;
     this._inventoryService.updatePhysicsAndDescription(payload)
       .subscribe((response: any) => {

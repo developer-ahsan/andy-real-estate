@@ -14,6 +14,8 @@ export class ImprintComponent implements OnInit {
   @Input() isLoading: boolean;
   @Output() isLoadingChange = new EventEmitter<boolean>();
   private _unsubscribeAll: Subject<any> = new Subject<any>();
+  chargeDistribution: FormGroup;
+  runSetup: FormGroup;
 
   displayedColumns: string[] = ['location', 'method', 'decorator', 'active', 'action'];
   imprintDisplayedColumns: string[] = ['id', 'name', 'decorator', 'order'];
@@ -21,10 +23,6 @@ export class ImprintComponent implements OnInit {
   dataSource2 = [];
   overlappingPayloadArray = [];
   overlappingUpdateLoader = false;
-
-  toppings = new FormControl();
-
-  toppingList: string[] = ['Extra cheese', 'Mushroom', 'Onion', 'Pepperoni', 'Sausage', 'Tomato'];
 
   foods = [
     { value: 'steak-0', viewValue: 'Steak' },
@@ -37,6 +35,8 @@ export class ImprintComponent implements OnInit {
   selectedMethod;
   selectedLocation;
   selectedDigitizer;
+
+  chargesTableArray = [];
 
   runSetupLoaderFetching = false;
   getChargesLoader = false;
@@ -170,6 +170,15 @@ export class ImprintComponent implements OnInit {
 
   ngOnInit(): void {
 
+    this.chargeDistribution = this._formBuilder.group({
+      charge: [0]
+    })
+
+    this.runSetup = this._formBuilder.group({
+      run: [''],
+      setup: ['']
+    })
+
     // Defalut selected button toggle
     this.showImprintScreen = 'Imprints';
     this.getImprints(this.page);
@@ -275,7 +284,6 @@ export class ImprintComponent implements OnInit {
       imprint_overlap: true
     };
 
-    console.log("payload", payload)
     this.overlappingUpdateLoader = true;
     this._inventoryService.updateImprintOverlapping(payload)
       .subscribe((response) => {
@@ -297,7 +305,7 @@ export class ImprintComponent implements OnInit {
       .subscribe((response) => {
         this.runSetupLoaderFetching = false;
         this.runSetupDistributorCodes = response["data"];
-        console.log(response)
+        this.selectedDiscountCode = this.runSetupDistributorCodes[0];
 
         // Mark for check
         this._changeDetectorRef.markForCheck();
@@ -305,16 +313,117 @@ export class ImprintComponent implements OnInit {
   };
 
   getCharges() {
-    this.getChargesLoader = true;
-    this._inventoryService.getSystemDistributorCodes()
-      .subscribe((response) => {
-        this.getChargesLoader = false;
-        this.runSetupDistributorCodes = response["data"];
-        console.log(response)
+    const chargeForm = this.chargeDistribution.getRawValue();
+    const { charge } = chargeForm;
+    const { distrDiscount } = this.selectedDiscountCode;
+    const intCharge = parseInt(charge);
+    const chargeValue = intCharge * (1 - distrDiscount);
 
-        // Mark for check
-        this._changeDetectorRef.markForCheck();
+    this.getChargesLoader = true;
+    this._inventoryService.getChargeValue(chargeValue)
+      .subscribe((charges) => {
+        if (!charges["data"]?.length) {
+          const errorLog = `No charges containing ${intCharge} x (1-${distrDiscount}) = ${chargeValue} were found. Check your inputs or add a new charge.`;
+          this._snackBar.open(errorLog, '', {
+            horizontalPosition: 'center',
+            verticalPosition: 'bottom',
+            duration: 3500
+          });
+          this.getChargesLoader = false;
+          this.chargesTableArray = [];
+
+          // Mark for check
+          this._changeDetectorRef.markForCheck();
+          return;
+        }
+
+        let chargeArray = [];
+        for (const response of charges["data"]) {
+          const { fk_chargeID } = response;
+          chargeArray.push(fk_chargeID)
+        };
+
+        this._inventoryService.getChargeValuesData(chargeArray.toString())
+          .subscribe((chargeValues) => {
+            this.getChargesLoader = false;
+
+            const responseArray = chargeValues["data"];
+            var array = responseArray,
+              grouped = Array.from(array.reduce((m, o) =>
+                m.set(o.fk_chargeID, (m.get(o.fk_chargeID) || []).concat(o)), new Map).values());
+
+            let tempArray = [];
+            for (const group of grouped) {
+              let array: any = group;
+              const obj = {
+                groupedObj: array,
+                uniqueProductQuantities: [...new Set(array.map(item => item.productQuantity))].sort(function (a: number, b: number) {
+                  return a - b;
+                }),
+                uniqueProcessQuantity: [...new Set(array.map(item => item.processQuantity))].sort(function (a: number, b: number) {
+                  return a - b;
+                })
+              };
+              tempArray.push(obj);
+            };
+
+            for (let i = 0; i < tempArray.length; i++) {
+              let array = tempArray[i].groupedObj;
+              let combinedChunkArray = [];
+              let processQuantities = tempArray[i]["uniqueProcessQuantity"];
+              let productQuantities = tempArray[i]["uniqueProductQuantities"];
+              let temporary = [];
+              for (let j = 0; j < processQuantities.length; j++) {
+                for (let k = 0; k < productQuantities.length; k++) {
+                  const data = this.returnChargeValueForAddImrpint(processQuantities[j], productQuantities[k], array);
+                  combinedChunkArray.push([processQuantities[j], productQuantities[k], data[0].charge])
+                }
+                temporary.push({
+                  renderedArray: this.filterByIds(combinedChunkArray, processQuantities[j]),
+                  verticalColumnName: processQuantities[j]
+                });
+              };
+
+              tempArray[i]["rowsRendering"] = temporary;
+              tempArray[i]["chargeId"] = array[0].fk_chargeID;
+            };
+
+            this.chargesTableArray = tempArray;
+
+            // Mark for check
+            this._changeDetectorRef.markForCheck();
+          })
       });
+  };
+
+  setRun(e, value) {
+    e.preventDefault();
+    this.runSetup.controls['run'].setValue(value);
+  };
+
+  setSetup(e, value) {
+    e.preventDefault();
+    this.runSetup.controls['setup'].setValue(value);
+  };
+
+  filterByIds(data, value) {
+    let temp = [];
+    for (let i = 0; i < data.length; i++) {
+      if (data[i][0] === value) {
+        temp.push(data[i]);
+      }
+    };
+    return temp;
+  }
+
+  returnChargeValueForAddImrpint(processQuantity, productQuantity, array) {
+    return array.filter(function (currentElement) {
+      return currentElement.processQuantity === processQuantity && currentElement.productQuantity === productQuantity;
+    });
+  }
+
+  combinationOfarrays(productArray: any, processArray: any) {
+    return productArray.flatMap(d => processArray.map(v => [d, v]));
   }
 
   clearAllStandardImprintOptions(): void {
@@ -780,6 +889,7 @@ export class ImprintComponent implements OnInit {
 
   addImprint() {
     const { pk_productID } = this.selectedProduct;
+    const setupRunForm = this.runSetup.getRawValue();
     this.addImprintLoader = true;
     let processMode;
     if (this.favoriteSeason === 'Per color (i.e. silk screening, pad printing, etc.)') {
@@ -811,8 +921,8 @@ export class ImprintComponent implements OnInit {
       method_id: this.selectedMethod.pk_methodID || null,
       location_id: this.selectedLocation.pk_locationID || null,
       digitizer_id: this.selectedDigitizer.pfk_digitizerID || null,
-      setup_charge_id: 1,  //
-      run_charge_id: 1,   //
+      setup_charge_id: setupRunForm.setup || 17,
+      run_charge_id: setupRunForm.run || 17,
       bln_includable: this.priceInclusionSelected.value === 'Yes' ? 1 : 0,
       area: this.areaValue || "",
       multi_color_min_id: 1,
