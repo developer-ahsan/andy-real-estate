@@ -41,8 +41,13 @@
         </div>
     </div>
 
+    <div class="row m-2 justify-end" *ngIf="isFiltering">
+        <a href="" class="mx-2 text-sm" (click)="clearFilter($event)">
+            <mat-icon class="icon-size-5" svgIcon="mat_outline:close"></mat-icon>
+            Filter
+        </a>
+    </div>
     <div class="row m-2">
-
         <div class="col-lg-4 col-12 p-2">
             <!-- Search -->
             <mat-form-field class="fuse-mat-dense fuse-mat-no-subscript w-full">
@@ -60,7 +65,7 @@
                     <span>Search Products By Supplier</span>
                     <span class="ml-3" *ngIf="isSupplierNotReceived"> (Fetching Suppliers... )</span>
                 </mat-label>
-                <mat-select disableRipple [disabled]="isSupplierNotReceived">
+                <mat-select [(ngModel)]="selectedSupplier" disableRipple [disabled]="isSupplierNotReceived">
                     <mat-option (click)="selectBySupplier(option)" value="{{option}}" *ngFor="let option of options">
                         {{option.companyName}}
                     </mat-option>
@@ -68,17 +73,20 @@
             </mat-form-field>
         </div>
 
-        <!-- <div class="col-lg-4 col-12 p-2"> -->
-        <!-- Search Products By Store -->
-        <!-- <mat-form-field appearance="fill" class="w-full">
-                <mat-label>Search Products By Store</mat-label>
-                <mat-select disableRipple (selectionChange)="selectByStore($event)">
-                    <mat-option value="store" *ngFor="let store of stores">
+        <div class="col-lg-4 col-12 p-2">
+            <!-- Search Products By Store -->
+            <mat-form-field appearance="fill" class="w-full">
+                <mat-label>
+                    <span>Search Products By Store</span>
+                    <span class="ml-3" *ngIf="isStoreNotReceived"> (Fetching Stores... )</span>
+                </mat-label>
+                <mat-select [(ngModel)]="selectedStore" disableRipple [disabled]="isStoreNotReceived">
+                    <mat-option (click)="selectByStore(store)" value="{{store}}" *ngFor="let store of stores">
                         {{store.storeName}}
                     </mat-option>
                 </mat-select>
             </mat-form-field>
-        </div> -->
+        </div>
 
     </div>
 

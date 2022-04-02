@@ -31,10 +31,10 @@ export class ImprintComponent implements OnInit {
   ];
   values: FormGroup;
 
-  selectedSupplier;
-  selectedMethod;
-  selectedLocation;
-  selectedDigitizer;
+  selectedSupplier = null;
+  selectedMethod = null;
+  selectedLocation = null;
+  selectedDigitizer = null;
 
   chargesTableArray = [];
 
@@ -100,7 +100,7 @@ export class ImprintComponent implements OnInit {
       value: "No"
     }
   ];
-  areaValue;
+  areaValue = "";
   minQuantity: number;
   addImprintComment;
   addImprintDisplayOrderValue;
@@ -831,10 +831,10 @@ export class ImprintComponent implements OnInit {
     }
 
     if (screenName === "Add Imprint") {
-      this.selectedDigitizer = [];
-      this.selectedMethod = [];
-      this.selectedLocation = [];
-      this.selectedSupplier = [];
+      this.selectedDigitizer = null;
+      this.selectedMethod = null
+      this.selectedLocation = null;
+      this.selectedSupplier = null;
       this.getSuppliers();
       this.getAddImprintLocations();
       this.getAddImprintMethods();
@@ -873,6 +873,20 @@ export class ImprintComponent implements OnInit {
       .pipe(takeUntil(this._unsubscribeAll))
       .subscribe((collection_ids) => {
         this.collectionIdsArray = collection_ids["data"];
+
+        if (!this.collectionIdsArray.length) {
+          this._snackBar.open("No collections have been specified for this supplier.", '', {
+            horizontalPosition: 'center',
+            verticalPosition: 'bottom',
+            duration: 3500
+          });
+          this.getImprintColorCollectionLoader = false;
+
+          // Mark for check
+          this._changeDetectorRef.markForCheck();
+          return;
+        };
+
         if (this.collectionIdsArray.length) {
           this.selectedCollectionId = this.collectionIdsArray[0]
         }
@@ -890,6 +904,46 @@ export class ImprintComponent implements OnInit {
   addImprint() {
     const { pk_productID } = this.selectedProduct;
     const setupRunForm = this.runSetup.getRawValue();
+    const { run, setup } = setupRunForm;
+
+    if (!this.selectedLocation) {
+      this._snackBar.open("New LOCATION was not specified correctly", '', {
+        horizontalPosition: 'center',
+        verticalPosition: 'bottom',
+        duration: 3500
+      });
+      return;
+    };
+
+    if (this.areaValue === "") {
+      this._snackBar.open("Imprint AREA has not been defined correctly.", '', {
+        horizontalPosition: 'center',
+        verticalPosition: 'bottom',
+        duration: 3500
+      });
+      return;
+    };
+
+    if (!this.collectionIdsArray.length) {
+      this._snackBar.open("Select a color collection", '', {
+        horizontalPosition: 'center',
+        verticalPosition: 'bottom',
+        duration: 3500
+      });
+
+      return;
+    };
+
+    if (run === "" || setup === "") {
+      this._snackBar.open("Select a SETUP or RUN charge", '', {
+        horizontalPosition: 'center',
+        verticalPosition: 'bottom',
+        duration: 3500
+      });
+
+      return;
+    };
+
     this.addImprintLoader = true;
     let processMode;
     if (this.favoriteSeason === 'Per color (i.e. silk screening, pad printing, etc.)') {
@@ -921,10 +975,10 @@ export class ImprintComponent implements OnInit {
       method_id: this.selectedMethod.pk_methodID || null,
       location_id: this.selectedLocation.pk_locationID || null,
       digitizer_id: this.selectedDigitizer.pfk_digitizerID || null,
-      setup_charge_id: setupRunForm.setup || 17,
-      run_charge_id: setupRunForm.run || 17,
+      setup_charge_id: setup || 17,
+      run_charge_id: run || 17,
       bln_includable: this.priceInclusionSelected.value === 'Yes' ? 1 : 0,
-      area: this.areaValue || "",
+      area: this.areaValue,
       multi_color_min_id: 1,
       bln_user_color_selection: this.defaultImprintColorSpecification === 'Yes' ? 1 : 0,
       max_colors: this.defaultImprintColorSpecification === 'Yes' ? this.maxColorSelected : null,
@@ -986,7 +1040,47 @@ export class ImprintComponent implements OnInit {
 
   updateImprint() {
     const { pk_productID } = this.selectedProduct;
+    const setupRunForm = this.runSetup.getRawValue();
     const { pk_imprintID } = this.editImprintObj;
+    const { run, setup } = setupRunForm;
+
+    if (!this.selectedLocation) {
+      this._snackBar.open("New LOCATION was not specified correctly", '', {
+        horizontalPosition: 'center',
+        verticalPosition: 'bottom',
+        duration: 3500
+      });
+      return;
+    };
+
+    if (this.areaValue === "") {
+      this._snackBar.open("Imprint AREA has not been defined correctly.", '', {
+        horizontalPosition: 'center',
+        verticalPosition: 'bottom',
+        duration: 3500
+      });
+      return;
+    };
+
+    if (!this.collectionIdsArray.length) {
+      this._snackBar.open("Select a color collection", '', {
+        horizontalPosition: 'center',
+        verticalPosition: 'bottom',
+        duration: 3500
+      });
+
+      return;
+    };
+
+    if (run === "" || setup === "") {
+      this._snackBar.open("Select a SETUP or RUN charge", '', {
+        horizontalPosition: 'center',
+        verticalPosition: 'bottom',
+        duration: 3500
+      });
+
+      return;
+    };
 
     this.updateImprintLoader = true;
     let processMode;
@@ -1019,10 +1113,10 @@ export class ImprintComponent implements OnInit {
       method_id: this.selectedMethod.pk_methodID || null,
       location_id: this.selectedLocation.pk_locationID || null,
       digitizer_id: this.selectedDigitizer.pfk_digitizerID || null,
-      setup_charge_id: 1,  //
-      run_charge_id: 1,   //
+      setup_charge_id: setup || 17,
+      run_charge_id: run || 17,
       bln_includable: this.priceInclusionSelected.value === 'Yes' ? 1 : 0,
-      area: this.areaValue || "",
+      area: this.areaValue,
       multi_color_min_id: 1,
       bln_user_color_selection: this.defaultImprintColorSpecification === 'Yes' ? 1 : 0,
       max_colors: this.defaultImprintColorSpecification === 'Yes' ? this.maxColorSelected : null,
@@ -1080,11 +1174,10 @@ export class ImprintComponent implements OnInit {
   editImprint(imprint) {
     this.editImprintObj = imprint;
     this.isEditImprintScreen = true;
-
-    this.selectedDigitizer = [];
-    this.selectedMethod = [];
-    this.selectedLocation = [];
-    this.selectedSupplier = [];
+    this.selectedDigitizer = null;
+    this.selectedMethod = null;
+    this.selectedLocation = null;
+    this.selectedSupplier = null;
 
     this.getSuppliers(imprint);
     this.getAddImprintMethods(imprint);
@@ -1102,8 +1195,17 @@ export class ImprintComponent implements OnInit {
       imprintComments,
       blnColorProcess,
       blnStitchProcess,
-      blnSingleProcess
+      blnSingleProcess,
+      fk_setupChargeID,
+      fk_runChargeID
     } = imprint;
+
+    const runSetupObj = {
+      run: fk_runChargeID,
+      setup: fk_setupChargeID
+    };
+
+    this.runSetup.patchValue(runSetupObj);
 
     if (blnColorProcess) {
       this.favoriteSeason = this.seasons[0];
@@ -1144,7 +1246,6 @@ export class ImprintComponent implements OnInit {
       .pipe(takeUntil(this._unsubscribeAll))
       .subscribe((location) => {
         this.addImprintLocations = location["data"];
-        this.selectedLocation = this.addImprintLocations.find(x => x.pk_locationID === 419) || this.addImprintLocations[0];
         if (data) {
           const { pk_locationID } = data
           this.selectedLocation = this.addImprintLocations.find(x => x.pk_locationID === pk_locationID) || this.addImprintLocations[0];

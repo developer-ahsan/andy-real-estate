@@ -116,11 +116,14 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
 
     keyword = 'companyName';
 
-
+    selectedStore = null;
+    selectedSupplier = null;
     isSupplierNotReceived = true;
+    isStoreNotReceived = true;
     createProductLoader = false;
     stepperOrientation: Observable<StepperOrientation>;
     favoriteSeason: string;
+    isFiltering = false;
     addProductTypeRadios = [
         {
             name: 'Normal Promotional Material',
@@ -371,6 +374,7 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
             .pipe(takeUntil(this._unsubscribeAll))
             .subscribe((stores) => {
                 this.stores = stores["data"];
+                this.isStoreNotReceived = false;
 
                 // Mark for check
                 this._changeDetectorRef.markForCheck();
@@ -444,12 +448,26 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
     // -----------------------------------------------------------------------------------------------------
 
     selectByStore(event): void {
-        console.log(event)
+        const { pk_storeID } = event;
+        this.isFiltering = true;
+        this.isLoading = true;
+        // Get the products by selected suppliers
+        this._inventoryService.getProductsByStoreId(pk_storeID)
+            .pipe(takeUntil(this._unsubscribeAll))
+            .subscribe((products: ProductsList[]) => {
+                this.products = products["data"];
+                this.productsCount = products["totalRecords"];
+                this.isLoading = false;
+
+                // Mark for check
+                this._changeDetectorRef.markForCheck();
+            });
     }
 
     selectBySupplier(event): void {
         const { pk_companyID } = event;
 
+        this.isFiltering = true;
         this.isLoading = true;
         // Get the products by selected suppliers
         this._inventoryService.getProductsBySupplierId(pk_companyID)
@@ -462,7 +480,28 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
                 // Mark for check
                 this._changeDetectorRef.markForCheck();
             });
+    };
+
+    clearFilter(e) {
+        e.preventDefault();
+
+        this.isLoading = true;
+        // Get the products
+        this._inventoryService.getProductsList(1)
+            .pipe(takeUntil(this._unsubscribeAll))
+            .subscribe((products: ProductsList[]) => {
+                this.products = products["data"];
+                this.productsCount = products["totalRecords"];
+                this.isLoading = false;
+
+                this.selectedStore = null;
+                this.selectedSupplier = null;
+
+                // Mark for check
+                this._changeDetectorRef.markForCheck();
+            });
     }
+
     createProduct(): void {
         const featureForm = this.featureForm.getRawValue();
         const netCostForm = this.netCostForm.getRawValue();

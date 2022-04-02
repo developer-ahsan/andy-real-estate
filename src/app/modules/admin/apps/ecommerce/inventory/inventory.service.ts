@@ -409,6 +409,16 @@ export class InventoryService {
         });
     };
 
+    getProductsByStoreId(storeId: string): Observable<any[]> {
+        return this._httpClient.get<any[]>(environment.products, {
+            params: {
+                list: true,
+                size: 20,
+                store_id: storeId
+            }
+        });
+    };
+
     getAllSuppliers(): Observable<any[]> {
         return this._httpClient.get<any[]>(environment.stores, {
             params: {
