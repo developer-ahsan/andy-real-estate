@@ -1,6 +1,24 @@
 <ngx-skeleton-loader count="8" appearance="line" animation="pulse" *ngIf="isLoading">
 </ngx-skeleton-loader>
-<div class="row" *ngIf="!isLoading">
+
+<div class="row my-3 justify-end" *ngIf="!isLoading">
+    <div class="col-lg-3 col-12" *ngIf="buttonText === 'Legacy System History'">
+        <button class="min-w-40 w-full" mat-flat-button [color]="'primary'"
+            [matTooltip]="'View legacy system updated history'" (click)="viewLegacySystemHistoryViceVerse()"
+            [disabled]="legacyHistoryLoader">
+            <span class="ml-1 mr-1"> Legacy System History </span>
+        </button>
+    </div>
+
+    <div class="col-lg-3 col-12" *ngIf="buttonText === 'View History'">
+        <button class="min-w-40 w-full" mat-flat-button [color]="'primary'" [matTooltip]="'View New Portal History'"
+            (click)="viewLegacySystemHistoryViceVerse()" [disabled]="legacyHistoryLoader">
+            <span class="ml-1 mr-1"> View History </span>
+        </button>
+    </div>
+</div>
+
+<div class="row" *ngIf="showLegacyLoader">
     <div class="col-12 my-2">
         <fuse-card class="rounded-2xl shadow bg-card flex flex-col lg:flex-row w-full">
             <div class="p-6 sm:p-8 lg:p-10 w-full">
@@ -13,5 +31,43 @@
                 </div>
             </div>
         </fuse-card>
+    </div>
+</div>
+
+<div class="row h-100" *ngIf="!isLoading && !showLegacyLoader">
+    <div class="col-12 my-2">
+        <mat-card class="w-full p-0 mb-10 h-full rounded-2xl">
+            <table mat-table [dataSource]="dataSource" class="w-full border-t"
+                *ngIf="dataSource.length > 0;else other_content">
+
+                <!-- Name Column -->
+                <ng-container matColumnDef="dateModified">
+                    <th mat-header-cell *matHeaderCellDef class="w-40 min-w-40"> Date </th>
+                    <td mat-cell *matCellDef="let element" class="text-sm"> {{element.dateModified}} </td>
+                </ng-container>
+
+                <!-- Weight Column -->
+                <ng-container matColumnDef="history">
+                    <th mat-header-cell *matHeaderCellDef> History </th>
+                    <td mat-cell *matCellDef="let element" class="text-sm"> {{element.history}} </td>
+                </ng-container>
+
+                <tr mat-header-row class="h-18 bg-light" *matHeaderRowDef="displayedColumns"></tr>
+                <tr mat-row class="h-14 hover:bg-gray-100 dark:hover:bg-hover"
+                    *matRowDef="let row; columns: displayedColumns;"></tr>
+            </table>
+
+            <ng-template #other_content>
+                <div class="text-secondary font-semibold p-8 pb-10">
+                    No update history found for this product.
+                </div>
+            </ng-template>
+
+            <mat-paginator
+                class="sm:absolute sm:inset-x-0 sm:bottom-0 border-b sm:border-t sm:border-b-0 z-10 bg-gray-50 dark:bg-transparent"
+                [ngClass]="{'pointer-events-none': isLoading}" [length]="dataSource.length" [pageIndex]="0"
+                [pageSize]="20" (page)="getNextData($event)" [hidePageSize]="true"></mat-paginator>
+
+        </mat-card>
     </div>
 </div>

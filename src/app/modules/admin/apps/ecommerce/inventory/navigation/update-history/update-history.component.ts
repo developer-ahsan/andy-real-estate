@@ -1,8 +1,8 @@
 import { Component, Input, OnInit, Output, EventEmitter, ChangeDetectorRef } from '@angular/core';
-import { Package } from 'app/modules/admin/apps/ecommerce/inventory/inventory.types';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { InventoryService } from 'app/modules/admin/apps/ecommerce/inventory/inventory.service';
+import moment from 'moment';
 
 @Component({
   selector: 'app-update-history',
@@ -15,7 +15,14 @@ export class UpdateHistoryComponent implements OnInit {
   private _unsubscribeAll: Subject<any> = new Subject<any>();
   htmlHistory: string = '';
 
-  v2UpdateHistory = [];
+  displayedColumns: string[] = ['dateModified', 'history'];
+  dataSource = [];
+  page = 1;
+
+  legacyHistoryLoader = true;
+  showLegacyLoader = false;
+
+  buttonText = "Legacy System History";
 
   constructor(
     private _changeDetectorRef: ChangeDetectorRef,
@@ -25,22 +32,60 @@ export class UpdateHistoryComponent implements OnInit {
   ngOnInit(): void {
     const { pk_productID } = this.selectedProduct;
 
-    this._inventoryService.getHistoryProductId(pk_productID)
-      .pipe(takeUntil(this._unsubscribeAll))
-      .subscribe((history) => {
-        this.v2UpdateHistory = history["data"];
-        console.log("this.v2UpdateHistory", this.v2UpdateHistory)
-      });
+    this.getHistoryByProductId(1);
 
     this._inventoryService.getUpdateHistoryByProductId(pk_productID)
       .pipe(takeUntil(this._unsubscribeAll))
       .subscribe((history) => {
         this.htmlHistory = history["data"][0]?.updateHistory;
+
+        this.legacyHistoryLoader = false;
+
+        // Mark for check
         this._changeDetectorRef.markForCheck();
       });
+  }
 
-    this.isLoadingChange.emit(false);
+  getNextData(event) {
+    this.isLoading = true;
+    const { previousPageIndex, pageIndex } = event;
+
+    if (pageIndex > previousPageIndex) {
+      this.page++;
+    } else {
+      this.page--;
+    };
+    this.getHistoryByProductId(this.page);
+  }
+
+  getHistoryByProductId(page) {
+    const { pk_productID } = this.selectedProduct;
+    this._inventoryService.getHistoryProductId(pk_productID, page)
+      .pipe(takeUntil(this._unsubscribeAll))
+      .subscribe((history) => {
+        this.dataSource = history["data"];
+
+        if (this.dataSource.length) {
+          for (const obj of this.dataSource) {
+            const { dateAdded } = obj;
+            obj["dateModified"] = dateAdded ? moment.utc(dateAdded).format("lll") : "N/A";
+          }
+        };
+
+        this.isLoadingChange.emit(false);
+
+        // Mark for check
+        this._changeDetectorRef.markForCheck();
+      });
+  };
+
+  viewLegacySystemHistoryViceVerse() {
+    this.showLegacyLoader = !this.showLegacyLoader;
+    if (this.buttonText === "View History") {
+      this.buttonText = "Legacy System History";
+    } else {
+      this.buttonText = "View History";
+    }
+
   }
 }
-
-3

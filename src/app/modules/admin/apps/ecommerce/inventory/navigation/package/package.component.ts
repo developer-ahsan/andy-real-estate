@@ -79,7 +79,6 @@ export class PackageComponent implements OnInit {
   };
 
   updatePackage() {
-    console.log("this.arrayToUpdate", this.arrayToUpdate)
     const { pk_productID } = this.selectedProduct;
 
     let tempPackageArray = [];
@@ -101,7 +100,6 @@ export class PackageComponent implements OnInit {
       package: tempPackageArray,
       call_type: "put"
     }
-    console.log("payload", payload);
 
     this.packageUpdateLoader = true;
     this._inventoryService.updatePackage(payload)
@@ -145,7 +143,6 @@ export class PackageComponent implements OnInit {
 
   rowAddPackage(packageObj, title, event) {
     const { value } = title !== 'blnDecoratorPO' ? event.target : event;
-    console.log("packageObj", packageObj)
 
     if (title === 'run') {
       packageObj.run = parseInt(value);
@@ -195,7 +192,6 @@ export class PackageComponent implements OnInit {
       package: tempPackageArray,
       call_type: "delete"
     }
-    console.log("payload", payload);
     this.deleteLoader = true;
     this._inventoryService.updatePackage(payload)
       .subscribe((response) => {
@@ -215,7 +211,6 @@ export class PackageComponent implements OnInit {
       });
   }
   addListPackage() {
-    console.log("this.arrayToPost", this.arrayToPost)
     const { pk_productID } = this.selectedProduct;
 
     let tempPackageArray = [];
@@ -237,7 +232,6 @@ export class PackageComponent implements OnInit {
       package: tempPackageArray,
       call_type: "post"
     }
-    console.log("payload", payload);
 
     this.packagePostLoader = true;
     this._inventoryService.updatePackage(payload)

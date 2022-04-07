@@ -393,11 +393,13 @@ export class InventoryService {
     /**
     * Get history by product id
     */
-    getHistoryProductId(productId: string) {
+    getHistoryProductId(productId: string, pageNo) {
         return this._httpClient.get(environment.products, {
             params: {
                 update_history_v2: true,
-                product_id: productId
+                product_id: productId,
+                size: 20,
+                page: pageNo
             }
         })
     }
