@@ -61,6 +61,8 @@ export class ProductDetailsComponent implements OnInit, OnDestroy {
           : 'N/A';
         this.isProductFetched = false;
 
+        console.log("this.selectedProduct", this.selectedProduct)
+
         this.routes = this._inventoryService.navigationLabels;
         const { blnService, blnApparel } = this.selectedProduct;
 

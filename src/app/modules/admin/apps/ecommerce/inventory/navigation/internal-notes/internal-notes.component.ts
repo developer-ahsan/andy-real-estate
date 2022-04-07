@@ -1,11 +1,12 @@
 import { Component, Input, OnInit, Output, EventEmitter, ChangeDetectorRef } from '@angular/core';
-import { Package } from 'app/modules/admin/apps/ecommerce/inventory/inventory.types';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { InventoryService } from 'app/modules/admin/apps/ecommerce/inventory/inventory.service';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { UserService } from 'app/core/user/user.service';
 import { User } from 'app/core/user/user.model';
+import { MatSnackBar } from '@angular/material/snack-bar';
+import moment from 'moment';
 
 @Component({
   selector: 'app-internal-notes',
@@ -28,11 +29,14 @@ export class InternalNotesComponent implements OnInit {
   loader = false;
   user: User;
 
+  deleteLoader = false;
+
   constructor(
     private _changeDetectorRef: ChangeDetectorRef,
     private _inventoryService: InventoryService,
     private _userService: UserService,
-    private _formBuilder: FormBuilder
+    private _formBuilder: FormBuilder,
+    private _snackBar: MatSnackBar
   ) { }
 
   ngOnInit(): void {
@@ -57,13 +61,17 @@ export class InternalNotesComponent implements OnInit {
       .subscribe((comment) => {
         this.comments = comment["data"];
         this.commentsCount = comment["totalRecords"];
-        console.log("this.comments", this.comments)
+
+        for (const comment of this.comments) {
+          const { theTimestamp } = comment;
+          comment["dateFormatted"] = moment.utc(theTimestamp).format("lll");
+        }
+
         this._changeDetectorRef.markForCheck();
       });
 
     this._inventoryService.getCommentators()
       .subscribe((commentators) => {
-        console.log("commentators", commentators);
         this.commentators = commentators["data"];
         this.isLoadingChange.emit(false);
       });
@@ -124,7 +132,6 @@ export class InternalNotesComponent implements OnInit {
       internal_comment: true,
     }
 
-    console.log("payload", payload)
     this.loader = true;
     this._inventoryService.updateComment(payload)
       .subscribe((response) => {
@@ -145,15 +152,35 @@ export class InternalNotesComponent implements OnInit {
   }
 
   deleteComment(comment): void {
+    const { pk_productID } = this.selectedProduct;
     const { pk_commentID } = comment;
+
     const payload = {
       comment_id: pk_commentID,
-      call_type: "delete"
+      call_type: "delete",
+      emails: [],
+      internal_comment: true
     };
-    console.log("payload", payload);
+
+    this.deleteLoader = true;
     this._inventoryService.deleteComment(payload)
       .subscribe((response) => {
-        console.log("Response deleted", response)
+        this.deleteLoader = false;
+        this._inventoryService.getCommentByProductId(pk_productID)
+          .pipe(takeUntil(this._unsubscribeAll))
+          .subscribe((comment) => {
+            this.comments = comment["data"];
+            this.commentsCount = comment["totalRecords"];
+
+            this._snackBar.open(response["message"], '', {
+              horizontalPosition: 'center',
+              verticalPosition: 'bottom',
+              duration: 3500
+            });
+
+            // Mark for check
+            this._changeDetectorRef.markForCheck();
+          });
       });
   }
 

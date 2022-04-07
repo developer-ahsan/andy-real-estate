@@ -37,8 +37,7 @@
 <div class="row h-100" *ngIf="!isLoading && !showLegacyLoader">
     <div class="col-12 my-2">
         <mat-card class="w-full p-0 mb-10 h-full rounded-2xl">
-            <table mat-table [dataSource]="dataSource" class="w-full border-t"
-                *ngIf="dataSource.length > 0;else other_content">
+            <table mat-table [dataSource]="dataSource" class="w-full" *ngIf="dataSource.length > 0;else other_content">
 
                 <!-- Name Column -->
                 <ng-container matColumnDef="dateModified">

@@ -41,8 +41,12 @@
 
             <ng-template #myCard>
                 <div class="bg-card shadow p-4">
-                    <div class="flex items-center">
+                    <div class="flex mr-6" style="justify-content: space-between;">
                         <div class="text-2xl font-bold">Products</div>
+                        <div class="text-2xl font-bold"
+                            [ngStyle]="selectedProduct?.blnActive ? {'color':'#0ecd0e'} : {'color': '#ff0000'}">
+                            {{selectedProduct?.blnActive ? 'Active' : 'Inactive' }}
+                        </div>
                     </div>
                     <div class="row w-full">
                         <div class="col-lg-4 col-md-6 col-12">
@@ -61,9 +65,14 @@
                                 style="color: #959595; text-decoration: underline; cursor: pointer;">
                                 Click Here </p>
                         </div>
-                        <div class="col-lg-4 col-md-6 col-12">
+                        <div class="col-lg-4 col-md-6 col-12" *ngIf="selectedProduct.vendorRelation !== 1">
                             <b class="text-secondary text-sm">Supplier Relationship</b>
-                            <p class="float-right text-sm">Preferred</p>
+                            <p class="float-right text-sm" *ngIf="selectedProduct.vendorRelation === 2">
+                                Preferred
+                            </p>
+                            <p class="float-right text-sm" *ngIf="selectedProduct.vendorRelation === 3">
+                                Partner
+                            </p>
                         </div>
                         <div class="col-lg-4 col-md-6 col-12">
                             <b class="text-secondary text-sm">Last Updated</b>
@@ -80,10 +89,6 @@
                         <div class="col-lg-4 col-md-6 col-12">
                             <b class="text-secondary text-sm">Core Product</b>
                             <p class="float-right text-sm">{{selectedProduct?.blnCore ? 'YES' : 'NO' }}</p>
-                        </div>
-                        <div class="col-lg-4 col-md-6 col-12">
-                            <b class="text-secondary text-sm">Status</b>
-                            <p class="float-right text-sm">{{selectedProduct?.blnActive ? 'Active' : 'Inactive' }}</p>
                         </div>
                     </div>
                 </div>

@@ -279,6 +279,8 @@ export interface Comment {
 export interface DeleteComment {
     comment_id: number;
     call_type: string;
+    internal_comment: boolean;
+    emails: string[];
 }
 
 export interface Licensing {
