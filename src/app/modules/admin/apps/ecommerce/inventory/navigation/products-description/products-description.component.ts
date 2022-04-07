@@ -80,6 +80,7 @@ export class ProductsDescriptionComponent implements OnInit {
     this._inventoryService.getProductDescription(pk_productID)
       .pipe(takeUntil(this._unsubscribeAll))
       .subscribe((description) => {
+        console.log("description", description)
 
         const { keywords, metaDesc, miniDesc, productDesc, supplierLink, sex, notes, searchKeywords, optionsGuidelines } = description["data"][0];
         this.productDescription = description["data"][0];

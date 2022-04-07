@@ -15,6 +15,8 @@ export class UpdateHistoryComponent implements OnInit {
   private _unsubscribeAll: Subject<any> = new Subject<any>();
   htmlHistory: string = '';
 
+  v2UpdateHistory = [];
+
   constructor(
     private _changeDetectorRef: ChangeDetectorRef,
     private _inventoryService: InventoryService
@@ -22,6 +24,14 @@ export class UpdateHistoryComponent implements OnInit {
 
   ngOnInit(): void {
     const { pk_productID } = this.selectedProduct;
+
+    this._inventoryService.getHistoryProductId(pk_productID)
+      .pipe(takeUntil(this._unsubscribeAll))
+      .subscribe((history) => {
+        this.v2UpdateHistory = history["data"];
+        console.log("this.v2UpdateHistory", this.v2UpdateHistory)
+      });
+
     this._inventoryService.getUpdateHistoryByProductId(pk_productID)
       .pipe(takeUntil(this._unsubscribeAll))
       .subscribe((history) => {

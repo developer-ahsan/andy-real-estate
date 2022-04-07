@@ -4,6 +4,7 @@ import { InventoryService } from 'app/modules/admin/apps/ecommerce/inventory/inv
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { NetCostUpdate } from 'app/modules/admin/apps/ecommerce/inventory/inventory.types';
+import { IDropdownSettings } from 'ng-multiselect-dropdown';
 
 @Component({
   selector: 'app-net-cost',
@@ -22,6 +23,18 @@ export class NetCostComponent implements OnInit {
   netCostLoader = false;
   validationCheckMessage = ""
 
+  coOpProgramSettings: IDropdownSettings = {};
+  selectedCoOpProgram = [];
+  coops = [];
+  selectedCooP = null;
+
+  redPriceDropdownSettings: IDropdownSettings = {};
+  selectedRedPriceItems = [];
+  redPriceList = [];
+  redPriceCommentText = "";
+
+  distributionCodes = [];
+
   constructor(
     private _changeDetectorRef: ChangeDetectorRef,
     private _inventoryService: InventoryService,
@@ -29,7 +42,66 @@ export class NetCostComponent implements OnInit {
   ) { }
 
   ngOnInit(): void {
-    const { pk_productID, msrp, liveCostComment, costComment, fk_coopID, fk_supplierID } = this.selectedProduct;
+    this._inventoryService.getSystemDistributorCodes()
+      .subscribe((response) => {
+        this.distributionCodes = response["data"];
+
+        // Mark for check
+        this._changeDetectorRef.markForCheck();
+      });
+
+    const { pk_productID, msrp, liveCostComment, costComment, fk_supplierID } = this.selectedProduct;
+
+    console.log("this.selectedProduct", this.selectedProduct)
+
+    this.selectedRedPriceItems.push(liveCostComment)
+    // liveCostComment ? this.selectedRedPriceItems.push(liveCostComment) : this.selectedRedPriceItems.push({});
+
+    // Red price comment
+    this.redPriceList = [
+      { item_id: 1, item_text: 'Price does not include imprint. You may add desired imprint(s) during the checkout process for an additional cost' },
+      { item_id: 2, item_text: 'Price does not include imprint and is based on the white color option. You may add desired imprint(s) during the checkout process for an additional cost' },
+      { item_id: 3, item_text: 'Price includes a one color/one location imprint. Setups and any other additional fees may apply and will be disclosed prior to checkout' },
+      { item_id: 4, item_text: 'Price includes a laser engraved/one location imprint. Setups and any other additional fees may apply andwill be disclosed prior to checkout' },
+      { item_id: 5, item_text: 'Price includes a laser etched/one location imprint. Setups and any other additional fees may apply and will be disclosed prior to checkout' },
+      { item_id: 6, item_text: 'Price does not include imprint and is based on the white color option. You may add desired imprint(s) during the checkout process for an additional cost' },
+      { item_id: 7, item_text: 'Price includes a full color/one location imprint. Setups and any other additional fees may apply and will be disclosed prior to checkout' },
+      { item_id: 8, item_text: 'Price includes imprint, setup, and run fees' },
+      { item_id: 9, item_text: 'Setups and any other additional fees may apply and will be disclosed prior to checkout' },
+      { item_id: 10, item_text: 'Item is sold blank' }
+    ];
+
+    this.redPriceDropdownSettings = {
+      singleSelection: false,
+      idField: 'item_id',
+      textField: 'item_text',
+      selectAllText: 'Select All',
+      unSelectAllText: 'UnSelect All',
+      itemsShowLimit: 3,
+      allowSearchFilter: true,
+      limitSelection: 1
+    };
+
+    this.coOpProgramSettings = {
+      singleSelection: false,
+      idField: 'pk_coopID',
+      textField: 'name',
+      selectAllText: 'Select All',
+      unSelectAllText: 'UnSelect All',
+      itemsShowLimit: 1,
+      allowSearchFilter: true,
+      limitSelection: 1,
+      noDataAvailablePlaceholderText: "No Co-op programs found"
+    };
+
+    // Get the CoOps
+    this._inventoryService.getSpecificProductCoops(pk_productID)
+      .subscribe((coops) => {
+        this.coops = coops["data"];
+
+        // Mark for check
+        this._changeDetectorRef.markForCheck();
+      });
 
     this.netCostForm = this._formBuilder.group({
       quantityOne: [''],
@@ -63,9 +135,7 @@ export class NetCostComponent implements OnInit {
       blankCostDropFive: [''],
       blankCostDropSix: [''],
       msrp: [''],
-      internalComments: [''],
-      redPriceComment: [''],
-      coOp: [""]
+      internalComments: ['']
     });
     // this.netCostForm.patchValue(customer);
 
@@ -81,7 +151,6 @@ export class NetCostComponent implements OnInit {
     this._inventoryService.getNetCost(pk_productID)
       .pipe(takeUntil(this._unsubscribeAll))
       .subscribe((netCost) => {
-        console.log("netCost", netCost["data"])
         const formValues = {
           quantityOne: netCost["data"][0]?.quantity || "",
           quantityTwo: netCost["data"][1]?.quantity || "",
@@ -114,16 +183,29 @@ export class NetCostComponent implements OnInit {
           blankCostDropFive: "",
           blankCostDropSix: "",
           msrp: msrp || "",
-          internalComments: costComment || "",
-          redPriceComment: liveCostComment || "",
-          coOp: fk_coopID || 0
+          internalComments: costComment || ""
         };
-        console.log("formValues", formValues);
+
         this.netCostForm.patchValue(formValues);
+
+        // Main component loader setting to false
+        this.isLoadingChange.emit(false);
+
+        // Mark for check
         this._changeDetectorRef.markForCheck();
       });
-    this.isLoadingChange.emit(false);
+
   }
+
+  onCoOpProgramSelect(item: any) {
+    const { pk_coopID } = item;
+    this.selectedCooP = pk_coopID;
+  };
+
+  onRedPriceItemSelect(item: any) {
+    const { item_text } = item;
+    this.redPriceCommentText = item_text;
+  };
 
   removeNull(array) {
     return array.filter(x => x !== null)
@@ -151,12 +233,12 @@ export class NetCostComponent implements OnInit {
       cost_list: realStandardCostList,
       blank_cost_list: realBlankList,
       cost_comment: formValues.internalComments,
-      live_cost_comment: formValues.redPriceComment,
-      coop_id: parseInt(formValues.coOp),
+      live_cost_comment: this.redPriceCommentText || "",
+      coop_id: this.selectedCooP || 0,
       msrp: parseInt(formValues.msrp),
       net_cost: true
-    }
-    console.log("payload => ", payload)
+    };
+
     this.netCostLoader = true;
     this._inventoryService.updateNetCost(payload)
       .subscribe((response) => {

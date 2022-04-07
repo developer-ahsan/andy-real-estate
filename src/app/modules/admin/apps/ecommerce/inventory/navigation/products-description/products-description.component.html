@@ -39,25 +39,25 @@
                             <div class="col-lg-6 col-12">
                                 <mat-form-field class="w-full">
                                     <mat-label>Product Number (40)</mat-label>
-                                    <input matInput [formControlName]="'productNO'">
+                                    <input matInput maxlength="40" [formControlName]="'productNO'">
                                 </mat-form-field>
                             </div>
                             <div class="col-12">
                                 <mat-form-field class="w-full">
                                     <mat-label>Permalink (300)</mat-label>
-                                    <input matInput [formControlName]="'permalink'">
+                                    <input matInput maxlength="300" [formControlName]="'permalink'">
                                 </mat-form-field>
                             </div>
                             <div class="col-lg-8 col-12">
                                 <mat-form-field class="w-full">
                                     <mat-label>Supplier Link URL: (200)</mat-label>
-                                    <input matInput [formControlName]="'supplierLink'">
+                                    <input matInput maxlength="200" [formControlName]="'supplierLink'">
                                 </mat-form-field>
                             </div>
                             <div class="col-lg-4 col-12">
                                 <mat-form-field class="w-full">
                                     <mat-label>TechnoLogo SKU (50)</mat-label>
-                                    <input matInput [formControlName]="'technoLogoSKU'">
+                                    <input matInput maxlength="50" [formControlName]="'technoLogoSKU'">
                                 </mat-form-field>
                             </div>
                             <div class="col-12 mb-6">
@@ -70,13 +70,15 @@
                             <div class="col-lg-6 col-12 mt-6">
                                 <mat-form-field class="w-full">
                                     <mat-label>Mini Descr. (150)</mat-label>
-                                    <textarea matInput rows="5" [formControlName]="'miniDesc'"></textarea>
+                                    <textarea matInput maxlength="150" rows="3"
+                                        [formControlName]="'miniDesc'"></textarea>
                                 </mat-form-field>
                             </div>
                             <div class="col-lg-6 col-12 mt-6">
                                 <mat-form-field class="w-full">
                                     <mat-label>Meta desc (160)</mat-label>
-                                    <textarea matInput rows="5" [formControlName]="'metaDesc'"></textarea>
+                                    <textarea matInput maxlength="160" rows="3"
+                                        [formControlName]="'metaDesc'"></textarea>
                                     <mat-icon class="icon-size-5 text-secondary ml-2" style="cursor: pointer;"
                                         (click)="copyDescriptionToMeta()" [matTooltip]="'Copy from description'"
                                         svgIcon="mat_outline:content_copy">
@@ -86,13 +88,13 @@
                             <div class="col-lg-4 col-12">
                                 <mat-form-field class="w-full">
                                     <mat-label>Meta keywords (50) </mat-label>
-                                    <input matInput [formControlName]="'keywords'">
+                                    <input matInput maxlength="50" [formControlName]="'keywords'">
                                 </mat-form-field>
                             </div>
                             <div class="col-lg-4 col-12">
                                 <mat-form-field class="w-full">
                                     <mat-label>Internal keywords (800)</mat-label>
-                                    <input matInput [formControlName]="'internalKeywords'">
+                                    <input matInput maxlength="800" [formControlName]="'internalKeywords'">
                                 </mat-form-field>
                             </div>
                             <div class="col-lg-4 col-12">

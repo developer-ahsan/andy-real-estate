@@ -207,3 +207,15 @@ body.light .mat-expansion-panel-header.mat-expanded, body .light .mat-expansion-
 .lineHeihgt-35 {
   line-height: 3.5
 }
+
+.mat-horizontal-content-container{
+  overflow: visible !important;
+}
+
+.selected-item{
+  max-width: max-content !important;
+}
+
+.mat-horizontal-stepper-header-container{
+  pointer-events: none !important;
+}

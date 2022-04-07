@@ -34,19 +34,14 @@
                     <mat-progress-spinner *ngIf="firstFormLoader || isSupplierNotReceived" [diameter]=" 24"
                         [mode]="'indeterminate'">
                     </mat-progress-spinner>
-                    <mat-icon [svgIcon]="'heroicons_outline:plus'" *ngIf="!firstFormLoader"></mat-icon>
-                    <span class="ml-2 mr-1" *ngIf="!firstFormLoader">Add Product</span>
+                    <mat-icon [svgIcon]="'heroicons_outline:plus'" *ngIf="!firstFormLoader && !isSupplierNotReceived">
+                    </mat-icon>
+                    <span class="ml-2 mr-1" *ngIf="!firstFormLoader && !isSupplierNotReceived">Add Product</span>
                 </button>
             </div>
         </div>
     </div>
 
-    <div class="row m-2 justify-end" *ngIf="isFiltering">
-        <a href="" class="mx-2 text-sm" (click)="clearFilter($event)">
-            <mat-icon class="icon-size-5" svgIcon="mat_outline:close"></mat-icon>
-            Filter
-        </a>
-    </div>
     <div class="row m-2">
         <div class="col-lg-4 col-12 p-2">
             <!-- Search -->
@@ -66,8 +61,10 @@
                     <span class="ml-3" *ngIf="isSupplierNotReceived"> (Fetching Suppliers... )</span>
                 </mat-label>
                 <mat-select [(ngModel)]="selectedSupplier" disableRipple [disabled]="isSupplierNotReceived">
-                    <mat-option (click)="selectBySupplier(option)" value="{{option}}" *ngFor="let option of options">
-                        {{option.companyName}}
+                    <mat-option (click)="clearFilter()">All Suppliers</mat-option>
+                    <mat-option (click)="selectBySupplier(supplier)" value="{{supplier}}"
+                        *ngFor="let supplier of suppliers">
+                        {{supplier.companyName}}
                     </mat-option>
                 </mat-select>
             </mat-form-field>
@@ -81,6 +78,7 @@
                     <span class="ml-3" *ngIf="isStoreNotReceived"> (Fetching Stores... )</span>
                 </mat-label>
                 <mat-select [(ngModel)]="selectedStore" disableRipple [disabled]="isStoreNotReceived">
+                    <mat-option (click)="clearFilter()">All Stores</mat-option>
                     <mat-option (click)="selectByStore(store)" value="{{store}}" *ngFor="let store of stores">
                         {{store.storeName}}
                     </mat-option>
@@ -351,36 +349,26 @@
 
     <div class="row bg-light max-height">
         <div class="col-12 overflow-auto">
-            <mat-card class="rounded-2xl m-8 overflow-auto">
+            <mat-card class="rounded-2xl m-8">
                 <mat-card-content>
-                    <mat-stepper (selectionChange)="selectionChange($event)" [linear]="true" class="example-stepper"
-                        [orientation]="(stepperOrientation | async)!">
+                    <mat-stepper (selectionChange)="selectionChange($event)" #stepper [linear]="isLinear"
+                        class="example-stepper" [orientation]="(stepperOrientation | async)!">
 
                         <!-- Product Type -->
                         <mat-step [stepControl]="firstFormGroup" label="Product Type" [editable]="false">
+                            <div class="row">
+                                <div class="col-12">
+                                    <p class="font-semibold">Select a supplier</p>
+                                </div>
+                                <div class="col-lg-9 col-12">
+                                    <ng-multiselect-dropdown [placeholder]="'Select Supplier'"
+                                        [settings]="dropdownSettings" [data]="dropdownList" [(ngModel)]="selectedItems"
+                                        (onSelect)="onItemSelect($event)">
+                                    </ng-multiselect-dropdown>
+                                </div>
+                            </div>
                             <form [formGroup]="firstFormGroup" class="mt-3">
                                 <div class="row">
-                                    <!-- <div class="col-12">
-                                        <ng-autocomplete [data]="suppliers" [searchKeyword]="keyword"
-                                            placeholder="Select country" (selected)='selectEvent($event)'
-                                            (inputChanged)='onChangeSearch($event)' (inputFocused)='onFocused($event)'
-                                            [itemTemplate]="itemTemplate" [notFoundTemplate]="notFoundTemplate">
-                                        </ng-autocomplete>
-                                    </div> -->
-                                    <div class="col-12">
-                                        <mat-form-field class="w-full" appearance="fill">
-                                            <mat-label>Select a supplier</mat-label>
-                                            <input type="text" matInput [formControlName]="'supplierValue'"
-                                                [matAutocomplete]="auto">
-                                            <mat-autocomplete #auto="matAutocomplete" [displayWith]="displayFn">
-                                                <mat-option *ngFor="let option of filteredOptions | async"
-                                                    [value]="option">
-                                                    {{option.companyName}}
-                                                </mat-option>
-                                            </mat-autocomplete>
-                                            <mat-error>This field is required</mat-error>
-                                        </mat-form-field>
-                                    </div>
                                     <div class="col-12">
                                         <mat-radio-group aria-labelledby="example-radio-group-label"
                                             class="example-radio-group w-full" [formControlName]="'radio'">
@@ -397,7 +385,8 @@
                                 <div class="row">
                                     <div class="col-lg-10 col-12"></div>
                                     <div class="col-lg-2 col-12">
-                                        <button class="w-full" mat-stroked-button matStepperNext>Continue</button>
+                                        <button class="w-full" (click)="goForward(stepper)"
+                                            mat-stroked-button>Continue</button>
                                     </div>
                                 </div>
                             </form>
@@ -428,17 +417,16 @@
                                             <mat-error>Brand Name is required</mat-error>
                                         </mat-form-field>
                                     </div>
-                                    <div class="col-lg-6 col-12">
-                                        <mat-form-field appearance="fill" class="w-full">
-                                            <mat-label>Main Description (500)</mat-label>
-                                            <textarea matInput rows="3" placeholder="Main Description (500)"
-                                                [formControlName]="'mainDescription'"></textarea>
-                                        </mat-form-field>
+                                    <div class="col-12 pb-6 mb-6">
+                                        <div>Main Description</div>
+                                        <quill-editor [formControlName]="'mainDescription'" [modules]="quillModules">
+                                        </quill-editor>
                                     </div>
-                                    <div class="col-lg-6 col-12">
+                                    <div class="col-12 mt-top-30px">
                                         <mat-form-field appearance="fill" class="w-full">
                                             <mat-label>Mini/Meta Description (150)</mat-label>
-                                            <textarea matInput rows="3" placeholder="Mini Description (150)"
+                                            <textarea matInput rows="3" maxlength="150"
+                                                placeholder="Mini Description (150)"
                                                 [formControlName]="'miniDescription'"></textarea>
                                         </mat-form-field>
                                     </div>
@@ -596,7 +584,7 @@
                                     </div>
                                     <div class="col-12">
                                         <mat-form-field class="example-chip-list w-full" appearance="fill">
-                                            <mat-label>Keywords (50) - Comma-seperated</mat-label>
+                                            <mat-label>Keywords (Comma-seperated)</mat-label>
                                             <mat-chip-list #chipList aria-label="Fruit selection">
                                                 <mat-chip *ngFor="let fruit of fruits" (removed)="remove(fruit)">
                                                     {{fruit.name}}
@@ -615,12 +603,10 @@
                                     </div>
                                 </div>
                                 <div class="row">
-                                    <div class="col-lg-8 col-12"></div>
-                                    <div class="col-lg-2 col-6">
-                                        <button class="w-full" mat-stroked-button matStepperPrevious>Back</button>
-                                    </div>
-                                    <div class="col-lg-2 col-6">
-                                        <button class="w-full" mat-stroked-button matStepperNext>Next</button>
+                                    <div class="col-lg-10 col-12"></div>
+                                    <div class="col-lg-2 col-12">
+                                        <button class="w-full" (click)="goForward(stepper)"
+                                            mat-stroked-button>Continue</button>
                                     </div>
                                 </div>
                             </form>
@@ -731,7 +717,8 @@
                                                         <mat-option value="select_order" disabled>
                                                             COST
                                                         </mat-option>
-                                                        <mat-option *ngFor="let option of products" [value]="option">
+                                                        <mat-option *ngFor="let option of distributionCodes"
+                                                            [value]="option">
                                                             {{option.distrDiscountCode}}
                                                         </mat-option>
                                                     </mat-select>
@@ -743,7 +730,8 @@
                                                         <mat-option value="select_order" disabled>
                                                             COST
                                                         </mat-option>
-                                                        <mat-option *ngFor="let option of products" [value]="option">
+                                                        <mat-option *ngFor="let option of distributionCodes"
+                                                            [value]="option">
                                                             {{option.distrDiscountCode}}
                                                         </mat-option>
                                                     </mat-select>
@@ -756,7 +744,8 @@
                                                         <mat-option value="select_order" disabled>
                                                             COST
                                                         </mat-option>
-                                                        <mat-option *ngFor="let option of products" [value]="option">
+                                                        <mat-option *ngFor="let option of distributionCodes"
+                                                            [value]="option">
                                                             {{option.distrDiscountCode}}
                                                         </mat-option>
                                                     </mat-select>
@@ -768,7 +757,8 @@
                                                         <mat-option value="select_order" disabled>
                                                             COST
                                                         </mat-option>
-                                                        <mat-option *ngFor="let option of products" [value]="option">
+                                                        <mat-option *ngFor="let option of distributionCodes"
+                                                            [value]="option">
                                                             {{option.distrDiscountCode}}
                                                         </mat-option>
                                                     </mat-select>
@@ -780,7 +770,8 @@
                                                         <mat-option value="select_order" disabled>
                                                             COST
                                                         </mat-option>
-                                                        <mat-option *ngFor="let option of products" [value]="option">
+                                                        <mat-option *ngFor="let option of distributionCodes"
+                                                            [value]="option">
                                                             {{option.distrDiscountCode}}
                                                         </mat-option>
                                                     </mat-select>
@@ -792,7 +783,8 @@
                                                         <mat-option value="select_order" disabled>
                                                             COST
                                                         </mat-option>
-                                                        <mat-option *ngFor="let option of products" [value]="option">
+                                                        <mat-option *ngFor="let option of distributionCodes"
+                                                            [value]="option">
                                                             {{option.distrDiscountCode}}
                                                         </mat-option>
                                                     </mat-select>
@@ -803,20 +795,7 @@
                                             </div>
 
                                             <!-- Other Form -->
-                                            <div class="col-lg-6 col-12 mt-5">
-                                                <p style="font-weight: 500;">Co-op Program</p>
-                                                <mat-form-field class="w-full">
-                                                    <mat-select name="order" [formControlName]="'coOp'">
-                                                        <mat-option value="select_order" disabled>
-                                                            NONE
-                                                        </mat-option>
-                                                        <mat-option *ngFor="let option of products" [value]="option">
-                                                            {{option.distrDiscountCode}}
-                                                        </mat-option>
-                                                    </mat-select>
-                                                </mat-form-field>
-                                            </div>
-                                            <div class="col-lg-6 col-12 mt-4">
+                                            <div class="col-12 mt-4">
                                                 <mat-form-field class="w-full">
                                                     <mat-label>MSRP</mat-label>
                                                     <input matInput [formControlName]="'msrp'">
@@ -828,33 +807,44 @@
                                                     <input matInput [formControlName]="'internalComments'">
                                                 </mat-form-field>
                                             </div>
-                                            <div class="col-12">
-                                                <mat-form-field class="w-full" appearance="fill">
-                                                    <mat-label>Red Price Comment</mat-label>
-                                                    <mat-select formControl="redPriceComment">
-                                                        <mat-option aria-disabled="true">None</mat-option>
-                                                        <mat-option *ngFor="let state of states" value="state">
-                                                            {{state.name}}
-                                                        </mat-option>
-                                                    </mat-select>
-                                                </mat-form-field>
-                                            </div>
                                         </div>
                                     </form>
+                                    <div class="row my-5 px-3">
+                                        <div class="col-12">
+                                            <p class="font-semibold">Red Price Comment</p>
+                                        </div>
+                                        <div class="col-12 mt-2">
+                                            <ng-multiselect-dropdown [placeholder]="'Select Red Price Comment'"
+                                                [settings]="redPriceDropdownSettings" [data]="redPriceList"
+                                                [(ngModel)]="selectedRedPriceItems"
+                                                (onSelect)="onRedPriceItemSelect($event)"
+                                                (onSelectAll)="onSelectAll($event)">
+                                            </ng-multiselect-dropdown>
+                                        </div>
+
+                                        <div class="col-12 mt-3">
+                                            <p class="font-semibold">Co-op Program</p>
+                                        </div>
+                                        <div class="col-12 mt-2">
+                                            <ng-multiselect-dropdown [placeholder]="'Co-op Program'"
+                                                [settings]="coOpProgramSettings" [data]="coops"
+                                                [(ngModel)]="selectedCoOpProgram"
+                                                (onSelect)="onCoOpProgramSelect($event)">
+                                            </ng-multiselect-dropdown>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                             <div class="row">
-                                <div class="col-lg-8 col-12"></div>
-                                <div class="col-lg-2 col-6">
-                                    <button class="w-full" mat-stroked-button matStepperPrevious>Back</button>
-                                </div>
-                                <div class="col-lg-2 col-6">
-                                    <button class="w-full" mat-stroked-button matStepperNext>Next</button>
+                                <div class="col-lg-10 col-12"></div>
+                                <div class="col-lg-2 col-12">
+                                    <button class="w-full" (click)="goForward(stepper)"
+                                        mat-stroked-button>Continue</button>
                                 </div>
                             </div>
                         </mat-step>
 
-                        <mat-step [stepControl]="licensingTermForm" label="Licensing Term" [editable]="true">
+                        <mat-step [stepControl]="licensingTermForm" label="Licensing Term" [editable]="false">
                             <ngx-skeleton-loader count="8" appearance="line" animation="pulse"
                                 *ngIf="licensingTermLoader">
                             </ngx-skeleton-loader>
@@ -865,9 +855,9 @@
                                 <div class="p-6">
                                     <mat-accordion multi>
                                         <div class="row">
-                                            <div class="col-lg-6 col-12" *ngFor="let license of licensingTerms;">
-                                                <mat-expansion-panel class="my-2"
-                                                    [expanded]="license.pk_licensingTermID === selectedTermObject?.pk_licensingTermID ? true : false"
+                                            <div class="col-lg-6 col-12"
+                                                *ngFor="let license of licensingTerms; let first = isFirst;">
+                                                <mat-expansion-panel class="my-2" [expanded]="isFirst ? true : false"
                                                     (opened)="expansionOpened(license)">
                                                     <mat-expansion-panel-header>
                                                         <mat-panel-title>
@@ -880,7 +870,13 @@
                                         </div>
                                     </mat-accordion>
                                 </div>
-
+                            </div>
+                            <div class="row" *ngIf="!licensingTermLoader">
+                                <div class="col-lg-10 col-12"></div>
+                                <div class="col-lg-2 col-12">
+                                    <button class="w-full" (click)="goForward(stepper)"
+                                        mat-stroked-button>Continue</button>
+                                </div>
                             </div>
                         </mat-step>
 
@@ -909,12 +905,10 @@
                                 </div>
                             </form>
                             <div class="row">
-                                <div class="col-lg-8 col-12"></div>
-                                <div class="col-lg-2 col-6">
-                                    <button class="w-full" mat-stroked-button matStepperPrevious>Back</button>
-                                </div>
-                                <div class="col-lg-2 col-6">
-                                    <button class="w-full" mat-stroked-button matStepperNext>Next</button>
+                                <div class="col-lg-10 col-12"></div>
+                                <div class="col-lg-2 col-12">
+                                    <button class="w-full" (click)="goForward(stepper)"
+                                        mat-stroked-button>Continue</button>
                                 </div>
                             </div>
                         </mat-step>
@@ -926,41 +920,36 @@
                                     <div class="mt-8 text-2xl font-extrabold tracking-tight leading-tight">
                                         Product Type
                                     </div>
-                                    <form [formGroup]="reviewForm" class="mt-3">
-                                        <div class="row">
-                                            <div class="col-12">
-                                                <mat-form-field class="w-full" appearance="fill">
-                                                    <mat-label>Select a supplier</mat-label>
-                                                    <input type="text" matInput [formControlName]="'supplierValue'"
-                                                        [matAutocomplete]="auto">
-                                                    <mat-autocomplete #auto="matAutocomplete" [displayWith]="displayFn">
-                                                        <mat-option *ngFor="let option of filteredOptions | async"
-                                                            [value]="option">
-                                                            {{option.companyName}}
-                                                        </mat-option>
-                                                    </mat-autocomplete>
-                                                    <mat-error>This field is required</mat-error>
-                                                </mat-form-field>
-                                            </div>
-                                            <div class="col-12">
-                                                <mat-radio-group aria-labelledby="example-radio-group-label"
-                                                    class="example-radio-group w-full" [formControlName]="'radio'">
-                                                    <mat-radio-button
-                                                        *ngFor="let obj of addProductTypeRadios; let i = index;"
-                                                        [value]="obj">
-                                                        {{obj.name}}
-                                                        <span *ngIf="obj.helperText.length"
-                                                            matTooltip="{{obj.helperText}} ">
-                                                            <i class="fa fa-question-circle"></i>
-                                                        </span>
-                                                    </mat-radio-button>
-                                                </mat-radio-group>
-                                            </div>
+                                    <div class="row">
+                                        <div class="col-12">
+                                            <p class="font-semibold">Select a supplier</p>
                                         </div>
-                                        <mat-divider></mat-divider>
+                                        <div class="col-12">
+                                            <ng-multiselect-dropdown [placeholder]="'Select Supplier'"
+                                                [settings]="dropdownSettings" [data]="dropdownList"
+                                                [(ngModel)]="selectedItems" (onSelect)="onItemSelect($event)"
+                                                (onSelectAll)="onSelectAll($event)">
+                                            </ng-multiselect-dropdown>
+                                        </div>
+                                    </div>
+                                    <div class="row my-2">
                                         <div class="mt-8 text-2xl font-extrabold tracking-tight leading-tight">
                                             Product Details
                                         </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-12">
+                                            <p class="font-semibold">Red Price Comment</p>
+                                        </div>
+                                        <div class="col-12">
+                                            <ng-multiselect-dropdown [placeholder]="'Select Red Price Comment'"
+                                                [settings]="redPriceDropdownSettings" [data]="redPriceList"
+                                                [(ngModel)]="selectedRedPriceItems"
+                                                (onSelect)="onRedPriceItemSelect($event)">
+                                            </ng-multiselect-dropdown>
+                                        </div>
+                                    </div>
+                                    <form [formGroup]="reviewForm" class="mt-3">
                                         <div class="row">
                                             <div class="col-lg-6 col-12">
                                                 <mat-form-field appearance="fill" class="w-full">
@@ -983,17 +972,17 @@
                                                     <mat-error>Brand Name is required</mat-error>
                                                 </mat-form-field>
                                             </div>
-                                            <div class="col-lg-6 col-12">
-                                                <mat-form-field appearance="fill" class="w-full">
-                                                    <mat-label>Main Description (500)</mat-label>
-                                                    <textarea matInput rows="3" placeholder="Main Description (500)"
-                                                        [formControlName]="'mainDescription'"></textarea>
-                                                </mat-form-field>
+                                            <div class="col-12 pb-6 mb-6">
+                                                <div>Main Description</div>
+                                                <quill-editor [formControlName]="'mainDescription'"
+                                                    [modules]="quillModules">
+                                                </quill-editor>
                                             </div>
-                                            <div class="col-lg-6 col-12">
+                                            <div class="col-12 mt-6 mt-top-30px">
                                                 <mat-form-field appearance="fill" class="w-full">
                                                     <mat-label>Mini/Meta Description (150)</mat-label>
-                                                    <textarea matInput rows="3" placeholder="Mini Description (150)"
+                                                    <textarea matInput rows="3" maxlength="150"
+                                                        placeholder="Mini Description (150)"
                                                         [formControlName]="'miniDescription'"></textarea>
                                                 </mat-form-field>
                                             </div>
@@ -1113,7 +1102,7 @@
                                             </div>
                                             <div class="col-12">
                                                 <mat-form-field class="example-chip-list w-full" appearance="fill">
-                                                    <mat-label>Keywords (50) - Comma-seperated</mat-label>
+                                                    <mat-label>Keywords (Comma-seperated)</mat-label>
                                                     <mat-chip-list #chipList aria-label="Fruit selection">
                                                         <mat-chip *ngFor="let fruit of fruits"
                                                             (removed)="remove(fruit)">
@@ -1276,7 +1265,8 @@
                                                         <mat-option value="select_order" disabled>
                                                             COST
                                                         </mat-option>
-                                                        <mat-option *ngFor="let option of products" [value]="option">
+                                                        <mat-option *ngFor="let option of distributionCodes"
+                                                            [value]="option">
                                                             {{option.distrDiscountCode}}
                                                         </mat-option>
                                                     </mat-select>
@@ -1288,7 +1278,8 @@
                                                         <mat-option value="select_order" disabled>
                                                             COST
                                                         </mat-option>
-                                                        <mat-option *ngFor="let option of products" [value]="option">
+                                                        <mat-option *ngFor="let option of distributionCodes"
+                                                            [value]="option">
                                                             {{option.distrDiscountCode}}
                                                         </mat-option>
                                                     </mat-select>
@@ -1301,7 +1292,8 @@
                                                         <mat-option value="select_order" disabled>
                                                             COST
                                                         </mat-option>
-                                                        <mat-option *ngFor="let option of products" [value]="option">
+                                                        <mat-option *ngFor="let option of distributionCodes"
+                                                            [value]="option">
                                                             {{option.distrDiscountCode}}
                                                         </mat-option>
                                                     </mat-select>
@@ -1313,7 +1305,8 @@
                                                         <mat-option value="select_order" disabled>
                                                             COST
                                                         </mat-option>
-                                                        <mat-option *ngFor="let option of products" [value]="option">
+                                                        <mat-option *ngFor="let option of distributionCodes"
+                                                            [value]="option">
                                                             {{option.distrDiscountCode}}
                                                         </mat-option>
                                                     </mat-select>
@@ -1325,7 +1318,8 @@
                                                         <mat-option value="select_order" disabled>
                                                             COST
                                                         </mat-option>
-                                                        <mat-option *ngFor="let option of products" [value]="option">
+                                                        <mat-option *ngFor="let option of distributionCodes"
+                                                            [value]="option">
                                                             {{option.distrDiscountCode}}
                                                         </mat-option>
                                                     </mat-select>
@@ -1337,7 +1331,8 @@
                                                         <mat-option value="select_order" disabled>
                                                             COST
                                                         </mat-option>
-                                                        <mat-option *ngFor="let option of products" [value]="option">
+                                                        <mat-option *ngFor="let option of distributionCodes"
+                                                            [value]="option">
                                                             {{option.distrDiscountCode}}
                                                         </mat-option>
                                                     </mat-select>
@@ -1346,22 +1341,7 @@
                                             <div class="col-12 mt-2">
                                                 <mat-divider></mat-divider>
                                             </div>
-
-                                            <!-- Other Form -->
-                                            <div class="col-lg-6 col-12 mt-5">
-                                                <p style="font-weight: 500;">Co-op Program</p>
-                                                <mat-form-field class="w-full">
-                                                    <mat-select name="order" [formControlName]="'coOp'">
-                                                        <mat-option value="select_order" disabled>
-                                                            NONE
-                                                        </mat-option>
-                                                        <mat-option *ngFor="let option of products" [value]="option">
-                                                            {{option.distrDiscountCode}}
-                                                        </mat-option>
-                                                    </mat-select>
-                                                </mat-form-field>
-                                            </div>
-                                            <div class="col-lg-6 col-12 mt-4">
+                                            <div class="col-lg-12 col-12 mt-4">
                                                 <mat-form-field class="w-full">
                                                     <mat-label>MSRP</mat-label>
                                                     <input matInput [formControlName]="'msrp'">
@@ -1371,17 +1351,6 @@
                                                 <mat-form-field class="w-full">
                                                     <mat-label>Internal Comments</mat-label>
                                                     <input matInput [formControlName]="'internalComments'">
-                                                </mat-form-field>
-                                            </div>
-                                            <div class="col-12">
-                                                <mat-form-field class="w-full" appearance="fill">
-                                                    <mat-label>Red Price Comment</mat-label>
-                                                    <mat-select formControl="redPriceComment">
-                                                        <mat-option aria-disabled="true">None</mat-option>
-                                                        <mat-option *ngFor="let state of states" value="state">
-                                                            {{state.name}}
-                                                        </mat-option>
-                                                    </mat-select>
                                                 </mat-form-field>
                                             </div>
                                         </div>
@@ -1464,8 +1433,8 @@
     <div class="row" *ngIf="!expansionLoader">
         <div class="col-lg-6 col-12" *ngFor="let item of subCategoryItems">
             <mat-radio-group name="internalList">
-                <mat-radio-button style="min-width: -webkit-fill-available;" [checked]="item.Selected" [value]="item"
-                    name="internalList" (change)="selectedRadio($event)">
+                <mat-radio-button style="min-width: -webkit-fill-available;" [value]="item" name="internalList"
+                    (change)="selectedSubCategory(item)">
                     <span class="text-sm">{{item.name}}</span>
                 </mat-radio-button>
             </mat-radio-group>

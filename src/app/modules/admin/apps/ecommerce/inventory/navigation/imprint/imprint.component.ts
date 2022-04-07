@@ -754,7 +754,7 @@ export class ImprintComponent implements OnInit {
   };
 
   updateData(): void {
-    console.log("update data");
+    console.log(this.testPricingForm.getRawValue());
   }
 
   returnChargeValueForRunTable(processQuantity, productQuantity, run) {
@@ -873,6 +873,11 @@ export class ImprintComponent implements OnInit {
       .pipe(takeUntil(this._unsubscribeAll))
       .subscribe((collection_ids) => {
         this.collectionIdsArray = collection_ids["data"];
+        this.collectionIdsArray = this.collectionIdsArray.filter((value, index, self) =>
+          index === self.findIndex((t) => (
+            t.place === value.place && t.fk_collectionID === value.fk_collectionID
+          ))
+        )
 
         if (!this.collectionIdsArray.length) {
           this._snackBar.open("No collections have been specified for this supplier.", '', {
@@ -1178,6 +1183,7 @@ export class ImprintComponent implements OnInit {
     this.selectedMethod = null;
     this.selectedLocation = null;
     this.selectedSupplier = null;
+    this.collectionIdsArray = [];
 
     this.getSuppliers(imprint);
     this.getAddImprintMethods(imprint);

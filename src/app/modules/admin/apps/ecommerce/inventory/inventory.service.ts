@@ -390,6 +390,18 @@ export class InventoryService {
         });
     };
 
+    /**
+    * Get history by product id
+    */
+    getHistoryProductId(productId: string) {
+        return this._httpClient.get(environment.products, {
+            params: {
+                update_history_v2: true,
+                product_id: productId
+            }
+        })
+    }
+
     getAllStores(): Observable<any[]> {
         return this._httpClient.get<any[]>(environment.stores, {
             params: {
@@ -580,6 +592,18 @@ export class InventoryService {
         });
     };
 
+    getTestPricing(imprintId, processQuantity, productQuantity): Observable<any[]> {
+        return this._httpClient.get<any[]>(environment.products, {
+            params: {
+                imprint: true,
+                test_pricing: true,
+                imprint_id: imprintId,
+                process_quantity: processQuantity,
+                product_quantity: productQuantity
+            }
+        });
+    };
+
     getAllDigitizers(): Observable<any[]> {
         return this._httpClient.get<any[]>(environment.products, {
             params: {
@@ -707,6 +731,26 @@ export class InventoryService {
             }
         })
     };
+
+    getProductCoops() {
+        return this._httpClient.get(environment.products, {
+            params: {
+                company: true,
+                product_coop: true,
+                size: 5000
+            }
+        })
+    }
+
+    getSpecificProductCoops(productId) {
+        return this._httpClient.get(environment.products, {
+            params: {
+                product_coop: true,
+                product_id: productId,
+                size: 5000
+            }
+        })
+    }
 
     getSystemDistributorCodes() {
         return this._httpClient.get(environment.system, {

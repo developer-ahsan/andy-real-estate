@@ -100,7 +100,7 @@
                                         <mat-option value="select_order" disabled>
                                             COST
                                         </mat-option>
-                                        <mat-option *ngFor="let option of products" [value]="option">
+                                        <mat-option *ngFor="let option of distributionCodes" [value]="option">
                                             {{option.distrDiscountCode}}
                                         </mat-option>
                                     </mat-select>
@@ -112,7 +112,7 @@
                                         <mat-option value="select_order" disabled>
                                             COST
                                         </mat-option>
-                                        <mat-option *ngFor="let option of products" [value]="option">
+                                        <mat-option *ngFor="let option of distributionCodes" [value]="option">
                                             {{option.distrDiscountCode}}
                                         </mat-option>
                                     </mat-select>
@@ -124,7 +124,7 @@
                                         <mat-option value="select_order" disabled>
                                             COST
                                         </mat-option>
-                                        <mat-option *ngFor="let option of products" [value]="option">
+                                        <mat-option *ngFor="let option of distributionCodes" [value]="option">
                                             {{option.distrDiscountCode}}
                                         </mat-option>
                                     </mat-select>
@@ -136,7 +136,7 @@
                                         <mat-option value="select_order" disabled>
                                             COST
                                         </mat-option>
-                                        <mat-option *ngFor="let option of products" [value]="option">
+                                        <mat-option *ngFor="let option of distributionCodes" [value]="option">
                                             {{option.distrDiscountCode}}
                                         </mat-option>
                                     </mat-select>
@@ -148,7 +148,7 @@
                                         <mat-option value="select_order" disabled>
                                             COST
                                         </mat-option>
-                                        <mat-option *ngFor="let option of products" [value]="option">
+                                        <mat-option *ngFor="let option of distributionCodes" [value]="option">
                                             {{option.distrDiscountCode}}
                                         </mat-option>
                                     </mat-select>
@@ -160,7 +160,7 @@
                                         <mat-option value="select_order" disabled>
                                             COST
                                         </mat-option>
-                                        <mat-option *ngFor="let option of products" [value]="option">
+                                        <mat-option *ngFor="let option of distributionCodes" [value]="option">
                                             {{option.distrDiscountCode}}
                                         </mat-option>
                                     </mat-select>
@@ -216,7 +216,7 @@
                                         <mat-option value="select_order" disabled>
                                             COST
                                         </mat-option>
-                                        <mat-option *ngFor="let option of products" [value]="option">
+                                        <mat-option *ngFor="let option of distributionCodes" [value]="option">
                                             {{option.distrDiscountCode}}
                                         </mat-option>
                                     </mat-select>
@@ -228,7 +228,7 @@
                                         <mat-option value="select_order" disabled>
                                             COST
                                         </mat-option>
-                                        <mat-option *ngFor="let option of products" [value]="option">
+                                        <mat-option *ngFor="let option of distributionCodes" [value]="option">
                                             {{option.distrDiscountCode}}
                                         </mat-option>
                                     </mat-select>
@@ -240,7 +240,7 @@
                                         <mat-option value="select_order" disabled>
                                             COST
                                         </mat-option>
-                                        <mat-option *ngFor="let option of products" [value]="option">
+                                        <mat-option *ngFor="let option of distributionCodes" [value]="option">
                                             {{option.distrDiscountCode}}
                                         </mat-option>
                                     </mat-select>
@@ -252,7 +252,7 @@
                                         <mat-option value="select_order" disabled>
                                             COST
                                         </mat-option>
-                                        <mat-option *ngFor="let option of products" [value]="option">
+                                        <mat-option *ngFor="let option of distributionCodes" [value]="option">
                                             {{option.distrDiscountCode}}
                                         </mat-option>
                                     </mat-select>
@@ -264,7 +264,7 @@
                                         <mat-option value="select_order" disabled>
                                             COST
                                         </mat-option>
-                                        <mat-option *ngFor="let option of products" [value]="option">
+                                        <mat-option *ngFor="let option of distributionCodes" [value]="option">
                                             {{option.distrDiscountCode}}
                                         </mat-option>
                                     </mat-select>
@@ -276,7 +276,7 @@
                                         <mat-option value="select_order" disabled>
                                             COST
                                         </mat-option>
-                                        <mat-option *ngFor="let option of products" [value]="option">
+                                        <mat-option *ngFor="let option of distributionCodes" [value]="option">
                                             {{option.distrDiscountCode}}
                                         </mat-option>
                                     </mat-select>
@@ -286,21 +286,7 @@
                                 <mat-divider></mat-divider>
                             </div>
 
-                            <!-- Other Form -->
-                            <div class="col-lg-6 col-12 mt-5">
-                                <p class="font-semibold">Co-op Program</p>
-                                <mat-form-field class="w-full">
-                                    <mat-select name="order" [formControlName]="'coOp'">
-                                        <mat-option value="select_order" aria-selected="true">
-                                            NONE
-                                        </mat-option>
-                                        <mat-option *ngFor="let option of products" [value]="option">
-                                            {{option.name}}
-                                        </mat-option>
-                                    </mat-select>
-                                </mat-form-field>
-                            </div>
-                            <div class="col-lg-6 col-12 mt-4">
+                            <div class="col-12 mt-4">
                                 <mat-form-field class="w-full">
                                     <mat-label>MSRP</mat-label>
                                     <input matInput [formControlName]="'msrp'">
@@ -312,14 +298,30 @@
                                     <input matInput [formControlName]="'internalComments'">
                                 </mat-form-field>
                             </div>
-                            <div class="col-12">
-                                <mat-form-field class="w-full">
-                                    <mat-label>Red Price Comment</mat-label>
-                                    <input matInput [formControlName]="'redPriceComment'">
-                                </mat-form-field>
-                            </div>
                         </div>
                     </form>
+                    <div class="row">
+                        <div class="col-12 mt-5">
+                            <p class="font-semibold">Co-op Program</p>
+                        </div>
+                        <div class="col-12 mt-2">
+                            <ng-multiselect-dropdown [placeholder]="'Co-op Program'" [settings]="coOpProgramSettings"
+                                [data]="coops" [(ngModel)]="selectedCoOpProgram"
+                                (onSelect)="onCoOpProgramSelect($event)">
+                            </ng-multiselect-dropdown>
+                        </div>
+
+                        <div class="col-12 mt-5">
+                            <p class="font-semibold">Red Price Comment</p>
+                        </div>
+                        <div class="col-12 mt-2">
+                            <ng-multiselect-dropdown [placeholder]="'Select Red Price Comment'"
+                                [settings]="redPriceDropdownSettings" [data]="redPriceList"
+                                [(ngModel)]="selectedRedPriceItems" (onSelect)="onRedPriceItemSelect($event)"
+                                (onSelectAll)="onSelectAll($event)">
+                            </ng-multiselect-dropdown>
+                        </div>
+                    </div>
                 </div>
                 <div class="flex items-center justify-end w-full">
                     <div class="flex items-center my-2">

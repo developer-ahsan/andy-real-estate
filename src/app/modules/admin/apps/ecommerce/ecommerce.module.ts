@@ -82,6 +82,7 @@ import { MatButtonToggleModule } from '@angular/material/button-toggle';
 import { SizesComponent } from './inventory/navigation/sizes/sizes.component';
 import { QuillModule } from 'ngx-quill';
 import { AutocompleteLibModule } from 'angular-ng-autocomplete';
+import { NgMultiSelectDropDownModule } from 'ng-multiselect-dropdown';
 
 @NgModule({
     declarations: [
@@ -169,7 +170,8 @@ import { AutocompleteLibModule } from 'angular-ng-autocomplete';
         MatSnackBarModule,
         MatButtonToggleModule,
         QuillModule.forRoot(),
-        AutocompleteLibModule
+        AutocompleteLibModule,
+        NgMultiSelectDropDownModule
     ]
 })
 export class ECommerceModule {

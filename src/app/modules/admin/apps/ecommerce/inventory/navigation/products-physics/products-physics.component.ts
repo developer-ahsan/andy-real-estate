@@ -85,6 +85,7 @@ export class ProductsPhysicsComponent implements OnInit {
     this._inventoryService.getPhysicsAndDimension(pk_productID)
       .pipe(takeUntil(this._unsubscribeAll))
       .subscribe((caseDimensions) => {
+
         // Fill dimesnion form
         this.caseDimensionForm.patchValue(caseDimensions["data"][0]);
 
