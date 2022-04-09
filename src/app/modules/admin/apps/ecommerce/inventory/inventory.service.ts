@@ -576,6 +576,17 @@ export class InventoryService {
         });
     };
 
+    getOverlapData(productId): Observable<any[]> {
+        return this._httpClient.get<any[]>(environment.products, {
+            params: {
+                imprint: true,
+                over_lap: true,
+                product_id: productId,
+                size: 1000
+            }
+        });
+    };
+
     getAllImprintLocations(): Observable<any[]> {
         return this._httpClient.get<any[]>(environment.products, {
             params: {

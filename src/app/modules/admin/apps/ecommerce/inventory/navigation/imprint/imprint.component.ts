@@ -21,8 +21,13 @@ export class ImprintComponent implements OnInit {
   imprintDisplayedColumns: string[] = ['id', 'name', 'decorator', 'order'];
   dataSource = [];
   dataSource2 = [];
+
+  overlapData = null;
+  selectedOverlap = [];
+  overlappingIterativeData = [];
   overlappingPayloadArray = [];
   overlappingUpdateLoader = false;
+  overLapDataFetchLoader = false;
 
   foods = [
     { value: 'steak-0', viewValue: 'Steak' },
@@ -809,6 +814,49 @@ export class ImprintComponent implements OnInit {
     }, 3500);
   };
 
+  getOverlapData() {
+    const { pk_productID } = this.selectedProduct;
+    this._inventoryService.getOverlapData(pk_productID)
+      .pipe(takeUntil(this._unsubscribeAll))
+      .subscribe((overlap) => {
+        if (overlap["data"]?.length) {
+          this.overlapData = overlap["data"].reduce(function (r, a) {
+            r[a.fk_locationID1] = r[a.fk_locationID1] || [];
+            r[a.fk_locationID1].push(a);
+            return r;
+          }, Object.create(null));
+
+          this.selectedOverlap = [this.overlapData[0], this.overlapData[2]];
+          console.log("this.overlapData", this.overlapData);
+        };
+
+        if (this.overlapData) {
+          for (let i = 0; i < this.overlappingIterativeData.length; i++) {
+            let overlappedObj = this.overlappingIterativeData[i];
+            const { pk_locationID } = overlappedObj;
+            let tempArray = [];
+            if (this.overlapData[`${pk_locationID}`]?.length) {
+              for (const overlappedLocation of this.overlapData[`${pk_locationID}`]) {
+                const { fk_locationID2 } = overlappedLocation;
+                let obj = this.overlappingIterativeData.find(o => o.pk_locationID === fk_locationID2);
+                tempArray.push(obj);
+              };
+              console.log(pk_locationID)
+              console.log(tempArray)
+            }
+          }
+
+        }
+        this.overlappingIterativeData.map(v => ({ ...v, isActive: true }))
+
+        console.log("this.overlappingIterativeData", this.overlappingIterativeData)
+
+        this.overLapDataFetchLoader = false;
+        // Mark for check
+        this._changeDetectorRef.markForCheck();
+      });
+  };
+
   calledScreen(screenName): void {
     if (screenName === "Display Order" || screenName === "Imprints") {
       this.isEditImprintScreen = false;
@@ -827,6 +875,12 @@ export class ImprintComponent implements OnInit {
         if (!this.priceInclusionFinalArray.length) {
           this.getPriceInclusionImprints();
         }
+      }
+
+      if (screenName === "Overlapping") {
+        this.overlappingIterativeData = this.testPricingDataSource.sort((a, b) => a["fk_locationID"] - b["fk_locationID"]);
+        this.overLapDataFetchLoader = true;
+        this.getOverlapData();
       }
     }
 
