@@ -827,7 +827,6 @@ export class ImprintComponent implements OnInit {
           }, Object.create(null));
 
           this.selectedOverlap = [this.overlapData[0], this.overlapData[2]];
-          console.log("this.overlapData", this.overlapData);
         };
 
         if (this.overlapData) {
@@ -841,15 +840,12 @@ export class ImprintComponent implements OnInit {
                 let obj = this.overlappingIterativeData.find(o => o.pk_locationID === fk_locationID2);
                 tempArray.push(obj);
               };
-              console.log(pk_locationID)
-              console.log(tempArray)
+              this.overlappingIterativeData[i]["overlappedArray"] = tempArray;
+            } else {
+              this.overlappingIterativeData[i]["overlappedArray"] = [];
             }
-          }
-
-        }
-        this.overlappingIterativeData.map(v => ({ ...v, isActive: true }))
-
-        console.log("this.overlappingIterativeData", this.overlappingIterativeData)
+          };
+        };
 
         this.overLapDataFetchLoader = false;
         // Mark for check
