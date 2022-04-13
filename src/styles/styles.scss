@@ -219,3 +219,9 @@ body.light .mat-expansion-panel-header.mat-expanded, body .light .mat-expansion-
 .mat-horizontal-stepper-header-container{
   pointer-events: none !important;
 }
+
+.text-cut {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}

@@ -788,33 +788,44 @@
     <ngx-skeleton-loader count="8" appearance="line" animation="pulse" *ngIf="overLapDataFetchLoader">
     </ngx-skeleton-loader>
     <fuse-card class="rounded-2xl shadow bg-card flex flex-col lg:flex-row w-full" *ngIf="!overLapDataFetchLoader">
-        <div class="p-6 sm:p-8 lg:p-10 w-full">
-            <div class="text-2xl font-bold">
+        <div class="w-full">
+            <div class="text-2xl font-bold p-6 sm:p-8 lg:p-10">
                 Overlapping
             </div>
             <!-- Features -->
-            <div class="gap-y-4 mt-6">
-                <div class="row my-5 border-b" *ngFor="let data of overlappingIterativeData">
-                    <div class="col-lg-3 col-12 my-5 px-3">
-                        <p class="text-secondary font-semibold">
-                            {{data.locationName}}
-                        </p>
+            <div class="gap-y-4 mt-6 overflow-x-auto">
+                <table class="overflow-auto" *ngIf="overlappingIterativeData.length">
+                    <div *ngFor="let data of overlappingIterativeData; let i = index; first as isFirst">
+                        <tr *ngIf="isFirst">
+                            <td></td>
+                            <th style="padding-left: 50px;" scope="col"
+                                class="bg-primary text-white overflow-hidden text-center p-3 min-w-24 max-w-24"
+                                *ngFor="let location of overlappingIterativeData">
+                                <span class="text-cut" matTooltip="{{location.locationName}}" style="font-size: 10px;">
+                                    {{location.locationName}} </span>
+                            </th>
+                        </tr>
+                        <tr>
+                            <th scope="col" class="bg-primary text-white p-3 min-w-30 max-w-30">
+                                <span class="text-cut" style="font-size: 10px;" matTooltip="{{data.locationName}}">
+                                    {{data.locationName}} </span>
+                            </th>
+                            <td class="text-center" style="min-width: 100px;"
+                                *ngFor="let inner of data.overlappedArray; let j = index;">
+                                <span *ngIf="j <= i">
+                                    <mat-checkbox (change)='checkBoxOverlap(inner, data)' [disabled]="j == i"
+                                        [checked]="j == i || inner.isSelected">
+                                    </mat-checkbox>
+                                </span>
+                            </td>
+                        </tr>
                     </div>
-                    <div class="col-lg-9 col-12 my-5 px-3">
-                        <mat-form-field appearance="fill" class="w-full">
-                            <mat-label>Location Names (To be overlaped) </mat-label>
-                            <mat-select [(ngModel)]="data.overlappedArray" multiple
-                                (selectionChange)="overlapingData(data, $event.value)">
-                                <mat-option *ngFor="let destination of overlappingIterativeData"
-                                    [disabled]="data.pk_imprintID === destination.pk_imprintID" [value]="destination">
-                                    {{destination.locationName}}
-                                </mat-option>
-                            </mat-select>
-                        </mat-form-field>
-                    </div>
-                </div>
+                </table>
+                <span class="text-secondary font-semibold" *ngIf="!overlappingIterativeData.length">
+                    Overlapping data is not available
+                </span>
             </div>
-            <div class="flex items-center justify-end w-full">
+            <div class="flex items-center justify-end w-full p-6">
                 <div class="flex items-center my-2">
                     <div class="flex items-center mr-4" *ngIf="flashMessage">
                         <ng-container *ngIf="flashMessage === 'success'">
@@ -828,7 +839,8 @@
                         </ng-container>
                     </div>
                     <button class="min-w-40" mat-stroked-button [matTooltip]="'Overlap the locations'"
-                        (click)="updateOverlapping()" [disabled]="overlappingUpdateLoader">
+                        (click)="updateOverlapping()"
+                        [disabled]="overlappingUpdateLoader || !overlappingIterativeData.length">
                         <mat-progress-spinner *ngIf="overlappingUpdateLoader" [diameter]="24" [mode]="'indeterminate'">
                         </mat-progress-spinner>
                         <mat-icon *ngIf="!overlappingUpdateLoader" [svgIcon]="'mat_outline:edit'"></mat-icon>

@@ -490,6 +490,11 @@ export interface updateImprintObj {
 
 export interface overlapUpdateObj {
     product_id: number;
-    pairs: [];
+    pairs: overlapPair[];
     imprint_overlap: boolean;
+}
+
+export interface overlapPair {
+    loc_1: number,
+    loc_2: number
 }

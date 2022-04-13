@@ -23,7 +23,8 @@ export class ImprintComponent implements OnInit {
   dataSource2 = [];
 
   overlapData = null;
-  selectedOverlap = [];
+  overlapCheckboxPayload = [];
+  overlapFirstData = [];
   overlappingIterativeData = [];
   overlappingPayloadArray = [];
   overlappingUpdateLoader = false;
@@ -268,24 +269,101 @@ export class ImprintComponent implements OnInit {
     };
   };
 
-  updateOverlapping() {
+  checkBoxOverlap(sourceObj, destObj): void {
+    let tempObj = {
+      loc_1: destObj.locationId,
+      loc_2: sourceObj.locationId
+    }
+    if (this.containsObject(tempObj, this.overlapCheckboxPayload)) {
+      const index = this.overlapCheckboxPayload.findIndex(x => x.loc_1 === tempObj.loc_1 && x.loc_2 === tempObj.loc_2);
+      if (index > -1) {
+        this.overlapCheckboxPayload.splice(index, 1);
+      }
+    } else {
+      this.overlapCheckboxPayload.push(tempObj)
+    };
+  }
+
+  getOverlapData() {
     const { pk_productID } = this.selectedProduct;
-    let tempArray: any = [];
-    for (const overlapObj of this.overlappingPayloadArray) {
-      const { source, destination } = overlapObj;
-      const { pk_locationID } = source;
-      for (const des of destination) {
-        const obj = {
-          loc_1: pk_locationID,
-          loc_2: des.pk_locationID
+    this._inventoryService.getOverlapData(pk_productID)
+      .pipe(takeUntil(this._unsubscribeAll))
+      .subscribe((overlap) => {
+        this.overlapFirstData = overlap["data"];
+
+        for (const overlap of this.overlapFirstData) {
+          const { fk_locationID1, fk_locationID2 } = overlap;
+          const obj = {
+            loc_1: fk_locationID1,
+            loc_2: fk_locationID2
+          }
+          this.overlapCheckboxPayload.push(obj);
         }
-        tempArray.push(obj);
+
+        if (overlap["data"]?.length) {
+          this.overlapData = overlap["data"].reduce(function (r, a) {
+            r[a.fk_locationID1] = r[a.fk_locationID1] || [];
+            r[a.fk_locationID1].push(a);
+            return r;
+          }, Object.create(null));
+        };
+
+        const temporaryArray = this.overlappingIterativeData;
+        const temporaryArrayInner = this.overlappingIterativeData;
+        let result: any = temporaryArray.map(a => a.pk_locationID);
+        result = result.flatMap(
+          (v, i) => result.slice(i + 1).map(w => [w, v])
+        )
+
+        let toBeOverlapped = [];
+        for (let i = 0; i < temporaryArray.length; i++) {
+          const { pk_imprintID, pk_locationID, locationName } = temporaryArray[i];
+          let obj = {
+            imprintId: pk_imprintID,
+            locationId: pk_locationID,
+            locationName: locationName
+          };
+          let inner = [];
+          for (let j = 0; j < temporaryArrayInner.length; j++) {
+            const { pk_imprintID, pk_locationID, locationName } = temporaryArrayInner[j];
+            let innerObj = {};
+            let checkObj = this.overlapFirstData.filter(x => x.fk_locationID1 === temporaryArray[i].fk_locationID && x.fk_locationID2 === temporaryArrayInner[j].fk_locationID);
+            innerObj = {
+              imprintId: pk_imprintID,
+              locationId: pk_locationID,
+              locationName: locationName,
+              isSelected: checkObj?.length ? true : false
+            };
+            inner.push(innerObj);
+          }
+          obj["overlappedArray"] = inner;
+          toBeOverlapped.push(obj);
+        };
+
+        this.overlappingIterativeData = toBeOverlapped;
+
+        this.overLapDataFetchLoader = false;
+
+        // Mark for check
+        this._changeDetectorRef.markForCheck();
+      });
+  };
+
+  containsObject(obj, list) {
+    for (const listObj of list) {
+      const { loc_1, loc_2 } = listObj;
+      if (loc_1 === obj.loc_1 && loc_2 === obj.loc_2) {
+        return true;
       }
     }
+    return false;
+  }
 
+  updateOverlapping() {
+    const { pk_productID } = this.selectedProduct;
     const payload = {
       product_id: pk_productID,
-      pairs: tempArray,
+      pairs: this.overlapCheckboxPayload,
       imprint_overlap: true
     };
 
@@ -528,6 +606,7 @@ export class ImprintComponent implements OnInit {
     this._inventoryService.addStandardImprints(payload)
       .subscribe((response) => {
         this.standardImprintAddLoader = false;
+
         this.showFlashMessage(
           response["success"] === true ?
             'success' :
@@ -795,8 +874,8 @@ export class ImprintComponent implements OnInit {
   }
 
   /**
- * Show flash message
- */
+  * Show flash message
+  */
   showFlashMessage(type: 'success' | 'error' | 'countError'): void {
     // Show the message
     this.flashMessage = type;
@@ -814,44 +893,9 @@ export class ImprintComponent implements OnInit {
     }, 3500);
   };
 
-  getOverlapData() {
-    const { pk_productID } = this.selectedProduct;
-    this._inventoryService.getOverlapData(pk_productID)
-      .pipe(takeUntil(this._unsubscribeAll))
-      .subscribe((overlap) => {
-        if (overlap["data"]?.length) {
-          this.overlapData = overlap["data"].reduce(function (r, a) {
-            r[a.fk_locationID1] = r[a.fk_locationID1] || [];
-            r[a.fk_locationID1].push(a);
-            return r;
-          }, Object.create(null));
-
-          this.selectedOverlap = [this.overlapData[0], this.overlapData[2]];
-        };
-
-        if (this.overlapData) {
-          for (let i = 0; i < this.overlappingIterativeData.length; i++) {
-            let overlappedObj = this.overlappingIterativeData[i];
-            const { pk_locationID } = overlappedObj;
-            let tempArray = [];
-            if (this.overlapData[`${pk_locationID}`]?.length) {
-              for (const overlappedLocation of this.overlapData[`${pk_locationID}`]) {
-                const { fk_locationID2 } = overlappedLocation;
-                let obj = this.overlappingIterativeData.find(o => o.pk_locationID === fk_locationID2);
-                tempArray.push(obj);
-              };
-              this.overlappingIterativeData[i]["overlappedArray"] = tempArray;
-            } else {
-              this.overlappingIterativeData[i]["overlappedArray"] = [];
-            }
-          };
-        };
-
-        this.overLapDataFetchLoader = false;
-        // Mark for check
-        this._changeDetectorRef.markForCheck();
-      });
-  };
+  getUniqueListBy(arr, key) {
+    return [...new Map(arr.map(item => [item[key], item])).values()]
+  }
 
   calledScreen(screenName): void {
     if (screenName === "Display Order" || screenName === "Imprints") {
@@ -875,6 +919,7 @@ export class ImprintComponent implements OnInit {
 
       if (screenName === "Overlapping") {
         this.overlappingIterativeData = this.testPricingDataSource.sort((a, b) => a["fk_locationID"] - b["fk_locationID"]);
+        this.overlappingIterativeData = this.getUniqueListBy(this.overlappingIterativeData, "fk_locationID");
         this.overLapDataFetchLoader = true;
         this.getOverlapData();
       }
