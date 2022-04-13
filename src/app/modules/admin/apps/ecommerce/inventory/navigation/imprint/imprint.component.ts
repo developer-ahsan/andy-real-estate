@@ -361,9 +361,14 @@ export class ImprintComponent implements OnInit {
 
   updateOverlapping() {
     const { pk_productID } = this.selectedProduct;
+
+    const dedup = [...this.overlapCheckboxPayload.reduce((map, { loc_1, loc_2 }) => {
+      return (map.set(`${loc_1}-${loc_2}`, { loc_1, loc_2 }));
+    }, new Map()).values()];
+
     const payload = {
       product_id: pk_productID,
-      pairs: this.overlapCheckboxPayload,
+      pairs: dedup,
       imprint_overlap: true
     };
 
