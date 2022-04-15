@@ -101,7 +101,6 @@ export class SizesComponent implements OnInit {
     const { pk_productID } = this.selectedProduct;
     let tempSizeArray = [];
     for (const size of this.arrayToUpdate) {
-      console.log("size", size)
       const { run, weight, unitsPerWeight, fk_sizeID, pk_sizeID } = size;
       if (isNaN(run) || isNaN(weight) || isNaN(unitsPerWeight)) {
         return this._snackBar.open('A value appears to be missing', '', {
@@ -124,8 +123,6 @@ export class SizesComponent implements OnInit {
       product_size: tempSizeArray,
       size: true
     };
-
-    console.log("payload", payload);
 
     this.sizeUpdateLoader = true;
     this._inventoryService.updateSizes(payload)
@@ -191,7 +188,7 @@ export class SizesComponent implements OnInit {
       order: parseInt(order),
       feature: true
     };
-    console.log("payload", payload);
+
     this.featureAddLoader = true;
     this._inventoryService.addFeature(payload)
       .subscribe((response) => {

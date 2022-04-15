@@ -31,15 +31,6 @@ export class DietaryInfoComponent implements OnInit {
       image: ['', Validators.required]
     });
 
-    const { pk_productID } = this.selectedProduct;
-    this._inventoryService.getPackageByProductId(pk_productID)
-      .pipe(takeUntil(this._unsubscribeAll))
-      .subscribe((pack) => {
-
-        console.log("pack ", pack)
-        this._changeDetectorRef.markForCheck();
-      });
-
     this.isLoadingChange.emit(false);
   }
 
@@ -55,6 +46,5 @@ export class DietaryInfoComponent implements OnInit {
       return;
     }
     this.imageRequired = '';
-    console.log("files", this.images);
   }
 }

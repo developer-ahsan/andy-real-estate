@@ -37,7 +37,6 @@ export class DuplicateComponent implements OnInit {
       .pipe(takeUntil(this._unsubscribeAll))
       .subscribe((history) => {
 
-        console.log("order history ", history)
         this._changeDetectorRef.markForCheck();
       });
 

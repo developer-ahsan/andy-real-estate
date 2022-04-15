@@ -118,7 +118,6 @@ export class CoreProductsComponent implements OnInit {
   subCategorySelection(subCategory): void {
     const { pk_subCategoryID } = subCategory;
     this.selectedSubCategory = subCategory;
-    console.log("subcategory", subCategory)
   }
 
   addCore(): void {

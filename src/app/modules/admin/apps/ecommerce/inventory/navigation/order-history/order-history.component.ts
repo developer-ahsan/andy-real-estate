@@ -42,7 +42,6 @@ export class OrderHistoryComponent implements OnInit {
       .pipe(takeUntil(this._unsubscribeAll))
       .subscribe((history) => {
 
-        console.log("order history ", history)
         this.order_history = history["data"];
         this.orderHistoryLength = history["totalRecords"];
         this._changeDetectorRef.markForCheck();

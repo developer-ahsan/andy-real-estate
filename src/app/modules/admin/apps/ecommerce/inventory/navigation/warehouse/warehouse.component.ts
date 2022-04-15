@@ -59,7 +59,6 @@ export class WarehouseComponent implements OnInit {
     this._inventoryService.getWarehouseByProductId(pk_productID)
       .pipe(takeUntil(this._unsubscribeAll))
       .subscribe((warehouse) => {
-        console.log("wareHouse", warehouse["data"][0]);
         this.wareHouseLength = warehouse["totalRecords"];
         if (this.wareHouseLength > 0) {
           this.selected = 'Yes';
@@ -72,7 +71,6 @@ export class WarehouseComponent implements OnInit {
   }
 
   radioChange(event) {
-    console.log(event.value);
   }
 
   isNumeric(num) {
@@ -91,7 +89,6 @@ export class WarehouseComponent implements OnInit {
       return;
     }
     this.imageRequired = '';
-    console.log("files", this.images);
   }
 
 
@@ -132,7 +129,7 @@ export class WarehouseComponent implements OnInit {
       call_type: this.wareHouseLength > 0 ? "put" : "post",
       warehouse: true
     };
-    console.log("payload", payload);
+
     this.wareHouseLoader = true;
     this._inventoryService.updateWarehouse(payload)
       .subscribe((response) => {

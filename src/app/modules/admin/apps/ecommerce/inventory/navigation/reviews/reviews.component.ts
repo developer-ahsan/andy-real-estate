@@ -114,6 +114,5 @@ export class ReviewsComponent implements OnInit {
       return;
     }
     this.imageRequired = '';
-    console.log("files", this.images);
   }
 }

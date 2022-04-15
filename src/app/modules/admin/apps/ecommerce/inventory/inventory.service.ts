@@ -254,7 +254,6 @@ export class InventoryService {
     };
 
     searchProductKeywords(keyword): Observable<ProductsList[]> {
-        console.log("testing")
         return this._httpClient.get<ProductsList[]>(environment.products, {
             params: {
                 list: true,

@@ -37,7 +37,6 @@ export class ArtworkComponent implements OnInit {
       .pipe(takeUntil(this._unsubscribeAll))
       .subscribe((artwork) => {
         this.artWorkData = artwork["data"];
-        console.log("artwork ", this.artWorkData)
         this._changeDetectorRef.markForCheck();
       });
 
@@ -56,13 +55,11 @@ export class ArtworkComponent implements OnInit {
       return;
     }
     this.imageRequired = '';
-    console.log("files", this.images);
   };
 
   openPdf(artWork) {
     const { pk_productID } = this.selectedProduct;
     const url = `https://assets.consolidus.com/globalAssets/Products/artworkTemplates/${pk_productID}/${artWork?.pk_artworkTemplateID}.${artWork?.extension}`;
-    console.log("url", url);
     window.open(url);
   }
 }

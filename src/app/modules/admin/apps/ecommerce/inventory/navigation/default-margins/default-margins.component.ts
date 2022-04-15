@@ -72,8 +72,8 @@ export class DefaultMarginsComponent implements OnInit {
       product_id: pk_productID,
       margins: realMargins,
       margin: true
-    }
-    console.log("payload", payload);
+    };
+
     this.defaultMarginUpdate = true;
     this._inventoryService.updateMargins(payload)
       .subscribe((response) => {

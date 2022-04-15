@@ -134,8 +134,6 @@ export class ColorComponent implements OnInit {
       tempColorArray.push(obj);
     };
 
-    console.log("tempColor", tempColorArray)
-
     const payload = {
       product_id: pk_productID,
       color_id: tempColorArray.map(a => a.fk_colorID),
@@ -144,8 +142,6 @@ export class ColorComponent implements OnInit {
       color: true,
       call_type: "update"
     };
-
-    console.log("payload", payload);
 
     this.colorUpdateLoader = true;
     this._inventoryService.updateColors(payload)
@@ -189,7 +185,6 @@ export class ColorComponent implements OnInit {
       color: true
     };
 
-    console.log("payload", payload)
     this.colorAddLoader = true;
     this._inventoryService.addColors(payload)
       .subscribe((response) => {
@@ -239,8 +234,6 @@ export class ColorComponent implements OnInit {
       tempColorArray.push(obj);
     };
 
-    console.log("tempColor", tempColorArray)
-
     const payload = {
       product_id: pk_productID,
       color_id: tempColorArray.map(a => a.fk_colorID),
@@ -249,8 +242,6 @@ export class ColorComponent implements OnInit {
       color: true,
       call_type: "delete"
     };
-
-    console.log("payload", payload);
 
     this.deleteLoader = true;
     this._inventoryService.updateColors(payload)

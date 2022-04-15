@@ -65,8 +65,8 @@ export class LicensingTermComponent implements OnInit {
                   this.selectedTerm = term;
                   this.selectedTermObject = term;
                 }
-              }
-              console.log("this.selectedTerm 1", this.selectedTerm);
+              };
+
               this._inventoryService.getLicensingSubCategory(this.selectedTerm.pk_licensingTermID, pk_productID)
                 .pipe(takeUntil(this._unsubscribeAll))
                 .subscribe((subCategories) => {
@@ -89,7 +89,6 @@ export class LicensingTermComponent implements OnInit {
                 .subscribe((licensingTerms) => {
                   this.licensingTerms = licensingTerms["data"];
 
-                  console.log("this.licensingTerms 2", this.licensingTerms);
                   // Mark for check
                   this._changeDetectorRef.markForCheck();
                   for (const term of this.licensingTerms) {
@@ -97,8 +96,8 @@ export class LicensingTermComponent implements OnInit {
                       this.selectedTerm = term;
                       this.selectedTermObject = term;
                     }
-                  }
-                  console.log("this.selectedTerm 2", this.selectedTerm);
+                  };
+
                   this._inventoryService.getLicensingSubCategory(this.selectedTerm.pk_licensingTermID, pk_productID)
                     .pipe(takeUntil(this._unsubscribeAll))
                     .subscribe((subCategories) => {
@@ -138,7 +137,6 @@ export class LicensingTermComponent implements OnInit {
 
         // Mark for check
         this._changeDetectorRef.markForCheck();
-        console.log("this.subCategoryItems", this.subCategoryItems);
       });
   }
   continue(): void {
@@ -157,7 +155,6 @@ export class LicensingTermComponent implements OnInit {
       licensing_term: true
     };
 
-    console.log("payload", payload);
     this.selectedTermUpdateLoader = true;
     this._inventoryService.updateLicensingTerms(payload)
       .subscribe((response) => {
@@ -183,7 +180,6 @@ export class LicensingTermComponent implements OnInit {
       licensing_term: true
     };
 
-    console.log("payload", payload);
     this.termUpdateLoader = true;
     this._inventoryService.updateLicensingTerms(payload)
       .subscribe((response) => {

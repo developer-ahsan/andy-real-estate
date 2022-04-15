@@ -46,7 +46,6 @@ export class ProductsStatusComponent implements OnInit {
 
   selectAll(): void {
     this.allSelected = !this.allSelected;
-    console.log("clicked selected/un")
     this.allStoresSelected = this.allSelected ? this.storesData.map(function (item) {
       return item;
     }) : [];

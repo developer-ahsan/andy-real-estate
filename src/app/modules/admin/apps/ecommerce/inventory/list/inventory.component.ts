@@ -573,7 +573,6 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
 
     createProduct(): void {
         const firstFormGroup = this.firstFormGroup.getRawValue();
-        console.log("this.firstFormGroup.getRawValue();", this.firstFormGroup.getRawValue());
         const finalForm = this.reviewForm.getRawValue();
 
         const { radio } = firstFormGroup;
@@ -671,7 +670,6 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
             licensing_term: licensingTerm
         };
 
-        console.log("product", payload)
         this.createProductLoader = true;
         this._inventoryService.addProduct(payload)
             .subscribe((response) => {
