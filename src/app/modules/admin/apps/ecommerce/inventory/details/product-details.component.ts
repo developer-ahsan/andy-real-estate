@@ -7,6 +7,8 @@ import { FuseMediaWatcherService } from '@fuse/services/media-watcher';
 import { InventoryService } from 'app/modules/admin/apps/ecommerce/inventory/inventory.service';
 import { ProductsDetails } from 'app/modules/admin/apps/ecommerce/inventory/inventory.types';
 import moment from 'moment';
+import { MatSlideToggleChange } from '@angular/material/slide-toggle';
+import { MatSnackBar } from '@angular/material/snack-bar';
 
 @Component({
   selector: 'app-product-details',
@@ -32,6 +34,8 @@ export class ProductDetailsComponent implements OnInit, OnDestroy {
   drawerOpened: boolean = true;
   storesData = [];
 
+  promoStandardBoolean: boolean;
+
   /**
    * Constructor
    */
@@ -40,6 +44,7 @@ export class ProductDetailsComponent implements OnInit, OnDestroy {
     private _inventoryService: InventoryService,
     private _router: Router,
     private _fuseMediaWatcherService: FuseMediaWatcherService,
+    private _snackBar: MatSnackBar
   ) {
   }
 
@@ -63,7 +68,8 @@ export class ProductDetailsComponent implements OnInit, OnDestroy {
         this.selectedProduct = product["data"][0];
 
         this.routes = this._inventoryService.navigationLabels;
-        const { blnService, blnApparel } = this.selectedProduct;
+        const { blnService, blnApparel, blnPromoStandard } = this.selectedProduct;
+        this.promoStandardBoolean = blnPromoStandard;
 
         if (blnService) {
           this.routes = this.filterNavigation(this.routes, 'Imprints');
@@ -117,6 +123,30 @@ export class ProductDetailsComponent implements OnInit, OnDestroy {
     this.isLoading = true;
     this.selectedIndex = title;
   };
+
+  onTogglePromoStandards(event: MatSlideToggleChange) {
+    const eventState = event.checked;
+    const { pk_productID } = this.selectedProduct;
+
+    const payload = {
+      product_id: pk_productID,
+      bln_active: eventState,
+      promo_standard: true
+    };
+
+    this.isLoading = true;
+    this._inventoryService.updatePromoStandard(payload)
+      .subscribe((response) => {
+        this.isLoading = false;
+        this._snackBar.open("Promostandards updated successfully", '', {
+          horizontalPosition: 'center',
+          verticalPosition: 'bottom',
+          duration: 3500
+        });
+        // Mark for check
+        this._changeDetectorRef.markForCheck();
+      });
+  }
 
   toggleDrawer() {
     this.drawerOpened = !this.drawerOpened;

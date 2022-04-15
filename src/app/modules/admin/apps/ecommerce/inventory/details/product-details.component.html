@@ -36,8 +36,14 @@
         </mat-drawer>
 
         <div class="sub-sidenav-content bg-light p-2">
-            <mat-icon class="subnav-menu-icon ml-1" svgIcon="heroicons_outline:menu" (click)="toggleDrawer()">
-            </mat-icon>
+            <div class="flex justify-content-between">
+                <mat-icon class="subnav-menu-icon ml-1" svgIcon="heroicons_outline:menu" (click)="toggleDrawer()">
+                </mat-icon>
+                <mat-slide-toggle (change)="onTogglePromoStandards($event)" [(ngModel)]="promoStandardBoolean"
+                    [disabled]="isLoading">
+                    Enable/Disable PromoStandards
+                </mat-slide-toggle>
+            </div>
 
             <ng-template #myCard>
                 <div class="bg-card shadow p-4">

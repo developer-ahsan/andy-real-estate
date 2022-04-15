@@ -67,6 +67,7 @@ export interface ProductsDetails {
     productName: string;
     blnService: boolean;
     blnApparel: boolean;
+    blnPromoStandard: boolean;
     RowNumber: number;
     TotalRequests: number;
 }
@@ -497,4 +498,10 @@ export interface overlapUpdateObj {
 export interface overlapPair {
     loc_1: number,
     loc_2: number
+}
+
+export interface updatePromostandardObj {
+    product_id: number;
+    bln_active: boolean;
+    promo_standard: boolean;
 }

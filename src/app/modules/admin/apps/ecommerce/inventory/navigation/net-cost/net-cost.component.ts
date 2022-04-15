@@ -52,8 +52,6 @@ export class NetCostComponent implements OnInit {
 
     const { pk_productID, msrp, liveCostComment, costComment, fk_supplierID } = this.selectedProduct;
 
-    console.log("this.selectedProduct", this.selectedProduct)
-
     this.selectedRedPriceItems.push(liveCostComment)
     // liveCostComment ? this.selectedRedPriceItems.push(liveCostComment) : this.selectedRedPriceItems.push({});
 
