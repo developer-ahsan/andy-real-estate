@@ -30,6 +30,9 @@ export class ImprintComponent implements OnInit {
   overlappingUpdateLoader = false;
   overLapDataFetchLoader = false;
 
+  istestPricingScreenLoader = false;
+  testPricingLoad = false;
+
   foods = [
     { value: 'steak-0', viewValue: 'Steak' },
     { value: 'pizza-1', viewValue: 'Pizza' },
@@ -128,6 +131,8 @@ export class ImprintComponent implements OnInit {
 
   collectionIdsArray = [];
   selectedCollectionId;
+
+  priceInclusionObj = null;
 
   maxColors = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12];
   maxColorSelected = 1;
@@ -843,7 +848,161 @@ export class ImprintComponent implements OnInit {
   };
 
   updateData(): void {
-    console.log(this.testPricingForm.getRawValue());
+    const {
+      optionOneFirst,
+      optionOneSecond,
+      optionTwoFirst,
+      optionTwoSecond,
+      optionThreeFirst,
+      optionThreeSecond,
+      optionFourFirst,
+      optionFourSecond
+    } = this.testPricingForm.getRawValue();
+
+    let array = [];
+
+    if (optionOneFirst || optionOneSecond) {
+      if (optionOneFirst && optionOneSecond) {
+        const { pk_imprintID } = optionOneFirst;
+        let Obj = {
+          imprintId: pk_imprintID,
+          processQuantity: optionOneSecond
+        }
+        array.push(Obj)
+      } else {
+        this._snackBar.open("Please fill out the respective fields", '', {
+          horizontalPosition: 'center',
+          verticalPosition: 'bottom',
+          duration: 3500
+        });
+        return;
+      }
+    }
+
+    if (optionTwoFirst || optionTwoSecond) {
+      if (optionTwoFirst && optionTwoSecond) {
+        const { pk_imprintID } = optionTwoFirst;
+        let Obj = {
+          imprintId: pk_imprintID,
+          processQuantity: optionTwoSecond
+        };
+
+        array.push(Obj)
+      } else {
+        this._snackBar.open("Please fill out the respective fields", '', {
+          horizontalPosition: 'center',
+          verticalPosition: 'bottom',
+          duration: 3500
+        });
+        return;
+      }
+    }
+
+    if (optionThreeFirst || optionThreeSecond) {
+      if (optionThreeFirst && optionThreeSecond) {
+        const { pk_imprintID } = optionThreeFirst;
+        let Obj = {
+          imprintId: pk_imprintID,
+          processQuantity: optionThreeSecond
+        };
+
+        array.push(Obj)
+      } else {
+        this._snackBar.open("Please fill out the respective fields", '', {
+          horizontalPosition: 'center',
+          verticalPosition: 'bottom',
+          duration: 3500
+        });
+        return;
+      }
+    }
+
+    if (optionFourFirst || optionFourSecond) {
+      if (optionFourFirst && optionFourSecond) {
+        const { pk_imprintID } = optionFourFirst;
+        let Obj = {
+          imprintId: pk_imprintID,
+          processQuantity: optionFourSecond
+        };
+        array.push(Obj)
+      } else {
+        this._snackBar.open("Please fill out the respective fields", '', {
+          horizontalPosition: 'center',
+          verticalPosition: 'bottom',
+          duration: 3500
+        });
+        return;
+      }
+    };
+
+    if (!array.length) {
+      this._snackBar.open("Please fill out the respective fields", '', {
+        horizontalPosition: 'center',
+        verticalPosition: 'bottom',
+        duration: 3500
+      });
+      return;
+    };
+
+    this.testPricingLoad = true;
+
+    let imprintIds = '';
+    let processQuantities = '';
+    for (const obj of array) {
+      const { imprintId, processQuantity } = obj;
+      imprintIds = imprintIds + `${imprintId},`;
+      processQuantities = processQuantities + `${processQuantity},`;
+    };
+    const finalImprintIds = imprintIds.replace(/,(?=[^,]*$)/, '');
+    const finalProcesses = processQuantities.replace(/,(?=[^,]*$)/, '');
+
+    const { pk_productID } = this.selectedProduct;
+    this._inventoryService.getTestPricing(pk_productID, finalImprintIds, finalProcesses)
+      .pipe(takeUntil(this._unsubscribeAll))
+      .subscribe((testPricing) => {
+        let tempObj;
+        let tempArray = testPricing["data"];
+        const maxValue = Math.max.apply(Math, tempArray.map(function (o) { return o[0].Profit; }));
+        let largeProfitObj = tempArray.find(imprint => imprint[0].Profit === maxValue);
+        let firstIndexObj = largeProfitObj[0];
+
+        tempObj = {
+          unibaseNetCost: firstIndexObj.productCost.toFixed(2),
+          unibaseRetail: (firstIndexObj.productCost * 2).toFixed(2),
+          orderBaseCount: firstIndexObj.orderBaseCount.toFixed(2),
+          orderBasePrice: firstIndexObj.orderBasePrice.toFixed(2),
+          orderGrandTotal: firstIndexObj.orderGrandTotal.toFixed(2),
+          orderGrandCost: firstIndexObj.orderGrandCost.toFixed(2),
+          orderGrandPercentage: (100 - ((firstIndexObj.orderGrandCost / firstIndexObj.orderGrandTotal) * 100)).toFixed(2),
+          profit: firstIndexObj.Profit,
+          totalSetupCost: firstIndexObj.setupCost,
+          totalSetupPrice: firstIndexObj.setupPrice,
+          orderRunCost: firstIndexObj.orderRunCost,
+          orderRunPrice: firstIndexObj.orderRunPrice
+        }
+        let tempArray2 = [];
+        for (const imprint of tempArray) {
+          const { imprintID } = imprint[0];
+          let name = this.testPricingDataSource.find(imprint => imprint.pk_imprintID === imprintID).locationName;
+          let methodName = this.testPricingDataSource.find(imprint => imprint.pk_imprintID === imprintID).methodName;
+          imprint[0]["imprintName"] = name;
+          imprint[0]["methodName"] = methodName;
+          tempArray2.push(imprint[0]);
+        }
+        tempObj["imprints"] = tempArray2;
+
+        this.priceInclusionObj = tempObj;
+
+        this.istestPricingScreenLoader = true;
+        this.testPricingLoad = false;
+        // Mark for Check
+        this._changeDetectorRef.markForCheck();
+      })
+  };
+
+  backToTestPricingForm() {
+    this.testPricingForm.reset();
+    this.istestPricingScreenLoader = false;
   }
 
   returnChargeValueForRunTable(processQuantity, productQuantity, run) {

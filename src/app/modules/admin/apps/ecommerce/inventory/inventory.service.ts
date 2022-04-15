@@ -605,14 +605,14 @@ export class InventoryService {
         });
     };
 
-    getTestPricing(imprintId, processQuantity, productQuantity): Observable<any[]> {
+    getTestPricing(productId, imprintId, processQuantity): Observable<any[]> {
         return this._httpClient.get<any[]>(environment.products, {
             params: {
                 imprint: true,
                 test_pricing: true,
+                product_id: productId,
                 imprint_id: imprintId,
-                process_quantity: processQuantity,
-                product_quantity: productQuantity
+                process_quantity: processQuantity
             }
         });
     };

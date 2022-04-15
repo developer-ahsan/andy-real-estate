@@ -569,7 +569,8 @@
 
 <!-- Test Pricing -->
 <div *ngIf="!isLoading && showImprintScreen == 'Test Pricing'">
-    <fuse-card class="rounded-2xl shadow bg-card flex flex-col lg:flex-row w-full">
+    <fuse-card class="rounded-2xl shadow bg-card flex flex-col lg:flex-row w-full my-5"
+        *ngIf="!istestPricingScreenLoader">
         <div class="p-6 sm:p-8 lg:p-10 w-full">
             <ngx-skeleton-loader count="8" appearance="line" animation="pulse" *ngIf="testPricingLoader">
             </ngx-skeleton-loader>
@@ -669,30 +670,152 @@
                     </div>
                 </form>
             </div>
-            <div class="flex items-center justify-end w-full" *ngIf="!testPricingLoader">
-                <div class="flex items-center my-2">
-                    <div class="flex items-center mr-4" *ngIf="flashMessage">
-                        <ng-container *ngIf="flashMessage === 'success'">
-                            <mat-icon class="text-green-500" [svgIcon]="'heroicons_outline:check'">
-                            </mat-icon>
-                            <span class="ml-2">Updated successfully</span>
-                        </ng-container>
-                        <ng-container *ngIf="flashMessage === 'error'">
-                            <mat-icon class="text-red-500" [svgIcon]="'heroicons_outline:x'"></mat-icon>
-                            <span class="ml-2">An error occurred, try again!</span>
-                        </ng-container>
-                    </div>
-                    <button class="min-w-40" mat-stroked-button [matTooltip]="'Update'" (click)="updateData()"
-                        [disabled]="updateLoader">
-                        <mat-progress-spinner *ngIf="updateLoader" [diameter]="24" [mode]="'indeterminate'">
-                        </mat-progress-spinner>
-                        <mat-icon *ngIf="!updateLoader" [svgIcon]="'mat_outline:edit'"></mat-icon>
-                        <span *ngIf="!updateLoader" class="ml-1 mr-1">Update</span>
-                    </button>
-                </div>
+            <div class="flex items-center justify-end w-full">
+                <button class="min-w-40" mat-stroked-button [matTooltip]="'Test pricing'" (click)="updateData()"
+                    [disabled]="testPricingLoad">
+                    <mat-progress-spinner *ngIf="testPricingLoad" [diameter]="24" [mode]="'indeterminate'">
+                    </mat-progress-spinner>
+                    <mat-icon *ngIf="!testPricingLoad" [svgIcon]="'mat_outline:edit'"></mat-icon>
+                    <span *ngIf="!testPricingLoad" class="ml-1 mr-1">Update</span>
+                </button>
             </div>
         </div>
     </fuse-card>
+
+    <!-- Main -->
+    <div class="inline-block w-full text-left my-5" *ngIf="istestPricingScreenLoader">
+
+        <div class="flex justify-end">
+            <button class="min-w-40" mat-stroked-button [matTooltip]="'Back to test pricing form'"
+                (click)="backToTestPricingForm()">
+                <span class="ml-1 mr-1">Back</span>
+            </button>
+        </div>
+
+        <!-- Invoice -->
+        <div class="w-full p-16 rounded-2xl shadow bg-card mt-5 min-w-240">
+
+            <div class="flex items-start justify-between">
+                <div class="grid grid-cols-2 gap-x-4 gap-y-1">
+                    <div class="text-2xl tracking-tight text-secondary">Pricing</div>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-12 gap-x-1 mt-12">
+                <!-- Columns -->
+                <div class="col-span-8 font-medium text-md text-secondary">PRODUCT</div>
+                <div class="font-medium text-md text-right text-secondary">NET COST</div>
+                <div class="font-medium text-md text-right text-secondary">RETAIL</div>
+                <div class="col-span-2 font-medium text-md text-right text-secondary">PERCENTAGE</div>
+
+                <!-- Divider -->
+                <div class="col-span-12 my-4 border-b"></div>
+
+                <!-- Item -->
+                <div class="col-span-8">
+                    <div class="text-md font-medium">Unit Base</div>
+                </div>
+                <div class="self-center text-left"> ${{priceInclusionObj.unibaseNetCost}} </div>
+                <div class="self-center text-right"> ${{priceInclusionObj.unibaseRetail}} </div>
+
+                <!-- Divider -->
+                <div class="col-span-12 my-4 border-b-2"></div>
+
+                <!-- Item -->
+                <div class="col-span-8">
+                    <div class="text-lg font-medium">Imprints</div>
+                </div>
+                <div class="col-span-12" *ngFor="let imprint of priceInclusionObj.imprints">
+                    <!-- Divider -->
+                    <div class="my-4 border-b"></div>
+                    <div class="text-md font-semibold text-secondary">
+                        &bull; {{imprint.imprintName}} | {{imprint.methodName}}
+                    </div>
+
+                    <div class="row">
+                        <div class="col-8">
+                            Unit Run
+                        </div>
+                        <div class="col-1">
+                            ${{imprint.runCost}}
+                        </div>
+                        <div class="col-1">
+                            ${{imprint.runPrice}}
+                        </div>
+
+                        <div class="col-8">
+                            Setup
+                        </div>
+                        <div class="col-1">
+                            ${{imprint.setupCost}}
+                        </div>
+                        <div class="col-1">
+                            ${{imprint.setupPrice}}
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Divider -->
+                <div class="col-span-12 my-4 border-b-2"></div>
+
+                <div class="col-span-8">
+                    <div class="self-center font-medium tracking-tight text-secondary">TOTALS</div>
+                </div>
+
+                <!-- Item -->
+                <div class="col-span-8 text-md font-medium">Base</div>
+                <div class="self-center my-1 text-md text-left">${{priceInclusionObj.orderBaseCount}}</div>
+                <div class="self-center my-1 text-md text-right">${{priceInclusionObj.orderBasePrice}}</div>
+                <div class="col-span-2 self-center text-right">40.00%</div>
+
+                <!-- Item -->
+                <div class="col-span-8 text-md font-medium">Run</div>
+                <div class="self-center my-1 text-md text-left">${{priceInclusionObj.orderRunCost}}</div>
+                <div class="self-center my-1 text-md text-right">${{priceInclusionObj.orderRunPrice}}</div>
+
+                <!-- Divider -->
+                <div class="col-span-12 my-4 border-b-2"></div>
+
+                <!-- Total -->
+                <div class="col-span-8 text-md font-medium"></div>
+                <div class="self-center my-1 text-1xl text-left"> ${{priceInclusionObj.orderBaseCount}} </div>
+                <div class="self-center my-1 text-1xl text-right"> ${{priceInclusionObj.orderBasePrice}} </div>
+                <div class="col-span-2 self-center text-1xl text-right">40.00%</div>
+
+                <!-- Divider -->
+                <div class="col-span-12 my-4 border-b"></div>
+
+                <!-- Item -->
+                <div class="col-span-8 text-md font-medium">Setup</div>
+                <div class="self-center text-md text-left"> ${{priceInclusionObj.totalSetupCost}} </div>
+                <div class="self-center text-md text-right"> ${{priceInclusionObj.totalSetupPrice}} </div>
+                <div class="col-span-2 text-md self-center text-right">20.00%</div>
+
+                <!-- Divider -->
+                <div class="col-span-12 my-4 border-b"></div>
+
+                <!-- Total -->
+                <div class="col-span-8 self-center text-1xl font-medium tracking-tight text-secondary">
+                    GRAND TOTAL
+                </div>
+                <div class="self-center text-1xl text-left"> ${{priceInclusionObj.orderGrandCost}} </div>
+                <div class="self-center text-1xl text-right"> ${{priceInclusionObj.orderGrandTotal}} </div>
+                <div class="col-span-2 text-1xl text-right font-medium">
+                    {{priceInclusionObj.orderGrandPercentage}}%
+                </div>
+
+                <!-- Divider -->
+                <div class="col-span-12 my-4 border-b-2"></div>
+
+                <!-- Total -->
+                <div class="col-span-10 self-center text-2xl font-medium tracking-tight text-secondary">
+                    PROFIT
+                </div>
+                <div class="col-span-2 text-2xl text-right font-medium text-secondary"> ${{priceInclusionObj.profit}}
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
 
 <!-- Price Inclusion -->
