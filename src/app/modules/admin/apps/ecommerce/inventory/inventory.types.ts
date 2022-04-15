@@ -505,3 +505,9 @@ export interface updatePromostandardObj {
     bln_active: boolean;
     promo_standard: boolean;
 }
+
+export interface updateAllowRun {
+    product_id: number;
+    bln_group_run: boolean;
+    imprint_group_run: boolean;
+}

@@ -4,6 +4,7 @@ import { takeUntil } from 'rxjs/operators';
 import { InventoryService } from 'app/modules/admin/apps/ecommerce/inventory/inventory.service';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { FormBuilder, FormControl, FormGroup } from '@angular/forms';
+import { MatSlideToggleChange } from '@angular/material/slide-toggle';
 
 @Component({
   selector: 'app-imprint',
@@ -170,6 +171,8 @@ export class ImprintComponent implements OnInit {
 
   isEditImprintScreen = false;
 
+  allowRunBoolean: boolean;
+
   showImprintScreen = "";
 
   constructor(
@@ -180,7 +183,8 @@ export class ImprintComponent implements OnInit {
   ) { }
 
   ngOnInit(): void {
-
+    const { blnGroupRun } = this.selectedProduct;
+    this.allowRunBoolean = blnGroupRun;
     this.chargeDistribution = this._formBuilder.group({
       charge: [0]
     })
@@ -1033,6 +1037,30 @@ export class ImprintComponent implements OnInit {
 
         this.ngOnInit();
         // Mark for Check
+        this._changeDetectorRef.markForCheck();
+      });
+  }
+
+  onToggleAllow(event: MatSlideToggleChange) {
+    const eventState = event.checked;
+    const { pk_productID } = this.selectedProduct;
+
+    const payload = {
+      product_id: pk_productID,
+      bln_group_run: eventState,
+      imprint_group_run: true
+    };
+
+    this.isLoading = true;
+    this._inventoryService.updateRunInGroup(payload)
+      .subscribe((response) => {
+        this.isLoading = false;
+        this._snackBar.open("Product updated successfully", '', {
+          horizontalPosition: 'center',
+          verticalPosition: 'bottom',
+          duration: 3500
+        });
+        // Mark for check
         this._changeDetectorRef.markForCheck();
       });
   }
