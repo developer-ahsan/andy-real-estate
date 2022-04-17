@@ -52,6 +52,10 @@
                                     <mat-icon class="icon-size-10 text-primary-500 dark:text-primary-300"
                                         svgIcon="mat_solid:picture_as_pdf"></mat-icon>
                                 </div>
+                                <div class="flex items-center justify-center p-2 font-semibold text-sm hover:cursor-pointer hover:opacity-80"
+                                    style="cursor: pointer;" (click)="openPdf(artWork)">
+                                    {{artWork.name}}
+                                </div>
                                 <button class="px-6 mt-8" mat-stroked-button>
                                     <mat-icon svgIcon="mat_outline:remove_circle_outline"></mat-icon>
                                     <span class="ml-2">Remove</span>

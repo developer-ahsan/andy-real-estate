@@ -37,10 +37,10 @@ export class ArtworkComponent implements OnInit {
       .pipe(takeUntil(this._unsubscribeAll))
       .subscribe((artwork) => {
         this.artWorkData = artwork["data"];
+
+        this.isLoadingChange.emit(false);
         this._changeDetectorRef.markForCheck();
       });
-
-    this.isLoadingChange.emit(false);
   }
 
   upload(event: Event) {
