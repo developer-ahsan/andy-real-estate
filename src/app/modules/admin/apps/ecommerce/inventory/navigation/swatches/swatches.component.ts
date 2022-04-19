@@ -38,17 +38,13 @@ export class SwatchesComponent implements OnInit {
     });
 
     const { pk_productID } = this.selectedProduct;
-    this._inventoryService.getPackageByProductId(pk_productID)
-      .pipe(takeUntil(this._unsubscribeAll))
-      .subscribe((pack) => {
-        this._changeDetectorRef.markForCheck();
-      });
 
-    let url = `https://assets.consolidus.com/globalAssets/Products/Swatch/22670.jpg`;
-    console.log("url", url)
+    let url = `https://assets.consolidus.com/globalAssets/Products/Swatch/${pk_productID}.jpg`;
     this.checkIfImageExists(url);
 
-    this.isLoadingChange.emit(false);
+    setTimeout(() => {
+      this.isLoadingChange.emit(false);
+    }, 2500)
   }
 
   checkIfImageExists(url) {
