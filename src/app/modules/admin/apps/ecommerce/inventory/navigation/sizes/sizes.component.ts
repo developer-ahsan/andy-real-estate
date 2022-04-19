@@ -17,8 +17,11 @@ export class SizesComponent implements OnInit {
   private _unsubscribeAll: Subject<any> = new Subject<any>();
 
   displayedColumns: string[] = ['select', 'sizeName', 'run', 'weight', 'unitsPerWeight'];
+  displayedColumnsChart: string[] = ['name'];
   dataSource = [];
+  dataSourceCharts = [];
   sizesLength: number = 0;
+  chartsLength: number = 0;
 
   selection = new SelectionModel<any>(true, []);
 
@@ -28,6 +31,7 @@ export class SizesComponent implements OnInit {
 
   selectedRowsLength: number;
   page = 1;
+  chartPage = 1;
 
   arrayToUpdate = [];
 
@@ -58,13 +62,35 @@ export class SizesComponent implements OnInit {
     this._inventoryService.getSizes(pk_productID, page)
       .pipe(takeUntil(this._unsubscribeAll))
       .subscribe((sizes) => {
-        const { selected, unSelected } = sizes["data"];
-        for (const selectedObj of selected) {
-          selectedObj["isSelected"] = true;
-        }
-        this.dataSource = selected.concat(unSelected);
-        this.sizesLength = sizes["totalRecords"];
-        this.isLoadingChange.emit(false);
+
+        this._inventoryService.getCharts(pk_productID, page)
+          .pipe(takeUntil(this._unsubscribeAll))
+          .subscribe((charts) => {
+            this.dataSourceCharts = charts["data"];
+            this.chartsLength = charts["totalRecords"];
+
+            const { selected, unSelected } = sizes["data"];
+            for (const selectedObj of selected) {
+              selectedObj["isSelected"] = true;
+            }
+            this.dataSource = selected.concat(unSelected);
+            this.sizesLength = sizes["totalRecords"];
+            this.isLoadingChange.emit(false);
+            // Mark for check
+            this._changeDetectorRef.markForCheck();
+          });
+
+      });
+  };
+
+  getCharts(page: number): void {
+    const { pk_productID } = this.selectedProduct;
+
+    this._inventoryService.getCharts(pk_productID, page)
+      .pipe(takeUntil(this._unsubscribeAll))
+      .subscribe((charts) => {
+        this.dataSourceCharts = charts["data"];
+        this.chartsLength = charts["totalRecords"];
 
         // Mark for check
         this._changeDetectorRef.markForCheck();
@@ -174,6 +200,17 @@ export class SizesComponent implements OnInit {
       this.page--;
     };
     this.getSizes(this.page);
+  };
+
+  getNextChartData(event) {
+    const { previousPageIndex, pageIndex } = event;
+
+    if (pageIndex > previousPageIndex) {
+      this.chartPage++;
+    } else {
+      this.chartPage--;
+    };
+    this.getCharts(this.chartPage);
   };
 
   addFeature(): void {

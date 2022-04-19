@@ -835,6 +835,17 @@ export class InventoryService {
         });
     };
 
+    getCharts(productId, page): Observable<any[]> {
+        return this._httpClient.get<any[]>(environment.products, {
+            params: {
+                product_id: productId,
+                chart: true,
+                size: 20,
+                page: page
+            }
+        });
+    };
+
     // DELETE CALLS
     deleteComment(payload: DeleteComment) {
         return this._httpClient.post(environment.products, payload);
