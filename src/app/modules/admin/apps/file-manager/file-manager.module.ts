@@ -9,6 +9,7 @@ import { fileManagerRoutes } from 'app/modules/admin/apps/file-manager/file-mana
 import { FileManagerComponent } from 'app/modules/admin/apps/file-manager/file-manager.component';
 import { FileManagerDetailsComponent } from 'app/modules/admin/apps/file-manager/details/details.component';
 import { FileManagerListComponent } from 'app/modules/admin/apps/file-manager/list/list.component';
+import { MatSelectModule } from '@angular/material/select';
 
 @NgModule({
     declarations: [
@@ -16,15 +17,15 @@ import { FileManagerListComponent } from 'app/modules/admin/apps/file-manager/li
         FileManagerDetailsComponent,
         FileManagerListComponent
     ],
-    imports     : [
+    imports: [
         RouterModule.forChild(fileManagerRoutes),
         MatButtonModule,
         MatIconModule,
         MatSidenavModule,
         MatTooltipModule,
+        MatSelectModule,
         SharedModule
     ]
 })
-export class FileManagerModule
-{
+export class FileManagerModule {
 }

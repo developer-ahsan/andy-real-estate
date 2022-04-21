@@ -3,12 +3,12 @@ import { HttpClient } from '@angular/common/http';
 import { BehaviorSubject, Observable, of, throwError } from 'rxjs';
 import { map, switchMap, take, tap } from 'rxjs/operators';
 import { Item, Items } from 'app/modules/admin/apps/file-manager/file-manager.types';
+import { environment } from 'environments/environment';
 
 @Injectable({
     providedIn: 'root'
 })
-export class FileManagerService
-{
+export class FileManagerService {
     // Private
     private _item: BehaviorSubject<Item | null> = new BehaviorSubject(null);
     private _items: BehaviorSubject<Items | null> = new BehaviorSubject(null);
@@ -16,8 +16,7 @@ export class FileManagerService
     /**
      * Constructor
      */
-    constructor(private _httpClient: HttpClient)
-    {
+    constructor(private _httpClient: HttpClient) {
     }
 
     // -----------------------------------------------------------------------------------------------------
@@ -27,16 +26,14 @@ export class FileManagerService
     /**
      * Getter for items
      */
-    get items$(): Observable<Items>
-    {
+    get items$(): Observable<Items> {
         return this._items.asObservable();
     }
 
     /**
      * Getter for item
      */
-    get item$(): Observable<Item>
-    {
+    get item$(): Observable<Item> {
         return this._item.asObservable();
     }
 
@@ -47,20 +44,27 @@ export class FileManagerService
     /**
      * Get items
      */
-    getItems(): Observable<Item[]>
-    {
+    getItems(): Observable<Item[]> {
         return this._httpClient.get<Items>('api/apps/file-manager').pipe(
             tap((response: any) => {
                 this._items.next(response);
             })
         );
-    }
+    };
+
+    getAllStores(): Observable<any[]> {
+        return this._httpClient.get<any[]>(environment.stores, {
+            params: {
+                list: true,
+                size: 2000
+            }
+        });
+    };
 
     /**
      * Get item by id
      */
-    getItemById(id: string): Observable<Item>
-    {
+    getItemById(id: string): Observable<Item> {
         return this._items.pipe(
             take(1),
             map((items) => {
@@ -76,8 +80,7 @@ export class FileManagerService
             }),
             switchMap((item) => {
 
-                if ( !item )
-                {
+                if (!item) {
                     return throwError('Could not found the item with id of ' + id + '!');
                 }
 

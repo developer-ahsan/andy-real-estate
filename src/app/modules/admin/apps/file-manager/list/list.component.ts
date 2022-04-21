@@ -8,18 +8,22 @@ import { FileManagerService } from 'app/modules/admin/apps/file-manager/file-man
 import { Item, Items } from 'app/modules/admin/apps/file-manager/file-manager.types';
 
 @Component({
-    selector       : 'file-manager-list',
-    templateUrl    : './list.component.html',
-    encapsulation  : ViewEncapsulation.None,
+    selector: 'file-manager-list',
+    templateUrl: './list.component.html',
+    encapsulation: ViewEncapsulation.None,
     changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class FileManagerListComponent implements OnInit, OnDestroy
-{
-    @ViewChild('matDrawer', {static: true}) matDrawer: MatDrawer;
+export class FileManagerListComponent implements OnInit, OnDestroy {
+    @ViewChild('matDrawer', { static: true }) matDrawer: MatDrawer;
     drawerMode: 'side' | 'over';
     selectedItem: Item;
     items: Items;
+    stores: any = [];
     private _unsubscribeAll: Subject<any> = new Subject<any>();
+    selectedStore = null;
+
+    // Boolean
+    isStoreNotReceived = true;
 
     /**
      * Constructor
@@ -30,8 +34,7 @@ export class FileManagerListComponent implements OnInit, OnDestroy
         private _router: Router,
         private _fileManagerService: FileManagerService,
         private _fuseMediaWatcherService: FuseMediaWatcherService
-    )
-    {
+    ) {
     }
 
     // -----------------------------------------------------------------------------------------------------
@@ -41,8 +44,19 @@ export class FileManagerListComponent implements OnInit, OnDestroy
     /**
      * On init
      */
-    ngOnInit(): void
-    {
+    ngOnInit(): void {
+
+        // Get the stores
+        this._fileManagerService.getAllStores()
+            .pipe(takeUntil(this._unsubscribeAll))
+            .subscribe((stores) => {
+                this.stores = stores["data"];
+                this.isStoreNotReceived = false;
+
+                // Mark for check
+                this._changeDetectorRef.markForCheck();
+            })
+
         // Get the items
         this._fileManagerService.items$
             .pipe(takeUntil(this._unsubscribeAll))
@@ -79,8 +93,7 @@ export class FileManagerListComponent implements OnInit, OnDestroy
     /**
      * On destroy
      */
-    ngOnDestroy(): void
-    {
+    ngOnDestroy(): void {
         // Unsubscribe from all subscriptions
         this._unsubscribeAll.next();
         this._unsubscribeAll.complete();
@@ -93,14 +106,19 @@ export class FileManagerListComponent implements OnInit, OnDestroy
     /**
      * On backdrop clicked
      */
-    onBackdropClicked(): void
-    {
+    onBackdropClicked(): void {
         // Go back to the list
-        this._router.navigate(['./'], {relativeTo: this._activatedRoute});
+        this._router.navigate(['./'], { relativeTo: this._activatedRoute });
 
         // Mark for check
         this._changeDetectorRef.markForCheck();
     }
+
+    selectByStore(event): void {
+        console.log("event", event);
+    }
+
+    clearFilter() { }
 
     /**
      * Track by function for ngFor loops
@@ -108,8 +126,7 @@ export class FileManagerListComponent implements OnInit, OnDestroy
      * @param index
      * @param item
      */
-    trackByFn(index: number, item: any): any
-    {
+    trackByFn(index: number, item: any): any {
         return item.id || index;
     }
 }
