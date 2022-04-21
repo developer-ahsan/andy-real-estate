@@ -21,9 +21,21 @@ export class FileManagerListComponent implements OnInit, OnDestroy {
     stores: any = [];
     private _unsubscribeAll: Subject<any> = new Subject<any>();
     selectedStore = null;
+    quillModules: any = {
+        toolbar: [
+            ['bold', 'italic', 'underline', 'strike'],
+            ['blockquote', 'code-block'],
+            [{ 'color': [] }, { 'background': ['white'] }],
+            [{ 'font': [] }],
+            [{ 'align': [] }],
+            ['clean']
+        ]
+    };
 
     // Boolean
+    isLoading: boolean = false;
     isStoreNotReceived = true;
+    enableAddStoreForm = false;
 
     /**
      * Constructor
@@ -45,6 +57,7 @@ export class FileManagerListComponent implements OnInit, OnDestroy {
      * On init
      */
     ngOnInit(): void {
+        this.isLoading = true;
 
         // Get the stores
         this._fileManagerService.getAllStores()
@@ -52,6 +65,7 @@ export class FileManagerListComponent implements OnInit, OnDestroy {
             .subscribe((stores) => {
                 this.stores = stores["data"];
                 this.isStoreNotReceived = false;
+                this.isLoading = false;
 
                 // Mark for check
                 this._changeDetectorRef.markForCheck();
@@ -112,6 +126,10 @@ export class FileManagerListComponent implements OnInit, OnDestroy {
 
         // Mark for check
         this._changeDetectorRef.markForCheck();
+    }
+
+    toggleAddStoreFormEnable(): void {
+        this.enableAddStoreForm = !this.enableAddStoreForm;
     }
 
     selectByStore(event): void {

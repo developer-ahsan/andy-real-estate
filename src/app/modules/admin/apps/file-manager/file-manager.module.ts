@@ -10,6 +10,9 @@ import { FileManagerComponent } from 'app/modules/admin/apps/file-manager/file-m
 import { FileManagerDetailsComponent } from 'app/modules/admin/apps/file-manager/details/details.component';
 import { FileManagerListComponent } from 'app/modules/admin/apps/file-manager/list/list.component';
 import { MatSelectModule } from '@angular/material/select';
+import { MatProgressBarModule } from '@angular/material/progress-bar';
+import { MatInputModule } from '@angular/material/input';
+import { QuillModule } from 'ngx-quill';
 
 @NgModule({
     declarations: [
@@ -24,6 +27,9 @@ import { MatSelectModule } from '@angular/material/select';
         MatSidenavModule,
         MatTooltipModule,
         MatSelectModule,
+        MatProgressBarModule,
+        MatInputModule,
+        QuillModule.forRoot(),
         SharedModule
     ]
 })
