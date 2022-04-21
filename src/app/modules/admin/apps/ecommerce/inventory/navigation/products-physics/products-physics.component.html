@@ -1,6 +1,6 @@
 <ngx-skeleton-loader count="8" appearance="line" animation="pulse" *ngIf="isLoading">
 </ngx-skeleton-loader>
-<mat-tab-group mat-align-tabs="start" *ngIf="!isLoading">
+<mat-tab-group mat-align-tabs="start" *ngIf="!isLoading" (selectedIndexChange)="myTabSelectedIndexChange($event)">
     <mat-tab label="Physics">
         <ng-container *ngTemplateOutlet="physicsAndShipping"></ng-container>
     </mat-tab>
@@ -14,8 +14,9 @@
         <ng-container *ngTemplateOutlet="caseQuantities"></ng-container>
     </mat-tab>
 </mat-tab-group>
+
 <ng-template #physicsAndShipping>
-    <div class="row">
+    <div class="row" *ngIf="!isLoading">
         <div class="col-12 my-2">
             <fuse-card class="rounded-2xl shadow bg-card flex flex-col lg:flex-row w-full">
                 <div class="p-6 sm:p-8 lg:p-10 w-full">
@@ -128,6 +129,7 @@
         </div>
     </div>
 </ng-template>
+
 <ng-template #flatRateShipping>
     <div class="row">
         <div class="col-12 my-2">
@@ -190,6 +192,7 @@
         </div>
     </div>
 </ng-template>
+
 <ng-template #caseDimension>
     <div class="row">
         <div class="col-12 my-2">
@@ -256,8 +259,11 @@
         </div>
     </div>
 </ng-template>
+
 <ng-template #caseQuantities>
-    <div class="row">
+    <ngx-skeleton-loader count="8" appearance="line" animation="pulse" *ngIf="caseQtyTabLoader">
+    </ngx-skeleton-loader>
+    <div class="row" *ngIf="!caseQtyTabLoader">
         <div class="col-12 my-2">
             <fuse-card class="rounded-2xl shadow bg-card flex flex-col lg:flex-row w-full">
                 <div class="p-6 sm:p-8 lg:p-10 w-full">

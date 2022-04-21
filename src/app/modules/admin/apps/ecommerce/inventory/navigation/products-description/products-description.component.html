@@ -7,7 +7,7 @@
                 <!-- Search Products By Supplier -->
                 <mat-form-field appearance="fill" class="w-full">
                     <mat-label>Select a supplier</mat-label>
-                    <mat-select disableRipple>
+                    <mat-select disableRipple [disabled]="isSupplierNotReceived">
                         <mat-option (click)="selectBySupplier(supplier)" value="{{supplier}}"
                             *ngFor="let supplier of suppliers">
                             {{supplier.companyName}}

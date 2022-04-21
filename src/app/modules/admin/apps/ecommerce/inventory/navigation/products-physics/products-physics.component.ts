@@ -24,6 +24,7 @@ export class ProductsPhysicsComponent implements OnInit {
   physicsLoader = false;
   caseQTYLoader = false;
   caseDimensionLoader = false;
+  caseQtyTabLoader = false;
   flashMessage: 'success' | 'error' | 'errorMessage' | null = null;
 
   physicsValidationMessage = '';
@@ -82,15 +83,15 @@ export class ProductsPhysicsComponent implements OnInit {
       quantitySix: ['']
     });
 
+    // Fill flat rate form
+    this.flatRateShippingForm.patchValue(this.selectedProduct);
+
     this._inventoryService.getPhysicsAndDimension(pk_productID)
       .pipe(takeUntil(this._unsubscribeAll))
       .subscribe((caseDimensions) => {
 
         // Fill dimesnion form
         this.caseDimensionForm.patchValue(caseDimensions["data"][0]);
-
-        // Fill flat rate form
-        this.flatRateShippingForm.patchValue(this.selectedProduct);
 
         const { blnIncludeShipping, prodTimeMax, prodTimeMin } = this.selectedProduct;
         this.sliderMaxValue = prodTimeMax;
@@ -100,24 +101,7 @@ export class ProductsPhysicsComponent implements OnInit {
         // Fill the form
         this.productPhysicsForm.patchValue(this.selectedProduct);
 
-        // Mark for check
-        this._changeDetectorRef.markForCheck();
-      });
-    this._inventoryService.getCaseQuantities(pk_productID)
-      .pipe(takeUntil(this._unsubscribeAll))
-      .subscribe((caseQuantity) => {
-        if (caseQuantity["data"]?.length) {
-          const formValue = {
-            quantityOne: caseQuantity["data"][0].quantity,
-            quantityTwo: caseQuantity["data"][1].quantity,
-            quantityThree: caseQuantity["data"][2].quantity,
-            quantityFour: caseQuantity["data"][3].quantity,
-            quantityFive: caseQuantity["data"][4].quantity,
-            quantitySix: caseQuantity["data"][5].quantity
-          };
-          this.caseQuantitiesForm.patchValue(formValue);
-        }
-
+        this.isLoadingChange.emit(false);
         // Mark for check
         this._changeDetectorRef.markForCheck();
       });
@@ -130,8 +114,6 @@ export class ProductsPhysicsComponent implements OnInit {
         // Mark for check
         this._changeDetectorRef.markForCheck();
       });
-
-    this.isLoadingChange.emit(false);
   };
 
   showOptions(event): void {
@@ -155,6 +137,32 @@ export class ProductsPhysicsComponent implements OnInit {
         this.flatRateLoader = false;
       });
   };
+
+  myTabSelectedIndexChange(index: number) {
+    if (index === 3) {
+      this.caseQtyTabLoader = true;
+      const { pk_productID } = this.selectedProduct;
+      this._inventoryService.getCaseQuantities(pk_productID)
+        .pipe(takeUntil(this._unsubscribeAll))
+        .subscribe((caseQuantity) => {
+          if (caseQuantity["data"]?.length) {
+            const formValue = {
+              quantityOne: caseQuantity["data"][0].quantity,
+              quantityTwo: caseQuantity["data"][1].quantity,
+              quantityThree: caseQuantity["data"][2].quantity,
+              quantityFour: caseQuantity["data"][3].quantity,
+              quantityFive: caseQuantity["data"][4].quantity,
+              quantitySix: caseQuantity["data"][5].quantity
+            };
+            this.caseQuantitiesForm.patchValue(formValue);
+          };
+
+          this.caseQtyTabLoader = false;
+          // Mark for check
+          this._changeDetectorRef.markForCheck();
+        });
+    }
+  }
 
   onShippingChargesChange(event) {
     const { value } = event;

@@ -35,6 +35,7 @@ export class ProductsDescriptionComponent implements OnInit {
   ];
   flashMessage: 'success' | 'error' | null = null;
   descriptionLoader = false;
+  isSupplierNotReceived = true;
 
   constructor(
     private _changeDetectorRef: ChangeDetectorRef,
@@ -73,6 +74,7 @@ export class ProductsDescriptionComponent implements OnInit {
       .subscribe((supplier) => {
         this.suppliers = supplier["data"];
 
+        this.isSupplierNotReceived = false;
         // Mark for check
         this._changeDetectorRef.markForCheck();
       })
@@ -110,11 +112,11 @@ export class ProductsDescriptionComponent implements OnInit {
 
         // Fill the form
         this.productDescriptionForm.patchValue(descriptionObj);
+        this.isLoadingChange.emit(false);
 
         // Mark for check
         this._changeDetectorRef.markForCheck();
       });
-    this.isLoadingChange.emit(false);
   };
 
   selectBySupplier(event): void {
