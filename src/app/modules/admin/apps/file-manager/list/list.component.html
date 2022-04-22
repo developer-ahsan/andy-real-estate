@@ -15,9 +15,11 @@
             </div>
             <div class="col-lg-2 col-12">
                 <!-- Upload button -->
-                <button class="mt-3" mat-flat-button [matTooltip]="'Create New Store'"
+                <button class="min-w-40 w-full" [disabled]="isLoading" mat-flat-button [matTooltip]="'Create New Store'"
                     (click)="toggleAddStoreFormEnable()" [color]="'primary'">
-                    <span class="ml-2 mr-1">Create Store</span>
+                    <mat-progress-spinner *ngIf="isLoading" [diameter]="24" [mode]="'indeterminate'">
+                    </mat-progress-spinner>
+                    <span class="ml-2 mr-1" *ngIf="!isLoading">Create Store</span>
                 </button>
             </div>
         </div>
@@ -48,7 +50,7 @@
                     <mat-form-field appearance="fill" class="w-full">
                         <mat-select [(ngModel)]="selectedStore" disableRipple [disabled]="isStoreNotReceived">
                             <mat-option (click)="clearFilter()">SELECT STORE</mat-option>
-                            <mat-option (click)="selectByStore(store)" value="{{store}}" *ngFor="let store of stores">
+                            <mat-option (click)="storeDetails(store)" value="{{store}}" *ngFor="let store of stores">
                                 {{store.storeName}}
                             </mat-option>
                         </mat-select>

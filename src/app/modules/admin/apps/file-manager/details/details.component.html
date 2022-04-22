@@ -2,9 +2,7 @@
 
     <!-- Close button -->
     <div class="flex items-center justify-end">
-        <button
-            mat-icon-button
-            [routerLink]="['../']">
+        <button mat-icon-button [routerLink]="['../']">
             <mat-icon [svgIcon]="'heroicons_outline:x'"></mat-icon>
         </button>
     </div>
@@ -13,14 +11,10 @@
     <div class="aspect-w-9 aspect-h-6 mt-8">
         <div class="flex items-center justify-center border rounded-lg bg-gray-50 dark:bg-card">
             <ng-container *ngIf="item.type === 'folder'">
-                <mat-icon
-                    class="icon-size-14 text-hint"
-                    [svgIcon]="'iconsmind:folder'"></mat-icon>
+                <mat-icon class="icon-size-14 text-hint" [svgIcon]="'iconsmind:folder'"></mat-icon>
             </ng-container>
             <ng-container *ngIf="item.type !== 'folder'">
-                <mat-icon
-                    class="icon-size-14 text-hint"
-                    [svgIcon]="'iconsmind:file'"></mat-icon>
+                <mat-icon class="icon-size-14 text-hint" [svgIcon]="'iconsmind:file'"></mat-icon>
             </ng-container>
         </div>
     </div>
@@ -28,14 +22,10 @@
     <!-- Name & Type -->
     <div class="flex flex-col items-start mt-8">
         <div class="text-xl font-medium">{{item.name}}</div>
-        <div
-            class="mt-1 px-1.5 rounded text-sm font-semibold leading-5 text-white"
-            [class.bg-indigo-600]="item.type === 'folder'"
-            [class.bg-red-600]="item.type === 'PDF'"
-            [class.bg-blue-600]="item.type === 'DOC'"
-            [class.bg-green-600]="item.type === 'XLS'"
-            [class.bg-gray-600]="item.type === 'TXT'"
-            [class.bg-amber-600]="item.type === 'JPG'">
+        <div class="mt-1 px-1.5 rounded text-sm font-semibold leading-5 text-white"
+            [class.bg-indigo-600]="item.type === 'folder'" [class.bg-red-600]="item.type === 'PDF'"
+            [class.bg-blue-600]="item.type === 'DOC'" [class.bg-green-600]="item.type === 'XLS'"
+            [class.bg-gray-600]="item.type === 'TXT'" [class.bg-amber-600]="item.type === 'JPG'">
             {{item.type.toUpperCase()}}
         </div>
     </div>
@@ -71,9 +61,7 @@
     <div class="flex items-center justify-between mt-8">
         <div class="text-lg font-medium">Description</div>
         <button mat-icon-button>
-            <mat-icon
-                class="icon-size-5"
-                [svgIcon]="'heroicons_solid:pencil'"></mat-icon>
+            <mat-icon class="icon-size-5" [svgIcon]="'heroicons_solid:pencil'"></mat-icon>
         </button>
     </div>
     <div class="flex mt-2 border-t">
@@ -89,15 +77,10 @@
 
     <!-- Actions -->
     <div class="grid grid-cols-2 gap-4 w-full mt-8">
-        <button
-            class="flex-auto"
-            mat-flat-button
-            [color]="'primary'">
+        <button class="flex-auto" mat-flat-button [color]="'primary'">
             Download
         </button>
-        <button
-            class="flex-auto"
-            mat-stroked-button>
+        <button class="flex-auto" mat-stroked-button>
             Delete
         </button>
     </div>

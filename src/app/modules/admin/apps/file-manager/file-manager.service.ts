@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { BehaviorSubject, Observable, of, throwError } from 'rxjs';
 import { map, switchMap, take, tap } from 'rxjs/operators';
-import { Item, Items } from 'app/modules/admin/apps/file-manager/file-manager.types';
+import { Item, Items } from 'app/modules/admin/apps/file-manager/stores.types';
 import { environment } from 'environments/environment';
 
 @Injectable({
@@ -47,7 +47,7 @@ export class FileManagerService {
     getItems(): Observable<Item[]> {
         return this._httpClient.get<Items>('api/apps/file-manager').pipe(
             tap((response: any) => {
-                this._items.next(response);
+                // this._items.next(response);
             })
         );
     };
@@ -58,7 +58,11 @@ export class FileManagerService {
                 list: true,
                 size: 2000
             }
-        });
+        }).pipe(
+            tap((response: any) => {
+                this._items.next(response["data"]);
+            })
+        );
     };
 
     /**
@@ -67,10 +71,10 @@ export class FileManagerService {
     getItemById(id: string): Observable<Item> {
         return this._items.pipe(
             take(1),
-            map((items) => {
+            map((items: any) => {
 
                 // Find within the folders and files
-                const item = [...items.folders, ...items.files].find(value => value.id === id) || null;
+                const item = items.find(value => value.pk_storeID == id) || null;
 
                 // Update the item
                 this._item.next(item);

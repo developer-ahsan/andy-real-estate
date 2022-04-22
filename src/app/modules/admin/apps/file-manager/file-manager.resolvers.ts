@@ -3,7 +3,7 @@ import { ActivatedRouteSnapshot, Resolve, Router, RouterStateSnapshot } from '@a
 import { Observable, throwError } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 import { FileManagerService } from 'app/modules/admin/apps/file-manager/file-manager.service';
-import { Item } from 'app/modules/admin/apps/file-manager/file-manager.types';
+import { Item } from 'app/modules/admin/apps/file-manager/stores.types';
 
 @Injectable({
     providedIn: 'root'
@@ -13,8 +13,7 @@ export class FileManagerItemsResolver implements Resolve<any>
     /**
      * Constructor
      */
-    constructor(private _fileManagerService: FileManagerService)
-    {
+    constructor(private _fileManagerService: FileManagerService) {
     }
 
     // -----------------------------------------------------------------------------------------------------
@@ -27,8 +26,7 @@ export class FileManagerItemsResolver implements Resolve<any>
      * @param route
      * @param state
      */
-    resolve(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<Item[]>
-    {
+    resolve(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<Item[]> {
         return this._fileManagerService.getItems();
     }
 }
@@ -44,8 +42,7 @@ export class FileManagerItemResolver implements Resolve<any>
     constructor(
         private _router: Router,
         private _fileManagerService: FileManagerService
-    )
-    {
+    ) {
     }
 
     // -----------------------------------------------------------------------------------------------------
@@ -58,25 +55,24 @@ export class FileManagerItemResolver implements Resolve<any>
      * @param route
      * @param state
      */
-    resolve(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<Item>
-    {
+    resolve(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<Item> {
         return this._fileManagerService.getItemById(route.paramMap.get('id'))
-                   .pipe(
-                       // Error here means the requested task is not available
-                       catchError((error) => {
+            .pipe(
+                // Error here means the requested task is not available
+                catchError((error) => {
 
-                           // Log the error
-                           console.error(error);
+                    // Log the error
+                    console.error(error);
 
-                           // Get the parent url
-                           const parentUrl = state.url.split('/').slice(0, -1).join('/');
+                    // Get the parent url
+                    const parentUrl = state.url.split('/').slice(0, -1).join('/');
 
-                           // Navigate to there
-                           this._router.navigateByUrl(parentUrl);
+                    // Navigate to there
+                    this._router.navigateByUrl(parentUrl);
 
-                           // Throw an error
-                           return throwError(error);
-                       })
-                   );
+                    // Throw an error
+                    return throwError(error);
+                })
+            );
     }
 }

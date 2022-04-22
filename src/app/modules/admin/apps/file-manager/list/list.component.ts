@@ -5,7 +5,7 @@ import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { FuseMediaWatcherService } from '@fuse/services/media-watcher';
 import { FileManagerService } from 'app/modules/admin/apps/file-manager/file-manager.service';
-import { Item, Items } from 'app/modules/admin/apps/file-manager/file-manager.types';
+import { Item, Items } from 'app/modules/admin/apps/file-manager/stores.types';
 
 @Component({
     selector: 'file-manager-list',
@@ -13,7 +13,7 @@ import { Item, Items } from 'app/modules/admin/apps/file-manager/file-manager.ty
     encapsulation: ViewEncapsulation.None,
     changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class FileManagerListComponent implements OnInit, OnDestroy {
+export class StoresListComponent implements OnInit, OnDestroy {
     @ViewChild('matDrawer', { static: true }) matDrawer: MatDrawer;
     drawerMode: 'side' | 'over';
     selectedItem: Item;
@@ -132,8 +132,9 @@ export class FileManagerListComponent implements OnInit, OnDestroy {
         this.enableAddStoreForm = !this.enableAddStoreForm;
     }
 
-    selectByStore(event): void {
-        console.log("event", event);
+    storeDetails(event): void {
+        // const { pk_storeID } = event;
+        // this._router.navigate([`/apps/stores/${pk_storeID}`]);
     }
 
     clearFilter() { }
