@@ -1,88 +1,91 @@
-<div class="flex flex-col flex-auto p-6 md:p-8">
-
-    <!-- Close button -->
-    <div class="flex items-center justify-end">
-        <button mat-icon-button [routerLink]="['../']">
-            <mat-icon [svgIcon]="'heroicons_outline:x'"></mat-icon>
-        </button>
-    </div>
-
-    <!-- Preview -->
-    <div class="aspect-w-9 aspect-h-6 mt-8">
-        <div class="flex items-center justify-center border rounded-lg bg-gray-50 dark:bg-card">
-            <ng-container *ngIf="item.type === 'folder'">
-                <mat-icon class="icon-size-14 text-hint" [svgIcon]="'iconsmind:folder'"></mat-icon>
-            </ng-container>
-            <ng-container *ngIf="item.type !== 'folder'">
-                <mat-icon class="icon-size-14 text-hint" [svgIcon]="'iconsmind:file'"></mat-icon>
-            </ng-container>
+<div class="absolute inset-0 flex flex-col min-w-0 overflow-y-auto bg-light dark:bg-transparent">
+    <!-- Header -->
+    <div
+        class="relative bg-light flex flex-col sm:flex-row flex-0 sm:items-center sm:justify-between py-2 px-6 md:px-8 border-b">
+        <!-- Loader -->
+        <div class="absolute inset-x-0 bottom-1" *ngIf="isLoading">
+            <mat-progress-bar [mode]="'indeterminate'"></mat-progress-bar>
+        </div>
+        <!-- Title -->
+        <div class="text-3xl font-extrabold tracking-tight">Store Details</div>
+        <!-- Actions -->
+        <div class="flex flex-shrink-0 items-center mt-6 sm:mt-0 sm:ml-4">
+            <!-- Back to Customers Page button -->
+            <button class="ml-4" mat-flat-button [color]="'primary'" [matTooltip]="'Go to stores'"
+                (click)="backToStoresScreen()">
+                <mat-icon [svgIcon]="'heroicons_outline:arrow-narrow-left'"></mat-icon>
+                <span class="ml-2 mr-1">Back to Stores</span>
+            </button>
         </div>
     </div>
 
-    <!-- Name & Type -->
-    <div class="flex flex-col items-start mt-8">
-        <div class="text-xl font-medium">{{item.name}}</div>
-        <div class="mt-1 px-1.5 rounded text-sm font-semibold leading-5 text-white"
-            [class.bg-indigo-600]="item.type === 'folder'" [class.bg-red-600]="item.type === 'PDF'"
-            [class.bg-blue-600]="item.type === 'DOC'" [class.bg-green-600]="item.type === 'XLS'"
-            [class.bg-gray-600]="item.type === 'TXT'" [class.bg-amber-600]="item.type === 'JPG'">
-            {{item.type.toUpperCase()}}
-        </div>
-    </div>
+    <ngx-skeleton-loader count="14" appearance="line" animation="pulse" class="p-5" *ngIf="isLoading">
+    </ngx-skeleton-loader>
 
-    <!-- Information -->
-    <div class="text-lg font-medium mt-8">Information</div>
-    <div class="flex flex-col mt-4 border-t border-b divide-y font-medium">
-        <div class="flex items-center justify-between py-3">
-            <div class="text-secondary">Created By</div>
-            <div>{{item.createdBy}}</div>
-        </div>
-        <div class="flex items-center justify-between py-3">
-            <div class="text-secondary">Created At</div>
-            <div>{{item.createdAt}}</div>
-        </div>
-        <div class="flex items-center justify-between py-3">
-            <div class="text-secondary">Modified At</div>
-            <div>{{item.modifiedAt}}</div>
-        </div>
-        <div class="flex items-center justify-between py-3">
-            <div class="text-secondary">Size</div>
-            <div>{{item.size}}</div>
-        </div>
-        <ng-container *ngIf="item.contents">
-            <div class="flex items-center justify-between py-3">
-                <div class="text-secondary">Contents</div>
-                <div>{{item.contents}}</div>
+    <mat-drawer-container class="sub-nav-component bg-light" autosize *ngIf="!isLoading">
+        <mat-drawer #drawer class="sub-sidenav bg-light" [mode]="drawerMode" [opened]="drawerOpened">
+            <div *ngFor="let route of routes;let i = index">
+                <button style="padding: 15px;"
+                    [style.background-color]="route.title === selectedIndex ? '#d4d7dd' : 'transparent'"
+                    [ngClass]="route.title === selectedIndex ? 'opacity-100' : 'opacity-80'" mat-button
+                    class="w-full my-1 mr-2 justify-content-start" (click)="clicked(route)">
+                    <mat-icon svgIcon="{{route.icon}}" class="icon-size-5 text-primary"></mat-icon>
+                    <span style="font-size: 13px; font-weight: bold; margin-left: 10px;"> {{route.title}} </span>
+                </button>
             </div>
-        </ng-container>
-    </div>
+        </mat-drawer>
 
-    <!-- Description -->
-    <div class="flex items-center justify-between mt-8">
-        <div class="text-lg font-medium">Description</div>
-        <button mat-icon-button>
-            <mat-icon class="icon-size-5" [svgIcon]="'heroicons_solid:pencil'"></mat-icon>
-        </button>
-    </div>
-    <div class="flex mt-2 border-t">
-        <div class="py-3">
-            <ng-container *ngIf="item.description">
-                <div>{{item.description}}</div>
-            </ng-container>
-            <ng-container *ngIf="!item.description">
-                <div class="italic text-secondary">Click here to add a description</div>
-            </ng-container>
+        <div class="sub-sidenav-content bg-light p-2">
+            <div class="flex justify-content-between">
+                <mat-icon class="subnav-menu-icon ml-1" svgIcon="heroicons_outline:menu" (click)="toggleDrawer()">
+                </mat-icon>
+            </div>
+
+            <ng-template #myCard>
+                <div class="bg-card shadow p-4">
+                    <div class="flex mr-7" style="justify-content: space-between;">
+                        <div class="text-2xl font-bold">{{selectedIndex}}</div>
+                    </div>
+                    <div class="row w-full">
+                        <div class="col-lg-6 col-md-6 col-12">
+                            <b class="text-secondary text-sm">Store ID</b>
+                            <p class="float-right text-sm">{{selectedStore?.pk_storeID || not_available}}</p>
+                        </div>
+                        <div class="col-lg-6 col-md-6 col-12">
+                            <b class="text-secondary text-sm">Launch Date</b>
+                            <p class="float-right text-sm">{{selectedStore?.launchDate}}</p>
+                        </div>
+                        <div class="col-lg-6 col-md-6 col-12">
+                            <b class="text-secondary text-sm">Program Manager</b>
+                            <p class="float-right text-sm">{{selectedStore?.championName || not_available}}</p>
+                        </div>
+                        <div class="col-lg-6 col-md-6 col-12">
+                            <b class="text-secondary text-sm">Secured</b>
+                            <p class="float-right text-sm text-secondary">{{selectedStore?.blnElectronicInvoicing ?
+                                'YES' : 'NO'}}</p>
+                        </div>
+                    </div>
+                </div>
+            </ng-template>
+
+            <div class="row p-2">
+
+                <div class="col-12">
+                    <mat-form-field appearance="fill" class="w-full">
+                        <mat-icon svgIcon="heroicons_outline:shopping-cart"></mat-icon>
+                        <mat-label>Select Store</mat-label>
+                        <mat-select [(ngModel)]="selectedStore">
+                            <mat-option (click)="changeStoreSelection(store)" value="{{store}}"
+                                *ngFor="let store of stores">
+                                {{store.storeName}}
+                            </mat-option>
+                        </mat-select>
+                    </mat-form-field>
+                </div>
+                <div class="col-12">
+                    <ng-container *ngTemplateOutlet="myCard"></ng-container>
+                </div>
+            </div>
         </div>
-    </div>
-
-    <!-- Actions -->
-    <div class="grid grid-cols-2 gap-4 w-full mt-8">
-        <button class="flex-auto" mat-flat-button [color]="'primary'">
-            Download
-        </button>
-        <button class="flex-auto" mat-stroked-button>
-            Delete
-        </button>
-    </div>
-
+    </mat-drawer-container>
 </div>

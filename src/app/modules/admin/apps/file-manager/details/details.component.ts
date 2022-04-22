@@ -1,10 +1,10 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnInit, ViewEncapsulation } from '@angular/core';
-import { MatDrawerToggleResult } from '@angular/material/sidenav';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
-import { StoresListComponent } from 'app/modules/admin/apps/file-manager/list/list.component';
 import { FileManagerService } from 'app/modules/admin/apps/file-manager/file-manager.service';
-import { Item } from 'app/modules/admin/apps/file-manager/stores.types';
+import moment from 'moment';
+import { FuseMediaWatcherService } from '@fuse/services/media-watcher';
+import { Router } from '@angular/router';
 
 @Component({
     selector: 'file-manager-details',
@@ -13,16 +13,29 @@ import { Item } from 'app/modules/admin/apps/file-manager/stores.types';
     changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class StoresDetailsComponent implements OnInit, OnDestroy {
-    item: Item;
+    selectedStore: any = null;
     private _unsubscribeAll: Subject<any> = new Subject<any>();
+    routes = null;
+    not_available: string = 'N/A';
+    stores = [];
+    launchDate = "";
+
+    // Boolean
+    isLoading: boolean = true;
+
+    // Sidebar stuff
+    drawerMode: 'over' | 'side' = 'side';
+    drawerOpened: boolean = true;
+    selectedIndex: string = "Dashboard";
 
     /**
      * Constructor
      */
     constructor(
         private _changeDetectorRef: ChangeDetectorRef,
-        private _fileManagerListComponent: StoresListComponent,
-        private _storesManagerService: FileManagerService
+        private _fuseMediaWatcherService: FuseMediaWatcherService,
+        private _storesManagerService: FileManagerService,
+        private _router: Router
     ) {
     }
 
@@ -34,28 +47,38 @@ export class StoresDetailsComponent implements OnInit, OnDestroy {
      * On init
      */
     ngOnInit(): void {
-        // Open the drawer
-        this._fileManagerListComponent.matDrawer.open();
+        const storeId = location.pathname.split('/')[3];
+        this.routes = this._storesManagerService.navigationLabels;
 
-        this._storesManagerService.getAllStores()
+        // Get the items
+        this._storesManagerService.items$
             .pipe(takeUntil(this._unsubscribeAll))
-            .subscribe((stores) => {
-                console.log("stores", stores["data"]);
+            .subscribe((items: any) => {
+                this.stores = items["data"];
+                this.selectedStore = this.stores.find(value => value.pk_storeID == storeId) || this.stores[0];
+                this.launchDate = this.selectedStore?.launchDate
+                    ? moment.utc(this.selectedStore?.launchDate).format("lll")
+                    : 'N/A';
+                this.isLoading = false;
 
                 // Mark for check
                 this._changeDetectorRef.markForCheck();
             });
 
-        // Get the item
-        this._storesManagerService.item$
+        // Subscribe to media changes
+        this._fuseMediaWatcherService.onMediaChange$
             .pipe(takeUntil(this._unsubscribeAll))
-            .subscribe((item: Item) => {
+            .subscribe(({ matchingAliases }) => {
 
-                // Open the drawer in case it is closed
-                this._fileManagerListComponent.matDrawer.open();
-
-                // Get the item
-                this.item = item;
+                // Set the drawerMode and drawerOpened if the given breakpoint is active
+                if (matchingAliases.includes('lg')) {
+                    this.drawerMode = 'side';
+                    this.drawerOpened = true;
+                }
+                else {
+                    this.drawerMode = 'over';
+                    this.drawerOpened = false;
+                }
 
                 // Mark for check
                 this._changeDetectorRef.markForCheck();
@@ -75,12 +98,34 @@ export class StoresDetailsComponent implements OnInit, OnDestroy {
     // @ Public methods
     // -----------------------------------------------------------------------------------------------------
 
+    clicked(index) {
+        const { title } = index;
+        if (title === this.selectedIndex) {
+            return;
+        }
+        this.isLoading = true;
+        this.selectedIndex = title;
+    };
+
+    backToStoresScreen(): void {
+        this.isLoading = true;
+        this._router.navigate(['/apps/stores']);
+    };
+
+    toggleDrawer() {
+        this.drawerOpened = !this.drawerOpened;
+    };
+
+    changeStoreSelection(event): void {
+        console.log("event", event)
+    };
+
     /**
      * Close the drawer
      */
-    closeDrawer(): Promise<MatDrawerToggleResult> {
-        return this._fileManagerListComponent.matDrawer.close();
-    }
+    // closeDrawer(): Promise<MatDrawerToggleResult> {
+    //     return this._fileManagerListComponent.matDrawer.close();
+    // }
 
     /**
      * Track by function for ngFor loops

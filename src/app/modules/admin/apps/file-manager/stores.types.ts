@@ -1,11 +1,9 @@
-export interface Items
-{
+export interface Items {
     folders: Item[];
     files: Item[];
 }
 
-export interface Item
-{
+export interface Item {
     id?: string;
     name?: string;
     createdBy?: string;

@@ -59,33 +59,13 @@ export class StoresListComponent implements OnInit, OnDestroy {
     ngOnInit(): void {
         this.isLoading = true;
 
-        // Get the stores
-        this._fileManagerService.getAllStores()
-            .pipe(takeUntil(this._unsubscribeAll))
-            .subscribe((stores) => {
-                this.stores = stores["data"];
-                this.isStoreNotReceived = false;
-                this.isLoading = false;
-
-                // Mark for check
-                this._changeDetectorRef.markForCheck();
-            })
-
         // Get the items
         this._fileManagerService.items$
             .pipe(takeUntil(this._unsubscribeAll))
-            .subscribe((items: Items) => {
-                this.items = items;
-
-                // Mark for check
-                this._changeDetectorRef.markForCheck();
-            });
-
-        // Get the item
-        this._fileManagerService.item$
-            .pipe(takeUntil(this._unsubscribeAll))
-            .subscribe((item: Item) => {
-                this.selectedItem = item;
+            .subscribe((items: any) => {
+                this.stores = items["data"];
+                this.isStoreNotReceived = false;
+                this.isLoading = false;
 
                 // Mark for check
                 this._changeDetectorRef.markForCheck();
@@ -133,8 +113,9 @@ export class StoresListComponent implements OnInit, OnDestroy {
     }
 
     storeDetails(event): void {
-        // const { pk_storeID } = event;
-        // this._router.navigate([`/apps/stores/${pk_storeID}`]);
+        const { pk_storeID } = event;
+        this.isLoading = true;
+        this._router.navigate([`/apps/stores/${pk_storeID}`]);
     }
 
     clearFilter() { }
