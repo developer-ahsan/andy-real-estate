@@ -48,6 +48,7 @@
                 <div class="col-12">
                     <!-- Store -->
                     <mat-form-field appearance="fill" class="w-full">
+                        <mat-icon svgIcon="mat_outline:storefront"></mat-icon>
                         <mat-select [(ngModel)]="selectedStore" disableRipple [disabled]="isStoreNotReceived">
                             <mat-option (click)="clearFilter()">SELECT STORE</mat-option>
                             <mat-option (click)="storeDetails(store)" value="{{store}}" *ngFor="let store of stores">

@@ -19,7 +19,7 @@ export const defaultNavigation: FuseNavigationItem[] = [
     {
         id: 'stores',
         title: 'Stores',
-        icon: 'heroicons_outline:home',
+        icon: 'mat_outline:storefront',
         type: 'basic',
         link: '/apps/stores',
     },
@@ -213,7 +213,7 @@ export const futuristicNavigation: FuseNavigationItem[] = [
                 id: 'apps.stores',
                 title: 'Stores',
                 type: 'basic',
-                icon: 'heroicons_outline:home',
+                icon: 'mat_outline:storefront',
                 link: '/apps/stores',
             },
             {
