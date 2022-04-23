@@ -117,15 +117,26 @@ export class StoresDetailsComponent implements OnInit, OnDestroy {
     };
 
     changeStoreSelection(event): void {
-        console.log("event", event)
-    };
+        const { pk_storeID } = event;
+        this.isLoading = true;
+        let newUrl = `${location.origin}/apps/stores/${pk_storeID}`;
+        history.pushState({}, null, newUrl);
 
-    /**
-     * Close the drawer
-     */
-    // closeDrawer(): Promise<MatDrawerToggleResult> {
-    //     return this._fileManagerListComponent.matDrawer.close();
-    // }
+        // Get the items
+        this._storesManagerService.items$
+            .pipe(takeUntil(this._unsubscribeAll))
+            .subscribe((items: any) => {
+                this.stores = items["data"];
+                this.selectedStore = this.stores.find(value => value.pk_storeID == pk_storeID) || this.stores[0];
+                this.launchDate = this.selectedStore?.launchDate
+                    ? moment.utc(this.selectedStore?.launchDate).format("lll")
+                    : 'N/A';
+                this.isLoading = false;
+
+                // Mark for check
+                this._changeDetectorRef.markForCheck();
+            });
+    };
 
     /**
      * Track by function for ngFor loops

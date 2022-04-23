@@ -14,6 +14,7 @@ import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatInputModule } from '@angular/material/input';
 import { QuillModule } from 'ngx-quill';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { NgxSkeletonLoaderModule } from 'ngx-skeleton-loader';
 
 @NgModule({
     declarations: [
@@ -30,6 +31,7 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
         MatTooltipModule,
         MatSelectModule,
         MatProgressBarModule,
+        NgxSkeletonLoaderModule,
         MatInputModule,
         QuillModule.forRoot(),
         SharedModule
