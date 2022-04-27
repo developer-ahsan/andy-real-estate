@@ -15,12 +15,23 @@ import { MatInputModule } from '@angular/material/input';
 import { QuillModule } from 'ngx-quill';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { NgxSkeletonLoaderModule } from 'ngx-skeleton-loader';
+import { DashboardComponent } from './navigation/dashboard/dashboard.component';
+import { StoreProductsComponent } from './navigation/store-products/store-products.component';
+import { ProductCategoriesComponent } from './navigation/product-categories/product-categories.component';
+import { ProductsSuppliersComponent } from './navigation/products-suppliers/products-suppliers.component';
+import { OfflineProductsComponent } from './navigation/offline-products/offline-products.component';
+import { NgApexchartsModule } from "ng-apexcharts";
 
 @NgModule({
     declarations: [
         FileManagerComponent,
         StoresDetailsComponent,
-        StoresListComponent
+        StoresListComponent,
+        DashboardComponent,
+        StoreProductsComponent,
+        ProductCategoriesComponent,
+        ProductsSuppliersComponent,
+        OfflineProductsComponent
     ],
     imports: [
         RouterModule.forChild(storeRoutes),
@@ -33,6 +44,7 @@ import { NgxSkeletonLoaderModule } from 'ngx-skeleton-loader';
         MatProgressBarModule,
         NgxSkeletonLoaderModule,
         MatInputModule,
+        NgApexchartsModule,
         QuillModule.forRoot(),
         SharedModule
     ]

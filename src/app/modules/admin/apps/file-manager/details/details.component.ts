@@ -103,7 +103,7 @@ export class StoresDetailsComponent implements OnInit, OnDestroy {
         if (title === this.selectedIndex) {
             return;
         }
-        this.isLoading = true;
+        // this.isLoading = true;
         this.selectedIndex = title;
     };
 

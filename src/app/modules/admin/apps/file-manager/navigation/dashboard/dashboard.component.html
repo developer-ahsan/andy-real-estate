@@ -1,0 +1,32 @@
+<div class="row p-3">
+    <div class="col-12 bg-card rounded-2xl shadow mb-5 py-5">
+        <apx-chart [series]="chartOptions.series" [chart]="chartOptions.chart" [xaxis]="chartOptions.xaxis"
+            [dataLabels]="chartOptions.dataLabels" [grid]="chartOptions.grid" [stroke]="chartOptions.stroke"
+            [title]="chartOptions.title"></apx-chart>
+    </div>
+
+    <div class="col-12 bg-card rounded-2xl shadow mb-5 py-5">
+        <apx-chart [series]="chartOptionsBar.series" [chart]="chartOptionsBar.chart"
+            [dataLabels]="chartOptionsBar.dataLabels" [plotOptions]="chartOptionsBar.plotOptions"
+            [xaxis]="chartOptionsBar.xaxis"></apx-chart>
+    </div>
+
+    <div class="col-12 bg-card rounded-2xl shadow mb-5 py-5">
+        <apx-chart [series]="chartOptionsOne.series" [chart]="chartOptionsOne.chart" [xaxis]="chartOptionsOne.xaxis"
+            [dataLabels]="chartOptionsOne.dataLabels" [grid]="chartOptionsOne.grid" [stroke]="chartOptionsOne.stroke"
+            [title]="chartOptionsOne.title"></apx-chart>
+    </div>
+
+    <div class="col-12 bg-card rounded-2xl shadow mb-5 py-5">
+        <apx-chart [series]="chartOptionsTwo.series" [chart]="chartOptionsTwo.chart" [xaxis]="chartOptionsTwo.xaxis"
+            [dataLabels]="chartOptionsTwo.dataLabels" [grid]="chartOptionsTwo.grid" [stroke]="chartOptionsTwo.stroke"
+            [title]="chartOptionsTwo.title"></apx-chart>
+    </div>
+
+    <div class="col-12 bg-card rounded-2xl shadow mb-5 py-5">
+        <apx-chart [series]="chartOptionsThree.series" [chart]="chartOptionsThree.chart"
+            [xaxis]="chartOptionsThree.xaxis" [dataLabels]="chartOptionsThree.dataLabels"
+            [grid]="chartOptionsThree.grid" [stroke]="chartOptionsThree.stroke" [title]="chartOptionsThree.title">
+        </apx-chart>
+    </div>
+</div>
