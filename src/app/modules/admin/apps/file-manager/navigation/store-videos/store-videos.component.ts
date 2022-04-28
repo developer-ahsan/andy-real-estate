@@ -43,10 +43,10 @@ const ELEMENT_DATA: PeriodicElement[] = [
 ];
 
 @Component({
-  selector: 'app-products-suppliers',
-  templateUrl: './products-suppliers.component.html'
+  selector: 'app-store-videos',
+  templateUrl: './store-videos.component.html'
 })
-export class ProductsSuppliersComponent implements OnInit {
+export class StoreVideosComponent implements OnInit {
   @Input() selectedStore: any;
   @Input() isLoading: boolean;
   @Output() isLoadingChange = new EventEmitter<boolean>();

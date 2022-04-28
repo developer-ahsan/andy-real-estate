@@ -21,7 +21,11 @@ import { ProductCategoriesComponent } from './navigation/product-categories/prod
 import { ProductsSuppliersComponent } from './navigation/products-suppliers/products-suppliers.component';
 import { OfflineProductsComponent } from './navigation/offline-products/offline-products.component';
 import { NgApexchartsModule } from "ng-apexcharts";
-import {MatTableModule} from '@angular/material/table';
+import { MatTableModule } from '@angular/material/table';
+import { MatPaginatorModule } from '@angular/material/paginator';
+import { StoreVideosComponent } from './navigation/store-videos/store-videos.component';
+import { RapidbuildComponent } from './navigation/rapidbuild/rapidbuild.component';
+import { RapidbuildActionsComponent } from './navigation/rapidbuild-actions/rapidbuild-actions.component';
 
 @NgModule({
     declarations: [
@@ -32,7 +36,10 @@ import {MatTableModule} from '@angular/material/table';
         StoreProductsComponent,
         ProductCategoriesComponent,
         ProductsSuppliersComponent,
-        OfflineProductsComponent
+        OfflineProductsComponent,
+        StoreVideosComponent,
+        RapidbuildComponent,
+        RapidbuildActionsComponent
     ],
     imports: [
         RouterModule.forChild(storeRoutes),
@@ -42,6 +49,7 @@ import {MatTableModule} from '@angular/material/table';
         MatSidenavModule,
         MatProgressSpinnerModule,
         MatTooltipModule,
+        MatPaginatorModule,
         MatSelectModule,
         MatProgressBarModule,
         NgxSkeletonLoaderModule,

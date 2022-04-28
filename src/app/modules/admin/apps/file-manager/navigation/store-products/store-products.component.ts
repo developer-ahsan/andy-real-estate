@@ -17,12 +17,30 @@ export interface PeriodicElement {
 }
 
 const ELEMENT_DATA: PeriodicElement[] = [
-  {spid: 1, name: '15 Adult Flip Flops', vendor: 'Cathy', master: 'Active', store:'Online', desc: false,image: false,video: false,colors: false, techno_logo: false, misc: false},
-  {spid: 2, name: '3080 Snowflake Ice Scraper', vendor: 'Saul', master: 'Active', store:'Online', desc: false,image: false,video: false,colors: false,techno_logo: false,misc: false},
-  {spid: 3, name: 'Lithium', vendor: 'GaryLine LLC', master: 'Active', store:'Online', desc: false,image: false,video: false,colors: false,techno_logo: false,misc: false},
-  {spid: 4, name: 'Beryllium', vendor: 'SanMar', master: 'Active', store:'Online', desc: false,image: false,video: false,colors: false,techno_logo: false,misc: false},
-  {spid: 5, name: 'Boron', vendor: 'A-One', master: 'Active', store:'Online', desc: false,image: false,video: false,colors: false,techno_logo: false,misc: false},
-  {spid: 6, name: 'Carbon', vendor: 'Delta Apparel LLC', master: 'Active', store:'Online', desc: false,image: false,video: false,colors: false,techno_logo: false,misc: false},
+  { spid: 1, name: '15 Adult Flip Flops', vendor: 'Cathy', master: 'Active', store: 'Online', desc: true, image: false, video: false, colors: false, techno_logo: false, misc: false },
+  { spid: 2, name: '3080 Snowflake Ice Scraper', vendor: 'Saul', master: 'Active', store: 'Online', desc: true, image: false, video: false, colors: false, techno_logo: false, misc: false },
+  { spid: 3, name: 'Lithium', vendor: 'GaryLine LLC', master: 'Active', store: 'Online', desc: false, image: false, video: false, colors: false, techno_logo: false, misc: false },
+  { spid: 4, name: 'Beryllium', vendor: 'SanMar', master: 'Active', store: 'Online', desc: false, image: false, video: false, colors: false, techno_logo: false, misc: false },
+  { spid: 5, name: 'Boron', vendor: 'A-One', master: 'Active', store: 'Online', desc: false, image: false, video: false, colors: false, techno_logo: false, misc: false },
+  { spid: 6, name: 'Carbon', vendor: 'Delta Apparel LLC', master: 'Active', store: 'Online', desc: false, image: false, video: false, colors: false, techno_logo: false, misc: false },
+  { spid: 1, name: '15 Adult Flip Flops', vendor: 'Cathy', master: 'Active', store: 'Online', desc: true, image: false, video: false, colors: false, techno_logo: false, misc: false },
+  { spid: 2, name: '3080 Snowflake Ice Scraper', vendor: 'Saul', master: 'Active', store: 'Online', desc: true, image: false, video: false, colors: false, techno_logo: false, misc: false },
+  { spid: 3, name: 'Lithium', vendor: 'GaryLine LLC', master: 'Active', store: 'Online', desc: false, image: false, video: false, colors: false, techno_logo: false, misc: false },
+  { spid: 4, name: 'Beryllium', vendor: 'SanMar', master: 'Active', store: 'Online', desc: false, image: false, video: false, colors: false, techno_logo: false, misc: false },
+  { spid: 5, name: 'Boron', vendor: 'A-One', master: 'Active', store: 'Online', desc: false, image: false, video: false, colors: false, techno_logo: false, misc: false },
+  { spid: 6, name: 'Carbon', vendor: 'Delta Apparel LLC', master: 'Active', store: 'Online', desc: true, image: false, video: false, colors: false, techno_logo: false, misc: false },
+  { spid: 1, name: '15 Adult Flip Flops', vendor: 'Cathy', master: 'Active', store: 'Online', desc: false, image: false, video: false, colors: false, techno_logo: false, misc: false },
+  { spid: 2, name: '3080 Snowflake Ice Scraper', vendor: 'Saul', master: 'Active', store: 'Online', desc: false, image: false, video: false, colors: false, techno_logo: false, misc: false },
+  { spid: 3, name: 'Lithium', vendor: 'GaryLine LLC', master: 'Active', store: 'Online', desc: true, image: false, video: false, colors: false, techno_logo: false, misc: false },
+  { spid: 4, name: 'Beryllium', vendor: 'SanMar', master: 'Active', store: 'Online', desc: false, image: false, video: false, colors: false, techno_logo: false, misc: false },
+  { spid: 5, name: 'Boron', vendor: 'A-One', master: 'Active', store: 'Online', desc: false, image: false, video: false, colors: false, techno_logo: false, misc: false },
+  { spid: 6, name: 'Carbon', vendor: 'Delta Apparel LLC', master: 'Active', store: 'Online', desc: false, image: false, video: false, colors: false, techno_logo: false, misc: false },
+  { spid: 1, name: '15 Adult Flip Flops', vendor: 'Cathy', master: 'Active', store: 'Online', desc: false, image: false, video: false, colors: false, techno_logo: false, misc: false },
+  { spid: 2, name: '3080 Snowflake Ice Scraper', vendor: 'Saul', master: 'Active', store: 'Online', desc: false, image: false, video: false, colors: false, techno_logo: false, misc: false },
+  { spid: 3, name: 'Lithium', vendor: 'GaryLine LLC', master: 'Active', store: 'Online', desc: false, image: false, video: false, colors: false, techno_logo: false, misc: false },
+  { spid: 4, name: 'Beryllium', vendor: 'SanMar', master: 'Active', store: 'Online', desc: true, image: false, video: false, colors: false, techno_logo: false, misc: false },
+  { spid: 5, name: 'Boron', vendor: 'A-One', master: 'Active', store: 'Online', desc: false, image: false, video: false, colors: false, techno_logo: false, misc: false },
+  { spid: 6, name: 'Carbon', vendor: 'Delta Apparel LLC', master: 'Active', store: 'Online', desc: false, image: false, video: false, colors: false, techno_logo: false, misc: false }
 ];
 
 /**
@@ -41,7 +59,7 @@ export class StoreProductsComponent implements OnInit {
   @Input() isLoading: boolean;
   @Output() isLoadingChange = new EventEmitter<boolean>();
   private _unsubscribeAll: Subject<any> = new Subject<any>();
-  displayedColumns: string[] = ['spid', 'name', 'vendor', 'master','store', 'desc','image','video', 'colors' , 'techno_logo' , 'misc' ];
+  displayedColumns: string[] = ['spid', 'name', 'vendor', 'master', 'store', 'desc', 'image', 'video', 'colors', 'techno_logo', 'misc'];
   dataSource = ELEMENT_DATA;
 
   constructor() { }

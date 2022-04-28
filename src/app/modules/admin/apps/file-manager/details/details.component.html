@@ -105,6 +105,18 @@
                         <app-offline-products [(isLoading)]="isLoading" [selectedStore]="selectedStore">
                         </app-offline-products>
                     </ng-template>
+                    <ng-template [ngIf]="selectedIndex === 'Store Product Videos'">
+                        <app-store-products [(isLoading)]="isLoading" [selectedStore]="selectedStore">
+                        </app-store-products>
+                    </ng-template>
+                    <ng-template [ngIf]="selectedIndex === 'RapidBuild'">
+                        <app-rapidbuild [(isLoading)]="isLoading" [selectedStore]="selectedStore">
+                        </app-rapidbuild>
+                    </ng-template>
+                    <ng-template [ngIf]="selectedIndex === 'RapidBuild Bulk Actions'">
+                        <app-rapidbuild-actions [(isLoading)]="isLoading" [selectedStore]="selectedStore">
+                        </app-rapidbuild-actions>
+                    </ng-template>
                 </div>
             </div>
         </div>
