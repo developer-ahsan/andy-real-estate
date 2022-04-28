@@ -21,6 +21,7 @@ import { ProductCategoriesComponent } from './navigation/product-categories/prod
 import { ProductsSuppliersComponent } from './navigation/products-suppliers/products-suppliers.component';
 import { OfflineProductsComponent } from './navigation/offline-products/offline-products.component';
 import { NgApexchartsModule } from "ng-apexcharts";
+import {MatTableModule} from '@angular/material/table';
 
 @NgModule({
     declarations: [
@@ -35,6 +36,7 @@ import { NgApexchartsModule } from "ng-apexcharts";
     ],
     imports: [
         RouterModule.forChild(storeRoutes),
+        MatTableModule,
         MatButtonModule,
         MatIconModule,
         MatSidenavModule,
