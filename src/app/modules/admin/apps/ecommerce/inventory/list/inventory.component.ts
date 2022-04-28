@@ -32,6 +32,7 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
 
     products: ProductsList[];
     isLinear = true;
+    productNumberLoader = false;
 
     exportLoader = false;
     brands: InventoryBrand[];
@@ -711,6 +712,45 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
     selectedSubCategory(item) {
         this.selectedTermObject = item;
     }
+
+    fetchProductNumberData(event): void {
+        if (event.target.value) {
+            this.productNumberLoader = true;
+            this._inventoryService.getPromoStandardProductDetails(event.target.value)
+                .pipe(takeUntil(this._unsubscribeAll))
+                .subscribe((productDetails) => {
+                    const { success } = productDetails["data"];
+                    if (success) {
+                        const details = productDetails["data"].result.Product;
+                        const product = {
+                            productName: details.productName,
+                            productNumber: details.productId,
+                            brandName: details.productBrand,
+                            mainDescription: details.description.toString().split(",").join("\n")
+                        }
+                        const string = details.ProductKeywordArray[0].keyword;
+                        if (string?.length) {
+                            for (const value of string.split(',')) {
+                                let temp = {
+                                    name: value
+                                }
+                                this.fruits.push(temp)
+                            }
+                        };
+
+                        this.secondFormGroup.patchValue(product);
+                    }
+                    this.productNumberLoader = false;
+
+                    // Mark for check
+                    this._changeDetectorRef.markForCheck();
+                });
+        }
+    };
+
+    goBack(stepper: MatStepper) {
+        stepper.previous();
+    };
 
     goForward(stepper: MatStepper) {
         const { selectedIndex } = stepper;

@@ -815,6 +815,15 @@ export class InventoryService {
         });
     };
 
+    getPromoStandardProductDetails(productNumber): Observable<any[]> {
+        return this._httpClient.get<any[]>(environment.products, {
+            params: {
+                promo_standards_2: true,
+                product_number: productNumber
+            }
+        });
+    };
+
     addProductGetLicensingTerms(): Observable<any[]> {
         return this._httpClient.get<any[]>(environment.products, {
             params: {
