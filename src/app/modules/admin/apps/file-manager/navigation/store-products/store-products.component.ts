@@ -1,7 +1,6 @@
 import { Component, Input, Output, OnInit, EventEmitter } from '@angular/core';
 import { Subject } from 'rxjs';
 
-
 export interface PeriodicElement {
   spid: number;
   name: string;

@@ -26,6 +26,7 @@ import { MatPaginatorModule } from '@angular/material/paginator';
 import { StoreVideosComponent } from './navigation/store-videos/store-videos.component';
 import { RapidbuildComponent } from './navigation/rapidbuild/rapidbuild.component';
 import { RapidbuildActionsComponent } from './navigation/rapidbuild-actions/rapidbuild-actions.component';
+import { StoreSettingsComponent } from './navigation/store-settings/store-settings.component';
 
 @NgModule({
     declarations: [
@@ -39,7 +40,8 @@ import { RapidbuildActionsComponent } from './navigation/rapidbuild-actions/rapi
         OfflineProductsComponent,
         StoreVideosComponent,
         RapidbuildComponent,
-        RapidbuildActionsComponent
+        RapidbuildActionsComponent,
+        StoreSettingsComponent
     ],
     imports: [
         RouterModule.forChild(storeRoutes),

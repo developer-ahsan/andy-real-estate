@@ -117,6 +117,10 @@
                         <app-rapidbuild-actions [(isLoading)]="isLoading" [selectedStore]="selectedStore">
                         </app-rapidbuild-actions>
                     </ng-template>
+                    <ng-template [ngIf]="selectedIndex === 'Store Settings'">
+                        <app-store-settings [(isLoading)]="isLoading" [selectedStore]="selectedStore">
+                        </app-store-settings>
+                    </ng-template>
                 </div>
             </div>
         </div>
