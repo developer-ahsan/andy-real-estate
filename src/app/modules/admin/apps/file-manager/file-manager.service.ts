@@ -71,7 +71,7 @@ export class FileManagerService {
         },
         {
             id: 12,
-            title: 'Campaign',
+            title: 'Campaigns',
             icon: 'mat_outline:campaign',
         },
         {
@@ -251,6 +251,74 @@ export class FileManagerService {
                 this._items.next(response);
             })
         );
+    };
+
+    getOfflineProducts(storeID, pageNo): Observable<any[]> {
+        return this._httpClient.get<any[]>(environment.storeNewUrl, {
+            params: {
+                offline_product: true,
+                store_id: storeID,
+                size: 20,
+                page: pageNo
+            }
+        })
+    };
+
+    getStoreProducts(storeID, pageNo): Observable<any[]> {
+        return this._httpClient.get<any[]>(environment.storeNewUrl, {
+            params: {
+                store_product: true,
+                store_id: storeID,
+                view_type: 1,
+                size: 20,
+                page: pageNo
+            }
+        })
+    };
+
+    getProducts(storeID, pageNo): Observable<any[]> {
+        return this._httpClient.get<any[]>(environment.storeNewUrl, {
+            params: {
+                product: true,
+                store_id: storeID,
+                size: 20,
+                page: pageNo
+            }
+        })
+    };
+
+    getStoreVideos(storeID, pageNo): Observable<any[]> {
+        return this._httpClient.get<any[]>(environment.storeNewUrl, {
+            params: {
+                product: true,
+                video: true,
+                store_id: storeID,
+                size: 20,
+                page: pageNo
+            }
+        })
+    };
+
+    getStoreCategory(storeID, pageNo): Observable<any[]> {
+        return this._httpClient.get<any[]>(environment.storeNewUrl, {
+            params: {
+                category: true,
+                store_id: storeID,
+                size: 20,
+                page: pageNo
+            }
+        })
+    };
+
+    getStoreSubCategory(storeID, pageNo): Observable<any[]> {
+        return this._httpClient.get<any[]>(environment.storeNewUrl, {
+            params: {
+                sub_category: true,
+                store_id: storeID,
+                size: 20,
+                page: pageNo
+            }
+        })
     };
 
     /**

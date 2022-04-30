@@ -1,5 +1,7 @@
-import { Component, Input, Output, OnInit, EventEmitter } from '@angular/core';
+import { Component, Input, Output, OnInit, EventEmitter, ChangeDetectorRef } from '@angular/core';
 import { Subject } from 'rxjs';
+import { FileManagerService } from 'app/modules/admin/apps/file-manager/file-manager.service';
+import { takeUntil } from 'rxjs/operators';
 
 export interface PeriodicElement {
   spid: number;
@@ -53,10 +55,29 @@ export class ProductsSuppliersComponent implements OnInit {
   private _unsubscribeAll: Subject<any> = new Subject<any>();
   displayedColumns: string[] = ['spid', 'name', 'vendor', 'master', 'store', 'desc', 'image', 'video', 'colors', 'techno_logo', 'misc'];
   dataSource = ELEMENT_DATA;
+  page: number = 1;
 
-  constructor() { }
+  constructor(
+    private _fileManagerService: FileManagerService,
+    private _changeDetectorRef: ChangeDetectorRef
+  ) { }
 
   ngOnInit(): void {
+    this.getMainStoreCall(this.page);
     this.isLoadingChange.emit(false);
+  }
+
+  getMainStoreCall(page) {
+    const { pk_storeID } = this.selectedStore;
+
+    // Get the offline products
+    this._fileManagerService.getStoreCategory(pk_storeID, page)
+      .pipe(takeUntil(this._unsubscribeAll))
+      .subscribe((response: any) => {
+        console.log("response", response)
+
+        // Mark for check
+        this._changeDetectorRef.markForCheck();
+      });
   }
 }
