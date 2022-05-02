@@ -12,7 +12,7 @@ export class ProductCategoriesComponent implements OnInit {
   @Input() isLoading: boolean;
   @Output() isLoadingChange = new EventEmitter<boolean>();
   private _unsubscribeAll: Subject<any> = new Subject<any>();
-  displayedColumns: string[] = ['spid', 'name', 'vendor', 'master', 'store', 'desc', 'image', 'video', 'colors', 'techno_logo', 'misc'];
+  displayedColumns: string[] = ['spid', 'name', 'vendor', 'master', 'store', 'desc', 'image'];
   dataSource = [];
   dataSourceTotalRecord: number;
   dataSourceLoading = false;
