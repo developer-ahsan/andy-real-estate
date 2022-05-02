@@ -126,12 +126,15 @@ export class StoresDetailsComponent implements OnInit, OnDestroy {
         this._storesManagerService.items$
             .pipe(takeUntil(this._unsubscribeAll))
             .subscribe((items: any) => {
-                this.stores = items["data"];
-                this.selectedStore = this.stores.find(value => value.pk_storeID == pk_storeID) || this.stores[0];
-                this.launchDate = this.selectedStore?.launchDate
-                    ? moment.utc(this.selectedStore?.launchDate).format("lll")
-                    : 'N/A';
-                this.isLoading = false;
+                this.ngOnInit();
+                setTimeout(() => {
+                    this.stores = items["data"];
+                    this.selectedStore = this.stores.find(value => value.pk_storeID == pk_storeID) || this.stores[0];
+                    this.launchDate = this.selectedStore?.launchDate
+                        ? moment.utc(this.selectedStore?.launchDate).format("lll")
+                        : 'N/A';
+                    this.isLoading = false;
+                }, 3000)
 
                 // Mark for check
                 this._changeDetectorRef.markForCheck();

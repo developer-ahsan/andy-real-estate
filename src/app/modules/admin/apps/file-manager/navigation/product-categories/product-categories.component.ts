@@ -24,13 +24,13 @@ export class ProductCategoriesComponent implements OnInit {
   ) { }
 
   ngOnInit(): void {
+    this.dataSourceLoading = true;
     this.getMainStoreCall(this.page);
     this.isLoadingChange.emit(false);
   }
 
   getMainStoreCall(page) {
     const { pk_storeID } = this.selectedStore;
-    this.dataSourceLoading = true;
 
     // Get the offline products
     this._fileManagerService.getStoreCategory(pk_storeID, page)

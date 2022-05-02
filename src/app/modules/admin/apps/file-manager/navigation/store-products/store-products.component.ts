@@ -29,13 +29,13 @@ export class StoreProductsComponent implements OnInit {
   ) { }
 
   ngOnInit(): void {
+    this.dataSourceLoading = true;
     this.getMainStoreCall(this.page);
     this.isLoadingChange.emit(false);
   }
 
   getMainStoreCall(page) {
     const { pk_storeID } = this.selectedStore;
-    this.dataSourceLoading = true;
 
     // Get the offline products
     this._fileManagerService.getStoreProducts(pk_storeID, page)
