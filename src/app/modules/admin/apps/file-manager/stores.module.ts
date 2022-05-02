@@ -27,6 +27,7 @@ import { StoreVideosComponent } from './navigation/store-videos/store-videos.com
 import { RapidbuildComponent } from './navigation/rapidbuild/rapidbuild.component';
 import { RapidbuildActionsComponent } from './navigation/rapidbuild-actions/rapidbuild-actions.component';
 import { StoreSettingsComponent } from './navigation/store-settings/store-settings.component';
+import { GroupOrderSettingsComponent } from './navigation/group-order-settings/group-order-settings.component';
 
 @NgModule({
     declarations: [
@@ -41,7 +42,8 @@ import { StoreSettingsComponent } from './navigation/store-settings/store-settin
         StoreVideosComponent,
         RapidbuildComponent,
         RapidbuildActionsComponent,
-        StoreSettingsComponent
+        StoreSettingsComponent,
+        GroupOrderSettingsComponent
     ],
     imports: [
         RouterModule.forChild(storeRoutes),
