@@ -11,6 +11,7 @@ export class GroupOrderSettingsComponent implements OnInit {
   @Input() selectedStore: any;
   @Input() isLoading: boolean;
   @Output() isLoadingChange = new EventEmitter<boolean>();
+  selected = 'YES';
   private _unsubscribeAll: Subject<any> = new Subject<any>();
 
   constructor(

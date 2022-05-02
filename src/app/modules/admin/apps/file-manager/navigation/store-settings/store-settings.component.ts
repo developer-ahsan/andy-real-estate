@@ -1,5 +1,14 @@
 import { Component, Input, Output, OnInit, EventEmitter } from '@angular/core';
+import {ThemePalette} from '@angular/material/core';
 import { Subject } from 'rxjs';
+
+export interface Task {
+  name: string;
+  completed: boolean;
+  color: ThemePalette;
+  subtasks?: Task[];
+}
+
 
 @Component({
   selector: 'app-store-settings',

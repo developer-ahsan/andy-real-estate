@@ -23,6 +23,7 @@ import { OfflineProductsComponent } from './navigation/offline-products/offline-
 import { NgApexchartsModule } from "ng-apexcharts";
 import { MatTableModule } from '@angular/material/table';
 import { MatPaginatorModule } from '@angular/material/paginator';
+import {MatRadioModule} from '@angular/material/radio';
 import { StoreVideosComponent } from './navigation/store-videos/store-videos.component';
 import { RapidbuildComponent } from './navigation/rapidbuild/rapidbuild.component';
 import { RapidbuildActionsComponent } from './navigation/rapidbuild-actions/rapidbuild-actions.component';
@@ -49,6 +50,7 @@ import { GroupOrderSettingsComponent } from './navigation/group-order-settings/g
         RouterModule.forChild(storeRoutes),
         MatTableModule,
         MatButtonModule,
+        MatRadioModule,
         MatIconModule,
         MatSidenavModule,
         MatProgressSpinnerModule,
