@@ -12,6 +12,7 @@ import { StoresListComponent } from 'app/modules/admin/apps/file-manager/list/li
 import { MatSelectModule } from '@angular/material/select';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatInputModule } from '@angular/material/input';
+import {MatCheckboxModule} from '@angular/material/checkbox'
 import { QuillModule } from 'ngx-quill';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { NgxSkeletonLoaderModule } from 'ngx-skeleton-loader';
@@ -62,6 +63,7 @@ import { CampaignsComponent } from './navigation/campaigns/campaigns.component';
         MatProgressBarModule,
         NgxSkeletonLoaderModule,
         MatInputModule,
+        MatCheckboxModule,
         NgApexchartsModule,
         QuillModule.forRoot(),
         SharedModule
