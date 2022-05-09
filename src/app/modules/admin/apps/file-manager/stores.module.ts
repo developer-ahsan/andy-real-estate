@@ -29,6 +29,7 @@ import { RapidbuildComponent } from './navigation/rapidbuild/rapidbuild.componen
 import { RapidbuildActionsComponent } from './navigation/rapidbuild-actions/rapidbuild-actions.component';
 import { StoreSettingsComponent } from './navigation/store-settings/store-settings.component';
 import { GroupOrderSettingsComponent } from './navigation/group-order-settings/group-order-settings.component';
+import { CampaignsComponent } from './navigation/campaigns/campaigns.component';
 
 @NgModule({
     declarations: [
@@ -44,7 +45,8 @@ import { GroupOrderSettingsComponent } from './navigation/group-order-settings/g
         RapidbuildComponent,
         RapidbuildActionsComponent,
         StoreSettingsComponent,
-        GroupOrderSettingsComponent
+        GroupOrderSettingsComponent,
+        CampaignsComponent
     ],
     imports: [
         RouterModule.forChild(storeRoutes),

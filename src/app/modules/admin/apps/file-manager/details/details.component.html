@@ -125,6 +125,10 @@
                         <app-group-order-settings [(isLoading)]="isLoading" [selectedStore]="selectedStore">
                         </app-group-order-settings>
                     </ng-template>
+                    <ng-template [ngIf]="selectedIndex === 'Campaigns'">
+                        <app-campaigns [(isLoading)]="isLoading" [selectedStore]="selectedStore">
+                        </app-campaigns>
+                    </ng-template>
                 </div>
             </div>
         </div>
