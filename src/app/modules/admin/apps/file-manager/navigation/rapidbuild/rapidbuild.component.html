@@ -1,124 +1,123 @@
-<div style="margin-bottom: 72px;">
-    <table mat-table [dataSource]="dataSource" class="w-full">
-        <!--- Note that these columns can be defined in any order.
-              The actual rendered columns are set as a property on the row definition" -->
-        <div class="color-blue">
-            <!-- SPID Column -->
-            <ng-container matColumnDef="spid">
-                <th class="min-w-10 bg-gray-50 dark:bg-black dark:bg-opacity-5" mat-header-cell *matHeaderCellDef>SPID
-                </th>
-                <td mat-cell *matCellDef="let element">{{ element.spid }}</td>
-            </ng-container>
-
-            <!-- Name Column -->
-            <ng-container matColumnDef="name">
-                <th class="min-w-40 bg-gray-50 dark:bg-black dark:bg-opacity-5" mat-header-cell *matHeaderCellDef>Name
-                </th>
-                <td mat-cell *matCellDef="let element">
-                    <span class="text-secondary font-semibold border-b-2">{{ element.name }}</span>
-                </td>
-            </ng-container>
-
-            <!-- Vendor Column -->
-            <ng-container matColumnDef="vendor">
-                <th class="min-w-10 bg-gray-50 dark:bg-black dark:bg-opacity-5" mat-header-cell *matHeaderCellDef>Vendor
-                </th>
-                <td mat-cell *matCellDef="let element">{{ element.vendor }}</td>
-            </ng-container>
-
-            <!-- Master Column -->
-            <ng-container matColumnDef="master">
-                <th class="min-w-10 bg-gray-50 dark:bg-black dark:bg-opacity-5" mat-header-cell *matHeaderCellDef>Master
-                </th>
-                <td mat-cell *matCellDef="let element">{{ element.master }}</td>
-            </ng-container>
-
-            <!-- Store Column -->
-            <ng-container matColumnDef="store">
-                <th class="min-w-10 bg-gray-50 dark:bg-black dark:bg-opacity-5" mat-header-cell *matHeaderCellDef>Store
-                </th>
-                <td mat-cell *matCellDef="let element">{{ element.store }}</td>
-            </ng-container>
-
-            <!-- Desc Column -->
-            <ng-container matColumnDef="desc">
-                <th class="min-w-10 bg-gray-50 dark:bg-black dark:bg-opacity-5" mat-header-cell *matHeaderCellDef>Desc
-                </th>
-                <td mat-cell *matCellDef="let element">
-                    <mat-icon class="text-green-400 icon-size-5" *ngIf="element.desc"
-                        [svgIcon]="'heroicons_solid:check'"></mat-icon>
-                    <mat-icon class="text-red-400 icon-size-5" *ngIf="!element.desc" [svgIcon]="'heroicons_solid:x'">
-                    </mat-icon>
-                </td>
-            </ng-container>
-
-            <!-- Image Column -->
-            <ng-container matColumnDef="image">
-                <th class="min-w-10 bg-gray-50 dark:bg-black dark:bg-opacity-5" mat-header-cell *matHeaderCellDef>Image
-                </th>
-                <td mat-cell *matCellDef="let element">
-                    <mat-icon class="text-green-400 icon-size-5" *ngIf="element.image"
-                        [svgIcon]="'heroicons_solid:check'"></mat-icon>
-                    <mat-icon class="text-red-400 icon-size-5" *ngIf="!element.image" [svgIcon]="'heroicons_solid:x'">
-                    </mat-icon>
-                </td>
-            </ng-container>
-
-            <!-- Video Column -->
-            <ng-container matColumnDef="video">
-                <th class="min-w-10 bg-gray-50 dark:bg-black dark:bg-opacity-5" mat-header-cell *matHeaderCellDef>Video
-                </th>
-                <td mat-cell *matCellDef="let element">
-                    <mat-icon class="text-green-400 icon-size-5" *ngIf="element.video"
-                        [svgIcon]="'heroicons_solid:check'"></mat-icon>
-                    <mat-icon class="text-red-400 icon-size-5" *ngIf="!element.video" [svgIcon]="'heroicons_solid:x'">
-                    </mat-icon>
-                </td>
-            </ng-container>
-
-            <!-- Colors Column -->
-            <ng-container matColumnDef="colors">
-                <th class="min-w-10 bg-gray-50 dark:bg-black dark:bg-opacity-5" mat-header-cell *matHeaderCellDef>Colors
-                </th>
-                <td mat-cell *matCellDef="let element">
-                    <mat-icon class="text-green-400 icon-size-5" *ngIf="element.colors"
-                        [svgIcon]="'heroicons_solid:check'"></mat-icon>
-                    <mat-icon class="text-red-400 icon-size-5" *ngIf="!element.colors" [svgIcon]="'heroicons_solid:x'">
-                    </mat-icon>
-                </td>
-            </ng-container>
-
-            <!-- TechnoLogo Column -->
-            <ng-container matColumnDef="techno_logo">
-                <th class="min-w-10 bg-gray-50 dark:bg-black dark:bg-opacity-5" mat-header-cell *matHeaderCellDef>
-                    TechnoLogo
-                </th>
-                <td mat-cell *matCellDef="let element">
-                    <mat-icon class="text-green-400 icon-size-5" *ngIf="element.techno_logo"
-                        [svgIcon]="'heroicons_solid:check'"></mat-icon>
-                    <mat-icon class="text-red-400 icon-size-5" *ngIf="!element.techno_logo"
-                        [svgIcon]="'heroicons_solid:x'">
-                    </mat-icon>
-                </td>
-            </ng-container>
-
-            <!-- Misc Column -->
-            <ng-container matColumnDef="misc">
-                <th class="min-w-10 bg-gray-50 dark:bg-black dark:bg-opacity-5" mat-header-cell *matHeaderCellDef>?</th>
-                <td mat-cell *matCellDef="let element">
-                    <mat-icon class="text-green-400 icon-size-5" *ngIf="element.misc"
-                        [svgIcon]="'heroicons_solid:check'"></mat-icon>
-                    <mat-icon class="text-red-400 icon-size-5" *ngIf="!element.misc" [svgIcon]="'heroicons_solid:x'">
-                    </mat-icon>
-                </td>
-            </ng-container>
-        </div>
-        <tr mat-header-row class="h-18 shadow bg-card" *matHeaderRowDef="displayedColumns"></tr>
-        <tr mat-row class="hover:bg-gray-100 dark:hover:bg-hover" style="cursor: pointer;"
-            *matRowDef="let row; columns: displayedColumns"></tr>
-    </table>
+<ngx-skeleton-loader count="8" appearance="line" animation="pulse" *ngIf="dataSourceLoading">
+</ngx-skeleton-loader>
+<div class="row bg-card rounded-2xl m-0 mb-5 py-3 shadow" *ngIf="!dropdownLoader && !dataSourceLoading">
+    <div class="col-12 mb-2">
+        <p class="text-secondary text-2xl font-semibold">
+            Filter
+        </p>
+    </div>
+    <div class="col-lg-4 col-md-6 col-12">
+        <mat-form-field appearance="fill" class="w-full">
+            <mat-label>PID/SPID/RBID</mat-label>
+            <input matInput placeholder="PID/SPID/RBID" />
+        </mat-form-field>
+    </div>
+    <div class="col-lg-4 col-md-6 col-12">
+        <mat-form-field appearance="fill" class="w-full">
+            <mat-label>Product Name</mat-label>
+            <input matInput placeholder="Product Name" />
+        </mat-form-field>
+    </div>
+    <div class="col-lg-4 col-12">
+        <mat-form-field appearance="fill" class="w-full">
+            <mat-label>Select Status</mat-label>
+            <mat-select>
+                <mat-option (click)="changeStatus('all')">
+                    All Statuses
+                </mat-option>
+                <mat-option (click)="changeStatus(obj)" value="{{obj}}" *ngFor="let obj of dropdown">
+                    {{obj.statusName}}
+                </mat-option>
+            </mat-select>
+        </mat-form-field>
+    </div>
 </div>
-<mat-paginator
-    class="sm:absolute sm:inset-x-0 sm:bottom-0 border-b sm:border-t sm:border-b-0 z-10 bg-gray-50 dark:bg-transparent"
-    [ngClass]="{'pointer-events-none': isLoading}" [length]="dataSource.length" [pageIndex]="0" [pageSize]="20"
-    [hidePageSize]="true"></mat-paginator>
+
+<div *ngIf="!dataSourceLoading">
+    <div style="margin-bottom: 72px;">
+        <table mat-table [dataSource]="dataSource" class="w-full" *ngIf="dataSource.length">
+            <div class="color-blue">
+                <!-- ID Column -->
+                <ng-container matColumnDef="id">
+                    <th class="min-w-24 bg-gray-50 dark:bg-black dark:bg-opacity-5" mat-header-cell *matHeaderCellDef>
+                        ID
+                    </th>
+                    <td mat-cell *matCellDef="let element">
+                        <span class="text-secondary font-semibold border-b-2">{{ element.pk_rapidBuildID }}</span>
+                    </td>
+                </ng-container>
+
+                <!-- status Column -->
+                <ng-container matColumnDef="status">
+                    <th class="min-w-24 bg-gray-50 dark:bg-black dark:bg-opacity-5" mat-header-cell *matHeaderCellDef>
+                        Status
+                    </th>
+                    <td mat-cell *matCellDef="let element">
+                        {{ element.statusName }}
+                    </td>
+                </ng-container>
+
+                <!-- age Column -->
+                <ng-container matColumnDef="age">
+                    <th class="min-w-24 bg-gray-50 dark:bg-black dark:bg-opacity-5" mat-header-cell *matHeaderCellDef>
+                        Age
+                    </th>
+                    <td mat-cell *matCellDef="let element">{{ element.statusName }}</td>
+                </ng-container>
+
+                <!-- pid Column -->
+                <ng-container matColumnDef="pid">
+                    <th class="min-w-10 bg-gray-50 dark:bg-black dark:bg-opacity-5" mat-header-cell *matHeaderCellDef>
+                        PID
+                    </th>
+                    <td mat-cell *matCellDef="let element">{{ element.pk_productID }}</td>
+                </ng-container>
+
+                <!-- spid Column -->
+                <ng-container matColumnDef="spid">
+                    <th class="min-w-10 bg-gray-50 dark:bg-black dark:bg-opacity-5" mat-header-cell *matHeaderCellDef>
+                        SPID
+                    </th>
+                    <td mat-cell *matCellDef="let element">{{ element.fk_storeProductID }}</td>
+                </ng-container>
+
+                <!-- product Column -->
+                <ng-container matColumnDef="product">
+                    <th class="min-w-40 bg-gray-50 dark:bg-black dark:bg-opacity-5" mat-header-cell *matHeaderCellDef>
+                        Product
+                    </th>
+                    <td mat-cell *matCellDef="let element">{{ element.productName }}</td>
+                </ng-container>
+
+                <!-- supplier Column -->
+                <ng-container matColumnDef="supplier">
+                    <th class="min-w-10 bg-gray-50 dark:bg-black dark:bg-opacity-5" mat-header-cell *matHeaderCellDef>
+                        Supplier
+                    </th>
+                    <td mat-cell *matCellDef="let element">{{ element.companyName }}</td>
+                </ng-container>
+
+                <!-- Last Proof Of Column -->
+                <ng-container matColumnDef="last_proof_of">
+                    <th class="min-w-10 bg-gray-50 dark:bg-black dark:bg-opacity-5" mat-header-cell *matHeaderCellDef>
+                        Last Proof Of
+                    </th>
+                    <td mat-cell *matCellDef="let element">
+                        {{ element.rapidBuildUserFirstName }} {{ element.rapidBuildUserLastName }}
+                    </td>
+                </ng-container>
+            </div>
+
+            <tr mat-header-row class="h-18 shadow bg-card" *matHeaderRowDef="displayedColumns"></tr>
+            <tr mat-row class="hover:bg-gray-100 dark:hover:bg-hover" style="cursor: pointer;"
+                *matRowDef="let row; columns: displayedColumns"></tr>
+        </table>
+        <div class="bg-gray text-primary font-semibold" *ngIf="!dataSource.length">
+            There are no results to display or your search did not return any results.
+        </div>
+    </div>
+    <mat-paginator *ngIf="dataSource.length"
+        class="sm:absolute sm:inset-x-0 sm:bottom-0 border-b sm:border-t sm:border-b-0 z-10 bg-gray-50 dark:bg-transparent"
+        [ngClass]="{'pointer-events-none': isLoading}" [length]="dataSourceTotalRecord" [pageIndex]="0" [pageSize]="20"
+        [hidePageSize]="true"></mat-paginator>
+</div>

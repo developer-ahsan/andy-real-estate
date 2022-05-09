@@ -276,6 +276,37 @@ export class FileManagerService {
         })
     };
 
+    getRapidBuildImages(storeID, statusId): Observable<any[]> {
+        return this._httpClient.get<any[]>(environment.storeNewUrlRapidBuild, {
+            params: {
+                dashboard: true,
+                store_id: storeID,
+                size: 20,
+                search_image_status_id: statusId
+            }
+        })
+    };
+
+    getAllRapidBuildImages(storeID): Observable<any[]> {
+        return this._httpClient.get<any[]>(environment.storeNewUrlRapidBuild, {
+            params: {
+                dashboard: true,
+                store_id: storeID,
+                size: 20
+            }
+        })
+    };
+
+    getRapidBuildDropDown(storeID): Observable<any[]> {
+        return this._httpClient.get<any[]>(environment.storeNewUrlRapidBuild, {
+            params: {
+                image: true,
+                store_id: storeID,
+                size: 20
+            }
+        })
+    };
+
     getProducts(storeID, pageNo): Observable<any[]> {
         return this._httpClient.get<any[]>(environment.storeNewUrl, {
             params: {

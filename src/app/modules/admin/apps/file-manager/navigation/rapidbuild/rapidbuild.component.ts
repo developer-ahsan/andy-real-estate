@@ -1,46 +1,7 @@
-import { Component, Input, Output, OnInit, EventEmitter } from '@angular/core';
+import { Component, Input, Output, OnInit, EventEmitter, ChangeDetectorRef } from '@angular/core';
 import { Subject } from 'rxjs';
-
-export interface PeriodicElement {
-  spid: number;
-  name: string;
-  vendor: string;
-  master: string;
-  store: string;
-  desc: boolean;
-  image: boolean;
-  video: boolean;
-  colors: boolean;
-  techno_logo: boolean;
-  misc: boolean
-}
-
-const ELEMENT_DATA: PeriodicElement[] = [
-  { spid: 1, name: '15 Adult Flip Flops', vendor: 'Cathy', master: 'Active', store: 'Online', desc: true, image: false, video: false, colors: false, techno_logo: false, misc: false },
-  { spid: 2, name: '3080 Snowflake Ice Scraper', vendor: 'Saul', master: 'Active', store: 'Online', desc: true, image: false, video: false, colors: false, techno_logo: false, misc: false },
-  { spid: 3, name: 'Lithium', vendor: 'GaryLine LLC', master: 'Active', store: 'Online', desc: false, image: false, video: false, colors: false, techno_logo: false, misc: false },
-  { spid: 4, name: 'Beryllium', vendor: 'SanMar', master: 'Active', store: 'Online', desc: false, image: false, video: false, colors: false, techno_logo: false, misc: false },
-  { spid: 5, name: 'Boron', vendor: 'A-One', master: 'Active', store: 'Online', desc: false, image: false, video: false, colors: false, techno_logo: false, misc: false },
-  { spid: 6, name: 'Carbon', vendor: 'Delta Apparel LLC', master: 'Active', store: 'Online', desc: false, image: false, video: false, colors: false, techno_logo: false, misc: false },
-  { spid: 1, name: '15 Adult Flip Flops', vendor: 'Cathy', master: 'Active', store: 'Online', desc: true, image: false, video: false, colors: false, techno_logo: false, misc: false },
-  { spid: 2, name: '3080 Snowflake Ice Scraper', vendor: 'Saul', master: 'Active', store: 'Online', desc: true, image: false, video: false, colors: false, techno_logo: false, misc: false },
-  { spid: 3, name: 'Lithium', vendor: 'GaryLine LLC', master: 'Active', store: 'Online', desc: false, image: false, video: false, colors: false, techno_logo: false, misc: false },
-  { spid: 4, name: 'Beryllium', vendor: 'SanMar', master: 'Active', store: 'Online', desc: false, image: false, video: false, colors: false, techno_logo: false, misc: false },
-  { spid: 5, name: 'Boron', vendor: 'A-One', master: 'Active', store: 'Online', desc: false, image: false, video: false, colors: false, techno_logo: false, misc: false },
-  { spid: 6, name: 'Carbon', vendor: 'Delta Apparel LLC', master: 'Active', store: 'Online', desc: true, image: false, video: false, colors: false, techno_logo: false, misc: false },
-  { spid: 1, name: '15 Adult Flip Flops', vendor: 'Cathy', master: 'Active', store: 'Online', desc: false, image: false, video: false, colors: false, techno_logo: false, misc: false },
-  { spid: 2, name: '3080 Snowflake Ice Scraper', vendor: 'Saul', master: 'Active', store: 'Online', desc: false, image: false, video: false, colors: false, techno_logo: false, misc: false },
-  { spid: 3, name: 'Lithium', vendor: 'GaryLine LLC', master: 'Active', store: 'Online', desc: true, image: false, video: false, colors: false, techno_logo: false, misc: false },
-  { spid: 4, name: 'Beryllium', vendor: 'SanMar', master: 'Active', store: 'Online', desc: false, image: false, video: false, colors: false, techno_logo: false, misc: false },
-  { spid: 5, name: 'Boron', vendor: 'A-One', master: 'Active', store: 'Online', desc: false, image: false, video: false, colors: false, techno_logo: false, misc: false },
-  { spid: 6, name: 'Carbon', vendor: 'Delta Apparel LLC', master: 'Active', store: 'Online', desc: false, image: false, video: false, colors: false, techno_logo: false, misc: false },
-  { spid: 1, name: '15 Adult Flip Flops', vendor: 'Cathy', master: 'Active', store: 'Online', desc: false, image: false, video: false, colors: false, techno_logo: false, misc: false },
-  { spid: 2, name: '3080 Snowflake Ice Scraper', vendor: 'Saul', master: 'Active', store: 'Online', desc: false, image: false, video: false, colors: false, techno_logo: false, misc: false },
-  { spid: 3, name: 'Lithium', vendor: 'GaryLine LLC', master: 'Active', store: 'Online', desc: false, image: false, video: false, colors: false, techno_logo: false, misc: false },
-  { spid: 4, name: 'Beryllium', vendor: 'SanMar', master: 'Active', store: 'Online', desc: true, image: false, video: false, colors: false, techno_logo: false, misc: false },
-  { spid: 5, name: 'Boron', vendor: 'A-One', master: 'Active', store: 'Online', desc: false, image: false, video: false, colors: false, techno_logo: false, misc: false },
-  { spid: 6, name: 'Carbon', vendor: 'Delta Apparel LLC', master: 'Active', store: 'Online', desc: false, image: false, video: false, colors: false, techno_logo: false, misc: false }
-];
+import { takeUntil } from 'rxjs/operators';
+import { FileManagerService } from '../../file-manager.service';
 
 @Component({
   selector: 'app-rapidbuild',
@@ -51,12 +12,87 @@ export class RapidbuildComponent implements OnInit {
   @Input() isLoading: boolean;
   @Output() isLoadingChange = new EventEmitter<boolean>();
   private _unsubscribeAll: Subject<any> = new Subject<any>();
-  displayedColumns: string[] = ['spid', 'name', 'vendor', 'master', 'store', 'desc', 'image', 'video', 'colors', 'techno_logo', 'misc'];
-  dataSource = ELEMENT_DATA;
+  displayedColumns: string[] = ['id', 'status', 'age', 'pid', 'spid', 'product', 'supplier', 'last_proof_of'];
+  dataSource = [];
+  dataSourceTotalRecord;
+  dataSourceLoading = true;
+  statusID: number = 2;
 
-  constructor() { }
+  dropdown = [];
+  dropdownLoader = true;
+  selectedStatus = null;
+  dropdownFetchLoader = false;
+
+  constructor(
+    private _fileManagerService: FileManagerService,
+    private _changeDetectorRef: ChangeDetectorRef
+  ) { }
 
   ngOnInit(): void {
+    const { pk_storeID } = this.selectedStore;
+
+    // Get the offline products
+    this._fileManagerService.getRapidBuildDropDown(pk_storeID)
+      .pipe(takeUntil(this._unsubscribeAll))
+      .subscribe((response: any) => {
+        this.dropdown = response["data"];
+        this.selectedStatus = this.dropdown[1];
+        this.dropdownLoader = false;
+
+        // Mark for check
+        this._changeDetectorRef.markForCheck();
+      });
+
+    this.getRapidBuildImages(2);
+
     this.isLoadingChange.emit(false);
+  };
+
+  changeStatus(obj): void {
+    this.dropdownFetchLoader = true;
+    if (obj === 'all') {
+      this.getAllRapidBuildImages();
+      return;
+    };
+
+    const { pk_statusID } = obj;
+
+    this.statusID = pk_statusID;
+
+    // Get the getRapidBuildImages
+    this.getRapidBuildImages(this.statusID);
+
+  }
+
+  getRapidBuildImages(statusId): void {
+    const { pk_storeID } = this.selectedStore;
+
+    this._fileManagerService.getRapidBuildImages(pk_storeID, statusId)
+      .pipe(takeUntil(this._unsubscribeAll))
+      .subscribe((response: any) => {
+        this.dataSource = response["data"];
+        this.dataSourceTotalRecord = response["totalRecords"];
+        this.dataSourceLoading = false;
+        this.dropdownFetchLoader = false;
+
+        // Mark for check
+        this._changeDetectorRef.markForCheck();
+      });
+  }
+
+  getAllRapidBuildImages(): void {
+    const { pk_storeID } = this.selectedStore;
+
+    this._fileManagerService.getAllRapidBuildImages(pk_storeID)
+      .pipe(takeUntil(this._unsubscribeAll))
+      .subscribe((response: any) => {
+        this.dataSource = response["data"];
+        this.dataSourceTotalRecord = response["totalRecords"];
+        this.dataSourceLoading = false;
+        this.dropdownFetchLoader = false;
+
+        // Mark for check
+        this._changeDetectorRef.markForCheck();
+      });
   }
 }
