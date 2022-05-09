@@ -95,4 +95,50 @@ export class RapidbuildComponent implements OnInit {
         this._changeDetectorRef.markForCheck();
       });
   }
+
+  searchId(event): void {
+    const { pk_storeID } = this.selectedStore;
+    this.dropdownFetchLoader = true;
+    let id;
+    if (event.target.value) {
+      id = event.target.value;
+    } else {
+      id = '';
+    }
+
+    this._fileManagerService.getAllRapidBuildImagesById(pk_storeID, id)
+      .pipe(takeUntil(this._unsubscribeAll))
+      .subscribe((response: any) => {
+        this.dataSource = response["data"];
+        this.dataSourceTotalRecord = response["totalRecords"];
+        this.dataSourceLoading = false;
+        this.dropdownFetchLoader = false;
+
+        // Mark for check
+        this._changeDetectorRef.markForCheck();
+      });
+  }
+
+  searchKeyword(event): void {
+    const { pk_storeID } = this.selectedStore;
+    this.dropdownFetchLoader = true;
+    let keyword;
+    if (event.target.value) {
+      keyword = event.target.value;
+    } else {
+      keyword = '';
+    }
+
+    this._fileManagerService.getAllRapidBuildImagesByKeyword(pk_storeID, keyword)
+      .pipe(takeUntil(this._unsubscribeAll))
+      .subscribe((response: any) => {
+        this.dataSource = response["data"];
+        this.dataSourceTotalRecord = response["totalRecords"];
+        this.dataSourceLoading = false;
+        this.dropdownFetchLoader = false;
+
+        // Mark for check
+        this._changeDetectorRef.markForCheck();
+      });
+  }
 }
