@@ -1,1 +1,32 @@
-<p>presentation works!</p>
+<ngx-skeleton-loader count="8" appearance="line" animation="pulse" *ngIf="isLoading">
+</ngx-skeleton-loader>
+<div class="row my-2 py-5 mx-5 overflow-auto" *ngIf="!isLoading">
+    <div class="col-12">
+        <mat-button-toggle-group #group="matButtonToggleGroup" [value]="presentationScreen"
+            (change)="calledScreen(group.value)">
+            <mat-button-toggle *ngFor="let buttonValue of presentationButtons" value="buttonValue">
+                {{buttonValue}}
+            </mat-button-toggle>
+        </mat-button-toggle-group>
+    </div>
+</div>
+
+<!-- Main Screen -->
+<div *ngIf="presentationScreen == 'Main'">
+    Main
+</div>
+
+<!-- Main Screen -->
+<div *ngIf="presentationScreen == 'Site Color'">
+    Site Color
+</div>
+
+<!-- Main Screen -->
+<div *ngIf="presentationScreen == 'Masthead'">
+    Masthead
+</div>
+
+<!-- Feature Image Screen -->
+<div *ngIf="presentationScreen == 'Feature Image'">
+    Feature Image
+</div>

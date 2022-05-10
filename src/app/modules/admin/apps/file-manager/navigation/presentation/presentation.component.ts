@@ -12,6 +12,14 @@ export class PresentationComponent implements OnInit {
   @Input() isLoading: boolean;
   @Output() isLoadingChange = new EventEmitter<boolean>();
   private _unsubscribeAll: Subject<any> = new Subject<any>();
+  presentationScreen: string = "Main";
+  presentationButtons: string[] = [
+    "Site Color",
+    "Masthead",
+    "Feature Images",
+    "Social Media",
+    "Support Team"
+  ]
 
   constructor(
     private _fileManagerService: FileManagerService,
@@ -20,6 +28,11 @@ export class PresentationComponent implements OnInit {
 
   ngOnInit(): void {
     this.isLoadingChange.emit(false);
+  };
+
+  calledScreen(screenName): void {
+    console.log("screenName", screenName)
+    this.presentationScreen = screenName;
   }
 
 }

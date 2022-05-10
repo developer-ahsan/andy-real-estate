@@ -12,7 +12,7 @@ import { StoresListComponent } from 'app/modules/admin/apps/file-manager/list/li
 import { MatSelectModule } from '@angular/material/select';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatInputModule } from '@angular/material/input';
-import {MatCheckboxModule} from '@angular/material/checkbox'
+import { MatCheckboxModule } from '@angular/material/checkbox'
 import { QuillModule } from 'ngx-quill';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { NgxSkeletonLoaderModule } from 'ngx-skeleton-loader';
@@ -24,7 +24,7 @@ import { OfflineProductsComponent } from './navigation/offline-products/offline-
 import { NgApexchartsModule } from "ng-apexcharts";
 import { MatTableModule } from '@angular/material/table';
 import { MatPaginatorModule } from '@angular/material/paginator';
-import {MatRadioModule} from '@angular/material/radio';
+import { MatRadioModule } from '@angular/material/radio';
 import { StoreVideosComponent } from './navigation/store-videos/store-videos.component';
 import { RapidbuildComponent } from './navigation/rapidbuild/rapidbuild.component';
 import { RapidbuildActionsComponent } from './navigation/rapidbuild-actions/rapidbuild-actions.component';
@@ -32,6 +32,7 @@ import { StoreSettingsComponent } from './navigation/store-settings/store-settin
 import { GroupOrderSettingsComponent } from './navigation/group-order-settings/group-order-settings.component';
 import { CampaignsComponent } from './navigation/campaigns/campaigns.component';
 import { PresentationComponent } from './navigation/presentation/presentation.component';
+import { MatButtonToggleModule } from '@angular/material/button-toggle';
 
 @NgModule({
     declarations: [
@@ -67,6 +68,7 @@ import { PresentationComponent } from './navigation/presentation/presentation.co
         MatInputModule,
         MatCheckboxModule,
         NgApexchartsModule,
+        MatButtonToggleModule,
         QuillModule.forRoot(),
         SharedModule
     ]
