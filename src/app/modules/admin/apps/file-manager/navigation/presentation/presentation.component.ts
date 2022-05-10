@@ -13,6 +13,7 @@ export class PresentationComponent implements OnInit {
   @Output() isLoadingChange = new EventEmitter<boolean>();
   private _unsubscribeAll: Subject<any> = new Subject<any>();
   presentationScreen: string = "Main";
+  selected = 'YES';
   presentationButtons: string[] = [
     "Site Color",
     "Masthead",
