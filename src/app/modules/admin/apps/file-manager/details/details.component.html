@@ -133,6 +133,10 @@
                         <app-presentation [(isLoading)]="isLoading" [selectedStore]="selectedStore">
                         </app-presentation>
                     </ng-template>
+                    <ng-template [ngIf]="selectedIndex === 'Shipping Notifications'">
+                        <app-shipping-notificaiton [(isLoading)]="isLoading" [selectedStore]="selectedStore">
+                        </app-shipping-notificaiton>
+                    </ng-template>
                 </div>
             </div>
         </div>

@@ -34,6 +34,7 @@ import { CampaignsComponent } from './navigation/campaigns/campaigns.component';
 import { PresentationComponent } from './navigation/presentation/presentation.component';
 import { MatButtonToggleModule } from '@angular/material/button-toggle';
 import { MatExpansionModule } from '@angular/material/expansion';
+import { ShippingNotificaitonComponent } from './navigation/shipping-notificaiton/shipping-notificaiton.component';
 
 @NgModule({
     declarations: [
@@ -51,7 +52,8 @@ import { MatExpansionModule } from '@angular/material/expansion';
         StoreSettingsComponent,
         GroupOrderSettingsComponent,
         CampaignsComponent,
-        PresentationComponent
+        PresentationComponent,
+        ShippingNotificaitonComponent
     ],
     imports: [
         RouterModule.forChild(storeRoutes),

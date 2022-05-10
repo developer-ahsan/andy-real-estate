@@ -1,0 +1,53 @@
+<ngx-skeleton-loader count="8" appearance="line" animation="pulse" *ngIf="isLoading">
+</ngx-skeleton-loader>
+<div class="row" *ngIf="!isLoading">
+    <div class="col-12 my-2">
+        <fuse-card class="rounded-2xl shadow bg-card flex flex-col lg:flex-row w-full">
+            <div class="p-6 sm:p-8 lg:p-10 w-full">
+                <div class="text-2xl font-bold">
+                    Order Shipment Notifications
+                </div>
+
+                <div class="row">
+                    <div class="col-12">
+                        <span class="text-secondary font-semibold text-1xl">
+                            Choose whether or not you want to receive shipment notification emails
+                        </span>
+                    </div>
+                    <div class="col-12 mt-3">
+                        <mat-form-field appearance="fill" class="w-full">
+                            <mat-label>Select an option</mat-label>
+                            <mat-select [(value)]="selected">
+                                <mat-option value="1">Enabled</mat-option>
+                                <mat-option value="2">Disabled</mat-option>
+                            </mat-select>
+                        </mat-form-field>
+                    </div>
+                </div>
+
+                <div class="flex items-center justify-end w-full">
+                    <div class="flex items-center my-2">
+                        <div class="flex items-center mr-4" *ngIf="flashMessage">
+                            <ng-container *ngIf="flashMessage === 'success'">
+                                <mat-icon class="text-green-500" [svgIcon]="'heroicons_outline:check'">
+                                </mat-icon>
+                                <span class="ml-2">Shipping notification updated successfully</span>
+                            </ng-container>
+                            <ng-container *ngIf="flashMessage === 'error'">
+                                <mat-icon class="text-red-500" [svgIcon]="'heroicons_outline:x'"></mat-icon>
+                                <span class="ml-2">An error occurred, try again!</span>
+                            </ng-container>
+                        </div>
+                        <button class="min-w-40" mat-stroked-button [matTooltip]="'Assign new store'"
+                            (click)="updateShipping()" [disabled]="updateLoader">
+                            <mat-progress-spinner *ngIf="updateLoader" [diameter]="24" [mode]="'indeterminate'">
+                            </mat-progress-spinner>
+                            <mat-icon *ngIf="!updateLoader" svgIcon="edit"></mat-icon>
+                            <span *ngIf="!updateLoader" class="ml-1 mr-1">Update</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </fuse-card>
+    </div>
+</div>

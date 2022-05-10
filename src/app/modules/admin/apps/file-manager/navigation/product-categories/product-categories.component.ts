@@ -20,6 +20,7 @@ export class ProductCategoriesComponent implements OnInit {
 
   subCategoriesLoader = false;
   subCategories = [];
+  selectedCategory = null;
 
   constructor(
     private _fileManagerService: FileManagerService,
@@ -30,7 +31,7 @@ export class ProductCategoriesComponent implements OnInit {
     this.dataSourceLoading = true;
     this.getMainStoreCall(this.page);
     this.isLoadingChange.emit(false);
-  }
+  };
 
   getMainStoreCall(page) {
     const { pk_storeID } = this.selectedStore;
@@ -61,6 +62,7 @@ export class ProductCategoriesComponent implements OnInit {
 
   openedAccordion(data): void {
     const { pk_categoryID } = data;
+    this.selectedCategory = data;
     this.subCategoriesLoader = true;
 
     // Get the offline products
