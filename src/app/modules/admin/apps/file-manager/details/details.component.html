@@ -129,6 +129,10 @@
                         <app-campaigns [(isLoading)]="isLoading" [selectedStore]="selectedStore">
                         </app-campaigns>
                     </ng-template>
+                    <ng-template [ngIf]="selectedIndex === 'Presentation'">
+                        <app-presentation [(isLoading)]="isLoading" [selectedStore]="selectedStore">
+                        </app-presentation>
+                    </ng-template>
                 </div>
             </div>
         </div>

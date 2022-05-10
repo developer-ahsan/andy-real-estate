@@ -113,7 +113,7 @@
             <tr mat-row class="hover:bg-gray-100 dark:hover:bg-hover" style="cursor: pointer;"
                 *matRowDef="let row; columns: displayedColumns"></tr>
         </table>
-        <div class="bg-gray text-primary font-semibold" *ngIf="!dataSource.length">
+        <div class="bg-gray text-primary font-semibold" *ngIf="!dataSource.length && !dataSourceLoading">
             There are no results to display or your search did not return any results.
         </div>
     </div>
