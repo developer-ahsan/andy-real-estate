@@ -1,32 +1,639 @@
-<ngx-skeleton-loader count="8" appearance="line" animation="pulse" *ngIf="isLoading">
+<ngx-skeleton-loader
+  count="8"
+  appearance="line"
+  animation="pulse"
+  *ngIf="isLoading"
+>
 </ngx-skeleton-loader>
 <div class="row my-2 py-5 mx-5 overflow-auto" *ngIf="!isLoading">
-    <div class="col-12">
-        <mat-button-toggle-group #group="matButtonToggleGroup" [value]="presentationScreen"
-            (change)="calledScreen(group.value)">
-            <mat-button-toggle *ngFor="let buttonValue of presentationButtons" value="buttonValue">
-                {{buttonValue}}
-            </mat-button-toggle>
-        </mat-button-toggle-group>
-    </div>
+  <div class="col-12">
+    <mat-button-toggle-group
+      #group="matButtonToggleGroup"
+      [value]="presentationScreen"
+      (change)="calledScreen(group.value)"
+    >
+      <mat-button-toggle
+        *ngFor="let buttonValue of presentationButtons"
+        value="buttonValue"
+      >
+        {{ buttonValue }}
+      </mat-button-toggle>
+    </mat-button-toggle-group>
+  </div>
 </div>
 
 <!-- Main Screen -->
 <div *ngIf="presentationScreen == 'Main'">
-    Main
+  <div class="row p-10 bg-light overflow-auto">
+    <div class="col-12 bg-card sm:p-6 md:p-6 lg:p-16 rounded-2xl shadow">
+      <div class="text-2xl font-extrabold tracking-tight leading-none my-3">
+        Look & Feel
+      </div>
+      <div class="col-12 mt-5">
+        <mat-form-field appearance="fill" class="w-full">
+          <mat-label> Use colored-background headers </mat-label>
+          <mat-select [(value)]="selected">
+            <mat-option value="option1">Yes</mat-option>
+            <mat-option value="option2">No</mat-option>
+          </mat-select>
+        </mat-form-field>
+      </div>
+      <div class="col-md-4">
+        <button
+          class="my-5"
+          mat-flat-button
+          [matTooltip]="'Update'"
+          [color]="'primary'"
+        >
+          <span class="px-2">Update</span>
+        </button>
+      </div>
+    </div>
+  </div>
 </div>
 
 <!-- Main Screen -->
-<div *ngIf="presentationScreen == 'Site Color'">
-    Site Color
+
+<!-- Site color start -->
+
+<div *ngIf="presentationScreen == 'Site Color'">Site Color</div>
+<div class="row p-10 bg-light overflow-auto">
+  <div class="col-12 bg-card sm:p-6 md:p-6 lg:p-16 rounded-2xl shadow my-3">
+    <div class="text-2xl font-extrabold tracking-tight leading-none mb-4">
+      Site Colors
+    </div>
+
+    <div class="col-lg-6 col-12">
+      <mat-form-field appearance="fill" class="w-full">
+        <mat-label> Primary Highlight</mat-label>
+        <input matInput />
+      </mat-form-field>
+    </div>
+    <div class="col-lg-6 col-12">
+      <mat-form-field appearance="fill" class="w-full">
+        <mat-label> Secondary Highlight</mat-label>
+        <input matInput />
+      </mat-form-field>
+    </div>
+
+    <div class="col-lg-6 col-12">
+      <mat-form-field appearance="fill" class="w-full">
+        <mat-label> Main Nav Background</mat-label>
+        <input matInput />
+      </mat-form-field>
+    </div>
+    <div class="col-lg-6 col-12">
+      <mat-form-field appearance="fill" class="w-full">
+        <mat-label> Main Nav Background Hover</mat-label>
+        <input matInput />
+      </mat-form-field>
+    </div>
+    <div class="col-lg-6 col-12">
+      <mat-form-field appearance="fill" class="w-full">
+        <mat-label> Main Nav Link</mat-label>
+        <input matInput />
+      </mat-form-field>
+    </div>
+    <div class="col-lg-6 col-12">
+      <mat-form-field appearance="fill" class="w-full">
+        <mat-label> Main Nav Hover Link Hover</mat-label>
+        <input matInput />
+      </mat-form-field>
+    </div>
+    <div class="col-lg-6 col-12">
+      <mat-form-field appearance="fill" class="w-full">
+        <mat-label> Cat Menu Link</mat-label>
+        <input matInput />
+      </mat-form-field>
+    </div>
+    <div class="col-lg-6 col-12">
+      <mat-form-field appearance="fill" class="w-full">
+        <mat-label> Cat Menu Link Hover</mat-label>
+        <input matInput />
+      </mat-form-field>
+    </div>
+    <div class="col-lg-6 col-12">
+      <mat-form-field appearance="fill" class="w-full">
+        <mat-label> SubCat Menu Link</mat-label>
+        <input matInput />
+      </mat-form-field>
+    </div>
+    <div class="col-lg-6 col-12">
+      <mat-form-field appearance="fill" class="w-full">
+        <mat-label> SubCat Menu Link Hover</mat-label>
+        <input matInput />
+      </mat-form-field>
+    </div>
+    <div class="col-lg-6 col-12">
+      <mat-form-field appearance="fill" class="w-full">
+        <mat-label>Link</mat-label>
+        <input matInput />
+      </mat-form-field>
+    </div>
+    <div class="col-lg-6 col-12">
+      <mat-form-field appearance="fill" class="w-full">
+        <mat-label> Link Hover</mat-label>
+        <input matInput />
+      </mat-form-field>
+    </div>
+    <div class="col-lg-6 col-12">
+      <mat-form-field appearance="fill" class="w-full">
+        <mat-label> Home Feature Link</mat-label>
+        <input matInput />
+      </mat-form-field>
+    </div>
+    <div class="col-lg-6 col-12">
+      <mat-form-field appearance="fill" class="w-full">
+        <mat-label> Home Feature Link Hover</mat-label>
+        <input matInput />
+      </mat-form-field>
+    </div>
+
+    <div class="col-md-4" style="margin-left: -17px">
+      <button
+        class="my-5"
+        mat-flat-button
+        [matTooltip]="'Update'"
+        [color]="'primary'"
+      >
+        <span class="px-2">Update</span>
+      </button>
+    </div>
+  </div>
 </div>
 
-<!-- Main Screen -->
-<div *ngIf="presentationScreen == 'Masthead'">
-    Masthead
+<!-- Masthead Start -->
+
+<div *ngIf="presentationScreen == 'Masthead'">Masthead</div>
+<div class="row p-10 bg-light overflow-auto">
+  <div class="col-12 bg-card sm:p-6 md:p-6 lg:p-16 rounded-2xl shadow">
+    <!-- Select a store -->
+    <div class="text-2xl font-extrabold tracking-tight leading-none my-3">
+      Store Masthead
+    </div>
+    <div class="row mt-3">
+      <div class="col-md-6">No masthead was found for this store.</div>
+
+      <div class="col-md-6">
+        <p style="margin-bottom: 5px; color: red">
+          GIF image format only! 369px W by 82px H
+        </p>
+        <br />
+        <input
+          type="file"
+          class="file-upload"
+          onchange="console.log(event.target.files)"
+        />
+      </div>
+    </div>
+    <div class="col-md-4">
+      <button mat-flat-button [matTooltip]="'Update'" [color]="'primary'">
+        <span class="px-2">Update</span>
+      </button>
+    </div>
+  </div>
 </div>
+
+<!-- Masthead ends -->
 
 <!-- Feature Image Screen -->
-<div *ngIf="presentationScreen == 'Feature Image'">
-    Feature Image
+
+<div *ngIf="presentationScreen == 'Feature Image'">Feature Image</div>
+<div class="row p-10 bg-light overflow-auto">
+  <div class="col-12 bg-card sm:p-6 md:p-6 lg:p-16 rounded-2xl shadow">
+    <!-- Select a store -->
+    <div class="text-2xl font-extrabold tracking-tight leading-none my-5">
+      Scroller Feature Images
+    </div>
+    <div class="row my-5">
+      <div class="col-md-4">
+        <img
+          class="mb-3"
+          src="https://assets.consolidus.com/globalAssets/Stores/featureImage/146/416.jpg?v=071801"
+          alt="picture1"
+        />
+        <button
+          class="mb-3"
+          mat-flat-button
+          [matTooltip]="'Update'"
+          [color]="'primary'"
+        >
+          <span class="px-1">Edit</span>
+        </button>
+        <p style="color: green">(Active)</p>
+      </div>
+      <div class="col-md-4">
+        <img
+          class="mb-3"
+          src="https://assets.consolidus.com/globalAssets/Stores/featureImage/146/416.jpg?v=071801"
+          alt="picture1"
+        />
+        <button
+          class="mb-3"
+          mat-flat-button
+          [matTooltip]="'Update'"
+          [color]="'primary'"
+        >
+          <span class="px-1">Edit</span>
+        </button>
+        <p style="color: green">(Active)</p>
+      </div>
+      <div class="col-md-4">
+        <img
+          class="mb-3"
+          src="https://assets.consolidus.com/globalAssets/Stores/featureImage/146/416.jpg?v=071801"
+          alt="picture1"
+        />
+        <button
+          class="mb-3"
+          mat-flat-button
+          [matTooltip]="'Update'"
+          [color]="'primary'"
+        >
+          <span class="px-1">Edit</span>
+        </button>
+        <p style="color: green">(Active)</p>
+      </div>
+    </div>
+    <div class="row my-5">
+      <div class="col-md-4">
+        <img
+          class="mb-3"
+          src="https://assets.consolidus.com/globalAssets/Stores/featureImage/146/241.jpg?v=071801"
+          alt="picture1"
+        />
+        <button
+          class="mb-3"
+          mat-flat-button
+          [matTooltip]="'Update'"
+          [color]="'primary'"
+        >
+          <span class="px-1">Edit</span>
+        </button>
+        <p style="color: green">(Active)</p>
+      </div>
+      <div class="col-md-4">
+        <img
+          class="mb-3"
+          src="https://assets.consolidus.com/globalAssets/Stores/featureImage/146/241.jpg?v=071801"
+          alt="picture1"
+        />
+        <button
+          class="mb-3"
+          mat-flat-button
+          [matTooltip]="'Update'"
+          [color]="'primary'"
+        >
+          <span class="px-1">Edit</span>
+        </button>
+        <p style="color: green">(Active)</p>
+      </div>
+      <div class="col-md-4">
+        <img
+          class="mb-3"
+          src="https://assets.consolidus.com/globalAssets/Stores/featureImage/146/384.jpg?v=071801"
+          alt="picture1"
+        />
+        <button
+          class="mb-3"
+          mat-flat-button
+          [matTooltip]="'Update'"
+          [color]="'primary'"
+        >
+          <span class="px-1">Edit</span>
+        </button>
+        <p style="color: green">(Active)</p>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="row p-10 bg-light overflow-auto">
+  <div class="col-12 bg-card sm:p-6 md:p-6 lg:p-16 rounded-2xl shadow">
+    <!-- Select a store -->
+    <div class="text-2xl font-extrabold tracking-tight leading-none my-5">
+      Update Mobile Feature Image
+    </div>
+    <div class="row">
+      <div class="col-12 fa fa-info-circle" style="color: rgb(101, 124, 174)">
+        The mobile feature image will replace the feature image scroller defined
+        above for mobile devices and those with smaller screen sizes. The mobile
+        feature image will not scroll, and will be a static image.
+      </div>
+      <div class="col-12 mt-3">
+        <img
+          src="https://assets.consolidus.com/globalAssets/Stores/featureImage/mobile/146/41.jpg?ver=05-10-22-15-03-57"
+          alt="picture"
+        />
+      </div>
+      <div class="text-2xl font-extrabold tracking-tight leading-none my-3">
+        Update Mobile Feature Image
+      </div>
+      <div class="col-12">
+        <p class="fa fa-info-circle" style="color: rgb(101, 124, 174)">
+          Images must be 1242px W by 450px H. JPG format only.
+        </p>
+        <br />
+        <input
+          type="file"
+          class="file-upload my-3"
+          onchange="console.log(event.target.files)"
+        />
+      </div>
+      <div class="mt-4 col-12">
+        <mat-form-field appearance="fill" class="w-full">
+          <mat-label>Feature image link URL: </mat-label>
+          <input matInput />
+        </mat-form-field>
+      </div>
+      <div class="col-12 mt-5">
+        <mat-form-field appearance="fill" class="w-full">
+          <mat-label>Open link in new window: </mat-label>
+          <mat-select [(value)]="selected">
+            <mat-option value="option1">Yes</mat-option>
+            <mat-option value="option2">No</mat-option>
+          </mat-select>
+        </mat-form-field>
+      </div>
+      <div class="row">
+        <div class="col-md-6">
+          <button
+            class="my-5"
+            mat-flat-button
+            [matTooltip]="'Update'"
+            [color]="'primary'"
+          >
+            <span class="px-2">Update</span>
+          </button>
+        </div>
+        <div class="col-md-6">
+          <button
+            class="my-5"
+            mat-flat-button
+            [matTooltip]="'Remove Image'"
+            [color]="'error'"
+          >
+            <span class="px-2">Remove Image</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Social Media Screen -->
+
+<div *ngIf="presentationScreen == 'Social Media'">Social Media</div>
+<div class="row p-10 bg-light overflow-auto">
+  <div class="col-12 bg-card sm:p-6 md:p-6 lg:p-16 rounded-2xl shadow">
+    <!-- Select a store -->
+    <div class="text-2xl font-extrabold tracking-tight leading-none my-3">
+      Social Media Details
+    </div>
+    <p class="tracking-tight leading-none">
+      Enter the URL of the Facebook or Twitter page below. If no Facebook or
+      Twitter page, leave blank. To remove a Facebook or Twitter page, remove
+      the link (leave blank) and hit update.
+    </p>
+    <div class="row">
+      <div class="mt-4 col-md-6">
+        <mat-form-field appearance="fill" class="w-full">
+          <mat-label> <strong>Facebook</strong></mat-label>
+          <input matInput />
+        </mat-form-field>
+      </div>
+      <div class="mt-4 col-md-6">
+        <mat-form-field appearance="fill" class="w-full">
+          <mat-label> <strong>Twitter</strong></mat-label>
+          <input matInput />
+        </mat-form-field>
+      </div>
+    </div>
+    <div class="row">
+      <div class="mt-4 col-md-6">
+        <mat-form-field appearance="fill" class="w-full">
+          <mat-label> <strong>LinkedIn</strong></mat-label>
+          <input matInput />
+        </mat-form-field>
+      </div>
+      <div class="mt-4 col-md-6">
+        <mat-form-field appearance="fill" class="w-full">
+          <mat-label> <strong>Instagram</strong></mat-label>
+          <input matInput />
+        </mat-form-field>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-md-4">
+        <button mat-flat-button [matTooltip]="'Update'" [color]="'primary'">
+          <span class="px-2">Update</span>
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Support Team -->
+<div *ngIf="presentationScreen == 'Support Team'">Support Team</div>
+
+<!-------------  Special Offers  --------------->
+<div *ngIf="presentationScreen == 'Special Offers'">Special Offers</div>
+<div class="row p-10 bg-light overflow-auto">
+  <div class="col-12 bg-card sm:p-6 md:p-6 lg:p-16 rounded-2xl shadow">
+    <!-- Select a store -->
+    <div class="text-2xl font-extrabold tracking-tight leading-none my-3">
+      Special offers
+    </div>
+    <div class="row">
+      <div class="col-6 mt-5">
+        <mat-form-field appearance="fill" class="w-full">
+          <mat-label>Does this store offer special offers? </mat-label>
+          <mat-select [(value)]="selected">
+            <mat-option value="option1">Yes</mat-option>
+            <mat-option value="option2">No</mat-option>
+          </mat-select>
+        </mat-form-field>
+      </div>
+      <div class="mt-4 col-12">
+        <mat-form-field appearance="fill" class="w-full">
+          <mat-label> Offer Text: (50)</mat-label>
+          <input maxlength="50" matInput />
+        </mat-form-field>
+      </div>
+      <div class="mt-4 col-12">
+        <mat-form-field appearance="fill" class="w-full">
+          <mat-label> Offer Textbox Text: (30)</mat-label>
+          <input maxlength="30" matInput />
+        </mat-form-field>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="row p-10 bg-light overflow-auto">
+  <div class="col-12 bg-card sm:p-6 md:p-6 lg:p-16 rounded-2xl shadow">
+    <!-- Select a store -->
+    <div class="text-2xl font-extrabold tracking-tight leading-none my-3">
+      Footer text
+    </div>
+    <p style="color: red">
+      NOTE: The footer text still applies to the store even if the special
+      offers are disabled.
+    </p>
+    <div class="row">
+      <div class="mt-4 col-12">
+        <mat-form-field appearance="fill" class="w-full">
+          <mat-label> Footer Text: (40)</mat-label>
+          <input maxlength="40" matInput />
+        </mat-form-field>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="row ml-3">
+  <div class="col-md-4">
+    <button mat-flat-button [matTooltip]="'Update'" [color]="'primary'">
+      <span class="px-2">Update</span>
+    </button>
+  </div>
+</div>
+
+<!-------------  Type Kit Settings  --------------->
+<div *ngIf="presentationScreen == 'Type Kit Settings'">Type Kit Settings</div>
+<div class="row p-10 bg-light overflow-auto">
+  <div class="col-12 bg-card sm:p-6 md:p-6 lg:p-16 rounded-2xl shadow">
+    <div class="text-2xl font-extrabold tracking-tight leading-none my-3">
+      Enter the TypeKit ID Below
+    </div>
+    <p>
+      To find the TypeKitID, log in to our TypeKit account. In the top bar,
+      select the store in the dropdown menu, and then click on "Launch Kit
+      Editor." In the window that pops up, there is a link in the top right
+      corner for "Embed Code." There should be a "Type Kit ID" number at the
+      bottom of the screen.
+    </p>
+    <div class="row">
+      <div class="mt-4 col-6">
+        <mat-form-field appearance="fill" class="w-full">
+          <mat-label> ID: </mat-label>
+          <input matInput />
+        </mat-form-field>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-md-4">
+        <button mat-flat-button [matTooltip]="'Update'" [color]="'primary'">
+          <span class="px-2">Update</span>
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-------------  News Feed  --------------->
+<div *ngIf="presentationScreen == 'News Feed'">News Feed</div>
+<div class="row p-10 bg-light overflow-auto">
+  <div class="col-12 bg-card sm:p-6 md:p-6 lg:p-16 rounded-2xl shadow">
+    <div class="row">
+      <div class="col-md-4 mb-3">
+        <button mat-flat-button [color]="'primary'">
+          <span class="px-2">Add New Item</span>
+        </button>
+      </div>
+    </div>
+    <p>
+      <strong>
+        There are currently no news items in the feed for this store.
+      </strong>
+    </p>
+  </div>
+</div>
+
+<!------------- Logo Bank --------------->
+<div *ngIf="presentationScreen == 'Logo Bank'">Logo Bank</div>
+
+<!------------- Brand Guide  --------------->
+<div *ngIf="presentationScreen == 'Brand Guide'">Brand Guide</div>
+<div class="row p-10 bg-light overflow-auto">
+  <div class="col-12 bg-card sm:p-6 md:p-6 lg:p-16 rounded-2xl shadow">
+    <div class="text-2xl font-extrabold tracking-tight leading-none my-3">
+      Add Brand Guide
+    </div>
+    <p>
+      <strong> Brand Guide File: </strong>
+    </p>
+    <p style="color: red">PDF Only!</p>
+    <div class="row">
+      <input
+        type="file"
+        class="file-upload my-3 ml-3"
+        onchange="console.log(event.target.files)"
+      />
+    </div>
+    <div class="row mt-5">
+      <div class="col-md-4">
+        <button mat-flat-button [matTooltip]="'Upload'" [color]="'primary'">
+          <span class="px-2">Upload</span>
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="row p-10 bg-light overflow-auto">
+  <div class="col-12 bg-card sm:p-6 md:p-6 lg:p-16 rounded-2xl shadow">
+    <div class="text-2xl font-extrabold tracking-tight leading-none my-3">
+      Current Brand Guide
+    </div>
+    <p>
+      <strong>
+        There are currently no news items in the feed for this store.
+      </strong>
+    </p>
+  </div>
+</div>
+
+<!------------- Favicon --------------->
+<div *ngIf="presentationScreen == 'Favicon'">Favicon</div>
+<div class="row p-10 bg-light overflow-auto">
+  <div class="col-12 bg-card sm:p-6 md:p-6 lg:p-16 rounded-2xl shadow">
+    <div class="text-2xl font-extrabold tracking-tight leading-none my-3">
+      Add New Favicon Icon
+    </div>
+    <div class="col-12 fa fa-info-circle" style="color: rgb(101, 124, 174)">
+      16px X 16px .ICO file only
+    </div>
+    <div class="row">
+      <input
+        type="file"
+        class="file-upload my-3 ml-3"
+        onchange="console.log(event.target.files)"
+      />
+    </div>
+    <div class="row mt-5">
+      <div class="col-md-4">
+        <button mat-flat-button [matTooltip]="'Upload'" [color]="'primary'">
+          <span class="px-2">Upload</span>
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!------------- Sitemap --------------->
+<div *ngIf="presentationScreen == 'Sitemap'">Sitemap</div>
+<div class="row p-10 bg-light overflow-auto">
+  <div class="col-12 bg-card sm:p-6 md:p-6 lg:p-16 rounded-2xl shadow">
+    <div class="text-2xl font-extrabold tracking-tight leading-none my-3">
+      Generate XML Sitemap
+    </div>
+    <div class="col-12 fa fa-info-circle" style="color: rgb(101, 124, 174)">
+      This tool automatically generates an XML sitemap for this store. If one
+      currently exists, it will be overwritten
+    </div>
+    <div class="row mt-5">
+      <div class="col-md-4">
+        <button mat-flat-button [color]="'primary'">
+          <span class="px-2">Generate XML sitemap</span>
+        </button>
+      </div>
+    </div>
+  </div>
 </div>
