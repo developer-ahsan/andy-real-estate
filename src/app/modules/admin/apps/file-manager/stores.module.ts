@@ -33,6 +33,7 @@ import { GroupOrderSettingsComponent } from './navigation/group-order-settings/g
 import { CampaignsComponent } from './navigation/campaigns/campaigns.component';
 import { PresentationComponent } from './navigation/presentation/presentation.component';
 import { MatButtonToggleModule } from '@angular/material/button-toggle';
+import { MatExpansionModule } from '@angular/material/expansion';
 
 @NgModule({
     declarations: [
@@ -69,6 +70,7 @@ import { MatButtonToggleModule } from '@angular/material/button-toggle';
         MatCheckboxModule,
         NgApexchartsModule,
         MatButtonToggleModule,
+        MatExpansionModule,
         QuillModule.forRoot(),
         SharedModule
     ]

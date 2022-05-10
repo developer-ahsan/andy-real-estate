@@ -18,6 +18,9 @@ export class ProductCategoriesComponent implements OnInit {
   dataSourceLoading = false;
   page: number = 1;
 
+  subCategoriesLoader = false;
+  subCategories = [];
+
   constructor(
     private _fileManagerService: FileManagerService,
     private _changeDetectorRef: ChangeDetectorRef
@@ -55,5 +58,21 @@ export class ProductCategoriesComponent implements OnInit {
     };
     this.getMainStoreCall(this.page);
   };
+
+  openedAccordion(data): void {
+    const { pk_categoryID } = data;
+    this.subCategoriesLoader = true;
+
+    // Get the offline products
+    this._fileManagerService.getStoreSubCategory(pk_categoryID)
+      .pipe(takeUntil(this._unsubscribeAll))
+      .subscribe((response: any) => {
+        this.subCategories = response["data"];
+        this.subCategoriesLoader = false;
+
+        // Mark for check
+        this._changeDetectorRef.markForCheck();
+      });
+  }
 
 }

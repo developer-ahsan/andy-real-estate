@@ -357,19 +357,18 @@ export class FileManagerService {
             params: {
                 category: true,
                 store_id: storeID,
-                size: 20,
+                size: 100,
                 page: pageNo
             }
         })
     };
 
-    getStoreSubCategory(storeID, pageNo): Observable<any[]> {
+    getStoreSubCategory(storeID): Observable<any[]> {
         return this._httpClient.get<any[]>(environment.storeNewUrl, {
             params: {
                 sub_category: true,
-                store_id: storeID,
-                size: 20,
-                page: pageNo
+                category_id: storeID,
+                size: 20
             }
         })
     };
