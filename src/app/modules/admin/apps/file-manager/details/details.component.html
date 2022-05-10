@@ -137,6 +137,10 @@
                         <app-shipping-notificaiton [(isLoading)]="isLoading" [selectedStore]="selectedStore">
                         </app-shipping-notificaiton>
                     </ng-template>
+                    <ng-template [ngIf]="selectedIndex === 'Reset Top Ten'">
+                        <app-reset-top-ten [(isLoading)]="isLoading" [selectedStore]="selectedStore">
+                        </app-reset-top-ten>
+                    </ng-template>
                 </div>
             </div>
         </div>
