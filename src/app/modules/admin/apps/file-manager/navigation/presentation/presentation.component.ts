@@ -14,13 +14,40 @@ export class PresentationComponent implements OnInit {
   private _unsubscribeAll: Subject<any> = new Subject<any>();
   presentationScreen: string = "Main";
   selected = 'YES';
+  quillModules: any = {
+    toolbar: [
+      ['bold', 'italic', 'underline', 'strike'],
+      ['blockquote', 'code-block'],
+      [{ 'color': [] }, { 'background': ['white'] }],
+      [{ 'font': [] }],
+      [{ 'align': [] }],
+      ['clean']
+    ]
+  };
   presentationButtons: string[] = [
     "Site Color",
     "Masthead",
     "Feature Images",
     "Social Media",
-    "Support Team"
-  ]
+    "Support Team",
+    "Special offers",
+    "Typekit",
+    "News Feed",
+    "Logo bank",
+    "Brand Guide",
+    "Favicon",
+    "Sitemap",
+    "Payment methods",
+    "Featured Caampaigns",
+    "Home page Scrollers",
+    "Header Image",
+    "Default Dashboard Emails",
+    "Product Builder Settings",
+    "Order Options",
+    "Artwork tags",
+    "Quick guides"
+  ];
+  checked = false;
 
   constructor(
     private _fileManagerService: FileManagerService,
@@ -30,6 +57,12 @@ export class PresentationComponent implements OnInit {
   ngOnInit(): void {
     this.isLoadingChange.emit(false);
   };
+
+  currentTestimonial: string[] = ['id', 'name', 'decorator', 'order'];
+  // displayedColumns: string[] = ['id', 'method', 'decorator', 'active', 'action'];
+  // dataSource = [];
+  displayedColumns: string[] = ['spid', 'name', 'master', 'store'];
+  dataSource = [];
 
   calledScreen(screenName): void {
     console.log("screenName", screenName)
