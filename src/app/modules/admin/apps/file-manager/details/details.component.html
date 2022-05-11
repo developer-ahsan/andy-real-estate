@@ -141,6 +141,10 @@
                         <app-reset-top-ten [(isLoading)]="isLoading" [selectedStore]="selectedStore">
                         </app-reset-top-ten>
                     </ng-template>
+                    <ng-template [ngIf]="selectedIndex === 'Surveys'">
+                        <app-surveys [(isLoading)]="isLoading" [selectedStore]="selectedStore">
+                        </app-surveys>
+                    </ng-template>
                 </div>
             </div>
         </div>

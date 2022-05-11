@@ -36,6 +36,7 @@ import { MatButtonToggleModule } from '@angular/material/button-toggle';
 import { MatExpansionModule } from '@angular/material/expansion';
 import { ShippingNotificaitonComponent } from './navigation/shipping-notificaiton/shipping-notificaiton.component';
 import { ResetTopTenComponent } from './navigation/reset-top-ten/reset-top-ten.component';
+import { SurveysComponent } from './navigation/surveys/surveys.component';
 
 @NgModule({
     declarations: [
@@ -55,7 +56,8 @@ import { ResetTopTenComponent } from './navigation/reset-top-ten/reset-top-ten.c
         CampaignsComponent,
         PresentationComponent,
         ShippingNotificaitonComponent,
-        ResetTopTenComponent
+        ResetTopTenComponent,
+        SurveysComponent
     ],
     imports: [
         RouterModule.forChild(storeRoutes),
