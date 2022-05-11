@@ -244,6 +244,7 @@ export class FileManagerService {
         return this._httpClient.get<any[]>(environment.stores, {
             params: {
                 list: true,
+                bln_active: true,
                 size: 2000
             }
         }).pipe(
