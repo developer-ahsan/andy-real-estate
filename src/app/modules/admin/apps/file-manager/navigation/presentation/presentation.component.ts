@@ -38,8 +38,8 @@ export class PresentationComponent implements OnInit {
     "Favicon",
     "Sitemap",
     "Payment methods",
-    "Featured Caampaigns",
-    "Home page Scrollers",
+    "Feature Campaign",
+    "Home Page Scrollers",
     "Header Image",
     "Default Dashboard Emails",
     "Product Builder Settings",
@@ -65,7 +65,6 @@ export class PresentationComponent implements OnInit {
   dataSource = [];
 
   calledScreen(screenName): void {
-    console.log("screenName", screenName)
     this.presentationScreen = screenName;
   }
 
