@@ -1,1 +1,258 @@
-<p>email-blast works!</p>
+<ngx-skeleton-loader
+  count="8"
+  appearance="line"
+  animation="pulse"
+  *ngIf="isLoading"
+>
+</ngx-skeleton-loader>
+<div class="row my-2 py-5 mx-5 overflow-auto" *ngIf="!isLoading">
+  <div class="col-12">
+    <mat-button-toggle-group
+      #group="matButtonToggleGroup"
+      [value]="presentationScreen"
+      (change)="calledScreen(group.value)"
+    >
+      <mat-button-toggle
+        *ngFor="let buttonValue of presentationButtons"
+        value="buttonValue"
+      >
+        {{ buttonValue }}
+      </mat-button-toggle>
+    </mat-button-toggle-group>
+  </div>
+</div>
+
+<!---------------------- Main Screen  ---------------------->
+<div *ngIf="presentationScreen == 'Main'">
+  <div class="row p-10 bg-light overflow-auto">
+    <div class="col-12 bg-card sm:p-6 md:p-6 lg:p-16 rounded-2xl shadow">
+      <div class="mt-4 col-12">
+        <mat-form-field appearance="fill" class="w-full">
+          <mat-label> Select an email to send. </mat-label>
+          <input matInput />
+        </mat-form-field>
+      </div>
+      <button class="my-5" mat-flat-button [color]="'primary'">
+        <span class="px-2">Continue</span>
+      </button>
+    </div>
+  </div>
+</div>
+
+<!---------------------- Campaign Email  ---------------------->
+<div *ngIf="presentationScreen == 'Campaign Email'"></div>
+<div class="row p-10 bg-light overflow-auto">
+  <div class="col-12 bg-card sm:p-6 md:p-6 lg:p-16 rounded-2xl shadow">
+    <div class="text-2xl font-extrabold tracking-tight leading-none my-3">
+      New Campaign Email
+    </div>
+    <div class="mt-4 col-12">
+      <mat-form-field appearance="fill" class="w-full">
+        <mat-label>
+          <strong>Select the campaign to be featured in the email:</strong>
+        </mat-label>
+        <input matInput />
+      </mat-form-field>
+    </div>
+    <div class="mt-4 col-12">
+      <mat-form-field appearance="fill" class="w-full">
+        <mat-label>
+          <strong>Action Title (HTML OK, 40 chars max):</strong>
+        </mat-label>
+        <input maxlength="40" matInput />
+      </mat-form-field>
+    </div>
+    <div class="col-12">
+      <div style="font-weight: 500">Action Text (HTML OK):</div>
+      <quill-editor [modules]="quillModules"> </quill-editor>
+    </div>
+    <button class="my-5" mat-flat-button [color]="'primary'">
+      <span class="px-2">Create Email</span>
+    </button>
+  </div>
+</div>
+
+<!---------------------- Featured Products Email  ---------------------->
+<div *ngIf="presentationScreen == 'Featured Products Email'"></div>
+<div class="row p-10 bg-light overflow-auto">
+  <div class="col-12 bg-card sm:p-6 md:p-6 lg:p-16 rounded-2xl shadow">
+    <div class="text-2xl font-extrabold tracking-tight leading-none my-3">
+      New Featured Products Email
+    </div>
+    <div class="col-12">
+      <p>
+        <strong> Feature Product: </strong>
+      </p>
+      <mat-form-field appearance="fill" class="w-full">
+        <mat-select [(value)]="selected">
+          <mat-option value="option2">All</mat-option>
+          <mat-option value="option1">Internal</mat-option>
+          <mat-option value="option2">Client</mat-option>
+        </mat-select>
+      </mat-form-field>
+    </div>
+    <div class="col-12">
+      <p>
+        <strong> Sub Product 1: </strong>
+      </p>
+      <mat-form-field appearance="fill" class="w-full">
+        <mat-select [(value)]="selected">
+          <mat-option value="option2">All</mat-option>
+          <mat-option value="option1">Internal</mat-option>
+          <mat-option value="option2">Client</mat-option>
+        </mat-select>
+      </mat-form-field>
+    </div>
+    <div class="mt-4 col-12">
+      <mat-form-field appearance="fill" class="w-full">
+        <mat-label>
+          <strong>Action Title (HTML OK, 80 chars max):</strong>
+        </mat-label>
+        <input maxlength="80" matInput />
+      </mat-form-field>
+    </div>
+    <div class="col-12">
+      <div style="font-weight: 500">Action Text (HTML OK, 1400 max):</div>
+      <quill-editor [modules]="quillModules"> </quill-editor>
+    </div>
+
+    <p class="mt-4">
+      <strong> Upload Custom Image: </strong>
+    </p>
+    <p style="color: red">
+      The width of the image <strong>cannot be larger than 580px.</strong> The
+      height can be anything, just don't go crazy! JPG ONLY! This image will
+      appear at the top of the email, above all products selected above.
+    </p>
+    <div class="row">
+      <input
+        type="file"
+        class="file-upload my-3 ml-3"
+        onchange="console.log(event.target.files)"
+      />
+    </div>
+    <div class="row">
+      <p>
+        <strong> Action text location: </strong>
+      </p>
+      <mat-form-field appearance="fill" class="w-full">
+        <mat-select [(value)]="selected">
+          <mat-option value="option1">Above Custom Image</mat-option>
+          <mat-option value="option2">Below Custom Image</mat-option>
+        </mat-select>
+      </mat-form-field>
+    </div>
+
+    <div class="mt-4 col-12">
+      <strong>URL For Image Link:</strong>
+      <p style="color: red">
+        This URL will be where the user is taken if they click on the image in
+        the email. Do not include "http://" in the URL. Start with "www."
+      </p>
+      <mat-form-field appearance="fill" class="w-full">
+        <input maxlength="80" matInput />
+      </mat-form-field>
+    </div>
+
+    <button class="my-5" mat-flat-button [color]="'primary'">
+      <span class="px-2">Create Email</span>
+    </button>
+  </div>
+</div>
+
+<!---------------------- New Text Email  ---------------------->
+<div *ngIf="presentationScreen == 'New Text Email'"></div>
+<div class="row p-10 bg-light overflow-auto">
+  <div class="col-12 bg-card sm:p-6 md:p-6 lg:p-16 rounded-2xl shadow">
+    <div class="text-2xl font-extrabold tracking-tight leading-none my-3">
+      New Text Email
+    </div>
+    <p style="color: red">Always include instructions to unsubscribe.</p>
+    <div class="mt-5 col-12">
+      <div style="font-weight: 500">Text (no HTML please)</div>
+      <quill-editor [modules]="quillModules"> </quill-editor>
+    </div>
+    <div class="mt-5">
+      <p>The email will be saved in TXT format with the name:</p>
+      <strong>TEXT_[date]_[time].txt</strong>
+    </div>
+    <button class="my-5" mat-flat-button [color]="'primary'">
+      <span class="px-2">Create Email</span>
+    </button>
+  </div>
+</div>
+
+<!---------------------- New HTML Email  ---------------------->
+<div *ngIf="presentationScreen == 'New HTML Email'"></div>
+<div class="row p-10 bg-light overflow-auto">
+  <div class="col-12 bg-card sm:p-6 md:p-6 lg:p-16 rounded-2xl shadow">
+    <div class="text-2xl font-extrabold tracking-tight leading-none my-3">
+      New HTML Email
+    </div>
+    <div class="col-12 fa fa-info-circle" style="color: rgb(101, 124, 174)">
+      Always include instructions to unsubscribe.
+    </div>
+    <div class="mt-5 col-12">
+      <quill-editor [modules]="quillModules"> </quill-editor>
+    </div>
+    <button class="my-5" mat-flat-button [color]="'primary'">
+      <span class="px-2">Create Email</span>
+    </button>
+  </div>
+</div>
+
+<!---------------------- New Custom Email  ---------------------->
+<div *ngIf="presentationScreen == 'New Custom Email'"></div>
+<div class="row p-10 bg-light overflow-auto">
+  <div class="col-12 bg-card sm:p-6 md:p-6 lg:p-16 rounded-2xl shadow">
+    <div class="text-2xl font-extrabold tracking-tight leading-none my-3">
+      New Custom Email
+    </div>
+
+    <p class="mt-4">
+      <strong> Upload Custom Image: </strong>
+    </p>
+    <p style="color: red">
+      The width of the image <strong>cannot be larger than 580px.</strong> The
+      height can be anything, just don't go crazy! JPG ONLY!
+    </p>
+    <div class="row">
+      <input
+        type="file"
+        class="file-upload my-3 ml-3"
+        onchange="console.log(event.target.files)"
+      />
+    </div>
+    <div class="col-12">
+      <div style="font-weight: 500">Custom text (2000)</div>
+      <p style="color: red">This shows before/above the custom image.</p>
+      <quill-editor [modules]="quillModules"> </quill-editor>
+    </div>
+    <div class="row">
+      <p>
+        <strong> Action text location: </strong>
+      </p>
+      <mat-form-field appearance="fill" class="w-full">
+        <mat-select [(value)]="selected">
+          <mat-option value="option1">Above Custom Image</mat-option>
+          <mat-option value="option2">Below Custom Image</mat-option>
+        </mat-select>
+      </mat-form-field>
+    </div>
+
+    <div class="mt-4 col-12">
+      <strong>URL For Image Link:</strong>
+      <p style="color: red">
+        This URL will be where the user is taken if they click on the image in
+        the email. Do not include "http://" in the URL. Start with "www."
+      </p>
+      <mat-form-field appearance="fill" class="w-full">
+        <input maxlength="80" matInput />
+      </mat-form-field>
+    </div>
+
+    <button class="my-5" mat-flat-button [color]="'primary'">
+      <span class="px-2">Create Email</span>
+    </button>
+  </div>
+</div>

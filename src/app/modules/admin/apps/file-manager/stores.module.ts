@@ -32,13 +32,14 @@ import { StoreSettingsComponent } from './navigation/store-settings/store-settin
 import { GroupOrderSettingsComponent } from './navigation/group-order-settings/group-order-settings.component';
 import { CampaignsComponent } from './navigation/campaigns/campaigns.component';
 import { PresentationComponent } from './navigation/presentation/presentation.component';
+import { EmailBlastComponent } from './navigation/email-blast/email-blast.component';
 import { MatButtonToggleModule } from '@angular/material/button-toggle';
 import { MatExpansionModule } from '@angular/material/expansion';
 import { ShippingNotificaitonComponent } from './navigation/shipping-notificaiton/shipping-notificaiton.component';
 import { ResetTopTenComponent } from './navigation/reset-top-ten/reset-top-ten.component';
 import { SurveysComponent } from './navigation/surveys/surveys.component';
-import { EmailBlastComponent } from './navigation/email-blast/email-blast.component';
 import { JaggaerSettingsComponent } from './navigation/jaggaer-settings/jaggaer-settings.component';
+
 
 @NgModule({
     declarations: [
@@ -57,11 +58,13 @@ import { JaggaerSettingsComponent } from './navigation/jaggaer-settings/jaggaer-
         GroupOrderSettingsComponent,
         CampaignsComponent,
         PresentationComponent,
+        EmailBlastComponent,
         ShippingNotificaitonComponent,
         ResetTopTenComponent,
         SurveysComponent,
         EmailBlastComponent,
         JaggaerSettingsComponent
+
     ],
     imports: [
         RouterModule.forChild(storeRoutes),
