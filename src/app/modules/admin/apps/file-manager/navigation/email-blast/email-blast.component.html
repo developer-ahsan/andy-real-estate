@@ -1,21 +1,10 @@
-<ngx-skeleton-loader
-  count="8"
-  appearance="line"
-  animation="pulse"
-  *ngIf="isLoading"
->
+<ngx-skeleton-loader count="8" appearance="line" animation="pulse" *ngIf="isLoading">
 </ngx-skeleton-loader>
 <div class="row my-2 py-5 mx-5 overflow-auto" *ngIf="!isLoading">
   <div class="col-12">
-    <mat-button-toggle-group
-      #group="matButtonToggleGroup"
-      [value]="presentationScreen"
-      (change)="calledScreen(group.value)"
-    >
-      <mat-button-toggle
-        *ngFor="let buttonValue of presentationButtons"
-        value="buttonValue"
-      >
+    <mat-button-toggle-group #group="matButtonToggleGroup" [value]="presentationScreen"
+      (change)="calledScreen(group.value)">
+      <mat-button-toggle *ngFor="let buttonValue of presentationButtons" value="{{buttonValue}}">
         {{ buttonValue }}
       </mat-button-toggle>
     </mat-button-toggle-group>
@@ -125,11 +114,7 @@
       appear at the top of the email, above all products selected above.
     </p>
     <div class="row">
-      <input
-        type="file"
-        class="file-upload my-3 ml-3"
-        onchange="console.log(event.target.files)"
-      />
+      <input type="file" class="file-upload my-3 ml-3" onchange="console.log(event.target.files)" />
     </div>
     <div class="row">
       <p>
@@ -217,11 +202,7 @@
       height can be anything, just don't go crazy! JPG ONLY!
     </p>
     <div class="row">
-      <input
-        type="file"
-        class="file-upload my-3 ml-3"
-        onchange="console.log(event.target.files)"
-      />
+      <input type="file" class="file-upload my-3 ml-3" onchange="console.log(event.target.files)" />
     </div>
     <div class="col-12">
       <div style="font-weight: 500">Custom text (2000)</div>

@@ -44,7 +44,6 @@ export class EmailBlastComponent implements OnInit {
     this.isLoadingChange.emit(false);
   }
   calledScreen(screenName): void {
-    console.log("screenName", screenName)
     this.presentationScreen = screenName;
   }
 
