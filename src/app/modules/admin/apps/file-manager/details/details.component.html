@@ -121,6 +121,10 @@
                         <app-store-settings [(isLoading)]="isLoading" [selectedStore]="selectedStore">
                         </app-store-settings>
                     </ng-template>
+                    <ng-template [ngIf]="selectedIndex === 'Jaggaer Settings'">
+                        <app-jaggaer-settings [(isLoading)]="isLoading" [selectedStore]="selectedStore">
+                        </app-jaggaer-settings>
+                    </ng-template>
                     <ng-template [ngIf]="selectedIndex === 'Group Order Settings'">
                         <app-group-order-settings [(isLoading)]="isLoading" [selectedStore]="selectedStore">
                         </app-group-order-settings>

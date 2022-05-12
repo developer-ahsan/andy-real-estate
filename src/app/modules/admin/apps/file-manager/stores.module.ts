@@ -38,6 +38,7 @@ import { ShippingNotificaitonComponent } from './navigation/shipping-notificaito
 import { ResetTopTenComponent } from './navigation/reset-top-ten/reset-top-ten.component';
 import { SurveysComponent } from './navigation/surveys/surveys.component';
 import { EmailBlastComponent } from './navigation/email-blast/email-blast.component';
+import { JaggaerSettingsComponent } from './navigation/jaggaer-settings/jaggaer-settings.component';
 
 @NgModule({
     declarations: [
@@ -59,7 +60,8 @@ import { EmailBlastComponent } from './navigation/email-blast/email-blast.compon
         ShippingNotificaitonComponent,
         ResetTopTenComponent,
         SurveysComponent,
-        EmailBlastComponent
+        EmailBlastComponent,
+        JaggaerSettingsComponent
     ],
     imports: [
         RouterModule.forChild(storeRoutes),
