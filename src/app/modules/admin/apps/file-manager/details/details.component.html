@@ -145,6 +145,10 @@
                         <app-surveys [(isLoading)]="isLoading" [selectedStore]="selectedStore">
                         </app-surveys>
                     </ng-template>
+                    <ng-template [ngIf]="selectedIndex === 'Email Blast'">
+                        <app-email-blast [(isLoading)]="isLoading" [selectedStore]="selectedStore">
+                        </app-email-blast>
+                    </ng-template>
                 </div>
             </div>
         </div>
