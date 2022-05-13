@@ -1,10 +1,21 @@
-<ngx-skeleton-loader count="8" appearance="line" animation="pulse" *ngIf="isLoading">
+<ngx-skeleton-loader
+  count="8"
+  appearance="line"
+  animation="pulse"
+  *ngIf="isLoading"
+>
 </ngx-skeleton-loader>
 <div class="row my-2 py-5 mx-5 overflow-auto" *ngIf="!isLoading">
   <div class="col-12">
-    <mat-button-toggle-group #group="matButtonToggleGroup" [value]="presentationScreen"
-      (change)="calledScreen(group.value)">
-      <mat-button-toggle *ngFor="let buttonValue of presentationButtons" value="{{buttonValue}}">
+    <mat-button-toggle-group
+      #group="matButtonToggleGroup"
+      [value]="presentationScreen"
+      (change)="calledScreen(group.value)"
+    >
+      <mat-button-toggle
+        *ngFor="let buttonValue of presentationButtons"
+        value="{{ buttonValue }}"
+      >
         {{ buttonValue }}
       </mat-button-toggle>
     </mat-button-toggle-group>
@@ -28,8 +39,8 @@
   </div>
 </div>
 
-<!---------------------- Campaign Email  ---------------------->
-<div *ngIf="presentationScreen == 'Campaign Email'"></div>
+<!---------------------- Campaign Focused  ---------------------->
+<div *ngIf="presentationScreen == 'Campaign Focused'"></div>
 <div class="row p-10 bg-light overflow-auto">
   <div class="col-12 bg-card sm:p-6 md:p-6 lg:p-16 rounded-2xl shadow">
     <div class="text-2xl font-extrabold tracking-tight leading-none my-3">
@@ -61,8 +72,8 @@
   </div>
 </div>
 
-<!---------------------- Featured Products Email  ---------------------->
-<div *ngIf="presentationScreen == 'Featured Products Email'"></div>
+<!---------------------- Featured products  ---------------------->
+<div *ngIf="presentationScreen == 'Featured products'"></div>
 <div class="row p-10 bg-light overflow-auto">
   <div class="col-12 bg-card sm:p-6 md:p-6 lg:p-16 rounded-2xl shadow">
     <div class="text-2xl font-extrabold tracking-tight leading-none my-3">
@@ -114,7 +125,11 @@
       appear at the top of the email, above all products selected above.
     </p>
     <div class="row">
-      <input type="file" class="file-upload my-3 ml-3" onchange="console.log(event.target.files)" />
+      <input
+        type="file"
+        class="file-upload my-3 ml-3"
+        onchange="console.log(event.target.files)"
+      />
     </div>
     <div class="row">
       <p>
@@ -145,8 +160,8 @@
   </div>
 </div>
 
-<!---------------------- New Text Email  ---------------------->
-<div *ngIf="presentationScreen == 'New Text Email'"></div>
+<!---------------------- Simple Text  ---------------------->
+<div *ngIf="presentationScreen == 'Simple Text'"></div>
 <div class="row p-10 bg-light overflow-auto">
   <div class="col-12 bg-card sm:p-6 md:p-6 lg:p-16 rounded-2xl shadow">
     <div class="text-2xl font-extrabold tracking-tight leading-none my-3">
@@ -167,8 +182,8 @@
   </div>
 </div>
 
-<!---------------------- New HTML Email  ---------------------->
-<div *ngIf="presentationScreen == 'New HTML Email'"></div>
+<!---------------------- Simple html  ---------------------->
+<div *ngIf="presentationScreen == 'Simple html'"></div>
 <div class="row p-10 bg-light overflow-auto">
   <div class="col-12 bg-card sm:p-6 md:p-6 lg:p-16 rounded-2xl shadow">
     <div class="text-2xl font-extrabold tracking-tight leading-none my-3">
@@ -186,8 +201,8 @@
   </div>
 </div>
 
-<!---------------------- New Custom Email  ---------------------->
-<div *ngIf="presentationScreen == 'New Custom Email'"></div>
+<!---------------------- Custom email  ---------------------->
+<div *ngIf="presentationScreen == 'Custom email'"></div>
 <div class="row p-10 bg-light overflow-auto">
   <div class="col-12 bg-card sm:p-6 md:p-6 lg:p-16 rounded-2xl shadow">
     <div class="text-2xl font-extrabold tracking-tight leading-none my-3">
@@ -202,7 +217,11 @@
       height can be anything, just don't go crazy! JPG ONLY!
     </p>
     <div class="row">
-      <input type="file" class="file-upload my-3 ml-3" onchange="console.log(event.target.files)" />
+      <input
+        type="file"
+        class="file-upload my-3 ml-3"
+        onchange="console.log(event.target.files)"
+      />
     </div>
     <div class="col-12">
       <div style="font-weight: 500">Custom text (2000)</div>
@@ -237,3 +256,6 @@
     </button>
   </div>
 </div>
+
+<!---------------------- Opt-In Email  ---------------------->
+<div *ngIf="presentationScreen == 'Opt-In Email'"></div>
