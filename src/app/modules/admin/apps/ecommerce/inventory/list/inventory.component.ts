@@ -798,84 +798,86 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
 
         // Net Cost screen
         if (selectedIndex === 1) {
-            const { radio } = this.firstFormGroup.value;
-            const { name } = radio;
-            let obj = {};
-            if (name === 'Normal Promotional Material') {
-                if (this.pricingDataArray?.length) {
-                    for (let i = 0; i <= 5; i++) {
-                        const { minQuantity, price } = this.pricingDataArray[i]["PartPriceArray"][0];
-                        if (i == 0) {
-                            obj["firstQuantity"] = minQuantity;
-                            obj["standardCostOne"] = price;
-                        }
+            if (this.supplierId == 25) {
+                const { radio } = this.firstFormGroup.value;
+                const { name } = radio;
+                let obj = {};
+                if (name === 'Normal Promotional Material') {
+                    if (this.pricingDataArray?.length) {
+                        for (let i = 0; i <= 5; i++) {
+                            const { minQuantity, price } = this.pricingDataArray[i]["PartPriceArray"][0];
+                            if (i == 0) {
+                                obj["firstQuantity"] = minQuantity;
+                                obj["standardCostOne"] = price;
+                            }
 
-                        if (i == 0) {
-                            obj["firstQuantity"] = minQuantity;
-                            obj["standardCostTwo"] = price;
-                        }
+                            if (i == 0) {
+                                obj["firstQuantity"] = minQuantity;
+                                obj["standardCostTwo"] = price;
+                            }
 
-                        if (i == 1) {
-                            obj["secondQuantity"] = minQuantity;
-                            obj["standardCostThree"] = price;
-                        }
+                            if (i == 1) {
+                                obj["secondQuantity"] = minQuantity;
+                                obj["standardCostThree"] = price;
+                            }
 
-                        if (i == 2) {
-                            obj["thirdQuantity"] = minQuantity;
-                            obj["standardCostFour"] = price;
-                        }
+                            if (i == 2) {
+                                obj["thirdQuantity"] = minQuantity;
+                                obj["standardCostFour"] = price;
+                            }
 
-                        if (i == 3) {
-                            obj["fourthQuantity"] = minQuantity;
-                            obj["standardCostFive"] = price;
-                        }
+                            if (i == 3) {
+                                obj["fourthQuantity"] = minQuantity;
+                                obj["standardCostFive"] = price;
+                            }
 
-                        if (i == 4) {
-                            obj["fifthQuantity"] = minQuantity;
-                            obj["standardCostSix"] = price;
-                        }
+                            if (i == 4) {
+                                obj["fifthQuantity"] = minQuantity;
+                                obj["standardCostSix"] = price;
+                            }
 
-                        if (i == 5) {
-                            obj["sixthQuantity"] = minQuantity;
-                            obj["standardCostOne"] = price;
+                            if (i == 5) {
+                                obj["sixthQuantity"] = minQuantity;
+                                obj["standardCostOne"] = price;
+                            }
+                        }
+                    }
+                } else {
+                    if (this.pricingDataArray?.length) {
+                        for (let i = 0; i <= 5; i++) {
+                            const { price } = this.pricingDataArray[i]["PartPriceArray"][0];
+                            if (i == 0) {
+                                obj["standardCostOne"] = price
+                            }
+
+                            if (i == 0) {
+                                obj["standardCostTwo"] = price
+                            }
+
+                            if (i == 1) {
+                                obj["standardCostThree"] = price
+                            }
+
+                            if (i == 2) {
+                                obj["standardCostFour"] = price
+                            }
+
+                            if (i == 3) {
+                                obj["standardCostFive"] = price
+                            }
+
+                            if (i == 4) {
+                                obj["standardCostSix"] = price
+                            }
+
+                            if (i == 5) {
+                                obj["standardCostOne"] = price
+                            }
                         }
                     }
                 }
-            } else {
-                if (this.pricingDataArray?.length) {
-                    for (let i = 0; i <= 5; i++) {
-                        const { price } = this.pricingDataArray[i]["PartPriceArray"][0];
-                        if (i == 0) {
-                            obj["standardCostOne"] = price
-                        }
-
-                        if (i == 0) {
-                            obj["standardCostTwo"] = price
-                        }
-
-                        if (i == 1) {
-                            obj["standardCostThree"] = price
-                        }
-
-                        if (i == 2) {
-                            obj["standardCostFour"] = price
-                        }
-
-                        if (i == 3) {
-                            obj["standardCostFive"] = price
-                        }
-
-                        if (i == 4) {
-                            obj["standardCostSix"] = price
-                        }
-
-                        if (i == 5) {
-                            obj["standardCostOne"] = price
-                        }
-                    }
-                }
-            }
-            this.netCostForm.patchValue(obj);
+                this.netCostForm.patchValue(obj);
+            };
         };
 
         if (selectedIndex === 3) {
@@ -890,7 +892,7 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
         };
 
         stepper.next();
-    }
+    };
 
     selectionChange(event) {
         const { selectedIndex } = event;
