@@ -154,6 +154,7 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
     stepperOrientation: Observable<StepperOrientation>;
     favoriteSeason: string;
     isFiltering = false;
+    productNumberText = "";
     addProductTypeRadios = [
         {
             name: 'Normal Promotional Material',
@@ -712,15 +713,19 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
 
     selectedSubCategory(item) {
         this.selectedTermObject = item;
+    };
+
+    onSearchChange(event): void {
+        this.productNumberText = event.target.value;
     }
 
-    fetchProductNumberData(event): void {
-        if (event.target.value) {
+    fetchProductNumberData(): void {
+        if (this.productNumberText) {
             this.productNumberLoader = true;
-            this._inventoryService.getPromoStandardProductDetails(event.target.value)
+            this._inventoryService.getPromoStandardProductDetails(this.productNumberText)
                 .pipe(takeUntil(this._unsubscribeAll))
                 .subscribe((productDetails) => {
-                    this._inventoryService.getPromoStandardProductPricingDetails(event.target.value)
+                    this._inventoryService.getPromoStandardProductPricingDetails(this.productNumberText)
                         .pipe(takeUntil(this._unsubscribeAll))
                         .subscribe((productPricing) => {
                             this._snackBar.open("Data fetched successfully", '', {
