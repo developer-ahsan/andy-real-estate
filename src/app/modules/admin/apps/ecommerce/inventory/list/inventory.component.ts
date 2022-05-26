@@ -55,6 +55,7 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
     page = 1;
     supplierType: string;
 
+    pricingDataArray = [];
     dropdownList = [];
     selectedItems = [];
     dropdownSettings: IDropdownSettings = {};
@@ -719,32 +720,51 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
             this._inventoryService.getPromoStandardProductDetails(event.target.value)
                 .pipe(takeUntil(this._unsubscribeAll))
                 .subscribe((productDetails) => {
-                    const { success } = productDetails["data"];
-                    if (success) {
-                        const details = productDetails["data"].result.Product;
-                        const product = {
-                            productName: details.productName,
-                            productNumber: details.productId,
-                            brandName: details.productBrand,
-                            mainDescription: details.description.toString().split(",").join("\n")
-                        }
-                        const string = details.ProductKeywordArray[0].keyword;
-                        if (string?.length) {
-                            for (const value of string.split(',')) {
-                                let temp = {
-                                    name: value
+                    this._inventoryService.getPromoStandardProductPricingDetails(event.target.value)
+                        .pipe(takeUntil(this._unsubscribeAll))
+                        .subscribe((productPricing) => {
+                            this._snackBar.open("Data fetched successfully", '', {
+                                horizontalPosition: 'center',
+                                verticalPosition: 'bottom',
+                                duration: 3500
+                            });
+                            const { success } = productDetails["data"];
+                            if (success) {
+                                const details = productDetails["data"].result.Product;
+                                const product = {
+                                    productName: details.productName,
+                                    productNumber: details.productId,
+                                    brandName: details.productBrand,
+                                    mainDescription: details.description.toString().split(",").join("\n")
                                 }
-                                this.fruits.push(temp)
+                                const string = details.ProductKeywordArray[0].keyword;
+                                if (string?.length) {
+                                    for (const value of string.split(',')) {
+                                        let temp = {
+                                            name: value
+                                        }
+                                        this.fruits.push(temp)
+                                    }
+                                };
+
+                                this.secondFormGroup.patchValue(product);
                             }
-                        };
 
-                        this.secondFormGroup.patchValue(product);
-                    }
-                    this.productNumberLoader = false;
+                            if (productPricing["data"]["success"]) {
+                                this.pricingDataArray = productPricing["data"]["result"]["Envelope"]["Body"]["GetConfigurationAndPricingResponse"]["Configuration"]["PartArray"];
+                            }
+                            this.productNumberLoader = false;
 
-                    // Mark for check
-                    this._changeDetectorRef.markForCheck();
+                            // Mark for check
+                            this._changeDetectorRef.markForCheck();
+                        });
                 });
+        } else {
+            this._snackBar.open("Enter product number to fetch data", '', {
+                horizontalPosition: 'center',
+                verticalPosition: 'bottom',
+                duration: 3500
+            });
         }
     };
 
@@ -774,6 +794,88 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
                 this.secondFormGroup.controls['brandName'].disable();
                 this.reviewForm.controls['brandName'].disable();
             };
+        };
+
+        // Net Cost screen
+        if (selectedIndex === 1) {
+            const { radio } = this.firstFormGroup.value;
+            const { name } = radio;
+            let obj = {};
+            if (name === 'Normal Promotional Material') {
+                if (this.pricingDataArray?.length) {
+                    for (let i = 0; i <= 5; i++) {
+                        const { minQuantity, price } = this.pricingDataArray[i]["PartPriceArray"][0];
+                        if (i == 0) {
+                            obj["firstQuantity"] = minQuantity;
+                            obj["standardCostOne"] = price;
+                        }
+
+                        if (i == 0) {
+                            obj["firstQuantity"] = minQuantity;
+                            obj["standardCostTwo"] = price;
+                        }
+
+                        if (i == 1) {
+                            obj["secondQuantity"] = minQuantity;
+                            obj["standardCostThree"] = price;
+                        }
+
+                        if (i == 2) {
+                            obj["thirdQuantity"] = minQuantity;
+                            obj["standardCostFour"] = price;
+                        }
+
+                        if (i == 3) {
+                            obj["fourthQuantity"] = minQuantity;
+                            obj["standardCostFive"] = price;
+                        }
+
+                        if (i == 4) {
+                            obj["fifthQuantity"] = minQuantity;
+                            obj["standardCostSix"] = price;
+                        }
+
+                        if (i == 5) {
+                            obj["sixthQuantity"] = minQuantity;
+                            obj["standardCostOne"] = price;
+                        }
+                    }
+                }
+            } else {
+                if (this.pricingDataArray?.length) {
+                    for (let i = 0; i <= 5; i++) {
+                        const { price } = this.pricingDataArray[i]["PartPriceArray"][0];
+                        if (i == 0) {
+                            obj["standardCostOne"] = price
+                        }
+
+                        if (i == 0) {
+                            obj["standardCostTwo"] = price
+                        }
+
+                        if (i == 1) {
+                            obj["standardCostThree"] = price
+                        }
+
+                        if (i == 2) {
+                            obj["standardCostFour"] = price
+                        }
+
+                        if (i == 3) {
+                            obj["standardCostFive"] = price
+                        }
+
+                        if (i == 4) {
+                            obj["standardCostSix"] = price
+                        }
+
+                        if (i == 5) {
+                            obj["standardCostOne"] = price
+                        }
+                    }
+                }
+            }
+            this.netCostForm.patchValue(obj);
         };
 
         if (selectedIndex === 3) {

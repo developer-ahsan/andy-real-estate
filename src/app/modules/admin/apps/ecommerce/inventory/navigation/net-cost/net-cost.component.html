@@ -4,8 +4,16 @@
     <div class="col-12 my-2">
         <fuse-card class="rounded-2xl bg-card flex flex-col lg:flex-row w-full">
             <div class="p-6 sm:p-8 lg:p-10 w-full">
-                <div class="text-2xl font-bold">
-                    Net Cost
+                <div class="flex justify-between">
+                    <div class="text-2xl font-bold">
+                        Net Cost
+                    </div>
+                    <button class="min-w-40" mat-stroked-button [matTooltip]="'Fetch Net Cost Data'"
+                        (click)="fetchNetCost()" [disabled]="netCostFetchLoader">
+                        <mat-progress-spinner *ngIf="netCostFetchLoader" [diameter]="24" [mode]="'indeterminate'">
+                        </mat-progress-spinner>
+                        <span *ngIf="!netCostFetchLoader" class="ml-1 mr-1">Fetch Net Cost</span>
+                    </button>
                 </div>
 
                 <!-- Net Cost Form -->

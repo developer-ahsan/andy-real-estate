@@ -5,6 +5,7 @@ import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { NetCostUpdate } from 'app/modules/admin/apps/ecommerce/inventory/inventory.types';
 import { IDropdownSettings } from 'ng-multiselect-dropdown';
+import { MatSnackBar } from '@angular/material/snack-bar';
 
 @Component({
   selector: 'app-net-cost',
@@ -23,6 +24,8 @@ export class NetCostComponent implements OnInit {
   netCostLoader = false;
   validationCheckMessage = ""
 
+  netCostFetchLoader = false;
+
   coOpProgramSettings: IDropdownSettings = {};
   selectedCoOpProgram = [];
   coops = [];
@@ -38,7 +41,8 @@ export class NetCostComponent implements OnInit {
   constructor(
     private _changeDetectorRef: ChangeDetectorRef,
     private _inventoryService: InventoryService,
-    private _formBuilder: FormBuilder
+    private _formBuilder: FormBuilder,
+    private _snackBar: MatSnackBar
   ) { }
 
   ngOnInit(): void {
@@ -53,7 +57,6 @@ export class NetCostComponent implements OnInit {
     const { pk_productID, msrp, liveCostComment, costComment, fk_supplierID } = this.selectedProduct;
 
     this.selectedRedPriceItems.push(liveCostComment)
-    // liveCostComment ? this.selectedRedPriceItems.push(liveCostComment) : this.selectedRedPriceItems.push({});
 
     // Red price comment
     this.redPriceList = [
@@ -198,6 +201,36 @@ export class NetCostComponent implements OnInit {
   onCoOpProgramSelect(item: any) {
     const { pk_coopID } = item;
     this.selectedCooP = pk_coopID;
+  };
+
+  fetchNetCost(): void {
+    const { productNumber } = this.selectedProduct;
+    this.netCostFetchLoader = true;
+    this._inventoryService.getPromoStandardProductPricingDetails(productNumber)
+      .pipe(takeUntil(this._unsubscribeAll))
+      .subscribe((productPricing) => {
+        if (productPricing["data"]["success"]) {
+          if (productPricing["data"]["result"]["Envelope"]["Body"]["GetConfigurationAndPricingResponse"]["ErrorMessage"]["description"] != "Data not found") {
+            const data = productPricing["data"]["result"]["Envelope"]["Body"]["GetConfigurationAndPricingResponse"]["Configuration"]["PartArray"];
+            console.log(data);
+            this._snackBar.open("Data fetched successfully", '', {
+              horizontalPosition: 'center',
+              verticalPosition: 'bottom',
+              duration: 3500
+            });
+          } else {
+            this._snackBar.open("No data found against this product number", '', {
+              horizontalPosition: 'center',
+              verticalPosition: 'bottom',
+              duration: 3500
+            });
+          }
+
+        }
+        this.netCostFetchLoader = false;
+        // Mark for check
+        this._changeDetectorRef.markForCheck();
+      })
   };
 
   onRedPriceItemSelect(item: any) {
