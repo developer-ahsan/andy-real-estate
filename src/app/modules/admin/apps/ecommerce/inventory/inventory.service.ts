@@ -253,6 +253,17 @@ export class InventoryService {
         });
     };
 
+    checkIfProductExist(productNumber, productName, supplierId): Observable<ProductsList[]> {
+        return this._httpClient.get<ProductsList[]>(environment.products, {
+            params: {
+                check: true,
+                product_number: productNumber,
+                product_name: productName,
+                supplier_id: supplierId
+            }
+        });
+    };
+
     searchProductKeywords(keyword): Observable<ProductsList[]> {
         return this._httpClient.get<ProductsList[]>(environment.products, {
             params: {

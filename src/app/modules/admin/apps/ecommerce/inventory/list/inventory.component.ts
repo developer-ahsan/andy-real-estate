@@ -633,13 +633,13 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
             name: productName,
             product_number: productNumber,
             description: true,
-            product_desc: mainDescription || " ",
-            mini_desc: miniDescription || null,
+            product_desc: mainDescription.replace(/'/g, "''") || " ",
+            mini_desc: miniDescription.replace(/'/g, "''") || null,
             keywords: keywords || null,
             notes: null,
             purchase_order_notes: null,
             supplier_link: supplierLink || null,
-            meta_desc: miniDescription || null,
+            meta_desc: miniDescription.replace(/'/g, "''") || null,
             sex: null,
             search_keywords: keywords || null,
             last_update_by: null,
@@ -674,16 +674,37 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
         };
 
         this.createProductLoader = true;
-        this._inventoryService.addProduct(payload)
-            .subscribe((response) => {
-                this.createProductLoader = false;
-                this.showFlashMessage(
-                    response["success"] === true ?
-                        'success' :
-                        'error'
-                );
-            });
-    }
+
+        this._inventoryService.checkIfProductExist(productNumber, productName, this.supplierId)
+            .pipe(takeUntil(this._unsubscribeAll))
+            .subscribe((response: any) => {
+                const isDataExist = response["data_exists"];
+
+                if (isDataExist) {
+                    this.createProductLoader = false;
+                    this._snackBar.open("Product already exists", '', {
+                        horizontalPosition: 'center',
+                        verticalPosition: 'bottom',
+                        duration: 3500
+                    });
+                    // Mark for check
+                    this._changeDetectorRef.markForCheck();
+                } else {
+                    this._inventoryService.addProduct(payload)
+                        .subscribe((response) => {
+                            this.createProductLoader = false;
+                            this.showFlashMessage(
+                                response["success"] === true ?
+                                    'success' :
+                                    'error'
+                            );
+                        });
+                    // Mark for check
+                    this._changeDetectorRef.markForCheck();
+                }
+            })
+    };
+
     /**
      * Close the details
      */
