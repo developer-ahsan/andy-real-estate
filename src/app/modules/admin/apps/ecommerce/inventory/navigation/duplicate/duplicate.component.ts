@@ -4,6 +4,7 @@ import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { InventoryService } from 'app/modules/admin/apps/ecommerce/inventory/inventory.service';
 import { FormBuilder, Validators } from '@angular/forms';
+import { MatSnackBar } from '@angular/material/snack-bar';
 
 @Component({
   selector: 'app-duplicate',
@@ -28,7 +29,8 @@ export class DuplicateComponent implements OnInit {
   constructor(
     private _changeDetectorRef: ChangeDetectorRef,
     private _formBuilder: FormBuilder,
-    private _inventoryService: InventoryService
+    private _inventoryService: InventoryService,
+    private _snackBar: MatSnackBar
   ) { }
 
   ngOnInit(): void {
@@ -69,6 +71,16 @@ export class DuplicateComponent implements OnInit {
         );
         this.duplicateLoader = false;
 
+        this.firstFormGroup.reset();
+        // Mark for check
+        this._changeDetectorRef.markForCheck();
+      }, err => {
+        this._snackBar.open("Some error occured", '', {
+          horizontalPosition: 'center',
+          verticalPosition: 'bottom',
+          duration: 3500
+        });
+        this.duplicateLoader = false;
         this.firstFormGroup.reset();
         // Mark for check
         this._changeDetectorRef.markForCheck();

@@ -25,6 +25,7 @@ export class ProductsDescriptionComponent implements OnInit {
     ]
   };
 
+  supplierDropdown = null;
   productDescription = [];
   suppliers = [];
   productDescriptionForm: FormGroup;
@@ -84,28 +85,55 @@ export class ProductsDescriptionComponent implements OnInit {
       .subscribe((description) => {
 
         const { keywords, metaDesc, miniDesc, productDesc, supplierLink, sex, notes, searchKeywords, optionsGuidelines } = description["data"][0];
+        let checkTechno;
+        if (technoLogoSKU === "null") {
+          checkTechno = null;
+        }
+
         this.productDescription = description["data"][0];
         this.productDescription["name"] = productName;
         this.productDescription["productNO"] = productNumber;
         this.productDescription["technoLogoSKU"] = technoLogoSKU;
         this.productDescription["permalink"] = this.convertToSlug(productName);
 
+        let checkKeyword, checkMetaDesc, checkMiniDesc, checkSearchKeywords, checkSupplierLink;
+
+        if (keywords === "null") {
+          checkKeyword = null
+        }
+
+        if (metaDesc === "null") {
+          checkMetaDesc = null
+        }
+
+        if (searchKeywords === "null") {
+          checkSearchKeywords = null
+        }
+
+        if (supplierLink === "null") {
+          checkSupplierLink = null
+        }
+
+        if (miniDesc === "null") {
+          checkMiniDesc = null
+        }
+
         const descriptionObj = {
           fk_productID: pk_productID,
           name: productName,
           productNO: productNumber,
           keywords: keywords || '',
-          internalKeywords: keywords || '',
-          metaDesc: metaDesc || '',
-          supplierLink: supplierLink || '',
+          internalKeywords: checkKeyword || '',
+          metaDesc: checkMetaDesc || '',
+          supplierLink: checkSupplierLink || '',
           sex: sex || '',
-          searchKeywords: searchKeywords || '',
+          searchKeywords: checkSearchKeywords || '',
           productDesc: productDesc || '',
           permalink: this.convertToSlug(productName),
           optionsGuidelines: optionsGuidelines || '',
           notes: notes || '',
-          miniDesc: miniDesc || '',
-          technoLogoSKU: technoLogoSKU,
+          miniDesc: checkMiniDesc || '',
+          technoLogoSKU: checkTechno || '',
           selectOrder: '',
           purchase_order_notes: ''
         };
@@ -120,7 +148,7 @@ export class ProductsDescriptionComponent implements OnInit {
   };
 
   selectBySupplier(event): void {
-    console.log("supplier ", event);
+    this.supplierDropdown = event;
   };
 
   convertToSlug(title: string) {
@@ -129,7 +157,13 @@ export class ProductsDescriptionComponent implements OnInit {
 
   updateDescription(): void {
     const formValues = this.productDescriptionForm.getRawValue();
+    let supplyId = null;
     const { pk_productID, fk_supplierID } = this.selectedProduct;
+
+    if (this.supplierDropdown) {
+      const { pk_companyID } = this.supplierDropdown;
+      supplyId = pk_companyID;
+    };
 
     const payload = {
       name: formValues.name || '',
@@ -147,7 +181,8 @@ export class ProductsDescriptionComponent implements OnInit {
       last_update_date: "" || '',
       update_history: "" || '',
       product_id: pk_productID,
-      supplier_id: fk_supplierID,
+      supplier_id: supplyId || fk_supplierID,
+      permalink: formValues.permalink,
       description: true
     };
 

@@ -1,10 +1,9 @@
 import { Component, Input, OnInit, Output, EventEmitter, ChangeDetectorRef } from '@angular/core';
-import { FormBuilder, FormGroup } from '@angular/forms';
 import { InventoryService } from 'app/modules/admin/apps/ecommerce/inventory/inventory.service';
 import { Colors, AvailableCores, SubCategories, Categories } from 'app/modules/admin/apps/ecommerce/inventory/inventory.types';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
-import { SelectionModel } from '@angular/cdk/collections';
+import { MatSnackBar } from '@angular/material/snack-bar';
 
 @Component({
   selector: 'app-core-products',
@@ -37,35 +36,10 @@ export class CoreProductsComponent implements OnInit {
   isSubCategory = false;
   coreAddLoader = false;
 
-  /** Whether the number of selected elements matches the total number of rows. */
-  isAllSelected() {
-    const numSelected = this.selection.selected.length;
-    // const numRows = this.dataSource.data.length;
-    // return numSelected === numRows;
-  }
-
-  /** Selects all rows if they are not all selected; otherwise clear selection. */
-  masterToggle() {
-    // if (this.isAllSelected()) {
-    //   this.selection.clear();
-    //   return;
-    // }
-
-    // this.selection.select(...this.dataSource.data);
-  }
-
-  /** The label for the checkbox on the passed row */
-  checkboxLabel(row): void {
-    // if (!row) {
-    //   return `${this.isAllSelected() ? 'deselect' : 'select'} all`;
-    // }
-    // return `${this.selection.isSelected(row) ? 'deselect' : 'select'} row ${row.position + 1}`;
-  }
-
   constructor(
     private _changeDetectorRef: ChangeDetectorRef,
     private _inventoryService: InventoryService,
-    private _formBuilder: FormBuilder
+    private _snackBar: MatSnackBar
   ) { }
 
   ngOnInit(): void {
@@ -74,17 +48,36 @@ export class CoreProductsComponent implements OnInit {
     this._inventoryService.getCoresByProductId(pk_productID)
       .pipe(takeUntil(this._unsubscribeAll))
       .subscribe((cores) => {
-        this.dataSource = cores["data"];
-        this._changeDetectorRef.markForCheck();
-      });
+        this._inventoryService.getAvailableCoresProductId(pk_productID)
+          .pipe(takeUntil(this._unsubscribeAll))
+          .subscribe((available_core) => {
+            this.available_cores = available_core["data"];
+            this.dataSource = cores["data"];
+            this.isLoadingChange.emit(false);
 
-    this._inventoryService.getAvailableCoresProductId(pk_productID)
-      .pipe(takeUntil(this._unsubscribeAll))
-      .subscribe((available_core) => {
-        this.available_cores = available_core["data"];
+            // Mark for check
+            this._changeDetectorRef.markForCheck();
+          }, err => {
+            this._snackBar.open("Some error occured", '', {
+              horizontalPosition: 'center',
+              verticalPosition: 'bottom',
+              duration: 3500
+            });
+            this.isLoadingChange.emit(false);
+            // Mark for check
+            this._changeDetectorRef.markForCheck();
+          });
+
+      }, err => {
+        this._snackBar.open("Some error occured", '', {
+          horizontalPosition: 'center',
+          verticalPosition: 'bottom',
+          duration: 3500
+        });
+        this.isLoadingChange.emit(false);
+        // Mark for check
         this._changeDetectorRef.markForCheck();
       });
-    this.isLoadingChange.emit(false);
   }
 
   uploadImage(): void {
@@ -100,6 +93,15 @@ export class CoreProductsComponent implements OnInit {
         this.categories = categories["data"];
 
         this._changeDetectorRef.markForCheck();
+      }, err => {
+        this._snackBar.open("Some error occured", '', {
+          horizontalPosition: 'center',
+          verticalPosition: 'bottom',
+          duration: 3500
+        });
+
+        // Mark for check
+        this._changeDetectorRef.markForCheck();
       });
   }
 
@@ -112,11 +114,19 @@ export class CoreProductsComponent implements OnInit {
         this.subCategory = subCategories["data"];
 
         this._changeDetectorRef.markForCheck();
+      }, err => {
+        this._snackBar.open("Some error occured", '', {
+          horizontalPosition: 'center',
+          verticalPosition: 'bottom',
+          duration: 3500
+        });
+
+        // Mark for check
+        this._changeDetectorRef.markForCheck();
       });
   }
 
   subCategorySelection(subCategory): void {
-    const { pk_subCategoryID } = subCategory;
     this.selectedSubCategory = subCategory;
   }
 
@@ -131,18 +141,54 @@ export class CoreProductsComponent implements OnInit {
     this.coreAddLoader = true;
     this._inventoryService.addCore(payload)
       .subscribe((response) => {
-        this.showFlashMessage(
-          response["success"] === true ?
-            'success' :
-            'error'
-        );
+        this._inventoryService.getCoresByProductId(pk_productID)
+          .pipe(takeUntil(this._unsubscribeAll))
+          .subscribe((cores) => {
+            this.coreAddLoader = false;
+            this.showFlashMessage(
+              response["success"] === true ?
+                'success' :
+                'error'
+            );
+            this.dataSource = cores["data"];
+            this._snackBar.open("Cores list updated", '', {
+              horizontalPosition: 'center',
+              verticalPosition: 'bottom',
+              duration: 3500
+            });
+
+            this.selectedSubCategory = "";
+            this.selectedCategory = "";
+            this.selectedCore = "";
+
+            // Mark for check
+            this._changeDetectorRef.markForCheck();
+          }, err => {
+            this._snackBar.open("Some error occured", '', {
+              horizontalPosition: 'center',
+              verticalPosition: 'bottom',
+              duration: 3500
+            });
+            this.coreAddLoader = false;
+
+            this.selectedSubCategory = "";
+            this.selectedCategory = "";
+            this.selectedCore = "";
+
+            // Mark for check
+            this._changeDetectorRef.markForCheck();
+          });
+      }, err => {
+        this._snackBar.open("Some error occured", '', {
+          horizontalPosition: 'center',
+          verticalPosition: 'bottom',
+          duration: 3500
+        });
         this.coreAddLoader = false;
 
-        this.ngOnInit();
         this.selectedSubCategory = "";
         this.selectedCategory = "";
         this.selectedCore = "";
-
         // Mark for check
         this._changeDetectorRef.markForCheck();
       });

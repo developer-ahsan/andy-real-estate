@@ -135,6 +135,7 @@ export interface productDescription {
     update_history: string;
     product_id: number;
     supplier_id: number;
+    permalink: string;
     description: boolean
 }
 

@@ -24,6 +24,7 @@ export class InternalNotesComponent implements OnInit {
   comments = [];
   commentsCount = 0;
   commentator_emails: string[];
+  commentatoLoader: boolean = true;
   allSelected = false;
   commentators: [];
   loader = false;
@@ -67,16 +68,32 @@ export class InternalNotesComponent implements OnInit {
           comment["dateFormatted"] = moment.utc(theTimestamp).format("lll");
         }
 
+        this.isLoadingChange.emit(false);
+        this._changeDetectorRef.markForCheck();
+      }, err => {
+        this._snackBar.open("Some error occured", '', {
+          horizontalPosition: 'center',
+          verticalPosition: 'bottom',
+          duration: 3500
+        });
+        this.isLoadingChange.emit(false);
         this._changeDetectorRef.markForCheck();
       });
 
     this._inventoryService.getCommentators()
       .subscribe((commentators) => {
         this.commentators = commentators["data"];
-        this.isLoadingChange.emit(false);
+        this.commentatoLoader = false;
+        this._changeDetectorRef.markForCheck();
+      }, err => {
+        this._snackBar.open("Some error occured, Unable to fetch commentators", '', {
+          horizontalPosition: 'center',
+          verticalPosition: 'bottom',
+          duration: 3500
+        });
+        this.commentatoLoader = false;
+        this._changeDetectorRef.markForCheck();
       });
-
-    this.isLoadingChange.emit(false);
   }
 
   selectOption(list) {

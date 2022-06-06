@@ -3,6 +3,7 @@ import { Package } from 'app/modules/admin/apps/ecommerce/inventory/inventory.ty
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { InventoryService } from 'app/modules/admin/apps/ecommerce/inventory/inventory.service';
+import { MatSnackBar } from '@angular/material/snack-bar';
 
 interface Transaction {
   item: string;
@@ -33,7 +34,8 @@ export class OrderHistoryComponent implements OnInit {
 
   constructor(
     private _changeDetectorRef: ChangeDetectorRef,
-    private _inventoryService: InventoryService
+    private _inventoryService: InventoryService,
+    private _snackBar: MatSnackBar
   ) { }
 
   ngOnInit(): void {
@@ -44,10 +46,21 @@ export class OrderHistoryComponent implements OnInit {
 
         this.order_history = history["data"];
         this.orderHistoryLength = history["totalRecords"];
+        this.isLoadingChange.emit(false);
+        // Mark for check
+        this._changeDetectorRef.markForCheck();
+      }, err => {
+        this._snackBar.open("Some error occured", '', {
+          horizontalPosition: 'center',
+          verticalPosition: 'bottom',
+          duration: 3500
+        });
+        this.isLoadingChange.emit(false);
+
+        // Mark for check
         this._changeDetectorRef.markForCheck();
       });
 
-    this.isLoadingChange.emit(false);
   }
 
   /** Gets the total cost of all transactions. */
