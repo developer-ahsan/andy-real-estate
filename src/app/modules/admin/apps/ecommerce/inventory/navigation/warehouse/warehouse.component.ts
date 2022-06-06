@@ -3,6 +3,7 @@ import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { InventoryService } from 'app/modules/admin/apps/ecommerce/inventory/inventory.service';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { MatSnackBar } from '@angular/material/snack-bar';
 
 @Component({
   selector: 'app-warehouse',
@@ -34,7 +35,8 @@ export class WarehouseComponent implements OnInit {
   constructor(
     private _changeDetectorRef: ChangeDetectorRef,
     private _inventoryService: InventoryService,
-    private _formBuilder: FormBuilder
+    private _formBuilder: FormBuilder,
+    private _snackBar: MatSnackBar
   ) { }
 
   ngOnInit(): void {
@@ -64,10 +66,21 @@ export class WarehouseComponent implements OnInit {
           this.selected = 'Yes';
         }
         this.wareHouseForm.patchValue(warehouse["data"][0]);
+        this.isLoadingChange.emit(false);
+
+        // Mark for check
+        this._changeDetectorRef.markForCheck();
+      }, err => {
+        this._snackBar.open("Some error occured fetchinf warehouse data", '', {
+          horizontalPosition: 'center',
+          verticalPosition: 'bottom',
+          duration: 3500
+        });
+        this.isLoadingChange.emit(false);
+
+        // Mark for check
         this._changeDetectorRef.markForCheck();
       });
-
-    this.isLoadingChange.emit(false);
   }
 
   radioChange(event) {
@@ -144,31 +157,17 @@ export class WarehouseComponent implements OnInit {
 
         // Mark for check
         this._changeDetectorRef.markForCheck();
+      }, err => {
+        this._snackBar.open("Some error occured", '', {
+          horizontalPosition: 'center',
+          verticalPosition: 'bottom',
+          duration: 3500
+        });
+        this.wareHouseLoader = false;
+
+        // Mark for check
+        this._changeDetectorRef.markForCheck();
       });
-
-    // if (!this.isNumeric(formValues.inventory)) {
-    //   this.inventoryCheck = "Inventory must be a number";
-    //   this.isValidated = false;
-    // }
-
-    // if (!this.isNumeric(formValues.inventoryThreshold)) {
-    //   this.thresholdCheck = "Inventory Threshold must be a number";
-    //   this.isValidated = false;
-    // }
-
-    // if (!this.isNumeric(formValues.deliveryFee)) {
-    //   this.feeCheck = "Delivery Fee must be a number";
-    //   this.isValidated = false;
-    // }
-
-    // if (!this.isNumeric(formValues.maxQuantity)) {
-    //   this.quantityCheck = "Quantity must be a number";
-    //   this.isValidated = false;
-    // }
-
-    // if (!this.isValidated) {
-    //   return;
-    // }
   }
 }
 
