@@ -63,6 +63,7 @@
 .flex-to-block {
   display: flex;
 }
+
 // Media Queries
 
 @media only screen and (max-width: 600px) {
@@ -162,11 +163,12 @@
   overflow: hidden !important;
 }
 
-.mat-expansion-panel-content{
+.mat-expansion-panel-content {
   background-color: white;
 }
 
-body.light .mat-expansion-panel-header.mat-expanded, body .light .mat-expansion-panel-header.mat-expanded {
+body.light .mat-expansion-panel-header.mat-expanded,
+body .light .mat-expansion-panel-header.mat-expanded {
   height: 42px !important;
 }
 
@@ -188,7 +190,7 @@ body.light .mat-expansion-panel-header.mat-expanded, body .light .mat-expansion-
   background-color: #6e5399;
 }
 
-.max-height{
+.max-height {
   height: 100%;
 }
 
@@ -196,7 +198,7 @@ body.light .mat-expansion-panel-header.mat-expanded, body .light .mat-expansion-
   font-size: 11px;
 }
 
-.cursor-pointer{
+.cursor-pointer {
   cursor: pointer;
 }
 
@@ -208,15 +210,15 @@ body.light .mat-expansion-panel-header.mat-expanded, body .light .mat-expansion-
   line-height: 3.5
 }
 
-.mat-horizontal-content-container{
+.mat-horizontal-content-container {
   overflow: visible !important;
 }
 
-.selected-item{
+.selected-item {
   max-width: max-content !important;
 }
 
-.mat-horizontal-stepper-header-container{
+.mat-horizontal-stepper-header-container {
   pointer-events: none !important;
 }
 
@@ -224,4 +226,8 @@ body.light .mat-expansion-panel-header.mat-expanded, body .light .mat-expansion-
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+}
+
+.text-wrap {
+  white-space: nowrap;
 }

@@ -79,11 +79,11 @@ export class ColorComponent implements OnInit {
       .pipe(takeUntil(this._unsubscribeAll))
       .subscribe((colors) => {
         this.dataSource = colors["data"];
+        this.isLoadingChange.emit(false);
 
         // Mark for check
         this._changeDetectorRef.markForCheck();
       });
-    this.isLoadingChange.emit(false);
   }
 
   uploadImage(): void {

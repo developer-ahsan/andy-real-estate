@@ -136,7 +136,7 @@
             <mat-radio-group name="internalList">
                 <mat-radio-button style="min-width: -webkit-fill-available;" [checked]="item.Selected" [value]="item"
                     name="internalList" (change)="selectedRadio($event)">
-                    <span class="text-sm" style="white-space: normal;">{{item.name}}</span>
+                    <span class="text-sm text-wrap">{{item.name}}</span>
                 </mat-radio-button>
             </mat-radio-group>
         </div>

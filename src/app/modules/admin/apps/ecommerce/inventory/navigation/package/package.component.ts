@@ -249,6 +249,16 @@ export class PackageComponent implements OnInit {
 
         // Mark for check
         this._changeDetectorRef.markForCheck();
+      }, err => {
+        this._snackBar.open("Some error occured", '', {
+          horizontalPosition: 'center',
+          verticalPosition: 'bottom',
+          duration: 3500
+        });
+        this.packagePostLoader = false;
+
+        // Mark for check
+        this._changeDetectorRef.markForCheck();
       });
   };
 

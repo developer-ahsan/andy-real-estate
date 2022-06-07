@@ -61,14 +61,22 @@ export class FeatureComponent implements OnInit {
             this.featureType = type["data"][0];
             this.dataSource = features["data"];
             this.featuresLength = features["totalRecords"];
+            this.isLoadingChange.emit(false);
+
+            // Mark for check
+            this._changeDetectorRef.markForCheck();
+          }, err => {
+            this._snackBar.open("Some error occured", '', {
+              horizontalPosition: 'center',
+              verticalPosition: 'bottom',
+              duration: 3500
+            });
+            this.isLoadingChange.emit(false);
 
             // Mark for check
             this._changeDetectorRef.markForCheck();
           });
       });
-
-
-    this.isLoadingChange.emit(false);
   };
 
   rowUpdate(featureObj, title, event) {
@@ -146,6 +154,16 @@ export class FeatureComponent implements OnInit {
                 this._changeDetectorRef.markForCheck();
               });
           });
+      }, err => {
+        this._snackBar.open("Some error occured", '', {
+          horizontalPosition: 'center',
+          verticalPosition: 'bottom',
+          duration: 3500
+        });
+        this.deleteLoader = false;
+
+        // Mark for check
+        this._changeDetectorRef.markForCheck();
       });
   }
 
@@ -190,6 +208,16 @@ export class FeatureComponent implements OnInit {
           verticalPosition: 'bottom',
           duration: 3500
         });
+
+        // Mark for check
+        this._changeDetectorRef.markForCheck();
+      }, err => {
+        this._snackBar.open("Some error occured", '', {
+          horizontalPosition: 'center',
+          verticalPosition: 'bottom',
+          duration: 3500
+        });
+        this.featureUpdateLoader = false;
 
         // Mark for check
         this._changeDetectorRef.markForCheck();
