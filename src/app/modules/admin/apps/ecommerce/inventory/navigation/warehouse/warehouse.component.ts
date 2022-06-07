@@ -135,7 +135,7 @@ export class WarehouseComponent implements OnInit {
       handling_cost: parseInt(formValues.handlingCost) || 0,
       delivery_options: formValues.checkBox1 || "",
       delivery_fees: parseInt(formValues.deliveryFee) || 0,
-      delivery_note: formValues.notes || "",
+      delivery_note: formValues.deliveryNote || "",
       max_quantity: parseInt(formValues.maxQuantity) || 0,
       ware_house_code: (formValues.warehouseCode),
       product_id: parseInt(pk_productID),
@@ -152,8 +152,6 @@ export class WarehouseComponent implements OnInit {
             'error'
         );
         this.wareHouseLoader = false;
-
-        this.ngOnInit();
 
         // Mark for check
         this._changeDetectorRef.markForCheck();
