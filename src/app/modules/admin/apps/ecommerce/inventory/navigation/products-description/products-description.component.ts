@@ -1,5 +1,6 @@
 import { Component, Input, OnInit, Output, EventEmitter, ChangeDetectorRef } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
+import { MatSnackBar } from '@angular/material/snack-bar';
 import { InventoryService } from 'app/modules/admin/apps/ecommerce/inventory/inventory.service';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
@@ -42,6 +43,7 @@ export class ProductsDescriptionComponent implements OnInit {
     private _changeDetectorRef: ChangeDetectorRef,
     private _inventoryService: InventoryService,
     private _formBuilder: FormBuilder,
+    private _snackBar: MatSnackBar
   ) { }
 
   ngOnInit(): void {
@@ -83,63 +85,20 @@ export class ProductsDescriptionComponent implements OnInit {
     this._inventoryService.getProductDescription(pk_productID)
       .pipe(takeUntil(this._unsubscribeAll))
       .subscribe((description) => {
-
-        const { keywords, metaDesc, miniDesc, productDesc, supplierLink, sex, notes, searchKeywords, optionsGuidelines } = description["data"][0];
-        let checkTechno;
-        if (technoLogoSKU === "null") {
-          checkTechno = null;
-        }
-
         this.productDescription = description["data"][0];
-        this.productDescription["name"] = productName;
-        this.productDescription["productNO"] = productNumber;
-        this.productDescription["technoLogoSKU"] = technoLogoSKU;
-        this.productDescription["permalink"] = this.convertToSlug(productName);
-
-        let checkKeyword, checkMetaDesc, checkMiniDesc, checkSearchKeywords, checkSupplierLink;
-
-        if (keywords === "null") {
-          checkKeyword = null
-        }
-
-        if (metaDesc === "null") {
-          checkMetaDesc = null
-        }
-
-        if (searchKeywords === "null") {
-          checkSearchKeywords = null
-        }
-
-        if (supplierLink === "null") {
-          checkSupplierLink = null
-        }
-
-        if (miniDesc === "null") {
-          checkMiniDesc = null
-        }
-
-        const descriptionObj = {
-          fk_productID: pk_productID,
-          name: productName,
-          productNO: productNumber,
-          keywords: keywords || '',
-          internalKeywords: checkKeyword || '',
-          metaDesc: checkMetaDesc || '',
-          supplierLink: checkSupplierLink || '',
-          sex: sex || '',
-          searchKeywords: checkSearchKeywords || '',
-          productDesc: productDesc || '',
-          permalink: this.convertToSlug(productName),
-          optionsGuidelines: optionsGuidelines || '',
-          notes: notes || '',
-          miniDesc: checkMiniDesc || '',
-          technoLogoSKU: checkTechno || '',
-          selectOrder: '',
-          purchase_order_notes: ''
-        };
 
         // Fill the form
-        this.productDescriptionForm.patchValue(descriptionObj);
+        this.productDescriptionForm.patchValue(this.productDescription);
+        this.isLoadingChange.emit(false);
+
+        // Mark for check
+        this._changeDetectorRef.markForCheck();
+      }, err => {
+        this._snackBar.open("Some error occured while fetching description", '', {
+          horizontalPosition: 'center',
+          verticalPosition: 'bottom',
+          duration: 3500
+        });
         this.isLoadingChange.emit(false);
 
         // Mark for check
@@ -160,14 +119,32 @@ export class ProductsDescriptionComponent implements OnInit {
     let supplyId = null;
     const { pk_productID, fk_supplierID } = this.selectedProduct;
 
+    if (!formValues.name) {
+      this._snackBar.open("Product Name is missing", '', {
+        horizontalPosition: 'center',
+        verticalPosition: 'bottom',
+        duration: 3500
+      })
+      return;
+    }
+
+    if (!formValues.productNO) {
+      this._snackBar.open("Product Number is missing", '', {
+        horizontalPosition: 'center',
+        verticalPosition: 'bottom',
+        duration: 3500
+      })
+      return;
+    }
+
     if (this.supplierDropdown) {
       const { pk_companyID } = this.supplierDropdown;
       supplyId = pk_companyID;
     };
 
     const payload = {
-      name: formValues.name || '',
-      product_number: formValues.productNO || '',
+      name: formValues.name,
+      product_number: formValues.productNO,
       product_desc: formValues.productDesc || '',
       mini_desc: formValues.miniDesc || '',
       keywords: formValues.keywords || '',

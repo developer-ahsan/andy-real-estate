@@ -309,24 +309,27 @@
                         </div>
                     </form>
                     <div class="row">
+                        <div class="col-12 mt-2">
+                            <mat-divider></mat-divider>
+                        </div>
+                        <div class="col-12 mt-2">
+                            <mat-form-field appearance="fill" class="w-full">
+                                <mat-label>Red Price Comment</mat-label>
+                                <mat-select placeholder="Select Red Price Comment"
+                                    (selectionChange)="onRedPriceItemSelect($event.value)">
+                                    <mat-option *ngFor="let redPrice of redPriceList" [value]="redPrice">
+                                        {{redPrice.item_text}}
+                                    </mat-option>
+                                </mat-select>
+                            </mat-form-field>
+                        </div>
                         <div class="col-12 mt-5">
-                            <p class="font-semibold">Co-op Program</p>
+                            <p class="font-semibold" style="color: #384253;">Co-op Program</p>
                         </div>
                         <div class="col-12 mt-2">
                             <ng-multiselect-dropdown [placeholder]="'Co-op Program'" [settings]="coOpProgramSettings"
                                 [data]="coops" [(ngModel)]="selectedCoOpProgram"
                                 (onSelect)="onCoOpProgramSelect($event)">
-                            </ng-multiselect-dropdown>
-                        </div>
-
-                        <div class="col-12 mt-5">
-                            <p class="font-semibold">Red Price Comment</p>
-                        </div>
-                        <div class="col-12 mt-2">
-                            <ng-multiselect-dropdown [placeholder]="'Select Red Price Comment'"
-                                [settings]="redPriceDropdownSettings" [data]="redPriceList"
-                                [(ngModel)]="selectedRedPriceItems" (onSelect)="onRedPriceItemSelect($event)"
-                                (onSelectAll)="onSelectAll($event)">
                             </ng-multiselect-dropdown>
                         </div>
                     </div>

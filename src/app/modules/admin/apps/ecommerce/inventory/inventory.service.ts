@@ -276,7 +276,7 @@ export class InventoryService {
     getProductDescription(productId): Observable<any[]> {
         return this._httpClient.get<any[]>(environment.products, {
             params: {
-                description: true,
+                description_product: true,
                 product_id: productId
             }
         });
@@ -522,6 +522,14 @@ export class InventoryService {
             params: {
                 warehouse: true,
                 product_id: productId
+            }
+        });
+    };
+
+    getWarehousesShippinOptions(): Observable<any[]> {
+        return this._httpClient.get<any[]>(environment.products, {
+            params: {
+                warehouse_delivery: true
             }
         });
     };

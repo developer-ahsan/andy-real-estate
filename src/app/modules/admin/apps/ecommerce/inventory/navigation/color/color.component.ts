@@ -83,6 +83,16 @@ export class ColorComponent implements OnInit {
 
         // Mark for check
         this._changeDetectorRef.markForCheck();
+      }, err => {
+        this._snackBar.open("Some error occured", '', {
+          horizontalPosition: 'center',
+          verticalPosition: 'bottom',
+          duration: 3500
+        });
+        this.isLoadingChange.emit(false);
+
+        // Mark for check
+        this._changeDetectorRef.markForCheck();
       });
   }
 
@@ -159,6 +169,16 @@ export class ColorComponent implements OnInit {
 
         // Mark for check
         this._changeDetectorRef.markForCheck();
+      }, err => {
+        this._snackBar.open("Some error occured", '', {
+          horizontalPosition: 'center',
+          verticalPosition: 'bottom',
+          duration: 3500
+        });
+        this.colorUpdateLoader = false;
+
+        // Mark for check
+        this._changeDetectorRef.markForCheck();
       });
   }
   copyColorToHex() {
@@ -202,6 +222,16 @@ export class ColorComponent implements OnInit {
             // Mark for check
             this._changeDetectorRef.markForCheck();
           });
+      }, err => {
+        this._snackBar.open("Some error occured", '', {
+          horizontalPosition: 'center',
+          verticalPosition: 'bottom',
+          duration: 3500
+        });
+        this.colorAddLoader = false;
+
+        // Mark for check
+        this._changeDetectorRef.markForCheck();
       });
   };
 
@@ -264,6 +294,16 @@ export class ColorComponent implements OnInit {
             // Mark for check
             this._changeDetectorRef.markForCheck();
           });
+      }, err => {
+        this._snackBar.open("Some error occured", '', {
+          horizontalPosition: 'center',
+          verticalPosition: 'bottom',
+          duration: 3500
+        });
+        this.deleteLoader = false;
+
+        // Mark for check
+        this._changeDetectorRef.markForCheck();
       });
   }
 

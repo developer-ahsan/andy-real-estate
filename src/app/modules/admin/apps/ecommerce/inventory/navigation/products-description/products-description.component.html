@@ -98,7 +98,13 @@
                                 </mat-form-field>
                             </div>
                             <div class="col-lg-4 col-12">
-                                <small class="text-secondary font-semibold">Update all store product permalinks?</small>
+                                <small class="text-secondary font-semibold">
+                                    Update store product permalinks?
+                                    <button
+                                        [matTooltip]="'This option will update all permalinks with the permalink for this product on any store that is currently on.'">
+                                        <i class="fa fa-info-circle"></i>
+                                    </button>
+                                </small>
                                 <mat-form-field class="w-full">
                                     <mat-select name="order" [formControlName]="'permalink'">
                                         <mat-option value="select_order" disabled>

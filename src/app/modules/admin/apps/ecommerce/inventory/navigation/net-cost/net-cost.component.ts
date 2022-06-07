@@ -3,7 +3,6 @@ import { FormBuilder, FormGroup } from '@angular/forms';
 import { InventoryService } from 'app/modules/admin/apps/ecommerce/inventory/inventory.service';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
-import { NetCostUpdate } from 'app/modules/admin/apps/ecommerce/inventory/inventory.types';
 import { IDropdownSettings } from 'ng-multiselect-dropdown';
 import { MatSnackBar } from '@angular/material/snack-bar';
 
@@ -33,7 +32,18 @@ export class NetCostComponent implements OnInit {
 
   redPriceDropdownSettings: IDropdownSettings = {};
   selectedRedPriceItems = [];
-  redPriceList = [];
+  redPriceList = [
+    { item_id: 1, item_text: 'Price does not include imprint. You may add desired imprint(s) during the checkout process for an additional cost' },
+    { item_id: 2, item_text: 'Price does not include imprint and is based on the white color option. You may add desired imprint(s) during the checkout process for an additional cost' },
+    { item_id: 3, item_text: 'Price includes a one color/one location imprint. Setups and any other additional fees may apply and will be disclosed prior to checkout' },
+    { item_id: 4, item_text: 'Price includes a laser engraved/one location imprint. Setups and any other additional fees may apply andwill be disclosed prior to checkout' },
+    { item_id: 5, item_text: 'Price includes a laser etched/one location imprint. Setups and any other additional fees may apply and will be disclosed prior to checkout' },
+    { item_id: 6, item_text: 'Price does not include imprint and is based on the white color option. You may add desired imprint(s) during the checkout process for an additional cost' },
+    { item_id: 7, item_text: 'Price includes a full color/one location imprint. Setups and any other additional fees may apply and will be disclosed prior to checkout' },
+    { item_id: 8, item_text: 'Price includes imprint, setup, and run fees' },
+    { item_id: 9, item_text: 'Setups and any other additional fees may apply and will be disclosed prior to checkout' },
+    { item_id: 10, item_text: 'Item is sold blank' }
+  ];
   redPriceCommentText = "";
 
   distributionCodes = [];
@@ -46,6 +56,7 @@ export class NetCostComponent implements OnInit {
   ) { }
 
   ngOnInit(): void {
+
     this._inventoryService.getSystemDistributorCodes()
       .subscribe((response) => {
         this.distributionCodes = response["data"];
@@ -57,20 +68,6 @@ export class NetCostComponent implements OnInit {
     const { pk_productID, msrp, liveCostComment, costComment, fk_supplierID } = this.selectedProduct;
 
     this.selectedRedPriceItems.push(liveCostComment)
-
-    // Red price comment
-    this.redPriceList = [
-      { item_id: 1, item_text: 'Price does not include imprint. You may add desired imprint(s) during the checkout process for an additional cost' },
-      { item_id: 2, item_text: 'Price does not include imprint and is based on the white color option. You may add desired imprint(s) during the checkout process for an additional cost' },
-      { item_id: 3, item_text: 'Price includes a one color/one location imprint. Setups and any other additional fees may apply and will be disclosed prior to checkout' },
-      { item_id: 4, item_text: 'Price includes a laser engraved/one location imprint. Setups and any other additional fees may apply andwill be disclosed prior to checkout' },
-      { item_id: 5, item_text: 'Price includes a laser etched/one location imprint. Setups and any other additional fees may apply and will be disclosed prior to checkout' },
-      { item_id: 6, item_text: 'Price does not include imprint and is based on the white color option. You may add desired imprint(s) during the checkout process for an additional cost' },
-      { item_id: 7, item_text: 'Price includes a full color/one location imprint. Setups and any other additional fees may apply and will be disclosed prior to checkout' },
-      { item_id: 8, item_text: 'Price includes imprint, setup, and run fees' },
-      { item_id: 9, item_text: 'Setups and any other additional fees may apply and will be disclosed prior to checkout' },
-      { item_id: 10, item_text: 'Item is sold blank' }
-    ];
 
     this.redPriceDropdownSettings = {
       singleSelection: false,
@@ -186,7 +183,8 @@ export class NetCostComponent implements OnInit {
           msrp: msrp || "",
           internalComments: costComment || ""
         };
-
+        console.log("netCost", netCost["data"])
+        console.log("formValues", formValues)
         this.netCostForm.patchValue(formValues);
 
         // Main component loader setting to false
