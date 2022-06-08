@@ -579,7 +579,7 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
         const finalForm = this.reviewForm.getRawValue();
 
         const { radio } = firstFormGroup;
-        const { technoLogo, supplierLink, mainDescription, miniDescription, weight, caseWidth, caseLength, caseHeight, overPackageCharge, keywords, productNumber, productName, msrp, internalComments } = finalForm;
+        const { technoLogo, supplierLink, mainDescription, miniDescription, weight, unitsInWeight, caseWidth, caseLength, caseHeight, overPackageCharge, keywords, productNumber, productName, msrp, internalComments } = finalForm;
 
         const productId = null;
 
@@ -593,16 +593,16 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
 
         const physics = {
             bln_apparel: radio.name === "Apparel Item" ? true : false,
-            dimensions: null,
+            dimensions: "",
             over_pack_charge: overPackageCharge || null,
             product_id: productId,
             shipping: shipping,
             weight: weight || null,
-            weight_in_units: null
+            weight_in_units: unitsInWeight || null
         };
 
         const flatRate = {
-            flat_rate_shipping: 1,
+            flat_rate_shipping: "",
             product_id: null
         };
 
@@ -824,7 +824,6 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
 
         // Net Cost screen
         if (selectedIndex === 1) {
-            // if (this.supplierId == 25) {
             const { radio } = this.firstFormGroup.value;
             const { name } = radio;
             let obj = {};
@@ -903,7 +902,6 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
                 }
             }
             this.netCostForm.patchValue(obj);
-            // };
         };
 
         if (selectedIndex === 3) {

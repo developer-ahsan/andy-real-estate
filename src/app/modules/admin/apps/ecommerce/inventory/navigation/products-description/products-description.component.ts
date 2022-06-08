@@ -4,6 +4,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { InventoryService } from 'app/modules/admin/apps/ecommerce/inventory/inventory.service';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
+import _ from 'lodash';
 
 @Component({
   selector: 'app-products-description',
@@ -104,9 +105,13 @@ export class ProductsDescriptionComponent implements OnInit {
       .pipe(takeUntil(this._unsubscribeAll))
       .subscribe((description) => {
         this.productDescription = description["data"][0];
+        this.productDescription = _.mapValues(this.productDescription, v => v == "null" ? '' : v);
 
         // Fill the form
         this.productDescriptionForm.patchValue(this.productDescription);
+        this.productDescriptionForm.patchValue({
+          internalKeywords: this.productDescription["searchKeywords"]
+        });
         this.isLoadingChange.emit(false);
 
         // Mark for check
@@ -197,12 +202,17 @@ export class ProductsDescriptionComponent implements OnInit {
   };
 
   copyDescriptionToMeta(): void {
+    const formValues = this.productDescriptionForm.getRawValue();
+    if (formValues.productDesc.length) {
+      var div = document.createElement("div");
+      div.innerHTML = formValues.productDesc;
+      var text = div.textContent || div.innerText || "";
 
-    // Copy main desceiprion to meta description
-    this.productDescription["metaDesc"] = this.productDescription["productDesc"];
-
-    // Fill the form
-    this.productDescriptionForm.patchValue(this.productDescription);
+      // Fill the form
+      this.productDescriptionForm.patchValue({
+        metaDesc: text
+      });
+    }
   }
 
   /**

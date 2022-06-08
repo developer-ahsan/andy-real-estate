@@ -636,7 +636,7 @@
                             </form>
                         </mat-step>
 
-                        <mat-step [stepControl]="thirdFormGroup" label="Net Cost" [editable]="false">
+                        <mat-step [stepControl]="thirdFormGroup" label="Net Cost" [editable]="true">
                             <div class="row">
                                 <div class="col-12">
                                     <form [formGroup]="netCostForm">
@@ -1474,7 +1474,7 @@
             <mat-radio-group name="internalList">
                 <mat-radio-button style="min-width: -webkit-fill-available;" [value]="item" name="internalList"
                     (change)="selectedSubCategory(item)">
-                    <span class="text-sm">{{item.name}}</span>
+                    <span class="text-sm text-wrap">{{item.name}}</span>
                 </mat-radio-button>
             </mat-radio-group>
         </div>
