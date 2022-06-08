@@ -26,6 +26,7 @@ export class ProductsDescriptionComponent implements OnInit {
     ]
   };
 
+  supplierSelected = null;
   supplierDropdown = null;
   productDescription = [];
   suppliers = [];
@@ -51,8 +52,8 @@ export class ProductsDescriptionComponent implements OnInit {
     // Create the selected product form
     this.productDescriptionForm = this._formBuilder.group({
       fk_productID: [''],
-      name: [''],
-      productNO: [''],
+      productName: [''],
+      productNumber: [''],
       keywords: [''],
       internalKeywords: [''],
       metaDesc: [''],
@@ -60,22 +61,24 @@ export class ProductsDescriptionComponent implements OnInit {
       sex: [''],
       searchKeywords: [''],
       productDesc: [''],
+      ProductPermalink: [''],
       permalink: [''],
       optionsGuidelines: [''],
       notes: [''],
       miniDesc: [''],
       technoLogoSKU: [''],
       selectOrder: [''],
-      purchase_order_notes: ['']
+      purchaseOrderNotes: ['']
     });
 
-    const { pk_productID, productName, productNumber, technoLogoSKU } = this.selectedProduct;
+    const { pk_productID, fk_supplierID } = this.selectedProduct;
 
     // Get the suppliers
     this._inventoryService.getAllSuppliers()
       .pipe(takeUntil(this._unsubscribeAll))
       .subscribe((supplier) => {
         this.suppliers = supplier["data"];
+        this.supplierSelected = this.suppliers.find(x => x.pk_companyID == fk_supplierID);
 
         this.isSupplierNotReceived = false;
         // Mark for check
@@ -119,7 +122,7 @@ export class ProductsDescriptionComponent implements OnInit {
     let supplyId = null;
     const { pk_productID, fk_supplierID } = this.selectedProduct;
 
-    if (!formValues.name) {
+    if (!formValues.productName) {
       this._snackBar.open("Product Name is missing", '', {
         horizontalPosition: 'center',
         verticalPosition: 'bottom',
@@ -128,7 +131,7 @@ export class ProductsDescriptionComponent implements OnInit {
       return;
     }
 
-    if (!formValues.productNO) {
+    if (!formValues.productNumber) {
       this._snackBar.open("Product Number is missing", '', {
         horizontalPosition: 'center',
         verticalPosition: 'bottom',
@@ -143,8 +146,8 @@ export class ProductsDescriptionComponent implements OnInit {
     };
 
     const payload = {
-      name: formValues.name,
-      product_number: formValues.productNO,
+      name: formValues.productName,
+      product_number: formValues.productNumber,
       product_desc: formValues.productDesc || '',
       mini_desc: formValues.miniDesc || '',
       keywords: formValues.keywords || '',
@@ -153,13 +156,13 @@ export class ProductsDescriptionComponent implements OnInit {
       meta_desc: formValues.metaDesc || '',
       sex: formValues.sex || 0,
       search_keywords: formValues.internalKeywords || '',
-      purchase_order_notes: formValues.purchase_order_notes || '',
+      purchase_order_notes: formValues.purchaseOrderNotes || '',
       last_update_by: "" || '',
       last_update_date: "" || '',
       update_history: "" || '',
       product_id: pk_productID,
       supplier_id: supplyId || fk_supplierID,
-      permalink: formValues.permalink,
+      permalink: formValues.ProductPermalink,
       description: true
     };
 

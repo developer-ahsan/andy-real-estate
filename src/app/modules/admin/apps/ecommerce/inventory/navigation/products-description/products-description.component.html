@@ -7,8 +7,8 @@
                 <!-- Search Products By Supplier -->
                 <mat-form-field appearance="fill" class="w-full">
                     <mat-label>Select a supplier</mat-label>
-                    <mat-select disableRipple [disabled]="isSupplierNotReceived">
-                        <mat-option (click)="selectBySupplier(supplier)" value="{{supplier}}"
+                    <mat-select [(value)]="supplierSelected" [disabled]="isSupplierNotReceived">
+                        <mat-option (click)="selectBySupplier(supplier)" [value]="supplier"
                             *ngFor="let supplier of suppliers">
                             {{supplier.companyName}}
                         </mat-option>
@@ -33,19 +33,19 @@
                             <div class="col-lg-6 col-12">
                                 <mat-form-field class="w-full">
                                     <mat-label>Name (100) </mat-label>
-                                    <input matInput [formControlName]="'name'">
+                                    <input matInput [formControlName]="'productName'">
                                 </mat-form-field>
                             </div>
                             <div class="col-lg-6 col-12">
                                 <mat-form-field class="w-full">
                                     <mat-label>Product Number (40)</mat-label>
-                                    <input matInput maxlength="40" [formControlName]="'productNO'">
+                                    <input matInput maxlength="40" [formControlName]="'productNumber'">
                                 </mat-form-field>
                             </div>
                             <div class="col-12">
                                 <mat-form-field class="w-full">
                                     <mat-label>Permalink (300)</mat-label>
-                                    <input matInput maxlength="300" [formControlName]="'permalink'">
+                                    <input matInput maxlength="300" [formControlName]="'ProductPermalink'">
                                 </mat-form-field>
                             </div>
                             <div class="col-lg-8 col-12">
@@ -125,7 +125,7 @@
                             <div class="col-lg-6 col-12">
                                 <mat-form-field class="w-full">
                                     <mat-label>Special notes for purchase order</mat-label>
-                                    <textarea matInput rows="3" [formControlName]="'purchase_order_notes'"></textarea>
+                                    <textarea matInput rows="3" [formControlName]="'purchaseOrderNotes'"></textarea>
                                 </mat-form-field>
                             </div>
                         </div>
