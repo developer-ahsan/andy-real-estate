@@ -71,19 +71,34 @@ export class ProductsDescriptionComponent implements OnInit {
       purchaseOrderNotes: ['']
     });
 
-    const { pk_productID, fk_supplierID } = this.selectedProduct;
+    const { pk_productID } = this.selectedProduct;
 
     // Get the suppliers
-    this._inventoryService.getAllSuppliers()
+    this._inventoryService.getProductByProductId(pk_productID)
       .pipe(takeUntil(this._unsubscribeAll))
-      .subscribe((supplier) => {
-        this.suppliers = supplier["data"];
-        this.supplierSelected = this.suppliers.find(x => x.pk_companyID == fk_supplierID);
+      .subscribe((details) => {
+        this._inventoryService.getAllSuppliers()
+          .pipe(takeUntil(this._unsubscribeAll))
+          .subscribe((supplier) => {
+            const { fk_supplierID } = details["data"][0];
+            this.suppliers = supplier["data"];
+            this.supplierSelected = this.suppliers.find(x => x.pk_companyID == fk_supplierID);
 
-        this.isSupplierNotReceived = false;
-        // Mark for check
-        this._changeDetectorRef.markForCheck();
-      })
+            this.isSupplierNotReceived = false;
+            // Mark for check
+            this._changeDetectorRef.markForCheck();
+          }, err => {
+            this._snackBar.open("Some error occured while fetching suppliers", '', {
+              horizontalPosition: 'center',
+              verticalPosition: 'bottom',
+              duration: 3500
+            });
+
+            // Mark for check
+            this._changeDetectorRef.markForCheck();
+          })
+      });
+
 
     this._inventoryService.getProductDescription(pk_productID)
       .pipe(takeUntil(this._unsubscribeAll))

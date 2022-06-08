@@ -101,7 +101,7 @@
                     </div>
                     <div class="flex items-center justify-end w-full">
                         <div class="flex items-center my-2">
-                            <div class="flex items-center mr-4" *ngIf="flashMessage">
+                            <div class="flex items-center mr-4" *ngIf="flashMessage && isPhysicsUpdate">
                                 <ng-container *ngIf="flashMessage === 'success'">
                                     <mat-icon class="text-green-500" [svgIcon]="'heroicons_outline:check'"></mat-icon>
                                     <span class="ml-2">Product Physics added successfully</span>
@@ -168,7 +168,7 @@
                     </div>
                     <div class="flex items-center justify-end w-full">
                         <div class="flex items-center my-2">
-                            <div class="flex items-center mr-4" *ngIf="flashMessage">
+                            <div class="flex items-center mr-4" *ngIf="flashMessage && isFlatUpdate">
                                 <ng-container *ngIf="flashMessage === 'success'">
                                     <mat-icon class="text-green-500" [svgIcon]="'heroicons_outline:check'"></mat-icon>
                                     <span class="ml-2">Product flat rate shipping added successfully</span>
@@ -234,10 +234,10 @@
                     </div>
                     <div class="flex items-center justify-end w-full">
                         <div class="flex items-center my-2">
-                            <div class="flex items-center mr-4" *ngIf="flashMessage">
+                            <div class="flex items-center mr-4" *ngIf="flashMessage && isDimensionsUpdate">
                                 <ng-container *ngIf="flashMessage === 'success'">
                                     <mat-icon class="text-green-500" [svgIcon]="'heroicons_outline:check'"></mat-icon>
-                                    <span class="ml-2">Product flat rate shipping added successfully</span>
+                                    <span class="ml-2">Dimensions are updated successfully</span>
                                 </ng-container>
                                 <ng-container *ngIf="flashMessage === 'error'">
                                     <mat-icon class="text-red-500" [svgIcon]="'heroicons_outline:x'"></mat-icon>
@@ -331,7 +331,7 @@
                     </div>
                     <div class="flex items-center justify-end w-full">
                         <div class="flex items-center my-2">
-                            <div class="flex items-center mr-4" *ngIf="flashMessage">
+                            <div class="flex items-center mr-4" *ngIf="flashMessage && isQuantityUpdate">
                                 <ng-container *ngIf="flashMessage === 'success'">
                                     <mat-icon class="text-green-500" [svgIcon]="'heroicons_outline:check'"></mat-icon>
                                     <span class="ml-2">Product Case quantities added successfully</span>
