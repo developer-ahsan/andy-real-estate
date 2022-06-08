@@ -1041,6 +1041,17 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
                 this.products = products["data"];
                 this.productsCount = products["totalRecords"];
                 this.isLoading = false;
+
+                // Mark for check
+                this._changeDetectorRef.markForCheck();
+            }, err => {
+                this._snackBar.open("Some error occured", '', {
+                    horizontalPosition: 'center',
+                    verticalPosition: 'bottom',
+                    duration: 3500
+                });
+                this.isLoading = false;
+
                 // Mark for check
                 this._changeDetectorRef.markForCheck();
             });

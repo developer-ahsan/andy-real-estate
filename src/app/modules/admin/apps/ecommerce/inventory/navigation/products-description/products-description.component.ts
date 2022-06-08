@@ -168,12 +168,12 @@ export class ProductsDescriptionComponent implements OnInit {
     const payload = {
       name: formValues.productName,
       product_number: formValues.productNumber,
-      product_desc: formValues.productDesc || '',
-      mini_desc: formValues.miniDesc || '',
+      product_desc: formValues.productDesc.replace(/'/g, "''") || '',
+      mini_desc: formValues.miniDesc.replace(/'/g, "''") || '',
       keywords: formValues.keywords || '',
-      notes: formValues.notes || '',
+      notes: formValues.notes.replace(/'/g, "''") || '',
       supplier_link: formValues.supplierLink || '',
-      meta_desc: formValues.metaDesc || '',
+      meta_desc: formValues.metaDesc.replace(/'/g, "''") || '',
       sex: formValues.sex || 0,
       search_keywords: formValues.internalKeywords || '',
       purchase_order_notes: formValues.purchaseOrderNotes || '',
@@ -194,6 +194,16 @@ export class ProductsDescriptionComponent implements OnInit {
             'success' :
             'error'
         );
+        this.descriptionLoader = false;
+
+        // Mark for check
+        this._changeDetectorRef.markForCheck();
+      }, err => {
+        this._snackBar.open("Some error occured", '', {
+          horizontalPosition: 'center',
+          verticalPosition: 'bottom',
+          duration: 3500
+        });
         this.descriptionLoader = false;
 
         // Mark for check
