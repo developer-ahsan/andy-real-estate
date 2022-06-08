@@ -194,12 +194,12 @@ export class ProductsPhysicsComponent implements OnInit {
         .subscribe((caseQuantity) => {
           if (caseQuantity["data"]?.length) {
             const formValue = {
-              quantityOne: caseQuantity["data"][0].quantity,
-              quantityTwo: caseQuantity["data"][1].quantity,
-              quantityThree: caseQuantity["data"][2].quantity,
-              quantityFour: caseQuantity["data"][3].quantity,
-              quantityFive: caseQuantity["data"][4].quantity,
-              quantitySix: caseQuantity["data"][5].quantity
+              quantityOne: caseQuantity["data"][0]?.quantity,
+              quantityTwo: caseQuantity["data"][1]?.quantity,
+              quantityThree: caseQuantity["data"][2]?.quantity,
+              quantityFour: caseQuantity["data"][3]?.quantity,
+              quantityFive: caseQuantity["data"][4]?.quantity,
+              quantitySix: caseQuantity["data"][5]?.quantity
             };
             this.caseQuantitiesForm.patchValue(formValue);
           };
@@ -348,9 +348,20 @@ export class ProductsPhysicsComponent implements OnInit {
       quantitySix
     } = this.caseQuantitiesForm.getRawValue();
 
+    let quantitiesArray = [
+      quantityOne,
+      quantityTwo,
+      quantityThree,
+      quantityFour,
+      quantityFive,
+      quantitySix
+    ];
+
+    quantitiesArray = quantitiesArray.filter(Number);
+
     const payload = {
       product_id: this.selectedProduct.pk_productID,
-      case_quantities: `${quantityOne},${quantityTwo},${quantityThree},${quantityFour},${quantityFive},${quantitySix}`,
+      case_quantities: quantitiesArray,
       case_quantity: true
     }
     this.caseQTYLoader = true;

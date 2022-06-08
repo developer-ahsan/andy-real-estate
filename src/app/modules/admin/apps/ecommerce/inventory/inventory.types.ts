@@ -201,7 +201,7 @@ export interface FlatRateShippingObj {
 
 export interface CaseQuantityObj {
     product_id: number;
-    case_quantities: string;
+    case_quantities: number[];
     case_quantity: boolean;
 }
 
