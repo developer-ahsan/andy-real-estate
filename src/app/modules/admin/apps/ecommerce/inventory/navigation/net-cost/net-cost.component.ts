@@ -183,8 +183,7 @@ export class NetCostComponent implements OnInit {
           msrp: msrp || "",
           internalComments: costComment || ""
         };
-        console.log("netCost", netCost["data"])
-        console.log("formValues", formValues)
+
         this.netCostForm.patchValue(formValues);
 
         // Main component loader setting to false
