@@ -140,7 +140,6 @@ export class FeatureComponent implements OnInit {
                 this.featureType = type["data"][0];
                 this.dataSource = features["data"];
                 this.featuresLength = features["totalRecords"];
-                this.deleteLoader = false;
                 const message = response["success"] === true
                   ? "Attribute were deleted successfully"
                   : "Some error occured. Please try again";
@@ -150,6 +149,8 @@ export class FeatureComponent implements OnInit {
                   verticalPosition: 'bottom',
                   duration: 3500
                 });
+                
+                this.deleteLoader = false;
                 // Mark for check
                 this._changeDetectorRef.markForCheck();
               });
@@ -299,7 +300,6 @@ export class FeatureComponent implements OnInit {
                 this.featureType = type["data"][0];
                 this.dataSource = features["data"];
                 this.featuresLength = features["totalRecords"];
-                this.featureAddLoader = false;
                 this.featureForm.reset({
                   order: 1,
                   feature: ''
@@ -315,6 +315,7 @@ export class FeatureComponent implements OnInit {
                   };
                 };
 
+                this.featureAddLoader = false;
                 this.showFlashMessage(
                   response["success"] === true ?
                     'success' :
