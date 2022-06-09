@@ -236,9 +236,9 @@ export class ProductsPhysicsComponent implements OnInit {
 
     const payload = {
       product_id: pk_productID,
-      weight: this.productPhysicsForm.getRawValue().weight || null,
-      weight_in_units: this.productPhysicsForm.getRawValue().unitsInWeight || null,
-      dimensions: this.productPhysicsForm.getRawValue().dimensions || null,
+      weight: this.productPhysicsForm.getRawValue().weight || "",
+      weight_in_units: this.productPhysicsForm.getRawValue().unitsInWeight || "",
+      dimensions: this.productPhysicsForm.getRawValue().dimensions || "",
       over_pack_charge: this.productPhysicsForm.getRawValue().overPackCharge,
       bln_apparel: blnApparel,
       shipping: {
@@ -267,7 +267,7 @@ export class ProductsPhysicsComponent implements OnInit {
       };
 
       if (!this.shipsFromCheck) {
-        this.physicsValidationMessage = "At least one shipment F.O.B. location is required"
+        this.physicsValidationMessage = "At least one shipment F.O.B. location is required. Please check Ships From check field"
         this.showFlashMessage('errorMessage');
         return;
       };
