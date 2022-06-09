@@ -18,7 +18,7 @@ steps:
 
 - task: AzureStaticWebApp@0
   inputs:
-    app_location: 'dist'
+    app_location: 'dist/fuse'
     config_file_location: '/'
     skip_api_build: true
     skip_app_build: true
