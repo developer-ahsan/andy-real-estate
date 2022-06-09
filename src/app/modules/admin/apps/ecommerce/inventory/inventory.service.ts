@@ -321,6 +321,15 @@ export class InventoryService {
         });
     };
 
+    getAllColors(): Observable<any[]> {
+        return this._httpClient.get<any[]>(environment.products, {
+            params: {
+                color: true,
+                size: 1000000
+            }
+        });
+    };
+
     getFeatures(productId, page): Observable<any[]> {
         return this._httpClient.get<any[]>(environment.products, {
             params: {

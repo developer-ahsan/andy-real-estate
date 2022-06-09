@@ -6,6 +6,7 @@ import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { SelectionModel } from '@angular/cdk/collections';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { IDropdownSettings } from 'ng-multiselect-dropdown';
 
 @Component({
   selector: 'app-color',
@@ -28,10 +29,13 @@ export class ColorComponent implements OnInit {
   hexColor;
   flashMessage: 'success' | 'error' | null = null;
 
+  colorsList: any = [];
+
   // Boolean
   colorUpdateLoader = false;
   colorAddLoader = false;
   deleteLoader = false;
+  colorDropdownSettings: IDropdownSettings = {};
 
   /** Whether the number of selected elements matches the total number of rows. */
   isAllSelected() {
@@ -75,14 +79,31 @@ export class ColorComponent implements OnInit {
       hex: ['']
     });
 
+    this.colorDropdownSettings = {
+      singleSelection: false,
+      idField: 'pk_colorID',
+      textField: 'colorName',
+      selectAllText: 'Select All',
+      unSelectAllText: 'UnSelect All',
+      itemsShowLimit: 3,
+      allowSearchFilter: true,
+      limitSelection: 1
+    };
+
     this._inventoryService.getColors(pk_productID)
       .pipe(takeUntil(this._unsubscribeAll))
       .subscribe((colors) => {
-        this.dataSource = colors["data"];
-        this.isLoadingChange.emit(false);
+        this._inventoryService.getAllColors()
+          .pipe(takeUntil(this._unsubscribeAll))
+          .subscribe((list) => {
+            this.dataSource = colors["data"];
+            this.colorsList = list["data"];
+            console.log("this.colorsList", this.colorsList)
+            this.isLoadingChange.emit(false);
 
-        // Mark for check
-        this._changeDetectorRef.markForCheck();
+            // Mark for check
+            this._changeDetectorRef.markForCheck();
+          })
       }, err => {
         this._snackBar.open("Some error occured", '', {
           horizontalPosition: 'center',
