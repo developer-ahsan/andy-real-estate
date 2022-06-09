@@ -149,7 +149,7 @@ export class FeatureComponent implements OnInit {
                   verticalPosition: 'bottom',
                   duration: 3500
                 });
-                
+
                 this.deleteLoader = false;
                 // Mark for check
                 this._changeDetectorRef.markForCheck();
@@ -169,6 +169,13 @@ export class FeatureComponent implements OnInit {
   }
 
   updateFeatures() {
+    if (!this.arrayToUpdate.length) {
+      return this._snackBar.open("Please select rows to update", '', {
+        horizontalPosition: 'center',
+        verticalPosition: 'bottom',
+        duration: 3500
+      });
+    };
     const { pk_productID } = this.selectedProduct;
     let tempFeatureArray = [];
     for (const feature of this.arrayToUpdate) {
@@ -201,7 +208,7 @@ export class FeatureComponent implements OnInit {
       .subscribe((response) => {
         this.featureUpdateLoader = false;
         const message = response["success"] === true
-          ? "Attribute was added successfully"
+          ? "Attribute was updated successfully"
           : "Some error occured. Please try again";
 
         this._snackBar.open(message, '', {
@@ -232,6 +239,16 @@ export class FeatureComponent implements OnInit {
       .subscribe((features) => {
         this.dataSource = features["data"];
         this.featuresLength = features["totalRecords"];
+
+        // Mark for check
+        this._changeDetectorRef.markForCheck();
+      }, err => {
+        this._snackBar.open("Some error occured", '', {
+          horizontalPosition: 'center',
+          verticalPosition: 'bottom',
+          duration: 3500
+        });
+        this.featureUpdateLoader = false;
 
         // Mark for check
         this._changeDetectorRef.markForCheck();
@@ -326,6 +343,16 @@ export class FeatureComponent implements OnInit {
                 this._changeDetectorRef.markForCheck();
               });
           });
+      }, err => {
+        this._snackBar.open("Some error occured", '', {
+          horizontalPosition: 'center',
+          verticalPosition: 'bottom',
+          duration: 3500
+        });
+        this.featureUpdateLoader = false;
+
+        // Mark for check
+        this._changeDetectorRef.markForCheck();
       });
   };
 
