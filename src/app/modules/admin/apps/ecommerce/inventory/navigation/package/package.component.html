@@ -5,10 +5,19 @@
     <div class="col-12">
         <mat-card class="w-full p-0 mb-10 h-full rounded-2xl">
             <div class="row p-5">
-                <div class="col-lg-9 col-12">
+                <div class="col-lg-6 col-12">
                     <div class="text-2xl font-bold">
                         Selected Packages
                     </div>
+                </div>
+                <div class="col-lg-3 col-12">
+                    <button class="min-w-40 w-full" *ngIf="dataSource1.length" mat-stroked-button
+                        [matTooltip]="'Delete Selected Packages'" (click)="deletePackages()" [disabled]="deleteLoader">
+                        <mat-progress-spinner *ngIf="deleteLoader" [diameter]="24" [mode]="'indeterminate'">
+                        </mat-progress-spinner>
+                        <mat-icon *ngIf="!deleteLoader" svgIcon="mat_outline:edit"></mat-icon>
+                        <span *ngIf="!deleteLoader" class="ml-1 mr-1">Delete</span>
+                    </button>
                 </div>
                 <div class="col-lg-3 col-12">
                     <button class="min-w-40 w-full" *ngIf="dataSource1.length" mat-flat-button [color]="'primary'"

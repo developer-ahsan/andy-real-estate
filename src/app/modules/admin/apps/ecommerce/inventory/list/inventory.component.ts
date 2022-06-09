@@ -579,7 +579,7 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
         const finalForm = this.reviewForm.getRawValue();
 
         const { radio } = firstFormGroup;
-        const { technoLogo, supplierLink, mainDescription, miniDescription, weight, unitsInWeight, caseWidth, caseLength, caseHeight, overPackageCharge, keywords, productNumber, productName, msrp, internalComments } = finalForm;
+        const { technoLogo, supplierLink, mainDescription, miniDescription, weight, unitsInWeight, caseWidth, caseLength, caseHeight, overPackageCharge, keywords, productNumber, productName, msrp, internalComments, order, feature } = finalForm;
 
         const productId = null;
 
@@ -619,7 +619,7 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
         };
 
         const netCost = {
-            blank_cost_list: [0, 1, 2],
+            blank_cost_list: [],
             coop_id: this.selectedCooP || "",
             cost_comment: internalComments || "",
             cost_list: [1, 2, 3],
@@ -648,6 +648,16 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
             product_id: productId
         };
 
+
+        const addFeature = {
+            attribute_type_id: 1,
+            attribute_text: feature,
+            supplier_id: this.supplierId,
+            product_id: null,
+            order: order,
+            user_full_name: ""
+        }
+
         const { fk_licensingTermID, pk_licensingTermSubCategoryID } = this.selectedRadioOption;
         const licensingTerm = {
             licensing_term_id: fk_licensingTermID,
@@ -670,7 +680,8 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
             case_quantities: caseQuantities,
             shipping: shipping,
             net_cost: netCost,
-            licensing_term: licensingTerm
+            licensing_term: licensingTerm,
+            feature: addFeature
         };
 
         this.createProductLoader = true;
@@ -692,15 +703,26 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
                 } else {
                     this._inventoryService.addProduct(payload)
                         .subscribe((response) => {
-                            this.createProductLoader = false;
                             this.showFlashMessage(
                                 response["success"] === true ?
                                     'success' :
                                     'error'
                             );
+                            this.createProductLoader = false;
+
+                            // Mark for check
+                            this._changeDetectorRef.markForCheck();
+                        }, err => {
+                            this._snackBar.open("Some error occured", '', {
+                                horizontalPosition: 'center',
+                                verticalPosition: 'bottom',
+                                duration: 3500
+                            });
+                            this.createProductLoader = false;
+
+                            // Mark for check
+                            this._changeDetectorRef.markForCheck();
                         });
-                    // Mark for check
-                    this._changeDetectorRef.markForCheck();
                 }
             })
     };

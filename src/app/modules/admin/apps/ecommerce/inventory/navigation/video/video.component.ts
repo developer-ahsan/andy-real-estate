@@ -5,6 +5,7 @@ import { takeUntil } from 'rxjs/operators';
 import { InventoryService } from 'app/modules/admin/apps/ecommerce/inventory/inventory.service';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
+import { MatSnackBar } from '@angular/material/snack-bar';
 
 @Component({
   selector: 'app-video',
@@ -32,7 +33,8 @@ export class VideoComponent implements OnInit {
     private _changeDetectorRef: ChangeDetectorRef,
     private _inventoryService: InventoryService,
     private _formBuilder: FormBuilder,
-    private sanitizer: DomSanitizer
+    private sanitizer: DomSanitizer,
+    private _snackBar: MatSnackBar
   ) { }
 
   ngOnInit(): void {
@@ -53,6 +55,8 @@ export class VideoComponent implements OnInit {
         };
         this.videoLength = video["totalRecords"];
         this.videoUploadForm.patchValue(video["data"][0]);
+        this.isLoadingChange.emit(false);
+
         this._changeDetectorRef.markForCheck();
       });
 
@@ -62,8 +66,16 @@ export class VideoComponent implements OnInit {
 
         this.videosLength = videos["totalRecords"];
         this._changeDetectorRef.markForCheck();
+      }, err => {
+        this._snackBar.open("Some error occured", '', {
+          horizontalPosition: 'center',
+          verticalPosition: 'bottom',
+          duration: 3500
+        });
+
+        // Mark for check
+        this._changeDetectorRef.markForCheck();
       });
-    this.isLoadingChange.emit(false);
   }
 
   getId(url) {
@@ -94,7 +106,7 @@ export class VideoComponent implements OnInit {
     const videoLink = this.videoUploadForm.getRawValue().video;
     const payload = {
       video: videoLink ? this.removeHttp(videoLink) : '',
-      button: "",
+      button: button,
       product_id: this.selectedProduct.pk_productID,
       videos: true
     };
@@ -109,6 +121,16 @@ export class VideoComponent implements OnInit {
         this.videoUpdateLoader = false;
 
         this.ngOnInit();
+        this._changeDetectorRef.markForCheck();
+      }, err => {
+        this._snackBar.open("Some error occured", '', {
+          horizontalPosition: 'center',
+          verticalPosition: 'bottom',
+          duration: 3500
+        });
+        this.videoUpdateLoader = false;
+
+        // Mark for check
         this._changeDetectorRef.markForCheck();
       });
   }

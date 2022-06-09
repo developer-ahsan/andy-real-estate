@@ -1,5 +1,6 @@
 import { Component, Input, OnInit, Output, EventEmitter, ChangeDetectorRef } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
+import { MatSnackBar } from '@angular/material/snack-bar';
 import { InventoryService } from 'app/modules/admin/apps/ecommerce/inventory/inventory.service';
 import { Colors } from 'app/modules/admin/apps/ecommerce/inventory/inventory.types';
 import { Subject } from 'rxjs';
@@ -23,7 +24,8 @@ export class DefaultMarginsComponent implements OnInit {
   constructor(
     private _changeDetectorRef: ChangeDetectorRef,
     private _inventoryService: InventoryService,
-    private _formBuilder: FormBuilder
+    private _formBuilder: FormBuilder,
+    private _snackBar: MatSnackBar
   ) { }
 
   ngOnInit(): void {
@@ -48,9 +50,21 @@ export class DefaultMarginsComponent implements OnInit {
           }
         }
         this.defaultMarginForm.patchValue(margin);
+        this.isLoadingChange.emit(false);
+
+        // Mark for check
+        this._changeDetectorRef.markForCheck();
+      }, err => {
+        this._snackBar.open("Some error occured", '', {
+          horizontalPosition: 'center',
+          verticalPosition: 'bottom',
+          duration: 3500
+        });
+        this.isLoadingChange.emit(false);
+
+        // Mark for check
         this._changeDetectorRef.markForCheck();
       });
-    this.isLoadingChange.emit(false);
   }
 
   removeNull(array) {
@@ -83,9 +97,19 @@ export class DefaultMarginsComponent implements OnInit {
             'error'
         );
         this.defaultMarginUpdate = false;
-        this._changeDetectorRef.markForCheck();
 
-        this.ngOnInit();
+        // Mark for check
+        this._changeDetectorRef.markForCheck();
+      }, err => {
+        this._snackBar.open("Some error occured", '', {
+          horizontalPosition: 'center',
+          verticalPosition: 'bottom',
+          duration: 3500
+        });
+        this.defaultMarginUpdate = false;
+
+        // Mark for check
+        this._changeDetectorRef.markForCheck();
       });
   }
 

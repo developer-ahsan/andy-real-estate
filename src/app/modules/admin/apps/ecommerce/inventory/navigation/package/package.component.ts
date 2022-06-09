@@ -80,7 +80,13 @@ export class PackageComponent implements OnInit {
 
   updatePackage() {
     const { pk_productID } = this.selectedProduct;
-
+    if (!this.arrayToUpdate.length) {
+      return this._snackBar.open("Please select rows to update", '', {
+        horizontalPosition: 'center',
+        verticalPosition: 'bottom',
+        duration: 3500
+      });
+    };
     let tempPackageArray = [];
     for (const packages of this.arrayToUpdate) {
       const { fk_packagingID, setup, run, unitsPerPackage, blnDecoratorPO, isDecorator } = packages;
@@ -104,7 +110,6 @@ export class PackageComponent implements OnInit {
     this.packageUpdateLoader = true;
     this._inventoryService.updatePackage(payload)
       .subscribe((response) => {
-        this.packageUpdateLoader = false;
         const message = response["success"] === true
           ? "Product packagings were updated successfully"
           : "Some error occured. Please try again";
@@ -114,6 +119,17 @@ export class PackageComponent implements OnInit {
           verticalPosition: 'bottom',
           duration: 3500
         });
+        this.packageUpdateLoader = false;
+
+        // Mark for check
+        this._changeDetectorRef.markForCheck();
+      }, err => {
+        this._snackBar.open("Some error occured", '', {
+          horizontalPosition: 'center',
+          verticalPosition: 'bottom',
+          duration: 3500
+        });
+        this.packageUpdateLoader = false;
 
         // Mark for check
         this._changeDetectorRef.markForCheck();
@@ -171,13 +187,12 @@ export class PackageComponent implements OnInit {
         duration: 3500
       });
     };
-    const { pk_productID } = this.selectedProduct;
 
     let tempPackageArray = [];
-    for (const packages of this.arrayToPost) {
-      const { pk_packagingID, setup, run, unitsPerPackage, blnDecoratorPO, isDecorator } = packages;
+    for (const packages of arrayTodelete) {
+      const { fk_packagingID, setup, run, unitsPerPackage, isDecorator } = packages;
       let obj = {
-        packaging_id: pk_packagingID,
+        packaging_id: fk_packagingID,
         setup: setup,
         run: run,
         units_per_package: unitsPerPackage,
@@ -186,18 +201,19 @@ export class PackageComponent implements OnInit {
       tempPackageArray.push(obj);
     };
 
+    const { pk_productID } = this.selectedProduct;
     const payload = {
       product_id: pk_productID,
       packaging: true,
       package: tempPackageArray,
       call_type: "delete"
-    }
+    };
+
     this.deleteLoader = true;
     this._inventoryService.updatePackage(payload)
       .subscribe((response) => {
-        this.deleteLoader = false;
         const message = response["success"] === true
-          ? "Product packagings were updated successfully"
+          ? "Product packagings were deleted successfully"
           : "Some error occured. Please try again";
         this.getPackAndAccessories()
         this._snackBar.open(message, '', {
@@ -205,6 +221,17 @@ export class PackageComponent implements OnInit {
           verticalPosition: 'bottom',
           duration: 3500
         });
+        this.deleteLoader = false;
+
+        // Mark for check
+        this._changeDetectorRef.markForCheck();
+      }, err => {
+        this._snackBar.open("Some error occured", '', {
+          horizontalPosition: 'center',
+          verticalPosition: 'bottom',
+          duration: 3500
+        });
+        this.deleteLoader = false;
 
         // Mark for check
         this._changeDetectorRef.markForCheck();
@@ -268,9 +295,15 @@ export class PackageComponent implements OnInit {
       .pipe(takeUntil(this._unsubscribeAll))
       .subscribe((packages) => {
         const { list, selected } = packages["data"];
+        let letIdsToRemoveWhichAreSelected = [];
+        for (const item of selected) {
+          const { fk_packagingID } = item;
+          letIdsToRemoveWhichAreSelected.push(fk_packagingID)
+        };
+
         let tempArray = [];
         let tempArray2 = [];
-        this.dataSource = list;
+        this.dataSource = list.filter(item => !letIdsToRemoveWhichAreSelected.includes(item.pk_packagingID));
         this.dataSource1 = selected;
         for (const packages of this.dataSource) {
           tempArray.push(packages)
@@ -297,6 +330,16 @@ export class PackageComponent implements OnInit {
         };
 
         this.dataSourceLength = packages["totalRecords"];
+        this.isLoadingChange.emit(false);
+
+        // Mark for check
+        this._changeDetectorRef.markForCheck();
+      }, err => {
+        this._snackBar.open("Some error occured", '', {
+          horizontalPosition: 'center',
+          verticalPosition: 'bottom',
+          duration: 3500
+        });
         this.isLoadingChange.emit(false);
 
         // Mark for check
@@ -346,6 +389,16 @@ export class PackageComponent implements OnInit {
 
         // Mark for check
         this._changeDetectorRef.markForCheck();
+      }, err => {
+        this._snackBar.open("Some error occured", '', {
+          horizontalPosition: 'center',
+          verticalPosition: 'bottom',
+          duration: 3500
+        });
+        this.searchLoader = false;
+
+        // Mark for check
+        this._changeDetectorRef.markForCheck();
       });
   };
 
@@ -384,6 +437,16 @@ export class PackageComponent implements OnInit {
             'error'
         );
         this.packageAddLoader = false;
+      }, err => {
+        this._snackBar.open("Some error occured", '', {
+          horizontalPosition: 'center',
+          verticalPosition: 'bottom',
+          duration: 3500
+        });
+        this.packageAddLoader = false;
+
+        // Mark for check
+        this._changeDetectorRef.markForCheck();
       });
   }
 

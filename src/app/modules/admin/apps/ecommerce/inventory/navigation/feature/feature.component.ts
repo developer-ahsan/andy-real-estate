@@ -324,6 +324,10 @@ export class FeatureComponent implements OnInit {
 
                 if (response["success"] === false) {
                   if (response["message"] === 'Data already exists in Database') {
+                    this.featureAddLoader = false;
+
+                    // Mark for check
+                    this._changeDetectorRef.markForCheck();
                     return this._snackBar.open(`Unable to add feature. ${response["message"]}`, '', {
                       horizontalPosition: 'center',
                       verticalPosition: 'bottom',
