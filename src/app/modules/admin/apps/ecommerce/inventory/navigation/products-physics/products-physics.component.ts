@@ -236,8 +236,8 @@ export class ProductsPhysicsComponent implements OnInit {
 
     const payload = {
       product_id: pk_productID,
-      weight: this.productPhysicsForm.getRawValue().weight || "",
-      weight_in_units: this.productPhysicsForm.getRawValue().unitsInWeight || "",
+      weight: this.productPhysicsForm.getRawValue().weight || 0,
+      weight_in_units: this.productPhysicsForm.getRawValue().unitsInWeight || 0,
       dimensions: this.productPhysicsForm.getRawValue().dimensions || "",
       over_pack_charge: this.productPhysicsForm.getRawValue().overPackCharge,
       bln_apparel: blnApparel,
