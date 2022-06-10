@@ -98,7 +98,6 @@ export class ColorComponent implements OnInit {
           .subscribe((list) => {
             this.dataSource = colors["data"];
             this.colorsList = list["data"];
-            console.log("this.colorsList", this.colorsList)
             this.isLoadingChange.emit(false);
 
             // Mark for check
