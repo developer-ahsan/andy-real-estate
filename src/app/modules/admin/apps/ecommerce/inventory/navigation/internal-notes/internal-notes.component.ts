@@ -163,8 +163,28 @@ export class InternalNotesComponent implements OnInit {
             this.internalNote.reset();
             this.loader = false;
             this.comments = comment["data"];
+          }, err => {
+            this._snackBar.open("Some error occured", '', {
+              horizontalPosition: 'center',
+              verticalPosition: 'bottom',
+              duration: 3500
+            });
+            this.loader = false;
+
+            // Mark for check
+            this._changeDetectorRef.markForCheck();
           });
 
+      }, err => {
+        this._snackBar.open("Some error occured while updating internal notes", '', {
+          horizontalPosition: 'center',
+          verticalPosition: 'bottom',
+          duration: 3500
+        });
+        this.loader = false;
+
+        // Mark for check
+        this._changeDetectorRef.markForCheck();
       });
   }
 
