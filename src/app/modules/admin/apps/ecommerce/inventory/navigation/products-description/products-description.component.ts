@@ -104,18 +104,30 @@ export class ProductsDescriptionComponent implements OnInit {
     this._inventoryService.getProductDescription(pk_productID)
       .pipe(takeUntil(this._unsubscribeAll))
       .subscribe((description) => {
-        this.productDescription = description["data"][0];
-        this.productDescription = _.mapValues(this.productDescription, v => v == "null" ? '' : v);
+        if (description["data"]?.length) {
+          this.productDescription = description["data"][0];
+          this.productDescription = _.mapValues(this.productDescription, v => v == "null" ? '' : v);
 
-        // Fill the form
-        this.productDescriptionForm.patchValue(this.productDescription);
-        this.productDescriptionForm.patchValue({
-          internalKeywords: this.productDescription["searchKeywords"]
-        });
-        this.isLoadingChange.emit(false);
+          // Fill the form
+          this.productDescriptionForm.patchValue(this.productDescription);
+          this.productDescriptionForm.patchValue({
+            internalKeywords: this.productDescription["searchKeywords"]
+          });
+          this.isLoadingChange.emit(false);
 
-        // Mark for check
-        this._changeDetectorRef.markForCheck();
+          // Mark for check
+          this._changeDetectorRef.markForCheck();
+        } else {
+          this._snackBar.open("No description details found for this product", '', {
+            horizontalPosition: 'center',
+            verticalPosition: 'bottom',
+            duration: 3500
+          });
+          this.isLoadingChange.emit(false);
+
+          // Mark for check
+          this._changeDetectorRef.markForCheck();
+        }
       }, err => {
         this._snackBar.open("Some error occured while fetching description", '', {
           horizontalPosition: 'center',
