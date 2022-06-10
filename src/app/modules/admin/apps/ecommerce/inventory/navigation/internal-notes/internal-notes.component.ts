@@ -142,7 +142,7 @@ export class InternalNotesComponent implements OnInit {
     const payload = {
       product_id: pk_productID,
       comment: comment,
-      admin_user_id: 866,
+      admin_user_id: 196,
       name: this.user?.name,
       emails: this.commentator_emails || [],
       call_type: "post",

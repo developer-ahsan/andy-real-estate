@@ -65,7 +65,7 @@ export class NetCostComponent implements OnInit {
         this._changeDetectorRef.markForCheck();
       });
 
-    const { pk_productID, msrp, liveCostComment, costComment, fk_supplierID } = this.selectedProduct;
+    const { pk_productID, liveCostComment, fk_supplierID } = this.selectedProduct;
 
     this.selectedRedPriceItems.push(liveCostComment)
 
@@ -146,52 +146,80 @@ export class NetCostComponent implements OnInit {
         this._changeDetectorRef.markForCheck();
       })
 
-    this._inventoryService.getNetCost(pk_productID)
+    this._inventoryService.getProductByProductId(pk_productID)
       .pipe(takeUntil(this._unsubscribeAll))
-      .subscribe((netCost) => {
-        const formValues = {
-          quantityOne: netCost["data"][0]?.quantity || "",
-          quantityTwo: netCost["data"][1]?.quantity || "",
-          quantityThree: netCost["data"][2]?.quantity || "",
-          quantityFour: netCost["data"][3]?.quantity || "",
-          quantityFive: netCost["data"][4]?.quantity || "",
-          quantitySix: netCost["data"][5]?.quantity || "",
-          standardCostOne: netCost["data"][0]?.cost || "",
-          standardCostTwo: netCost["data"][1]?.cost || "",
-          standardCostThree: netCost["data"][2]?.cost || "",
-          standardCostFour: netCost["data"][3]?.cost || "",
-          standardCostFive: netCost["data"][4]?.cost || "",
-          standardCostSix: netCost["data"][5]?.cost || "",
-          standardCostDropOne: "",
-          standardCostDropTwo: "",
-          standardCostDropThree: "",
-          standardCostDropFour: "",
-          standardCostDropFive: "",
-          standardCostDropSix: "",
-          blankCostOne: netCost["data"][0]?.blankCost || "",
-          blankCostTwo: netCost["data"][1]?.blankCost || "",
-          blankCostThree: netCost["data"][2]?.blankCost || "",
-          blankCostFour: netCost["data"][3]?.blankCost || "",
-          blankCostFive: netCost["data"][4]?.blankCost || "",
-          blankCostSix: netCost["data"][5]?.blankCost || "",
-          blankCostDropOne: "",
-          blankCostDropTwo: "",
-          blankCostDropThree: "",
-          blankCostDropFour: "",
-          blankCostDropFive: "",
-          blankCostDropSix: "",
-          msrp: msrp || "",
-          internalComments: costComment || ""
-        };
+      .subscribe((details) => {
+        this.selectedProduct = details["data"][0];
+        const { msrp, costComment } = this.selectedProduct
 
-        this.netCostForm.patchValue(formValues);
+        this._inventoryService.getNetCost(pk_productID)
+          .pipe(takeUntil(this._unsubscribeAll))
+          .subscribe((netCost) => {
+            const formValues = {
+              quantityOne: netCost["data"][0]?.quantity || "",
+              quantityTwo: netCost["data"][1]?.quantity || "",
+              quantityThree: netCost["data"][2]?.quantity || "",
+              quantityFour: netCost["data"][3]?.quantity || "",
+              quantityFive: netCost["data"][4]?.quantity || "",
+              quantitySix: netCost["data"][5]?.quantity || "",
+              standardCostOne: netCost["data"][0]?.cost || "",
+              standardCostTwo: netCost["data"][1]?.cost || "",
+              standardCostThree: netCost["data"][2]?.cost || "",
+              standardCostFour: netCost["data"][3]?.cost || "",
+              standardCostFive: netCost["data"][4]?.cost || "",
+              standardCostSix: netCost["data"][5]?.cost || "",
+              standardCostDropOne: "",
+              standardCostDropTwo: "",
+              standardCostDropThree: "",
+              standardCostDropFour: "",
+              standardCostDropFive: "",
+              standardCostDropSix: "",
+              blankCostOne: netCost["data"][0]?.blankCost || "",
+              blankCostTwo: netCost["data"][1]?.blankCost || "",
+              blankCostThree: netCost["data"][2]?.blankCost || "",
+              blankCostFour: netCost["data"][3]?.blankCost || "",
+              blankCostFive: netCost["data"][4]?.blankCost || "",
+              blankCostSix: netCost["data"][5]?.blankCost || "",
+              blankCostDropOne: "",
+              blankCostDropTwo: "",
+              blankCostDropThree: "",
+              blankCostDropFour: "",
+              blankCostDropFive: "",
+              blankCostDropSix: "",
+              msrp: msrp || "",
+              internalComments: costComment || ""
+            };
 
+            this.netCostForm.patchValue(formValues);
+
+            // Main component loader setting to false
+            this.isLoadingChange.emit(false);
+
+            // Mark for check
+            this._changeDetectorRef.markForCheck();
+          }, err => {
+            this._snackBar.open("Some error occured", '', {
+              horizontalPosition: 'center',
+              verticalPosition: 'bottom',
+              duration: 3500
+            });
+            // Main component loader setting to false
+            this.isLoadingChange.emit(false);
+            // Mark for check
+            this._changeDetectorRef.markForCheck();
+          });
+      }, err => {
+        this._snackBar.open("Some error occured", '', {
+          horizontalPosition: 'center',
+          verticalPosition: 'bottom',
+          duration: 3500
+        });
         // Main component loader setting to false
         this.isLoadingChange.emit(false);
-
         // Mark for check
         this._changeDetectorRef.markForCheck();
-      });
+      })
+
 
   }
 
