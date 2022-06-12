@@ -351,8 +351,8 @@
         <!-- Search -->
         <mat-form-field class="fuse-mat-dense fuse-mat-no-subscript w-full">
             <mat-label>Product Number</mat-label>
-            <input class="h-6" matInput (input)="onSearchChange($event)" [autocomplete]="'off'"
-                [placeholder]="'Product Number'">
+            <input class="h-6" matInput (input)="onSearchChange($event)" (keyup.enter)="fetchProductNumberData()"
+                [autocomplete]="'off'" [placeholder]="'Product Number'">
         </mat-form-field>
         <button class="mt-7 ml-2 min-w-50" mat-flat-button [color]="'primary'" [matTooltip]="'Go to products list'"
             (click)="fetchProductNumberData()" [disabled]="productNumberLoader">

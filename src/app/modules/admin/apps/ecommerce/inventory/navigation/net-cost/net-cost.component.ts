@@ -237,12 +237,14 @@ export class NetCostComponent implements OnInit {
         if (productPricing["data"]["success"]) {
           if (productPricing["data"]["result"]["Envelope"]["Body"]["GetConfigurationAndPricingResponse"]["ErrorMessage"]["description"] != "Data not found") {
             const data = productPricing["data"]["result"]["Envelope"]["Body"]["GetConfigurationAndPricingResponse"]["Configuration"]["PartArray"];
-            console.log(data);
             this._snackBar.open("Data fetched successfully", '', {
               horizontalPosition: 'center',
               verticalPosition: 'bottom',
               duration: 3500
             });
+            this.netCostFetchLoader = false;
+            // Mark for check
+            this._changeDetectorRef.markForCheck();
           } else {
             this._snackBar.open("No data found against this product number", '', {
               horizontalPosition: 'center',
