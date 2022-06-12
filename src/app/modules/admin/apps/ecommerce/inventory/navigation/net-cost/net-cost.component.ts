@@ -417,6 +417,16 @@ export class NetCostComponent implements OnInit {
             'error'
         );
         this.netCostLoader = false;
+      }, err => {
+        this._snackBar.open("Some error occured while updating net cost", '', {
+          horizontalPosition: 'center',
+          verticalPosition: 'bottom',
+          duration: 3500
+        });
+        this.netCostLoader = false;
+
+        // Mark for check
+        this._changeDetectorRef.markForCheck();
       });
   }
 
