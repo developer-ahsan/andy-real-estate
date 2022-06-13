@@ -978,11 +978,11 @@ export class ImprintComponent implements OnInit {
           orderGrandTotal: firstIndexObj.orderGrandTotal.toFixed(2),
           orderGrandCost: firstIndexObj.orderGrandCost.toFixed(2),
           orderGrandPercentage: (100 - ((firstIndexObj.orderGrandCost / firstIndexObj.orderGrandTotal) * 100)).toFixed(2),
-          profit: firstIndexObj.Profit,
-          totalSetupCost: firstIndexObj.setupCost,
-          totalSetupPrice: firstIndexObj.setupPrice,
-          orderRunCost: firstIndexObj.orderRunCost,
-          orderRunPrice: firstIndexObj.orderRunPrice
+          profit: parseFloat(firstIndexObj.Profit).toFixed(2),
+          totalSetupCost: parseFloat(firstIndexObj.setupCost).toFixed(2),
+          totalSetupPrice: parseFloat(firstIndexObj.setupPrice).toFixed(2),
+          orderRunCost: parseFloat(firstIndexObj.orderRunCost).toFixed(2),
+          orderRunPrice: parseFloat(firstIndexObj.orderRunPrice).toFixed(2)
         }
         let tempArray2 = [];
         for (const imprint of tempArray) {

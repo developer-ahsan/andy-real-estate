@@ -213,6 +213,7 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
         productLength: [''],
         weight: [''],
         unitsInWeight: [''],
+        flatRate: [''],
         doChargesApply: ['No'],
         brandName: ['', Validators.required],
         overPackageCharge: [''],
@@ -268,6 +269,7 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
         productLength: [''],
         weight: [''],
         unitsInWeight: [''],
+        flatRate: [''],
         doChargesApply: ['No'],
         sex: [''],
         allowGroupRun: [''],
@@ -592,17 +594,33 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
             });
     }
 
+    removeNull(array) {
+        return array.filter(x => x !== null)
+    };
+
     createProduct(): void {
         const firstFormGroup = this.firstFormGroup.getRawValue();
         const finalForm = this.reviewForm.getRawValue();
 
         const { radio } = firstFormGroup;
-        const { technoLogo, supplierLink, mainDescription, miniDescription, weight, unitsInWeight, caseWidth, caseLength, caseHeight, overPackageCharge, keywords, productNumber, productName, msrp, internalComments, order, feature } = finalForm;
+        const { technoLogo, supplierLink, mainDescription, miniDescription, flatRate, weight, doChargesApply, unitsInWeight, caseWidth, caseLength, caseHeight, overPackageCharge, keywords, productNumber, productName, msrp, internalComments, order, feature } = finalForm;
+
+        const { firstQuantity, secondQuantity, thirdQuantity, fourthQuantity, fifthQuantity, sixthQuantity, standardCostOne, standardCostTwo, standardCostThree, standardCostFour, standardCostFive, standardCostSix } = finalForm;
+        const { quantityOne, quantityTwo, quantityThree, quantityFour, quantityFive, quantitySix } = finalForm;
+
+        let quantityList = [parseInt(firstQuantity) || null, parseInt(secondQuantity) || null, parseInt(thirdQuantity) || null, parseInt(fourthQuantity) || null, parseInt(fifthQuantity) || null, parseInt(sixthQuantity) || null];
+        quantityList = this.removeNull(quantityList);
+
+        let standardCost = [parseFloat(standardCostOne) || null, parseFloat(standardCostTwo) || null, parseFloat(standardCostThree) || null, parseFloat(standardCostFour) || null, parseFloat(standardCostFive) || null, parseFloat(standardCostSix) || null];
+        standardCost = this.removeNull(standardCost);
+
+        let caseQuantitiesList = [parseInt(quantityOne) || null, parseInt(quantityTwo) || null, parseInt(quantityThree) || null, parseInt(quantityFour) || null, parseInt(quantityFive) || null, parseInt(quantitySix) || null]
+        caseQuantitiesList = this.removeNull(caseQuantitiesList);
 
         const productId = null;
 
         const shipping = {
-            bln_include_shipping: 1,
+            bln_include_shipping: doChargesApply == "Yes" ? 1 : 0,
             fob_location_list: [],
             prod_time_max: this.sliderMaxValue || 10,
             prod_time_min: this.sliderMinValue || 7,
@@ -611,7 +629,7 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
 
         const physics = {
             bln_apparel: radio.name === "Apparel Item" ? true : false,
-            dimensions: "",
+            dimensions: null,
             over_pack_charge: overPackageCharge || null,
             product_id: productId,
             shipping: shipping,
@@ -619,8 +637,8 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
             weight_in_units: unitsInWeight || null
         };
 
-        const flatRate = {
-            flat_rate_shipping: "",
+        const flatRateObj = {
+            flat_rate_shipping: flatRate || null,
             product_id: null
         };
 
@@ -632,26 +650,26 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
         };
 
         const caseQuantities = {
-            case_quantities: [1, 2, 3, 4],
+            case_quantities: caseQuantitiesList,
             product_id: null
         };
 
         const netCost = {
             blank_cost_list: [],
-            coop_id: this.selectedCooP || "",
-            cost_comment: internalComments || "",
-            cost_list: [1, 2, 3],
-            live_cost_comment: this.redPriceCommentText || "",
-            msrp: msrp || "",
+            coop_id: this.selectedCooP || null,
+            cost_comment: internalComments || null,
+            cost_list: standardCost,
+            live_cost_comment: this.redPriceCommentText || null,
+            msrp: msrp || null,
             product_id: productId,
-            quantity_list: [1, 2, 3]
+            quantity_list: quantityList
         };
 
         const description = {
             name: productName,
             product_number: productNumber,
             description: true,
-            product_desc: mainDescription?.replace(/'/g, "''") || " ",
+            product_desc: mainDescription?.replace(/'/g, "''") || null,
             mini_desc: miniDescription?.replace(/'/g, "''") || null,
             keywords: keywords || null,
             notes: null,
@@ -673,7 +691,7 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
             supplier_id: this.supplierId,
             product_id: null,
             order: order,
-            user_full_name: ""
+            user_full_name: null
         }
 
         const { fk_licensingTermID, pk_licensingTermSubCategoryID } = this.selectedRadioOption;
@@ -693,7 +711,7 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
             permalink: null,
             description: description,
             physics: physics,
-            flat_rate: flatRate,
+            flat_rate: flatRateObj,
             case_dimension: caseDimension,
             case_quantities: caseQuantities,
             shipping: shipping,

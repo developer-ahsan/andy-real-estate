@@ -5,6 +5,7 @@ import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { Options } from '@angular-slider/ngx-slider';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import _ from 'lodash';
 
 @Component({
   selector: 'app-products-physics',
@@ -99,13 +100,14 @@ export class ProductsPhysicsComponent implements OnInit {
         this.sliderMinValue = prodTimeMin;
         this.blnShipingValue = blnIncludeShipping ? 'YES' : 'NO';
 
-        const physics = {
+        let physics = {
           weight: Number(weight).toFixed(2),
           unitsInWeight: unitsInWeight,
           dimensions: dimensions,
           unitsInShippingPackage: unitsInShippingPackage,
           overPackCharge: Number(overPackCharge).toFixed(4)
         };
+        physics = _.mapValues(physics, v => v == "null" ? '' : v);
 
         // Fill the form
         this.productPhysicsForm.patchValue(physics);

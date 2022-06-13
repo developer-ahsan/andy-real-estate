@@ -351,8 +351,8 @@
         <!-- Search -->
         <mat-form-field class="fuse-mat-dense fuse-mat-no-subscript w-full">
             <mat-label>Product Number</mat-label>
-            <input class="h-6" matInput (input)="onSearchChange($event)" (keyup.enter)="fetchProductNumberData()"
-                [autocomplete]="'off'" [placeholder]="'Product Number'">
+            <input class="h-6" [disabled]="productNumberLoader" matInput (input)="onSearchChange($event)"
+                (keyup.enter)="fetchProductNumberData()" [autocomplete]="'off'" [placeholder]="'Product Number'">
         </mat-form-field>
         <button class="mt-7 ml-2 min-w-50" mat-flat-button [color]="'primary'" [matTooltip]="'Go to products list'"
             (click)="fetchProductNumberData()" [disabled]="productNumberLoader">
@@ -448,6 +448,12 @@
                                                 [formControlName]="'miniDescription'"></textarea>
                                         </mat-form-field>
                                     </div>
+                                    <div class="col-12">
+                                        <div class="flex items-center">
+                                            <div class="font-medium text-secondary">PRODUCT DIMENSIONS</div>
+                                            <div class="flex-auto ml-2 border-b-2"></div>
+                                        </div>
+                                    </div>
                                     <div class="col-lg-4 col-12">
                                         <mat-form-field appearance="fill" class="w-full">
                                             <mat-label>Product Width</mat-label>
@@ -512,30 +518,41 @@
                                         </mat-form-field>
                                     </div>
                                     <div class="col-12">
+                                        <mat-form-field class="w-full">
+                                            <mat-label>Flat Rate</mat-label>
+                                            <input matInput type="number" [formControlName]="'flatRate'">
+                                        </mat-form-field>
+                                    </div>
+                                    <div class="col-12">
                                         <mat-form-field appearance="fill" class="w-full">
                                             <mat-label>Supplier Link (200)</mat-label>
                                             <input matInput formControlName="supplierLink">
                                         </mat-form-field>
                                     </div>
-
+                                    <div class="col-12">
+                                        <div class="flex items-center">
+                                            <div class="font-medium text-secondary">CASE DIMENSIONS</div>
+                                            <div class="flex-auto ml-2 border-b-2"></div>
+                                        </div>
+                                    </div>
                                     <div class="col-lg-4 col-12">
                                         <mat-form-field appearance="fill" class="w-full">
                                             <mat-label>Case Height</mat-label>
-                                            <input matInput formControlName="caseHeight">
+                                            <input matInput type="number" formControlName="caseHeight">
                                             <small class="text-secondary font-semibold"> inch </small>
                                         </mat-form-field>
                                     </div>
                                     <div class="col-lg-4 col-12">
                                         <mat-form-field appearance="fill" class="w-full">
                                             <mat-label>Case Width</mat-label>
-                                            <input matInput formControlName="caseWidth">
+                                            <input matInput type="number" formControlName="caseWidth">
                                             <small class="text-secondary font-semibold"> inch </small>
                                         </mat-form-field>
                                     </div>
                                     <div class="col-lg-4 col-12">
                                         <mat-form-field appearance="fill" class="w-full">
                                             <mat-label>Case Length</mat-label>
-                                            <input matInput formControlName="caseLength">
+                                            <input matInput type="number" formControlName="caseLength">
                                             <small class="text-secondary font-semibold"> inch </small>
                                         </mat-form-field>
                                     </div>
@@ -545,37 +562,37 @@
                                     </div>
                                     <div class="col-4">
                                         <mat-form-field class="w-full">
-                                            <input matInput [formControlName]="'quantityOne'"><small
+                                            <input matInput type="number" [formControlName]="'quantityOne'"><small
                                                 class="text-secondary font-semibold"> 1 </small>
                                         </mat-form-field>
                                     </div>
                                     <div class="col-4">
                                         <mat-form-field class="w-full">
-                                            <input matInput [formControlName]="'quantityTwo'"><small
+                                            <input matInput type="number" [formControlName]="'quantityTwo'"><small
                                                 class="text-secondary font-semibold"> 2 </small>
                                         </mat-form-field>
                                     </div>
                                     <div class="col-4">
                                         <mat-form-field class="w-full">
-                                            <input matInput [formControlName]="'quantityThree'"><small
+                                            <input matInput type="number" [formControlName]="'quantityThree'"><small
                                                 class="text-secondary font-semibold"> 3 </small>
                                         </mat-form-field>
                                     </div>
                                     <div class="col-4">
                                         <mat-form-field class="w-full">
-                                            <input matInput [formControlName]="'quantityFour'"><small
+                                            <input matInput type="number" [formControlName]="'quantityFour'"><small
                                                 class="text-secondary font-semibold"> 4 </small>
                                         </mat-form-field>
                                     </div>
                                     <div class="col-4">
                                         <mat-form-field class="w-full">
-                                            <input matInput [formControlName]="'quantityFive'"><small
+                                            <input matInput type="number" [formControlName]="'quantityFive'"><small
                                                 class="text-secondary font-semibold"> 5 </small>
                                         </mat-form-field>
                                     </div>
                                     <div class="col-4">
                                         <mat-form-field class="w-full">
-                                            <input matInput [formControlName]="'quantitySix'"><small
+                                            <input matInput type="number" [formControlName]="'quantitySix'"><small
                                                 class="text-secondary font-semibold"> 6 </small>
                                         </mat-form-field>
                                     </div>
@@ -646,42 +663,48 @@
                                             </div>
                                             <div class="col-lg-2 col-4">
                                                 <mat-form-field class="w-full">
-                                                    <input matInput [formControlName]="'firstQuantity'"><small
+                                                    <input matInput type="number"
+                                                        [formControlName]="'firstQuantity'"><small
                                                         class="text-secondary font-semibold"> 1
                                                     </small>
                                                 </mat-form-field>
                                             </div>
                                             <div class="col-lg-2 col-4">
                                                 <mat-form-field class="w-full">
-                                                    <input matInput [formControlName]="'secondQuantity'"><small
+                                                    <input matInput type="number"
+                                                        [formControlName]="'secondQuantity'"><small
                                                         class="text-secondary font-semibold"> 2
                                                     </small>
                                                 </mat-form-field>
                                             </div>
                                             <div class="col-lg-2 col-4">
                                                 <mat-form-field class="w-full">
-                                                    <input matInput [formControlName]="'thirdQuantity'"><small
+                                                    <input matInput type="number"
+                                                        [formControlName]="'thirdQuantity'"><small
                                                         class="text-secondary font-semibold"> 3
                                                     </small>
                                                 </mat-form-field>
                                             </div>
                                             <div class="col-lg-2 col-4">
                                                 <mat-form-field class="w-full">
-                                                    <input matInput [formControlName]="'fourthQuantity'"><small
+                                                    <input matInput type="number"
+                                                        [formControlName]="'fourthQuantity'"><small
                                                         class="text-secondary font-semibold"> 4
                                                     </small>
                                                 </mat-form-field>
                                             </div>
                                             <div class="col-lg-2 col-4">
                                                 <mat-form-field class="w-full">
-                                                    <input matInput [formControlName]="'fifthQuantity'"><small
+                                                    <input matInput type="number"
+                                                        [formControlName]="'fifthQuantity'"><small
                                                         class="text-secondary font-semibold"> 5
                                                     </small>
                                                 </mat-form-field>
                                             </div>
                                             <div class="col-lg-2 col-4">
                                                 <mat-form-field class="w-full">
-                                                    <input matInput [formControlName]="'sixthQuantity'"><small
+                                                    <input matInput type="number"
+                                                        [formControlName]="'sixthQuantity'"><small
                                                         class="text-secondary font-semibold"> 6
                                                     </small>
                                                 </mat-form-field>
@@ -695,42 +718,48 @@
                                             </div>
                                             <div class="col-lg-2 col-4">
                                                 <mat-form-field class="w-full">
-                                                    <input matInput [formControlName]="'standardCostOne'"><small
+                                                    <input matInput type="number"
+                                                        [formControlName]="'standardCostOne'"><small
                                                         class="text-secondary font-semibold"> 1
                                                     </small>
                                                 </mat-form-field>
                                             </div>
                                             <div class="col-lg-2 col-4">
                                                 <mat-form-field class="w-full">
-                                                    <input matInput [formControlName]="'standardCostTwo'"><small
+                                                    <input matInput type="number"
+                                                        [formControlName]="'standardCostTwo'"><small
                                                         class="text-secondary font-semibold"> 2
                                                     </small>
                                                 </mat-form-field>
                                             </div>
                                             <div class="col-lg-2 col-4">
                                                 <mat-form-field class="w-full">
-                                                    <input matInput [formControlName]="'standardCostThree'"><small
+                                                    <input matInput type="number"
+                                                        [formControlName]="'standardCostThree'"><small
                                                         class="text-secondary font-semibold"> 3
                                                     </small>
                                                 </mat-form-field>
                                             </div>
                                             <div class="col-lg-2 col-4">
                                                 <mat-form-field class="w-full">
-                                                    <input matInput [formControlName]="'standardCostFour'"><small
+                                                    <input matInput type="number"
+                                                        [formControlName]="'standardCostFour'"><small
                                                         class="text-secondary font-semibold"> 4
                                                     </small>
                                                 </mat-form-field>
                                             </div>
                                             <div class="col-lg-2 col-4">
                                                 <mat-form-field class="w-full">
-                                                    <input matInput [formControlName]="'standardCostFive'"><small
+                                                    <input matInput type="number"
+                                                        [formControlName]="'standardCostFive'"><small
                                                         class="text-secondary font-semibold"> 5
                                                     </small>
                                                 </mat-form-field>
                                             </div>
                                             <div class="col-lg-2 col-4">
                                                 <mat-form-field class="w-full">
-                                                    <input matInput [formControlName]="'standardCostSix'"><small
+                                                    <input matInput type="number"
+                                                        [formControlName]="'standardCostSix'"><small
                                                         class="text-secondary font-semibold"> 6
                                                     </small>
                                                 </mat-form-field>
@@ -1025,6 +1054,12 @@
                                                         [formControlName]="'miniDescription'"></textarea>
                                                 </mat-form-field>
                                             </div>
+                                            <div class="col-12">
+                                                <div class="flex items-center">
+                                                    <div class="font-medium text-secondary">PRODUCT DIMENSIONS</div>
+                                                    <div class="flex-auto ml-2 border-b-2"></div>
+                                                </div>
+                                            </div>
                                             <div class="col-lg-4 col-12">
                                                 <mat-form-field appearance="fill" class="w-full">
                                                     <mat-label>Product Width</mat-label>
@@ -1070,24 +1105,30 @@
                                                     [(highValue)]="reviewFormSliderMaxValue" [options]="sliderOptions">
                                                 </ngx-slider>
                                             </div>
+                                            <div class="col-12">
+                                                <div class="flex items-center">
+                                                    <div class="font-medium text-secondary">CASE DIMENSIONS</div>
+                                                    <div class="flex-auto ml-2 border-b-2"></div>
+                                                </div>
+                                            </div>
                                             <div class="col-lg-4 col-12">
                                                 <mat-form-field appearance="fill" class="w-full">
                                                     <mat-label>Case Height</mat-label>
-                                                    <input matInput formControlName="caseHeight">
+                                                    <input matInput type="number" formControlName="caseHeight">
                                                     <small class="text-secondary font-semibold"> inch </small>
                                                 </mat-form-field>
                                             </div>
                                             <div class="col-lg-4 col-12">
                                                 <mat-form-field appearance="fill" class="w-full">
                                                     <mat-label>Case Width</mat-label>
-                                                    <input matInput formControlName="caseWidth">
+                                                    <input matInput type="number" formControlName="caseWidth">
                                                     <small class="text-secondary font-semibold"> inch </small>
                                                 </mat-form-field>
                                             </div>
                                             <div class="col-lg-4 col-12">
                                                 <mat-form-field appearance="fill" class="w-full">
                                                     <mat-label>Case Length</mat-label>
-                                                    <input matInput formControlName="caseLength">
+                                                    <input matInput type="number" formControlName="caseLength">
                                                     <small class="text-secondary font-semibold"> inch </small>
                                                 </mat-form-field>
                                             </div>
@@ -1112,6 +1153,12 @@
                                                         class="text-secondary font-semibold">
                                                         unit(s) </small>
                                                     <mat-error>This field is required</mat-error>
+                                                </mat-form-field>
+                                            </div>
+                                            <div class="col-12">
+                                                <mat-form-field class="w-full">
+                                                    <mat-label>Flat Rate</mat-label>
+                                                    <input matInput type="number" [formControlName]="'flatRate'">
                                                 </mat-form-field>
                                             </div>
                                             <div class="col-lg-6 col-12" style="line-height: 2.3;">
@@ -1164,37 +1211,43 @@
                                             </div>
                                             <div class="col-4">
                                                 <mat-form-field class="w-full">
-                                                    <input matInput [formControlName]="'quantityOne'"><small
+                                                    <input matInput type="number"
+                                                        [formControlName]="'quantityOne'"><small
                                                         class="text-secondary font-semibold"> 1 </small>
                                                 </mat-form-field>
                                             </div>
                                             <div class="col-4">
                                                 <mat-form-field class="w-full">
-                                                    <input matInput [formControlName]="'quantityTwo'"><small
+                                                    <input matInput type="number"
+                                                        [formControlName]="'quantityTwo'"><small
                                                         class="text-secondary font-semibold"> 2 </small>
                                                 </mat-form-field>
                                             </div>
                                             <div class="col-4">
                                                 <mat-form-field class="w-full">
-                                                    <input matInput [formControlName]="'quantityThree'"><small
+                                                    <input matInput type="number"
+                                                        [formControlName]="'quantityThree'"><small
                                                         class="text-secondary font-semibold"> 3 </small>
                                                 </mat-form-field>
                                             </div>
                                             <div class="col-4">
                                                 <mat-form-field class="w-full">
-                                                    <input matInput [formControlName]="'quantityFour'"><small
+                                                    <input matInput type="number"
+                                                        [formControlName]="'quantityFour'"><small
                                                         class="text-secondary font-semibold"> 4 </small>
                                                 </mat-form-field>
                                             </div>
                                             <div class="col-4">
                                                 <mat-form-field class="w-full">
-                                                    <input matInput [formControlName]="'quantityFive'"><small
+                                                    <input matInput type="number"
+                                                        [formControlName]="'quantityFive'"><small
                                                         class="text-secondary font-semibold"> 5 </small>
                                                 </mat-form-field>
                                             </div>
                                             <div class="col-4">
                                                 <mat-form-field class="w-full">
-                                                    <input matInput [formControlName]="'quantitySix'"><small
+                                                    <input matInput type="number"
+                                                        [formControlName]="'quantitySix'"><small
                                                         class="text-secondary font-semibold"> 6 </small>
                                                 </mat-form-field>
                                             </div>
@@ -1209,42 +1262,48 @@
                                             </div>
                                             <div class="col-lg-2 col-4">
                                                 <mat-form-field class="w-full">
-                                                    <input matInput [formControlName]="'firstQuantity'"><small
+                                                    <input matInput type="number"
+                                                        [formControlName]="'firstQuantity'"><small
                                                         class="text-secondary font-semibold"> 1
                                                     </small>
                                                 </mat-form-field>
                                             </div>
                                             <div class="col-lg-2 col-4">
                                                 <mat-form-field class="w-full">
-                                                    <input matInput [formControlName]="'secondQuantity'"><small
+                                                    <input matInput type="number"
+                                                        [formControlName]="'secondQuantity'"><small
                                                         class="text-secondary font-semibold"> 2
                                                     </small>
                                                 </mat-form-field>
                                             </div>
                                             <div class="col-lg-2 col-4">
                                                 <mat-form-field class="w-full">
-                                                    <input matInput [formControlName]="'thirdQuantity'"><small
+                                                    <input matInput type="number"
+                                                        [formControlName]="'thirdQuantity'"><small
                                                         class="text-secondary font-semibold"> 3
                                                     </small>
                                                 </mat-form-field>
                                             </div>
                                             <div class="col-lg-2 col-4">
                                                 <mat-form-field class="w-full">
-                                                    <input matInput [formControlName]="'fourthQuantity'"><small
+                                                    <input matInput type="number"
+                                                        [formControlName]="'fourthQuantity'"><small
                                                         class="text-secondary font-semibold"> 4
                                                     </small>
                                                 </mat-form-field>
                                             </div>
                                             <div class="col-lg-2 col-4">
                                                 <mat-form-field class="w-full">
-                                                    <input matInput [formControlName]="'fifthQuantity'"><small
+                                                    <input matInput type="number"
+                                                        [formControlName]="'fifthQuantity'"><small
                                                         class="text-secondary font-semibold"> 5
                                                     </small>
                                                 </mat-form-field>
                                             </div>
                                             <div class="col-lg-2 col-4">
                                                 <mat-form-field class="w-full">
-                                                    <input matInput [formControlName]="'sixthQuantity'"><small
+                                                    <input matInput type="number"
+                                                        [formControlName]="'sixthQuantity'"><small
                                                         class="text-secondary font-semibold"> 6
                                                     </small>
                                                 </mat-form-field>
@@ -1258,42 +1317,48 @@
                                             </div>
                                             <div class="col-lg-2 col-4">
                                                 <mat-form-field class="w-full">
-                                                    <input matInput [formControlName]="'standardCostOne'"><small
+                                                    <input matInput type="number"
+                                                        [formControlName]="'standardCostOne'"><small
                                                         class="text-secondary font-semibold"> 1
                                                     </small>
                                                 </mat-form-field>
                                             </div>
                                             <div class="col-lg-2 col-4">
                                                 <mat-form-field class="w-full">
-                                                    <input matInput [formControlName]="'standardCostTwo'"><small
+                                                    <input matInput type="number"
+                                                        [formControlName]="'standardCostTwo'"><small
                                                         class="text-secondary font-semibold"> 2
                                                     </small>
                                                 </mat-form-field>
                                             </div>
                                             <div class="col-lg-2 col-4">
                                                 <mat-form-field class="w-full">
-                                                    <input matInput [formControlName]="'standardCostThree'"><small
+                                                    <input matInput type="number"
+                                                        [formControlName]="'standardCostThree'"><small
                                                         class="text-secondary font-semibold"> 3
                                                     </small>
                                                 </mat-form-field>
                                             </div>
                                             <div class="col-lg-2 col-4">
                                                 <mat-form-field class="w-full">
-                                                    <input matInput [formControlName]="'standardCostFour'"><small
+                                                    <input matInput type="number"
+                                                        [formControlName]="'standardCostFour'"><small
                                                         class="text-secondary font-semibold"> 4
                                                     </small>
                                                 </mat-form-field>
                                             </div>
                                             <div class="col-lg-2 col-4">
                                                 <mat-form-field class="w-full">
-                                                    <input matInput [formControlName]="'standardCostFive'"><small
+                                                    <input matInput type="number"
+                                                        [formControlName]="'standardCostFive'"><small
                                                         class="text-secondary font-semibold"> 5
                                                     </small>
                                                 </mat-form-field>
                                             </div>
                                             <div class="col-lg-2 col-4">
                                                 <mat-form-field class="w-full">
-                                                    <input matInput [formControlName]="'standardCostSix'"><small
+                                                    <input matInput type="number"
+                                                        [formControlName]="'standardCostSix'"><small
                                                         class="text-secondary font-semibold"> 6
                                                     </small>
                                                 </mat-form-field>
