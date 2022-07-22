@@ -25,7 +25,7 @@ export class ProductDetailsComponent implements OnInit, OnDestroy {
   selectedProduct: ProductsDetails = null;
   private _unsubscribeAll: Subject<any> = new Subject<any>();
   routes = [];
-  selectedIndex: string = "Pack & Accessories";
+  selectedIndex: string = "Store Versions";
   not_available: string = 'N/A';
   last_updated = "";
 
