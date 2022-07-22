@@ -21,6 +21,7 @@ export class LicensingTermComponent implements OnInit {
   subCategoryItems = [];
   licensingCompanies = [];
   licensingTerms = [];
+  dummyLicensingTerms = [];
   licensingForm: FormGroup;
   loader = false;
   expansionLoader = false;
@@ -62,6 +63,7 @@ export class LicensingTermComponent implements OnInit {
             .pipe(takeUntil(this._unsubscribeAll))
             .subscribe((licensingTerms) => {
               this.licensingTerms = licensingTerms["data"];
+              this.dummyLicensingTerms = licensingTerms["data"];
               for (const term of this.licensingTerms) {
                 if (term.Selected === "true") {
                   this.selectedTerm = term;
@@ -69,7 +71,7 @@ export class LicensingTermComponent implements OnInit {
                 }
               };
 
-              this._inventoryService.getLicensingSubCategory(this.selectedTerm.pk_licensingTermID, pk_productID)
+              this._inventoryService.getLicensingSubCategory(this.selectedTerm?.pk_licensingTermID, pk_productID)
                 .pipe(takeUntil(this._unsubscribeAll))
                 .subscribe((subCategories) => {
                   this.selectedSubCategItems = subCategories["data"];
@@ -90,6 +92,7 @@ export class LicensingTermComponent implements OnInit {
                 .pipe(takeUntil(this._unsubscribeAll))
                 .subscribe((licensingTerms) => {
                   this.licensingTerms = licensingTerms["data"];
+                  this.dummyLicensingTerms = licensingTerms["data"];
 
                   for (const term of this.licensingTerms) {
                     if (term.Selected === "true") {
@@ -98,7 +101,7 @@ export class LicensingTermComponent implements OnInit {
                     }
                   };
 
-                  this._inventoryService.getLicensingSubCategory(this.selectedTerm.pk_licensingTermID, pk_productID)
+                  this._inventoryService.getLicensingSubCategory(this.selectedTerm?.pk_licensingTermID, pk_productID)
                     .pipe(takeUntil(this._unsubscribeAll))
                     .subscribe((subCategories) => {
                       this.selectedSubCategItems = subCategories["data"];
@@ -181,6 +184,7 @@ export class LicensingTermComponent implements OnInit {
           .pipe(takeUntil(this._unsubscribeAll))
           .subscribe((licensingTerms) => {
             this.licensingTerms = licensingTerms["data"];
+            this.dummyLicensingTerms = licensingTerms["data"];
             for (const term of this.licensingTerms) {
               if (term.Selected === "true") {
                 this.selectedTerm = term;
@@ -188,7 +192,7 @@ export class LicensingTermComponent implements OnInit {
               }
             };
 
-            this._inventoryService.getLicensingSubCategory(this.selectedTerm.pk_licensingTermID, pk_productID)
+            this._inventoryService.getLicensingSubCategory(this.selectedTerm?.pk_licensingTermID, pk_productID)
               .pipe(takeUntil(this._unsubscribeAll))
               .subscribe((subCategories) => {
                 this.selectedSubCategItems = subCategories["data"];
@@ -225,6 +229,7 @@ export class LicensingTermComponent implements OnInit {
           .pipe(takeUntil(this._unsubscribeAll))
           .subscribe((licensingTerms) => {
             this.licensingTerms = licensingTerms["data"];
+            this.dummyLicensingTerms = licensingTerms["data"];
             for (const term of this.licensingTerms) {
               if (term.Selected === "true") {
                 this.selectedTerm = term;
@@ -232,7 +237,7 @@ export class LicensingTermComponent implements OnInit {
               }
             };
 
-            this._inventoryService.getLicensingSubCategory(this.selectedTerm.pk_licensingTermID, pk_productID)
+            this._inventoryService.getLicensingSubCategory(this.selectedTerm?.pk_licensingTermID, pk_productID)
               .pipe(takeUntil(this._unsubscribeAll))
               .subscribe((subCategories) => {
                 this.selectedSubCategItems = subCategories["data"];
@@ -248,6 +253,16 @@ export class LicensingTermComponent implements OnInit {
               });
           });
       });
+  }
+
+  searchKeyword(event): void {
+    const value = event.target.value;
+    console.log("value", value);
+    console.log("dummyLicensingTerms", this.dummyLicensingTerms)
+
+    this.licensingTerms = this.dummyLicensingTerms.filter((item: any) => {
+      return item.term.toLowerCase().includes(value.toLowerCase());
+    });
   }
 
   /**

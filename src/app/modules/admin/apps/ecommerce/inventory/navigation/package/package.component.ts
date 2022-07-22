@@ -160,13 +160,21 @@ export class PackageComponent implements OnInit {
   rowAddPackage(packageObj, title, event) {
     const { value } = title !== 'blnDecoratorPO' ? event.target : event;
 
-    if (title === 'run') {
+    packageObj.run = packageObj.run || 0.00;
+    packageObj.setup = packageObj.setup || 0.00;
+    packageObj.unitsPerPackage = packageObj.unitsPerPackage || 1;
+
+    if (title == "run") {
       packageObj.run = parseInt(value);
-    } else if (title === 'setup') {
+    };
+
+    if (title == "setup") {
       packageObj.setup = parseInt(value);
-    } else if (title === 'unitsPerPackage') {
+    };
+
+    if (title == "unitsPerPackage") {
       packageObj.unitsPerPackage = parseFloat(value);
-    }
+    };
 
     if (!this.arrayToPost?.length) {
       this.arrayToPost.push(packageObj);
@@ -176,6 +184,62 @@ export class PackageComponent implements OnInit {
         this.arrayToPost.push(packageObj);
       }
     };
+  };
+
+  addListPackage() {
+    const { pk_productID } = this.selectedProduct;
+
+    let tempPackageArray = [];
+    for (const packages of this.arrayToPost) {
+      const { pk_packagingID, setup, run, unitsPerPackage, isDecorator } = packages;
+      let obj = {
+        packaging_id: pk_packagingID,
+        setup: setup,
+        run: run,
+        units_per_package: unitsPerPackage,
+        bln_decorator: isDecorator === "true" ? 1 : 0
+      };
+      tempPackageArray.push(obj);
+    };
+
+    const payload = {
+      product_id: pk_productID,
+      packaging: true,
+      package: tempPackageArray,
+      call_type: "post"
+    }
+
+    this.packagePostLoader = true;
+    this._inventoryService.updatePackage(payload)
+      .subscribe((response) => {
+        this.packagePostLoader = false;
+        const message = response["success"] === true
+          ? "Product packagings were added successfully"
+          : "Some error occured. Please try again";
+        this.getPackAndAccessories()
+        this._snackBar.open(message, '', {
+          horizontalPosition: 'center',
+          verticalPosition: 'bottom',
+          duration: 3500
+        });
+        this.selection.clear();
+        this.arrayToPost = [];
+
+        // Mark for check
+        this._changeDetectorRef.markForCheck();
+      }, err => {
+        this._snackBar.open("Some error occured", '', {
+          horizontalPosition: 'center',
+          verticalPosition: 'bottom',
+          duration: 3500
+        });
+        this.packagePostLoader = false;
+        this.selection.clear();
+        this.arrayToPost = [];
+
+        // Mark for check
+        this._changeDetectorRef.markForCheck();
+      });
   };
 
   deletePackages() {
@@ -236,57 +300,6 @@ export class PackageComponent implements OnInit {
         // Mark for check
         this._changeDetectorRef.markForCheck();
       });
-  }
-  addListPackage() {
-    const { pk_productID } = this.selectedProduct;
-
-    let tempPackageArray = [];
-    for (const packages of this.arrayToPost) {
-      const { pk_packagingID, setup, run, unitsPerPackage, blnDecoratorPO, isDecorator } = packages;
-      let obj = {
-        packaging_id: pk_packagingID,
-        setup: setup,
-        run: run,
-        units_per_package: unitsPerPackage,
-        bln_decorator: isDecorator === "true" ? 1 : 0
-      };
-      tempPackageArray.push(obj);
-    };
-
-    const payload = {
-      product_id: pk_productID,
-      packaging: true,
-      package: tempPackageArray,
-      call_type: "post"
-    }
-
-    this.packagePostLoader = true;
-    this._inventoryService.updatePackage(payload)
-      .subscribe((response) => {
-        this.packagePostLoader = false;
-        const message = response["success"] === true
-          ? "Product packagings were added successfully"
-          : "Some error occured. Please try again";
-        this.getPackAndAccessories()
-        this._snackBar.open(message, '', {
-          horizontalPosition: 'center',
-          verticalPosition: 'bottom',
-          duration: 3500
-        });
-
-        // Mark for check
-        this._changeDetectorRef.markForCheck();
-      }, err => {
-        this._snackBar.open("Some error occured", '', {
-          horizontalPosition: 'center',
-          verticalPosition: 'bottom',
-          duration: 3500
-        });
-        this.packagePostLoader = false;
-
-        // Mark for check
-        this._changeDetectorRef.markForCheck();
-      });
   };
 
   getPackAndAccessories(): void {
@@ -335,12 +348,7 @@ export class PackageComponent implements OnInit {
         // Mark for check
         this._changeDetectorRef.markForCheck();
       }, err => {
-        this._snackBar.open("Some error occured", '', {
-          horizontalPosition: 'center',
-          verticalPosition: 'bottom',
-          duration: 3500
-        });
-        this.isLoadingChange.emit(false);
+        this.getPackAndAccessories();
 
         // Mark for check
         this._changeDetectorRef.markForCheck();

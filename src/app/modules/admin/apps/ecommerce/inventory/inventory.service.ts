@@ -102,7 +102,7 @@ export class InventoryService {
         },
         {
             id: 17,
-            title: 'Lisencing Term',
+            title: 'Licensing Terms',
             icon: 'mat_outline:picture_in_picture',
         },
         {
