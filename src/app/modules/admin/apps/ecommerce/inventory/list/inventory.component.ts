@@ -96,7 +96,7 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
         floor: 1,
         ceil: 120
     };
-    selectedSex: string = "N/A";
+    selectedSex: string = "1";
 
     pageNo: number;
 
@@ -315,6 +315,12 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
         licensingTerm: ['']
     });
 
+    imprintForm = this._formBuilder.group({
+        decorator_id: [''],
+        product_id: [''],
+        method_id: ['']
+    })
+
     /**
      * Constructor
      */
@@ -403,7 +409,6 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
             pk_productID: [''],
         });
 
-        this.getCoOps();
         this.getAllSuppliers();
         this.getAllStores();
 
@@ -476,7 +481,7 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
 
     getCoOps(): void {
         // Get the CoOps
-        this._inventoryService.getProductCoops()
+        this._inventoryService.getProductCoops(this.supplierId)
             .subscribe((coops) => {
                 this.coops = coops["data"];
 
@@ -717,7 +722,7 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
             purchase_order_notes: null,
             supplier_link: supplierLink || null,
             meta_desc: miniDescription?.replace(/'/g, "''") || null,
-            sex: this.supplierType == "Apparel Item" ? this.selectedSex : null,
+            sex: this.supplierType == "Apparel Item" ? parseInt(this.selectedSex) : null,
             search_keywords: keywords || null,
             last_update_by: null,
             last_update_date: null,
@@ -1092,6 +1097,8 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
                 this.secondFormGroup.controls['brandName'].disable();
                 this.reviewForm.controls['brandName'].disable();
             };
+
+            this.getCoOps();
         };
 
         // Licensing term screen

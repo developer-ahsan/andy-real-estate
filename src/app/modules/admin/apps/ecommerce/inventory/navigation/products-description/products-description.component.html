@@ -55,9 +55,22 @@
                                 </mat-form-field>
                             </div>
                             <div class="col-lg-4 col-12">
+                                <small class="text-secondary font-semibold">
+                                    Update store product permalinks?
+                                    <button
+                                        [matTooltip]="'This option will update all permalinks with the permalink for this product on any store that is currently on.'">
+                                        <i class="fa fa-info-circle"></i>
+                                    </button>
+                                </small>
                                 <mat-form-field class="w-full">
-                                    <mat-label>TechnoLogo SKU (50)</mat-label>
-                                    <input matInput maxlength="50" [formControlName]="'technoLogoSKU'">
+                                    <mat-select name="order" [formControlName]="'permalink'">
+                                        <mat-option value="select_order" disabled>
+                                            Click to select
+                                        </mat-option>
+                                        <mat-option *ngFor="let option of products" [value]="option">
+                                            {{option}}
+                                        </mat-option>
+                                    </mat-select>
                                 </mat-form-field>
                             </div>
                             <div class="col-12 mb-6">
@@ -80,40 +93,25 @@
                                     <textarea matInput maxlength="160" rows="3"
                                         [formControlName]="'metaDesc'"></textarea>
                                     <mat-icon class="icon-size-5 text-secondary ml-2" style="cursor: pointer;"
-                                        (click)="copyDescriptionToMeta()" [matTooltip]="'Copy from description'"
+                                        (click)="copyMiniToMeta()" [matTooltip]="'Copy from mini description'"
                                         svgIcon="mat_outline:content_copy">
                                     </mat-icon>
                                 </mat-form-field>
                             </div>
-                            <div class="col-lg-4 col-12">
+                            <div class="col-lg-6 col-12">
                                 <mat-form-field class="w-full">
                                     <mat-label>Meta keywords (50) </mat-label>
                                     <input matInput maxlength="50" [formControlName]="'keywords'">
                                 </mat-form-field>
                             </div>
-                            <div class="col-lg-4 col-12">
+                            <div class="col-lg-6 col-12">
                                 <mat-form-field class="w-full">
                                     <mat-label>Internal keywords (800)</mat-label>
                                     <input matInput maxlength="800" [formControlName]="'internalKeywords'">
-                                </mat-form-field>
-                            </div>
-                            <div class="col-lg-4 col-12">
-                                <small class="text-secondary font-semibold">
-                                    Update store product permalinks?
-                                    <button
-                                        [matTooltip]="'This option will update all permalinks with the permalink for this product on any store that is currently on.'">
-                                        <i class="fa fa-info-circle"></i>
-                                    </button>
-                                </small>
-                                <mat-form-field class="w-full">
-                                    <mat-select name="order" [formControlName]="'permalink'">
-                                        <mat-option value="select_order" disabled>
-                                            Click to select
-                                        </mat-option>
-                                        <mat-option *ngFor="let option of products" [value]="option">
-                                            {{option}}
-                                        </mat-option>
-                                    </mat-select>
+                                    <mat-icon class="icon-size-5 text-secondary ml-2" style="cursor: pointer;"
+                                        (click)="copyMetaToInternal()" [matTooltip]="'Copy from meta keywords'"
+                                        svgIcon="mat_outline:content_copy">
+                                    </mat-icon>
                                 </mat-form-field>
                             </div>
                             <div class="col-lg-6 col-12">

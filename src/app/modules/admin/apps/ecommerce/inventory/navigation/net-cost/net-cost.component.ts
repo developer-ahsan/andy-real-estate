@@ -25,6 +25,7 @@ export class NetCostComponent implements OnInit {
   validationCheckMessage = "";
 
   selectedDropdown;
+  isDropdownDisabled = true;
 
   netCostFetchLoader = false;
 
@@ -35,17 +36,18 @@ export class NetCostComponent implements OnInit {
 
   redPriceDropdownSettings: IDropdownSettings = {};
   selectedRedPriceItems = [];
+  selectedRedPrice: string;
   redPriceList = [
-    { item_id: 1, item_text: 'Price does not include imprint. You may add desired imprint(s) during the checkout process for an additional cost' },
-    { item_id: 2, item_text: 'Price does not include imprint and is based on the white color option. You may add desired imprint(s) during the checkout process for an additional cost' },
-    { item_id: 3, item_text: 'Price includes a one color/one location imprint. Setups and any other additional fees may apply and will be disclosed prior to checkout' },
-    { item_id: 4, item_text: 'Price includes a laser engraved/one location imprint. Setups and any other additional fees may apply andwill be disclosed prior to checkout' },
-    { item_id: 5, item_text: 'Price includes a laser etched/one location imprint. Setups and any other additional fees may apply and will be disclosed prior to checkout' },
-    { item_id: 6, item_text: 'Price does not include imprint and is based on the white color option. You may add desired imprint(s) during the checkout process for an additional cost' },
-    { item_id: 7, item_text: 'Price includes a full color/one location imprint. Setups and any other additional fees may apply and will be disclosed prior to checkout' },
-    { item_id: 8, item_text: 'Price includes imprint, setup, and run fees' },
-    { item_id: 9, item_text: 'Setups and any other additional fees may apply and will be disclosed prior to checkout' },
-    { item_id: 10, item_text: 'Item is sold blank' }
+    'Price does not include imprint. You may add desired imprint(s) during the checkout process for an additional cost',
+    'Price does not include imprint and is based on the white color option. You may add desired imprint(s) during the checkout process for an additional cost',
+    'Price includes a one color/one location imprint. Setups and any other additional fees may apply and will be disclosed prior to checkout',
+    'Price includes a laser engraved/one location imprint. Setups and any other additional fees may apply andwill be disclosed prior to checkout',
+    'Price includes a laser etched/one location imprint. Setups and any other additional fees may apply and will be disclosed prior to checkout',
+    'Price does not include imprint and is based on the white color option. You may add desired imprint(s) during the checkout process for an additional cost',
+    'Price includes a full color/one location imprint. Setups and any other additional fees may apply and will be disclosed prior to checkout',
+    'Price includes imprint, setup, and run fees',
+    'Setups and any other additional fees may apply and will be disclosed prior to checkout',
+    'Item is sold blank'
   ];
   redPriceCommentText = "";
 
@@ -84,17 +86,11 @@ export class NetCostComponent implements OnInit {
       blankCostFour: [''],
       blankCostFive: [''],
       blankCostSix: [''],
-      // blankCostDropOne: [''],
-      // blankCostDropTwo: [''],
-      // blankCostDropThree: [''],
-      // blankCostDropFour: [''],
-      // blankCostDropFive: [''],
-      // blankCostDropSix: [''],
       msrp: [''],
       internalComments: ['']
     });
 
-    const { pk_productID, liveCostComment, fk_supplierID } = this.selectedProduct;
+    const { pk_productID, liveCostComment } = this.selectedProduct;
 
     this.selectedRedPriceItems.push(liveCostComment)
 
@@ -121,106 +117,68 @@ export class NetCostComponent implements OnInit {
       noDataAvailablePlaceholderText: "No Co-op programs found"
     };
 
-    // Get the CoOps
-    this._inventoryService.getSpecificProductCoops(pk_productID)
-      .subscribe((coops) => {
-        this.coops = coops["data"];
-
-        // Mark for check
-        this._changeDetectorRef.markForCheck();
-      });
-
-    this._inventoryService.getCoOp(fk_supplierID)
-      .pipe(takeUntil(this._unsubscribeAll))
-      .subscribe((coOp) => {
-        this.products = coOp["data"];
-
-        // Mark for check
-        this._changeDetectorRef.markForCheck();
-      })
+    this.getCoOps();
 
     this._inventoryService.getSystemDistributorCodes()
       .subscribe((response) => {
-        this._inventoryService.getProductByProductId(pk_productID)
+        this.distributionCodes = response["data"];
+        this.distributionCodes.push({
+          distrDiscount: -1,
+          distrDiscountCode: "COST"
+        });
+        const countryDefault = this.distributionCodes.find(c => c.distrDiscount == -1);
+        this.netCostForm.patchValue({
+          standardCostDropOne: countryDefault,
+          standardCostDropTwo: countryDefault,
+          standardCostDropThree: countryDefault,
+          standardCostDropFour: countryDefault,
+          standardCostDropFive: countryDefault,
+          standardCostDropSix: countryDefault
+        });
+        // Mark for check
+        this._changeDetectorRef.markForCheck();
+
+      });
+
+    this._inventoryService.getProductByProductId(pk_productID)
+      .pipe(takeUntil(this._unsubscribeAll))
+      .subscribe((details) => {
+        this.selectedProduct = details["data"][0];
+        const { msrp, costComment, liveCostComment } = this.selectedProduct
+        this.selectedRedPrice = liveCostComment;
+        this._inventoryService.getNetCost(pk_productID)
           .pipe(takeUntil(this._unsubscribeAll))
-          .subscribe((details) => {
-            this.selectedProduct = details["data"][0];
-            const { msrp, costComment } = this.selectedProduct
+          .subscribe((netCost) => {
+            const formValues = {
+              quantityOne: netCost["data"][0]?.quantity || "",
+              quantityTwo: netCost["data"][1]?.quantity || "",
+              quantityThree: netCost["data"][2]?.quantity || "",
+              quantityFour: netCost["data"][3]?.quantity || "",
+              quantityFive: netCost["data"][4]?.quantity || "",
+              quantitySix: netCost["data"][5]?.quantity || "",
+              standardCostOne: netCost["data"][0]?.cost || "",
+              standardCostTwo: netCost["data"][1]?.cost || "",
+              standardCostThree: netCost["data"][2]?.cost || "",
+              standardCostFour: netCost["data"][3]?.cost || "",
+              standardCostFive: netCost["data"][4]?.cost || "",
+              standardCostSix: netCost["data"][5]?.cost || "",
+              blankCostOne: netCost["data"][0]?.blankCost || "",
+              blankCostTwo: netCost["data"][1]?.blankCost || "",
+              blankCostThree: netCost["data"][2]?.blankCost || "",
+              blankCostFour: netCost["data"][3]?.blankCost || "",
+              blankCostFive: netCost["data"][4]?.blankCost || "",
+              blankCostSix: netCost["data"][5]?.blankCost || "",
+              msrp: msrp || "",
+              internalComments: costComment || ""
+            };
 
-            this._inventoryService.getNetCost(pk_productID)
-              .pipe(takeUntil(this._unsubscribeAll))
-              .subscribe((netCost) => {
+            this.netCostForm.patchValue(_.mapValues(formValues, v => v == "null" ? '' : v));
 
-                this.distributionCodes = response["data"];
-                const formValues = {
-                  quantityOne: netCost["data"][0]?.quantity || "",
-                  quantityTwo: netCost["data"][1]?.quantity || "",
-                  quantityThree: netCost["data"][2]?.quantity || "",
-                  quantityFour: netCost["data"][3]?.quantity || "",
-                  quantityFive: netCost["data"][4]?.quantity || "",
-                  quantitySix: netCost["data"][5]?.quantity || "",
-                  standardCostOne: netCost["data"][0]?.cost || "",
-                  standardCostTwo: netCost["data"][1]?.cost || "",
-                  standardCostThree: netCost["data"][2]?.cost || "",
-                  standardCostFour: netCost["data"][3]?.cost || "",
-                  standardCostFive: netCost["data"][4]?.cost || "",
-                  standardCostSix: netCost["data"][5]?.cost || "",
-                  standardCostDropOne: "",
-                  standardCostDropTwo: "",
-                  standardCostDropThree: "",
-                  standardCostDropFour: "",
-                  standardCostDropFive: "",
-                  standardCostDropSix: "",
-                  blankCostOne: netCost["data"][0]?.blankCost || "",
-                  blankCostTwo: netCost["data"][1]?.blankCost || "",
-                  blankCostThree: netCost["data"][2]?.blankCost || "",
-                  blankCostFour: netCost["data"][3]?.blankCost || "",
-                  blankCostFive: netCost["data"][4]?.blankCost || "",
-                  blankCostSix: netCost["data"][5]?.blankCost || "",
-                  // blankCostDropOne: "",
-                  // blankCostDropTwo: "",
-                  // blankCostDropThree: "",
-                  // blankCostDropFour: "",
-                  // blankCostDropFive: "",
-                  // blankCostDropSix: "",
-                  msrp: msrp || "",
-                  internalComments: costComment || ""
-                };
+            // Main component loader setting to false
+            this.isLoadingChange.emit(false);
 
-                this.netCostForm.patchValue(_.mapValues(formValues, v => v == "null" ? '' : v));
-
-                if (this.distributionCodes.length) {
-                  this.distributionCodes.push({
-                    distrDiscount: -1,
-                    distrDiscountCode: "COST"
-                  });
-                  const countryDefault = this.distributionCodes.find(c => c.distrDiscount == -1);
-                  this.netCostForm.patchValue({
-                    standardCostDropOne: countryDefault,
-                    standardCostDropTwo: countryDefault,
-                    standardCostDropThree: countryDefault,
-                    standardCostDropFour: countryDefault,
-                    standardCostDropFive: countryDefault,
-                    standardCostDropSix: countryDefault
-                  });
-                };
-
-                // Main component loader setting to false
-                this.isLoadingChange.emit(false);
-
-                // Mark for check
-                this._changeDetectorRef.markForCheck();
-              }, err => {
-                this._snackBar.open("Some error occured", '', {
-                  horizontalPosition: 'center',
-                  verticalPosition: 'bottom',
-                  duration: 3500
-                });
-                // Main component loader setting to false
-                this.isLoadingChange.emit(false);
-                // Mark for check
-                this._changeDetectorRef.markForCheck();
-              });
+            // Mark for check
+            this._changeDetectorRef.markForCheck();
           }, err => {
             this._snackBar.open("Some error occured", '', {
               horizontalPosition: 'center',
@@ -232,8 +190,47 @@ export class NetCostComponent implements OnInit {
             // Mark for check
             this._changeDetectorRef.markForCheck();
           });
+      }, err => {
+        this._snackBar.open("Some error occured", '', {
+          horizontalPosition: 'center',
+          verticalPosition: 'bottom',
+          duration: 3500
+        });
+        // Main component loader setting to false
+        this.isLoadingChange.emit(false);
+        // Mark for check
+        this._changeDetectorRef.markForCheck();
       });
   };
+
+  getCoOps(): void {
+    const { fk_supplierID, pk_productID } = this.selectedProduct;
+    // Get the CoOps
+    this._inventoryService.getProductCoops(fk_supplierID)
+      .subscribe((coops) => {
+        // Get the CoOps
+        this._inventoryService.getSpecificProductCoops(pk_productID)
+          .subscribe((coop) => {
+            const selectedCoopResult = coop["data"];
+            this.coops = coops["data"];
+            if (selectedCoopResult.length) {
+              this.selectedCoOpProgram = selectedCoopResult;
+            };
+            this.isDropdownDisabled = false;
+
+            // Mark for check
+            this._changeDetectorRef.markForCheck();
+          });
+
+        // Mark for check
+        this._changeDetectorRef.markForCheck();
+      }, err => {
+        this.getCoOps();
+
+        // Mark for check
+        this._changeDetectorRef.markForCheck();
+      });
+  }
 
   clearFields(): void {
     const sample = {
@@ -409,9 +406,8 @@ export class NetCostComponent implements OnInit {
       })
   };
 
-  onRedPriceItemSelect(item: any) {
-    const { item_text } = item;
-    this.redPriceCommentText = item_text;
+  onRedPriceItemSelect(text: string) {
+    this.redPriceCommentText = text;
   };
 
   removeNull(array) {

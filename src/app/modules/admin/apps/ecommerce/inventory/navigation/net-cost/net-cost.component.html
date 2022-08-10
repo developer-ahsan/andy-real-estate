@@ -326,10 +326,10 @@
                         <div class="col-12 mt-2">
                             <mat-form-field appearance="fill" class="w-full">
                                 <mat-label>Red Price Comment</mat-label>
-                                <mat-select placeholder="Select Red Price Comment"
+                                <mat-select [(value)]="selectedRedPrice" placeholder="Red price comment"
                                     (selectionChange)="onRedPriceItemSelect($event.value)">
                                     <mat-option *ngFor="let redPrice of redPriceList" [value]="redPrice">
-                                        {{redPrice.item_text}}
+                                        {{redPrice}}
                                     </mat-option>
                                 </mat-select>
                             </mat-form-field>
@@ -338,8 +338,8 @@
                             <p class="font-semibold" style="color: #384253;">Co-op Program</p>
                         </div>
                         <div class="col-12 mt-2">
-                            <ng-multiselect-dropdown [placeholder]="'Co-op Program'" [settings]="coOpProgramSettings"
-                                [data]="coops" [(ngModel)]="selectedCoOpProgram"
+                            <ng-multiselect-dropdown [disabled]="isDropdownDisabled" [placeholder]="'Co-op Program'"
+                                [settings]="coOpProgramSettings" [data]="coops" [(ngModel)]="selectedCoOpProgram"
                                 (onSelect)="onCoOpProgramSelect($event)">
                             </ng-multiselect-dropdown>
                         </div>

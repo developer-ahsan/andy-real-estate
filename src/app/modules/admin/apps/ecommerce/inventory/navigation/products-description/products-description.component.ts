@@ -67,7 +67,6 @@ export class ProductsDescriptionComponent implements OnInit {
       optionsGuidelines: [''],
       notes: [''],
       miniDesc: [''],
-      technoLogoSKU: [''],
       selectOrder: [''],
       purchaseOrderNotes: ['']
     });
@@ -223,19 +222,27 @@ export class ProductsDescriptionComponent implements OnInit {
       });
   };
 
-  copyDescriptionToMeta(): void {
+  copyMiniToMeta(): void {
     const formValues = this.productDescriptionForm.getRawValue();
-    if (formValues.productDesc.length) {
-      var div = document.createElement("div");
-      div.innerHTML = formValues.productDesc;
-      var text = div.textContent || div.innerText || "";
-
+    const { miniDesc } = formValues;
+    if (miniDesc.length) {
       // Fill the form
       this.productDescriptionForm.patchValue({
-        metaDesc: text
+        metaDesc: miniDesc
       });
-    }
-  }
+    };
+  };
+
+  copyMetaToInternal(): void {
+    const formValues = this.productDescriptionForm.getRawValue();
+    const { keywords } = formValues;
+    if (keywords.length) {
+      // Fill the form
+      this.productDescriptionForm.patchValue({
+        internalKeywords: keywords
+      });
+    };
+  };
 
   /**
    * Show flash message

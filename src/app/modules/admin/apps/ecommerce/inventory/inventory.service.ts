@@ -772,12 +772,13 @@ export class InventoryService {
         })
     };
 
-    getProductCoops() {
+    getProductCoops(supplier_id) {
         return this._httpClient.get(environment.products, {
             params: {
                 company: true,
                 product_coop: true,
-                size: 5000
+                supplier_id: supplier_id,
+                size: 500
             }
         })
     }
