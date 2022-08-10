@@ -21,11 +21,6 @@ export class InventoryService {
     private _vendors: BehaviorSubject<InventoryVendor[] | null> = new BehaviorSubject(null);
     public navigationLabels = [
         {
-            id: 1,
-            title: 'Store Versions',
-            icon: 'mat_outline:sd_storage'
-        },
-        {
             id: 2,
             title: 'Name & Description',
             icon: 'mat_outline:edit_note',
@@ -109,6 +104,11 @@ export class InventoryService {
             id: 18,
             title: 'Warehouse Options',
             icon: 'mat_outline:house_siding',
+        },
+        {
+            id: 1,
+            title: 'Store Versions',
+            icon: 'mat_outline:sd_storage'
         },
         {
             id: 19,
@@ -915,12 +915,9 @@ export class InventoryService {
 
     // ADD DEFAULT IMAGE
     addDefaultImage(payload) {
-        const headers = {
-            'Content-Type': 'application/x-www-form-urlencoded',
-            'Access-Control-Allow-Origin': '*'
-        };
+        const headers = { 'Authorization': `Bearer ${this._authService.accessToken}` };
         return this._httpClient.post(
-            environment.mediaAccessUrl, payload, { headers });
+            environment.products, payload, { headers });
     };
 
     // Add Product

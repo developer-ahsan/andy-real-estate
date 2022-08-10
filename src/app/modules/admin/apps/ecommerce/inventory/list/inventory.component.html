@@ -347,30 +347,36 @@
         </div>
     </div>
 
-    <div class="flex justify-between bg-light p-7">
-        <!-- Search -->
-        <mat-form-field class="fuse-mat-dense fuse-mat-no-subscript w-full">
-            <mat-label>Product Number</mat-label>
-            <input class="h-6" [disabled]="productNumberLoader" matInput (input)="onSearchChange($event)"
-                (keyup.enter)="fetchProductNumberData()" [autocomplete]="'off'" [placeholder]="'Product Number'">
-        </mat-form-field>
-        <button class="mt-7 ml-2 min-w-50" mat-flat-button [color]="'primary'" [matTooltip]="'Go to products list'"
-            (click)="fetchProductNumberData()" [disabled]="productNumberLoader">
-            <mat-progress-spinner *ngIf="productNumberLoader" [diameter]="24" [mode]="'indeterminate'">
-            </mat-progress-spinner>
-            <span class="ml-2 mr-1" *ngIf="!productNumberLoader">Fetch</span>
-        </button>
+    <div class="row bg-light px-8 pt-2 pb-6">
+        <div class="col-lg-9 col-12">
+            <!-- Search -->
+            <mat-form-field class="fuse-mat-dense fuse-mat-no-subscript w-full">
+                <mat-label>Product Number</mat-label>
+                <input class="h-6" [disabled]="productNumberLoader" matInput (input)="onSearchChange($event)"
+                    (keyup.enter)="fetchProductNumberData()" [autocomplete]="'off'" [placeholder]="'Product Number'">
+            </mat-form-field>
+        </div>
+        <div class="col-lg-3 col-12">
+            <button class="w-full min-w-50 mt-2 lg:mt-7" mat-flat-button [color]="'primary'"
+                [matTooltip]="'Go to products list'" (click)="fetchProductNumberData()"
+                [disabled]="productNumberLoader">
+                <mat-progress-spinner *ngIf="productNumberLoader" [diameter]="24" [mode]="'indeterminate'">
+                </mat-progress-spinner>
+                <span class="ml-2 mr-1" *ngIf="!productNumberLoader">Fetch</span>
+            </button>
+        </div>
     </div>
 
-    <ngx-skeleton-loader count="8" appearance="line" animation="pulse" *ngIf="productNumberLoader">
-    </ngx-skeleton-loader>
-
-    <div class="row bg-light max-height" *ngIf="!productNumberLoader">
-        <div class="col-12 overflow-auto">
+    <div class="row bg-light max-height">
+        <div class="col-12" *ngIf="productNumberLoader">
+            <ngx-skeleton-loader count="5" appearance="line" animation="pulse"></ngx-skeleton-loader>
+        </div>
+        <div class="col-12 overflow-auto" *ngIf="!productNumberLoader">
             <mat-card class="rounded-2xl m-8">
                 <mat-card-content>
                     <mat-stepper (selectionChange)="selectionChange($event)" #stepper [linear]="isLinear"
-                        class="example-stepper" [orientation]="(stepperOrientation | async)!">
+                        class="example-stepper" [ngClass]="isReviewFormReached ? 'myStepperAuto' : 'myStepperNone'"
+                        [orientation]="(stepperOrientation | async)!">
 
                         <!-- Product Type -->
                         <mat-step [stepControl]="firstFormGroup" label="Product Type" [editable]="true">
@@ -378,7 +384,7 @@
                                 <div class="col-12">
                                     <p class="font-semibold">Select a supplier</p>
                                 </div>
-                                <div class="col-lg-9 col-12">
+                                <div class="col-12">
                                     <ng-multiselect-dropdown [placeholder]="'Select Supplier'"
                                         [settings]="dropdownSettings" [data]="dropdownList" [(ngModel)]="selectedItems"
                                         (onSelect)="onItemSelect($event)">
@@ -414,6 +420,10 @@
                         <mat-step [stepControl]="secondFormGroup" label="Product Details" [editable]="true">
                             <form [formGroup]="secondFormGroup" class="mt-3">
                                 <div class="row">
+                                    <div class="col-12 mb-1">
+                                        <span class="font-semibold mr-2">Supplier:</span>
+                                        <span> {{supplierName}} </span>
+                                    </div>
                                     <div class="col-lg-6 col-12">
                                         <mat-form-field appearance="fill" class="w-full">
                                             <mat-label>Product Name</mat-label>
@@ -448,41 +458,32 @@
                                                 [formControlName]="'miniDescription'"></textarea>
                                         </mat-form-field>
                                     </div>
-                                    <div class="col-12">
+                                    <div class="col-12" *ngIf="supplierType != 'Apparel Item'">
                                         <div class="flex items-center">
                                             <div class="font-medium text-secondary">PRODUCT DIMENSIONS</div>
                                             <div class="flex-auto ml-2 border-b-2"></div>
                                         </div>
                                     </div>
-                                    <div class="col-lg-4 col-12">
+                                    <div class="col-lg-4 col-12" *ngIf="supplierType != 'Apparel Item'">
                                         <mat-form-field appearance="fill" class="w-full">
                                             <mat-label>Product Width</mat-label>
                                             <input matInput formControlName="productWidth">
                                         </mat-form-field>
                                     </div>
-                                    <div class="col-lg-4 col-12">
+                                    <div class="col-lg-4 col-12" *ngIf="supplierType != 'Apparel Item'">
                                         <mat-form-field appearance="fill" class="w-full">
                                             <mat-label>Product Height</mat-label>
                                             <input matInput formControlName="productHeight">
                                         </mat-form-field>
                                     </div>
-                                    <div class="col-lg-4 col-12">
+                                    <div class="col-lg-4 col-12" *ngIf="supplierType != 'Apparel Item'">
                                         <mat-form-field appearance="fill" class="w-full">
                                             <mat-label>Product Length</mat-label>
                                             <input matInput formControlName="productLength">
                                         </mat-form-field>
                                     </div>
                                     <div class="col-lg-6 col-12" style="line-height: 2.3;"
-                                        *ngIf="supplierType === 'Apparel Item'">
-                                        <p class="font-semibold">Sex</p>
-                                        <mat-radio-group [formControlName]="'sex'">
-                                            <mat-radio-button value="Male" class="mr-5">Male</mat-radio-button>
-                                            <mat-radio-button value="Female" class="mx-5">Female</mat-radio-button>
-                                            <mat-radio-button value="Other" class="ml-5">Other</mat-radio-button>
-                                        </mat-radio-group>
-                                    </div>
-                                    <div class="col-lg-6 col-12" style="line-height: 2.3;"
-                                        *ngIf="supplierType === 'Apparel Item'">
+                                        *ngIf="supplierType == 'Apparel Item'">
                                         <p class="font-semibold">Group run</p>
                                         <mat-checkbox [formControlName]="'allowGroupRun'">Allow group run?
                                         </mat-checkbox>
@@ -495,26 +496,47 @@
                                             [options]="sliderOptions">
                                         </ngx-slider>
                                     </div>
-                                    <div class="col-12">
+                                    <div class="col-5" *ngIf="supplierType != 'Apparel Item'">
                                         <p class="text-secondary font-semibold">Weight</p>
                                     </div>
-                                    <div class="col-4">
+                                    <div class="col-7" *ngIf="supplierType != 'Apparel Item'">
+                                        <p class="text-secondary font-semibold">Units in weight</p>
+                                    </div>
+                                    <div class="col-4" *ngIf="supplierType != 'Apparel Item'">
                                         <mat-form-field class="w-full">
                                             <input matInput type="number" min="1" [formControlName]="'weight'"><small
                                                 class="text-secondary font-semibold">
                                                 lbs </small>
                                         </mat-form-field>
                                     </div>
-                                    <div class="col-1">
+                                    <div class="col-1 text-center" *ngIf="supplierType != 'Apparel Item'">
                                         <span class="text-secondary lineHeihgt-35">per</span>
                                     </div>
-                                    <div class="col-4">
+                                    <div class="col-4" *ngIf="supplierType != 'Apparel Item'">
                                         <mat-form-field class="w-full">
                                             <input matInput type="number" min="1"
                                                 [formControlName]="'unitsInWeight'"><small
                                                 class="text-secondary font-semibold">
                                                 unit(s) </small>
-                                            <mat-error>This field is required</mat-error>
+                                        </mat-form-field>
+                                    </div>
+                                    <div class="col-lg-3 col-12" *ngIf="supplierType == 'Apparel Item'">
+                                        <mat-form-field class="w-full">
+                                            <mat-label>Sex</mat-label>
+                                            <mat-select [(value)]="selectedSex" placeholder="Mode">
+                                                <mat-option value="N/A">N/A</mat-option>
+                                                <mat-option value="Men's">Men's</mat-option>
+                                                <mat-option value="Women's">Women's</mat-option>
+                                                <mat-option value="Men's/Women's">Men's/Women's</mat-option>
+                                            </mat-select>
+                                        </mat-form-field>
+                                    </div>
+                                    <div class="col-12" *ngIf="supplierType == 'Apparel Item'">
+                                        <mat-form-field class="w-full">
+                                            <input matInput type="number" min="1"
+                                                [formControlName]="'unitsInWeight'"><small
+                                                class="text-secondary font-semibold">
+                                                unit(s) </small>
                                         </mat-form-field>
                                     </div>
                                     <div class="col-12">
@@ -531,7 +553,7 @@
                                     </div>
                                     <div class="col-12">
                                         <div class="flex items-center">
-                                            <div class="font-medium text-secondary">CASE DIMENSIONS</div>
+                                            <div class="font-medium" style="color: #64748b;">CASE DIMENSIONS</div>
                                             <div class="flex-auto ml-2 border-b-2"></div>
                                         </div>
                                     </div>
@@ -598,20 +620,14 @@
                                     </div>
 
 
-                                    <div class="col-lg-4 col-12">
+                                    <div class="col-lg-6 col-12">
                                         <mat-form-field appearance="fill" class="w-full">
                                             <mat-label>Over Pack Charge (optional)</mat-label>
                                             <input matInput type="number" formControlName="overPackageCharge">
                                         </mat-form-field>
                                     </div>
-                                    <div class="col-lg-4 col-12">
-                                        <mat-form-field appearance="fill" class="w-full">
-                                            <mat-label>TechnoLogo SKU (100) (optional)</mat-label>
-                                            <input matInput formControlName="technoLogo">
-                                        </mat-form-field>
-                                    </div>
-                                    <div class="col-lg-4 col-12" style="line-height: 2.3;">
-                                        <p class="font-semibold">Do shipping charges apply?</p>
+                                    <div class="col-lg-6 col-12" style="line-height: 2.3;">
+                                        <p class="font-semibold" style="color: #64748b;">Do shipping charges apply?</p>
                                         <mat-radio-group [formControlName]="'doChargesApply'">
                                             <mat-radio-button value="Yes" class="mr-5">Yes</mat-radio-button>
                                             <mat-radio-button value="No" class="ml-5">No</mat-radio-button>
@@ -767,9 +783,6 @@
                                             <div class="col-lg-2 col-4">
                                                 <mat-form-field class="w-full">
                                                     <mat-select name="order" [formControlName]="'standardCostDropOne'">
-                                                        <mat-option value="select_order" disabled>
-                                                            COST
-                                                        </mat-option>
                                                         <mat-option *ngFor="let option of distributionCodes"
                                                             [value]="option">
                                                             {{option.distrDiscountCode}}
@@ -780,9 +793,6 @@
                                             <div class="col-lg-2 col-4">
                                                 <mat-form-field class="w-full">
                                                     <mat-select name="order" [formControlName]="'standardCostDropTwo'">
-                                                        <mat-option value="select_order" disabled>
-                                                            COST
-                                                        </mat-option>
                                                         <mat-option *ngFor="let option of distributionCodes"
                                                             [value]="option">
                                                             {{option.distrDiscountCode}}
@@ -794,9 +804,6 @@
                                                 <mat-form-field class="w-full">
                                                     <mat-select name="order"
                                                         [formControlName]="'standardCostDropThree'">
-                                                        <mat-option value="select_order" disabled>
-                                                            COST
-                                                        </mat-option>
                                                         <mat-option *ngFor="let option of distributionCodes"
                                                             [value]="option">
                                                             {{option.distrDiscountCode}}
@@ -807,9 +814,6 @@
                                             <div class="col-lg-2 col-4">
                                                 <mat-form-field class="w-full">
                                                     <mat-select name="order" [formControlName]="'standardCostDropFour'">
-                                                        <mat-option value="select_order" disabled>
-                                                            COST
-                                                        </mat-option>
                                                         <mat-option *ngFor="let option of distributionCodes"
                                                             [value]="option">
                                                             {{option.distrDiscountCode}}
@@ -820,9 +824,6 @@
                                             <div class="col-lg-2 col-4">
                                                 <mat-form-field class="w-full">
                                                     <mat-select name="order" [formControlName]="'standardCostDropFive'">
-                                                        <mat-option value="select_order" disabled>
-                                                            COST
-                                                        </mat-option>
                                                         <mat-option *ngFor="let option of distributionCodes"
                                                             [value]="option">
                                                             {{option.distrDiscountCode}}
@@ -833,9 +834,6 @@
                                             <div class="col-lg-2 col-4">
                                                 <mat-form-field class="w-full">
                                                     <mat-select name="order" [formControlName]="'standardCostDropSix'">
-                                                        <mat-option value="select_order" disabled>
-                                                            COST
-                                                        </mat-option>
                                                         <mat-option *ngFor="let option of distributionCodes"
                                                             [value]="option">
                                                             {{option.distrDiscountCode}}
@@ -945,28 +943,47 @@
 
                         <mat-step [stepControl]="featureForm" label="Features" [editable]="true">
                             <form [formGroup]="featureForm">
-                                <div class="row">
-                                    <div class="col-lg-3 col-12 mt-3">
-                                        <mat-form-field class="w-full">
-                                            <mat-label>
-                                                <button
-                                                    [matTooltip]="'This determines the order in which features will be displayed'">
-                                                    <i class="fa fa-info-circle"></i>
-                                                </button>
-                                                <span class="ml-1">Order</span>
-                                            </mat-label>
-                                            <input matInput [formControlName]="'order'" placeholder="New Feature">
-                                        </mat-form-field>
-                                    </div>
-                                    <div class="col-lg-9 col-12 mt-3">
-                                        <mat-form-field class="w-full">
-                                            <mat-label>Feature</mat-label>
-                                            <input matInput [formControlName]="'feature'">
-                                            <mat-error>This field is required</mat-error>
-                                        </mat-form-field>
+                                <div formArrayName="items"
+                                    *ngFor="let item of featureForm.get('items').controls; let i = index; let first = first;">
+                                    <div class="row mt-1" [formGroupName]="i">
+                                        <div class="col-lg-3 col-12">
+                                            <mat-form-field class="w-full">
+                                                <mat-label>
+                                                    <button
+                                                        [matTooltip]="'This determines the order in which features will be displayed'">
+                                                        <i class="fa fa-info-circle"></i>
+                                                    </button>
+                                                    <span class="ml-1">Order</span>
+                                                </mat-label>
+                                                <input matInput type="number" [formControlName]="'order'"
+                                                    placeholder="New Feature">
+                                            </mat-form-field>
+                                        </div>
+                                        <div class="col-lg-9 col-12">
+                                            <mat-form-field class="w-full">
+                                                <mat-label>
+                                                    Feature
+                                                </mat-label>
+                                                <input matInput [formControlName]="'feature'">
+                                                <mat-error>This field is required</mat-error>
+                                            </mat-form-field>
+                                        </div>
+                                        <div *ngIf="!first" class="col-12">
+                                            <span class="cursor-pointer text-secondary text-sm"
+                                                (click)="removeFeature(i)">
+                                                Delete
+                                            </span>
+                                        </div>
                                     </div>
                                 </div>
                             </form>
+                            <div class="row my-2">
+                                <div class="col-12 text-right">
+                                    <p class="cursor-pointer font-semibold" (click)="addItem()">
+                                        <span>Add Feature</span>
+                                    </p>
+                                </div>
+                            </div>
                             <div class="row">
                                 <div class="col-lg-8 col-12"></div>
                                 <div class="col-lg-2 col-12">
@@ -1054,25 +1071,25 @@
                                                         [formControlName]="'miniDescription'"></textarea>
                                                 </mat-form-field>
                                             </div>
-                                            <div class="col-12">
+                                            <div class="col-12" *ngIf="supplierType != 'Apparel Item'">
                                                 <div class="flex items-center">
                                                     <div class="font-medium text-secondary">PRODUCT DIMENSIONS</div>
                                                     <div class="flex-auto ml-2 border-b-2"></div>
                                                 </div>
                                             </div>
-                                            <div class="col-lg-4 col-12">
+                                            <div class="col-lg-4 col-12" *ngIf="supplierType != 'Apparel Item'">
                                                 <mat-form-field appearance="fill" class="w-full">
                                                     <mat-label>Product Width</mat-label>
                                                     <input matInput formControlName="productWidth">
                                                 </mat-form-field>
                                             </div>
-                                            <div class="col-lg-4 col-12">
+                                            <div class="col-lg-4 col-12" *ngIf="supplierType != 'Apparel Item'">
                                                 <mat-form-field appearance="fill" class="w-full">
                                                     <mat-label>Product Height</mat-label>
                                                     <input matInput formControlName="productHeight">
                                                 </mat-form-field>
                                             </div>
-                                            <div class="col-lg-4 col-12">
+                                            <div class="col-lg-4 col-12" *ngIf="supplierType != 'Apparel Item'">
                                                 <mat-form-field appearance="fill" class="w-full">
                                                     <mat-label>Product Length</mat-label>
                                                     <input matInput formControlName="productLength">
@@ -1080,18 +1097,19 @@
                                             </div>
 
                                             <div class="col-lg-6 col-12" style="line-height: 2.3;"
-                                                *ngIf="supplierType === 'Apparel Item'">
-                                                <p class="font-semibold">Sex</p>
-                                                <mat-radio-group [formControlName]="'sex'">
-                                                    <mat-radio-button value="Male" class="mr-5">Male</mat-radio-button>
-                                                    <mat-radio-button value="Female" class="mx-5">Female
-                                                    </mat-radio-button>
-                                                    <mat-radio-button value="Other" class="ml-5">Other
-                                                    </mat-radio-button>
-                                                </mat-radio-group>
+                                                *ngIf="supplierType == 'Apparel Item'">
+                                                <mat-form-field class="w-full">
+                                                    <mat-label>Sex</mat-label>
+                                                    <mat-select [(value)]="selectedSex" placeholder="Mode">
+                                                        <mat-option value="N/A">N/A</mat-option>
+                                                        <mat-option value="Men's">Men's</mat-option>
+                                                        <mat-option value="Women's">Women's</mat-option>
+                                                        <mat-option value="Men's/Women's">Men's/Women's</mat-option>
+                                                    </mat-select>
+                                                </mat-form-field>
                                             </div>
                                             <div class="col-lg-6 col-12" style="line-height: 2.3;"
-                                                *ngIf="supplierType === 'Apparel Item'">
+                                                *ngIf="supplierType == 'Apparel Item'">
                                                 <p class="font-semibold">Group run</p>
                                                 <mat-checkbox [formControlName]="'allowGroupRun'">Allow group run?
                                                 </mat-checkbox>
@@ -1132,10 +1150,13 @@
                                                     <small class="text-secondary font-semibold"> inch </small>
                                                 </mat-form-field>
                                             </div>
-                                            <div class="col-12">
+                                            <div class="col-lg-5" *ngIf="supplierType != 'Apparel Item'">
                                                 <p class="text-secondary font-semibold">Weight</p>
                                             </div>
-                                            <div class="col-4">
+                                            <div class="col-lg-7" *ngIf="supplierType != 'Apparel Item'">
+                                                <p class="text-secondary font-semibold">Units in weight</p>
+                                            </div>
+                                            <div class="col-4" *ngIf="supplierType != 'Apparel Item'">
                                                 <mat-form-field class="w-full">
                                                     <input matInput type="number" min="1"
                                                         [formControlName]="'weight'"><small
@@ -1143,16 +1164,24 @@
                                                         lbs </small>
                                                 </mat-form-field>
                                             </div>
-                                            <div class="col-1">
+                                            <div class="col-1 text-center" *ngIf="supplierType != 'Apparel Item'">
                                                 <span class="text-secondary lineHeihgt-35">per</span>
                                             </div>
-                                            <div class="col-4">
+                                            <div class="col-4" *ngIf="supplierType != 'Apparel Item'">
                                                 <mat-form-field class="w-full">
                                                     <input matInput type="number" min="1"
                                                         [formControlName]="'unitsInWeight'"><small
                                                         class="text-secondary font-semibold">
                                                         unit(s) </small>
                                                     <mat-error>This field is required</mat-error>
+                                                </mat-form-field>
+                                            </div>
+                                            <div class="col-12" *ngIf="supplierType == 'Apparel Item'">
+                                                <mat-form-field class="w-full">
+                                                    <input matInput type="number" min="1"
+                                                        [formControlName]="'unitsInWeight'"><small
+                                                        class="text-secondary font-semibold">
+                                                        unit(s) </small>
                                                 </mat-form-field>
                                             </div>
                                             <div class="col-12">
@@ -1168,19 +1197,14 @@
                                                     <mat-radio-button value="No" class="ml-5">No</mat-radio-button>
                                                 </mat-radio-group>
                                             </div>
-                                            <div class="col-lg-4 col-12">
+
+                                            <div class="col-lg-6 col-12">
                                                 <mat-form-field appearance="fill" class="w-full">
                                                     <mat-label>Over Pack Charge (optional)</mat-label>
                                                     <input matInput type="number" formControlName="overPackageCharge">
                                                 </mat-form-field>
                                             </div>
-                                            <div class="col-lg-4 col-12">
-                                                <mat-form-field appearance="fill" class="w-full">
-                                                    <mat-label>TechnoLogo SKU (100) (optional)</mat-label>
-                                                    <input matInput formControlName="technoLogo">
-                                                </mat-form-field>
-                                            </div>
-                                            <div class="col-lg-4 col-12">
+                                            <div class="col-lg-6 col-12">
                                                 <mat-form-field appearance="fill" class="w-full">
                                                     <mat-label>Supplier Link (200)</mat-label>
                                                     <input matInput formControlName="supplierLink">
@@ -1366,9 +1390,6 @@
                                             <div class="col-lg-2 col-4">
                                                 <mat-form-field class="w-full">
                                                     <mat-select name="order" [formControlName]="'standardCostDropOne'">
-                                                        <mat-option value="select_order" disabled>
-                                                            COST
-                                                        </mat-option>
                                                         <mat-option *ngFor="let option of distributionCodes"
                                                             [value]="option">
                                                             {{option.distrDiscountCode}}
@@ -1379,9 +1400,6 @@
                                             <div class="col-lg-2 col-4">
                                                 <mat-form-field class="w-full">
                                                     <mat-select name="order" [formControlName]="'standardCostDropTwo'">
-                                                        <mat-option value="select_order" disabled>
-                                                            COST
-                                                        </mat-option>
                                                         <mat-option *ngFor="let option of distributionCodes"
                                                             [value]="option">
                                                             {{option.distrDiscountCode}}
@@ -1393,9 +1411,6 @@
                                                 <mat-form-field class="w-full">
                                                     <mat-select name="order"
                                                         [formControlName]="'standardCostDropThree'">
-                                                        <mat-option value="select_order" disabled>
-                                                            COST
-                                                        </mat-option>
                                                         <mat-option *ngFor="let option of distributionCodes"
                                                             [value]="option">
                                                             {{option.distrDiscountCode}}
@@ -1406,9 +1421,6 @@
                                             <div class="col-lg-2 col-4">
                                                 <mat-form-field class="w-full">
                                                     <mat-select name="order" [formControlName]="'standardCostDropFour'">
-                                                        <mat-option value="select_order" disabled>
-                                                            COST
-                                                        </mat-option>
                                                         <mat-option *ngFor="let option of distributionCodes"
                                                             [value]="option">
                                                             {{option.distrDiscountCode}}
@@ -1419,9 +1431,6 @@
                                             <div class="col-lg-2 col-4">
                                                 <mat-form-field class="w-full">
                                                     <mat-select name="order" [formControlName]="'standardCostDropFive'">
-                                                        <mat-option value="select_order" disabled>
-                                                            COST
-                                                        </mat-option>
                                                         <mat-option *ngFor="let option of distributionCodes"
                                                             [value]="option">
                                                             {{option.distrDiscountCode}}
@@ -1432,9 +1441,6 @@
                                             <div class="col-lg-2 col-4">
                                                 <mat-form-field class="w-full">
                                                     <mat-select name="order" [formControlName]="'standardCostDropSix'">
-                                                        <mat-option value="select_order" disabled>
-                                                            COST
-                                                        </mat-option>
                                                         <mat-option *ngFor="let option of distributionCodes"
                                                             [value]="option">
                                                             {{option.distrDiscountCode}}
@@ -1455,32 +1461,6 @@
                                                 <mat-form-field class="w-full">
                                                     <mat-label>Internal Comments</mat-label>
                                                     <input matInput [formControlName]="'internalComments'">
-                                                </mat-form-field>
-                                            </div>
-                                        </div>
-                                        <mat-divider></mat-divider>
-                                        <div class="mt-8 text-2xl font-extrabold tracking-tight leading-tight">
-                                            Features
-                                        </div>
-                                        <div class="row">
-                                            <div class="col-lg-3 col-12 mt-3">
-                                                <mat-form-field class="w-full">
-                                                    <mat-label>
-                                                        <button
-                                                            [matTooltip]="'This determines the order in which features will be displayed'">
-                                                            <i class="fa fa-info-circle"></i>
-                                                        </button>
-                                                        <span class="ml-1">Order</span>
-                                                    </mat-label>
-                                                    <input matInput [formControlName]="'order'"
-                                                        placeholder="New Feature">
-                                                </mat-form-field>
-                                            </div>
-                                            <div class="col-lg-9 col-12 mt-3">
-                                                <mat-form-field class="w-full">
-                                                    <mat-label>Feature</mat-label>
-                                                    <input matInput [formControlName]="'feature'">
-                                                    <mat-error>This field is required</mat-error>
                                                 </mat-form-field>
                                             </div>
                                         </div>

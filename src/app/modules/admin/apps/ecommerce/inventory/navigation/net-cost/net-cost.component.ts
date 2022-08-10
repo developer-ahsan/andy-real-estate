@@ -5,6 +5,7 @@ import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { IDropdownSettings } from 'ng-multiselect-dropdown';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import _ from 'lodash';
 
 @Component({
   selector: 'app-net-cost',
@@ -21,7 +22,9 @@ export class NetCostComponent implements OnInit {
   netCostForm: FormGroup;
   products: string[] = [];
   netCostLoader = false;
-  validationCheckMessage = ""
+  validationCheckMessage = "";
+
+  selectedDropdown;
 
   netCostFetchLoader = false;
 
@@ -56,14 +59,40 @@ export class NetCostComponent implements OnInit {
   ) { }
 
   ngOnInit(): void {
-
-    this._inventoryService.getSystemDistributorCodes()
-      .subscribe((response) => {
-        this.distributionCodes = response["data"];
-
-        // Mark for check
-        this._changeDetectorRef.markForCheck();
-      });
+    this.netCostForm = this._formBuilder.group({
+      quantityOne: [''],
+      quantityTwo: [''],
+      quantityThree: [''],
+      quantityFour: [''],
+      quantityFive: [''],
+      quantitySix: [''],
+      standardCostOne: [''],
+      standardCostTwo: [''],
+      standardCostThree: [''],
+      standardCostFour: [''],
+      standardCostFive: [''],
+      standardCostSix: [''],
+      standardCostDropOne: [''],
+      standardCostDropTwo: [''],
+      standardCostDropThree: [''],
+      standardCostDropFour: [''],
+      standardCostDropFive: [''],
+      standardCostDropSix: [''],
+      blankCostOne: [''],
+      blankCostTwo: [''],
+      blankCostThree: [''],
+      blankCostFour: [''],
+      blankCostFive: [''],
+      blankCostSix: [''],
+      // blankCostDropOne: [''],
+      // blankCostDropTwo: [''],
+      // blankCostDropThree: [''],
+      // blankCostDropFour: [''],
+      // blankCostDropFive: [''],
+      // blankCostDropSix: [''],
+      msrp: [''],
+      internalComments: ['']
+    });
 
     const { pk_productID, liveCostComment, fk_supplierID } = this.selectedProduct;
 
@@ -101,41 +130,6 @@ export class NetCostComponent implements OnInit {
         this._changeDetectorRef.markForCheck();
       });
 
-    this.netCostForm = this._formBuilder.group({
-      quantityOne: [''],
-      quantityTwo: [''],
-      quantityThree: [''],
-      quantityFour: [''],
-      quantityFive: [''],
-      quantitySix: [''],
-      standardCostOne: [''],
-      standardCostTwo: [''],
-      standardCostThree: [''],
-      standardCostFour: [''],
-      standardCostFive: [''],
-      standardCostSix: [''],
-      standardCostDropOne: [''],
-      standardCostDropTwo: [''],
-      standardCostDropThree: [''],
-      standardCostDropFour: [''],
-      standardCostDropFive: [''],
-      standardCostDropSix: [''],
-      blankCostOne: [''],
-      blankCostTwo: [''],
-      blankCostThree: [''],
-      blankCostFour: [''],
-      blankCostFive: [''],
-      blankCostSix: [''],
-      blankCostDropOne: [''],
-      blankCostDropTwo: [''],
-      blankCostDropThree: [''],
-      blankCostDropFour: [''],
-      blankCostDropFive: [''],
-      blankCostDropSix: [''],
-      msrp: [''],
-      internalComments: ['']
-    });
-
     this._inventoryService.getCoOp(fk_supplierID)
       .pipe(takeUntil(this._unsubscribeAll))
       .subscribe((coOp) => {
@@ -145,57 +139,88 @@ export class NetCostComponent implements OnInit {
         this._changeDetectorRef.markForCheck();
       })
 
-    this._inventoryService.getProductByProductId(pk_productID)
-      .pipe(takeUntil(this._unsubscribeAll))
-      .subscribe((details) => {
-        this.selectedProduct = details["data"][0];
-        const { msrp, costComment } = this.selectedProduct
-
-        this._inventoryService.getNetCost(pk_productID)
+    this._inventoryService.getSystemDistributorCodes()
+      .subscribe((response) => {
+        this._inventoryService.getProductByProductId(pk_productID)
           .pipe(takeUntil(this._unsubscribeAll))
-          .subscribe((netCost) => {
-            const formValues = {
-              quantityOne: netCost["data"][0]?.quantity || "",
-              quantityTwo: netCost["data"][1]?.quantity || "",
-              quantityThree: netCost["data"][2]?.quantity || "",
-              quantityFour: netCost["data"][3]?.quantity || "",
-              quantityFive: netCost["data"][4]?.quantity || "",
-              quantitySix: netCost["data"][5]?.quantity || "",
-              standardCostOne: netCost["data"][0]?.cost || "",
-              standardCostTwo: netCost["data"][1]?.cost || "",
-              standardCostThree: netCost["data"][2]?.cost || "",
-              standardCostFour: netCost["data"][3]?.cost || "",
-              standardCostFive: netCost["data"][4]?.cost || "",
-              standardCostSix: netCost["data"][5]?.cost || "",
-              standardCostDropOne: "",
-              standardCostDropTwo: "",
-              standardCostDropThree: "",
-              standardCostDropFour: "",
-              standardCostDropFive: "",
-              standardCostDropSix: "",
-              blankCostOne: netCost["data"][0]?.blankCost || "",
-              blankCostTwo: netCost["data"][1]?.blankCost || "",
-              blankCostThree: netCost["data"][2]?.blankCost || "",
-              blankCostFour: netCost["data"][3]?.blankCost || "",
-              blankCostFive: netCost["data"][4]?.blankCost || "",
-              blankCostSix: netCost["data"][5]?.blankCost || "",
-              blankCostDropOne: "",
-              blankCostDropTwo: "",
-              blankCostDropThree: "",
-              blankCostDropFour: "",
-              blankCostDropFive: "",
-              blankCostDropSix: "",
-              msrp: msrp || "",
-              internalComments: costComment || ""
-            };
+          .subscribe((details) => {
+            this.selectedProduct = details["data"][0];
+            const { msrp, costComment } = this.selectedProduct
 
-            this.netCostForm.patchValue(formValues);
+            this._inventoryService.getNetCost(pk_productID)
+              .pipe(takeUntil(this._unsubscribeAll))
+              .subscribe((netCost) => {
 
-            // Main component loader setting to false
-            this.isLoadingChange.emit(false);
+                this.distributionCodes = response["data"];
+                const formValues = {
+                  quantityOne: netCost["data"][0]?.quantity || "",
+                  quantityTwo: netCost["data"][1]?.quantity || "",
+                  quantityThree: netCost["data"][2]?.quantity || "",
+                  quantityFour: netCost["data"][3]?.quantity || "",
+                  quantityFive: netCost["data"][4]?.quantity || "",
+                  quantitySix: netCost["data"][5]?.quantity || "",
+                  standardCostOne: netCost["data"][0]?.cost || "",
+                  standardCostTwo: netCost["data"][1]?.cost || "",
+                  standardCostThree: netCost["data"][2]?.cost || "",
+                  standardCostFour: netCost["data"][3]?.cost || "",
+                  standardCostFive: netCost["data"][4]?.cost || "",
+                  standardCostSix: netCost["data"][5]?.cost || "",
+                  standardCostDropOne: "",
+                  standardCostDropTwo: "",
+                  standardCostDropThree: "",
+                  standardCostDropFour: "",
+                  standardCostDropFive: "",
+                  standardCostDropSix: "",
+                  blankCostOne: netCost["data"][0]?.blankCost || "",
+                  blankCostTwo: netCost["data"][1]?.blankCost || "",
+                  blankCostThree: netCost["data"][2]?.blankCost || "",
+                  blankCostFour: netCost["data"][3]?.blankCost || "",
+                  blankCostFive: netCost["data"][4]?.blankCost || "",
+                  blankCostSix: netCost["data"][5]?.blankCost || "",
+                  // blankCostDropOne: "",
+                  // blankCostDropTwo: "",
+                  // blankCostDropThree: "",
+                  // blankCostDropFour: "",
+                  // blankCostDropFive: "",
+                  // blankCostDropSix: "",
+                  msrp: msrp || "",
+                  internalComments: costComment || ""
+                };
 
-            // Mark for check
-            this._changeDetectorRef.markForCheck();
+                this.netCostForm.patchValue(_.mapValues(formValues, v => v == "null" ? '' : v));
+
+                if (this.distributionCodes.length) {
+                  this.distributionCodes.push({
+                    distrDiscount: -1,
+                    distrDiscountCode: "COST"
+                  });
+                  const countryDefault = this.distributionCodes.find(c => c.distrDiscount == -1);
+                  this.netCostForm.patchValue({
+                    standardCostDropOne: countryDefault,
+                    standardCostDropTwo: countryDefault,
+                    standardCostDropThree: countryDefault,
+                    standardCostDropFour: countryDefault,
+                    standardCostDropFive: countryDefault,
+                    standardCostDropSix: countryDefault
+                  });
+                };
+
+                // Main component loader setting to false
+                this.isLoadingChange.emit(false);
+
+                // Mark for check
+                this._changeDetectorRef.markForCheck();
+              }, err => {
+                this._snackBar.open("Some error occured", '', {
+                  horizontalPosition: 'center',
+                  verticalPosition: 'bottom',
+                  duration: 3500
+                });
+                // Main component loader setting to false
+                this.isLoadingChange.emit(false);
+                // Mark for check
+                this._changeDetectorRef.markForCheck();
+              });
           }, err => {
             this._snackBar.open("Some error occured", '', {
               horizontalPosition: 'center',
@@ -207,20 +232,33 @@ export class NetCostComponent implements OnInit {
             // Mark for check
             this._changeDetectorRef.markForCheck();
           });
-      }, err => {
-        this._snackBar.open("Some error occured", '', {
-          horizontalPosition: 'center',
-          verticalPosition: 'bottom',
-          duration: 3500
-        });
-        // Main component loader setting to false
-        this.isLoadingChange.emit(false);
-        // Mark for check
-        this._changeDetectorRef.markForCheck();
-      })
+      });
+  };
 
+  clearFields(): void {
+    const sample = {
+      standardCostOne: "",
+      standardCostTwo: "",
+      standardCostThree: "",
+      standardCostFour: "",
+      standardCostFive: "",
+      standardCostSix: ""
+    };
+    this.netCostForm.patchValue(sample);
+  };
 
-  }
+  setDropdownValue(value: string) {
+    this.selectedDropdown = this.distributionCodes.find(item => item.distrDiscountCode === value);
+    const sample = {
+      standardCostDropOne: this.selectedDropdown,
+      standardCostDropTwo: this.selectedDropdown,
+      standardCostDropThree: this.selectedDropdown,
+      standardCostDropFour: this.selectedDropdown,
+      standardCostDropFive: this.selectedDropdown,
+      standardCostDropSix: this.selectedDropdown
+    };
+    this.netCostForm.patchValue(sample);
+  };
 
   onCoOpProgramSelect(item: any) {
     const { pk_coopID } = item;
@@ -390,11 +428,11 @@ export class NetCostComponent implements OnInit {
     const realStandardCostList = this.removeNull(standardCostList);
 
     // If length of quantities and blanks list is not equal then return
-    if (realQuantityList?.length !== realBlankList?.length) {
-      this.validationCheckMessage = "Number of quantity breaks does not match the number of blank cost amounts";
-      this.showFlashMessage('error');
-      return;
-    }
+    // if (realQuantityList?.length !== realBlankList?.length) {
+    //   this.validationCheckMessage = "Number of quantity breaks does not match the number of blank cost amounts";
+    //   this.showFlashMessage('error');
+    //   return;
+    // }
 
     const payload = {
       product_id: parseInt(this.selectedProduct.pk_productID),
@@ -431,8 +469,8 @@ export class NetCostComponent implements OnInit {
   }
 
   /**
- * Show flash message
- */
+  * Show flash message
+  */
   showFlashMessage(type: 'success' | 'error'): void {
     // Show the message
     this.flashMessage = type;

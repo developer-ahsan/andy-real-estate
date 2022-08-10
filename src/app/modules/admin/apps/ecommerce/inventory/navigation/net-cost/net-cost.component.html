@@ -2,7 +2,7 @@
 </ngx-skeleton-loader>
 <div class="row" *ngIf="!isLoading">
     <div class="col-12 my-2">
-        <fuse-card class="rounded-2xl bg-card flex flex-col lg:flex-row w-full">
+        <fuse-card class="rounded-2xl shadow bg-card flex flex-col lg:flex-row w-full">
             <div class="p-6 sm:p-8 lg:p-10 w-full">
                 <div class="flex justify-between">
                     <div class="text-2xl font-bold">
@@ -63,8 +63,19 @@
                                 <mat-divider></mat-divider>
                             </div>
                             <!-- Standard COST -->
-                            <div class="col-12 mt-5">
+                            <div class="col-12 mt-5 flex justify-between">
                                 <b>Standard Cost</b>
+                                <p>
+                                    <span class="underline font-semibold cursor-pointer mr-2"
+                                        (click)="clearFields()">Clear</span>
+
+                                    <span class="underline font-semibold cursor-pointer"
+                                        (click)="setDropdownValue('C')">C</span>
+
+                                    |
+                                    <span class="underline font-semibold cursor-pointer"
+                                        (click)="setDropdownValue('A')">A</span>
+                                </p>
                             </div>
                             <div class="col-lg-2 col-4">
                                 <mat-form-field class="w-full">
@@ -105,9 +116,9 @@
                             <div class="col-lg-2 col-4">
                                 <mat-form-field class="w-full">
                                     <mat-select name="order" [formControlName]="'standardCostDropOne'">
-                                        <mat-option value="select_order" disabled>
+                                        <!-- <mat-option value="select_order" disabled>
                                             COST
-                                        </mat-option>
+                                        </mat-option> -->
                                         <mat-option *ngFor="let option of distributionCodes" [value]="option">
                                             {{option.distrDiscountCode}}
                                         </mat-option>
@@ -179,7 +190,7 @@
                             </div>
 
                             <!-- Blank COST -->
-                            <div class="col-12 mt-5">
+                            <!-- <div class="col-12 mt-5">
                                 <b>Blank Cost</b>
                             </div>
                             <div class="col-lg-2 col-4">
@@ -292,7 +303,7 @@
                             </div>
                             <div class="col-12 mt-2">
                                 <mat-divider></mat-divider>
-                            </div>
+                            </div> -->
 
                             <div class="col-12 mt-4">
                                 <mat-form-field class="w-full">

@@ -62,7 +62,9 @@ export class ProductsPhysicsComponent implements OnInit {
   ) { }
 
   ngOnInit(): void {
-    const { pk_productID } = this.selectedProduct;
+    const { pk_productID, flatRateShipping } = this.selectedProduct;
+    this.caseQtyTabLoader = true;
+
     // Create the selected product shipping form
     this.productPhysicsForm = this._formBuilder.group({
       weight: ['', Validators.required],
@@ -90,6 +92,14 @@ export class ProductsPhysicsComponent implements OnInit {
       quantityFive: [''],
       quantitySix: ['']
     });
+
+
+    const flatRateObj = {
+      flatRateShipping: Number(flatRateShipping).toFixed(2)
+    };
+
+    // Fill flat rate form
+    this.flatRateShippingForm.patchValue(flatRateObj);
 
     this._inventoryService.getProductByProductId(pk_productID)
       .pipe(takeUntil(this._unsubscribeAll))
@@ -149,7 +159,41 @@ export class ProductsPhysicsComponent implements OnInit {
         // Mark for check
         this._changeDetectorRef.markForCheck();
       });
+
+    setTimeout(() => {
+      this.getCaseQuantites();
+    }, 3000)
   };
+
+  getCaseQuantites = () => {
+    const { pk_productID } = this.selectedProduct;
+
+    this.caseQtyTabLoader = true;
+    this._inventoryService.getCaseQuantities(pk_productID)
+      .pipe(takeUntil(this._unsubscribeAll))
+      .subscribe((caseQuantity) => {
+        if (caseQuantity["data"]?.length) {
+          const formValue = {
+            quantityOne: caseQuantity["data"][0]?.quantity,
+            quantityTwo: caseQuantity["data"][1]?.quantity,
+            quantityThree: caseQuantity["data"][2]?.quantity,
+            quantityFour: caseQuantity["data"][3]?.quantity,
+            quantityFive: caseQuantity["data"][4]?.quantity,
+            quantitySix: caseQuantity["data"][5]?.quantity
+          };
+          this.caseQuantitiesForm.patchValue(formValue);
+        };
+
+        this.caseQtyTabLoader = false;
+        // Mark for check
+        this._changeDetectorRef.markForCheck();
+      }, err => {
+        this.getCaseQuantites();
+
+        // Mark for check
+        this._changeDetectorRef.markForCheck();
+      });
+  }
 
   showOptions(event): void {
     this.shipsFromCheck = event.checked;
@@ -179,48 +223,48 @@ export class ProductsPhysicsComponent implements OnInit {
   };
 
   myTabSelectedIndexChange(index: number) {
-    if (index === 1) {
-      const { flatRateShipping } = this.selectedProduct;
-      const flatRateObj = {
-        flatRateShipping: Number(flatRateShipping).toFixed(2)
-      };
+    // if (index === 1) {
+    //   const { flatRateShipping } = this.selectedProduct;
+    //   const flatRateObj = {
+    //     flatRateShipping: Number(flatRateShipping).toFixed(2)
+    //   };
 
-      // Fill flat rate form
-      this.flatRateShippingForm.patchValue(flatRateObj);
-    }
-    if (index === 3) {
-      this.caseQtyTabLoader = true;
-      const { pk_productID } = this.selectedProduct;
-      this._inventoryService.getCaseQuantities(pk_productID)
-        .pipe(takeUntil(this._unsubscribeAll))
-        .subscribe((caseQuantity) => {
-          if (caseQuantity["data"]?.length) {
-            const formValue = {
-              quantityOne: caseQuantity["data"][0]?.quantity,
-              quantityTwo: caseQuantity["data"][1]?.quantity,
-              quantityThree: caseQuantity["data"][2]?.quantity,
-              quantityFour: caseQuantity["data"][3]?.quantity,
-              quantityFive: caseQuantity["data"][4]?.quantity,
-              quantitySix: caseQuantity["data"][5]?.quantity
-            };
-            this.caseQuantitiesForm.patchValue(formValue);
-          };
+    //   // Fill flat rate form
+    //   this.flatRateShippingForm.patchValue(flatRateObj);
+    // }
+    // if (index === 3) {
+    //   this.caseQtyTabLoader = true;
+    //   const { pk_productID } = this.selectedProduct;
+    //   this._inventoryService.getCaseQuantities(pk_productID)
+    //     .pipe(takeUntil(this._unsubscribeAll))
+    //     .subscribe((caseQuantity) => {
+    //       if (caseQuantity["data"]?.length) {
+    //         const formValue = {
+    //           quantityOne: caseQuantity["data"][0]?.quantity,
+    //           quantityTwo: caseQuantity["data"][1]?.quantity,
+    //           quantityThree: caseQuantity["data"][2]?.quantity,
+    //           quantityFour: caseQuantity["data"][3]?.quantity,
+    //           quantityFive: caseQuantity["data"][4]?.quantity,
+    //           quantitySix: caseQuantity["data"][5]?.quantity
+    //         };
+    //         this.caseQuantitiesForm.patchValue(formValue);
+    //       };
 
-          this.caseQtyTabLoader = false;
-          // Mark for check
-          this._changeDetectorRef.markForCheck();
-        }, err => {
-          this._snackBar.open("Some error occured while fetching case quantites", '', {
-            horizontalPosition: 'center',
-            verticalPosition: 'bottom',
-            duration: 3500
-          });
-          this.caseQtyTabLoader = false;
+    //       this.caseQtyTabLoader = false;
+    //       // Mark for check
+    //       this._changeDetectorRef.markForCheck();
+    //     }, err => {
+    //       this._snackBar.open("Some error occured while fetching case quantites", '', {
+    //         horizontalPosition: 'center',
+    //         verticalPosition: 'bottom',
+    //         duration: 3500
+    //       });
+    //       this.caseQtyTabLoader = false;
 
-          // Mark for check
-          this._changeDetectorRef.markForCheck();
-        });
-    }
+    //       // Mark for check
+    //       this._changeDetectorRef.markForCheck();
+    //     });
+    // }
   }
 
   onShippingChargesChange(event) {

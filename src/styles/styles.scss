@@ -218,8 +218,12 @@ body .light .mat-expansion-panel-header.mat-expanded {
   max-width: max-content !important;
 }
 
-.mat-horizontal-stepper-header-container {
+.myStepperNone .mat-horizontal-stepper-header-container {
   pointer-events: none !important;
+}
+
+.myStepperAuto .mat-horizontal-stepper-header-container {
+  pointer-events: auto !important;
 }
 
 .text-cut {

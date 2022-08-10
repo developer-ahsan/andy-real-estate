@@ -5,6 +5,7 @@ import { InventoryService } from 'app/modules/admin/apps/ecommerce/inventory/inv
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { environment } from 'environments/environment';
 import * as _ from 'lodash';
+import { MatSnackBar } from '@angular/material/snack-bar';
 
 @Component({
   selector: 'app-swatches',
@@ -21,6 +22,8 @@ export class SwatchesComponent implements OnInit {
   fileName: string = "";
   imagesArray = [];
 
+  imageUploadLoader: boolean = false;
+
   imageError = "";
   isImageSaved: boolean;
   cardImageBase64 = "";
@@ -28,7 +31,8 @@ export class SwatchesComponent implements OnInit {
   constructor(
     private _changeDetectorRef: ChangeDetectorRef,
     private _inventoryService: InventoryService,
-    private _formBuilder: FormBuilder
+    private _formBuilder: FormBuilder,
+    private _snackBar: MatSnackBar
   ) { }
 
   ngOnInit(): void {
@@ -39,13 +43,13 @@ export class SwatchesComponent implements OnInit {
 
     const { pk_productID } = this.selectedProduct;
 
-    let url = `https://assets.consolidus.com/globalAssets/Products/Swatch/${pk_productID}.jpg`;
+    let url = `https://assets.consolidus.com/globalAssets/Products/Swatch/${pk_productID}/${pk_productID}-1.jpg`;
     this.checkIfImageExists(url);
 
     setTimeout(() => {
       this.isLoadingChange.emit(false);
     }, 2500)
-  }
+  };
 
   checkIfImageExists(url) {
     const img = new Image();
@@ -65,7 +69,6 @@ export class SwatchesComponent implements OnInit {
   }
 
   upload(event) {
-    console.log("this.imagesArray", this.imagesArray)
     const file = event.target.files[0];
     this.fileName = file["name"];
     const reader = new FileReader();
@@ -96,15 +99,34 @@ export class SwatchesComponent implements OnInit {
       const { pk_productID } = this.selectedProduct;
       const base64 = this.images.split(",")[1];
       const payload = {
-        imageFile: base64,
-        key: environment.mediaKey,
-        filePath: `/globalAssets/Products/defaultImage./${pk_productID}/${pk_productID}-${this.fileName}`
+        file_upload: true,
+        image_file: base64,
+        image_path: `/globalAssets/Products/Swatch/${pk_productID}/${pk_productID}-${this.fileName}`
       };
 
-      console.log("payload", payload);
+      this.imageUploadLoader = true;
       this._inventoryService.addDefaultImage(payload)
         .subscribe((response) => {
-          console.log("response => ", response)
+          this._snackBar.open(response["message"], '', {
+            horizontalPosition: 'center',
+            verticalPosition: 'bottom',
+            duration: 3500
+          });
+          this.imageUploadLoader = false;
+          this.ngOnInit();
+
+          // Mark for check
+          this._changeDetectorRef.markForCheck();
+        }, err => {
+          this.imageUploadLoader = false;
+          this._snackBar.open("Some error occured", '', {
+            horizontalPosition: 'center',
+            verticalPosition: 'bottom',
+            duration: 3500
+          });
+
+          // Mark for check
+          this._changeDetectorRef.markForCheck();
         })
     };
   }

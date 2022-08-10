@@ -30,6 +30,9 @@ export class ColorComponent implements OnInit {
   flashMessage: 'success' | 'error' | null = null;
 
   colorsList: any = [];
+  defaultResetValue: number = 0.00;
+
+  isAllColors: boolean = false;
 
   // Boolean
   colorUpdateLoader = false;
@@ -70,12 +73,10 @@ export class ColorComponent implements OnInit {
   ) { }
 
   ngOnInit(): void {
-    const { pk_productID } = this.selectedProduct;
 
     this.colorForm = this._formBuilder.group({
       colors: ['', Validators.required],
-      run: [''],
-      setup: [''],
+      run: ['0.00'],
       hex: ['']
     });
 
@@ -90,31 +91,52 @@ export class ColorComponent implements OnInit {
       limitSelection: 1
     };
 
+    this.getColors();
+    this.getAllColors();
+  }
+
+  getAllColors(): void {
+    this.isAllColors = true;
+    this._inventoryService.getAllColors()
+      .pipe(takeUntil(this._unsubscribeAll))
+      .subscribe((list) => {
+        this.colorsList = list["data"];
+        this.isAllColors = false;
+
+        // Mark for check
+        this._changeDetectorRef.markForCheck();
+      }, err => {
+        this.getAllColors();
+
+        // Mark for check
+        this._changeDetectorRef.markForCheck();
+      })
+  };
+
+  resetRunValue(): void {
+    this.colorForm.patchValue({
+      run: ['0.00']
+    });
+  };
+
+  getColors(): void {
+    const { pk_productID } = this.selectedProduct;
+
     this._inventoryService.getColors(pk_productID)
       .pipe(takeUntil(this._unsubscribeAll))
       .subscribe((colors) => {
-        this._inventoryService.getAllColors()
-          .pipe(takeUntil(this._unsubscribeAll))
-          .subscribe((list) => {
-            this.dataSource = colors["data"];
-            this.colorsList = list["data"];
-            this.isLoadingChange.emit(false);
-
-            // Mark for check
-            this._changeDetectorRef.markForCheck();
-          })
-      }, err => {
-        this._snackBar.open("Some error occured", '', {
-          horizontalPosition: 'center',
-          verticalPosition: 'bottom',
-          duration: 3500
-        });
+        this.dataSource = colors["data"];
         this.isLoadingChange.emit(false);
 
         // Mark for check
         this._changeDetectorRef.markForCheck();
+      }, err => {
+        this.getColors();
+
+        // Mark for check
+        this._changeDetectorRef.markForCheck();
       });
-  }
+  };
 
   uploadImage(): void {
     console.log("uploadImage");
@@ -207,7 +229,7 @@ export class ColorComponent implements OnInit {
 
   addColor() {
     const { pk_productID } = this.selectedProduct;
-    const { colors, run, hex, setup } = this.colorForm.getRawValue();
+    const { colors, run, hex } = this.colorForm.getRawValue();
     var colorTempArray = colors?.length ? colors.split(',') : [];
     let colorArr = [];
     if (colorTempArray.length) {
