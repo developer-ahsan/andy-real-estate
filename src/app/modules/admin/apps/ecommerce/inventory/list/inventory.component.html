@@ -61,7 +61,7 @@
                     <span class="ml-3" *ngIf="isSupplierNotReceived"> (Fetching Suppliers... )</span>
                 </mat-label>
                 <mat-select [(ngModel)]="selectedSupplier" disableRipple [disabled]="isSupplierNotReceived">
-                    <mat-option (click)="clearFilter()">All Suppliers</mat-option>
+                    <mat-option (click)="clearFilter()" value="All Suppliers">All Suppliers</mat-option>
                     <mat-option (click)="selectBySupplier(supplier)" value="{{supplier}}"
                         *ngFor="let supplier of suppliers">
                         {{supplier.companyName}}
@@ -78,7 +78,7 @@
                     <span class="ml-3" *ngIf="isStoreNotReceived"> (Fetching Stores... )</span>
                 </mat-label>
                 <mat-select [(ngModel)]="selectedStore" disableRipple [disabled]="isStoreNotReceived">
-                    <mat-option (click)="clearFilter()">All Stores</mat-option>
+                    <mat-option (click)="clearFilter()" value="All Stores">All Stores</mat-option>
                     <mat-option (click)="selectByStore(store)" value="{{store}}" *ngFor="let store of stores">
                         {{store.storeName}}
                     </mat-option>
@@ -730,8 +730,18 @@
                                                 <mat-divider></mat-divider>
                                             </div>
                                             <!-- Standard COST -->
-                                            <div class="col-12 mt-5">
-                                                <b style="font-weight: 500;">Standard Cost</b>
+                                            <div class="col-12 mt-5 flex justify-between">
+                                                <b>Standard Cost</b>
+                                                <p>
+                                                    <span class="underline font-semibold cursor-pointer mr-2"
+                                                        (click)="clearFields()">Clear</span>
+
+                                                    <span class="underline font-semibold cursor-pointer"
+                                                        (click)="setDropdownValue('C')">C</span>
+                                                    |
+                                                    <span class="underline font-semibold cursor-pointer"
+                                                        (click)="setDropdownValue('A')">A</span>
+                                                </p>
                                             </div>
                                             <div class="col-lg-2 col-4">
                                                 <mat-form-field class="w-full">
@@ -861,8 +871,33 @@
                                             </div>
                                         </div>
                                     </form>
-                                    <div class="row my-5 px-3">
-                                        <div class="col-12">
+                                    <div class="row my-1 px-3">
+                                        <div class="col-12 flex justify-between">
+                                            <p class="font-semibold">Red Price Comment</p>
+                                            <p class="text-secondary cursor-pointer underline">
+                                                <span *ngIf="isCustomRedPrice" (click)="changeIsCustom()">
+                                                    Default Options
+                                                </span>
+                                                <span *ngIf="!isCustomRedPrice" (click)="changeIsCustom()">
+                                                    Custom Red price
+                                                </span>
+                                            </p>
+                                        </div>
+                                        <div class="col-12" *ngIf="!isCustomRedPrice">
+                                            <ng-multiselect-dropdown [placeholder]="'Select Red Price Comment'"
+                                                [settings]="redPriceDropdownSettings" [data]="redPriceList"
+                                                [(ngModel)]="selectedRedPriceItems"
+                                                (onSelect)="onRedPriceItemSelect($event)">
+                                            </ng-multiselect-dropdown>
+                                        </div>
+                                        <div class="col-12" *ngIf="isCustomRedPrice">
+                                            <mat-form-field class="w-full">
+                                                <input matInput [(ngModel)]="redPriceCommentText">
+                                            </mat-form-field>
+                                        </div>
+                                    </div>
+                                    <div class="row my-1 px-3">
+                                        <!-- <div class="col-12">
                                             <p class="font-semibold">Red Price Comment</p>
                                         </div>
                                         <div class="col-12 mt-2">
@@ -872,7 +907,7 @@
                                                 (onSelect)="onRedPriceItemSelect($event)"
                                                 (onSelectAll)="onSelectAll($event)">
                                             </ng-multiselect-dropdown>
-                                        </div>
+                                        </div> -->
 
                                         <div class="col-12 mt-3">
                                             <p class="font-semibold">Co-op Program</p>
@@ -912,9 +947,9 @@
                                 <div class="p-6">
                                     <mat-accordion multi>
                                         <div class="row">
-                                            <div class="col-lg-6 col-12"
-                                                *ngFor="let license of licensingTerms; let first = isFirst;">
-                                                <mat-expansion-panel class="my-2" [expanded]="isFirst ? true : false"
+                                            <div class="col-lg-6 col-12" *ngFor="let license of licensingTerms">
+                                                <mat-expansion-panel class="my-2"
+                                                    [expanded]="license.pk_licensingTermID === selectedExpansionLicensingTerm ? true : false"
                                                     (opened)="expansionOpened(license)">
                                                     <mat-expansion-panel-header>
                                                         <mat-panel-title>
@@ -999,13 +1034,83 @@
                             </div>
                         </mat-step>
 
-                        <!-- <mat-step [stepControl]="imprintForm" label="Imprints" [editable]="true">
+                        <mat-step [stepControl]="colorForm" label="Colors" [editable]="true">
                             <div class="row">
                                 <div class="col-12">
-                                    <ng-template matStepLabel>Imprint</ng-template>
+                                    <ng-template matStepLabel>Color</ng-template>
+                                </div>
+                                <div class="col-12">
+                                    <div class="text-2xl font-bold">
+                                        Add Color
+                                    </div>
+                                </div>
+                                <div class="col-12">
+                                    <form [formGroup]="colorForm">
+                                        <div class="row">
+                                            <div class="col-lg-3 col-12">
+                                                <mat-form-field class="w-full">
+                                                    <mat-label>
+                                                        <span class="ml-1">Color</span>
+                                                    </mat-label>
+                                                    <input matInput [formControlName]="'colors'"
+                                                        placeholder="Enter list of colors, spearated by comma">
+                                                    <mat-error>This field is required</mat-error>
+                                                </mat-form-field>
+                                            </div>
+                                            <div class="col-lg-3 col-12">
+                                                <mat-form-field class="w-full">
+                                                    <mat-label>
+                                                        Run
+                                                    </mat-label>
+                                                    <input matInput [formControlName]="'run'" type="number" value="0.00"
+                                                        placeholder="Run">
+                                                    <mat-icon class="icon-size-5 text-secondary cursor-pointer"
+                                                        [matTooltip]="'Reset run value to 0.00'"
+                                                        (click)="resetRunValue()" svgIcon="heroicons_outline:refresh">
+                                                    </mat-icon>
+                                                </mat-form-field>
+                                            </div>
+                                            <div class="col-lg-3 col-12">
+                                                <button
+                                                    [matTooltip]="'Enter the hexadecimal value for corresponding color. This hexadecimal color will be used to create color swatches in multiple places on the SmartSites. You can enter upto five hexadecimal colors separated by entering Enter key.'">
+                                                    <i class="fa fa-info-circle"></i>
+                                                </button>
+                                                <span class="ml-1">Hex</span>
+                                                <mat-form-field class="w-full">
+                                                    <input matInput [formControlName]="'hex'" value="{{hexColor}}"
+                                                        placeholder="Hex">
+                                                    <mat-icon class="icon-size-5 text-secondary ml-2"
+                                                        style="cursor: pointer;" (click)="copyColorToHex()"
+                                                        [matTooltip]="'Copy hex from color palette'"
+                                                        svgIcon="mat_outline:content_copy">
+                                                    </mat-icon>
+                                                    <mat-error>This field is required</mat-error>
+                                                </mat-form-field>
+                                            </div>
+                                            <div class="col-lg-3 col-12">
+                                                <mat-form-field class="w-full">
+                                                    <mat-label>Color: {{colorValue}}</mat-label>
+                                                    <input matInput type="color" value="{{colorValue}}"
+                                                        (change)="changeColor($event)" placeholder="Color">
+                                                </mat-form-field>
+                                            </div>
+                                        </div>
+                                    </form>
                                 </div>
                             </div>
-                        </mat-step> -->
+                            <div class="row">
+                                <div class="col-lg-8 col-12"></div>
+                                <div class="col-lg-2 col-12">
+                                    <button class="w-full" (click)="goBack(stepper)" mat-stroked-button>
+                                        Back
+                                    </button>
+                                </div>
+                                <div class="col-lg-2 col-12">
+                                    <button class="w-full" (click)="goForward(stepper)"
+                                        mat-stroked-button>Continue</button>
+                                </div>
+                            </div>
+                        </mat-step>
 
                         <mat-step>
                             <div class="row">

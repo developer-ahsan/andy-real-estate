@@ -41,6 +41,8 @@ export class ProductsDescriptionComponent implements OnInit {
   descriptionLoader = false;
   isSupplierNotReceived = true;
 
+  selectedSex = "N/A";
+
   constructor(
     private _changeDetectorRef: ChangeDetectorRef,
     private _inventoryService: InventoryService,
@@ -74,31 +76,31 @@ export class ProductsDescriptionComponent implements OnInit {
     const { pk_productID } = this.selectedProduct;
 
     // Get the suppliers
-    this._inventoryService.getProductByProductId(pk_productID)
+    this._inventoryService.product$
       .pipe(takeUntil(this._unsubscribeAll))
       .subscribe((details) => {
-        this._inventoryService.getAllSuppliers()
+        const { fk_supplierID } = details["data"][0];
+
+        // Get the suppliers
+        this._inventoryService.Suppliers$
           .pipe(takeUntil(this._unsubscribeAll))
           .subscribe((supplier) => {
-            const { fk_supplierID } = details["data"][0];
-            this.suppliers = supplier["data"];
-            this.supplierSelected = this.suppliers.find(x => x.pk_companyID == fk_supplierID);
+            if (supplier) {
+              this.suppliers = supplier["data"];
+              this.supplierSelected = this.suppliers.find(x => x.pk_companyID == fk_supplierID);
+              this.isSupplierNotReceived = false;
 
-            this.isSupplierNotReceived = false;
-            // Mark for check
-            this._changeDetectorRef.markForCheck();
-          }, err => {
-            this._snackBar.open("Some error occured while fetching suppliers", '', {
-              horizontalPosition: 'center',
-              verticalPosition: 'bottom',
-              duration: 3500
-            });
+              // Mark for check
+              this._changeDetectorRef.markForCheck();
+            } else {
+              this.getAllSuppliers(fk_supplierID);
+            };
 
             // Mark for check
             this._changeDetectorRef.markForCheck();
-          })
+          });
+
       });
-
 
     this._inventoryService.getProductDescription(pk_productID)
       .pipe(takeUntil(this._unsubscribeAll))
@@ -109,9 +111,17 @@ export class ProductsDescriptionComponent implements OnInit {
 
           // Fill the form
           this.productDescriptionForm.patchValue(this.productDescription);
-          this.productDescriptionForm.patchValue({
-            internalKeywords: this.productDescription["searchKeywords"]
-          });
+          let sexVal = this.productDescription["sex"];
+          if (sexVal == 1) {
+            this.selectedSex = "N/A";
+          } else if (sexVal == 2) {
+            this.selectedSex = "Men's";
+          } else if (sexVal == 3) {
+            this.selectedSex = "Women's";
+          } else if (sexVal == 4) {
+            this.selectedSex = "Men's/Women's";
+          };
+
           this.isLoadingChange.emit(false);
 
           // Mark for check
@@ -139,6 +149,28 @@ export class ProductsDescriptionComponent implements OnInit {
         this._changeDetectorRef.markForCheck();
       });
   };
+
+  getAllSuppliers(supplierId) {
+    this._inventoryService.getAllSuppliers()
+      .pipe(takeUntil(this._unsubscribeAll))
+      .subscribe((suppliers) => {
+        this.suppliers = suppliers["data"];
+        this.supplierSelected = this.suppliers.find(x => x.pk_companyID == supplierId);
+        this.isSupplierNotReceived = false;
+
+        // Mark for check
+        this._changeDetectorRef.markForCheck();
+      }, err => {
+        this._snackBar.open("Some error occured while fetching suppliers", '', {
+          horizontalPosition: 'center',
+          verticalPosition: 'bottom',
+          duration: 3500
+        });
+
+        // Mark for check
+        this._changeDetectorRef.markForCheck();
+      })
+  }
 
   selectBySupplier(event): void {
     this.supplierDropdown = event;
@@ -176,6 +208,17 @@ export class ProductsDescriptionComponent implements OnInit {
       supplyId = pk_companyID;
     };
 
+    let sexVal: number;
+    if (this.selectedSex == "N/A") {
+      sexVal = 1;
+    } else if (this.selectedSex == "Men's") {
+      sexVal = 2;
+    } else if (this.selectedSex == "Women's") {
+      sexVal = 3;
+    } else if (this.selectedSex == "Men's/Women's") {
+      sexVal = 4;
+    };
+
     const payload = {
       name: formValues.productName,
       product_number: formValues.productNumber,
@@ -185,7 +228,7 @@ export class ProductsDescriptionComponent implements OnInit {
       notes: formValues.notes?.replace(/'/g, "''") || '',
       supplier_link: formValues.supplierLink || '',
       meta_desc: formValues.metaDesc?.replace(/'/g, "''") || '',
-      sex: formValues.sex || 0,
+      sex: this.selectedProduct?.blnApparel ? sexVal : null,
       search_keywords: formValues.internalKeywords || '',
       purchase_order_notes: formValues.purchaseOrderNotes || '',
       last_update_by: "" || '',
@@ -206,6 +249,9 @@ export class ProductsDescriptionComponent implements OnInit {
             'error'
         );
         this.descriptionLoader = false;
+        this._inventoryService.getProductByProductId(pk_productID)
+          .pipe(takeUntil(this._unsubscribeAll))
+          .subscribe((product) => { })
 
         // Mark for check
         this._changeDetectorRef.markForCheck();

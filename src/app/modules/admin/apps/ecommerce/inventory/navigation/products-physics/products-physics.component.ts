@@ -27,6 +27,7 @@ export class ProductsPhysicsComponent implements OnInit {
   caseQTYLoader = false;
   caseDimensionLoader = false;
   caseQtyTabLoader = false;
+  caseDimensionTabLoader = false;
   flashMessage: 'success' | 'error' | 'errorMessage' | null = null;
 
   isPhysicsUpdate = false;
@@ -64,6 +65,7 @@ export class ProductsPhysicsComponent implements OnInit {
   ngOnInit(): void {
     const { pk_productID, flatRateShipping } = this.selectedProduct;
     this.caseQtyTabLoader = true;
+    this.caseDimensionTabLoader = true;
 
     // Create the selected product shipping form
     this.productPhysicsForm = this._formBuilder.group({
@@ -101,7 +103,7 @@ export class ProductsPhysicsComponent implements OnInit {
     // Fill flat rate form
     this.flatRateShippingForm.patchValue(flatRateObj);
 
-    this._inventoryService.getProductByProductId(pk_productID)
+    this._inventoryService.product$
       .pipe(takeUntil(this._unsubscribeAll))
       .subscribe((productDetails) => {
         this.selectedProduct = productDetails["data"][0];
@@ -140,14 +142,14 @@ export class ProductsPhysicsComponent implements OnInit {
     this._inventoryService.getPhysicsAndDimension(pk_productID)
       .pipe(takeUntil(this._unsubscribeAll))
       .subscribe((caseDimensions) => {
-
+        this.caseDimensionTabLoader = false;
         // Fill dimesnion form
         this.caseDimensionForm.patchValue(caseDimensions["data"][0]);
 
         // Mark for check
         this._changeDetectorRef.markForCheck();
       }, err => {
-
+        this.caseDimensionTabLoader = false;
         // Fill dimesnion form
         this.caseDimensionForm.patchValue(null);
         this._snackBar.open("Some error occured while fetching dimensions", '', {
@@ -160,9 +162,7 @@ export class ProductsPhysicsComponent implements OnInit {
         this._changeDetectorRef.markForCheck();
       });
 
-    setTimeout(() => {
-      this.getCaseQuantites();
-    }, 3000)
+    this.getCaseQuantites();
   };
 
   getCaseQuantites = () => {
@@ -185,10 +185,18 @@ export class ProductsPhysicsComponent implements OnInit {
         };
 
         this.caseQtyTabLoader = false;
+
         // Mark for check
         this._changeDetectorRef.markForCheck();
       }, err => {
-        this.getCaseQuantites();
+        this.caseQtyTabLoader = false;
+        // Fill dimesnion form
+        this.caseDimensionForm.patchValue(null);
+        this._snackBar.open("Some error occured while case quantities", '', {
+          horizontalPosition: 'center',
+          verticalPosition: 'bottom',
+          duration: 3500
+        });
 
         // Mark for check
         this._changeDetectorRef.markForCheck();
@@ -204,21 +212,40 @@ export class ProductsPhysicsComponent implements OnInit {
     this.isFlatUpdate = true;
     this.isDimensionsUpdate = false;
     this.isQuantityUpdate = false;
+    const { pk_productID } = this.selectedProduct;
 
     const payload = {
-      product_id: this.selectedProduct.pk_productID,
+      product_id: pk_productID,
       flat_rate_shipping: this.flatRateShippingForm.getRawValue().flatRateShipping,
       flat_rate: true
     }
     this.flatRateLoader = true;
     this._inventoryService.updateFlatRateShipping(payload)
       .subscribe((response) => {
-        this.showFlashMessage(
-          response["success"] === true ?
-            'success' :
-            'error'
-        );
+        this._inventoryService.getProductByProductId(pk_productID)
+          .pipe(takeUntil(this._unsubscribeAll))
+          .subscribe((product) => {
+            this.showFlashMessage(
+              response["success"] === true ?
+                'success' :
+                'error'
+            );
+            this.flatRateLoader = false;
+
+            // Mark for check
+            this._changeDetectorRef.markForCheck();
+          });
+
+      }, err => {
+        this._snackBar.open("Some error occured while updating flat rate shipping", '', {
+          horizontalPosition: 'center',
+          verticalPosition: 'bottom',
+          duration: 3500
+        });
         this.flatRateLoader = false;
+
+        // Mark for check
+        this._changeDetectorRef.markForCheck();
       });
   };
 
@@ -328,6 +355,9 @@ export class ProductsPhysicsComponent implements OnInit {
             'error'
         );
         this.physicsLoader = false;
+
+        // Mark for check
+        this._changeDetectorRef.markForCheck();
       }, err => {
         this._snackBar.open("Some error occured while updating physics", '', {
           horizontalPosition: 'center',
@@ -419,6 +449,9 @@ export class ProductsPhysicsComponent implements OnInit {
             'error'
         );
         this.caseQTYLoader = false;
+
+        // Mark for check
+        this._changeDetectorRef.markForCheck();
       }, err => {
         this._snackBar.open("Some error occured while updating case quantities", '', {
           horizontalPosition: 'center',

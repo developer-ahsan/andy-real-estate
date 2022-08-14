@@ -55,6 +55,7 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
     private _unsubscribeAll: Subject<any> = new Subject<any>();
     page = 1;
     supplierType: string;
+    selectedDropdown;
 
     pricingDataArray = [];
     dropdownList = [];
@@ -64,6 +65,7 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
     redPriceDropdownSettings: IDropdownSettings = {};
     selectedRedPriceItems = [];
     redPriceList = [];
+    isCustomRedPrice: boolean = false;
 
     coOpProgramSettings: IDropdownSettings = {};
     selectedCoOpProgram = [];
@@ -97,6 +99,9 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
         ceil: 120
     };
     selectedSex: string = "1";
+
+    productsOnClearFilter = [];
+    productsOnClearFilterCount: number;
 
     pageNo: number;
 
@@ -150,10 +155,11 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
         }
     ];
 
+    selectedExpansionLicensingTerm = null;
     keyword = 'companyName';
     redPriceCommentText = "";
-    selectedStore = null;
-    selectedSupplier = null;
+    selectedStore = "All Stores";
+    selectedSupplier = "All Suppliers";
     isSupplierNotReceived = true;
     isStoreNotReceived = true;
     createProductLoader = false;
@@ -321,6 +327,14 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
         method_id: ['']
     })
 
+    colorForm = this._formBuilder.group({
+        colors: ['', Validators.required],
+        run: ['0.00'],
+        hex: ['']
+    });
+    colorValue = '#000000';
+    hexColor;
+
     /**
      * Constructor
      */
@@ -410,7 +424,11 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
         });
 
         this.getAllSuppliers();
-        this.getAllStores();
+
+        setTimeout(() => {
+            this.getDistributionCodes();
+            this.getAllStores();
+        }, 2000);
 
         // Get the products
         this._inventoryService.products$
@@ -418,6 +436,8 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
             .subscribe((products: ProductsList[]) => {
                 this.products = products["data"];
                 this.productsCount = products["totalRecords"];
+                this.productsOnClearFilter = products["data"];
+                this.productsOnClearFilterCount = products["totalRecords"];
 
                 // Mark for check
                 this._changeDetectorRef.markForCheck();
@@ -493,6 +513,50 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
                 // Mark for check
                 this._changeDetectorRef.markForCheck();
             });
+    };
+
+    setDropdownValue(value: string) {
+        this.selectedDropdown = this.distributionCodes.find(item => item.distrDiscountCode === value);
+        const sample = {
+            standardCostDropOne: this.selectedDropdown,
+            standardCostDropTwo: this.selectedDropdown,
+            standardCostDropThree: this.selectedDropdown,
+            standardCostDropFour: this.selectedDropdown,
+            standardCostDropFive: this.selectedDropdown,
+            standardCostDropSix: this.selectedDropdown
+        };
+        this.netCostForm.patchValue(sample);
+    };
+
+    getDistributionCodes(): void {
+        // Get distribution code for cost dropdowns
+        this._inventoryService.getSystemDistributorCodes()
+            .subscribe((response) => {
+                this.distributionCodes = response["data"];
+                if (this.distributionCodes.length) {
+                    this.distributionCodes.push({
+                        distrDiscount: -1,
+                        distrDiscountCode: "COST"
+                    });
+                    const countryDefault = this.distributionCodes.find(c => c.distrDiscount == -1);
+                    this.netCostForm.patchValue({
+                        standardCostDropOne: countryDefault,
+                        standardCostDropTwo: countryDefault,
+                        standardCostDropThree: countryDefault,
+                        standardCostDropFour: countryDefault,
+                        standardCostDropFive: countryDefault,
+                        standardCostDropSix: countryDefault
+                    });
+                };
+
+                // Mark for check
+                this._changeDetectorRef.markForCheck();
+            }, err => {
+                this.getDistributionCodes();
+
+                // Mark for check
+                this._changeDetectorRef.markForCheck();
+            });
     }
 
     getAllSuppliers(): void {
@@ -500,37 +564,30 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
         this._inventoryService.getAllSuppliers()
             .pipe(takeUntil(this._unsubscribeAll))
             .subscribe((supplier) => {
-                this._inventoryService.getSystemDistributorCodes()
-                    .subscribe((response) => {
-                        this.distributionCodes = response["data"];
-                        this.suppliers = supplier["data"];
-                        this.dropdownList = this.suppliers;
-                        this.isSupplierNotReceived = false;
-                        if (this.distributionCodes.length) {
-                            this.distributionCodes.push({
-                                distrDiscount: -1,
-                                distrDiscountCode: "COST"
-                            });
-                            const countryDefault = this.distributionCodes.find(c => c.distrDiscount == -1);
-                            this.netCostForm.patchValue({
-                                standardCostDropOne: countryDefault,
-                                standardCostDropTwo: countryDefault,
-                                standardCostDropThree: countryDefault,
-                                standardCostDropFour: countryDefault,
-                                standardCostDropFive: countryDefault,
-                                standardCostDropSix: countryDefault
-                            });
-                        };
+                this.suppliers = supplier["data"];
+                this.dropdownList = this.suppliers;
+                this.isSupplierNotReceived = false;
 
-                        // Mark for check
-                        this._changeDetectorRef.markForCheck();
-                    });
+                // Mark for check
+                this._changeDetectorRef.markForCheck();
             }, err => {
                 this.getAllSuppliers();
 
                 // Mark for check
                 this._changeDetectorRef.markForCheck();
             });
+    };
+
+    clearFields(): void {
+        const sample = {
+            standardCostOne: "",
+            standardCostTwo: "",
+            standardCostThree: "",
+            standardCostFour: "",
+            standardCostFive: "",
+            standardCostSix: ""
+        };
+        this.netCostForm.patchValue(sample);
     };
 
     getAllStores(): void {
@@ -597,6 +654,7 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
                 this.products = products["data"];
                 this.productsCount = products["totalRecords"];
                 this.isLoading = false;
+                this.selectedSupplier = "All Suppliers";
 
                 // Mark for check
                 this._changeDetectorRef.markForCheck();
@@ -615,6 +673,7 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
                 this.products = products["data"];
                 this.productsCount = products["totalRecords"];
                 this.isLoading = false;
+                this.selectedStore = "All Stores";
 
                 // Mark for check
                 this._changeDetectorRef.markForCheck();
@@ -624,21 +683,30 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
     clearFilter() {
 
         this.isLoading = true;
-        // Get the products
-        this._inventoryService.getProductsList(1)
-            .pipe(takeUntil(this._unsubscribeAll))
-            .subscribe((products: ProductsList[]) => {
-                this.products = products["data"];
-                this.productsCount = products["totalRecords"];
-                this.isLoading = false;
+        this.products = this.productsOnClearFilter;
+        this.productsCount = this.productsOnClearFilterCount;
+        this.selectedStore = "All Stores";
+        this.selectedSupplier = "All Suppliers";
+        this.isLoading = false;
 
-                this.selectedStore = null;
-                this.selectedSupplier = null;
+        // Mark for check
+        this._changeDetectorRef.markForCheck();
+    };
 
-                // Mark for check
-                this._changeDetectorRef.markForCheck();
-            });
-    }
+    resetRunValue(): void {
+        this.colorForm.patchValue({
+            run: ['0.00']
+        });
+    };
+
+    copyColorToHex() {
+        this.hexColor = this.colorValue
+    };
+
+    changeColor(event) {
+        const { value } = event.target;
+        this.colorValue = value;
+    };
 
     removeNull(array) {
         return array.filter(x => x !== null)
@@ -711,13 +779,24 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
             quantity_list: [...new Set(quantityList)]
         };
 
+        let keywordsString = null;
+        if (keywords.length) {
+            keywordsString = keywords;
+        } else if (this.fruits.length) {
+            const keywordsSliced = this.fruits.slice(0, 10)
+            let names = keywordsSliced.map(function (item) {
+                return item['name'];
+            });
+            keywordsString = names.toString().replace(/'/g, "-");
+        };
+
         const description = {
             name: productName,
             product_number: productNumber,
             description: true,
             product_desc: mainDescription?.replace(/'/g, "''") || null,
             mini_desc: miniDescription?.replace(/'/g, "''") || null,
-            keywords: keywords || null,
+            keywords: keywordsString ? keywordsString : null,
             notes: null,
             purchase_order_notes: null,
             supplier_link: supplierLink || null,
@@ -773,47 +852,47 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
 
         console.log("payload", payload)
 
-        // this.createProductLoader = true;
+        this.createProductLoader = true;
 
-        // this._inventoryService.checkIfProductExist(productNumber, productName, this.supplierId)
-        //     .pipe(takeUntil(this._unsubscribeAll))
-        //     .subscribe((response: any) => {
-        //         const isDataExist = response["data_exists"];
+        this._inventoryService.checkIfProductExist(productNumber, productName, this.supplierId)
+            .pipe(takeUntil(this._unsubscribeAll))
+            .subscribe((response: any) => {
+                const isDataExist = response["data_exists"];
 
-        //         if (isDataExist) {
-        //             this.createProductLoader = false;
-        //             this._snackBar.open("Product already exists", '', {
-        //                 horizontalPosition: 'center',
-        //                 verticalPosition: 'bottom',
-        //                 duration: 3500
-        //             });
-        //             // Mark for check
-        //             this._changeDetectorRef.markForCheck();
-        //         } else {
-        //             this._inventoryService.addProduct(payload)
-        //                 .subscribe((response) => {
-        //                     this.showFlashMessage(
-        //                         response["success"] === true ?
-        //                             'success' :
-        //                             'error'
-        //                     );
-        //                     this.createProductLoader = false;
+                if (isDataExist) {
+                    this.createProductLoader = false;
+                    this._snackBar.open("Product already exists", '', {
+                        horizontalPosition: 'center',
+                        verticalPosition: 'bottom',
+                        duration: 3500
+                    });
+                    // Mark for check
+                    this._changeDetectorRef.markForCheck();
+                } else {
+                    this._inventoryService.addProduct(payload)
+                        .subscribe((response) => {
+                            this.showFlashMessage(
+                                response["success"] === true ?
+                                    'success' :
+                                    'error'
+                            );
+                            this.createProductLoader = false;
 
-        //                     // Mark for check
-        //                     this._changeDetectorRef.markForCheck();
-        //                 }, err => {
-        //                     this._snackBar.open("Some error occured", '', {
-        //                         horizontalPosition: 'center',
-        //                         verticalPosition: 'bottom',
-        //                         duration: 3500
-        //                     });
-        //                     this.createProductLoader = false;
+                            // Mark for check
+                            this._changeDetectorRef.markForCheck();
+                        }, err => {
+                            this._snackBar.open("Some error occured", '', {
+                                horizontalPosition: 'center',
+                                verticalPosition: 'bottom',
+                                duration: 3500
+                            });
+                            this.createProductLoader = false;
 
-        //                     // Mark for check
-        //                     this._changeDetectorRef.markForCheck();
-        //                 });
-        //         }
-        //     })
+                            // Mark for check
+                            this._changeDetectorRef.markForCheck();
+                        });
+                }
+            })
     };
 
     /**
@@ -824,19 +903,23 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
     };
 
     expansionOpened(license): void {
-        this.expansionLoader = true;
+        const { pk_licensingTermID } = license;
 
-        this._inventoryService.addProductGetLicensingSubCategory(license.pk_licensingTermID)
-            .pipe(takeUntil(this._unsubscribeAll))
-            .subscribe((subCategories) => {
-                this.subCategoryItems = subCategories["data"];
-                this.subCategoryItems[0].Selected = true;
-                this.selectedRadioOption = this.subCategoryItems[0];
-                this.expansionLoader = false;
+        if (this.selectedExpansionLicensingTerm != pk_licensingTermID || this.selectedExpansionLicensingTerm == null) {
+            this.expansionLoader = true;
+            this.selectedExpansionLicensingTerm = pk_licensingTermID;
+            this._inventoryService.addProductGetLicensingSubCategory(license.pk_licensingTermID)
+                .pipe(takeUntil(this._unsubscribeAll))
+                .subscribe((subCategories) => {
+                    this.subCategoryItems = subCategories["data"];
+                    this.subCategoryItems[0].Selected = true;
+                    this.selectedRadioOption = this.subCategoryItems[0];
+                    this.expansionLoader = false;
 
-                // Mark for check
-                this._changeDetectorRef.markForCheck();
-            });
+                    // Mark for check
+                    this._changeDetectorRef.markForCheck();
+                });
+        };
     };
 
     selectedRadio(item: MatRadioChange) {
@@ -1131,7 +1214,7 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
         };
 
         // Review Screen
-        if (selectedIndex === 5) {
+        if (selectedIndex === 6) {
             this.isReviewFormReached = true;
             this.reviewFormSliderMaxValue = this.sliderMaxValue;
             this.reviewFormSliderMinValue = this.sliderMinValue;
@@ -1173,6 +1256,10 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
         });
         this.products = sortedData;
         this.productsCount = sortedData.length;
+    };
+
+    changeIsCustom(): void {
+        this.isCustomRedPrice = !this.isCustomRedPrice
     };
 
     /**
@@ -1281,6 +1368,9 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
                     this.suppliers = supplier["data"];
                     this.firstFormLoader = false;
                     this.enableProductAddForm = true;
+
+                    // Mark for check
+                    this._changeDetectorRef.markForCheck();
                 })
         }
     };

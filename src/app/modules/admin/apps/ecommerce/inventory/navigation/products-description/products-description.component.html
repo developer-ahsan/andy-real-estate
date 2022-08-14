@@ -54,22 +54,14 @@
                                     <input matInput maxlength="200" [formControlName]="'supplierLink'">
                                 </mat-form-field>
                             </div>
-                            <div class="col-lg-4 col-12">
-                                <small class="text-secondary font-semibold">
-                                    Update store product permalinks?
-                                    <button
-                                        [matTooltip]="'This option will update all permalinks with the permalink for this product on any store that is currently on.'">
-                                        <i class="fa fa-info-circle"></i>
-                                    </button>
-                                </small>
+                            <div class="col-lg-4 col-12" *ngIf="selectedProduct?.blnApparel">
                                 <mat-form-field class="w-full">
-                                    <mat-select name="order" [formControlName]="'permalink'">
-                                        <mat-option value="select_order" disabled>
-                                            Click to select
-                                        </mat-option>
-                                        <mat-option *ngFor="let option of products" [value]="option">
-                                            {{option}}
-                                        </mat-option>
+                                    <mat-label>Sex</mat-label>
+                                    <mat-select [(value)]="selectedSex" placeholder="Select Sex">
+                                        <mat-option value="N/A">N/A</mat-option>
+                                        <mat-option value="Men's">Men's</mat-option>
+                                        <mat-option value="Women's">Women's</mat-option>
+                                        <mat-option value="Men's/Women's">Men's/Women's</mat-option>
                                     </mat-select>
                                 </mat-form-field>
                             </div>
@@ -83,14 +75,14 @@
                             <div class="col-lg-6 col-12 mt-6">
                                 <mat-form-field class="w-full">
                                     <mat-label>Mini Descr. (150)</mat-label>
-                                    <textarea matInput maxlength="150" rows="3"
+                                    <textarea matInput maxlength="150" rows="5"
                                         [formControlName]="'miniDesc'"></textarea>
                                 </mat-form-field>
                             </div>
                             <div class="col-lg-6 col-12 mt-6">
                                 <mat-form-field class="w-full">
                                     <mat-label>Meta desc (160)</mat-label>
-                                    <textarea matInput maxlength="160" rows="3"
+                                    <textarea matInput maxlength="160" rows="5"
                                         [formControlName]="'metaDesc'"></textarea>
                                     <mat-icon class="icon-size-5 text-secondary ml-2" style="cursor: pointer;"
                                         (click)="copyMiniToMeta()" [matTooltip]="'Copy from mini description'"
@@ -117,13 +109,13 @@
                             <div class="col-lg-6 col-12">
                                 <mat-form-field class="w-full">
                                     <mat-label>Notes (500)</mat-label>
-                                    <textarea matInput rows="3" [formControlName]="'notes'"></textarea>
+                                    <textarea matInput rows="5" [formControlName]="'notes'"></textarea>
                                 </mat-form-field>
                             </div>
                             <div class="col-lg-6 col-12">
                                 <mat-form-field class="w-full">
                                     <mat-label>Special notes for purchase order</mat-label>
-                                    <textarea matInput rows="3" [formControlName]="'purchaseOrderNotes'"></textarea>
+                                    <textarea matInput rows="5" [formControlName]="'purchaseOrderNotes'"></textarea>
                                 </mat-form-field>
                             </div>
                         </div>

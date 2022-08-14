@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { BehaviorSubject, Observable, of, throwError } from 'rxjs';
+import { BehaviorSubject, Observable, of, ReplaySubject, throwError } from 'rxjs';
 import { filter, map, switchMap, take, tap } from 'rxjs/operators';
 import { AddCore, AddFeature, AddPackage, CaseDimensionObj, CaseQuantityObj, Comment, createColorObj, CreateProduct, DeleteComment, displayOrderObj, duplicateObj, featureUpdateObj, FlatRateShippingObj, InventoryBrand, InventoryCategory, InventoryPagination, InventoryTag, InventoryVendor, Licensing, NetCostUpdate, overlapUpdateObj, PhysicsObj, physicsUpdateObject, priceInclusionObj, ProductsList, updateAllowRun, updateColorObj, updateImprintObj, UpdateMargin, updatePackageObj, updatePromostandardObj, updateSize, videoObj, Warehouse } from 'app/modules/admin/apps/ecommerce/inventory/inventory.types';
 import { environment } from 'environments/environment';
@@ -19,6 +19,7 @@ export class InventoryService {
     private _products: BehaviorSubject<ProductsList[] | null> = new BehaviorSubject(null);
     private _tags: BehaviorSubject<InventoryTag[] | null> = new BehaviorSubject(null);
     private _vendors: BehaviorSubject<InventoryVendor[] | null> = new BehaviorSubject(null);
+    private suppliers$: BehaviorSubject<any[] | null> = new BehaviorSubject<any[]>(null);
     public navigationLabels = [
         {
             id: 2,
@@ -174,7 +175,7 @@ export class InventoryService {
     /**
      * Getter for product
      */
-    get product$(): Observable<ProductsList> {
+    get product$(): Observable<any> {
         return this._product.asObservable();
     }
 
@@ -198,6 +199,10 @@ export class InventoryService {
     get vendors$(): Observable<InventoryVendor[]> {
         return this._vendors.asObservable();
     };
+
+    get Suppliers$(): Observable<any[]> {
+        return this.suppliers$.asObservable();
+    }
 
     // -----------------------------------------------------------------------------------------------------
     // @ Public methods
@@ -250,7 +255,11 @@ export class InventoryService {
                 list: true,
                 product_id: productId
             }
-        });
+        }).pipe(
+            tap((response: any) => {
+                this._product.next(response);
+            })
+        )
     };
 
     checkIfProductExist(productNumber, productName, supplierId): Observable<ProductsList[]> {
@@ -459,7 +468,11 @@ export class InventoryService {
                 bln_active: 1,
                 size: 2000
             }
-        });
+        }).pipe(
+            tap((response: any) => {
+                this.suppliers$.next(response);
+            })
+        );
     };
 
     getMarginsByProductId(productId): Observable<any[]> {

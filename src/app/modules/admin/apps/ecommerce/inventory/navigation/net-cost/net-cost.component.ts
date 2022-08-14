@@ -140,7 +140,7 @@ export class NetCostComponent implements OnInit {
 
       });
 
-    this._inventoryService.getProductByProductId(pk_productID)
+    this._inventoryService.product$
       .pipe(takeUntil(this._unsubscribeAll))
       .subscribe((details) => {
         this.selectedProduct = details["data"][0];
@@ -205,6 +205,7 @@ export class NetCostComponent implements OnInit {
 
   getCoOps(): void {
     const { fk_supplierID, pk_productID } = this.selectedProduct;
+
     // Get the CoOps
     this._inventoryService.getProductCoops(fk_supplierID)
       .subscribe((coops) => {
@@ -221,9 +222,6 @@ export class NetCostComponent implements OnInit {
             // Mark for check
             this._changeDetectorRef.markForCheck();
           });
-
-        // Mark for check
-        this._changeDetectorRef.markForCheck();
       }, err => {
         this.getCoOps();
 

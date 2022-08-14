@@ -145,7 +145,8 @@ export class ColorComponent implements OnInit {
   changeColor(event) {
     const { value } = event.target;
     this.colorValue = value;
-  }
+  };
+
   rowUpdate(colorObj, title, event) {
     const { value } = event.target;
     const { fk_colorID } = colorObj;

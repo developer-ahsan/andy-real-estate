@@ -57,31 +57,62 @@ export class ProductDetailsComponent implements OnInit, OnDestroy {
    */
   ngOnInit(): void {
     const productId = location.pathname.split('/')[4];
-    this._inventoryService.getProductByProductId(productId)
+
+    this._inventoryService.product$
       .pipe(takeUntil(this._unsubscribeAll))
-      .subscribe((product) => {
-        this.last_updated = product["data"][0]?.lastUpdatedDate
-          ? moment.utc(product["data"][0]?.lastUpdatedDate).format("lll")
-          : 'N/A';
-        this.isProductFetched = false;
+      .subscribe((details) => {
+        if (details) {
+          this.last_updated = details["data"][0]?.lastUpdatedDate
+            ? moment.utc(details["data"][0]?.lastUpdatedDate).format("lll")
+            : 'N/A';
+          this.isProductFetched = false;
 
-        this.selectedProduct = product["data"][0];
+          this.selectedProduct = details["data"][0];
 
-        this.routes = this._inventoryService.navigationLabels;
-        const { blnService, blnApparel, blnPromoStandard } = this.selectedProduct;
-        this.promoStandardBoolean = blnPromoStandard;
+          this.routes = this._inventoryService.navigationLabels;
+          const { blnService, blnApparel, blnPromoStandard } = this.selectedProduct;
+          this.promoStandardBoolean = blnPromoStandard;
 
-        if (blnService) {
-          this.routes = this.filterNavigation(this.routes, 'Imprints');
-        };
+          if (blnService) {
+            this.routes = this.filterNavigation(this.routes, 'Imprints');
+          };
 
-        if (!blnApparel) {
-          this.routes = this.filterNavigation(this.routes, 'Sizes')
-        };
+          if (!blnApparel) {
+            this.routes = this.filterNavigation(this.routes, 'Sizes')
+          };
 
-        // Mark for check
-        this._changeDetectorRef.markForCheck();
-      });
+          // Mark for check
+          this._changeDetectorRef.markForCheck();
+        } else {
+          this._inventoryService.getProductByProductId(productId)
+            .pipe(takeUntil(this._unsubscribeAll))
+            .subscribe((product) => {
+              this.last_updated = product["data"][0]?.lastUpdatedDate
+                ? moment.utc(product["data"][0]?.lastUpdatedDate).format("lll")
+                : 'N/A';
+              this.isProductFetched = false;
+
+              this.selectedProduct = product["data"][0];
+
+              this.routes = this._inventoryService.navigationLabels;
+              const { blnService, blnApparel, blnPromoStandard } = this.selectedProduct;
+              this.promoStandardBoolean = blnPromoStandard;
+
+              if (blnService) {
+                this.routes = this.filterNavigation(this.routes, 'Imprints');
+              };
+
+              if (!blnApparel) {
+                this.routes = this.filterNavigation(this.routes, 'Sizes')
+              };
+
+              // Mark for check
+              this._changeDetectorRef.markForCheck();
+            });
+        }
+      })
+
+
 
     // Subscribe to media changes
     this._fuseMediaWatcherService.onMediaChange$

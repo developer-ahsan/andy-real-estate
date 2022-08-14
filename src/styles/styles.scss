@@ -235,3 +235,22 @@ body .light .mat-expansion-panel-header.mat-expanded {
 .text-wrap {
   white-space: nowrap;
 }
+
+// Auto complete fields
+// .multiselect-dropdown[ngcontent-qbs-c261] .dropdown-btn[ngcontent-qbs-c261] {
+//   line-height: 2.5;
+//   border: 1px solid #e8dcdc !important;
+// }
+
+// .multiselect-dropdown[_ngcontent-qbs-c261] .dropdown-btn[_ngcontent-qbs-c261] .dropdown-multiselect__caret[_ngcontent-qbs-c261] {
+//   top: 80% !important;
+// }
+
+.multiselect-dropdown .dropdown-btn {
+  border: 1px solid #fed8d8 !important;
+  line-height: 2.5 !important;
+}
+
+.multiselect-dropdown .dropdown-btn .dropdown-multiselect__caret {
+  top: auto !important;
+}
