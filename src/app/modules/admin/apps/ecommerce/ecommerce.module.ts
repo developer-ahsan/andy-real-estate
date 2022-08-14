@@ -83,6 +83,7 @@ import { SizesComponent } from './inventory/navigation/sizes/sizes.component';
 import { QuillModule } from 'ngx-quill';
 import { AutocompleteLibModule } from 'angular-ng-autocomplete';
 import { NgMultiSelectDropDownModule } from 'ng-multiselect-dropdown';
+import { PromostandardColorsComponent } from './inventory/navigation/promostandard-colors/promostandard-colors.component';
 
 @NgModule({
     declarations: [
@@ -133,7 +134,8 @@ import { NgMultiSelectDropDownModule } from 'ng-multiselect-dropdown';
         ImprintComponent,
         SwatchesComponent,
         UserInfoComponent,
-        SizesComponent
+        SizesComponent,
+        PromostandardColorsComponent
     ],
     imports: [
         RouterModule.forChild(ecommerceRoutes),

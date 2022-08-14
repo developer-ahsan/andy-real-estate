@@ -313,12 +313,15 @@
                                 Color Collection ID
                             </span>
                         </button>
+                    </div>
+                    <div class="col-12 my-1">
                         <small class="font-semibold ml-3" *ngIf="!collectionIdsArray.length">
                             * No collections avaiable. Click on the button to generate list of collections
                         </small>
                     </div>
+
                     <div class="col-12 my-2" *ngIf="defaultImprintColorSpecification === 'Yes'">
-                        <mat-form-field class="w-full" *ngIf="collectionIdsArray.length">
+                        <!-- <mat-form-field class="w-full" *ngIf="collectionIdsArray.length">
                             <mat-label>
                                 IMPRINT COLOR COLLECTIONS
                             </mat-label>
@@ -327,7 +330,14 @@
                                     <small>{{collection.collectionName}} ({{collection.fk_collectionID}})</small>
                                 </mat-option>
                             </mat-select>
-                        </mat-form-field>
+                        </mat-form-field> -->
+
+                        <div *ngIf="collectionIdsArray.length">
+                            <ng-multiselect-dropdown [placeholder]="'Imprint Color Collections'"
+                                [settings]="dropdownSettings" [data]="collectionIdsArray"
+                                [(ngModel)]="selectedCollectionId" (onSelect)="onItemSelect($event)">
+                            </ng-multiselect-dropdown>
+                        </div>
                     </div>
 
                     <!-- Imprint order itself -->

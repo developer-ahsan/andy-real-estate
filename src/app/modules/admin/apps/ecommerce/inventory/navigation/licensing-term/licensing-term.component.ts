@@ -257,8 +257,6 @@ export class LicensingTermComponent implements OnInit {
 
   searchKeyword(event): void {
     const value = event.target.value;
-    console.log("value", value);
-    console.log("dummyLicensingTerms", this.dummyLicensingTerms)
 
     this.licensingTerms = this.dummyLicensingTerms.filter((item: any) => {
       return item.term.toLowerCase().includes(value.toLowerCase());

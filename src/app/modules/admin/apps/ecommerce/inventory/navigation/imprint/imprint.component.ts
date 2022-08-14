@@ -5,6 +5,7 @@ import { InventoryService } from 'app/modules/admin/apps/ecommerce/inventory/inv
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { FormBuilder, FormControl, FormGroup } from '@angular/forms';
 import { MatSlideToggleChange } from '@angular/material/slide-toggle';
+import { IDropdownSettings } from 'ng-multiselect-dropdown';
 
 @Component({
   selector: 'app-imprint',
@@ -33,6 +34,8 @@ export class ImprintComponent implements OnInit {
 
   istestPricingScreenLoader = false;
   testPricingLoad = false;
+
+  dropdownSettings: IDropdownSettings = {};
 
   foods = [
     { value: 'steak-0', viewValue: 'Steak' },
@@ -202,14 +205,14 @@ export class ImprintComponent implements OnInit {
 
     this.priceInclusionForm = this._formBuilder.group({
       checkBox: ['']
-    })
+    });
 
     this.values = this._formBuilder.group({
       twoColorQ: [1],
       threeColorQ: [1],
       fourColorQ: [1],
       fiveColorQ: [1]
-    })
+    });
 
     this.testPricingForm = this._formBuilder.group({
       optionOneFirst: [''],
@@ -221,6 +224,17 @@ export class ImprintComponent implements OnInit {
       optionFourFirst: [''],
       optionFourSecond: ['']
     });
+
+    this.dropdownSettings = {
+      singleSelection: false,
+      idField: 'fk_collectionID',
+      textField: 'collectionName',
+      selectAllText: 'Select All',
+      unSelectAllText: 'UnSelect All',
+      itemsShowLimit: 1,
+      allowSearchFilter: true,
+      limitSelection: 1
+    };
   };
 
   getStandardImprints(): void {
@@ -1180,13 +1194,17 @@ export class ImprintComponent implements OnInit {
         };
 
         if (this.collectionIdsArray.length) {
-          this.selectedCollectionId = this.collectionIdsArray[0]
+          // this.selectedCollectionId = this.collectionIdsArray[0]
         }
         this.getImprintColorCollectionLoader = false;
 
         // Mark for check
         this._changeDetectorRef.markForCheck();
       });
+  };
+
+  onItemSelect(item: any) {
+    this.selectedCollectionId = [item];
   };
 
   uploadFile(event) {
@@ -1274,7 +1292,7 @@ export class ImprintComponent implements OnInit {
       multi_color_min_id: 1,
       bln_user_color_selection: this.defaultImprintColorSpecification === 'Yes' ? 1 : 0,
       max_colors: this.defaultImprintColorSpecification === 'Yes' ? this.maxColorSelected : null,
-      collection_id: this.collectionIdsArray.length ? this.selectedCollectionId.fk_collectionID : null,
+      collection_id: this.collectionIdsArray.length ? this.selectedCollectionId[0].fk_collectionID : null,
       bln_process_mode: processMode,
       min_product_qty: this.minQuantity || 1,
       imprint_comments: this.addImprintComment || "",
@@ -1412,7 +1430,7 @@ export class ImprintComponent implements OnInit {
       multi_color_min_id: 1,
       bln_user_color_selection: this.defaultImprintColorSpecification === 'Yes' ? 1 : 0,
       max_colors: this.defaultImprintColorSpecification === 'Yes' ? this.maxColorSelected : null,
-      collection_id: this.collectionIdsArray.length ? this.selectedCollectionId.fk_collectionID : null,
+      collection_id: this.collectionIdsArray.length ? this.selectedCollectionId[0].fk_collectionID : null,
       bln_process_mode: processMode,
       min_product_qty: this.minQuantity || 1,
       imprint_comments: this.addImprintComment || "",
@@ -1519,19 +1537,33 @@ export class ImprintComponent implements OnInit {
   };
 
   getSuppliers(data?: any) {
-    this._inventoryService.getAllSuppliers()
+    // Get the suppliers
+    this._inventoryService.Suppliers$
       .pipe(takeUntil(this._unsubscribeAll))
-      .subscribe((suppliers) => {
-        this.suppliers = suppliers["data"];
-        this.selectedSupplier = this.suppliers[2];
-        if (data) {
-          const { pk_companyID } = data
-          this.selectedSupplier = this.suppliers.find(x => x.pk_companyID === pk_companyID) || this.suppliers[2]
-        }
+      .subscribe((supplier) => {
+        if (supplier) {
+          this.suppliers = supplier["data"];
+          this.selectedSupplier = this.suppliers[2];
 
-        // Mark for check
-        this._changeDetectorRef.markForCheck();
+          // Mark for check
+          this._changeDetectorRef.markForCheck();
+        } else {
+          this._inventoryService.getAllSuppliers()
+            .pipe(takeUntil(this._unsubscribeAll))
+            .subscribe((suppliers) => {
+              this.suppliers = suppliers["data"];
+              this.selectedSupplier = this.suppliers[2];
+              if (data) {
+                const { pk_companyID } = data
+                this.selectedSupplier = this.suppliers.find(x => x.pk_companyID === pk_companyID) || this.suppliers[2]
+              }
+
+              // Mark for check
+              this._changeDetectorRef.markForCheck();
+            });
+        };
       });
+
   }
 
   getAddImprintLocations(data?: any) {

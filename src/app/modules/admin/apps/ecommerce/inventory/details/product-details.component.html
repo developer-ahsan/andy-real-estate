@@ -137,6 +137,12 @@
                     </ng-template>
                 </div>
                 <div class="col-12">
+                    <ng-template [ngIf]="selectedIndex === 'Promostandard colors'">
+                        <app-promostandard-colors [(isLoading)]="isLoading" [selectedProduct]="selectedProduct">
+                        </app-promostandard-colors>
+                    </ng-template>
+                </div>
+                <div class="col-12">
                     <ng-template [ngIf]="selectedIndex === 'Features'">
                         <app-feature [(isLoading)]="isLoading" [selectedProduct]="selectedProduct"></app-feature>
                     </ng-template>

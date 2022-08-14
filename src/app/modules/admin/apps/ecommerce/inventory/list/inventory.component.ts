@@ -328,7 +328,7 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
     })
 
     colorForm = this._formBuilder.group({
-        colors: ['', Validators.required],
+        colors: [''],
         run: ['0.00'],
         hex: ['']
     });
@@ -833,6 +833,24 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
             licensing_term: true
         };
 
+        const { colors, run, hex } = this.colorForm.getRawValue();
+        var colorTempArray = colors?.length ? colors.split(',') : [];
+        let colorArr = [];
+        if (colorTempArray.length) {
+            for (const color of colorTempArray) {
+                colorArr.push(color.replace(/[^\w]/g, ""));
+            }
+        };
+
+        const colorPayload = {
+            product_id: null,
+            color_name: colorArr?.length ? colorArr : [],
+            color_id: [],
+            the_run: [run],
+            rgb: [hex || this.hexColor],
+            color: true
+        };
+
         const payload = {
             product: true,
             supplier_id: this.supplierId,
@@ -847,7 +865,8 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
             shipping: shipping,
             net_cost: netCost,
             licensing_term: licensingTerm,
-            feature: uniqueFeatures
+            feature: uniqueFeatures,
+            color: [colorPayload]
         };
 
         console.log("payload", payload)
