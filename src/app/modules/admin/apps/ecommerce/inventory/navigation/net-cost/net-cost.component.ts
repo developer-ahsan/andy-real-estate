@@ -144,8 +144,12 @@ export class NetCostComponent implements OnInit {
       .pipe(takeUntil(this._unsubscribeAll))
       .subscribe((details) => {
         this.selectedProduct = details["data"][0];
-        const { msrp, costComment, liveCostComment } = this.selectedProduct
-        this.selectedRedPrice = liveCostComment;
+        const { msrp, costComment, liveCostComment } = this.selectedProduct;
+        if (liveCostComment) {
+          this.redPriceList.push(liveCostComment);
+          this.selectedRedPrice = liveCostComment;
+        };
+
         this._inventoryService.getNetCost(pk_productID)
           .pipe(takeUntil(this._unsubscribeAll))
           .subscribe((netCost) => {

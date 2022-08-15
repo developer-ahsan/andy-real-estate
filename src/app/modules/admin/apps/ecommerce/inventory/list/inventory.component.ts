@@ -866,7 +866,7 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
             net_cost: netCost,
             licensing_term: licensingTerm,
             feature: uniqueFeatures,
-            color: [colorPayload]
+            // color: [colorPayload]
         };
 
         console.log("payload", payload)

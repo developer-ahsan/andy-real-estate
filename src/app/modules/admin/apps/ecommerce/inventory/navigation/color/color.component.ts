@@ -7,6 +7,7 @@ import { takeUntil } from 'rxjs/operators';
 import { SelectionModel } from '@angular/cdk/collections';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { IDropdownSettings } from 'ng-multiselect-dropdown';
+import * as _ from 'lodash';
 
 @Component({
   selector: 'app-color',
@@ -29,8 +30,14 @@ export class ColorComponent implements OnInit {
   hexColor;
   flashMessage: 'success' | 'error' | null = null;
 
+  images = null;
+  imagesArrayToUpdate = [];
+  fileName: string = "";
+
   colorsList: any = [];
   defaultResetValue: number = 0.00;
+
+  updateImageTouched: boolean = false;
 
   isAllColors: boolean = false;
 
@@ -119,14 +126,41 @@ export class ColorComponent implements OnInit {
     });
   };
 
+  checkIfImageExists(url, color) {
+    const img = new Image();
+    img.src = url;
+
+    if (img.complete) {
+      color["media"] = url;
+    } else {
+      img.onload = () => {
+        color["media"] = url;
+      };
+
+      img.onerror = () => {
+        color["media"] = null;
+        return;
+      };
+    }
+  };
+
   getColors(): void {
     const { pk_productID } = this.selectedProduct;
 
     this._inventoryService.getColors(pk_productID)
       .pipe(takeUntil(this._unsubscribeAll))
       .subscribe((colors) => {
+        for (const color of colors["data"]) {
+          const { fk_colorID } = color;
+          let image = `https://assets.consolidus.com/globalAssets/Products/Colors/${pk_productID}/${fk_colorID}.jpg`;
+          this.checkIfImageExists(image, color);
+        };
+
         this.dataSource = colors["data"];
-        this.isLoadingChange.emit(false);
+
+        setTimeout(() => {
+          this.isLoadingChange.emit(false);
+        }, 2000);
 
         // Mark for check
         this._changeDetectorRef.markForCheck();
@@ -167,8 +201,67 @@ export class ColorComponent implements OnInit {
     };
   };
 
+  upload(event, element) {
+    const { fk_colorID } = element;
+    this.updateImageTouched = true;
+    const file = event.target.files[0];
+    const reader = new FileReader();
+    reader.readAsDataURL(file);
+    reader.onload = () => {
+      this.imagesArrayToUpdate.push({
+        imageUpload: reader.result,
+        name: fk_colorID
+      });
+    };
+  };
+
   updateColor() {
     const { pk_productID } = this.selectedProduct;
+
+    if (this.updateImageTouched) {
+      for (const obj of this.imagesArrayToUpdate) {
+        const { imageUpload, name } = obj;
+        let image = new Image;
+        image.src = imageUpload;
+        image.onload = () => {
+          const base64Data = imageUpload;
+          const allowed_types = ['jpg', 'jpeg'];
+          const [, type] = base64Data.split(';')[0].split('/');
+          if (!_.includes(allowed_types, type)) {
+            this._snackBar.open("Image extensions are allowed in JPG", '', {
+              horizontalPosition: 'center',
+              verticalPosition: 'bottom',
+              duration: 3500
+            });
+            return;
+          }
+
+          if (image.width !== 600 && image.width !== 600) {
+            this._snackBar.open("Dimentions allowed are 600px x 600px", '', {
+              horizontalPosition: 'center',
+              verticalPosition: 'bottom',
+              duration: 3500
+            });
+            return;
+          };
+
+          const base64 = imageUpload.split(",")[1];
+          const payload = {
+            file_upload: true,
+            image_file: base64,
+            image_path: `/globalAssets/Products/Colors/${pk_productID}/${name}.jpg`
+          };
+
+          this._inventoryService.addColorMedia(payload)
+            .subscribe((response) => {
+
+              // Mark for check
+              this._changeDetectorRef.markForCheck();
+            })
+        };
+      };
+    };
+
     let tempColorArray = [];
     for (const color of this.arrayToUpdate) {
       const { run, rgb, fk_colorID } = color;
@@ -199,19 +292,31 @@ export class ColorComponent implements OnInit {
     this.colorUpdateLoader = true;
     this._inventoryService.updateColors(payload)
       .subscribe((response) => {
-        this.colorUpdateLoader = false;
-        const message = response["success"] === true
-          ? "Colors updated successfully"
-          : "Some error occured. Please try again";
+        this._inventoryService.getColors(pk_productID)
+          .pipe(takeUntil(this._unsubscribeAll))
+          .subscribe((colors) => {
+            for (const color of colors["data"]) {
+              const { fk_colorID } = color;
+              let image = `https://assets.consolidus.com/globalAssets/Products/Colors/${pk_productID}/${fk_colorID}.jpg`;
+              this.checkIfImageExists(image, color);
+            };
 
-        this._snackBar.open(message, '', {
-          horizontalPosition: 'center',
-          verticalPosition: 'bottom',
-          duration: 3500
-        });
+            this.dataSource = colors["data"];
 
-        // Mark for check
-        this._changeDetectorRef.markForCheck();
+            this.colorUpdateLoader = false;
+            const message = response["success"] === true
+              ? "Colors updated successfully"
+              : "Some error occured. Please try again";
+
+            this._snackBar.open(message, '', {
+              horizontalPosition: 'center',
+              verticalPosition: 'bottom',
+              duration: 3500
+            });
+
+            // Mark for check
+            this._changeDetectorRef.markForCheck();
+          });
       }, err => {
         this._snackBar.open("Some error occured", '', {
           horizontalPosition: 'center',
@@ -254,7 +359,14 @@ export class ColorComponent implements OnInit {
         this._inventoryService.getColors(pk_productID)
           .pipe(takeUntil(this._unsubscribeAll))
           .subscribe((colors) => {
+            for (const color of colors["data"]) {
+              const { fk_colorID } = color;
+              let image = `https://assets.consolidus.com/globalAssets/Products/Colors/${pk_productID}/${fk_colorID}.jpg`;
+              this.checkIfImageExists(image, color);
+            };
+
             this.dataSource = colors["data"];
+            this.colorForm.reset();
             this.colorAddLoader = false;
             this.showFlashMessage(
               response["success"] === true ?

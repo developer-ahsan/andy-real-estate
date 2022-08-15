@@ -827,6 +827,13 @@ export class InventoryService {
             environment.products, payload, { headers });
     };
 
+    // ADD DEFAULT Colors
+    addColorMedia(payload) {
+        const headers = { 'Authorization': `Bearer ${this._authService.accessToken}` };
+        return this._httpClient.post(
+            environment.products, payload, { headers });
+    };
+
     // Add Product
     addProduct(payload) {
         const headers = { 'Authorization': `Bearer ${this._authService.accessToken}` };

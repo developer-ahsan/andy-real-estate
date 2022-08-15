@@ -111,6 +111,10 @@ export class ProductsDescriptionComponent implements OnInit {
 
           // Fill the form
           this.productDescriptionForm.patchValue(this.productDescription);
+          this.productDescriptionForm.patchValue({
+            internalKeywords: this.productDescription["ProductSearchKeywords"]
+          });
+
           let sexVal = this.productDescription["sex"];
           if (sexVal == 1) {
             this.selectedSex = "N/A";

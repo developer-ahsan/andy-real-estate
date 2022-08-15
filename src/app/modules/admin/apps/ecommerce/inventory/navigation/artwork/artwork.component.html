@@ -13,22 +13,19 @@
                 </div>
                 <!-- Artwork template -->
                 <div class="gap-y-4 mt-6">
-                    <form [formGroup]="imageUploadForm">
-                        <div class="row">
-                            <div class="col-lg-8 col-12 mt-2">
-                                <input type="file" accept=".jpg" [formControlName]="'image'" (change)="upload($event)"
-                                    style="line-height: 2.5;" />
-                                <small class="text-danger font-semibold"> {{imageRequired}} </small>
-                            </div>
-                            <div class="col-lg-4 col-12 mt-2">
-                                <button (click)="uploadImage()" mat-stroked-button
-                                    [matTooltip]="'PDF, EPS, AI, PSD, and JPG file formats only!'">
-                                    <mat-icon [svgIcon]="'heroicons_outline:upload'"></mat-icon>
-                                    <span class="ml-1 mr-1">Upload Network Template</span>
-                                </button>
-                            </div>
+                    <div class="row">
+                        <div class="col-12 my-1">
+                            <input type="file" accept=".jpg" (change)="upload($event)" style="line-height: 2.5;" />
+                            <small class="text-danger font-semibold"> {{imageRequired}} </small>
                         </div>
-                    </form>
+                        <div class="col-12 flex justify-end">
+                            <button (click)="uploadFile()" mat-stroked-button
+                                [matTooltip]="'PDF, EPS, AI, PSD, and JPG file formats only!'">
+                                <mat-icon [svgIcon]="'heroicons_outline:upload'"></mat-icon>
+                                <span class="ml-1 mr-1">Upload Artwork Template</span>
+                            </button>
+                        </div>
+                    </div>
                 </div>
             </div>
         </fuse-card>

@@ -69,7 +69,7 @@ export class DefaultImageComponent implements OnInit {
         return;
       };
     }
-  }
+  };
 
   upload(event) {
     const file = event.target.files[0];
@@ -95,12 +95,20 @@ export class DefaultImageComponent implements OnInit {
       const allowed_types = ['jpg', 'jpeg'];
       const [, type] = base64Data.split(';')[0].split('/');
       if (!_.includes(allowed_types, type)) {
-        this.imageError = 'Image extensions are allowed in JPG';
+        this._snackBar.open("Image extensions are allowed in JPG", '', {
+          horizontalPosition: 'center',
+          verticalPosition: 'bottom',
+          duration: 3500
+        });
         return;
       }
 
       if (image.width !== 600 && image.width !== 600) {
-        this.imageError = 'Dimentions allowed are 600px x 600px';
+        this._snackBar.open("Dimentions allowed are 600px x 600px", '', {
+          horizontalPosition: 'center',
+          verticalPosition: 'bottom',
+          duration: 3500
+        });
         return;
       };
 

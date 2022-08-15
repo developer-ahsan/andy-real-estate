@@ -4,6 +4,7 @@ import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { InventoryService } from 'app/modules/admin/apps/ecommerce/inventory/inventory.service';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { MatSnackBar } from '@angular/material/snack-bar';
 
 @Component({
   selector: 'app-artwork',
@@ -23,7 +24,8 @@ export class ArtworkComponent implements OnInit {
   constructor(
     private _changeDetectorRef: ChangeDetectorRef,
     private _inventoryService: InventoryService,
-    private _formBuilder: FormBuilder
+    private _formBuilder: FormBuilder,
+    private _snackBar: MatSnackBar
   ) { }
 
   ngOnInit(): void {
@@ -49,12 +51,34 @@ export class ArtworkComponent implements OnInit {
     this.images = files;
   }
 
-  uploadImage(): void {
+  uploadFile(): void {
     if (!this.images) {
-      this.imageRequired = "*Please attach an image and continue"
+      this._snackBar.open("Please attach a file", '', {
+        horizontalPosition: 'center',
+        verticalPosition: 'bottom',
+        duration: 3500
+      });
+      return;
+    };
+
+    let fileType = this.images[0].type;
+    if (fileType == 'image/jpeg' ||
+      fileType == 'application/pdf' ||
+      fileType == 'application/postscript') {
+      this._snackBar.open("Artwork file uploaded successfully", '', {
+        horizontalPosition: 'center',
+        verticalPosition: 'bottom',
+        duration: 3500
+      });
+      return;
+    } else {
+      this._snackBar.open("Only PDF, EPS, AI, PSD, and JPG file formats are accepted", '', {
+        horizontalPosition: 'center',
+        verticalPosition: 'bottom',
+        duration: 3500
+      });
       return;
     }
-    this.imageRequired = '';
   };
 
   openPdf(artWork) {

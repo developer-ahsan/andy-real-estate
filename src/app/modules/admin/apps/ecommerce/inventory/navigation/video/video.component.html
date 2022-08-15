@@ -15,20 +15,17 @@
                     <form [formGroup]="videoUploadForm">
                         <div class="row p-2">
                             <div class="col-12 text-secondary font-extrabold">
-                                - There are total of {{videosLength}} videos in our system.
+                                Total Videos: {{videosLength}}
                             </div>
                             <div class="col-12 text-secondary">
-                                <p>When the video service, such as Vimeo or Youtube, gives you the embed code, you will
+                                <p>
+                                    - When the video service, such as Vimeo or Youtube, gives you the embed code, you
+                                    will
                                     only
                                     want to enter the part of the code that is after the "src=" part that is in quotes.
                                     Entering
-                                    the entire code below will not work.</p>
-                            </div>
-                            <div class="col-12 text-danger mt-3">
-                                DO NOT include any "http://" or "https://" in the URL. Remove these before adding.
-                            </div>
-                            <div class="col-12 text-danger mb-3">
-                                Try to remove any "autorun" variables in the URL. Usually they look like "&autorun=1"
+                                    the entire code below will not work
+                                </p>
                             </div>
                             <div class="col-12 font-semibold">
                                 Usually the video service will give you options for embedding a video. Make sure that

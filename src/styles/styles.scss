@@ -254,3 +254,27 @@ body .light .mat-expansion-panel-header.mat-expanded {
 .multiselect-dropdown .dropdown-btn .dropdown-multiselect__caret {
   top: auto !important;
 }
+
+.upload-btn-wrapper {
+  position: relative;
+  overflow: hidden;
+  display: inline-block;
+}
+
+.btn {
+  border: 2px solid #404C5E;
+  color: #404C5E;
+  background-color: white;
+  padding: 8px 20px;
+  border-radius: 25px;
+  font-size: px;
+  font-weight: bold;
+}
+
+.upload-btn-wrapper input[type=file] {
+  font-size: 100px;
+  position: absolute;
+  left: 0;
+  top: 0;
+  opacity: 0;
+}
