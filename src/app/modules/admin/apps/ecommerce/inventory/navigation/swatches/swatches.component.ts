@@ -43,7 +43,7 @@ export class SwatchesComponent implements OnInit {
 
     const { pk_productID } = this.selectedProduct;
 
-    let url = `https://assets.consolidus.com/globalAssets/Products/Swatch/${pk_productID}/${pk_productID}-1.jpg`;
+    let url = `${environment.productMedia}/Swatch/${pk_productID}/${pk_productID}-1.jpg`;
     this.checkIfImageExists(url);
 
     setTimeout(() => {

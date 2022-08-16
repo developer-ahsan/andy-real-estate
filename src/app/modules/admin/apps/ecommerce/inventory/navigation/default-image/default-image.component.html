@@ -15,11 +15,11 @@
                 <div class="gap-y-4 mt-6">
                     <form [formGroup]="imageUploadForm">
                         <div class="row">
-                            <div class="col-lg-10 col-12">
+                            <div class="col-12">
                                 <input type="file" accept=".jpg" [formControlName]="'image'" (change)="upload($event)"
                                     style="line-height: 2.5;" />
                             </div>
-                            <div class="col-lg-2 col-12">
+                            <div class="col-12 flex justify-end">
                                 <button class="min-w-40" mat-stroked-button [matTooltip]="'(600px X 600px JPG only!)'"
                                     (click)="uploadImage()" [disabled]="imageUploadLoader">
                                     <mat-progress-spinner *ngIf="imageUploadLoader" [diameter]="24"
@@ -29,9 +29,6 @@
                                     </mat-icon>
                                     <span *ngIf="!imageUploadLoader" class="ml-1 mr-1">Add Image</span>
                                 </button>
-                            </div>
-                            <div class="col-12">
-                                <small class="text-danger font-semibold"> {{imageError}} </small>
                             </div>
                         </div>
                     </form>

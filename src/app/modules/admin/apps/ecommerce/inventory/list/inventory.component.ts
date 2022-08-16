@@ -814,7 +814,7 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
         for (const item of features["items"]) {
             const { order, feature } = item;
             featureArray.push({
-                attribute_type_id: 1,
+                attribute_type_id: order,
                 attribute_text: feature,
                 supplier_id: this.supplierId,
                 product_id: null,
@@ -866,52 +866,62 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
             net_cost: netCost,
             licensing_term: licensingTerm,
             feature: uniqueFeatures,
-            // color: [colorPayload]
+            color: colorPayload
         };
 
         console.log("payload", payload)
 
-        this.createProductLoader = true;
+        // this.createProductLoader = true;
 
-        this._inventoryService.checkIfProductExist(productNumber, productName, this.supplierId)
-            .pipe(takeUntil(this._unsubscribeAll))
-            .subscribe((response: any) => {
-                const isDataExist = response["data_exists"];
+        // this._inventoryService.checkIfProductExist(productNumber, productName, this.supplierId)
+        //     .pipe(takeUntil(this._unsubscribeAll))
+        //     .subscribe((response: any) => {
+        //         const isDataExist = response["data_exists"];
 
-                if (isDataExist) {
-                    this.createProductLoader = false;
-                    this._snackBar.open("Product already exists", '', {
-                        horizontalPosition: 'center',
-                        verticalPosition: 'bottom',
-                        duration: 3500
-                    });
-                    // Mark for check
-                    this._changeDetectorRef.markForCheck();
-                } else {
-                    this._inventoryService.addProduct(payload)
-                        .subscribe((response) => {
-                            this.showFlashMessage(
-                                response["success"] === true ?
-                                    'success' :
-                                    'error'
-                            );
-                            this.createProductLoader = false;
+        //         if (isDataExist) {
+        //             this.createProductLoader = false;
+        //             this._snackBar.open("Product already exists", '', {
+        //                 horizontalPosition: 'center',
+        //                 verticalPosition: 'bottom',
+        //                 duration: 3500
+        //             });
+        //             // Mark for check
+        //             this._changeDetectorRef.markForCheck();
+        //         } else {
+        //             this._inventoryService.addProduct(payload)
+        //                 .subscribe((response) => {
+        //                     this.showFlashMessage(
+        //                         response["success"] === true ?
+        //                             'success' :
+        //                             'error'
+        //                     );
+        //                     this.createProductLoader = false;
 
-                            // Mark for check
-                            this._changeDetectorRef.markForCheck();
-                        }, err => {
-                            this._snackBar.open("Some error occured", '', {
-                                horizontalPosition: 'center',
-                                verticalPosition: 'bottom',
-                                duration: 3500
-                            });
-                            this.createProductLoader = false;
+        //                     // Mark for check
+        //                     this._changeDetectorRef.markForCheck();
+        //                 }, err => {
+        //                     this._snackBar.open("Some error occured", '', {
+        //                         horizontalPosition: 'center',
+        //                         verticalPosition: 'bottom',
+        //                         duration: 3500
+        //                     });
+        //                     this.createProductLoader = false;
 
-                            // Mark for check
-                            this._changeDetectorRef.markForCheck();
-                        });
-                }
-            })
+        //                     // Mark for check
+        //                     this._changeDetectorRef.markForCheck();
+        //                 });
+        //         }
+        //     }, err => {
+        //         this._snackBar.open("Some error occured", '', {
+        //             horizontalPosition: 'center',
+        //             verticalPosition: 'bottom',
+        //             duration: 3500
+        //         });
+        //         this.createProductLoader = false;
+
+        //         // Mark for check
+        //         this._changeDetectorRef.markForCheck();
+        //     });
     };
 
     /**

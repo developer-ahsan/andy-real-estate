@@ -5,6 +5,7 @@ import { takeUntil } from 'rxjs/operators';
 import { InventoryService } from 'app/modules/admin/apps/ecommerce/inventory/inventory.service';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { environment } from 'environments/environment';
 
 @Component({
   selector: 'app-artwork',
@@ -83,7 +84,7 @@ export class ArtworkComponent implements OnInit {
 
   openPdf(artWork) {
     const { pk_productID } = this.selectedProduct;
-    const url = `https://assets.consolidus.com/globalAssets/Products/artworkTemplates/${pk_productID}/${artWork?.pk_artworkTemplateID}.${artWork?.extension}`;
+    const url = `${environment.productMedia}/artworkTemplates/${pk_productID}/${artWork?.pk_artworkTemplateID}.${artWork?.extension}`;
     window.open(url);
   }
 }

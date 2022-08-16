@@ -14,7 +14,8 @@ export const environment = {
     storeNewUrl: "https://stores-staging.azurewebsites.net/api/stores",
     storeNewUrlRapidBuild: "https://stores-staging.azurewebsites.net/api/rapid_build",
     products: "https://consolidus-staging.azurewebsites.net/api/products",
-    system: "https://consolidus-staging.azurewebsites.net/api/system"
+    system: "https://consolidus-staging.azurewebsites.net/api/system",
+    productMedia: "https://assets.consolidus.com/globalAssets/Products"
 };
 
 /*

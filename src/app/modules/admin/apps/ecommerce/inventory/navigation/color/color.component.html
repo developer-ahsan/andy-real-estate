@@ -173,10 +173,10 @@
                             <ng-container *ngIf="element.media; else defaultValue">
                                 <img class="object-cover rounded-2xl shadow-sm w-24" src="{{element.media}}">
                             </ng-container>
+                            <ng-template #defaultValue>
+                                <input type="file" id="myfile" (change)="upload($event, element)" />
+                            </ng-template>
                         </td>
-                        <ng-template #defaultValue>
-                            <input type="file" id="myfile" (change)="upload($event, element)" />
-                        </ng-template>
                     </ng-container>
 
                     <tr mat-header-row *matHeaderRowDef="displayedColumns;" class="h-18"></tr>

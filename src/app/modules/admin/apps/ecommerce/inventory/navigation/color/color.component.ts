@@ -8,6 +8,7 @@ import { SelectionModel } from '@angular/cdk/collections';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { IDropdownSettings } from 'ng-multiselect-dropdown';
 import * as _ from 'lodash';
+import { environment } from 'environments/environment';
 
 @Component({
   selector: 'app-color',
@@ -152,7 +153,7 @@ export class ColorComponent implements OnInit {
       .subscribe((colors) => {
         for (const color of colors["data"]) {
           const { fk_colorID } = color;
-          let image = `https://assets.consolidus.com/globalAssets/Products/Colors/${pk_productID}/${fk_colorID}.jpg`;
+          let image = `${environment.productMedia}/Colors/${pk_productID}/${fk_colorID}.jpg`;
           this.checkIfImageExists(image, color);
         };
 
@@ -205,60 +206,65 @@ export class ColorComponent implements OnInit {
     const { fk_colorID } = element;
     this.updateImageTouched = true;
     const file = event.target.files[0];
+    let type = file["type"];
     const reader = new FileReader();
     reader.readAsDataURL(file);
     reader.onload = () => {
       this.imagesArrayToUpdate.push({
         imageUpload: reader.result,
-        name: fk_colorID
+        name: fk_colorID,
+        type: file["type"]
       });
     };
   };
+
+  uploadColorMedia(obj: any) {
+    const { pk_productID } = this.selectedProduct;
+    const { imageUpload, name, type } = obj;
+    let image = new Image;
+    image.src = imageUpload;
+    image.onload = () => {
+      if (image.width != 600 || image.height != 600) {
+        this._snackBar.open("Dimentions allowed are 600px x 600px", '', {
+          horizontalPosition: 'center',
+          verticalPosition: 'bottom',
+          duration: 3500
+        });
+        return;
+      };
+
+      if (type != "image/jpeg") {
+        this._snackBar.open("Image extensions are allowed in JPG", '', {
+          horizontalPosition: 'center',
+          verticalPosition: 'bottom',
+          duration: 3500
+        });
+        return;
+      }
+
+      const base64 = imageUpload.split(",")[1];
+      const payload = {
+        file_upload: true,
+        image_file: base64,
+        image_path: `/globalAssets/Products/Colors/${pk_productID}/${name}.jpg`
+      };
+
+      this._inventoryService.addColorMedia(payload)
+        .subscribe((response) => {
+
+          // Mark for check
+          this._changeDetectorRef.markForCheck();
+        })
+    };
+  }
 
   updateColor() {
     const { pk_productID } = this.selectedProduct;
 
     if (this.updateImageTouched) {
+
       for (const obj of this.imagesArrayToUpdate) {
-        const { imageUpload, name } = obj;
-        let image = new Image;
-        image.src = imageUpload;
-        image.onload = () => {
-          const base64Data = imageUpload;
-          const allowed_types = ['jpg', 'jpeg'];
-          const [, type] = base64Data.split(';')[0].split('/');
-          if (!_.includes(allowed_types, type)) {
-            this._snackBar.open("Image extensions are allowed in JPG", '', {
-              horizontalPosition: 'center',
-              verticalPosition: 'bottom',
-              duration: 3500
-            });
-            return;
-          }
-
-          if (image.width !== 600 && image.width !== 600) {
-            this._snackBar.open("Dimentions allowed are 600px x 600px", '', {
-              horizontalPosition: 'center',
-              verticalPosition: 'bottom',
-              duration: 3500
-            });
-            return;
-          };
-
-          const base64 = imageUpload.split(",")[1];
-          const payload = {
-            file_upload: true,
-            image_file: base64,
-            image_path: `/globalAssets/Products/Colors/${pk_productID}/${name}.jpg`
-          };
-
-          this._inventoryService.addColorMedia(payload)
-            .subscribe((response) => {
-
-              // Mark for check
-              this._changeDetectorRef.markForCheck();
-            })
-        };
+        this.uploadColorMedia(obj);
       };
     };
 
@@ -297,7 +303,7 @@ export class ColorComponent implements OnInit {
           .subscribe((colors) => {
             for (const color of colors["data"]) {
               const { fk_colorID } = color;
-              let image = `https://assets.consolidus.com/globalAssets/Products/Colors/${pk_productID}/${fk_colorID}.jpg`;
+              let image = `${environment.productMedia}/Colors/${pk_productID}/${fk_colorID}.jpg`;
               this.checkIfImageExists(image, color);
             };
 
@@ -361,12 +367,18 @@ export class ColorComponent implements OnInit {
           .subscribe((colors) => {
             for (const color of colors["data"]) {
               const { fk_colorID } = color;
-              let image = `https://assets.consolidus.com/globalAssets/Products/Colors/${pk_productID}/${fk_colorID}.jpg`;
+              let image = `${environment.productMedia}/Colors/${pk_productID}/${fk_colorID}.jpg`;
               this.checkIfImageExists(image, color);
             };
 
             this.dataSource = colors["data"];
-            this.colorForm.reset();
+            this.colorForm.patchValue({
+              colors: [''],
+              run: ['0.00'],
+              hex: ['']
+            });
+            this.colorValue = '#000000';
+
             this.colorAddLoader = false;
             this.showFlashMessage(
               response["success"] === true ?

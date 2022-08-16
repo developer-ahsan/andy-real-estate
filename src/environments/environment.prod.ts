@@ -3,12 +3,13 @@ export const environment = {
     signInAuth: "https://www.googleapis.com/identitytoolkit/v3/relyingparty/verifyPassword?key=AIzaSyDdIDmQFMIa3aXSnoudkf3At_zQ9faFs2k",
     mediaKey: "DE3339BDDF8B5D1A6BD3D965D7CCB4B6A7234672505A0023485852397777D05E",
     mediaAccessUrl: "https://admin.consolidus.com/ssadm/imageUpload.cfm",
-    customerList: "https://consolidus-staging.azurewebsites.net/api/users",
-    customer: "https://consolidus-staging.azurewebsites.net/api/user",
-    orders: "https://consolidus-staging.azurewebsites.net/api/orders",
-    stores: "https://consolidus-staging.azurewebsites.net/api/stores",
-    storeNewUrl: "https://stores-staging.azurewebsites.net/api/stores",
-    storeNewUrlRapidBuild: "https://stores-staging.azurewebsites.net/api/rapid_build",
-    products: "https://consolidus-staging.azurewebsites.net/api/products",
-    system: "https://consolidus-staging.azurewebsites.net/api/system"
+    customerList: "https://consolidus.azurewebsites.net/api/users",
+    customer: "https://consolidus.azurewebsites.net/api/user",
+    orders: "https://consolidus.azurewebsites.net/api/orders",
+    stores: "https://consolidus.azurewebsites.net/api/stores",
+    storeNewUrl: "https://stores.azurewebsites.net/api/stores",
+    storeNewUrlRapidBuild: "https://stores.azurewebsites.net/api/rapid_build",
+    products: "https://consolidus.azurewebsites.net/api/products",
+    system: "https://consolidus.azurewebsites.net/api/system",
+    productMedia: "https://assets.consolidus.com/globalAssets/Products"
 };

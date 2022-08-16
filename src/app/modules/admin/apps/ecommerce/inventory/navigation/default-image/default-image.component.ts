@@ -18,7 +18,7 @@ export class DefaultImageComponent implements OnInit {
   private _unsubscribeAll: Subject<any> = new Subject<any>();
 
   imageUploadForm: FormGroup;
-  images = null;
+  image = null;
   fileName: string = "";
   imagesArray = [];
 
@@ -45,7 +45,7 @@ export class DefaultImageComponent implements OnInit {
 
     // 11718
     for (let i = 1; i <= 10; i++) {
-      let url = `https://assets.consolidus.com/globalAssets/Products/defaultImage/${pk_productID}/${pk_productID}-${i}.jpg`;
+      let url = `${environment.productMedia}/defaultImage/${pk_productID}/${pk_productID}-${i}.jpg`;
       this.checkIfImageExists(url);
     };
 
@@ -74,36 +74,43 @@ export class DefaultImageComponent implements OnInit {
   upload(event) {
     const file = event.target.files[0];
     this.fileName = file["name"];
+    let fileType = file["type"];
     const reader = new FileReader();
     reader.readAsDataURL(file);
     reader.onload = () => {
-      this.images = reader.result;
+      this.image = {
+        imageUpload: reader.result,
+        fileType: fileType
+      };
     };
   };
 
   uploadImage(): void {
     this.imageError = null;
-    if (!this.images) {
-      this.imageError = "*Please attach an image and continue";
+    if (!this.image) {
+      this._snackBar.open("*Please attach an image", '', {
+        horizontalPosition: 'center',
+        verticalPosition: 'bottom',
+        duration: 3500
+      });
       return;
     };
 
+    const { imageUpload, fileType } = this.image;
     let image = new Image;
-    image.src = this.images;
+    image.src = imageUpload;
     image.onload = () => {
-      const base64Data = this.images;
-      const allowed_types = ['jpg', 'jpeg'];
-      const [, type] = base64Data.split(';')[0].split('/');
-      if (!_.includes(allowed_types, type)) {
+
+      if (fileType != "image/jpeg") {
         this._snackBar.open("Image extensions are allowed in JPG", '', {
           horizontalPosition: 'center',
           verticalPosition: 'bottom',
           duration: 3500
         });
         return;
-      }
+      };
 
-      if (image.width !== 600 && image.width !== 600) {
+      if (image.width != 600 || image.height != 600) {
         this._snackBar.open("Dimentions allowed are 600px x 600px", '', {
           horizontalPosition: 'center',
           verticalPosition: 'bottom',
@@ -113,7 +120,7 @@ export class DefaultImageComponent implements OnInit {
       };
 
       const { pk_productID } = this.selectedProduct;
-      const base64 = this.images.split(",")[1];
+      const base64 = imageUpload.split(",")[1];
       const payload = {
         file_upload: true,
         image_file: base64,
