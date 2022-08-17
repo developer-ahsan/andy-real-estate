@@ -232,7 +232,7 @@ export class ProductsDescriptionComponent implements OnInit {
       notes: formValues.notes?.replace(/'/g, "''") || '',
       supplier_link: formValues.supplierLink || '',
       meta_desc: formValues.metaDesc?.replace(/'/g, "''") || '',
-      sex: this.selectedProduct?.blnApparel ? sexVal : null,
+      sex: this.selectedProduct?.blnApparel ? sexVal : 0,
       search_keywords: formValues.internalKeywords || '',
       purchase_order_notes: formValues.purchaseOrderNotes || '',
       last_update_by: "" || '',
@@ -253,9 +253,11 @@ export class ProductsDescriptionComponent implements OnInit {
             'error'
         );
         this.descriptionLoader = false;
+
         this._inventoryService.getProductByProductId(pk_productID)
           .pipe(takeUntil(this._unsubscribeAll))
-          .subscribe((product) => { })
+          .subscribe((product) => {
+          })
 
         // Mark for check
         this._changeDetectorRef.markForCheck();

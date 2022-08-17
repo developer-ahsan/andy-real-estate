@@ -224,6 +224,15 @@ export class InventoryService {
         });
     };
 
+    getColorsAndSize(productId): Observable<any[]> {
+        return this._httpClient.get<any[]>(environment.products, {
+            params: {
+                color_size: true,
+                product_id: productId
+            }
+        });
+    };
+
     getFeatures(productId, page): Observable<any[]> {
         return this._httpClient.get<any[]>(environment.products, {
             params: {
@@ -760,10 +769,11 @@ export class InventoryService {
         });
     };
 
-    getPromoStandardInventory(): Observable<any[]> {
+    getPromoStandardInventory(productNumber): Observable<any[]> {
         return this._httpClient.get<any[]>(environment.products, {
             params: {
-                promo_standards_inventory: true
+                promo_standards_inventory: true,
+                product_number: productNumber
             }
         });
     };
@@ -827,7 +837,28 @@ export class InventoryService {
             environment.products, payload, { headers });
     };
 
-    // ADD DEFAULT Colors
+    // ADD ARTWORK TEMPLATE
+    addArtworkTemplate(payload) {
+        const headers = { 'Authorization': `Bearer ${this._authService.accessToken}` };
+        return this._httpClient.post(
+            environment.products, payload, { headers });
+    };
+
+    // ADD DIETARY MEDIA
+    addDietaryMedia(payload) {
+        const headers = { 'Authorization': `Bearer ${this._authService.accessToken}` };
+        return this._httpClient.post(
+            environment.products, payload, { headers });
+    };
+
+    // ADD SWATCH IMAGE
+    addSwatchImage(payload) {
+        const headers = { 'Authorization': `Bearer ${this._authService.accessToken}` };
+        return this._httpClient.post(
+            environment.products, payload, { headers });
+    };
+
+    // ADD DEFAULT COLOR IMAGE
     addColorMedia(payload) {
         const headers = { 'Authorization': `Bearer ${this._authService.accessToken}` };
         return this._httpClient.post(

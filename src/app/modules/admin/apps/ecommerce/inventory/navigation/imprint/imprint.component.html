@@ -321,17 +321,6 @@
                     </div>
 
                     <div class="col-12 my-2" *ngIf="defaultImprintColorSpecification === 'Yes'">
-                        <!-- <mat-form-field class="w-full" *ngIf="collectionIdsArray.length">
-                            <mat-label>
-                                IMPRINT COLOR COLLECTIONS
-                            </mat-label>
-                            <mat-select [(ngModel)]="selectedCollectionId" name="collection">
-                                <mat-option *ngFor="let collection of collectionIdsArray" [value]="collection">
-                                    <small>{{collection.collectionName}} ({{collection.fk_collectionID}})</small>
-                                </mat-option>
-                            </mat-select>
-                        </mat-form-field> -->
-
                         <div *ngIf="collectionIdsArray.length">
                             <ng-multiselect-dropdown [placeholder]="'Imprint Color Collections'"
                                 [settings]="dropdownSettings" [data]="collectionIdsArray"
@@ -520,7 +509,7 @@
                     </div>
 
                     <!-- Image -->
-                    <div class="col-12">
+                    <div class="col-12 hidden">
                         <b>
                             <button [matTooltip]="'JPG, GIF, and PNG file types only!'">
                                 <i class="fa fa-info-circle"></i>
@@ -528,13 +517,13 @@
                             Image (optional)
                         </b>
                     </div>
-                    <div class="col-12">
+                    <div class="col-12 hidden">
                         <small class="leading-relaxed text-secondary font-semibold">
                             Add an image that will accompany the imprint for the user to use as reference when choosing
                             an imprint location.
                         </small>
                     </div>
-                    <div class="col-12 my-3" style="line-height: 3.5;">
+                    <div class="col-12 my-3 hidden" style="line-height: 3.5;">
                         <input type="file" (change)="uploadFile($event)">
                     </div>
 

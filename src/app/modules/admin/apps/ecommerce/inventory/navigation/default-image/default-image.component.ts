@@ -44,7 +44,7 @@ export class DefaultImageComponent implements OnInit {
     const { pk_productID } = this.selectedProduct;
 
     // 11718
-    for (let i = 1; i <= 10; i++) {
+    for (let i = 1; i <= 5; i++) {
       let url = `${environment.productMedia}/defaultImage/${pk_productID}/${pk_productID}-${i}.jpg`;
       this.checkIfImageExists(url);
     };
@@ -73,7 +73,7 @@ export class DefaultImageComponent implements OnInit {
 
   upload(event) {
     const file = event.target.files[0];
-    this.fileName = file["name"];
+    this.fileName = !this.imagesArray.length ? "1" : `${this.imagesArray.length + 1}`;
     let fileType = file["type"];
     const reader = new FileReader();
     reader.readAsDataURL(file);
@@ -86,6 +86,15 @@ export class DefaultImageComponent implements OnInit {
   };
 
   uploadImage(): void {
+    if (this.imagesArray.length == 5) {
+      this._snackBar.open("*You can only have maximum of five blank images per product", '', {
+        horizontalPosition: 'center',
+        verticalPosition: 'bottom',
+        duration: 3500
+      });
+      return;
+    };
+
     this.imageError = null;
     if (!this.image) {
       this._snackBar.open("*Please attach an image", '', {
@@ -124,7 +133,7 @@ export class DefaultImageComponent implements OnInit {
       const payload = {
         file_upload: true,
         image_file: base64,
-        image_path: `/globalAssets/Products/defaultImage/${pk_productID}/${pk_productID}-${this.fileName}`
+        image_path: `/globalAssets/Products/defaultImage/${pk_productID}/${pk_productID}-${this.fileName}.jpg`
       };
 
       this.imageUploadLoader = true;
@@ -136,7 +145,7 @@ export class DefaultImageComponent implements OnInit {
             duration: 3500
           });
           this.imageUploadLoader = false;
-          this.ngOnInit();
+          this.imagesArray.push(`${environment.productMedia}/defaultImage/${pk_productID}/${pk_productID}-${this.fileName}.jpg`)
 
           // Mark for check
           this._changeDetectorRef.markForCheck();

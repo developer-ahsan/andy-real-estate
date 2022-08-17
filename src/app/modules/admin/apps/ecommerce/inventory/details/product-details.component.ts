@@ -69,6 +69,8 @@ export class ProductDetailsComponent implements OnInit, OnDestroy {
 
           this.selectedProduct = details["data"][0];
 
+          const { fk_supplierID } = this.selectedProduct;
+
           this.routes = this._inventoryService.navigationLabels;
           const { blnService, blnApparel, blnPromoStandard } = this.selectedProduct;
           this.promoStandardBoolean = blnPromoStandard;
@@ -79,6 +81,10 @@ export class ProductDetailsComponent implements OnInit, OnDestroy {
 
           if (!blnApparel) {
             this.routes = this.filterNavigation(this.routes, 'Sizes')
+          };
+
+          if (fk_supplierID != 25) {
+            this.routes = this.filterNavigation(this.routes, 'Promostandard colors')
           };
 
           // Mark for check
@@ -94,6 +100,8 @@ export class ProductDetailsComponent implements OnInit, OnDestroy {
 
               this.selectedProduct = product["data"][0];
 
+              const { fk_supplierID } = this.selectedProduct;
+
               this.routes = this._inventoryService.navigationLabels;
               const { blnService, blnApparel, blnPromoStandard } = this.selectedProduct;
               this.promoStandardBoolean = blnPromoStandard;
@@ -104,6 +112,10 @@ export class ProductDetailsComponent implements OnInit, OnDestroy {
 
               if (!blnApparel) {
                 this.routes = this.filterNavigation(this.routes, 'Sizes')
+              };
+
+              if (fk_supplierID != 25) {
+                this.routes = this.filterNavigation(this.routes, 'Promostandard colors')
               };
 
               // Mark for check

@@ -1,9 +1,9 @@
 import { Component, Input, OnInit, Output, EventEmitter, ChangeDetectorRef } from '@angular/core';
-import { Package } from 'app/modules/admin/apps/ecommerce/inventory/inventory.types';
 import { Subject } from 'rxjs';
-import { takeUntil } from 'rxjs/operators';
-import { InventoryService } from 'app/modules/admin/apps/ecommerce/inventory/inventory.service';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { environment } from 'environments/environment';
+import { MatSnackBar } from '@angular/material/snack-bar';
+import { InventoryService } from 'app/modules/admin/apps/ecommerce/inventory/inventory.service';
 
 @Component({
   selector: 'app-dietary-info',
@@ -16,35 +16,107 @@ export class DietaryInfoComponent implements OnInit {
   private _unsubscribeAll: Subject<any> = new Subject<any>();
 
   imageUploadForm: FormGroup;
-  images: FileList = null;
-  imageRequired: string = '';
+  images = null;
+  pdf;
+  imageUploadLoader: boolean = false;
 
   constructor(
     private _changeDetectorRef: ChangeDetectorRef,
+    private _formBuilder: FormBuilder,
     private _inventoryService: InventoryService,
-    private _formBuilder: FormBuilder
+    private _snackBar: MatSnackBar
   ) { }
 
   ngOnInit(): void {
+
+    const { pk_productID } = this.selectedProduct;
+
     // Create the selected product form
     this.imageUploadForm = this._formBuilder.group({
       image: ['', Validators.required]
     });
 
+    this.pdf = `${environment.productMedia}/DietaryInfo/${pk_productID}.pdf`;
+
     this.isLoadingChange.emit(false);
+
+    // Mark for check
+    this._changeDetectorRef.markForCheck();
   }
 
-  upload(event: Event) {
-    const target = event.target as HTMLInputElement;
-    const files = target.files as FileList;
-    this.images = files;
-  }
+  upload(event) {
+    const file = event.target.files[0];
+    if (file) {
+      let fileExtension = file["name"].split('.').pop();  //return the extension
+      let fileType = fileExtension == "pdf" ? "application/pdf" : "not-accepted";
+      const reader = new FileReader();
+      reader.readAsDataURL(file);
+      reader.onload = () => {
+        this.images = {
+          fileUpload: reader.result,
+          fileType: fileType
+        };
+      };
+    };
+  };
 
-  uploadImage(): void {
+  uploadFile(): void {
     if (!this.images) {
-      this.imageRequired = "*Please attach an image and continue"
+      this._snackBar.open("Please attach a file", '', {
+        horizontalPosition: 'center',
+        verticalPosition: 'bottom',
+        duration: 3500
+      });
       return;
-    }
-    this.imageRequired = '';
-  }
+    };
+
+    const { fileUpload, fileType } = this.images;
+
+    if (fileType == 'application/pdf') {
+      const { pk_productID } = this.selectedProduct;
+      const base64 = fileUpload.split(",")[1];
+      const payload = {
+        file_upload: true,
+        image_file: base64,
+        image_path: `/globalAssets/Products/DietaryInfo/${pk_productID}.pdf`
+      };
+
+      this.imageUploadLoader = true;
+      this._inventoryService.addDietaryMedia(payload)
+        .subscribe((response) => {
+
+          this.pdf = `${environment.productMedia}/DietaryInfo/${pk_productID}.pdf`;
+          this._snackBar.open("File uploaded successfully", '', {
+            horizontalPosition: 'center',
+            verticalPosition: 'bottom',
+            duration: 3500
+          });
+          this.imageUploadLoader = false;
+
+          // Mark for check
+          this._changeDetectorRef.markForCheck();
+        }, err => {
+          this.imageUploadLoader = false;
+          this._snackBar.open("Some error occured", '', {
+            horizontalPosition: 'center',
+            verticalPosition: 'bottom',
+            duration: 3500
+          });
+
+          // Mark for check
+          this._changeDetectorRef.markForCheck();
+        })
+    } else {
+      this._snackBar.open("Only PDF files are accepted", '', {
+        horizontalPosition: 'center',
+        verticalPosition: 'bottom',
+        duration: 3500
+      });
+      return;
+    };
+  };
+
+  openPdf() {
+    window.open(this.pdf);
+  };
 }

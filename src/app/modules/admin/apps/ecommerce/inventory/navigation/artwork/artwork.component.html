@@ -19,10 +19,14 @@
                             <small class="text-danger font-semibold"> {{imageRequired}} </small>
                         </div>
                         <div class="col-12 flex justify-end">
-                            <button (click)="uploadFile()" mat-stroked-button
+                            <button class="min-w-40" (click)="uploadFile()" mat-stroked-button
+                                [disabled]="imageUploadLoader"
                                 [matTooltip]="'PDF, EPS, AI, PSD, and JPG file formats only!'">
-                                <mat-icon [svgIcon]="'heroicons_outline:upload'"></mat-icon>
-                                <span class="ml-1 mr-1">Upload Artwork Template</span>
+                                <mat-progress-spinner *ngIf="imageUploadLoader" [diameter]="24"
+                                    [mode]="'indeterminate'"></mat-progress-spinner>
+                                <mat-icon *ngIf="!imageUploadLoader" [svgIcon]="'heroicons_outline:upload'">
+                                </mat-icon>
+                                <span *ngIf="!imageUploadLoader" class="ml-1 mr-1">Upload</span>
                             </button>
                         </div>
                     </div>
@@ -39,6 +43,11 @@
                 <div class="text-2xl font-bold">
                     Current artwork templates
                 </div>
+                <div class="row">
+                    <div class="col-12 text-secondary">
+                        PDF, EPS, AI, PSD, and JPG file formats only!
+                    </div>
+                </div>
                 <!-- Artwork template -->
                 <div class="gap-y-4 mt-6">
                     <div class="row p-2" *ngIf="artWorkData.length > 0;else other_content">
@@ -53,10 +62,10 @@
                                     style="cursor: pointer;" (click)="openPdf(artWork)">
                                     {{artWork.name}}
                                 </div>
-                                <button class="px-6 mt-8" mat-stroked-button>
+                                <!-- <button class="px-6 mt-8" mat-stroked-button>
                                     <mat-icon svgIcon="mat_outline:remove_circle_outline"></mat-icon>
                                     <span class="ml-2">Remove</span>
-                                </button>
+                                </button> -->
                             </fuse-card>
                         </div>
                     </div>

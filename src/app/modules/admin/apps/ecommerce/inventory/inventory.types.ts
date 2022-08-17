@@ -68,6 +68,7 @@ export interface ProductsDetails {
     blnService: boolean;
     blnApparel: boolean;
     blnPromoStandard: boolean;
+    fk_supplierID?: number;
     RowNumber: number;
     TotalRequests: number;
 }

@@ -17,32 +17,72 @@ export class PromostandardColorsComponent implements OnInit {
   dataSource = [];
   dummyDataSource = [];
 
+
+  inventoryColors: string[];
+  inventorySizes: string[];
+
   constructor(
     private _changeDetectorRef: ChangeDetectorRef,
     private _inventoryService: InventoryService
   ) { }
 
   ngOnInit(): void {
-    const { pk_productID } = this.selectedProduct;
+    const { pk_productID, productNumber } = this.selectedProduct;
 
-    this._inventoryService.getColors(pk_productID)
-      .pipe(takeUntil(this._unsubscribeAll))
-      .subscribe((colors) => {
-        console.log("colors", colors["data"])
+    const prodNumber = productNumber ? productNumber.substr(0, productNumber.indexOf('_')) : "L455";
 
-        // Mark for check
-        this._changeDetectorRef.markForCheck();
-      }, err => {
-
-        // Mark for check
-        this._changeDetectorRef.markForCheck();
-      });
-
-    this._inventoryService.getPromoStandardInventory()
+    this._inventoryService.getPromoStandardInventory(prodNumber)
       .pipe(takeUntil(this._unsubscribeAll))
       .subscribe((response) => {
-        this.dataSource = response["data"]["result"];
-        this.dummyDataSource = this.dataSource;
+        if (response["data"]["success"]) {
+          this._inventoryService.getColorsAndSize(pk_productID)
+            .pipe(takeUntil(this._unsubscribeAll))
+            .subscribe((inventory) => {
+              let promos = response["data"]["result"]["ProductVariationInventoryArray"];
+              let tempArray = [];
+              for (const promo of promos) {
+                const { quantityAvailable } = promo;
+                if (quantityAvailable != 0) {
+                  tempArray.push(promo);
+                }
+              };
+
+              let colors = inventory["color"];
+              let sizes = inventory["size"];
+
+              this.inventoryColors = colors.length ? colors.map(value => value["colorName"]) : [];
+              this.inventorySizes = sizes.length ? sizes.map(value => value["sizeName"]) : [];
+
+              if (this.inventoryColors.length) {
+                tempArray = tempArray.filter(i => this.inventoryColors.includes(i.attributeColor));
+              };
+
+              if (this.inventorySizes.length) {
+                tempArray = tempArray.filter(i => this.inventorySizes.includes(i.attributeSize));
+              };
+
+              this.dataSource = tempArray;
+              this.dummyDataSource = this.dataSource;
+
+              this.isLoadingChange.emit(false);
+              // Mark for check
+              this._changeDetectorRef.markForCheck();
+            }, err => {
+              this.isLoadingChange.emit(false);
+
+              // Mark for check
+              this._changeDetectorRef.markForCheck();
+            });
+        } else {
+          this.dataSource = [];
+          this.dummyDataSource = [];
+
+          this.isLoadingChange.emit(false);
+          // Mark for check
+          this._changeDetectorRef.markForCheck();
+        }
+
+      }, err => {
         this.isLoadingChange.emit(false);
 
         // Mark for check

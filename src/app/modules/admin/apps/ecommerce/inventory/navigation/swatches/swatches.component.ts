@@ -43,8 +43,10 @@ export class SwatchesComponent implements OnInit {
 
     const { pk_productID } = this.selectedProduct;
 
-    let url = `${environment.productMedia}/Swatch/${pk_productID}/${pk_productID}-1.jpg`;
-    this.checkIfImageExists(url);
+    for (let i = 1; i <= 5; i++) {
+      let url = `${environment.productMedia}/Swatch/${pk_productID}/${pk_productID}-${i}.jpg`;
+      this.checkIfImageExists(url);
+    };
 
     setTimeout(() => {
       this.isLoadingChange.emit(false);
@@ -70,42 +72,61 @@ export class SwatchesComponent implements OnInit {
 
   upload(event) {
     const file = event.target.files[0];
-    this.fileName = file["name"];
+    this.fileName = !this.imagesArray.length ? "1" : `${this.imagesArray.length + 1}`;
+    let fileType = file["type"];
     const reader = new FileReader();
     reader.readAsDataURL(file);
     reader.onload = () => {
-      this.images = reader.result;
+      this.images = {
+        imageUpload: reader.result,
+        fileType: fileType
+      };
     };
   };
 
   uploadImage(): void {
     this.imageError = null;
     if (!this.images) {
-      this.imageError = "*Please attach an image and continue";
+      this._snackBar.open("Please attach an image", '', {
+        horizontalPosition: 'center',
+        verticalPosition: 'bottom',
+        duration: 3500
+      });
       return;
     };
 
     let image = new Image;
-    image.src = this.images;
+    const { imageUpload, fileType } = this.images;
+    image.src = imageUpload;
     image.onload = () => {
-      const base64Data = this.images;
-      const allowed_types = ['jpg', 'jpeg'];
-      const [, type] = base64Data.split(';')[0].split('/');
-      if (!_.includes(allowed_types, type)) {
-        this.imageError = 'Image extensions are allowed in JPG';
+      if (fileType != "image/jpeg") {
+        this._snackBar.open("Image extensions are allowed in JPG", '', {
+          horizontalPosition: 'center',
+          verticalPosition: 'bottom',
+          duration: 3500
+        });
+        return;
+      };
+
+      if (image.width != 600 || image.height != 600) {
+        this._snackBar.open("Dimentions allowed are 600px x 600px", '', {
+          horizontalPosition: 'center',
+          verticalPosition: 'bottom',
+          duration: 3500
+        });
         return;
       };
 
       const { pk_productID } = this.selectedProduct;
-      const base64 = this.images.split(",")[1];
+      const base64 = imageUpload.split(",")[1];
       const payload = {
         file_upload: true,
         image_file: base64,
-        image_path: `/globalAssets/Products/Swatch/${pk_productID}/${pk_productID}-${this.fileName}`
+        image_path: `/globalAssets/Products/Swatch/${pk_productID}/${pk_productID}-${this.fileName}.jpg`
       };
 
       this.imageUploadLoader = true;
-      this._inventoryService.addDefaultImage(payload)
+      this._inventoryService.addSwatchImage(payload)
         .subscribe((response) => {
           this._snackBar.open(response["message"], '', {
             horizontalPosition: 'center',
@@ -113,7 +134,7 @@ export class SwatchesComponent implements OnInit {
             duration: 3500
           });
           this.imageUploadLoader = false;
-          this.ngOnInit();
+          this.imagesArray.push(`${environment.productMedia}/Swatch/${pk_productID}/${pk_productID}-${this.fileName}.jpg`);
 
           // Mark for check
           this._changeDetectorRef.markForCheck();
