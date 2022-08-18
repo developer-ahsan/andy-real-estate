@@ -552,27 +552,27 @@
                                             <input matInput formControlName="supplierLink">
                                         </mat-form-field>
                                     </div>
-                                    <div class="col-12">
+                                    <div class="col-12" *ngIf="supplierType != 'Apparel Item'">
                                         <div class="flex items-center">
                                             <div class="font-medium" style="color: #64748b;">CASE DIMENSIONS</div>
                                             <div class="flex-auto ml-2 border-b-2"></div>
                                         </div>
                                     </div>
-                                    <div class="col-lg-4 col-12">
+                                    <div class="col-lg-4 col-12" *ngIf="supplierType != 'Apparel Item'">
                                         <mat-form-field appearance="fill" class="w-full">
                                             <mat-label>Case Height</mat-label>
                                             <input matInput type="number" formControlName="caseHeight">
                                             <small class="text-secondary font-semibold"> inch </small>
                                         </mat-form-field>
                                     </div>
-                                    <div class="col-lg-4 col-12">
+                                    <div class="col-lg-4 col-12" *ngIf="supplierType != 'Apparel Item'">
                                         <mat-form-field appearance="fill" class="w-full">
                                             <mat-label>Case Width</mat-label>
                                             <input matInput type="number" formControlName="caseWidth">
                                             <small class="text-secondary font-semibold"> inch </small>
                                         </mat-form-field>
                                     </div>
-                                    <div class="col-lg-4 col-12">
+                                    <div class="col-lg-4 col-12" *ngIf="supplierType != 'Apparel Item'">
                                         <mat-form-field appearance="fill" class="w-full">
                                             <mat-label>Case Length</mat-label>
                                             <input matInput type="number" formControlName="caseLength">
@@ -1732,27 +1732,27 @@
                                                     [(highValue)]="reviewFormSliderMaxValue" [options]="sliderOptions">
                                                 </ngx-slider>
                                             </div>
-                                            <div class="col-12">
+                                            <div class="col-12" *ngIf="supplierType != 'Apparel Item'">
                                                 <div class="flex items-center">
                                                     <div class="font-medium text-secondary">CASE DIMENSIONS</div>
                                                     <div class="flex-auto ml-2 border-b-2"></div>
                                                 </div>
                                             </div>
-                                            <div class="col-lg-4 col-12">
+                                            <div class="col-lg-4 col-12" *ngIf="supplierType != 'Apparel Item'">
                                                 <mat-form-field appearance="fill" class="w-full">
                                                     <mat-label>Case Height</mat-label>
                                                     <input matInput type="number" formControlName="caseHeight">
                                                     <small class="text-secondary font-semibold"> inch </small>
                                                 </mat-form-field>
                                             </div>
-                                            <div class="col-lg-4 col-12">
+                                            <div class="col-lg-4 col-12" *ngIf="supplierType != 'Apparel Item'">
                                                 <mat-form-field appearance="fill" class="w-full">
                                                     <mat-label>Case Width</mat-label>
                                                     <input matInput type="number" formControlName="caseWidth">
                                                     <small class="text-secondary font-semibold"> inch </small>
                                                 </mat-form-field>
                                             </div>
-                                            <div class="col-lg-4 col-12">
+                                            <div class="col-lg-4 col-12" *ngIf="supplierType != 'Apparel Item'">
                                                 <mat-form-field appearance="fill" class="w-full">
                                                     <mat-label>Case Length</mat-label>
                                                     <input matInput type="number" formControlName="caseLength">

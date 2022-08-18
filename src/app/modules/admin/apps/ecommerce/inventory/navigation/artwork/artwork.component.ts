@@ -40,7 +40,6 @@ export class ArtworkComponent implements OnInit {
       .pipe(takeUntil(this._unsubscribeAll))
       .subscribe((artwork) => {
         this.artWorkData = artwork["data"];
-        console.log("this.artWorkData", this.artWorkData)
 
         this.isLoadingChange.emit(false);
         this._changeDetectorRef.markForCheck();
@@ -88,7 +87,6 @@ export class ArtworkComponent implements OnInit {
         image_path: `/globalAssets/Products/ArtworkTemplates/${pk_productID}/${pk_productID}-${fileName}`
       };
 
-      console.log("payload", payload)
       this.imageUploadLoader = true;
       this._inventoryService.addArtworkTemplate(payload)
         .subscribe((response) => {

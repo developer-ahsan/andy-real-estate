@@ -174,7 +174,7 @@
                                 <img class="object-cover rounded-2xl shadow-sm w-24" src="{{element.media}}">
                             </ng-container>
                             <ng-template #defaultValue>
-                                <input type="file" id="myfile" (change)="upload($event, element)" />
+                                <input type="file" accept=".jpg" id="myfile" (change)="upload($event, element)" />
                             </ng-template>
                         </td>
                     </ng-container>

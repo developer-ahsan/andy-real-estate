@@ -48,7 +48,7 @@
 
                 <!-- Dietary Information -->
                 <div class="gap-y-4 mt-6">
-                    <div class="row p-2">
+                    <div class="row p-2" *ngIf="pdf;else other_content">
                         <div class="col-lg-4 col-12">
                             <fuse-card class="flex flex-col items-center w-full p-8 filter-info bg-light rounded-2xl">
                                 <div class="flex items-center justify-center p-5 rounded-full bg-primary-100 dark:bg-gray-600 hover:cursor-pointer hover:opacity-80"
@@ -63,11 +63,11 @@
                             </fuse-card>
                         </div>
                     </div>
-                    <!-- <ng-template #other_content>
+                    <ng-template #other_content>
                         <p class="text-secondary font-semibold my-5">
                             *There is no dietary information PDF sheet uploaded for this product.
                         </p>
-                    </ng-template> -->
+                    </ng-template>
                 </div>
             </div>
         </fuse-card>

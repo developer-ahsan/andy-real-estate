@@ -81,7 +81,6 @@ export class CoreProductsComponent implements OnInit {
   }
 
   uploadImage(): void {
-    console.log("uploadImage");
   }
 
   coreSelection(cores): void {

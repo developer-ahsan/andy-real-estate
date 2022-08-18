@@ -896,7 +896,7 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
         for (const item of features["items"]) {
             const { order, feature } = item;
             featureArray.push({
-                attribute_type_id: order,
+                attribute_type_id: 1,
                 attribute_text: feature,
                 supplier_id: this.supplierId,
                 product_id: null,
@@ -951,8 +951,6 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
             color: colorPayload,
             imprint: this.imprintPayload
         };
-
-        console.log("payload", payload)
 
         this.createProductLoader = true;
 
@@ -1070,7 +1068,8 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
                                         productName: details.productName,
                                         productNumber: details.productId,
                                         brandName: details.productBrand,
-                                        mainDescription: details.description.toString().split(",").join("\n")
+                                        mainDescription: details.description.toString().split(",").join("\n"),
+                                        miniDescription: "Mini description"
                                     };
                                     const string = details.ProductKeywordArray[0].keyword;
                                     if (string?.length) {

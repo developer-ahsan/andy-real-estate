@@ -174,7 +174,6 @@ export class ColorComponent implements OnInit {
   };
 
   uploadImage(): void {
-    console.log("uploadImage");
   };
 
   changeColor(event) {

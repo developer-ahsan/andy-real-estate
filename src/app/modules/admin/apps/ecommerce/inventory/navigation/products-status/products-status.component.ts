@@ -41,7 +41,6 @@ export class ProductsStatusComponent implements OnInit {
   }
 
   assignStore(): void {
-    console.log("assigned store");
   }
 
   selectAll(): void {

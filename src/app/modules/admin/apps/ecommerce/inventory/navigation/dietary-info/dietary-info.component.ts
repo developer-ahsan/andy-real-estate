@@ -36,7 +36,7 @@ export class DietaryInfoComponent implements OnInit {
       image: ['', Validators.required]
     });
 
-    this.pdf = `${environment.productMedia}/DietaryInfo/${pk_productID}.pdf`;
+    this.pdf = null;
 
     this.isLoadingChange.emit(false);
 
