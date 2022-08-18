@@ -36,11 +36,12 @@ export class ColorComponent implements OnInit {
   fileName: string = "";
 
   colorsList: any = [];
+  dummyColorsList: any = [];
   defaultResetValue: number = 0.00;
 
   updateImageTouched: boolean = false;
 
-  isAllColors: boolean = false;
+  isAllColors: boolean = true;
 
   // Boolean
   colorUpdateLoader = false;
@@ -104,11 +105,21 @@ export class ColorComponent implements OnInit {
   }
 
   getAllColors(): void {
-    this.isAllColors = true;
+
+    // Getting all colors in db
     this._inventoryService.getAllColors()
       .pipe(takeUntil(this._unsubscribeAll))
       .subscribe((list) => {
-        this.colorsList = list["data"];
+        let tempArray = [];
+        for (const color of list["data"]) {
+          const { colorName } = color;
+          if (colorName) {
+            tempArray.push(color);
+          };
+        };
+
+        this.colorsList = tempArray;
+        this.dummyColorsList = this.colorsList;
         this.isAllColors = false;
 
         // Mark for check
@@ -119,6 +130,13 @@ export class ColorComponent implements OnInit {
         // Mark for check
         this._changeDetectorRef.markForCheck();
       })
+  };
+
+  onItemSelect(item: any) {
+    const { colorName } = item;
+    this.colorForm.patchValue({
+      colors: colorName
+    });
   };
 
   resetRunValue(): void {

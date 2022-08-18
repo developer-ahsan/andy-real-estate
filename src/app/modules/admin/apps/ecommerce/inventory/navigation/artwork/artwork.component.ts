@@ -100,6 +100,10 @@ export class ArtworkComponent implements OnInit {
                 duration: 3500
               });
               this.imageUploadLoader = false;
+              this.artWorkData.push({
+                pk_artworkTemplateID: 1,
+                extension: "pdf"
+              });
 
               // Mark for check
               this._changeDetectorRef.markForCheck();
@@ -137,7 +141,7 @@ export class ArtworkComponent implements OnInit {
 
   openPdf(artWork) {
     const { pk_productID } = this.selectedProduct;
-    const url = `${environment.productMedia}/artworkTemplates/${pk_productID}/${artWork?.pk_artworkTemplateID}.${artWork?.extension}`;
+    const url = `${environment.productMedia}/artworkTemplates/${pk_productID}/1.pdf`;
     window.open(url);
   }
 }

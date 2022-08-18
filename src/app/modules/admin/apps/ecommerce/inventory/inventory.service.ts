@@ -219,7 +219,7 @@ export class InventoryService {
         return this._httpClient.get<any[]>(environment.products, {
             params: {
                 color: true,
-                size: 1000000
+                size: 1000
             }
         });
     };
