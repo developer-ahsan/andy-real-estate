@@ -1215,6 +1215,7 @@ export class ImprintComponent implements OnInit, OnDestroy {
 
   onItemSelect(item: any) {
     this.selectedCollectionId = [item];
+    this.customColorId = item["fk_collectionID"];
   };
 
   uploadFile(event) {

@@ -319,9 +319,6 @@
                             <small class="font-semibold ml-3">
                                 * No collections available. Click on the button to generate list of collections
                             </small>
-                            <mat-form-field class="w-full">
-                                <input matInput placeholder="Enter Collection ID" [(ngModel)]='customColorId'>
-                            </mat-form-field>
                         </div>
                         <div class="my-2" *ngIf="collectionIdsArray.length">
                             <b>Select Imprint Color</b>
@@ -329,6 +326,11 @@
                                 [settings]="dropdownSettings" [data]="collectionIdsArray"
                                 [(ngModel)]="selectedCollectionId" (onSelect)="onItemSelect($event)">
                             </ng-multiselect-dropdown>
+                        </div>
+                        <div class="my-1">
+                            <mat-form-field class="w-full">
+                                <input matInput placeholder="Enter Collection ID" [(ngModel)]='customColorId'>
+                            </mat-form-field>
                         </div>
                     </div>
 
@@ -1296,9 +1298,6 @@
                             <small class="font-semibold ml-3">
                                 * No collections available. Click on the button to generate list of collections
                             </small>
-                            <mat-form-field class="w-full">
-                                <input matInput placeholder="Enter Collection ID" [(ngModel)]='customColorId'>
-                            </mat-form-field>
                         </div>
                         <div *ngIf="collectionIdsArray.length">
                             <mat-form-field class="w-full" *ngIf="collectionIdsArray.length">
@@ -1310,6 +1309,11 @@
                                         <small>{{collection.collectionName}} ({{collection.fk_collectionID}})</small>
                                     </mat-option>
                                 </mat-select>
+                            </mat-form-field>
+                        </div>
+                        <div class="my-1">
+                            <mat-form-field class="w-full">
+                                <input matInput placeholder="Enter Collection ID" [(ngModel)]='customColorId'>
                             </mat-form-field>
                         </div>
                     </div>

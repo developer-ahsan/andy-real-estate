@@ -1363,10 +1363,6 @@
                                                     * No collections available. Click on the button to generate list of
                                                     collections
                                                 </small>
-                                                <mat-form-field class="w-full">
-                                                    <input matInput placeholder="Enter Collection ID"
-                                                        [(ngModel)]='customColorId'>
-                                                </mat-form-field>
                                             </div>
 
                                             <div class="my-2" *ngIf="collectionIdsArray.length">
@@ -1376,6 +1372,13 @@
                                                     [data]="collectionIdsArray" [(ngModel)]="selectedCollectionId"
                                                     (onSelect)="onImprintColorSelect($event)">
                                                 </ng-multiselect-dropdown>
+                                            </div>
+
+                                            <div class="my-1">
+                                                <mat-form-field class="w-full">
+                                                    <input matInput placeholder="Enter Collection ID"
+                                                        [(ngModel)]='customColorId'>
+                                                </mat-form-field>
                                             </div>
                                         </div>
 

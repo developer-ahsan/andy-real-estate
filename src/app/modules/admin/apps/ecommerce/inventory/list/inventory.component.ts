@@ -1274,24 +1274,24 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
                         }
 
                         if (i == 1) {
-                            obj["secondQuantity"] = minQuantity;
+                            obj["secondQuantity"] = minQuantity + 1;
                             obj["standardCostTwo"] = price;
                         }
 
                         if (i == 2) {
-                            obj["thirdQuantity"] = minQuantity;
+                            obj["thirdQuantity"] = minQuantity + 2;
                             obj["standardCostThree"] = price;
                         }
 
                         if (i == 3) {
-                            obj["fourthQuantity"] = minQuantity;
+                            obj["fourthQuantity"] = minQuantity + 3;
                             obj["standardCostFour"] = price;
                         }
 
                         if (i == 4) {
-                            obj["fifthQuantity"] = minQuantity;
+                            obj["fifthQuantity"] = minQuantity + 4;
                             obj["standardCostFive"] = price;
-                            obj["sixthQuantity"] = minQuantity;
+                            obj["sixthQuantity"] = minQuantity + 5;
                             obj["standardCostSix"] = price;
                         }
 
@@ -1751,6 +1751,7 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
 
     onImprintColorSelect(item: any) {
         this.selectedCollectionId = [item];
+        this.customColorId = item["fk_collectionID"];
     };
 
     addArea(value: string): void {
