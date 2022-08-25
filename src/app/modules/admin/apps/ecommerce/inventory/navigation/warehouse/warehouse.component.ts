@@ -1,4 +1,4 @@
-import { Component, Input, OnInit, Output, EventEmitter, ChangeDetectorRef } from '@angular/core';
+import { Component, Input, OnInit, Output, EventEmitter, ChangeDetectorRef, OnDestroy } from '@angular/core';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { InventoryService } from 'app/modules/admin/apps/ecommerce/inventory/inventory.service';
@@ -9,7 +9,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
   selector: 'app-warehouse',
   templateUrl: './warehouse.component.html'
 })
-export class WarehouseComponent implements OnInit {
+export class WarehouseComponent implements OnInit, OnDestroy {
   @Input() selectedProduct: any;
   @Input() isLoading: boolean;
   @Output() isLoadingChange = new EventEmitter<boolean>();
@@ -102,28 +102,7 @@ export class WarehouseComponent implements OnInit {
       return;
     }
     this.imageRequired = '';
-  }
-
-
-  /**
- * Show flash message
- */
-  showFlashMessage(type: 'success' | 'error'): void {
-    // Show the message
-    this.flashMessage = type;
-
-    // Mark for check
-    this._changeDetectorRef.markForCheck();
-
-    // Hide it after 3.5 seconds
-    setTimeout(() => {
-
-      this.flashMessage = null;
-
-      // Mark for check
-      this._changeDetectorRef.markForCheck();
-    }, 3500);
-  }
+  };
 
   wareHouseSubmitCall(): void {
     const { pk_productID } = this.selectedProduct;
@@ -166,7 +145,36 @@ export class WarehouseComponent implements OnInit {
         // Mark for check
         this._changeDetectorRef.markForCheck();
       });
-  }
+  };
+
+  /**
+ * Show flash message
+ */
+  showFlashMessage(type: 'success' | 'error'): void {
+    // Show the message
+    this.flashMessage = type;
+
+    // Mark for check
+    this._changeDetectorRef.markForCheck();
+
+    // Hide it after 3.5 seconds
+    setTimeout(() => {
+
+      this.flashMessage = null;
+
+      // Mark for check
+      this._changeDetectorRef.markForCheck();
+    }, 3500);
+  };
+
+  /**
+     * On destroy
+     */
+  ngOnDestroy(): void {
+    // Unsubscribe from all subscriptions
+    this._unsubscribeAll.next();
+    this._unsubscribeAll.complete();
+  };
 }
 
 

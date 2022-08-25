@@ -1,4 +1,4 @@
-import { Component, Input, OnInit, Output, EventEmitter, ChangeDetectorRef } from '@angular/core';
+import { Component, Input, OnInit, Output, EventEmitter, ChangeDetectorRef, OnDestroy } from '@angular/core';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { InventoryService } from 'app/modules/admin/apps/ecommerce/inventory/inventory.service';
@@ -11,7 +11,7 @@ import { IDropdownSettings } from 'ng-multiselect-dropdown';
   selector: 'app-imprint',
   templateUrl: './imprint.component.html'
 })
-export class ImprintComponent implements OnInit {
+export class ImprintComponent implements OnInit, OnDestroy {
   @Input() selectedProduct: any;
   @Input() isLoading: boolean;
   @Output() isLoadingChange = new EventEmitter<boolean>();
@@ -43,7 +43,7 @@ export class ImprintComponent implements OnInit {
     { value: 'tacos-2', viewValue: 'Tacos' },
   ];
   values: FormGroup;
-
+  customColorId = null;
   selectedSupplier = null;
   selectedMethod = null;
   selectedLocation = null;
@@ -1200,6 +1200,16 @@ export class ImprintComponent implements OnInit {
 
         // Mark for check
         this._changeDetectorRef.markForCheck();
+      }, err => {
+        this._snackBar.open("Unable to fetch imprint colors right now. Try again", '', {
+          horizontalPosition: 'center',
+          verticalPosition: 'bottom',
+          duration: 3500
+        });
+        this.getImprintColorCollectionLoader = false;
+
+        // Mark for check
+        this._changeDetectorRef.markForCheck();
       });
   };
 
@@ -1234,14 +1244,15 @@ export class ImprintComponent implements OnInit {
       return;
     };
 
-    if (!this.collectionIdsArray.length) {
-      this._snackBar.open("Select a color collection", '', {
-        horizontalPosition: 'center',
-        verticalPosition: 'bottom',
-        duration: 3500
-      });
-
-      return;
+    if (this.defaultImprintColorSpecification === 'Yes') {
+      if (!this.collectionIdsArray.length && !this.customColorId) {
+        this._snackBar.open("Select a color collection", '', {
+          horizontalPosition: 'center',
+          verticalPosition: 'bottom',
+          duration: 3500
+        });
+        return;
+      };
     };
 
     if (run === "" || setup === "") {
@@ -1292,7 +1303,7 @@ export class ImprintComponent implements OnInit {
       multi_color_min_id: 1,
       bln_user_color_selection: this.defaultImprintColorSpecification === 'Yes' ? 1 : 0,
       max_colors: this.defaultImprintColorSpecification === 'Yes' ? this.maxColorSelected : null,
-      collection_id: this.collectionIdsArray.length ? this.selectedCollectionId[0].fk_collectionID : null,
+      collection_id: this.collectionIdsArray.length ? this.selectedCollectionId[0].fk_collectionID : Number(this.customColorId),
       bln_process_mode: processMode,
       min_product_qty: this.minQuantity || 1,
       imprint_comments: this.addImprintComment || "",
@@ -1372,14 +1383,16 @@ export class ImprintComponent implements OnInit {
       return;
     };
 
-    if (!this.collectionIdsArray.length) {
-      this._snackBar.open("Select a color collection", '', {
-        horizontalPosition: 'center',
-        verticalPosition: 'bottom',
-        duration: 3500
-      });
+    if (this.defaultImprintColorSpecification === 'Yes') {
+      if (!this.collectionIdsArray.length) {
+        this._snackBar.open("Select a color collection", '', {
+          horizontalPosition: 'center',
+          verticalPosition: 'bottom',
+          duration: 3500
+        });
 
-      return;
+        return;
+      };
     };
 
     if (run === "" || setup === "") {
@@ -1537,13 +1550,15 @@ export class ImprintComponent implements OnInit {
   };
 
   getSuppliers(data?: any) {
+    const { fk_supplierID } = this.selectedProduct;
+
     // Get the suppliers
     this._inventoryService.Suppliers$
       .pipe(takeUntil(this._unsubscribeAll))
       .subscribe((supplier) => {
         if (supplier) {
           this.suppliers = supplier["data"];
-          this.selectedSupplier = this.suppliers[2];
+          this.selectedSupplier = this.suppliers.find(x => x.pk_companyID === fk_supplierID) || this.suppliers[2]
 
           // Mark for check
           this._changeDetectorRef.markForCheck();
@@ -1552,7 +1567,7 @@ export class ImprintComponent implements OnInit {
             .pipe(takeUntil(this._unsubscribeAll))
             .subscribe((suppliers) => {
               this.suppliers = suppliers["data"];
-              this.selectedSupplier = this.suppliers[2];
+              this.selectedSupplier = this.suppliers.find(x => x.pk_companyID === fk_supplierID) || this.suppliers[2];
               if (data) {
                 const { pk_companyID } = data
                 this.selectedSupplier = this.suppliers.find(x => x.pk_companyID === pk_companyID) || this.suppliers[2]
@@ -1640,5 +1655,14 @@ export class ImprintComponent implements OnInit {
     this.displayList = true;
     this.imprintList = false;
     this.getImprints(this.page);
-  }
+  };
+
+  /**
+     * On destroy
+     */
+  ngOnDestroy(): void {
+    // Unsubscribe from all subscriptions
+    this._unsubscribeAll.next();
+    this._unsubscribeAll.complete();
+  };
 }

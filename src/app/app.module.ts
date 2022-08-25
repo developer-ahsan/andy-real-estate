@@ -13,21 +13,24 @@ import { LayoutModule } from 'app/layout/layout.module';
 import { AppComponent } from 'app/app.component';
 import { appRoutes } from 'app/app.routing';
 import { HttpClientModule } from '@angular/common/http';
+import { environment } from 'environments/environment';
+import { AngularFireModule } from '@angular/fire/compat';
 
 const routerConfig: ExtraOptions = {
     scrollPositionRestoration: 'enabled',
-    preloadingStrategy       : PreloadAllModules
+    preloadingStrategy: PreloadAllModules
 };
 
 @NgModule({
     declarations: [
         AppComponent
     ],
-    imports     : [
+    imports: [
         BrowserModule,
         BrowserAnimationsModule,
         RouterModule.forRoot(appRoutes, routerConfig),
         HttpClientModule,
+        AngularFireModule.initializeApp(environment.firebaseConfig),
 
         // Fuse & Fuse Mock API
         FuseModule,
@@ -43,10 +46,9 @@ const routerConfig: ExtraOptions = {
         // 3rd party modules
         MarkdownModule.forRoot({})
     ],
-    bootstrap   : [
+    bootstrap: [
         AppComponent
     ]
 })
-export class AppModule
-{
+export class AppModule {
 }

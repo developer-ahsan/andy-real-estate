@@ -1,4 +1,4 @@
-import { Component, Input, OnInit, Output, EventEmitter, ChangeDetectorRef } from '@angular/core';
+import { Component, Input, OnInit, Output, EventEmitter, ChangeDetectorRef, OnDestroy } from '@angular/core';
 import { Subject } from 'rxjs';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { environment } from 'environments/environment';
@@ -9,7 +9,7 @@ import { InventoryService } from 'app/modules/admin/apps/ecommerce/inventory/inv
   selector: 'app-dietary-info',
   templateUrl: './dietary-info.component.html'
 })
-export class DietaryInfoComponent implements OnInit {
+export class DietaryInfoComponent implements OnInit, OnDestroy {
   @Input() selectedProduct: any;
   @Input() isLoading: boolean;
   @Output() isLoadingChange = new EventEmitter<boolean>();
@@ -118,5 +118,14 @@ export class DietaryInfoComponent implements OnInit {
 
   openPdf() {
     window.open(this.pdf);
+  };
+
+  /**
+     * On destroy
+     */
+  ngOnDestroy(): void {
+    // Unsubscribe from all subscriptions
+    this._unsubscribeAll.next();
+    this._unsubscribeAll.complete();
   };
 }

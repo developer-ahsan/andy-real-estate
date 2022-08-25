@@ -37,6 +37,11 @@
 <div class="row h-100" *ngIf="!isLoading && !showLegacyLoader">
     <div class="col-12 my-2">
         <mat-card class="w-full p-0 mb-10 h-full rounded-2xl">
+            <div class="p-6 w-full">
+                <div class="text-2xl font-bold">
+                    Update History
+                </div>
+            </div>
             <table mat-table [dataSource]="dataSource" class="w-full" *ngIf="dataSource.length > 0;else other_content">
 
                 <!-- Name Column -->

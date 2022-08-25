@@ -174,7 +174,7 @@
     </div>
 </div>
 
-<div class="row">
+<div class="row" *ngIf="!selectedProduct.blnApparel">
     <div class="col-12">
         <ngx-skeleton-loader count="8" appearance="line" animation="pulse" *ngIf="caseDimensionTabLoader || isLoading">
         </ngx-skeleton-loader>

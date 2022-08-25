@@ -1,4 +1,4 @@
-import { Component, Input, OnInit, Output, EventEmitter, ChangeDetectorRef } from '@angular/core';
+import { Component, Input, OnInit, Output, EventEmitter, ChangeDetectorRef, OnDestroy } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { InventoryService } from 'app/modules/admin/apps/ecommerce/inventory/inventory.service';
 import { Subject } from 'rxjs';
@@ -11,7 +11,7 @@ import _ from 'lodash';
   selector: 'app-products-physics',
   templateUrl: './products-physics.component.html'
 })
-export class ProductsPhysicsComponent implements OnInit {
+export class ProductsPhysicsComponent implements OnInit, OnDestroy {
   @Input() selectedProduct: any;
   @Input() isLoading: boolean;
   @Output() isLoadingChange = new EventEmitter<boolean>();
@@ -63,7 +63,7 @@ export class ProductsPhysicsComponent implements OnInit {
   ) { }
 
   ngOnInit(): void {
-    const { pk_productID, flatRateShipping } = this.selectedProduct;
+    const { flatRateShipping } = this.selectedProduct;
     this.caseQtyTabLoader = true;
     this.caseDimensionTabLoader = true;
 
@@ -107,7 +107,7 @@ export class ProductsPhysicsComponent implements OnInit {
       .pipe(takeUntil(this._unsubscribeAll))
       .subscribe((productDetails) => {
         this.selectedProduct = productDetails["data"][0];
-        const { blnIncludeShipping, prodTimeMax, prodTimeMin, weight, unitsInWeight, dimensions, unitsInShippingPackage, overPackCharge } = this.selectedProduct;
+        const { blnIncludeShipping, prodTimeMax, prodTimeMin, weight, unitsInWeight, dimensions, unitsInShippingPackage, overPackCharge, blnApparel } = this.selectedProduct;
         this.sliderMaxValue = prodTimeMax;
         this.sliderMinValue = prodTimeMin;
         this.blnShipingValue = blnIncludeShipping ? 'YES' : 'NO';
@@ -139,30 +139,36 @@ export class ProductsPhysicsComponent implements OnInit {
         this._changeDetectorRef.markForCheck();
       });
 
+
+
+    setTimeout(() => {
+      this.getCaseQuantites();
+    }, 2000);
+
+    setTimeout(() => {
+      this.getDimensions();
+    }, 3000);
+  };
+
+  getDimensions = () => {
+    const { pk_productID } = this.selectedProduct;
+
     this._inventoryService.getPhysicsAndDimension(pk_productID)
       .pipe(takeUntil(this._unsubscribeAll))
       .subscribe((caseDimensions) => {
         this.caseDimensionTabLoader = false;
+
         // Fill dimesnion form
         this.caseDimensionForm.patchValue(caseDimensions["data"][0]);
 
         // Mark for check
         this._changeDetectorRef.markForCheck();
       }, err => {
-        this.caseDimensionTabLoader = false;
-        // Fill dimesnion form
-        this.caseDimensionForm.patchValue(null);
-        this._snackBar.open("Some error occured while fetching dimensions", '', {
-          horizontalPosition: 'center',
-          verticalPosition: 'bottom',
-          duration: 3500
-        });
+        this.getDimensions();
 
         // Mark for check
         this._changeDetectorRef.markForCheck();
       });
-
-    this.getCaseQuantites();
   };
 
   getCaseQuantites = () => {
@@ -306,18 +312,19 @@ export class ProductsPhysicsComponent implements OnInit {
     this.isQuantityUpdate = false;
 
     const { blnApparel, pk_productID } = this.selectedProduct;
+    const { weight, unitsInWeight, dimensions, overPackCharge, unitsInShippingPackage } = this.productPhysicsForm.getRawValue();
 
     const payload = {
       product_id: pk_productID,
-      weight: this.productPhysicsForm.getRawValue().weight || 0,
-      weight_in_units: this.productPhysicsForm.getRawValue().unitsInWeight || 0,
-      dimensions: this.productPhysicsForm.getRawValue().dimensions || "",
-      over_pack_charge: this.productPhysicsForm.getRawValue().overPackCharge,
+      weight: weight || 0,
+      weight_in_units: unitsInWeight || 0,
+      dimensions: dimensions || "",
+      over_pack_charge: overPackCharge,
       bln_apparel: blnApparel,
       shipping: {
         prod_time_min: this.sliderMinValue,
         prod_time_max: this.sliderMaxValue,
-        units_in_shipping_package: this.productPhysicsForm.getRawValue().unitsInShippingPackage,
+        units_in_shipping_package: unitsInShippingPackage,
         bln_include_shipping: this.blnShipingValue === 'YES' ? 1 : 0,
         fob_location_list: this.fob?.length
           ? this.fob.map(({ fk_FOBLocationID }) => fk_FOBLocationID)
@@ -349,15 +356,46 @@ export class ProductsPhysicsComponent implements OnInit {
     this.physicsLoader = true;
     this._inventoryService.updatePhysics(payload)
       .subscribe((response) => {
-        this.showFlashMessage(
-          response["success"] === true ?
-            'success' :
-            'error'
-        );
-        this.physicsLoader = false;
+        this._inventoryService.getProductByProductId(pk_productID)
+          .subscribe((productDetails) => {
+            this.selectedProduct = productDetails["data"][0];
+            const { blnIncludeShipping, prodTimeMax, prodTimeMin, weight, unitsInWeight, dimensions, unitsInShippingPackage, overPackCharge } = this.selectedProduct;
+            this.sliderMaxValue = prodTimeMax;
+            this.sliderMinValue = prodTimeMin;
+            this.blnShipingValue = blnIncludeShipping ? 'YES' : 'NO';
 
-        // Mark for check
-        this._changeDetectorRef.markForCheck();
+            let physics = {
+              weight: Number(weight).toFixed(2),
+              unitsInWeight: unitsInWeight,
+              dimensions: dimensions,
+              unitsInShippingPackage: unitsInShippingPackage,
+              overPackCharge: Number(overPackCharge).toFixed(4)
+            };
+            physics = _.mapValues(physics, v => v == "null" ? '' : v);
+
+            // Fill the form
+            this.productPhysicsForm.patchValue(physics);
+
+            this.showFlashMessage(
+              response["success"] === true ?
+                'success' :
+                'error'
+            );
+            this.physicsLoader = false;
+
+            // Mark for check
+            this._changeDetectorRef.markForCheck();
+          }, err => {
+            this._snackBar.open("Some error occured while updating physics", '', {
+              horizontalPosition: 'center',
+              verticalPosition: 'bottom',
+              duration: 3500
+            });
+            this.physicsLoader = false;
+
+            // Mark for check
+            this._changeDetectorRef.markForCheck();
+          })
       }, err => {
         this._snackBar.open("Some error occured while updating physics", '', {
           horizontalPosition: 'center',
@@ -483,5 +521,14 @@ export class ProductsPhysicsComponent implements OnInit {
       // Mark for check
       this._changeDetectorRef.markForCheck();
     }, 3000);
-  }
+  };
+
+  /**
+   * On destroy
+   */
+  ngOnDestroy(): void {
+    // Unsubscribe from all subscriptions
+    this._unsubscribeAll.next();
+    this._unsubscribeAll.complete();
+  };
 }

@@ -303,25 +303,28 @@
                     </div>
 
                     <div class="col-12 my-2" *ngIf="defaultImprintColorSpecification === 'Yes'">
-                        <button class="min-w-40" mat-flat-button [color]="'primary'"
-                            [matTooltip]="'Get Imprint Color Collection Ids'" (click)="generateCollectionId()"
-                            [disabled]="getImprintColorCollectionLoader">
-                            <mat-progress-spinner *ngIf="getImprintColorCollectionLoader" [diameter]="24"
-                                [mode]="'indeterminate'">
-                            </mat-progress-spinner>
-                            <span *ngIf="!getImprintColorCollectionLoader" class="ml-1 mr-1">
-                                Color Collection ID
-                            </span>
-                        </button>
-                    </div>
-                    <div class="col-12 my-1">
-                        <small class="font-semibold ml-3" *ngIf="!collectionIdsArray.length">
-                            * No collections avaiable. Click on the button to generate list of collections
-                        </small>
-                    </div>
-
-                    <div class="col-12 my-2" *ngIf="defaultImprintColorSpecification === 'Yes'">
-                        <div *ngIf="collectionIdsArray.length">
+                        <div>
+                            <button class="min-w-40" mat-flat-button [color]="'primary'"
+                                [matTooltip]="'Get Imprint Color Collection Ids'" (click)="generateCollectionId()"
+                                [disabled]="getImprintColorCollectionLoader">
+                                <mat-progress-spinner *ngIf="getImprintColorCollectionLoader" [diameter]="24"
+                                    [mode]="'indeterminate'">
+                                </mat-progress-spinner>
+                                <span *ngIf="!getImprintColorCollectionLoader" class="ml-1 mr-1">
+                                    Color Collection ID
+                                </span>
+                            </button>
+                        </div>
+                        <div *ngIf="!collectionIdsArray.length">
+                            <small class="font-semibold ml-3">
+                                * No collections available. Click on the button to generate list of collections
+                            </small>
+                            <mat-form-field class="w-full">
+                                <input matInput placeholder="Enter Collection ID" [(ngModel)]='customColorId'>
+                            </mat-form-field>
+                        </div>
+                        <div class="my-2" *ngIf="collectionIdsArray.length">
+                            <b>Select Imprint Color</b>
                             <ng-multiselect-dropdown [placeholder]="'Imprint Color Collections'"
                                 [settings]="dropdownSettings" [data]="collectionIdsArray"
                                 [(ngModel)]="selectedCollectionId" (onSelect)="onItemSelect($event)">
@@ -1277,31 +1280,38 @@
                     </div>
 
                     <div class="col-12 my-2" *ngIf="defaultImprintColorSpecification === 'Yes'">
-                        <button class="min-w-40" mat-flat-button [color]="'primary'"
-                            [matTooltip]="'Get Imprint Color Collection Ids'" (click)="generateCollectionId()"
-                            [disabled]="getImprintColorCollectionLoader">
-                            <mat-progress-spinner *ngIf="getImprintColorCollectionLoader" [diameter]="24"
-                                [mode]="'indeterminate'">
-                            </mat-progress-spinner>
-                            <span *ngIf="!getImprintColorCollectionLoader" class="ml-1 mr-1">
-                                Color Collection ID
-                            </span>
-                        </button>
-                        <small class="font-semibold ml-3" *ngIf="!collectionIdsArray.length">
-                            * No collections avaiable. Click on the button to generate list of collections
-                        </small>
-                    </div>
-                    <div class="col-12 my-2" *ngIf="defaultImprintColorSpecification === 'Yes'">
-                        <mat-form-field class="w-full" *ngIf="collectionIdsArray.length">
-                            <mat-label>
-                                IMPRINT COLOR COLLECTIONS
-                            </mat-label>
-                            <mat-select [(ngModel)]="selectedCollectionId" name="collection">
-                                <mat-option *ngFor="let collection of collectionIdsArray" [value]="collection">
-                                    <small>{{collection.collectionName}} ({{collection.fk_collectionID}})</small>
-                                </mat-option>
-                            </mat-select>
-                        </mat-form-field>
+                        <div>
+                            <button class="min-w-40" mat-flat-button [color]="'primary'"
+                                [matTooltip]="'Get Imprint Color Collection Ids'" (click)="generateCollectionId()"
+                                [disabled]="getImprintColorCollectionLoader">
+                                <mat-progress-spinner *ngIf="getImprintColorCollectionLoader" [diameter]="24"
+                                    [mode]="'indeterminate'">
+                                </mat-progress-spinner>
+                                <span *ngIf="!getImprintColorCollectionLoader" class="ml-1 mr-1">
+                                    Color Collection ID
+                                </span>
+                            </button>
+                        </div>
+                        <div *ngIf="!collectionIdsArray.length">
+                            <small class="font-semibold ml-3">
+                                * No collections available. Click on the button to generate list of collections
+                            </small>
+                            <mat-form-field class="w-full">
+                                <input matInput placeholder="Enter Collection ID" [(ngModel)]='customColorId'>
+                            </mat-form-field>
+                        </div>
+                        <div *ngIf="collectionIdsArray.length">
+                            <mat-form-field class="w-full" *ngIf="collectionIdsArray.length">
+                                <mat-label>
+                                    IMPRINT COLOR COLLECTIONS
+                                </mat-label>
+                                <mat-select [(ngModel)]="selectedCollectionId" name="collection">
+                                    <mat-option *ngFor="let collection of collectionIdsArray" [value]="collection">
+                                        <small>{{collection.collectionName}} ({{collection.fk_collectionID}})</small>
+                                    </mat-option>
+                                </mat-select>
+                            </mat-form-field>
+                        </div>
                     </div>
 
                     <!-- Imprint order itself -->

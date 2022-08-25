@@ -1,4 +1,4 @@
-import { Component, Input, OnInit, Output, EventEmitter, ChangeDetectorRef } from '@angular/core';
+import { Component, Input, OnInit, Output, EventEmitter, ChangeDetectorRef, OnDestroy } from '@angular/core';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { InventoryService } from 'app/modules/admin/apps/ecommerce/inventory/inventory.service';
@@ -7,12 +7,13 @@ import { UserService } from 'app/core/user/user.service';
 import { User } from 'app/core/user/user.model';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import moment from 'moment';
+import { AuthService } from 'app/core/auth/auth.service';
 
 @Component({
   selector: 'app-internal-notes',
   templateUrl: './internal-notes.component.html'
 })
-export class InternalNotesComponent implements OnInit {
+export class InternalNotesComponent implements OnInit, OnDestroy {
   @Input() selectedProduct: any;
   @Input() isLoading: boolean;
   @Output() isLoadingChange = new EventEmitter<boolean>();
@@ -37,7 +38,8 @@ export class InternalNotesComponent implements OnInit {
     private _inventoryService: InventoryService,
     private _userService: UserService,
     private _formBuilder: FormBuilder,
-    private _snackBar: MatSnackBar
+    private _snackBar: MatSnackBar,
+    private _authService: AuthService
   ) { }
 
   ngOnInit(): void {
@@ -48,14 +50,15 @@ export class InternalNotesComponent implements OnInit {
     });
 
     // Get login user details
-    this._userService.user$
-      .pipe(takeUntil(this._unsubscribeAll))
-      .subscribe((user: User) => {
-        this.user = user;
+    this.user = this._authService.parseJwt(this._authService.accessToken);
+    // this._userService.user$
+    //   .pipe(takeUntil(this._unsubscribeAll))
+    //   .subscribe((user: User) => {
+    //     this.user = user;
 
-        // Mark for check
-        this._changeDetectorRef.markForCheck();
-      });
+    //     // Mark for check
+    //     this._changeDetectorRef.markForCheck();
+    //   });
 
     this._inventoryService.getCommentByProductId(pk_productID)
       .pipe(takeUntil(this._unsubscribeAll))
@@ -219,7 +222,16 @@ export class InternalNotesComponent implements OnInit {
             this._changeDetectorRef.markForCheck();
           });
       });
-  }
+  };
+
+  /**
+     * On destroy
+     */
+  ngOnDestroy(): void {
+    // Unsubscribe from all subscriptions
+    this._unsubscribeAll.next();
+    this._unsubscribeAll.complete();
+  };
 
 }
 

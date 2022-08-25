@@ -214,6 +214,7 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
         }
     }
 
+    netCostDefaultStandardCost;
     reviewForm = this._formBuilder.group({
         productName: ['', Validators.required],
         productNumber: ['', Validators.required],
@@ -352,7 +353,7 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
     minQuantity: number;
     addImprintComment;
     addImprintDisplayOrderValue;
-    favoriteSeason: string;
+    favoriteSeason: string = "Per color (i.e. silk screening, pad printing, etc.)";
     defaultImprintColorSpecification = "Yes";
     maxColors = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12];
     maxColorSelected = 1;
@@ -395,6 +396,7 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
         fourColorQ: [1],
         fiveColorQ: [1]
     });
+    customColorId = null;
     imprintPayload = null;
 
     /**
@@ -597,16 +599,103 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
             });
     };
 
+    updateCost(event, selectField) {
+        const { distrDiscount } = event.value;
+        const discountedValue = 1 - distrDiscount;
+
+        if (selectField == "standardCostOne") {
+
+            this.netCostForm.patchValue({
+                standardCostOne: this.netCostDefaultStandardCost.standardCostOne
+            });
+            const { standardCostOne } = this.netCostForm.getRawValue();
+            this.netCostForm.patchValue({
+                standardCostOne: standardCostOne ? Number((standardCostOne * discountedValue).toFixed(3)) : null
+            });
+
+        } else if (selectField == "standardCostTwo") {
+
+            this.netCostForm.patchValue({
+                standardCostTwo: this.netCostDefaultStandardCost.standardCostTwo
+            });
+            const { standardCostTwo } = this.netCostForm.getRawValue();
+            this.netCostForm.patchValue({
+                standardCostTwo: standardCostTwo ? Number((standardCostTwo * discountedValue).toFixed(3)) : null
+            });
+
+        } else if (selectField == "standardCostThree") {
+
+            this.netCostForm.patchValue({
+                standardCostThree: this.netCostDefaultStandardCost.standardCostThree
+            });
+            const { standardCostThree } = this.netCostForm.getRawValue();
+            this.netCostForm.patchValue({
+                standardCostThree: standardCostThree ? Number((standardCostThree * discountedValue).toFixed(3)) : null
+            });
+
+        } else if (selectField == "standardCostFour") {
+
+            this.netCostForm.patchValue({
+                standardCostFour: this.netCostDefaultStandardCost.standardCostFour
+            });
+            const { standardCostFour } = this.netCostForm.getRawValue();
+            this.netCostForm.patchValue({
+                standardCostFour: standardCostFour ? Number((standardCostFour * discountedValue).toFixed(3)) : null
+            });
+
+        } else if (selectField == "standardCostFive") {
+
+            this.netCostForm.patchValue({
+                standardCostFive: this.netCostDefaultStandardCost.standardCostFive
+            });
+            const { standardCostFive } = this.netCostForm.getRawValue();
+            this.netCostForm.patchValue({
+                standardCostFive: standardCostFive ? Number((standardCostFive * discountedValue).toFixed(3)) : null
+            });
+
+        } else if (selectField == "standardCostSix") {
+
+            this.netCostForm.patchValue({
+                standardCostSix: this.netCostDefaultStandardCost.standardCostSix
+            });
+            const { standardCostSix } = this.netCostForm.getRawValue();
+            this.netCostForm.patchValue({
+                standardCostSix: standardCostSix ? (standardCostSix * discountedValue).toFixed(3) : null
+            });
+
+        };
+
+    };
+
     setDropdownValue(value: string) {
         this.selectedDropdown = this.distributionCodes.find(item => item.distrDiscountCode === value);
+        const { distrDiscount } = this.selectedDropdown;
+        this.netCostForm.patchValue({
+            standardCostOne: this.netCostDefaultStandardCost.standardCostOne,
+            standardCostTwo: this.netCostDefaultStandardCost.standardCostTwo,
+            standardCostThree: this.netCostDefaultStandardCost.standardCostThree,
+            standardCostFour: this.netCostDefaultStandardCost.standardCostFour,
+            standardCostFive: this.netCostDefaultStandardCost.standardCostFive,
+            standardCostSix: this.netCostDefaultStandardCost.standardCostSix
+        });
+
+        const { standardCostOne, standardCostTwo, standardCostThree, standardCostFour, standardCostFive, standardCostSix } = this.netCostForm.getRawValue();
+
         const sample = {
             standardCostDropOne: this.selectedDropdown,
             standardCostDropTwo: this.selectedDropdown,
             standardCostDropThree: this.selectedDropdown,
             standardCostDropFour: this.selectedDropdown,
             standardCostDropFive: this.selectedDropdown,
-            standardCostDropSix: this.selectedDropdown
+            standardCostDropSix: this.selectedDropdown,
+            standardCostOne: standardCostOne ? Number((standardCostOne * (1 - distrDiscount)).toFixed(3)) : null,
+            standardCostTwo: standardCostTwo ? Number((standardCostTwo * (1 - distrDiscount)).toFixed(3)) : null,
+            standardCostThree: standardCostThree ? Number((standardCostThree * (1 - distrDiscount)).toFixed(3)) : null,
+            standardCostFour: standardCostFour ? Number((standardCostFour * (1 - distrDiscount)).toFixed(3)) : null,
+            standardCostFive: standardCostFive ? Number((standardCostFive * (1 - distrDiscount)).toFixed(3)) : null,
+            standardCostSix: standardCostSix ? Number((standardCostSix * (1 - distrDiscount)).toFixed(3)) : null
         };
+
         this.netCostForm.patchValue(sample);
     };
 
@@ -719,7 +808,7 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
         // Unsubscribe from all subscriptions
         this._unsubscribeAll.next();
         this._unsubscribeAll.complete();
-    }
+    };
 
     // -----------------------------------------------------------------------------------------------------
     // @ Public methods
@@ -1202,13 +1291,17 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
                         if (i == 4) {
                             obj["fifthQuantity"] = minQuantity;
                             obj["standardCostFive"] = price;
-                        }
-
-                        if (i == 5) {
                             obj["sixthQuantity"] = minQuantity;
                             obj["standardCostSix"] = price;
                         }
-                    }
+
+                        // if (i == 5) {
+                        //     obj["sixthQuantity"] = minQuantity;
+                        //     obj["standardCostSix"] = price;
+                        // }
+                    };
+
+
                 } else {
                     obj = {
                         firstQuantity: null,
@@ -1247,12 +1340,22 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
 
                         if (i == 4) {
                             obj["standardCostFive"] = price
-                        }
-
-                        if (i == 5) {
                             obj["standardCostSix"] = price
                         }
+
+                        // if (i == 5) {
+                        //     obj["standardCostSix"] = price
+                        // }
                     }
+
+                    this.netCostDefaultStandardCost = {
+                        standardCostOne: obj["standardCostOne"],
+                        standardCostTwo: obj["standardCostTwo"],
+                        standardCostThree: obj["standardCostThree"],
+                        standardCostFour: obj["standardCostFour"],
+                        standardCostFive: obj["standardCostFive"],
+                        standardCostSix: obj["standardCostSix"]
+                    };
                 } else {
                     obj = {
                         standardCostOne: null,
@@ -1300,14 +1403,15 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
                 return;
             };
 
-            if (!this.collectionIdsArray.length) {
-                this._snackBar.open("Select a color collection", '', {
-                    horizontalPosition: 'center',
-                    verticalPosition: 'bottom',
-                    duration: 3500
-                });
-
-                return;
+            if (this.defaultImprintColorSpecification === 'Yes') {
+                if (!this.collectionIdsArray.length && !this.customColorId) {
+                    this._snackBar.open("Select a color collection", '', {
+                        horizontalPosition: 'center',
+                        verticalPosition: 'bottom',
+                        duration: 3500
+                    });
+                    return;
+                };
             };
 
             if (run === "" || setup === "") {
@@ -1357,7 +1461,7 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
                 multi_color_min_id: 1,
                 bln_user_color_selection: this.defaultImprintColorSpecification === 'Yes' ? 1 : 0,
                 max_colors: this.defaultImprintColorSpecification === 'Yes' ? this.maxColorSelected : null,
-                collection_id: this.collectionIdsArray.length ? this.selectedCollectionId[0].fk_collectionID : null,
+                collection_id: this.collectionIdsArray.length ? this.selectedCollectionId[0].fk_collectionID : Number(this.customColorId),
                 bln_process_mode: processMode,
                 min_product_qty: this.minQuantity || 1,
                 imprint_comments: this.addImprintComment || "",
@@ -1632,6 +1736,16 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
 
                 // Mark for check
                 this._changeDetectorRef.markForCheck();
+            }, err => {
+                this._snackBar.open("Unable to fetch imprint colors right now. Try again", '', {
+                    horizontalPosition: 'center',
+                    verticalPosition: 'bottom',
+                    duration: 3500
+                });
+                this.getImprintColorCollectionLoader = false;
+
+                // Mark for check
+                this._changeDetectorRef.markForCheck();
             });
     };
 
@@ -1734,6 +1848,53 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
         this.productsCount = sortedData.length;
     };
 
+    updateQuantityQuickLinks(str: string) {
+        const netCostFormValues = this.netCostForm.getRawValue();
+
+        if (str == "secondQuantity") {
+            const { firstQuantity } = netCostFormValues;
+            this.netCostForm.patchValue({
+                secondQuantity: firstQuantity * 2
+            });
+            this.reviewForm.patchValue({
+                secondQuantity: firstQuantity * 2
+            });
+        } else if (str == "thirdQuantity") {
+            const { secondQuantity } = netCostFormValues;
+            this.netCostForm.patchValue({
+                thirdQuantity: secondQuantity * 2
+            });
+            this.reviewForm.patchValue({
+                thirdQuantity: secondQuantity * 2
+            });
+        } else if (str == "fourthQuantity") {
+            const { thirdQuantity } = netCostFormValues;
+            this.netCostForm.patchValue({
+                fourthQuantity: thirdQuantity * 2
+            });
+            this.reviewForm.patchValue({
+                fourthQuantity: thirdQuantity * 2
+            });
+        } else if (str == "fifthQuantity") {
+            const { fourthQuantity } = netCostFormValues;
+            this.netCostForm.patchValue({
+                fifthQuantity: fourthQuantity * 2
+            });
+            this.reviewForm.patchValue({
+                fifthQuantity: fourthQuantity * 2
+            });
+        } else if (str == "sixthQuantity") {
+            const { fifthQuantity } = netCostFormValues;
+            this.netCostForm.patchValue({
+                sixthQuantity: fifthQuantity * 2
+            });
+            this.reviewForm.patchValue({
+                sixthQuantity: fifthQuantity * 2
+            });
+        };
+
+    };
+
     changeIsCustom(): void {
         this.isCustomRedPrice = !this.isCustomRedPrice
     };
@@ -1758,14 +1919,30 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
         }, 3000);
     };
 
+    searchByPID(event): void {
+        this.isLoading = true;
+        let keyword = event.target.value ? event.target.value : '';
+
+        this._inventoryService.getProductByProductId(keyword)
+            .pipe(takeUntil(this._unsubscribeAll))
+            .subscribe((products) => {
+                this.products = products["data"];
+                this.productsCount = products["totalRecords"];
+                this.isLoading = false;
+
+                // Mark for check
+                this._changeDetectorRef.markForCheck();
+            }, err => {
+                this.isLoading = false;
+
+                // Mark for check
+                this._changeDetectorRef.markForCheck();
+            })
+    };
+
     searchKeyword(event): void {
         this.isLoading = true;
-        let keyword;
-        if (event.target.value) {
-            keyword = event.target.value;
-        } else {
-            keyword = '';
-        }
+        let keyword = event.target.value ? event.target.value : '';
 
         this._inventoryService.searchProductKeywords(keyword)
             .pipe(takeUntil(this._unsubscribeAll))

@@ -144,16 +144,7 @@ export class ProductDetailsComponent implements OnInit, OnDestroy {
         // Mark for check
         this._changeDetectorRef.markForCheck();
       });
-  }
-
-  /**
-   * On destroy
-   */
-  ngOnDestroy(): void {
-    // Unsubscribe from all subscriptions
-    this._unsubscribeAll.next();
-    this._unsubscribeAll.complete();
-  }
+  };
 
   // -----------------------------------------------------------------------------------------------------
   // @ Public methods
@@ -204,5 +195,14 @@ export class ProductDetailsComponent implements OnInit, OnDestroy {
   backToProductsScreen(): void {
     this.isLoading = true;
     this._router.navigate(['/apps/ecommerce/inventory']);
-  }
+  };
+
+  /**
+   * On destroy
+   */
+  ngOnDestroy(): void {
+    // Unsubscribe from all subscriptions
+    this._unsubscribeAll.next();
+    this._unsubscribeAll.complete();
+  };
 }

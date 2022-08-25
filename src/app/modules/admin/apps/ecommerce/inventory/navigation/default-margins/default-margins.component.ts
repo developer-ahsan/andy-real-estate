@@ -1,4 +1,4 @@
-import { Component, Input, OnInit, Output, EventEmitter, ChangeDetectorRef } from '@angular/core';
+import { Component, Input, OnInit, Output, EventEmitter, ChangeDetectorRef, OnDestroy } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { InventoryService } from 'app/modules/admin/apps/ecommerce/inventory/inventory.service';
@@ -10,7 +10,7 @@ import { takeUntil } from 'rxjs/operators';
   selector: 'app-default-margins',
   templateUrl: './default-margins.component.html'
 })
-export class DefaultMarginsComponent implements OnInit {
+export class DefaultMarginsComponent implements OnInit, OnDestroy {
   @Input() selectedProduct: any;
   @Input() isLoading: boolean;
   @Output() isLoadingChange = new EventEmitter<boolean>();
@@ -131,5 +131,14 @@ export class DefaultMarginsComponent implements OnInit {
       // Mark for check
       this._changeDetectorRef.markForCheck();
     }, 3500);
-  }
+  };
+
+  /**
+     * On destroy
+     */
+  ngOnDestroy(): void {
+    // Unsubscribe from all subscriptions
+    this._unsubscribeAll.next();
+    this._unsubscribeAll.complete();
+  };
 }

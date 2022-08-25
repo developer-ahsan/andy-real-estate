@@ -1,4 +1,4 @@
-import { Component, Input, OnInit, Output, EventEmitter, ChangeDetectorRef } from '@angular/core';
+import { Component, Input, OnInit, Output, EventEmitter, ChangeDetectorRef, OnDestroy } from '@angular/core';
 import { Package } from 'app/modules/admin/apps/ecommerce/inventory/inventory.types';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
@@ -14,7 +14,7 @@ interface Transaction {
   selector: 'app-order-history',
   templateUrl: './order-history.component.html'
 })
-export class OrderHistoryComponent implements OnInit {
+export class OrderHistoryComponent implements OnInit, OnDestroy {
   @Input() selectedProduct: any;
   @Input() isLoading: boolean;
   @Output() isLoadingChange = new EventEmitter<boolean>();
@@ -60,11 +60,19 @@ export class OrderHistoryComponent implements OnInit {
         // Mark for check
         this._changeDetectorRef.markForCheck();
       });
-
-  }
+  };
 
   /** Gets the total cost of all transactions. */
   getTotalCost() {
     return this.transactions.map(t => t.cost).reduce((acc, value) => acc + value, 0);
-  }
+  };
+
+  /**
+     * On destroy
+     */
+  ngOnDestroy(): void {
+    // Unsubscribe from all subscriptions
+    this._unsubscribeAll.next();
+    this._unsubscribeAll.complete();
+  };
 }

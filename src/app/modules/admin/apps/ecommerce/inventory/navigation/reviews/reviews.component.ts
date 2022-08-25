@@ -1,4 +1,4 @@
-import { Component, Input, OnInit, Output, EventEmitter, ChangeDetectorRef } from '@angular/core';
+import { Component, Input, OnInit, Output, EventEmitter, ChangeDetectorRef, OnDestroy } from '@angular/core';
 import { Reviews } from 'app/modules/admin/apps/ecommerce/inventory/inventory.types';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
@@ -10,7 +10,7 @@ import moment from 'moment';
   selector: 'app-reviews',
   templateUrl: './reviews.component.html'
 })
-export class ReviewsComponent implements OnInit {
+export class ReviewsComponent implements OnInit, OnDestroy {
   @Input() selectedProduct: any;
   @Input() isLoading: boolean;
   @Output() isLoadingChange = new EventEmitter<boolean>();
@@ -114,5 +114,14 @@ export class ReviewsComponent implements OnInit {
       return;
     }
     this.imageRequired = '';
-  }
+  };
+
+  /**
+     * On destroy
+     */
+  ngOnDestroy(): void {
+    // Unsubscribe from all subscriptions
+    this._unsubscribeAll.next();
+    this._unsubscribeAll.complete();
+  };
 }

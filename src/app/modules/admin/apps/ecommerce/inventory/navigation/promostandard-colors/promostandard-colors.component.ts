@@ -1,4 +1,4 @@
-import { ChangeDetectorRef, Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { ChangeDetectorRef, Component, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angular/core';
 import { InventoryService } from 'app/modules/admin/apps/ecommerce/inventory/inventory.service';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
@@ -7,7 +7,7 @@ import { takeUntil } from 'rxjs/operators';
   selector: 'app-promostandard-colors',
   templateUrl: './promostandard-colors.component.html'
 })
-export class PromostandardColorsComponent implements OnInit {
+export class PromostandardColorsComponent implements OnInit, OnDestroy {
   @Input() selectedProduct: any;
   @Input() isLoading: boolean;
   @Output() isLoadingChange = new EventEmitter<boolean>();
@@ -16,7 +16,7 @@ export class PromostandardColorsComponent implements OnInit {
   displayedColumns: string[] = ['color', 'size', 'quantityAvailable'];
   dataSource = [];
   dummyDataSource = [];
-
+  dataSourceLength: number = 0;
 
   inventoryColors: string[];
   inventorySizes: string[];
@@ -63,6 +63,7 @@ export class PromostandardColorsComponent implements OnInit {
 
               this.dataSource = tempArray;
               this.dummyDataSource = this.dataSource;
+              this.dataSourceLength = this.dummyDataSource.length;
 
               this.isLoadingChange.emit(false);
               // Mark for check
@@ -96,6 +97,15 @@ export class PromostandardColorsComponent implements OnInit {
     this.dataSource = this.dummyDataSource.filter((item: any) => {
       return item.attributeColor.toLowerCase().includes(value.toLowerCase()) || item.attributeSize.toLowerCase().includes(value.toLowerCase());
     });
-  }
+  };
+
+  /**
+     * On destroy
+     */
+  ngOnDestroy(): void {
+    // Unsubscribe from all subscriptions
+    this._unsubscribeAll.next();
+    this._unsubscribeAll.complete();
+  };
 
 }

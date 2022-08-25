@@ -15,7 +15,15 @@ export const environment = {
     storeNewUrlRapidBuild: "https://stores-staging.azurewebsites.net/api/rapid_build",
     products: "https://consolidus-staging.azurewebsites.net/api/products",
     system: "https://consolidus-staging.azurewebsites.net/api/system",
-    productMedia: "https://assets.consolidus.com/globalAssets/Products"
+    productMedia: "https://assets.consolidus.com/globalAssets/Products",
+    firebaseConfig: {
+        apiKey: "AIzaSyDdIDmQFMIa3aXSnoudkf3At_zQ9faFs2k",
+        authDomain: "consolidus-cinnova.firebaseapp.com",
+        projectId: "consolidus-cinnova",
+        storageBucket: "consolidus-cinnova.appspot.com",
+        messagingSenderId: "187396735094",
+        appId: "1:187396735094:web:4127587a84d92215ec1f57"
+    }
 };
 
 /*

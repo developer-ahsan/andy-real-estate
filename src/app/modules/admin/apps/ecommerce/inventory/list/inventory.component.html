@@ -43,21 +43,32 @@
     </div>
 
     <div class="row m-2">
-        <div class="col-lg-4 col-12 p-2">
-            <!-- Search -->
+        <div class="col-lg-3 col-12 p-2">
             <mat-form-field class="fuse-mat-dense fuse-mat-no-subscript w-full">
-                <mat-label>Search Products</mat-label>
+                <mat-label>Search by Product ID</mat-label>
+                <input class="h-6" matInput [matTooltip]="'Press enter key after typing'"
+                    (keyup.enter)="searchByPID($event)" type="number" [autocomplete]="'off'"
+                    [placeholder]="'Search by Product ID'">
                 <mat-icon matPrefix [svgIcon]="'heroicons_outline:search'"></mat-icon>
-                <input class="h-6" matInput (keyup.enter)="searchKeyword($event)" [autocomplete]="'off'"
-                    [placeholder]="'Search Products...'">
             </mat-form-field>
         </div>
 
-        <div class="col-lg-4 col-12 p-2">
-            <!-- Search Products By Supplier -->
+        <div class="col-lg-3 col-12 p-2">
+            <!-- Search -->
+            <mat-form-field class="fuse-mat-dense fuse-mat-no-subscript w-full">
+                <mat-label>Search Products</mat-label>
+                <input class="h-6" matInput [matTooltip]="'Press enter key after typing'"
+                    (keyup.enter)="searchKeyword($event)" [autocomplete]="'off'" [placeholder]="'Search Products'">
+                <mat-icon matPrefix [svgIcon]="'heroicons_outline:search'"></mat-icon>
+                <!-- <mat-icon matPrefix [svgIcon]="'heroicons_outline:x'"></mat-icon> -->
+            </mat-form-field>
+        </div>
+
+        <div class="col-lg-3 col-12 p-2">
+            <!-- Filter Products By Supplier -->
             <mat-form-field appearance="fill" class="w-full">
                 <mat-label>
-                    <span>Search Products By Supplier</span>
+                    <span>Filter Products By Supplier</span>
                     <span class="ml-3" *ngIf="isSupplierNotReceived"> (Fetching Suppliers... )</span>
                 </mat-label>
                 <mat-select [(ngModel)]="selectedSupplier" disableRipple [disabled]="isSupplierNotReceived">
@@ -70,11 +81,11 @@
             </mat-form-field>
         </div>
 
-        <div class="col-lg-4 col-12 p-2">
-            <!-- Search Products By Store -->
+        <div class="col-lg-3 col-12 p-2">
+            <!-- Filter Products By Store -->
             <mat-form-field appearance="fill" class="w-full">
                 <mat-label>
-                    <span>Search Products By Store</span>
+                    <span>Filter Products By Store</span>
                     <span class="ml-3" *ngIf="isStoreNotReceived"> (Fetching Stores... )</span>
                 </mat-label>
                 <mat-select [(ngModel)]="selectedStore" disableRipple [disabled]="isStoreNotReceived">
@@ -679,6 +690,9 @@
                                                 <b style="font-weight: 500;">Quantity</b>
                                             </div>
                                             <div class="col-lg-2 col-4">
+                                                <p>
+                                                    <br />
+                                                </p>
                                                 <mat-form-field class="w-full">
                                                     <input matInput type="number"
                                                         [formControlName]="'firstQuantity'"><small
@@ -687,6 +701,10 @@
                                                 </mat-form-field>
                                             </div>
                                             <div class="col-lg-2 col-4">
+                                                <p class="flex justify-between">
+                                                    <span class="underline ml-1 font-semibold cursor-pointer"
+                                                        (click)="updateQuantityQuickLinks('secondQuantity')">x2</span>
+                                                </p>
                                                 <mat-form-field class="w-full">
                                                     <input matInput type="number"
                                                         [formControlName]="'secondQuantity'"><small
@@ -695,6 +713,10 @@
                                                 </mat-form-field>
                                             </div>
                                             <div class="col-lg-2 col-4">
+                                                <p class="flex justify-between">
+                                                    <span class="underline ml-1 font-semibold cursor-pointer"
+                                                        (click)="updateQuantityQuickLinks('thirdQuantity')">x2</span>
+                                                </p>
                                                 <mat-form-field class="w-full">
                                                     <input matInput type="number"
                                                         [formControlName]="'thirdQuantity'"><small
@@ -703,6 +725,10 @@
                                                 </mat-form-field>
                                             </div>
                                             <div class="col-lg-2 col-4">
+                                                <p class="flex justify-between">
+                                                    <span class="underline ml-1 font-semibold cursor-pointer"
+                                                        (click)="updateQuantityQuickLinks('fourthQuantity')">x2</span>
+                                                </p>
                                                 <mat-form-field class="w-full">
                                                     <input matInput type="number"
                                                         [formControlName]="'fourthQuantity'"><small
@@ -711,6 +737,10 @@
                                                 </mat-form-field>
                                             </div>
                                             <div class="col-lg-2 col-4">
+                                                <p class="flex justify-between">
+                                                    <span class="underline ml-1 font-semibold cursor-pointer"
+                                                        (click)="updateQuantityQuickLinks('fifthQuantity')">x2</span>
+                                                </p>
                                                 <mat-form-field class="w-full">
                                                     <input matInput type="number"
                                                         [formControlName]="'fifthQuantity'"><small
@@ -719,6 +749,10 @@
                                                 </mat-form-field>
                                             </div>
                                             <div class="col-lg-2 col-4">
+                                                <p class="flex justify-between">
+                                                    <span class="underline ml-1 font-semibold cursor-pointer"
+                                                        (click)="updateQuantityQuickLinks('sixthQuantity')">x2</span>
+                                                </p>
                                                 <mat-form-field class="w-full">
                                                     <input matInput type="number"
                                                         [formControlName]="'sixthQuantity'"><small
@@ -793,7 +827,8 @@
                                             </div>
                                             <div class="col-lg-2 col-4">
                                                 <mat-form-field class="w-full">
-                                                    <mat-select name="order" [formControlName]="'standardCostDropOne'">
+                                                    <mat-select name="order" [formControlName]="'standardCostDropOne'"
+                                                        (selectionChange)="updateCost($event, 'standardCostOne')">
                                                         <mat-option *ngFor="let option of distributionCodes"
                                                             [value]="option">
                                                             {{option.distrDiscountCode}}
@@ -803,7 +838,8 @@
                                             </div>
                                             <div class="col-lg-2 col-4">
                                                 <mat-form-field class="w-full">
-                                                    <mat-select name="order" [formControlName]="'standardCostDropTwo'">
+                                                    <mat-select name="order" [formControlName]="'standardCostDropTwo'"
+                                                        (selectionChange)="updateCost($event, 'standardCostTwo')">
                                                         <mat-option *ngFor="let option of distributionCodes"
                                                             [value]="option">
                                                             {{option.distrDiscountCode}}
@@ -813,8 +849,8 @@
                                             </div>
                                             <div class="col-lg-2 col-4">
                                                 <mat-form-field class="w-full">
-                                                    <mat-select name="order"
-                                                        [formControlName]="'standardCostDropThree'">
+                                                    <mat-select name="order" [formControlName]="'standardCostDropThree'"
+                                                        (selectionChange)="updateCost($event, 'standardCostThree')">
                                                         <mat-option *ngFor="let option of distributionCodes"
                                                             [value]="option">
                                                             {{option.distrDiscountCode}}
@@ -824,7 +860,8 @@
                                             </div>
                                             <div class="col-lg-2 col-4">
                                                 <mat-form-field class="w-full">
-                                                    <mat-select name="order" [formControlName]="'standardCostDropFour'">
+                                                    <mat-select name="order" [formControlName]="'standardCostDropFour'"
+                                                        (selectionChange)="updateCost($event, 'standardCostFour')">
                                                         <mat-option *ngFor="let option of distributionCodes"
                                                             [value]="option">
                                                             {{option.distrDiscountCode}}
@@ -834,7 +871,8 @@
                                             </div>
                                             <div class="col-lg-2 col-4">
                                                 <mat-form-field class="w-full">
-                                                    <mat-select name="order" [formControlName]="'standardCostDropFive'">
+                                                    <mat-select name="order" [formControlName]="'standardCostDropFive'"
+                                                        (selectionChange)="updateCost($event, 'standardCostFive')">
                                                         <mat-option *ngFor="let option of distributionCodes"
                                                             [value]="option">
                                                             {{option.distrDiscountCode}}
@@ -844,7 +882,8 @@
                                             </div>
                                             <div class="col-lg-2 col-4">
                                                 <mat-form-field class="w-full">
-                                                    <mat-select name="order" [formControlName]="'standardCostDropSix'">
+                                                    <mat-select name="order" [formControlName]="'standardCostDropSix'"
+                                                        (selectionChange)="updateCost($event, 'standardCostSix')">
                                                         <mat-option *ngFor="let option of distributionCodes"
                                                             [value]="option">
                                                             {{option.distrDiscountCode}}
@@ -897,18 +936,6 @@
                                         </div>
                                     </div>
                                     <div class="row my-1 px-3">
-                                        <!-- <div class="col-12">
-                                            <p class="font-semibold">Red Price Comment</p>
-                                        </div>
-                                        <div class="col-12 mt-2">
-                                            <ng-multiselect-dropdown [placeholder]="'Select Red Price Comment'"
-                                                [settings]="redPriceDropdownSettings" [data]="redPriceList"
-                                                [(ngModel)]="selectedRedPriceItems"
-                                                (onSelect)="onRedPriceItemSelect($event)"
-                                                (onSelectAll)="onSelectAll($event)">
-                                            </ng-multiselect-dropdown>
-                                        </div> -->
-
                                         <div class="col-12 mt-3">
                                             <p class="font-semibold">Co-op Program</p>
                                         </div>
@@ -1314,31 +1341,36 @@
                                             </mat-form-field>
                                         </div>
 
-                                        <div class="col-12 my-2" *ngIf="defaultImprintColorSpecification === 'Yes'">
-                                            <button class="min-w-40" mat-flat-button [color]="'primary'"
-                                                [matTooltip]="'Get Imprint Color Collection Ids'"
-                                                (click)="generateCollectionId()"
-                                                [disabled]="getImprintColorCollectionLoader">
-                                                <mat-progress-spinner *ngIf="getImprintColorCollectionLoader"
-                                                    [diameter]="24" [mode]="'indeterminate'">
-                                                </mat-progress-spinner>
-                                                <span *ngIf="!getImprintColorCollectionLoader" class="ml-1 mr-1">
-                                                    Color Collection ID
-                                                </span>
-                                            </button>
-                                        </div>
-                                        <div class="col-12">
-                                            <small class="font-semibold ml-3" *ngIf="!collectionIdsArray.length">
-                                                * No collections avaiable. Click on the button to generate list of
-                                                collections
-                                            </small>
-                                        </div>
-
                                         <div class="col-12 mt-2" *ngIf="defaultImprintColorSpecification === 'Yes'">
-                                            <b *ngIf="collectionIdsArray.length">Select Imprint Color</b>
-                                        </div>
-                                        <div class="col-12 my-1" *ngIf="defaultImprintColorSpecification === 'Yes'">
-                                            <div *ngIf="collectionIdsArray.length">
+                                            <p class="font-semibold my-1">
+                                                Imprint Color Collection
+                                            </p>
+                                            <div>
+                                                <button class="min-w-40" mat-flat-button [color]="'primary'"
+                                                    [matTooltip]="'Get Imprint Color Collection Ids'"
+                                                    (click)="generateCollectionId()"
+                                                    [disabled]="getImprintColorCollectionLoader">
+                                                    <mat-progress-spinner *ngIf="getImprintColorCollectionLoader"
+                                                        [diameter]="24" [mode]="'indeterminate'">
+                                                    </mat-progress-spinner>
+                                                    <span *ngIf="!getImprintColorCollectionLoader" class="ml-1 mr-1">
+                                                        Color Collection ID
+                                                    </span>
+                                                </button>
+                                            </div>
+                                            <div *ngIf="!collectionIdsArray.length">
+                                                <small class="font-semibold ml-3" *ngIf="!collectionIdsArray.length">
+                                                    * No collections available. Click on the button to generate list of
+                                                    collections
+                                                </small>
+                                                <mat-form-field class="w-full">
+                                                    <input matInput placeholder="Enter Collection ID"
+                                                        [(ngModel)]='customColorId'>
+                                                </mat-form-field>
+                                            </div>
+
+                                            <div class="my-2" *ngIf="collectionIdsArray.length">
+                                                <b>Select Imprint Color</b>
                                                 <ng-multiselect-dropdown [placeholder]="'Imprint Color Collections'"
                                                     [settings]="imprintColorsDropdownSettings"
                                                     [data]="collectionIdsArray" [(ngModel)]="selectedCollectionId"
@@ -1895,6 +1927,9 @@
                                                 <b style="font-weight: 500;">Quantity</b>
                                             </div>
                                             <div class="col-lg-2 col-4">
+                                                <p>
+                                                    <br />
+                                                </p>
                                                 <mat-form-field class="w-full">
                                                     <input matInput type="number"
                                                         [formControlName]="'firstQuantity'"><small
@@ -1903,6 +1938,10 @@
                                                 </mat-form-field>
                                             </div>
                                             <div class="col-lg-2 col-4">
+                                                <p class="flex justify-between">
+                                                    <span class="underline ml-1 font-semibold cursor-pointer"
+                                                        (click)="updateQuantityQuickLinks('secondQuantity')">x2</span>
+                                                </p>
                                                 <mat-form-field class="w-full">
                                                     <input matInput type="number"
                                                         [formControlName]="'secondQuantity'"><small
@@ -1911,6 +1950,10 @@
                                                 </mat-form-field>
                                             </div>
                                             <div class="col-lg-2 col-4">
+                                                <p class="flex justify-between">
+                                                    <span class="underline ml-1 font-semibold cursor-pointer"
+                                                        (click)="updateQuantityQuickLinks('thirdQuantity')">x2</span>
+                                                </p>
                                                 <mat-form-field class="w-full">
                                                     <input matInput type="number"
                                                         [formControlName]="'thirdQuantity'"><small
@@ -1919,6 +1962,10 @@
                                                 </mat-form-field>
                                             </div>
                                             <div class="col-lg-2 col-4">
+                                                <p class="flex justify-between">
+                                                    <span class="underline ml-1 font-semibold cursor-pointer"
+                                                        (click)="updateQuantityQuickLinks('fourthQuantity')">x2</span>
+                                                </p>
                                                 <mat-form-field class="w-full">
                                                     <input matInput type="number"
                                                         [formControlName]="'fourthQuantity'"><small
@@ -1927,6 +1974,10 @@
                                                 </mat-form-field>
                                             </div>
                                             <div class="col-lg-2 col-4">
+                                                <p class="flex justify-between">
+                                                    <span class="underline ml-1 font-semibold cursor-pointer"
+                                                        (click)="updateQuantityQuickLinks('fifthQuantity')">x2</span>
+                                                </p>
                                                 <mat-form-field class="w-full">
                                                     <input matInput type="number"
                                                         [formControlName]="'fifthQuantity'"><small
@@ -1935,6 +1986,10 @@
                                                 </mat-form-field>
                                             </div>
                                             <div class="col-lg-2 col-4">
+                                                <p class="flex justify-between">
+                                                    <span class="underline ml-1 font-semibold cursor-pointer"
+                                                        (click)="updateQuantityQuickLinks('sixthQuantity')">x2</span>
+                                                </p>
                                                 <mat-form-field class="w-full">
                                                     <input matInput type="number"
                                                         [formControlName]="'sixthQuantity'"><small

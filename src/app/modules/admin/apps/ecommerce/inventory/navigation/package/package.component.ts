@@ -1,4 +1,4 @@
-import { Component, Input, OnInit, Output, EventEmitter, ChangeDetectorRef } from '@angular/core';
+import { Component, Input, OnInit, Output, EventEmitter, ChangeDetectorRef, OnDestroy } from '@angular/core';
 import { Package } from 'app/modules/admin/apps/ecommerce/inventory/inventory.types';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
@@ -11,7 +11,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
   selector: 'app-package',
   templateUrl: './package.component.html'
 })
-export class PackageComponent implements OnInit {
+export class PackageComponent implements OnInit, OnDestroy {
   @Input() selectedProduct: any;
   @Input() isLoading: boolean;
   @Output() isLoadingChange = new EventEmitter<boolean>();
@@ -488,5 +488,14 @@ export class PackageComponent implements OnInit {
     };
 
     this.getPackAndAccessories();
-  }
+  };
+
+  /**
+     * On destroy
+     */
+  ngOnDestroy(): void {
+    // Unsubscribe from all subscriptions
+    this._unsubscribeAll.next();
+    this._unsubscribeAll.complete();
+  };
 }

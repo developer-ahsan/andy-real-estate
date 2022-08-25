@@ -22,7 +22,7 @@
                 </div>
 
                 <div class="mt-2 text-xl">
-                    Total Inventory: {{inventorySizes.length + inventoryColors.length}}
+                    Total Inventory: {{dataSourceLength}}
                 </div>
             </div>
 
@@ -51,7 +51,10 @@
                 <!-- Quantity Column -->
                 <ng-container matColumnDef="quantityAvailable">
                     <th mat-header-cell *matHeaderCellDef> Quantity </th>
-                    <td mat-cell *matCellDef="let element" class="text-sm"> {{element.quantityAvailable}} </td>
+                    <td mat-cell *matCellDef="let element" class="text-sm">
+                        {{element.quantityAvailable}}
+                        <span *ngIf="element.customProductMessage">+</span>
+                    </td>
                 </ng-container>
 
                 <tr mat-header-row class="h-18 bg-light" *matHeaderRowDef="displayedColumns"></tr>

@@ -61,22 +61,28 @@
                         </div>
                         <div class="col-lg-4 col-md-6 col-12">
                             <b class="text-secondary text-sm">Supplier</b>
-                            <a class="float-right text-sm" href="{{selectedProduct?.websiteURL}}" target="_blank">
+                            <a class="float-right text-sm"
+                                style="color: #959595; text-decoration: underline; cursor: pointer;"
+                                href="{{selectedProduct?.websiteURL}}" target="_blank">
                                 {{selectedProduct?.companyName || not_available}}
                             </a>
                         </div>
-                        <div class="col-lg-4 col-md-6 col-12">
+                        <div class="col-lg-4 col-md-6 col-12" *ngIf="selectedProduct?.supplierLink">
                             <b class="text-secondary text-sm">Product Link</b>
-                            <p class="float-right text-sm"
-                                style="color: #959595; text-decoration: underline; cursor: pointer;">
-                                Click Here </p>
+                            <a class="float-right text-sm"
+                                style="color: #959595; text-decoration: underline; cursor: pointer;"
+                                href="{{selectedProduct?.supplierLink}}" target="_blank">
+                                Click Here
+                            </a>
                         </div>
                         <div class="col-lg-4 col-md-6 col-12" *ngIf="selectedProduct.vendorRelation !== 1">
                             <b class="text-secondary text-sm">Supplier Relationship</b>
-                            <p class="float-right text-sm" *ngIf="selectedProduct.vendorRelation === 2">
+                            <p class="float-right text-sm" *ngIf="selectedProduct.vendorRelation === 2"
+                                style="color: #7b8404">
                                 Preferred
                             </p>
-                            <p class="float-right text-sm" *ngIf="selectedProduct.vendorRelation === 3">
+                            <p class="float-right text-sm" *ngIf="selectedProduct.vendorRelation === 3"
+                                style="color: #0ecd0e">
                                 Partner
                             </p>
                         </div>

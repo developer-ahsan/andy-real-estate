@@ -7,17 +7,16 @@ import { FuseAlertType } from '@fuse/components/alert';
 import { AuthService } from 'app/core/auth/auth.service';
 
 @Component({
-    selector     : 'auth-sign-in',
-    templateUrl  : './sign-in.component.html',
+    selector: 'auth-sign-in',
+    templateUrl: './sign-in.component.html',
     encapsulation: ViewEncapsulation.None,
-    animations   : fuseAnimations
+    animations: fuseAnimations
 })
-export class AuthSignInComponent implements OnInit
-{
+export class AuthSignInComponent implements OnInit {
     @ViewChild('signInNgForm') signInNgForm: NgForm;
 
     alert: { type: FuseAlertType; message: string } = {
-        type   : 'success',
+        type: 'success',
         message: ''
     };
     signInForm: FormGroup;
@@ -32,8 +31,7 @@ export class AuthSignInComponent implements OnInit
         private _formBuilder: FormBuilder,
         private _router: Router,
         private _httpClient: HttpClient
-    )
-    {
+    ) {
     }
 
     // -----------------------------------------------------------------------------------------------------
@@ -43,12 +41,11 @@ export class AuthSignInComponent implements OnInit
     /**
      * On init
      */
-    ngOnInit(): void
-    {
+    ngOnInit(): void {
         // Create the form
         this.signInForm = this._formBuilder.group({
-            email     : ['', [Validators.required, Validators.email]],
-            password  : ['', Validators.required],
+            email: ['', [Validators.required, Validators.email]],
+            password: ['', Validators.required],
             rememberMe: ['']
         });
     }
@@ -60,11 +57,9 @@ export class AuthSignInComponent implements OnInit
     /**
      * Sign in
      */
-    signIn(): void
-    {
+    signIn(): void {
         // Return if the form is invalid
-        if ( this.signInForm.invalid )
-        {
+        if (this.signInForm.invalid) {
             return;
         }
 
@@ -74,11 +69,15 @@ export class AuthSignInComponent implements OnInit
         // Hide the alert
         this.showAlert = false;
 
-        // Sign in
-        this._authService.signIn(this.signInForm.value)
-            .subscribe(
-                () => {
+        const { email, password } = this.signInForm.getRawValue();
 
+        // Sign in
+        this._authService.SignInUsingEmailPassword(email, password);
+        setTimeout(() => {
+            const { loginMessageNumber } = this._authService;
+
+            switch (loginMessageNumber) {
+                case 0: {
                     // Set the redirect url.
                     // The '/signed-in-redirect' is a dummy url to catch the request and redirect the user
                     // to the correct page after a successful sign in. This way, that url can be set via
@@ -87,10 +86,23 @@ export class AuthSignInComponent implements OnInit
 
                     // Navigate to the redirect url
                     this._router.navigateByUrl(redirectURL);
+                    break;
+                }
+                case 1: {
+                    // Re-enable the form
+                    this.signInForm.enable();
 
-                },
-                (response) => {
+                    // Set the alert
+                    this.alert = {
+                        type: 'error',
+                        message: 'User is already login'
+                    };
 
+                    // Show the alert
+                    this.showAlert = true
+                    break;
+                }
+                default: {
                     // Re-enable the form
                     this.signInForm.enable();
 
@@ -99,13 +111,15 @@ export class AuthSignInComponent implements OnInit
 
                     // Set the alert
                     this.alert = {
-                        type   : 'error',
+                        type: 'error',
                         message: 'Wrong email or password'
                     };
 
                     // Show the alert
                     this.showAlert = true;
+                    break;
                 }
-            );
+            };
+        }, 1500);
     }
 }

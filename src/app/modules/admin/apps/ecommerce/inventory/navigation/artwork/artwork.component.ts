@@ -1,4 +1,4 @@
-import { Component, Input, OnInit, Output, EventEmitter, ChangeDetectorRef } from '@angular/core';
+import { Component, Input, OnInit, Output, EventEmitter, ChangeDetectorRef, OnDestroy } from '@angular/core';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { InventoryService } from 'app/modules/admin/apps/ecommerce/inventory/inventory.service';
@@ -10,7 +10,7 @@ import { environment } from 'environments/environment';
   selector: 'app-artwork',
   templateUrl: './artwork.component.html'
 })
-export class ArtworkComponent implements OnInit {
+export class ArtworkComponent implements OnInit, OnDestroy {
   @Input() selectedProduct: any;
   @Input() isLoading: boolean;
   @Output() isLoadingChange = new EventEmitter<boolean>();
@@ -143,5 +143,14 @@ export class ArtworkComponent implements OnInit {
     const { pk_productID } = this.selectedProduct;
     const url = `${environment.productMedia}/artworkTemplates/${pk_productID}/1.pdf`;
     window.open(url);
-  }
+  };
+
+  /**
+     * On destroy
+     */
+  ngOnDestroy(): void {
+    // Unsubscribe from all subscriptions
+    this._unsubscribeAll.next();
+    this._unsubscribeAll.complete();
+  };
 }

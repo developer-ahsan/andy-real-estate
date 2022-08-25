@@ -1,4 +1,4 @@
-import { Component, Input, OnInit, Output, EventEmitter, ChangeDetectorRef } from '@angular/core';
+import { Component, Input, OnInit, Output, EventEmitter, ChangeDetectorRef, OnDestroy } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { InventoryService } from 'app/modules/admin/apps/ecommerce/inventory/inventory.service';
@@ -10,7 +10,7 @@ import _ from 'lodash';
   selector: 'app-products-description',
   templateUrl: './products-description.component.html'
 })
-export class ProductsDescriptionComponent implements OnInit {
+export class ProductsDescriptionComponent implements OnInit, OnDestroy {
   @Input() selectedProduct: any;
   @Input() isLoading: boolean;
   @Output() isLoadingChange = new EventEmitter<boolean>();
@@ -247,20 +247,20 @@ export class ProductsDescriptionComponent implements OnInit {
     this.descriptionLoader = true;
     this._inventoryService.updatePhysicsAndDescription(payload)
       .subscribe((response: any) => {
-        this.showFlashMessage(
-          response["success"] === true ?
-            'success' :
-            'error'
-        );
-        this.descriptionLoader = false;
-
         this._inventoryService.getProductByProductId(pk_productID)
           .pipe(takeUntil(this._unsubscribeAll))
           .subscribe((product) => {
-          })
 
-        // Mark for check
-        this._changeDetectorRef.markForCheck();
+            this.showFlashMessage(
+              response["success"] === true ?
+                'success' :
+                'error'
+            );
+            this.descriptionLoader = false;
+
+            // Mark for check
+            this._changeDetectorRef.markForCheck();
+          });
       }, err => {
         this._snackBar.open("Some error occured", '', {
           horizontalPosition: 'center',
@@ -316,4 +316,12 @@ export class ProductsDescriptionComponent implements OnInit {
     }, 3000);
   };
 
+  /**
+     * On destroy
+     */
+  ngOnDestroy(): void {
+    // Unsubscribe from all subscriptions
+    this._unsubscribeAll.next();
+    this._unsubscribeAll.complete();
+  };
 }
