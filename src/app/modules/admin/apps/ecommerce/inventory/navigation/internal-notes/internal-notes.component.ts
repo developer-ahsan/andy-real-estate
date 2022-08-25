@@ -97,11 +97,11 @@ export class InternalNotesComponent implements OnInit, OnDestroy {
         this.commentatoLoader = false;
         this._changeDetectorRef.markForCheck();
       });
-  }
+  };
 
   selectOption(list) {
     this.commentator_emails = list.selectedOptions.selected.map(item => item.value)
-  }
+  };
 
   /**
  * Show flash message
