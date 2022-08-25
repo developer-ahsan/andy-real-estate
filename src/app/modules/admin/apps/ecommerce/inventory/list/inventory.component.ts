@@ -728,7 +728,7 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
                 // Mark for check
                 this._changeDetectorRef.markForCheck();
             });
-    }
+    };
 
     getAllSuppliers(): void {
         // Get the suppliers
