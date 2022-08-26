@@ -20,6 +20,7 @@ export class PromostandardColorsComponent implements OnInit, OnDestroy {
 
   inventoryColors: string[];
   inventorySizes: string[];
+  quantitiesSum: number = 0;
 
   constructor(
     private _changeDetectorRef: ChangeDetectorRef,
@@ -65,7 +66,10 @@ export class PromostandardColorsComponent implements OnInit, OnDestroy {
               this.dummyDataSource = this.dataSource;
               this.dataSourceLength = this.dummyDataSource.length;
 
+              this.quantitiesSum = this.dataSource.length ? this.dataSource.map((item: any) => item["quantityAvailable"]).reduce((prev, next) => prev + next) : 0;
+
               this.isLoadingChange.emit(false);
+
               // Mark for check
               this._changeDetectorRef.markForCheck();
             }, err => {
@@ -79,9 +83,10 @@ export class PromostandardColorsComponent implements OnInit, OnDestroy {
           this.dummyDataSource = [];
 
           this.isLoadingChange.emit(false);
+
           // Mark for check
           this._changeDetectorRef.markForCheck();
-        }
+        };
 
       }, err => {
         this.isLoadingChange.emit(false);
