@@ -66,6 +66,7 @@ export class PromostandardColorsComponent implements OnInit, OnDestroy {
               this.dummyDataSource = this.dataSource;
               this.dataSourceLength = this.dummyDataSource.length;
 
+              // Total matched quantites sum
               this.quantitiesSum = this.dataSource.length ? this.dataSource.map((item: any) => item["quantityAvailable"]).reduce((prev, next) => prev + next) : 0;
 
               this.isLoadingChange.emit(false);
