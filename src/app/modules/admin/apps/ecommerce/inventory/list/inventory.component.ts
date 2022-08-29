@@ -1162,8 +1162,10 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
 
     onSearchChange(event): void {
         const searchValue = event.target.value;
+
+        // check if product number has underscore to remove
         this.productNumberText = searchValue.substring(0, searchValue.indexOf('_'));
-    }
+    };
 
     fetchProductNumberData(): void {
         if (!this.supplierId) {
