@@ -312,9 +312,9 @@ export class NetCostComponent implements OnInit, OnDestroy {
   };
 
   fetchNetCost(): void {
-    const { productNumber } = this.selectedProduct;
+    const { productNumber, fk_supplierID } = this.selectedProduct;
     this.netCostFetchLoader = true;
-    this._inventoryService.getPromoStandardProductPricingDetails(productNumber)
+    this._inventoryService.getPromoStandardProductPricingDetails(productNumber, fk_supplierID)
       .pipe(takeUntil(this._unsubscribeAll))
       .subscribe((productPricing) => {
         if (productPricing["data"]["success"]) {
@@ -337,29 +337,34 @@ export class NetCostComponent implements OnInit, OnDestroy {
               // Update Standard Cost
               if (pricingDataArray?.length) {
                 for (let i = 0; i <= 5; i++) {
-                  const { price } = pricingDataArray[i]["PartPriceArray"][0];
-                  if (i == 0) {
-                    obj["standardCostOne"] = price
-                  }
+                  if (typeof (pricingDataArray[i]) == "object") {
+                    if ("PartPriceArray" in pricingDataArray[i]) {
+                      const { price } = pricingDataArray[i]["PartPriceArray"][0];
+                      if (i == 0) {
+                        obj["standardCostOne"] = price
+                      }
 
-                  if (i == 1) {
-                    obj["standardCostTwo"] = price
-                  }
+                      if (i == 1) {
+                        obj["standardCostTwo"] = price
+                      }
 
-                  if (i == 2) {
-                    obj["standardCostThree"] = price
-                  }
+                      if (i == 2) {
+                        obj["standardCostThree"] = price
+                      }
 
-                  if (i == 3) {
-                    obj["standardCostFour"] = price
-                  }
+                      if (i == 3) {
+                        obj["standardCostFour"] = price
+                      }
 
-                  if (i == 4) {
-                    obj["standardCostFive"] = price
-                  }
+                      if (i == 4) {
+                        obj["standardCostFive"] = price
+                        obj["standardCostSix"] = price
+                      }
 
-                  if (i == 5) {
-                    obj["standardCostSix"] = price
+                      // if (i == 5) {
+                      //   obj["standardCostSix"] = price
+                      // }
+                    }
                   }
                 }
               } else {
@@ -376,35 +381,41 @@ export class NetCostComponent implements OnInit, OnDestroy {
               // Updata Quantity and standard cost
               if (pricingDataArray?.length) {
                 for (let i = 0; i <= 5; i++) {
-                  const { minQuantity, price } = pricingDataArray[i]["PartPriceArray"][0];
-                  if (i == 0) {
-                    obj["quantityOne"] = minQuantity;
-                    obj["standardCostOne"] = price;
-                  }
+                  if (typeof (pricingDataArray[i]) == "object") {
+                    if ("PartPriceArray" in pricingDataArray[i]) {
+                      const { minQuantity, price } = pricingDataArray[i]["PartPriceArray"][0];
+                      if (i == 0) {
+                        obj["quantityOne"] = minQuantity;
+                        obj["standardCostOne"] = price;
+                      }
 
-                  if (i == 1) {
-                    obj["quantityTwo"] = minQuantity;
-                    obj["standardCostTwo"] = price;
-                  }
+                      if (i == 1) {
+                        obj["quantityTwo"] = minQuantity + 1;
+                        obj["standardCostTwo"] = price;
+                      }
 
-                  if (i == 2) {
-                    obj["quantityThree"] = minQuantity;
-                    obj["standardCostThree"] = price;
-                  }
+                      if (i == 2) {
+                        obj["quantityThree"] = minQuantity + 2;
+                        obj["standardCostThree"] = price;
+                      }
 
-                  if (i == 3) {
-                    obj["quantityFour"] = minQuantity;
-                    obj["standardCostFour"] = price;
-                  }
+                      if (i == 3) {
+                        obj["quantityFour"] = minQuantity + 3;
+                        obj["standardCostFour"] = price;
+                      }
 
-                  if (i == 4) {
-                    obj["quantityFive"] = minQuantity;
-                    obj["standardCostFive"] = price;
-                  }
+                      if (i == 4) {
+                        obj["quantityFive"] = minQuantity + 4;
+                        obj["standardCostFive"] = price;
+                        obj["quantitySix"] = minQuantity + 5;
+                        obj["standardCostSix"] = price;
+                      }
 
-                  if (i == 5) {
-                    obj["quantitySix"] = minQuantity;
-                    obj["standardCostSix"] = price;
+                      // if (i == 5) {
+                      //   obj["quantitySix"] = minQuantity;
+                      //   obj["standardCostSix"] = price;
+                      // }
+                    }
                   }
                 }
               } else {

@@ -40,8 +40,9 @@ export class ProductsDescriptionComponent implements OnInit, OnDestroy {
   flashMessage: 'success' | 'error' | null = null;
   descriptionLoader = false;
   isSupplierNotReceived = true;
-
+  isSupplierFetchingFailed = false;
   selectedSex = "N/A";
+  isRefetchLoader: boolean = false;
 
   constructor(
     private _changeDetectorRef: ChangeDetectorRef,
@@ -165,6 +166,41 @@ export class ProductsDescriptionComponent implements OnInit, OnDestroy {
         // Mark for check
         this._changeDetectorRef.markForCheck();
       }, err => {
+        this.isSupplierFetchingFailed = true;
+        this._snackBar.open("Some error occured while fetching suppliers", '', {
+          horizontalPosition: 'center',
+          verticalPosition: 'bottom',
+          duration: 3500
+        });
+
+        // Mark for check
+        this._changeDetectorRef.markForCheck();
+      })
+  };
+
+  getAllSuppliersRetry() {
+    const { fk_supplierID } = this.selectedProduct;
+
+    this.isRefetchLoader = true;
+    // Get all suppliers
+    this._inventoryService.getAllSuppliers()
+      .pipe(takeUntil(this._unsubscribeAll))
+      .subscribe((suppliers) => {
+        this.suppliers = suppliers["data"];
+        this.supplierSelected = this.suppliers.find(x => x.pk_companyID == fk_supplierID);
+        this.isSupplierNotReceived = false;
+        this.isRefetchLoader = false;
+        this._snackBar.open("Suppliers fetched successfully", '', {
+          horizontalPosition: 'center',
+          verticalPosition: 'bottom',
+          duration: 3500
+        });
+
+        // Mark for check
+        this._changeDetectorRef.markForCheck();
+      }, err => {
+        this.isSupplierFetchingFailed = true;
+        this.isRefetchLoader = false;
         this._snackBar.open("Some error occured while fetching suppliers", '', {
           horizontalPosition: 'center',
           verticalPosition: 'bottom',

@@ -751,29 +751,32 @@ export class InventoryService {
         });
     };
 
-    getPromoStandardProductDetails(productNumber): Observable<any[]> {
+    getPromoStandardProductDetails(productNumber, supplierId): Observable<any[]> {
         return this._httpClient.get<any[]>(environment.products, {
             params: {
                 promo_standards_2: true,
-                product_number: productNumber
+                product_number: productNumber,
+                supplier_id: supplierId
             }
         });
     };
 
-    getPromoStandardProductPricingDetails(productNumber): Observable<any[]> {
+    getPromoStandardProductPricingDetails(productNumber, supplierId): Observable<any[]> {
         return this._httpClient.get<any[]>(environment.products, {
             params: {
                 promo_standards_pricing: true,
-                product_number: productNumber
+                product_number: productNumber,
+                supplier_id: supplierId
             }
         });
     };
 
-    getPromoStandardInventory(productNumber): Observable<any[]> {
+    getPromoStandardInventory(productNumber, supplierId): Observable<any[]> {
         return this._httpClient.get<any[]>(environment.products, {
             params: {
                 promo_standards_inventory: true,
-                product_number: productNumber
+                product_number: productNumber,
+                supplier_id: supplierId
             }
         });
     };

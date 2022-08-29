@@ -4,6 +4,17 @@
     <div class="col-12 my-2">
         <fuse-card class="rounded-2xl shadow bg-card flex flex-col lg:flex-row w-full">
             <div class="p-6 sm:p-8 lg:p-10 w-full">
+                <div class="row" *ngIf="isSupplierFetchingFailed">
+                    <div class="col-12 flex justify-end">
+                        <button class="min-w-40" mat-stroked-button [matTooltip]="'Fetch all suppliers'"
+                            (click)="getAllSuppliersRetry()" [disabled]="isRefetchLoader">
+                            <mat-progress-spinner *ngIf="isRefetchLoader" [diameter]="24" [mode]="'indeterminate'">
+                            </mat-progress-spinner>
+                            <span *ngIf="!isRefetchLoader" class="ml-1 mr-1">Refetch Suppliers</span>
+                        </button>
+                    </div>
+                </div>
+
                 <!-- Search Products By Supplier -->
                 <mat-form-field appearance="fill" class="w-full">
                     <mat-label>Select a supplier</mat-label>

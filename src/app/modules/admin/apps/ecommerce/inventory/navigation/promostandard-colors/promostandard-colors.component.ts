@@ -28,11 +28,11 @@ export class PromostandardColorsComponent implements OnInit, OnDestroy {
   ) { }
 
   ngOnInit(): void {
-    const { pk_productID, productNumber } = this.selectedProduct;
+    const { pk_productID, productNumber, fk_supplierID } = this.selectedProduct;
 
     const prodNumber = productNumber ? productNumber.substr(0, productNumber.indexOf('_')) : "L455";
 
-    this._inventoryService.getPromoStandardInventory(prodNumber)
+    this._inventoryService.getPromoStandardInventory(prodNumber, fk_supplierID)
       .pipe(takeUntil(this._unsubscribeAll))
       .subscribe((response) => {
         if (response["data"]["success"]) {
