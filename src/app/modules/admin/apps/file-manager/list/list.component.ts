@@ -5,7 +5,7 @@ import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { FuseMediaWatcherService } from '@fuse/services/media-watcher';
 import { FileManagerService } from 'app/modules/admin/apps/file-manager/file-manager.service';
-import { Item, Items } from 'app/modules/admin/apps/file-manager/stores.types';
+import { Item, Items, StoreList } from 'app/modules/admin/apps/file-manager/stores.types';
 
 @Component({
     selector: 'file-manager-list',
@@ -13,12 +13,14 @@ import { Item, Items } from 'app/modules/admin/apps/file-manager/stores.types';
     encapsulation: ViewEncapsulation.None,
     changeDetection: ChangeDetectionStrategy.OnPush
 })
+
 export class StoresListComponent implements OnInit, OnDestroy {
     @ViewChild('matDrawer', { static: true }) matDrawer: MatDrawer;
     drawerMode: 'side' | 'over';
     selectedItem: Item;
     items: Items;
-    stores: any = [];
+    stores: StoreList[] = [];
+    duplicateStores: StoreList[] = [];
     private _unsubscribeAll: Subject<any> = new Subject<any>();
     selectedStore = null;
     quillModules: any = {
@@ -36,6 +38,8 @@ export class StoresListComponent implements OnInit, OnDestroy {
     isLoading: boolean = false;
     isStoreNotReceived = true;
     enableAddStoreForm = false;
+
+    storeTableColumns: string[] = ['pk_storeID', 'storeName'];
 
     /**
      * Constructor
@@ -64,6 +68,7 @@ export class StoresListComponent implements OnInit, OnDestroy {
             .pipe(takeUntil(this._unsubscribeAll))
             .subscribe((items: any) => {
                 this.stores = items["data"];
+                this.duplicateStores = this.stores;
                 this.isStoreNotReceived = false;
                 this.isLoading = false;
 
@@ -91,7 +96,7 @@ export class StoresListComponent implements OnInit, OnDestroy {
         // Unsubscribe from all subscriptions
         this._unsubscribeAll.next();
         this._unsubscribeAll.complete();
-    }
+    };
 
     // -----------------------------------------------------------------------------------------------------
     // @ Public methods
@@ -116,7 +121,15 @@ export class StoresListComponent implements OnInit, OnDestroy {
         const { pk_storeID } = event;
         this.isLoading = true;
         this._router.navigate([`/apps/stores/${pk_storeID}`]);
-    }
+    };
+
+    searchKeyword(event): void {
+        const value = event.target.value;
+
+        this.stores = this.duplicateStores.filter((item: any) => {
+            return item.storeName.toLowerCase().includes(value.toLowerCase()) || item.pk_storeID.toString().toLowerCase().includes(value.toLowerCase());
+        });
+    };
 
     clearFilter() { }
 
@@ -129,4 +142,4 @@ export class StoresListComponent implements OnInit, OnDestroy {
     trackByFn(index: number, item: any): any {
         return item.id || index;
     }
-}
+};

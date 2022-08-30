@@ -1,7 +1,7 @@
 export interface Items {
     folders: Item[];
     files: Item[];
-}
+};
 
 export interface Item {
     id?: string;
@@ -13,4 +13,10 @@ export interface Item {
     type?: string;
     contents?: string | null;
     description?: string | null;
-}
+};
+
+export interface StoreList {
+    pk_storeID: number;
+    storeName: string;
+    storeUrl?: string;
+};

@@ -107,6 +107,14 @@ export class StoresDetailsComponent implements OnInit, OnDestroy {
         this.selectedIndex = title;
     };
 
+    goToLink(link: string) {
+        const { storeURL, protocol } = this.selectedStore;
+
+        if (link == "storeURL") {
+            window.open(`${protocol}${storeURL}`, "_blank");
+        }
+    };
+
     backToStoresScreen(): void {
         this.isLoading = true;
         this._router.navigate(['/apps/stores']);

@@ -47,22 +47,30 @@
                         <div class="text-2xl font-bold">{{selectedIndex}}</div>
                     </div>
                     <div class="row w-full">
-                        <div class="col-lg-6 col-md-6 col-12">
+                        <div class="col-lg-4 col-md-6 col-12">
                             <b class="text-secondary text-sm">Store ID</b>
                             <p class="float-right text-sm">{{selectedStore?.pk_storeID || not_available}}</p>
                         </div>
-                        <div class="col-lg-6 col-md-6 col-12">
+                        <div class="col-lg-4 col-md-6 col-12">
                             <b class="text-secondary text-sm">Launch Date</b>
                             <p class="float-right text-sm">{{launchDate}}</p>
                         </div>
-                        <div class="col-lg-6 col-md-6 col-12">
+                        <div class="col-lg-4 col-md-6 col-12">
                             <b class="text-secondary text-sm">Program Manager</b>
                             <p class="float-right text-sm">{{selectedStore?.championName || not_available}}</p>
                         </div>
-                        <div class="col-lg-6 col-md-6 col-12">
+                        <div class="col-lg-4 col-md-6 col-12">
                             <b class="text-secondary text-sm">Secured</b>
                             <p class="float-right text-sm text-secondary">{{selectedStore?.blnElectronicInvoicing ?
                                 'YES' : 'NO'}}</p>
+                        </div>
+                        <div class="col-lg-4 col-md-6 col-12">
+                            <b class="text-secondary text-sm">Site</b>
+                            <a class="float-right text-sm"
+                                style="color: #3b2dce; text-decoration: underline; cursor: pointer;"
+                                (click)="goToLink('storeURL')">
+                                {{selectedStore?.storeURL || not_available}}
+                            </a>
                         </div>
                     </div>
                 </div>
