@@ -1,4 +1,5 @@
 import { Component, Input, Output, OnInit, EventEmitter, ChangeDetectorRef } from '@angular/core';
+import { MatSnackBar } from '@angular/material/snack-bar';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { FileManagerService } from '../../file-manager.service';
@@ -12,20 +13,23 @@ export class RapidbuildComponent implements OnInit {
   @Input() isLoading: boolean;
   @Output() isLoadingChange = new EventEmitter<boolean>();
   private _unsubscribeAll: Subject<any> = new Subject<any>();
-  displayedColumns: string[] = ['id', 'status', 'age', 'pid', 'spid', 'product', 'supplier', 'last_proof_of'];
+  displayedColumns: string[] = ['id', 'status', 'product', 'supplier', 'last_proof_of'];
   dataSource = [];
   dataSourceTotalRecord;
   dataSourceLoading = true;
   statusID: number = 2;
-
+  duplicatedDataSource = [];
   dropdown = [];
   dropdownLoader = true;
   selectedStatus = null;
   dropdownFetchLoader = false;
 
+  filterLoader = false;
+
   constructor(
     private _fileManagerService: FileManagerService,
-    private _changeDetectorRef: ChangeDetectorRef
+    private _changeDetectorRef: ChangeDetectorRef,
+    private _snackBar: MatSnackBar
   ) { }
 
   ngOnInit(): void {
@@ -49,18 +53,38 @@ export class RapidbuildComponent implements OnInit {
   };
 
   changeStatus(obj): void {
-    this.dropdownFetchLoader = true;
+    this.filterLoader = true;
+    const { pk_storeID } = this.selectedStore;
+
     if (obj === 'all') {
-      this.getAllRapidBuildImages();
+      this._fileManagerService.getAllRapidBuildImages(pk_storeID)
+        .pipe(takeUntil(this._unsubscribeAll))
+        .subscribe((response: any) => {
+          this.dataSource = response["data"];
+          this.dataSourceTotalRecord = response["totalRecords"];
+          this.dataSourceLoading = false;
+          this.dropdownFetchLoader = false;
+
+          // Mark for check
+          this._changeDetectorRef.markForCheck();
+        });
       return;
     };
 
     const { pk_statusID } = obj;
-
     this.statusID = pk_statusID;
 
-    // Get the getRapidBuildImages
-    this.getRapidBuildImages(this.statusID);
+    this._fileManagerService.getRapidBuildImages(pk_storeID, pk_statusID)
+      .pipe(takeUntil(this._unsubscribeAll))
+      .subscribe((response: any) => {
+        this.dataSource = response["data"];
+        this.dataSourceTotalRecord = response["totalRecords"];
+        this.dataSourceLoading = false;
+        this.dropdownFetchLoader = false;
+
+        // Mark for check
+        this._changeDetectorRef.markForCheck();
+      });
 
   }
 
@@ -72,6 +96,7 @@ export class RapidbuildComponent implements OnInit {
       .subscribe((response: any) => {
         this.dataSource = response["data"];
         this.dataSourceTotalRecord = response["totalRecords"];
+        this.duplicatedDataSource = this.dataSource;
         this.dataSourceLoading = false;
         this.dropdownFetchLoader = false;
 
@@ -79,6 +104,13 @@ export class RapidbuildComponent implements OnInit {
         this._changeDetectorRef.markForCheck();
       });
   }
+
+  resetSearch(): void {
+    this.dataSource = this.duplicatedDataSource;
+
+    // Mark for check
+    this._changeDetectorRef.markForCheck();
+  };
 
   getAllRapidBuildImages(): void {
     const { pk_storeID } = this.selectedStore;
@@ -98,21 +130,25 @@ export class RapidbuildComponent implements OnInit {
 
   searchId(event): void {
     const { pk_storeID } = this.selectedStore;
-    this.dropdownFetchLoader = true;
-    let id;
-    if (event.target.value) {
-      id = event.target.value;
-    } else {
-      id = '';
-    }
+    this.filterLoader = true;
+    let keyword = event.target.value;
 
-    this._fileManagerService.getAllRapidBuildImagesById(pk_storeID, id)
+    if (!keyword) {
+      this._snackBar.open("Please enter text to search", '', {
+        horizontalPosition: 'center',
+        verticalPosition: 'bottom',
+        duration: 3500
+      });
+      return;
+    };
+
+    this._fileManagerService.getAllRapidBuildImagesById(pk_storeID, keyword)
       .pipe(takeUntil(this._unsubscribeAll))
       .subscribe((response: any) => {
         this.dataSource = response["data"];
         this.dataSourceTotalRecord = response["totalRecords"];
         this.dataSourceLoading = false;
-        this.dropdownFetchLoader = false;
+        this.filterLoader = false;
 
         // Mark for check
         this._changeDetectorRef.markForCheck();
@@ -121,13 +157,17 @@ export class RapidbuildComponent implements OnInit {
 
   searchKeyword(event): void {
     const { pk_storeID } = this.selectedStore;
-    this.dropdownFetchLoader = true;
-    let keyword;
-    if (event.target.value) {
-      keyword = event.target.value;
-    } else {
-      keyword = '';
-    }
+    this.filterLoader = true;
+    let keyword = event.target.value;
+
+    if (!keyword) {
+      this._snackBar.open("Please enter text to search", '', {
+        horizontalPosition: 'center',
+        verticalPosition: 'bottom',
+        duration: 3500
+      });
+      return;
+    };
 
     this._fileManagerService.getAllRapidBuildImagesByKeyword(pk_storeID, keyword)
       .pipe(takeUntil(this._unsubscribeAll))
@@ -135,7 +175,7 @@ export class RapidbuildComponent implements OnInit {
         this.dataSource = response["data"];
         this.dataSourceTotalRecord = response["totalRecords"];
         this.dataSourceLoading = false;
-        this.dropdownFetchLoader = false;
+        this.filterLoader = false;
 
         // Mark for check
         this._changeDetectorRef.markForCheck();

@@ -37,13 +37,6 @@ export class ProductsSuppliersComponent implements OnInit {
 
   ngOnInit(): void {
     this.dataSourceLoading = true;
-
-    // Get the stores
-    this._fileManagerService.suppliers$
-      .pipe(takeUntil(this._unsubscribeAll))
-      .subscribe((response: any) => {
-        this.suppliers = response["data"];
-      })
     this.getFirstCall(1);
     this.isLoadingChange.emit(false);
   }
@@ -81,7 +74,6 @@ export class ProductsSuppliersComponent implements OnInit {
       .pipe(takeUntil(this._unsubscribeAll))
       .subscribe((response: any) => {
         this.dataSource = response["data"];
-        this.dataSourceTotalRecord = response["totalRecords"];
         this.dataSourceLoading = false;
 
         // Mark for check
@@ -133,7 +125,6 @@ export class ProductsSuppliersComponent implements OnInit {
         .pipe(takeUntil(this._unsubscribeAll))
         .subscribe((response: any) => {
           this.dataSource = response["data"];
-          this.dataSourceTotalRecord = response["totalRecords"];
           this.isKeywordSearch = false;
 
           // Mark for check

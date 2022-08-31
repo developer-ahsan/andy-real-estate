@@ -102,6 +102,17 @@ export class FileManagerService {
         })
     };
 
+    getOfflineProductsByKeyword(storeID, keyword): Observable<any[]> {
+        return this._httpClient.get<any[]>(environment.storeNewUrl, {
+            params: {
+                offline_product: true,
+                keyword: keyword,
+                store_id: storeID,
+                size: 20
+            }
+        })
+    };
+
     getStoreProducts(storeID, pageNo): Observable<any[]> {
         return this._httpClient.get<any[]>(environment.storeNewUrl, {
             params: {
@@ -194,6 +205,18 @@ export class FileManagerService {
         return this._httpClient.get<any[]>(environment.storeNewUrl, {
             params: {
                 product: true,
+                video: true,
+                store_id: storeID,
+                size: 20,
+                page: pageNo
+            }
+        })
+    };
+
+    getStoreProductLevelVideos(storeID, pageNo): Observable<any[]> {
+        return this._httpClient.get<any[]>(environment.storeNewUrl, {
+            params: {
+                store_product: true,
                 video: true,
                 store_id: storeID,
                 size: 20,

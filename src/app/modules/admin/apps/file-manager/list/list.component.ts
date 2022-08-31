@@ -118,9 +118,12 @@ export class StoresListComponent implements OnInit, OnDestroy {
     }
 
     storeDetails(event): void {
-        const { pk_storeID } = event;
         this.isLoading = true;
+        const { pk_storeID } = event;
         this._router.navigate([`/apps/stores/${pk_storeID}`]);
+
+        // Mark for check
+        this._changeDetectorRef.markForCheck();
     };
 
     searchKeyword(event): void {

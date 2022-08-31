@@ -1,65 +1,284 @@
-<ngx-skeleton-loader count="8" appearance="line" animation="pulse" *ngIf="dataSourceLoading">
-</ngx-skeleton-loader>
-<div *ngIf="!dataSourceLoading">
-    <div style="margin-bottom: 72px;">
-        <table mat-table [dataSource]="dataSource" class="w-full">
-            <!--- Note that these columns can be defined in any order.
-              The actual rendered columns are set as a property on the row definition" -->
-            <div class="color-blue">
-                <!-- SPID Column -->
-                <ng-container matColumnDef="pid">
-                    <th class="min-w-10 bg-gray-50 dark:bg-black dark:bg-opacity-5" mat-header-cell *matHeaderCellDef>
-                        PID
-                    </th>
-                    <td mat-cell *matCellDef="let element">{{ element.pk_productID }}</td>
-                </ng-container>
-
-                <!-- Name Column -->
-                <ng-container matColumnDef="product_number">
-                    <th class="min-w-24 bg-gray-50 dark:bg-black dark:bg-opacity-5" mat-header-cell *matHeaderCellDef>
-                        Product#
-                    </th>
-                    <td mat-cell *matCellDef="let element">
-                        {{ element.productNumber }}
-                    </td>
-                </ng-container>
-
-                <!-- Vendor Column -->
-                <ng-container matColumnDef="product_name">
-                    <th class="min-w-40 bg-gray-50 dark:bg-black dark:bg-opacity-5" mat-header-cell *matHeaderCellDef>
-                        Product Name
-                    </th>
-                    <td mat-cell *matCellDef="let element">
-                        <small class="text-secondary font-semibold border-b-2">{{ element.productName }}</small>
-                    </td>
-                </ng-container>
-
-                <!-- Master Column -->
-                <ng-container matColumnDef="vendor">
-                    <th class="min-w-24 bg-gray-50 dark:bg-black dark:bg-opacity-5" mat-header-cell *matHeaderCellDef>
-                        VENDOR
-                    </th>
-                    <td mat-cell *matCellDef="let element">{{ element.companyName }}</td>
-                </ng-container>
-
-                <!-- Status Column -->
-                <ng-container matColumnDef="status">
-                    <th class="min-w-10 bg-gray-50 dark:bg-black dark:bg-opacity-5" mat-header-cell *matHeaderCellDef>
-                        Status
-                    </th>
-                    <td mat-cell *matCellDef="let element">
-                        <span *ngIf="element.blnActive" class="text-green-400 border-b-2">ACTIVE</span>
-                        <span *ngIf="!element.blnActive" class="text-red-400 border-b-2">DISABLED</span>
-                    </td>
-                </ng-container>
-            </div>
-            <tr mat-header-row class="h-18 shadow bg-card" *matHeaderRowDef="displayedColumns"></tr>
-            <tr mat-row class="hover:bg-gray-100 dark:hover:bg-hover" style="cursor: pointer;"
-                *matRowDef="let row; columns: displayedColumns"></tr>
-        </table>
+<div class="row mb-2">
+    <div class="col-12">
+        <mat-button-toggle-group class="flex flex-wrap -m-2" #group="matButtonToggleGroup" [value]="mainScreen"
+            (change)="calledScreen(group.value)">
+            <mat-button-toggle class="m-2" *ngFor="let buttonValue of screens" value="{{buttonValue}}">
+                <span class="ml-1.5 font-medium text-secondary">
+                    {{ buttonValue }}
+                </span>
+            </mat-button-toggle>
+        </mat-button-toggle-group>
     </div>
-    <mat-paginator
-        class="sm:absolute sm:inset-x-0 sm:bottom-0 border-b sm:border-t sm:border-b-0 z-10 bg-gray-50 dark:bg-transparent"
-        [ngClass]="{'pointer-events-none': isLoading}" (page)="getNextData($event)" [length]="dataSourceTotalRecord"
-        [pageIndex]="0" [pageSize]="20" [hidePageSize]="true"></mat-paginator>
+</div>
+
+<div *ngIf="mainScreen == 'Product-Level Videos'">
+    <ngx-skeleton-loader count="8" appearance="line" animation="pulse" *ngIf="dataSourceLoading">
+    </ngx-skeleton-loader>
+
+    <div *ngIf="!dataSourceLoading">
+        <fuse-card class="rounded-2xl shadow bg-card flex pb-10">
+            <div class="row" style="width: -webkit-fill-available;">
+                <div class="col-12">
+                    <div class="p-6 sm:p-8 lg:p-10 w-full">
+                        <div class="row">
+                            <div class="col-lg-6 col-12">
+                                <div class="text-2xl font-bold">
+                                    Product-Level Videos
+                                </div>
+                            </div>
+                            <!-- <div class="col-lg-6 col-12">
+                                <mat-form-field class="fuse-mat-dense fuse-mat-no-subscript w-full">
+                                    <input class="h-6" matInput [matTooltip]="'Press enter key after typing'"
+                                        (keyup.enter)="searchStoreProduct($event)" [value]="keywordSearch" type="text"
+                                        [autocomplete]="'off'" [disabled]="isKeywordSearch"
+                                        [placeholder]="'Search by keyword'">
+                                    <mat-icon matPrefix [svgIcon]="'heroicons_outline:search'"></mat-icon>
+                                </mat-form-field>
+                            </div>
+                            <div class="col-12 flex justify-end">
+                                <p class="text-md cursor-pointer font-medium text-primary-500 hover:underline"
+                                    (click)="resetSearch()">
+                                    Reset Search
+                                </p>
+                            </div> -->
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-12 px-10" *ngIf="isKeywordSearch">
+                    <ngx-skeleton-loader count="8" appearance="line" animation="pulse" *ngIf="isKeywordSearch">
+                    </ngx-skeleton-loader>
+                </div>
+
+                <div class="col-12 font-semibold px-10 flex justify-end" *ngIf="!isKeywordSearch">
+                    {{productLevelTotalVideos}} Records Found
+                </div>
+
+                <div class="col-12 h-full" *ngIf="!isKeywordSearch">
+                    <ng-container *ngIf="dataSource.length > 0; else noRecords">
+                        <table mat-table [dataSource]="dataSource" class="w-full">
+                            <div class="color-blue">
+                                <!-- SPID Column -->
+                                <ng-container matColumnDef="pid">
+                                    <th class="min-w-10 bg-gray-50 dark:bg-black dark:bg-opacity-5" mat-header-cell
+                                        *matHeaderCellDef>
+                                        PID
+                                    </th>
+                                    <td mat-cell *matCellDef="let element">{{ element.pk_productID }}</td>
+                                </ng-container>
+
+                                <!-- Name Column -->
+                                <ng-container matColumnDef="product_number">
+                                    <th class="min-w-24 bg-gray-50 dark:bg-black dark:bg-opacity-5" mat-header-cell
+                                        *matHeaderCellDef>
+                                        Product#
+                                    </th>
+                                    <td mat-cell *matCellDef="let element">
+                                        {{ element.productNumber }}
+                                    </td>
+                                </ng-container>
+
+                                <!-- Vendor Column -->
+                                <ng-container matColumnDef="product_name">
+                                    <th class="min-w-40 bg-gray-50 dark:bg-black dark:bg-opacity-5" mat-header-cell
+                                        *matHeaderCellDef>
+                                        Product Name
+                                    </th>
+                                    <td mat-cell *matCellDef="let element">
+                                        {{ element.productName }}
+                                    </td>
+                                </ng-container>
+
+                                <!-- Master Column -->
+                                <ng-container matColumnDef="vendor">
+                                    <th class="min-w-24 bg-gray-50 dark:bg-black dark:bg-opacity-5" mat-header-cell
+                                        *matHeaderCellDef>
+                                        VENDOR
+                                    </th>
+                                    <td mat-cell *matCellDef="let element">
+                                        <div>
+                                            {{ element.companyName }}
+                                            <span>
+                                                <mat-icon class="icon-size-4 text-gray-500"
+                                                    svgIcon="heroicons_solid:star" *ngIf="element.vendorRelation == 3">
+                                                </mat-icon>
+                                                <mat-icon class="icon-size-4 text-green-500"
+                                                    svgIcon="heroicons_solid:check-circle"
+                                                    *ngIf="element.vendorRelation == 2">
+                                                </mat-icon>
+
+                                            </span>
+                                        </div>
+                                    </td>
+                                </ng-container>
+
+                                <!-- Status Column -->
+                                <ng-container matColumnDef="status">
+                                    <th class="min-w-10 bg-gray-50 dark:bg-black dark:bg-opacity-5" mat-header-cell
+                                        *matHeaderCellDef>
+                                        Status
+                                    </th>
+                                    <td mat-cell *matCellDef="let element">
+                                        <span *ngIf="element.blnActive">ACTIVE</span>
+                                        <span *ngIf="!element.blnActive">DISABLED</span>
+                                    </td>
+                                </ng-container>
+                            </div>
+                            <tr mat-header-row class="h-16 shadow bg-card" *matHeaderRowDef="displayedColumns"></tr>
+                            <tr mat-row class="hover:bg-gray-100 dark:hover:bg-hover" style="cursor: pointer;"
+                                *matRowDef="let row; columns: displayedColumns"></tr>
+                        </table>
+                    </ng-container>
+                    <ng-template #noRecords>
+                        <div class="font-semibold tracking-tight text-center">
+                            <p>No record found</p>
+                        </div>
+                    </ng-template>
+                </div>
+                <div class="col-12" *ngIf="!isKeywordSearch">
+                    <mat-paginator
+                        class="sm:absolute sm:inset-x-0 sm:bottom-0 border-b sm:border-t sm:border-b-0 z-10 bg-gray-50 dark:bg-transparent"
+                        [ngClass]="{'pointer-events-none': isLoading}" (page)="getNextData($event)"
+                        [length]="productLevelTotalVideos" [pageIndex]="0" [pageSize]="20" [hidePageSize]="true">
+                    </mat-paginator>
+                </div>
+            </div>
+        </fuse-card>
+    </div>
+</div>
+
+<div *ngIf="mainScreen == 'Store-Product-Level Videos'">
+    <ngx-skeleton-loader count="8" appearance="line" animation="pulse" *ngIf="dataSourceLoading2">
+    </ngx-skeleton-loader>
+
+    <div *ngIf="!dataSourceLoading2">
+        <fuse-card class="rounded-2xl shadow bg-card flex pb-10">
+            <div class="row" style="width: -webkit-fill-available;">
+                <div class="col-12">
+                    <div class="p-6 sm:p-8 lg:p-10 w-full">
+                        <div class="row">
+                            <div class="col-lg-6 col-12">
+                                <div class="text-2xl font-bold">
+                                    Store-Product-Level Videos
+                                </div>
+                            </div>
+                            <!-- <div class="col-lg-6 col-12">
+                                <mat-form-field class="fuse-mat-dense fuse-mat-no-subscript w-full">
+                                    <input class="h-6" matInput [matTooltip]="'Press enter key after typing'"
+                                        (keyup.enter)="searchStoreProduct($event)" [value]="keywordSearch" type="text"
+                                        [autocomplete]="'off'" [disabled]="isKeywordSearch"
+                                        [placeholder]="'Search by keyword'">
+                                    <mat-icon matPrefix [svgIcon]="'heroicons_outline:search'"></mat-icon>
+                                </mat-form-field>
+                            </div>
+                            <div class="col-12 flex justify-end">
+                                <p class="text-md cursor-pointer font-medium text-primary-500 hover:underline"
+                                    (click)="resetSearch()">
+                                    Reset Search
+                                </p>
+                            </div> -->
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-12 px-10" *ngIf="isKeywordSearch">
+                    <ngx-skeleton-loader count="8" appearance="line" animation="pulse" *ngIf="isKeywordSearch">
+                    </ngx-skeleton-loader>
+                </div>
+
+                <div class="col-12 font-semibold px-10 flex justify-end" *ngIf="!isKeywordSearch">
+                    {{storeProductLevelVideos}} Records Found
+                </div>
+
+                <div class="col-12 h-full" *ngIf="!isKeywordSearch">
+                    <ng-container *ngIf="dataSource2.length > 0; else noRecords">
+                        <table mat-table [dataSource]="dataSource2" class="w-full">
+                            <div class="color-blue">
+                                <!-- SPID Column -->
+                                <ng-container matColumnDef="pid">
+                                    <th class="min-w-10 bg-gray-50 dark:bg-black dark:bg-opacity-5" mat-header-cell
+                                        *matHeaderCellDef>
+                                        PID
+                                    </th>
+                                    <td mat-cell *matCellDef="let element">{{ element.pk_productID }}</td>
+                                </ng-container>
+
+                                <!-- Name Column -->
+                                <ng-container matColumnDef="product_number">
+                                    <th class="min-w-24 bg-gray-50 dark:bg-black dark:bg-opacity-5" mat-header-cell
+                                        *matHeaderCellDef>
+                                        Product#
+                                    </th>
+                                    <td mat-cell *matCellDef="let element">
+                                        {{ element.productNumber }}
+                                    </td>
+                                </ng-container>
+
+                                <!-- Vendor Column -->
+                                <ng-container matColumnDef="product_name">
+                                    <th class="min-w-40 bg-gray-50 dark:bg-black dark:bg-opacity-5" mat-header-cell
+                                        *matHeaderCellDef>
+                                        Product Name
+                                    </th>
+                                    <td mat-cell *matCellDef="let element">
+                                        {{ element.productName }}
+                                    </td>
+                                </ng-container>
+
+                                <!-- Master Column -->
+                                <ng-container matColumnDef="vendor">
+                                    <th class="min-w-24 bg-gray-50 dark:bg-black dark:bg-opacity-5" mat-header-cell
+                                        *matHeaderCellDef>
+                                        VENDOR
+                                    </th>
+                                    <td mat-cell *matCellDef="let element">
+                                        <div>
+                                            {{ element.companyName }}
+                                            <span>
+                                                <mat-icon class="icon-size-4 text-gray-500"
+                                                    svgIcon="heroicons_solid:star" *ngIf="element.vendorRelation == 3">
+                                                </mat-icon>
+                                                <mat-icon class="icon-size-4 text-green-500"
+                                                    svgIcon="heroicons_solid:check-circle"
+                                                    *ngIf="element.vendorRelation == 2">
+                                                </mat-icon>
+
+                                            </span>
+                                        </div>
+                                    </td>
+                                </ng-container>
+
+                                <!-- Status Column -->
+                                <ng-container matColumnDef="status">
+                                    <th class="min-w-10 bg-gray-50 dark:bg-black dark:bg-opacity-5" mat-header-cell
+                                        *matHeaderCellDef>
+                                        Status
+                                    </th>
+                                    <td mat-cell *matCellDef="let element">
+                                        <span *ngIf="element.blnActive">ACTIVE</span>
+                                        <span *ngIf="!element.blnActive">DISABLED</span>
+                                    </td>
+                                </ng-container>
+                            </div>
+                            <tr mat-header-row class="h-16 shadow bg-card" *matHeaderRowDef="displayedColumns"></tr>
+                            <tr mat-row class="hover:bg-gray-100 dark:hover:bg-hover" style="cursor: pointer;"
+                                *matRowDef="let row; columns: displayedColumns"></tr>
+                        </table>
+                    </ng-container>
+                    <ng-template #noRecords>
+                        <div class="font-semibold tracking-tight text-center">
+                            <p>No record found</p>
+                        </div>
+                    </ng-template>
+                </div>
+                <div class="col-12" *ngIf="!isKeywordSearch">
+                    <mat-paginator
+                        class="sm:absolute sm:inset-x-0 sm:bottom-0 border-b sm:border-t sm:border-b-0 z-10 bg-gray-50 dark:bg-transparent"
+                        [ngClass]="{'pointer-events-none': isLoading}" (page)="getNextData2($event)"
+                        [length]="storeProductLevelVideos" [pageIndex]="0" [pageSize]="20" [hidePageSize]="true">
+                    </mat-paginator>
+                </div>
+            </div>
+        </fuse-card>
+    </div>
 </div>

@@ -14,6 +14,8 @@ import {
   ApexLegend,
   ApexPlotOptions
 } from "ng-apexcharts";
+import { takeUntil } from 'rxjs/operators';
+import { FileManagerService } from '../../file-manager.service';
 
 export type ChartOptions = {
   series: ApexAxisChartSeries;
@@ -85,7 +87,9 @@ export class DashboardComponent implements OnInit {
   public chartOptionsTwo: Partial<ChartOptionsTwo>;
   public chartOptionsThree: Partial<ChartOptionsThree>;
 
-  constructor() {
+  constructor(
+    private _fileManagerService: FileManagerService
+  ) {
 
     this.chartOptionsOne = {
       series: [
@@ -313,6 +317,13 @@ export class DashboardComponent implements OnInit {
 
   ngOnInit(): void {
     this.isLoadingChange.emit(false);
+
+    // Get the stores
+    this._fileManagerService.stores$
+      .pipe(takeUntil(this._unsubscribeAll))
+      .subscribe((items: any) => {
+        // console.log(items)
+      });
   }
 
 }
