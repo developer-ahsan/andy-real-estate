@@ -39,7 +39,7 @@ import { ShippingNotificaitonComponent } from './navigation/shipping-notificaito
 import { ResetTopTenComponent } from './navigation/reset-top-ten/reset-top-ten.component';
 import { SurveysComponent } from './navigation/surveys/surveys.component';
 import { JaggaerSettingsComponent } from './navigation/jaggaer-settings/jaggaer-settings.component';
-
+import { MatSnackBarModule } from '@angular/material/snack-bar';
 
 @NgModule({
     declarations: [
@@ -83,6 +83,7 @@ import { JaggaerSettingsComponent } from './navigation/jaggaer-settings/jaggaer-
         MatCheckboxModule,
         NgApexchartsModule,
         MatButtonToggleModule,
+        MatSnackBarModule,
         MatExpansionModule,
         QuillModule.forRoot(),
         SharedModule

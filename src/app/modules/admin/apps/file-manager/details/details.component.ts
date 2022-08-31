@@ -26,7 +26,7 @@ export class StoresDetailsComponent implements OnInit, OnDestroy {
     // Sidebar stuff
     drawerMode: 'over' | 'side' = 'side';
     drawerOpened: boolean = true;
-    selectedIndex: string = "Dashboard";
+    selectedIndex: string = "Products/Supplier";
 
     /**
      * Constructor
@@ -51,7 +51,7 @@ export class StoresDetailsComponent implements OnInit, OnDestroy {
         this.routes = this._storesManagerService.navigationLabels;
 
         // Get the items
-        this._storesManagerService.items$
+        this._storesManagerService.stores$
             .pipe(takeUntil(this._unsubscribeAll))
             .subscribe((items: any) => {
                 this.stores = items["data"];
@@ -131,7 +131,7 @@ export class StoresDetailsComponent implements OnInit, OnDestroy {
         history.pushState({}, null, newUrl);
 
         // Get the items
-        this._storesManagerService.items$
+        this._storesManagerService.stores$
             .pipe(takeUntil(this._unsubscribeAll))
             .subscribe((items: any) => {
                 this.ngOnInit();

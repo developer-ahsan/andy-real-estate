@@ -29,3 +29,29 @@ export class FileManagerItemsResolver implements Resolve<any>
         return this._fileManagerService.getAllStores();
     }
 }
+
+@Injectable({
+    providedIn: 'root'
+})
+export class SupplierResolver implements Resolve<any>
+{
+    /**
+     * Constructor
+     */
+    constructor(private _fileManagerService: FileManagerService) {
+    }
+
+    // -----------------------------------------------------------------------------------------------------
+    // @ Public methods
+    // -----------------------------------------------------------------------------------------------------
+
+    /**
+     * Resolver
+     *
+     * @param route
+     * @param state
+     */
+    resolve(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<Item[]> {
+        return this._fileManagerService.getAllSuppliers();
+    }
+}

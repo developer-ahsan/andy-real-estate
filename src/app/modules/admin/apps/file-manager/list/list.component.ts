@@ -63,8 +63,8 @@ export class StoresListComponent implements OnInit, OnDestroy {
     ngOnInit(): void {
         this.isLoading = true;
 
-        // Get the items
-        this._fileManagerService.items$
+        // Get the stores
+        this._fileManagerService.stores$
             .pipe(takeUntil(this._unsubscribeAll))
             .subscribe((items: any) => {
                 this.stores = items["data"];
