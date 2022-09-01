@@ -113,6 +113,7 @@ export class StoreSettingsComponent implements OnInit, OnDestroy {
 
     const { pk_storeID } = this.selectedStore;
 
+    // Store get call
     this._storesManagerService.getStoreByStoreId(pk_storeID)
       .pipe(takeUntil(this._unsubscribeAll))
       .subscribe((result: any) => {
