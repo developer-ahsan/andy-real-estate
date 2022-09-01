@@ -1,527 +1,509 @@
-<div class="row p-10 bg-light overflow-auto">
-  <div class="col-12 bg-card sm:p-6 md:p-6 lg:p-16 rounded-2xl shadow">
-    <!-- Select a store -->
-    <div class="text-2xl font-extrabold tracking-tight leading-none">
-      General Store Settings
-    </div>
-    <div class="row my-3">
-      <div class="col-lg-6 col-12">
-        <mat-form-field appearance="fill" class="w-full">
-          <mat-label>Store Name</mat-label>
-          <input matInput />
-        </mat-form-field>
-      </div>
-      <div class="col-lg-6 col-12">
-        <mat-form-field appearance="fill" class="w-full">
-          <mat-label>Store Code</mat-label>
-          <input matInput />
-        </mat-form-field>
-      </div>
-      <div class="col-lg-6 col-12">
-        <mat-form-field appearance="fill" class="w-full">
-          <mat-label>Business Name</mat-label>
-          <input matInput />
-        </mat-form-field>
-      </div>
-      <div class="col-lg-6 col-12">
-        <mat-form-field appearance="fill" class="w-full">
-          <mat-label>Root URL</mat-label>
-          <input matInput />
-        </mat-form-field>
-      </div>
+<ngx-skeleton-loader count="8" appearance="line" animation="pulse" *ngIf="isStoreFetch">
+</ngx-skeleton-loader>
 
-      <div class="col-lg-6 col-12">
-        <mat-form-field appearance="fill" class="w-full">
-          <mat-label>Tag Line(150)</mat-label>
-          <input maxlength="150" matInput />
-        </mat-form-field>
-      </div>
-      <div class="col-lg-6 col-12">
-        <mat-form-field appearance="fill" class="w-full">
-          <mat-label>Browser Title(180)</mat-label>
-          <input maxlength="180" matInput />
-        </mat-form-field>
-      </div>
-
-      <!-- Description input fields -->
-
-      <div class="col-12">
-        <div style="font-weight: 500">Meta Description (300)</div>
-        <quill-editor [modules]="quillModules"> </quill-editor>
-      </div>
-
-      <div class="col-12" style="margin-top: 90px">
-        <div style="font-weight: 500">Meta Keywords (300)</div>
-        <quill-editor [modules]="quillModules"> </quill-editor>
-      </div>
-
-      <div class="col-12" style="margin-top: 90px">
-        <div style="font-weight: 500">Custom Registration Text</div>
-        <quill-editor [modules]="quillModules"> </quill-editor>
-      </div>
-
-      <!-- Description input fields ends here -->
-
-      <div class="col-lg-6 col-12" style="margin-top: 90px">
-        <mat-form-field appearance="fill" class="w-full">
-          <mat-label>Handling Charge</mat-label>
-          <input matInput value="0.0000" />
-        </mat-form-field>
-      </div>
-
-      <div class="col-lg-6 col-12" style="margin-top: 90px">
-        <mat-form-field appearance="fill" class="w-full">
-          <mat-label>SightMax Site ID</mat-label>
-          <input matInput value="9" />
-        </mat-form-field>
-      </div>
-
-      <div class="col-lg-6 col-12">
-        <mat-form-field appearance="fill" class="w-full">
-          <mat-label>SightMax Queue ID</mat-label>
-          <input matInput value="9" />
-        </mat-form-field>
-      </div>
-
-      <div class="col-lg-6 col-12">
-        <mat-form-field appearance="fill" class="w-full">
-          <mat-label>Google Analytics ID (15)</mat-label>
-          <input maxlength="15" matInput value="UA-285311-69" />
-        </mat-form-field>
-      </div>
-
-      <div class="col-lg-6 col-12">
-        <mat-form-field appearance="fill" class="w-full">
-          <mat-label>Google Tag</mat-label>
-          <input matInput value="9" />
-        </mat-form-field>
-      </div>
-
-      <div class="col-lg-6 col-12">
-        <mat-form-field appearance="fill" class="w-full">
-          <mat-label>Bing Tag</mat-label>
-          <input matInput value="9" />
-        </mat-form-field>
-      </div>
-
-      <div class="col-lg-6 col-12">
-        <mat-form-field appearance="fill" class="w-full">
-          <mat-label>Report color (hex value) </mat-label>
-          <input matInput value="#e00022" />
-        </mat-form-field>
-      </div>
-
-      <!-- Select fields -->
-      <!-- Protocol -->
-      <div class="col-12">
-        <mat-form-field appearance="fill" class="w-full">
-          <mat-label>Protocol</mat-label>
-          <mat-select [(value)]="selected">
-            <mat-option value="option1">HTTP</mat-option>
-            <mat-option value="option2">HTTPS</mat-option>
-          </mat-select>
-        </mat-form-field>
-      </div>
-
-      <div class="col-6">
-        <mat-form-field appearance="fill" class="w-full">
-          <mat-label>Include Shipping</mat-label>
-          <mat-select [(value)]="selected">
-            <mat-option value="option1">Yes</mat-option>
-            <mat-option value="option2">No</mat-option>
-          </mat-select>
-        </mat-form-field>
-      </div>
-      <div class="col-6">
-        <mat-form-field appearance="fill" class="w-full">
-          <mat-label>Tax Exempt?</mat-label>
-          <mat-select [(value)]="selected">
-            <mat-option value="option1">Yes</mat-option>
-            <mat-option value="option2">No</mat-option>
-          </mat-select>
-        </mat-form-field>
-      </div>
-      <div class="col-6">
-        <mat-form-field appearance="fill" class="w-full">
-          <mat-label>SciQuest Enabled</mat-label>
-          <mat-select [(value)]="selected">
-            <mat-option value="option1">Yes</mat-option>
-            <mat-option value="option2">No</mat-option>
-          </mat-select>
-        </mat-form-field>
-      </div>
-      <div class="col-6">
-        <mat-form-field appearance="fill" class="w-full">
-          <mat-label>Cost Center Codes</mat-label>
-          <mat-select [(value)]="selected">
-            <mat-option value="option1">Yes</mat-option>
-            <mat-option value="option2">No</mat-option>
-          </mat-select>
-        </mat-form-field>
-      </div>
-      <div class="col-6">
-        <mat-form-field appearance="fill" class="w-full">
-          <mat-label>Require location</mat-label>
-          <mat-select [(value)]="selected">
-            <mat-option value="option1">Yes</mat-option>
-            <mat-option value="option2">No</mat-option>
-          </mat-select>
-        </mat-form-field>
-      </div>
-      <div class="col-6">
-        <mat-form-field appearance="fill" class="w-full">
-          <mat-label>Require Account Code</mat-label>
-          <mat-select [(value)]="selected">
-            <mat-option value="option1">Yes</mat-option>
-            <mat-option value="option2">No</mat-option>
-          </mat-select>
-        </mat-form-field>
-      </div>
-      <div class="col-6">
-        <mat-form-field appearance="fill" class="w-full">
-          <mat-label>Show product members in URL</mat-label>
-          <mat-select [(value)]="selected">
-            <mat-option value="option1">Yes</mat-option>
-            <mat-option value="option2">No</mat-option>
-          </mat-select>
-        </mat-form-field>
-      </div>
-      <div class="col-6">
-        <mat-form-field appearance="fill" class="w-full">
-          <mat-label>PDF Invoices</mat-label>
-          <mat-select [(value)]="selected">
-            <mat-option value="option1">Yes</mat-option>
-            <mat-option value="option2">No</mat-option>
-          </mat-select>
-        </mat-form-field>
-      </div>
-      <div class="col-6">
-        <mat-form-field appearance="fill" class="w-full">
-          <mat-label>PDF Shipping notifications</mat-label>
-          <mat-select [(value)]="selected">
-            <mat-option value="option1">Yes</mat-option>
-            <mat-option value="option2">No</mat-option>
-          </mat-select>
-        </mat-form-field>
-      </div>
-
-      <div class="col-6">
-        <mat-form-field appearance="fill" class="w-full">
-          <mat-label>Include store logo bank</mat-label>
-          <mat-select [(value)]="selected">
-            <mat-option value="option1">Yes</mat-option>
-            <mat-option value="option2">No</mat-option>
-          </mat-select>
-        </mat-form-field>
-      </div>
-      <div class="col-6">
-        <mat-form-field appearance="fill" class="w-full">
-          <mat-label>Include customer logo bank</mat-label>
-          <mat-select [(value)]="selected">
-            <mat-option value="option1">Yes</mat-option>
-            <mat-option value="option2">No</mat-option>
-          </mat-select>
-        </mat-form-field>
-      </div>
-      <div class="col-6">
-        <mat-form-field appearance="fill" class="w-full">
-          <mat-label>Declining program reports</mat-label>
-          <mat-select [(value)]="selected">
-            <mat-option value="option1">Yes</mat-option>
-            <mat-option value="option2">No</mat-option>
-          </mat-select>
-        </mat-form-field>
-      </div>
-      <div class="col-6">
-        <mat-form-field appearance="fill" class="w-full">
-          <mat-label>Referral at Checkout</mat-label>
-          <mat-select [(value)]="selected">
-            <mat-option value="option1">Yes</mat-option>
-            <mat-option value="option2">No</mat-option>
-          </mat-select>
-        </mat-form-field>
-      </div>
-      <div class="col-6">
-        <mat-form-field appearance="fill" class="w-full">
-          <mat-label>Use expanded product search</mat-label>
-          <mat-select [(value)]="selected">
-            <mat-option value="option1">Yes</mat-option>
-            <mat-option value="option2">No</mat-option>
-          </mat-select>
-        </mat-form-field>
-      </div>
-      <div class="col-6">
-        <mat-form-field appearance="fill" class="w-full">
-          <mat-label>Use quote help/assistance</mat-label>
-          <mat-select [(value)]="selected">
-            <mat-option value="option1">Yes</mat-option>
-            <mat-option value="option2">No</mat-option>
-          </mat-select>
-        </mat-form-field>
-      </div>
-      <div class="col-6">
-        <mat-form-field appearance="fill" class="w-full">
-          <mat-label>Include exit survey</mat-label>
-          <mat-select [(value)]="selected">
-            <mat-option value="option1">Yes</mat-option>
-            <mat-option value="option2">No</mat-option>
-          </mat-select>
-        </mat-form-field>
-      </div>
-      <div class="col-6">
-        <mat-form-field appearance="fill" class="w-full">
-          <mat-label>Allow SmartArt quotes</mat-label>
-          <mat-select [(value)]="selected">
-            <mat-option value="option1">Yes</mat-option>
-            <mat-option value="option2">No</mat-option>
-          </mat-select>
-        </mat-form-field>
-      </div>
-      <div class="col-6">
-        <mat-form-field appearance="fill" class="w-full">
-          <mat-label>Include in internal sales report</mat-label>
-          <mat-select [(value)]="selected">
-            <mat-option value="option1">Yes</mat-option>
-            <mat-option value="option2">No</mat-option>
-          </mat-select>
-        </mat-form-field>
-      </div>
-      <div class="col-6">
-        <mat-form-field appearance="fill" class="w-full">
-          <mat-label>Enable ChatBeacon live chat?</mat-label>
-          <mat-select [(value)]="selected">
-            <mat-option value="option1">Yes</mat-option>
-            <mat-option value="option2">No</mat-option>
-          </mat-select>
-        </mat-form-field>
-      </div>
-      <div class="col-6">
-        <mat-form-field appearance="fill" class="w-full">
-          <mat-label>Product Builder Button Text</mat-label>
-          <input matInput />
-        </mat-form-field>
-      </div>
-
-      <div class="col-lg-10 col-12"></div>
-      <div class="col-lg-2 col-12">
-        <!-- Upload button -->
-        <button
-          class="mt-5 w-full"
-          mat-flat-button
-          [matTooltip]="'Add Store'"
-          [color]="'primary'"
-        >
-          <span class="px-2">Create Store</span>
-        </button>
-      </div>
-    </div>
-  </div>
-</div>
-<!-- Add new store ends here -->
-
-<!-- Registration Page start -->
-
-<div class="row p-10 bg-light overflow-auto">
-  <div class="col-12 bg-card sm:p-6 md:p-6 lg:p-16 rounded-2xl shadow">
-    <div class="text-2xl font-extrabold tracking-tight leading-none">
-      Registration Page
-    </div>
-    <div class="row my-3">
-      <div class="col-12">
-        <mat-form-field appearance="fill" class="w-full">
-          <mat-label> Allow registration</mat-label>
-          <mat-select [(value)]="selected">
-            <mat-option value="option1">Yes</mat-option>
-            <mat-option value="option2">No</mat-option>
-          </mat-select>
-        </mat-form-field>
-      </div>
-      <div class="col-12">
-        <mat-form-field appearance="fill" class="w-full">
-          <mat-label>Require "how did you hear about us"?</mat-label>
-          <mat-select [(value)]="selected">
-            <mat-option value="option1">Yes</mat-option>
-            <mat-option value="option2">No</mat-option>
-          </mat-select>
-        </mat-form-field>
-      </div>
-    </div>
-  </div>
-</div>
-
-<!-- Email setting -->
-<div class="row p-10 bg-light overflow-auto">
-  <div class="col-12 bg-card sm:p-6 md:p-6 lg:p-16 rounded-2xl shadow">
-    <div class="text-2xl font-extrabold tracking-tight leading-none">
-      Email Settings
-    </div>
-    <div class="row my-3">
-      <div class="col-6">
-        <mat-form-field appearance="fill" class="w-full">
-          <mat-label>Registration Welcome Email</mat-label>
-          <mat-select [(value)]="selected">
-            <mat-option value="option1">Yes</mat-option>
-            <mat-option value="option2">No</mat-option>
-          </mat-select>
-        </mat-form-field>
-      </div>
-      <div class="col-6">
-        <mat-form-field appearance="fill" class="w-full">
-          <mat-label>Registration Welcome Email Promocode</mat-label>
-          <mat-select [(value)]="selected">
-            <mat-option value="option1">Yes</mat-option>
-            <mat-option value="option2">No</mat-option>
-          </mat-select>
-        </mat-form-field>
-      </div>
-      <div class="col-6">
-        <mat-form-field appearance="fill" class="w-full">
-          <mat-label>Reorder Emails</mat-label>
-          <mat-select [(value)]="selected">
-            <mat-option value="option1">Yes</mat-option>
-            <mat-option value="option2">No</mat-option>
-          </mat-select>
-        </mat-form-field>
-      </div>
-      <div class="col-6">
-        <mat-form-field appearance="fill" class="w-full">
-          <mat-label>Review Emails</mat-label>
-          <mat-select [(value)]="selected">
-            <mat-option value="option1">Yes</mat-option>
-            <mat-option value="option2">No</mat-option>
-          </mat-select>
-        </mat-form-field>
-      </div>
-      <div class="col-6">
-        <mat-form-field appearance="fill" class="w-full">
-          <mat-label>Reorder Promo Code</mat-label>
-          <mat-select [(value)]="selected">
-            <mat-option value="option1">Yes</mat-option>
-            <mat-option value="option2">No</mat-option>
-          </mat-select>
-        </mat-form-field>
-      </div>
-      <div class="col-6">
-        <mat-form-field appearance="fill" class="w-full">
-          <mat-label>Monthly top-rated products email</mat-label>
-          <mat-select [(value)]="selected">
-            <mat-option value="option1">Yes</mat-option>
-            <mat-option value="option2">No</mat-option>
-          </mat-select>
-        </mat-form-field>
-      </div>
-    </div>
-  </div>
-</div>
-
-<!-- Promotional Pulse Settings -->
-
-<div class="row p-10 bg-light overflow-auto">
-  <div class="col-12 bg-card sm:p-6 md:p-6 lg:p-16 rounded-2xl shadow">
-    <div class="text-2xl font-extrabold tracking-tight leading-none">
-      Promotional Pulse Settings
-    </div>
-    <div class="row my-3">
-      <div class="col-12">
-        <mat-form-field appearance="fill" class="w-full">
-          <mat-label> Master accounts see all orders</mat-label>
-          <mat-select [(value)]="selected">
-            <mat-option value="option1">Yes</mat-option>
-            <mat-option value="option2">No</mat-option>
-          </mat-select>
-        </mat-form-field>
-      </div>
-    </div>
-  </div>
-</div>
-
-<!-- Cash Back Settings -->
-<div class="row p-10 bg-light overflow-auto">
-  <div class="col-12 bg-card sm:p-6 md:p-6 lg:p-16 rounded-2xl shadow">
-    <div class="text-2xl font-extrabold tracking-tight leading-none">
-      Cash Back Settings
-    </div>
-    <div class="row my-3">
-      <div class="col-lg-6 col-12">
-        <mat-form-field appearance="fill" class="w-full">
-          <mat-label> Cash back active</mat-label>
-          <mat-select [(value)]="selected">
-            <mat-option value="option1">Yes</mat-option>
-            <mat-option value="option2">No</mat-option>
-          </mat-select>
-        </mat-form-field>
-      </div>
-      <div class="col-lg-6 col-12">
-        <mat-form-field appearance="fill" class="w-full">
-          <mat-label>Percent</mat-label>
-          <input matInput value="9" /> %
-        </mat-form-field>
-      </div>
-      <div class="col-lg-6 col-12">
-        <mat-form-field appearance="fill" class="w-full">
-          <mat-label
-            >Cashback automatically turned on for newly-registered
-            users?</mat-label
-          >
-          <mat-select [(value)]="selected">
-            <mat-option value="option1">Yes</mat-option>
-            <mat-option value="option2">No</mat-option>
-          </mat-select>
-        </mat-form-field>
-      </div>
-    </div>
-  </div>
-</div>
-
-<!-- Default Credit Term -->
-
-<div class="row p-10 bg-light overflow-auto">
-  <div class="col-12 bg-card sm:p-6 md:p-6 lg:p-16 rounded-2xl shadow">
-    <div class="text-2xl font-extrabold tracking-tight leading-none">
-      Default Credit Term
-    </div>
-    <div class="my-5">
-      <mat-radio-group aria-label="Select an option">
-        <div class="col-12 my-3 font-weight-bold">
-          <mat-radio-button value="1">None</mat-radio-button>
+<div *ngIf="!isStoreFetch">
+  <form [formGroup]="storeSettingsForm">
+    <div class="row px-3 bg-light">
+      <div class="col-12 bg-card sm:p-6 md:p-6 lg:p-10 rounded-2xl shadow">
+        <!-- Select a store -->
+        <div class="text-2xl font-extrabold tracking-tight leading-none">
+          General Store Settings
         </div>
-        <div class="col-12 my-3">
-          <mat-radio-button
-            class="font-weight-bold"
-            style="color: red"
-            value="1"
-            >Expired</mat-radio-button
-          >
-          <br />"Your account's credit terms have expired."
+
+        <div class="row my-3">
+          <div class="col-lg-6 col-12">
+            <mat-form-field appearance="fill" class="w-full">
+              <mat-label>Store Name</mat-label>
+              <input matInput [formControlName]="'storeName'" />
+            </mat-form-field>
+          </div>
+          <div class="col-lg-6 col-12">
+            <mat-form-field appearance="fill" class="w-full">
+              <mat-label>Store Code</mat-label>
+              <input matInput [formControlName]="'storeCode'" />
+            </mat-form-field>
+          </div>
+          <div class="col-lg-6 col-12">
+            <mat-form-field appearance="fill" class="w-full">
+              <mat-label>Business Name</mat-label>
+              <input matInput [formControlName]="'businessName'" />
+            </mat-form-field>
+          </div>
+          <div class="col-lg-6 col-12">
+            <mat-form-field appearance="fill" class="w-full">
+              <mat-label>Root URL</mat-label>
+              <input matInput [formControlName]="'storeURL'" />
+            </mat-form-field>
+          </div>
+
+          <div class="col-12">
+            <mat-form-field appearance="fill" class="w-full">
+              <mat-label>Tag Line(150)</mat-label>
+              <input maxlength="150" matInput [formControlName]="'tagLine'" />
+            </mat-form-field>
+          </div>
+          <div class="col-12">
+            <mat-form-field appearance="fill" class="w-full">
+              <mat-label>Browser Title(180)</mat-label>
+              <input maxlength="180" matInput [formControlName]="'browserTitle'" />
+            </mat-form-field>
+          </div>
+
+          <!-- Description input fields -->
+
+          <div class="col-12">
+            <div style="font-weight: 500">Meta Description (300)</div>
+            <quill-editor [modules]="quillModules" [formControlName]="'metaDesc'"> </quill-editor>
+          </div>
+
+          <div class="col-12" style="margin-top: 90px">
+            <div style="font-weight: 500">Meta Keywords (300)</div>
+            <quill-editor [modules]="quillModules" [formControlName]="'metaKeywords'"> </quill-editor>
+          </div>
+
+          <div class="col-12" style="margin-top: 90px">
+            <div style="font-weight: 500">Custom Registration Text</div>
+            <quill-editor [modules]="quillModules" [formControlName]="'registrationText'"> </quill-editor>
+          </div>
+
+          <!-- Description input fields ends here -->
+
+          <div class="col-lg-6 col-12" style="margin-top: 90px">
+            <mat-form-field appearance="fill" class="w-full">
+              <mat-label>Handling Charge</mat-label>
+              <input matInput [formControlName]="'storeHandling'" />
+            </mat-form-field>
+          </div>
+
+          <div class="col-lg-6 col-12" style="margin-top: 90px">
+            <mat-form-field appearance="fill" class="w-full">
+              <mat-label>SightMax Site ID</mat-label>
+              <input matInput [formControlName]="'siteMaxSiteID'" />
+            </mat-form-field>
+          </div>
+
+          <div class="col-lg-6 col-12">
+            <mat-form-field appearance="fill" class="w-full">
+              <mat-label>SightMax Queue ID</mat-label>
+              <input matInput [formControlName]="'siteMaxQueueID'" />
+            </mat-form-field>
+          </div>
+
+          <div class="col-lg-6 col-12">
+            <mat-form-field appearance="fill" class="w-full">
+              <mat-label>Google Analytics ID (15)</mat-label>
+              <input maxlength="15" type="text" matInput [formControlName]="'googleAnalyticsID'" />
+            </mat-form-field>
+          </div>
+
+          <div class="col-12">
+            <mat-form-field appearance="fill" class="w-full">
+              <mat-label>Google Tag</mat-label>
+              <input matInput [formControlName]="'googleTag'" />
+            </mat-form-field>
+          </div>
+
+          <div class="col-12">
+            <mat-form-field appearance="fill" class="w-full">
+              <mat-label>Bing Tag</mat-label>
+              <input matInput [formControlName]="'bingTag'" />
+            </mat-form-field>
+          </div>
+
+          <div class="col-lg-6 col-12">
+            <mat-form-field appearance="fill" class="w-full">
+              <mat-label>Report color ( {{selectedStore?.reportColor}} ) </mat-label>
+              <input matInput type="color" [formControlName]="'reportColor'" />
+            </mat-form-field>
+          </div>
+
+
+          <div class="col-lg-6 col-12">
+            <mat-form-field appearance="fill" class="w-full">
+              <mat-label>Product Builder Button Text</mat-label>
+              <input matInput [formControlName]="'productBuilderText'" />
+            </mat-form-field>
+          </div>
+
+          <!-- Select fields -->
+          <!-- Protocol -->
+          <div class="col-12">
+            <mat-form-field appearance="fill" class="w-full">
+              <mat-label>Protocol</mat-label>
+              <mat-select [formControlName]="'protocol'">
+                <mat-option value="http://">HTTP</mat-option>
+                <mat-option value="https://">HTTPS</mat-option>
+              </mat-select>
+            </mat-form-field>
+          </div>
+
+          <div class="col-6">
+            <mat-form-field appearance="fill" class="w-full">
+              <mat-label>Include Shipping</mat-label>
+              <mat-select [formControlName]="'blnShipping'">
+                <mat-option [value]="true">Yes</mat-option>
+                <mat-option [value]="false">No</mat-option>
+              </mat-select>
+            </mat-form-field>
+          </div>
+          <div class="col-6">
+            <mat-form-field appearance="fill" class="w-full">
+              <mat-label>Tax Exempt?</mat-label>
+              <mat-select [formControlName]="'blnTaxExempt'">
+                <mat-option [value]="true">Yes</mat-option>
+                <mat-option [value]="false">No</mat-option>
+              </mat-select>
+            </mat-form-field>
+          </div>
+          <div class="col-6">
+            <mat-form-field appearance="fill" class="w-full">
+              <mat-label>SciQuest Enabled</mat-label>
+              <mat-select [formControlName]="'blnElectronicInvoicing'">
+                <mat-option [value]="true">Yes</mat-option>
+                <mat-option [value]="false">No</mat-option>
+              </mat-select>
+            </mat-form-field>
+          </div>
+          <div class="col-6">
+            <mat-form-field appearance="fill" class="w-full">
+              <mat-label>Cost Center Codes</mat-label>
+              <mat-select [formControlName]="'blnCostCenterCodes'">
+                <mat-option [value]="true">Yes</mat-option>
+                <mat-option [value]="false">No</mat-option>
+              </mat-select>
+            </mat-form-field>
+          </div>
+          <div class="col-6">
+            <mat-form-field appearance="fill" class="w-full">
+              <mat-label>Require location</mat-label>
+              <mat-select [formControlName]="'blnRequireLocation'">
+                <mat-option [value]="true">Yes</mat-option>
+                <mat-option [value]="false">No</mat-option>
+              </mat-select>
+            </mat-form-field>
+          </div>
+          <div class="col-6">
+            <mat-form-field appearance="fill" class="w-full">
+              <mat-label>Require Account Code</mat-label>
+              <mat-select [formControlName]="'blnRequireAccountCode'">
+                <mat-option [value]="true">Yes</mat-option>
+                <mat-option [value]="false">No</mat-option>
+              </mat-select>
+            </mat-form-field>
+          </div>
+          <div class="col-6">
+            <mat-form-field appearance="fill" class="w-full">
+              <mat-label>Show product members in URL</mat-label>
+              <mat-select [formControlName]="'blnStoreHeaderImage'">
+                <mat-option [value]="true">Yes</mat-option>
+                <mat-option [value]="false">No</mat-option>
+              </mat-select>
+            </mat-form-field>
+          </div>
+          <div class="col-6">
+            <mat-form-field appearance="fill" class="w-full">
+              <mat-label>PDF Invoices</mat-label>
+              <mat-select [formControlName]="'blnPDFInvoice'">
+                <mat-option [value]="true">Yes</mat-option>
+                <mat-option [value]="false">No</mat-option>
+              </mat-select>
+            </mat-form-field>
+          </div>
+          <div class="col-6">
+            <mat-form-field appearance="fill" class="w-full">
+              <mat-label>PDF Shipping notifications</mat-label>
+              <mat-select [formControlName]="'blnPDFShippingNotifications'">
+                <mat-option [value]="true">Yes</mat-option>
+                <mat-option [value]="false">No</mat-option>
+              </mat-select>
+            </mat-form-field>
+          </div>
+
+          <div class="col-6">
+            <mat-form-field appearance="fill" class="w-full">
+              <mat-label>Include store logo bank</mat-label>
+              <mat-select [formControlName]="'blnLogoBank'">
+                <mat-option [value]="true">Yes</mat-option>
+                <mat-option [value]="false">No</mat-option>
+              </mat-select>
+            </mat-form-field>
+          </div>
+          <div class="col-6">
+            <mat-form-field appearance="fill" class="w-full">
+              <mat-label>Include customer logo bank</mat-label>
+              <mat-select [formControlName]="'blnCustomerLogoBank'">
+                <mat-option [value]="true">Yes</mat-option>
+                <mat-option [value]="false">No</mat-option>
+              </mat-select>
+            </mat-form-field>
+          </div>
+          <div class="col-6">
+            <mat-form-field appearance="fill" class="w-full">
+              <mat-label>Declining program reports</mat-label>
+              <mat-select [formControlName]="'blnDecliningProgramNotifications'">
+                <mat-option [value]="true">Yes</mat-option>
+                <mat-option [value]="false">No</mat-option>
+              </mat-select>
+            </mat-form-field>
+          </div>
+          <div class="col-6">
+            <mat-form-field appearance="fill" class="w-full">
+              <mat-label>Referral at Checkout</mat-label>
+              <mat-select [formControlName]="'blnCheckoutReferral'">
+                <mat-option [value]="true">Yes</mat-option>
+                <mat-option [value]="false">No</mat-option>
+              </mat-select>
+            </mat-form-field>
+          </div>
+          <div class="col-6">
+            <mat-form-field appearance="fill" class="w-full">
+              <mat-label>Use expanded product search</mat-label>
+              <mat-select [formControlName]="'blnExpandedProductSearch'">
+                <mat-option [value]="true">Yes</mat-option>
+                <mat-option [value]="false">No</mat-option>
+              </mat-select>
+            </mat-form-field>
+          </div>
+          <div class="col-6">
+            <mat-form-field appearance="fill" class="w-full">
+              <mat-label>Use quote help/assistance</mat-label>
+              <mat-select [formControlName]="'blnQuoteHelp'">
+                <mat-option [value]="true">Yes</mat-option>
+                <mat-option [value]="false">No</mat-option>
+              </mat-select>
+            </mat-form-field>
+          </div>
+          <div class="col-6">
+            <mat-form-field appearance="fill" class="w-full">
+              <mat-label>Include exit survey</mat-label>
+              <mat-select [formControlName]="'blnExitSurvey'">
+                <mat-option [value]="true">Yes</mat-option>
+                <mat-option [value]="false">No</mat-option>
+              </mat-select>
+            </mat-form-field>
+          </div>
+          <div class="col-6">
+            <mat-form-field appearance="fill" class="w-full">
+              <mat-label>Allow SmartArt quotes</mat-label>
+              <mat-select [formControlName]="'blnSmartArtQuotes'">
+                <mat-option [value]="true">Yes</mat-option>
+                <mat-option [value]="false">No</mat-option>
+              </mat-select>
+            </mat-form-field>
+          </div>
+          <div class="col-6">
+            <mat-form-field appearance="fill" class="w-full">
+              <mat-label>Include in internal sales report</mat-label>
+              <mat-select [formControlName]="'blnSalesReport'">
+                <mat-option [value]="true">Yes</mat-option>
+                <mat-option [value]="false">No</mat-option>
+              </mat-select>
+            </mat-form-field>
+          </div>
+          <div class="col-6">
+            <mat-form-field appearance="fill" class="w-full">
+              <mat-label>Enable ChatBeacon live chat?</mat-label>
+              <mat-select [formControlName]="'blnChat'">
+                <mat-option [value]="true">Yes</mat-option>
+                <mat-option [value]="false">No</mat-option>
+              </mat-select>
+            </mat-form-field>
+          </div>
+
+          <!-- Registration -->
+          <div class="col-12 border-t py-5">
+            <div class="text-2xl font-extrabold tracking-tight leading-none">
+              Registration Page
+            </div>
+          </div>
+
+          <div class="col-12">
+            <mat-form-field appearance="fill" class="w-full">
+              <mat-label> Allow registration</mat-label>
+              <mat-select [formControlName]="'blnAllowRegistration'">
+                <mat-option [value]="true">Yes</mat-option>
+                <mat-option [value]="false">No</mat-option>
+              </mat-select>
+            </mat-form-field>
+          </div>
+          <div class="col-12">
+            <mat-form-field appearance="fill" class="w-full">
+              <mat-label>Require "how did you hear about us"?</mat-label>
+              <mat-select [formControlName]="'blnRequireReference'">
+                <mat-option [value]="true">Yes</mat-option>
+                <mat-option [value]="false">No</mat-option>
+              </mat-select>
+            </mat-form-field>
+          </div>
+
+          <!-- Email Settings -->
+          <div class="col-12 border-t py-5">
+            <div class="text-2xl font-extrabold tracking-tight leading-none">
+              Email Settings
+            </div>
+          </div>
+
+          <div class="col-6">
+            <mat-form-field appearance="fill" class="w-full">
+              <mat-label>Registration Welcome Email</mat-label>
+              <mat-select [formControlName]="'blnWelcomeEmail'">
+                <mat-option [value]="true">Yes</mat-option>
+                <mat-option [value]="false">No</mat-option>
+              </mat-select>
+            </mat-form-field>
+          </div>
+          <div class="col-6">
+            <mat-form-field appearance="fill" class="w-full">
+              <mat-label>Registration Welcome Email Promocode</mat-label>
+              <mat-select [formControlName]="'blnWelcomeEmailPromocode'">
+                <mat-option [value]="true">Yes</mat-option>
+                <mat-option [value]="false">No</mat-option>
+              </mat-select>
+            </mat-form-field>
+          </div>
+          <div class="col-6">
+            <mat-form-field appearance="fill" class="w-full">
+              <mat-label>Reorder Emails</mat-label>
+              <mat-select [formControlName]="'blnReorderEmails'">
+                <mat-option [value]="true">Yes</mat-option>
+                <mat-option [value]="false">No</mat-option>
+              </mat-select>
+            </mat-form-field>
+          </div>
+          <div class="col-6">
+            <mat-form-field appearance="fill" class="w-full">
+              <mat-label>Review Emails</mat-label>
+              <mat-select [formControlName]="'blnReviewEmails'">
+                <mat-option [value]="true">Yes</mat-option>
+                <mat-option [value]="false">No</mat-option>
+              </mat-select>
+            </mat-form-field>
+          </div>
+          <div class="col-6">
+            <mat-form-field appearance="fill" class="w-full">
+              <mat-label>Reorder Promo Code</mat-label>
+              <mat-select [formControlName]="'blnReorderPromoCode'">
+                <mat-option [value]="true">Yes</mat-option>
+                <mat-option [value]="false">No</mat-option>
+              </mat-select>
+            </mat-form-field>
+          </div>
+          <div class="col-6">
+            <mat-form-field appearance="fill" class="w-full">
+              <mat-label>Monthly top-rated products email</mat-label>
+              <mat-select [formControlName]="'blnTopRatedScroller'">
+                <mat-option [value]="true">Yes</mat-option>
+                <mat-option [value]="false">No</mat-option>
+              </mat-select>
+            </mat-form-field>
+          </div>
+
+          <!-- Promotional Pulse Settings -->
+          <div class="col-12 border-t py-5">
+            <div class="text-2xl font-extrabold tracking-tight leading-none">
+              Promotional Pulse Settings
+            </div>
+          </div>
+
+          <div class="col-12">
+            <mat-form-field appearance="fill" class="w-full">
+              <mat-label> Master accounts see all orders</mat-label>
+              <mat-select [formControlName]="'blnMasterAccountShowAllOrders'">
+                <mat-option [value]="true">Yes</mat-option>
+                <mat-option [value]="false">No</mat-option>
+              </mat-select>
+            </mat-form-field>
+          </div>
+
+          <!-- Cash Back Settings -->
+          <div class="col-12 border-t py-5">
+            <div class="text-2xl font-extrabold tracking-tight leading-none">
+              Cash Back Settings
+            </div>
+          </div>
         </div>
-        <div class="col-12 my-3">
-          <mat-radio-button value="1" class="font-weight-bold"
-            >Upon application approval</mat-radio-button
-          >
-          <br />"No credit line has been set up for your account. You may still
-          place an order; the order will be processed upon approval of your
-          credit terms application."
+
+        <div class="col-12">
+          <mat-form-field appearance="fill" class="w-full">
+            <mat-label> Cash back active</mat-label>
+            <mat-select [formControlName]="'blnCashback'">
+              <mat-option [value]="true">Yes</mat-option>
+              <mat-option [value]="false">No</mat-option>
+            </mat-select>
+          </mat-form-field>
         </div>
-        <div class="col-12 my-3 font-weight-bold">
-          <mat-radio-button value="1"
-            >Net 10 days after delivery date</mat-radio-button
-          >
+        <div class="col-12">
+          <mat-form-field appearance="fill" class="w-full">
+            <mat-label>Percent</mat-label>
+            <input matInput type="number" [formControlName]="'cashbackPercent'" /> %
+          </mat-form-field>
         </div>
-        <div class="col-12 my-3 font-weight-bold">
-          <mat-radio-button value="1">Net 30</mat-radio-button>
+        <div class="col-12">
+          <mat-form-field appearance="fill" class="w-full">
+            <mat-label>Cashback automatically turned on for newly-registered
+              users?</mat-label>
+            <mat-select [formControlName]="'blnRegisteredUsersCashbackDefault'">
+              <mat-option [value]="true">Yes</mat-option>
+              <mat-option [value]="false">No</mat-option>
+            </mat-select>
+          </mat-form-field>
         </div>
-      </mat-radio-group>
+
+        <!-- Default Credit Term -->
+        <div class="col-12 border-t py-5">
+          <div class="text-2xl font-extrabold tracking-tight leading-none">
+            Default Credit Term
+          </div>
+          <div class="my-5">
+            <mat-radio-group aria-label="Select an option">
+              <div class="col-12 my-3 font-weight-bold">
+                <mat-radio-button value="1">None</mat-radio-button>
+              </div>
+              <div class="col-12 my-3">
+                <mat-radio-button class="font-weight-bold" style="color: red" value="1">Expired</mat-radio-button>
+                <br />"Your account's credit terms have expired."
+              </div>
+              <div class="col-12 my-3">
+                <mat-radio-button value="1" class="font-weight-bold">Upon application approval</mat-radio-button>
+                <br />"No credit line has been set up for your account. You may still
+                place an order; the order will be processed upon approval of your
+                credit terms application."
+              </div>
+              <div class="col-12 my-3 font-weight-bold">
+                <mat-radio-button value="1">Net 10 days after delivery date</mat-radio-button>
+              </div>
+              <div class="col-12 my-3 font-weight-bold">
+                <mat-radio-button value="1">Net 30</mat-radio-button>
+              </div>
+            </mat-radio-group>
+          </div>
+        </div>
+
+        <div class="col-12 flex justify-end">
+          <div class="items-center">
+            <div class="flex items-center my-2">
+              <div class="flex items-center mr-4" *ngIf="flashMessage">
+                <ng-container *ngIf="flashMessage === 'success'">
+                  <mat-icon class="text-green-500" [svgIcon]="'heroicons_outline:check'">
+                  </mat-icon>
+                  <span class="ml-2">Store settings updated successfully</span>
+                </ng-container>
+                <ng-container *ngIf="flashMessage === 'error'">
+                  <mat-icon class="text-red-500" [svgIcon]="'heroicons_outline:x'"></mat-icon>
+                  <span class="ml-2">An error occurred, try again!</span>
+                </ng-container>
+              </div>
+              <button class="min-w-40" mat-flat-button [color]="'primary'" [matTooltip]="'Update Store Settings'"
+                (click)="saveChanges()" [disabled]="isStoreSettingsUpdate">
+                <mat-progress-spinner *ngIf="isStoreSettingsUpdate" [diameter]="24" [mode]="'indeterminate'">
+                </mat-progress-spinner>
+                <mat-icon *ngIf="!isStoreSettingsUpdate" svgIcon="mode_edit_outline"></mat-icon>
+                <span *ngIf="!isStoreSettingsUpdate" class="ml-1 mr-1">Save Changes</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
-  </div>
-</div>
-<div class="col-lg-2 col-12 w-full">
-  <!-- Upload button -->
-  <button
-    class="mt-5"
-    mat-flat-button
-    [matTooltip]="'Update Store Settings'"
-    [color]="'primary'"
-  >
-    <span class="px-2">Update Store Settings</span>
-  </button>
+  </form>
 </div>

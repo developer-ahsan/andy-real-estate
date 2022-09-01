@@ -2,9 +2,10 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { BehaviorSubject, Observable, of, throwError } from 'rxjs';
 import { map, switchMap, take, tap } from 'rxjs/operators';
-import { StoreList } from 'app/modules/admin/apps/file-manager/stores.types';
+import { GroupBuy, StoreList, StoreSettings } from 'app/modules/admin/apps/file-manager/stores.types';
 import { environment } from 'environments/environment';
 import { navigations } from './navigation-data';
+import { AuthService } from 'app/core/auth/auth.service';
 
 @Injectable({
     providedIn: 'root'
@@ -14,13 +15,17 @@ export class FileManagerService {
     private _selectedStore: BehaviorSubject<StoreList | null> = new BehaviorSubject(null);
     private _stores: BehaviorSubject<StoreList | null> = new BehaviorSubject(null);
     private _suppliers: BehaviorSubject<any[] | null> = new BehaviorSubject<any[]>(null);
+    private _setting: BehaviorSubject<any[] | null> = new BehaviorSubject<any[]>(null);
 
     public navigationLabels = navigations;
 
     /**
      * Constructor
      */
-    constructor(private _httpClient: HttpClient) {
+    constructor(
+        private _httpClient: HttpClient,
+        private _authService: AuthService
+    ) {
     }
 
     // -----------------------------------------------------------------------------------------------------
@@ -33,6 +38,14 @@ export class FileManagerService {
     get stores$(): Observable<StoreList> {
         return this._stores.asObservable();
     }
+
+    /**
+     * Getter for settings
+     */
+    get settings$(): Observable<any> {
+        return this._setting.asObservable();
+    }
+
 
     /**
      * Getter for items
@@ -245,6 +258,37 @@ export class FileManagerService {
             }
         })
     };
+
+    getStoreSetting(storeID): Observable<any[]> {
+        return this._httpClient.get<any[]>(environment.storeNewUrl, {
+            params: {
+                setting: true,
+                store_id: storeID
+            }
+        }).pipe(
+            tap((response: any) => {
+                this._setting.next(response);
+            })
+        );
+    };
+
+    /**
+     * update wareHouse
+    **/
+    updateStoreSettings(payload: StoreSettings) {
+        const headers = { 'Authorization': `Bearer ${this._authService.accessToken}` };
+        return this._httpClient.put(
+            environment.products, payload, { headers });
+    };
+
+    /**
+     * update wareHouse
+    **/
+    updateGroupOrderSettings(payload: GroupBuy) {
+        const headers = { 'Authorization': `Bearer ${this._authService.accessToken}` };
+        return this._httpClient.put(
+            environment.products, payload, { headers });
+    }
 
     /**
      * Get item by id
