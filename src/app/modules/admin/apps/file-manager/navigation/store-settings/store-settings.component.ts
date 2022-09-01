@@ -37,6 +37,12 @@ export class StoreSettingsComponent implements OnInit, OnDestroy {
   };
   storeSettingsForm: FormGroup;
 
+  mainScreen: string = "Store Settings";
+  screens = [
+    "Store Settings",
+    "Jaggaer Settings"
+  ];
+
   isStoreSettingsUpdate: boolean = false;
   flashMessage: 'success' | 'error' | null = null;
 
@@ -133,6 +139,14 @@ export class StoreSettingsComponent implements OnInit, OnDestroy {
         // Mark for check
         this._changeDetectorRef.markForCheck();
       });
+  };
+
+  calledScreen(screenName): void {
+    this.mainScreen = screenName;
+  };
+
+  callStoreScreen(): void {
+    this.mainScreen = "Store Settings";
   };
 
   saveChanges(): void {

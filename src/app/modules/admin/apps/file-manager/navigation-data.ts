@@ -44,11 +44,11 @@ export const navigations = [
         title: 'Store Settings',
         icon: 'mat_outline:settings',
     },
-    {
-        id: 10,
-        title: 'Jaggaer Settings',
-        icon: 'mat_outline:settings',
-    },
+    // {
+    //     id: 10,
+    //     title: 'Jaggaer Settings',
+    //     icon: 'mat_outline:settings',
+    // },
     {
         id: 11,
         title: 'Group Order Settings',

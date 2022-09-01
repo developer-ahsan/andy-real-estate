@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { BehaviorSubject, Observable, of, throwError } from 'rxjs';
 import { map, switchMap, take, tap } from 'rxjs/operators';
-import { GroupBuy, StoreList, StoreSettings } from 'app/modules/admin/apps/file-manager/stores.types';
+import { AddSurvey, GroupBuy, ShippingNotification, StoreList, StoreSettings } from 'app/modules/admin/apps/file-manager/stores.types';
 import { environment } from 'environments/environment';
 import { navigations } from './navigation-data';
 import { AuthService } from 'app/core/auth/auth.service';
@@ -102,6 +102,25 @@ export class FileManagerService {
                 this._stores.next(response);
             })
         );
+    };
+
+    getStoreByStoreId(storeId): Observable<any[]> {
+        return this._httpClient.get<any[]>(environment.storeNewUrl, {
+            params: {
+                list: true,
+                store_id: storeId
+            }
+        });
+    };
+
+    getSurveysByStoreId(storeId): Observable<any[]> {
+        return this._httpClient.get<any[]>(environment.storeNewUrl, {
+            params: {
+                survey: true,
+                store_id: storeId,
+                size: 20
+            }
+        });
     };
 
     getOfflineProducts(storeID, pageNo): Observable<any[]> {
@@ -278,7 +297,7 @@ export class FileManagerService {
     updateStoreSettings(payload: StoreSettings) {
         const headers = { 'Authorization': `Bearer ${this._authService.accessToken}` };
         return this._httpClient.put(
-            environment.products, payload, { headers });
+            environment.storeNewUrl, payload, { headers });
     };
 
     /**
@@ -287,8 +306,36 @@ export class FileManagerService {
     updateGroupOrderSettings(payload: GroupBuy) {
         const headers = { 'Authorization': `Bearer ${this._authService.accessToken}` };
         return this._httpClient.put(
-            environment.products, payload, { headers });
-    }
+            environment.storeNewUrl, payload, { headers });
+    };
+
+    /**
+     * update wareHouse
+    **/
+    addSurvey(payload: AddSurvey) {
+        const headers = { 'Authorization': `Bearer ${this._authService.accessToken}` };
+        return this._httpClient.post(
+            environment.storeNewUrl, payload, { headers });
+    };
+
+    getShippingNotifications(storeID) {
+        return this._httpClient.get<any[]>(environment.storeNewUrl, {
+            params: {
+                shipping_notification: true,
+                store_id: storeID,
+                size: 20
+            }
+        });
+    };
+
+    /**
+     * update wareHouse
+    **/
+    updateShippingNotifications(payload: ShippingNotification) {
+        const headers = { 'Authorization': `Bearer ${this._authService.accessToken}` };
+        return this._httpClient.put(
+            environment.storeNewUrl, payload, { headers });
+    };
 
     /**
      * Get item by id

@@ -43,8 +43,8 @@
                     <span class="ml-2">An error occurred, try again!</span>
                   </ng-container>
                 </div>
-                <button class="min-w-40" mat-flat-button [color]="'primary'"
-                  [matTooltip]="'Update Group Order Settings'" (click)="saveChanges()" [disabled]="isGroupOrderUpdate">
+                <button class="min-w-40" mat-stroked-button [matTooltip]="'Update Group Order Settings'"
+                  (click)="saveChanges()" [disabled]="isGroupOrderUpdate">
                   <mat-progress-spinner *ngIf="isGroupOrderUpdate" [diameter]="24" [mode]="'indeterminate'">
                   </mat-progress-spinner>
                   <mat-icon *ngIf="!isGroupOrderUpdate" svgIcon="mode_edit_outline"></mat-icon>

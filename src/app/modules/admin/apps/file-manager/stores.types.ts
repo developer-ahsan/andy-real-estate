@@ -86,4 +86,16 @@ export interface GroupBuy {
     bln_groud_order_active: boolean;
     store_id: number;
     group_buy: boolean;
-}
+};
+
+export interface ShippingNotification {
+    store_id: number;
+    bln_notification: boolean;
+    shipping_notification: boolean;
+};
+
+export interface AddSurvey {
+    store_id: number;
+    name: string;
+    survey: boolean
+};
