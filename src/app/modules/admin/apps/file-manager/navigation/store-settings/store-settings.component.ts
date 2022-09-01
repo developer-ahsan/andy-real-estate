@@ -113,21 +113,36 @@ export class StoreSettingsComponent implements OnInit, OnDestroy {
 
     const { pk_storeID } = this.selectedStore;
 
-    // Get the items
-    this._storesManagerService.getStoreSetting(pk_storeID)
+    this._storesManagerService.getStoreByStoreId(pk_storeID)
       .pipe(takeUntil(this._unsubscribeAll))
-      .subscribe((response: any) => {
-        let storeSetting = response["data"][0];
-        this.selectedStore["reportColor"] = `#${this.selectedStore["reportColor"]}`;
-        storeSetting["cashbackPercent"] = storeSetting["cashbackPercent"] * 100;
+      .subscribe((result: any) => {
+        // Get the items
+        this._storesManagerService.getStoreSetting(pk_storeID)
+          .pipe(takeUntil(this._unsubscribeAll))
+          .subscribe((response: any) => {
+            let storeSetting = response["data"][0];
+            let selectedStore = result["data"][0];
+            selectedStore["reportColor"] = `#${selectedStore["reportColor"]}`;
+            storeSetting["cashbackPercent"] = storeSetting["cashbackPercent"] * 100;
 
-        this.storeSettingsForm.patchValue(this.selectedStore);
-        this.storeSettingsForm.patchValue(storeSetting);
+            this.storeSettingsForm.patchValue(selectedStore);
+            this.storeSettingsForm.patchValue(storeSetting);
 
-        this.isStoreFetch = false;
+            this.isStoreFetch = false;
 
-        // Mark for check
-        this._changeDetectorRef.markForCheck();
+            // Mark for check
+            this._changeDetectorRef.markForCheck();
+          }, err => {
+            this._snackBar.open("Some error occured", '', {
+              horizontalPosition: 'center',
+              verticalPosition: 'bottom',
+              duration: 3500
+            });
+            this.isStoreFetch = false;
+
+            // Mark for check
+            this._changeDetectorRef.markForCheck();
+          });
       }, err => {
         this._snackBar.open("Some error occured", '', {
           horizontalPosition: 'center',
@@ -138,7 +153,8 @@ export class StoreSettingsComponent implements OnInit, OnDestroy {
 
         // Mark for check
         this._changeDetectorRef.markForCheck();
-      });
+      })
+
   };
 
   calledScreen(screenName): void {
