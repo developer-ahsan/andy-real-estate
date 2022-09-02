@@ -291,6 +291,27 @@ export class FileManagerService {
         );
     };
 
+    getCampaigns(storeID): Observable<any[]> {
+        return this._httpClient.get<any[]>(environment.storeNewUrl, {
+            params: {
+                campaign: true,
+                store_id: storeID,
+                size: 20
+            }
+        })
+    };
+
+    getCampaignsByPage(storeID, page): Observable<any[]> {
+        return this._httpClient.get<any[]>(environment.storeNewUrl, {
+            params: {
+                campaign: true,
+                store_id: storeID,
+                page: page,
+                size: 20
+            }
+        })
+    };
+
     /**
      * update wareHouse
     **/
