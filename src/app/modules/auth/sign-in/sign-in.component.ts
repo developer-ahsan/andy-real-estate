@@ -71,7 +71,7 @@ export class AuthSignInComponent implements OnInit {
 
         const { email, password } = this.signInForm.getRawValue();
 
-        // Sign in
+        // Sign in callback to avoid timeout
         this._authService.SignInUsingEmailPassword(email, password)
             .then(() => {
                 const { loginMessageNumber } = this._authService;
