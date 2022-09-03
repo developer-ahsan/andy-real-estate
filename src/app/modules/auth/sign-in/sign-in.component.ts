@@ -72,54 +72,54 @@ export class AuthSignInComponent implements OnInit {
         const { email, password } = this.signInForm.getRawValue();
 
         // Sign in
-        this._authService.SignInUsingEmailPassword(email, password);
-        setTimeout(() => {
-            const { loginMessageNumber } = this._authService;
+        this._authService.SignInUsingEmailPassword(email, password)
+            .then(() => {
+                const { loginMessageNumber } = this._authService;
 
-            switch (loginMessageNumber) {
-                case 0: {
-                    // Set the redirect url.
-                    // The '/signed-in-redirect' is a dummy url to catch the request and redirect the user
-                    // to the correct page after a successful sign in. This way, that url can be set via
-                    // routing file and we don't have to touch here.
-                    const redirectURL = this._activatedRoute.snapshot.queryParamMap.get('redirectURL') || '/signed-in-redirect';
+                switch (loginMessageNumber) {
+                    case 0: {
+                        // Set the redirect url.
+                        // The '/signed-in-redirect' is a dummy url to catch the request and redirect the user
+                        // to the correct page after a successful sign in. This way, that url can be set via
+                        // routing file and we don't have to touch here.
+                        const redirectURL = this._activatedRoute.snapshot.queryParamMap.get('redirectURL') || '/signed-in-redirect';
 
-                    // Navigate to the redirect url
-                    this._router.navigateByUrl(redirectURL);
-                    break;
-                }
-                case 1: {
-                    // Re-enable the form
-                    this.signInForm.enable();
+                        // Navigate to the redirect url
+                        this._router.navigateByUrl(redirectURL);
+                        break;
+                    }
+                    case 1: {
+                        // Re-enable the form
+                        this.signInForm.enable();
 
-                    // Set the alert
-                    this.alert = {
-                        type: 'error',
-                        message: 'User is already login'
-                    };
+                        // Set the alert
+                        this.alert = {
+                            type: 'error',
+                            message: 'User is already login'
+                        };
 
-                    // Show the alert
-                    this.showAlert = true
-                    break;
-                }
-                default: {
-                    // Re-enable the form
-                    this.signInForm.enable();
+                        // Show the alert
+                        this.showAlert = true
+                        break;
+                    }
+                    default: {
+                        // Re-enable the form
+                        this.signInForm.enable();
 
-                    // Reset the form
-                    this.signInForm.get('password').reset();
+                        // Reset the form
+                        this.signInForm.get('password').reset();
 
-                    // Set the alert
-                    this.alert = {
-                        type: 'error',
-                        message: 'Wrong email or password'
-                    };
+                        // Set the alert
+                        this.alert = {
+                            type: 'error',
+                            message: 'Wrong email or password'
+                        };
 
-                    // Show the alert
-                    this.showAlert = true;
-                    break;
-                }
-            };
-        }, 1500);
+                        // Show the alert
+                        this.showAlert = true;
+                        break;
+                    }
+                };
+            });
     }
 }
