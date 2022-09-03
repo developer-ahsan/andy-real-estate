@@ -331,6 +331,7 @@ export class InventoryService {
         })
     }
 
+    // Made stores observable
     getAllStores(): Observable<any[]> {
         return this._httpClient.get<any[]>(environment.stores, {
             params: {
@@ -364,6 +365,7 @@ export class InventoryService {
         });
     };
 
+    // Made suppliers observable
     getAllSuppliers(): Observable<any[]> {
         return this._httpClient.get<any[]>(environment.stores, {
             params: {
