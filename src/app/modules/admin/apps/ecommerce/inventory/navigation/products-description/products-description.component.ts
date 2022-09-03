@@ -86,16 +86,9 @@ export class ProductsDescriptionComponent implements OnInit, OnDestroy {
         this._inventoryService.Suppliers$
           .pipe(takeUntil(this._unsubscribeAll))
           .subscribe((supplier) => {
-            if (supplier) {
-              this.suppliers = supplier["data"];
-              this.supplierSelected = this.suppliers.find(x => x.pk_companyID == fk_supplierID);
-              this.isSupplierNotReceived = false;
-
-              // Mark for check
-              this._changeDetectorRef.markForCheck();
-            } else {
-              this.getAllSuppliers(fk_supplierID);
-            };
+            this.suppliers = supplier["data"];
+            this.supplierSelected = this.suppliers.find(x => x.pk_companyID == fk_supplierID);
+            this.isSupplierNotReceived = false;
 
             // Mark for check
             this._changeDetectorRef.markForCheck();

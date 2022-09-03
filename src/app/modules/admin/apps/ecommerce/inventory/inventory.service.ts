@@ -20,7 +20,8 @@ export class InventoryService {
     private _products: BehaviorSubject<ProductsList[] | null> = new BehaviorSubject(null);
     private _tags: BehaviorSubject<InventoryTag[] | null> = new BehaviorSubject(null);
     private _vendors: BehaviorSubject<InventoryVendor[] | null> = new BehaviorSubject(null);
-    private suppliers$: BehaviorSubject<any[] | null> = new BehaviorSubject<any[]>(null);
+    private _suppliers: BehaviorSubject<any[] | null> = new BehaviorSubject<any[]>(null);
+    private _stores: BehaviorSubject<any[] | null> = new BehaviorSubject<any[]>(null);
     public navigationLabels = navigations;
 
     /**
@@ -86,8 +87,12 @@ export class InventoryService {
     };
 
     get Suppliers$(): Observable<any[]> {
-        return this.suppliers$.asObservable();
-    }
+        return this._suppliers.asObservable();
+    };
+
+    get stores$(): Observable<any[]> {
+        return this._stores.asObservable();
+    };
 
     // -----------------------------------------------------------------------------------------------------
     // @ Public methods
@@ -173,7 +178,7 @@ export class InventoryService {
                 description_product: true,
                 product_id: productId
             }
-        });
+        })
     };
 
     getCaseQuantities(productId): Observable<any[]> {
@@ -332,7 +337,11 @@ export class InventoryService {
                 list: true,
                 size: 2000
             }
-        });
+        }).pipe(
+            tap((response: any) => {
+                this._stores.next(response);
+            })
+        );
     };
 
     getProductsBySupplierId(supplierId: string): Observable<any[]> {
@@ -364,7 +373,7 @@ export class InventoryService {
             }
         }).pipe(
             tap((response: any) => {
-                this.suppliers$.next(response);
+                this._suppliers.next(response);
             })
         );
     };
