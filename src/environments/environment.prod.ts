@@ -12,6 +12,11 @@ export const environment = {
     products: "https://consolidus.azurewebsites.net/api/products",
     system: "https://consolidus.azurewebsites.net/api/system",
     productMedia: "https://assets.consolidus.com/globalAssets/Products",
+    storeMedia: "https://assets.consolidus.com/globalAssets/Stores",
+    supportTeam:
+        "https://assets.consolidus.com/globalAssets/System/Defaults/SupportTeam/",
+    featureImage:
+        "https://assets.consolidus.com/globalAssets/Stores/featureImage/",
     firebaseConfig: {
         apiKey: "AIzaSyDdIDmQFMIa3aXSnoudkf3At_zQ9faFs2k",
         authDomain: "consolidus-cinnova.firebaseapp.com",
