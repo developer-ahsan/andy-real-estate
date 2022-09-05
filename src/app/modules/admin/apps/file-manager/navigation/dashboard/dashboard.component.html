@@ -1,32 +1,127 @@
 <div class="row p-3">
-    <div class="col-12 bg-card rounded-2xl shadow mb-5 py-5">
-        <apx-chart [series]="chartOptions.series" [chart]="chartOptions.chart" [xaxis]="chartOptions.xaxis"
-            [dataLabels]="chartOptions.dataLabels" [grid]="chartOptions.grid" [stroke]="chartOptions.stroke"
-            [title]="chartOptions.title"></apx-chart>
-    </div>
+  <div class="col-12 bg-card rounded-2xl shadow mb-5 py-5">
+    <mat-form-field appearance="fill" class="w-full">
+      <mat-label>Go Back</mat-label>
+      <mat-select
+        [(ngModel)]="selectedYear"
+        (selectionChange)="getDashboardGraphsData('historical_store_sales')"
+      >
+        <mat-option *ngFor="let item of yearArray" value="{{ item }}">{{
+          item
+        }}</mat-option>
+      </mat-select>
+    </mat-form-field>
+    <ngx-skeleton-loader
+      *ngIf="isPageLoadingHistory"
+      count="8"
+      appearance="line"
+      animation="pulse"
+    >
+    </ngx-skeleton-loader>
+    <!-- <div class="text-center" *ngIf="isPageLoadingHistory">
+      <div class="spinner-border" role="status">
+        <span class="sr-only">Loading...</span>
+      </div>
+    </div> -->
+    <apx-chart
+      *ngIf="!isPageLoadingHistory"
+      [series]="chartOptions.series"
+      [chart]="chartOptions.chart"
+      [xaxis]="chartOptions.xaxis"
+      [yaxis]="chartOptions.yaxis"
+      [markers]="markers"
+      [colors]="chartOptions.colors"
+      [grid]="chartOptions.grid"
+      [stroke]="chartOptions.stroke"
+      [title]="chartOptions.title"
+    ></apx-chart>
+  </div>
 
-    <div class="col-12 bg-card rounded-2xl shadow mb-5 py-5">
-        <apx-chart [series]="chartOptionsBar.series" [chart]="chartOptionsBar.chart"
-            [dataLabels]="chartOptionsBar.dataLabels" [plotOptions]="chartOptionsBar.plotOptions"
-            [xaxis]="chartOptionsBar.xaxis"></apx-chart>
-    </div>
+  <div class="col-12 bg-card rounded-2xl shadow mb-5 py-5">
+    <ngx-skeleton-loader
+      *ngIf="isPageLoadingYTD"
+      count="8"
+      appearance="line"
+      animation="pulse"
+    >
+    </ngx-skeleton-loader>
+    <apx-chart
+      *ngIf="!isPageLoadingYTD"
+      [series]="chartOptionsBar.series"
+      [chart]="chartOptionsBar.chart"
+      [xaxis]="chartOptionsBar.xaxis"
+      [dataLabels]="chartOptionsBar.dataLabels"
+      [yaxis]="chartOptionsBar.yaxis"
+    ></apx-chart>
+  </div>
 
-    <div class="col-12 bg-card rounded-2xl shadow mb-5 py-5">
-        <apx-chart [series]="chartOptionsOne.series" [chart]="chartOptionsOne.chart" [xaxis]="chartOptionsOne.xaxis"
-            [dataLabels]="chartOptionsOne.dataLabels" [grid]="chartOptionsOne.grid" [stroke]="chartOptionsOne.stroke"
-            [title]="chartOptionsOne.title"></apx-chart>
-    </div>
-
-    <div class="col-12 bg-card rounded-2xl shadow mb-5 py-5">
-        <apx-chart [series]="chartOptionsTwo.series" [chart]="chartOptionsTwo.chart" [xaxis]="chartOptionsTwo.xaxis"
-            [dataLabels]="chartOptionsTwo.dataLabels" [grid]="chartOptionsTwo.grid" [stroke]="chartOptionsTwo.stroke"
-            [title]="chartOptionsTwo.title"></apx-chart>
-    </div>
-
-    <div class="col-12 bg-card rounded-2xl shadow mb-5 py-5">
-        <apx-chart [series]="chartOptionsThree.series" [chart]="chartOptionsThree.chart"
-            [xaxis]="chartOptionsThree.xaxis" [dataLabels]="chartOptionsThree.dataLabels"
-            [grid]="chartOptionsThree.grid" [stroke]="chartOptionsThree.stroke" [title]="chartOptionsThree.title">
+  <div class="col-12 bg-card rounded-2xl shadow mb-5 py-5">
+    <div class="row">
+      <div class="col-md-6 col-12">
+        <ngx-skeleton-loader
+          *ngIf="isPageLoadingSales"
+          count="8"
+          appearance="line"
+          animation="pulse"
+        >
+        </ngx-skeleton-loader>
+        <!-- <div class="text-center" *ngIf="isPageLoadingSales">
+        <div class="spinner-border" role="status">
+          <span class="sr-only">Loading...</span>
+        </div>
+      </div> -->
+        <apx-chart
+          *ngIf="!isPageLoadingSales"
+          [series]="chartOptionsOne.series"
+          [chart]="chartOptionsOne.chart"
+          [xaxis]="chartOptionsOne.xaxis"
+          [grid]="chartOptionsOne.grid"
+          [stroke]="chartOptionsOne.stroke"
+          [title]="chartOptionsOne.title"
+          [yaxis]="chartOptionsOne.yaxis"
+        ></apx-chart>
+      </div>
+      <div class="col-md-6 col-12">
+        <ngx-skeleton-loader
+          *ngIf="isPageLoadingSales"
+          count="8"
+          appearance="line"
+          animation="pulse"
+        >
+        </ngx-skeleton-loader>
+        <apx-chart
+          *ngIf="!isPageLoadingSales"
+          [series]="chartOptionsTwo.series"
+          [chart]="chartOptionsTwo.chart"
+          [xaxis]="chartOptionsTwo.xaxis"
+          [dataLabels]="chartOptionsTwo.dataLabels"
+          [grid]="chartOptionsTwo.grid"
+          [stroke]="chartOptionsTwo.stroke"
+          [yaxis]="chartOptionsTwo.yaxis"
+          [title]="chartOptionsTwo.title"
+        ></apx-chart>
+      </div>
+      <div class="col-md-6 col-12">
+        <ngx-skeleton-loader
+          *ngIf="isPageLoadingSales"
+          count="8"
+          appearance="line"
+          animation="pulse"
+        >
+        </ngx-skeleton-loader>
+        <apx-chart
+          *ngIf="!isPageLoadingSales"
+          [series]="chartOptionsThree.series"
+          [chart]="chartOptionsThree.chart"
+          [xaxis]="chartOptionsThree.xaxis"
+          [dataLabels]="chartOptionsThree.dataLabels"
+          [yaxis]="chartOptionsThree.yaxis"
+          [grid]="chartOptionsThree.grid"
+          [stroke]="chartOptionsThree.stroke"
+          [title]="chartOptionsThree.title"
+        >
         </apx-chart>
+      </div>
     </div>
+  </div>
 </div>
