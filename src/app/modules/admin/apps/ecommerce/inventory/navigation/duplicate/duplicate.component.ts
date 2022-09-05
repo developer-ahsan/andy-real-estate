@@ -5,6 +5,7 @@ import { takeUntil } from 'rxjs/operators';
 import { InventoryService } from 'app/modules/admin/apps/ecommerce/inventory/inventory.service';
 import { FormBuilder, Validators } from '@angular/forms';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-duplicate',
@@ -30,7 +31,8 @@ export class DuplicateComponent implements OnInit, OnDestroy {
     private _changeDetectorRef: ChangeDetectorRef,
     private _formBuilder: FormBuilder,
     private _inventoryService: InventoryService,
-    private _snackBar: MatSnackBar
+    private _snackBar: MatSnackBar,
+    private _router: Router
   ) { }
 
   ngOnInit(): void {
@@ -72,6 +74,9 @@ export class DuplicateComponent implements OnInit, OnDestroy {
         this.duplicateLoader = false;
 
         this.firstFormGroup.reset();
+        const productId = response["product_id"];
+        this._router.navigate([`/apps/ecommerce/inventory/${productId}`]);
+
         // Mark for check
         this._changeDetectorRef.markForCheck();
       }, err => {

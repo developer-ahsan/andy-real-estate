@@ -2,7 +2,7 @@ import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnIni
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { fuseAnimations } from '@fuse/animations';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { FuseMediaWatcherService } from '@fuse/services/media-watcher';
 import { InventoryService } from 'app/modules/admin/apps/ecommerce/inventory/inventory.service';
 import { ProductsDetails } from 'app/modules/admin/apps/ecommerce/inventory/inventory.types';
@@ -44,7 +44,8 @@ export class ProductDetailsComponent implements OnInit, OnDestroy {
     private _inventoryService: InventoryService,
     private _router: Router,
     private _fuseMediaWatcherService: FuseMediaWatcherService,
-    private _snackBar: MatSnackBar
+    private _snackBar: MatSnackBar,
+    private route: ActivatedRoute
   ) {
   }
 
@@ -56,94 +57,98 @@ export class ProductDetailsComponent implements OnInit, OnDestroy {
    * On init
    */
   ngOnInit(): void {
-    const productId = location.pathname.split('/')[4];
+    this.route.params.subscribe(res => {
+      const productId = res.id;
+      this._inventoryService.product$
+        .pipe(takeUntil(this._unsubscribeAll))
+        .subscribe((details) => {
+          if (details) {
+            this.last_updated = details["data"][0]?.lastUpdatedDate
+              ? moment.utc(details["data"][0]?.lastUpdatedDate).format("lll")
+              : 'N/A';
+            this.isProductFetched = false;
 
-    this._inventoryService.product$
-      .pipe(takeUntil(this._unsubscribeAll))
-      .subscribe((details) => {
-        if (details) {
-          this.last_updated = details["data"][0]?.lastUpdatedDate
-            ? moment.utc(details["data"][0]?.lastUpdatedDate).format("lll")
-            : 'N/A';
-          this.isProductFetched = false;
+            this.selectedProduct = details["data"][0];
 
-          this.selectedProduct = details["data"][0];
+            const { fk_supplierID } = this.selectedProduct;
 
-          const { fk_supplierID } = this.selectedProduct;
+            this.routes = this._inventoryService.navigationLabels;
+            const { blnService, blnApparel, blnPromoStandard } = this.selectedProduct;
+            this.promoStandardBoolean = blnPromoStandard;
 
-          this.routes = this._inventoryService.navigationLabels;
-          const { blnService, blnApparel, blnPromoStandard } = this.selectedProduct;
-          this.promoStandardBoolean = blnPromoStandard;
+            if (blnService) {
+              this.routes = this.filterNavigation(this.routes, 'Imprints');
+            };
 
-          if (blnService) {
-            this.routes = this.filterNavigation(this.routes, 'Imprints');
-          };
+            if (!blnApparel) {
+              this.routes = this.filterNavigation(this.routes, 'Sizes')
+            };
 
-          if (!blnApparel) {
-            this.routes = this.filterNavigation(this.routes, 'Sizes')
-          };
+            if (fk_supplierID != 25) {
+              this.routes = this.filterNavigation(this.routes, 'Promostandard colors')
+            };
 
-          if (fk_supplierID != 25) {
-            this.routes = this.filterNavigation(this.routes, 'Promostandard colors')
-          };
+            // Mark for check
+            this._changeDetectorRef.markForCheck();
+          } else {
+            this._inventoryService.getProductByProductId(productId)
+              .pipe(takeUntil(this._unsubscribeAll))
+              .subscribe((product) => {
+                this.last_updated = product["data"][0]?.lastUpdatedDate
+                  ? moment.utc(product["data"][0]?.lastUpdatedDate).format("lll")
+                  : 'N/A';
+                this.isProductFetched = false;
+
+                this.selectedProduct = product["data"][0];
+
+                const { fk_supplierID } = this.selectedProduct;
+
+                this.routes = this._inventoryService.navigationLabels;
+                const { blnService, blnApparel, blnPromoStandard } = this.selectedProduct;
+                this.promoStandardBoolean = blnPromoStandard;
+
+                if (blnService) {
+                  this.routes = this.filterNavigation(this.routes, 'Imprints');
+                };
+
+                if (!blnApparel) {
+                  this.routes = this.filterNavigation(this.routes, 'Sizes')
+                };
+
+                if (fk_supplierID != 25) {
+                  this.routes = this.filterNavigation(this.routes, 'Promostandard colors')
+                };
+
+                // Mark for check
+                this._changeDetectorRef.markForCheck();
+              });
+          }
+        })
+
+
+
+      // Subscribe to media changes
+      this._fuseMediaWatcherService.onMediaChange$
+        .pipe(takeUntil(this._unsubscribeAll))
+        .subscribe(({ matchingAliases }) => {
+
+          // Set the drawerMode and drawerOpened if the given breakpoint is active
+          if (matchingAliases.includes('lg')) {
+            this.drawerMode = 'side';
+            this.drawerOpened = true;
+          }
+          else {
+            this.drawerMode = 'over';
+            this.drawerOpened = false;
+          }
 
           // Mark for check
           this._changeDetectorRef.markForCheck();
-        } else {
-          this._inventoryService.getProductByProductId(productId)
-            .pipe(takeUntil(this._unsubscribeAll))
-            .subscribe((product) => {
-              this.last_updated = product["data"][0]?.lastUpdatedDate
-                ? moment.utc(product["data"][0]?.lastUpdatedDate).format("lll")
-                : 'N/A';
-              this.isProductFetched = false;
-
-              this.selectedProduct = product["data"][0];
-
-              const { fk_supplierID } = this.selectedProduct;
-
-              this.routes = this._inventoryService.navigationLabels;
-              const { blnService, blnApparel, blnPromoStandard } = this.selectedProduct;
-              this.promoStandardBoolean = blnPromoStandard;
-
-              if (blnService) {
-                this.routes = this.filterNavigation(this.routes, 'Imprints');
-              };
-
-              if (!blnApparel) {
-                this.routes = this.filterNavigation(this.routes, 'Sizes')
-              };
-
-              if (fk_supplierID != 25) {
-                this.routes = this.filterNavigation(this.routes, 'Promostandard colors')
-              };
-
-              // Mark for check
-              this._changeDetectorRef.markForCheck();
-            });
-        }
-      })
+        });
+    })
+    // const productId = location.pathname.split('/')[4];
 
 
-
-    // Subscribe to media changes
-    this._fuseMediaWatcherService.onMediaChange$
-      .pipe(takeUntil(this._unsubscribeAll))
-      .subscribe(({ matchingAliases }) => {
-
-        // Set the drawerMode and drawerOpened if the given breakpoint is active
-        if (matchingAliases.includes('lg')) {
-          this.drawerMode = 'side';
-          this.drawerOpened = true;
-        }
-        else {
-          this.drawerMode = 'over';
-          this.drawerOpened = false;
-        }
-
-        // Mark for check
-        this._changeDetectorRef.markForCheck();
-      });
   };
 
   // -----------------------------------------------------------------------------------------------------
