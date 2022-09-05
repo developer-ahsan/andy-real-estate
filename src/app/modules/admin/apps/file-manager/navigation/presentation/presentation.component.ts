@@ -40,6 +40,7 @@ export class PresentationComponent implements OnInit {
     ],
   };
   presentationButtons: string[] = [
+    "Main",
     "Site Color",
     "Masthead",
     "Feature Images",
@@ -90,6 +91,10 @@ export class PresentationComponent implements OnInit {
   featureImagesData: any;
   featureImageUrl = "";
   addNewFeature: boolean = false;
+
+  drawerOpened: boolean = false;
+  selectedIndex: any;
+  drawerMode = "over";
   constructor(
     private _fileManagerService: FileManagerService,
     private _changeDetectorRef: ChangeDetectorRef,
@@ -178,6 +183,7 @@ export class PresentationComponent implements OnInit {
   dataSource = [];
 
   calledScreen(screenName): void {
+    this.drawerOpened = false;
     this.addNewFeature = false;
     this.presentationScreen = screenName;
     if (screenName == "Site Color") {
@@ -265,5 +271,8 @@ export class PresentationComponent implements OnInit {
   }
   addNewFeatureImageToggle() {
     this.addNewFeature = !this.addNewFeature;
+  }
+  toggleDrawer() {
+    this.drawerOpened = !this.drawerOpened;
   }
 }

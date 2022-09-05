@@ -3,31 +3,35 @@
 // The list of file replacements can be found in `angular.json`.
 
 export const environment = {
-    production: false,
-    signInAuth: "https://www.googleapis.com/identitytoolkit/v3/relyingparty/verifyPassword?key=AIzaSyDdIDmQFMIa3aXSnoudkf3At_zQ9faFs2k",
-    mediaKey: "DE3339BDDF8B5D1A6BD3D965D7CCB4B6A7234672505A0023485852397777D05E",
-    mediaAccessUrl: "https://admin.consolidus.com/ssadm/imageUpload.cfm",
-    customerList: "https://consolidus-staging.azurewebsites.net/api/users",
-    customer: "https://consolidus-staging.azurewebsites.net/api/user",
-    orders: "https://consolidus-staging.azurewebsites.net/api/orders",
-    // stores: "https://consolidus-staging.azurewebsites.net/api/stores",
-    stores: "http://localhost:7071/api/stores",
-    storeNewUrl: "https://stores-staging.azurewebsites.net/api/stores",
-    storeNewUrlRapidBuild: "https://stores-staging.azurewebsites.net/api/rapid_build",
-    products: "https://consolidus-staging.azurewebsites.net/api/products",
-    system: "https://consolidus-staging.azurewebsites.net/api/system",
-    productMedia: "https://assets.consolidus.com/globalAssets/Products",
-    storeMedia: "https://assets.consolidus.com/globalAssets/Stores",
-    supportTeam: "https://assets.consolidus.com/globalAssets/System/Defaults/SupportTeam/",
-    featureImage: "https://assets.consolidus.com/globalAssets/Stores/featureImage/",
-    firebaseConfig: {
-        apiKey: "AIzaSyDdIDmQFMIa3aXSnoudkf3At_zQ9faFs2k",
-        authDomain: "consolidus-cinnova.firebaseapp.com",
-        projectId: "consolidus-cinnova",
-        storageBucket: "consolidus-cinnova.appspot.com",
-        messagingSenderId: "187396735094",
-        appId: "1:187396735094:web:4127587a84d92215ec1f57"
-    }
+  production: false,
+  signInAuth:
+    "https://www.googleapis.com/identitytoolkit/v3/relyingparty/verifyPassword?key=AIzaSyDdIDmQFMIa3aXSnoudkf3At_zQ9faFs2k",
+  mediaKey: "DE3339BDDF8B5D1A6BD3D965D7CCB4B6A7234672505A0023485852397777D05E",
+  mediaAccessUrl: "https://admin.consolidus.com/ssadm/imageUpload.cfm",
+  customerList: "https://consolidus-staging.azurewebsites.net/api/users",
+  customer: "https://consolidus-staging.azurewebsites.net/api/user",
+  orders: "https://consolidus-staging.azurewebsites.net/api/orders",
+  stores: "https://consolidus-staging.azurewebsites.net/api/stores",
+  // stores: "http://localhost:7071/api/stores",
+  storeNewUrl: "https://stores-staging.azurewebsites.net/api/stores",
+  storeNewUrlRapidBuild:
+    "https://stores-staging.azurewebsites.net/api/rapid_build",
+  products: "https://consolidus-staging.azurewebsites.net/api/products",
+  system: "https://consolidus-staging.azurewebsites.net/api/system",
+  productMedia: "https://assets.consolidus.com/globalAssets/Products",
+  storeMedia: "https://assets.consolidus.com/globalAssets/Stores",
+  supportTeam:
+    "https://assets.consolidus.com/globalAssets/System/Defaults/SupportTeam/",
+  featureImage:
+    "https://assets.consolidus.com/globalAssets/Stores/featureImage/",
+  firebaseConfig: {
+    apiKey: "AIzaSyDdIDmQFMIa3aXSnoudkf3At_zQ9faFs2k",
+    authDomain: "consolidus-cinnova.firebaseapp.com",
+    projectId: "consolidus-cinnova",
+    storageBucket: "consolidus-cinnova.appspot.com",
+    messagingSenderId: "187396735094",
+    appId: "1:187396735094:web:4127587a84d92215ec1f57",
+  },
 };
 
 /*
