@@ -1,0 +1,123 @@
+<ngx-skeleton-loader count="8" appearance="line" animation="pulse" *ngIf="isLoading">
+</ngx-skeleton-loader>
+<div *ngIf="!isLoading">
+  <fuse-card class="rounded-2xl shadow bg-card flex">
+    <div class="row" style="width: -webkit-fill-available;">
+      <div class="col-12">
+        <div class="p-6 sm:p-8 lg:p-10 w-full">
+          <div class="row">
+            <div class="col-lg-6 col-12 pb-6 sm:pb-8 lg:pb-8">
+              <div class="text-2xl font-bold">
+                Referral Locations
+              </div>
+            </div>
+            <div class="col-12 mb-3">
+              <note class="text-md">
+                If any referral locations exist, the registration form for this store will be altered to allow the
+                customer to choose their referral location. To not show this information on the registration form,
+                remove all referral locations from the list.
+              </note>
+              <fuse-alert class="m-1" [dismissible]="false" [dismissed]="false" [type]="'accent'" [appearance]="'soft'">
+                There are currently no referral locations specified for this store. Please specify them below.
+              </fuse-alert>
+            </div>
+            <div class="col-12 py-6">
+              <form>
+                <div class="text-md font-bold mb-5">
+                  ADD NEW REFERRAL LOCATION
+                </div>
+                <div class="row py-6">
+                  <div class="col-md-4 col-12">
+                    <mat-form-field class="w-full">
+                      <mat-label>Location Name</mat-label>
+                      <input matInput placeholder="Location Name" />
+                    </mat-form-field>
+                  </div>
+                  <div class="col-md-4 col-12">
+                    <mat-form-field class="w-full">
+                      <mat-label>Location State</mat-label>
+                      <mat-select matInput>
+                        <mat-option value="excel">A</mat-option>
+                        <mat-option value="csv">B</mat-option>
+                      </mat-select>
+                    </mat-form-field>
+                  </div>
+                  <div class="col-md-4 col-12">
+                    <mat-form-field class="w-full">
+                      <mat-label>Royalty Percentage (of gross profit per order)</mat-label>
+                      <input matInput placeholder="Royalty Percentage (of gross profit per order)" />
+                    </mat-form-field>
+                  </div>
+                  <div class="col-md-4 col-12">
+                    <mat-form-field class="w-full">
+                      <mat-label>P.O.C. Name</mat-label>
+                      <input matInput placeholder="P.O.C. Name" />
+                    </mat-form-field>
+                  </div>
+                  <div class="col-md-4 col-12">
+                    <mat-form-field class="w-full">
+                      <mat-label>P.O.C. Phone</mat-label>
+                      <input matInput placeholder="P.O.C. Phone" />
+                    </mat-form-field>
+                  </div>
+                  <div class="col-md-4 col-12">
+                    <mat-form-field class="w-full">
+                      <mat-label>P.O.C. Fax</mat-label>
+                      <input matInput placeholder="P.O.C. Fax" />
+                    </mat-form-field>
+                  </div>
+                  <div class="col-md-4 col-12">
+                    <mat-form-field class="w-full">
+                      <mat-label>P.O.C. Email</mat-label>
+                      <input matInput placeholder="P.O.C. Email" />
+                    </mat-form-field>
+                  </div>
+                  <div class="col-md-4 col-12">
+                    <mat-form-field class="w-full">
+                      <mat-label>P.O.C. Address</mat-label>
+                      <input matInput placeholder="P.O.C. Address" />
+                    </mat-form-field>
+                  </div>
+                  <div class="col-md-4 col-12">
+                    <mat-form-field class="w-full">
+                      <mat-label>P.O.C. City</mat-label>
+                      <input matInput placeholder="P.O.C. City" />
+                    </mat-form-field>
+                  </div>
+                  <div class="col-md-4 col-12">
+                    <mat-form-field class="w-full">
+                      <mat-label>P.O.C. State</mat-label>
+                      <mat-select matInput>
+                        <mat-option value="excel">A</mat-option>
+                        <mat-option value="csv">B</mat-option>
+                      </mat-select>
+                    </mat-form-field>
+                  </div>
+                  <div class="col-md-4 col-12">
+                    <mat-form-field class="w-full">
+                      <mat-label>P.O.C. Zip</mat-label>
+                      <input matInput placeholder="P.O.C. Zip" />
+                    </mat-form-field>
+                  </div>
+                  <div class="col-md-4 col-12">
+                    <mat-form-field class="w-full">
+                      <mat-label>Make checks payable to:</mat-label>
+                      <input matInput placeholder="Make checks payable to" />
+                    </mat-form-field>
+                  </div>
+                </div>
+                <div class="row">
+                  <div class="col-md-4 col-12">
+                    <button class="order-first sm:order-last w-full" mat-flat-button [color]="'primary'">
+                      Add refferal location
+                    </button>
+                  </div>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </fuse-card>
+</div>

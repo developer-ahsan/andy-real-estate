@@ -27,7 +27,8 @@ export class PresentationComponent implements OnInit {
   @Input() isLoading: boolean;
   @Output() isLoadingChange = new EventEmitter<boolean>();
   private _unsubscribeAll: Subject<any> = new Subject<any>();
-  presentationScreen: string = "Main";
+
+  presentationScreen: string = "Look & Feel";
   selected = "YES";
   quillModules: any = {
     toolbar: [
@@ -40,7 +41,7 @@ export class PresentationComponent implements OnInit {
     ],
   };
   presentationButtons: string[] = [
-    "Main",
+    "Look & Feel",
     "Site Color",
     "Masthead",
     "Feature Images",
@@ -184,27 +185,29 @@ export class PresentationComponent implements OnInit {
 
   calledScreen(screenName): void {
     this.drawerOpened = false;
-    this.addNewFeature = false;
-    this.presentationScreen = screenName;
-    if (screenName == "Site Color") {
-      this.getScreenData("color", screenName);
-    } else if (screenName == "Social Media") {
-      this.getScreenData("social_media", screenName);
-    } else if (screenName == "News Feed") {
-      this.getScreenData("news_feed", screenName);
-    } else if (screenName == "Special offers") {
-      this.getScreenData("special_offer", screenName);
-    } else if (screenName == "Typekit") {
-      this.getScreenData("type_kit", screenName);
-    } else if (screenName == "Feature Campaign") {
-      this.getScreenData("campaign", screenName);
-    } else if (screenName == "Payment methods") {
-      this.getScreenData("payment_method", screenName);
-    } else if (screenName == "Support Team") {
-      this.getScreenData("support_team", screenName);
-      this.getScreenData("available_support_team", screenName);
-    } else if (screenName == "Feature Images") {
-      this.getScreenData("feature_image", screenName);
+    if (screenName != this.presentationScreen) {
+      this.addNewFeature = false;
+      this.presentationScreen = screenName;
+      if (screenName == "Site Color") {
+        this.getScreenData("color", screenName);
+      } else if (screenName == "Social Media") {
+        this.getScreenData("social_media", screenName);
+      } else if (screenName == "News Feed") {
+        this.getScreenData("news_feed", screenName);
+      } else if (screenName == "Special offers") {
+        this.getScreenData("special_offer", screenName);
+      } else if (screenName == "Typekit") {
+        this.getScreenData("type_kit", screenName);
+      } else if (screenName == "Feature Campaign") {
+        this.getScreenData("campaign", screenName);
+      } else if (screenName == "Payment methods") {
+        this.getScreenData("payment_method", screenName);
+      } else if (screenName == "Support Team") {
+        this.getScreenData("support_team", screenName);
+        this.getScreenData("available_support_team", screenName);
+      } else if (screenName == "Feature Images") {
+        this.getScreenData("feature_image", screenName);
+      }
     }
   }
   getScreenData(value, screen) {

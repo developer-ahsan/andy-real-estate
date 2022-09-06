@@ -156,6 +156,50 @@
                         <app-email-blast [(isLoading)]="isLoading" [selectedStore]="selectedStore">
                         </app-email-blast>
                     </ng-template>
+                    <ng-template [ngIf]="selectedIndex === 'Store Suppliers'">
+                        <app-store-suppliers [(isLoading)]="isLoading" [selectedStore]="selectedStore">
+                        </app-store-suppliers>
+                    </ng-template>
+                    <ng-template [ngIf]="selectedIndex === 'Product Clicks'">
+                        <app-product-clicks [(isLoading)]="isLoading" [selectedStore]="selectedStore">
+                        </app-product-clicks>
+                    </ng-template>
+                    <ng-template [ngIf]="selectedIndex === 'Search History'">
+                        <app-search-history [(isLoading)]="isLoading" [selectedStore]="selectedStore">
+                        </app-search-history>
+                    </ng-template>
+                    <ng-template [ngIf]="selectedIndex === 'User Data File'">
+                        <app-user-data-file [(isLoading)]="isLoading" [selectedStore]="selectedStore">
+                        </app-user-data-file>
+                    </ng-template>
+                    <ng-template [ngIf]="selectedIndex === 'Opt-In Data File'">
+                        <app-opt-in-user-data [(isLoading)]="isLoading" [selectedStore]="selectedStore">
+                        </app-opt-in-user-data>
+                    </ng-template>
+                    <ng-template [ngIf]="selectedIndex === 'Fullfillment Options'">
+                        <app-fulfill-options [(isLoading)]="isLoading" [selectedStore]="selectedStore">
+                        </app-fulfill-options>
+                    </ng-template>
+                    <ng-template [ngIf]="selectedIndex === 'Royalities'">
+                        <app-royalties [(isLoading)]="isLoading" [selectedStore]="selectedStore">
+                        </app-royalties>
+                    </ng-template>
+                    <ng-template [ngIf]="selectedIndex === 'Store Apparel Decorator'">
+                        <app-apparel-decorator [(isLoading)]="isLoading" [selectedStore]="selectedStore">
+                        </app-apparel-decorator>
+                    </ng-template>
+                    <ng-template [ngIf]="selectedIndex === 'Customer Reviews'">
+                        <app-customer-reviews [(isLoading)]="isLoading" [selectedStore]="selectedStore">
+                        </app-customer-reviews>
+                    </ng-template>
+                    <ng-template [ngIf]="selectedIndex === 'Fulfillment Invoices'">
+                        <app-fulfillment-invoices [(isLoading)]="isLoading" [selectedStore]="selectedStore">
+                        </app-fulfillment-invoices>
+                    </ng-template>
+                    <ng-template [ngIf]="selectedIndex === 'Referral Locations'">
+                        <app-referal-locations [(isLoading)]="isLoading" [selectedStore]="selectedStore">
+                        </app-referal-locations>
+                    </ng-template>
                 </div>
             </div>
         </div>

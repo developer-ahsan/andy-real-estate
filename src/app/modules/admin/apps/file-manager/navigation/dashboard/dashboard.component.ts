@@ -104,8 +104,20 @@ export class DashboardComponent implements OnInit {
   isPageLoadingHistory: boolean = false;
   isPageLoadingYTD: boolean = false;
   isPageLoadingSales: boolean = false;
+  isPageLoadingCustomers: boolean = false;
   selectedYear: any = "2017";
   yearArray: any;
+
+  topCustomers: any = [];
+  displayedColumns: string[] = [
+    "cName",
+    "Company",
+    "Total",
+    "Sales",
+    "Email",
+    "Phone",
+  ];
+
   constructor(
     private _fileManagerService: FileManagerService,
     private _changeDetectorRef: ChangeDetectorRef,
@@ -330,6 +342,10 @@ export class DashboardComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    this.isPageLoadingHistory = true;
+    this.isPageLoadingSales = true;
+    this.isPageLoadingYTD = true;
+
     this.isLoadingChange.emit(false);
     this.initialize();
     // Get the stores
@@ -358,6 +374,8 @@ export class DashboardComponent implements OnInit {
       this.isPageLoadingSales = true;
     } else if (value == "ytd_month") {
       this.isPageLoadingYTD = true;
+    } else if (value == "top_customer") {
+      this.isPageLoadingCustomers = true;
     }
     let params = {
       dashboard: true,
@@ -381,7 +399,6 @@ export class DashboardComponent implements OnInit {
             this.chartOptions.colors[1] = "#" + res.data.sales[0].reportColor;
             this.chartOptions.xaxis.categories.push(element.orderDate);
             let earning = this.currencyPipe.transform(element.total, "USD");
-            console.log(earning);
             this.chartOptions.series[0].data.push(element.total);
           });
         } else if (value == "sales_average_margin") {
@@ -419,6 +436,10 @@ export class DashboardComponent implements OnInit {
               this.chartOptionsBar.xaxis.categories = months;
             }
           });
+        } else if (value == "top_customer") {
+          this.topCustomers = [];
+          this.isPageLoadingCustomers = false;
+          this.topCustomers = res["data"];
         }
         this._changeDetectorRef.markForCheck();
       });
@@ -426,9 +447,13 @@ export class DashboardComponent implements OnInit {
   toMonthName(monthNumber) {
     const date = new Date();
     date.setMonth(monthNumber - 1);
-
     return date.toLocaleString("en-US", {
       month: "short",
     });
+  }
+  selectedTabValue(event) {
+    if(event.tab.textLabel == 'Top Customers' && this.topCustomers.length == 0) {
+      this.getDashboardGraphsData("top_customer");
+    }
   }
 }

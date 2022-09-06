@@ -55,6 +55,11 @@ export const navigations = [
         icon: 'mat_outline:settings',
     },
     {
+        id: 111,
+        title: 'Store Apparel Decorator',
+        icon: 'mat_outline:animation',
+    },
+    {
         id: 12,
         title: 'Campaigns',
         icon: 'mat_outline:campaign',

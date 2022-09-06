@@ -78,11 +78,28 @@ export class FileManagerService {
 
   getAllSuppliers(): Observable<any[]> {
     return this._httpClient
-      .get<any[]>(environment.stores, {
+      .get<any[]>('https://consolidus.azurewebsites.net/api/stores', {
         params: {
           supplier: true,
           bln_active: 1,
           size: 2000,
+        },
+      })
+      .pipe(
+        tap((response: any) => {
+          this._suppliers.next(response);
+        })
+      );
+  }
+
+
+  // bln undefined
+  getAllSuppliersBln(size: number): Observable<any[]> {
+    return this._httpClient
+      .get<any[]>('https://consolidus.azurewebsites.net/api/stores', {
+        params: {
+          supplier: true,
+          size: size
         },
       })
       .pipe(
@@ -413,6 +430,12 @@ export class FileManagerService {
       .pipe(retry(3));
   }
   getDashboardData(params) {
+    return this._httpClient
+      .get<any[]>(environment.stores, { params: params })
+      .pipe(retry(3));
+  }
+
+  getStoresData(params) {
     return this._httpClient
       .get<any[]>(environment.stores, { params: params })
       .pipe(retry(3));

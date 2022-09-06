@@ -22,7 +22,8 @@ export const storeRoutes: Route[] = [
                 pathMatch: 'full',
                 component: StoresDetailsComponent,
                 resolve: {
-                    items: FileManagerItemsResolver
+                    items: FileManagerItemsResolver,
+                    suppliers: SupplierResolver
                 }
             }
         ]

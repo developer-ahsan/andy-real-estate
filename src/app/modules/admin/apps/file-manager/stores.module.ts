@@ -43,6 +43,19 @@ import { MatSnackBarModule } from "@angular/material/snack-bar";
 import { FormsModule, ReactiveFormsModule } from "@angular/forms";
 import { MatDialogModule } from "@angular/material/dialog";
 import { FuseAlertModule } from "@fuse/components/alert";
+import { StoreSuppliersComponent } from "./navigation/store-suppliers/store-suppliers.component";
+import { ProductClicksComponent } from "./navigation/product-clicks/product-clicks.component";
+import { SearchHistoryComponent } from "./navigation/search-history/search-history.component";
+import { UserDataFileComponent } from "./navigation/user-data-file/user-data-file.component";
+import { OptInUserDataComponent } from "./navigation/opt-in-user-data/opt-in-user-data.component";
+import { FulfillOptionsComponent } from "./navigation/fulfill-options/fulfill-options.component";
+import { RoyaltiesComponent } from "./navigation/royalties/royalties.component";
+import { ApparelDecoratorComponent } from "./navigation/apparel-decorator/apparel-decorator.component";
+import { NgMultiSelectDropDownModule } from "ng-multiselect-dropdown";
+import { CustomerReviewsComponent } from "./navigation/customer-reviews/customer-reviews.component";
+import { MatTabsModule } from "@angular/material/tabs";
+import { FulfillmentInvoicesComponent } from "./navigation/fulfillment-invoices/fulfillment-invoices.component";
+import { ReferalLocationsComponent } from "./navigation/referal-locations/referal-locations.component";
 
 @NgModule({
   declarations: [
@@ -67,6 +80,17 @@ import { FuseAlertModule } from "@fuse/components/alert";
     SurveysComponent,
     EmailBlastComponent,
     JaggaerSettingsComponent,
+    StoreSuppliersComponent,
+    ProductClicksComponent,
+    SearchHistoryComponent,
+    UserDataFileComponent,
+    OptInUserDataComponent,
+    FulfillOptionsComponent,
+    RoyaltiesComponent,
+    ApparelDecoratorComponent,
+    CustomerReviewsComponent,
+    FulfillmentInvoicesComponent,
+    ReferalLocationsComponent
   ],
   imports: [
     RouterModule.forChild(storeRoutes),
@@ -94,6 +118,8 @@ import { FuseAlertModule } from "@fuse/components/alert";
     FormsModule,
     ReactiveFormsModule,
     FuseAlertModule,
+    NgMultiSelectDropDownModule,
+    MatTabsModule
   ],
 })
 export class StoresModule {}
