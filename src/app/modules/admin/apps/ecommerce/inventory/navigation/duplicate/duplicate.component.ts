@@ -41,18 +41,9 @@ export class DuplicateComponent implements OnInit, OnDestroy {
     private _inventoryService: InventoryService,
     private _snackBar: MatSnackBar,
     private _router: Router
-  ) {}
+  ) { }
 
   ngOnInit(): void {
-    const { pk_productID } = this.selectedProduct;
-    this._inventoryService
-      .getOrderHistoryByProductId(pk_productID)
-      .pipe(takeUntil(this._unsubscribeAll))
-      .subscribe((history) => {
-        this._changeDetectorRef.markForCheck();
-      });
-
-    this.isLoadingChange.emit(false);
   }
 
   addDuplicate(): void {
