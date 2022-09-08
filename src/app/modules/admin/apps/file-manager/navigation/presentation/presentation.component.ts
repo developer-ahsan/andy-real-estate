@@ -15,7 +15,7 @@ import {
 import { MatDialog } from "@angular/material/dialog";
 import { Subject } from "rxjs";
 import { finalize, takeUntil, map } from "rxjs/operators";
-import { FileManagerService } from "../../file-manager.service";
+import { FileManagerService } from "../../store-manager.service";
 import { environment } from "environments/environment";
 @Component({
   selector: "app-presentation",
@@ -101,7 +101,7 @@ export class PresentationComponent implements OnInit {
     private _changeDetectorRef: ChangeDetectorRef,
     private _matDialog: MatDialog,
     private formBuilder: FormBuilder
-  ) {}
+  ) { }
 
   ngOnInit(): void {
     this.isLoadingChange.emit(false);

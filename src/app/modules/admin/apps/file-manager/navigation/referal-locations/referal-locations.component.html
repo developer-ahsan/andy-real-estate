@@ -1,9 +1,18 @@
-<ngx-skeleton-loader count="8" appearance="line" animation="pulse" *ngIf="isLoading">
+<ngx-skeleton-loader count="8" appearance="line" animation="pulse" *ngIf="dataSourceLoading">
 </ngx-skeleton-loader>
-<div *ngIf="!isLoading">
+<div class="row py-2 overflow-auto" *ngIf="!dataSourceLoading">
+  <div class="col-12">
+    <mat-button-toggle-group #group="matButtonToggleGroup" [value]="mainScreen" (change)="calledScreen(group.value)">
+      <mat-button-toggle *ngFor="let buttonValue of screens" value="{{buttonValue}}">
+        {{ buttonValue }}
+      </mat-button-toggle>
+    </mat-button-toggle-group>
+  </div>
+</div>
+<div *ngIf="!dataSourceLoading">
   <fuse-card class="rounded-2xl shadow bg-card flex">
     <div class="row" style="width: -webkit-fill-available;">
-      <div class="col-12">
+      <div class="col-12" *ngIf="mainScreen == 'Referral Locations'">
         <div class="p-6 sm:p-8 lg:p-10 w-full">
           <div class="row">
             <div class="col-lg-6 col-12 pb-6 sm:pb-8 lg:pb-8">
@@ -17,15 +26,123 @@
                 customer to choose their referral location. To not show this information on the registration form,
                 remove all referral locations from the list.
               </note>
-              <fuse-alert class="m-1" [dismissible]="false" [dismissed]="false" [type]="'accent'" [appearance]="'soft'">
+              <fuse-alert *ngIf="dataSource.length == 0" class="m-1" [dismissible]="false" [dismissed]="false"
+                [type]="'accent'" [appearance]="'soft'">
                 There are currently no referral locations specified for this store. Please specify them below.
               </fuse-alert>
             </div>
+            <div class="col-12 h-full " *ngIf="dataSource.length > 0">
+              <mat-accordion [formGroup]="contactForm">
+                <mat-expansion-panel *ngFor="let item of dataSource; let i=index" (opened)="panelOpenState = true"
+                  (closed)="panelOpenState = false">
+                  <mat-expansion-panel-header>
+                    <mat-panel-title class="text:lg font-bold">
+                      {{item.name}}
+                    </mat-panel-title>
+                  </mat-expansion-panel-header>
+                  <div formArrayName="contacts">
+                    <div class="row" [formGroupName]="i">
+                      <div class="col-md-3">
+                        <mat-form-field class="w-full">
+                          <mat-label>Location Name</mat-label>
+                          <input matInput type="text" formControlName="name">
+                        </mat-form-field>
+                      </div>
+                      <div class="col-md-3">
+                        <mat-form-field class="w-full">
+                          <mat-label>Location State</mat-label>
+                          <input matInput type="text" formControlName="name">
+                        </mat-form-field>
+                      </div>
+                      <div class="col-md-3">
+                        <mat-form-field class="w-full">
+                          <mat-label>Royalty Percentage</mat-label>
+                          <input matInput type="text" formControlName="percentage">
+                        </mat-form-field>
+                      </div>
+                      <div class="col-md-3">
+                        <mat-form-field class="w-full">
+                          <mat-label>Make Checks Payable To</mat-label>
+                          <input matInput type="text" formControlName="checkPayableTo">
+                        </mat-form-field>
+                      </div>
+                      <div class="col-md-3">
+                        <mat-form-field class="w-full">
+                          <mat-label>P.O.C. Name</mat-label>
+                          <input matInput type="text" formControlName="contactName">
+                        </mat-form-field>
+                      </div>
+                      <div class="col-md-3">
+                        <mat-form-field class="w-full">
+                          <mat-label>P.O.C. Phone</mat-label>
+                          <input matInput type="text" formControlName="contactPhone">
+                        </mat-form-field>
+                      </div>
+                      <div class="col-md-3">
+                        <mat-form-field class="w-full">
+                          <mat-label>P.O.C. Fax</mat-label>
+                          <input matInput type="text" formControlName="contactFax">
+                        </mat-form-field>
+                      </div>
+                      <div class="col-md-3">
+                        <mat-form-field class="w-full">
+                          <mat-label>P.O.C. Email</mat-label>
+                          <input matInput type="text" formControlName="contactEmail">
+                        </mat-form-field>
+                      </div>
+                      <div class="col-md-3">
+                        <mat-form-field class="w-full">
+                          <mat-label>P.O.C. Address</mat-label>
+                          <input matInput type="text" formControlName="contactAddress">
+                        </mat-form-field>
+                      </div>
+                      <div class="col-md-3">
+                        <mat-form-field class="w-full">
+                          <mat-label>P.O.C. City</mat-label>
+                          <input matInput type="text" formControlName="contactCity">
+                        </mat-form-field>
+                      </div>
+                      <div class="col-md-3">
+                        <mat-form-field class="w-full">
+                          <mat-label>P.O.C. State</mat-label>
+                          <input matInput type="text" formControlName="contactState">
+                        </mat-form-field>
+                      </div>
+                      <div class="col-md-3">
+                        <mat-form-field class="w-full">
+                          <mat-label>P.O.C. Zip</mat-label>
+                          <input matInput type="text" formControlName="contactZip">
+                        </mat-form-field>
+                      </div>
+                      <div class="col-md-12 flex justify-end">
+                        <button class="w-full md:w-50 lg:w-50 mr-2" mat-stroked-button [matTooltip]="'Update'">
+                          <!-- <mat-progress-spinner *ngIf="isPageLoading" [diameter]="24" [mode]="'indeterminate'"></mat-progress-spinner> -->
+                          <span class="ml-2 mr-1">Update</span>
+                        </button>
+                        <button class="w-full md:w-50 lg:w-50" mat-stroked-button [matTooltip]="'Remove'">
+                          <!-- <mat-progress-spinner *ngIf="isPageLoading" [diameter]="24" [mode]="'indeterminate'"></mat-progress-spinner> -->
+                          <span class="ml-2 mr-1">Remove</span>
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                </mat-expansion-panel>
+              </mat-accordion>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- Add New Referral Location -->
+      <div class="col-12" *ngIf="mainScreen == 'Add New Referral Location'">
+        <div class="p-6 sm:p-8 lg:p-10 w-full">
+          <div class="row">
+            <div class="col-lg-6 col-12 pb-6 sm:pb-8 lg:pb-8">
+              <div class="text-2xl font-bold">
+                Add New Referral Location
+              </div>
+            </div>
             <div class="col-12 py-6">
               <form>
-                <div class="text-md font-bold mb-5">
-                  ADD NEW REFERRAL LOCATION
-                </div>
                 <div class="row py-6">
                   <div class="col-md-4 col-12">
                     <mat-form-field class="w-full">
@@ -107,8 +224,9 @@
                   </div>
                 </div>
                 <div class="row">
-                  <div class="col-md-4 col-12">
-                    <button class="order-first sm:order-last w-full" mat-flat-button [color]="'primary'">
+                  <div class="col-md-12 col-12 flex justify-end">
+                    <button c class="w-full md:w-50 lg:w-50" mat-stroked-button mat-flat-button
+                      [matTooltip]="'Add refferal location'">
                       Add refferal location
                     </button>
                   </div>

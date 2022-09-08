@@ -1,6 +1,6 @@
-<ngx-skeleton-loader count="8" appearance="line" animation="pulse" *ngIf="isLoading">
+<ngx-skeleton-loader count="8" appearance="line" animation="pulse" *ngIf="isPageLoading">
 </ngx-skeleton-loader>
-<div *ngIf="!isLoading">
+<div *ngIf="!isPageLoading">
   <fuse-card class="rounded-2xl shadow bg-card flex">
     <div class="row" style="width: -webkit-fill-available;">
       <div class="col-12">
@@ -13,32 +13,86 @@
               <note class="text-md text-gray-400">NOTE: These settings only apply to fulfillment orders.</note>
             </div>
             <div class="col-12 pt-6">
-              <form>
+              <form [formGroup]="optionForm">
                 <div class="row">
                   <div class="col-md-6 col-12">
                     <mat-form-field class="w-full">
                       <mat-label>Require fulfillment event name and date during checkout?</mat-label>
-                      <mat-select matInput>
-                        <mat-option value="yes">Yes</mat-option>
-                        <mat-option value="no">No</mat-option>
+                      <mat-select matInput formControlName="blnEvent">
+                        <mat-option [value]="true">Yes</mat-option>
+                        <mat-option [value]="false">No</mat-option>
                       </mat-select>
                     </mat-form-field>
                   </div>
-                </div>
-                <div class="row">
                   <div class="col-md-6 col-12">
                     <mat-form-field class="w-full">
                       <mat-label>Default Billing Address for Fulfillment Orders?</mat-label>
-                      <mat-select matInput>
-                        <mat-option value="yes">Yes</mat-option>
-                        <mat-option value="no">No</mat-option>
+                      <mat-select matInput formControlName="blnBilling">
+                        <mat-option [value]="true">Yes</mat-option>
+                        <mat-option [value]="false">No</mat-option>
                       </mat-select>
                     </mat-form-field>
                   </div>
                 </div>
                 <div class="row">
                   <div class="col-md-4 col-12">
-                    <button class="order-first sm:order-last w-full" mat-flat-button [color]="'primary'">
+                    <mat-form-field class="w-full">
+                      <mat-label>Company Name</mat-label>
+                      <input matInput type="text" formControlName="billingCompanyName">
+                    </mat-form-field>
+                  </div>
+                  <div class="col-md-4 col-12">
+                    <mat-form-field class="w-full">
+                      <mat-label>First Name</mat-label>
+                      <input matInput type="text" formControlName="billingFirstName">
+                    </mat-form-field>
+                  </div>
+                  <div class="col-md-4 col-12">
+                    <mat-form-field class="w-full">
+                      <mat-label>Last Name</mat-label>
+                      <input matInput type="text" formControlName="billingLastName">
+                    </mat-form-field>
+                  </div>
+                  <div class="col-md-4 col-12">
+                    <mat-form-field class="w-full">
+                      <mat-label>Address</mat-label>
+                      <input matInput type="text" formControlName="billingAddress">
+                    </mat-form-field>
+                  </div>
+                  <div class="col-md-4 col-12">
+                    <mat-form-field class="w-full">
+                      <mat-label>City</mat-label>
+                      <input matInput type="text" formControlName="billingCity">
+                    </mat-form-field>
+                  </div>
+                  <div class="col-md-4 col-12">
+                    <mat-form-field class="w-full">
+                      <mat-label>State</mat-label>
+                      <input matInput type="text" formControlName="billingState">
+                    </mat-form-field>
+                  </div>
+                  <div class="col-md-4 col-12">
+                    <mat-form-field class="w-full">
+                      <mat-label>ZipCode</mat-label>
+                      <input matInput type="text" formControlName="billingZip">
+                    </mat-form-field>
+                  </div>
+                  <div class="col-md-4 col-12">
+                    <mat-form-field class="w-full">
+                      <mat-label>Phone</mat-label>
+                      <input matInput type="text" formControlName="billingPhone">
+                    </mat-form-field>
+                  </div>
+                  <div class="col-md-4 col-12">
+                    <mat-form-field class="w-full">
+                      <mat-label>Email</mat-label>
+                      <input matInput type="text" formControlName="billingEmail">
+                    </mat-form-field>
+                  </div>
+                </div>
+                <div class="row">
+                  <div class="col-12 flex justify-end">
+                    <button [matTooltip]="'Update'" class="w-full md:w-50 lg:w-50" mat-stroked-button mat-flat-button>
                       Update
                     </button>
                   </div>

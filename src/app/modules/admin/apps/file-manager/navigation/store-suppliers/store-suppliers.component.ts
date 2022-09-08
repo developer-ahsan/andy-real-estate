@@ -1,6 +1,6 @@
 import { Component, Input, Output, OnInit, EventEmitter, ChangeDetectorRef } from '@angular/core';
 import { Subject } from 'rxjs';
-import { FileManagerService } from 'app/modules/admin/apps/file-manager/file-manager.service';
+import { FileManagerService } from 'app/modules/admin/apps/file-manager/store-manager.service';
 import { takeUntil } from 'rxjs/operators';
 import { MatSnackBar } from '@angular/material/snack-bar';
 
@@ -37,26 +37,26 @@ export class StoreSuppliersComponent implements OnInit {
       store_id: this.selectedStore.pk_storeID
     }
     this._fileManagerService.getStoresData(params)
-    .pipe(takeUntil(this._unsubscribeAll))
-    .subscribe((response: any) => {
-      this.dataSource = response["data"];
-      this.dataSource.forEach(element => {
-        this.totalProductsCount = this.totalProductsCount + element.productCount;
-      });
-      this.dataSourceLoading = false;
-      this._changeDetectorRef.markForCheck();
-    })
+      .pipe(takeUntil(this._unsubscribeAll))
+      .subscribe((response: any) => {
+        this.dataSource = response["data"];
+        this.dataSource.forEach(element => {
+          this.totalProductsCount = this.totalProductsCount + element.productCount;
+        });
+        this.dataSourceLoading = false;
+        this._changeDetectorRef.markForCheck();
+      })
   }
   calculatePercentage(item, index) {
-    let percentage = (item.productCount/this.totalProductsCount)*100;
+    let percentage = (item.productCount / this.totalProductsCount) * 100;
     item.percentage = percentage;
-    if(index == this.dataSource.length -1 ) {
+    if (index == this.dataSource.length - 1) {
       this.totalSumPercentage();
     }
     return percentage.toFixed(2);
   }
   totalSumPercentage() {
-    if(this.totalPercentage ==0) {
+    if (this.totalPercentage == 0) {
       this.dataSource.forEach(element => {
         this.totalPercentage = this.totalPercentage + element.percentage;
       });

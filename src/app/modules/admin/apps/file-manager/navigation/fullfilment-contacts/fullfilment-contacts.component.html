@@ -1,0 +1,174 @@
+<ngx-skeleton-loader count="8" appearance="line" animation="pulse" *ngIf="isPageLoading">
+</ngx-skeleton-loader>
+<div *ngIf="!isPageLoading">
+  <fuse-card class="rounded-2xl shadow bg-card flex">
+    <div class="row" style="width: -webkit-fill-available;">
+      <div class="col-12">
+        <div class="p-6 sm:p-8 lg:p-10 w-full">
+          <div class="row">
+            <div class="col-lg-6 col-12 pb-6 sm:pb-8 lg:pb-8">
+              <div class="text-2xl font-bold">
+                Add New Contact
+              </div>
+            </div>
+            <div class="col-12 pt-2">
+              <form>
+                <div class="row">
+                  <div class="col-md-6 col-12">
+                    <mat-form-field class="w-full">
+                      <mat-label>Primary</mat-label>
+                      <mat-select matInput>
+                        <mat-option value="yes">Yes</mat-option>
+                        <mat-option value="no">No</mat-option>
+                      </mat-select>
+                    </mat-form-field>
+                  </div>
+                  <div class="col-md-6 col-12">
+                    <mat-form-field class="w-full">
+                      <mat-label>User</mat-label>
+                      <mat-select matInput>
+                        <mat-option value="{{item.pk_userID}}" *ngFor="let item of usersData">({{item.pk_userID}}) -
+                          {{item.firstName + ' ' + item.lastName + ' ' + item.email}}</mat-option>
+                      </mat-select>
+                    </mat-form-field>
+                  </div>
+                  <div class="col-md-6 col-12">
+                    <mat-form-field class="w-full">
+                      <mat-label>Location</mat-label>
+                      <mat-select matInput>
+                        <mat-option value="no">No Location</mat-option>
+                        <mat-option value="{{item.pk_attributeID}}" *ngFor="let item of locationsData">
+                          {{item.attributeName}}</mat-option>
+                      </mat-select>
+                    </mat-form-field>
+                  </div>
+                  <div class="col-md-6 col-12">
+                    <mat-form-field class="w-full">
+                      <mat-label>Revised Invoices</mat-label>
+                      <mat-select matInput>
+                        <mat-option value="yes">Yes</mat-option>
+                        <mat-option value="no">No</mat-option>
+                      </mat-select>
+                    </mat-form-field>
+                  </div>
+                  <div class="col-md-12 col-12 flex justify-end">
+                    <button class="w-full md:w-50 lg:w-50" mat-stroked-button mat-flat-button
+                      [matTooltip]="'Add Contact'">
+                      Add Contact
+                    </button>
+                  </div>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </fuse-card>
+  <fuse-card class="rounded-2xl shadow bg-card flex mt-3">
+    <div class="row" style="width: -webkit-fill-available;">
+      <div class="col-12">
+        <div class="p-6 sm:p-8 lg:p-10 w-full">
+          <div class="row">
+            <div class="col-lg-6 col-12 pb-6 sm:pb-8 lg:pb-8">
+              <div class="text-2xl font-bold">
+                Fulfillment Contacts
+              </div>
+            </div>
+            <div class="col-12 h-full ">
+              <ng-container *ngIf="dataSource.length > 0; else noRecords">
+                <form [formGroup]="contactForm">
+                  <table mat-table [dataSource]="dataSource" class="w-full">
+                    <div class="color-blue" formArrayName="contacts">
+                      <!-- ID Column -->
+                      <ng-container matColumnDef="Primary">
+                        <th class="min-w-10 bg-gray-50 dark:bg-black dark:bg-opacity-5" mat-header-cell
+                          *matHeaderCellDef>
+                          Primary
+                        </th>
+                        <td mat-cell *matCellDef="let element;let i=index" [formGroupName]="i">
+                          <mat-checkbox [checked]="element.blnPrimary" formControlName="primary" class="example-margin">
+                          </mat-checkbox>
+                        </td>
+                      </ng-container>
+
+                      <!-- Name Column -->
+                      <ng-container matColumnDef="User">
+                        <th class="min-w-30 bg-gray-50 dark:bg-black dark:bg-opacity-5" mat-header-cell
+                          *matHeaderCellDef>
+                          User
+                        </th>
+                        <td mat-cell *matCellDef="let element;let i=index" [formGroupName]="i">
+                          <mat-form-field class="min-w-90 mt-2">
+                            <mat-select matInput formControlName="user">
+                              <mat-option [value]="item.pfk_userID" *ngFor="let item of usersData">
+                                ({{item.pk_userID}}) -
+                                {{item.firstName + ' ' + item.lastName + ' ' + item.email}}</mat-option>
+                            </mat-select>
+                          </mat-form-field>
+                        </td>
+                      </ng-container>
+
+                      <!-- Status Column -->
+                      <ng-container matColumnDef="Location">
+                        <th class="min-w-30 bg-gray-50 dark:bg-black dark:bg-opacity-5" mat-header-cell
+                          *matHeaderCellDef>
+                          Location
+                        </th>
+                        <td mat-cell *matCellDef="let element;let i=index" [formGroupName]="i">
+                          <mat-form-field class="min-w-50 mt-2">
+                            <mat-select matInput formControlName="location">
+                              <mat-option value="no">No Location</mat-option>
+                              <mat-option value="{{item.attributeName}}" *ngFor="let item of locationsData">
+                                {{item.attributeName}}</mat-option>
+                            </mat-select>
+                          </mat-form-field>
+                        </td>
+                      </ng-container>
+                      <ng-container matColumnDef="Revised">
+                        <th class="min-w-20 bg-gray-50 dark:bg-black dark:bg-opacity-5" mat-header-cell
+                          *matHeaderCellDef>
+                          Revised Invoices
+                        </th>
+                        <td mat-cell *matCellDef="let element;let i=index" [formGroupName]="i" class="text-center">
+                          <mat-checkbox [checked]="element.blnRevisedInvoices" formControlName="revised"
+                            class="example-margin"></mat-checkbox>
+                        </td>
+                      </ng-container>
+                      <ng-container matColumnDef="Action">
+                        <th class="min-w-10 bg-gray-50 dark:bg-black dark:bg-opacity-5" mat-header-cell
+                          *matHeaderCellDef>
+                          Action
+                        </th>
+                        <td mat-cell *matCellDef="let element;">
+                          <div class="flex justify-between">
+                            <button [matTooltip]="'Save Changes'" mat-icon-button
+                              aria-label="Example icon button with a vertical three dot icon">
+                              <mat-icon>done</mat-icon>
+                            </button>
+                            <button [matTooltip]="'Remove'" mat-icon-button
+                              aria-label="Example icon button with a vertical three dot icon">
+                              <mat-icon>close</mat-icon>
+                            </button>
+                          </div>
+                        </td>
+                      </ng-container>
+                    </div>
+                    <tr mat-header-row class="h-16 shadow bg-card" *matHeaderRowDef="displayedColumns"></tr>
+                    <tr mat-row class="hover:bg-gray-100 dark:hover:bg-hover" style="cursor: pointer;"
+                      *matRowDef="let row; columns: displayedColumns"></tr>
+                  </table>
+                </form>
+              </ng-container>
+              <ng-template #noRecords>
+                <div class="font-semibold tracking-tight text-center">
+                  <p>There are currenty no fulfillment contacts defined for this store.</p>
+                </div>
+              </ng-template>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </fuse-card>
+</div>

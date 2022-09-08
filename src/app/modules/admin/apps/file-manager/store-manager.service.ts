@@ -20,6 +20,8 @@ export class FileManagerService {
   // Private
   private _selectedStore: BehaviorSubject<StoreList | null> =
     new BehaviorSubject(null);
+  private _storeDetails: BehaviorSubject<StoreList | null> =
+    new BehaviorSubject(null);
   private _stores: BehaviorSubject<StoreList | null> = new BehaviorSubject(
     null
   );
@@ -38,7 +40,7 @@ export class FileManagerService {
   constructor(
     private _httpClient: HttpClient,
     private _authService: AuthService
-  ) {}
+  ) { }
 
   // -----------------------------------------------------------------------------------------------------
   // @ Accessors
@@ -71,6 +73,12 @@ export class FileManagerService {
   get item$(): Observable<StoreList> {
     return this._selectedStore.asObservable();
   }
+  /**
+     * Getter for item
+     */
+  get storeDetail$(): Observable<StoreList> {
+    return this._storeDetails.asObservable();
+  }
 
   // -----------------------------------------------------------------------------------------------------
   // @ Public methods
@@ -78,7 +86,7 @@ export class FileManagerService {
 
   getAllSuppliers(): Observable<any[]> {
     return this._httpClient
-      .get<any[]>('https://consolidus.azurewebsites.net/api/stores', {
+      .get<any[]>(environment.stores, {
         params: {
           supplier: true,
           bln_active: 1,
@@ -96,7 +104,7 @@ export class FileManagerService {
   // bln undefined
   getAllSuppliersBln(size: number): Observable<any[]> {
     return this._httpClient
-      .get<any[]>('https://consolidus.azurewebsites.net/api/stores', {
+      .get<any[]>(environment.stores, {
         params: {
           supplier: true,
           size: size
@@ -132,7 +140,8 @@ export class FileManagerService {
       .pipe(
         tap((response: any) => {
           this._stores.next(response);
-        })
+        }),
+        retry(3)
       );
   }
 
@@ -142,7 +151,11 @@ export class FileManagerService {
         list: true,
         store_id: storeId,
       },
-    });
+    }).pipe(
+      tap((response: any) => {
+        this._storeDetails.next(response);
+      })
+    );
   }
 
   getSurveysByStoreId(storeId): Observable<any[]> {
@@ -438,6 +451,11 @@ export class FileManagerService {
   getStoresData(params) {
     return this._httpClient
       .get<any[]>(environment.stores, { params: params })
+      .pipe(retry(3));
+  }
+  puttStoresData(params) {
+    return this._httpClient
+      .put<any[]>(environment.stores, { params: params })
       .pipe(retry(3));
   }
 }

@@ -4,7 +4,7 @@ import { MatDrawer } from '@angular/material/sidenav';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { FuseMediaWatcherService } from '@fuse/services/media-watcher';
-import { FileManagerService } from 'app/modules/admin/apps/file-manager/file-manager.service';
+import { FileManagerService } from 'app/modules/admin/apps/file-manager/store-manager.service';
 import { Item, Items, StoreList } from 'app/modules/admin/apps/file-manager/stores.types';
 
 @Component({

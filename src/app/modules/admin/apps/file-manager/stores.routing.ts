@@ -1,8 +1,8 @@
 import { Route } from '@angular/router';
-import { FileManagerComponent } from 'app/modules/admin/apps/file-manager/file-manager.component';
+import { FileManagerComponent } from 'app/modules/admin/apps/file-manager/store-manager.component';
 import { StoresListComponent } from 'app/modules/admin/apps/file-manager/list/list.component';
 import { StoresDetailsComponent } from 'app/modules/admin/apps/file-manager/details/details.component';
-import { FileManagerItemsResolver, SupplierResolver } from 'app/modules/admin/apps/file-manager/file-manager.resolvers';
+import { FileManagerItemsResolver, StoreDetailsByID, SupplierResolver } from 'app/modules/admin/apps/file-manager/store-manager.resolvers';
 
 export const storeRoutes: Route[] = [
     {
@@ -23,7 +23,8 @@ export const storeRoutes: Route[] = [
                 component: StoresDetailsComponent,
                 resolve: {
                     items: FileManagerItemsResolver,
-                    suppliers: SupplierResolver
+                    suppliers: SupplierResolver,
+                    storeByID: StoreDetailsByID
                 }
             }
         ]

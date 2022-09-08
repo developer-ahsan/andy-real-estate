@@ -23,7 +23,7 @@ import {
   ApexPlotOptions,
 } from "ng-apexcharts";
 import { takeUntil } from "rxjs/operators";
-import { FileManagerService } from "../../file-manager.service";
+import { FileManagerService } from "../../store-manager.service";
 import { CurrencyPipe } from "@angular/common";
 
 export type ChartOptions = {
@@ -452,7 +452,7 @@ export class DashboardComponent implements OnInit {
     });
   }
   selectedTabValue(event) {
-    if(event.tab.textLabel == 'Top Customers' && this.topCustomers.length == 0) {
+    if (event.tab.textLabel == 'Top Customers' && this.topCustomers.length == 0) {
       this.getDashboardGraphsData("top_customer");
     }
   }

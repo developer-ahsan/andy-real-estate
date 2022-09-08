@@ -5,15 +5,16 @@ import { takeUntil } from 'rxjs/operators';
 import { MatSnackBar } from '@angular/material/snack-bar';
 
 @Component({
-  selector: 'app-offline-products',
-  templateUrl: './offline-products.component.html'
+  selector: 'app-margins',
+  templateUrl: './margins.component.html',
 })
-export class OfflineProductsComponent implements OnInit {
+export class MarginsComponent implements OnInit {
+
   @Input() selectedStore: any;
   @Input() isLoading: boolean;
   @Output() isLoadingChange = new EventEmitter<boolean>();
   private _unsubscribeAll: Subject<any> = new Subject<any>();
-  displayedColumns: string[] = ['pk_storeProductID', 'productName', 'blnStoreActive'];
+  displayedColumns: string[] = ['frequency', '1', '2', '3', '4', '5', '6', 'Action'];
   dataSource = [];
   duplicatedDataSource = [];
   dataSourceTotalRecord: number;

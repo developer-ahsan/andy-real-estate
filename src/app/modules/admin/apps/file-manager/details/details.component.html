@@ -176,7 +176,7 @@
                         <app-opt-in-user-data [(isLoading)]="isLoading" [selectedStore]="selectedStore">
                         </app-opt-in-user-data>
                     </ng-template>
-                    <ng-template [ngIf]="selectedIndex === 'Fullfillment Options'">
+                    <ng-template [ngIf]="selectedIndex === 'Fulfillment Options'">
                         <app-fulfill-options [(isLoading)]="isLoading" [selectedStore]="selectedStore">
                         </app-fulfill-options>
                     </ng-template>
@@ -199,6 +199,26 @@
                     <ng-template [ngIf]="selectedIndex === 'Referral Locations'">
                         <app-referal-locations [(isLoading)]="isLoading" [selectedStore]="selectedStore">
                         </app-referal-locations>
+                    </ng-template>
+                    <ng-template [ngIf]="selectedIndex === 'Fulfillment Contacts'">
+                        <app-fullfilment-contacts [(isLoading)]="isLoading" [selectedStore]="selectedStore">
+                        </app-fullfilment-contacts>
+                    </ng-template>
+                    <ng-template [ngIf]="selectedIndex === 'Margins'">
+                        <app-margins [(isLoading)]="isLoading" [selectedStore]="selectedStore">
+                        </app-margins>
+                    </ng-template>
+                    <ng-template [ngIf]="selectedIndex === 'Inventory Summary'">
+                        <app-inventory-summary [(isLoading)]="isLoading" [selectedStore]="selectedStore">
+                        </app-inventory-summary>
+                    </ng-template>
+                    <ng-template [ngIf]="selectedIndex === 'Cost Center Codes'">
+                        <app-cost-center-code [(isLoading)]="isLoading" [selectedStore]="selectedStore">
+                        </app-cost-center-code>
+                    </ng-template>
+                    <ng-template [ngIf]="selectedIndex === 'Locations'">
+                        <app-locations [(isLoading)]="isLoading" [selectedStore]="selectedStore">
+                        </app-locations>
                     </ng-template>
                 </div>
             </div>

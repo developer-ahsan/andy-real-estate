@@ -1,12 +1,14 @@
 import { Component, Input, Output, OnInit, EventEmitter, ChangeDetectorRef } from '@angular/core';
 import { Subject } from 'rxjs';
-import { FileManagerService } from 'app/modules/admin/apps/file-manager/file-manager.service';
+import { FileManagerService } from 'app/modules/admin/apps/file-manager/store-manager.service';
 import { takeUntil } from 'rxjs/operators';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { FormArray, FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 
 @Component({
   selector: 'app-campaigns',
-  templateUrl: './campaigns.component.html'
+  templateUrl: './campaigns.component.html',
+  styles: ['::ng-deep {.ql-container {height: auto}}']
 })
 export class CampaignsComponent implements OnInit {
   @Input() selectedStore: any;
@@ -44,6 +46,7 @@ export class CampaignsComponent implements OnInit {
     "Display Order"
   ];
 
+  updateFeatureLoading: boolean = false;
   constructor(
     private _storeManagerService: FileManagerService,
     private _changeDetectorRef: ChangeDetectorRef,
@@ -54,7 +57,8 @@ export class CampaignsComponent implements OnInit {
     this.dataSourceLoading = true;
     this.getFirstCall();
   };
-
+  initialize() {
+  }
   getFirstCall() {
     const { pk_storeID } = this.selectedStore;
 
@@ -120,5 +124,26 @@ export class CampaignsComponent implements OnInit {
   calledScreen(screenName): void {
     this.mainScreen = screenName;
   };
+
+  updateFeature() {
+    this.updateFeatureLoading = true;
+    let checkArray = []
+    this.dataSource.forEach(element => {
+      if (element.blnFeature) {
+        checkArray.push(element.pk_campaignID)
+      }
+    });
+    let params = {
+      store_id: this.selectedStore.pk_storeID,
+      campaign_ids: checkArray.toString(),
+      bln_feature: true
+    }
+    this._storeManagerService.puttStoresData(params)
+      .pipe(takeUntil(this._unsubscribeAll))
+      .subscribe(res => {
+        this.updateFeatureLoading = false;
+        this._changeDetectorRef.markForCheck();
+      })
+  }
 
 }

@@ -1,7 +1,7 @@
 import { Component, Input, Output, OnInit, EventEmitter, ChangeDetectorRef } from '@angular/core';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
-import { FileManagerService } from '../../file-manager.service';
+import { FileManagerService } from '../../store-manager.service';
 
 @Component({
   selector: 'app-jaggaer-settings',

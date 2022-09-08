@@ -1,0 +1,54 @@
+<ngx-skeleton-loader count="8" appearance="line" animation="pulse" *ngIf="isPageLoading">
+</ngx-skeleton-loader>
+<div *ngIf="!isPageLoading">
+  <fuse-card class="rounded-2xl shadow bg-card flex">
+    <div class="row" style="width: -webkit-fill-available;">
+      <div class="col-12">
+        <div class="p-6 sm:p-8 lg:p-10 w-full">
+          <div class="row">
+            <div class="col-lg-6 col-12 pb-6 sm:pb-8 lg:pb-8">
+              <div class="text-2xl font-bold">
+                Cost Center Codes
+              </div>
+            </div>
+            <div class="col-12 pt-6">
+              <div class="text-lg mb-2">Add New Cost Center Code</div>
+              <form>
+                <div class="row flex">
+                  <div class="col-md-6 col-12">
+                    <mat-form-field class="w-full">
+                      <input matInput type="text">
+                    </mat-form-field>
+                  </div>
+                  <div class="col-md-2 col-12">
+                    <button [matTooltip]="'Add'" class="w-full md:w-20 lg:w-20" mat-stroked-button mat-flat-button>
+                      Add
+                    </button>
+                  </div>
+                </div>
+              </form>
+            </div>
+            <div class="col-12 pt-6">
+              <div class="row mt-2 border-b" *ngFor="let item of dataSource">
+                <div class="col-md-8">
+                  <mat-form-field class="w-full">
+                    <input matInput type="text" [value]="item.code">
+                  </mat-form-field>
+                </div>
+                <div class="col-md-4 flex justify-end">
+                  <button [matTooltip]="'Update'" class="w-full md:w-50 lg:w-50 mr-1" mat-stroked-button
+                    mat-flat-button>
+                    Update
+                  </button>
+                  <button [matTooltip]="'Remove'" class="w-full md:w-50 lg:w-50" mat-stroked-button mat-flat-button>
+                    Remove
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </fuse-card>
+</div>

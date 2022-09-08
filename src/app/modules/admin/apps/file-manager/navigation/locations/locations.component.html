@@ -1,0 +1,180 @@
+<ngx-skeleton-loader count="8" appearance="line" animation="pulse" *ngIf="dataSourceLoading">
+</ngx-skeleton-loader>
+<div *ngIf="!dataSourceLoading">
+  <div *ngIf="!isLoading">
+    <fuse-card class="rounded-2xl shadow bg-card flex pb-10">
+      <div class="row" style="width: -webkit-fill-available;">
+        <div class="col-12">
+          <div class="p-6 sm:p-8 lg:p-10 w-full row">
+            <div class="text-2xl font-bold col-lg-6 col-12">
+              Locations
+            </div>
+            <div class="col-lg-6 col-12 flex md:justify-end">
+              <p *ngIf="!isAddLocation" (click)="toggleAddLocation()"
+                class="text-md cursor-pointer font-medium text-primary-500 hover:text-primary-900">
+                Add Location Attribute
+              </p>
+              <p *ngIf="isAddLocation" (click)="toggleAddLocation()"
+                class="text-md cursor-pointer font-medium text-primary-500 hover:text-primary-900">
+                Close Location Attribute
+              </p>
+            </div>
+            <div class="col-12 pt-6" *ngIf="isAddLocation">
+              <note class="text-md">A location attribute would be a type of top-level location, such as a
+                "department,"
+                "campus," "branch," etc.</note>
+              <form class="mt-2">
+                <div class="row flex">
+                  <div class="col-md-6 col-12">
+                    <mat-form-field class="w-full">
+                      <input matInput type="text" placeholder="Location attribute name">
+                    </mat-form-field>
+                  </div>
+                  <div class="col-md-2 col-12">
+                    <button [matTooltip]="'Add Attribute'" class="w-full md:w-50 lg:w-50" mat-stroked-button
+                      mat-flat-button>
+                      Add Attribute
+                    </button>
+                  </div>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+
+
+        <div class="col-12 h-full">
+          <ng-container *ngIf="dataSource.length > 0; else noRecords">
+            <table mat-table [dataSource]="dataSource" class="w-full" [multiTemplateDataRows]="true">
+              <div class="color-blue">
+                <!-- categoryName Column -->
+                <ng-container matColumnDef="categoryName">
+                  <th class="min-w-15 bg-gray-50 dark:bg-black dark:bg-opacity-5" mat-header-cell *matHeaderCellDef>
+                    Attribute Name
+                  </th>
+                  <td mat-cell *matCellDef="let element"> {{
+                    element.attributeName }}</td>
+                </ng-container>
+                <ng-container matColumnDef="isRecommended">
+                  <th class="min-w-10 bg-gray-50 dark:bg-black dark:bg-opacity-5 text-center" mat-header-cell
+                    *matHeaderCellDef>
+                    Locations
+                  </th>
+                  <td mat-cell *matCellDef="let element" class="text-center">
+                    5
+                  </td>
+                </ng-container>
+
+                <!-- isBestSeller Column -->
+                <ng-container matColumnDef="isBestSeller">
+                  <th class="min-w-10 bg-gray-50 dark:bg-black dark:bg-opacity-5 text-center" mat-header-cell
+                    *matHeaderCellDef>
+                    Users
+                  </th>
+                  <td mat-cell *matCellDef="let element" class="text-center">
+                    0
+                  </td>
+                </ng-container>
+
+                <!-- isTopRated Column -->
+                <ng-container matColumnDef="isTopRated">
+                  <th class="min-w-10 bg-gray-50 dark:bg-black dark:bg-opacity-5 text-center" mat-header-cell
+                    *matHeaderCellDef>
+                    Action
+                  </th>
+                  <td mat-cell *matCellDef="let element" class="text-center">
+                    <button [matTooltip]="'Remove'" mat-icon-button
+                      aria-label="Example icon button with a vertical three dot icon">
+                      <mat-icon>close</mat-icon>
+                    </button>
+                  </td>
+                </ng-container>
+
+                <!-- subCategories Column -->
+                <ng-container matColumnDef="subCategories">
+                  <th class="min-w-40 text-center bg-gray-50 dark:bg-black dark:bg-opacity-5" mat-header-cell
+                    *matHeaderCellDef>
+                    Sub Locations
+                  </th>
+                  <td class="text-center" mat-cell *matCellDef="let element">
+                    <button class="min-w-10 min-h-7 h-7 px-2 leading-6" mat-stroked-button
+                      (click)="openedAccordion(element)">
+                      <mat-icon class="icon-size-5"
+                        [svgIcon]="selectedCategory?.pk_attributeID == element?.pk_attributeID ? 'heroicons_solid:chevron-up' : 'heroicons_solid:chevron-down'">
+                      </mat-icon>
+                    </button>
+                  </td>
+                </ng-container>
+
+                <!-- Sub categories row -->
+                <ng-container matColumnDef="SubCategoriesList">
+                  <td class="p-0 border-b-0" mat-cell *matCellDef="let element"
+                    [attr.colspan]="displayedColumns.length">
+                    <div class="shadow-lg overflow-hidden"
+                      [@expandCollapse]="selectedCategory?.pk_attributeID == element?.pk_attributeID ? 'expanded' : 'collapsed'">
+                      <div class="row bg-hover p-5 font-semibold" *ngIf="!subCategoriesLoader">
+                        <div class="col-6">
+                          Location Name
+                        </div>
+                        <div class="col-3">
+                          Users
+                        </div>
+                        <div class="col-3">
+                          Action
+                        </div>
+                      </div>
+
+                      <div class="p-5" *ngIf="!subCategoriesLoader && subCategories.length">
+                        <div class="row pb-1 border-b-1" *ngFor="let item of subCategories; let last = last">
+                          <div class="col-6">
+                            {{item.locationName}}
+                          </div>
+                          <div class="col-3">
+                            0
+                          </div>
+                          <div class="col-3">
+                            <button [matTooltip]="'Remove'" mat-icon-button
+                              aria-label="Example icon button with a vertical three dot icon">
+                              <mat-icon>close</mat-icon>
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+
+
+
+                      <div class="p-5 border-b" *ngIf="!subCategoriesLoader && !subCategories.length">
+                        <div class="row">
+                          <div class="col-12">
+                            No Sublocation found
+                          </div>
+                        </div>
+                      </div>
+
+                      <div class="m-3" *ngIf="subCategoriesLoader">
+                        <ngx-skeleton-loader count="3" appearance="line" animation="pulse" *ngIf="subCategoriesLoader">
+                        </ngx-skeleton-loader>
+                      </div>
+                    </div>
+                  </td>
+                </ng-container>
+
+              </div>
+
+              <tr class="shadow" mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+              <tr mat-row class="cursor-pointer" *matRowDef="let row; columns: displayedColumns"></tr>
+              <tr class="h-0 border-b-1" mat-row *matRowDef="let row; columns: ['SubCategoriesList']">
+              </tr>
+
+            </table>
+          </ng-container>
+          <ng-template #noRecords>
+            <div class="font-semibold tracking-tight text-center">
+              <p>No record found</p>
+            </div>
+          </ng-template>
+        </div>
+      </div>
+    </fuse-card>
+  </div>
+</div>

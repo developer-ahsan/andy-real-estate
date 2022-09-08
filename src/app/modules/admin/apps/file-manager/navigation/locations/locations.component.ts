@@ -2,18 +2,17 @@ import { Component, Input, Output, OnInit, EventEmitter, ChangeDetectorRef, View
 import { Subject } from 'rxjs';
 import { FileManagerService } from 'app/modules/admin/apps/file-manager/store-manager.service';
 import { takeUntil } from 'rxjs/operators';
-import { fuseAnimations } from '@fuse/animations';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { fuseAnimations } from '@fuse/animations';
 
 @Component({
-  selector: 'app-product-categories',
-  templateUrl: './product-categories.component.html',
+  selector: 'app-locations',
+  templateUrl: './locations.component.html',
   encapsulation: ViewEncapsulation.None,
   changeDetection: ChangeDetectionStrategy.OnPush,
   animations: fuseAnimations
 })
-
-export class ProductCategoriesComponent implements OnInit {
+export class LocationsComponent implements OnInit {
   @Input() selectedStore: any;
   @Input() isLoading: boolean;
   @Output() isLoadingChange = new EventEmitter<boolean>();
@@ -33,7 +32,7 @@ export class ProductCategoriesComponent implements OnInit {
 
   activeProductsSum;
   productsCount;
-
+  isAddLocation: boolean = false
   constructor(
     private _fileManagerService: FileManagerService,
     private _changeDetectorRef: ChangeDetectorRef,
@@ -42,15 +41,17 @@ export class ProductCategoriesComponent implements OnInit {
 
   ngOnInit(): void {
     this.dataSourceLoading = true;
-    this.getFirstCall(this.page);
+    this.getLocations();
     this.isLoadingChange.emit(false);
   };
 
-  getFirstCall(page) {
-    const { pk_storeID } = this.selectedStore;
-
+  getLocations() {
+    let params = {
+      store_id: this.selectedStore.pk_storeID,
+      store_locations: true
+    }
     // Get the offline products
-    this._fileManagerService.getStoreCategory(pk_storeID, page)
+    this._fileManagerService.getStoresData(params)
       .pipe(takeUntil(this._unsubscribeAll))
       .subscribe((response: any) => {
         this.dataSource = response["data"];
@@ -58,11 +59,6 @@ export class ProductCategoriesComponent implements OnInit {
         this.dataSourceTotalRecord = response["totalRecords"];
         this.dataSourceLoading = false;
         this.paginatedLoading = false;
-
-        // Mark for check
-        this._changeDetectorRef.markForCheck();
-      }, err => {
-        this.getFirstCall(1);
 
         // Mark for check
         this._changeDetectorRef.markForCheck();
@@ -123,10 +119,10 @@ export class ProductCategoriesComponent implements OnInit {
   }
 
   openedAccordion(data): void {
-    const { pk_categoryID } = data;
+    const { pk_attributeID, attributeName } = data;
 
     // If the customer is already selected...
-    if (this.selectedCategory && this.selectedCategory.pk_categoryID === pk_categoryID) {
+    if (this.selectedCategory && this.selectedCategory.pk_attributeID === pk_attributeID) {
       // Close the details
       this.closeDetails();
       return;
@@ -137,32 +133,52 @@ export class ProductCategoriesComponent implements OnInit {
 
     this.subCategoriesLoader = true;
 
+    let params = {
+      store_id: this.selectedStore.pk_storeID,
+      store_locations: true,
+      sub_locations: attributeName
+    }
     // Get the offline products
-    this._fileManagerService.getStoreSubCategory(pk_categoryID)
+    this._fileManagerService.getStoresData(params)
       .pipe(takeUntil(this._unsubscribeAll))
       .subscribe((response: any) => {
         this.subCategories = response["data"];
         this.subCategoriesLoader = false;
-
-        if (this.subCategories.length) {
-          this.activeProductsSum = this.subCategories.map(item => item.activeProductCount).reduce((prev, next) => prev + next);
-          this.productsCount = this.subCategories.map(item => item.productCount).reduce((prev, next) => prev + next);
-        };
-
-        // Mark for check
-        this._changeDetectorRef.markForCheck();
-      }, err => {
-        this._snackBar.open("Some error occured", '', {
-          horizontalPosition: 'center',
-          verticalPosition: 'bottom',
-          duration: 3500
-        });
-        this.subCategories = [];
-        this.subCategoriesLoader = false;
+        this.paginatedLoading = false;
 
         // Mark for check
         this._changeDetectorRef.markForCheck();
       });
+    // Get the offline products
+    // this._fileManagerService.getStoreSubCategory(pk_categoryID)
+    //   .pipe(takeUntil(this._unsubscribeAll))
+    //   .subscribe((response: any) => {
+    //     this.subCategories = response["data"];
+    //     this.subCategoriesLoader = false;
+
+    //     if (this.subCategories.length) {
+    //       this.activeProductsSum = this.subCategories.map(item => item.activeProductCount).reduce((prev, next) => prev + next);
+    //       this.productsCount = this.subCategories.map(item => item.productCount).reduce((prev, next) => prev + next);
+    //     };
+
+    //     // Mark for check
+    //     this._changeDetectorRef.markForCheck();
+    //   }, err => {
+    //     this._snackBar.open("Some error occured", '', {
+    //       horizontalPosition: 'center',
+    //       verticalPosition: 'bottom',
+    //       duration: 3500
+    //     });
+    //     this.subCategories = [];
+    //     this.subCategoriesLoader = false;
+
+    //     // Mark for check
+    //     this._changeDetectorRef.markForCheck();
+    //   });
+  }
+
+  toggleAddLocation() {
+    this.isAddLocation = !this.isAddLocation;
   }
 
 }

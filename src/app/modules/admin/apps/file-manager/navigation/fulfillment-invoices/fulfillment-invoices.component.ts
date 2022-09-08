@@ -1,6 +1,6 @@
 import { Component, Input, Output, OnInit, EventEmitter, ChangeDetectorRef } from '@angular/core';
 import { Subject } from 'rxjs';
-import { FileManagerService } from 'app/modules/admin/apps/file-manager/file-manager.service';
+import { FileManagerService } from 'app/modules/admin/apps/file-manager/store-manager.service';
 import { takeUntil } from 'rxjs/operators';
 import { MatSnackBar } from '@angular/material/snack-bar';
 
@@ -14,7 +14,7 @@ export class FulfillmentInvoicesComponent implements OnInit {
   @Input() isLoading: boolean;
   @Output() isLoadingChange = new EventEmitter<boolean>();
   private _unsubscribeAll: Subject<any> = new Subject<any>();
-  displayedColumns: string[] = ['pk_storeProductID', 'productName', 'blnStoreActive'];
+  displayedColumns: string[] = ['id', 'date', 'status'];
   dataSource = [];
   duplicatedDataSource = [];
   dataSourceTotalRecord: number;
@@ -32,10 +32,22 @@ export class FulfillmentInvoicesComponent implements OnInit {
 
   ngOnInit(): void {
     this.dataSourceLoading = true;
-    this.getFirstCall(1);
+    this.getInvoiceData();
     this.isLoadingChange.emit(false);
   };
-
+  getInvoiceData() {
+    let params = {
+      store_id: this.selectedStore.pk_storeID,
+      fulfillment_invoice: true
+    }
+    this._fileManagerService.getStoresData(params)
+      .pipe(takeUntil(this._unsubscribeAll))
+      .subscribe(res => {
+        this.dataSourceLoading = false;
+        this.dataSource = res["data"];
+        this._changeDetectorRef.markForCheck();
+      })
+  }
   getFirstCall(page) {
     const { pk_storeID } = this.selectedStore;
 

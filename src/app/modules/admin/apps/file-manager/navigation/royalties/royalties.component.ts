@@ -1,5 +1,8 @@
-import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { ChangeDetectorRef, Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { FormControl, FormGroup } from '@angular/forms';
+import { MatSnackBar } from '@angular/material/snack-bar';
 import { Subject } from 'rxjs';
+import { FileManagerService } from '../../store-manager.service';
 
 @Component({
   selector: 'app-royalties',
@@ -22,9 +25,17 @@ export class RoyaltiesComponent implements OnInit {
       ["clean"],
     ],
   };
-  constructor() { }
+
+  royalityForm: FormGroup;
+  constructor(
+    private _fileManagerService: FileManagerService,
+    private _changeDetectorRef: ChangeDetectorRef,
+    private _snackBar: MatSnackBar
+  ) { }
 
   ngOnInit() {
+    this.royalityForm = new FormGroup({
+    })
   }
 
 }

@@ -4,7 +4,7 @@ import { IDropdownSettings } from 'ng-multiselect-dropdown';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { InventoryService } from '../../../ecommerce/inventory/inventory.service';
-import { FileManagerService } from '../../file-manager.service';
+import { FileManagerService } from '../../store-manager.service';
 @Component({
   selector: 'app-apparel-decorator',
   templateUrl: './apparel-decorator.component.html'
@@ -19,21 +19,21 @@ export class ApparelDecoratorComponent implements OnInit {
   dropdownList = [];
   dropdownSettings: IDropdownSettings = {
     // singleSelection: true,
-      idField: 'companyName',
-      textField: 'companyName',
-      enableCheckAll: false,
-      selectAllText: 'Select All',
-      unSelectAllText: 'Unselect All',
-      allowSearchFilter: true,
-      limitSelection: 1,
-      clearSearchFilter: true,
-      maxHeight: 197,
-      itemsShowLimit: 5,
-      searchPlaceholderText: 'Search Suppliers',
-      noDataAvailablePlaceholderText: 'No Data Available',
-      closeDropDownOnSelection: false,
-      showSelectedItemsAtTop: false,
-      defaultOpen: false,
+    idField: 'companyName',
+    textField: 'companyName',
+    enableCheckAll: false,
+    selectAllText: 'Select All',
+    unSelectAllText: 'Unselect All',
+    allowSearchFilter: true,
+    limitSelection: 1,
+    clearSearchFilter: true,
+    maxHeight: 197,
+    itemsShowLimit: 5,
+    searchPlaceholderText: 'Search Suppliers',
+    noDataAvailablePlaceholderText: 'No Data Available',
+    closeDropDownOnSelection: false,
+    showSelectedItemsAtTop: false,
+    defaultOpen: false,
   };
   selectedItems = [];
 
@@ -50,25 +50,25 @@ export class ApparelDecoratorComponent implements OnInit {
     this.getSuppliers();
   }
   getSuppliers() {
-    this.dropdownList.push({companyName: 'NONE - Use master product level imprint settings'})
+    this.dropdownList.push({ companyName: 'NONE - Use master product level imprint settings' })
     this._fileManagerService.suppliers$
-    .pipe(takeUntil(this._unsubscribeAll))
-    .subscribe(res => {
-      this.totalSuppliers = res.totalRecords;
-    })
+      .pipe(takeUntil(this._unsubscribeAll))
+      .subscribe(res => {
+        this.totalSuppliers = res.totalRecords;
+      })
     this._fileManagerService.getAllSuppliersBln(this.totalSuppliers)
-    .pipe(takeUntil(this._unsubscribeAll))
-    .subscribe(res => {
-      this.isPageLoading = false;
-      res["data"].forEach(element => {
-        this.dropdownList.push(element);
-      });
-      // this.dropdownList = res["data"];
-      this._changeDetectorRef.markForCheck();
-    })
+      .pipe(takeUntil(this._unsubscribeAll))
+      .subscribe(res => {
+        this.isPageLoading = false;
+        res["data"].forEach(element => {
+          this.dropdownList.push(element);
+        });
+        // this.dropdownList = res["data"];
+        this._changeDetectorRef.markForCheck();
+      })
   }
   onItemSelect(item: any) {
     const { pk_companyID, companyName } = item;
-};
+  };
 
 }

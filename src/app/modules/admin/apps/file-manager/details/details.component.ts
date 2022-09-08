@@ -8,7 +8,7 @@ import {
 } from "@angular/core";
 import { Subject } from "rxjs";
 import { takeUntil } from "rxjs/operators";
-import { FileManagerService } from "app/modules/admin/apps/file-manager/file-manager.service";
+import { FileManagerService } from "app/modules/admin/apps/file-manager/store-manager.service";
 import moment from "moment";
 import { FuseMediaWatcherService } from "@fuse/services/media-watcher";
 import { Router } from "@angular/router";
@@ -43,7 +43,7 @@ export class StoresDetailsComponent implements OnInit, OnDestroy {
     private _fuseMediaWatcherService: FuseMediaWatcherService,
     private _storesManagerService: FileManagerService,
     private _router: Router
-  ) {}
+  ) { }
 
   // -----------------------------------------------------------------------------------------------------
   // @ Lifecycle hooks
