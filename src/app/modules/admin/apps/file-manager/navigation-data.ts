@@ -119,16 +119,16 @@ export const navigations = [
         title: 'Opt-In Data File',
         icon: 'mat_outline:data_saver_on'
     },
-    // {
-    //     id: 24,
-    //     title: 'Customer Reviews',
-    //     icon: 'mat_outline:reviews',
-    // },
     {
-        id: 25,
-        title: 'Fulfillment Contacts',
-        icon: 'mat_outline:contacts',
+        id: 24,
+        title: 'Customer Reviews',
+        icon: 'mat_outline:reviews',
     },
+    // {
+    //     id: 25,
+    //     title: 'Fulfillment Contacts',
+    //     icon: 'mat_outline:contacts',
+    // },
     // {
     //     id: 26,
     //     title: 'Fulfillment Invoices',

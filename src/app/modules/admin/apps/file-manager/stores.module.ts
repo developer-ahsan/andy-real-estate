@@ -61,6 +61,9 @@ import { MarginsComponent } from "./navigation/margins/margins.component";
 import { InventorySummaryComponent } from "./navigation/inventory-summary/inventory-summary.component";
 import { CostCenterCodeComponent } from "./navigation/cost-center-code/cost-center-code.component";
 import { LocationsComponent } from "./navigation/locations/locations.component";
+import { CreditTermsComponent } from "./navigation/credit-terms/credit-terms.component";
+import { StorePlanComponent } from "./navigation/store-plan/store-plan.component";
+import { StudentOrgComponent } from "./navigation/student-org/student-org.component";
 
 @NgModule({
   declarations: [
@@ -100,7 +103,10 @@ import { LocationsComponent } from "./navigation/locations/locations.component";
     MarginsComponent,
     InventorySummaryComponent,
     CostCenterCodeComponent,
-    LocationsComponent
+    LocationsComponent,
+    CreditTermsComponent,
+    StorePlanComponent,
+    StudentOrgComponent
   ],
   imports: [
     RouterModule.forChild(storeRoutes),

@@ -220,6 +220,18 @@
                         <app-locations [(isLoading)]="isLoading" [selectedStore]="selectedStore">
                         </app-locations>
                     </ng-template>
+                    <ng-template [ngIf]="selectedIndex === 'Blanket Credit Terms'">
+                        <app-credit-terms [(isLoading)]="isLoading" [selectedStore]="selectedStore">
+                        </app-credit-terms>
+                    </ng-template>
+                    <ng-template [ngIf]="selectedIndex === 'Store Plan/Strategies'">
+                        <app-store-plan [(isLoading)]="isLoading" [selectedStore]="selectedStore">
+                        </app-store-plan>
+                    </ng-template>
+                    <ng-template [ngIf]="selectedIndex === 'Student orgs'">
+                        <app-student-org [(isLoading)]="isLoading" [selectedStore]="selectedStore">
+                        </app-student-org>
+                    </ng-template>
                 </div>
             </div>
         </div>

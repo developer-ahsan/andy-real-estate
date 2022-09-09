@@ -1,27 +1,11 @@
-<mat-drawer-container
-  class="sub-nav-component bg-light"
-  autosize
-  *ngIf="!isLoading"
->
-  <mat-drawer
-    #drawer
-    class="sub-sidenav bg-light"
-    [mode]="drawerMode"
-    [opened]="drawerOpened"
-  >
+<mat-drawer-container class="sub-nav-component bg-light" autosize *ngIf="!isLoading">
+  <mat-drawer #drawer class="sub-sidenav bg-light" [mode]="drawerMode" [opened]="drawerOpened">
     <div *ngFor="let buttonValue of presentationButtons">
-      <button
-        style="padding: 15px"
-        [style.background-color]="
+      <button style="padding: 15px" [style.background-color]="
           buttonValue == presentationScreen ? '#d4d7dd' : 'transparent'
-        "
-        [ngClass]="
+        " [ngClass]="
           buttonValue == presentationScreen ? 'opacity-100' : 'opacity-80'
-        "
-        mat-button
-        class="w-full my-1 mr-2 justify-content-start"
-        (click)="calledScreen(buttonValue)"
-      >
+        " mat-button class="w-full my-1 mr-2 justify-content-start" (click)="calledScreen(buttonValue)">
         <!-- <mat-icon svgIcon="{{route.icon}}" class="icon-size-5 text-primary"></mat-icon> -->
         <span style="font-size: 13px; font-weight: bold; margin-left: 10px">
           {{ buttonValue }}
@@ -32,20 +16,11 @@
 
   <div class="sub-sidenav-content bg-light p-2">
     <div class="flex justify-content-between">
-      <mat-icon
-        class="subnav-menu-icon ml-1"
-        svgIcon="heroicons_outline:menu"
-        (click)="toggleDrawer()"
-      >
+      <mat-icon class="subnav-menu-icon ml-1" svgIcon="heroicons_outline:menu" (click)="toggleDrawer()">
       </mat-icon>
     </div>
-    <div class="p-4 bg-light overflow-auto">
-      <ngx-skeleton-loader
-        count="8"
-        appearance="line"
-        animation="pulse"
-        *ngIf="isPageLoading"
-      >
+    <div class="p-4 bg-light overflow-auto" *ngIf="isPageLoading">
+      <ngx-skeleton-loader count="8" appearance="line" animation="pulse">
       </ngx-skeleton-loader>
     </div>
     <div class="p-4 bg-light overflow-auto" *ngIf="!isPageLoading">
@@ -65,12 +40,7 @@
             </mat-form-field>
           </div>
           <div class="col-md-4">
-            <button
-              class="my-5"
-              mat-flat-button
-              [matTooltip]="'Update'"
-              [color]="'primary'"
-            >
+            <button class="my-5" mat-flat-button [matTooltip]="'Update'" mat-stroked-button>
               <span class="px-2">Update</span>
             </button>
           </div>
@@ -80,12 +50,8 @@
 
       <div *ngIf="presentationScreen == 'Site Color'">
         <div class="row">
-          <div
-            class="col-12 bg-card sm:p-6 md:p-6 lg:p-10 rounded-2xl shadow my-3"
-          >
-            <div
-              class="text-2xl font-extrabold tracking-tight leading-none mb-4"
-            >
+          <div class="col-12 bg-card sm:p-6 md:p-6 lg:p-10 rounded-2xl shadow my-3">
+            <div class="text-2xl font-extrabold tracking-tight leading-none mb-4">
               Site Colors
             </div>
             <form [formGroup]="siteColorsForm">
@@ -94,36 +60,25 @@
                   <mat-form-field appearance="fill" class="w-full">
                     <mat-label>
                       Primary Highlight ({{
-                        color.primaryHighlight.value
-                      }})</mat-label
-                    >
-                    <input
-                      formControlName="primaryHighlight"
-                      type="color"
-                      matInput
-                    />
+                      color.primaryHighlight.value
+                      }})</mat-label>
+                    <input formControlName="primaryHighlight" type="color" matInput />
                   </mat-form-field>
                 </div>
                 <div class="col-lg-6 col-12">
                   <mat-form-field appearance="fill" class="w-full">
                     <mat-label>
                       Secondary Highlight ({{
-                        color.secondaryHighlight.value
-                      }})</mat-label
-                    >
-                    <input
-                      formControlName="secondaryHighlight"
-                      type="color"
-                      matInput
-                    />
+                      color.secondaryHighlight.value
+                      }})</mat-label>
+                    <input formControlName="secondaryHighlight" type="color" matInput />
                   </mat-form-field>
                 </div>
 
                 <div class="col-lg-6 col-12">
                   <mat-form-field appearance="fill" class="w-full">
                     <mat-label>
-                      Main Nav Background ({{ color.mainNav.value }})</mat-label
-                    >
+                      Main Nav Background ({{ color.mainNav.value }})</mat-label>
                     <input formControlName="mainNav" type="color" matInput />
                   </mat-form-field>
                 </div>
@@ -131,96 +86,61 @@
                   <mat-form-field appearance="fill" class="w-full">
                     <mat-label>
                       Main Nav Background Hover ({{
-                        color.mainNavHover.value
-                      }})</mat-label
-                    >
-                    <input
-                      formControlName="mainNavHover"
-                      type="color"
-                      matInput
-                    />
+                      color.mainNavHover.value
+                      }})</mat-label>
+                    <input formControlName="mainNavHover" type="color" matInput />
                   </mat-form-field>
                 </div>
                 <div class="col-lg-6 col-12">
                   <mat-form-field appearance="fill" class="w-full">
                     <mat-label>
                       Main Nav Link ({{
-                        color.mainNavLinkColor.value
-                      }})</mat-label
-                    >
-                    <input
-                      formControlName="mainNavLinkColor"
-                      type="color"
-                      matInput
-                    />
+                      color.mainNavLinkColor.value
+                      }})</mat-label>
+                    <input formControlName="mainNavLinkColor" type="color" matInput />
                   </mat-form-field>
                 </div>
                 <div class="col-lg-6 col-12">
                   <mat-form-field appearance="fill" class="w-full">
                     <mat-label>
                       Main Nav Hover Link Hover ({{
-                        color.mainNavLinkColorHover.value
-                      }})</mat-label
-                    >
-                    <input
-                      formControlName="mainNavLinkColorHover"
-                      type="color"
-                      matInput
-                    />
+                      color.mainNavLinkColorHover.value
+                      }})</mat-label>
+                    <input formControlName="mainNavLinkColorHover" type="color" matInput />
                   </mat-form-field>
                 </div>
                 <div class="col-lg-6 col-12">
                   <mat-form-field appearance="fill" class="w-full">
                     <mat-label>
-                      Cat Menu Link ({{ color.catMenuLink.value }})</mat-label
-                    >
-                    <input
-                      formControlName="catMenuLink"
-                      type="color"
-                      matInput
-                    />
+                      Cat Menu Link ({{ color.catMenuLink.value }})</mat-label>
+                    <input formControlName="catMenuLink" type="color" matInput />
                   </mat-form-field>
                 </div>
                 <div class="col-lg-6 col-12">
                   <mat-form-field appearance="fill" class="w-full">
                     <mat-label>
                       Cat Menu Link Hover ({{
-                        color.catMenuLinkHover.value
-                      }})</mat-label
-                    >
-                    <input
-                      formControlName="catMenuLinkHover"
-                      type="color"
-                      matInput
-                    />
+                      color.catMenuLinkHover.value
+                      }})</mat-label>
+                    <input formControlName="catMenuLinkHover" type="color" matInput />
                   </mat-form-field>
                 </div>
                 <div class="col-lg-6 col-12">
                   <mat-form-field appearance="fill" class="w-full">
                     <mat-label>
                       SubCat Menu Link ({{
-                        color.subCatMenuLink.value
-                      }})</mat-label
-                    >
-                    <input
-                      formControlName="subCatMenuLink"
-                      type="color"
-                      matInput
-                    />
+                      color.subCatMenuLink.value
+                      }})</mat-label>
+                    <input formControlName="subCatMenuLink" type="color" matInput />
                   </mat-form-field>
                 </div>
                 <div class="col-lg-6 col-12">
                   <mat-form-field appearance="fill" class="w-full">
                     <mat-label>
                       SubCat Menu Link Hover ({{
-                        color.subCatMenuLinkHover.value
-                      }})</mat-label
-                    >
-                    <input
-                      formControlName="subCatMenuLinkHover"
-                      type="color"
-                      matInput
-                    />
+                      color.subCatMenuLinkHover.value
+                      }})</mat-label>
+                    <input formControlName="subCatMenuLinkHover" type="color" matInput />
                   </mat-form-field>
                 </div>
                 <div class="col-lg-6 col-12">
@@ -232,8 +152,7 @@
                 <div class="col-lg-6 col-12">
                   <mat-form-field appearance="fill" class="w-full">
                     <mat-label>
-                      Link Hover ({{ color.linkHover.value }})</mat-label
-                    >
+                      Link Hover ({{ color.linkHover.value }})</mat-label>
                     <input formControlName="linkHover" type="color" matInput />
                   </mat-form-field>
                 </div>
@@ -241,35 +160,24 @@
                   <mat-form-field appearance="fill" class="w-full">
                     <mat-label>
                       Home Feature Link ({{
-                        color.HomeFeatureLink.value
-                      }})</mat-label
-                    >
-                    <input
-                      formControlName="HomeFeatureLink"
-                      type="color"
-                      matInput
-                    />
+                      color.HomeFeatureLink.value
+                      }})</mat-label>
+                    <input formControlName="HomeFeatureLink" type="color" matInput />
                   </mat-form-field>
                 </div>
                 <div class="col-lg-6 col-12">
                   <mat-form-field appearance="fill" class="w-full">
                     <mat-label>
                       Home Feature Link Hover ({{
-                        color.linkHover.value
-                      }})</mat-label
-                    >
+                      color.linkHover.value
+                      }})</mat-label>
                     <input formControlName="linkHover" type="color" matInput />
                   </mat-form-field>
                 </div>
 
                 <div class="col-md-4" style="margin-left: -17px">
-                  <button
-                    class="my-5"
-                    mat-flat-button
-                    [matTooltip]="'Update'"
-                    [color]="'primary'"
-                    [disabled]="siteColorsForm.invalid"
-                  >
+                  <button class="my-5" mat-flat-button [matTooltip]="'Update'" [color]="'primary'"
+                    [disabled]="siteColorsForm.invalid">
                     <span class="px-2">Update</span>
                   </button>
                 </div>
@@ -283,9 +191,7 @@
       <div *ngIf="presentationScreen == 'Masthead'">
         <div class="row">
           <div class="col-12 bg-card sm:p-6 md:p-6 lg:p-10 rounded-2xl shadow">
-            <div
-              class="text-2xl font-extrabold tracking-tight leading-none my-3"
-            >
+            <div class="text-2xl font-extrabold tracking-tight leading-none my-3">
               Store Masthead
             </div>
             <div class="row mt-3">
@@ -298,19 +204,11 @@
                   GIF image format only! 369px W by 82px H
                 </p>
                 <br />
-                <input
-                  type="file"
-                  class="file-upload"
-                  onchange="console.log(event.target.files)"
-                />
+                <input type="file" class="file-upload" onchange="console.log(event.target.files)" />
               </div>
             </div>
             <div class="col-md-4">
-              <button
-                mat-flat-button
-                [matTooltip]="'Update'"
-                [color]="'primary'"
-              >
+              <button mat-flat-button [matTooltip]="'Update'" [color]="'primary'">
                 <span class="px-2">Update</span>
               </button>
             </div>
@@ -325,9 +223,7 @@
       <div *ngIf="presentationScreen == 'Social Media'">
         <div class="row">
           <div class="col-12 bg-card sm:p-6 md:p-6 lg:p-10 rounded-2xl shadow">
-            <div
-              class="text-2xl font-extrabold tracking-tight leading-none my-3"
-            >
+            <div class="text-2xl font-extrabold tracking-tight leading-none my-3">
               Social Media Details
             </div>
             <p class="tracking-tight leading-none">
@@ -366,11 +262,7 @@
               </div>
               <div class="row">
                 <div class="col-md-4">
-                  <button
-                    mat-flat-button
-                    [matTooltip]="'Update'"
-                    [color]="'primary'"
-                  >
+                  <button mat-flat-button [matTooltip]="'Update'" [color]="'primary'">
                     <span class="px-2">Update</span>
                   </button>
                 </div>
@@ -386,17 +278,17 @@
           <div class="col-12 bg-card sm:p-6 md:p-6 lg:p-10 rounded-2xl shadow">
             <div class="row">
               <div class="col-md-4 mb-3">
-                <button mat-flat-button [color]="'primary'">
+                <button mat-flat-button mat-stroked-button>
                   <span class="px-2">Add New Item</span>
                 </button>
               </div>
             </div>
-            <p *ngIf="!newsFeedData">
+            <p *ngIf="newsFeedData.length == 0">
               <strong>
                 There are currently no news items in the feed for this store.
               </strong>
             </p>
-            <table class="table" *ngIf="newsFeedData">
+            <table class="table" *ngIf="newsFeedData.length > 0">
               <thead>
                 <tr>
                   <th scope="col">ID</th>
@@ -420,19 +312,14 @@
       <div *ngIf="presentationScreen == 'Special offers'">
         <form [formGroup]="specialOfferForm">
           <div class="row">
-            <div
-              class="col-12 bg-card sm:p-6 md:p-6 lg:p-10 rounded-2xl shadow"
-            >
-              <div
-                class="text-2xl font-extrabold tracking-tight leading-none my-3"
-              >
+            <div class="col-12 bg-card sm:p-6 md:p-6 lg:p-10 rounded-2xl shadow">
+              <div class="text-2xl font-extrabold tracking-tight leading-none my-3">
                 Special offers
               </div>
               <div class="row">
                 <div class="col-6 mt-5">
                   <mat-form-field appearance="fill" class="w-full">
-                    <mat-label
-                      >Does this store offer special offers?
+                    <mat-label>Does this store offer special offers?
                     </mat-label>
                     <mat-select formControlName="blnOffer">
                       <mat-option [value]="true">Yes</mat-option>
@@ -443,39 +330,23 @@
                 <div class="mt-4 col-12">
                   <mat-form-field appearance="fill" class="w-full">
                     <mat-label> Offer Text: (50)</mat-label>
-                    <input
-                      formControlName="offerText"
-                      maxlength="50"
-                      matInput
-                    />
+                    <input formControlName="offerText" maxlength="50" matInput />
                   </mat-form-field>
                 </div>
                 <div class="mt-4 col-12">
                   <mat-form-field appearance="fill" class="w-full">
                     <mat-label> Offer Textbox Text: (30)</mat-label>
-                    <input
-                      formControlName="offerTextBox"
-                      maxlength="30"
-                      matInput
-                    />
+                    <input formControlName="offerTextBox" maxlength="30" matInput />
                   </mat-form-field>
                 </div>
                 <div class="mt-4 col-12">
                   <mat-form-field appearance="fill" class="w-full">
                     <mat-label> Footer Text: (40)</mat-label>
-                    <input
-                      formControlName="offerFooter"
-                      maxlength="40"
-                      matInput
-                    />
+                    <input formControlName="offerFooter" maxlength="40" matInput />
                   </mat-form-field>
                 </div>
-                <div class="col-md-4">
-                  <button
-                    mat-flat-button
-                    [matTooltip]="'Update'"
-                    [color]="'primary'"
-                  >
+                <div class="col-12 flex justify-end">
+                  <button mat-flat-button [matTooltip]="'Update'" mat-stroked-button>
                     <span class="px-2">Update</span>
                   </button>
                 </div>
@@ -488,9 +359,7 @@
       <div *ngIf="presentationScreen == 'Typekit'">
         <div class="row">
           <div class="col-12 bg-card sm:p-6 md:p-6 lg:p-10 rounded-2xl shadow">
-            <div
-              class="text-2xl font-extrabold tracking-tight leading-none my-3"
-            >
+            <div class="text-2xl font-extrabold tracking-tight leading-none my-3">
               Enter the TypeKit ID Below
             </div>
             <p>
@@ -510,11 +379,7 @@
             </div>
             <div class="row">
               <div class="col-md-4">
-                <button
-                  mat-flat-button
-                  [matTooltip]="'Update'"
-                  [color]="'primary'"
-                >
+                <button mat-flat-button [matTooltip]="'Update'" mat-stroked-button>
                   <span class="px-2">Update</span>
                 </button>
               </div>
@@ -527,36 +392,19 @@
       <div *ngIf="presentationScreen == 'Feature Campaign'">
         <div class="row">
           <div class="col-12 bg-card sm:p-6 md:p-6 lg:p-10 rounded-2xl shadow">
-            <div
-              class="text-2xl font-extrabold tracking-tight leading-none my-3"
-            >
+            <div class="text-2xl font-extrabold tracking-tight leading-none my-3">
               Select featured campaigns
             </div>
-            <div
-              class="mt-5 fa fa-info-circle"
-              style="color: rgb(101, 124, 174)"
-            >
+            <div class="mt-5 fa fa-info-circle" style="color: rgb(101, 124, 174)">
               Select max 2 campaigns to feature in the home page of the store.
             </div>
-            <div
-              class="col-12 my-4 font-weight-bold"
-              *ngFor="let item of campaignData; let i = index"
-            >
-              <mat-checkbox
-                class="example-margin"
-                name="{{ i }}"
-                [checked]="item.blnActive"
-              >
+            <div class="col-12 my-4 font-weight-bold" *ngFor="let item of campaignData; let i = index">
+              <mat-checkbox class="example-margin" name="{{ i }}" [checked]="item.blnActive">
                 {{ item.objective }}
               </mat-checkbox>
             </div>
             <div class="col-md-4">
-              <button
-                class="my-5"
-                mat-flat-button
-                [matTooltip]="'Update'"
-                [color]="'primary'"
-              >
+              <button class="my-5" mat-flat-button mat-stroked-button [matTooltip]="'Update'" [color]="'primary'">
                 <span class="px-2">Update</span>
               </button>
             </div>
@@ -568,9 +416,7 @@
       <div *ngIf="presentationScreen == 'Payment methods'">
         <div class="row">
           <div class="col-12 bg-card sm:p-6 md:p-6 lg:p-10 rounded-2xl shadow">
-            <div
-              class="text-2xl font-extrabold tracking-tight leading-none my-3"
-            >
+            <div class="text-2xl font-extrabold tracking-tight leading-none my-3">
               Online Credit Card
             </div>
             <form [formGroup]="onlineCreditForm">
@@ -614,12 +460,8 @@
               </div>
             </form>
           </div>
-          <div
-            class="mt-3 col-12 bg-card sm:p-6 md:p-6 lg:p-10 rounded-2xl shadow"
-          >
-            <div
-              class="text-2xl font-extrabold tracking-tight leading-none my-3"
-            >
+          <div class="mt-3 col-12 bg-card sm:p-6 md:p-6 lg:p-10 rounded-2xl shadow">
+            <div class="text-2xl font-extrabold tracking-tight leading-none my-3">
               Prepayment
             </div>
             <form [formGroup]="prepaymentForm">
@@ -663,12 +505,8 @@
               </div>
             </form>
           </div>
-          <div
-            class="mt-3 col-12 bg-card sm:p-6 md:p-6 lg:p-10 rounded-2xl shadow"
-          >
-            <div
-              class="text-2xl font-extrabold tracking-tight leading-none my-3"
-            >
+          <div class="mt-3 col-12 bg-card sm:p-6 md:p-6 lg:p-10 rounded-2xl shadow">
+            <div class="text-2xl font-extrabold tracking-tight leading-none my-3">
               Third Party Payment
             </div>
             <form [formGroup]="thirdPartyForm">
@@ -712,12 +550,8 @@
               </div>
             </form>
           </div>
-          <div
-            class="mt-3 col-12 bg-card sm:p-6 md:p-6 lg:p-10 rounded-2xl shadow"
-          >
-            <div
-              class="text-2xl font-extrabold tracking-tight leading-none my-3"
-            >
+          <div class="mt-3 col-12 bg-card sm:p-6 md:p-6 lg:p-10 rounded-2xl shadow">
+            <div class="text-2xl font-extrabold tracking-tight leading-none my-3">
               Credit Terms
             </div>
             <form [formGroup]="creditTermsForm">
@@ -762,7 +596,7 @@
             </form>
           </div>
           <div class="col-md-4 mt-5 ml-3">
-            <button mat-flat-button [color]="'primary'">
+            <button mat-flat-button mat-stroked-button [matTooltip]="'Update'">
               <span class="px-2">Update</span>
             </button>
           </div>
@@ -772,30 +606,17 @@
       <div *ngIf="presentationScreen == 'Support Team'">
         <div class="row mb-3">
           <div class="col-12 bg-card sm:p-6 md:p-6 lg:p-10 rounded-2xl shadow">
-            <div
-              class="text-2xl font-extrabold tracking-tight leading-none my-3"
-            >
+            <div class="text-2xl font-extrabold tracking-tight leading-none my-3">
               Support Team
             </div>
             <div class="row" *ngIf="availableTeamData">
-              <div
-                class="col-md-2 col-4"
-                style="text-align: -webkit-center"
-                *ngFor="let item of availableTeamData"
-              >
+              <div class="col-md-2 col-4" style="text-align: -webkit-center" *ngFor="let item of availableTeamData">
                 <div ng-repeat="file in imagefinaldata" class="img_wrp">
-                  <img
-                    height="200"
-                    width="250"
-                    src="{{ teamImageUrl + item.fk_defaultMemberID }}.jpg"
+                  <img height="200" width="250" src="{{ teamImageUrl + item.fk_defaultMemberID }}.jpg"
                     onError="this.src='https://assets.consolidus.com/globalAssets/Support/anonymous.png'"
-                    alt="{{ item.name }}"
-                  />
+                    alt="{{ item.name }}" />
                   <p class="text-lg mt-2">{{ item.name }}</p>
-                  <mat-icon
-                    class="close cursor-pointer"
-                    [svgIcon]="'heroicons_solid:check-circle'"
-                  ></mat-icon>
+                  <mat-icon class="close cursor-pointer" [svgIcon]="'heroicons_solid:check-circle'"></mat-icon>
                   <!-- <img
                     class="close"
                     src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSNnBYwnpEUhBQQ83LsiN2RvVkfQW75_JNfrfL1NiY&s"
@@ -808,20 +629,12 @@
 
         <form [formGroup]="teamForm" *ngIf="teamData">
           <div formArrayName="memberDetails">
-            <div
-              class="row w-full bg-card rounded-2xl shadow mb-3 py-5"
-              *ngFor="let item of teamData; let $index = index"
-            >
-              <div
-                class="col-lg-3 col-md-4 col-12"
-                style="text-align: -webkit-center"
-              >
-                <img
-                  class="rounded-full img-fluid image"
-                  src="{{ teamImageUrl + item.fk_defaultMemberID }}.jpg"
+            <div class="row w-full bg-card rounded-2xl shadow mb-3 py-5"
+              *ngFor="let item of teamData; let $index = index">
+              <div class="col-lg-3 col-md-4 col-12" style="text-align: -webkit-center">
+                <img class="rounded-full img-fluid image" src="{{ teamImageUrl + item.fk_defaultMemberID }}.jpg"
                   onError="this.src='https://assets.consolidus.com/globalAssets/Support/anonymous.png'"
-                  alt="{{ item.name }}"
-                />
+                  alt="{{ item.name }}" />
                 <p class="text-lg mt-2">{{ item.name }}</p>
               </div>
               <div class="col-lg-9 col-md-8 col-12" [formGroupName]="$index">
@@ -838,49 +651,29 @@
                   <div class="col-lg-6 col-md-6 col-12">
                     <mat-form-field class="input">
                       <mat-label>Email: </mat-label>
-                      <input
-                        formControlName="email"
-                        matInput
-                        placeholder="Email"
-                      />
+                      <input formControlName="email" matInput placeholder="Email" />
                     </mat-form-field>
                   </div>
                   <div class="col-lg-6 col-md-6 col-12">
                     <mat-form-field class="input">
                       <mat-label>Role Name: </mat-label>
-                      <input
-                        formControlName="roleName"
-                        matInput
-                        placeholder="Role Name"
-                      />
+                      <input formControlName="roleName" matInput placeholder="Role Name" />
                     </mat-form-field>
                   </div>
                   <div class="col-lg-6 col-md-6 col-12">
                     <mat-form-field class="input">
                       <mat-label>Display Order: </mat-label>
-                      <input
-                        formControlName="displayOrder"
-                        matInput
-                        placeholder="Display Order"
-                      />
+                      <input formControlName="displayOrder" matInput placeholder="Display Order" />
                     </mat-form-field>
                   </div>
                   <div class="col-lg-6 col-md-6 col-12">
                     <div class="flex items-center mt-4 sm:mt-0">
                       <!-- Discard -->
-                      <button
-                        class="order-first sm:order-last mr-2"
-                        mat-flat-button
-                        [color]="'warn'"
-                      >
+                      <button class="order-first sm:order-last mr-2" mat-flat-button [color]="'warn'">
                         Remove
                       </button>
-                      <button
-                        class="order-first sm:order-last"
-                        mat-flat-button
-                        [color]="'primary'"
-                        (click)="onUpdate(item, $index)"
-                      >
+                      <button class="order-first sm:order-last" mat-flat-button [color]="'primary'"
+                        (click)="onUpdate(item, $index)">
                         Update
                       </button>
                     </div>
@@ -897,55 +690,31 @@
       <div *ngIf="presentationScreen == 'Feature Images'">
         <div class="row">
           <div class="col-12 mb-3" *ngIf="!addNewFeature">
-            <button
-              mat-flat-button
-              class="bg-accent-100 border"
-              (click)="addNewFeatureImageToggle()"
-            >
+            <button mat-flat-button class="bg-accent-100 border" (click)="addNewFeatureImageToggle()">
               <mat-icon [svgIcon]="'heroicons_outline:plus'"></mat-icon>
               <span class="ml-2">Add New</span>
             </button>
           </div>
-          <div
-            class="col-12 bg-card sm:p-6 md:p-6 lg:p-10 rounded-2xl shadow mb-3"
-            *ngIf="!addNewFeature"
-          >
-            <div
-              class="text-2xl font-extrabold tracking-tight leading-none my-5"
-            >
+          <div class="col-12 bg-card sm:p-6 md:p-6 lg:p-10 rounded-2xl shadow mb-3" *ngIf="!addNewFeature">
+            <div class="text-2xl font-extrabold tracking-tight leading-none my-5">
               Scroller Feature Images
             </div>
             <div class="row my-5">
-              <div
-                class="col-md-4 col-12"
-                *ngFor="let item of featureImagesData"
-              >
-                <img
-                  class="mb-3"
-                  src="{{ featureImageUrl + item.pk_featureImage }}.jpg"
-                  alt="picture1"
-                />
-                <button class="mx-6" mat-flat-button [color]="'primary'">
+              <div class="col-md-4 col-12" *ngFor="let item of featureImagesData">
+                <img class="mb-3" src="{{ featureImageUrl + item.pk_featureImage }}.jpg" alt="picture1" />
+                <button class="mx-6" mat-stroked-button mat-flat-button>
                   <span class="ml-2">Edit</span>
                 </button>
                 <p style="color: green">(Active)</p>
               </div>
             </div>
           </div>
-          <div
-            class="col-12 bg-card sm:p-6 md:p-6 lg:p-10 rounded-2xl shadow"
-            *ngIf="!addNewFeature"
-          >
-            <div
-              class="text-2xl font-extrabold tracking-tight leading-none my-5"
-            >
+          <div class="col-12 bg-card sm:p-6 md:p-6 lg:p-10 rounded-2xl shadow" *ngIf="!addNewFeature">
+            <div class="text-2xl font-extrabold tracking-tight leading-none my-5">
               Update Mobile Feature Image
             </div>
             <div class="row">
-              <div
-                class="col-12 fa fa-info-circle"
-                style="color: rgb(101, 124, 174)"
-              >
+              <div class="col-12 fa fa-info-circle" style="color: rgb(101, 124, 174)">
                 The mobile feature image will replace the feature image scroller
                 defined above for mobile devices and those with smaller screen
                 sizes. The mobile feature image will not scroll, and will be a
@@ -954,12 +723,9 @@
               <div class="col-12 mt-3">
                 <img
                   src="https://assets.consolidus.com/globalAssets/Stores/featureImage/mobile/146/41.jpg?ver=05-10-22-15-03-57"
-                  alt="picture"
-                />
+                  alt="picture" />
               </div>
-              <div
-                class="text-2xl font-extrabold tracking-tight leading-none my-3"
-              >
+              <div class="text-2xl font-extrabold tracking-tight leading-none my-3">
                 Update Mobile Feature Image
               </div>
               <div class="col-12">
@@ -967,11 +733,7 @@
                   Images must be 1242px W by 450px H. JPG format only.
                 </p>
                 <br />
-                <input
-                  type="file"
-                  class="file-upload my-3"
-                  onchange="console.log(event.target.files)"
-                />
+                <input type="file" class="file-upload my-3" onchange="console.log(event.target.files)" />
               </div>
               <div class="mt-4 col-12">
                 <mat-form-field appearance="fill" class="w-full">
@@ -990,22 +752,12 @@
               </div>
               <div class="row">
                 <div class="col-md-6">
-                  <button
-                    class="my-5"
-                    mat-flat-button
-                    [matTooltip]="'Update'"
-                    [color]="'primary'"
-                  >
+                  <button class="my-5" mat-flat-button [matTooltip]="'Update'" [color]="'primary'">
                     <span class="px-2">Update</span>
                   </button>
                 </div>
                 <div class="col-md-6">
-                  <button
-                    class="my-5"
-                    mat-flat-button
-                    [matTooltip]="'Remove Image'"
-                    [color]="'error'"
-                  >
+                  <button class="my-5" mat-flat-button [matTooltip]="'Remove Image'" [color]="'error'">
                     <span class="px-2">Remove Image</span>
                   </button>
                 </div>
@@ -1013,41 +765,20 @@
             </div>
           </div>
           <div class="col-12 mb-3" *ngIf="addNewFeature">
-            <button
-              mat-flat-button
-              class="bg-accent-100 border"
-              (click)="addNewFeatureImageToggle()"
-            >
+            <button mat-flat-button class="bg-accent-100 border" (click)="addNewFeatureImageToggle()">
               <span class="ml-2">Cancel</span>
             </button>
           </div>
-          <div
-            class="col-12 bg-card sm:p-6 md:p-6 lg:p-10 rounded-2xl shadow"
-            *ngIf="addNewFeature"
-          >
-            <div
-              class="text-2xl font-extrabold tracking-tight leading-none my-5"
-            >
+          <div class="col-12 bg-card sm:p-6 md:p-6 lg:p-10 rounded-2xl shadow" *ngIf="addNewFeature">
+            <div class="text-2xl font-extrabold tracking-tight leading-none my-5">
               Create New Feature Images
             </div>
-            <fuse-alert
-              class="m-1"
-              [dismissible]="true"
-              [dismissed]="false"
-              [type]="'info'"
-              [appearance]="'soft'"
-            >
+            <fuse-alert class="m-1" [dismissible]="true" [dismissed]="false" [type]="'info'" [appearance]="'soft'">
               Please note: the main text/header copy and the button copy are not
               required. If the button copy is left blank, the button will not
               show up at all on the feature image.
             </fuse-alert>
-            <fuse-alert
-              class="m-1"
-              [dismissible]="true"
-              [dismissed]="false"
-              [type]="'info'"
-              [appearance]="'soft'"
-            >
+            <fuse-alert class="m-1" [dismissible]="true" [dismissed]="false" [type]="'info'" [appearance]="'soft'">
               <span fuseAlertTitle>Select an Image</span>
               images must be 1500px W by 300px H. JPG format only.<br />
               Try to make the main content of the image be no wider than 768px,
@@ -1055,11 +786,8 @@
               entire width of the image (1500px), but the main content of the
               feature image should be contained within a 768px box (this
               includes any main images and text).<br />
-              <a
-                href="https://admin.consolidus.com/ssadm/controller/view/system/images/feature-image-wireframe.jpg"
-                _target="_blank"
-                >Click here to see an example</a
-              >
+              <a href="https://admin.consolidus.com/ssadm/controller/view/system/images/feature-image-wireframe.jpg"
+                _target="_blank">Click here to see an example</a>
             </fuse-alert>
             <form class="flex flex-col flex-auto py-6 sm:py-8 overflow-y-auto">
               <!-- To -->
@@ -1091,10 +819,7 @@
 
                 <mat-form-field class="input-width mr-1">
                   <mat-label>Button background color: </mat-label>
-                  <input
-                    matInput
-                    placeholder="Button background color (hex value)"
-                  />
+                  <input matInput placeholder="Button background color (hex value)" />
                 </mat-form-field>
                 <mat-form-field class="input-width ml-1">
                   <mat-label>Button text color: </mat-label>
@@ -1127,16 +852,10 @@
                 </mat-form-field>
               </div>
               <!-- Actions -->
-              <div
-                class="flex flex-col sm:flex-row sm:items-center justify-between mt-4 sm:mt-6"
-              >
+              <div class="flex flex-col sm:flex-row sm:items-center justify-between mt-4 sm:mt-6">
                 <div class="flex items-center mt-4 sm:mt-0">
                   <!-- Discard -->
-                  <button
-                    class="order-first sm:order-last"
-                    mat-flat-button
-                    [color]="'primary'"
-                  >
+                  <button class="order-first sm:order-last" mat-flat-button [color]="'primary'">
                     Add new feature image
                   </button>
                 </div>
@@ -1149,31 +868,18 @@
       <div *ngIf="presentationScreen == 'Favicon'">
         <div class="row">
           <div class="col-12 bg-card sm:p-6 md:p-6 lg:p-10 rounded-2xl shadow">
-            <div
-              class="text-2xl font-extrabold tracking-tight leading-none my-3"
-            >
+            <div class="text-2xl font-extrabold tracking-tight leading-none my-3">
               Add New Favicon Icon
             </div>
-            <div
-              class="col-12 fa fa-info-circle"
-              style="color: rgb(101, 124, 174)"
-            >
+            <div class="col-12 fa fa-info-circle" style="color: rgb(101, 124, 174)">
               16px X 16px .ICO file only
             </div>
             <div class="row">
-              <input
-                type="file"
-                class="file-upload my-3 ml-3"
-                onchange="console.log(event.target.files)"
-              />
+              <input type="file" class="file-upload my-3 ml-3" onchange="console.log(event.target.files)" />
             </div>
             <div class="row mt-5">
               <div class="col-md-4">
-                <button
-                  mat-flat-button
-                  [matTooltip]="'Upload'"
-                  [color]="'primary'"
-                >
+                <button mat-flat-button [matTooltip]="'Upload'" mat-stroked-button>
                   <span class="px-2">Upload</span>
                 </button>
               </div>
@@ -1185,9 +891,7 @@
       <div *ngIf="presentationScreen == 'Brand Guide'">
         <div class="row">
           <div class="col-12 bg-card sm:p-6 md:p-6 lg:p-10 rounded-2xl shadow">
-            <div
-              class="text-2xl font-extrabold tracking-tight leading-none my-3"
-            >
+            <div class="text-2xl font-extrabold tracking-tight leading-none my-3">
               Add Brand Guide
             </div>
             <p>
@@ -1195,30 +899,20 @@
             </p>
             <p style="color: red">PDF Only!</p>
             <div class="row">
-              <input
-                type="file"
-                class="file-upload my-3 ml-3"
-                onchange="console.log(event.target.files)"
-              />
+              <input type="file" class="file-upload my-3 ml-3" onchange="console.log(event.target.files)" />
             </div>
             <div class="row mt-5">
               <div class="col-md-4">
-                <button
-                  mat-flat-button
-                  [matTooltip]="'Upload'"
-                  [color]="'primary'"
-                >
+                <button mat-flat-button mat-stroked-button [matTooltip]="'Upload'">
                   <span class="px-2">Upload</span>
                 </button>
               </div>
             </div>
           </div>
         </div>
-        <div class="row p-10 bg-light overflow-auto">
-          <div class="col-12 bg-card sm:p-6 md:p-6 lg:p-16 rounded-2xl shadow">
-            <div
-              class="text-2xl font-extrabold tracking-tight leading-none my-3"
-            >
+        <div class="row  bg-light overflow-auto">
+          <div class="col-12 bg-card sm:p-6 md:p-6 lg:p-10 rounded-2xl shadow">
+            <div class="text-2xl font-extrabold tracking-tight leading-none my-3">
               Current Brand Guide
             </div>
             <p>
@@ -1240,9 +934,7 @@
                 </button>
               </div>
             </div>
-            <div
-              class="text-2xl font-extrabold tracking-tight leading-none my-3"
-            >
+            <div class="text-2xl font-extrabold tracking-tight leading-none my-3">
               Add A Logo File
             </div>
             <div class="mt-4 col-12">
@@ -1262,11 +954,7 @@
                   <strong> Vector Image: </strong>
                 </p>
                 <p style="color: red">AI and EPS formats only!</p>
-                <input
-                  type="file"
-                  class="file-upload my-3"
-                  onchange="console.log(event.target.files)"
-                />
+                <input type="file" class="file-upload my-3" onchange="console.log(event.target.files)" />
                 <button class="my-5" mat-flat-button [color]="'primary'">
                   <span class="px-2">Upload</span>
                 </button>
@@ -1303,23 +991,18 @@
         <!-- Current Logo Bank -->
         <div class="row">
           <div class="col-12 bg-card sm:p-6 md:p-6 lg:p-10 rounded-2xl shadow">
-            <div
-              class="text-2xl font-extrabold tracking-tight leading-none my-3"
-            >
+            <div class="text-2xl font-extrabold tracking-tight leading-none my-3">
               Logo bank notes
             </div>
             <p>
               These notes will appear in RapidBuild as a descriptor for the
               internal logo bank.
             </p>
-            <div
-              class="mt-2 p-3"
-              style="
+            <div class="mt-2 p-3" style="
                 overflow-y: scroll;
                 height: 200px;
                 border: 0.5px solid black;
-              "
-            >
+              ">
               <p class="mb-3">
                 Please feature teal/mint, white, black, or light grey products.
               </p>
@@ -1354,9 +1037,7 @@
 
         <div class="row">
           <div class="col-12 bg-card sm:p-6 md:p-6 lg:p-10 rounded-2xl shadow">
-            <div
-              class="text-2xl font-extrabold tracking-tight leading-none my-3"
-            >
+            <div class="text-2xl font-extrabold tracking-tight leading-none my-3">
               Current logo bank
             </div>
             <div class="row mt-4">
@@ -1386,10 +1067,7 @@
           <div class="col-12 bg-card sm:p-6 md:p-6 lg:p-10 rounded-2xl shadow">
             <div class="row">
               <div class="col-md-2">
-                <img
-                  src="https://assets.consolidus.com/globalAssets/Stores/LogoBank2/127/Thumbs/2353.jpg"
-                  alt="img"
-                />
+                <img src="https://assets.consolidus.com/globalAssets/Stores/LogoBank2/127/Thumbs/2353.jpg" alt="img" />
               </div>
               <div class="col-md-10" style="height: 100%">
                 <mat-form-field appearance="fill" class="w-full">
@@ -1401,10 +1079,7 @@
                 <a class="mt-3" href=""><u>View vector file</u> </a>
                 <div class="row mt-4">
                   <div class="col-md-4">
-                    <p
-                      class="fa fa-info-circle"
-                      style="color: rgb(182, 38, 38)"
-                    >
+                    <p class="fa fa-info-circle" style="color: rgb(182, 38, 38)">
                       Client
                     </p>
                   </div>
@@ -1428,9 +1103,7 @@
 
         <div class="row">
           <div class="col-12 bg-card sm:p-6 md:p-6 lg:p-10 rounded-2xl shadow">
-            <div
-              class="text-2xl font-extrabold tracking-tight leading-none my-3"
-            >
+            <div class="text-2xl font-extrabold tracking-tight leading-none my-3">
               Create Scroller
             </div>
             <div class="row">
@@ -1454,9 +1127,7 @@
         <!-- Current Scrollers -->
         <div class="row">
           <div class="col-12 bg-card sm:p-6 md:p-6 lg:p-10 rounded-2xl shadow">
-            <div
-              class="text-2xl font-extrabold tracking-tight leading-none my-3"
-            >
+            <div class="text-2xl font-extrabold tracking-tight leading-none my-3">
               Current Scrollers
             </div>
             <p>
@@ -1470,9 +1141,7 @@
         <!-- Default Scrollers -->
         <div class="row">
           <div class="col-12 bg-card sm:p-6 md:p-6 lg:p-10 rounded-2xl shadow">
-            <div
-              class="text-2xl font-extrabold tracking-tight leading-none my-3"
-            >
+            <div class="text-2xl font-extrabold tracking-tight leading-none my-3">
               Default Scrollers
             </div>
             <p>
@@ -1578,9 +1247,7 @@
         <!-- Scroller Display Order -->
         <div class="row">
           <div class="col-12 bg-card sm:p-6 md:p-6 lg:p-10 rounded-2xl shadow">
-            <div
-              class="text-2xl font-extrabold tracking-tight leading-none my-3"
-            >
+            <div class="text-2xl font-extrabold tracking-tight leading-none my-3">
               Scroller Display Order
             </div>
             <div class="row">
@@ -1614,9 +1281,7 @@
         <div class="row">
           <div class="col-12 bg-card sm:p-6 md:p-6 lg:p-10 rounded-2xl shadow">
             <div class="row my-3">
-              <div
-                class="text-2xl font-extrabold tracking-tight leading-none col-md-10"
-              >
+              <div class="text-2xl font-extrabold tracking-tight leading-none col-md-10">
                 Customer testimonials
               </div>
               <div class="col-md-2">
@@ -1667,11 +1332,7 @@
             </div>
             <div class="row">
               <div class="col-md-4">
-                <button
-                  class="fa fa-plus my-5"
-                  mat-flat-button
-                  [color]="'primary'"
-                >
+                <button class="fa fa-plus my-5" mat-flat-button [color]="'primary'">
                   <span class="px-2">Add Testimonial</span>
                 </button>
               </div>
@@ -1683,9 +1344,7 @@
         <div class="row">
           <div class="col-12 bg-card sm:p-6 md:p-6 lg:p-10 rounded-2xl shadow">
             <div class="row my-3">
-              <div
-                class="text-2xl font-extrabold tracking-tight leading-none col-md-10"
-              >
+              <div class="text-2xl font-extrabold tracking-tight leading-none col-md-10">
                 Current Testimonial
               </div>
               <div class="col-md-2">
@@ -1700,11 +1359,7 @@
               <div class="color-blue">
                 <!-- SPID Column -->
                 <ng-container matColumnDef="spid">
-                  <th
-                    class="min-w-10 bg-gray-50 dark:bg-black dark:bg-opacity-5"
-                    mat-header-cell
-                    *matHeaderCellDef
-                  >
+                  <th class="min-w-10 bg-gray-50 dark:bg-black dark:bg-opacity-5" mat-header-cell *matHeaderCellDef>
                     SPID
                   </th>
                   <td mat-cell *matCellDef="let element">
@@ -1714,69 +1369,41 @@
 
                 <!-- Name Column -->
                 <ng-container matColumnDef="name">
-                  <th
-                    class="min-w-40 bg-gray-50 dark:bg-black dark:bg-opacity-5"
-                    mat-header-cell
-                    *matHeaderCellDef
-                  >
+                  <th class="min-w-40 bg-gray-50 dark:bg-black dark:bg-opacity-5" mat-header-cell *matHeaderCellDef>
                     Name
                   </th>
                   <td mat-cell *matCellDef="let element">
                     <small class="text-secondary border-b-2">{{
                       element.productName
-                    }}</small>
+                      }}</small>
                   </td>
                 </ng-container>
 
                 <!-- Master Column -->
                 <ng-container matColumnDef="master">
-                  <th
-                    class="min-w-24 bg-gray-50 dark:bg-black dark:bg-opacity-5"
-                    mat-header-cell
-                    *matHeaderCellDef
-                  >
+                  <th class="min-w-24 bg-gray-50 dark:bg-black dark:bg-opacity-5" mat-header-cell *matHeaderCellDef>
                     Master
                   </th>
                   <td mat-cell *matCellDef="let element">
-                    <span *ngIf="element.blnActive" style="color: green"
-                      >Active</span
-                    >
-                    <span *ngIf="!element.blnActive" style="color: red"
-                      >Inactive</span
-                    >
+                    <span *ngIf="element.blnActive" style="color: green">Active</span>
+                    <span *ngIf="!element.blnActive" style="color: red">Inactive</span>
                   </td>
                 </ng-container>
 
                 <!-- Store Column -->
                 <ng-container matColumnDef="store">
-                  <th
-                    class="min-w-24 bg-gray-50 dark:bg-black dark:bg-opacity-5"
-                    mat-header-cell
-                    *matHeaderCellDef
-                  >
+                  <th class="min-w-24 bg-gray-50 dark:bg-black dark:bg-opacity-5" mat-header-cell *matHeaderCellDef>
                     Store
                   </th>
                   <td mat-cell *matCellDef="let element">
-                    <span *ngIf="element.blnStoreActive" style="color: green"
-                      >Online</span
-                    >
-                    <span *ngIf="!element.blnStoreActive" style="color: red"
-                      >Offline</span
-                    >
+                    <span *ngIf="element.blnStoreActive" style="color: green">Online</span>
+                    <span *ngIf="!element.blnStoreActive" style="color: red">Offline</span>
                   </td>
                 </ng-container>
               </div>
-              <tr
-                mat-header-row
-                class="h-18 shadow bg-card"
-                *matHeaderRowDef="displayedColumns"
-              ></tr>
-              <tr
-                mat-row
-                class="hover:bg-gray-100 dark:hover:bg-hover"
-                style="cursor: pointer"
-                *matRowDef="let row; columns: displayedColumns"
-              ></tr>
+              <tr mat-header-row class="h-18 shadow bg-card" *matHeaderRowDef="displayedColumns"></tr>
+              <tr mat-row class="hover:bg-gray-100 dark:hover:bg-hover" style="cursor: pointer"
+                *matRowDef="let row; columns: displayedColumns"></tr>
             </table>
             <div class="row mt-5">
               <div class="col-md-6">
@@ -1797,21 +1424,16 @@
       <div *ngIf="presentationScreen == 'Sitemap'">
         <div class="row">
           <div class="col-12 bg-card sm:p-6 md:p-6 lg:p-10 rounded-2xl shadow">
-            <div
-              class="text-2xl font-extrabold tracking-tight leading-none my-3"
-            >
+            <div class="text-2xl font-extrabold tracking-tight leading-none my-3">
               Generate XML Sitemap
             </div>
-            <div
-              class="col-12 fa fa-info-circle"
-              style="color: rgb(101, 124, 174)"
-            >
+            <div class="col-12 fa fa-info-circle" style="color: rgb(101, 124, 174)">
               This tool automatically generates an XML sitemap for this store.
               If one currently exists, it will be overwritten
             </div>
             <div class="row mt-5">
               <div class="col-md-4">
-                <button mat-flat-button [color]="'primary'">
+                <button mat-flat-button mat-stroked-button [matTooltip]="'Generate XML sitemap'">
                   <span class="px-2">Generate XML sitemap</span>
                 </button>
               </div>
@@ -1823,15 +1445,10 @@
       <div *ngIf="presentationScreen == 'Header Image'">
         <div class="row">
           <div class="col-12 bg-card sm:p-6 md:p-6 lg:p-10 rounded-2xl shadow">
-            <div
-              class="text-2xl font-extrabold tracking-tight leading-none my-3"
-            >
+            <div class="text-2xl font-extrabold tracking-tight leading-none my-3">
               Header Image
             </div>
-            <div
-              class="mt-5 fa fa-info-circle"
-              style="color: rgb(101, 124, 174)"
-            >
+            <div class="mt-5 fa fa-info-circle" style="color: rgb(101, 124, 174)">
               This lets you customize the header image that appears to the right
               of the search bar on the SmartSites. You can also specify a link
               for this image as well. Removing the image will force the default
@@ -1850,20 +1467,11 @@
             </p>
             <p style="color: red">PNG, 261px X 44px</p>
             <div class="row">
-              <input
-                type="file"
-                class="file-upload my-3 ml-3"
-                onchange="console.log(event.target.files)"
-              />
+              <input type="file" class="file-upload my-3 ml-3" onchange="console.log(event.target.files)" />
             </div>
             <div class="row">
               <div class="col-md-4">
-                <button
-                  class="my-5"
-                  mat-flat-button
-                  [matTooltip]="'Update'"
-                  [color]="'primary'"
-                >
+                <button class="my-5" mat-flat-button [matTooltip]="'Update'" [color]="'primary'">
                   <span class="px-2">Update</span>
                 </button>
               </div>
@@ -1874,12 +1482,8 @@
       <!------------- Product Builder Settings--------------->
       <div *ngIf="presentationScreen == 'Product Builder Settings'">
         <div class="row">
-          <div
-            class="col-12 bg-card sm:p-6 md:p-6 lg:p-10 rounded-2xl shadow mb-3"
-          >
-            <div
-              class="text-2xl font-extrabold tracking-tight leading-none my-3"
-            >
+          <div class="col-12 bg-card sm:p-6 md:p-6 lg:p-10 rounded-2xl shadow mb-3">
+            <div class="text-2xl font-extrabold tracking-tight leading-none my-3">
               Product builder settings
             </div>
             <div class="col-12 mt-5">
@@ -1893,9 +1497,7 @@
             </div>
           </div>
           <div class="col-12 bg-card sm:p-6 md:p-6 lg:p-10 rounded-2xl shadow">
-            <div
-              class="text-2xl font-extrabold tracking-tight leading-none my-3"
-            >
+            <div class="text-2xl font-extrabold tracking-tight leading-none my-3">
               Imprint Artwork Options
             </div>
             <div class="col-12 mt-5">
@@ -1944,12 +1546,7 @@
               </mat-form-field>
             </div>
             <div class="col-md-4">
-              <button
-                class="my-5"
-                mat-flat-button
-                [matTooltip]="'Update'"
-                [color]="'primary'"
-              >
+              <button class="my-5" mat-flat-button [matTooltip]="'Update'" [color]="'primary'">
                 <span class="px-2">Update</span>
               </button>
             </div>
@@ -1961,12 +1558,8 @@
       <div *ngIf="presentationScreen == 'Default Dashboard Emails'">
         <!-- Reschedule -->
         <div class="row">
-          <div
-            class="col-12 bg-card sm:p-6 md:p-6 lg:p-10 mb-3 rounded-2xl shadow"
-          >
-            <div
-              class="text-2xl font-extrabold tracking-tight leading-none my-3"
-            >
+          <div class="col-12 bg-card sm:p-6 md:p-6 lg:p-10 mb-3 rounded-2xl shadow">
+            <div class="text-2xl font-extrabold tracking-tight leading-none my-3">
               Default Reschedule Artwork Follow Up Email
             </div>
             <div class="col-12 p-0">
@@ -1979,12 +1572,8 @@
             </div>
           </div>
           <!-- Payment -->
-          <div
-            class="col-12 bg-card sm:p-6 md:p-6 lg:p-10 mb-3 rounded-2xl shadow"
-          >
-            <div
-              class="text-2xl font-extrabold tracking-tight leading-none my-3"
-            >
+          <div class="col-12 bg-card sm:p-6 md:p-6 lg:p-10 mb-3 rounded-2xl shadow">
+            <div class="text-2xl font-extrabold tracking-tight leading-none my-3">
               Default Payment Notification Email
             </div>
             <div class="col-12 p-0">
@@ -1997,12 +1586,8 @@
             </div>
           </div>
           <!-- Sample -->
-          <div
-            class="col-12 bg-card sm:p-6 md:p-6 lg:p-10 mb-3 rounded-2xl shadow"
-          >
-            <div
-              class="text-2xl font-extrabold tracking-tight leading-none my-3"
-            >
+          <div class="col-12 bg-card sm:p-6 md:p-6 lg:p-10 mb-3 rounded-2xl shadow">
+            <div class="text-2xl font-extrabold tracking-tight leading-none my-3">
               Default Sample Email
             </div>
             <div class="col-12 p-0">
@@ -2015,12 +1600,8 @@
             </div>
           </div>
           <!-- Around this time -->
-          <div
-            class="col-12 bg-card sm:p-6 md:p-6 lg:p-10 mb-3 rounded-2xl shadow"
-          >
-            <div
-              class="text-2xl font-extrabold tracking-tight leading-none my-3"
-            >
+          <div class="col-12 bg-card sm:p-6 md:p-6 lg:p-10 mb-3 rounded-2xl shadow">
+            <div class="text-2xl font-extrabold tracking-tight leading-none my-3">
               Default "Around This Time Last Year" Email
             </div>
             <div class="col-12 p-0">
@@ -2032,12 +1613,8 @@
             </div>
           </div>
           <!-- Post-Sale Activity -->
-          <div
-            class="col-12 bg-card sm:p-6 md:p-6 lg:p-10 mb-3 rounded-2xl shadow"
-          >
-            <div
-              class="text-2xl font-extrabold tracking-tight leading-none my-3"
-            >
+          <div class="col-12 bg-card sm:p-6 md:p-6 lg:p-10 mb-3 rounded-2xl shadow">
+            <div class="text-2xl font-extrabold tracking-tight leading-none my-3">
               Default "Post-Sale Activity" Email
             </div>
             <div class="col-12 p-0">
@@ -2049,12 +1626,8 @@
             </div>
           </div>
           <!-- Customer Survey -->
-          <div
-            class="col-12 bg-card sm:p-6 md:p-6 lg:p-10 mb-3 rounded-2xl shadow"
-          >
-            <div
-              class="text-2xl font-extrabold tracking-tight leading-none my-3"
-            >
+          <div class="col-12 bg-card sm:p-6 md:p-6 lg:p-10 mb-3 rounded-2xl shadow">
+            <div class="text-2xl font-extrabold tracking-tight leading-none my-3">
               Default Customer Survey Email
             </div>
             <div style="font-weight: 500">
@@ -2072,12 +1645,8 @@
             </div>
           </div>
           <!-- Quote Email -->
-          <div
-            class="col-12 bg-card sm:p-6 md:p-6 lg:p-10 mb-3 rounded-2xl shadow"
-          >
-            <div
-              class="text-2xl font-extrabold tracking-tight leading-none my-3"
-            >
+          <div class="col-12 bg-card sm:p-6 md:p-6 lg:p-10 mb-3 rounded-2xl shadow">
+            <div class="text-2xl font-extrabold tracking-tight leading-none my-3">
               Default Quote Email
             </div>
             <div style="font-weight: 500">
@@ -2095,12 +1664,7 @@
             </div>
           </div>
           <div class="col-md-4">
-            <button
-              class="my-5"
-              mat-flat-button
-              [matTooltip]="'Update'"
-              [color]="'primary'"
-            >
+            <button class="my-5" mat-flat-button [matTooltip]="'Update'" [color]="'primary'">
               <span class="px-2">Update</span>
             </button>
           </div>
@@ -2110,15 +1674,10 @@
       <div *ngIf="presentationScreen == 'Order Options'">
         <div class="row">
           <div class="col-12 bg-card sm:p-6 md:p-6 lg:p-10 rounded-2xl shadow">
-            <div
-              class="text-2xl font-extrabold tracking-tight leading-none my-3"
-            >
+            <div class="text-2xl font-extrabold tracking-tight leading-none my-3">
               Order Options Header Image
             </div>
-            <div
-              class="mt-5 fa fa-info-circle"
-              style="color: rgb(101, 124, 174)"
-            >
+            <div class="mt-5 fa fa-info-circle" style="color: rgb(101, 124, 174)">
               There is no order options header uploaded for this store.
             </div>
             <p>
@@ -2126,11 +1685,7 @@
             </p>
             <p style="color: red">(1500px X 300px, JPG ONLY!)</p>
             <div class="row">
-              <input
-                type="file"
-                class="file-upload my-3 ml-3"
-                onchange="console.log(event.target.files)"
-              />
+              <input type="file" class="file-upload my-3 ml-3" onchange="console.log(event.target.files)" />
             </div>
             <div class="row">
               <div class="col-md-4">
@@ -2153,9 +1708,7 @@
                 </button>
               </div>
             </div>
-            <div
-              class="text-2xl font-extrabold tracking-tight leading-none my-3"
-            >
+            <div class="text-2xl font-extrabold tracking-tight leading-none my-3">
               Add an artwork tag
             </div>
             <form>
@@ -2184,19 +1737,10 @@
                     of the artwork tag here.
                   </p>
                   <p style="color: red">PDF format only!</p>
-                  <input
-                    type="file"
-                    class="file-upload my-3 ml-3"
-                    onchange="console.log(event.target.files)"
-                  />
+                  <input type="file" class="file-upload my-3 ml-3" onchange="console.log(event.target.files)" />
                 </div>
                 <div class="col-md-4">
-                  <button
-                    class="my-5"
-                    mat-flat-button
-                    [matTooltip]="'Update'"
-                    [color]="'primary'"
-                  >
+                  <button class="my-5" mat-flat-button [matTooltip]="'Update'" [color]="'primary'">
                     <span class="px-2">Upload</span>
                   </button>
                 </div>
@@ -2207,9 +1751,7 @@
         <!-- Current artwork tags -->
         <div class="row">
           <div class="col-12 bg-card sm:p-6 md:p-6 lg:p-10 rounded-2xl shadow">
-            <div
-              class="text-2xl font-extrabold tracking-tight leading-none my-3"
-            >
+            <div class="text-2xl font-extrabold tracking-tight leading-none my-3">
               Current artwork tags
             </div>
             <div class="row">
@@ -2228,9 +1770,7 @@
       <div *ngIf="presentationScreen == 'Quick guides'">
         <div class="row mb-3">
           <div class="col-12 bg-card sm:p-6 md:p-6 lg:p-10 rounded-2xl shadow">
-            <div
-              class="text-2xl font-extrabold tracking-tight leading-none my-3"
-            >
+            <div class="text-2xl font-extrabold tracking-tight leading-none my-3">
               Add quick guide header
             </div>
             <p>
@@ -2238,11 +1778,7 @@
             </p>
             <p style="color: red">1500px W by 300px H JPG only!</p>
             <div class="row">
-              <input
-                type="file"
-                class="file-upload my-3 ml-3"
-                onchange="console.log(event.target.files)"
-              />
+              <input type="file" class="file-upload my-3 ml-3" onchange="console.log(event.target.files)" />
             </div>
             <div class="row">
               <div class="col-md-4">
@@ -2256,9 +1792,7 @@
 
         <div class="row mb-3">
           <div class="col-12 bg-card sm:p-6 md:p-6 lg:p-10 rounded-2xl shadow">
-            <div
-              class="text-2xl font-extrabold tracking-tight leading-none my-3"
-            >
+            <div class="text-2xl font-extrabold tracking-tight leading-none my-3">
               Add New Quick Guide
             </div>
             <p>
@@ -2266,11 +1800,7 @@
             </p>
             <p style="color: red">PDF file only!</p>
             <div class="row">
-              <input
-                type="file"
-                class="file-upload my-3 ml-3"
-                onchange="console.log(event.target.files)"
-              />
+              <input type="file" class="file-upload my-3 ml-3" onchange="console.log(event.target.files)" />
             </div>
             <div class="row">
               <div class="mt-4 col-12">
@@ -2292,9 +1822,7 @@
 
         <div class="row mb-3">
           <div class="col-12 bg-card sm:p-6 md:p-6 lg:p-10 rounded-2xl shadow">
-            <div
-              class="text-2xl font-extrabold tracking-tight leading-none my-3"
-            >
+            <div class="text-2xl font-extrabold tracking-tight leading-none my-3">
               Current Quick Guides
             </div>
             <div class="row">
@@ -2303,20 +1831,10 @@
                   Tradeshow Lookbook
                 </p>
                 <br />
-                <mat-icon
-                  class="cursor-pointer h-20 w-20"
-                  [svgIcon]="'heroicons_solid:document-text'"
-                ></mat-icon>
+                <mat-icon class="cursor-pointer h-20 w-20" [svgIcon]="'heroicons_solid:document-text'"></mat-icon>
                 <br />
-                <button
-                  mat-flat-button
-                  [matTooltip]="'Delete'"
-                  class="bg-accent-100 border"
-                >
-                  <mat-icon
-                    class="cursor-pointer"
-                    [svgIcon]="'heroicons_solid:trash'"
-                  ></mat-icon>
+                <button mat-flat-button [matTooltip]="'Delete'" class="bg-accent-100 border">
+                  <mat-icon class="cursor-pointer" [svgIcon]="'heroicons_solid:trash'"></mat-icon>
                 </button>
               </div>
               <div class="col-md-3 col-6 text-center">
@@ -2324,20 +1842,10 @@
                   Tradeshow Lookbook
                 </p>
                 <br />
-                <mat-icon
-                  class="cursor-pointer h-20 w-20"
-                  [svgIcon]="'heroicons_solid:document-text'"
-                ></mat-icon>
+                <mat-icon class="cursor-pointer h-20 w-20" [svgIcon]="'heroicons_solid:document-text'"></mat-icon>
                 <br />
-                <button
-                  mat-flat-button
-                  [matTooltip]="'Delete'"
-                  class="bg-accent-100 border"
-                >
-                  <mat-icon
-                    class="cursor-pointer"
-                    [svgIcon]="'heroicons_solid:trash'"
-                  ></mat-icon>
+                <button mat-flat-button [matTooltip]="'Delete'" class="bg-accent-100 border">
+                  <mat-icon class="cursor-pointer" [svgIcon]="'heroicons_solid:trash'"></mat-icon>
                 </button>
               </div>
             </div>

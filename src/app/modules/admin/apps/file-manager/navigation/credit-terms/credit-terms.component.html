@@ -1,0 +1,40 @@
+<ngx-skeleton-loader count="8" appearance="line" animation="pulse" *ngIf="isPageLoading">
+</ngx-skeleton-loader>
+<div *ngIf="!isPageLoading">
+  <fuse-card class="rounded-2xl shadow bg-card flex">
+    <div class="row" style="width: -webkit-fill-available;">
+      <div class="col-12">
+        <div class="p-6 sm:p-8 lg:p-10 w-full">
+          <div class="row">
+            <div class="col-lg-12 col-12 pb-6 sm:pb-8 lg:pb-8">
+              <div class="text-2xl font-bold">
+                Blanket Credit Terms
+              </div>
+              <note class="text-md">This tool allows you to apply a credit term to all the users on this store.
+              </note>
+            </div>
+            <div class="col-12 pt-6">
+              <form>
+                <mat-radio-group aria-labelledby="example-radio-group-label" class="example-radio-group"
+                  [(ngModel)]="selectedTerm">
+                  <mat-radio-button class="example-radio-button" *ngFor="let item of creditTerms"
+                    [value]="item.creditTermName">
+                    <strong>{{item.creditTermName}}</strong>
+                    <div style="white-space: break-spaces;">{{item.creditTermDesc}}</div>
+                  </mat-radio-button>
+                </mat-radio-group>
+                <div class="row mt-3">
+                  <div class="col-12 flex justify-end">
+                    <button [matTooltip]="'Apply'" class="w-full md:w-50 lg:w-50" mat-stroked-button mat-flat-button>
+                      Apply
+                    </button>
+                  </div>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </fuse-card>
+</div>

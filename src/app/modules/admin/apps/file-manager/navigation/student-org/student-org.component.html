@@ -1,0 +1,255 @@
+<ngx-skeleton-loader count="8" appearance="line" animation="pulse" *ngIf="isPageLoading">
+</ngx-skeleton-loader>
+<div *ngIf="!isPageLoading">
+  <div class="row p-3">
+    <div class="col-12 bg-card rounded-2xl shadow py-5">
+      <mat-tab-group [animationDuration]="'0'" (selectedTabChange)="selectedTabValue($event)">
+        <mat-tab label="Student Organizations">
+          <div class="row" style="width: -webkit-fill-available;">
+            <div class="col-12">
+              <div>
+                <div class="row">
+                  <div class="col-lg-6 col-12 pb-6 sm:pb-8 lg:pb-8">
+                    <div class="text-2xl font-bold">
+                      Student Organizations
+                    </div>
+                  </div>
+                  <div class="col-12 h-full ">
+                    <ng-container *ngIf="dataSource.length > 0; else noRecords">
+                      <form [formGroup]="contactForm">
+                        <table mat-table [dataSource]="dataSource" class="w-full">
+                          <div class="color-blue" formArrayName="contacts">
+                            <!-- ID Column -->
+                            <ng-container matColumnDef="code">
+                              <th class="min-w-10 bg-gray-50 dark:bg-black dark:bg-opacity-5" mat-header-cell
+                                *matHeaderCellDef>
+                                Code
+                              </th>
+                              <td mat-cell *matCellDef="let element;let i=index" [formGroupName]="i">
+                                {{element.code}}
+                              </td>
+                            </ng-container>
+
+                            <!-- Name Column -->
+                            <ng-container matColumnDef="name">
+                              <th class="min-w-10 bg-gray-50 dark:bg-black dark:bg-opacity-5" mat-header-cell
+                                *matHeaderCellDef>
+                                Name
+                              </th>
+                              <td mat-cell *matCellDef="let element;let i=index" [formGroupName]="i">
+                                {{element.name}}
+                              </td>
+                            </ng-container>
+
+                            <!-- Status Column -->
+                            <ng-container matColumnDef="a_name">
+                              <th class="min-w-10 bg-gray-50 dark:bg-black dark:bg-opacity-5" mat-header-cell
+                                *matHeaderCellDef>
+                                Advisor Name
+                              </th>
+                              <td mat-cell *matCellDef="let element;let i=index" [formGroupName]="i">
+                                {{element.advisorName}}
+                              </td>
+                            </ng-container>
+                            <ng-container matColumnDef="a_email">
+                              <th class="min-w-10 bg-gray-50 dark:bg-black dark:bg-opacity-5" mat-header-cell
+                                *matHeaderCellDef>
+                                Advisor Email
+                              </th>
+                              <td mat-cell *matCellDef="let element;let i=index" [formGroupName]="i"
+                                class="text-center">
+                                {{element.advisorEmail}}
+                              </td>
+                            </ng-container>
+                            <ng-container matColumnDef="campus">
+                              <th class="min-w-10 bg-gray-50 dark:bg-black dark:bg-opacity-5" mat-header-cell
+                                *matHeaderCellDef>
+                                Campus
+                              </th>
+                              <td mat-cell *matCellDef="let element;let i=index" [formGroupName]="i"
+                                class="text-center">
+                                {{element.campus}}
+                              </td>
+                            </ng-container>
+                            <ng-container matColumnDef="active">
+                              <th class="min-w-10 bg-gray-50 dark:bg-black dark:bg-opacity-5" mat-header-cell
+                                *matHeaderCellDef>
+                                Active
+                              </th>
+                              <td mat-cell *matCellDef="let element;let i=index" [formGroupName]="i"
+                                class="text-center">
+                                <span *ngIf="element.blnActive">Active</span>
+                                <span *ngIf="!element.blnActive">Disabled</span>
+                              </td>
+                            </ng-container>
+                            <ng-container matColumnDef="Action">
+                              <th class="min-w-10 bg-gray-50 dark:bg-black dark:bg-opacity-5" mat-header-cell
+                                *matHeaderCellDef>
+                                Action
+                              </th>
+                              <td mat-cell *matCellDef="let element;">
+                                <div class="flex justify-between">
+                                  <button [matTooltip]="'Save Changes'" mat-icon-button
+                                    aria-label="Example icon button with a vertical three dot icon">
+                                    <mat-icon>done</mat-icon>
+                                  </button>
+                                  <button [matTooltip]="'Remove'" mat-icon-button
+                                    aria-label="Example icon button with a vertical three dot icon">
+                                    <mat-icon>close</mat-icon>
+                                  </button>
+                                </div>
+                              </td>
+                            </ng-container>
+                          </div>
+                          <tr mat-header-row class="h-16 shadow bg-card" *matHeaderRowDef="displayedColumns"></tr>
+                          <tr mat-row class="hover:bg-gray-100 dark:hover:bg-hover" style="cursor: pointer;"
+                            *matRowDef="let row; columns: displayedColumns"></tr>
+                        </table>
+                      </form>
+                    </ng-container>
+                    <ng-template #noRecords>
+                      <div class="font-semibold tracking-tight text-center">
+                        <p> There are currently no student organizations defined for this store or your search did not
+                          return any results.</p>
+                      </div>
+                    </ng-template>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </mat-tab>
+        <mat-tab label="Import Organizations">
+          <div class="row">
+            <div class="col-lg-6 col-12 pb-6 sm:pb-8 lg:pb-8">
+              <div class="text-2xl font-bold">
+                Import Student Organization Data Sheet
+              </div>
+            </div>
+          </div>
+          <form>
+            <div class="row">
+              <div class="col-md-4 col-12 mt-5">
+                <mat-label>Select a CSV file to import:</mat-label>
+                <input type="file">
+              </div>
+              <div class="col-md-4 col-12">
+                <mat-form-field class="w-full">
+                  <mat-label>Import option: </mat-label>
+                  <mat-select matInput>
+                    <mat-option value="no">Append</mat-option>
+                    <mat-option value="no">Overwrite</mat-option>
+                    <mat-option value="no">Update</mat-option>
+                  </mat-select>
+                </mat-form-field>
+              </div>
+              <div class="col-md-4 col-12">
+                <mat-form-field class="w-full">
+                  <mat-label>Campus</mat-label>
+                  <mat-select matInput>
+                    <mat-option value="no">All Campus</mat-option>
+                  </mat-select>
+                </mat-form-field>
+              </div>
+              <div class="col-12 flex justify-end">
+                <button [matTooltip]="'Import Data'" class="w-full md:w-50 lg:w-50" mat-stroked-button mat-flat-button>
+                  Import Data
+                </button>
+              </div>
+            </div>
+          </form>
+        </mat-tab>
+        <mat-tab label="Add New ">
+          <div class="row">
+            <div class="col-lg-6 col-12 pb-6 sm:pb-8 lg:pb-8">
+              <div class="text-2xl font-bold">
+                Add new student organization
+              </div>
+            </div>
+          </div>
+          <form>
+            <div class="row">
+              <div class="col-md-4 col-12">
+                <mat-form-field class="w-full">
+                  <mat-label>Organization code/number: *</mat-label>
+                  <input type="text" matInput placeholder="Organization Code Number">
+                </mat-form-field>
+              </div>
+              <div class="col-md-4 col-12">
+                <mat-form-field class="w-full">
+                  <mat-label>Organization Name: *</mat-label>
+                  <input type="text" matInput placeholder="Organization Name">
+                </mat-form-field>
+              </div>
+              <div class="col-md-4 col-12">
+                <mat-form-field class="w-full">
+                  <mat-label>Advisor Email</mat-label>
+                  <input type="text" matInput placeholder="Advisor Email">
+                </mat-form-field>
+              </div>
+              <div class="col-md-4 col-12">
+                <mat-form-field class="w-full">
+                  <mat-label>Advisor Name</mat-label>
+                  <input type="text" matInput placeholder="Advisor Name">
+                </mat-form-field>
+              </div>
+              <div class="col-md-4 col-12">
+                <mat-form-field class="w-full">
+                  <mat-label>Campus</mat-label>
+                  <mat-select matInput>
+                    <mat-option value="no">All Campus</mat-option>
+                  </mat-select>
+                </mat-form-field>
+              </div>
+              <div class="col-12 flex justify-end">
+                <button [matTooltip]="'Add Student Organization'" class="w-full md:w-50 lg:w-50" mat-stroked-button
+                  mat-flat-button>
+                  Add Student Organization
+                </button>
+              </div>
+            </div>
+          </form>
+        </mat-tab>
+        <mat-tab label="Update Campus">
+          <div class="row">
+            <div class="col-lg-6 col-12 pb-6 sm:pb-8 lg:pb-8">
+              <div class="text-2xl font-bold">
+                Update Campus
+              </div>
+            </div>
+          </div>
+          <form>
+            <div class="row">
+              <div class="col-md-4 col-12">
+                <mat-form-field class="w-full">
+                  <mat-label>Campus</mat-label>
+                  <mat-select matInput>
+                    <mat-option value="no">All Campus</mat-option>
+                  </mat-select>
+                </mat-form-field>
+              </div>
+              <div class="col-md-4 col-12">
+                <mat-form-field class="w-full">
+                  <mat-label>Advisor Email</mat-label>
+                  <input type="text" matInput placeholder="Advisor Email">
+                </mat-form-field>
+              </div>
+              <div class="col-md-4 col-12">
+                <mat-form-field class="w-full">
+                  <mat-label>Advisor Name</mat-label>
+                  <input type="text" matInput placeholder="Advisor Name">
+                </mat-form-field>
+              </div>
+
+              <div class="col-12 flex justify-end">
+                <button [matTooltip]="'Update'" class="w-full md:w-50 lg:w-50" mat-stroked-button mat-flat-button>
+                  Update
+                </button>
+              </div>
+            </div>
+          </form>
+        </mat-tab>
+      </mat-tab-group>
+    </div>
+  </div>
+</div>

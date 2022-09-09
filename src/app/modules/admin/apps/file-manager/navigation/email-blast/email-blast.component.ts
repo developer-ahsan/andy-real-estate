@@ -5,7 +5,8 @@ import { FileManagerService } from '../../store-manager.service';
 
 @Component({
   selector: 'app-email-blast',
-  templateUrl: './email-blast.component.html'
+  templateUrl: './email-blast.component.html',
+  styles: ['::ng-deep {.ql-container {height: auto}}']
 })
 export class EmailBlastComponent implements OnInit {
   @Input() selectedStore: any;
@@ -25,6 +26,7 @@ export class EmailBlastComponent implements OnInit {
     ]
   };
   presentationButtons: string[] = [
+    "Main",
     "Campaign Focused",
     "Featured products",
     "Simple Text",
@@ -34,7 +36,14 @@ export class EmailBlastComponent implements OnInit {
     "Segmented target files",
   ];
   checked = false;
+  drawerOpened: boolean = false;
+  selectedIndex: any;
+  drawerMode = "over";
+  displayedColumns: string[] = ['update', 'name', 'action'];
+  dataSource = [1, 2];
 
+  optDisplayedColumns: string[] = ['email', 'action'];
+  optDataSource = [1, 2];
   constructor(
     private _fileManagerService: FileManagerService,
     private _changeDetectorRef: ChangeDetectorRef
@@ -44,7 +53,11 @@ export class EmailBlastComponent implements OnInit {
     this.isLoadingChange.emit(false);
   }
   calledScreen(screenName): void {
+    this.drawerOpened = false;
     this.presentationScreen = screenName;
+  }
+  toggleDrawer() {
+    this.drawerOpened = !this.drawerOpened;
   }
 
 }
