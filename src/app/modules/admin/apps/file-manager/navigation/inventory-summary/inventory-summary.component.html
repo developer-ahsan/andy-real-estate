@@ -2,7 +2,7 @@
 </ngx-skeleton-loader>
 <div *ngIf="!dataSourceLoading">
   <div *ngIf="!isLoading">
-    <fuse-card class="rounded-2xl shadow bg-card flex pb-10">
+    <fuse-card class="rounded-2xl shadow bg-card flex pb-10" *ngIf="!isEditInventory">
       <div class="row" style="width: -webkit-fill-available;">
         <div class="col-12">
           <div class="p-6 sm:p-8 lg:p-10 w-full">
@@ -47,7 +47,7 @@
                   <th class="min-w-50 bg-gray-50 dark:bg-black dark:bg-opacity-5" mat-header-cell *matHeaderCellDef>
                     Product
                   </th>
-                  <td mat-cell *matCellDef="let element">
+                  <td mat-cell *matCellDef="let element" (click)="editInventory(element)">
                     {{ element.productName }}
                   </td>
                 </ng-container>
@@ -97,5 +97,108 @@
         </div>
       </div>
     </fuse-card>
+    <div *ngIf="isEditInventory">
+      <div class="row mb-2">
+        <div class="col-12 text-right">
+          <button class="ml-4" mat-flat-button mat-stroked-button [matTooltip]="'Go to Inventory'"
+            (click)="backToInventory()">
+            <mat-icon [svgIcon]="'heroicons_outline:arrow-narrow-left'"></mat-icon>
+            <span class="ml-2 mr-1">Back to Inventory'"</span>
+          </button>
+        </div>
+        <fuse-card class="rounded-2xl shadow bg-card flex pb-10" *ngIf="!isEditInventory">
+          <div class="row" style="width: -webkit-fill-available;">
+            <div class="col-12">
+              <div class="p-6 sm:p-8 lg:p-10 w-full">
+                <div class="row">
+                  <div class="col-lg-6 col-12">
+                    <div class="text-2xl font-bold">
+                      Update Inventory Summary
+                    </div>
+                  </div>
+                  <!-- <div class="col-lg-6 col-12 flex justify-end">
+                    <p class="text-md cursor-pointer font-medium text-primary-500 hover:text-primary-900">
+                      Edit Inventory
+                    </p>
+                  </div> -->
+                </div>
+              </div>
+            </div>
+            <div class="col-12 h-full">
+              <form [formGroup]="isEditInventoryForm">
+                <div class="col-12">
+                  <mat-form-field appearance="fill" class="w-full">
+                    <mat-label>
+                      Is this a warehouse item?
+                    </mat-label>
+                    <mat-select formControlName="isWarehouse">
+                      <mat-option [value]="true">Yes</mat-option>
+                      <mat-option [value]="false">No</mat-option>
+                    </mat-select>
+                  </mat-form-field>
+                </div>
+                <div class="row mt-3">
+                  <div class="col-lg-4 col-12">
+                    <mat-form-field appearance="fill" class="w-full">
+                      <mat-label>Inventory</mat-label>
+                      <input formControlName="inventory" matInput />
+                    </mat-form-field>
+                  </div>
+                  <div class="col-lg-6 col-12">
+                    <mat-form-field appearance="fill" class="w-full">
+                      <mat-label>Inventory Threshold</mat-label>
+                      <input formControlName="inventoryThreshold" matInput />
+                    </mat-form-field>
+                  </div>
+                  <div class="col-12 mt-5">
+                    <mat-form-field appearance="fill" class="w-full">
+                      <mat-label>
+                        Max Quantity
+                      </mat-label>
+                      <input formControlName="maxQuantity" matInput />
+                    </mat-form-field>
+                  </div>
+                  <div class="col-12 mt-4">
+                    <mat-form-field appearance="fill" class="w-full">
+                      <mat-label>Warehousing Cost</mat-label>
+                      <input formControlName="warehousingCost" matInput />
+                    </mat-form-field>
+                  </div>
+                  <div class="col-12 mt-4">
+                    <mat-form-field appearance="fill" class="w-full">
+                      <mat-label>Handling Cost</mat-label>
+                      <input formControlName="warehousingCost" matInput />
+                    </mat-form-field>
+                  </div>
+                  <div class="col-12 mt-4">
+                    <mat-form-field appearance="fill" class="w-full">
+                      <mat-label>Warehouse code:</mat-label>
+                      <input formControlName="warehousingCost" matInput />
+                    </mat-form-field>
+                  </div>
+                  <div class="col-12 mt-4">
+                    <mat-form-field appearance="fill" class="w-full">
+                      <mat-label>Delivery Fee:</mat-label>
+                      <input formControlName="warehousingCost" matInput />
+                    </mat-form-field>
+                  </div>
+                  <div class="col-12 mt-4">
+                    <mat-form-field appearance="fill" class="w-full">
+                      <mat-label>Delivery Note:</mat-label>
+                      <input formControlName="deliveryNote" matInput />
+                    </mat-form-field>
+                  </div>
+                  <div class="col-12 text-right">
+                    <button class="my-5" mat-flat-button mat-stroked-button [matTooltip]="'Update'">
+                      <span class="px-2">Update</span>
+                    </button>
+                  </div>
+                </div>
+              </form>
+            </div>
+          </div>
+        </fuse-card>
+      </div>
+    </div>
   </div>
 </div>

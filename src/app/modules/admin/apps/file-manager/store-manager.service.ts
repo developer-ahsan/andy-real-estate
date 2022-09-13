@@ -453,9 +453,8 @@ export class FileManagerService {
       .get<any[]>(environment.stores, { params: params })
       .pipe(retry(3));
   }
-  puttStoresData(params) {
-    return this._httpClient
-      .put<any[]>(environment.stores, { params: params })
-      .pipe(retry(3));
+  putStoresData(payload) {
+    const headers = { 'Authorization': `Bearer ${this._authService.accessToken}` };
+    return this._httpClient.put(environment.stores, payload, { headers }).pipe(retry(3));
   }
 }

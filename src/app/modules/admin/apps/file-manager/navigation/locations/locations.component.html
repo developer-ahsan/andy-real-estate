@@ -19,7 +19,7 @@
                 Close Location Attribute
               </p>
             </div>
-            <div class="col-12 pt-6" *ngIf="isAddLocation">
+            <div class="col-12 pt-6" *ngIf="isAddLocation && !isAddSubLocation">
               <note class="text-md">A location attribute would be a type of top-level location, such as a
                 "department,"
                 "campus," "branch," etc.</note>
@@ -39,6 +39,44 @@
                 </div>
               </form>
             </div>
+            <div class="col-12 pt-6" *ngIf="isAddSubLocation">
+              <note class="text-md">Location Attribute</note>
+              <form class="mt-2">
+                <div class="row flex">
+                  <div class="col-md-6 col-12">
+                    <mat-form-field class="w-full">
+                      <input matInput type="text" placeholder="Location attribute name" [(ngModel)]="updateAttributeVal"
+                        name="arribute">
+                    </mat-form-field>
+                  </div>
+                  <div class="col-md-2 col-12">
+                    <button [matTooltip]="'Add Attribute'" class="w-full md:w-50 lg:w-50" mat-stroked-button
+                      mat-flat-button>
+                      Update Attribute
+                    </button>
+                  </div>
+                </div>
+              </form>
+            </div>
+            <div class="col-12 pt-6" *ngIf="isAddSubLocation">
+              <note class="text-md">Add A Location</note>
+              <form class="mt-2">
+                <div class="row flex">
+                  <div class="col-md-6 col-12">
+                    <mat-form-field class="w-full">
+                      <input matInput type="text" placeholder="Location attribute name">
+                    </mat-form-field>
+                  </div>
+                  <div class="col-md-2 col-12">
+                    <button [matTooltip]="'Add Attribute'" class="w-full md:w-50 lg:w-50" mat-stroked-button
+                      mat-flat-button>
+                      Add Location
+                    </button>
+                  </div>
+                </div>
+              </form>
+            </div>
+
           </div>
         </div>
 

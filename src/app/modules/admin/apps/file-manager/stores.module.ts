@@ -64,6 +64,9 @@ import { LocationsComponent } from "./navigation/locations/locations.component";
 import { CreditTermsComponent } from "./navigation/credit-terms/credit-terms.component";
 import { StorePlanComponent } from "./navigation/store-plan/store-plan.component";
 import { StudentOrgComponent } from "./navigation/student-org/student-org.component";
+import { MatNativeDateModule } from "@angular/material/core";
+import { MatFormFieldModule } from "@angular/material/form-field";
+import { MatDatepickerModule } from "@angular/material/datepicker";
 
 @NgModule({
   declarations: [
@@ -128,6 +131,9 @@ import { StudentOrgComponent } from "./navigation/student-org/student-org.compon
     NgApexchartsModule,
     MatButtonToggleModule,
     MatSnackBarModule,
+    MatNativeDateModule,
+    MatFormFieldModule,
+    MatDatepickerModule,
     MatExpansionModule,
     QuillModule.forRoot(),
     SharedModule,

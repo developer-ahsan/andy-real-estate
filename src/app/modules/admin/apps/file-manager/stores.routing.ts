@@ -24,7 +24,7 @@ export const storeRoutes: Route[] = [
                 resolve: {
                     items: FileManagerItemsResolver,
                     suppliers: SupplierResolver,
-                    storeByID: StoreDetailsByID
+                    details: StoreDetailsByID
                 }
             }
         ]

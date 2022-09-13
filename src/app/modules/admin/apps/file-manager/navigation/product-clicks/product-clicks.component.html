@@ -12,21 +12,9 @@
                                     Product Clicks
                                 </div>
                             </div>
-                            <!-- <div class="col-lg-6 col-12">
-                                <mat-form-field class="fuse-mat-dense fuse-mat-no-subscript w-full">
-                                    <input class="h-6" matInput [matTooltip]="'Press enter key after typing'"
-                                        (keyup.enter)="searchStoreProduct($event)" [value]="keywordSearch" type="text"
-                                        [autocomplete]="'off'" [disabled]="isKeywordSearch"
-                                        [placeholder]="'Search by keyword'">
-                                    <mat-icon matPrefix [svgIcon]="'heroicons_outline:search'"></mat-icon>
-                                </mat-form-field>
-                            </div>
-                            <div class="col-12 flex justify-end">
-                                <p class="text-md cursor-pointer font-medium text-primary-500 hover:underline"
-                                    (click)="resetSearch()">
-                                    Reset Search
-                                </p>
-                            </div> -->
+                        </div>
+                        <div class="row">
+                            <div class="col-12 text-right">TotalRecords: {{dataSourceTotalRecord}}</div>
                         </div>
                     </div>
                 </div>
@@ -42,22 +30,24 @@
                             <div class="color-blue">
                                 <!-- Company Column -->
                                 <ng-container matColumnDef="productName">
-                                    <th class="min-w-10 bg-gray-50 dark:bg-black dark:bg-opacity-5" mat-header-cell
+                                    <th class="min-w-50 bg-gray-50 dark:bg-black dark:bg-opacity-5" mat-header-cell
                                         *matHeaderCellDef>
                                         Product
                                     </th>
-                                    <td mat-cell *matCellDef="let element">{{ element.pk_storeProductID }}</td>
+                                    <td mat-cell *matCellDef="let element">{{ element.productName }}</td>
+                                    <td mat-footer-cell *matFooterCellDef> <b>Total</b> </td>
                                 </ng-container>
 
                                 <!-- Product Column -->
                                 <ng-container matColumnDef="clicks">
-                                    <th class="min-w-50 bg-gray-50 dark:bg-black dark:bg-opacity-5" mat-header-cell
+                                    <th class="min-w-10 bg-gray-50 dark:bg-black dark:bg-opacity-5" mat-header-cell
                                         *matHeaderCellDef>
                                         Clicks
                                     </th>
                                     <td mat-cell *matCellDef="let element">
-                                        {{ element.productName}}
+                                        {{ element.pk_storeProductID}}
                                     </td>
+                                    <td mat-footer-cell *matFooterCellDef> <b>100</b> </td>
                                 </ng-container>
 
                                 <!-- percentage Column -->
@@ -67,14 +57,16 @@
                                         (%)
                                     </th>
                                     <td mat-cell *matCellDef="let element">
-                                        <span *ngIf="element.blnActive" class="text-green-400">ACTIVE</span>
-                                        <span *ngIf="!element.blnActive" class="text-gray-400">DISABLED</span>
+                                        10%
                                     </td>
+                                    <td mat-footer-cell *matFooterCellDef> <b>100%</b> </td>
                                 </ng-container>
                             </div>
                             <tr mat-header-row class="h-16 shadow bg-card" *matHeaderRowDef="displayedColumns"></tr>
                             <tr mat-row class="hover:bg-gray-100 dark:hover:bg-hover" style="cursor: pointer;"
                                 *matRowDef="let row; columns: displayedColumns"></tr>
+                            <tr mat-footer-row *matFooterRowDef="displayedColumns" class="example-first-footer-row">
+                            </tr>
                         </table>
                     </ng-container>
                     <ng-template #noRecords>
@@ -82,13 +74,6 @@
                             <p>No record found</p>
                         </div>
                     </ng-template>
-                </div>
-                <div class="col-12" *ngIf="!isKeywordSearch">
-                    <mat-paginator
-                        class="sm:absolute sm:inset-x-0 sm:bottom-0 border-b sm:border-t sm:border-b-0 z-10 bg-gray-50 dark:bg-transparent"
-                        [ngClass]="{'pointer-events-none': isLoading}" (page)="getNextData($event)"
-                        [length]="dataSourceTotalRecord" [pageIndex]="0" [pageSize]="20" [hidePageSize]="true">
-                    </mat-paginator>
                 </div>
             </div>
         </fuse-card>

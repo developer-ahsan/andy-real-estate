@@ -1,5 +1,7 @@
-import { ChangeDetectorRef, Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { ChangeDetectorRef, Component, EventEmitter, Input, OnInit, Output, ViewChild } from '@angular/core';
 import { FormControl, FormGroup } from '@angular/forms';
+import { MatOption } from '@angular/material/core';
+import { MatSelect } from '@angular/material/select';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { Subject } from 'rxjs';
 import { FileManagerService } from '../../store-manager.service';
@@ -10,7 +12,7 @@ import { FileManagerService } from '../../store-manager.service';
   styles: ['::ng-deep {.ql-container {height: auto}}']
 })
 export class RoyaltiesComponent implements OnInit {
-
+  @ViewChild('select') select: MatSelect;
   @Input() selectedStore: any;
   @Input() isLoading: boolean;
   @Output() isLoadingChange = new EventEmitter<boolean>();
@@ -27,6 +29,16 @@ export class RoyaltiesComponent implements OnInit {
   };
 
   royalityForm: FormGroup;
+  includeCheckArray = [
+    { value: 'Include shipping', viewValue: 'Include shipping' },
+    { value: 'Include runs', viewValue: 'Include runs' },
+    { value: ' Include setups', viewValue: ' Include setups' },
+    { value: ' Has cost', viewValue: ' Has cost' },
+    { value: 'Has price', viewValue: 'Has price' },
+    { value: 'Checkout option', viewValue: 'Checkout option' },
+    { value: 'Require during checkout', viewValue: 'Require during checkout' }
+  ]
+  allSelected: boolean = false;
   constructor(
     private _fileManagerService: FileManagerService,
     private _changeDetectorRef: ChangeDetectorRef,
@@ -38,4 +50,20 @@ export class RoyaltiesComponent implements OnInit {
     })
   }
 
+  toggleAllSelection() {
+    if (this.allSelected) {
+      this.select.options.forEach((item: MatOption) => item.select());
+    } else {
+      this.select.options.forEach((item: MatOption) => item.deselect());
+    }
+  }
+  optionClick() {
+    let newStatus = true;
+    this.select.options.forEach((item: MatOption) => {
+      if (!item.selected) {
+        newStatus = false;
+      }
+    });
+    this.allSelected = newStatus;
+  }
 }

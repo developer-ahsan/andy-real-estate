@@ -4,6 +4,7 @@ import { FileManagerService } from 'app/modules/admin/apps/file-manager/store-ma
 import { takeUntil } from 'rxjs/operators';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { FormArray, FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
+import { I } from '@angular/cdk/keycodes';
 
 @Component({
   selector: 'app-campaigns',
@@ -47,6 +48,10 @@ export class CampaignsComponent implements OnInit {
   ];
 
   updateFeatureLoading: boolean = false;
+  isEditCampaign: boolean = false;
+  campaignForm: FormGroup;
+  flashMessage: 'success' | 'error' | 'errorMessage' | null = null;
+
   constructor(
     private _storeManagerService: FileManagerService,
     private _changeDetectorRef: ChangeDetectorRef,
@@ -55,11 +60,24 @@ export class CampaignsComponent implements OnInit {
 
   ngOnInit(): void {
     this.dataSourceLoading = true;
-    this.getFirstCall();
+    this.initialize();
+    this.getFirstCall('get');
   };
   initialize() {
+    this.campaignForm = new FormGroup({
+      pk_campaignID: new FormControl(''),
+      title: new FormControl(''),
+      permalink: new FormControl(''),
+      objective: new FormControl(''),
+      shortDesc: new FormControl(''),
+      strategy: new FormControl(''),
+      results: new FormControl(''),
+      videoURL: new FormControl(''),
+      blnActive: new FormControl(''),
+      blnFeature: new FormControl('')
+    })
   }
-  getFirstCall() {
+  getFirstCall(type) {
     const { pk_storeID } = this.selectedStore;
 
     // Get the supplier products
@@ -70,13 +88,15 @@ export class CampaignsComponent implements OnInit {
         this.duplicatedDataSource = this.dataSource;
         this.dataSourceTotalRecord = response["totalRecords"];
         this.dataSourceLoading = false;
+        if (type != 'get') {
+          this.updateFeatureLoading = false;
+          this.flashMessage = type;
+          this.hideFlashMessage();
+        }
 
         // Mark for check
         this._changeDetectorRef.markForCheck();
       }, err => {
-
-        // Recall on error
-        this.getFirstCall();
         this.dataSourceLoading = false;
 
         // Mark for check
@@ -135,15 +155,74 @@ export class CampaignsComponent implements OnInit {
     });
     let params = {
       store_id: this.selectedStore.pk_storeID,
-      campaign_ids: checkArray.toString(),
-      bln_feature: true
+      campaign_ids: checkArray,
+      bln_feature: true,
+      campaign_featured: true
     }
-    this._storeManagerService.puttStoresData(params)
+    this._storeManagerService.putStoresData(params)
       .pipe(takeUntil(this._unsubscribeAll))
       .subscribe(res => {
+        this.showFlashMessage(
+          res["success"] === true ?
+            'success' :
+            'error'
+        );
+        this._changeDetectorRef.markForCheck();
+      }, (err => {
         this.updateFeatureLoading = false;
         this._changeDetectorRef.markForCheck();
-      })
+      }))
   }
+  updateDisplayOrder() {
+    let checkArray = []
+    this.dataSource.forEach(element => {
+      if (element.blnFeature) {
+        checkArray.push({ campaign_id: element.pk_campaignID, display_order: Number(element.listOrder) })
+      }
+    });
+    let params = {
+      store_id: this.selectedStore.pk_storeID,
+      display_order: checkArray,
+      campaign_display: true
+    }
+    this._storeManagerService.putStoresData(params)
+      .pipe(takeUntil(this._unsubscribeAll))
+      .subscribe(res => {
+        this.showFlashMessage(
+          res["success"] === true ?
+            'success' :
+            'error'
+        );
+        this._changeDetectorRef.markForCheck();
+      }, (err => {
+        this.updateFeatureLoading = false;
+        this._changeDetectorRef.markForCheck();
+      }))
+  }
+  campaignEdit(campaign) {
+    this.isEditCampaign = true;
+    this.campaignForm.patchValue(campaign)
+    console.log(campaign);
+  }
+  backToCampaigns() {
+    this.isEditCampaign = false;
+  }
+  showFlashMessage(type: 'success' | 'error'): void {
+    // Show the message
+    this.flashMessage = null;
+    this.getFirstCall(type);
 
+    // Mark for check
+    this._changeDetectorRef.markForCheck();
+  };
+  hideFlashMessage() {
+    // Hide it after 3.5 seconds
+    setTimeout(() => {
+
+      this.flashMessage = null;
+
+      // Mark for check
+      this._changeDetectorRef.markForCheck();
+    }, 3500);
+  }
 }

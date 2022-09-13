@@ -32,7 +32,10 @@ export class LocationsComponent implements OnInit {
 
   activeProductsSum;
   productsCount;
-  isAddLocation: boolean = false
+  isAddLocation: boolean = false;
+  isAddSubLocation: boolean = false;
+  updateAttributeVal = '';
+  updateAttributeId: any;
   constructor(
     private _fileManagerService: FileManagerService,
     private _changeDetectorRef: ChangeDetectorRef,
@@ -116,11 +119,16 @@ export class LocationsComponent implements OnInit {
      */
   closeDetails(): void {
     this.selectedCategory = null;
+    this.isAddSubLocation = false;
+    this.isAddLocation = false;
   }
 
   openedAccordion(data): void {
+    this.isAddLocation = false;
+    this.isAddSubLocation = true;
     const { pk_attributeID, attributeName } = data;
-
+    this.updateAttributeVal = attributeName;
+    this.updateAttributeId = pk_attributeID;
     // If the customer is already selected...
     if (this.selectedCategory && this.selectedCategory.pk_attributeID === pk_attributeID) {
       // Close the details
@@ -179,6 +187,7 @@ export class LocationsComponent implements OnInit {
 
   toggleAddLocation() {
     this.isAddLocation = !this.isAddLocation;
+    this.isAddSubLocation = false;
   }
 
 }

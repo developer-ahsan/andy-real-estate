@@ -13,40 +13,68 @@
                 </div>
               </div>
               <div class="col-lg-6 col-12 flex justify-end">
-                <p class="text-md cursor-pointer font-medium text-primary-500 hover:text-primary-900"
-                  (click)="advancedSearchToggle()">
-                  <span *ngIf="!isAdvancedSearch">Advanced Search</span>
-                  <span *ngIf="isAdvancedSearch">Close Search</span>
+                <p class="text-md cursor-pointer font-medium text-primary-500 hover:text-primary-900">
+                  <span *ngIf="!isAdvancedSearch" (click)="advancedSearchToggle()">Advanced Search</span>
+                  <span *ngIf="isAdvancedSearch" (click)="resetSearch()">Reset Search</span>
                 </p>
               </div>
               <div class="col-12" *ngIf="isAdvancedSearch">
-                <form class="pt-6 sm:pt-8">
+                <form class="pt-6 sm:pt-8" [formGroup]="filterForm">
                   <div class="row">
-                    <div class="col-md-4  col-12">
+                    <!-- <div class="col-md-4  col-12">
                       <mat-form-field>
                         <mat-label>View History from: </mat-label>
-                        <mat-select matInput>
-                          <mat-option value="alltime">All time</mat-option>
-                          <mat-option value="alltime">This week</mat-option>
-                          <mat-option value="alltime">This month</mat-option>
-                          <mat-option value="alltime">This year</mat-option>
+                        <mat-select matInput formControlName="check">
+                          <mat-option value="all">All time</mat-option>
+                          <mat-option value="week">This week</mat-option>
+                          <mat-option value="month">This month</mat-option>
+                          <mat-option value="year">This year</mat-option>
                         </mat-select>
                       </mat-form-field>
-                    </div>
-                    <div class="col-md-4  col-12">
+                    </div> -->
+                    <div class="col-md-6 col-12">
                       <mat-form-field>
+                        <mat-label>Keyword:</mat-label>
+                        <input formControlName="keyword" matInput placeholder="Keyword:" />
+                      </mat-form-field>
+                    </div>
+                    <!-- <div class="col-md-4 col-12">
+                      <mat-form-field appearance="fill">
+                        <mat-label>Enter a date range</mat-label>
+                        <mat-date-range-input [formGroup]="rangeFilter" [rangePicker]="picker">
+                          <input matStartDate formControlName="start" placeholder="Start date">
+                          <input matEndDate formControlName="end" placeholder="End date">
+                        </mat-date-range-input>
+                        <mat-hint>MM/DD/YYYY – MM/DD/YYYY</mat-hint>
+                        <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+                        <mat-date-range-picker #picker></mat-date-range-picker>
+
+                        <mat-error *ngIf="rangeFilter.controls.start.hasError('matStartDateInvalid')">Invalid start date
+                        </mat-error>
+                        <mat-error *ngIf="rangeFilter.controls.end.hasError('matEndDateInvalid')">Invalid end date
+                        </mat-error>
+                      </mat-form-field>
+                    </div> -->
+                    <div class="col-md-6  col-12">
+                      <mat-form-field appearance="fill">
+                        <mat-label>Enter a date range</mat-label>
+                        <mat-date-range-input [rangePicker]="picker">
+                          <input matStartDate formControlName="start_date" placeholder="Start date">
+                          <input matEndDate formControlName="end_date" placeholder="End date">
+                        </mat-date-range-input>
+                        <!-- <mat-hint>MM/DD/YYYY – MM/DD/YYYY</mat-hint> -->
+                        <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+                        <mat-date-range-picker #picker></mat-date-range-picker>
+                      </mat-form-field>
+
+                      <!-- <mat-form-field>
                         <mat-label>Range start date (mm/dd/yyyy):</mat-label>
-                        <input matInput placeholder="Range start date (mm/dd/yyyy):" />
-                      </mat-form-field>
+                        <input formControlName="start_date" matInput placeholder="Range start date (mm/dd/yyyy):" />
+                      </mat-form-field> -->
                     </div>
-                    <div class="col-md-4  col-12">
-                      <mat-form-field>
-                        <mat-label>Range end date (mm/dd/yyyy):</mat-label>
-                        <input matInput placeholder="Range end date (mm/dd/yyyy):" />
-                      </mat-form-field>
-                    </div>
-                    <div class="col-md-4  col-12">
-                      <button class="order-first sm:order-last w-full" mat-flat-button [color]="'primary'">
+                    <div class="col-12 text-right">
+                      <button (click)="filterSearchHistory(1)" class="order-first sm:order-last " mat-flat-button
+                        mat-stroked-button>
                         Filter
                       </button>
                     </div>
@@ -95,7 +123,7 @@
                     Frequency
                   </th>
                   <td mat-cell *matCellDef="let element">
-                    {{ element.results}}
+                    {{ element.counter}}
                   </td>
                 </ng-container>
 
@@ -105,7 +133,7 @@
                     Results
                   </th>
                   <td mat-cell *matCellDef="let element">
-                    {{element.results}}
+                    {{element.resultSum}}
                   </td>
                 </ng-container>
                 <!-- Days Ago Column -->
@@ -114,7 +142,7 @@
                     Days Ago
                   </th>
                   <td mat-cell *matCellDef="let element">
-                    {{element.searchDate | date}}
+                    {{getDiferenceInDays(element.maxDate)}}
                   </td>
                 </ng-container>
               </div>

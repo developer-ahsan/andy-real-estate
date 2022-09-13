@@ -3,6 +3,7 @@ import { Subject } from 'rxjs';
 import { FileManagerService } from 'app/modules/admin/apps/file-manager/store-manager.service';
 import { takeUntil } from 'rxjs/operators';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { FormControl, FormGroup } from '@angular/forms';
 
 @Component({
   selector: 'app-margins',
@@ -24,23 +25,51 @@ export class MarginsComponent implements OnInit {
   keywordSearch: string = "";
   isKeywordSearch: boolean = false;
 
+  defaultMarginForm: FormGroup;
+
   constructor(
-    private _fileManagerService: FileManagerService,
+    private _storesManagerService: FileManagerService,
     private _changeDetectorRef: ChangeDetectorRef,
     private _snackBar: MatSnackBar
   ) { }
 
   ngOnInit(): void {
+    this.initialize();
+    this._storesManagerService.storeDetail$.subscribe(result => {
+      let data = result["data"][0];
+      this.defaultMarginForm.patchValue({
+        margin1: data.margin1 * 100,
+        margin2: data.margin2 * 100,
+        margin3: data.margin3 * 100,
+        margin4: data.margin4 * 100,
+        margin5: data.margin5 * 100,
+        margin6: data.margin6 * 100,
+      });
+    })
     this.dataSourceLoading = true;
-    this.getFirstCall(1);
+    this.getFirstCall();
     this.isLoadingChange.emit(false);
   };
+  initialize() {
+    this.defaultMarginForm = new FormGroup({
+      margin1: new FormControl(''),
+      margin2: new FormControl(''),
+      margin3: new FormControl(''),
+      margin4: new FormControl(''),
+      margin5: new FormControl(''),
+      margin6: new FormControl(''),
+    })
+  }
 
-  getFirstCall(page) {
+  getFirstCall() {
     const { pk_storeID } = this.selectedStore;
 
+    let params = {
+      margin: true,
+      store_id: pk_storeID
+    }
     // Get the supplier products
-    this._fileManagerService.getOfflineProducts(pk_storeID, page)
+    this._storesManagerService.getStoresData(params)
       .pipe(takeUntil(this._unsubscribeAll))
       .subscribe((response: any) => {
         this.dataSource = response["data"];
@@ -51,11 +80,7 @@ export class MarginsComponent implements OnInit {
         // Mark for check
         this._changeDetectorRef.markForCheck();
       }, err => {
-
-        // Recall on error
-        this.getFirstCall(1);
         this.dataSourceLoading = false;
-
         // Mark for check
         this._changeDetectorRef.markForCheck();
       });
@@ -65,7 +90,7 @@ export class MarginsComponent implements OnInit {
     const { pk_storeID } = this.selectedStore;
 
     // Get the offline products
-    this._fileManagerService.getOfflineProducts(pk_storeID, page)
+    this._storesManagerService.getOfflineProducts(pk_storeID, page)
       .pipe(takeUntil(this._unsubscribeAll))
       .subscribe((response: any) => {
         this.dataSource = response["data"];
@@ -114,7 +139,7 @@ export class MarginsComponent implements OnInit {
 
     if (this.keywordSearch) {
       this.isKeywordSearch = true;
-      this._fileManagerService.getOfflineProductsByKeyword(pk_storeID, keyword)
+      this._storesManagerService.getOfflineProductsByKeyword(pk_storeID, keyword)
         .pipe(takeUntil(this._unsubscribeAll))
         .subscribe((response: any) => {
           this.dataSource = response["data"];

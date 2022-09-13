@@ -3,7 +3,7 @@ import { Subject } from 'rxjs';
 import { FileManagerService } from 'app/modules/admin/apps/file-manager/store-manager.service';
 import { takeUntil } from 'rxjs/operators';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { FormArray, FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { FormArray, FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 @Component({
   selector: 'app-student-org',
   templateUrl: './student-org.component.html'
@@ -19,13 +19,15 @@ export class StudentOrgComponent implements OnInit {
   isContactListLoading: boolean = false;
 
   // Table
-  displayedColumns: string[] = ['code', 'name', 'a_name', 'a_email', 'campus', 'active', 'Action'];
+  displayedColumns: string[] = ['code', 'name', 'a_name', 'a_email', 'campus', 'active'];
   dataSource = [];
   usersData: any;
   contactListData: any;
 
   contactForm: FormGroup;
 
+  isEditStoreOrg: boolean = false;
+  isEditFormOrg: FormGroup
   constructor(
     private _fileManagerService: FileManagerService,
     private _changeDetectorRef: ChangeDetectorRef,
@@ -38,6 +40,15 @@ export class StudentOrgComponent implements OnInit {
     this.getContactList();
   }
   initialize() {
+    this.isEditFormOrg = new FormGroup({
+      advisorEmail: new FormControl(''),
+      advisorName: new FormControl(''),
+      blnActive: new FormControl(''),
+      campus: new FormControl(''),
+      code: new FormControl(''),
+      name: new FormControl(''),
+      pk_studentOrgID: new FormControl('')
+    })
     this.contactForm = this.fb.group({
       contacts: new FormArray([])
     });
@@ -74,6 +85,13 @@ export class StudentOrgComponent implements OnInit {
     // if (event.tab.textLabel == 'Top Customers' && this.topCustomers.length == 0) {
     // this.getDashboardGraphsData("top_customer");
     // }
+  }
+  editStoreOrg(obj) {
+    this.isEditFormOrg.patchValue(obj);
+    this.isEditStoreOrg = true;
+  }
+  backToOrgList() {
+    this.isEditStoreOrg = false;
   }
 
 }

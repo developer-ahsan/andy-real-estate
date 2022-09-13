@@ -124,11 +124,11 @@ export const navigations = [
         title: 'Customer Reviews',
         icon: 'mat_outline:reviews',
     },
-    // {
-    //     id: 25,
-    //     title: 'Fulfillment Contacts',
-    //     icon: 'mat_outline:contacts',
-    // },
+    {
+        id: 25,
+        title: 'Fulfillment Contacts',
+        icon: 'mat_outline:contacts',
+    },
     // {
     //     id: 26,
     //     title: 'Fulfillment Invoices',

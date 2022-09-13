@@ -38,9 +38,12 @@ export class UserDataFileComponent implements OnInit {
   ]
 
   ngFileType = 'xlsx';
-  allSelected = false;
+  allSelected = true;
   isPageLoading: boolean = false;
   fileUserRecord: any;
+
+  ngStartDate: any;
+  ngEndDate: any;
   constructor(
     private _fileManagerService: FileManagerService,
     private _changeDetectorRef: ChangeDetectorRef,
@@ -49,6 +52,11 @@ export class UserDataFileComponent implements OnInit {
 
   ngOnInit() {
     this.isLoadingChange.emit(false);
+    setTimeout(() => {
+      this.select.options.forEach((item: MatOption) => {
+        item.select()
+      });
+    }, 1000);
   }
   getUserData() {
     this.isPageLoading = true;

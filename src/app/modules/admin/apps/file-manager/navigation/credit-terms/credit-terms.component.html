@@ -16,9 +16,9 @@
             <div class="col-12 pt-6">
               <form>
                 <mat-radio-group aria-labelledby="example-radio-group-label" class="example-radio-group"
-                  [(ngModel)]="selectedTerm">
-                  <mat-radio-button class="example-radio-button" *ngFor="let item of creditTerms"
-                    [value]="item.creditTermName">
+                  [(ngModel)]="selectedTerm" name="radio">
+                  <mat-radio-button class="example-radio-button" *ngFor="let item of creditTerms;let i=index"
+                    [value]="item.creditTermName" name="{{i}}">
                     <strong>{{item.creditTermName}}</strong>
                     <div style="white-space: break-spaces;">{{item.creditTermDesc}}</div>
                   </mat-radio-button>

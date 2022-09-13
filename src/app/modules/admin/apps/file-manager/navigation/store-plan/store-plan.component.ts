@@ -3,6 +3,7 @@ import { Subject } from 'rxjs';
 import { FileManagerService } from 'app/modules/admin/apps/file-manager/store-manager.service';
 import { takeUntil } from 'rxjs/operators';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { FormGroup } from '@angular/forms';
 
 @Component({
   selector: 'app-store-plan',
@@ -18,6 +19,8 @@ export class StorePlanComponent implements OnInit {
   dataSource = [];
   dataSourceLoading = false;
 
+  isEditStorePlan: boolean = false;
+  storePlanForm: FormGroup;
   constructor(
     private _fileManagerService: FileManagerService,
     private _changeDetectorRef: ChangeDetectorRef,
@@ -25,10 +28,15 @@ export class StorePlanComponent implements OnInit {
   ) { }
 
   ngOnInit(): void {
+    console.log(this.selectedStore)
+    this.initialize();
     this.dataSourceLoading = true;
     this.getDataPlans();
     this.isLoadingChange.emit(false);
   };
+  initialize() {
+
+  }
   getDataPlans() {
     let params = {
       store_id: this.selectedStore.pk_storeID,
@@ -43,5 +51,12 @@ export class StorePlanComponent implements OnInit {
         // Mark for check
         this._changeDetectorRef.markForCheck();
       });
+  }
+  editStorePlan(obj) {
+    console.log(obj)
+    this.isEditStorePlan = true;
+  }
+  backToStorePlanList() {
+    this.isEditStorePlan = false;
   }
 }
