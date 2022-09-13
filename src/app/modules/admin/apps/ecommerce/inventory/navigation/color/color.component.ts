@@ -83,6 +83,7 @@ export class ColorComponent implements OnInit, OnDestroy {
 
     this.getColors();
 
+    // Color select autocomplete field
     this.colorName.valueChanges.subscribe(
       term => {
         if (term.length > 1) {
