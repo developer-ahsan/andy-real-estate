@@ -164,14 +164,14 @@
                     <div class="flex items-center mr-4" *ngIf="flashMessage">
                       <ng-container *ngIf="flashMessage === 'success'">
                         <mat-icon class="text-green-500" [svgIcon]="'heroicons_outline:check'"></mat-icon>
-                        <span class="ml-2">Featured Campaigns Updated Successfully</span>
+                        <span class="ml-2">Campaigns Display Order Updated Successfully</span>
                       </ng-container>
                       <ng-container *ngIf="flashMessage === 'error'">
                         <mat-icon class="text-red-500" [svgIcon]="'heroicons_outline:x'"></mat-icon>
                         <span class="ml-2">An error occurred, try again!</span>
                       </ng-container>
                     </div>
-                    <button class="min-w-40" mat-stroked-button [matTooltip]="'Update'" (click)="updateFeature()"
+                    <button class="min-w-40" mat-stroked-button [matTooltip]="'Update'" (click)="updateDisplayOrder()"
                       [disabled]="updateFeatureLoading">
                       <mat-progress-spinner *ngIf="updateFeatureLoading" [diameter]="24" [mode]="'indeterminate'">
                       </mat-progress-spinner>

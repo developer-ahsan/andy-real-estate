@@ -174,6 +174,7 @@ export class CampaignsComponent implements OnInit {
       }))
   }
   updateDisplayOrder() {
+    this.updateFeatureLoading = true;
     let checkArray = []
     this.dataSource.forEach(element => {
       if (element.blnFeature) {
@@ -181,7 +182,7 @@ export class CampaignsComponent implements OnInit {
       }
     });
     let params = {
-      store_id: this.selectedStore.pk_storeID,
+      // store_id: this.selectedStore.pk_storeID,
       display_order: checkArray,
       campaign_display: true
     }

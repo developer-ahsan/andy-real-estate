@@ -76,7 +76,8 @@ export class SearchHistoryComponent implements OnInit {
     let params = {
       search_history: true,
       store_id: this.selectedStore.pk_storeID,
-      page: page
+      page: page,
+      size: 20
     }
     // Get the supplier products
     this._fileManagerService.getStoresData(params)
@@ -136,6 +137,7 @@ export class SearchHistoryComponent implements OnInit {
       search_history: true,
       store_id: this.selectedStore.pk_storeID,
       page: page,
+      size: 20,
       keyword: this.filterForm.get('keyword').value,
       start_date: moment(this.filterForm.get('start_date').value).format('MM-DD-YYYY'),
       end_date: moment(this.filterForm.get('end_date').value).format('MM-DD-YYYY')

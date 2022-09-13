@@ -33,7 +33,7 @@ export class StoresDetailsComponent implements OnInit, OnDestroy {
   // Sidebar stuff
   drawerMode: "over" | "side" = "side";
   drawerOpened: boolean = true;
-  selectedIndex: string = "Campaigns";
+  selectedIndex: string = "Customer Reviews";
 
   /**
    * Constructor
@@ -60,12 +60,10 @@ export class StoresDetailsComponent implements OnInit, OnDestroy {
     this._storesManagerService.stores$
       .pipe(takeUntil(this._unsubscribeAll))
       .subscribe((items: any) => {
-        console.log(items)
         this.stores = items["data"];
         this.selectedStore =
           this.stores.find((value) => value.pk_storeID == storeId) ||
           this.stores[0];
-        console.log(this.selectedStore)
         this.launchDate = this.selectedStore?.launchDate
           ? moment.utc(this.selectedStore?.launchDate).format("lll")
           : "N/A";

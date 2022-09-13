@@ -1,5 +1,5 @@
 import { ChangeDetectorRef, Component, EventEmitter, Input, OnInit, Output, ViewChild } from '@angular/core';
-import { FormControl, FormGroup } from '@angular/forms';
+import { FormArray, FormBuilder, FormControl, FormGroup } from '@angular/forms';
 import { MatOption } from '@angular/material/core';
 import { MatSelect } from '@angular/material/select';
 import { MatSnackBar } from '@angular/material/snack-bar';
@@ -28,7 +28,6 @@ export class RoyaltiesComponent implements OnInit {
     ],
   };
 
-  royalityForm: FormGroup;
   includeCheckArray = [
     { value: 'Include shipping', viewValue: 'Include shipping' },
     { value: 'Include runs', viewValue: 'Include runs' },
@@ -39,15 +38,28 @@ export class RoyaltiesComponent implements OnInit {
     { value: 'Require during checkout', viewValue: 'Require during checkout' }
   ]
   allSelected: boolean = false;
+  data = [1, 2, 3];
+  royalityForm: FormGroup;
+
   constructor(
     private _fileManagerService: FileManagerService,
     private _changeDetectorRef: ChangeDetectorRef,
-    private _snackBar: MatSnackBar
+    private _snackBar: MatSnackBar,
+    private fb: FormBuilder
   ) { }
 
   ngOnInit() {
-    this.royalityForm = new FormGroup({
-    })
+    this.royalityForm = this.fb.group({
+      royalities: new FormArray([])
+    });
+    for (let i = 0; i < this.data.length; i++) {
+      this.royalityListArray.push(this.fb.group({
+        // 'primary': this.data[i] && this.data[i].blnPrimary ? this.data[i].blnPrimary : '',
+      }));
+    }
+  }
+  get royalityListArray(): FormArray {
+    return this.royalityForm.get('royalities') as FormArray;
   }
 
   toggleAllSelection() {

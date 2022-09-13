@@ -56,7 +56,7 @@
                 <div class="row mt-3">
                   <div class="col-md-4 col-12 text-right">
                     <button class="order-first sm:order-last w-full" mat-flat-button mat-stroked-button>
-                      Update
+                      Add Royality
                     </button>
                   </div>
                 </div>
@@ -67,4 +67,70 @@
       </div>
     </div>
   </fuse-card>
+  <fuse-card class="mt-5 rounded-2xl shadow bg-card flex">
+    <div class="row" style="width: -webkit-fill-available;">
+      <div class="col-12">
+        <div class="p-6 sm:p-8 lg:p-10 w-full">
+          <div class="row">
+            <div class="col-lg-6 col-12 pb-6 sm:pb-8 lg:pb-8">
+              <div class="text-2xl font-bold">
+                Current Royalities
+              </div>
+            </div>
+            <div class="col-12 pt-6">
+              <form [formGroup]="royalityForm">
+                <div class="row pb-3 pt-5 border-b" formArrayName="royalities" *ngFor="let item of data;let i=index">
+                  <div class="col-md-3 col-12" [formGroupName]="i">
+                    <mat-form-field class="w-full">
+                      <mat-label>Royalty name: *</mat-label>
+                      <input matInput placeholder="Royalty name" />
+                    </mat-form-field>
+                  </div>
+                  <div class="col-md-3 col-12" [formGroupName]="i">
+                    <mat-form-field class="w-full">
+                      <mat-label>Royalties based on:</mat-label>
+                      <mat-select matInput>
+                        <mat-option value="sales">Sales</mat-option>
+                        <mat-option value="excel">Gross Profit</mat-option>
+                      </mat-select>
+                    </mat-form-field>
+                  </div>
+                  <div class="col-md-3 col-12" [formGroupName]="i">
+                    <mat-form-field class="w-full">
+                      <mat-label>Percentage: </mat-label>
+                      <input matInput placeholder="Percentage" />
+                    </mat-form-field>
+                  </div>
+                  <div class="col-md-3 col-12" [formGroupName]="i">
+                    <mat-form-field class="w-full">
+                      <mat-label>Royalty settings:</mat-label>
+                      <mat-select #select multiple>
+                        <div class="select-all">
+                          <mat-checkbox [(ngModel)]="allSelected" [ngModelOptions]="{standalone: true}"
+                            (change)="toggleAllSelection()">Select All</mat-checkbox>
+                        </div>
+                        <mat-option (click)="optionClick()" *ngFor="let item of includeCheckArray" [value]="item.value">
+                          {{item.viewValue}}
+                        </mat-option>
+                      </mat-select>
+                    </mat-form-field>
+                  </div>
+                  <div class="col-12 text-right">
+                    <button class="order-first sm:order-last" mat-button>
+                      Remove
+                    </button>
+                    <button class="order-first sm:order-last mr-2" mat-flat-button mat-stroked-button>
+                      Update Royality
+                    </button>
+                  </div>
+                </div>
+
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </fuse-card>
+
 </div>

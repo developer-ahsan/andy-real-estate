@@ -457,4 +457,8 @@ export class FileManagerService {
     const headers = { 'Authorization': `Bearer ${this._authService.accessToken}` };
     return this._httpClient.put(environment.stores, payload, { headers }).pipe(retry(3));
   }
+  postStoresData(payload) {
+    const headers = { 'Authorization': `Bearer ${this._authService.accessToken}` };
+    return this._httpClient.post(environment.stores, payload, { headers }).pipe(retry(3));
+  }
 }

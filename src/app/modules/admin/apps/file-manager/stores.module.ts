@@ -67,6 +67,7 @@ import { StudentOrgComponent } from "./navigation/student-org/student-org.compon
 import { MatNativeDateModule } from "@angular/material/core";
 import { MatFormFieldModule } from "@angular/material/form-field";
 import { MatDatepickerModule } from "@angular/material/datepicker";
+import { MatSortModule } from "@angular/material/sort";
 
 @NgModule({
   declarations: [
@@ -141,7 +142,8 @@ import { MatDatepickerModule } from "@angular/material/datepicker";
     ReactiveFormsModule,
     FuseAlertModule,
     NgMultiSelectDropDownModule,
-    MatTabsModule
+    MatTabsModule,
+    MatSortModule
   ],
 })
 export class StoresModule { }

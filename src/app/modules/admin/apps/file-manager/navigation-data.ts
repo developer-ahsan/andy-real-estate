@@ -99,11 +99,11 @@ export const navigations = [
         title: 'Store Suppliers',
         icon: 'mat_outline:supervised_user_circle',
     },
-    {
-        id: 20,
-        title: 'Product Clicks',
-        icon: 'mat_outline:ads_click',
-    },
+    // {
+    //     id: 20,
+    //     title: 'Product Clicks',
+    //     icon: 'mat_outline:ads_click',
+    // },
     {
         id: 21,
         title: 'Search History',
