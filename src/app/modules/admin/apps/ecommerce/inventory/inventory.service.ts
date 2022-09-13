@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { BehaviorSubject, Observable, of, ReplaySubject, throwError } from 'rxjs';
-import { filter, map, switchMap, take, tap } from 'rxjs/operators';
+import { BehaviorSubject, Observable } from 'rxjs';
+import { debounceTime, map, tap } from 'rxjs/operators';
 import { AddCore, AddFeature, AddPackage, CaseDimensionObj, CaseQuantityObj, Comment, createColorObj, CreateProduct, DeleteComment, displayOrderObj, duplicateObj, featureUpdateObj, FlatRateShippingObj, InventoryBrand, InventoryCategory, InventoryPagination, InventoryTag, InventoryVendor, Licensing, NetCostUpdate, overlapUpdateObj, PhysicsObj, physicsUpdateObject, priceInclusionObj, ProductsList, updateAllowRun, updateColorObj, updateImprintObj, UpdateMargin, updatePackageObj, updatePromostandardObj, updateSize, videoObj, Warehouse } from 'app/modules/admin/apps/ecommerce/inventory/inventory.types';
 import { environment } from 'environments/environment';
 import { productDescription } from 'app/modules/admin/apps/ecommerce/inventory/inventory.types';
@@ -23,6 +23,7 @@ export class InventoryService {
     private _suppliers: BehaviorSubject<any[] | null> = new BehaviorSubject<any[]>(null);
     private _stores: BehaviorSubject<any[] | null> = new BehaviorSubject<any[]>(null);
     public navigationLabels = navigations;
+    opts = [];
 
     /**
      * Constructor
@@ -227,6 +228,25 @@ export class InventoryService {
                 size: 1000
             }
         });
+    };
+
+    getSearchedColors(value: string): Observable<any[]> {
+        var listOfColors = this._httpClient.get(environment.products, {
+            params: {
+                colors: true,
+                color_name: value,
+                size: 20
+            }
+        }).pipe(
+            debounceTime(400),
+            map(
+                (data: any) => {
+                    return (
+                        data.length != 0 ? data as any[] : [{ "Result": "No Record Found" } as any]
+                    );
+                }
+            ));
+        return listOfColors;
     };
 
     getColorsAndSize(productId): Observable<any[]> {

@@ -1,5 +1,5 @@
 import { Component, Input, OnInit, Output, EventEmitter, ChangeDetectorRef, OnDestroy } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { InventoryService } from 'app/modules/admin/apps/ecommerce/inventory/inventory.service';
 import { Colors } from 'app/modules/admin/apps/ecommerce/inventory/inventory.types';
 import { Subject } from 'rxjs';
@@ -20,11 +20,13 @@ export class ColorComponent implements OnInit, OnDestroy {
   @Output() isLoadingChange = new EventEmitter<boolean>();
   private _unsubscribeAll: Subject<any> = new Subject<any>();
 
+  isColorsFetching: boolean = false;
   colors: Colors[] = [];
   displayedColumns: string[] = ['select', 'color', 'run', 'hex', 'upload'];
   dataSource: Colors[] = [];
   selection = new SelectionModel<any>(true, []);
 
+  selectedColor: any = {};
   arrayToUpdate = [];
   colorForm: FormGroup;
   colorValue = '#000000';
@@ -37,6 +39,7 @@ export class ColorComponent implements OnInit, OnDestroy {
 
   colorsList: any = [];
   dummyColorsList: any = [];
+  colorList = [];
   defaultResetValue: number = 0.00;
 
   updateImageTouched: boolean = false;
@@ -49,30 +52,8 @@ export class ColorComponent implements OnInit, OnDestroy {
   deleteLoader = false;
   colorDropdownSettings: IDropdownSettings = {};
 
-  /** Whether the number of selected elements matches the total number of rows. */
-  isAllSelected() {
-    const numSelected = this.selection.selected.length;
-    // const numRows = this.dataSource.data.length;
-    // return numSelected === numRows;
-  }
-
-  /** Selects all rows if they are not all selected; otherwise clear selection. */
-  masterToggle() {
-    // if (this.isAllSelected()) {
-    //   this.selection.clear();
-    //   return;
-    // }
-
-    // this.selection.select(...this.dataSource.data);
-  }
-
-  /** The label for the checkbox on the passed row */
-  checkboxLabel(row?: any): void {
-    // if (!row) {
-    //   return `${this.isAllSelected() ? 'deselect' : 'select'} all`;
-    // }
-    // return `${this.selection.isSelected(row) ? 'deselect' : 'select'} row ${row.position + 1}`;
-  }
+  public colorName = new FormControl();
+  results: any[];
 
   constructor(
     private _changeDetectorRef: ChangeDetectorRef,
@@ -101,35 +82,23 @@ export class ColorComponent implements OnInit, OnDestroy {
     };
 
     this.getColors();
-    this.getAllColors();
-  }
 
-  getAllColors(): void {
+    this.colorName.valueChanges.subscribe(
+      term => {
+        if (term.length > 1) {
+          this._inventoryService.getSearchedColors(term).subscribe(
+            result => {
+              this.results = result["data"] as any[];
 
-    // Getting all colors in db
-    this._inventoryService.getAllColors()
-      .pipe(takeUntil(this._unsubscribeAll))
-      .subscribe((list) => {
-        let tempArray = [];
-        for (const color of list["data"]) {
-          const { colorName } = color;
-          if (colorName) {
-            tempArray.push(color);
-          };
-        };
-
-        this.colorsList = tempArray;
-        this.dummyColorsList = this.colorsList;
-        this.isAllColors = false;
-
-        // Mark for check
-        this._changeDetectorRef.markForCheck();
-      }, err => {
-        this.getAllColors();
-
-        // Mark for check
-        this._changeDetectorRef.markForCheck();
+              // Mark for check
+              this._changeDetectorRef.markForCheck();
+            })
+        }
       })
+  };
+
+  colorSelected(result: any): void {
+    this.selectedColor = result;
   };
 
   onItemSelect(item: any) {
@@ -358,19 +327,22 @@ export class ColorComponent implements OnInit, OnDestroy {
 
   addColor() {
     const { pk_productID } = this.selectedProduct;
-    const { colors, run, hex } = this.colorForm.getRawValue();
-    var colorTempArray = colors?.length ? colors.split(',') : [];
-    let colorArr = [];
-    if (colorTempArray.length) {
-      for (const color of colorTempArray) {
-        colorArr.push(color.replace(/[^\w]/g, ""));
-      }
+    const { run, hex } = this.colorForm.getRawValue();
+
+    const { pk_colorID } = this.selectedColor;
+
+    if (!pk_colorID) {
+      return this._snackBar.open("Please select color", '', {
+        horizontalPosition: 'center',
+        verticalPosition: 'bottom',
+        duration: 3500
+      });
     };
 
     const payload = {
       product_id: pk_productID,
-      color_name: colorArr?.length ? colorArr : [],
-      color_id: [],
+      color_name: [],
+      color_id: [pk_colorID],
       the_run: [run],
       rgb: [hex || this.hexColor],
       color: true
@@ -433,13 +405,6 @@ export class ColorComponent implements OnInit, OnDestroy {
     let tempColorArray = [];
     for (const color of arrayTodelete) {
       const { run, rgb, fk_colorID } = color;
-      if (isNaN(run) || !rgb?.length) {
-        return this._snackBar.open('A value appears to be missing', '', {
-          horizontalPosition: 'center',
-          verticalPosition: 'bottom',
-          duration: 3500
-        });
-      }
       let obj = {
         fk_colorID: fk_colorID,
         rgb: rgb,
@@ -510,6 +475,31 @@ export class ColorComponent implements OnInit, OnDestroy {
       this._changeDetectorRef.markForCheck();
     }, 3500);
   };
+
+  /** Whether the number of selected elements matches the total number of rows. */
+  isAllSelected() {
+    const numSelected = this.selection.selected.length;
+    // const numRows = this.dataSource.data.length;
+    // return numSelected === numRows;
+  }
+
+  /** Selects all rows if they are not all selected; otherwise clear selection. */
+  masterToggle() {
+    // if (this.isAllSelected()) {
+    //   this.selection.clear();
+    //   return;
+    // }
+
+    // this.selection.select(...this.dataSource.data);
+  }
+
+  /** The label for the checkbox on the passed row */
+  checkboxLabel(row?: any): void {
+    // if (!row) {
+    //   return `${this.isAllSelected() ? 'deselect' : 'select'} all`;
+    // }
+    // return `${this.selection.isSelected(row) ? 'deselect' : 'select'} row ${row.position + 1}`;
+  }
 
   /**
      * On destroy
