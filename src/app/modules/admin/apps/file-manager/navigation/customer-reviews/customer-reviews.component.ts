@@ -233,7 +233,6 @@ export class CustomerReviewsComponent implements OnInit {
       element.patchValue({
         image: image
       })
-      console.log(element.value);
     };
   };
   updateProductReview(element) {
