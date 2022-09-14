@@ -53,10 +53,8 @@ export class ClassyLayoutComponent implements OnInit, OnDestroy {
      * On init
      */
     ngOnInit(): void {
-
         // Get login user details
         this.user = this._authService.parseJwt(this._authService.accessToken);
-
         // this._userService.user$
         //     .pipe(takeUntil(this._unsubscribeAll))
         //     .subscribe((user: User) => {

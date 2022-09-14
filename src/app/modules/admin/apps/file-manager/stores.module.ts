@@ -143,7 +143,7 @@ import { MatSortModule } from "@angular/material/sort";
     FuseAlertModule,
     NgMultiSelectDropDownModule,
     MatTabsModule,
-    MatSortModule
+    MatSortModule,
   ],
 })
 export class StoresModule { }

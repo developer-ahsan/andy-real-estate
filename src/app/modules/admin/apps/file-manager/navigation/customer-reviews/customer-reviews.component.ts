@@ -1,15 +1,18 @@
-import { Component, Input, Output, OnInit, EventEmitter, ChangeDetectorRef } from '@angular/core';
+import { Component, Input, Output, OnInit, EventEmitter, ChangeDetectorRef, Directive, ElementRef, ViewChild } from '@angular/core';
 import { Subject } from 'rxjs';
 import { FileManagerService } from 'app/modules/admin/apps/file-manager/store-manager.service';
 import { takeUntil } from 'rxjs/operators';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { FormArray, FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import * as moment from 'moment';
+import { AuthService } from 'app/core/auth/auth.service';
 @Component({
   selector: 'app-customer-reviews',
   templateUrl: './customer-reviews.component.html'
 })
 export class CustomerReviewsComponent implements OnInit {
+  @Directive({ selector: '[myHighlight]' })
+  @ViewChild('myHighlight') myHighlight: ElementRef;
 
   @Input() selectedStore: any;
   @Input() isLoading: boolean;
@@ -36,14 +39,23 @@ export class CustomerReviewsComponent implements OnInit {
   productReviewsData: any;
   isUpdatePageLoader: boolean = false;
 
+  isSendProductReview: boolean = false;
+  sendProductReviewForm: FormGroup;
+  isSendProductReviewLoader: boolean = false;
+  isSendProductReviewMsg: boolean = false;
+
+
   flashMessage: boolean = false;
   flashMessage1: boolean = false;
+  user: any;
 
   constructor(
     private _fileManagerService: FileManagerService,
     private _changeDetectorRef: ChangeDetectorRef,
     private fb: FormBuilder,
-    private _snackBar: MatSnackBar
+    private _snackBar: MatSnackBar,
+    private el: ElementRef,
+    private _authService: AuthService
   ) { }
 
   ngOnInit(): void {
@@ -53,6 +65,7 @@ export class CustomerReviewsComponent implements OnInit {
     this.isLoadingChange.emit(false);
   };
   initialize() {
+    this.user = this._authService.parseJwt(this._authService.accessToken);
     this.productReviewForm = this.fb.group({
       reviews: new FormArray([])
     });
@@ -62,6 +75,15 @@ export class CustomerReviewsComponent implements OnInit {
       date: new FormControl(moment().format("MM/DD/YYYY")),
       rating: new FormControl(1, Validators.required),
       comment: new FormControl('')
+    })
+    this.sendProductReviewForm = new FormGroup({
+      name: new FormControl('', Validators.required),
+      email_list: new FormControl([], Validators.required),
+      subject: new FormControl(this.user.name + ' ' + this.selectedStore.storeName + ' Would Like You To Review This Product', Validators.required),
+      html_body: new FormControl(''),
+      message: new FormControl(''),
+      store_name: new FormControl(''),
+      send_review_email: new FormControl(true)
     })
   }
   get reviewListArray(): FormArray {
@@ -92,8 +114,10 @@ export class CustomerReviewsComponent implements OnInit {
   getCustomerReviewsByID(product) {
     this.initialize();
     this.editData = product;
-    this.isEditPageLoader = true;
-    this.isEditReview = true;
+    if (!this.flashMessage1) {
+      this.isEditPageLoader = true;
+      this.isEditReview = true;
+    }
     let params = {
       review_details: true,
       store_product_id: product.pk_storeProductID
@@ -118,6 +142,14 @@ export class CustomerReviewsComponent implements OnInit {
             blnActive: new FormControl(this.productReviewsData[i].blnActive, [Validators.required])
           }));
         }
+        if (this.flashMessage1) {
+          this.flashMessage1 = false;
+          this.isEditReview = true;
+          this.flashMessage = false;
+          this.isAddReview = false;
+          this._changeDetectorRef.markForCheck();
+        }
+
         this.isEditPageLoader = false;
         this._changeDetectorRef.markForCheck();
       }, err => {
@@ -143,9 +175,14 @@ export class CustomerReviewsComponent implements OnInit {
     this.editData = data;
     this.isEditReview = !this.isEditReview;
   }
+  editsendProductToggle() {
+    this.isEditReview = false;
+    this.isSendProductReview = true;
+  }
   backToReviews() {
     this.isEditReview = false;
     this.isAddReview = false;
+    this.isSendProductReview = false;
   }
   backToUpdateReviews() {
     this.isEditReview = true;
@@ -214,14 +251,9 @@ export class CustomerReviewsComponent implements OnInit {
     this._fileManagerService.postStoresData(payload)
       .pipe(takeUntil(this._unsubscribeAll))
       .subscribe((response: any) => {
-        this.flashMessage1 = false;
         if (response["success"]) {
-          this.productAddReviewForm.reset();
+          this.getCustomerReviewsByID(this.editData);
           this.flashMessage = true;
-          setTimeout(() => {
-            this.flashMessage = false;
-            this._changeDetectorRef.markForCheck();
-          }, 3000);
         }
         this._changeDetectorRef.markForCheck();
       }, err => {
@@ -229,5 +261,46 @@ export class CustomerReviewsComponent implements OnInit {
         this.flashMessage1 = false;
         this._changeDetectorRef.markForCheck();
       })
+  }
+  sendProductReviewEmail() {
+    this.isSendProductReviewLoader = true;
+    let myCurrentContent: string = this.myHighlight.nativeElement.innerHTML;
+    let html = '<!DOCTYPE html>' + myCurrentContent;
+    this.sendProductReviewForm.patchValue({
+      html_body: html,
+      store_name: this.selectedStore.storeName
+    })
+    const { email_list, subject, store_name, html_body, send_review_email } = this.sendProductReviewForm.getRawValue();
+    let emails = email_list.split(",");
+    let payload = {
+      email_list: emails, subject, store_name, html_body, send_review_email
+    }
+    this._fileManagerService.postStoresData(payload)
+      .pipe(takeUntil(this._unsubscribeAll))
+      .subscribe((response: any) => {
+        // if (response["success"]) {
+        this.isSendProductReviewLoader = false;
+        this.isSendProductReviewMsg = true;
+        setTimeout(() => {
+          this.isSendProductReviewMsg = false;
+          this._changeDetectorRef.markForCheck();
+        }, 2000);
+        this.sendProductReviewForm = new FormGroup({
+          name: new FormControl('', Validators.required),
+          email_list: new FormControl([], Validators.required),
+          subject: new FormControl(this.user.name + ' ' + this.selectedStore.storeName + ' Would Like You To Review This Product', Validators.required),
+          html_body: new FormControl(''),
+          message: new FormControl(''),
+          store_name: new FormControl(''),
+          send_review_email: new FormControl(true)
+        })
+        // }
+        this._changeDetectorRef.markForCheck();
+      }, err => {
+        this.isSendProductReviewLoader = false;
+        this.isSendProductReviewMsg = false;
+        this._changeDetectorRef.markForCheck();
+      })
+
   }
 }

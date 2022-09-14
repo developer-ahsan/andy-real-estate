@@ -24,8 +24,15 @@ export class MarginsComponent implements OnInit {
 
   keywordSearch: string = "";
   isKeywordSearch: boolean = false;
+  mainScreen: string = "Margins";
+  screens = [
+    "Margins",
+    "Default Values"
+  ];
 
   defaultMarginForm: FormGroup;
+  defaultMarginLoader: boolean = false;
+  defaultMarginMsgLoader: boolean = false;
 
   constructor(
     private _storesManagerService: FileManagerService,
@@ -38,12 +45,12 @@ export class MarginsComponent implements OnInit {
     this._storesManagerService.storeDetail$.subscribe(result => {
       let data = result["data"][0];
       this.defaultMarginForm.patchValue({
-        margin1: data.margin1 * 100,
-        margin2: data.margin2 * 100,
-        margin3: data.margin3 * 100,
-        margin4: data.margin4 * 100,
-        margin5: data.margin5 * 100,
-        margin6: data.margin6 * 100,
+        margin1: Number((data.margin1 * 100).toFixed(2)),
+        margin2: Number((data.margin2 * 100).toFixed(2)),
+        margin3: Number((data.margin3 * 100).toFixed(2)),
+        margin4: Number((data.margin4 * 100).toFixed(2)),
+        margin5: Number((data.margin5 * 100).toFixed(2)),
+        margin6: Number((data.margin6 * 100).toFixed(2)),
       });
     })
     this.dataSourceLoading = true;
@@ -58,8 +65,13 @@ export class MarginsComponent implements OnInit {
       margin4: new FormControl(''),
       margin5: new FormControl(''),
       margin6: new FormControl(''),
+      store_id: new FormControl(this.selectedStore.pk_storeID),
+      update_default_margin: new FormControl(true)
     })
   }
+  calledScreen(screenName): void {
+    this.mainScreen = screenName;
+  };
 
   getFirstCall() {
     const { pk_storeID } = this.selectedStore;
@@ -165,5 +177,38 @@ export class MarginsComponent implements OnInit {
         duration: 3500
       });
     }
+  };
+
+  updateDefaultMargin() {
+    this.defaultMarginLoader = true;
+    const { pk_storeID } = this.selectedStore;
+    const { margin1, margin2, margin3, margin4, margin5, margin6, store_id, update_default_margin } = this.defaultMarginForm.getRawValue();
+    let payload = {
+      margin1: (margin1 / 100).toFixed(2),
+      margin2: (margin2 / 100).toFixed(2),
+      margin3: (margin3 / 100).toFixed(2),
+      margin4: (margin4 / 100).toFixed(2),
+      margin5: (margin5 / 100).toFixed(2),
+      margin6: (margin6 / 100).toFixed(2),
+      store_id, update_default_margin
+    };
+    // Get the supplier products
+    this._storesManagerService.putStoresData(payload)
+      .pipe(takeUntil(this._unsubscribeAll))
+      .subscribe((response: any) => {
+        this.defaultMarginLoader = false;
+        this.defaultMarginMsgLoader = true;
+        setTimeout(() => {
+          this.defaultMarginMsgLoader = false;
+          this._changeDetectorRef.markForCheck();
+        }, 2000);
+
+        // Mark for check
+        this._changeDetectorRef.markForCheck();
+      }, err => {
+        // Mark for check
+        this._changeDetectorRef.markForCheck();
+        this.defaultMarginLoader = false;
+      });
   };
 }
