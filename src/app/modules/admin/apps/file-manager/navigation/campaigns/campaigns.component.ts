@@ -203,7 +203,6 @@ export class CampaignsComponent implements OnInit {
   campaignEdit(campaign) {
     this.isEditCampaign = true;
     this.campaignForm.patchValue(campaign)
-    console.log(campaign);
   }
   backToCampaigns() {
     this.isEditCampaign = false;

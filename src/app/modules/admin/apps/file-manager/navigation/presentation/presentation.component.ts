@@ -270,7 +270,7 @@ export class PresentationComponent implements OnInit {
     // Open the dialog
   }
   onUpdate(item, index) {
-    console.log(this.teamForm.value[index]);
+    // console.log(this.teamForm.value[index]);
   }
   addNewFeatureImageToggle() {
     this.addNewFeature = !this.addNewFeature;

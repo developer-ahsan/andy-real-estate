@@ -28,7 +28,6 @@ export class StorePlanComponent implements OnInit {
   ) { }
 
   ngOnInit(): void {
-    console.log(this.selectedStore)
     this.initialize();
     this.dataSourceLoading = true;
     this.getDataPlans();
@@ -53,7 +52,6 @@ export class StorePlanComponent implements OnInit {
       });
   }
   editStorePlan(obj) {
-    console.log(obj)
     this.isEditStorePlan = true;
   }
   backToStorePlanList() {

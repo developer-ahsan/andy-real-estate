@@ -49,7 +49,6 @@ export class FulfillOptionsComponent implements OnInit {
     this._fileManagerService.getStoresData(params)
       .pipe(takeUntil(this._unsubscribeAll))
       .subscribe(res => {
-        console.log(res)
         this.optionForm.patchValue(res["data"][0]);
         this.isPageLoading = false;
         this._changeDetectorRef.markForCheck();
