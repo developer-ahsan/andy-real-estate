@@ -33,7 +33,7 @@ export class StoresDetailsComponent implements OnInit, OnDestroy {
   // Sidebar stuff
   drawerMode: "over" | "side" = "side";
   drawerOpened: boolean = true;
-  selectedIndex: string = "Dashboard";
+  selectedIndex: string = "Customer Reviews";
 
   /**
    * Constructor

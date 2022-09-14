@@ -52,11 +52,11 @@ export class UserDataFileComponent implements OnInit {
 
   ngOnInit() {
     this.isLoadingChange.emit(false);
-    setTimeout(() => {
-      this.select.options.forEach((item: MatOption) => {
-        item.select()
-      });
-    }, 1000);
+    // setTimeout(() => {
+    //   this.select.options.forEach((item: MatOption) => {
+    //     item.select()
+    //   });
+    // }, 1000);
   }
   getUserData() {
     this.isPageLoading = true;

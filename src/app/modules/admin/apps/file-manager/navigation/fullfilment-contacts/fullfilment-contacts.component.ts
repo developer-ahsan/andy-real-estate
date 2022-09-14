@@ -47,6 +47,7 @@ export class FullfilmentContactsComponent implements OnInit {
     this.initialize();
   }
   initialize() {
+    this.dataSource = [];
     this.contactForm = this.fb.group({
       contacts: new FormArray([])
     });
@@ -162,8 +163,14 @@ export class FullfilmentContactsComponent implements OnInit {
       .pipe(takeUntil(this._unsubscribeAll))
       .subscribe(res => {
         if (res["success"]) {
-          item.del_loader = false;
-          this.dataSource = this.dataSource.filter((u) => u.pk_fulfillmentContactID !== item.pk_fulfillmentContactID);
+          this.dataSource = this.dataSource.filter((value) => {
+            return value.pk_fulfillmentContactID != item.pk_fulfillmentContactID;
+          });
+          // this.dataSource._updateChangeSubscription();
+          // this.dataSource = this.dataSource.filter((u) => {
+          //   console.log(u)
+          //   u.pk_fulfillmentContactID !== item.pk_fulfillmentContactID
+          // });
           this._snackBar.open("Contact Deleted Successfully!!", '', {
             horizontalPosition: 'center',
             verticalPosition: 'bottom',

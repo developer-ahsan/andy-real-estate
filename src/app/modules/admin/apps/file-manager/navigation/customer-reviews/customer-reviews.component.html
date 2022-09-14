@@ -139,7 +139,7 @@
               </div>
               <div class="col-md-3 col-12">
                 <mat-form-field class="w-full" appearance="fill">
-                  <mat-label>Date:</mat-label>
+                  <mat-label>Date: *</mat-label>
                   <input formControlName="date" readonly matInput [matDatepicker]="picker">
                   <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
                   <mat-datepicker #picker></mat-datepicker>
@@ -147,7 +147,7 @@
               </div>
               <div class="col-md-3 col-12">
                 <mat-form-field class="w-full">
-                  <mat-label>Rating: </mat-label>
+                  <mat-label>Rating: *</mat-label>
                   <mat-select matInput formControlName="rating">
                     <mat-option [value]="1">Bad</mat-option>
                     <mat-option [value]="2">Poor</mat-option>
@@ -159,7 +159,7 @@
               </div>
               <div class="col-md-3 col-12">
                 <mat-form-field class="w-full">
-                  <mat-label>Status:</mat-label>
+                  <mat-label>Status: *</mat-label>
                   <mat-select matInput formControlName="blnActive">
                     <mat-option [value]="true">Online</mat-option>
                     <mat-option [value]="false">Offline</mat-option>
@@ -168,7 +168,7 @@
               </div>
               <div class="col-md-6 col-12">
                 <mat-form-field class="w-full">
-                  <mat-label>Customer Comments:</mat-label>
+                  <mat-label>Customer Comments: *</mat-label>
                   <textarea rows="10" matInput formControlName="comment"></textarea>
                 </mat-form-field>
               </div>
@@ -198,15 +198,17 @@
                   </ng-container>
                 </div>
 
-                <button [matTooltip]="'Delete'" class="mr-2 order-first sm:order-last" mat-flat-button
-                  mat-stroked-button (click)="removeReviews(i)">
-                  <!-- <mat-progress-spinner *ngIf="item.loader" [diameter]="24" [mode]="'indeterminate'">
-                  </mat-progress-spinner> -->
-                  <mat-icon svgIcon="mat_outline:delete"></mat-icon>
+                <button [matTooltip]="'Delete'" [disabled]="!item.valid || item.get('del_loader').value"
+                  class="mr-2 order-first sm:order-last" mat-flat-button mat-stroked-button
+                  (click)="removeReviews(i,item)">
+                  <mat-progress-spinner *ngIf="item.get('del_loader').value" [diameter]="24" [mode]="'indeterminate'">
+                  </mat-progress-spinner>
+                  <mat-icon svgIcon="mat_outline:delete" *ngIf="!item.get('del_loader').value"></mat-icon>
                   <span class="px-2">Delete</span>
                 </button>
-                <button [disabled]="!item.valid" [matTooltip]="'Update'" class="order-first sm:order-last"
-                  mat-flat-button mat-stroked-button (click)="updateProductReview(item)">
+                <button [disabled]="!item.valid || item.get('loader').value" [matTooltip]="'Update'"
+                  class="order-first sm:order-last" mat-flat-button mat-stroked-button
+                  (click)="updateProductReview(item)">
                   <mat-progress-spinner *ngIf="item.get('loader').value" [diameter]="24" [mode]="'indeterminate'">
                   </mat-progress-spinner>
                   <mat-icon *ngIf="!item.get('loader').value" svgIcon="mode_edit_outline"></mat-icon>
@@ -301,7 +303,7 @@
                     </div>
                   </form>
                 </div>
-                <div class="col-12 pt-3">
+                <!-- <div class="col-12 pt-3">
                   <div class="row border-t pb-4 pt-2">
                     <div class="col-md-8 col-12">
                       <div class="text-lg">
@@ -327,7 +329,7 @@
                       </button>
                     </div>
                   </div>
-                </div>
+                </div> -->
               </div>
             </div>
           </div>

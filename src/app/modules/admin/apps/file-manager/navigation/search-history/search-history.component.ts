@@ -132,15 +132,19 @@ export class SearchHistoryComponent implements OnInit {
   };
   filterSearchHistory(page) {
     const { pk_storeID } = this.selectedStore;
-
+    const { keyword, start_date, end_date } = this.filterForm.getRawValue();
     let params: any = {
       search_history: true,
       store_id: this.selectedStore.pk_storeID,
       page: page,
-      size: 20,
-      keyword: this.filterForm.get('keyword').value,
-      start_date: moment(this.filterForm.get('start_date').value).format('MM-DD-YYYY'),
-      end_date: moment(this.filterForm.get('end_date').value).format('MM-DD-YYYY')
+      size: 20
+    }
+    if (keyword != '') {
+      params.keyword = keyword;
+    }
+    if (start_date) {
+      params.start_date = moment(this.filterForm.get('start_date').value).format('MM-DD-YYYY');
+      params.end_date = moment(this.filterForm.get('end_date').value).format('MM-DD-YYYY');
     }
 
     // Get the supplier products

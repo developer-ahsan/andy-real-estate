@@ -144,11 +144,11 @@ export const navigations = [
         title: 'Royalities',
         icon: 'mat_outline:reviews',
     },
-    {
-        id: 29,
-        title: 'Referral Locations',
-        icon: 'mat_outline:info',
-    },
+    // {
+    //     id: 29,
+    //     title: 'Referral Locations',
+    //     icon: 'mat_outline:info',
+    // },
     {
         id: 30,
         title: 'Art Approval Settings',

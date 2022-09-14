@@ -138,6 +138,7 @@ export class CustomerReviewsComponent implements OnInit {
             storeProductId: new FormControl(this.productReviewsData[i].fk_storeProductID),
             update_review: new FormControl(true),
             loader: new FormControl(false),
+            del_loader: new FormControl(false),
             flashMessage: new FormControl(false),
             blnActive: new FormControl(this.productReviewsData[i].blnActive, [Validators.required])
           }));
@@ -167,8 +168,33 @@ export class CustomerReviewsComponent implements OnInit {
     };
     this.getCustomerReviews(this.page);
   };
-  removeReviews(index): void {
-    this.reviewListArray.removeAt(index);
+  removeReviews(index, element): void {
+    element.patchValue({
+      del_loader: true
+    })
+    let payload = {
+      pk_reviewID: element.get('pk_reviewID').value,
+      delete_review: true
+    }
+    this._fileManagerService.putStoresData(payload)
+      .pipe(takeUntil(this._unsubscribeAll))
+      .subscribe(res => {
+        if (res["success"]) {
+          this.reviewListArray.removeAt(index);
+          this._snackBar.open("Review Deleted Successfully!!", '', {
+            horizontalPosition: 'center',
+            verticalPosition: 'bottom',
+            duration: 3000
+          });
+        }
+        this._changeDetectorRef.markForCheck();
+      }, err => {
+        element.patchValue({
+          del_loader: false
+        })
+        this._changeDetectorRef.markForCheck()
+      })
+    // this.reviewListArray.removeAt(index);
   }
 
   editToggle(data) {
@@ -186,6 +212,7 @@ export class CustomerReviewsComponent implements OnInit {
   }
   backToUpdateReviews() {
     this.isEditReview = true;
+    this.isSendProductReview = false;
     this.isAddReview = false;
   }
   addReviewToggle() {
