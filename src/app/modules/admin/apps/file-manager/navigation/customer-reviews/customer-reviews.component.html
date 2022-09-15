@@ -111,9 +111,9 @@
                     (click)="addReviewToggle()">Add
                     Product
                     Review</button>
-                  <button (click)="editsendProductToggle()" mat-flat-button mat-stroked-button
+                  <!-- <button (click)="editsendProductToggle()" mat-flat-button mat-stroked-button
                     [matTooltip]="'Send Product Review'">Send Product
-                    Review</button>
+                    Review</button> -->
                 </div>
               </div>
             </div>
@@ -291,7 +291,7 @@
                           </ng-container>
                         </div>
 
-                        <button [disabled]="!productAddReviewForm.valid" (click)="addProductReview()"
+                        <button [disabled]="!productAddReviewForm.valid && flashMessage1" (click)="addProductReview()"
                           [matTooltip]="'Add review'" class="order-first sm:order-last" mat-flat-button
                           mat-stroked-button>
                           <mat-progress-spinner *ngIf="flashMessage1" [diameter]="24" [mode]="'indeterminate'">

@@ -37,6 +37,7 @@ export class SearchHistoryComponent implements OnInit {
     data: [],
     totalRecords: 0
   };
+  isFilterLoader: boolean = false;
   constructor(
     private _fileManagerService: FileManagerService,
     private _changeDetectorRef: ChangeDetectorRef,
@@ -127,10 +128,14 @@ export class SearchHistoryComponent implements OnInit {
     this.dataSource = this.firstDataTemp.data;
     this.dataSourceTotalRecord = this.firstDataTemp.totalRecords;
     this.filterForm.reset();
+    this.filterForm.patchValue({
+      keyword: ''
+    })
     // Mark for check
     this._changeDetectorRef.markForCheck();
   };
   filterSearchHistory(page) {
+    this.isFilterLoader = true;
     const { pk_storeID } = this.selectedStore;
     const { keyword, start_date, end_date } = this.filterForm.getRawValue();
     let params: any = {
@@ -139,7 +144,7 @@ export class SearchHistoryComponent implements OnInit {
       page: page,
       size: 20
     }
-    if (keyword != '') {
+    if (keyword != '' || keyword != null) {
       params.keyword = keyword;
     }
     if (start_date) {
@@ -151,6 +156,7 @@ export class SearchHistoryComponent implements OnInit {
     this._fileManagerService.getStoresData(params)
       .pipe(takeUntil(this._unsubscribeAll))
       .subscribe((response: any) => {
+        this.isFilterLoader = false;
         this.dataSource = response["data"];
         this.duplicatedDataSource = this.dataSource;
         this.dataSourceTotalRecord = response["totalRecords"];
@@ -163,6 +169,7 @@ export class SearchHistoryComponent implements OnInit {
         // Recall on error
         this.getFirstCall(1);
         this.dataSourceLoading = false;
+        this.isFilterLoader = false;
 
         // Mark for check
         this._changeDetectorRef.markForCheck();

@@ -73,9 +73,11 @@
                       </mat-form-field> -->
                     </div>
                     <div class="col-12 text-right">
-                      <button (click)="filterSearchHistory(1)" class="order-first sm:order-last min-w-40"
-                        mat-flat-button mat-stroked-button>
-                        Filter
+                      <button (click)="filterSearchHistory(1)" [matTooltip]="'Fetch'" [disabled]="isFilterLoader"
+                        class="order-first sm:order-last min-w-40" mat-flat-button mat-stroked-button>
+                        <mat-progress-spinner *ngIf="isFilterLoader" [diameter]="24" [mode]="'indeterminate'">
+                        </mat-progress-spinner>
+                        <span class="mr-1">Fetch</span>
                       </button>
                     </div>
                   </div>

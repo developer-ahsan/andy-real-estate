@@ -4,6 +4,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { FileManagerService } from '../../store-manager.service';
+import moment from "moment";
 
 @Component({
   selector: 'app-email-blast',
@@ -62,6 +63,15 @@ export class EmailBlastComponent implements OnInit {
 
 
   previewData: any;
+
+  ngStartDate: any;
+  ngEndDate: any;
+  processData: any;
+  processDataLoader: boolean = false;
+  processDataColumns: string[] = ['date', 'action'];
+  processDataColumns1: string[] = ['clicks', 'requests', 'processed', 'delivered'];
+  processDate: any;
+  subProcessData: any;
   constructor(
     private _fileManagerService: FileManagerService,
     private _changeDetectorRef: ChangeDetectorRef,
@@ -236,5 +246,35 @@ export class EmailBlastComponent implements OnInit {
         this._changeDetectorRef.markForCheck();
       })
   }
-
+  getGraphData() {
+    if (!this.ngStartDate || !this.ngEndDate) {
+      this._snackBar.open("Please Select Date Range", '', {
+        horizontalPosition: 'center',
+        verticalPosition: 'bottom',
+        duration: 3000
+      });
+    } else {
+      this.processDataLoader = true;
+      let params = {
+        start_date: moment(this.ngStartDate).format('YYYY-MM-DD'),
+        end_date: moment(this.ngEndDate).format('YYYY-MM-DD'),
+        email_stats: true,
+        aggregated_by: 'day'
+      }
+      this._fileManagerService.getStoresData(params)
+        .pipe(takeUntil(this._unsubscribeAll))
+        .subscribe(res => {
+          this.processDataLoader = false;
+          this.processData = res["data"]
+          this._changeDetectorRef.markForCheck();
+        }, err => {
+          this.processDataLoader = false;
+          this._changeDetectorRef.markForCheck();
+        })
+    }
+  }
+  openedAccordion(item) {
+    this.processDate = item.date;
+    this.subProcessData = item.stats;
+  }
 }

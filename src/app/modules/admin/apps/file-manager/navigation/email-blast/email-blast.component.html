@@ -76,6 +76,109 @@
                 <tr mat-row class="hover:bg-gray-100 dark:hover:bg-hover" style="cursor: pointer;"
                   *matRowDef="let row; columns: mainSisplayedColumns"></tr>
               </table>
+              <!-- <div class="row mt-5">
+                <div class="col-12">
+                  <mat-form-field appearance="fill" class="w-full">
+                    <mat-label>Enter a date range</mat-label>
+                    <mat-date-range-input [rangePicker]="picker">
+                      <input readonly matStartDate [(ngModel)]="ngStartDate" placeholder="Start date"
+                        [ngModelOptions]="{standalone: true}">
+                      <input readonly matEndDate placeholder="End date" [(ngModel)]="ngEndDate"
+                        [ngModelOptions]="{standalone: true}">
+                    </mat-date-range-input>
+                    <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+                    <mat-date-range-picker #picker></mat-date-range-picker>
+                  </mat-form-field>
+                </div>
+                <div class="col-12 text-right">
+                  <button [matTooltip]="'Process Data'" class="order-first sm:order-last" mat-flat-button
+                    mat-stroked-button (click)="getGraphData()">
+                    <mat-progress-spinner *ngIf="processDataLoader" [diameter]="24" [mode]="'indeterminate'">
+                    </mat-progress-spinner>
+                    <mat-icon svgIcon="mat_outline:search" *ngIf="!processDataLoader"></mat-icon>
+                    <span class="px-2">Process Data</span>
+                  </button>
+                </div>
+                <div class="col-12" *ngIf="!processDataLoader && processData">
+                  <table mat-table [dataSource]="processData" class="w-full" [multiTemplateDataRows]="true">
+                    <div class="color-blue">
+                      <ng-container matColumnDef="date">
+                        <th class="min-w-50 bg-gray-50 dark:bg-black dark:bg-opacity-5" mat-header-cell
+                          *matHeaderCellDef>
+                          Date
+                        </th>
+                        <td mat-cell *matCellDef="let element">{{element.date}}</td>
+                      </ng-container>
+                      <ng-container matColumnDef="action">
+                        <th class="min-w-10 bg-gray-50 dark:bg-black dark:bg-opacity-5" mat-header-cell
+                          *matHeaderCellDef>
+                          Action
+                        </th>
+                        <td mat-cell *matCellDef="let element">
+                          <button class="min-w-10 min-h-7 h-7 px-2 leading-6" mat-stroked-button
+                            (click)="openedAccordion(element)">
+                            <mat-icon class="icon-size-5"
+                              [svgIcon]="processDate == element?.date ? 'heroicons_solid:chevron-up' : 'heroicons_solid:chevron-down'">
+                            </mat-icon>
+                          </button>
+                        </td>
+                      </ng-container>
+                      <ng-container matColumnDef="SubCategoriesList" *ngIf="subProcessData">
+                        <td class="p-0 border-b-0" mat-cell *matCellDef="let element"
+                          [attr.colspan]="processDataColumns.length">
+                          <div class="shadow-lg overflow-hidden"
+                            [@expandCollapse]="processDate == element?.date ? 'expanded' : 'collapsed'">
+                            <div class="row bg-hover p-5 font-semibold">
+                              <div class="col-3">
+                                Clicks
+                              </div>
+                              <div class="col-3">
+                                Requests
+                              </div>
+                              <div class="col-3">
+                                Processed
+                              </div>
+                              <div class="col-3">
+                                Delivered
+                              </div>
+                            </div>
+
+                            <div class="p-5" *ngIf="subProcessData.length > 0">
+                              <div class="row pb-1 border-b-1" *ngFor="let item of subProcessData; let last = last">
+                                <div class="col-3">
+                                  {{item.clicks}}
+                                </div>
+                                <div class="col-3">
+                                  {{item.requests}}
+                                </div>
+                                <div class="col-3">
+                                  {{item.processed}}
+                                </div>
+                                <div class="col-3">
+                                  {{item.delivered}}
+                                </div>
+                              </div>
+                            </div>
+                            <div class="p-5 border-b" *ngIf="subProcessData.length == 0">
+                              <div class="row">
+                                <div class="col-12">
+                                  No Data found
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        </td>
+                      </ng-container>
+                    </div>
+                    <tr mat-header-row class="h-16 shadow bg-card" *matHeaderRowDef="processDataColumns">
+                    </tr>
+                    <tr mat-row class="hover:bg-gray-100 dark:hover:bg-hover" style="cursor: pointer;"
+                      *matRowDef="let row; columns: processDataColumns"></tr>
+                    <tr class="h-0 border-b-1" mat-row *matRowDef="let row; columns: ['SubCategoriesList']">
+                    </tr>
+                  </table>
+                </div>
+              </div> -->
             </div>
           </div>
         </div>
@@ -473,9 +576,9 @@
                                             [mode]="'indeterminate'">
                                           </mat-progress-spinner>
                                         </button>
-                                        <button [matTooltip]="'Remove'" class="p-0" mat-button>
+                                        <!-- <button [matTooltip]="'Remove'" class="p-0" mat-button>
                                           Remove
-                                        </button>
+                                        </button> -->
                                       </div>
                                     </td>
                                   </ng-container>
@@ -523,9 +626,9 @@
                                             [mode]="'indeterminate'">
                                           </mat-progress-spinner>
                                         </button>
-                                        <button [matTooltip]="'Remove'" mat-button>
+                                        <!-- <button [matTooltip]="'Remove'" mat-button>
                                           Remove
-                                        </button>
+                                        </button> -->
                                       </div>
                                     </td>
                                   </ng-container>

@@ -19,11 +19,6 @@ export const navigations = [
                 icon: 'mat_outline:margin',
             },
             {
-                id: 13,
-                title: 'Presentation',
-                icon: 'mat_outline:present_to_all',
-            },
-            {
                 title: 'Fulfillment Contacts',
                 icon: 'mat_outline:contacts',
             },
@@ -38,6 +33,11 @@ export const navigations = [
             {
                 title: 'Consolidated Bill',
                 icon: 'mat_outline:house_siding',
+            },
+            {
+                id: 13,
+                title: 'Presentation',
+                icon: 'mat_outline:present_to_all',
             },
             {
                 title: 'Cost Center Codes',

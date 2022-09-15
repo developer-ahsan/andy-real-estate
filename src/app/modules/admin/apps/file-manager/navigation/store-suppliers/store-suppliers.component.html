@@ -13,6 +13,11 @@
                 </div>
                 <note class="text-sm text-gray-400">PLEASE NOTE: Some of the products may be offline/obsolete.</note>
               </div>
+              <div class="col-lg-6 col-12 text-right">
+                <div class="text-2xl font-bold" *ngIf="!dataSourceLoading">
+                  Products: {{totalProductsCount}}
+                </div>
+              </div>
             </div>
           </div>
         </div>

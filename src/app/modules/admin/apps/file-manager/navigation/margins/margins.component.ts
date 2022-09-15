@@ -15,7 +15,7 @@ export class MarginsComponent implements OnInit {
   @Input() isLoading: boolean;
   @Output() isLoadingChange = new EventEmitter<boolean>();
   private _unsubscribeAll: Subject<any> = new Subject<any>();
-  displayedColumns: string[] = ['frequency', '1', '2', '3', '4', '5', '6', 'Action'];
+  displayedColumns: string[] = ['frequency', '1', '2', '3', '4', '5', '6'];
   dataSource = [];
   duplicatedDataSource = [];
   dataSourceTotalRecord: number;
