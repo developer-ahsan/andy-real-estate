@@ -25,6 +25,35 @@
     <mat-drawer-container class="sub-nav-component bg-light" autosize *ngIf="!isLoading">
         <mat-drawer #drawer class="sub-sidenav bg-light" [mode]="drawerMode" [opened]="drawerOpened">
             <div *ngFor="let route of routes;let i = index">
+                <mat-expansion-panel #panel [class.mat-elevation-z0]="true" dense *ngIf="route.children.length == 0"
+                    hideToggle (click)="clicked(route)" (opened)="doSomething()">
+                    <mat-expansion-panel-header
+                        [style.background-color]="route.title === selectedIndex ? '#d4d7dd' : 'transparent'"
+                        [ngClass]="route.title === selectedIndex ? 'opacity-100' : 'opacity-80'">
+                        <mat-icon svgIcon="{{route.icon}}" class="icon-size-5 text-primary"></mat-icon>
+                        <span style="font-size: 13px; font-weight: bold; margin-left: 10px;"> {{route.title}} </span>
+                    </mat-expansion-panel-header>
+                </mat-expansion-panel>
+                <mat-expansion-panel [expanded]="true" [class.mat-elevation-z0]="true" dense
+                    *ngIf="route.children.length > 0">
+                    <mat-expansion-panel-header
+                        [ngClass]="route.title === selectedIndex ? 'opacity-100' : 'opacity-80'">
+                        <mat-icon svgIcon="{{route.icon}}" class="icon-size-5 text-primary"></mat-icon>
+                        <span style="font-size: 13px; font-weight: bold; margin-left: 10px;"> {{route.title}} </span>
+                    </mat-expansion-panel-header>
+                    <mat-nav-list dense *ngFor="let child of route.children">
+                        <button style="padding: 15px;"
+                            [style.background-color]="child.title === selectedIndex ? '#d4d7dd' : 'transparent'"
+                            [ngClass]="child.title === selectedIndex ? 'opacity-100' : 'opacity-80'" mat-button
+                            class="w-full my-1 mr-2 justify-content-start" (click)="clicked(child)">
+                            <mat-icon svgIcon="{{child.icon}}" class="icon-size-5 text-primary"></mat-icon>
+                            <span style="font-size: 13px; font-weight: bold; margin-left: 10px;"> {{child.title}}
+                            </span>
+                        </button>
+                    </mat-nav-list>
+                </mat-expansion-panel>
+            </div>
+            <!-- <div *ngFor="let route of routes;let i = index">
                 <button style="padding: 15px;"
                     [style.background-color]="route.title === selectedIndex ? '#d4d7dd' : 'transparent'"
                     [ngClass]="route.title === selectedIndex ? 'opacity-100' : 'opacity-80'" mat-button
@@ -32,7 +61,7 @@
                     <mat-icon svgIcon="{{route.icon}}" class="icon-size-5 text-primary"></mat-icon>
                     <span style="font-size: 13px; font-weight: bold; margin-left: 10px;"> {{route.title}} </span>
                 </button>
-            </div>
+            </div> -->
         </mat-drawer>
 
         <div class="sub-sidenav-content bg-light p-2">

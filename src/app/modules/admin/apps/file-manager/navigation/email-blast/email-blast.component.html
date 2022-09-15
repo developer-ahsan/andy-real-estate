@@ -32,19 +32,51 @@
       </div>
     </div> -->
     <div *ngIf="!isLoading">
+      <div *ngIf="presentationScreen == 'Preview'">
+        <ngx-skeleton-loader count="8" appearance="line" animation="pulse" *ngIf="!previewData">
+        </ngx-skeleton-loader>
+        <div [innerHtml]="previewData" *ngIf="previewData" class="p-10 rounded-xl bg-card shadow-lg"></div>
+      </div>
       <!---------------------- Main Screen  ---------------------->
       <div *ngIf="presentationScreen == 'Main'">
+        <ngx-skeleton-loader count="8" appearance="line" animation="pulse" *ngIf="mainDataLoader">
+        </ngx-skeleton-loader>
         <div class="row p-10 pt-2 bg-light overflow-auto">
-          <div class="col-12 bg-card sm:p-6 md:p-6 lg:p-6 rounded-2xl shadow">
-            <div class="mt-4 col-12">
-              <mat-form-field appearance="fill" class="w-full">
-                <mat-label> Select an email to send. </mat-label>
-                <input matInput />
-              </mat-form-field>
+          <div class="col-12 bg-card sm:p-6 md:p-6 lg:p-6 rounded-2xl shadow" *ngIf="!mainDataLoader">
+            <div class="text-2xl font-extrabold tracking-tight leading-none my-3">
+              Email Templates
             </div>
-            <button class="my-5" mat-flat-button [color]="'primary'">
-              <span class="px-2">Continue</span>
-            </button>
+            <div class="mt-4 col-12">
+              <table mat-table [dataSource]="mainDataSource" class="w-full">
+                <div class="color-blue">
+                  <!-- Email Column -->
+                  <ng-container matColumnDef="template">
+                    <th class="min-w-50 bg-gray-50 dark:bg-black dark:bg-opacity-5" mat-header-cell *matHeaderCellDef>
+                      Template
+                    </th>
+                    <td mat-cell *matCellDef="let element">{{element.name}}</td>
+                  </ng-container>
+
+                  <!-- Action Column -->
+                  <ng-container matColumnDef="action">
+                    <th class="min-w-10 bg-gray-50 dark:bg-black dark:bg-opacity-5 text-center" mat-header-cell
+                      *matHeaderCellDef>
+                      Actions
+                    </th>
+                    <td mat-cell *matCellDef="let element">
+                      <div class="flex justify-center">
+                        <button [matTooltip]="'Preview'" mat-button (click)="getEmailTemplatePreview(element)">Preview
+                        </button>
+                      </div>
+                    </td>
+                  </ng-container>
+                </div>
+                <tr mat-header-row class="h-16 shadow bg-card" *matHeaderRowDef="mainSisplayedColumns">
+                </tr>
+                <tr mat-row class="hover:bg-gray-100 dark:hover:bg-hover" style="cursor: pointer;"
+                  *matRowDef="let row; columns: mainSisplayedColumns"></tr>
+              </table>
+            </div>
           </div>
         </div>
       </div>
@@ -324,35 +356,47 @@
             <div class="text-2xl font-extrabold tracking-tight leading-none my-3">
               Edit Opt-In Emails
             </div>
-            <mat-tab-group [animationDuration]="'0'">
+            <ngx-skeleton-loader count="8" appearance="line" animation="pulse" *ngIf="isPageLoading">
+            </ngx-skeleton-loader>
+            <mat-tab-group [animationDuration]="'0'" *ngIf="!isPageLoading">
               <mat-tab label="Add An Email">
                 <ng-template matTabContent>
-                  <div class="row">
+                  <div class="row" [formGroup]="addOptInForm">
                     <div class="col-12 col-md-6">
                       <mat-form-field class="w-full">
-                        <input type="text" matInput placeholder="Email (One email at a time)">
+                        <input type="text" formControlName="email" matInput placeholder="Email (One email at a time)">
                       </mat-form-field>
                     </div>
                     <div class="col-12 col-md-6">
                       <mat-form-field class="w-full">
-                        <mat-select>
+                        <mat-select formControlName="blnActive">
                           <mat-option [value]="true">Opt-In</mat-option>
                           <mat-option [value]="false">Opt-Out</mat-option>
                         </mat-select>
                       </mat-form-field>
                     </div>
-                    <div class="col-12 flex justify-end">
-                      <button [matTooltip]="'Add'" class="w-full lg:w-30 md:w-50" mat-stroked-button mat-flat-button>
-                        Add
+                    <div class="col-12 flex items-center justify-end w-full">
+                      <div class="flex mr-4" *ngIf="isAddMsg">
+                        <ng-container>
+                          <mat-icon class="text-green-500" [svgIcon]="'heroicons_outline:check'"></mat-icon>
+                          <span class="ml-2">Email Added Successfully</span>
+                        </ng-container>
+                      </div>
+                      <button [disabled]="!addOptInForm.valid || isAddLoader" [matTooltip]="'Add'"
+                        class="order-first sm:order-last" mat-flat-button mat-stroked-button (click)="addOptInEmail()">
+                        <mat-progress-spinner *ngIf="isAddLoader" [diameter]="24" [mode]="'indeterminate'">
+                        </mat-progress-spinner>
+                        <mat-icon *ngIf="!isAddLoader" svgIcon="mat_outline:add"></mat-icon>
+                        <span class="px-2">Add</span>
                       </button>
                     </div>
                   </div>
                 </ng-template>
               </mat-tab>
-              <mat-tab label="Import Emails">
+              <!-- Import Emails -->
+              <!-- <mat-tab label="Import Emails">
                 <ng-template matTabContent>
                   <note class="text-red-500">No headers, all emails are validated before any is stored</note>
-                  <!-- Warning -->
                   <fuse-alert [type]="'warning'">
                     <p class="text-sm">
                       NOTE: Your CSV file CANNOT have any formatting in it. This means no bold, underline, cell
@@ -377,7 +421,7 @@
                     </div>
                   </div>
                 </ng-template>
-              </mat-tab>
+              </mat-tab> -->
 
               <mat-tab label="Opt-In/Opt-Out">
                 <ng-template matTabContent>
@@ -397,93 +441,109 @@
                       that address.</p>
                   </fuse-alert>
                   <div class="row mt-5">
-                    <div class="col-12 col-md-6 p-2 pr-4">
-                      <ng-container *ngIf="optDataSource.length > 0; else noRecords">
-                        <div class="text-lg font-bold">Opt-In</div>
-                        <table mat-table [dataSource]="dataSource" class="w-full">
-                          <div class="color-blue">
-                            <!-- Email Column -->
-                            <ng-container matColumnDef="email">
-                              <th class="min-w-50 bg-gray-50 dark:bg-black dark:bg-opacity-5" mat-header-cell
-                                *matHeaderCellDef>
-                                Email
-                              </th>
-                              <td mat-cell *matCellDef="let element">test@email.com</td>
-                            </ng-container>
+                    <div class="col-12 p-2 pr-4">
+                      <mat-tab-group [animationDuration]="'0'">
+                        <mat-tab label="Opt-In">
+                          <ng-template matTabContent>
+                            <ng-container *ngIf="OptInEmails.length > 0; else noRecords">
+                              <div class="text-lg font-bold">Opt-In</div>
+                              <table mat-table [dataSource]="OptInEmails" class="w-full">
+                                <div class="color-blue">
+                                  <!-- Email Column -->
+                                  <ng-container matColumnDef="email">
+                                    <th class="min-w-50 bg-gray-50 dark:bg-black dark:bg-opacity-5" mat-header-cell
+                                      *matHeaderCellDef>
+                                      Email
+                                    </th>
+                                    <td mat-cell *matCellDef="let element">{{element.email}}</td>
+                                  </ng-container>
 
-                            <!-- Action Column -->
-                            <ng-container matColumnDef="action">
-                              <th class="min-w-10 bg-gray-50 dark:bg-black dark:bg-opacity-5" mat-header-cell
-                                *matHeaderCellDef>
-                                Actions
-                              </th>
-                              <td mat-cell *matCellDef="let element">
-                                <div class="flex justify-between">
-                                  <button [matTooltip]="'Opt-Out'" mat-button>
-                                    Opt-Out
-                                  </button>
-                                  <button [matTooltip]="'Remove'" mat-button>
-                                    Remove
-                                  </button>
+                                  <!-- Action Column -->
+                                  <ng-container matColumnDef="action">
+                                    <th class="min-w-10 bg-gray-50 dark:bg-black dark:bg-opacity-5 text-center"
+                                      mat-header-cell *matHeaderCellDef>
+                                      Actions
+                                    </th>
+                                    <td mat-cell *matCellDef="let element">
+                                      <div class="flex justify-center">
+                                        <button [matTooltip]="'Opt-Out'" class="p-0" mat-button
+                                          (click)="updateOptInEmail(element,'opt-out')">
+                                          <span *ngIf="!element?.loader">Opt-Out</span>
+                                          <mat-progress-spinner *ngIf="element?.loader" [diameter]="24"
+                                            [mode]="'indeterminate'">
+                                          </mat-progress-spinner>
+                                        </button>
+                                        <button [matTooltip]="'Remove'" class="p-0" mat-button>
+                                          Remove
+                                        </button>
+                                      </div>
+                                    </td>
+                                  </ng-container>
                                 </div>
-                              </td>
+                                <tr mat-header-row class="h-16 shadow bg-card" *matHeaderRowDef="optDisplayedColumns">
+                                </tr>
+                                <tr mat-row class="hover:bg-gray-100 dark:hover:bg-hover" style="cursor: pointer;"
+                                  *matRowDef="let row; columns: optDisplayedColumns"></tr>
+                              </table>
                             </ng-container>
-                          </div>
-                          <tr mat-header-row class="h-16 shadow bg-card" *matHeaderRowDef="optDisplayedColumns"></tr>
-                          <tr mat-row class="hover:bg-gray-100 dark:hover:bg-hover" style="cursor: pointer;"
-                            *matRowDef="let row; columns: optDisplayedColumns"></tr>
-                        </table>
-                      </ng-container>
-                      <ng-template #noRecords>
-                        <div class="font-semibold tracking-tight text-center">
-                          <p>No record found</p>
-                        </div>
-                      </ng-template>
-                    </div>
-                    <div class="col-12 col-md-6 p-2 pl-4">
-                      <ng-container *ngIf="optDataSource.length > 0; else noRecords">
-                        <div class="text-lg font-bold">Opt-Out</div>
-                        <table mat-table [dataSource]="dataSource" class="w-full">
-                          <div class="color-blue">
-                            <!-- Email Column -->
-                            <ng-container matColumnDef="email">
-                              <th class="min-w-50 bg-gray-50 dark:bg-black dark:bg-opacity-5" mat-header-cell
-                                *matHeaderCellDef>
-                                Email
-                              </th>
-                              <td mat-cell *matCellDef="let element">test@email.com</td>
-                            </ng-container>
+                            <ng-template #noRecords>
+                              <div class="font-semibold tracking-tight text-center">
+                                <p>No record found</p>
+                              </div>
+                            </ng-template>
+                          </ng-template>
+                        </mat-tab>
+                        <mat-tab label="Opt-Out">
+                          <ng-template matTabContent>
+                            <ng-container *ngIf="OptOutEmails.length > 0; else noRecords">
+                              <div class="text-lg font-bold">Opt-Out</div>
+                              <table mat-table [dataSource]="OptOutEmails" class="w-full">
+                                <div class="color-blue">
+                                  <!-- Email Column -->
+                                  <ng-container matColumnDef="email">
+                                    <th class="min-w-50 bg-gray-50 dark:bg-black dark:bg-opacity-5" mat-header-cell
+                                      *matHeaderCellDef>
+                                      Email
+                                    </th>
+                                    <td mat-cell *matCellDef="let element">{{element.email}}</td>
+                                  </ng-container>
 
-                            <!-- Action Column -->
-                            <ng-container matColumnDef="action">
-                              <th class="min-w-10 bg-gray-50 dark:bg-black dark:bg-opacity-5" mat-header-cell
-                                *matHeaderCellDef>
-                                Actions
-                              </th>
-                              <td mat-cell *matCellDef="let element">
-                                <div class="flex justify-between">
-                                  <button [matTooltip]="'Opt-In'" mat-button
-                                    aria-label="Example icon button with a vertical three dot icon">
-                                    Opt-In
-                                  </button>
-                                  <button [matTooltip]="'Remove'" mat-button
-                                    aria-label="Example icon button with a vertical three dot icon">
-                                    Remove
-                                  </button>
+                                  <!-- Action Column -->
+                                  <ng-container matColumnDef="action">
+                                    <th class="min-w-10 bg-gray-50 dark:bg-black dark:bg-opacity-5 text-center"
+                                      mat-header-cell *matHeaderCellDef>
+                                      Actions
+                                    </th>
+                                    <td mat-cell *matCellDef="let element">
+                                      <div class="flex justify-center">
+                                        <button [matTooltip]="'Opt-In'" mat-button
+                                          (click)="updateOptInEmail(element,'opt-in')">
+                                          <span *ngIf="!element?.loader">Opt-IN</span>
+                                          <mat-progress-spinner *ngIf="element?.loader" [diameter]="24"
+                                            [mode]="'indeterminate'">
+                                          </mat-progress-spinner>
+                                        </button>
+                                        <button [matTooltip]="'Remove'" mat-button>
+                                          Remove
+                                        </button>
+                                      </div>
+                                    </td>
+                                  </ng-container>
                                 </div>
-                              </td>
+                                <tr mat-header-row class="h-16 shadow bg-card" *matHeaderRowDef="optDisplayedColumns">
+                                </tr>
+                                <tr mat-row class="hover:bg-gray-100 dark:hover:bg-hover" style="cursor: pointer;"
+                                  *matRowDef="let row; columns: optDisplayedColumns"></tr>
+                              </table>
                             </ng-container>
-                          </div>
-                          <tr mat-header-row class="h-16 shadow bg-card" *matHeaderRowDef="optDisplayedColumns"></tr>
-                          <tr mat-row class="hover:bg-gray-100 dark:hover:bg-hover" style="cursor: pointer;"
-                            *matRowDef="let row; columns: optDisplayedColumns"></tr>
-                        </table>
-                      </ng-container>
-                      <ng-template #noRecords>
-                        <div class="font-semibold tracking-tight text-center">
-                          <p>No record found</p>
-                        </div>
-                      </ng-template>
+                            <ng-template #noRecords>
+                              <div class="font-semibold tracking-tight text-center">
+                                <p>No record found</p>
+                              </div>
+                            </ng-template>
+                          </ng-template>
+                        </mat-tab>
+                      </mat-tab-group>
                     </div>
                   </div>
                 </ng-template>
@@ -550,12 +610,12 @@
 
                       <!-- Status Column -->
                       <ng-container matColumnDef="action">
-                        <th class="min-w-10 bg-gray-50 dark:bg-black dark:bg-opacity-5" mat-header-cell
+                        <th class="min-w-10 bg-gray-50 dark:bg-black dark:bg-opacity-5 " mat-header-cell
                           *matHeaderCellDef>
                           Actions
                         </th>
                         <td mat-cell *matCellDef="let element">
-                          <div class="flex justify-between">
+                          <div class="flex justify-center">
                             <button [matTooltip]="'Download'" mat-icon-button
                               aria-label="Example icon button with a vertical three dot icon">
                               <mat-icon>download</mat-icon>

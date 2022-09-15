@@ -4,6 +4,7 @@ import {
   Component,
   OnDestroy,
   OnInit,
+  ViewChild,
   ViewEncapsulation,
 } from "@angular/core";
 import { Subject } from "rxjs";
@@ -20,6 +21,8 @@ import { Router } from "@angular/router";
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class StoresDetailsComponent implements OnInit, OnDestroy {
+  @ViewChild("panel") panel;
+
   selectedStore: any = null;
   private _unsubscribeAll: Subject<any> = new Subject<any>();
   routes = null;
@@ -52,6 +55,10 @@ export class StoresDetailsComponent implements OnInit, OnDestroy {
   /**
    * On init
    */
+  doSomething() {
+    //do stuff
+    this.panel.close();
+  }
   ngOnInit(): void {
     const storeId = location.pathname.split("/")[3];
     this.routes = this._storesManagerService.navigationLabels;
