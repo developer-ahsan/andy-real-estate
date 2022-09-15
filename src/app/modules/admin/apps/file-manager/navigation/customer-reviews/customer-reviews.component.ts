@@ -49,6 +49,7 @@ export class CustomerReviewsComponent implements OnInit {
   flashMessage1: boolean = false;
   user: any;
 
+  isAddLoader: boolean = false;
   constructor(
     private _fileManagerService: FileManagerService,
     private _changeDetectorRef: ChangeDetectorRef,
@@ -148,6 +149,7 @@ export class CustomerReviewsComponent implements OnInit {
           this.isEditReview = true;
           this.flashMessage = false;
           this.isAddReview = false;
+          this.isAddLoader = false;
           this._changeDetectorRef.markForCheck();
         }
 
@@ -181,7 +183,7 @@ export class CustomerReviewsComponent implements OnInit {
       .subscribe(res => {
         if (res["success"]) {
           this.reviewListArray.removeAt(index);
-          this._snackBar.open("Review Deleted Successfully!!", '', {
+          this._snackBar.open("Review Deleted Successfully", '', {
             horizontalPosition: 'center',
             verticalPosition: 'bottom',
             duration: 3000
@@ -268,6 +270,7 @@ export class CustomerReviewsComponent implements OnInit {
   }
   addProductReview() {
     this.flashMessage1 = true;
+    this.isAddLoader = true;
     const { name, company, date, rating, comment } = this.productAddReviewForm.getRawValue();
     let payload = {
       storeProductId: this.editData.pk_storeProductID,
@@ -284,6 +287,7 @@ export class CustomerReviewsComponent implements OnInit {
         this._changeDetectorRef.markForCheck();
       }, err => {
 
+        this.isAddLoader = false;
         this.flashMessage1 = false;
         this._changeDetectorRef.markForCheck();
       })

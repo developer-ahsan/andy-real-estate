@@ -35,7 +35,18 @@
       <div *ngIf="presentationScreen == 'Preview'">
         <ngx-skeleton-loader count="8" appearance="line" animation="pulse" *ngIf="!previewData">
         </ngx-skeleton-loader>
-        <div [innerHtml]="previewData" *ngIf="previewData" class="p-10 rounded-xl bg-card shadow-lg"></div>
+        <div *ngIf="previewData" class="p-10 rounded-xl bg-card shadow-lg">
+          <div class="row mb-5">
+            <div class="col-12 text-right">
+              <button class="ml-4" mat-flat-button mat-stroked-button [matTooltip]="'Back to Template'"
+                (click)="backToUpdateTemplate()">
+                <mat-icon [svgIcon]="'heroicons_outline:arrow-narrow-left'"></mat-icon>
+                <span class="ml-2 mr-1">Back to Template</span>
+              </button>
+            </div>
+          </div>
+          <div [innerHtml]="previewData"></div>
+        </div>
       </div>
       <!---------------------- Main Screen  ---------------------->
       <div *ngIf="presentationScreen == 'Main'">

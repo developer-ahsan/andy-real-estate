@@ -196,12 +196,16 @@ export class MarginsComponent implements OnInit {
     this._storesManagerService.putStoresData(payload)
       .pipe(takeUntil(this._unsubscribeAll))
       .subscribe((response: any) => {
-        this.defaultMarginLoader = false;
-        this.defaultMarginMsgLoader = true;
-        setTimeout(() => {
-          this.defaultMarginMsgLoader = false;
+        this._storesManagerService.getStoreByStoreId(pk_storeID).subscribe(res => {
+          this.defaultMarginLoader = false;
+          this.defaultMarginMsgLoader = true;
+          setTimeout(() => {
+            this.defaultMarginMsgLoader = false;
+            this._changeDetectorRef.markForCheck();
+          }, 2000);
           this._changeDetectorRef.markForCheck();
-        }, 2000);
+        })
+
 
         // Mark for check
         this._changeDetectorRef.markForCheck();

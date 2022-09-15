@@ -199,8 +199,9 @@
                         </ng-container>
                       </div>
 
-                      <button [disabled]="!defaultMarginForm.valid" (click)="updateDefaultMargin()"
-                        [matTooltip]="'Update'" class="order-first sm:order-last" mat-flat-button mat-stroked-button>
+                      <button [disabled]="!defaultMarginForm.valid || defaultMarginLoader"
+                        (click)="updateDefaultMargin()" [matTooltip]="'Update'" class="order-first sm:order-last"
+                        mat-flat-button mat-stroked-button>
                         <mat-progress-spinner *ngIf="defaultMarginLoader" [diameter]="24" [mode]="'indeterminate'">
                         </mat-progress-spinner>
                         <mat-icon *ngIf="!defaultMarginLoader" svgIcon="mode_edit_outline"></mat-icon>

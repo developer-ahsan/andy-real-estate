@@ -291,7 +291,7 @@
                           </ng-container>
                         </div>
 
-                        <button [disabled]="!productAddReviewForm.valid && flashMessage1" (click)="addProductReview()"
+                        <button [disabled]="!productAddReviewForm.valid || isAddLoader" (click)="addProductReview()"
                           [matTooltip]="'Add review'" class="order-first sm:order-last" mat-flat-button
                           mat-stroked-button>
                           <mat-progress-spinner *ngIf="flashMessage1" [diameter]="24" [mode]="'indeterminate'">

@@ -231,6 +231,7 @@ export class EmailBlastComponent implements OnInit {
       })
   }
   getEmailTemplatePreview(element) {
+    this.previewData = null;
     this.presentationScreen = 'Preview';
     let params = {
       emails: true,
@@ -276,5 +277,8 @@ export class EmailBlastComponent implements OnInit {
   openedAccordion(item) {
     this.processDate = item.date;
     this.subProcessData = item.stats;
+  }
+  backToUpdateTemplate() {
+    this.presentationScreen = 'Main';
   }
 }
