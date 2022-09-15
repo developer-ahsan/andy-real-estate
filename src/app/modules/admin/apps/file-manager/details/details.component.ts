@@ -36,6 +36,8 @@ export class StoresDetailsComponent implements OnInit, OnDestroy {
   // Sidebar stuff
   drawerMode: "over" | "side" = "side";
   drawerOpened: boolean = true;
+
+  // Default details screen
   selectedIndex: string = "Dashboard";
 
   /**
