@@ -1190,12 +1190,13 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
         this.productNumberText = event.target.value;
 
         if (this.productNumberText.includes("_")) {
+
             // check if product number has underscore to remove
             this.productNumberText = this.productNumberText.substring(0, this.productNumberText.indexOf('_'));
         };
 
         // Check for production number text
-        if (this.productNumberText.includes("#")) {
+        if (this.productNumberText.startsWith("#")) {
             // check if product number has hash to remove
             this.productNumberText = this.productNumberText.replace('#', '');
         };
