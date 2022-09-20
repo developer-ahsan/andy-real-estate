@@ -397,6 +397,7 @@ export class LocationsComponent implements OnInit {
     }
   }
   removeMainLocation(item) {
+
     const message = `Removing this location attribute will remove all locations associated with this attribute, as well as dissociate any users with these locations. `;
 
     const dialogData = new ConfirmDialogModel("Are you sure you want to continue?", message);
@@ -409,6 +410,7 @@ export class LocationsComponent implements OnInit {
     dialogRef.afterClosed().subscribe(dialogResult => {
       if (dialogResult) {
         item.deleteLoader = true;
+        this._changeDetectorRef.markForCheck()
         let payload = {
           attribute_id: item.pk_attributeID,
           delete_main_location: true
