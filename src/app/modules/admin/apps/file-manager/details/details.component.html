@@ -261,6 +261,10 @@
                         <app-student-org [(isLoading)]="isLoading" [selectedStore]="selectedStore">
                         </app-student-org>
                     </ng-template>
+                    <ng-template [ngIf]="selectedIndex === 'Art Approval Settings'">
+                        <art-approval-settings [(isLoading)]="isLoading" [selectedStore]="selectedStore">
+                        </art-approval-settings>
+                    </ng-template>
                 </div>
             </div>
         </div>

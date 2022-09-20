@@ -68,6 +68,9 @@ import { MatNativeDateModule } from "@angular/material/core";
 import { MatFormFieldModule } from "@angular/material/form-field";
 import { MatDatepickerModule } from "@angular/material/datepicker";
 import { MatSortModule } from "@angular/material/sort";
+import { MatChipsModule } from "@angular/material/chips";
+import { ArtApprovalComponent } from "./navigation/art-approval-settings/art-approval.component";
+import { ConfirmationDialogComponent } from "./confirmation-dialog/confirmation-dialog.component";
 
 @NgModule({
   declarations: [
@@ -110,7 +113,8 @@ import { MatSortModule } from "@angular/material/sort";
     LocationsComponent,
     CreditTermsComponent,
     StorePlanComponent,
-    StudentOrgComponent
+    StudentOrgComponent,
+    ArtApprovalComponent
   ],
   imports: [
     RouterModule.forChild(storeRoutes),
@@ -144,6 +148,8 @@ import { MatSortModule } from "@angular/material/sort";
     NgMultiSelectDropDownModule,
     MatTabsModule,
     MatSortModule,
+    MatChipsModule
   ],
+  entryComponents: [ConfirmationDialogComponent],
 })
 export class StoresModule { }

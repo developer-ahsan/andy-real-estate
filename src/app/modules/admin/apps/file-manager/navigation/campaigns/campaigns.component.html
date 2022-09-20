@@ -1,4 +1,4 @@
-<div class="row py-2 overflow-auto" *ngIf="!dataSourceLoading && !isEditCampaign">
+<div class="row py-2 overflow-auto" *ngIf="!isEditCampaign">
   <div class="col-12">
     <mat-button-toggle-group #group="matButtonToggleGroup" [value]="mainScreen" (change)="calledScreen(group.value)">
       <mat-button-toggle *ngFor="let buttonValue of screens" value="{{buttonValue}}">
@@ -8,13 +8,80 @@
   </div>
 </div>
 
-<ngx-skeleton-loader count="8" appearance="line" animation="pulse" *ngIf="dataSourceLoading">
+<ngx-skeleton-loader count="8" appearance="line" animation="pulse"
+  *ngIf="mainCampaign.loader && mainScreen=='Marketing Campaign'">
 </ngx-skeleton-loader>
 
+<ngx-skeleton-loader count="8" appearance="line" animation="pulse"
+  *ngIf="dataSourceLoading && (mainScreen=='Campaigns' || mainScreen=='Set Featured' || mainScreen=='Display Order')">
+</ngx-skeleton-loader>
 <div>
-  <div *ngIf="!dataSourceLoading">
+  <div>
     <div *ngIf="!isLoading && !isEditCampaign">
-      <fuse-card class="rounded-2xl shadow bg-card flex" *ngIf="mainScreen == 'Campaigns'">
+      <fuse-card class="rounded-2xl shadow bg-card flex"
+        *ngIf="mainScreen == 'Marketing Campaign' && !mainCampaign.loader">
+        <div class="row" style="width: -webkit-fill-available;">
+          <div class="col-12">
+            <div class="p-6 sm:p-8 lg:p-10 w-full">
+              <div class="text-2xl font-extrabold tracking-tight leading-none">
+                Marketing Campaign
+              </div>
+              <div class="col-12">
+                <form>
+                  <div class="row mt-5">
+                    <div class="col-12">
+                      <div class="flex">
+                        <label>Campaign Title</label>
+                        <mat-icon style="width: 14px; height: 14px;min-height: 18px;margin-top:1px"
+                          svgIcon="heroicons_solid:question-mark-circle"
+                          [matTooltip]="'This is what the campaign center will be called on the site.  Use this field to customize the name of this section.'">
+                        </mat-icon>
+                      </div>
+
+                      <mat-form-field class="w-full">
+                        <input matInput [(ngModel)]="mainCampaign?.data.campaignTitle"
+                          [ngModelOptions]="{standalone: true}" placeholder="Campaign Title" />
+                      </mat-form-field>
+                    </div>
+                    <div class="col-12">
+                      <div class="flex">
+                        <label>Campaign Center Copy</label>
+                        <mat-icon style="width: 14px; height: 14px;min-height: 18px;margin-top:1px"
+                          svgIcon="heroicons_solid:question-mark-circle"
+                          [matTooltip]="'This is the copy that will show on the campaign center page.'">
+                        </mat-icon>
+                      </div>
+                      <mat-form-field class="w-full">
+                        <textarea matInput rows="10" [ngModelOptions]="{standalone: true}"
+                          [(ngModel)]="mainCampaign?.data.campaignCenterCopy"
+                          placeholder="Campaign Center Copy"></textarea>
+                      </mat-form-field>
+                    </div>
+                    <div class="col-12 flex items-center justify-end w-full">
+                      <div class="flex mr-4" *ngIf="mainCampaign.update_msg">
+                        <ng-container>
+                          <mat-icon class="text-green-500" [svgIcon]="'heroicons_outline:check'"></mat-icon>
+                          <span class="ml-2">Marketing Campaign Updated Successfully</span>
+                        </ng-container>
+                      </div>
+                      <button (click)="updateMainCampaign(mainCampaign.data)" [disabled]="mainCampaign.update_loader"
+                        [matTooltip]="'Update'" class="order-first sm:order-last" mat-flat-button mat-stroked-button>
+                        <mat-progress-spinner *ngIf="mainCampaign.update_loader" [diameter]="24"
+                          [mode]="'indeterminate'">
+                        </mat-progress-spinner>
+                        <mat-icon *ngIf="!mainCampaign.update_loader" svgIcon="mat_outline:edit"></mat-icon>
+                        <span class="px-2">Update</span>
+                      </button>
+                    </div>
+                  </div>
+                </form>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </fuse-card>
+      <fuse-card class="rounded-2xl shadow bg-card flex" *ngIf="mainScreen == 'Campaigns' && !dataSourceLoading">
         <div class="row" style="width: -webkit-fill-available;">
           <div class="col-12">
             <div class="p-6 sm:p-8 lg:p-10 w-full">
@@ -24,7 +91,7 @@
             </div>
           </div>
 
-          <div class="col-12 h-full">
+          <div class="col-12 pb-5">
             <ng-container *ngIf="dataSource.length > 0; else noRecords">
               <table mat-table [dataSource]="dataSource" class="w-full">
                 <div class="color-blue">
@@ -89,7 +156,7 @@
           </div>
         </div>
       </fuse-card>
-      <fuse-card class="rounded-2xl shadow bg-card flex" *ngIf="mainScreen == 'Set Featured'">
+      <fuse-card class="rounded-2xl shadow bg-card flex" *ngIf="mainScreen == 'Set Featured' && !dataSourceLoading">
         <div class="row" style="width: -webkit-fill-available;">
           <div class="col-12">
             <div class="p-6 sm:p-8 lg:p-10 w-full">
@@ -139,7 +206,7 @@
           </div>
         </div>
       </fuse-card>
-      <fuse-card class="rounded-2xl shadow bg-card flex" *ngIf="mainScreen == 'Display Order'">
+      <fuse-card class="rounded-2xl shadow bg-card flex" *ngIf="mainScreen == 'Display Order' && !dataSourceLoading">
         <div class="row" style="width: -webkit-fill-available;">
           <div class="col-12 ">
             <div class="p-6 sm:p-8 lg:p-10 w-full">

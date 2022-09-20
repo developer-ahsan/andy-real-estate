@@ -39,8 +39,9 @@ export class CampaignsComponent implements OnInit {
   dataSourceLoading = false;
   page: number = 1;
 
-  mainScreen: string = "Campaigns";
+  mainScreen: string = "Marketing Campaign";
   screens = [
+    "Marketing Campaign",
     "Campaigns",
     "New Campaign",
     "Set Featured",
@@ -52,6 +53,12 @@ export class CampaignsComponent implements OnInit {
   campaignForm: FormGroup;
   flashMessage: 'success' | 'error' | 'errorMessage' | null = null;
 
+  mainCampaign = {
+    data: {},
+    loader: false,
+    update_loader: false,
+    update_msg: false
+  }
   constructor(
     private _storeManagerService: FileManagerService,
     private _changeDetectorRef: ChangeDetectorRef,
@@ -62,6 +69,7 @@ export class CampaignsComponent implements OnInit {
     this.dataSourceLoading = true;
     this.initialize();
     this.getFirstCall('get');
+    this.getMainCampaign();
   };
   initialize() {
     this.campaignForm = new FormGroup({
@@ -225,4 +233,58 @@ export class CampaignsComponent implements OnInit {
       this._changeDetectorRef.markForCheck();
     }, 3500);
   }
+  getMainCampaign() {
+    this.mainCampaign.loader = true;
+    const { pk_storeID } = this.selectedStore;
+    let params = {
+      store_id: pk_storeID,
+      main_campaign: true
+    }
+    // Get the supplier products
+    this._storeManagerService.getStoresData(params)
+      .pipe(takeUntil(this._unsubscribeAll))
+      .subscribe((response: any) => {
+        this.mainCampaign.loader = false;
+        this.mainCampaign.data = response["data"][0];
+        // Mark for check
+        this._changeDetectorRef.markForCheck();
+      }, err => {
+        this.mainCampaign.loader = false;
+
+        // Mark for check
+        this._changeDetectorRef.markForCheck();
+      });
+  };
+  updateMainCampaign(item) {
+    this.mainCampaign.update_loader = true;
+    const { pk_storeID } = this.selectedStore;
+    let payload = {
+      store_id: pk_storeID,
+      campaign_center_copy: item.campaignCenterCopy.replace(`'`, `"`),
+      title: item.campaignTitle.replace(`'`, `"`),
+      campaign_update: true
+    }
+    // Get the supplier products
+    this._storeManagerService.putStoresData(payload)
+      .pipe(takeUntil(this._unsubscribeAll))
+      .subscribe((response: any) => {
+        this.mainCampaign.update_loader = false;
+        this.mainCampaign.update_msg = true;
+
+        if (response["success"]) {
+          setTimeout(() => {
+            this.mainCampaign.update_msg = false;
+            this._changeDetectorRef.markForCheck();
+          }, 2000);
+        }
+        // Mark for check
+        this._changeDetectorRef.markForCheck();
+      }, err => {
+        this.mainCampaign.update_loader = false;
+        this.mainCampaign.update_msg = false;
+
+        // Mark for check
+        this._changeDetectorRef.markForCheck();
+      });
+  };
 }

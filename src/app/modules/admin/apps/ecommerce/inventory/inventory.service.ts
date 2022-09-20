@@ -12,6 +12,7 @@ import { navigations } from 'app/modules/admin/apps/ecommerce/inventory/navigati
     providedIn: 'root'
 })
 export class InventoryService {
+    public selectedIndex = null;
     // Private
     private _brands: BehaviorSubject<InventoryBrand[] | null> = new BehaviorSubject(null);
     private _categories: BehaviorSubject<InventoryCategory[] | null> = new BehaviorSubject(null);

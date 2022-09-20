@@ -10,11 +10,11 @@
 
 
 
-<ngx-skeleton-loader count="8" appearance="line" animation="pulse" *ngIf="dataSourceLoading">
+<ngx-skeleton-loader count="8" appearance="line" animation="pulse" *ngIf="mainScreen == 'Margins' && dataSourceLoading">
 </ngx-skeleton-loader>
-<div *ngIf="!dataSourceLoading">
+<div>
   <div *ngIf="!isLoading">
-    <fuse-card class="rounded-2xl shadow bg-card flex" *ngIf="mainScreen == 'Margins'">
+    <fuse-card class="rounded-2xl shadow bg-card flex" *ngIf="mainScreen == 'Margins' && !dataSourceLoading">
       <div class="row" style="width: -webkit-fill-available;">
         <div class="col-12">
           <div class="p-6 sm:p-8 lg:p-10 w-full">

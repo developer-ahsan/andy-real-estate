@@ -52,7 +52,7 @@ export class ProductDetailsComponent implements OnInit, OnDestroy {
     private _fuseMediaWatcherService: FuseMediaWatcherService,
     private _snackBar: MatSnackBar,
     private route: ActivatedRoute
-  ) {}
+  ) { }
 
   // -----------------------------------------------------------------------------------------------------
   // @ Lifecycle hooks
@@ -63,7 +63,12 @@ export class ProductDetailsComponent implements OnInit, OnDestroy {
    */
   ngOnInit(): void {
     this.route.params.subscribe((res) => {
-      this.selectedIndex = "Name & Description";
+      if (this._inventoryService.selectedIndex) {
+        this.selectedIndex = "Warehouse Options";
+      } else {
+        this.selectedIndex = "Name & Description";
+      }
+      // this.selectedIndex = null;
       const productId = res.id;
       this._inventoryService.product$
         .pipe(takeUntil(this._unsubscribeAll))
@@ -107,8 +112,8 @@ export class ProductDetailsComponent implements OnInit, OnDestroy {
               .subscribe((product) => {
                 this.last_updated = product["data"][0]?.lastUpdatedDate
                   ? moment
-                      .utc(product["data"][0]?.lastUpdatedDate)
-                      .format("lll")
+                    .utc(product["data"][0]?.lastUpdatedDate)
+                    .format("lll")
                   : "N/A";
                 this.isProductFetched = false;
 

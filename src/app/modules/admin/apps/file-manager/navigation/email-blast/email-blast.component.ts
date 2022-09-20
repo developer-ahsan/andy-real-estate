@@ -68,8 +68,7 @@ export class EmailBlastComponent implements OnInit {
   ngEndDate: any;
   processData: any;
   processDataLoader: boolean = false;
-  processDataColumns: string[] = ['date', 'action'];
-  processDataColumns1: string[] = ['clicks', 'requests', 'processed', 'delivered'];
+  processDataColumns: string[] = ['clicks', 'requests', 'processed', 'delivered'];
   processDate: any;
   subProcessData: any;
   constructor(

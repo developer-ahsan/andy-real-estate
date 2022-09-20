@@ -16,10 +16,13 @@ export class StoreSuppliersComponent implements OnInit {
   private _unsubscribeAll: Subject<any> = new Subject<any>();
   displayedColumns: string[] = ['company', 'productName', 'percentage'];
   dataSource = [];
+  searchDataSource = [];
   dataSourceLoading = false;
+
 
   totalProductsCount: number = 0;
   totalPercentage: number = 0;
+
   constructor(
     private _fileManagerService: FileManagerService,
     private _changeDetectorRef: ChangeDetectorRef,
@@ -43,6 +46,7 @@ export class StoreSuppliersComponent implements OnInit {
         this.dataSource.forEach(element => {
           this.totalProductsCount = this.totalProductsCount + element.productCount;
         });
+        this.searchDataSource = this.dataSource;
         this.dataSourceLoading = false;
         this._changeDetectorRef.markForCheck();
       })
@@ -60,6 +64,16 @@ export class StoreSuppliersComponent implements OnInit {
       this.dataSource.forEach(element => {
         this.totalPercentage = this.totalPercentage + element.percentage;
       });
+    }
+  }
+  searchCompany(value) {
+    console.log(value)
+    if (value != '') {
+      this.dataSource = this.searchDataSource.filter(res => {
+        return res.companyName.toLowerCase().includes(value.toLowerCase());
+      })
+    } else {
+      this.dataSource = this.searchDataSource;
     }
   }
 

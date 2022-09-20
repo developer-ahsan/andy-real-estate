@@ -187,5 +187,8 @@ export class SearchHistoryComponent implements OnInit {
     let milliSSecond = secondDate.getTime();
     return Number((milliSSecond - milliSFirst) / (1000 * 3600 * 24)).toFixed(0)
   }
+  convertDate(date) {
+    return moment(date).format('YYYY-MM-DD')
+  }
 }
 

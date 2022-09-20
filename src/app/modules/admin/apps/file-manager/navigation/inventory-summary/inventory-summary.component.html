@@ -2,7 +2,7 @@
 </ngx-skeleton-loader>
 <div *ngIf="!dataSourceLoading">
   <div *ngIf="!isLoading">
-    <fuse-card class="rounded-2xl shadow bg-card flex pb-10" *ngIf="!isEditInventory">
+    <fuse-card class="rounded-2xl shadow bg-card flex pb-0" *ngIf="!isEditInventory">
       <div class="row" style="width: -webkit-fill-available;">
         <div class="col-12">
           <div class="p-6 sm:p-8 lg:p-10 w-full">
@@ -47,7 +47,7 @@
                   <th class="min-w-50 bg-gray-50 dark:bg-black dark:bg-opacity-5" mat-header-cell *matHeaderCellDef>
                     Product
                   </th>
-                  <td mat-cell *matCellDef="let element" (click)="editInventory(element)">
+                  <td mat-cell *matCellDef="let element" (click)="editInventory(element.pk_productID)">
                     {{ element.productName }}
                   </td>
                 </ng-container>
@@ -94,6 +94,13 @@
               <p>No record found</p>
             </div>
           </ng-template>
+          <div *ngIf="dataSource.length > 0">
+            <mat-paginator style="border-bottom-left-radius: 16px;border-bottom-right-radius:16px"
+              class="sm:bottom-0 border-b sm:border-t sm:border-b-0 z-10 bg-gray-50 dark:bg-transparent"
+              [ngClass]="{'pointer-events-none': isLoading}" (page)="getNextData($event)"
+              [length]="dataSourceTotalRecord" [pageIndex]="0" [pageSize]="20" [hidePageSize]="true">
+            </mat-paginator>
+          </div>
         </div>
       </div>
     </fuse-card>

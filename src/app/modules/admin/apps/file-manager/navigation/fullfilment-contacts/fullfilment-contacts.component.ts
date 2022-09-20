@@ -171,7 +171,7 @@ export class FullfilmentContactsComponent implements OnInit {
           //   console.log(u)
           //   u.pk_fulfillmentContactID !== item.pk_fulfillmentContactID
           // });
-          this._snackBar.open("Contact Deleted Successfully!!", '', {
+          this._snackBar.open("Contact Deleted Successfully", '', {
             horizontalPosition: 'center',
             verticalPosition: 'bottom',
             duration: 3000

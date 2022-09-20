@@ -75,13 +75,22 @@
                     <div class="col-12 text-right">
                       <button (click)="filterSearchHistory(1)" [matTooltip]="'Fetch'" [disabled]="isFilterLoader"
                         class="order-first sm:order-last min-w-40" mat-flat-button mat-stroked-button>
-                        <mat-progress-spinner *ngIf="isFilterLoader" [diameter]="24" [mode]="'indeterminate'">
+                        <mat-progress-spinner *ngIf="isFilterLoader" class="mr-2" [diameter]="24"
+                          [mode]="'indeterminate'">
                         </mat-progress-spinner>
                         <span class="mr-1">Fetch</span>
                       </button>
                     </div>
                   </div>
                 </form>
+                <div *ngIf="this.filterForm.get('start_date').value && this.filterForm.get('end_date').value ">
+                  <mat-chip-list aria-label="Dog selection">
+                    <mat-chip>
+                      {{convertDate(this.filterForm.get('start_date').value) + ' - ' +
+                      convertDate(this.filterForm.get('end_date').value)}}
+                    </mat-chip>
+                  </mat-chip-list>
+                </div>
               </div>
             </div>
           </div>

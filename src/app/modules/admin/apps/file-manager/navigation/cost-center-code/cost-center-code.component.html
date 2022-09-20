@@ -1,7 +1,62 @@
-<ngx-skeleton-loader count="8" appearance="line" animation="pulse" *ngIf="isPageLoading">
-</ngx-skeleton-loader>
-<div *ngIf="!isPageLoading">
-  <fuse-card class="rounded-2xl shadow bg-card flex">
+<div class="row py-2 overflow-auto">
+  <div class="col-12">
+    <mat-button-toggle-group #group="matButtonToggleGroup" [value]="mainScreen" (change)="calledScreen(group.value)">
+      <mat-button-toggle *ngFor="let buttonValue of screens" value="{{buttonValue}}">
+        {{ buttonValue }}
+      </mat-button-toggle>
+    </mat-button-toggle-group>
+  </div>
+</div>
+
+<div>
+  <ngx-skeleton-loader count="8" appearance="line" animation="pulse"
+    *ngIf="isPageLoading && mainScreen == 'Cost Center Codes'">
+  </ngx-skeleton-loader>
+  <fuse-card class="rounded-2xl shadow bg-card flex" *ngIf="mainScreen == 'Add New Code'">
+    <div class="row" style="width: -webkit-fill-available;">
+      <div class="col-12">
+        <div class="p-6 sm:p-8 lg:p-10 w-full">
+          <div class="row">
+            <div class="col-lg-6 col-12 pb-6 sm:pb-8 lg:pb-8">
+              <div class="text-2xl font-bold">
+                Add New Cost Center Codes
+              </div>
+            </div>
+            <div class="col-12 pt-6">
+              <div class="text-lg mb-2">Cost Center Code *</div>
+              <form>
+                <div class="row flex">
+                  <div class="col-12">
+                    <mat-form-field class="w-full">
+                      <input matInput type="text" [(ngModel)]="ngCostCode" [ngModelOptions]="{standalone: true}">
+                    </mat-form-field>
+                  </div>
+                  <div class="col-12 flex items-center justify-end w-full">
+                    <div class="flex items-center my-2">
+                      <div class="flex items-center mr-4" *ngIf="isCostAddMsg">
+                        <ng-container>
+                          <mat-icon class="text-green-500" [svgIcon]="'heroicons_outline:check'"></mat-icon>
+                          <span class="ml-2">Cost Code Added Successfully</span>
+                        </ng-container>
+                      </div>
+                      <button class="min-w-40" [disabled]="isCostAddLoader" mat-stroked-button
+                        [matTooltip]="'Add Cost Code'" (click)="addCostCode()">
+                        <mat-progress-spinner *ngIf="isCostAddLoader" [diameter]="24" [mode]="'indeterminate'">
+                        </mat-progress-spinner>
+                        <mat-icon *ngIf="!isCostAddLoader" svgIcon="mat_outline:add"></mat-icon>
+                        <span class="px-2">Add</span>
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </fuse-card>
+  <fuse-card class="rounded-2xl shadow bg-card flex" *ngIf="!isPageLoading && mainScreen == 'Cost Center Codes'">
     <div class="row" style="width: -webkit-fill-available;">
       <div class="col-12">
         <div class="p-6 sm:p-8 lg:p-10 w-full">
@@ -11,40 +66,54 @@
                 Cost Center Codes
               </div>
             </div>
-            <div class="col-12 pt-6">
-              <div class="text-lg mb-2">Add New Cost Center Code</div>
-              <form>
-                <div class="row flex">
-                  <div class="col-md-6 col-12">
-                    <mat-form-field class="w-full">
-                      <input matInput type="text">
-                    </mat-form-field>
+            <div class="col-12 pt-2">
+              <ng-container *ngIf="dataSource.length > 0; else noRecords">
+                <table mat-table [dataSource]="dataSource" class="w-full">
+                  <div class="color-blue">
+                    <!-- Search Term Column -->
+                    <ng-container matColumnDef="code">
+                      <th class="min-w-50 bg-gray-50 dark:bg-black dark:bg-opacity-5" mat-header-cell *matHeaderCellDef>
+                        Code
+                      </th>
+                      <td mat-cell *matCellDef="let element">
+                        <mat-form-field class="mt-5 min-w-60">
+                          <input matInput [(ngModel)]="element.code">
+                        </mat-form-field>
+                      </td>
+                    </ng-container>
+
+                    <!-- Frequency Column -->
+                    <ng-container matColumnDef="action">
+                      <th class="min-w-10 text-center bg-gray-50 dark:bg-black dark:bg-opacity-5" mat-header-cell
+                        *matHeaderCellDef>
+                        Action
+                      </th>
+                      <td mat-cell *matCellDef="let element" class="text-center">
+                        <button (click)="removeCostCode(element)" [matTooltip]="'Remove'" class="mr-2"
+                          [disabled]="element?.delLoader">
+                          <mat-progress-spinner *ngIf="element?.delLoader" [diameter]="24" [mode]="'indeterminate'">
+                          </mat-progress-spinner>
+                          <mat-icon *ngIf="!element?.delLoader" svgIcon="mat_outline:delete"></mat-icon>
+                        </button>
+                        <button (click)="updateCostCode(element)" [matTooltip]="'Save Changes'"
+                          [disabled]="element.updateLoader">
+                          <mat-progress-spinner *ngIf="element.updateLoader" [diameter]="24" [mode]="'indeterminate'">
+                          </mat-progress-spinner>
+                          <mat-icon svgIcon="mat_outline:check" *ngIf="!element.updateLoader"></mat-icon>
+                        </button>
+                      </td>
+                    </ng-container>
                   </div>
-                  <div class="col-md-2 col-12">
-                    <button [matTooltip]="'Add'" class="w-full md:w-20 lg:w-20" mat-stroked-button mat-flat-button>
-                      Add
-                    </button>
-                  </div>
+                  <tr mat-header-row class="h-16 shadow bg-card" *matHeaderRowDef="displayedColumns"></tr>
+                  <tr mat-row class="hover:bg-gray-100 dark:hover:bg-hover" style="cursor: pointer;"
+                    *matRowDef="let row; columns: displayedColumns"></tr>
+                </table>
+              </ng-container>
+              <ng-template #noRecords>
+                <div class="font-semibold tracking-tight text-center mb-5">
+                  <p>No record found</p>
                 </div>
-              </form>
-            </div>
-            <div class="col-12 pt-6">
-              <div class="row mt-2 border-b" *ngFor="let item of dataSource">
-                <div class="col-md-8">
-                  <mat-form-field class="w-full">
-                    <input matInput type="text" [value]="item.code">
-                  </mat-form-field>
-                </div>
-                <div class="col-md-4 flex justify-end">
-                  <button [matTooltip]="'Update'" class="w-full md:w-50 lg:w-50 mr-1" mat-stroked-button
-                    mat-flat-button>
-                    Update
-                  </button>
-                  <button [matTooltip]="'Remove'" class="w-full md:w-50 lg:w-50" mat-stroked-button mat-flat-button>
-                    Remove
-                  </button>
-                </div>
-              </div>
+              </ng-template>
             </div>
           </div>
         </div>

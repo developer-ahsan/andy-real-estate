@@ -26,9 +26,14 @@
           <ngx-skeleton-loader count="8" appearance="line" animation="pulse" *ngIf="dataSourceLoading">
           </ngx-skeleton-loader>
         </div>
-
         <div class="col-12 h-full" *ngIf="!dataSourceLoading">
-          <ng-container *ngIf="dataSource.length > 0; else noRecords">
+          <ng-container *ngIf="searchDataSource.length > 0; else noRecords">
+            <div class="p-6 sm:p-8 lg:p-10">
+              <mat-form-field class="w-full">
+                <input matInput (input)="searchCompany($event.target.value)" placeholder="Search Company Name" />
+                <mat-icon matPrefix>search</mat-icon>
+              </mat-form-field>
+            </div>
             <table mat-table [dataSource]="dataSource" class="w-full">
               <div class="color-blue">
                 <!-- Company Column -->

@@ -4,6 +4,8 @@ import { FileManagerService } from 'app/modules/admin/apps/file-manager/store-ma
 import { takeUntil } from 'rxjs/operators';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { FormControl, FormGroup } from '@angular/forms';
+import { Router } from '@angular/router';
+import { InventoryService } from '../../../ecommerce/inventory/inventory.service';
 
 @Component({
   selector: 'app-inventory-summary',
@@ -17,6 +19,7 @@ export class InventorySummaryComponent implements OnInit {
   displayedColumns: string[] = ['spid', 'id', 'product', 'vendor', 'inventory', 'threshold', 'fee'];
   dataSource = [];
   dataSourceLoading = false;
+  dataSourceTotalRecord: any;
   page: number = 1;
 
   keywordSearch: string = "";
@@ -26,8 +29,10 @@ export class InventorySummaryComponent implements OnInit {
   isEditInventoryForm: FormGroup;
   constructor(
     private _fileManagerService: FileManagerService,
+    private _inventoryService: InventoryService,
     private _changeDetectorRef: ChangeDetectorRef,
-    private _snackBar: MatSnackBar
+    private _snackBar: MatSnackBar,
+    private router: Router
   ) { }
 
   ngOnInit(): void {
@@ -45,25 +50,41 @@ export class InventorySummaryComponent implements OnInit {
       vendorRelation: new FormControl(''),
     })
     this.dataSourceLoading = true;
-    this.getSummary();
+    this.getSummary(1);
     this.isLoadingChange.emit(false);
   };
-  getSummary() {
+  getSummary(page) {
     let params = {
       store_id: this.selectedStore.pk_storeID,
-      inventory_summary: true
+      inventory_summary: true,
+      size: 20,
+      page: page
     }
     this._fileManagerService.getStoresData(params)
       .pipe(takeUntil(this._unsubscribeAll))
       .subscribe(res => {
         this.dataSourceLoading = false;
+        this.dataSourceTotalRecord = res["totalRecords"];
         this.dataSource = res["data"];
         this._changeDetectorRef.markForCheck();
       })
   }
-  editInventory(obj) {
-    this.isEditInventoryForm.patchValue(obj);
-    this.isEditInventory = true;
+  getNextData(event) {
+    const { previousPageIndex, pageIndex } = event;
+
+    if (pageIndex > previousPageIndex) {
+      this.page++;
+    } else {
+      this.page--;
+    };
+    this.getSummary(this.page);
+  };
+  routeInventory(id) {
+    this._inventoryService.selectedIndex = 'Warehouse Options';
+    this.router.navigate(['apps/ecommerce/inventory', id]);
+    setTimeout(() => {
+      this._inventoryService.selectedIndex = null;
+    }, 2000);
   }
   backToInventory() {
     this.isEditInventory = false;
