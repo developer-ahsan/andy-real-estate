@@ -54,7 +54,7 @@ export class ProductsDescriptionComponent implements OnInit, OnDestroy {
     private _inventoryService: InventoryService,
     private _formBuilder: FormBuilder,
     private _snackBar: MatSnackBar
-  ) {}
+  ) { }
 
   ngOnInit(): void {
     // Create the selected product form
@@ -128,6 +128,8 @@ export class ProductsDescriptionComponent implements OnInit, OnDestroy {
               this.selectedSex = "Women's";
             } else if (sexVal == 4) {
               this.selectedSex = "Men's/Women's";
+            } else if (sexVal == 5) {
+              this.selectedSex = "Unisex";
             }
 
             this.isLoadingChange.emit(false);
@@ -293,6 +295,8 @@ export class ProductsDescriptionComponent implements OnInit, OnDestroy {
       sexVal = 3;
     } else if (this.selectedSex == "Men's/Women's") {
       sexVal = 4;
+    } else if (this.selectedSex == "Unisex") {
+      sexVal = 5;
     }
 
     const payload = {
