@@ -265,6 +265,10 @@
                         <art-approval-settings [(isLoading)]="isLoading" [selectedStore]="selectedStore">
                         </art-approval-settings>
                     </ng-template>
+                    <ng-template [ngIf]="selectedIndex === 'Consolidated Bill'">
+                        <app-consolidated-bill [(isLoading)]="isLoading" [selectedStore]="selectedStore">
+                        </app-consolidated-bill>
+                    </ng-template>
                 </div>
             </div>
         </div>

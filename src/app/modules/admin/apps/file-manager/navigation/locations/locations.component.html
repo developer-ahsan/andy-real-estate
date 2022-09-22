@@ -1,10 +1,17 @@
 <div class="row py-2 overflow-auto" *ngIf="isUserScreen">
-  <div class="col-12">
+  <div class="col-6">
     <mat-button-toggle-group #group="matButtonToggleGroup" [value]="mainScreen" (change)="calledScreen(group.value)">
       <mat-button-toggle *ngFor="let buttonValue of screens" value="{{buttonValue}}">
         {{ buttonValue }}
       </mat-button-toggle>
     </mat-button-toggle-group>
+  </div>
+  <div class="col-6 text-right">
+    <button class="ml-4" mat-flat-button mat-stroked-button [matTooltip]="'Back to Locations'"
+      (click)="backToLocations()">
+      <mat-icon [svgIcon]="'heroicons_outline:arrow-narrow-left'"></mat-icon>
+      <span class="ml-2 mr-1">Back to Locations</span>
+    </button>
   </div>
 </div>
 
@@ -24,7 +31,7 @@
     <fuse-card class="rounded-2xl shadow bg-card flex pb-0" *ngIf="!isUserScreen">
       <div class="row" style="width: -webkit-fill-available;">
         <div class="col-12">
-          <div class="p-6 sm:p-8 lg:p-10 w-full row">
+          <div class="p-4 sm:p-6 lg:p-8 w-full row">
             <div class="text-2xl font-bold col-lg-6 col-12">
               Locations
             </div>
@@ -215,9 +222,9 @@
             </table>
           </ng-container>
           <ng-template #noRecords>
-            <div class="font-semibold tracking-tight text-center pb-10">
+            <!-- <div class="font-semibold tracking-tight text-center pb-10">
               <p>No record found</p>
-            </div>
+            </div> -->
           </ng-template>
           <div *ngIf="dataSource.length > 0">
             <mat-paginator style="border-bottom-left-radius: 16px;border-bottom-right-radius:16px"
@@ -233,20 +240,18 @@
     <fuse-card class="rounded-2xl shadow bg-card flex pb-0" *ngIf="isUserScreen">
       <div class="row" style="width: -webkit-fill-available;" *ngIf="mainScreen == 'Users' && !isSubLocationLoader">
         <div class="col-12">
-          <div class="p-6 sm:p-8 lg:p-10 w-full row">
+          <div class="p-4 sm:p-6 lg:p-8 w-full row">
             <div class="text-2xl font-bold col-lg-6 col-12 mt-2">
               Users List
             </div>
-            <div class="text-2xl font-bold col-lg-6 col-12 text-right">
-              <button class="ml-4" mat-flat-button mat-stroked-button [matTooltip]="'Back to Locations'"
-                (click)="backToLocations()">
-                <mat-icon [svgIcon]="'heroicons_outline:arrow-narrow-left'"></mat-icon>
-                <span class="ml-2 mr-1">Back to Locations</span>
-              </button>
+            <div class="text-2xl font-bold col-lg-6 col-12 text-right" *ngIf="tempSubLocationUsers.length > 0">
+              <mat-form-field class="w-full">
+                <input placeholder="Filter By Name" type="text" matInput (input)="searchRecord($event)">
+              </mat-form-field>
             </div>
           </div>
         </div>
-        <div class="col-12 text-right" *ngIf="checkedUserArray.length > 0">
+        <div class="col-12 text-right mb-2" *ngIf="checkedUserArray.length > 0">
           <button [disabled]="isDeleteUserLoader" class="mr-2 min-w-40" mat-flat-button mat-stroked-button
             [matTooltip]="'Remove Selected Locations'" (click)="deleteSelectedUser()">
             <mat-progress-spinner *ngIf="isDeleteUserLoader" [diameter]="24" [mode]="'indeterminate'">
@@ -254,9 +259,16 @@
             <span *ngIf="!isDeleteUserLoader">Remove Selected Locations</span>
           </button>
         </div>
-        <div class="col-12 mt-5">
+        <div class="col-12">
           <ng-container *ngIf="subLocationUsers.length > 0; else noRecords">
-            <table mat-table [dataSource]="subLocationUsers" class="w-full">
+            <!-- <div class="px-6">
+              <mat-form-field class="w-full">
+                <mat-label>Filter By Name</mat-label>
+                <input placeholder="Filter By Name" type="text" matInput (input)="searchRecord($event)">
+              </mat-form-field>
+            </div> -->
+            <table style="border-bottom-left-radius: 16px;border-bottom-right-radius:16px" mat-table
+              [dataSource]="subLocationUsers" class="w-full">
               <div class="color-blue">
                 <!-- SPID Column -->
                 <ng-container matColumnDef="id">
@@ -310,21 +322,27 @@
       <div class="row" style="width: -webkit-fill-available;"
         *ngIf="mainScreen == 'Add New Users' && !isUserListLoader">
         <div class="col-12">
-          <div class="p-6 sm:p-8 lg:p-10 w-full row">
+          <div class="p-4 sm:p-6 lg:p-8 w-full row">
             <div class="text-2xl font-bold col-lg-6 col-12 mt-2">
               Add New Users
             </div>
-            <div class="text-2xl font-bold col-lg-6 col-12 text-right">
-              <button class="ml-4" mat-flat-button mat-stroked-button [matTooltip]="'Back to Locations'"
-                (click)="backToLocations()">
-                <mat-icon [svgIcon]="'heroicons_outline:arrow-narrow-left'"></mat-icon>
-                <span class="ml-2 mr-1">Back to Locations</span>
-              </button>
+            <div class="text-2xl font-bold col-lg-6 col-12 text-right" *ngIf="usersList.length > 0">
+              <mat-form-field class="w-full">
+                <input placeholder="Filter By User Id, Name, Company" type="text" matInput #userSearchInput>
+              </mat-form-field>
             </div>
           </div>
         </div>
+        <div class="col-12 text-right mb-2" *ngIf="addCheckedUserArray.length > 0">
+          <button [disabled]="isAddUserLoader" class="mr-2 min-w-40" mat-flat-button mat-stroked-button
+            [matTooltip]="'Add Selected Locations'" (click)="addSelectedUser()">
+            <mat-progress-spinner *ngIf="isAddUserLoader" [diameter]="24" [mode]="'indeterminate'">
+            </mat-progress-spinner>
+            <span *ngIf="!isAddUserLoader">Add Selected Locations</span>
+          </button>
+        </div>
 
-        <div class="col-12 mt-5">
+        <div class="col-12">
           <ng-container *ngIf="usersList.length > 0; else noRecords">
             <table mat-table [dataSource]="usersList" class="w-full">
               <div class="color-blue">
@@ -360,7 +378,7 @@
                     Action
                   </th>
                   <td mat-cell *matCellDef="let element">
-                    <mat-checkbox></mat-checkbox>
+                    <mat-checkbox (change)="userCheckBoxList($event,element)"></mat-checkbox>
                   </td>
                 </ng-container>
               </div>
@@ -370,7 +388,7 @@
             </table>
           </ng-container>
           <ng-template #noRecords>
-            <div class="font-semibold tracking-tight text-center">
+            <div class="font-semibold tracking-tight text-center pb-5">
               <p>No record found</p>
             </div>
           </ng-template>

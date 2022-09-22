@@ -9,6 +9,7 @@
 </div>
 <ngx-skeleton-loader count="8" appearance="line" animation="pulse" *ngIf="isPageLoading">
 </ngx-skeleton-loader>
+
 <div *ngIf="!isPageLoading">
   <div class="row p-3">
     <div class="col-12 bg-card rounded-2xl shadow py-5">
@@ -55,55 +56,315 @@
           </div>
         </div>
       </div>
+      <!-- Default -->
+      <div class="row p-6" *ngIf="mainScreen == 'Default Approval Group'">
+        <mat-tab-group [animationDuration]="'0'" (selectedTabChange)="selectedTabValue($event)">
+          <mat-tab label="Add New Group">
+            <ng-template matTabContent>
+              <div class="row">
+                <div class="col-12 pb-6 sm:pb-8 lg:pb-8">
+                  <div class="text-2xl font-bold">
+                    Default Approval Group
+                  </div>
+                  <note class="text-md">This is the default chain of approval contacts a proof will go through if the
+                    customer
+                    is not assigned to any specific location.</note>
+                </div>
+                <div class="col-12 col-md-4">
+                  <mat-form-field class="w-full">
+                    <mat-label>Order:</mat-label>
+                    <input matInput type="number">
+                  </mat-form-field>
+                </div>
+                <div class="col-12 col-md-4">
+                  <mat-form-field class="w-full">
+                    <mat-label>First Name:</mat-label>
+                    <input matInput>
+                  </mat-form-field>
+                </div>
+                <div class="col-12 col-md-4">
+                  <mat-form-field class="w-full">
+                    <mat-label>Last Name:</mat-label>
+                    <input matInput>
+                  </mat-form-field>
+                </div>
+                <div class="col-12 col-md-4">
+                  <mat-form-field class="w-full">
+                    <mat-label>Email:</mat-label>
+                    <input matInput>
+                  </mat-form-field>
+                </div>
+                <div class="col-12 col-md-4">
+                  <mat-form-field class="w-full">
+                    <mat-label>Emails:</mat-label>
+                    <mat-select matInput>
+                      <mat-option [value]="true">Yes</mat-option>
+                      <mat-option [value]="false">No</mat-option>
+                    </mat-select>
+                  </mat-form-field>
+                </div>
+                <div class="col-12 col-md-4">
+                  <mat-form-field class="w-full">
+                    <mat-label>Royalities:</mat-label>
+                    <mat-select matInput>
+                      <mat-option [value]="true">Yes</mat-option>
+                      <mat-option [value]="false">No</mat-option>
+                    </mat-select>
+                  </mat-form-field>
+                </div>
+                <div class="col-12 col-md-4">
+                  <mat-form-field class="w-full">
+                    <mat-label>Customer Approvals:</mat-label>
+                    <mat-select matInput>
+                      <mat-option [value]="true">Yes</mat-option>
+                      <mat-option [value]="false">No</mat-option>
+                    </mat-select>
+                  </mat-form-field>
+                </div>
+                <div class="col-12">
+                  <!-- <mat-form-field class="w-full"> -->
+                  <mat-label>User:</mat-label>
+                  <ng-multiselect-dropdown [placeholder]="'Select User'" [settings]=" dropdownSettings"
+                    [data]="dropdownList">
+                  </ng-multiselect-dropdown>
+                  <!-- </mat-form-field> -->
+                </div>
+                <div class="col-12 flex items-center justify-end w-full">
+                  <div class="flex items-center my-2">
+                    <div class="flex items-center mr-4" *ngIf="isAddApprovalMsg">
+                      <ng-container>
+                        <mat-icon class="text-green-500" [svgIcon]="'heroicons_outline:check'"></mat-icon>
+                        <span class="ml-2">Art Approval Added Successfully</span>
+                      </ng-container>
+                    </div>
+                    <button class="min-w-40" [disabled]="isAddApprovalLoader" mat-stroked-button [matTooltip]="'Add'"
+                      (click)="updateArtApprovaSettings()">
+                      <mat-progress-spinner *ngIf="isAddApprovalLoader" [diameter]="24" [mode]="'indeterminate'">
+                      </mat-progress-spinner>
+                      <mat-icon *ngIf="!isAddApprovalLoader" svgIcon="mat_outline:add"></mat-icon>
+                      <span class="px-2">Add</span>
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </ng-template>
+          </mat-tab>
+          <mat-tab label="Current Groups">
+            <ng-template matTabContent>
+              <div class="row w-full">
+                <div class="col-12 pb-6 sm:pb-8 lg:pb-8">
+                  <div class="text-2xl font-bold">
+                    Approval Contact Groups
+                  </div>
+                </div>
+                <div class="col-12" *ngIf="!isDefaultGroupLoader">
+                  <fuse-alert *ngIf="isDefaultGroupData.length == 0" [type]="'info'" [appearance]="'soft'">
+                    There are currently no approval contact groups defined.
+                  </fuse-alert>
+                  <ng-container *ngIf="isDefaultGroupData.length > 0; else noRecords">
+                    <table mat-table [dataSource]="isDefaultGroupData" class="w-full">
+                      <div class="color-blue">
+                        <!-- Search Term Column -->
+                        <ng-container matColumnDef="order">
+                          <th class="min-w-10 bg-gray-50 dark:bg-black dark:bg-opacity-5" mat-header-cell
+                            *matHeaderCellDef>
+                            Order
+                          </th>
+                          <td mat-cell *matCellDef="let element">{{element.listOrder}}</td>
+                        </ng-container>
+                        <ng-container matColumnDef="first">
+                          <th class="min-w-30 bg-gray-50 dark:bg-black dark:bg-opacity-5" mat-header-cell
+                            *matHeaderCellDef>
+                            First Name
+                          </th>
+                          <td mat-cell *matCellDef="let element">{{element.firstName}}</td>
+                        </ng-container>
+                        <ng-container matColumnDef="last">
+                          <th class="min-w-30 bg-gray-50 dark:bg-black dark:bg-opacity-5" mat-header-cell
+                            *matHeaderCellDef>
+                            Last Name
+                          </th>
+                          <td mat-cell *matCellDef="let element">{{element.lastName}}</td>
+                        </ng-container>
+                        <ng-container matColumnDef="user">
+                          <th class="min-w-10 bg-gray-50 dark:bg-black dark:bg-opacity-5" mat-header-cell
+                            *matHeaderCellDef>
+                            User
+                          </th>
+                          <td mat-cell *matCellDef="let element">d</td>
+                        </ng-container>
+                        <ng-container matColumnDef="emails">
+                          <th class="min-w-10 bg-gray-50 dark:bg-black dark:bg-opacity-5 text-center" mat-header-cell
+                            *matHeaderCellDef>
+                            Emails
+                          </th>
+                          <td mat-cell *matCellDef="let element" class="text-center">
+                            <mat-icon svgIcon="mat_outline:close" *ngIf="!element.blnIncludeAdditionalEmails">
+                            </mat-icon>
+                            <mat-icon svgIcon="mat_outline:check" *ngIf="element.blnIncludeAdditionalEmails">
+                            </mat-icon>
+                          </td>
+                        </ng-container>
+                        <ng-container matColumnDef="royalities">
+                          <th class="min-w-10 bg-gray-50 dark:bg-black dark:bg-opacity-5 text-center" mat-header-cell
+                            *matHeaderCellDef>
+                            Royalities
+                          </th>
+                          <td mat-cell *matCellDef="let element" class="text-center">
+                            <mat-icon svgIcon="mat_outline:close" *ngIf="!element.blnRoyalties">
+                            </mat-icon>
+                            <mat-icon svgIcon="mat_outline:check" *ngIf="element.blnRoyalties">
+                            </mat-icon>
+                          </td>
+                        </ng-container>
+                        <ng-container matColumnDef="ca">
+                          <th class="min-w-10 bg-gray-50 dark:bg-black dark:bg-opacity-5 text-center" mat-header-cell
+                            *matHeaderCellDef>
+                            Customer Approvals
+                          </th>
+                          <td mat-cell *matCellDef="let element" class="text-center">
+                            <mat-icon svgIcon="mat_outline:close" *ngIf="!element.blnStoreUserApprovalContacts">
+                            </mat-icon>
+                            <mat-icon svgIcon="mat_outline:check" *ngIf="element.blnStoreUserApprovalContacts">
+                            </mat-icon>
+                          </td>
+                        </ng-container>
+                        <!-- Frequency Column -->
+                        <ng-container matColumnDef="action">
+                          <th class="min-w-10 text-center bg-gray-50 dark:bg-black dark:bg-opacity-5" mat-header-cell
+                            *matHeaderCellDef>
+                            Action
+                          </th>
+                          <td mat-cell *matCellDef="let element" class="text-center">
+                            <button class="mr-2" [disabled]="element.delLoader">
+                              <mat-progress-spinner *ngIf="element.delLoader" [diameter]="24" [mode]="'indeterminate'">
+                              </mat-progress-spinner>
+                              <mat-icon *ngIf="!element.delLoader" svgIcon="mat_outline:delete"></mat-icon>
+                            </button>
+                            <button>
+                              <mat-icon svgIcon="mat_outline:edit"></mat-icon>
+                            </button>
+                          </td>
+                        </ng-container>
+                      </div>
+                      <tr mat-header-row class="h-16 shadow bg-card" *matHeaderRowDef="isDefaultGroupColumns"></tr>
+                      <tr mat-row class="hover:bg-gray-100 dark:hover:bg-hover" style="cursor: pointer;"
+                        *matRowDef="let row; columns: isDefaultGroupColumns"></tr>
+                    </table>
+                  </ng-container>
+                  <div *ngIf="isDefaultGroupData.length > 0">
+                    <mat-paginator
+                      class="sm:bottom-0 border-b sm:border-t sm:border-b-0 z-10 bg-gray-50 dark:bg-transparent"
+                      [ngClass]="{'pointer-events-none': isLoading}" (page)="getNextDefaultGroupData($event)"
+                      [length]="isDefaultGroupDataTotal" [pageIndex]="0" [pageSize]="20" [hidePageSize]="true">
+                    </mat-paginator>
+                  </div>
+                </div>
+
+              </div>
+            </ng-template>
+          </mat-tab>
+        </mat-tab-group>
+        <div class="col-12">
+          <ngx-skeleton-loader *ngIf="isDefaultGroupLoader" count="8" appearance="line" animation="pulse">
+          </ngx-skeleton-loader>
+        </div>
+      </div>
+      <!-- Add New  -->
       <div class="row p-6" *ngIf="mainScreen == 'Add New Approval'">
-        <div class="col-12 pb-6 sm:pb-8 lg:pb-8">
-          <div class="text-2xl font-bold">
-            Add New Approval Contact Group
-          </div>
-          <note class="text-md">Define a new approval contact group. Use this to set up a list of approval contacts
-            specific to a location. Any orders placed by a customer assigned to this location will have their proofs go
-            through the list of contacts defined. Leaving the "location" option unselected means that all customers
-            under the "attribute" selection will go through this approval list.</note>
-        </div>
-        <div class="col-12 col-md-4">
-          <mat-form-field class="w-full">
-            <mat-label>Name:</mat-label>
-            <input matInput>
-          </mat-form-field>
-        </div>
-        <div class="col-12 col-md-4">
-          <mat-form-field class="w-full">
-            <mat-label>Location attribute:</mat-label>
-            <mat-select matInput>
-              <mat-option>Select location attribute</mat-option>
-            </mat-select>
-          </mat-form-field>
-        </div>
-        <div class="col-12 col-md-4">
-          <mat-form-field class="w-full">
-            <mat-label>Location: (optional)</mat-label>
-            <mat-select matInput>
-              <mat-option>Select location</mat-option>
-            </mat-select>
-          </mat-form-field>
-        </div>
-        <div class="col-12 flex items-center justify-end w-full">
-          <div class="flex items-center my-2">
-            <div class="flex items-center mr-4" *ngIf="isAddApprovalMsg">
-              <ng-container>
-                <mat-icon class="text-green-500" [svgIcon]="'heroicons_outline:check'"></mat-icon>
-                <span class="ml-2">Art Approval Added Successfully</span>
-              </ng-container>
-            </div>
-            <button class="min-w-40" [disabled]="isAddApprovalLoader" mat-stroked-button [matTooltip]="'Add'"
-              (click)="updateArtApprovaSettings()">
-              <mat-progress-spinner *ngIf="isAddApprovalLoader" [diameter]="24" [mode]="'indeterminate'">
-              </mat-progress-spinner>
-              <mat-icon *ngIf="!isAddApprovalLoader" svgIcon="mat_outline:add"></mat-icon>
-              <span class="px-2">Add</span>
-            </button>
-          </div>
-        </div>
+        <mat-tab-group class="w-full" [animationDuration]="'0'" (selectedTabChange)="selectedTabValue($event)">
+          <mat-tab label="Add New Group">
+            <ng-template matTabContent>
+              <div class="row">
+                <div class="col-12 pb-6 sm:pb-8 lg:pb-8">
+                  <div class="text-2xl font-bold">
+                    Add New Approval Contact Group
+                  </div>
+                  <note class="text-md">Define a new approval contact group. Use this to set up a list of approval
+                    contacts
+                    specific to a location. Any orders placed by a customer assigned to this location will have their
+                    proofs go
+                    through the list of contacts defined. Leaving the "location" option unselected means that all
+                    customers
+                    under the "attribute" selection will go through this approval list.</note>
+                </div>
+                <div class="col-12 col-md-4">
+                  <mat-form-field class="w-full">
+                    <mat-label>Name:</mat-label>
+                    <input matInput>
+                  </mat-form-field>
+                </div>
+                <div class="col-12 col-md-4">
+                  <mat-form-field class="w-full">
+                    <mat-label>Location attribute:</mat-label>
+                    <mat-select matInput>
+                      <mat-option>Select location attribute</mat-option>
+                    </mat-select>
+                  </mat-form-field>
+                </div>
+                <div class="col-12 col-md-4">
+                  <mat-form-field class="w-full">
+                    <mat-label>Location: (optional)</mat-label>
+                    <mat-select matInput>
+                      <mat-option>Select location</mat-option>
+                    </mat-select>
+                  </mat-form-field>
+                </div>
+                <div class="col-12 flex items-center justify-end w-full">
+                  <div class="flex items-center my-2">
+                    <div class="flex items-center mr-4" *ngIf="isAddApprovalMsg">
+                      <ng-container>
+                        <mat-icon class="text-green-500" [svgIcon]="'heroicons_outline:check'"></mat-icon>
+                        <span class="ml-2">Art Approval Added Successfully</span>
+                      </ng-container>
+                    </div>
+                    <button class="min-w-40" [disabled]="isAddApprovalLoader" mat-stroked-button [matTooltip]="'Add'"
+                      (click)="updateArtApprovaSettings()">
+                      <mat-progress-spinner *ngIf="isAddApprovalLoader" [diameter]="24" [mode]="'indeterminate'">
+                      </mat-progress-spinner>
+                      <mat-icon *ngIf="!isAddApprovalLoader" svgIcon="mat_outline:add"></mat-icon>
+                      <span class="px-2">Add</span>
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </ng-template>
+          </mat-tab>
+          <mat-tab label="Current Groups">
+            <ng-template matTabContent>
+              <div class="row">
+                <div class="col-12 pb-6 sm:pb-8 lg:pb-8">
+                  <div class="text-2xl font-bold">
+                    Approval Contact Group
+                  </div>
+                </div>
+                <div class="col-12">
+                  <fuse-alert [type]="'info'" [appearance]="'soft'">
+                    There are currently no approval contact groups defined.
+                  </fuse-alert>
+                  <mat-accordion>
+                    <mat-expansion-panel hideToggle>
+                      <mat-expansion-panel-header>
+                        <mat-panel-title>
+                          This is the expansion title
+                        </mat-panel-title>
+                      </mat-expansion-panel-header>
+                      <p>This is the primary content of the panel.</p>
+                    </mat-expansion-panel>
+                    <mat-expansion-panel>
+                      <mat-expansion-panel-header>
+                        <mat-panel-title>
+                          Self aware panel
+                        </mat-panel-title>
+                      </mat-expansion-panel-header>
+                      <p>I'm visible because I am open</p>
+                    </mat-expansion-panel>
+                  </mat-accordion>
+                </div>
+              </div>
+            </ng-template>
+          </mat-tab>
+        </mat-tab-group>
       </div>
       <!-- Create Email -->
       <div class="row p-6" *ngIf="mainScreen == 'Create New Email'" [formGroup]="isAddEmailForm">

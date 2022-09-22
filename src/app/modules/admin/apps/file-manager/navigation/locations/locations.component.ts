@@ -1,12 +1,12 @@
-import { Component, Input, Output, OnInit, EventEmitter, ChangeDetectorRef, ViewEncapsulation, ChangeDetectionStrategy } from '@angular/core';
-import { Subject } from 'rxjs';
+import { Component, Input, Output, OnInit, EventEmitter, ChangeDetectorRef, ViewEncapsulation, ChangeDetectionStrategy, ViewChild, ElementRef } from '@angular/core';
+import { fromEvent, Subject } from 'rxjs';
 import { FileManagerService } from 'app/modules/admin/apps/file-manager/store-manager.service';
 import { takeUntil } from 'rxjs/operators';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { fuseAnimations } from '@fuse/animations';
 import { MatDialog } from '@angular/material/dialog';
 import { ConfirmationDialogComponent, ConfirmDialogModel } from '../../confirmation-dialog/confirmation-dialog.component';
-
+import { debounceTime, map, distinctUntilChanged, filter } from "rxjs/operators";
 @Component({
   selector: 'app-locations',
   templateUrl: './locations.component.html',
@@ -15,6 +15,13 @@ import { ConfirmationDialogComponent, ConfirmDialogModel } from '../../confirmat
   animations: fuseAnimations
 })
 export class LocationsComponent implements OnInit {
+  userSearchInput: ElementRef;
+
+  @ViewChild('userSearchInput') set content(content: ElementRef) {
+    if (this.usersList.length > 0 && this.mainScreen == 'Add New Users') { // initially setter gets called with undefined
+      this.userSearchInput = content;
+    }
+  }
   @Input() selectedStore: any;
   @Input() isLoading: boolean;
   @Output() isLoadingChange = new EventEmitter<boolean>();
@@ -49,16 +56,21 @@ export class LocationsComponent implements OnInit {
   isUserScreen: boolean = false;
   subLocationData: any;
   subLocationUsers: any;
+  tempSubLocationUsers: any;
+
   isSubLocationLoader: boolean = true;
   subUserColumns: String[] = ['id', 'name', 'company', 'action'];
 
-  usersList: any;
+  usersList: any = [];
   userTotalRecords: number;
   userPage = 1;
   isUserListLoader: boolean = false;
 
   checkedUserArray: any = [];
   isDeleteUserLoader: boolean = false;
+
+  addCheckedUserArray: any = [];
+  isAddUserLoader: boolean = false;
 
   isAddMainLocationLoader: boolean = false;
   ngAddMainLocation = '';
@@ -76,8 +88,8 @@ export class LocationsComponent implements OnInit {
   };
   calledScreen(screenName): void {
     this.mainScreen = screenName;
-    if (!this.usersList) {
-      this.getAllUserList(1);
+    if (this.usersList.length == 0) {
+      this.getAllUserList(1, 'get');
     }
   };
   getLocations(page, type) {
@@ -288,6 +300,8 @@ export class LocationsComponent implements OnInit {
     this.mainScreen = 'Users';
   }
   getSubLocationsUserList(type) {
+    this.checkedUserArray = [];
+    this.addCheckedUserArray = [];
     if (type == 'get') {
       this.isSubLocationLoader = true;
     }
@@ -297,10 +311,20 @@ export class LocationsComponent implements OnInit {
     }
     this._fileManagerService.getStoresData(params).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
       this.subLocationUsers = res["data"];
+      this.tempSubLocationUsers = res["data"];
       this.isSubLocationLoader = false;
       if (type == 'delete') {
         this.isDeleteUserLoader = false;
-        this._snackBar.open("User Removed Successfully", '', {
+        this._snackBar.open("Users Removed Successfully", '', {
+          horizontalPosition: 'center',
+          verticalPosition: 'bottom',
+          duration: 3000
+        });
+      }
+      if (type == 'add') {
+        this.mainScreen = 'Users';
+        this.isAddUserLoader = false;
+        this._snackBar.open("Users Added Successfully", '', {
           horizontalPosition: 'center',
           verticalPosition: 'bottom',
           duration: 3000
@@ -312,21 +336,35 @@ export class LocationsComponent implements OnInit {
       this._changeDetectorRef.markForCheck();
     })
   }
-  getAllUserList(page) {
+  getAllUserList(page, type) {
     if (page == 1) {
       this.isUserListLoader = true;
     }
-    let params = {
-      available_location_users: true,
-      store_id: this.selectedStore.pk_storeID,
-      page: page,
-      size: 20
+    let params = {}
+    if (type == 'filter') {
+      params = {
+        available_location_users: true,
+        store_id: this.selectedStore.pk_storeID,
+        page: page,
+        size: 20,
+        keyword: this.userSearchInput.nativeElement.value
+      }
+    } else {
+      params = {
+        available_location_users: true,
+        store_id: this.selectedStore.pk_storeID,
+        page: page,
+        size: 20
+      }
     }
+
     this._fileManagerService.getStoresData(params).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
       this.usersList = res["data"];
       this.userTotalRecords = res["totalRecords"];
-
       this.isUserListLoader = false;
+      if (this.usersList.length > 0) {
+        this.searchRecordUser();
+      }
       this._changeDetectorRef.markForCheck();
     }, err => {
       this.isSubLocationLoader = false;
@@ -342,7 +380,7 @@ export class LocationsComponent implements OnInit {
     } else {
       this.userPage--;
     };
-    this.getAllUserList(this.userPage);
+    this.getAllUserList(this.userPage, 'pagination');
   };
   checkBoxList(ev, item) {
     if (ev.checked) {
@@ -364,7 +402,9 @@ export class LocationsComponent implements OnInit {
     }
     this._fileManagerService.putStoresData(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
       if (res["success"]) {
+        this.checkedUserArray = [];
         this.getSubLocationsUserList('delete');
+        this.getAllUserList(1, 'get');
         this._changeDetectorRef.markForCheck();
       }
     }, err => {
@@ -434,6 +474,74 @@ export class LocationsComponent implements OnInit {
         })
       }
     });
+  }
+  addSelectedUser() {
+    this.isAddUserLoader = true;
+    let payload = {
+      location_id: this.subLocationData.pk_locationID,
+      user_ids: this.addCheckedUserArray,
+      association_users_location: true
+    }
+    this._fileManagerService.postStoresData(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+      if (res["success"]) {
+        this.addCheckedUserArray = [];
+        this.getSubLocationsUserList('add');
+        this.getAllUserList(1, 'get');
+        this._changeDetectorRef.markForCheck();
+      }
+    }, err => {
+      this.isAddUserLoader = false;
+      this._changeDetectorRef.markForCheck();
+    })
+  }
+  userCheckBoxList(ev, item) {
+    if (ev.checked) {
+      // let index = this.subLocationUsers.filter((element) => {
+      //   return element.fk_userID.indexOf(item.pk_userID) !== -1;
+      // })
+      // console.log(index)
+      // if(this.subLocationUsers.)
+      if (this.addCheckedUserArray.includes(item.pk_userID)) {
+
+      } else {
+        this.addCheckedUserArray.push(item.pk_userID)
+      }
+    } else {
+      this.addCheckedUserArray.splice(this.addCheckedUserArray.indexOf(item.pk_userID), 1);
+    }
+  }
+  searchRecord(ev) {
+    let value = ev.target.value;
+    if (value != '') {
+      this.subLocationUsers = this.tempSubLocationUsers.filter(element => {
+        element.userName = element.firstName + ' ' + element.lastName;
+        return element.userName.toLowerCase().includes(value.toLowerCase());
+      })
+    } else {
+      this.subLocationUsers = this.tempSubLocationUsers;
+    }
+  }
+  searchRecordUser() {
+    setTimeout(() => {
+      fromEvent(this.userSearchInput.nativeElement, 'keyup').pipe(
+        // get value
+        map((event: any) => {
+          return event.target.value;
+        })
+        // if character length greater then 2
+        , filter(res => res.length > 1)
+
+        // Time in milliseconds between key events
+        , debounceTime(1000)
+
+        // If previous query is diffent from current   
+        , distinctUntilChanged()
+
+        // subscription for response
+      ).subscribe((text: string) => {
+        this.getAllUserList(1, 'filter');
+      });
+    }, 1000);
 
   }
 }

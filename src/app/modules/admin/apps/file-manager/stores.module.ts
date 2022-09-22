@@ -71,6 +71,8 @@ import { MatSortModule } from "@angular/material/sort";
 import { MatChipsModule } from "@angular/material/chips";
 import { ArtApprovalComponent } from "./navigation/art-approval-settings/art-approval.component";
 import { ConfirmationDialogComponent } from "./confirmation-dialog/confirmation-dialog.component";
+import { MatAutocompleteModule } from "@angular/material/autocomplete";
+import { ConsolidatedBillComponent } from "./navigation/consolidated-bill/consolidated-bill.component";
 
 @NgModule({
   declarations: [
@@ -114,7 +116,8 @@ import { ConfirmationDialogComponent } from "./confirmation-dialog/confirmation-
     CreditTermsComponent,
     StorePlanComponent,
     StudentOrgComponent,
-    ArtApprovalComponent
+    ArtApprovalComponent,
+    ConsolidatedBillComponent
   ],
   imports: [
     RouterModule.forChild(storeRoutes),
@@ -148,7 +151,8 @@ import { ConfirmationDialogComponent } from "./confirmation-dialog/confirmation-
     NgMultiSelectDropDownModule,
     MatTabsModule,
     MatSortModule,
-    MatChipsModule
+    MatChipsModule,
+    MatAutocompleteModule
   ],
   entryComponents: [ConfirmationDialogComponent],
 })

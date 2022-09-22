@@ -18,7 +18,7 @@ table {
     border-bottom-width: 0;
   }
   
-  .example-element-detail {
+  ::ng-deep .example-element-detail {
     overflow: hidden;
     display: flex;
   }
@@ -45,3 +45,6 @@ table {
   .example-element-description-attribution {
     opacity: 0.5;
   }
+  .mat-focused .placeholder {
+    color: #00D318;
+}

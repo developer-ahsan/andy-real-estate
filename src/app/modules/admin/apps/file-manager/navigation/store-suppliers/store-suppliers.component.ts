@@ -67,7 +67,6 @@ export class StoreSuppliersComponent implements OnInit {
     }
   }
   searchCompany(value) {
-    console.log(value)
     if (value != '') {
       this.dataSource = this.searchDataSource.filter(res => {
         return res.companyName.toLowerCase().includes(value.toLowerCase());

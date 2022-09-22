@@ -6,59 +6,36 @@ export const navigations = [
         children: []
     },
     {
-        id: 2,
-        title: 'Settings',
-        icon: 'mat_outline:settings',
+        id: 4,
+        title: 'Marketing',
+        icon: 'mat_outline:campaign',
         children: [
             {
-                title: 'Store Settings',
-                icon: 'mat_outline:settings',
+                id: 12,
+                title: 'Campaigns',
+                icon: 'mat_outline:campaign',
+            },
+
+            {
+                id: 14,
+                title: 'Email Blast',
+                icon: 'mat_outline:email',
             },
             {
-                title: 'Margins',
-                icon: 'mat_outline:margin',
+                id: 17,
+                title: 'Surveys',
+                icon: 'mat_outline:campaign',
             },
             {
-                title: 'Fulfillment Contacts',
-                icon: 'mat_outline:contacts',
+                id: 22,
+                title: 'User Data File',
+                icon: 'mat_outline:data_saver_off',
             },
             {
-                title: 'Royalities',
-                icon: 'mat_outline:reviews',
+                id: 23,
+                title: 'Opt-In Data File',
+                icon: 'mat_outline:data_saver_on'
             },
-            {
-                title: 'Art Approval Settings',
-                icon: 'mat_outline:picture_in_picture',
-            },
-            {
-                title: 'Consolidated Bill',
-                icon: 'mat_outline:house_siding',
-            },
-            {
-                id: 13,
-                title: 'Presentation',
-                icon: 'mat_outline:present_to_all',
-            },
-            {
-                title: 'Cost Center Codes',
-                icon: 'mat_outline:history',
-            },
-            {
-                title: 'Locations',
-                icon: 'mat_outline:speaker_notes',
-            },
-            {
-                title: 'Blanket Credit Terms',
-                icon: 'mat_outline:group_work',
-            },
-            {
-                title: 'Student orgs',
-                icon: 'heroicons_outline:duplicate'
-            },
-            {
-                title: 'Store Plan/Strategies',
-                icon: 'heroicons_outline:duplicate'
-            }
         ]
     },
     {
@@ -124,38 +101,63 @@ export const navigations = [
         ]
     },
     {
-        id: 4,
-        title: 'Marketing',
-        icon: 'mat_outline:campaign',
+        id: 2,
+        title: 'Settings',
+        icon: 'mat_outline:settings',
         children: [
             {
-                id: 12,
-                title: 'Campaigns',
-                icon: 'mat_outline:campaign',
-            },
-
-            {
-                id: 14,
-                title: 'Email Blast',
-                icon: 'mat_outline:email',
+                title: 'Store Settings',
+                icon: 'mat_outline:settings',
             },
             {
-                id: 17,
-                title: 'Surveys',
-                icon: 'mat_outline:campaign',
+                title: 'Margins',
+                icon: 'mat_outline:margin',
             },
             {
-                id: 22,
-                title: 'User Data File',
-                icon: 'mat_outline:data_saver_off',
+                title: 'Fulfillment Contacts',
+                icon: 'mat_outline:contacts',
             },
             {
-                id: 23,
-                title: 'Opt-In Data File',
-                icon: 'mat_outline:data_saver_on'
+                title: 'Royalities',
+                icon: 'mat_outline:reviews',
             },
+            {
+                title: 'Art Approval Settings',
+                icon: 'mat_outline:picture_in_picture',
+            },
+            {
+                title: 'Consolidated Bill',
+                icon: 'mat_outline:house_siding',
+            },
+            {
+                id: 13,
+                title: 'Presentation',
+                icon: 'mat_outline:present_to_all',
+            },
+            {
+                title: 'Cost Center Codes',
+                icon: 'mat_outline:history',
+            },
+            {
+                title: 'Locations',
+                icon: 'mat_outline:speaker_notes',
+            },
+            {
+                title: 'Blanket Credit Terms',
+                icon: 'mat_outline:group_work',
+            },
+            {
+                title: 'Student orgs',
+                icon: 'heroicons_outline:duplicate'
+            },
+            {
+                title: 'Store Plan/Strategies',
+                icon: 'heroicons_outline:duplicate'
+            }
         ]
     },
+
+
 
 
 

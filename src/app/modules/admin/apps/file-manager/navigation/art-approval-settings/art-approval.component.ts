@@ -1,20 +1,24 @@
-import { Component, Input, Output, OnInit, EventEmitter, ChangeDetectorRef, ViewChild } from '@angular/core';
-import { Subject } from 'rxjs';
+import { Component, Input, Output, OnInit, EventEmitter, ChangeDetectorRef, ViewChild, ElementRef } from '@angular/core';
+import { Observable, Subject } from 'rxjs';
 import { FileManagerService } from 'app/modules/admin/apps/file-manager/store-manager.service';
-import { takeUntil } from 'rxjs/operators';
+import { map, startWith, takeUntil } from 'rxjs/operators';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { FormArray, FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
+import { MatAutocomplete, MatAutocompleteSelectedEvent, MatAutocompleteTrigger } from '@angular/material/autocomplete';
+import { COMMA, ENTER } from '@angular/cdk/keycodes';
+import { MatChipInputEvent } from '@angular/material/chips';
+import { IDropdownSettings } from 'ng-multiselect-dropdown';
 @Component({
   selector: 'art-approval-settings',
   templateUrl: './art-approval.component.html',
-  styles: ['::ng-deep {.ql-container {height: auto}}']
+  styles: ['::ng-deep {.ql-container {height: auto} fuse-alert.fuse-alert-appearance-soft.fuse-alert-type-info .fuse-alert-container .fuse-alert-message {color: #525151 !important} fuse-alert.fuse-alert-appearance-soft.fuse-alert-type-info .fuse-alert-container .fuse-alert-icon {color: #525151 !important} .fuse-mat-rounded .mat-tab-group .mat-tab-header .mat-tab-label-container {padding: 0px}}']
 })
 export class ArtApprovalComponent implements OnInit {
 
   mainScreen: string = "Settings";
   screens = [
     "Settings",
-    "Approval Group",
+    "Default Approval Group",
     "Add New Approval",
     "Current Emails",
     "Create New Email"
@@ -68,14 +72,23 @@ export class ArtApprovalComponent implements OnInit {
   dataSourceTotalRecord: any;
   page = 1;
 
+  dropdownSettings: IDropdownSettings = {};
+
+  dropdownList: string[] = []
+
+  isDefaultGroupLoader: boolean = false;
+  isDefaultGroupData: any = [];
+  isDefaultGroupDataTotal: any;
+  isDefaultGroupPage = 1;
+  isDefaultGroupColumns: string[] = ['order', 'first', 'last', 'emails', 'royalities', 'ca', 'action'];
 
   constructor(
     private _storeService: FileManagerService,
     private _changeDetectorRef: ChangeDetectorRef,
     private _snackBar: MatSnackBar,
     private fb: FormBuilder
-  ) { }
-
+  ) {
+  }
   ngOnInit() {
     this.initialize();
   }
@@ -114,6 +127,8 @@ export class ArtApprovalComponent implements OnInit {
         this.isEditEmail = false;
         this.getAdditionalEmails(1, 'get');
       }
+    } else if (screenName == '') {
+
     }
   };
   updateArtApprovaSettings() {
@@ -260,4 +275,55 @@ export class ArtApprovalComponent implements OnInit {
   backToList() {
     this.isEditEmail = false;
   }
+  selectedTabValue(event) {
+    if (event.tab.textLabel == 'Current Groups' && this.isDefaultGroupData.length == 0) {
+      this.getDefaultGroup(1, 'get');
+    }
+  }
+  getLocations(page, type) {
+    let params = {
+      store_id: this.selectedStore.pk_storeID,
+      store_locations: true,
+      page: page,
+      size: 10
+    }
+    // Get the offline products
+    this._storeService.getStoresData(params)
+      .pipe(takeUntil(this._unsubscribeAll))
+      .subscribe((response: any) => {
+
+        // Mark for check
+        this._changeDetectorRef.markForCheck();
+      });
+  };
+  getDefaultGroup(page, type) {
+    if (page == 1 && type == 'get') {
+      this.isDefaultGroupLoader = true;
+    }
+    let params = {
+      art_approval_default_group: true,
+      store_id: this.selectedStore.pk_storeID,
+      size: 20,
+      page: page
+    }
+    this._storeService.getStoresData(params).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+      this.isDefaultGroupData = res["data"];
+      this.isDefaultGroupDataTotal = res["totalRecords"];
+      this.isDefaultGroupLoader = false;
+      this._changeDetectorRef.markForCheck();
+    }, err => {
+      this.isDefaultGroupLoader = false;
+      this._changeDetectorRef.markForCheck();
+    })
+  }
+  getNextDefaultGroupData(event) {
+    const { previousPageIndex, pageIndex } = event;
+
+    if (pageIndex > previousPageIndex) {
+      this.isDefaultGroupPage++;
+    } else {
+      this.isDefaultGroupPage--;
+    };
+    this.getDefaultGroup(this.isDefaultGroupPage, 'get');
+  };
 }

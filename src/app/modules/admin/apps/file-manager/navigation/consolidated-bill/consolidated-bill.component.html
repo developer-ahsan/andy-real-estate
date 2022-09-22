@@ -1,0 +1,97 @@
+<!-- <ngx-skeleton-loader count="8" appearance="line" animation="pulse" *ngIf="isPageLoading">
+</ngx-skeleton-loader> -->
+<div *ngIf="!isLoading">
+  <fuse-card class="rounded-2xl shadow bg-card flex">
+    <div class="row" style="width: -webkit-fill-available;">
+      <div class="col-12">
+        <div class="p-6 sm:p-8 lg:p-10 w-full">
+          <div class="row">
+            <div class="col-lg-12 col-12 pb-6 sm:pb-8 lg:pb-8">
+              <div class="text-2xl font-bold">
+                Select Consolidated Bill Date
+              </div>
+              <note class="text-md">Select the type of consolidated bill you want to generate below. Generate the bill
+                right now with today's date, or enter your own date. Consolidated bills select all orders that have been
+                shipped but not paid PRIOR to the date.
+              </note>
+            </div>
+            <div class="col-12">
+              <form>
+                <mat-radio-group aria-labelledby="example-radio-group-label" class="example-radio-group mb-0"
+                  [(ngModel)]="selectedTerm" name="radio">
+                  <mat-radio-button class="example-radio-button" [value]="'today'">
+                    <strong>Generate bill now (today's date)</strong>
+                    <div style="white-space: break-spaces;"></div>
+                  </mat-radio-button>
+                  <mat-radio-button class="example-radio-button" [value]="'todays'">
+                    <mat-form-field appearance="fill" class="min-w-60">
+                      <mat-label><strong>Choose a date</strong></mat-label>
+                      <input matInput readonly [matDatepicker]="picker">
+                      <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+                      <mat-datepicker #picker></mat-datepicker>
+                    </mat-form-field>
+                  </mat-radio-button>
+                </mat-radio-group>
+                <div class="pl-10">
+                  <mat-form-field class="min-w-60">
+                    <mat-label>Order Type</mat-label>
+                    <mat-select matInput>
+                      <mat-option [value]="true">Normal Orders</mat-option>
+                      <mat-option [value]="false">Fulfillment Orders</mat-option>
+                    </mat-select>
+                  </mat-form-field>
+                  <br>
+                  <mat-form-field class="min-w-60">
+                    <mat-label>Location</mat-label>
+                    <mat-select matInput>
+                      <mat-option [value]="true">No Location</mat-option>
+                      <mat-option [value]="false">Fulfillment Orders</mat-option>
+                    </mat-select>
+                  </mat-form-field>
+                  <br>
+                  <mat-checkbox class="example-margin min-w-60">Include discounts</mat-checkbox>
+                  <br>
+                  <mat-form-field class="w-full">
+                    <input matInput placeholder="Search Movie" [(ngModel)]="selectedMovie" [matAutocomplete]="auto"
+                      [formControl]="searchMoviesCtrl" placeholder="Min 3 Characters Ex. Ant">
+                    <button *ngIf="selectedMovie" matSuffix mat-icon-button aria-label="Clear"
+                      (click)="clearSelection()">
+                      <mat-icon>close</mat-icon>
+                    </button>
+                    <mat-autocomplete [panelWidth]="400" #auto="matAutocomplete" (optionSelected)="onSelected()"
+                      [displayWith]="displayWith">
+                      <mat-option *ngIf="isLoadings" class="is-loading">Loading...</mat-option>
+                      <ng-container *ngIf="!isLoadings">
+                        <mat-option *ngFor="let movie of filteredMovies" [value]="movie.firstName">
+                          <span><b>{{movie.firstName}}</b> ({{movie.firstName}})</span>
+                        </mat-option>
+                      </ng-container>
+                    </mat-autocomplete>
+                  </mat-form-field>
+                </div>
+                <div class="row mt-3">
+                  <div class="col-12 flex items-center justify-start w-full">
+                    <div class="flex items-center my-2">
+                      <div class="flex items-center mr-4" *ngIf="isApplyMsg">
+                        <ng-container>
+                          <mat-icon class="text-green-500" [svgIcon]="'heroicons_outline:check'"></mat-icon>
+                          <span class="ml-2">Blanket credit term successfully applied</span>
+                        </ng-container>
+                      </div>
+                      <button [disabled]="isApplyLoader" (click)="updateCreditTerms()" [matTooltip]="'Apply'"
+                        class="w-full md:w-50 lg:w-50" mat-stroked-button mat-flat-button>
+                        <mat-progress-spinner *ngIf="isApplyLoader" [diameter]="24" [mode]="'indeterminate'">
+                        </mat-progress-spinner>
+                        <span *ngIf="!isApplyLoader">Generate Bill</span>
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </fuse-card>
+</div>

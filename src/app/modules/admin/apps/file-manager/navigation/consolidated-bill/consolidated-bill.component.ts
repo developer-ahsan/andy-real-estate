@@ -4,11 +4,15 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { Subject } from 'rxjs';
 import { FileManagerService } from '../../store-manager.service';
 import { takeUntil } from 'rxjs/operators';
+import { HttpClient } from '@angular/common/http';
+import { debounceTime, tap, switchMap, finalize, distinctUntilChanged, filter } from 'rxjs/operators';
+const API_KEY = "e8067b53"
+
 @Component({
-  selector: 'app-credit-terms',
-  templateUrl: './credit-terms.component.html',
+  selector: 'app-consolidated-bill',
+  templateUrl: './consolidated-bill.component.html',
 })
-export class CreditTermsComponent implements OnInit {
+export class ConsolidatedBillComponent implements OnInit {
   @Input() selectedStore: any;
   @Input() isLoading: boolean;
   @Output() isLoadingChange = new EventEmitter<boolean>();
@@ -18,15 +22,74 @@ export class CreditTermsComponent implements OnInit {
   selectedTerm: any;
   isApplyLoader: boolean = false;
   isApplyMsg: boolean = false;
+
+
+  searchMoviesCtrl = new FormControl();
+  filteredMovies: any;
+  minLengthTerm = 3;
+  selectedMovie: any = "";
+  isLoadings: boolean = false;
   constructor(
     private _fileManagerService: FileManagerService,
     private _changeDetectorRef: ChangeDetectorRef,
-    private _snackBar: MatSnackBar
+    private _snackBar: MatSnackBar,
+    private http: HttpClient
   ) { }
 
+  onSelected() {
+    console.log(this.selectedMovie);
+    this.selectedMovie = this.selectedMovie;
+  }
+
+  displayWith(value: any) {
+    return value?.Title;
+  }
+
+  clearSelection() {
+    this.selectedMovie = "";
+    this.filteredMovies = [];
+  }
+
   ngOnInit() {
-    this.isPageLoading = true;
-    this.getCredits();
+    this.searchMoviesCtrl.valueChanges
+      .pipe(
+        filter(res => {
+          return res !== null && res.length >= this.minLengthTerm
+        }),
+        distinctUntilChanged(),
+        debounceTime(1000),
+        tap(() => {
+          this.filteredMovies = [];
+          this.isLoadings = true;
+          this._changeDetectorRef.markForCheck();
+
+        }),
+        switchMap(value => this._fileManagerService.getStoresData({
+          available_location_users: true,
+          store_id: this.selectedStore.pk_storeID,
+          page: 1,
+          size: 20,
+          keyword: value
+        }).pipe(takeUntil(this._unsubscribeAll),
+          finalize(() => {
+            this.isLoadings = false
+            this._changeDetectorRef.markForCheck();
+
+          }),
+        )
+        )
+      )
+      .subscribe((data: any) => {
+        if (data['data'].length == 0) {
+          this.filteredMovies = [];
+          this._changeDetectorRef.markForCheck();
+
+        } else {
+          this.filteredMovies = data['data'];
+          this._changeDetectorRef.markForCheck();
+        }
+        console.log(this.filteredMovies);
+      });
   }
   getCredits() {
     let params = {

@@ -13,21 +13,32 @@
               <note class="text-md">This tool allows you to apply a credit term to all the users on this store.
               </note>
             </div>
-            <div class="col-12 pt-6">
+            <div class="col-12">
               <form>
                 <mat-radio-group aria-labelledby="example-radio-group-label" class="example-radio-group"
                   [(ngModel)]="selectedTerm" name="radio">
                   <mat-radio-button class="example-radio-button" *ngFor="let item of creditTerms;let i=index"
-                    [value]="item.creditTermName" name="{{i}}">
+                    [value]="item.pk_creditTermID" name="{{i}}">
                     <strong>{{item.creditTermName}}</strong>
                     <div style="white-space: break-spaces;">{{item.creditTermDesc}}</div>
                   </mat-radio-button>
                 </mat-radio-group>
                 <div class="row mt-3">
-                  <div class="col-12 flex justify-end">
-                    <button [matTooltip]="'Apply'" class="w-full md:w-50 lg:w-50" mat-stroked-button mat-flat-button>
-                      Apply
-                    </button>
+                  <div class="col-12 flex items-center justify-end w-full">
+                    <div class="flex items-center my-2">
+                      <div class="flex items-center mr-4" *ngIf="isApplyMsg">
+                        <ng-container>
+                          <mat-icon class="text-green-500" [svgIcon]="'heroicons_outline:check'"></mat-icon>
+                          <span class="ml-2">Blanket credit term successfully applied</span>
+                        </ng-container>
+                      </div>
+                      <button [disabled]="isApplyLoader" (click)="updateCreditTerms()" [matTooltip]="'Apply'"
+                        class="w-full md:w-50 lg:w-50" mat-stroked-button mat-flat-button>
+                        <mat-progress-spinner *ngIf="isApplyLoader" [diameter]="24" [mode]="'indeterminate'">
+                        </mat-progress-spinner>
+                        <span *ngIf="!isApplyLoader">Apply</span>
+                      </button>
+                    </div>
                   </div>
                 </div>
               </form>
