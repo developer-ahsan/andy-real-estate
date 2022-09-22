@@ -129,7 +129,6 @@ export class ProductsDescriptionComponent implements OnInit, OnDestroy {
             } else if (sexVal == 4) {
               this.selectedSex = "Men's/Women's";
             } else if (sexVal == 5) {
-              // Unisex field added
               this.selectedSex = "Unisex";
             }
 
