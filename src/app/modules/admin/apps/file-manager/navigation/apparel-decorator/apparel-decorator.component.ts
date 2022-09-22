@@ -1,4 +1,4 @@
-import { ChangeDetectorRef, Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { ChangeDetectorRef, Component, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angular/core';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { IDropdownSettings } from 'ng-multiselect-dropdown';
 import { Subject } from 'rxjs';
@@ -9,7 +9,7 @@ import { FileManagerService } from '../../store-manager.service';
   selector: 'app-apparel-decorator',
   templateUrl: './apparel-decorator.component.html'
 })
-export class ApparelDecoratorComponent implements OnInit {
+export class ApparelDecoratorComponent implements OnInit, OnDestroy {
 
   @Input() selectedStore: any;
   @Input() isLoading: boolean;
@@ -69,6 +69,12 @@ export class ApparelDecoratorComponent implements OnInit {
   }
   onItemSelect(item: any) {
     const { pk_companyID, companyName } = item;
+  };
+
+  ngOnDestroy(): void {
+    // Unsubscribe from all subscriptions
+    this._unsubscribeAll.next();
+    this._unsubscribeAll.complete();
   };
 
 }

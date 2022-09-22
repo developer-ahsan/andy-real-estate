@@ -1,4 +1,4 @@
-import { Component, Input, Output, OnInit, EventEmitter, ChangeDetectorRef } from '@angular/core';
+import { Component, Input, Output, OnInit, EventEmitter, ChangeDetectorRef, OnDestroy } from '@angular/core';
 import { Subject } from 'rxjs';
 import { FileManagerService } from 'app/modules/admin/apps/file-manager/store-manager.service';
 import { takeUntil } from 'rxjs/operators';
@@ -9,7 +9,7 @@ import { FormControl, FormGroup } from '@angular/forms';
   selector: 'app-margins',
   templateUrl: './margins.component.html',
 })
-export class MarginsComponent implements OnInit {
+export class MarginsComponent implements OnInit, OnDestroy {
 
   @Input() selectedStore: any;
   @Input() isLoading: boolean;
@@ -214,5 +214,10 @@ export class MarginsComponent implements OnInit {
         this._changeDetectorRef.markForCheck();
         this.defaultMarginLoader = false;
       });
+  };
+  ngOnDestroy(): void {
+    // Unsubscribe from all subscriptions
+    this._unsubscribeAll.next();
+    this._unsubscribeAll.complete();
   };
 }

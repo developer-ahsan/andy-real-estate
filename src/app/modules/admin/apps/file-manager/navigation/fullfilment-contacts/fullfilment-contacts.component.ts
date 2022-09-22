@@ -1,4 +1,4 @@
-import { Component, Input, Output, OnInit, EventEmitter, ChangeDetectorRef, ViewChild } from '@angular/core';
+import { Component, Input, Output, OnInit, EventEmitter, ChangeDetectorRef, ViewChild, OnDestroy } from '@angular/core';
 import { Subject } from 'rxjs';
 import { FileManagerService } from 'app/modules/admin/apps/file-manager/store-manager.service';
 import { takeUntil } from 'rxjs/operators';
@@ -8,7 +8,7 @@ import { FormArray, FormBuilder, FormControl, FormGroup, Validators } from '@ang
   selector: 'app-fullfilment-contacts',
   templateUrl: './fullfilment-contacts.component.html',
 })
-export class FullfilmentContactsComponent implements OnInit {
+export class FullfilmentContactsComponent implements OnInit, OnDestroy {
   @Input() selectedStore: any;
   @Input() isLoading: boolean;
   @Output() isLoadingChange = new EventEmitter<any>();
@@ -214,5 +214,10 @@ export class FullfilmentContactsComponent implements OnInit {
         this._changeDetectorRef.markForCheck()
       })
   }
+  ngOnDestroy(): void {
+    // Unsubscribe from all subscriptions
+    this._unsubscribeAll.next();
+    this._unsubscribeAll.complete();
+  };
 
 }

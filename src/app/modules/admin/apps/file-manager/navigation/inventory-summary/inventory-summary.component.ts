@@ -1,4 +1,4 @@
-import { Component, Input, Output, OnInit, EventEmitter, ChangeDetectorRef } from '@angular/core';
+import { Component, Input, Output, OnInit, EventEmitter, ChangeDetectorRef, OnDestroy } from '@angular/core';
 import { Subject } from 'rxjs';
 import { FileManagerService } from 'app/modules/admin/apps/file-manager/store-manager.service';
 import { takeUntil } from 'rxjs/operators';
@@ -11,7 +11,7 @@ import { InventoryService } from '../../../ecommerce/inventory/inventory.service
   selector: 'app-inventory-summary',
   templateUrl: './inventory-summary.component.html'
 })
-export class InventorySummaryComponent implements OnInit {
+export class InventorySummaryComponent implements OnInit, OnDestroy {
   @Input() selectedStore: any;
   @Input() isLoading: boolean;
   @Output() isLoadingChange = new EventEmitter<boolean>();
@@ -89,5 +89,9 @@ export class InventorySummaryComponent implements OnInit {
   backToInventory() {
     this.isEditInventory = false;
   }
-
+  ngOnDestroy(): void {
+    // Unsubscribe from all subscriptions
+    this._unsubscribeAll.next();
+    this._unsubscribeAll.complete();
+  };
 }

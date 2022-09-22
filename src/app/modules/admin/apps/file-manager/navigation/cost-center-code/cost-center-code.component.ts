@@ -1,4 +1,4 @@
-import { Component, Input, Output, OnInit, EventEmitter, ChangeDetectorRef } from '@angular/core';
+import { Component, Input, Output, OnInit, EventEmitter, ChangeDetectorRef, OnDestroy } from '@angular/core';
 import { Subject } from 'rxjs';
 import { FileManagerService } from 'app/modules/admin/apps/file-manager/store-manager.service';
 import { takeUntil } from 'rxjs/operators';
@@ -8,7 +8,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
   selector: 'app-cost-center-code',
   templateUrl: './cost-center-code.component.html'
 })
-export class CostCenterCodeComponent implements OnInit {
+export class CostCenterCodeComponent implements OnInit, OnDestroy {
 
   @Input() selectedStore: any;
   @Input() isLoading: boolean;
@@ -148,5 +148,10 @@ export class CostCenterCodeComponent implements OnInit {
     }
 
   }
+  ngOnDestroy(): void {
+    // Unsubscribe from all subscriptions
+    this._unsubscribeAll.next();
+    this._unsubscribeAll.complete();
+  };
 
 }

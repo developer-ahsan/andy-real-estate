@@ -1,4 +1,4 @@
-import { Component, Input, Output, OnInit, EventEmitter, ChangeDetectorRef } from '@angular/core';
+import { Component, Input, Output, OnInit, EventEmitter, ChangeDetectorRef, OnDestroy } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { Subject } from 'rxjs';
@@ -11,7 +11,7 @@ import moment from "moment";
   templateUrl: './email-blast.component.html',
   styles: ['::ng-deep {.ql-container {height: auto}}']
 })
-export class EmailBlastComponent implements OnInit {
+export class EmailBlastComponent implements OnInit, OnDestroy {
   @Input() selectedStore: any;
   @Input() isLoading: boolean;
   @Output() isLoadingChange = new EventEmitter<boolean>();
@@ -280,4 +280,10 @@ export class EmailBlastComponent implements OnInit {
   backToUpdateTemplate() {
     this.presentationScreen = 'Main';
   }
+
+  ngOnDestroy(): void {
+    // Unsubscribe from all subscriptions
+    this._unsubscribeAll.next();
+    this._unsubscribeAll.complete();
+  };
 }

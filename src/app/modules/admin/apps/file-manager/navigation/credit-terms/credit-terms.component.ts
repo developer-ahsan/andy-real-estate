@@ -1,4 +1,4 @@
-import { ChangeDetectorRef, Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { ChangeDetectorRef, Component, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angular/core';
 import { FormControl, FormGroup } from '@angular/forms';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { Subject } from 'rxjs';
@@ -8,7 +8,7 @@ import { takeUntil } from 'rxjs/operators';
   selector: 'app-credit-terms',
   templateUrl: './credit-terms.component.html',
 })
-export class CreditTermsComponent implements OnInit {
+export class CreditTermsComponent implements OnInit, OnDestroy {
   @Input() selectedStore: any;
   @Input() isLoading: boolean;
   @Output() isLoadingChange = new EventEmitter<boolean>();
@@ -75,5 +75,11 @@ export class CreditTermsComponent implements OnInit {
     }
 
   }
+
+  ngOnDestroy(): void {
+    // Unsubscribe from all subscriptions
+    this._unsubscribeAll.next();
+    this._unsubscribeAll.complete();
+  };
 
 }

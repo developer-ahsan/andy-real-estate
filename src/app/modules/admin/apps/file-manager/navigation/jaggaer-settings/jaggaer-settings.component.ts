@@ -1,4 +1,4 @@
-import { Component, Input, Output, OnInit, EventEmitter, ChangeDetectorRef } from '@angular/core';
+import { Component, Input, Output, OnInit, EventEmitter, ChangeDetectorRef, OnDestroy } from '@angular/core';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { FileManagerService } from '../../store-manager.service';
@@ -7,7 +7,7 @@ import { FileManagerService } from '../../store-manager.service';
   selector: 'app-jaggaer-settings',
   templateUrl: './jaggaer-settings.component.html'
 })
-export class JaggaerSettingsComponent implements OnInit {
+export class JaggaerSettingsComponent implements OnInit, OnDestroy {
   @Input() selectedStore: any;
   @Input() isLoading: boolean;
   @Output() isLoadingChange = new EventEmitter<boolean>();
@@ -21,5 +21,9 @@ export class JaggaerSettingsComponent implements OnInit {
   ngOnInit(): void {
     this.isLoadingChange.emit(false);
   }
-
+  ngOnDestroy(): void {
+    // Unsubscribe from all subscriptions
+    this._unsubscribeAll.next();
+    this._unsubscribeAll.complete();
+  };
 }

@@ -1,4 +1,4 @@
-import { Component, Input, Output, OnInit, EventEmitter, ChangeDetectorRef, ViewEncapsulation, ChangeDetectionStrategy, ViewChild, ElementRef } from '@angular/core';
+import { Component, Input, Output, OnInit, EventEmitter, ChangeDetectorRef, ViewEncapsulation, ChangeDetectionStrategy, ViewChild, ElementRef, OnDestroy } from '@angular/core';
 import { fromEvent, Subject } from 'rxjs';
 import { FileManagerService } from 'app/modules/admin/apps/file-manager/store-manager.service';
 import { takeUntil } from 'rxjs/operators';
@@ -14,7 +14,7 @@ import { debounceTime, map, distinctUntilChanged, filter } from "rxjs/operators"
   changeDetection: ChangeDetectionStrategy.OnPush,
   animations: fuseAnimations
 })
-export class LocationsComponent implements OnInit {
+export class LocationsComponent implements OnInit, OnDestroy {
   userSearchInput: ElementRef;
 
   @ViewChild('userSearchInput') set content(content: ElementRef) {
@@ -542,6 +542,10 @@ export class LocationsComponent implements OnInit {
         this.getAllUserList(1, 'filter');
       });
     }, 1000);
-
   }
+  ngOnDestroy(): void {
+    // Unsubscribe from all subscriptions
+    this._unsubscribeAll.next();
+    this._unsubscribeAll.complete();
+  };
 }

@@ -1,4 +1,4 @@
-import { ChangeDetectorRef, Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { ChangeDetectorRef, Component, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angular/core';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { Subject } from 'rxjs';
 import { FileManagerService } from '../../store-manager.service';
@@ -9,7 +9,7 @@ import { FormControl, FormGroup, Validators } from '@angular/forms';
   selector: 'app-fulfill-options',
   templateUrl: './fulfill-options.component.html'
 })
-export class FulfillOptionsComponent implements OnInit {
+export class FulfillOptionsComponent implements OnInit, OnDestroy {
 
   @Input() selectedStore: any;
   @Input() isLoading: boolean;
@@ -54,5 +54,9 @@ export class FulfillOptionsComponent implements OnInit {
         this._changeDetectorRef.markForCheck();
       })
   }
-
+  ngOnDestroy(): void {
+    // Unsubscribe from all subscriptions
+    this._unsubscribeAll.next();
+    this._unsubscribeAll.complete();
+  };
 }

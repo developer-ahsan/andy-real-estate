@@ -1,4 +1,4 @@
-import { Component, Input, Output, OnInit, EventEmitter, ChangeDetectorRef, ViewChild } from '@angular/core';
+import { Component, Input, Output, OnInit, EventEmitter, ChangeDetectorRef, ViewChild, OnDestroy } from '@angular/core';
 import { Subject } from 'rxjs';
 import { FileManagerService } from 'app/modules/admin/apps/file-manager/store-manager.service';
 import { takeUntil } from 'rxjs/operators';
@@ -8,7 +8,7 @@ import * as Excel from 'exceljs/dist/exceljs.min.js';
   selector: 'app-opt-in-user-data',
   templateUrl: './opt-in-user-data.component.html'
 })
-export class OptInUserDataComponent implements OnInit {
+export class OptInUserDataComponent implements OnInit, OnDestroy {
 
   @Input() selectedStore: any;
   @Input() isLoading: boolean;
@@ -88,5 +88,9 @@ export class OptInUserDataComponent implements OnInit {
     // Mark for check
     this._changeDetectorRef.markForCheck();
   }
-
+  ngOnDestroy(): void {
+    // Unsubscribe from all subscriptions
+    this._unsubscribeAll.next();
+    this._unsubscribeAll.complete();
+  };
 }

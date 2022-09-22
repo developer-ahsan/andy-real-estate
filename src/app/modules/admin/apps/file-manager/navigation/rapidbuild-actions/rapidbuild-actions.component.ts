@@ -1,4 +1,4 @@
-import { Component, Input, Output, OnInit, EventEmitter, ChangeDetectorRef } from '@angular/core';
+import { Component, Input, Output, OnInit, EventEmitter, ChangeDetectorRef, OnDestroy } from '@angular/core';
 import { Subject } from 'rxjs';
 import { FileManagerService } from 'app/modules/admin/apps/file-manager/store-manager.service';
 import { takeUntil } from 'rxjs/operators';
@@ -12,7 +12,7 @@ import { takeUntil } from 'rxjs/operators';
   templateUrl: './rapidbuild-actions.component.html'
 })
 
-export class RapidbuildActionsComponent implements OnInit {
+export class RapidbuildActionsComponent implements OnInit, OnDestroy {
   @Input() selectedStore: any;
   @Input() isLoading: boolean;
   @Output() isLoadingChange = new EventEmitter<boolean>();
@@ -60,5 +60,9 @@ export class RapidbuildActionsComponent implements OnInit {
     };
     this.getMainStoreCall(this.page);
   };
-
+  ngOnDestroy(): void {
+    // Unsubscribe from all subscriptions
+    this._unsubscribeAll.next();
+    this._unsubscribeAll.complete();
+  };
 }

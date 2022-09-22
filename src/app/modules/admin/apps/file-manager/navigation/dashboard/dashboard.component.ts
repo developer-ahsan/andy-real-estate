@@ -6,6 +6,7 @@ import {
   EventEmitter,
   ViewChild,
   ChangeDetectorRef,
+  OnDestroy,
 } from "@angular/core";
 import { Subject } from "rxjs";
 import {
@@ -88,7 +89,7 @@ export type ChartOptionsThree = {
   templateUrl: "./dashboard.component.html",
   providers: [CurrencyPipe],
 })
-export class DashboardComponent implements OnInit {
+export class DashboardComponent implements OnInit, OnDestroy {
   @Input() selectedStore: any;
   @Input() isLoading: boolean;
   @Output() isLoadingChange = new EventEmitter<boolean>();
@@ -456,4 +457,9 @@ export class DashboardComponent implements OnInit {
       this.getDashboardGraphsData("top_customer");
     }
   }
+  ngOnDestroy(): void {
+    // Unsubscribe from all subscriptions
+    this._unsubscribeAll.next();
+    this._unsubscribeAll.complete();
+  };
 }

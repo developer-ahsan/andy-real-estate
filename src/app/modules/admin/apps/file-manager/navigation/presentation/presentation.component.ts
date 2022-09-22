@@ -5,6 +5,7 @@ import {
   OnInit,
   EventEmitter,
   ChangeDetectorRef,
+  OnDestroy,
 } from "@angular/core";
 import {
   FormBuilder,
@@ -22,7 +23,7 @@ import { environment } from "environments/environment";
   templateUrl: "./presentation.component.html",
   styleUrls: ["./presentation.scss"],
 })
-export class PresentationComponent implements OnInit {
+export class PresentationComponent implements OnInit, OnDestroy {
   @Input() selectedStore: any;
   @Input() isLoading: boolean;
   @Output() isLoadingChange = new EventEmitter<boolean>();
@@ -278,4 +279,9 @@ export class PresentationComponent implements OnInit {
   toggleDrawer() {
     this.drawerOpened = !this.drawerOpened;
   }
+  ngOnDestroy(): void {
+    // Unsubscribe from all subscriptions
+    this._unsubscribeAll.next();
+    this._unsubscribeAll.complete();
+  };
 }

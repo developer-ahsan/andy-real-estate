@@ -1,4 +1,4 @@
-import { Component, Input, Output, OnInit, EventEmitter, ChangeDetectorRef, ViewChild, ElementRef } from '@angular/core';
+import { Component, Input, Output, OnInit, EventEmitter, ChangeDetectorRef, ViewChild, ElementRef, OnDestroy } from '@angular/core';
 import { Observable, Subject } from 'rxjs';
 import { FileManagerService } from 'app/modules/admin/apps/file-manager/store-manager.service';
 import { map, startWith, takeUntil } from 'rxjs/operators';
@@ -13,7 +13,7 @@ import { IDropdownSettings } from 'ng-multiselect-dropdown';
   templateUrl: './art-approval.component.html',
   styles: ['::ng-deep {.ql-container {height: auto} fuse-alert.fuse-alert-appearance-soft.fuse-alert-type-info .fuse-alert-container .fuse-alert-message {color: #525151 !important} fuse-alert.fuse-alert-appearance-soft.fuse-alert-type-info .fuse-alert-container .fuse-alert-icon {color: #525151 !important} .fuse-mat-rounded .mat-tab-group .mat-tab-header .mat-tab-label-container {padding: 0px}}']
 })
-export class ArtApprovalComponent implements OnInit {
+export class ArtApprovalComponent implements OnInit, OnDestroy {
 
   mainScreen: string = "Settings";
   screens = [
@@ -325,5 +325,11 @@ export class ArtApprovalComponent implements OnInit {
       this.isDefaultGroupPage--;
     };
     this.getDefaultGroup(this.isDefaultGroupPage, 'get');
+  };
+
+  ngOnDestroy(): void {
+    // Unsubscribe from all subscriptions
+    this._unsubscribeAll.next();
+    this._unsubscribeAll.complete();
   };
 }
