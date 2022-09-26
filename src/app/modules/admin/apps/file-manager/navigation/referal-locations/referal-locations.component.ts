@@ -1,4 +1,4 @@
-import { ChangeDetectorRef, Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { ChangeDetectorRef, Component, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angular/core';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { Subject } from 'rxjs';
 import { FileManagerService } from '../../store-manager.service';
@@ -9,7 +9,7 @@ import { FormArray, FormBuilder, FormControl, FormGroup, Validators } from '@ang
   selector: 'app-referal-locations',
   templateUrl: './referal-locations.component.html'
 })
-export class ReferalLocationsComponent implements OnInit {
+export class ReferalLocationsComponent implements OnInit, OnDestroy {
 
   mainScreen: string = "Referral Locations";
   screens = [
@@ -82,4 +82,9 @@ export class ReferalLocationsComponent implements OnInit {
   get lcoationsListArray(): FormArray {
     return this.referralForm.get('locations') as FormArray;
   }
+  ngOnDestroy(): void {
+    // Unsubscribe from all subscriptions
+    this._unsubscribeAll.next();
+    this._unsubscribeAll.complete();
+  };
 }

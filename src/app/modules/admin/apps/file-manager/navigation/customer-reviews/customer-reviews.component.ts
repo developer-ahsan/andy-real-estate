@@ -1,4 +1,4 @@
-import { Component, Input, Output, OnInit, EventEmitter, ChangeDetectorRef, Directive, ElementRef, ViewChild } from '@angular/core';
+import { Component, Input, Output, OnInit, EventEmitter, ChangeDetectorRef, Directive, ElementRef, ViewChild, OnDestroy } from '@angular/core';
 import { Subject } from 'rxjs';
 import { FileManagerService } from 'app/modules/admin/apps/file-manager/store-manager.service';
 import { takeUntil } from 'rxjs/operators';
@@ -10,7 +10,7 @@ import { AuthService } from 'app/core/auth/auth.service';
   selector: 'app-customer-reviews',
   templateUrl: './customer-reviews.component.html'
 })
-export class CustomerReviewsComponent implements OnInit {
+export class CustomerReviewsComponent implements OnInit, OnDestroy {
   @Directive({ selector: '[myHighlight]' })
   @ViewChild('myHighlight') myHighlight: ElementRef;
 
@@ -333,4 +333,10 @@ export class CustomerReviewsComponent implements OnInit {
       })
 
   }
+
+  ngOnDestroy(): void {
+    // Unsubscribe from all subscriptions
+    this._unsubscribeAll.next();
+    this._unsubscribeAll.complete();
+  };
 }

@@ -14,99 +14,110 @@
                       Student Organizations
                     </div>
                   </div>
+                  <div class="col-lg-6 col-12 pb-6 sm:pb-8 lg:pb-8">
+                    <mat-form-field class="w-full">
+                      <mat-label>Filter By Campus:</mat-label>
+                      <mat-select (selectionChange)="filterByCampus($event)" matInput [(ngModel)]="filterBy"
+                        [ngModelOptions]="{standalone: true}">
+                        <mat-option value="all">All</mat-option>
+                        <mat-option value="Newark">Newark</mat-option>
+                        <mat-option value="New Brunswick">New Brunswick</mat-option>
+                        <mat-option value="Camden">Camden</mat-option>
+                        <mat-option value="RBHS">RBHS</mat-option>
+                      </mat-select>
+                    </mat-form-field>
+                  </div>
                   <div class="col-12 h-full ">
                     <ng-container *ngIf="dataSource.length > 0; else noRecords">
-                      <form [formGroup]="contactForm">
-                        <table mat-table [dataSource]="dataSource" class="w-full">
-                          <div class="color-blue" formArrayName="contacts">
-                            <!-- ID Column -->
-                            <ng-container matColumnDef="code">
-                              <th class="min-w-10 bg-gray-50 dark:bg-black dark:bg-opacity-5" mat-header-cell
-                                *matHeaderCellDef>
-                                Code
-                              </th>
-                              <td mat-cell *matCellDef="let element;let i=index" [formGroupName]="i">
-                                {{element.code}}
-                              </td>
-                            </ng-container>
+                      <table mat-table [dataSource]="dataSource" class="w-full">
+                        <div class="color-blue">
+                          <!-- ID Column -->
+                          <ng-container matColumnDef="code">
+                            <th class="min-w-10 bg-gray-50 dark:bg-black dark:bg-opacity-5" mat-header-cell
+                              *matHeaderCellDef>
+                              Code
+                            </th>
+                            <td mat-cell *matCellDef="let element;let i=index">
+                              {{element.code}}
+                            </td>
+                          </ng-container>
 
-                            <!-- Name Column -->
-                            <ng-container matColumnDef="name">
-                              <th class="min-w-10 bg-gray-50 dark:bg-black dark:bg-opacity-5" mat-header-cell
-                                *matHeaderCellDef>
-                                Name
-                              </th>
-                              <td mat-cell *matCellDef="let element;let i=index" [formGroupName]="i"
-                                (click)="editStoreOrg(element)">
-                                {{element.name}}
-                              </td>
-                            </ng-container>
+                          <!-- Name Column -->
+                          <ng-container matColumnDef="name">
+                            <th class="min-w-10 bg-gray-50 dark:bg-black dark:bg-opacity-5" mat-header-cell
+                              *matHeaderCellDef>
+                              Name
+                            </th>
+                            <td mat-cell *matCellDef="let element;let i=index">
+                              {{element.name}}
+                            </td>
+                          </ng-container>
 
-                            <!-- Status Column -->
-                            <ng-container matColumnDef="a_name">
-                              <th class="min-w-10 bg-gray-50 dark:bg-black dark:bg-opacity-5" mat-header-cell
-                                *matHeaderCellDef>
-                                Advisor Name
-                              </th>
-                              <td mat-cell *matCellDef="let element;let i=index" [formGroupName]="i">
-                                {{element.advisorName}}
-                              </td>
-                            </ng-container>
-                            <ng-container matColumnDef="a_email">
-                              <th class="min-w-10 bg-gray-50 dark:bg-black dark:bg-opacity-5" mat-header-cell
-                                *matHeaderCellDef>
-                                Advisor Email
-                              </th>
-                              <td mat-cell *matCellDef="let element;let i=index" [formGroupName]="i"
-                                class="text-center">
-                                {{element.advisorEmail}}
-                              </td>
-                            </ng-container>
-                            <ng-container matColumnDef="campus">
-                              <th class="min-w-10 bg-gray-50 dark:bg-black dark:bg-opacity-5" mat-header-cell
-                                *matHeaderCellDef>
-                                Campus
-                              </th>
-                              <td mat-cell *matCellDef="let element;let i=index" [formGroupName]="i"
-                                class="text-center">
-                                {{element.campus}}
-                              </td>
-                            </ng-container>
-                            <ng-container matColumnDef="active">
-                              <th class="min-w-10 bg-gray-50 dark:bg-black dark:bg-opacity-5" mat-header-cell
-                                *matHeaderCellDef>
-                                Active
-                              </th>
-                              <td mat-cell *matCellDef="let element;let i=index" [formGroupName]="i"
-                                class="text-center">
-                                <span *ngIf="element.blnActive">Active</span>
-                                <span *ngIf="!element.blnActive">Disabled</span>
-                              </td>
-                            </ng-container>
-                            <ng-container matColumnDef="Action">
-                              <th class="min-w-10 bg-gray-50 dark:bg-black dark:bg-opacity-5" mat-header-cell
-                                *matHeaderCellDef>
-                                Action
-                              </th>
-                              <td mat-cell *matCellDef="let element;">
-                                <div class="flex justify-between">
-                                  <button [matTooltip]="'Save Changes'" mat-icon-button
-                                    aria-label="Example icon button with a vertical three dot icon">
-                                    <mat-icon>done</mat-icon>
-                                  </button>
-                                  <button [matTooltip]="'Remove'" mat-icon-button
-                                    aria-label="Example icon button with a vertical three dot icon">
-                                    <mat-icon>close</mat-icon>
-                                  </button>
-                                </div>
-                              </td>
-                            </ng-container>
-                          </div>
-                          <tr mat-header-row class="h-16 shadow bg-card" *matHeaderRowDef="displayedColumns"></tr>
-                          <tr mat-row class="hover:bg-gray-100 dark:hover:bg-hover" style="cursor: pointer;"
-                            *matRowDef="let row; columns: displayedColumns"></tr>
-                        </table>
-                      </form>
+                          <!-- Status Column -->
+                          <ng-container matColumnDef="a_name">
+                            <th class="min-w-10 bg-gray-50 dark:bg-black dark:bg-opacity-5" mat-header-cell
+                              *matHeaderCellDef>
+                              Advisor Name
+                            </th>
+                            <td mat-cell *matCellDef="let element;let i=index">
+                              {{element.advisorName}}
+                            </td>
+                          </ng-container>
+                          <ng-container matColumnDef="a_email">
+                            <th class="min-w-10 bg-gray-50 dark:bg-black dark:bg-opacity-5" mat-header-cell
+                              *matHeaderCellDef>
+                              Advisor Email
+                            </th>
+                            <td mat-cell *matCellDef="let element;let i=index">
+                              {{element.advisorEmail}}
+                            </td>
+                          </ng-container>
+                          <ng-container matColumnDef="campus">
+                            <th class="min-w-10 bg-gray-50 dark:bg-black dark:bg-opacity-5" mat-header-cell
+                              *matHeaderCellDef>
+                              Campus
+                            </th>
+                            <td mat-cell *matCellDef="let element;let i=index">
+                              {{element.campus}}
+                            </td>
+                          </ng-container>
+                          <ng-container matColumnDef="active">
+                            <th class="min-w-10 bg-gray-50 dark:bg-black dark:bg-opacity-5" mat-header-cell
+                              *matHeaderCellDef>
+                              Active
+                            </th>
+                            <td mat-cell *matCellDef="let element;let i=index">
+                              <span *ngIf="element.blnActive">Active</span>
+                              <span *ngIf="!element.blnActive">Disabled</span>
+                            </td>
+                          </ng-container>
+                          <ng-container matColumnDef="action">
+                            <th class="min-w-10 bg-gray-50 dark:bg-black dark:bg-opacity-5 text-center" mat-header-cell
+                              *matHeaderCellDef>
+                              Action
+                            </th>
+                            <td mat-cell *matCellDef="let element;">
+                              <div class="flex justify-center">
+                                <button (click)="editStoreOrg(element)" [matTooltip]="'Edit'" mat-icon-button
+                                  aria-label="Example icon button with a vertical three dot icon">
+                                  <mat-icon>edit</mat-icon>
+                                </button>
+                                <button [disabled]="element?.deleteLoader" (click)="removeOrg(element)"
+                                  [matTooltip]="'Remove'" mat-icon-button
+                                  aria-label="Example icon button with a vertical three dot icon">
+                                  <mat-icon *ngIf="!element?.deleteLoader">close</mat-icon>
+                                  <mat-progress-spinner *ngIf="element?.deleteLoader" [diameter]="24"
+                                    [mode]="'indeterminate'">
+                                  </mat-progress-spinner>
+                                </button>
+                              </div>
+                            </td>
+                          </ng-container>
+                        </div>
+                        <tr mat-header-row class="h-16 shadow bg-card" *matHeaderRowDef="displayedColumns"></tr>
+                        <tr mat-row class="hover:bg-gray-100 dark:hover:bg-hover" style="cursor: pointer;"
+                          *matRowDef="let row; columns: displayedColumns"></tr>
+                      </table>
                     </ng-container>
                     <ng-template #noRecords>
                       <div class="font-semibold tracking-tight text-center">
@@ -168,44 +179,55 @@
               </div>
             </div>
           </div>
-          <form>
+          <form [formGroup]="isAddFormOrg">
             <div class="row">
               <div class="col-md-4 col-12">
                 <mat-form-field class="w-full">
                   <mat-label>Organization code/number: *</mat-label>
-                  <input type="text" matInput placeholder="Organization Code Number">
+                  <input type="text" formControlName="code" matInput placeholder="Organization Code Number">
                 </mat-form-field>
               </div>
               <div class="col-md-4 col-12">
                 <mat-form-field class="w-full">
                   <mat-label>Organization Name: *</mat-label>
-                  <input type="text" matInput placeholder="Organization Name">
+                  <input type="text" formControlName="name" matInput placeholder="Organization Name">
                 </mat-form-field>
               </div>
               <div class="col-md-4 col-12">
                 <mat-form-field class="w-full">
                   <mat-label>Advisor Email</mat-label>
-                  <input type="text" matInput placeholder="Advisor Email">
+                  <input type="text" formControlName="advisorEmail" matInput placeholder="Advisor Email">
                 </mat-form-field>
               </div>
               <div class="col-md-4 col-12">
                 <mat-form-field class="w-full">
                   <mat-label>Advisor Name</mat-label>
-                  <input type="text" matInput placeholder="Advisor Name">
+                  <input type="text" formControlName="advisorName" matInput placeholder="Advisor Name">
                 </mat-form-field>
               </div>
               <div class="col-md-4 col-12">
                 <mat-form-field class="w-full">
                   <mat-label>Campus</mat-label>
-                  <mat-select matInput>
-                    <mat-option value="no">All Campus</mat-option>
+                  <mat-select matInput formControlName="campus">
+                    <mat-option value="Newark">Newark</mat-option>
+                    <mat-option value="New Brunswick">New Brunswick</mat-option>
+                    <mat-option value="Camden">Camden</mat-option>
+                    <mat-option value="RBHS">RBHS</mat-option>
                   </mat-select>
                 </mat-form-field>
               </div>
-              <div class="col-12 flex justify-end">
-                <button [matTooltip]="'Add Student Organization'" class="w-full md:w-50 lg:w-50" mat-stroked-button
-                  mat-flat-button>
-                  Add Student Organization
+              <div class="col-12 flex items-center justify-end w-full">
+                <div class="flex mr-4" *ngIf="isAddMsg">
+                  <ng-container>
+                    <mat-icon class="text-green-500" [svgIcon]="'heroicons_outline:check'"></mat-icon>
+                    <span class="ml-2">{{isAddMsgText}}</span>
+                  </ng-container>
+                </div>
+                <button (click)="addOrg()" [disabled]="isAddLoader" [matTooltip]="'Add Student Organization'"
+                  class="min-w-50" mat-stroked-button mat-flat-button>
+                  <span class="px-2" *ngIf="!isAddLoader">Add Student Organization</span>
+                  <mat-progress-spinner *ngIf="isAddLoader" [diameter]="24" [mode]="'indeterminate'">
+                  </mat-progress-spinner>
                 </button>
               </div>
             </div>
@@ -219,39 +241,51 @@
               </div>
             </div>
           </div>
-          <form>
+          <form [formGroup]="isCampusForm">
             <div class="row">
               <div class="col-md-4 col-12">
                 <mat-form-field class="w-full">
                   <mat-label>Campus</mat-label>
-                  <mat-select matInput>
-                    <mat-option value="no">All Campus</mat-option>
+                  <mat-select matInput formControlName="campus">
+                    <mat-option value="Newark">Newark</mat-option>
+                    <mat-option value="New Brunswick">New Brunswick</mat-option>
+                    <mat-option value="Camden">Camden</mat-option>
+                    <mat-option value="RBHS">RBHS</mat-option>
                   </mat-select>
                 </mat-form-field>
               </div>
               <div class="col-md-4 col-12">
                 <mat-form-field class="w-full">
-                  <mat-label>Advisor Email</mat-label>
-                  <input type="text" matInput placeholder="Advisor Email">
+                  <mat-label>Advisor Email *</mat-label>
+                  <input type="text" matInput placeholder="Advisor Email" formControlName="advisorEmail">
                 </mat-form-field>
               </div>
               <div class="col-md-4 col-12">
                 <mat-form-field class="w-full">
-                  <mat-label>Advisor Name</mat-label>
-                  <input type="text" matInput placeholder="Advisor Name">
+                  <mat-label>Advisor Name *</mat-label>
+                  <input type="text" matInput placeholder="Advisor Name" formControlName="advisorName">
                 </mat-form-field>
               </div>
 
-              <div class="col-12 flex justify-end">
-                <button [matTooltip]="'Update'" class="w-full md:w-50 lg:w-50" mat-stroked-button mat-flat-button>
-                  Update
+              <div class="col-12 flex items-center justify-end w-full">
+                <div class="flex mr-4" *ngIf="isCampusUpdateMsg">
+                  <ng-container>
+                    <mat-icon class="text-green-500" [svgIcon]="'heroicons_outline:check'"></mat-icon>
+                    <span class="ml-2">Campus Email Updated Successfully</span>
+                  </ng-container>
+                </div>
+                <button (click)="updateCampusEmail()" [disabled]="isCampusUpdateLoader" [matTooltip]="'Update'"
+                  class="min-w-40" mat-stroked-button mat-flat-button>
+                  <span class="px-2" *ngIf="!isCampusUpdateLoader">Update</span>
+                  <mat-progress-spinner *ngIf="isCampusUpdateLoader" [diameter]="24" [mode]="'indeterminate'">
+                  </mat-progress-spinner>
                 </button>
               </div>
             </div>
           </form>
         </mat-tab>
       </mat-tab-group>
-      <div class="row" style="width: -webkit-fill-available;">
+      <div class="row p-6" style="width: -webkit-fill-available;">
         <div class="col-12" *ngIf="isEditStoreOrg">
           <div>
             <div class="row">
@@ -264,7 +298,7 @@
               </div>
               <div class="col-lg-6 col-12 pb-6 sm:pb-8 lg:pb-8">
                 <div class="text-2xl font-bold">
-                  Student Organizations Update
+                  Student Organizations Edit
                 </div>
               </div>
               <div class="col-12">
@@ -298,8 +332,15 @@
                       </mat-form-field>
                     </div>
                     <div class="col-12 text-right">
-                      <button class="my-5 mr-2" mat-flat-button mat-stroked-button [matTooltip]="'Update'">
-                        <span class="px-2">Update</span>
+                      <button [disabled]="isEditLoader" class="my-5 mr-2" (click)="backToOrgList()"
+                        [matTooltip]="'Cancel'">
+                        <span class="px-2">Cancel</span>
+                      </button>
+                      <button (click)="updateOrg()" [disabled]="isEditLoader" class="my-5 mr-2 min-w-40" mat-flat-button
+                        mat-stroked-button [matTooltip]="'Update'">
+                        <span class="px-2" *ngIf="!isEditLoader">Update</span>
+                        <mat-progress-spinner *ngIf="isEditLoader" [diameter]="24" [mode]="'indeterminate'">
+                        </mat-progress-spinner>
                       </button>
                     </div>
                   </div>

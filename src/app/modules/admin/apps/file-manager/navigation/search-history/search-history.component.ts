@@ -1,4 +1,4 @@
-import { Component, Input, Output, OnInit, EventEmitter, ChangeDetectorRef } from '@angular/core';
+import { Component, Input, Output, OnInit, EventEmitter, ChangeDetectorRef, OnDestroy } from '@angular/core';
 import { Subject } from 'rxjs';
 import { FileManagerService } from 'app/modules/admin/apps/file-manager/store-manager.service';
 import { takeUntil } from 'rxjs/operators';
@@ -14,7 +14,7 @@ import { MatFormFieldControl } from '@angular/material/form-field';
     { provide: MatFormFieldControl, useExisting: SearchHistoryComponent }
   ]
 })
-export class SearchHistoryComponent implements OnInit {
+export class SearchHistoryComponent implements OnInit, OnDestroy {
   @Input() selectedStore: any;
   @Input() isLoading: boolean;
   @Output() isLoadingChange = new EventEmitter<boolean>();
@@ -190,5 +190,10 @@ export class SearchHistoryComponent implements OnInit {
   convertDate(date) {
     return moment(date).format('YYYY-MM-DD')
   }
+  ngOnDestroy(): void {
+    // Unsubscribe from all subscriptions
+    this._unsubscribeAll.next();
+    this._unsubscribeAll.complete();
+  };
 }
 

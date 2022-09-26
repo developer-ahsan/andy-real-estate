@@ -1,4 +1,4 @@
-import { Component, Input, Output, OnInit, EventEmitter, ChangeDetectorRef } from '@angular/core';
+import { Component, Input, Output, OnInit, EventEmitter, ChangeDetectorRef, OnDestroy } from '@angular/core';
 import { Subject } from 'rxjs';
 import { FileManagerService } from 'app/modules/admin/apps/file-manager/store-manager.service';
 import { takeUntil } from 'rxjs/operators';
@@ -8,7 +8,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
   selector: 'app-store-suppliers',
   templateUrl: './store-suppliers.component.html'
 })
-export class StoreSuppliersComponent implements OnInit {
+export class StoreSuppliersComponent implements OnInit, OnDestroy {
 
   @Input() selectedStore: any;
   @Input() isLoading: boolean;
@@ -75,5 +75,9 @@ export class StoreSuppliersComponent implements OnInit {
       this.dataSource = this.searchDataSource;
     }
   }
-
+  ngOnDestroy(): void {
+    // Unsubscribe from all subscriptions
+    this._unsubscribeAll.next();
+    this._unsubscribeAll.complete();
+  };
 }

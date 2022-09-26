@@ -1,4 +1,4 @@
-import { Component, Input, Output, OnInit, EventEmitter, ChangeDetectorRef } from '@angular/core';
+import { Component, Input, Output, OnInit, EventEmitter, ChangeDetectorRef, OnDestroy } from '@angular/core';
 import { Subject } from 'rxjs';
 import { FileManagerService } from 'app/modules/admin/apps/file-manager/store-manager.service';
 import { takeUntil } from 'rxjs/operators';
@@ -9,7 +9,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
   selector: 'app-surveys',
   templateUrl: './surveys.component.html'
 })
-export class SurveysComponent implements OnInit {
+export class SurveysComponent implements OnInit, OnDestroy {
   @Input() selectedStore: any;
   @Input() isLoading: boolean;
   @Output() isLoadingChange = new EventEmitter<boolean>();
@@ -149,5 +149,10 @@ export class SurveysComponent implements OnInit {
       // Mark for check
       this._changeDetectorRef.markForCheck();
     }, 3000);
+  };
+  ngOnDestroy(): void {
+    // Unsubscribe from all subscriptions
+    this._unsubscribeAll.next();
+    this._unsubscribeAll.complete();
   };
 }

@@ -27,7 +27,7 @@ export class RapidbuildComponent implements OnInit, OnDestroy {
   filterLoader = false;
 
   constructor(
-    private _fileManagerService: FileManagerService,
+    private _storeManagerService: FileManagerService,
     private _changeDetectorRef: ChangeDetectorRef,
     private _snackBar: MatSnackBar
   ) { }
@@ -36,7 +36,7 @@ export class RapidbuildComponent implements OnInit, OnDestroy {
     const { pk_storeID } = this.selectedStore;
 
     // Get the offline products
-    this._fileManagerService.getRapidBuildDropDown(pk_storeID)
+    this._storeManagerService.getRapidBuildDropDown(pk_storeID)
       .pipe(takeUntil(this._unsubscribeAll))
       .subscribe((response: any) => {
         this.dropdown = response["data"];
@@ -57,7 +57,7 @@ export class RapidbuildComponent implements OnInit, OnDestroy {
     const { pk_storeID } = this.selectedStore;
 
     if (obj === 'all') {
-      this._fileManagerService.getAllRapidBuildImages(pk_storeID)
+      this._storeManagerService.getAllRapidBuildImages(pk_storeID)
         .pipe(takeUntil(this._unsubscribeAll))
         .subscribe((response: any) => {
           this.dataSource = response["data"];
@@ -74,7 +74,7 @@ export class RapidbuildComponent implements OnInit, OnDestroy {
     const { pk_statusID } = obj;
     this.statusID = pk_statusID;
 
-    this._fileManagerService.getRapidBuildImages(pk_storeID, pk_statusID)
+    this._storeManagerService.getRapidBuildImages(pk_storeID, pk_statusID)
       .pipe(takeUntil(this._unsubscribeAll))
       .subscribe((response: any) => {
         this.dataSource = response["data"];
@@ -91,7 +91,7 @@ export class RapidbuildComponent implements OnInit, OnDestroy {
   getRapidBuildImages(statusId): void {
     const { pk_storeID } = this.selectedStore;
 
-    this._fileManagerService.getRapidBuildImages(pk_storeID, statusId)
+    this._storeManagerService.getRapidBuildImages(pk_storeID, statusId)
       .pipe(takeUntil(this._unsubscribeAll))
       .subscribe((response: any) => {
         this.dataSource = response["data"];
@@ -115,7 +115,7 @@ export class RapidbuildComponent implements OnInit, OnDestroy {
   getAllRapidBuildImages(): void {
     const { pk_storeID } = this.selectedStore;
 
-    this._fileManagerService.getAllRapidBuildImages(pk_storeID)
+    this._storeManagerService.getAllRapidBuildImages(pk_storeID)
       .pipe(takeUntil(this._unsubscribeAll))
       .subscribe((response: any) => {
         this.dataSource = response["data"];
@@ -142,7 +142,7 @@ export class RapidbuildComponent implements OnInit, OnDestroy {
       return;
     };
 
-    this._fileManagerService.getAllRapidBuildImagesById(pk_storeID, keyword)
+    this._storeManagerService.getAllRapidBuildImagesById(pk_storeID, keyword)
       .pipe(takeUntil(this._unsubscribeAll))
       .subscribe((response: any) => {
         this.dataSource = response["data"];
@@ -169,7 +169,7 @@ export class RapidbuildComponent implements OnInit, OnDestroy {
       return;
     };
 
-    this._fileManagerService.getAllRapidBuildImagesByKeyword(pk_storeID, keyword)
+    this._storeManagerService.getAllRapidBuildImagesByKeyword(pk_storeID, keyword)
       .pipe(takeUntil(this._unsubscribeAll))
       .subscribe((response: any) => {
         this.dataSource = response["data"];

@@ -35,6 +35,14 @@ export const ecommerceRoutes: Route[] = [
                     suppliers: SuppliersListResolver
                 }
             },
+            {
+                path: 'storeProduct/:id',
+                pathMatch: 'full',
+                component: ProductDetailsComponent,
+                resolve: {
+                    suppliers: SuppliersListResolver
+                }
+            },
         ]
     },
     {

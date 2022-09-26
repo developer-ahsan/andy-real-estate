@@ -1,4 +1,4 @@
-import { ChangeDetectorRef, Component, EventEmitter, Input, OnInit, Output, ViewChild } from '@angular/core';
+import { ChangeDetectorRef, Component, EventEmitter, Input, OnDestroy, OnInit, Output, ViewChild } from '@angular/core';
 import { FormArray, FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { MatOption } from '@angular/material/core';
 import { MatSelect } from '@angular/material/select';
@@ -12,7 +12,7 @@ import { FileManagerService } from '../../store-manager.service';
   templateUrl: './royalties.component.html',
   styles: ['::ng-deep {.ql-container {height: auto}}']
 })
-export class RoyaltiesComponent implements OnInit {
+export class RoyaltiesComponent implements OnInit, OnDestroy {
   @ViewChild('select') select: MatSelect;
   @Input() selectedStore: any;
   @Input() isLoading: boolean;
@@ -239,4 +239,9 @@ export class RoyaltiesComponent implements OnInit {
         this._changeDetectorRef.markForCheck()
       })
   }
+  ngOnDestroy(): void {
+    // Unsubscribe from all subscriptions
+    this._unsubscribeAll.next();
+    this._unsubscribeAll.complete();
+  };
 }

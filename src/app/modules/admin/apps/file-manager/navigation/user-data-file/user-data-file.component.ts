@@ -1,4 +1,4 @@
-import { Component, Input, Output, OnInit, EventEmitter, ChangeDetectorRef, ViewChild } from '@angular/core';
+import { Component, Input, Output, OnInit, EventEmitter, ChangeDetectorRef, ViewChild, OnDestroy } from '@angular/core';
 import { Subject } from 'rxjs';
 import { FileManagerService } from 'app/modules/admin/apps/file-manager/store-manager.service';
 import { takeUntil } from 'rxjs/operators';
@@ -13,7 +13,7 @@ import moment from "moment";
   templateUrl: './user-data-file.component.html',
   styles: ['.select-all{margin: 5px 17px;}']
 })
-export class UserDataFileComponent implements OnInit {
+export class UserDataFileComponent implements OnInit, OnDestroy {
 
   @ViewChild('select') select: MatSelect;
   @Input() selectedStore: any;
@@ -146,5 +146,9 @@ export class UserDataFileComponent implements OnInit {
     });
     this.allSelected = newStatus;
   }
-
+  ngOnDestroy(): void {
+    // Unsubscribe from all subscriptions
+    this._unsubscribeAll.next();
+    this._unsubscribeAll.complete();
+  };
 }
