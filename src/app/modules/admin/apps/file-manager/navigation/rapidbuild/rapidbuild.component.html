@@ -3,7 +3,7 @@
 
 <div *ngIf="!dataSourceLoading && !dropdownFetchLoader">
     <fuse-card class="rounded-2xl shadow bg-card flex pb-10">
-        <div class="row" style="width: -webkit-fill-available;">
+        <div class="row" style="width: -webkit-fill-available;" *ngIf="!isDetailOpen">
             <div class="col-12">
                 <div class="p-6 sm:p-8 lg:p-10 w-full">
                     <div class="row">
@@ -12,21 +12,6 @@
                                 Rapidbuild Images
                             </div>
                         </div>
-                        <!-- <div class="col-lg-6 col-12">
-                            <mat-form-field class="fuse-mat-dense fuse-mat-no-subscript w-full">
-                                <input class="h-6" matInput [matTooltip]="'Press enter key after typing'"
-                                    (keyup.enter)="searchStoreProduct($event)" [value]="keywordSearch" type="text"
-                                    [autocomplete]="'off'" [disabled]="isKeywordSearch"
-                                    [placeholder]="'Search by keyword'">
-                                <mat-icon matPrefix [svgIcon]="'heroicons_outline:search'"></mat-icon>
-                            </mat-form-field>
-                        </div>
-                        <div class="col-12 flex justify-end">
-                            <p class="text-md cursor-pointer font-medium text-primary-500 hover:underline"
-                                (click)="resetSearch()">
-                                Reset Search
-                            </p>
-                        </div> -->
                     </div>
                 </div>
             </div>
@@ -61,10 +46,10 @@
                         </mat-form-field>
                     </div>
                     <div class="col-12 flex justify-end">
-                        <p class="text-md cursor-pointer font-medium text-primary-500 hover:underline"
+                        <span class="text-md cursor-pointer font-medium text-primary-500 hover:underline"
                             (click)="resetSearch()">
                             Reset Search
-                        </p>
+                        </span>
                     </div>
                 </div>
             </div>
@@ -84,7 +69,7 @@
                                     *matHeaderCellDef>
                                     ID
                                 </th>
-                                <td mat-cell *matCellDef="let element">
+                                <td mat-cell *matCellDef="let element" (click)="editToggle(element)">
                                     {{ element.pk_rapidBuildID }}
                                 </td>
                             </ng-container>
@@ -164,7 +149,7 @@
                 </ng-container>
                 <ng-template #noRecords>
                     <div class="font-semibold tracking-tight text-center">
-                        <p>No record found</p>
+                        <span>No record found</span>
                     </div>
                 </ng-template>
             </div>
@@ -172,6 +157,120 @@
                 class="sm:absolute sm:inset-x-0 sm:bottom-0 border-b sm:border-t sm:border-b-0 z-10 bg-gray-50 dark:bg-transparent"
                 [ngClass]="{'pointer-events-none': isLoading}" [length]="dataSourceTotalRecord" [pageIndex]="0"
                 [pageSize]="20" [hidePageSize]="true"></mat-paginator>
+        </div>
+        <div class="row" style="width: -webkit-fill-available;" *ngIf="isDetailOpen">
+            <div class="col-12">
+                <div class="p-6 sm:p-8 lg:p-10 w-full">
+                    <div class="row">
+                        <div class="col-lg-6 col-12">
+                            <div class="text-2xl font-bold">
+                                Rapidbuild Images Details
+                            </div>
+                        </div>
+                        <div class="col-lg-6 col-12 text-right">
+                            <button class="ml-4" mat-flat-button mat-stroked-button [matTooltip]="'Back To List'"
+                                (click)="backToList()">
+                                <mat-icon [svgIcon]="'heroicons_outline:arrow-narrow-left'"></mat-icon>
+                                <span class="ml-2 mr-1">Back To List</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-12 mt-5" *ngIf="isRebuildDetailLoader">
+                    <ngx-skeleton-loader count="8" appearance="line" animation="pulse">
+                    </ngx-skeleton-loader>
+                </div>
+                <div class="col-12" *ngIf="!isRebuildDetailLoader">
+                    <div class="row px-10">
+                        <div class="col-12 border-b mb-5">
+                            <div class="text-lg font-bold">
+                                Product Details:
+                            </div>
+                            <div class="row p-3 pt-5">
+                                <div class="col-md-6 col-12 mb-2">
+                                    <span class="font-bold">RapidBuild ID: </span>
+                                    <span>{{editItemData?.pk_rapidBuildID}}</span>
+                                </div>
+                                <div class="col-md-6 col-12 mb-2">
+                                    <span class="font-bold">Image status: </span>
+                                    <span>{{editItemData?.statusName}}</span>
+                                </div>
+                                <div class="col-md-6 col-12 mb-2">
+                                    <span class="font-bold">Store: </span>
+                                    <span>{{editItemData?.storeName}}</span>
+                                </div>
+                                <div class="col-md-6 col-12 mb-2">
+                                    <span class="font-bold">Product name: </span>
+                                    <span>{{editItemData?.productName}}</span>
+                                </div>
+                                <div class="col-md-6 col-12 mb-2">
+                                    <span class="font-bold">Product number: </span>
+                                    <span>{{editItemData?.productNumber}}</span>
+                                </div>
+                                <!-- <div class="col-md-6 col-12 mb-2">
+                                    <span class="font-bold">Product Type: </span>
+                                    <span>{{editItemData?.pk_rapidBuildID}}</span>
+                                </div> -->
+                                <div class="col-md-6 col-12 mb-2">
+                                    <span class="font-bold">Supplier: </span>
+                                    <span><a class="text-decoration-none text-primary-500"
+                                            href="{{editItemData?.websiteURL}}"
+                                            target="_blank">{{editItemData?.companyName}}</a></span>
+                                </div>
+                                <div class="col-md-6 col-12 mb-2">
+                                    <span class="font-bold">Product link: </span>
+                                    <span><a class="text-decoration-none text-primary-500"
+                                            href="{{editItemData?.supplierLink}}" target="_blank">Click here</a></span>
+                                </div>
+                                <div class="col-md-6 col-12 mb-2">
+                                    <span class="font-bold">PID: </span>
+                                    <span>{{editItemData?.pk_productID}}</span>
+                                </div>
+                                <div class="col-md-6 col-12 mb-2">
+                                    <span class="font-bold">SPID: </span>
+                                    <span>{{editItemData?.fk_storeProductID}}</span>
+                                </div>
+                                <div class="col-md-6 col-12 mb-2">
+                                    <span class="font-bold">Categories: </span>
+                                    <span>{{editItemData?.subCategoryName}}</span>
+                                </div>
+                                <div class="col-md-6 col-12 mb-2" *ngIf="buildDetailColors">
+                                    <span class="font-bold">Available colors: </span>
+                                    <span>{{buildDetailColors}}</span>
+                                </div>
+                                <div class="col-12 mb-2">
+                                    <mat-expansion-panel>
+                                        <mat-expansion-panel-header>
+                                            <mat-panel-title class="font-bold">
+                                                Imprint details
+                                            </mat-panel-title>
+                                        </mat-expansion-panel-header>
+                                        <p>I'm visible because I am open</p>
+                                    </mat-expansion-panel>
+
+                                    <!-- <span class="font-bold">Imprint details: </span>
+                                    <span>{{editItemData?.pk_rapidBuildID}}</span> -->
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-12 border-b mb-5 ">
+                            <div class="text-lg font-bold">
+                                Current Proof:
+                            </div>
+                            <fuse-alert class="mb-3" *ngIf="!currentProof" [type]="'warning'" [appearance]="'outline'">
+                                This product does not yet have a proof.
+                            </fuse-alert>
+                            <img *ngIf="currentProof" src="{{imgUrl}}/{{editItemData.pk_rapidBuildID}}.jpg">
+                        </div>
+                        <div class="col-12 mb-5 ">
+                            <div class="text-lg font-bold">
+                                Proof Comments:
+                            </div>
+                            <div [innerHtml]="buildDetailData[0]?.proofComments"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     </fuse-card>
 </div>

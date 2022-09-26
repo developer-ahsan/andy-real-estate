@@ -12,6 +12,7 @@ export const environment = {
     products: "https://consolidus.azurewebsites.net/api/products",
     system: "https://consolidus.azurewebsites.net/api/system",
     productMedia: "https://assets.consolidus.com/globalAssets/Products",
+    rapidBuildMedia: "https://assets.consolidus.com/globalAssets/rapidBuild",
     storeMedia: "https://assets.consolidus.com/globalAssets/Stores",
     supportTeam:
         "https://assets.consolidus.com/globalAssets/System/Defaults/SupportTeam/",

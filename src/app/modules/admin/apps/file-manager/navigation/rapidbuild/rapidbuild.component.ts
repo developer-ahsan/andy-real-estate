@@ -3,7 +3,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { FileManagerService } from '../../store-manager.service';
-
+import { environment } from 'environments/environment';
 @Component({
   selector: 'app-rapidbuild',
   templateUrl: './rapidbuild.component.html'
@@ -26,6 +26,25 @@ export class RapidbuildComponent implements OnInit, OnDestroy {
 
   filterLoader = false;
 
+  isDetailOpen: boolean = false;
+  editItemData: any;
+  buildDetailData: any;
+  buildDetailColors: any;
+  mainScreen = 'Product Details';
+  screens = [
+    "Product Details",
+    "Proof Comments",
+    "Current Proof"
+  ];
+
+
+  isRebuildDetailLoader: boolean = false;
+  currentProof: boolean = false;
+
+  imgUrl = environment.rapidBuildMedia;
+  imprintsDisplayedColumns: string[] = ['number', 'methodName', 'locationName', 'area'];
+  imprintsDataSource = [];
+  imprintsDataSourceLoading = true;
   constructor(
     private _storeManagerService: FileManagerService,
     private _changeDetectorRef: ChangeDetectorRef,
@@ -50,6 +69,10 @@ export class RapidbuildComponent implements OnInit, OnDestroy {
     this.getRapidBuildImages(2);
 
     this.isLoadingChange.emit(false);
+  };
+
+  calledScreen(screenName): void {
+    this.mainScreen = screenName;
   };
 
   changeStatus(obj): void {
@@ -185,5 +208,61 @@ export class RapidbuildComponent implements OnInit, OnDestroy {
     // Unsubscribe from all subscriptions
     this._unsubscribeAll.next();
     this._unsubscribeAll.complete();
+  };
+  editToggle(item) {
+    this.currentProof = false;
+    this.isDetailOpen = true;
+    this.editItemData = item;
+    this.getRebuildDetails()
+    this.getImageOrFallback('https://assets.consolidus.com/globalAssets/rapidBuild/rbid.jpg').then(res => {
+      this.currentProof = true;
+    }, err => {
+      console.log(err)
+    });
+  }
+  getRebuildDetails() {
+    this.isRebuildDetailLoader = true;
+    console.log(this.editItemData)
+    let params = {
+      rapidbuild_details: true,
+      rbid: this.editItemData.pk_rapidBuildID,
+      spid: this.editItemData.fk_storeProductID
+    }
+    this._storeManagerService.getRapidData(params).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+      console.log(res)
+      this.buildDetailData = res["data"];
+      let arr = [];
+      res["colors"].forEach(element => {
+        arr.push(element.colorName);
+      });
+      this.buildDetailColors = arr.toString();
+      this.isRebuildDetailLoader = false;
+      this._changeDetectorRef.markForCheck();
+    }, err => {
+      this.isRebuildDetailLoader = false;
+      this._changeDetectorRef.markForCheck();
+    })
+  }
+  backToList() {
+    this.isDetailOpen = false;
+    this.editItemData = null;
+  }
+  checkImage(img) {
+    fetch('https://assets.consolidus.com/globalAssets/rapidBuild/rbid.jpg', { method: 'HEAD' })
+      .then(res => {
+        if (res.ok) {
+          console.log('Image exists.');
+        } else {
+          console.log('Image does not exist.');
+        }
+      }).catch(err => console.log('Error:', err));
+
+  }
+  getImageOrFallback(path) {
+    return new Promise(resolve => {
+      const img = new Image();
+      img.src = path;
+      img.onload = () => resolve(path);
+    });
   };
 }
