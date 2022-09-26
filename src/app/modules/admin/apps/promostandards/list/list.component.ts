@@ -21,6 +21,7 @@ export class PromostandardsListComponent implements OnInit, OnDestroy {
 
     drawerMode: 'side' | 'over';
     selectedTask: Task;
+    // List
     tags: Tag[];
     tasks: Task[];
     tasksCount: any = {
