@@ -427,14 +427,16 @@ export class ImprintComponent implements OnInit, OnDestroy {
     const chargeForm = this.chargeDistribution.getRawValue();
     const { charge } = chargeForm;
     const { distrDiscount } = this.selectedDiscountCode;
-    const intCharge = parseInt(charge);
-    const chargeValue = intCharge * (1 - distrDiscount);
+    const roundedDiscount = distrDiscount.toFixed(5);
+    const intCharge = Number(charge);
+    let chargeValue = intCharge * (1 - roundedDiscount);
+    chargeValue = Math.round(chargeValue * 10000) / 10000;
 
     this.getChargesLoader = true;
     this._inventoryService.getChargeValue(chargeValue)
       .subscribe((charges) => {
         if (!charges["data"]?.length) {
-          const errorLog = `No charges containing ${intCharge} x (1-${distrDiscount}) = ${chargeValue} were found. Check your inputs or add a new charge.`;
+          const errorLog = `No charges containing ${intCharge} x (1-${roundedDiscount}) = ${chargeValue} were found. Check your inputs or add a new charge.`;
           this._snackBar.open(errorLog, '', {
             horizontalPosition: 'center',
             verticalPosition: 'bottom',
@@ -487,7 +489,8 @@ export class ImprintComponent implements OnInit, OnDestroy {
               for (let j = 0; j < processQuantities.length; j++) {
                 for (let k = 0; k < productQuantities.length; k++) {
                   const data = this.returnChargeValueForAddImrpint(processQuantities[j], productQuantities[k], array);
-                  combinedChunkArray.push([processQuantities[j], productQuantities[k], data[0].charge])
+                  const charge = data[0].charge;
+                  combinedChunkArray.push([processQuantities[j], productQuantities[k], Math.round(charge * 1000) / 1000]);
                 }
                 temporary.push({
                   renderedArray: this.filterByIds(combinedChunkArray, processQuantities[j]),

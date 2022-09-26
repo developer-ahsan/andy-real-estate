@@ -485,19 +485,19 @@
                                     <div class="col-lg-4 col-12" *ngIf="supplierType != 'Apparel Item'">
                                         <mat-form-field appearance="fill" class="w-full">
                                             <mat-label>Product Width</mat-label>
-                                            <input matInput formControlName="productWidth">
+                                            <input matInput type="number" formControlName="productWidth">
                                         </mat-form-field>
                                     </div>
                                     <div class="col-lg-4 col-12" *ngIf="supplierType != 'Apparel Item'">
                                         <mat-form-field appearance="fill" class="w-full">
                                             <mat-label>Product Height</mat-label>
-                                            <input matInput formControlName="productHeight">
+                                            <input matInput type="number" formControlName="productHeight">
                                         </mat-form-field>
                                     </div>
                                     <div class="col-lg-4 col-12" *ngIf="supplierType != 'Apparel Item'">
                                         <mat-form-field appearance="fill" class="w-full">
                                             <mat-label>Product Length</mat-label>
-                                            <input matInput formControlName="productLength">
+                                            <input matInput type="number" formControlName="productLength">
                                         </mat-form-field>
                                     </div>
                                     <div class="col-lg-6 col-12" style="line-height: 2.3;"
@@ -656,7 +656,7 @@
                                     <div class="col-12">
                                         <mat-form-field class="example-chip-list w-full" appearance="fill">
                                             <mat-label>Keywords (Comma-seperated)</mat-label>
-                                            <mat-chip-list #chipList aria-label="Fruit selection">
+                                            <mat-chip-list class="pt-1" #chipList aria-label="Fruit selection">
                                                 <mat-chip *ngFor="let fruit of fruits" (removed)="remove(fruit)">
                                                     {{fruit.name}}
                                                     <button matChipRemove>
@@ -1781,19 +1781,19 @@
                                             <div class="col-lg-4 col-12" *ngIf="supplierType != 'Apparel Item'">
                                                 <mat-form-field appearance="fill" class="w-full">
                                                     <mat-label>Product Width</mat-label>
-                                                    <input matInput formControlName="productWidth">
+                                                    <input matInput type="number" formControlName="productWidth">
                                                 </mat-form-field>
                                             </div>
                                             <div class="col-lg-4 col-12" *ngIf="supplierType != 'Apparel Item'">
                                                 <mat-form-field appearance="fill" class="w-full">
                                                     <mat-label>Product Height</mat-label>
-                                                    <input matInput formControlName="productHeight">
+                                                    <input matInput type="number" formControlName="productHeight">
                                                 </mat-form-field>
                                             </div>
                                             <div class="col-lg-4 col-12" *ngIf="supplierType != 'Apparel Item'">
                                                 <mat-form-field appearance="fill" class="w-full">
                                                     <mat-label>Product Length</mat-label>
-                                                    <input matInput formControlName="productLength">
+                                                    <input matInput type="number" formControlName="productLength">
                                                 </mat-form-field>
                                             </div>
 
@@ -1916,7 +1916,7 @@
                                             <div class="col-12">
                                                 <mat-form-field class="example-chip-list w-full" appearance="fill">
                                                     <mat-label>Keywords (Comma-seperated)</mat-label>
-                                                    <mat-chip-list #chipList aria-label="Fruit selection">
+                                                    <mat-chip-list class="pt-1" #chipList aria-label="Fruit selection">
                                                         <mat-chip *ngFor="let fruit of fruits"
                                                             (removed)="remove(fruit)">
                                                             {{fruit.name}}

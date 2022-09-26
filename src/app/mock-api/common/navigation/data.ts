@@ -17,6 +17,13 @@ export const defaultNavigation: FuseNavigationItem[] = [
         link: '/apps/ecommerce/inventory',
     },
     {
+        id: 'promostandards',
+        title: 'Promostandards',
+        icon: 'heroicons_outline:document-report',
+        type: 'basic',
+        link: '/apps/promostandards',
+    },
+    {
         id: 'stores',
         title: 'Stores',
         icon: 'mat_outline:storefront',
