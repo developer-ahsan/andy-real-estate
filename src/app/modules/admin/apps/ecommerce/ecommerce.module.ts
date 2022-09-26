@@ -84,6 +84,8 @@ import { QuillModule } from 'ngx-quill';
 import { AutocompleteLibModule } from 'angular-ng-autocomplete';
 import { NgMultiSelectDropDownModule } from 'ng-multiselect-dropdown';
 import { PromostandardColorsComponent } from './inventory/navigation/promostandard-colors/promostandard-colors.component';
+import { ProductStoreComponent } from './product-store/store.component';
+import { StoreProductDetailsComponent } from './product-store/details/product-store-details.component';
 
 @NgModule({
     declarations: [
@@ -135,7 +137,10 @@ import { PromostandardColorsComponent } from './inventory/navigation/promostanda
         SwatchesComponent,
         UserInfoComponent,
         SizesComponent,
-        PromostandardColorsComponent
+        PromostandardColorsComponent,
+        // Product Stores
+        ProductStoreComponent,
+        StoreProductDetailsComponent
     ],
     imports: [
         RouterModule.forChild(ecommerceRoutes),

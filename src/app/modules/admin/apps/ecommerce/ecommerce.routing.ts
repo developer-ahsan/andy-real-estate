@@ -7,6 +7,8 @@ import { CustomersListComponent } from 'app/modules/admin/apps/ecommerce/custome
 import { CustomersBrandsResolver, CustomersCategoriesResolver, CustomersProductsResolver, CustomersTagsResolver, CustomersVendorsResolver } from 'app/modules/admin/apps/ecommerce/customers/customers.resolvers';
 import { CustomersTabComponent } from 'app/modules/admin/apps/ecommerce/customers/tabs/customers.component';
 import { ProductDetailsComponent } from 'app/modules/admin/apps/ecommerce/inventory/details/product-details.component';
+import { ProductStoreComponent } from './product-store/store.component';
+import { StoreProductDetailsComponent } from './product-store/details/product-store-details.component';
 
 export const ecommerceRoutes: Route[] = [
     {
@@ -75,6 +77,23 @@ export const ecommerceRoutes: Route[] = [
                     products: CustomersProductsResolver,
                     tags: CustomersTagsResolver,
                     vendors: CustomersVendorsResolver
+                }
+            }
+        ]
+    },
+    {
+        path: 'store',
+        component: ProductStoreComponent,
+        children: [
+            {
+                path: '',
+                component: StoreProductDetailsComponent,
+                resolve: {
+                    // brands: CustomersBrandsResolver,
+                    // categories: CustomersCategoriesResolver,
+                    // products: CustomersProductsResolver,
+                    // tags: CustomersTagsResolver,
+                    // vendors: CustomersVendorsResolver
                 }
             }
         ]
