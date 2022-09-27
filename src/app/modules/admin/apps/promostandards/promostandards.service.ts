@@ -2,7 +2,8 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { BehaviorSubject, Observable, of, throwError } from 'rxjs';
 import { filter, map, switchMap, take, tap } from 'rxjs/operators';
-import { Tag, Task } from 'app/modules/admin/apps/promostandards/promostandards.types';
+import { Promostandard, Tag, Task } from 'app/modules/admin/apps/promostandards/promostandards.types';
+import { environment } from 'environments/environment';
 
 @Injectable({
     providedIn: 'root'
@@ -12,6 +13,7 @@ export class TasksService {
     private _tags: BehaviorSubject<Tag[] | null> = new BehaviorSubject(null);
     private _task: BehaviorSubject<Task | null> = new BehaviorSubject(null);
     private _tasks: BehaviorSubject<Task[] | null> = new BehaviorSubject(null);
+    private _promostandards: BehaviorSubject<Promostandard[] | null> = new BehaviorSubject<any[]>(null);
 
     /**
      * Constructor
@@ -44,9 +46,31 @@ export class TasksService {
         return this._tasks.asObservable();
     }
 
+    /**
+     * Getter for product
+     */
+    get promostandards$(): Observable<Promostandard[]> {
+        return this._promostandards.asObservable();
+    }
+
     // -----------------------------------------------------------------------------------------------------
     // @ Public methods
     // -----------------------------------------------------------------------------------------------------
+
+    // Get promostandards list
+    getPromostandards(page): Observable<Promostandard[]> {
+        return this._httpClient.get<Promostandard[]>(environment.products, {
+            params: {
+                promo_standards_credentials: true,
+                page: page,
+                size: 20
+            }
+        }).pipe(
+            tap((data) => {
+                this._promostandards.next(data);
+            })
+        );
+    };
 
     /**
      * Get tags
