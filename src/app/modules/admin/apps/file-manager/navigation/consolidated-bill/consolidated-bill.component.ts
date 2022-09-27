@@ -19,16 +19,21 @@ export class ConsolidatedBillComponent implements OnInit, OnDestroy {
   private _unsubscribeAll: Subject<any> = new Subject<any>();
   isPageLoading: boolean = false;
   creditTerms: any;
-  selectedTerm: any;
+  selectedTerm: any = 'today';
   isApplyLoader: boolean = false;
   isApplyMsg: boolean = false;
 
 
-  searchMoviesCtrl = new FormControl();
-  filteredMovies: any;
+  locationCtrl = new FormControl();
+  filteredLocations: any;
   minLengthTerm = 3;
-  selectedMovie: any = "";
+  slectedLocation: any = "";
   isLoadings: boolean = false;
+
+
+  ngDate = new Date();
+  ngOrder = true;
+  ngDiscount = true;
   constructor(
     private _fileManagerService: FileManagerService,
     private _changeDetectorRef: ChangeDetectorRef,
@@ -37,59 +42,21 @@ export class ConsolidatedBillComponent implements OnInit, OnDestroy {
   ) { }
 
   onSelected() {
-    console.log(this.selectedMovie);
-    this.selectedMovie = this.selectedMovie;
+    this.slectedLocation = this.slectedLocation;
+    console.log(this.slectedLocation)
   }
 
   displayWith(value: any) {
-    return value?.Title;
+    return value;
   }
 
   clearSelection() {
-    this.selectedMovie = "";
-    this.filteredMovies = [];
+    this.slectedLocation = "";
+    this.filteredLocations = [];
   }
 
   ngOnInit() {
-    this.searchMoviesCtrl.valueChanges
-      .pipe(
-        filter(res => {
-          return res !== null && res.length >= this.minLengthTerm
-        }),
-        distinctUntilChanged(),
-        debounceTime(1000),
-        tap(() => {
-          this.filteredMovies = [];
-          this.isLoadings = true;
-          this._changeDetectorRef.markForCheck();
-
-        }),
-        switchMap(value => this._fileManagerService.getStoresData({
-          available_location_users: true,
-          store_id: this.selectedStore.pk_storeID,
-          page: 1,
-          size: 20,
-          keyword: value
-        }).pipe(takeUntil(this._unsubscribeAll),
-          finalize(() => {
-            this.isLoadings = false
-            this._changeDetectorRef.markForCheck();
-
-          }),
-        )
-        )
-      )
-      .subscribe((data: any) => {
-        if (data['data'].length == 0) {
-          this.filteredMovies = [];
-          this._changeDetectorRef.markForCheck();
-
-        } else {
-          this.filteredMovies = data['data'];
-          this._changeDetectorRef.markForCheck();
-        }
-        console.log(this.filteredMovies);
-      });
+    this.getLocationsSearch();
   }
   getCredits() {
     let params = {
@@ -143,5 +110,45 @@ export class ConsolidatedBillComponent implements OnInit, OnDestroy {
     this._unsubscribeAll.next();
     this._unsubscribeAll.complete();
   };
+  getLocationsSearch() {
+    this.locationCtrl.valueChanges
+      .pipe(
+        filter(res => {
+          return res !== null && res.length >= this.minLengthTerm
+        }),
+        distinctUntilChanged(),
+        debounceTime(1000),
+        tap(() => {
+          this.filteredLocations = [];
+          this.isLoadings = true;
+          this._changeDetectorRef.markForCheck();
+
+        }),
+        switchMap(value => this._fileManagerService.getStoresData({
+          store_id: this.selectedStore.pk_storeID,
+          store_locations: true,
+          size: 20,
+          keyword: value
+        }).pipe(takeUntil(this._unsubscribeAll),
+          finalize(() => {
+            this.isLoadings = false
+            this._changeDetectorRef.markForCheck();
+
+          }),
+        )
+        )
+      )
+      .subscribe((data: any) => {
+        if (data['data'].length == 0) {
+          this.filteredLocations = [];
+          this._changeDetectorRef.markForCheck();
+
+        } else {
+          this.filteredLocations = data['data'];
+          this._changeDetectorRef.markForCheck();
+        }
+        console.log(this.filteredLocations);
+      });
+  }
 
 }
