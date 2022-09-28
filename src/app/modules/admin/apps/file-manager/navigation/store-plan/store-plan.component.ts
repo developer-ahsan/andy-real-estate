@@ -3,7 +3,7 @@ import { Subject } from 'rxjs';
 import { FileManagerService } from 'app/modules/admin/apps/file-manager/store-manager.service';
 import { takeUntil } from 'rxjs/operators';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { FormGroup } from '@angular/forms';
+import { FormControl, FormGroup } from '@angular/forms';
 
 @Component({
   selector: 'app-store-plan',
@@ -21,6 +21,10 @@ export class StorePlanComponent implements OnInit, OnDestroy {
 
   isEditStorePlan: boolean = false;
   storePlanForm: FormGroup;
+
+  isEditStorePlanData: any;
+  isEditStorePlanForm: FormGroup;
+  isEditStoreLoader: boolean = false;
   constructor(
     private _fileManagerService: FileManagerService,
     private _changeDetectorRef: ChangeDetectorRef,
@@ -34,7 +38,23 @@ export class StorePlanComponent implements OnInit, OnDestroy {
     this.isLoadingChange.emit(false);
   };
   initialize() {
-
+    this.isEditStorePlanForm = new FormGroup({
+      reportId: new FormControl(''),
+      lastUpdated: new FormControl(''),
+      question1: new FormControl(''),
+      question2: new FormControl(''),
+      question3: new FormControl(''),
+      rule5: new FormControl(''),
+      rule4: new FormControl(''),
+      rule3: new FormControl(''),
+      rule2b: new FormControl(''),
+      rule2a: new FormControl(''),
+      rule1: new FormControl(''),
+      rule2bExample1: new FormControl(''),
+      rule2bExample2: new FormControl(''),
+      rule2bExample3: new FormControl(''),
+      update_store_plan: new FormControl(true)
+    })
   }
   getDataPlans() {
     let params = {
@@ -52,7 +72,13 @@ export class StorePlanComponent implements OnInit, OnDestroy {
       });
   }
   editStorePlan(obj) {
+    console.log(obj)
     this.isEditStorePlan = true;
+    this.isEditStorePlanData = obj;
+    this.isEditStorePlanForm.patchValue({
+      reportId: obj.pk_reportID
+    })
+    this.isEditStorePlanForm.patchValue(obj);
   }
   backToStorePlanList() {
     this.isEditStorePlan = false;
@@ -62,4 +88,19 @@ export class StorePlanComponent implements OnInit, OnDestroy {
     this._unsubscribeAll.next();
     this._unsubscribeAll.complete();
   };
+  updateStorePlan() {
+    this.isEditStoreLoader = true;
+    this._fileManagerService.putStoresData(this.isEditStorePlanForm.value).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+      this.isEditStoreLoader = false;
+      this._snackBar.open('Store Plan Update Successfully', '', {
+        horizontalPosition: 'center',
+        verticalPosition: 'bottom',
+        duration: 3500
+      });
+      this._changeDetectorRef.markForCheck();
+    }, err => {
+      this.isEditStoreLoader = false;
+      this._changeDetectorRef.markForCheck();
+    })
+  }
 }

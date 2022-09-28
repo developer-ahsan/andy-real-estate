@@ -9,7 +9,8 @@
 </div>
 <ngx-skeleton-loader count="8" appearance="line" animation="pulse" *ngIf="isPageLoading">
 </ngx-skeleton-loader>
-
+<ngx-skeleton-loader count="8" appearance="line" animation="pulse" *ngIf="storeUsersLoader">
+</ngx-skeleton-loader>
 <div *ngIf="!isPageLoading">
   <div class="row p-3">
     <div class="col-12 bg-card rounded-2xl shadow py-5">
@@ -58,8 +59,9 @@
       </div>
       <!-- Default -->
       <div class="row p-6" *ngIf="mainScreen == 'Default Approval Group'">
-        <mat-tab-group [animationDuration]="'0'" (selectedTabChange)="selectedTabValue($event)">
-          <mat-tab label="Add New Group">
+        <mat-tab-group *ngIf="!storeUsersLoader" [animationDuration]="'0'"
+          (selectedTabChange)="selectedTabValue($event)">
+          <mat-tab label="Add New Group Contact" *ngIf="!isDefaultGroupLoader">
             <ng-template matTabContent>
               <div class="row">
                 <div class="col-12 pb-6 sm:pb-8 lg:pb-8">
@@ -125,7 +127,7 @@
                   <!-- <mat-form-field class="w-full"> -->
                   <mat-label>User:</mat-label>
                   <ng-multiselect-dropdown [placeholder]="'Select User'" [settings]=" dropdownSettings"
-                    [data]="dropdownList">
+                    [data]="usersDropDown">
                   </ng-multiselect-dropdown>
                   <!-- </mat-form-field> -->
                 </div>
@@ -151,13 +153,21 @@
           </mat-tab>
           <mat-tab label="Current Groups">
             <ng-template matTabContent>
-              <div class="row w-full">
-                <div class="col-12 pb-6 sm:pb-8 lg:pb-8">
+              <div class="row w-full" *ngIf="!isDefaultGroupLoader">
+                <div class="col-12 col-md-6 pb-6 sm:pb-8 lg:pb-8">
                   <div class="text-2xl font-bold">
                     Approval Contact Groups
                   </div>
                 </div>
-                <div class="col-12" *ngIf="!isDefaultGroupLoader">
+                <div class="col-12 col-md-6 pb-6 sm:pb-8 lg:pb-8 text-right" *ngIf="isEditDefaultContactGroup">
+                  <button class=" ml-4" mat-flat-button mat-stroked-button [matTooltip]="'Back to List'"
+                    (click)="backToDefaultGroupList()">
+                    <mat-icon [svgIcon]="'heroicons_outline:arrow-narrow-left'"></mat-icon>
+                    <span class="ml-2 mr-1">Back to List</span>
+                  </button>
+                </div>
+
+                <div class="col-12" *ngIf="!isDefaultGroupLoader && !isEditDefaultContactGroup">
                   <fuse-alert *ngIf="isDefaultGroupData.length == 0" [type]="'info'" [appearance]="'soft'">
                     There are currently no approval contact groups defined.
                   </fuse-alert>
@@ -241,7 +251,7 @@
                               </mat-progress-spinner>
                               <mat-icon *ngIf="!element.delLoader" svgIcon="mat_outline:delete"></mat-icon>
                             </button>
-                            <button>
+                            <button (click)="isDefaultGroupEditToggle(element)" [matTooltip]="'Edit'">
                               <mat-icon svgIcon="mat_outline:edit"></mat-icon>
                             </button>
                           </td>
@@ -260,7 +270,79 @@
                     </mat-paginator>
                   </div>
                 </div>
-
+                <div class="col-12" *ngIf="isEditDefaultContactGroup">
+                  <div class="row w-full" [formGroup]="isEditDefaultContactForm">
+                    <div class="col-12 col-md-4">
+                      <mat-form-field class="w-full">
+                        <mat-label>Order:</mat-label>
+                        <input matInput formControlName="listOrder" type="number">
+                      </mat-form-field>
+                    </div>
+                    <div class="col-12 col-md-4">
+                      <mat-form-field class="w-full">
+                        <mat-label>First Name:</mat-label>
+                        <input matInput formControlName="firstName">
+                      </mat-form-field>
+                    </div>
+                    <div class="col-12 col-md-4">
+                      <mat-form-field class="w-full">
+                        <mat-label>Last Name:</mat-label>
+                        <input matInput formControlName="lastName">
+                      </mat-form-field>
+                    </div>
+                    <div class="col-12 col-md-4">
+                      <mat-form-field class="w-full">
+                        <mat-label>Email:</mat-label>
+                        <input matInput formControlName="email">
+                      </mat-form-field>
+                    </div>
+                    <div class="col-12 col-md-4">
+                      <mat-form-field class="w-full">
+                        <mat-label>Emails:</mat-label>
+                        <mat-select matInput formControlName="blnIncludeAdditionalEmails">
+                          <mat-option [value]="true">Yes</mat-option>
+                          <mat-option [value]="false">No</mat-option>
+                        </mat-select>
+                      </mat-form-field>
+                    </div>
+                    <div class="col-12 col-md-4">
+                      <mat-form-field class="w-full">
+                        <mat-label>Royalities:</mat-label>
+                        <mat-select matInput formControlName="blnRoyalties">
+                          <mat-option [value]="true">Yes</mat-option>
+                          <mat-option [value]="false">No</mat-option>
+                        </mat-select>
+                      </mat-form-field>
+                    </div>
+                    <div class="col-12 col-md-4">
+                      <mat-form-field class="w-full">
+                        <mat-label>Customer Approvals:</mat-label>
+                        <mat-select matInput formControlName="blnStoreUserApprovalContacts">
+                          <mat-option [value]="true">Yes</mat-option>
+                          <mat-option [value]="false">No</mat-option>
+                        </mat-select>
+                      </mat-form-field>
+                    </div>
+                    <div class="col-12">
+                      <!-- <mat-form-field class="w-full"> -->
+                      <mat-label>User:</mat-label>
+                      <ng-multiselect-dropdown [(ngModel)]="selectedItems" [ngModelOptions]="{standalone: true}"
+                        [placeholder]="'Select User'" [settings]=" dropdownSettings" [data]="usersDropDown">
+                      </ng-multiselect-dropdown>
+                      <!-- </mat-form-field> -->
+                    </div>
+                    <div class="col-12 text-right">
+                      <button class="min-w-40" [disabled]="isEditDefaultContactLoader" mat-stroked-button
+                        [matTooltip]="'Add'" (click)="updateDefaulApprovalGroupContact()">
+                        <mat-progress-spinner *ngIf="isEditDefaultContactLoader" [diameter]="24"
+                          [mode]="'indeterminate'">
+                        </mat-progress-spinner>
+                        <mat-icon *ngIf="!isEditDefaultContactLoader" svgIcon="mat_outline:edit"></mat-icon>
+                        <span class="px-2">Add</span>
+                      </button>
+                    </div>
+                  </div>
+                </div>
               </div>
             </ng-template>
           </mat-tab>
@@ -290,15 +372,18 @@
                 </div>
                 <div class="col-12 col-md-4">
                   <mat-form-field class="w-full">
-                    <mat-label>Name:</mat-label>
+                    <mat-label>Name: *</mat-label>
                     <input matInput>
                   </mat-form-field>
                 </div>
                 <div class="col-12 col-md-4">
                   <mat-form-field class="w-full">
-                    <mat-label>Location attribute:</mat-label>
+                    <mat-label>Location attribute: *</mat-label>
                     <mat-select matInput>
                       <mat-option>Select location attribute</mat-option>
+                      <mat-option *ngFor="let item of locationsList" [value]="item.pk_attributeID"
+                        (click)="getSubLocations(item)">
+                        {{item.attributeName}}</mat-option>
                     </mat-select>
                   </mat-form-field>
                 </div>
@@ -307,6 +392,8 @@
                     <mat-label>Location: (optional)</mat-label>
                     <mat-select matInput>
                       <mat-option>Select location</mat-option>
+                      <mat-option *ngFor="let item of subLocationsList" [value]="item.pk_locationID">
+                        {{item.locationName}}</mat-option>
                     </mat-select>
                   </mat-form-field>
                 </div>

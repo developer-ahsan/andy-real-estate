@@ -466,4 +466,9 @@ export class FileManagerService {
       .get<any[]>(environment.storeNewUrlRapidBuild, { params: params })
       .pipe(retry(3));
   }
+  getProductsData(params) {
+    return this._httpClient
+      .get<any[]>(environment.products, { params: params })
+      .pipe(retry(3));
+  }
 }

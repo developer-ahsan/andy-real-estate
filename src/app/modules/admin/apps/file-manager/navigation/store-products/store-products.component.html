@@ -49,9 +49,11 @@
                                         SPID
                                     </th>
                                     <td mat-cell *matCellDef="let element">
-                                        <span class="text-sm">
-                                            {{ element.pk_storeProductID }}
-                                        </span>
+                                        <a [routerLink]="['/apps/ecommerce/store', element.pk_storeProductID]">
+                                            <span class="text-sm">
+                                                {{ element.pk_storeProductID }}
+                                            </span>
+                                        </a>
                                     </td>
                                 </ng-container>
 

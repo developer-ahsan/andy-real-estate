@@ -86,7 +86,7 @@ export const ecommerceRoutes: Route[] = [
         component: ProductStoreComponent,
         children: [
             {
-                path: '',
+                path: ':id',
                 component: StoreProductDetailsComponent,
                 resolve: {
                     // brands: CustomersBrandsResolver,

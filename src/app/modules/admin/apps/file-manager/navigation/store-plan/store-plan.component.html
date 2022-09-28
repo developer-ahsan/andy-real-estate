@@ -56,10 +56,11 @@
                   </td>
                 </ng-container>
                 <ng-container matColumnDef="submitted">
-                  <th class="min-w-10 bg-gray-50 dark:bg-black dark:bg-opacity-5" mat-header-cell *matHeaderCellDef>
+                  <th class="min-w-10 bg-gray-50 dark:bg-black dark:bg-opacity-5 text-center" mat-header-cell
+                    *matHeaderCellDef>
                     Submitted
                   </th>
-                  <td mat-cell *matCellDef="let element">
+                  <td mat-cell *matCellDef="let element" class="text-center">
                     <mat-icon *ngIf="!element.blnSubmitted">close</mat-icon>
                     <mat-icon *ngIf="element.blnSubmitted">done</mat-icon>
                   </td>
@@ -97,85 +98,103 @@
               Store Plan/Strategy For {{selectedStore.storeName}}
             </div>
             <!-- <form [formGroup]="storePlanForm"> -->
-            <div class="row mt-3">
+            <div class="row mt-3" [formGroup]="isEditStorePlanForm">
+              <div class="col-12 mb-5 border-b">
+                <div class="pb-3">
+                  <p>This store plan/strategy was generated for Q3 of <b>{{isEditStorePlanData.thisQuarter | date:
+                      'YYYY'}}</b>
+                    on
+                    {{isEditStorePlanData.thisQuarter | date}}.</p>
+                  <p><b>Q3 {{isEditStorePlanData.thisQuarter | date: 'YYYY'}} </b>=
+                    {{isEditStorePlanData.thisQuarterTotal | currency}}</p>
+                  <p><b>Q2 {{isEditStorePlanData.lastQuarter | date: 'YYYY'}} </b>=
+                    {{isEditStorePlanData.lastQuarterTotal | currency}}</p>
+                  <p><b>Q1 {{isEditStorePlanData.twoQuartersAgo | date: 'YYYY'}} </b>=
+                    {{isEditStorePlanData.twoQuartersAgoTotal | currency}}</p>
+                </div>
+              </div>
               <div class="col-12">
                 <mat-form-field appearance="fill" class="w-full">
                   <mat-label>Why do you feel this program has declined in sales?</mat-label>
-                  <textarea matInput></textarea>
+                  <textarea matInput formControlName="question1"></textarea>
                 </mat-form-field>
               </div>
               <div class="col-12">
                 <mat-form-field appearance="fill" class="w-full">
                   <mat-label>1.) How well are you improving the site?</mat-label>
-                  <textarea matInput></textarea>
+                  <textarea matInput formControlName="rule1"></textarea>
                 </mat-form-field>
               </div>
-              <div class="col-12">
+              <!-- <div class="col-12">
                 <p style="margin-bottom: 2px">Attach a completed site audit worksheet:</p>
                 <br />
                 <input type="file" class="file-upload" onchange="console.log(event.target.files)" />
-              </div>
+              </div> -->
               <div class="col-12">
                 <mat-form-field appearance="fill" class="w-full">
                   <mat-label>2.) How have you been proactively learning the industry? </mat-label>
-                  <textarea matInput></textarea>
+                  <textarea matInput formControlName="rule2a"></textarea>
                 </mat-form-field>
               </div>
               <div class="col-12 col-md-6">
                 <mat-form-field appearance="fill" class="w-full">
                   <mat-label>How have you been proactively learning more about this market? </mat-label>
-                  <textarea matInput></textarea>
+                  <textarea matInput formControlName="rule2b"></textarea>
                 </mat-form-field>
               </div>
               <div class="col-12 col-md-6">
                 <mat-form-field appearance="fill" class="w-full">
                   <mat-label>Give 3 examples of smart/strategic recommendations, for the use of branded products, that
                     you have made for this market? </mat-label>
-                  <textarea matInput></textarea>
+                  <textarea matInput formControlName="rule2bExample1"></textarea>
                 </mat-form-field>
               </div>
               <div class="col-12">
                 <mat-form-field appearance="fill" class="w-full">
                   <mat-label>3.) How have you been marketing to this market?</mat-label>
-                  <textarea matInput></textarea>
+                  <textarea matInput formControlName="rule3"></textarea>
                 </mat-form-field>
               </div>
-              <div class="col-12">
+              <!-- <div class="col-12">
                 <p style="margin-bottom: 2px">Attach your marketing calendar:</p>
                 <br />
                 <input type="file" class="file-upload" onchange="console.log(event.target.files)" />
-              </div>
+              </div> -->
               <div class="col-12">
                 <mat-form-field appearance="fill" class="w-full">
                   <mat-label>4.) Have you been cultivating customer relations in this program?</mat-label>
-                  <textarea matInput></textarea>
+                  <textarea matInput formControlName="rule4"></textarea>
                 </mat-form-field>
               </div>
               <div class="col-12">
                 <mat-form-field appearance="fill" class="w-full">
                   <mat-label>5.) Have you been proactively prospecting to this market?</mat-label>
-                  <textarea matInput></textarea>
+                  <textarea matInput formControlName="rule5"></textarea>
                 </mat-form-field>
               </div>
               <div class="col-12">
                 <mat-form-field appearance="fill" class="w-full">
                   <mat-label>How confident are you that you can manage this program for growth? Explain.</mat-label>
-                  <textarea matInput></textarea>
+                  <textarea matInput formControlName="question2"></textarea>
                 </mat-form-field>
               </div>
               <div class="col-12">
                 <mat-form-field appearance="fill" class="w-full">
                   <mat-label>What is your plan to grow this program?</mat-label>
-                  <textarea matInput></textarea>
+                  <textarea matInput formControlName="question3"></textarea>
                 </mat-form-field>
               </div>
               <div class="col-12 text-right">
-                <button class="my-5 mr-2" mat-flat-button mat-stroked-button [matTooltip]="'Update'">
+                <button (click)="updateStorePlan()" [disabled]="isEditStoreLoader" [matTooltip]="'Update'"
+                  class="order-first sm:order-last" mat-flat-button mat-stroked-button>
+                  <mat-progress-spinner *ngIf="isEditStoreLoader" [diameter]="24" [mode]="'indeterminate'">
+                  </mat-progress-spinner>
+                  <mat-icon *ngIf="!isEditStoreLoader" svgIcon="mat_outline:add"></mat-icon>
                   <span class="px-2">Update</span>
                 </button>
-                <button class="my-5" mat-flat-button mat-stroked-button [matTooltip]="'Sumbit'" [color]="'primary'">
+                <!-- <button class="my-5" mat-flat-button mat-stroked-button [matTooltip]="'Sumbit'" [color]="'primary'">
                   <span class="px-2">Submit</span>
-                </button>
+                </button> -->
               </div>
             </div>
             <!-- </form> -->

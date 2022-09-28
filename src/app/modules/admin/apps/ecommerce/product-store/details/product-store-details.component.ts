@@ -67,81 +67,83 @@ export class StoreProductDetailsComponent implements OnInit, OnDestroy {
     this.route.params.subscribe((res) => {
       // this.selectedIndex = null;
       const productId = res.id;
-      this._storeProductService.product$
-        .pipe(takeUntil(this._unsubscribeAll))
-        .subscribe((details) => {
-          if (details) {
-            this.last_updated = details["data"][0]?.lastUpdatedDate
-              ? moment.utc(details["data"][0]?.lastUpdatedDate).format("lll")
-              : "N/A";
-            this.isProductFetched = false;
+      this.isProductFetched = false;
+      this.isLoading = false;
+      // this._storeProductService.product$
+      //   .pipe(takeUntil(this._unsubscribeAll))
+      //   .subscribe((details) => {
+      //     if (details) {
+      //       this.last_updated = details["data"][0]?.lastUpdatedDate
+      //         ? moment.utc(details["data"][0]?.lastUpdatedDate).format("lll")
+      //         : "N/A";
+      //       this.isProductFetched = false;
 
-            this.selectedProduct = details["data"][0];
+      //       this.selectedProduct = details["data"][0];
 
-            const { fk_supplierID } = this.selectedProduct;
+      //       const { fk_supplierID } = this.selectedProduct;
 
-            const { blnService, blnApparel, blnPromoStandard } =
-              this.selectedProduct;
-            this.promoStandardBoolean = blnPromoStandard;
+      //       const { blnService, blnApparel, blnPromoStandard } =
+      //         this.selectedProduct;
+      //       this.promoStandardBoolean = blnPromoStandard;
 
-            if (blnService) {
-              this.routes = this.filterNavigation(this.routes, "Imprints");
-            }
+      //       if (blnService) {
+      //         this.routes = this.filterNavigation(this.routes, "Imprints");
+      //       }
 
-            if (!blnApparel) {
-              this.routes = this.filterNavigation(this.routes, "Sizes");
-            }
+      //       if (!blnApparel) {
+      //         this.routes = this.filterNavigation(this.routes, "Sizes");
+      //       }
 
-            if (fk_supplierID != 25) {
-              this.routes = this.filterNavigation(
-                this.routes,
-                "Promostandard colors"
-              );
-            }
+      //       if (fk_supplierID != 25) {
+      //         this.routes = this.filterNavigation(
+      //           this.routes,
+      //           "Promostandard colors"
+      //         );
+      //       }
 
-            // Mark for check
-            this._changeDetectorRef.markForCheck();
-          } else {
-            this._storeProductService
-              .getProductByProductId(productId)
-              .pipe(takeUntil(this._unsubscribeAll))
-              .subscribe((product) => {
-                this.last_updated = product["data"][0]?.lastUpdatedDate
-                  ? moment
-                    .utc(product["data"][0]?.lastUpdatedDate)
-                    .format("lll")
-                  : "N/A";
-                this.isProductFetched = false;
+      //       // Mark for check
+      //       this._changeDetectorRef.markForCheck();
+      //     } else {
+      //       this._storeProductService
+      //         .getProductByProductId(productId)
+      //         .pipe(takeUntil(this._unsubscribeAll))
+      //         .subscribe((product) => {
+      //           this.last_updated = product["data"][0]?.lastUpdatedDate
+      //             ? moment
+      //               .utc(product["data"][0]?.lastUpdatedDate)
+      //               .format("lll")
+      //             : "N/A";
+      //           this.isProductFetched = false;
 
-                this.selectedProduct = product["data"][0];
+      //           this.selectedProduct = product["data"][0];
 
-                const { fk_supplierID } = this.selectedProduct;
+      //           const { fk_supplierID } = this.selectedProduct;
 
-                this.routes = this._storeProductService.navigationLabels;
-                const { blnService, blnApparel, blnPromoStandard } =
-                  this.selectedProduct;
-                this.promoStandardBoolean = blnPromoStandard;
+      //           this.routes = this._storeProductService.navigationLabels;
+      //           const { blnService, blnApparel, blnPromoStandard } =
+      //             this.selectedProduct;
+      //           this.promoStandardBoolean = blnPromoStandard;
 
-                if (blnService) {
-                  this.routes = this.filterNavigation(this.routes, "Imprints");
-                }
+      //           if (blnService) {
+      //             this.routes = this.filterNavigation(this.routes, "Imprints");
+      //           }
 
-                if (!blnApparel) {
-                  this.routes = this.filterNavigation(this.routes, "Sizes");
-                }
+      //           if (!blnApparel) {
+      //             this.routes = this.filterNavigation(this.routes, "Sizes");
+      //           }
 
-                if (fk_supplierID != 25) {
-                  this.routes = this.filterNavigation(
-                    this.routes,
-                    "Promostandard colors"
-                  );
-                }
+      //           if (fk_supplierID != 25) {
+      //             this.routes = this.filterNavigation(
+      //               this.routes,
+      //               "Promostandard colors"
+      //             );
+      //           }
 
-                // Mark for check
-                this._changeDetectorRef.markForCheck();
-              });
-          }
-        });
+      //           // Mark for check
+      //           this._changeDetectorRef.markForCheck();
+      //         });
+      //     }
+      //   });
 
       // Subscribe to media changes
       this._fuseMediaWatcherService.onMediaChange$

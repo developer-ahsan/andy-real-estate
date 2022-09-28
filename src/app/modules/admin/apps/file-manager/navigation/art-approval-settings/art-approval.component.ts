@@ -82,6 +82,21 @@ export class ArtApprovalComponent implements OnInit, OnDestroy {
   isDefaultGroupPage = 1;
   isDefaultGroupColumns: string[] = ['order', 'first', 'last', 'emails', 'royalities', 'ca', 'action'];
 
+
+  addContactGroupForm: FormGroup;
+  locationsList: any;
+  subLocationsList: any;
+
+  storeUsers: any;
+  storeUsersLoader: boolean = false;
+  usersDropDown: any[] = [];
+
+  // Default Group
+  isEditDefaultContactGroup: boolean = false;
+  isEditDefaultContactLoader: boolean = false;
+  isEditDefaultContactForm: FormGroup;
+
+  selectedItems: any;
   constructor(
     private _storeService: FileManagerService,
     private _changeDetectorRef: ChangeDetectorRef,
@@ -90,14 +105,29 @@ export class ArtApprovalComponent implements OnInit, OnDestroy {
   ) {
   }
   ngOnInit() {
+    this.dropdownSettings = {
+      singleSelection: false,
+      idField: 'item_id',
+      textField: 'item_text',
+      selectAllText: 'Select All',
+      unSelectAllText: 'UnSelect All',
+      // itemsShowLimit: 3,
+      allowSearchFilter: true
+    };
     this.initialize();
   }
   initialize() {
     this.initEditEmailForm();
     this.initAddEmailForm();
+    this.initEditDefaultGroupUpdateForm();
     this.contactForm = this.fb.group({
       contacts: new FormArray([])
     });
+    this.addContactGroupForm = new FormGroup({
+      name: new FormControl(''),
+      location: new FormControl(''),
+      sublocation: new FormControl('')
+    })
   }
   initEditEmailForm() {
     this.isEditEmailForm = new FormGroup({
@@ -119,6 +149,20 @@ export class ArtApprovalComponent implements OnInit, OnDestroy {
       add_proof_email: new FormControl(true)
     })
   }
+  initEditDefaultGroupUpdateForm() {
+    this.isEditDefaultContactForm = new FormGroup({
+      listOrder: new FormControl(''),
+      firstName: new FormControl(''),
+      lastName: new FormControl(''),
+      email: new FormControl(''),
+      blnIncludeAdditionalEmails: new FormControl(true),
+      blnStoreUserApprovalContacts: new FormControl(true),
+      blnRoyalties: new FormControl(true),
+      fk_storeUserID: new FormControl(''),
+      pk_artApprovalContactID: new FormControl(''),
+      update_approval_contact: new FormControl(true)
+    })
+  }
 
   calledScreen(screenName): void {
     this.mainScreen = screenName;
@@ -127,8 +171,14 @@ export class ArtApprovalComponent implements OnInit, OnDestroy {
         this.isEditEmail = false;
         this.getAdditionalEmails(1, 'get');
       }
-    } else if (screenName == '') {
-
+    } else if (screenName == 'Add New Approval') {
+      if (!this.locationsList) {
+        this.getLocations();
+      }
+    } else if (screenName == 'Default Approval Group') {
+      if (!this.storeUsers) {
+        this.getUsersList();
+      }
     }
   };
   updateArtApprovaSettings() {
@@ -278,24 +328,42 @@ export class ArtApprovalComponent implements OnInit, OnDestroy {
   selectedTabValue(event) {
     if (event.tab.textLabel == 'Current Groups' && this.isDefaultGroupData.length == 0) {
       this.getDefaultGroup(1, 'get');
+      this.backToDefaultGroupList();
+    } else if (event.tab.textLabel == 'Add New Group Contact') {
+      this.backToDefaultGroupList();
     }
   }
-  getLocations(page, type) {
+  getLocations() {
     let params = {
       store_id: this.selectedStore.pk_storeID,
       store_locations: true,
-      page: page,
-      size: 10
+      page: 1,
+      size: 20
     }
     // Get the offline products
     this._storeService.getStoresData(params)
       .pipe(takeUntil(this._unsubscribeAll))
       .subscribe((response: any) => {
-
+        this.locationsList = response["data"];
         // Mark for check
         this._changeDetectorRef.markForCheck();
       });
   };
+  getSubLocations(obj) {
+    let params = {
+      store_id: this.selectedStore.pk_storeID,
+      store_locations: true,
+      sub_locations: true,
+      attribute_id: obj.pk_attributeID
+    }
+    this._storeService.getStoresData(params)
+      .pipe(takeUntil(this._unsubscribeAll))
+      .subscribe((response: any) => {
+        this.subLocationsList = response["data"];
+        // Mark for check
+        this._changeDetectorRef.markForCheck();
+      });
+  }
   getDefaultGroup(page, type) {
     if (page == 1 && type == 'get') {
       this.isDefaultGroupLoader = true;
@@ -310,6 +378,14 @@ export class ArtApprovalComponent implements OnInit, OnDestroy {
       this.isDefaultGroupData = res["data"];
       this.isDefaultGroupDataTotal = res["totalRecords"];
       this.isDefaultGroupLoader = false;
+      if (type == 'update') {
+        this.isEditDefaultContactLoader = false;
+        this._snackBar.open("Contact Updated Successfully", '', {
+          horizontalPosition: 'center',
+          verticalPosition: 'bottom',
+          duration: 3000
+        });
+      }
       this._changeDetectorRef.markForCheck();
     }, err => {
       this.isDefaultGroupLoader = false;
@@ -326,6 +402,75 @@ export class ArtApprovalComponent implements OnInit, OnDestroy {
     };
     this.getDefaultGroup(this.isDefaultGroupPage, 'get');
   };
+
+  getUsersList() {
+    this.storeUsersLoader = true;
+    let params = {
+      store_users: true,
+      store_id: this.selectedStore.pk_storeID,
+      bln_active: 1
+    }
+    this._storeService.getStoresData(params).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+      this.storeUsersLoader = false;
+      this.storeUsers = res["data"];
+      this.storeUsers.forEach(element => {
+        this.usersDropDown.push({
+          item_id: element.pfk_userID,
+          item_text: element.firstName + ' ' + element.lastName
+        })
+      });
+      this._changeDetectorRef.markForCheck();
+    }, err => {
+      this.storeUsersLoader = false;
+      this._changeDetectorRef.markForCheck();
+    })
+  }
+  isDefaultGroupEditToggle(obj) {
+    this.isEditDefaultContactGroup = true;
+    let user = obj.fk_storeUserID.split(',');
+    this.selectedItems = [];
+    user.forEach(element => {
+      this.usersDropDown.filter(item => {
+        if (item.item_id == element) {
+          this.selectedItems.push({ item_id: item.item_id, item_text: item.item_text })
+        }
+      })
+    });
+    this.isEditDefaultContactForm.patchValue({
+      listOrder: obj.listOrder,
+      firstName: obj.firstName,
+      lastName: obj.lastName,
+      email: obj.email,
+      blnIncludeAdditionalEmails: obj.blnIncludeAdditionalEmails,
+      blnStoreUserApprovalContacts: obj.blnStoreUserApprovalContacts,
+      blnRoyalties: obj.blnRoyalties,
+      pk_artApprovalContactID: obj.pk_artApprovalContactID
+    })
+
+
+  }
+  backToDefaultGroupList() {
+    this.isEditDefaultContactGroup = false;
+  }
+  updateDefaulApprovalGroupContact() {
+    let val = [];
+    this.selectedItems.forEach(element => {
+      val.push(element.item_id);
+    });
+    this.isEditDefaultContactForm.patchValue({
+      fk_storeUserID: val.toString()
+    })
+    this.isEditDefaultContactLoader = true;
+    this._storeService.putStoresData(this.isEditDefaultContactForm.value).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+      this.getDefaultGroup(1, 'update');
+      this._changeDetectorRef.markForCheck();
+    }, err => {
+      this.isEditDefaultContactLoader = false;
+      this._changeDetectorRef.markForCheck();
+    })
+  }
+
+
 
   ngOnDestroy(): void {
     // Unsubscribe from all subscriptions

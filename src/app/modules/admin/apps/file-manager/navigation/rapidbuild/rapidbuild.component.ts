@@ -247,17 +247,6 @@ export class RapidbuildComponent implements OnInit, OnDestroy {
     this.isDetailOpen = false;
     this.editItemData = null;
   }
-  checkImage(img) {
-    fetch('https://assets.consolidus.com/globalAssets/rapidBuild/rbid.jpg', { method: 'HEAD' })
-      .then(res => {
-        if (res.ok) {
-          console.log('Image exists.');
-        } else {
-          console.log('Image does not exist.');
-        }
-      }).catch(err => console.log('Error:', err));
-
-  }
   getImageOrFallback(path) {
     return new Promise(resolve => {
       const img = new Image();
@@ -265,4 +254,21 @@ export class RapidbuildComponent implements OnInit, OnDestroy {
       img.onload = () => resolve(path);
     });
   };
+  getImprints() {
+    if (this.imprintsDataSource.length == 0) {
+      this.imprintsDataSourceLoading = true;
+      let params = {
+        imprint: true,
+        product_id: this.editItemData.pk_productID,
+      }
+      this._storeManagerService.getProductsData(params).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+        this.imprintsDataSource = res["data"];
+        this.imprintsDataSourceLoading = false;
+        this._changeDetectorRef.markForCheck();
+      }, err => {
+        this.imprintsDataSourceLoading = false;
+        this._changeDetectorRef.markForCheck();
+      })
+    }
+  }
 }
