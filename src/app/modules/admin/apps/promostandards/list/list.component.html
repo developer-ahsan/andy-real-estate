@@ -1,4 +1,4 @@
-<div class="absolute inset-0 flex flex-col min-w-0 overflow-hidden bg-card">
+<div class="absolute inset-0 flex flex-col min-w-0 overflow-auto bg-card">
 
     <!-- Main -->
     <div class="flex flex-col flex-auto">
@@ -71,11 +71,11 @@
                         </table>
                     </div>
 
-                    <mat-paginator
+                    <!-- <mat-paginator
                         class="sm:absolute sm:inset-x-0 sm:bottom-0 border-b sm:border-t sm:border-b-0 z-10 bg-gray-50 dark:bg-transparent"
                         [ngClass]="{'pointer-events-none': isLoading}" [length]="promostandardsCount"
                         [pageIndex]="pageNo" [pageSize]="20" (page)="getNextData($event)" [hidePageSize]="true">
-                    </mat-paginator>
+                    </mat-paginator> -->
 
                 </ng-container>
 
