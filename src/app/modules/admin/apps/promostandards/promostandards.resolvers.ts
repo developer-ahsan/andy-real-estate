@@ -3,7 +3,7 @@ import { ActivatedRouteSnapshot, Resolve, Router, RouterStateSnapshot } from '@a
 import { Observable, throwError } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 import { TasksService } from 'app/modules/admin/apps/promostandards/promostandards.service';
-import { Tag, Task } from 'app/modules/admin/apps/promostandards/promostandards.types';
+import { Tag, Task, Promostandard } from 'app/modules/admin/apps/promostandards/promostandards.types';
 
 @Injectable({
     providedIn: 'root'
@@ -100,5 +100,31 @@ export class TasksTaskResolver implements Resolve<any>
                     return throwError(error);
                 })
             );
+    }
+}
+
+@Injectable({
+    providedIn: 'root'
+})
+export class PromostandardsResolver implements Resolve<any>
+{
+    /**
+     * Constructor
+     */
+    constructor(private _tasksService: TasksService) {
+    }
+
+    // -----------------------------------------------------------------------------------------------------
+    // @ Public methods
+    // -----------------------------------------------------------------------------------------------------
+
+    /**
+     * Resolver
+     *
+     * @param route
+     * @param state
+     */
+    resolve(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<Promostandard[]> {
+        return this._tasksService.getPromostandards(1);
     }
 }

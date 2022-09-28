@@ -25,6 +25,8 @@ import { tasksRoutes } from 'app/modules/admin/apps/promostandards/promostandard
 import { PromostandardsComponent } from 'app/modules/admin/apps/promostandards/promostandards.component';
 import { PromostandardsDetailsComponent } from 'app/modules/admin/apps/promostandards/details/details.component';
 import { PromostandardsListComponent } from 'app/modules/admin/apps/promostandards/list/list.component';
+import { MatTableModule } from '@angular/material/table';
+import { MatPaginatorModule } from '@angular/material/paginator';
 
 @NgModule({
     declarations: [
@@ -48,6 +50,8 @@ import { PromostandardsListComponent } from 'app/modules/admin/apps/promostandar
         MatProgressBarModule,
         MatRadioModule,
         MatRippleModule,
+        MatPaginatorModule,
+        MatTableModule,
         MatSelectModule,
         MatSidenavModule,
         MatTooltipModule,
