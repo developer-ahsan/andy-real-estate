@@ -38,7 +38,7 @@ export class StoresDetailsComponent implements OnInit, OnDestroy {
   drawerOpened: boolean = true;
 
   // Default details screen
-  selectedIndex: string = "Dashboard";
+  selectedIndex: string = "Consolidated Bill";
 
   /**
    * Constructor
