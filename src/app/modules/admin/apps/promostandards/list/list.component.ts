@@ -27,6 +27,7 @@ export class PromostandardsListComponent implements OnInit, OnDestroy {
     page: number = 1;
     pageNo: number = 0;
     isLoading: boolean = true;
+    showFiller = false;
 
     /**
      * Constructor

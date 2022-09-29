@@ -1,5 +1,20 @@
 <div class="absolute inset-0 flex flex-col min-w-0 overflow-auto bg-card">
+    <mat-drawer-container class="example-container" autosize>
+        <mat-drawer #drawer class="example-sidenav" mode="side">
+            <p>Auto-resizing sidenav</p>
+            <p *ngIf="showFiller">Lorem, ipsum dolor sit amet consectetur.</p>
+            <button (click)="showFiller = !showFiller" mat-raised-button>
+                Toggle extra text
+            </button>
+        </mat-drawer>
 
+        <div class="example-sidenav-content">
+            <button type="button" mat-button (click)="drawer.toggle()">
+                Toggle sidenav
+            </button>
+        </div>
+
+    </mat-drawer-container>
     <!-- Main -->
     <div class="flex flex-col flex-auto">
 
@@ -14,14 +29,14 @@
                 </div>
             </div>
             <!-- Actions -->
-            <div class="mt-4 sm:mt-0">
-                <!-- Add section button -->
-                <button mat-flat-button [color]="'accent'"
+            <!-- <div class="mt-4 sm:mt-0"> -->
+            <!-- Add section button -->
+            <!-- <button mat-flat-button [color]="'accent'"
                     [matTooltip]="'Add new promostandard endpoint for supplier into the system'">
                     <mat-icon [svgIcon]="'heroicons_outline:plus'"></mat-icon>
                     <span class="ml-2 mr-1">Add Section</span>
-                </button>
-            </div>
+                </button> -->
+            <!-- </div> -->
         </div>
 
         <!-- Main -->
