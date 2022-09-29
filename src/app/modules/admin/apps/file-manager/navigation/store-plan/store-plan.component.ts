@@ -34,7 +34,7 @@ export class StorePlanComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.initialize();
     this.dataSourceLoading = true;
-    this.getDataPlans();
+    this.getDataPlans('get');
     this.isLoadingChange.emit(false);
   };
   initialize() {
@@ -56,7 +56,7 @@ export class StorePlanComponent implements OnInit, OnDestroy {
       update_store_plan: new FormControl(true)
     })
   }
-  getDataPlans() {
+  getDataPlans(type) {
     let params = {
       store_id: this.selectedStore.pk_storeID,
       store_plan: true
@@ -67,6 +67,15 @@ export class StorePlanComponent implements OnInit, OnDestroy {
       .subscribe((response: any) => {
         this.dataSource = response["data"];
         this.dataSourceLoading = false;
+        if (type == 'update') {
+          this.isEditStoreLoader = false;
+          this._snackBar.open('Store Plan Update Successfully', '', {
+            horizontalPosition: 'center',
+            verticalPosition: 'bottom',
+            duration: 3500
+          });
+          this.backToStorePlanList()
+        }
         // Mark for check
         this._changeDetectorRef.markForCheck();
       });
@@ -91,12 +100,7 @@ export class StorePlanComponent implements OnInit, OnDestroy {
   updateStorePlan() {
     this.isEditStoreLoader = true;
     this._fileManagerService.putStoresData(this.isEditStorePlanForm.value).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
-      this.isEditStoreLoader = false;
-      this._snackBar.open('Store Plan Update Successfully', '', {
-        horizontalPosition: 'center',
-        verticalPosition: 'bottom',
-        duration: 3500
-      });
+      this.getDataPlans('update')
       this._changeDetectorRef.markForCheck();
     }, err => {
       this.isEditStoreLoader = false;

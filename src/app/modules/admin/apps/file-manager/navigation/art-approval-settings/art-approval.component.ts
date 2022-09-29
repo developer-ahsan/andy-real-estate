@@ -537,6 +537,7 @@ export class ArtApprovalComponent implements OnInit, OnDestroy {
     this._storeService.getStoresData(params).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
       this.approvalGroupList = res["data"];
       if (type == 'add') {
+        this.initAddGroupForm();
         this.addGroupFormLoader = false;
         this._snackBar.open("Group Created Successfully", '', {
           horizontalPosition: 'center',

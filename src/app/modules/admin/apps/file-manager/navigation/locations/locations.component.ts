@@ -461,6 +461,7 @@ export class LocationsComponent implements OnInit, OnDestroy {
             this.dataSource = this.dataSource.filter((value) => {
               return value.pk_attributeID != item.pk_attributeID;
             });
+            this.dataSourceTotalRecord = this.dataSourceTotalRecord - 1;
             this._snackBar.open("Location Deleted Successfully", '', {
               horizontalPosition: 'center',
               verticalPosition: 'bottom',
@@ -532,7 +533,7 @@ export class LocationsComponent implements OnInit, OnDestroy {
         , filter(res => res.length > 1)
 
         // Time in milliseconds between key events
-        , debounceTime(1000)
+        , debounceTime(400)
 
         // If previous query is diffent from current   
         , distinctUntilChanged()
