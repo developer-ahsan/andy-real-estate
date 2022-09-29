@@ -6,7 +6,7 @@ import { AddCore, AddFeature, AddPackage, CaseDimensionObj, CaseQuantityObj, Com
 import { environment } from 'environments/environment';
 import { productDescription } from 'app/modules/admin/apps/ecommerce/inventory/inventory.types';
 import { AuthService } from 'app/core/auth/auth.service';
-import { navigations } from 'app/modules/admin/apps/ecommerce/inventory/navigations';
+import { navigations } from 'app/modules/admin/apps/ecommerce/product-store/navigations';
 
 @Injectable({
     providedIn: 'root'

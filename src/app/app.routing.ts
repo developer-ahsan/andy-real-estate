@@ -3,7 +3,6 @@ import { AuthGuard } from 'app/core/auth/guards/auth.guard';
 import { NoAuthGuard } from 'app/core/auth/guards/noAuth.guard';
 import { LayoutComponent } from 'app/layout/layout.component';
 import { InitialDataResolver } from 'app/app.resolvers';
-import { EmailTemplatePreviewComponent } from './modules/admin/apps/file-manager/navigation/email-blast/email-template-preview/email-template-preview.component';
 
 // @formatter:off
 /* eslint-disable max-len */
@@ -86,11 +85,6 @@ export const appRoutes: Route[] = [
             // Apps
             {
                 path: 'apps', children: [
-                    {
-                        path: 'email-template-preview/:id',
-                        pathMatch: 'full',
-                        component: EmailTemplatePreviewComponent
-                    },
                     { path: 'academy', loadChildren: () => import('app/modules/admin/apps/academy/academy.module').then(m => m.AcademyModule) },
                     { path: 'calendar', loadChildren: () => import('app/modules/admin/apps/calendar/calendar.module').then(m => m.CalendarModule) },
                     { path: 'chat', loadChildren: () => import('app/modules/admin/apps/chat/chat.module').then(m => m.ChatModule) },

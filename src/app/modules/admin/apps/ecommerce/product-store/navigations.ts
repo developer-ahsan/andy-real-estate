@@ -1,58 +1,58 @@
 export const navigations = [
     {
         id: 2,
-        title: 'Name & Description',
-        icon: 'mat_outline:edit_note',
+        title: 'Pricing',
+        icon: 'mat_outline:price_change',
     },
     {
         id: 3,
-        title: 'Physics & Shipping',
+        title: 'Shipping',
         icon: 'mat_outline:local_shipping',
     },
     {
         id: 4,
-        title: 'Net Cost',
+        title: 'Store-Level Coop',
         icon: 'mat_outline:price_change'
     },
     {
         id: 5,
-        title: 'Imprints',
+        title: 'Categories',
         icon: 'mat_outline:checklist',
     },
     {
         id: 6,
-        title: 'Colors',
-        icon: 'mat_outline:color_lens',
+        title: 'Extrinsic Category',
+        icon: 'mat_outline:category',
     },
     {
         id: 24,
-        title: 'Promostandard colors',
-        icon: 'mat_outline:color_lens',
+        title: 'Special Description',
+        icon: 'mat_outline:description',
     },
     {
         id: 7,
-        title: 'Sizes',
+        title: 'Permalink',
         icon: 'heroicons_outline:arrows-expand',
     },
     {
         id: 8,
-        title: 'Features',
+        title: 'Realated Products',
         icon: 'mat_outline:checklist'
     },
     {
         id: 9,
-        title: 'Pack & Accessories',
+        title: 'Product Options',
         icon: 'feather:package',
     },
     {
         id: 10,
-        title: 'Default Images',
+        title: 'Royality Settings',
         icon: 'mat_outline:image',
     },
     {
         id: 11,
-        title: 'Default Margins',
-        icon: 'mat_outline:margin',
+        title: 'Images',
+        icon: 'mat_outline:image',
     },
     {
         id: 12,
@@ -61,68 +61,52 @@ export const navigations = [
     },
     {
         id: 13,
-        title: 'Swatches',
-        icon: 'mat_outline:image',
+        title: 'Colors',
+        icon: 'mat_outline:color_lens',
     },
     {
         id: 14,
-        title: 'Artwork Template',
+        title: 'Imprints',
         icon: 'heroicons_outline:template',
     },
     {
         id: 15,
-        title: 'Product Reviews',
-        icon: 'mat_outline:reviews',
+        title: 'Virtual Proof Images',
+        icon: 'mat_outline:broken_image',
     },
     {
         id: 16,
-        title: 'Dietary Information',
+        title: 'Product Reviews',
         icon: 'mat_outline:info',
     },
     {
         id: 17,
-        title: 'Licensing Terms',
-        icon: 'mat_outline:picture_in_picture',
+        title: 'Profit Calculator',
+        icon: 'mat_outline:calculate',
     },
     {
         id: 18,
-        title: 'Warehouse Options',
+        title: 'Simulator',
         icon: 'mat_outline:house_siding',
     },
     {
         id: 1,
-        title: 'Store Versions',
-        icon: 'mat_outline:sd_storage'
+        title: 'Update History',
+        icon: 'mat_outline:history'
     },
     {
         id: 19,
-        title: 'Update History',
-        icon: 'mat_outline:history',
+        title: 'Master Product',
+        icon: 'mat_outline:production_quantity_limits',
     },
     {
         id: 20,
-        title: 'Order History',
+        title: 'Store Versions',
         icon: 'mat_outline:history',
     },
     {
         id: 21,
-        title: 'Internal Notes',
-        icon: 'mat_outline:speaker_notes',
-    },
-    {
-        id: 22,
-        title: 'Core Products',
-        icon: 'mat_outline:group_work',
-    },
-    {
-        id: 23,
-        title: 'Duplicate',
-        icon: 'heroicons_outline:duplicate'
-    }
-    ,
-    {
-        id: 24,
-        title: 'Delete Product',
-        icon: 'heroicons_outline:trash'
+        title: 'Remove From Store',
+        icon: 'heroicons_outline:trash',
     }
 ];

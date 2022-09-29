@@ -1,11 +1,9 @@
-<!-- <ngx-skeleton-loader count="8" appearance="line" animation="pulse" *ngIf="isPageLoading">
-</ngx-skeleton-loader> -->
 <div *ngIf="!isLoading">
   <fuse-card class="rounded-2xl shadow bg-card flex">
     <div class="row" style="width: -webkit-fill-available;">
       <div class="col-12">
         <div class="p-6 sm:p-8 lg:p-10 w-full">
-          <div class="row">
+          <div class="row" *ngIf="!isConsolidatedBill">
             <div class="col-lg-12 col-12 pb-6 sm:pb-8 lg:pb-8">
               <div class="text-2xl font-bold">
                 Select Consolidated Bill Date
@@ -36,15 +34,16 @@
                   <mat-form-field class="min-w-60 mr-2">
                     <mat-label>Order Type</mat-label>
                     <mat-select matInput [(ngModel)]="ngOrder" name="order">
-                      <mat-option [value]="true">Normal Orders</mat-option>
-                      <mat-option [value]="false">Fulfillment Orders</mat-option>
+                      <mat-option [value]="1">Normal Orders</mat-option>
+                      <mat-option [value]="2">Fulfillment Orders</mat-option>
                     </mat-select>
                   </mat-form-field>
                   <!-- <br> -->
                   <mat-form-field class="min-w-60">
                     <mat-label>Select Location</mat-label>
                     <input matInput placeholder="Search Location" name="test" [(ngModel)]="slectedLocation"
-                      [matAutocomplete]="auto" [formControl]="locationCtrl" placeholder="Min 3 Character">
+                      [matAutocomplete]="auto" [formControl]="locationCtrl"
+                      placeholder="Search Location Min 3 Character">
                     <button *ngIf="slectedLocation" matSuffix mat-icon-button aria-label="Clear"
                       (click)="clearSelection()">
                       <mat-icon>close</mat-icon>
@@ -73,7 +72,7 @@
                           <span class="ml-2">Blanket credit term successfully applied</span>
                         </ng-container>
                       </div>
-                      <button [disabled]="isApplyLoader" (click)="updateCreditTerms()" [matTooltip]="'Apply'"
+                      <button [disabled]="isApplyLoader" (click)="getConsolidatedBill()" [matTooltip]="'Apply'"
                         class="w-full md:w-50 lg:w-50" mat-stroked-button mat-flat-button>
                         <mat-progress-spinner *ngIf="isApplyLoader" [diameter]="24" [mode]="'indeterminate'">
                         </mat-progress-spinner>
@@ -85,8 +84,110 @@
               </form>
             </div>
           </div>
+          <div class="row" *ngIf="isConsolidatedBill">
+            <div class="col-md-8 col-12 pb-6 sm:pb-8 lg:pb-8">
+              <div class="text-2xl font-bold">
+                {{selectedStore.storeName}} - {{date}} Consolidated Bill
+              </div>
+            </div>
+            <div class="col-md-4 col-12 pb-6 sm:pb-8 lg:pb-8 text-right">
+              <button class=" ml-4" mat-flat-button mat-stroked-button [matTooltip]="'Back to Search'"
+                (click)="backToSearch()">
+                <mat-icon [svgIcon]="'heroicons_outline:arrow-narrow-left'"></mat-icon>
+                <span class="ml-2 mr-1">Back to Search</span>
+              </button>
+            </div>
+            <!-- <div class="col-12 flex justify-between">
+              <div class="self-center text-2xl font-medium tracking-tight text-secondary">
+                TOTAL</div>
+              <div class="text-right text-2xl font-medium">$49,000.00</div>
+            </div> -->
+          </div>
         </div>
       </div>
     </div>
   </fuse-card>
+  <div class="mt-5">
+    <ngx-skeleton-loader count="8" appearance="line" animation="pulse" *ngIf="isApplyLoader">
+    </ngx-skeleton-loader>
+  </div>
+
+  <div *ngIf="isConsolidatedBill && !isApplyLoader">
+
+    <div class="inline-block text-left print:p-0 w-full" id="htmltable" #htmltable>
+
+      <!-- Invoice -->
+      <div
+        class="p-5 rounded-2xl mb-5 shadow bg-card print:w-auto print:p-0 print:rounded-none print:shadow-none print:bg-transparent"
+        *ngFor="let item of consolidatedData">
+
+        <div class="flex items-start">
+          <div class="grid place-items-start gap-y-12 mt-10">
+            <div class="grid auto-cols-max grid-flow-col gap-x-2">
+              <div class="place-self-center w-24 text-center text-2xl text-secondary">
+                <div style="text-align: -webkit-center;">
+                  <img class="w-40" src="assets/images/logo/consolidus-logo.jpeg">
+                </div>
+              </div>
+              <div class="pl-6 border-l text-md">
+                <div class="font-medium">Dept: {{item.name}}</div>
+                <div>Charge Code: {{item.accountChargeCode == '' ? 'N/A' : item.accountChargeCode }}</div>
+                <div>Contact: {{item.name}}</div>
+                <div>Email: {{item.shippingEmail}}</div>
+              </div>
+            </div>
+          </div>
+          <div class="grid grid-cols-2 gap-x-4 gap-y-1 ml-auto">
+            <div class="justify-self-start font-semibold text-3xl tracking-tight">INVOICE</div>
+            <div class="justify-self-start text-3xl font-semibold">#{{item.pk_orderID}}</div>
+            <div class="justify-self-start font-medium tracking-tight text-secondary">INVOICE DATE
+            </div>
+            <div class="font-medium">{{item.orderDate | date}}</div>
+            <div class="justify-self-start font-medium tracking-tight text-secondary">TOTAL</div>
+            <div class="font-medium">{{item.total | currency }}</div>
+            <div class="justify-self-start font-medium tracking-tight text-secondary">TOTAL DUE
+            </div>
+            <div class="font-medium">{{item.cashbackCredit | currency}}</div>
+          </div>
+        </div>
+        <div *ngIf="!item.loader" class="text-center mt-5">
+          <button (click)="getConsolidatedBillDetail(item)" *ngIf="!item?.hide"
+            class="font-medium text-md text-secondary">View Details</button>
+        </div>
+        <div *ngIf="item.loader" class="mt-16">
+          <ngx-skeleton-loader count="8" appearance="line" animation="pulse">
+          </ngx-skeleton-loader>
+        </div>
+        <div *ngIf="item?.productsData">
+          <div class="row mt-16">
+            <div class="col-1 font-medium text-md text-secondary">ITEM</div>
+            <div class="col-4 font-medium text-md text-secondary">DESCRIPTION</div>
+            <div class="col-4 font-medium text-md text-secondary">EXTENDED PRICE (Qty * Unit Price)</div>
+            <div class="col-1 font-medium text-md text-secondary">SETUPS</div>
+            <div class="col-1 font-medium text-md text-secondary">SHIPPING</div>
+            <div class="col-1 font-medium text-md text-secondary">TOTAL</div>
+            <div class="col-12 my-4 border-b"></div>
+          </div>
+          <div class="row" *ngFor="let product of item?.productsData">
+            <div class="col-1 text-secondary">{{product.pk_storeProductID ? product.pk_storeProductID : 'N/A' }}</div>
+            <div class="col-4 text-secondary">{{product.productName + ' (' + product.sizeName + '/' + product.colorName
+              + ')'}}</div>
+            <!-- <div class="col-2 text-secondary">{{product.runPrice | currency}}</div> -->
+            <div class="col-4 text-secondary">{{(product.runPrice * product.quantity) | currency}}</div>
+            <!-- <div class="col-1  text-secondary">{{product.quantity}}</div> -->
+            <div class="col-1 text-secondary">{{product.setupPrice | currency}}</div>
+            <div class="col-1 text-secondary">$0.00</div>
+            <div class="col-1 text-secondary font-bold">{{((product.runPrice * product.quantity) + product.setupPrice) |
+              currency}}</div>
+            <div class="col-12 my-4 border-b"></div>
+          </div>
+        </div>
+        <div class="mt-10">
+          <div style="text-align: -webkit-center;">
+            <img class="w-40" src="assets/images/logo/consolidus-logo.jpeg">
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
 </div>

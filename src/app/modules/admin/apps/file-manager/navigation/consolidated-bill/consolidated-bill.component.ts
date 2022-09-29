@@ -6,6 +6,7 @@ import { FileManagerService } from '../../store-manager.service';
 import { takeUntil } from 'rxjs/operators';
 import { HttpClient } from '@angular/common/http';
 import { debounceTime, tap, switchMap, finalize, distinctUntilChanged, filter } from 'rxjs/operators';
+import moment from 'moment';
 const API_KEY = "e8067b53"
 
 @Component({
@@ -32,8 +33,14 @@ export class ConsolidatedBillComponent implements OnInit, OnDestroy {
 
 
   ngDate = new Date();
-  ngOrder = true;
+  today = new Date();
+  ngOrder = 1;
   ngDiscount = true;
+
+  isConsolidatedBill: boolean = false;
+  date: any;
+  consolidatedData: any;
+  totalAmount = 0;
   constructor(
     private _fileManagerService: FileManagerService,
     private _changeDetectorRef: ChangeDetectorRef,
@@ -57,53 +64,6 @@ export class ConsolidatedBillComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.getLocationsSearch();
-  }
-  getCredits() {
-    let params = {
-      store_id: this.selectedStore.pk_storeID,
-      credit_term: true
-    }
-    this._fileManagerService.getStoresData(params)
-      .pipe(takeUntil(this._unsubscribeAll))
-      .subscribe(res => {
-        this.isPageLoading = false;
-        this.creditTerms = res["data"];
-        this._changeDetectorRef.markForCheck();
-      })
-  }
-  updateCreditTerms() {
-    this.isApplyLoader = true;
-    if (this.selectedTerm != null) {
-      let payload = {
-        store_id: this.selectedStore.pk_storeID,
-        credit_term_id: this.selectedTerm,
-        update_credit_terms: true
-      }
-      this._fileManagerService.putStoresData(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
-        if (res["success"]) {
-          this.selectedTerm = null;
-          this.isApplyLoader = false;
-          this.isApplyMsg = true;
-          setTimeout(() => {
-            this.isApplyMsg = false;
-            this._changeDetectorRef.markForCheck();
-          }, 2000);
-          this._changeDetectorRef.markForCheck();
-        }
-      }, err => {
-        this.isApplyLoader = false;
-        this._changeDetectorRef.markForCheck();
-      })
-    } else {
-      this._snackBar.open("Please Select Any Term", '', {
-        horizontalPosition: 'center',
-        verticalPosition: 'bottom',
-        duration: 2000
-      });
-      this.isApplyLoader = false;
-      this._changeDetectorRef.markForCheck();
-    }
-
   }
   ngOnDestroy(): void {
     // Unsubscribe from all subscriptions
@@ -149,6 +109,53 @@ export class ConsolidatedBillComponent implements OnInit, OnDestroy {
         }
         console.log(this.filteredLocations);
       });
+  }
+  getConsolidatedBill() {
+    if (this.selectedTerm == 'today') {
+      this.date = moment(this.today).format('MM/DD/yyyy');
+    } else {
+      this.date = moment(this.ngDate).format('MM/DD/yyyy');
+    }
+    this.isConsolidatedBill = true;
+    this.isApplyLoader = true;
+    let payload = {
+      consolidated_bill: true,
+      store_id: this.selectedStore.pk_storeID,
+      order_date: this.date,
+      order_type: this.ngOrder,
+      attribute_id: this.slectedLocation
+    }
+    this._fileManagerService.getStoresData(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+      this.consolidatedData = res["data"];
+      this.consolidatedData.forEach(element => {
+        this.totalAmount += element.total;
+      });
+      this.isApplyLoader = false;
+      this._changeDetectorRef.markForCheck();
+    }, err => {
+      this.isApplyLoader = false;
+      this._changeDetectorRef.markForCheck();
+    })
+  }
+  getConsolidatedBillDetail(obj) {
+    obj.loader = true;
+    let payload = {
+      consolidated_bill_products: true,
+      order_line_id: obj.pk_orderLineID
+    }
+    this._fileManagerService.getStoresData(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+      console.log(res);
+      obj.productsData = res["data"];
+      obj.loader = false;
+      obj.hide = true;
+      this._changeDetectorRef.markForCheck();
+    }, err => {
+      obj.loader = false;
+      this._changeDetectorRef.markForCheck();
+    })
+  }
+  backToSearch() {
+    this.isConsolidatedBill = false;
   }
 
 }

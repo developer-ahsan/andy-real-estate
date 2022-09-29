@@ -1,9 +1,19 @@
+<div class="row py-2 overflow-auto">
+    <div class="col-12">
+        <mat-button-toggle-group #group="matButtonToggleGroup" [value]="mainScreen"
+            (change)="calledScreen(group.value)">
+            <mat-button-toggle *ngFor="let buttonValue of screens" value="{{buttonValue}}">
+                {{ buttonValue }}
+            </mat-button-toggle>
+        </mat-button-toggle-group>
+    </div>
+</div>
 <ngx-skeleton-loader count="8" appearance="line" animation="pulse" *ngIf="dataSourceLoading">
 </ngx-skeleton-loader>
 <div *ngIf="!dataSourceLoading">
     <div *ngIf="!isLoading">
         <fuse-card class="rounded-2xl shadow bg-card flex pb-10">
-            <div class="row" style="width: -webkit-fill-available;">
+            <div class="row" style="width: -webkit-fill-available;" *ngIf="mainScreen=='Categories'">
                 <div class="col-12">
                     <div class="p-6 sm:p-8 lg:p-10 w-full">
                         <div class="text-2xl font-bold">
@@ -214,6 +224,120 @@
                             </p>
                         </div>
                     </ng-template>
+                </div>
+            </div>
+            <div class="row" *ngIf="mainScreen == 'Online Status'">
+                <div class="col-12">
+                    <div class="p-6 sm:p-8 lg:p-10 w-full">
+                        <div class="text-2xl font-bold">
+                            Online Status
+                        </div>
+                    </div>
+                </div>
+                <div class="col-4 px-10" *ngFor="let item of dataSource">
+                    <mat-checkbox class="example-margin" [(ngModel)]="item.blnActive">
+                        {{item.categoryName}}
+                    </mat-checkbox>
+                </div>
+                <div class="col-12 px-10">
+                    <button class="min-w-40" mat-stroked-button [matTooltip]="'Update'" (click)="updateOnlineStatus()"
+                        [disabled]="updateStatusLoader">
+                        <mat-progress-spinner *ngIf="updateStatusLoader" [diameter]="24" [mode]="'indeterminate'">
+                        </mat-progress-spinner>
+                        <mat-icon *ngIf="!updateStatusLoader" svgIcon="mode_edit_outline"></mat-icon>
+                        <span class="px-2">Update</span>
+                    </button>
+                </div>
+            </div>
+            <div class="row" *ngIf="mainScreen == 'Display Order'">
+                <div class="col-12">
+                    <div class="p-6 sm:p-8 lg:p-10 w-full">
+                        <div class="text-2xl font-bold">
+                            Display Order
+                        </div>
+                    </div>
+                </div>
+                <div class="col-6 px-10" *ngFor="let data of dataSource">
+                    <mat-form-field class="w-full">
+                        <mat-label>
+                            {{data.categoryName}}
+                        </mat-label>
+                        <mat-select [(ngModel)]="data.listOrder">
+                            <mat-option *ngFor="let item of dataSource;let i = index" [value]="i+1">{{i+1}}</mat-option>
+                        </mat-select>
+                    </mat-form-field>
+                </div>
+                <div class="col-12 px-10">
+                    <button class="min-w-40" mat-stroked-button [matTooltip]="'Update'"
+                        (click)="updateListOrderStatus()" [disabled]="updateOrderLoader">
+                        <mat-progress-spinner *ngIf="updateOrderLoader" [diameter]="24" [mode]="'indeterminate'">
+                        </mat-progress-spinner>
+                        <mat-icon *ngIf="!updateOrderLoader" svgIcon="mode_edit_outline"></mat-icon>
+                        <span class="px-2">Update</span>
+                    </button>
+                </div>
+            </div>
+            <div class="row" *ngIf="mainScreen == 'Add New Category'">
+                <div class="col-12">
+                    <div class="p-6 sm:p-8 lg:p-10 w-full">
+                        <div class="text-2xl font-bold">
+                            Add New Category
+                        </div>
+                    </div>
+                </div>
+                <div class="col-12 px-10">
+                    <form [formGroup]="addCategoryForm">
+                        <div class="row">
+                            <div class="col-md-6 col-12">
+                                <mat-form-field class="w-full">
+                                    <mat-label>Category Name (25) *</mat-label>
+                                    <input type="text" matInput formControlName="categoryName">
+                                </mat-form-field>
+                            </div>
+                            <div class="col-md-6 col-12">
+                                <mat-form-field class="w-full">
+                                    <mat-label>Permalink (300) *</mat-label>
+                                    <input type="text" matInput formControlName="permalink">
+                                </mat-form-field>
+                            </div>
+                            <div class="col-12">
+                                <mat-form-field class="w-full">
+                                    <mat-label>Description (1000) *</mat-label>
+                                    <textarea rows="5" matInput formControlName="categoryDesc"></textarea>
+                                </mat-form-field>
+                            </div>
+                            <div class="col-12">
+                                <mat-form-field class="w-full">
+                                    <mat-label>Meta Description (300) *</mat-label>
+                                    <textarea rows="5" matInput formControlName="metaDesc"></textarea>
+                                </mat-form-field>
+                            </div>
+                            <div class="col-md-6 col-12">
+                                <mat-form-field class="w-full">
+                                    <mat-label>Browser title (180)</mat-label>
+                                    <input type="text" matInput formControlName="browserTitle">
+                                </mat-form-field>
+                            </div>
+                            <div class="col-md-6 col-12">
+                                <mat-form-field class="w-full">
+                                    <mat-label>Allow in scrollers</mat-label>
+                                    <mat-select matInput formControlName="blnScroller">
+                                        <mat-option [value]="true">Yes</mat-option>
+                                        <mat-option [value]="false">No</mat-option>
+                                    </mat-select>
+                                </mat-form-field>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="col-12 px-10">
+                    <button class="min-w-40" mat-stroked-button [matTooltip]="'Add Category'" (click)="addNewCategory()"
+                        [disabled]="addCategoryLoader">
+                        <mat-progress-spinner *ngIf="addCategoryLoader" [diameter]="24" [mode]="'indeterminate'">
+                        </mat-progress-spinner>
+                        <mat-icon *ngIf="!addCategoryLoader" svgIcon="mat_outline:add"></mat-icon>
+                        <span class="px-2">Add Category</span>
+                    </button>
                 </div>
             </div>
         </fuse-card>

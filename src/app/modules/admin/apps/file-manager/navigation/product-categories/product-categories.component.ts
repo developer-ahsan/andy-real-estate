@@ -4,6 +4,7 @@ import { FileManagerService } from 'app/modules/admin/apps/file-manager/store-ma
 import { takeUntil } from 'rxjs/operators';
 import { fuseAnimations } from '@fuse/animations';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { FormControl, FormGroup } from '@angular/forms';
 
 @Component({
   selector: 'app-product-categories',
@@ -34,6 +35,18 @@ export class ProductCategoriesComponent implements OnInit, OnDestroy {
   activeProductsSum;
   productsCount;
 
+  mainScreen: string = "Categories";
+  screens = [
+    "Categories",
+    "Add New Category",
+    "Display Order",
+    "Online Status"
+  ];
+
+  updateStatusLoader: boolean = false;
+  updateOrderLoader: boolean = false;
+  addCategoryForm: FormGroup;
+  addCategoryLoader: boolean = false;
   constructor(
     private _fileManagerService: FileManagerService,
     private _changeDetectorRef: ChangeDetectorRef,
@@ -41,12 +54,30 @@ export class ProductCategoriesComponent implements OnInit, OnDestroy {
   ) { }
 
   ngOnInit(): void {
+    this.initialize();
     this.dataSourceLoading = true;
-    this.getFirstCall(this.page);
+    this.getFirstCall(this.page, 'get');
     this.isLoadingChange.emit(false);
   };
+  initialize() {
+    this.addCategoryForm = new FormGroup({
+      fk_storeID: new FormControl(this.selectedStore.pk_storeID),
+      categoryName: new FormControl(''),
+      categoryDesc: new FormControl(''),
+      categoryMiniDesc: new FormControl(''),
+      listOrder: new FormControl(1),
+      browserTitle: new FormControl(''),
+      metaDesc: new FormControl(''),
+      permalink: new FormControl(''),
+      blnScroller: new FormControl(true),
+      add_category: new FormControl(true),
+    })
+  }
+  calledScreen(screenName): void {
+    this.mainScreen = screenName;
+  };
 
-  getFirstCall(page) {
+  getFirstCall(page, check) {
     const { pk_storeID } = this.selectedStore;
 
     // Get the offline products
@@ -58,11 +89,33 @@ export class ProductCategoriesComponent implements OnInit, OnDestroy {
         this.dataSourceTotalRecord = response["totalRecords"];
         this.dataSourceLoading = false;
         this.paginatedLoading = false;
-
+        if (check == 'status') {
+          this._snackBar.open("Status updated successfully", '', {
+            horizontalPosition: 'center',
+            verticalPosition: 'bottom',
+            duration: 3500
+          });
+          this.updateStatusLoader = false;
+        } else if (check == 'order') {
+          this._snackBar.open("Display Order updated successfully", '', {
+            horizontalPosition: 'center',
+            verticalPosition: 'bottom',
+            duration: 3500
+          });
+          this.updateOrderLoader = false;
+        } else if (check == 'add') {
+          this._snackBar.open("Category added successfully", '', {
+            horizontalPosition: 'center',
+            verticalPosition: 'bottom',
+            duration: 3500
+          });
+          this.addCategoryLoader = false;
+          this.initialize();
+        }
         // Mark for check
         this._changeDetectorRef.markForCheck();
       }, err => {
-        this.getFirstCall(1);
+        this.getFirstCall(1, 'get');
 
         // Mark for check
         this._changeDetectorRef.markForCheck();
@@ -169,4 +222,78 @@ export class ProductCategoriesComponent implements OnInit, OnDestroy {
     this._unsubscribeAll.next();
     this._unsubscribeAll.complete();
   };
+  updateOnlineStatus() {
+    this.updateStatusLoader = true;
+    let checkArray = []
+    this.dataSource.forEach(element => {
+      checkArray.push({
+        status: element.blnActive,
+        pk_categoryID: element.pk_categoryID
+      })
+    });
+    let params = {
+      store_id: this.selectedStore.pk_storeID,
+      categories: checkArray,
+      update_category_status: true
+    }
+    this._fileManagerService.putStoresData(params)
+      .pipe(takeUntil(this._unsubscribeAll))
+      .subscribe(res => {
+        this.getFirstCall(1, 'status');
+        this._changeDetectorRef.markForCheck();
+      }, (err => {
+        this.updateStatusLoader = false;
+        this._changeDetectorRef.markForCheck();
+      }))
+  }
+  updateListOrderStatus() {
+    this.updateOrderLoader = true;
+    let checkArray = []
+    this.dataSource.forEach(element => {
+      checkArray.push({
+        listOrder: element.listOrder,
+        pk_categoryID: element.pk_categoryID
+      })
+    });
+    let params = {
+      store_id: this.selectedStore.pk_storeID,
+      categories: checkArray,
+      category_display_order: true
+    }
+    this._fileManagerService.putStoresData(params)
+      .pipe(takeUntil(this._unsubscribeAll))
+      .subscribe(res => {
+        this.getFirstCall(1, 'order');
+        this._changeDetectorRef.markForCheck();
+      }, (err => {
+        this.updateOrderLoader = false;
+        this._changeDetectorRef.markForCheck();
+      }))
+  }
+  addNewCategory() {
+    const { fk_storeID, categoryName, categoryDesc, categoryMiniDesc, listOrder, browserTitle, metaDesc, permalink, blnScroller, add_category } = this.addCategoryForm.getRawValue();
+    if (categoryName == '' || permalink == '' || metaDesc == '' || categoryDesc == '') {
+      this._snackBar.open("Please fill all the required fields", '', {
+        horizontalPosition: 'center',
+        verticalPosition: 'bottom',
+        duration: 3500
+      });
+    } else {
+      this.addCategoryLoader = true;
+      let params = {
+        fk_storeID, categoryName, categoryDesc, categoryMiniDesc, listOrder, browserTitle, metaDesc, permalink, blnScroller, add_category
+      }
+      this._fileManagerService.postStoresData(params)
+        .pipe(takeUntil(this._unsubscribeAll))
+        .subscribe(res => {
+          this.getFirstCall(1, 'add');
+          this._changeDetectorRef.markForCheck();
+        }, (err => {
+          this.addCategoryLoader = false;
+          this._changeDetectorRef.markForCheck();
+        }))
+    }
+
+
+  }
 }
