@@ -9,7 +9,11 @@
     <div class="row w-full" *ngIf="!enableAddStoreForm">
       <div class="col-10">
         <!-- Title -->
-        <div class="text-4xl font-extrabold tracking-tight">Stores</div>
+        <div class="text-4xl font-extrabold tracking-tight leading-none">Stores</div>
+        <div class="ml-0.5 font-medium text-secondary">
+          <span *ngIf="stores.length > 0">{{stores.length}} records found</span>
+          <span *ngIf="stores.length < 1">No records found</span>
+        </div>
       </div>
       <div class="col-2">
         <!-- Upload button -->
@@ -50,9 +54,9 @@
   </div>
 
   <div class="row mx-0 bg-card" *ngIf="!enableAddStoreForm">
-    <div class="col-12 font-semibold flex justify-end">
+    <!-- <div class="col-12 font-semibold flex justify-end">
       {{ stores.length }} Records Found
-    </div>
+    </div> -->
 
     <!-- Main -->
     <div class="flex flex-auto">

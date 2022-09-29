@@ -127,4 +127,34 @@ export class PromostandardsResolver implements Resolve<any>
     resolve(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<Promostandard[]> {
         return this._tasksService.getPromostandards(1);
     }
+
+
+}
+
+@Injectable({
+    providedIn: 'root'
+})
+export class SuppliersResolver implements Resolve<any>
+{
+    /**
+     * Constructor
+     */
+    constructor(private _tasksService: TasksService) {
+    }
+
+    // -----------------------------------------------------------------------------------------------------
+    // @ Public methods
+    // -----------------------------------------------------------------------------------------------------
+
+    /**
+     * Resolver
+     *
+     * @param route
+     * @param state
+     */
+    resolve(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<Promostandard[]> {
+        return this._tasksService.getAllSuppliers();
+    }
+
+
 }

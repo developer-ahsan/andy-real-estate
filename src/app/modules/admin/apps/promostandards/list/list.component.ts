@@ -7,6 +7,7 @@ import { takeUntil } from 'rxjs/operators';
 import { FuseMediaWatcherService } from '@fuse/services/media-watcher';
 import { Promostandard } from 'app/modules/admin/apps/promostandards/promostandards.types';
 import { TasksService } from 'app/modules/admin/apps/promostandards/promostandards.service';
+import { IDropdownSettings } from 'ng-multiselect-dropdown';
 
 @Component({
     selector: 'tasks-list',
@@ -22,7 +23,7 @@ export class PromostandardsListComponent implements OnInit, OnDestroy {
     // List
     promostandards: Promostandard[];
     private _unsubscribeAll: Subject<any> = new Subject<any>();
-    promostandardsTableColumns: string[] = ['companyName', 'url'];
+    promostandardsTableColumns: string[] = ['companyName', 'url', 'type'];
     promostandardsCount: number = 0;
     page: number = 1;
     pageNo: number = 0;
@@ -32,6 +33,11 @@ export class PromostandardsListComponent implements OnInit, OnDestroy {
     /**
      * Constructor
      */
+
+    dropdownSettings: IDropdownSettings = {};
+    dropdownList: any[] = []
+    selectedItems: any;
+
     constructor(
         private _activatedRoute: ActivatedRoute,
         private _changeDetectorRef: ChangeDetectorRef,
@@ -50,6 +56,19 @@ export class PromostandardsListComponent implements OnInit, OnDestroy {
      * On init
      */
     ngOnInit(): void {
+        this.dropdownSettings = {
+            singleSelection: true,
+            idField: 'id',
+            textField: 'name',
+            // itemsShowLimit: 3,
+            allowSearchFilter: true
+        };
+        // Get Suppliers
+        this._promostandardsService.suppliers$.pipe(takeUntil(this._unsubscribeAll))
+            .subscribe((response) => {
+                this.dropdownList = response["data"];
+                this._changeDetectorRef.markForCheck();
+            });
         // Get the promostandards list
         this._promostandardsService.promostandards$
             .pipe(takeUntil(this._unsubscribeAll))

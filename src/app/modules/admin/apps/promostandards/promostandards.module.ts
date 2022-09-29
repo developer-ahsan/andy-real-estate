@@ -27,6 +27,7 @@ import { PromostandardsDetailsComponent } from 'app/modules/admin/apps/promostan
 import { PromostandardsListComponent } from 'app/modules/admin/apps/promostandards/list/list.component';
 import { MatTableModule } from '@angular/material/table';
 import { MatPaginatorModule } from '@angular/material/paginator';
+import { NgMultiSelectDropDownModule } from 'ng-multiselect-dropdown';
 
 @NgModule({
     declarations: [
@@ -57,7 +58,8 @@ import { MatPaginatorModule } from '@angular/material/paginator';
         MatTooltipModule,
         FuseAutogrowModule,
         FuseFindByKeyPipeModule,
-        SharedModule
+        SharedModule,
+        NgMultiSelectDropDownModule
     ],
     providers: [
         {

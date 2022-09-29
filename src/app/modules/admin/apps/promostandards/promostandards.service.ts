@@ -14,7 +14,7 @@ export class TasksService {
     private _task: BehaviorSubject<Task | null> = new BehaviorSubject(null);
     private _tasks: BehaviorSubject<Task[] | null> = new BehaviorSubject(null);
     private _promostandards: BehaviorSubject<Promostandard[] | null> = new BehaviorSubject<any[]>(null);
-
+    private _suppliers: BehaviorSubject<any[] | null> = new BehaviorSubject<any[]>(null);
     /**
      * Constructor
      */
@@ -52,7 +52,10 @@ export class TasksService {
     get promostandards$(): Observable<Promostandard[]> {
         return this._promostandards.asObservable();
     }
-
+    // Get Suppliers
+    get suppliers$(): Observable<any> {
+        return this._suppliers.asObservable();
+    }
     // -----------------------------------------------------------------------------------------------------
     // @ Public methods
     // -----------------------------------------------------------------------------------------------------
@@ -329,5 +332,20 @@ export class TasksService {
                 })
             ))
         );
+    }
+    getAllSuppliers(): Observable<any[]> {
+        return this._httpClient
+            .get<any[]>(environment.stores, {
+                params: {
+                    supplier: true,
+                    bln_active: 1,
+                    size: 2000,
+                },
+            })
+            .pipe(
+                tap((response: any) => {
+                    this._suppliers.next(response);
+                })
+            );
     }
 }
