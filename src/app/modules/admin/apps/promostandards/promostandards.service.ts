@@ -1,9 +1,10 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { BehaviorSubject, Observable, of, throwError } from 'rxjs';
-import { filter, map, switchMap, take, tap } from 'rxjs/operators';
+import { filter, map, retry, switchMap, take, tap } from 'rxjs/operators';
 import { Promostandard, Tag, Task } from 'app/modules/admin/apps/promostandards/promostandards.types';
 import { environment } from 'environments/environment';
+import { AuthService } from 'app/core/auth/auth.service';
 
 @Injectable({
     providedIn: 'root'
@@ -18,7 +19,9 @@ export class TasksService {
     /**
      * Constructor
      */
-    constructor(private _httpClient: HttpClient) {
+    constructor(private _httpClient: HttpClient,
+        private _authService: AuthService
+    ) {
     }
 
     // -----------------------------------------------------------------------------------------------------
@@ -347,5 +350,9 @@ export class TasksService {
                     this._suppliers.next(response);
                 })
             );
+    }
+    postPromoData(payload) {
+        const headers = { 'Authorization': `Bearer ${this._authService.accessToken}` };
+        return this._httpClient.post(environment.products, payload, { headers }).pipe(retry(3));
     }
 }

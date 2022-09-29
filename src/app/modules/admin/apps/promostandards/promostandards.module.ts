@@ -28,6 +28,8 @@ import { PromostandardsListComponent } from 'app/modules/admin/apps/promostandar
 import { MatTableModule } from '@angular/material/table';
 import { MatPaginatorModule } from '@angular/material/paginator';
 import { NgMultiSelectDropDownModule } from 'ng-multiselect-dropdown';
+import { MatSnackBarModule } from '@angular/material/snack-bar';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 
 @NgModule({
     declarations: [
@@ -59,7 +61,9 @@ import { NgMultiSelectDropDownModule } from 'ng-multiselect-dropdown';
         FuseAutogrowModule,
         FuseFindByKeyPipeModule,
         SharedModule,
-        NgMultiSelectDropDownModule
+        NgMultiSelectDropDownModule,
+        MatSnackBarModule,
+        MatProgressSpinnerModule
     ],
     providers: [
         {

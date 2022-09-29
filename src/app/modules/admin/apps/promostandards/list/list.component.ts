@@ -8,6 +8,8 @@ import { FuseMediaWatcherService } from '@fuse/services/media-watcher';
 import { Promostandard } from 'app/modules/admin/apps/promostandards/promostandards.types';
 import { TasksService } from 'app/modules/admin/apps/promostandards/promostandards.service';
 import { IDropdownSettings } from 'ng-multiselect-dropdown';
+import { FormControl, FormGroup } from '@angular/forms';
+import { MatSnackBar } from '@angular/material/snack-bar';
 
 @Component({
     selector: 'tasks-list',
@@ -38,13 +40,20 @@ export class PromostandardsListComponent implements OnInit, OnDestroy {
     dropdownList: any[] = []
     selectedItems: any;
 
+    promoStandartForm: FormGroup;
+    isAddLoader: boolean = false;
+
+    @ViewChild('drawer', { static: true }) sidenav: MatDrawer;
+
+
     constructor(
         private _activatedRoute: ActivatedRoute,
         private _changeDetectorRef: ChangeDetectorRef,
         @Inject(DOCUMENT) private _document: any,
         private _router: Router,
         private _promostandardsService: TasksService,
-        private _fuseMediaWatcherService: FuseMediaWatcherService
+        private _fuseMediaWatcherService: FuseMediaWatcherService,
+        private _snackBar: MatSnackBar
     ) {
     }
 
@@ -56,6 +65,7 @@ export class PromostandardsListComponent implements OnInit, OnDestroy {
      * On init
      */
     ngOnInit(): void {
+        this.initPromoForm();
         this.dropdownSettings = {
             singleSelection: true,
             idField: 'id',
@@ -94,6 +104,18 @@ export class PromostandardsListComponent implements OnInit, OnDestroy {
             });
     }
 
+    initPromoForm() {
+        this.promoStandartForm = new FormGroup({
+            id: new FormControl(0),
+            supplier_id: new FormControl(''),
+            url: new FormControl(''),
+            username: new FormControl(''),
+            password: new FormControl(''),
+            type: new FormControl('pricing'),
+            bln_active: new FormControl(true),
+            version: new FormControl(''),
+        })
+    }
     /**
      * On destroy
      */
@@ -107,12 +129,22 @@ export class PromostandardsListComponent implements OnInit, OnDestroy {
     // @ Public methods
     // -----------------------------------------------------------------------------------------------------
 
-    getPromostandards(page: number): void {
+    getPromostandards(page: number, type): void {
         this._promostandardsService.getPromostandards(page)
             .pipe(takeUntil(this._unsubscribeAll))
             .subscribe((response: Promostandard[]) => {
                 this.promostandards = response["data"];
                 this.isLoading = false;
+                if (type == 'add') {
+                    this.sidenav.toggle();
+                    this.isAddLoader = false;
+                    this.initPromoForm();
+                    this._snackBar.open('Promostandards credentials added successfully', '', {
+                        horizontalPosition: 'center',
+                        verticalPosition: 'bottom',
+                        duration: 3500
+                    });
+                }
 
                 // Mark for check
                 this._changeDetectorRef.markForCheck();
@@ -128,7 +160,7 @@ export class PromostandardsListComponent implements OnInit, OnDestroy {
         } else {
             this.page--;
         };
-        this.getPromostandards(this.page);
+        this.getPromostandards(this.page, 'get');
     };
 
     /**
@@ -139,5 +171,27 @@ export class PromostandardsListComponent implements OnInit, OnDestroy {
      */
     trackByFn(index: number, item: any): any {
         return item.id || index;
+    }
+    addPromoStandard() {
+        const { id, supplier_id, url, username, password, type, bln_active, version } = this.promoStandartForm.getRawValue();
+        if (supplier_id == '' || url == '' || username == '' || password == '' || version == '') {
+            this._snackBar.open('Please fill out required fields', '', {
+                horizontalPosition: 'center',
+                verticalPosition: 'bottom',
+                duration: 3500
+            });
+        } else {
+            this.isAddLoader = true;
+            let payload = {
+                id, supplier_id, url, username, password, type, bln_active, version, promostandard_credentials_post: true
+            }
+            this._promostandardsService.postPromoData(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+                this.getPromostandards(this.page, 'add');
+                this._changeDetectorRef.markForCheck();
+            }, err => {
+                this.isAddLoader = false;
+                this._changeDetectorRef.markForCheck();
+            })
+        }
     }
 }

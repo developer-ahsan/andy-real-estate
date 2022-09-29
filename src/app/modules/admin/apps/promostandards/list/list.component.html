@@ -1,37 +1,63 @@
 <div class="absolute inset-0 flex flex-col min-w-0 overflow-auto bg-card">
 
-    <mat-drawer-container class="example-container w-full" [hasBackdrop]="false">
-        <mat-drawer #drawer [mode]="'over'" position="end">
+    <mat-drawer-container class="example-container w-full bg-white" [hasBackdrop]="false">
+        <mat-drawer #drawer [mode]="'over'" position="end" style="width: 500px !important">
             <div class="row p-5">
-                <div class="col-6">
+                <div class="col-9">
                     <div class="text-2xl font-extrabold tracking-tight leading-none"> Add New Promostandard
                     </div>
                 </div>
-                <div class="col-6 text-right">
+                <div class="col-3 text-right">
                     <mat-icon (click)="drawer.toggle()" class="mr-2 cursor-pointer" [svgIcon]="'mat_outline:close'">
                     </mat-icon>
                 </div>
-                <div class="col-12 mt-4">
+                <div class="col-12 mt-4" [formGroup]="promoStandartForm">
                     <mat-form-field class="w-full">
-                        <mat-label>Select Supplier</mat-label>
-                        <mat-select [disableOptionCentering]="true" #select1 placeholder="Auto Focus">
+                        <mat-label>Select Supplier *</mat-label>
+                        <mat-select formControlName="supplier_id">
                             <mat-option *ngFor="let item of dropdownList" [value]="item.pk_companyID">
                                 {{item.companyName}}
                             </mat-option>
                         </mat-select>
                     </mat-form-field>
                     <mat-form-field class="w-full">
-                        <mat-label>Url</mat-label>
-                        <input matInput>
+                        <mat-label>Url *</mat-label>
+                        <input matInput formControlName="url">
                     </mat-form-field>
                     <mat-form-field class="w-full">
-                        <mat-label>User Name</mat-label>
-                        <input matInput>
+                        <mat-label>User Name *</mat-label>
+                        <input matInput formControlName="username">
                     </mat-form-field>
                     <mat-form-field class="w-full">
-                        <mat-label>Password</mat-label>
-                        <input matInput type="password">
+                        <mat-label>Password *</mat-label>
+                        <input matInput type="password" formControlName="password">
                     </mat-form-field>
+                    <mat-form-field class="w-full">
+                        <mat-label>Type</mat-label>
+                        <mat-select formControlName="type">
+                            <mat-option [value]="'pricing'">Pricing</mat-option>
+                            <mat-option [value]="'data'">Data</mat-option>
+                            <mat-option [value]="'inventory'">Inventory</mat-option>
+                        </mat-select>
+                    </mat-form-field>
+                    <mat-form-field class="w-full">
+                        <mat-label>Active</mat-label>
+                        <mat-select formControlName="bln_active">
+                            <mat-option [value]="true">Yes</mat-option>
+                            <mat-option [value]="false">No</mat-option>
+                        </mat-select>
+                    </mat-form-field>
+                    <mat-form-field class="w-full">
+                        <mat-label>Version *</mat-label>
+                        <input matInput formControlName="version">
+                    </mat-form-field>
+                    <button (click)="addPromoStandard()" [disabled]="isAddLoader" class="mt-2 w-full" mat-flat-button
+                        mat-stroked-button [matTooltip]="'Add new promostandard endpoint for supplier into the system'">
+                        <mat-progress-spinner *ngIf="isAddLoader" [diameter]="24" [mode]="'indeterminate'">
+                        </mat-progress-spinner>
+                        <mat-icon *ngIf="!isAddLoader" [svgIcon]="'heroicons_outline:plus'"></mat-icon>
+                        <span class=" ml-2 mr-1">Add</span>
+                    </button>
                 </div>
             </div>
         </mat-drawer>
