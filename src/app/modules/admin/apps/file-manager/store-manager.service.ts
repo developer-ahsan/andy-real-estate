@@ -437,6 +437,7 @@ export class FileManagerService {
     );
   }
 
+  // presentation data
   getPresentationData(params) {
     return this._httpClient
       .get<any[]>(environment.stores, { params: params })
