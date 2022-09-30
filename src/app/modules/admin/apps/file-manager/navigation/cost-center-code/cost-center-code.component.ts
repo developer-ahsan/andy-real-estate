@@ -54,6 +54,7 @@ export class CostCenterCodeComponent implements OnInit, OnDestroy {
           this.isCostAddLoader = false;
           this.isCostAddMsg = true;
           this.ngCostCode = '';
+          this.mainScreen = 'Cost Center Codes';
           setTimeout(() => {
             this.isCostAddMsg = false;
             this._changeDetectorRef.markForCheck();

@@ -334,7 +334,7 @@ export class ArtApprovalComponent implements OnInit, OnDestroy {
   addProofEmail() {
     const { body, subject } = this.isAddEmailForm.getRawValue();
     if (!body || subject == '') {
-      this._snackBar.open("Please Check Input Fields", '', {
+      this._snackBar.open("Please fill out required fields", '', {
         horizontalPosition: 'center',
         verticalPosition: 'bottom',
         duration: 3000
@@ -466,7 +466,7 @@ export class ArtApprovalComponent implements OnInit, OnDestroy {
   updateDefaulApprovalGroupContact() {
     const { listOrder, firstName, lastName, email } = this.isEditDefaultContactForm.getRawValue();
     if (listOrder == '' || firstName == '' || lastName == '' || email == '') {
-      this._snackBar.open("Please Check Required Fields", '', {
+      this._snackBar.open("Please fill out required fields", '', {
         horizontalPosition: 'center',
         verticalPosition: 'bottom',
         duration: 3000
@@ -596,7 +596,7 @@ export class ArtApprovalComponent implements OnInit, OnDestroy {
   addApprovalContactGroup() {
     let { listOrder, firstName, lastName, email, storeUserID, fk_artApprovalGroupID, blnEmails, blnStoreUserApprovalContacts, blnRoyalties, add_artApproval_contact } = this.addContactGroupForm.getRawValue();
     if (listOrder == '' || firstName == '' || lastName == '' || email == '') {
-      this._snackBar.open("Please Check Required Fields", '', {
+      this._snackBar.open("Please fill out required fields", '', {
         horizontalPosition: 'center',
         verticalPosition: 'bottom',
         duration: 3000
@@ -674,7 +674,7 @@ export class ArtApprovalComponent implements OnInit, OnDestroy {
   addContactGroup() {
     let { name, fk_storeID, fk_attributeID, fk_locationID, add_artContact_group } = this.addGroupForm.getRawValue();
     if (name == '' || fk_attributeID == '') {
-      this._snackBar.open("Please Check Required Fields", '', {
+      this._snackBar.open("Please fill out required fields", '', {
         horizontalPosition: 'center',
         verticalPosition: 'bottom',
         duration: 3000

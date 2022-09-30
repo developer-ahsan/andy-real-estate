@@ -4,11 +4,11 @@
         <mat-drawer #drawer [mode]="'over'" position="end" style="width: 500px !important">
             <div class="row p-5">
                 <div class="col-9">
-                    <div class="text-2xl font-extrabold tracking-tight leading-none"> Add New Promostandard
+                    <div class="text-2xl font-extrabold tracking-tight leading-none"> {{drawerTitle}}
                     </div>
                 </div>
                 <div class="col-3 text-right">
-                    <mat-icon (click)="drawer.toggle()" class="mr-2 cursor-pointer" [svgIcon]="'mat_outline:close'">
+                    <mat-icon (click)="closeDrawer()" class="mr-2 cursor-pointer" [svgIcon]="'mat_outline:close'">
                     </mat-icon>
                 </div>
                 <div class="col-12 mt-4" [formGroup]="promoStandartForm">
@@ -51,12 +51,21 @@
                         <mat-label>Version *</mat-label>
                         <input matInput formControlName="version">
                     </mat-form-field>
-                    <button (click)="addPromoStandard()" [disabled]="isAddLoader" class="mt-2 w-full" mat-flat-button
-                        mat-stroked-button [matTooltip]="'Add new promostandard endpoint for supplier into the system'">
+                    <button *ngIf="drawerType == 'add'" (click)="addPromoStandard()" [disabled]="isAddLoader"
+                        class="mt-2 w-full" mat-flat-button mat-stroked-button
+                        [matTooltip]="'Add new promostandard endpoint for supplier into the system'">
                         <mat-progress-spinner *ngIf="isAddLoader" [diameter]="24" [mode]="'indeterminate'">
                         </mat-progress-spinner>
                         <mat-icon *ngIf="!isAddLoader" [svgIcon]="'heroicons_outline:plus'"></mat-icon>
                         <span class=" ml-2 mr-1">Add</span>
+                    </button>
+                    <button *ngIf="drawerType == 'update'" (click)="updatePromoStandard()" [disabled]="isAddLoader"
+                        class="mt-2 w-full" mat-flat-button mat-stroked-button
+                        [matTooltip]="'Update promostandard endpoint for supplier into the system'">
+                        <mat-progress-spinner *ngIf="isAddLoader" [diameter]="24" [mode]="'indeterminate'">
+                        </mat-progress-spinner>
+                        <mat-icon *ngIf="!isAddLoader" [svgIcon]="'heroicons_outline:plus'"></mat-icon>
+                        <span class=" ml-2 mr-1">Update</span>
                     </button>
                 </div>
             </div>
@@ -78,7 +87,7 @@
                     <!-- Actions -->
                     <div class="mt-4 sm:mt-0">
                         <!-- Add section button -->
-                        <button (click)="drawer.toggle()" mat-flat-button [color]="'accent'"
+                        <button (click)="drawerTitleChange('add', null)" mat-flat-button [color]="'accent'"
                             [matTooltip]="'Add new promostandard endpoint for supplier into the system'">
                             <mat-icon [svgIcon]="'heroicons_outline:plus'"></mat-icon>
                             <span class="ml-2 mr-1">Add Section</span>
@@ -98,8 +107,7 @@
                             <div class="overflow-auto" cdkScrollable>
 
                                 <!-- Table -->
-                                <table class="w-full table-fixed bg-transparent"
-                                    [ngClass]="{'pointer-events-none': isLoading}" mat-table
+                                <table class="w-full table-fixed bg-transparent" mat-table
                                     [dataSource]="promostandards">
 
                                     <!-- Supplier Name -->
@@ -108,7 +116,8 @@
                                             *matHeaderCellDef mat-sort-header disableClear>
                                             Supplier Name
                                         </th>
-                                        <td mat-cell *matCellDef="let promostandard">
+                                        <td mat-cell *matCellDef="let promostandard"
+                                            (click)="drawerTitleChange('update', promostandard)">
                                             <span>{{promostandard.companyName}}</span>
                                         </td>
                                     </ng-container>
@@ -119,7 +128,8 @@
                                             *matHeaderCellDef mat-sort-header disableClear>
                                             URL
                                         </th>
-                                        <td mat-cell *matCellDef="let promostandard">
+                                        <td mat-cell *matCellDef="let promostandard"
+                                            (click)="drawerTitleChange('update', promostandard)">
                                             <span>{{promostandard.url}}</span>
                                         </td>
                                     </ng-container>
@@ -128,7 +138,8 @@
                                             *matHeaderCellDef mat-sort-header disableClear>
                                             Type
                                         </th>
-                                        <td mat-cell *matCellDef="let promostandard">
+                                        <td mat-cell *matCellDef="let promostandard"
+                                            (click)="drawerTitleChange('update', promostandard)">
                                             <span class="text-capitalize">{{promostandard.type}}</span>
                                         </td>
                                     </ng-container>

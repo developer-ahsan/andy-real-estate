@@ -355,4 +355,8 @@ export class TasksService {
         const headers = { 'Authorization': `Bearer ${this._authService.accessToken}` };
         return this._httpClient.post(environment.products, payload, { headers }).pipe(retry(3));
     }
+    putPromoData(payload) {
+        const headers = { 'Authorization': `Bearer ${this._authService.accessToken}` };
+        return this._httpClient.put(environment.products, payload, { headers }).pipe(retry(3));
+    }
 }

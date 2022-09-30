@@ -44,8 +44,8 @@ export class PromostandardsListComponent implements OnInit, OnDestroy {
     isAddLoader: boolean = false;
 
     @ViewChild('drawer', { static: true }) sidenav: MatDrawer;
-
-
+    drawerTitle = '';
+    drawerType = 'add';
     constructor(
         private _activatedRoute: ActivatedRoute,
         private _changeDetectorRef: ChangeDetectorRef,
@@ -106,7 +106,7 @@ export class PromostandardsListComponent implements OnInit, OnDestroy {
 
     initPromoForm() {
         this.promoStandartForm = new FormGroup({
-            id: new FormControl(0),
+            id: new FormControl(''),
             supplier_id: new FormControl(''),
             url: new FormControl(''),
             username: new FormControl(''),
@@ -193,5 +193,45 @@ export class PromostandardsListComponent implements OnInit, OnDestroy {
                 this._changeDetectorRef.markForCheck();
             })
         }
+    }
+    updatePromoStandard() {
+        const { id, supplier_id, url, username, password, type, bln_active, version } = this.promoStandartForm.getRawValue();
+        if (supplier_id == '' || url == '' || username == '' || password == '' || version == '') {
+            this._snackBar.open('Please fill out required fields', '', {
+                horizontalPosition: 'center',
+                verticalPosition: 'bottom',
+                duration: 3500
+            });
+        } else {
+            this.isAddLoader = true;
+            let payload = {
+                id, supplier_id, url, username, password, type, bln_active, version, promostandard_credentials_put: true
+            }
+            this._promostandardsService.putPromoData(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+                this.getPromostandards(this.page, 'add');
+                this._changeDetectorRef.markForCheck();
+            }, err => {
+                this.isAddLoader = false;
+                this._changeDetectorRef.markForCheck();
+            })
+        }
+    }
+    drawerTitleChange(type, obj) {
+        this.sidenav.toggle();
+        this.drawerType = type;
+        if (type == 'add') {
+            this.drawerTitle = 'Add New Promostandard';
+        } else {
+            this.drawerTitle = 'Update Promostandard';
+            this.promoStandartForm.patchValue(obj);
+            this.promoStandartForm.patchValue({
+                supplier_id: Number(obj.fk_supplierID),
+                id: obj.pk_promostandards_credential_ID
+            })
+        }
+    }
+    closeDrawer() {
+        this.initPromoForm();
+        this.sidenav.toggle();
     }
 }
