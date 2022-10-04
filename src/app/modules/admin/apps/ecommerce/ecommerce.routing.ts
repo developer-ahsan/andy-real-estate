@@ -34,7 +34,8 @@ export const ecommerceRoutes: Route[] = [
                 pathMatch: 'full',
                 component: ProductDetailsComponent,
                 resolve: {
-                    suppliers: SuppliersListResolver
+                    suppliers: SuppliersListResolver,
+                    product: ProductDescriptionResolver
                 }
             },
             {

@@ -105,7 +105,7 @@ export class ProductDescriptionResolver implements Resolve<any>
      */
     resolve(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<ProductsList[]> {
         const id = route.params['id'];
-        return this._inventoryService.getProductDescription(id);
+        return this._inventoryService.getProductByProductId(id);
     }
 }
 
