@@ -12,6 +12,7 @@ import {
 import { environment } from "environments/environment";
 import { navigations } from "./navigation-data";
 import { AuthService } from "app/core/auth/auth.service";
+import { AddNewsFeed, AddScroller, AddTestimonial, colorHeaderUpdate, colorsUpdate, DefaultEmailUpdate, DeleteNewsFeed, DeleteScroller, DeleteTestimonial, UpdateDefaultScroller, UpdateNewsFeed, UpdateScroller, UpdateScrollerOrder, UpdateSpecialOffer, UpdateTestimonials, UpdateTestimonialStatus, UpdateTypeKit } from "./navigation/presentation/presentation.types";
 
 @Injectable({
   providedIn: "root",
@@ -470,5 +471,77 @@ export class FileManagerService {
     return this._httpClient
       .get<any[]>(environment.products, { params: params })
       .pipe(retry(3));
+  }
+
+  // Presentation Calls 
+  colorHeaderUpdate(payload: colorHeaderUpdate) {
+    const headers = { 'Authorization': `Bearer ${this._authService.accessToken}` };
+    return this._httpClient.put(environment.stores, payload, { headers }).pipe(retry(3));
+  }
+  colorsUpdate(payload: colorsUpdate) {
+    const headers = { 'Authorization': `Bearer ${this._authService.accessToken}` };
+    return this._httpClient.put(environment.stores, payload, { headers }).pipe(retry(3));
+  }
+  UpdateSpecialOffer(payload: UpdateSpecialOffer) {
+    const headers = { 'Authorization': `Bearer ${this._authService.accessToken}` };
+    return this._httpClient.put(environment.stores, payload, { headers }).pipe(retry(3));
+  }
+  UpdateTypeKit(payload: UpdateTypeKit) {
+    const headers = { 'Authorization': `Bearer ${this._authService.accessToken}` };
+    return this._httpClient.put(environment.stores, payload, { headers }).pipe(retry(3));
+  }
+  AddNewsFeed(payload: AddNewsFeed) {
+    const headers = { 'Authorization': `Bearer ${this._authService.accessToken}` };
+    return this._httpClient.post(environment.stores, payload, { headers }).pipe(retry(3));
+  }
+  UpdateNewsFeed(payload: UpdateNewsFeed) {
+    const headers = { 'Authorization': `Bearer ${this._authService.accessToken}` };
+    return this._httpClient.put(environment.stores, payload, { headers }).pipe(retry(3));
+  }
+  DeleteNewsFeed(payload: DeleteNewsFeed) {
+    const headers = { 'Authorization': `Bearer ${this._authService.accessToken}` };
+    return this._httpClient.put(environment.stores, payload, { headers }).pipe(retry(3));
+  }
+  // Dashboard Emails
+  DefaultEmailUpdate(payload: DefaultEmailUpdate) {
+    const headers = { 'Authorization': `Bearer ${this._authService.accessToken}` };
+    return this._httpClient.put(environment.stores, payload, { headers }).pipe(retry(3));
+  }
+  // Testimonials
+  UpdateTestimonialStatus(payload: UpdateTestimonialStatus) {
+    const headers = { 'Authorization': `Bearer ${this._authService.accessToken}` };
+    return this._httpClient.put(environment.stores, payload, { headers }).pipe(retry(3));
+  }
+  UpdateTestimonials(payload: UpdateTestimonials) {
+    const headers = { 'Authorization': `Bearer ${this._authService.accessToken}` };
+    return this._httpClient.put(environment.stores, payload, { headers }).pipe(retry(3));
+  }
+  DeleteTestimonial(payload: DeleteTestimonial) {
+    const headers = { 'Authorization': `Bearer ${this._authService.accessToken}` };
+    return this._httpClient.put(environment.stores, payload, { headers }).pipe(retry(3));
+  }
+  AddTestimonial(payload: AddTestimonial) {
+    const headers = { 'Authorization': `Bearer ${this._authService.accessToken}` };
+    return this._httpClient.post(environment.stores, payload, { headers }).pipe(retry(3));
+  }
+  UpdateDefaultScroller(payload: UpdateDefaultScroller) {
+    const headers = { 'Authorization': `Bearer ${this._authService.accessToken}` };
+    return this._httpClient.put(environment.stores, payload, { headers }).pipe(retry(3));
+  }
+  UpdateScrollerOrder(payload: UpdateScrollerOrder) {
+    const headers = { 'Authorization': `Bearer ${this._authService.accessToken}` };
+    return this._httpClient.put(environment.stores, payload, { headers }).pipe(retry(3));
+  }
+  AddScroller(payload: AddScroller) {
+    const headers = { 'Authorization': `Bearer ${this._authService.accessToken}` };
+    return this._httpClient.post(environment.stores, payload, { headers }).pipe(retry(3));
+  }
+  DeleteScroller(payload: DeleteScroller) {
+    const headers = { 'Authorization': `Bearer ${this._authService.accessToken}` };
+    return this._httpClient.put(environment.stores, payload, { headers }).pipe(retry(3));
+  }
+  UpdateScroller(payload: UpdateScroller) {
+    const headers = { 'Authorization': `Bearer ${this._authService.accessToken}` };
+    return this._httpClient.put(environment.stores, payload, { headers }).pipe(retry(3));
   }
 }

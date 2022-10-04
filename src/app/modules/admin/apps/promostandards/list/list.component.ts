@@ -1,8 +1,8 @@
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Inject, OnDestroy, OnInit, ViewChild, ViewEncapsulation } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, Inject, OnDestroy, OnInit, ViewChild, ViewEncapsulation } from '@angular/core';
 import { DOCUMENT } from '@angular/common';
 import { ActivatedRoute, Router } from '@angular/router';
 import { MatDrawer } from '@angular/material/sidenav';
-import { Subject } from 'rxjs';
+import { fromEvent, Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { FuseMediaWatcherService } from '@fuse/services/media-watcher';
 import { Promostandard } from 'app/modules/admin/apps/promostandards/promostandards.types';
@@ -10,6 +10,7 @@ import { TasksService } from 'app/modules/admin/apps/promostandards/promostandar
 import { IDropdownSettings } from 'ng-multiselect-dropdown';
 import { FormControl, FormGroup } from '@angular/forms';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { debounceTime, map, distinctUntilChanged, filter } from "rxjs/operators";
 
 @Component({
     selector: 'tasks-list',
@@ -19,14 +20,20 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 })
 export class PromostandardsListComponent implements OnInit, OnDestroy {
     @ViewChild('matDrawer', { static: true }) matDrawer: MatDrawer;
+    SearchInput: ElementRef;
 
+    @ViewChild('SearchInput') set content(content: ElementRef) {
+        this.SearchInput = content;
+    }
     drawerMode: 'side' | 'over';
     selectedPromostandard: Promostandard;
     // List
     promostandards: Promostandard[];
+    tempPromostandards: Promostandard[];
     private _unsubscribeAll: Subject<any> = new Subject<any>();
     promostandardsTableColumns: string[] = ['companyName', 'url', 'type'];
     promostandardsCount: number = 0;
+    tempPromostandardsCount: number = 0;
     page: number = 1;
     pageNo: number = 0;
     isLoading: boolean = true;
@@ -46,6 +53,7 @@ export class PromostandardsListComponent implements OnInit, OnDestroy {
     @ViewChild('drawer', { static: true }) sidenav: MatDrawer;
     drawerTitle = '';
     drawerType = 'add';
+    searchKeyword = '';
     constructor(
         private _activatedRoute: ActivatedRoute,
         private _changeDetectorRef: ChangeDetectorRef,
@@ -65,6 +73,7 @@ export class PromostandardsListComponent implements OnInit, OnDestroy {
      * On init
      */
     ngOnInit(): void {
+        this.isLoading = false;
         this.initPromoForm();
         this.dropdownSettings = {
             singleSelection: true,
@@ -80,11 +89,16 @@ export class PromostandardsListComponent implements OnInit, OnDestroy {
                 this._changeDetectorRef.markForCheck();
             });
         // Get the promostandards list
+        this.tempPromostandards = [];
         this._promostandardsService.promostandards$
             .pipe(takeUntil(this._unsubscribeAll))
             .subscribe((response: Promostandard[]) => {
                 this.promostandards = response["data"];
                 this.promostandardsCount = response["totalRecords"];
+                if (this.tempPromostandards.length == 0) {
+                    this.tempPromostandards = response["data"];
+                    this.tempPromostandardsCount = response["totalRecords"];
+                }
 
                 // Mark for check
                 this._changeDetectorRef.markForCheck();
@@ -130,10 +144,19 @@ export class PromostandardsListComponent implements OnInit, OnDestroy {
     // -----------------------------------------------------------------------------------------------------
 
     getPromostandards(page: number, type): void {
-        this._promostandardsService.getPromostandards(page)
+        let val = "";
+        if (type = 'filter') {
+            val = this.searchKeyword;
+        }
+        let payload = {
+            page: page,
+            keyword: val
+        }
+        this._promostandardsService.getPromostandards(payload)
             .pipe(takeUntil(this._unsubscribeAll))
             .subscribe((response: Promostandard[]) => {
                 this.promostandards = response["data"];
+                this.promostandardsCount = response["totalRecords"];
                 this.isLoading = false;
                 if (type == 'add') {
                     this.sidenav.toggle();
@@ -233,5 +256,16 @@ export class PromostandardsListComponent implements OnInit, OnDestroy {
     closeDrawer() {
         this.initPromoForm();
         this.sidenav.toggle();
+    }
+    searchPromostandards(ev) {
+        this.searchKeyword = ev.target.value;
+        if (ev.target.value.length == 0) {
+            this.promostandardsCount = this.tempPromostandardsCount;
+            this.promostandards = this.tempPromostandards;
+        } else {
+            this.isLoading = true;
+            this._changeDetectorRef.markForCheck()
+            this.getPromostandards(1, 'filter');
+        }
     }
 }

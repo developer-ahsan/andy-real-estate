@@ -64,12 +64,13 @@ export class TasksService {
     // -----------------------------------------------------------------------------------------------------
 
     // Get promostandards list
-    getPromostandards(page): Observable<Promostandard[]> {
+    getPromostandards(payload): Observable<Promostandard[]> {
         return this._httpClient.get<Promostandard[]>(environment.products, {
             params: {
                 promo_standards_credentials: true,
-                page: page,
-                size: 20
+                page: payload.page,
+                keyword: payload.keyword,
+                size: 10
             }
         }).pipe(
             tap((data) => {

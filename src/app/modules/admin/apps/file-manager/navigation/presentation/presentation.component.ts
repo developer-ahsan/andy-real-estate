@@ -18,6 +18,8 @@ import { Subject } from "rxjs";
 import { finalize, takeUntil, map } from "rxjs/operators";
 import { FileManagerService } from "../../store-manager.service";
 import { environment } from "environments/environment";
+import moment from "moment";
+import { MatSnackBar } from "@angular/material/snack-bar";
 @Component({
   selector: "app-presentation",
   templateUrl: "./presentation.component.html",
@@ -68,15 +70,9 @@ export class PresentationComponent implements OnInit, OnDestroy {
   checked = false;
 
   isPageLoading: boolean = false;
-  siteColorsForm: FormGroup;
   mastHeadImg = "";
   socialMediaForm: FormGroup;
   // News Feed
-  newsFeedData: any;
-  // Special Offers
-  specialOfferForm: FormGroup;
-  // Typekit
-  ngTypeKit = "";
   // Campaigns
   campaignData: any;
   // Payment Methods
@@ -97,52 +93,77 @@ export class PresentationComponent implements OnInit, OnDestroy {
   drawerOpened: boolean = false;
   selectedIndex: any;
   drawerMode = "over";
+
+
+  // Look & Feel 
+  ngBlnColorHeader: boolean = false;
+  lookFeelLoader: boolean = false;
+  lookFeelMsg: boolean = false;
+  // SiteColor
+  siteColorsForm: FormGroup;
+  siteColorLoader: boolean = false;
+  siteColorMsg: boolean = false;
+  // Special Offers
+  specialOfferForm: FormGroup;
+  specialOfferLoader: boolean = false;
+  specialOfferMsg: boolean = false;
+  // Typekit
+  ngTypeKit = "";
+  typekitLoader: boolean = false;
+  typekitMsg: boolean = false;
+  // News Feed
+  newsFeedData: any;
+  newsFeedAddLoader: boolean = false;
+  newsFeedAddMsg: boolean = false;
+  newsFeedAddForm: FormGroup;
+  newsFeedUpdateForm: FormGroup;
+  newsFeedUpdateLoader: boolean = false;
+  newsFeedUpdateMsg: boolean = false;
+  isNewsFeedAdd: boolean = false;
+  isNewsFeedupdate: boolean = false;
+  newsFeedColumns: string[] = ['id', 'date', 'title', 'action'];
+
+  // Dashboard Emails 
+  dashboardEmailsForm: FormGroup;
+  dashboardEmailLoader: boolean = false;
+  dashboardEmailMsg: boolean = false;
+  // Home Page Scrollers
+
   constructor(
     private _fileManagerService: FileManagerService,
     private _changeDetectorRef: ChangeDetectorRef,
     private _matDialog: MatDialog,
+    private _snackBar: MatSnackBar,
     private formBuilder: FormBuilder
   ) { }
 
   ngOnInit(): void {
     this.isLoadingChange.emit(false);
     this.initialize();
+    this._fileManagerService.settings$.pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+      this.ngBlnColorHeader = res["data"][0].blnColorHeaders;
+      console.log(res)
+    })
   }
   initialize() {
+    this.initSiteColorForm();
+    this.initSpecialOfferForm();
+    this.initNewsFeedForm();
+    this.initDashboardEmailForm();
     this.mastHeadImg =
       environment.storeMedia +
       `/mastheads/` +
       this.selectedStore.pk_storeID +
       ".gif";
-    this.featureImageUrl =
-      environment.featureImage + this.selectedStore.pk_storeID + "/";
-    this.siteColorsForm = new FormGroup({
-      mainNav: new FormControl("", Validators.required),
-      primaryHighlight: new FormControl("", Validators.required),
-      mainNavHover: new FormControl("", Validators.required),
-      catMenuLink: new FormControl("", Validators.required),
-      catMenuLinkHover: new FormControl("", Validators.required),
-      subCatMenuLink: new FormControl("", Validators.required),
-      subCatMenuLinkHover: new FormControl("", Validators.required),
-      link: new FormControl("", Validators.required),
-      linkHover: new FormControl("", Validators.required),
-      HomeFeatureLink: new FormControl("", Validators.required),
-      secondaryHighlight: new FormControl("", Validators.required),
-      mainNavLinkColor: new FormControl("", Validators.required),
-      mainNavLinkColorHover: new FormControl("", Validators.required),
-    });
+    this.featureImageUrl = environment.featureImage + this.selectedStore.pk_storeID + "/";
+
     this.socialMediaForm = new FormGroup({
       facebookPage: new FormControl(""),
       twitterPage: new FormControl(""),
       linkedInPage: new FormControl(""),
       instagramPage: new FormControl(""),
     });
-    this.specialOfferForm = new FormGroup({
-      blnOffer: new FormControl(false),
-      offerText: new FormControl(""),
-      offerTextBox: new FormControl(""),
-      offerFooter: new FormControl(""),
-    });
+
     this.onlineCreditForm = new FormGroup({
       title: new FormControl("", Validators.required),
       description: new FormControl("", Validators.required),
@@ -175,6 +196,68 @@ export class PresentationComponent implements OnInit, OnDestroy {
       memberDetails: this.formBuilder.array([]),
     });
   }
+  initSiteColorForm() {
+    this.siteColorsForm = new FormGroup({
+      mainNav: new FormControl("", Validators.required),
+      primaryHighlight: new FormControl("", Validators.required),
+      mainNavHover: new FormControl("", Validators.required),
+      catMenuLink: new FormControl("", Validators.required),
+      catMenuLinkHover: new FormControl("", Validators.required),
+      subCatMenuLink: new FormControl("", Validators.required),
+      subCatMenuLinkHover: new FormControl("", Validators.required),
+      link: new FormControl("", Validators.required),
+      linkHover: new FormControl("", Validators.required),
+      homeFeatureLink: new FormControl("", Validators.required),
+      homeFeatureLinkHover: new FormControl(""),
+      secondaryHighlight: new FormControl("", Validators.required),
+      mainNavLinkColor: new FormControl("", Validators.required),
+      mainNavLinkColorHover: new FormControl("", Validators.required),
+      fk_storeID: new FormControl(this.selectedStore.pk_storeID),
+      site_colors_update: new FormControl(true)
+    });
+  }
+  initSpecialOfferForm() {
+    this.specialOfferForm = new FormGroup({
+      blnOffer: new FormControl(false),
+      offerText: new FormControl(""),
+      offerTextBox: new FormControl(""),
+      offerFooter: new FormControl(""),
+      fk_storeID: new FormControl(this.selectedStore.pk_storeID),
+      update_special_offer: new FormControl(true)
+    });
+  }
+  initNewsFeedForm() {
+    this.newsFeedAddForm = new FormGroup({
+      fk_storeID: new FormControl(this.selectedStore.pk_storeID),
+      title: new FormControl('', Validators.required),
+      date: new FormControl(new Date(), Validators.required),
+      news: new FormControl('', Validators.required),
+      add_news_feed: new FormControl(true)
+    });
+    this.newsFeedUpdateForm = new FormGroup({
+      fk_storeID: new FormControl(this.selectedStore.pk_storeID),
+      title: new FormControl('', Validators.required),
+      date: new FormControl('', Validators.required),
+      news: new FormControl('', Validators.required),
+      pk_newsFeedID: new FormControl('', Validators.required),
+      update_news_feed: new FormControl(true)
+    });
+  }
+  initDashboardEmailForm() {
+    this.dashboardEmailsForm = new FormGroup({
+      rescheduleFollowUp: new FormControl(''),
+      sampleEmail: new FormControl(''),
+      paymentNotification: new FormControl(''),
+      followUpEmail: new FormControl(''),
+      reorderEmail: new FormControl(''),
+      surveyEmail: new FormControl(''),
+      surveyEmailSubject: new FormControl(''),
+      quoteEmailSubject: new FormControl(''),
+      quoteEmail: new FormControl(''),
+      fk_storeID: new FormControl(this.selectedStore.pk_storeID),
+      update_default_email: new FormControl(true)
+    })
+  }
   get color() {
     return this.siteColorsForm.controls;
   }
@@ -194,6 +277,8 @@ export class PresentationComponent implements OnInit, OnDestroy {
       } else if (screenName == "Social Media") {
         this.getScreenData("social_media", screenName);
       } else if (screenName == "News Feed") {
+        this.isNewsFeedAdd = false;
+        this.isNewsFeedupdate = false;
         this.getScreenData("news_feed", screenName);
       } else if (screenName == "Special offers") {
         this.getScreenData("special_offer", screenName);
@@ -208,6 +293,8 @@ export class PresentationComponent implements OnInit, OnDestroy {
         this.getScreenData("available_support_team", screenName);
       } else if (screenName == "Feature Images") {
         this.getScreenData("feature_image", screenName);
+      } else if (screenName == "Default Dashboard Emails") {
+        this.getScreenData("presentation_default_emails", screenName);
       }
     }
   }
@@ -224,9 +311,14 @@ export class PresentationComponent implements OnInit, OnDestroy {
       .subscribe((res: any) => {
         if (screen == "Site Color") {
           this.siteColorsForm.patchValue(res.data[0]);
+          this.siteColorsForm.patchValue({
+            homeFeatureLink: res.data[0].HomeFeatureLink
+          })
         } else if (screen == "Social Media") {
           this.socialMediaForm.patchValue(res.data[0]);
         } else if (screen == "News Feed") {
+          this.isNewsFeedAdd = false;
+          this.isNewsFeedupdate = false;
           this.newsFeedData = res.data;
         } else if (screen == "Special offers") {
           this.specialOfferForm.patchValue(res.data[0]);
@@ -262,6 +354,8 @@ export class PresentationComponent implements OnInit, OnDestroy {
           }
         } else if (screen == "Feature Images") {
           this.featureImagesData = res.data;
+        } else if (screen == "Default Dashboard Emails") {
+          this.dashboardEmailsForm.patchValue(res.data[0]);
         }
         this.isPageLoading = false;
         this._changeDetectorRef.markForCheck();
@@ -284,4 +378,239 @@ export class PresentationComponent implements OnInit, OnDestroy {
     this._unsubscribeAll.next();
     this._unsubscribeAll.complete();
   };
+  // Look & Feel
+  colorHeaderUpdate() {
+    this.lookFeelLoader = true;
+    let payload = {
+      blnColorHeaders: this.ngBlnColorHeader,
+      fk_storeID: this.selectedStore.pk_storeID,
+      color_header_update: true
+    }
+    this._fileManagerService.colorHeaderUpdate(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+      this.lookFeelLoader = false;
+      if (res["success"]) {
+        this._fileManagerService.getStoreSetting(this.selectedStore.pk_storeID).pipe(takeUntil(this._unsubscribeAll)).subscribe();
+        this.lookFeelMsg = true;
+        setTimeout(() => {
+          this.lookFeelMsg = false;
+          this._changeDetectorRef.markForCheck();
+        }, 3000);
+      }
+      this._changeDetectorRef.markForCheck();
+    }, err => {
+      this.lookFeelLoader = false;
+      this._changeDetectorRef.markForCheck();
+    })
+  }
+  // Site Colors
+  colorsUpdate() {
+    const { primaryHighlight,
+      secondaryHighlight,
+      mainNav,
+      mainNavHover,
+      mainNavLinkColor,
+      mainNavLinkColorHover,
+      catMenuLink,
+      catMenuLinkHover,
+      subCatMenuLink,
+      subCatMenuLinkHover,
+      link,
+      linkHover,
+      homeFeatureLink,
+      homeFeatureLinkHover,
+      fk_storeID,
+      site_colors_update } = this.siteColorsForm.getRawValue();
+    let payload = {
+      secondaryHighlight: secondaryHighlight.replace('#', ''),
+      primaryHighlight: primaryHighlight.replace('#', ''),
+      mainNav: mainNav.replace('#', ''),
+      mainNavHover: mainNavHover.replace('#', ''),
+      mainNavLinkColor: mainNavLinkColor.replace('#', ''),
+      mainNavLinkColorHover: mainNavLinkColorHover.replace('#', ''),
+      catMenuLink: catMenuLink.replace('#', ''),
+      catMenuLinkHover: catMenuLinkHover.replace('#', ''),
+      subCatMenuLink: subCatMenuLink.replace('#', ''),
+      subCatMenuLinkHover: subCatMenuLinkHover.replace('#', ''),
+      link: link.replace('#', ''),
+      linkHover: linkHover.replace('#', ''),
+      homeFeatureLink: homeFeatureLink.replace('#', ''),
+      homeFeatureLinkHover: homeFeatureLinkHover.replace('#', ''),
+      fk_storeID,
+      site_colors_update
+    }
+    this.siteColorLoader = true;
+    this._fileManagerService.colorsUpdate(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+      this.siteColorLoader = false;
+      if (res["success"]) {
+        this.siteColorMsg = true;
+        setTimeout(() => {
+          this.siteColorMsg = false;
+          this._changeDetectorRef.markForCheck();
+        }, 3000);
+      }
+      this._changeDetectorRef.markForCheck();
+    }, err => {
+      this.siteColorLoader = false;
+      this._changeDetectorRef.markForCheck();
+    })
+  }
+  // Special Offers
+  UpdateSpecialOffer() {
+    this.specialOfferLoader = true;
+    this._fileManagerService.UpdateSpecialOffer(this.specialOfferForm.value).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+      this.specialOfferLoader = false;
+      if (res["success"]) {
+        this.specialOfferMsg = true;
+        setTimeout(() => {
+          this.specialOfferMsg = false;
+          this._changeDetectorRef.markForCheck();
+        }, 3000);
+      }
+      this._changeDetectorRef.markForCheck();
+    }, err => {
+      this.specialOfferLoader = false;
+      this._changeDetectorRef.markForCheck();
+    })
+  }
+  // Special Offers
+  UpdateTypeKit() {
+    let payload = {
+      typeKitID: this.ngTypeKit,
+      fk_storeID: this.selectedStore.pk_storeID,
+      update_typekit: true
+    }
+    this.typekitLoader = true;
+    this._fileManagerService.UpdateTypeKit(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+      this.typekitLoader = false;
+      if (res["success"]) {
+        this.typekitMsg = true;
+        this._changeDetectorRef.markForCheck();
+        setTimeout(() => {
+          this.typekitMsg = false;
+          this._changeDetectorRef.markForCheck();
+        }, 3000);
+      }
+    }, err => {
+      this.typekitLoader = false;
+      this._changeDetectorRef.markForCheck();
+    })
+  }
+  // News Feed
+  isAddToggle(check) {
+    this.isNewsFeedAdd = check;
+    this.isNewsFeedupdate = false;
+  }
+  isEditToggle(check, obj) {
+    this.isNewsFeedAdd = false;
+    this.isNewsFeedupdate = check;
+    if (check) {
+      console.log(obj)
+      this.newsFeedUpdateForm.patchValue(obj);
+    }
+  }
+  AddNewsFeed() {
+    const { fk_storeID, title, date, news, add_news_feed } = this.newsFeedAddForm.getRawValue();
+    if (title == '' || date == '' || news == '') {
+      this._snackBar.open("Please fill out required fields", '', {
+        horizontalPosition: 'center',
+        verticalPosition: 'bottom',
+        duration: 3000
+      });
+    } else {
+      let payload = {
+        fk_storeID, title, date: moment(date).format('MM/DD/yyyy'),
+        news, add_news_feed
+      }
+      this.newsFeedAddLoader = true;
+      this._fileManagerService.AddNewsFeed(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+        this.newsFeedAddLoader = false;
+        if (res["success"]) {
+          this.getScreenData("news_feed", this.presentationScreen);
+          this.newsFeedAddMsg = true;
+          setTimeout(() => {
+            this.newsFeedAddMsg = false;
+            this._changeDetectorRef.markForCheck();
+          }, 3000);
+        }
+        this._changeDetectorRef.markForCheck();
+      }, err => {
+        this.newsFeedAddLoader = false;
+        this._changeDetectorRef.markForCheck();
+      });
+    }
+  }
+  UpdateNewsFeed() {
+    const { fk_storeID, title, date, news, update_news_feed, pk_newsFeedID } = this.newsFeedUpdateForm.getRawValue();
+    if (title == '' || date == '' || news == '') {
+      this._snackBar.open("Please fill out required fields", '', {
+        horizontalPosition: 'center',
+        verticalPosition: 'bottom',
+        duration: 3000
+      });
+    } else {
+      let payload = {
+        fk_storeID, title, date: moment(date).format('MM/DD/yyyy'),
+        news, update_news_feed, pk_newsFeedID
+      }
+      this.newsFeedUpdateLoader = true;
+      this._fileManagerService.UpdateNewsFeed(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+        this.newsFeedUpdateLoader = false;
+        if (res["success"]) {
+          this.getScreenData("news_feed", this.presentationScreen);
+          this.newsFeedUpdateMsg = true;
+          setTimeout(() => {
+            this.newsFeedUpdateMsg = false;
+            this._changeDetectorRef.markForCheck();
+          }, 3000);
+        }
+        this._changeDetectorRef.markForCheck();
+      }, err => {
+        this.newsFeedUpdateLoader = false;
+        this._changeDetectorRef.markForCheck();
+      });
+    }
+  }
+  DeleteNewsFeed(element) {
+    element.deleteLoader = true;
+    let payload = {
+      fk_storeID: this.selectedStore.pk_storeID,
+      pk_newsFeedID: element.pk_newsFeedID,
+      delete_news_feed: true
+    }
+    this._fileManagerService.DeleteNewsFeed(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+      element.deleteLoader = false;
+      this.newsFeedData = this.newsFeedData.filter((value) => {
+        return value.pk_newsFeedID != element.pk_newsFeedID;
+      });
+      if (res["success"]) {
+        this._snackBar.open("News feed removed successfully", '', {
+          horizontalPosition: 'center',
+          verticalPosition: 'bottom',
+          duration: 3000
+        });
+      }
+      this._changeDetectorRef.markForCheck();
+    }, err => {
+      element.deleteLoader = false;
+      this._changeDetectorRef.markForCheck();
+    });
+  }
+  // Dashboard Emails
+  DefaultEmailUpdate() {
+    this.dashboardEmailLoader = true;
+    this._fileManagerService.DefaultEmailUpdate(this.dashboardEmailsForm.value).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+      this.dashboardEmailLoader = false;
+      if (res["success"]) {
+        this.dashboardEmailMsg = true;
+        setTimeout(() => {
+          this.dashboardEmailMsg = false;
+          this._changeDetectorRef.markForCheck();
+        }, 3000);
+      }
+      this._changeDetectorRef.markForCheck();
+    }, err => {
+      this.dashboardEmailLoader = false;
+      this._changeDetectorRef.markForCheck();
+    });
+  }
 }

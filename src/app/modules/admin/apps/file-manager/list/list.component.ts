@@ -6,10 +6,12 @@ import { takeUntil } from 'rxjs/operators';
 import { FuseMediaWatcherService } from '@fuse/services/media-watcher';
 import { FileManagerService } from 'app/modules/admin/apps/file-manager/store-manager.service';
 import { Item, Items, StoreList } from 'app/modules/admin/apps/file-manager/stores.types';
+import { Form, FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 
 @Component({
     selector: 'file-manager-list',
     templateUrl: './list.component.html',
+    styles: ['::ng-deep {.ql-container {height: auto}}'],
     encapsulation: ViewEncapsulation.None,
     changeDetection: ChangeDetectionStrategy.OnPush
 })
@@ -25,12 +27,12 @@ export class StoresListComponent implements OnInit, OnDestroy {
     selectedStore = null;
     quillModules: any = {
         toolbar: [
-            ['bold', 'italic', 'underline', 'strike'],
-            ['blockquote', 'code-block'],
-            [{ 'color': [] }, { 'background': ['white'] }],
-            [{ 'font': [] }],
-            [{ 'align': [] }],
-            ['clean']
+            ["bold", "italic", "underline", "strike"],
+            ["blockquote", "code-block"],
+            [{ color: [] }, { background: ["white"] }],
+            [{ font: [] }],
+            [{ align: [] }],
+            ["clean"],
         ]
     };
 
@@ -44,12 +46,24 @@ export class StoresListComponent implements OnInit, OnDestroy {
     /**
      * Constructor
      */
+
+    firstFormGroup = this._formBuilder.group({
+        firstCtrl: ['', Validators.required],
+    });
+    secondFormGroup = this._formBuilder.group({
+        secondCtrl: ['', Validators.required],
+    });
+    isLinear = true;
+
+
+    createStoreForm: FormGroup;
     constructor(
         private _activatedRoute: ActivatedRoute,
         private _changeDetectorRef: ChangeDetectorRef,
         private _router: Router,
         private _fileManagerService: FileManagerService,
-        private _fuseMediaWatcherService: FuseMediaWatcherService
+        private _fuseMediaWatcherService: FuseMediaWatcherService,
+        private _formBuilder: FormBuilder
     ) {
     }
 
@@ -60,7 +74,38 @@ export class StoresListComponent implements OnInit, OnDestroy {
     /**
      * On init
      */
+    initCreateStoreForm() {
+        this.createStoreForm = this._formBuilder.group({
+            storeName: new FormControl('', Validators.required),
+            storeCode: new FormControl('', Validators.required),
+            storeURL: new FormControl('', Validators.required),
+            margin1: new FormControl(40, Validators.required),
+            margin2: new FormControl(37, Validators.required),
+            margin3: new FormControl(34, Validators.required),
+            margin4: new FormControl(31, Validators.required),
+            margin5: new FormControl(27, Validators.required),
+            margin6: new FormControl(24, Validators.required),
+            storeHandling: new FormControl(0.00),
+            siteMaxSiteID: new FormControl(''),
+            siteMaxQueueID: new FormControl(''),
+            googleAnalyticsID: new FormControl(''),
+            tagLine: new FormControl(''),
+            championName: new FormControl('', Validators.required),
+            secretKey: new FormControl(''),
+            blnEProcurement: new FormControl(false),
+            blnElectronicInvoicing: new FormControl(false),
+            browserTitle: new FormControl(''),
+            metaDesc: new FormControl(''),
+            metaKeywords: new FormControl(''),
+            blnShipping: new FormControl(false),
+            launchDate: new FormControl(new Date()),
+            protocol: new FormControl('Http', Validators.required),
+            businessName: new FormControl(''),
+            reportColor: new FormControl('')
+        });
+    }
     ngOnInit(): void {
+        this.initCreateStoreForm();
         this.isLoading = true;
 
         // Get the stores

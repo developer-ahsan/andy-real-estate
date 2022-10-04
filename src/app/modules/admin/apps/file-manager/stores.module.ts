@@ -73,6 +73,9 @@ import { ArtApprovalComponent } from "./navigation/art-approval-settings/art-app
 import { ConfirmationDialogComponent } from "./confirmation-dialog/confirmation-dialog.component";
 import { MatAutocompleteModule } from "@angular/material/autocomplete";
 import { ConsolidatedBillComponent } from "./navigation/consolidated-bill/consolidated-bill.component";
+import { MatStepperModule } from '@angular/material/stepper';
+import { PresentationScrollersComponent } from "./navigation/presentation/presentation-scrollers/presentation-scrollers.component";
+import { MatSlideToggleModule } from "@angular/material/slide-toggle";
 
 @NgModule({
   declarations: [
@@ -117,7 +120,8 @@ import { ConsolidatedBillComponent } from "./navigation/consolidated-bill/consol
     StorePlanComponent,
     StudentOrgComponent,
     ArtApprovalComponent,
-    ConsolidatedBillComponent
+    ConsolidatedBillComponent,
+    PresentationScrollersComponent
   ],
   imports: [
     RouterModule.forChild(storeRoutes),
@@ -151,8 +155,10 @@ import { ConsolidatedBillComponent } from "./navigation/consolidated-bill/consol
     NgMultiSelectDropDownModule,
     MatTabsModule,
     MatSortModule,
+    MatStepperModule,
     MatChipsModule,
-    MatAutocompleteModule
+    MatAutocompleteModule,
+    MatSlideToggleModule
   ],
   entryComponents: [ConfirmationDialogComponent],
 })

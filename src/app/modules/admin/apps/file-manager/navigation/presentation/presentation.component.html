@@ -19,11 +19,11 @@
       <mat-icon class="subnav-menu-icon ml-1" svgIcon="heroicons_outline:menu" (click)="toggleDrawer()">
       </mat-icon>
     </div>
-    <div class="p-4 bg-light overflow-auto" *ngIf="isPageLoading">
+    <div class="p-4 bg-light" *ngIf="isPageLoading">
       <ngx-skeleton-loader count="8" appearance="line" animation="pulse">
       </ngx-skeleton-loader>
     </div>
-    <div class="p-4 bg-light overflow-auto" *ngIf="!isPageLoading">
+    <div class="p-4 bg-light" *ngIf="!isPageLoading">
       <!-- Main Screen -->
       <div class="row" *ngIf="presentationScreen == 'Look & Feel'">
         <div class="col-12 bg-card sm:p-6 md:p-6 lg:p-10 rounded-2xl shadow">
@@ -33,21 +33,32 @@
           <div class="col-12 mt-5">
             <mat-form-field appearance="fill" class="w-full">
               <mat-label> Use colored-background headers </mat-label>
-              <mat-select [(value)]="selected">
-                <mat-option value="option1">Yes</mat-option>
-                <mat-option value="option2">No</mat-option>
+              <mat-select [(value)]="ngBlnColorHeader">
+                <mat-option [value]="true">Yes</mat-option>
+                <mat-option [value]="false">No</mat-option>
               </mat-select>
             </mat-form-field>
           </div>
-          <div class="col-md-4">
-            <button class="my-5" mat-flat-button [matTooltip]="'Update'" mat-stroked-button>
-              <span class="px-2">Update</span>
-            </button>
+          <div class="col-12 flex justify-end mt-2">
+            <div class="flex items-center my-2">
+              <div class="flex items-center mr-4" *ngIf="lookFeelMsg">
+                <ng-container *ngIf="lookFeelMsg">
+                  <mat-icon class="text-green-500" [svgIcon]="'heroicons_outline:check'"></mat-icon>
+                  <span class="ml-2">Look & Feel Updated Successfully</span>
+                </ng-container>
+              </div>
+              <button class="min-w-40" mat-stroked-button [matTooltip]="'Update'" (click)="colorHeaderUpdate()"
+                [disabled]="lookFeelLoader">
+                <mat-progress-spinner *ngIf="lookFeelLoader" [diameter]="24" [mode]="'indeterminate'">
+                </mat-progress-spinner>
+                <mat-icon *ngIf="!lookFeelLoader" svgIcon="mode_edit_outline"></mat-icon>
+                <span class="px-2">Update</span>
+              </button>
+            </div>
           </div>
         </div>
       </div>
       <!-- Site color start -->
-
       <div *ngIf="presentationScreen == 'Site Color'">
         <div class="row">
           <div class="col-12 bg-card sm:p-6 md:p-6 lg:p-10 rounded-2xl shadow my-3">
@@ -160,9 +171,9 @@
                   <mat-form-field appearance="fill" class="w-full">
                     <mat-label>
                       Home Feature Link ({{
-                      color.HomeFeatureLink.value
+                      color.homeFeatureLink.value
                       }})</mat-label>
-                    <input formControlName="HomeFeatureLink" type="color" matInput />
+                    <input formControlName="homeFeatureLink" type="color" matInput />
                   </mat-form-field>
                 </div>
                 <div class="col-lg-6 col-12">
@@ -175,11 +186,22 @@
                   </mat-form-field>
                 </div>
 
-                <div class="col-md-4" style="margin-left: -17px">
-                  <button class="my-5" mat-flat-button [matTooltip]="'Update'" [color]="'primary'"
-                    [disabled]="siteColorsForm.invalid">
-                    <span class="px-2">Update</span>
-                  </button>
+                <div class="col-12 flex justify-end mt-2">
+                  <div class="flex items-center my-2">
+                    <div class="flex items-center mr-4" *ngIf="siteColorMsg">
+                      <ng-container *ngIf="siteColorMsg">
+                        <mat-icon class="text-green-500" [svgIcon]="'heroicons_outline:check'"></mat-icon>
+                        <span class="ml-2">Site Colors Updated Successfully</span>
+                      </ng-container>
+                    </div>
+                    <button class="min-w-40" mat-stroked-button [matTooltip]="'Update'" (click)="colorsUpdate()"
+                      [disabled]="siteColorLoader">
+                      <mat-progress-spinner *ngIf="siteColorLoader" [diameter]="24" [mode]="'indeterminate'">
+                      </mat-progress-spinner>
+                      <mat-icon *ngIf="!siteColorLoader" svgIcon="mode_edit_outline"></mat-icon>
+                      <span class="px-2">Update</span>
+                    </button>
+                  </div>
                 </div>
               </div>
             </form>
@@ -274,36 +296,187 @@
 
       <!-------------  News Feed  --------------->
       <div *ngIf="presentationScreen == 'News Feed'">
-        <div class="row bg-light overflow-auto">
-          <div class="col-12 bg-card sm:p-6 md:p-6 lg:p-10 rounded-2xl shadow">
-            <div class="row">
-              <div class="col-md-4 mb-3">
-                <button mat-flat-button mat-stroked-button>
-                  <span class="px-2">Add New Item</span>
-                </button>
+        <div class="row bg-light overflow-auto bg-card">
+          <div class="col-12 sm:p-6 md:p-6 lg:p-10 rounded-2xl shadow">
+            <div class="row " *ngIf="!isNewsFeedAdd && !isNewsFeedupdate">
+              <div class="col-12 p-0 flex justify-between">
+                <div class="text-2xl font-extrabold tracking-tight leading-none mb-4  mt-2">
+                  News Feed
+                </div>
+                <div class="text-md mb-4">
+                  <button mat-flat-button (click)="isAddToggle(true)">
+                    <span class="px-2">Add New Item</span>
+                  </button>
+                </div>
+              </div>
+              <div class="col-12 p-0">
+                <ng-container *ngIf="newsFeedData.length > 0; else noRecords">
+                  <table mat-table [dataSource]="newsFeedData" class="w-full">
+                    <div class="color-blue">
+                      <!-- Company Column -->
+                      <ng-container matColumnDef="id">
+                        <th class="min-w-10 bg-gray-50 dark:bg-black dark:bg-opacity-5" mat-header-cell
+                          *matHeaderCellDef>
+                          ID
+                        </th>
+                        <td mat-cell *matCellDef="let element">{{ element.pk_newsFeedID }}</td>
+                      </ng-container>
+
+                      <!-- Product Column -->
+                      <ng-container matColumnDef="date">
+                        <th class="min-w-10 bg-gray-50 dark:bg-black dark:bg-opacity-5" mat-header-cell
+                          *matHeaderCellDef>
+                          Date
+                        </th>
+                        <td mat-cell *matCellDef="let element">
+                          {{ element.date | date}}
+                        </td>
+                      </ng-container>
+
+                      <!-- percentage Column -->
+                      <ng-container matColumnDef="title">
+                        <th class="min-w-50 bg-gray-50 dark:bg-black dark:bg-opacity-5" mat-header-cell
+                          *matHeaderCellDef>
+                          Title
+                        </th>
+                        <td mat-cell *matCellDef="let element">
+                          {{element.title}}
+                        </td>
+                      </ng-container>
+                      <ng-container matColumnDef="action">
+                        <th class="min-w-10 bg-gray-50 dark:bg-black dark:bg-opacity-5" mat-header-cell
+                          *matHeaderCellDef>
+                          Action
+                        </th>
+                        <td mat-cell *matCellDef="let element">
+                          <button [disabled]="element?.deleteLoader" [matTooltip]="'Remove'" mat-icon-button
+                            (click)="DeleteNewsFeed(element)">
+                            <mat-icon *ngIf="!element?.deleteLoader">close</mat-icon>
+                            <mat-progress-spinner *ngIf="element?.deleteLoader" [diameter]="24"
+                              [mode]="'indeterminate'">
+                            </mat-progress-spinner>
+                          </button>
+                          <button (click)="isEditToggle(true,element)" [matTooltip]="'Edit'" mat-icon-button>
+                            <mat-icon>edit</mat-icon>
+                          </button>
+                        </td>
+                      </ng-container>
+                    </div>
+                    <tr mat-header-row class="h-16 shadow bg-card" *matHeaderRowDef="newsFeedColumns"></tr>
+                    <tr mat-row class="hover:bg-gray-100 dark:hover:bg-hover" style="cursor: pointer;"
+                      *matRowDef="let row; columns: newsFeedColumns"></tr>
+
+                  </table>
+                </ng-container>
+                <ng-template #noRecords>
+                  <div class="font-semibold tracking-tight text-center">
+                    <p>There are currently no news items in the feed for this store.</p>
+                  </div>
+                </ng-template>
               </div>
             </div>
-            <p *ngIf="newsFeedData.length == 0">
-              <strong>
-                There are currently no news items in the feed for this store.
-              </strong>
-            </p>
-            <table class="table" *ngIf="newsFeedData.length > 0">
-              <thead>
-                <tr>
-                  <th scope="col">ID</th>
-                  <th scope="col">Date</th>
-                  <th scope="col">Title</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr *ngFor="let item of newsFeedData">
-                  <td>{{ item.pk_newsFeedID }}</td>
-                  <td>{{ item.date | date }}</td>
-                  <td>{{ item.title }}</td>
-                </tr>
-              </tbody>
-            </table>
+            <div class="row" *ngIf="isNewsFeedAdd">
+              <div class="col-12 flex justify-between ">
+                <div class="text-2xl font-extrabold tracking-tight leading-none mb-4">
+                  Add News Feed
+                </div>
+                <div class="text-md mb-4">
+                  <button class="ml-4" mat-flat-button mat-stroked-button [matTooltip]="'Back to List'"
+                    (click)="isAddToggle(false)">
+                    <mat-icon [svgIcon]="'heroicons_outline:arrow-narrow-left'"></mat-icon>
+                    <span class="ml-2 mr-1">Back to List</span>
+                  </button>
+                </div>
+              </div>
+              <div class="col-12">
+                <form [formGroup]="newsFeedAddForm">
+                  <mat-form-field class="w-full">
+                    <mat-label>Title *</mat-label>
+                    <input matInput placeholder="Title" formControlName="title">
+                  </mat-form-field>
+                  <mat-form-field class="w-full">
+                    <mat-label>Date *</mat-label>
+                    <input matInput formControlName="date" readonly [matDatepicker]="picker">
+                    <mat-hint>MM/DD/YYYY</mat-hint>
+                    <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+                    <mat-datepicker #picker></mat-datepicker>
+                    <!-- <input matInput placeholder="Date" formControlName="date"> -->
+                  </mat-form-field>
+                  <mat-form-field class="w-full">
+                    <mat-label>News *</mat-label>
+                    <textarea matInput placeholder="News" formControlName="news"></textarea>
+                  </mat-form-field>
+                  <div class="w-full flex justify-end mt-2">
+                    <div class="flex items-center my-2">
+                      <div class="flex items-center mr-4" *ngIf="newsFeedAddMsg">
+                        <ng-container *ngIf="newsFeedAddMsg">
+                          <mat-icon class="text-green-500" [svgIcon]="'heroicons_outline:check'"></mat-icon>
+                          <span class="ml-2">News Feed Created Successfully</span>
+                        </ng-container>
+                      </div>
+                      <button class="min-w-40" mat-stroked-button [matTooltip]="'Add'" (click)="AddNewsFeed()"
+                        [disabled]="newsFeedAddLoader">
+                        <mat-progress-spinner *ngIf="newsFeedAddLoader" [diameter]="24" [mode]="'indeterminate'">
+                        </mat-progress-spinner>
+                        <mat-icon *ngIf="!newsFeedAddLoader" svgIcon="heroicons_outline:plus"></mat-icon>
+                        <span class="px-2">Add</span>
+                      </button>
+                    </div>
+                  </div>
+                </form>
+              </div>
+            </div>
+            <div class="row" *ngIf="isNewsFeedupdate">
+              <div class="col-12 flex justify-between ">
+                <div class="text-2xl font-extrabold tracking-tight leading-none mb-4">
+                  Update News Feed
+                </div>
+                <div class="text-md mb-4">
+                  <button class="ml-4" mat-flat-button mat-stroked-button [matTooltip]="'Back to List'"
+                    (click)="isAddToggle(false)">
+                    <mat-icon [svgIcon]="'heroicons_outline:arrow-narrow-left'"></mat-icon>
+                    <span class="ml-2 mr-1">Back to List</span>
+                  </button>
+                </div>
+              </div>
+              <div class="col-12">
+                <form [formGroup]="newsFeedUpdateForm">
+                  <mat-form-field class="w-full">
+                    <mat-label>Title *</mat-label>
+                    <input matInput placeholder="Title" formControlName="title">
+                  </mat-form-field>
+                  <mat-form-field class="w-full">
+                    <mat-label>Date *</mat-label>
+                    <input matInput formControlName="date" readonly [matDatepicker]="picker">
+                    <mat-hint>MM/DD/YYYY</mat-hint>
+                    <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+                    <mat-datepicker #picker></mat-datepicker>
+                    <!-- <input matInput placeholder="Date" formControlName="date"> -->
+                  </mat-form-field>
+                  <mat-form-field class="w-full">
+                    <mat-label>News *</mat-label>
+                    <textarea matInput placeholder="News" formControlName="news"></textarea>
+                  </mat-form-field>
+                  <div class="w-full flex justify-end mt-2">
+                    <div class="flex items-center my-2">
+                      <div class="flex items-center mr-4" *ngIf="newsFeedUpdateMsg">
+                        <ng-container *ngIf="newsFeedUpdateMsg">
+                          <mat-icon class="text-green-500" [svgIcon]="'heroicons_outline:check'"></mat-icon>
+                          <span class="ml-2">News Feed Updated Successfully</span>
+                        </ng-container>
+                      </div>
+                      <button class="min-w-40" mat-stroked-button [matTooltip]="'Update'" (click)="UpdateNewsFeed()"
+                        [disabled]="newsFeedUpdateLoader">
+                        <mat-progress-spinner *ngIf="newsFeedUpdateLoader" [diameter]="24" [mode]="'indeterminate'">
+                        </mat-progress-spinner>
+                        <mat-icon *ngIf="!newsFeedUpdateLoader" svgIcon="heroicons_outline:pencil-alt"></mat-icon>
+                        <span class="px-2">Update</span>
+                      </button>
+                    </div>
+                  </div>
+                </form>
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -345,10 +518,22 @@
                     <input formControlName="offerFooter" maxlength="40" matInput />
                   </mat-form-field>
                 </div>
-                <div class="col-12 flex justify-end">
-                  <button mat-flat-button [matTooltip]="'Update'" mat-stroked-button>
-                    <span class="px-2">Update</span>
-                  </button>
+                <div class="col-12 flex justify-end mt-2">
+                  <div class="flex items-center my-2">
+                    <div class="flex items-center mr-4" *ngIf="specialOfferMsg">
+                      <ng-container *ngIf="specialOfferMsg">
+                        <mat-icon class="text-green-500" [svgIcon]="'heroicons_outline:check'"></mat-icon>
+                        <span class="ml-2">Special Offers Updated Successfully</span>
+                      </ng-container>
+                    </div>
+                    <button class="min-w-40" mat-stroked-button [matTooltip]="'Update'" (click)="UpdateSpecialOffer()"
+                      [disabled]="specialOfferLoader">
+                      <mat-progress-spinner *ngIf="specialOfferLoader" [diameter]="24" [mode]="'indeterminate'">
+                      </mat-progress-spinner>
+                      <mat-icon *ngIf="!specialOfferLoader" svgIcon="mode_edit_outline"></mat-icon>
+                      <span class="px-2">Update</span>
+                    </button>
+                  </div>
                 </div>
               </div>
             </div>
@@ -370,18 +555,28 @@
               Kit ID" number at the bottom of the screen.
             </p>
             <div class="row">
-              <div class="mt-4 col-6">
+              <div class="mt-4 col-12">
                 <mat-form-field appearance="fill" class="w-full">
                   <mat-label> ID: </mat-label>
                   <input [(ngModel)]="ngTypeKit" matInput />
                 </mat-form-field>
               </div>
-            </div>
-            <div class="row">
-              <div class="col-md-4">
-                <button mat-flat-button [matTooltip]="'Update'" mat-stroked-button>
-                  <span class="px-2">Update</span>
-                </button>
+              <div class="col-12 flex justify-end mt-2">
+                <div class="flex items-center my-2">
+                  <div class="flex items-center mr-4" *ngIf="typekitMsg">
+                    <ng-container>
+                      <mat-icon class="text-green-500" [svgIcon]="'heroicons_outline:check'"></mat-icon>
+                      <span class="ml-2">Typekit Updated Successfully</span>
+                    </ng-container>
+                  </div>
+                  <button class="min-w-40" mat-stroked-button [matTooltip]="'Update'" (click)="UpdateTypeKit()"
+                    [disabled]="typekitLoader">
+                    <mat-progress-spinner *ngIf="typekitLoader" [diameter]="24" [mode]="'indeterminate'">
+                    </mat-progress-spinner>
+                    <mat-icon *ngIf="!typekitLoader" svgIcon="mode_edit_outline"></mat-icon>
+                    <span class="px-2">Update</span>
+                  </button>
+                </div>
               </div>
             </div>
           </div>
@@ -1100,325 +1295,7 @@
       <!------------- Home Page Scrollers --------------->
       <div *ngIf="presentationScreen == 'Home Page Scrollers'">
         <!-- Create Scroller -->
-
-        <div class="row">
-          <div class="col-12 bg-card sm:p-6 md:p-6 lg:p-10 rounded-2xl shadow">
-            <div class="text-2xl font-extrabold tracking-tight leading-none my-3">
-              Create Scroller
-            </div>
-            <div class="row">
-              <div class="mt-4 col-6">
-                <mat-form-field appearance="fill" class="w-full">
-                  <mat-label> Scroller Title: </mat-label>
-                  <input matInput />
-                </mat-form-field>
-              </div>
-            </div>
-            <div class="row">
-              <div class="col-md-4">
-                <button class="my-5" mat-flat-button [color]="'primary'">
-                  <span class="px-2">Create Scroller</span>
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Current Scrollers -->
-        <div class="row">
-          <div class="col-12 bg-card sm:p-6 md:p-6 lg:p-10 rounded-2xl shadow">
-            <div class="text-2xl font-extrabold tracking-tight leading-none my-3">
-              Current Scrollers
-            </div>
-            <p>
-              <strong>
-                There are currently no scrollers defined for this store.
-              </strong>
-            </p>
-          </div>
-        </div>
-
-        <!-- Default Scrollers -->
-        <div class="row">
-          <div class="col-12 bg-card sm:p-6 md:p-6 lg:p-10 rounded-2xl shadow">
-            <div class="text-2xl font-extrabold tracking-tight leading-none my-3">
-              Default Scrollers
-            </div>
-            <p>
-              Default scrollers are auto-populated using already-existing store
-              data:
-            </p>
-            <p class="mt-5">
-              <strong>Best Sellers:</strong> Generated by all of the items
-              selected as "best seller" in each category's recommendations
-              settings.
-            </p>
-            <p>
-              <strong>Featured Products:</strong> Generated by all of the items
-              selected a "featured" in each category's recommendations settings.
-            </p>
-            <p>
-              <strong>Recommended:</strong> Generated by all of the items
-              selected as "recommended" in each category's recommndation
-              settings.
-            </p>
-            <p>
-              <strong>Under €0.95:</strong> Selects the top 100 products on the
-              store that have a starting price under €0.95.
-            </p>
-            <p>
-              <strong>Top Rated:</strong> Selects the top 100 top-rated products
-              on the store (4 or 5 rating)
-            </p>
-            <p>
-              <strong>Testimonials:</strong> Shows manually-entered customer
-              testimonials (from below). This scroller only shows if there are
-              at least three and always appears below all product scrollers.
-            </p>
-            <p class="mt-5">
-              These default scrollers cannot be removed, but they can be turned
-              on or off, and the display order can be changed.
-            </p>
-            <div class="row">
-              <div class="col-12 mt-5">
-                <mat-form-field appearance="fill" class="w-full">
-                  <mat-label> Best Sellers </mat-label>
-                  <mat-select [(value)]="selected">
-                    <mat-option value="option1">Active</mat-option>
-                    <mat-option value="option2">Disabled</mat-option>
-                  </mat-select>
-                </mat-form-field>
-              </div>
-            </div>
-            <div class="row">
-              <div class="col-12 mt-5">
-                <mat-form-field appearance="fill" class="w-full">
-                  <mat-label> Featured Products </mat-label>
-                  <mat-select [(value)]="selected">
-                    <mat-option value="option1">Active</mat-option>
-                    <mat-option value="option2">Disabled</mat-option>
-                  </mat-select>
-                </mat-form-field>
-              </div>
-            </div>
-            <div class="row">
-              <div class="col-12 mt-5">
-                <mat-form-field appearance="fill" class="w-full">
-                  <mat-label> Recommended Products </mat-label>
-                  <mat-select [(value)]="selected">
-                    <mat-option value="option1">Active</mat-option>
-                    <mat-option value="option2">Disabled</mat-option>
-                  </mat-select>
-                </mat-form-field>
-              </div>
-            </div>
-            <div class="row">
-              <div class="col-12 mt-5">
-                <mat-form-field appearance="fill" class="w-full">
-                  <mat-label> Products Under €0.95 </mat-label>
-                  <mat-select [(value)]="selected">
-                    <mat-option value="option1">Active</mat-option>
-                    <mat-option value="option2">Disabled</mat-option>
-                  </mat-select>
-                </mat-form-field>
-              </div>
-            </div>
-            <div class="row">
-              <div class="col-12 mt-5">
-                <mat-form-field appearance="fill" class="w-full">
-                  <mat-label> Top Rated Products </mat-label>
-                  <mat-select [(value)]="selected">
-                    <mat-option value="option1">Active</mat-option>
-                    <mat-option value="option2">Disabled</mat-option>
-                  </mat-select>
-                </mat-form-field>
-              </div>
-            </div>
-            <div class="row">
-              <div class="col-md-4">
-                <button class="my-5" mat-flat-button [color]="'primary'">
-                  <span class="px-2">Update</span>
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Scroller Display Order -->
-        <div class="row">
-          <div class="col-12 bg-card sm:p-6 md:p-6 lg:p-10 rounded-2xl shadow">
-            <div class="text-2xl font-extrabold tracking-tight leading-none my-3">
-              Scroller Display Order
-            </div>
-            <div class="row">
-              <div class="mt-4 col-12">
-                <mat-form-field appearance="fill" class="w-full">
-                  <mat-label> Best Sellers </mat-label>
-                  <input matInput />
-                </mat-form-field>
-              </div>
-            </div>
-            <div class="row">
-              <div class="mt-4 col-12">
-                <mat-form-field appearance="fill" class="w-full">
-                  <mat-label> Top Rated Products </mat-label>
-                  <input matInput />
-                </mat-form-field>
-              </div>
-            </div>
-            <div class="row">
-              <div class="col-md-4">
-                <button class="my-5" mat-flat-button [color]="'primary'">
-                  <span class="px-2">Update</span>
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Customer testimonials -->
-
-        <div class="row">
-          <div class="col-12 bg-card sm:p-6 md:p-6 lg:p-10 rounded-2xl shadow">
-            <div class="row my-3">
-              <div class="text-2xl font-extrabold tracking-tight leading-none col-md-10">
-                Customer testimonials
-              </div>
-              <div class="col-md-2">
-                <button mat-flat-button [color]="'primary'">
-                  <span class="px-2">Turn off</span>
-                </button>
-              </div>
-            </div>
-            <div class="row">
-              <div class="mt-4 col-6">
-                <mat-form-field appearance="fill" class="w-full">
-                  <mat-label> Best Sellers </mat-label>
-                  <input matInput />
-                </mat-form-field>
-              </div>
-              <div class="mt-4 col-6">
-                <mat-form-field appearance="fill" class="w-full">
-                  <mat-label> Top Rated Products </mat-label>
-                  <input matInput />
-                </mat-form-field>
-              </div>
-            </div>
-            <div class="row">
-              <div class="col-md-1">
-                <mat-form-field appearance="fill" class="w-full">
-                  <mat-label> Order: </mat-label>
-                  <input matInput />
-                </mat-form-field>
-              </div>
-              <div class="col-md-5">
-                <mat-form-field appearance="fill" class="w-full">
-                  <mat-label> Testimonial: </mat-label>
-                  <input matInput />
-                </mat-form-field>
-              </div>
-              <div class="col-md-3">
-                <mat-form-field appearance="fill" class="w-full">
-                  <mat-label> Name: </mat-label>
-                  <input matInput />
-                </mat-form-field>
-              </div>
-              <div class="col-md-3">
-                <mat-form-field appearance="fill" class="w-full">
-                  <mat-label> Title: </mat-label>
-                  <input matInput />
-                </mat-form-field>
-              </div>
-            </div>
-            <div class="row">
-              <div class="col-md-4">
-                <button class="fa fa-plus my-5" mat-flat-button [color]="'primary'">
-                  <span class="px-2">Add Testimonial</span>
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Current Testimonial -->
-        <div class="row">
-          <div class="col-12 bg-card sm:p-6 md:p-6 lg:p-10 rounded-2xl shadow">
-            <div class="row my-3">
-              <div class="text-2xl font-extrabold tracking-tight leading-none col-md-10">
-                Current Testimonial
-              </div>
-              <div class="col-md-2">
-                <button mat-flat-button [color]="'primary'">
-                  <span class="px-2">Turn off</span>
-                </button>
-              </div>
-            </div>
-            <table mat-table [dataSource]="dataSource" class="w-full">
-              <!--- Note that these columns can be defined in any order.
-            The actual rendered columns are set as a property on the row definition" -->
-              <div class="color-blue">
-                <!-- SPID Column -->
-                <ng-container matColumnDef="spid">
-                  <th class="min-w-10 bg-gray-50 dark:bg-black dark:bg-opacity-5" mat-header-cell *matHeaderCellDef>
-                    SPID
-                  </th>
-                  <td mat-cell *matCellDef="let element">
-                    {{ element.pk_storeProductID }}
-                  </td>
-                </ng-container>
-
-                <!-- Name Column -->
-                <ng-container matColumnDef="name">
-                  <th class="min-w-40 bg-gray-50 dark:bg-black dark:bg-opacity-5" mat-header-cell *matHeaderCellDef>
-                    Name
-                  </th>
-                  <td mat-cell *matCellDef="let element">
-                    <small class="text-secondary border-b-2">{{
-                      element.productName
-                      }}</small>
-                  </td>
-                </ng-container>
-
-                <!-- Master Column -->
-                <ng-container matColumnDef="master">
-                  <th class="min-w-24 bg-gray-50 dark:bg-black dark:bg-opacity-5" mat-header-cell *matHeaderCellDef>
-                    Master
-                  </th>
-                  <td mat-cell *matCellDef="let element">
-                    <span *ngIf="element.blnActive" style="color: green">Active</span>
-                    <span *ngIf="!element.blnActive" style="color: red">Inactive</span>
-                  </td>
-                </ng-container>
-
-                <!-- Store Column -->
-                <ng-container matColumnDef="store">
-                  <th class="min-w-24 bg-gray-50 dark:bg-black dark:bg-opacity-5" mat-header-cell *matHeaderCellDef>
-                    Store
-                  </th>
-                  <td mat-cell *matCellDef="let element">
-                    <span *ngIf="element.blnStoreActive" style="color: green">Online</span>
-                    <span *ngIf="!element.blnStoreActive" style="color: red">Offline</span>
-                  </td>
-                </ng-container>
-              </div>
-              <tr mat-header-row class="h-18 shadow bg-card" *matHeaderRowDef="displayedColumns"></tr>
-              <tr mat-row class="hover:bg-gray-100 dark:hover:bg-hover" style="cursor: pointer"
-                *matRowDef="let row; columns: displayedColumns"></tr>
-            </table>
-            <div class="row mt-5">
-              <div class="col-md-6">
-                <button mat-flat-button [color]="'primary'">
-                  <span class="px-2">Update</span>
-                </button>
-              </div>
-              <div class="col-md-6">
-                <button mat-flat-button [color]="'primary'">
-                  <span class="px-2">Remove</span>
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
+        <app-presentation-scrollers [selectedStore]="selectedStore"></app-presentation-scrollers>
       </div>
       <!------------- Sitemap --------------->
       <div *ngIf="presentationScreen == 'Sitemap'">
@@ -1557,77 +1434,77 @@
       <!------------- Default Emails--------------->
       <div *ngIf="presentationScreen == 'Default Dashboard Emails'">
         <!-- Reschedule -->
-        <div class="row">
-          <div class="col-12 bg-card sm:p-6 md:p-6 lg:p-10 mb-3 rounded-2xl shadow">
-            <div class="text-2xl font-extrabold tracking-tight leading-none my-3">
+        <div class="row bg-card sm:p-6 md:p-6 lg:p-10 mb-3 rounded-2xl shadow" [formGroup]="dashboardEmailsForm">
+          <div class="col-12 ">
+            <div class="text-2xl font-extrabold tracking-tight leading-none">
               Default Reschedule Artwork Follow Up Email
             </div>
-            <div class="col-12 p-0">
+            <div class="col-12 p-0 mb-3">
               <div style="font-weight: 500">
                 This email is sent from the order status dashboard for program
                 managers to remind customers to approve their artwork for orders
                 that have been sitting on hold for too long.
               </div>
-              <quill-editor [modules]="quillModules"> </quill-editor>
+              <quill-editor [modules]="quillModules" formControlName="rescheduleFollowUp"> </quill-editor>
             </div>
           </div>
           <!-- Payment -->
-          <div class="col-12 bg-card sm:p-6 md:p-6 lg:p-10 mb-3 rounded-2xl shadow">
-            <div class="text-2xl font-extrabold tracking-tight leading-none my-3">
+          <div class="col-12 mt-5">
+            <div class="text-2xl font-extrabold tracking-tight leading-none">
               Default Payment Notification Email
             </div>
-            <div class="col-12 p-0">
+            <div class="col-12 p-0 mb-3">
               <div style="font-weight: 500">
                 This email is sent from the order status dashboard for program
                 managers to remind customers that their orders are awaiting
                 payment.
               </div>
-              <quill-editor [modules]="quillModules"> </quill-editor>
+              <quill-editor [modules]="quillModules" formControlName="paymentNotification"> </quill-editor>
             </div>
           </div>
           <!-- Sample -->
-          <div class="col-12 bg-card sm:p-6 md:p-6 lg:p-10 mb-3 rounded-2xl shadow">
-            <div class="text-2xl font-extrabold tracking-tight leading-none my-3">
+          <div class="col-12 mt-5">
+            <div class="text-2xl font-extrabold tracking-tight leading-none">
               Default Sample Email
             </div>
-            <div class="col-12 p-0">
+            <div class="col-12 p-0 mb-3">
               <div style="font-weight: 500">
                 This email is sent from the "Sample Status" area of the program
                 manager dashboard. This email reminds customers of their sample
                 orders and asks if they want to place a real order.
               </div>
-              <quill-editor [modules]="quillModules"> </quill-editor>
+              <quill-editor [modules]="quillModules" formControlName="sampleEmail"> </quill-editor>
             </div>
           </div>
           <!-- Around this time -->
-          <div class="col-12 bg-card sm:p-6 md:p-6 lg:p-10 mb-3 rounded-2xl shadow">
-            <div class="text-2xl font-extrabold tracking-tight leading-none my-3">
+          <div class="col-12 mt-5">
+            <div class="text-2xl font-extrabold tracking-tight leading-none">
               Default "Around This Time Last Year" Email
             </div>
-            <div class="col-12 p-0">
+            <div class="col-12 p-0 mb-3">
               <div style="font-weight: 500">
                 This email is sent from the "Around This Time Last Year" area of
                 the program manager dashboard.
               </div>
-              <quill-editor [modules]="quillModules"> </quill-editor>
+              <quill-editor [modules]="quillModules" formControlName="followUpEmail"> </quill-editor>
             </div>
           </div>
           <!-- Post-Sale Activity -->
-          <div class="col-12 bg-card sm:p-6 md:p-6 lg:p-10 mb-3 rounded-2xl shadow">
-            <div class="text-2xl font-extrabold tracking-tight leading-none my-3">
+          <div class="col-12 mt-5">
+            <div class="text-2xl font-extrabold tracking-tight leading-none">
               Default "Post-Sale Activity" Email
             </div>
-            <div class="col-12 p-0">
+            <div class="col-12 p-0 mb-3">
               <div style="font-weight: 500">
                 This email is sent from the "Post-Sale Activity" area of the
                 program manager dashboard.
               </div>
-              <quill-editor [modules]="quillModules"> </quill-editor>
+              <quill-editor [modules]="quillModules" formControlName="reorderEmail"> </quill-editor>
             </div>
           </div>
           <!-- Customer Survey -->
-          <div class="col-12 bg-card sm:p-6 md:p-6 lg:p-10 mb-3 rounded-2xl shadow">
-            <div class="text-2xl font-extrabold tracking-tight leading-none my-3">
+          <div class="col-12 mt-5">
+            <div class="text-2xl font-extrabold tracking-tight leading-none">
               Default Customer Survey Email
             </div>
             <div style="font-weight: 500">
@@ -1637,16 +1514,16 @@
             <div class="mt-4 col-12 p-0">
               <mat-form-field appearance="fill" class="w-full">
                 <mat-label> <strong>Subject:</strong> </mat-label>
-                <input matInput />
+                <input matInput formControlName="surveyEmailSubject" />
               </mat-form-field>
             </div>
             <div class="col-12 p-0">
-              <quill-editor [modules]="quillModules"> </quill-editor>
+              <quill-editor [modules]="quillModules" formControlName="surveyEmail"> </quill-editor>
             </div>
           </div>
           <!-- Quote Email -->
-          <div class="col-12 bg-card sm:p-6 md:p-6 lg:p-10 mb-3 rounded-2xl shadow">
-            <div class="text-2xl font-extrabold tracking-tight leading-none my-3">
+          <div class="col-12 mt-5">
+            <div class="text-2xl font-extrabold tracking-tight leading-none ">
               Default Quote Email
             </div>
             <div style="font-weight: 500">
@@ -1656,17 +1533,29 @@
             <div class="mt-4 col-12 p-0">
               <mat-form-field appearance="fill" class="w-full">
                 <mat-label> <strong>Subject:</strong> </mat-label>
-                <input matInput />
+                <input matInput formControlName="quoteEmailSubject" />
               </mat-form-field>
             </div>
             <div class="col-12 p-0">
-              <quill-editor [modules]="quillModules"> </quill-editor>
+              <quill-editor [modules]="quillModules" formControlName="quoteEmail"> </quill-editor>
             </div>
           </div>
-          <div class="col-md-4">
-            <button class="my-5" mat-flat-button [matTooltip]="'Update'" [color]="'primary'">
-              <span class="px-2">Update</span>
-            </button>
+          <div class="col-12 flex justify-end mt-2">
+            <div class="flex items-center my-2">
+              <div class="flex items-center mr-4" *ngIf="dashboardEmailMsg">
+                <ng-container *ngIf="dashboardEmailMsg">
+                  <mat-icon class="text-green-500" [svgIcon]="'heroicons_outline:check'"></mat-icon>
+                  <span class="ml-2">Dashboard Emails Updated Successfully</span>
+                </ng-container>
+              </div>
+              <button class="min-w-40" mat-stroked-button [matTooltip]="'Update'" (click)="DefaultEmailUpdate()"
+                [disabled]="dashboardEmailLoader">
+                <mat-progress-spinner *ngIf="dashboardEmailLoader" [diameter]="24" [mode]="'indeterminate'">
+                </mat-progress-spinner>
+                <mat-icon *ngIf="!dashboardEmailLoader" svgIcon="mode_edit_outline"></mat-icon>
+                <span class="px-2">Update</span>
+              </button>
+            </div>
           </div>
         </div>
       </div>

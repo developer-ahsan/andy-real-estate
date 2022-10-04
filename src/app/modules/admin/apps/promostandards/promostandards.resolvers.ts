@@ -125,7 +125,7 @@ export class PromostandardsResolver implements Resolve<any>
      * @param state
      */
     resolve(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<Promostandard[]> {
-        return this._tasksService.getPromostandards(1);
+        return this._tasksService.getPromostandards({ page: 1, keyword: '' });
     }
 
 

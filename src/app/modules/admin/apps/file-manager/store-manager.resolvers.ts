@@ -80,3 +80,28 @@ export class StoreDetailsByID implements Resolve<any>
         return this._fileManagerService.getStoreByStoreId(route.params.id);
     }
 }
+@Injectable({
+    providedIn: 'root'
+})
+export class StoreSettingsByID implements Resolve<any>
+{
+    /**
+     * Constructor
+     */
+    constructor(private _fileManagerService: FileManagerService) {
+    }
+
+    // -----------------------------------------------------------------------------------------------------
+    // @ Public methods
+    // -----------------------------------------------------------------------------------------------------
+
+    /**
+     * Resolver
+     *
+     * @param route
+     * @param state
+     */
+    resolve(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<Item[]> {
+        return this._fileManagerService.getStoreSetting(route.params.id);
+    }
+}

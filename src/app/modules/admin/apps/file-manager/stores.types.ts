@@ -99,3 +99,32 @@ export interface AddSurvey {
     name: string;
     survey: boolean
 };
+
+export interface CreateStore {
+    storeName: string;
+    storeCode: string;
+    storeURL: string;
+    margin1: number;
+    margin2: number;
+    margin3: number;
+    margin4: number;
+    margin5: number;
+    margin6: number;
+    storeHandling: number;
+    siteMaxSiteID: number;
+    siteMaxQueueID: number;
+    googleAnalyticsID: string;
+    tagLine: string;
+    championName: string;
+    secretKey: string;
+    blnEProcurement: boolean;
+    blnElectronicInvoicing: boolean;
+    browserTitle: string;
+    metaDesc: string;
+    metaKeywords: string;
+    blnShipping: boolean;
+    launchDate: string;
+    protocol: string;
+    businessName: string;
+    reportColor: string;
+};

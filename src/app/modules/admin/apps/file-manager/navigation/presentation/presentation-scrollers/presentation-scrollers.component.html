@@ -1,0 +1,397 @@
+<div class="row py-2">
+  <div class="col-12">
+    <mat-button-toggle-group #group="matButtonToggleGroup" [value]="mainScreen" (change)="calledScreen(group.value)">
+      <mat-button-toggle *ngFor="let buttonValue of screens" value="{{buttonValue}}">
+        {{ buttonValue }}
+      </mat-button-toggle>
+    </mat-button-toggle-group>
+  </div>
+</div>
+<div class="p-4 bg-light" *ngIf="isPageLoading">
+  <ngx-skeleton-loader count="8" appearance="line" animation="pulse">
+  </ngx-skeleton-loader>
+</div>
+<div class="row" *ngIf="mainScreen == 'Testimonials' && !isPageLoading">
+  <div class="col-12 p-0 bg-card  rounded-2xl shadow">
+    <div class="row my-3 sm:p-6 md:p-6 lg:p-10">
+      <div class="text-2xl font-extrabold tracking-tight leading-none col-md-10">
+        Current Testimonial
+      </div>
+      <div class="col-md-2">
+        <mat-slide-toggle [matTooltip]="'Turn On/Off Testimonial'" (change)=" UpdateTestimonialStatus()"
+          [(ngModel)]="testimonialToggle">
+          <span *ngIf="testimonialToggle">Turn Off</span>
+          <span *ngIf="!testimonialToggle">Turn On</span>
+        </mat-slide-toggle>
+      </div>
+    </div>
+    <div class="row mb-2 px-5" [formGroup]="addTestimonialForm">
+      <div class="col-md-2 col-12">
+        <mat-form-field class="w-full">
+          <mat-label>Order *</mat-label>
+          <input type="number" matInput formControlName="displayOrder">
+        </mat-form-field>
+      </div>
+      <div class="col-md-4 col-12">
+        <mat-form-field class="w-full">
+          <mat-label>Testimonial *</mat-label>
+          <input type="text" matInput formControlName="testimonial">
+        </mat-form-field>
+      </div>
+      <div class="col-md-3 col-12">
+        <mat-form-field class="w-full">
+          <mat-label>Name *</mat-label>
+          <input type="text" matInput formControlName="name">
+        </mat-form-field>
+      </div>
+      <div class="col-md-3 col-12">
+        <mat-form-field class="w-full">
+          <mat-label>Title *</mat-label>
+          <input type="text" matInput formControlName="title">
+        </mat-form-field>
+      </div>
+      <div class="col-12 flex justify-end mt-2">
+        <div class="flex items-center my-2">
+          <button class="min-w-40" mat-stroked-button [matTooltip]="'Add Testimonial'" (click)="AddTestimonial()"
+            [disabled]="addTestimonialLoader">
+            <mat-progress-spinner *ngIf="addTestimonialLoader" [diameter]="24" [mode]="'indeterminate'">
+            </mat-progress-spinner>
+            <mat-icon *ngIf="!addTestimonialLoader" svgIcon="heroicons_outline:plus"></mat-icon>
+            <span class="px-2">Add Testimonial</span>
+          </button>
+        </div>
+      </div>
+    </div>
+    <table mat-table [dataSource]="testimonialsData" class="w-full">
+      <div class="color-blue">
+        <ng-container matColumnDef="delete">
+          <th class="min-w-10 bg-gray-50 dark:bg-black dark:bg-opacity-5" mat-header-cell *matHeaderCellDef>
+            <mat-icon svgIcon="heroicons_outline:trash"></mat-icon>
+          </th>
+          <td mat-cell *matCellDef="let element">
+            <mat-checkbox [(ngModel)]="element.blnCheck"></mat-checkbox>
+          </td>
+        </ng-container>
+        <ng-container matColumnDef="order">
+          <th class="min-w-10 bg-gray-50 dark:bg-black dark:bg-opacity-5" mat-header-cell *matHeaderCellDef>
+            Order
+          </th>
+          <td mat-cell *matCellDef="let element" class="p-2">
+            <mat-form-field class="w-full">
+              <input matInput [(ngModel)]="element.displayOrder">
+            </mat-form-field>
+          </td>
+        </ng-container>
+
+        <!-- Name Column -->
+        <ng-container matColumnDef="testimonial">
+          <th class="min-w-40 bg-gray-50 dark:bg-black dark:bg-opacity-5" mat-header-cell *matHeaderCellDef>
+            Testimonial
+          </th>
+          <td mat-cell *matCellDef="let element" class="p-2">
+            <mat-form-field class="w-full">
+              <input matInput [(ngModel)]="element.testimonial">
+            </mat-form-field>
+          </td>
+        </ng-container>
+
+        <!-- Master Column -->
+        <ng-container matColumnDef="name">
+          <th class="min-w-24 bg-gray-50 dark:bg-black dark:bg-opacity-5" mat-header-cell *matHeaderCellDef>
+            Name
+          </th>
+          <td mat-cell *matCellDef="let element" class="p-2">
+            <mat-form-field class="w-full">
+              <input matInput [(ngModel)]="element.name">
+            </mat-form-field>
+          </td>
+        </ng-container>
+
+        <!-- Store Column -->
+        <ng-container matColumnDef="title">
+          <th class="min-w-24 bg-gray-50 dark:bg-black dark:bg-opacity-5" mat-header-cell *matHeaderCellDef>
+            Title
+          </th>
+          <td mat-cell *matCellDef="let element" class="p-2">
+            <mat-form-field class="w-full">
+              <input matInput [(ngModel)]="element.title">
+            </mat-form-field>
+          </td>
+        </ng-container>
+      </div>
+      <tr mat-header-row class="h-18 shadow bg-card" *matHeaderRowDef="testimonialColumns"></tr>
+      <tr mat-row class="hover:bg-gray-100 dark:hover:bg-hover" style="cursor: pointer"
+        *matRowDef="let row; columns: testimonialColumns"></tr>
+    </table>
+    <div class="col-12 flex justify-end mt-2">
+      <div class="flex items-center my-2 mr-2">
+        <div class="flex items-center mr-4" *ngIf="lookFeelMsg">
+          <ng-container *ngIf="lookFeelMsg">
+            <mat-icon class="text-green-500" [svgIcon]="'heroicons_outline:check'"></mat-icon>
+            <span class="ml-2">Testimonial Removed Successfully</span>
+          </ng-container>
+        </div>
+        <button class="min-w-40" mat-stroked-button [matTooltip]="'Remove'" (click)="DeleteTestimonial()"
+          [disabled]="deleteTestimonialLoader">
+          <mat-progress-spinner *ngIf="deleteTestimonialLoader" [diameter]="24" [mode]="'indeterminate'">
+          </mat-progress-spinner>
+          <mat-icon *ngIf="!deleteTestimonialLoader" svgIcon="heroicons_outline:trash"></mat-icon>
+          <span class="px-2">Remove</span>
+        </button>
+      </div>
+      <div class="flex items-center my-2">
+        <button class="min-w-40" mat-stroked-button [matTooltip]="'Update'" (click)="UpdateTestimonials()"
+          [disabled]="updateTestimonialLoader">
+          <mat-progress-spinner *ngIf="updateTestimonialLoader" [diameter]="24" [mode]="'indeterminate'">
+          </mat-progress-spinner>
+          <mat-icon *ngIf="!updateTestimonialLoader" svgIcon="mode_edit_outline"></mat-icon>
+          <span class="px-2">Update</span>
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="row" *ngIf="mainScreen == 'Default Scrollers' && !isPageLoading">
+  <div class="col-12 p-0 bg-card  rounded-2xl shadow">
+    <div class="row sm:p-6 md:p-6 lg:p-8">
+      <div class="text-2xl font-extrabold tracking-tight leading-none col-md-10">
+        Default Scrollers
+      </div>
+    </div>
+    <div class="row px-10">
+      <div class="col-12 mb-5">
+        <note>Default scrollers are auto-populated using already-existing store data:</note>
+        <p><b>Best Sellers:</b> Generated by all of the items selected as "best seller" in each category's
+          recommendations
+          settings.<br>
+          <b>Featured Products:</b> Generated by all of the items selected a "featured" in each category's
+          recommendations
+          settings.<br>
+          <b>Recommended:</b> Generated by all of the items selected as "recommended" in each category's recommndation
+          settings.<br>
+          <b>Under $1:</b> Selects the top 100 products on the store that have a starting price under $1.00.<br>
+          <b>Top Rated:</b> Selects the top 100 top-rated products on the store (4 or 5 rating)<br>
+          <b>Testimonials:</b> Shows manually-entered customer testimonials (from below). This scroller only shows if
+          there are at least three and always appears below all product scrollers.<br>
+
+          These default scrollers cannot be removed, but they can be turned on or off, and the display order can be
+          changed.
+        </p>
+      </div>
+      <div class="col-12">
+        <div class="row">
+          <div class="col-6" *ngFor="let item of defaultScrollersData">
+            <mat-form-field class="w-full">
+              <mat-label>{{item.title}}</mat-label>
+              <mat-select [(ngModel)]="item.blnActive">
+                <mat-option [value]="true">Active</mat-option>
+                <mat-option [value]="false">Disabled</mat-option>
+              </mat-select>
+            </mat-form-field>
+          </div>
+          <div class="col-12 flex justify-end mt-2">
+            <div class="flex items-center my-2 mr-2">
+              <div class="flex items-center mr-4" *ngIf="defaultScrollerMsg">
+                <ng-container *ngIf="defaultScrollerMsg">
+                  <mat-icon class="text-green-500" [svgIcon]="'heroicons_outline:check'"></mat-icon>
+                  <span class="ml-2">Default Scrollers Updated Successfully</span>
+                </ng-container>
+              </div>
+              <button class="min-w-40" mat-stroked-button [matTooltip]="'Update'" (click)="UpdateDefaultScroller()"
+                [disabled]="defaultScrollerLoader">
+                <mat-progress-spinner *ngIf="defaultScrollerLoader" [diameter]="24" [mode]="'indeterminate'">
+                </mat-progress-spinner>
+                <mat-icon *ngIf="!defaultScrollerLoader" svgIcon="mode_edit_outline"></mat-icon>
+                <span class="px-2">Update</span>
+              </button>
+            </div>
+
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="row" *ngIf="mainScreen == 'Scroller Order' && !isPageLoading">
+  <div class="col-12 p-0 bg-card  rounded-2xl shadow">
+    <div class="row sm:p-6 md:p-6 lg:p-8">
+      <div class="text-2xl font-extrabold tracking-tight leading-none col-md-10">
+        Scrollers Display Order
+      </div>
+    </div>
+    <div class="row px-10">
+      <div class="col-12">
+        <div class="row">
+          <div class="col-6" *ngFor="let item of defaultScrollersData">
+            <mat-form-field class="w-full">
+              <mat-label>{{item.title}} *</mat-label>
+              <input type="number" matInput [(ngModel)]="item.displayOrder">
+            </mat-form-field>
+          </div>
+          <div class="col-12 flex justify-end mt-2">
+            <div class="flex items-center my-2 mr-2">
+              <div class="flex items-center mr-4" *ngIf="defaultScrollerOrderMsg">
+                <ng-container *ngIf="defaultScrollerOrderMsg">
+                  <mat-icon class="text-green-500" [svgIcon]="'heroicons_outline:check'"></mat-icon>
+                  <span class="ml-2">Default Scrollers Display Order Updated Successfully</span>
+                </ng-container>
+              </div>
+              <button class="min-w-40" mat-stroked-button [matTooltip]="'Update'" (click)="UpdateScrollerOrder()"
+                [disabled]="defaultScrollerOrderLoader">
+                <mat-progress-spinner *ngIf="defaultScrollerOrderLoader" [diameter]="24" [mode]="'indeterminate'">
+                </mat-progress-spinner>
+                <mat-icon *ngIf="!defaultScrollerOrderLoader" svgIcon="mode_edit_outline"></mat-icon>
+                <span class="px-2">Update</span>
+              </button>
+            </div>
+
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="row" *ngIf="mainScreen == 'Scrollers' && !isPageLoading">
+  <div class="col-12 p-0 bg-card  rounded-2xl shadow">
+    <div class="row sm:p-6 md:p-6 lg:p-8">
+      <div class="text-2xl font-extrabold tracking-tight leading-none col-md-6 col-12">
+        Scrollers
+      </div>
+      <div class="col-md-6 col-12 text-right" *ngIf="updateScroller">
+        <button class="ml-4" mat-flat-button mat-stroked-button [matTooltip]="'Back to Scrollers'"
+          (click)="backToScrollerList()">
+          <mat-icon [svgIcon]="'heroicons_outline:arrow-narrow-left'"></mat-icon>
+          <span class="ml-2 mr-1">Back to Scrollers</span>
+        </button>
+      </div>
+    </div>
+    <div class="row px-10">
+      <div class="col-12">
+        <div class="row">
+          <div class="col-12">
+            <mat-form-field class="w-full" *ngIf="!updateScroller">
+              <mat-label>Scroller Title *</mat-label>
+              <input type="text" matInput [(ngModel)]="scrollerTitle">
+            </mat-form-field>
+
+            <div class="row" *ngIf="updateScroller">
+              <div class="col-md-8 col-12">
+                <mat-form-field class="w-full">
+                  <mat-label>Scroller Title *</mat-label>
+                  <input type="text" matInput [(ngModel)]="scrollerTitle">
+                </mat-form-field>
+              </div>
+              <div class="col-md-4 col-12">
+                <mat-form-field class="w-full" *ngIf="updateScrollerData">
+                  <mat-label>Active *</mat-label>
+                  <mat-select [(ngModel)]="updateScrollerData.blnActive">
+                    <mat-option [value]="true">Active</mat-option>
+                    <mat-option [value]="false">Disabled</mat-option>
+                  </mat-select>
+                </mat-form-field>
+              </div>
+            </div>
+          </div>
+          <div class="col-12 flex justify-end mt-2" *ngIf="!updateScroller">
+            <div class="flex items-center mb-2 mr-2">
+              <div class="flex items-center mr-4" *ngIf="scrollersMsg">
+                <ng-container *ngIf="scrollersMsg">
+                  <mat-icon class="text-green-500" [svgIcon]="'heroicons_outline:check'"></mat-icon>
+                  <span class="ml-2">Scroller Created Successfully</span>
+                </ng-container>
+              </div>
+              <button class="min-w-40" mat-stroked-button [matTooltip]="'Create Scroller'" (click)="AddScroller()"
+                [disabled]="scrollersLoader">
+                <mat-progress-spinner *ngIf="scrollersLoader" [diameter]="24" [mode]="'indeterminate'">
+                </mat-progress-spinner>
+                <mat-icon *ngIf="!scrollersLoader" svgIcon="heroicons_outline:plus"></mat-icon>
+                <span class="px-2">Create Scroller</span>
+              </button>
+            </div>
+          </div>
+          <div class="col-12 flex justify-end mt-2" *ngIf="updateScroller">
+            <div class="flex items-center mb-2 mr-2">
+              <div class="flex items-center mr-4" *ngIf="scrollersMsg">
+                <ng-container *ngIf="scrollersMsg">
+                  <mat-icon class="text-green-500" [svgIcon]="'heroicons_outline:check'"></mat-icon>
+                  <span class="ml-2">Scroller Updated Successfully</span>
+                </ng-container>
+              </div>
+              <button class="min-w-40" mat-stroked-button [matTooltip]="'Update Scroller'" (click)="UpdateScroller()"
+                [disabled]="updateScrollerLoader">
+                <mat-progress-spinner *ngIf="updateScrollerLoader" [diameter]="24" [mode]="'indeterminate'">
+                </mat-progress-spinner>
+                <mat-icon *ngIf="!updateScrollerLoader" svgIcon="heroicons_outline:pencil"></mat-icon>
+                <span class="px-2">Update Scroller</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div *ngIf="updateScroller && updateScrollerDataLoader" class="col-12">
+        <ngx-skeleton-loader count="8" appearance="line" animation="pulse">
+        </ngx-skeleton-loader>
+      </div>
+      <div *ngIf="scrollerProducts && updateScroller && !updateScrollerDataLoader" class="col-12">
+        <div *ngIf="scrollerProducts.length > 0">
+          <div class="row border-b" *ngFor="let item of scrollerProducts">
+            <div class="col-3">
+              <img style="width:50%" src="{{imgUrl + '/HiRes/' + item.pk_storeProductID}}.jpg"
+                (error)="onImgError($event)">
+            </div>
+            <div class="col-9 p-5">
+              <h5>{{item.productName}}</h5>
+              <p>{{item.pk_storeProductID}}</p>
+            </div>
+          </div>
+        </div>
+        <div *ngIf="scrollerProducts.length == 0" class="font-semibold tracking-tight text-center pb-10">
+          <p>There are no items assigned to this scroller. Scrollers must have at least 10 active products to appear
+            online.</p>
+        </div>
+      </div>
+    </div>
+    <table mat-table [dataSource]="scrollersData" class="w-full mb-5" *ngIf="!updateScroller">
+      <div class="color-blue">
+        <ng-container matColumnDef="title">
+          <th class="min-w-50 bg-gray-50 dark:bg-black dark:bg-opacity-5" mat-header-cell *matHeaderCellDef>
+            Title
+          </th>
+          <td mat-cell *matCellDef="let element" class="px-5">
+            {{element.title}}
+          </td>
+        </ng-container>
+
+        <!-- Name Column -->
+        <ng-container matColumnDef="active">
+          <th class="min-w-10 bg-gray-50 dark:bg-black text-center dark:bg-opacity-5" mat-header-cell *matHeaderCellDef>
+            Active
+          </th>
+          <td mat-cell *matCellDef="let element" class="px-5 text-center">
+            <mat-icon *ngIf="element.blnActive">check</mat-icon>
+            <mat-icon *ngIf="!element.blnActive">close</mat-icon>
+          </td>
+        </ng-container>
+        <ng-container matColumnDef="action">
+          <th class="min-w-10 bg-gray-50 dark:bg-black text-center dark:bg-opacity-5" mat-header-cell *matHeaderCellDef>
+            Action
+          </th>
+          <td mat-cell *matCellDef="let element" class="px-5 text-center">
+            <mat-icon [matTooltip]="'Update Scroller'" (click)="updateScrollerToggle(element)">edit</mat-icon>
+            <mat-icon [matTooltip]="'Remove Scroller'" (click)="DeleteScroller(element)" *ngIf="!element?.deleteLoader">
+              delete</mat-icon>
+            <mat-icon *ngIf="element?.deleteLoader">
+              <mat-progress-spinner [diameter]="24" [mode]="'indeterminate'">
+              </mat-progress-spinner>
+            </mat-icon>
+          </td>
+        </ng-container>
+      </div>
+      <tr mat-header-row class="h-18 shadow bg-card" *matHeaderRowDef="scrollerColumns"></tr>
+      <tr mat-row class="hover:bg-gray-100 dark:hover:bg-hover" style="cursor: pointer"
+        *matRowDef="let row; columns: scrollerColumns"></tr>
+    </table>
+
+  </div>
+
+</div>
