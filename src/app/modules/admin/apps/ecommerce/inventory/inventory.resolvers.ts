@@ -109,7 +109,6 @@ export class ProductDescriptionResolver implements Resolve<any>
     }
 }
 
-// Distribution code
 @Injectable({
     providedIn: 'root'
 })
