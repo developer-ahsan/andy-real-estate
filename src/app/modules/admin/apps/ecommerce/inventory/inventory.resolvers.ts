@@ -108,4 +108,32 @@ export class ProductDescriptionResolver implements Resolve<any>
         return this._inventoryService.getProductByProductId(id);
     }
 }
+@Injectable({
+    providedIn: 'root'
+})
+export class SystemDistributorCodes implements Resolve<any>
+{
+    /**
+     * Constructor
+     */
+    constructor(private _inventoryService: InventoryService) {
+    }
+
+    // -----------------------------------------------------------------------------------------------------
+    // @ Public methods
+    // -----------------------------------------------------------------------------------------------------
+
+    /**
+     * Resolver
+     *
+     * @param route
+     * @param state
+     */
+    resolve(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<ProductsList[]> {
+        return this._inventoryService.getSystemDistributorCodes();
+    }
+}
+
+
+
 

@@ -643,80 +643,82 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
     updateCost(event, selectField) {
         const { distrDiscount, distrDiscountCode } = event.value;
         const discountedValue = 1 - distrDiscount;
-
         if (distrDiscountCode == "COST") {
             return;
         };
 
         if (selectField == "standardCostOne") {
-            if (this.netCostDefaultStandardCost?.standardCostOne) {
+
+            if (distrDiscountCode == '0') {
                 this.netCostForm.patchValue({
                     standardCostOne: this.netCostDefaultStandardCost.standardCostOne
                 });
-                const { standardCostOne } = this.netCostForm.getRawValue();
-                this.netCostForm.patchValue({
-                    standardCostOne: standardCostOne ? Number((standardCostOne * discountedValue).toFixed(3)) : null
-                });
-            };
+            }
+            const { standardCostOne } = this.netCostForm.getRawValue();
+            this.netCostForm.patchValue({
+                standardCostOne: standardCostOne ? Number((standardCostOne * discountedValue)).toFixed(3) : null
+            });
+
         } else if (selectField == "standardCostTwo") {
 
-            if (this.netCostDefaultStandardCost?.standardCostTwo) {
+            if (distrDiscountCode == '0') {
                 this.netCostForm.patchValue({
                     standardCostTwo: this.netCostDefaultStandardCost.standardCostTwo
                 });
-                const { standardCostTwo } = this.netCostForm.getRawValue();
-                this.netCostForm.patchValue({
-                    standardCostTwo: standardCostTwo ? Number((standardCostTwo * discountedValue).toFixed(3)) : null
-                });
             }
+            const { standardCostTwo } = this.netCostForm.getRawValue();
+            this.netCostForm.patchValue({
+                standardCostTwo: standardCostTwo ? Number((standardCostTwo * discountedValue)).toFixed(3) : null
+            });
 
         } else if (selectField == "standardCostThree") {
 
-            if (this.netCostDefaultStandardCost?.standardCostThree) {
+            if (distrDiscountCode == '0') {
                 this.netCostForm.patchValue({
                     standardCostThree: this.netCostDefaultStandardCost.standardCostThree
                 });
-                const { standardCostThree } = this.netCostForm.getRawValue();
-                this.netCostForm.patchValue({
-                    standardCostThree: standardCostThree ? Number((standardCostThree * discountedValue).toFixed(3)) : null
-                });
-            };
+            }
+            const { standardCostThree } = this.netCostForm.getRawValue();
+            this.netCostForm.patchValue({
+                standardCostThree: standardCostThree ? Number((standardCostThree * discountedValue)).toFixed(3) : null
+            });
 
         } else if (selectField == "standardCostFour") {
 
-            if (this.netCostDefaultStandardCost?.standardCostFour) {
+            if (distrDiscountCode == '0') {
                 this.netCostForm.patchValue({
                     standardCostFour: this.netCostDefaultStandardCost.standardCostFour
                 });
-                const { standardCostFour } = this.netCostForm.getRawValue();
-                this.netCostForm.patchValue({
-                    standardCostFour: standardCostFour ? Number((standardCostFour * discountedValue).toFixed(3)) : null
-                });
             }
+            const { standardCostFour } = this.netCostForm.getRawValue();
+            this.netCostForm.patchValue({
+                standardCostFour: standardCostFour ? Number((standardCostFour * discountedValue)).toFixed(3) : null
+            });
 
         } else if (selectField == "standardCostFive") {
 
-            if (this.netCostDefaultStandardCost?.standardCostFive) {
+            if (distrDiscountCode == '0') {
                 this.netCostForm.patchValue({
                     standardCostFive: this.netCostDefaultStandardCost.standardCostFive
                 });
-                const { standardCostFive } = this.netCostForm.getRawValue();
-                this.netCostForm.patchValue({
-                    standardCostFive: standardCostFive ? Number((standardCostFive * discountedValue).toFixed(3)) : null
-                });
             }
+            const { standardCostFive } = this.netCostForm.getRawValue();
+            this.netCostForm.patchValue({
+                standardCostFive: standardCostFive ? Number((standardCostFive * discountedValue)).toFixed(3) : null
+            });
 
         } else if (selectField == "standardCostSix") {
 
-            if (this.netCostDefaultStandardCost?.standardCostSix) {
+            if (distrDiscountCode == '0') {
                 this.netCostForm.patchValue({
                     standardCostSix: this.netCostDefaultStandardCost.standardCostSix
                 });
-                const { standardCostSix } = this.netCostForm.getRawValue();
-                this.netCostForm.patchValue({
-                    standardCostSix: standardCostSix ? (standardCostSix * discountedValue).toFixed(3) : null
-                });
             }
+            const { standardCostSix } = this.netCostForm.getRawValue();
+            this.netCostForm.patchValue({
+                standardCostSix: standardCostSix ? (standardCostSix * discountedValue).toFixed(3) : null
+            });
+
         };
 
     };
@@ -763,14 +765,10 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
 
     getDistributionCodes(): void {
         // Get distribution code for cost dropdowns
-        this._inventoryService.getSystemDistributorCodes()
+        this._inventoryService.distributionCodes$
             .subscribe((response) => {
                 this.distributionCodes = response["data"];
                 if (this.distributionCodes.length) {
-                    this.distributionCodes.push({
-                        distrDiscount: -1,
-                        distrDiscountCode: "COST"
-                    });
                     const countryDefault = this.distributionCodes.find(c => c.distrDiscount == -1);
                     this.netCostForm.patchValue({
                         standardCostDropOne: countryDefault,
@@ -1808,7 +1806,7 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
     getRunSetup() {
         if (!this.distributionCodes.length) {
             this.runSetupLoaderFetching = true;
-            this._inventoryService.getSystemDistributorCodes()
+            this._inventoryService.distributionCodes$
                 .subscribe((response) => {
                     this.runSetupLoaderFetching = false;
                     this.runSetupDistributorCodes = response["data"];
