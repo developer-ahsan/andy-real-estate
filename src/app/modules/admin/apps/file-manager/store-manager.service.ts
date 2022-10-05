@@ -4,6 +4,8 @@ import { BehaviorSubject, Observable, of, throwError } from "rxjs";
 import { map, retry, switchMap, take, tap } from "rxjs/operators";
 import {
   AddSurvey,
+  CreateStore,
+  CreateStoreSettings,
   GroupBuy,
   ShippingNotification,
   StoreList,
@@ -12,7 +14,7 @@ import {
 import { environment } from "environments/environment";
 import { navigations } from "./navigation-data";
 import { AuthService } from "app/core/auth/auth.service";
-import { AddNewsFeed, AddScroller, AddTestimonial, colorHeaderUpdate, colorsUpdate, DefaultEmailUpdate, DeleteNewsFeed, DeleteScroller, DeleteTestimonial, UpdateDefaultScroller, UpdateNewsFeed, UpdateScroller, UpdateScrollerOrder, UpdateSpecialOffer, UpdateTestimonials, UpdateTestimonialStatus, UpdateTypeKit } from "./navigation/presentation/presentation.types";
+import { AddNewsFeed, AddScroller, AddTestimonial, colorHeaderUpdate, colorsUpdate, DefaultEmailUpdate, DeleteNewsFeed, DeleteScroller, DeleteTestimonial, UpdateDefaultScroller, UpdateFeatureCampaign, UpdateNewsFeed, UpdateScroller, UpdateScrollerOrder, UpdateSpecialOffer, UpdateTestimonials, UpdateTestimonialStatus, UpdateTypeKit } from "./navigation/presentation/presentation.types";
 
 @Injectable({
   providedIn: "root",
@@ -473,6 +475,17 @@ export class FileManagerService {
       .pipe(retry(3));
   }
 
+  CreateNewStore(payload: CreateStore) {
+    const headers = { 'Authorization': `Bearer ${this._authService.accessToken}` };
+    return this._httpClient.post(environment.stores, payload, { headers }).pipe(retry(1));
+  }
+  CreateStoreSettings(payload: CreateStoreSettings) {
+    const headers = { 'Authorization': `Bearer ${this._authService.accessToken}` };
+    return this._httpClient.post(environment.stores, payload, { headers }).pipe(retry(1));
+  }
+
+
+
   // Presentation Calls 
   colorHeaderUpdate(payload: colorHeaderUpdate) {
     const headers = { 'Authorization': `Bearer ${this._authService.accessToken}` };
@@ -541,6 +554,10 @@ export class FileManagerService {
     return this._httpClient.put(environment.stores, payload, { headers }).pipe(retry(3));
   }
   UpdateScroller(payload: UpdateScroller) {
+    const headers = { 'Authorization': `Bearer ${this._authService.accessToken}` };
+    return this._httpClient.put(environment.stores, payload, { headers }).pipe(retry(3));
+  }
+  UpdateFeatureCampaign(payload: UpdateFeatureCampaign) {
     const headers = { 'Authorization': `Bearer ${this._authService.accessToken}` };
     return this._httpClient.put(environment.stores, payload, { headers }).pipe(retry(3));
   }

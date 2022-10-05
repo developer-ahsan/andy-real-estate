@@ -74,7 +74,6 @@ export class PresentationComponent implements OnInit, OnDestroy {
   socialMediaForm: FormGroup;
   // News Feed
   // Campaigns
-  campaignData: any;
   // Payment Methods
   onlineCreditForm: FormGroup;
   prepaymentForm: FormGroup;
@@ -127,7 +126,10 @@ export class PresentationComponent implements OnInit, OnDestroy {
   dashboardEmailsForm: FormGroup;
   dashboardEmailLoader: boolean = false;
   dashboardEmailMsg: boolean = false;
-  // Home Page Scrollers
+  // Featured Campaigns
+  campaignData: any = [];
+  fetureCampaignLoader: boolean = false;
+  featureCampaignMsg: boolean = false;
 
   constructor(
     private _fileManagerService: FileManagerService,
@@ -285,7 +287,7 @@ export class PresentationComponent implements OnInit, OnDestroy {
       } else if (screenName == "Typekit") {
         this.getScreenData("type_kit", screenName);
       } else if (screenName == "Feature Campaign") {
-        this.getScreenData("campaign", screenName);
+        this.getScreenData("presentation_feature_campaigns", screenName);
       } else if (screenName == "Payment methods") {
         this.getScreenData("payment_method", screenName);
       } else if (screenName == "Support Team") {
@@ -295,6 +297,7 @@ export class PresentationComponent implements OnInit, OnDestroy {
         this.getScreenData("feature_image", screenName);
       } else if (screenName == "Default Dashboard Emails") {
         this.getScreenData("presentation_default_emails", screenName);
+      } else if (screenName == '') {
       }
     }
   }
@@ -612,5 +615,34 @@ export class PresentationComponent implements OnInit, OnDestroy {
       this.dashboardEmailLoader = false;
       this._changeDetectorRef.markForCheck();
     });
+  }
+  // Featured Campaigns
+  UpdateFeatureCampaign() {
+    this.fetureCampaignLoader = true;
+    let campaignIDsList = []
+    this.campaignData.forEach(element => {
+      if (element.isFeature) {
+        campaignIDsList.push({ pk_campaignID: element.pk_campaignID, isFeature: element.isFeature })
+      }
+    });
+    let payload = {
+      campaignIDsList: campaignIDsList,
+      fk_storeID: this.selectedStore.pk_storeID,
+      update_presentation_feature_campaign: true
+    }
+    this._fileManagerService.UpdateFeatureCampaign(payload)
+      .pipe(takeUntil(this._unsubscribeAll))
+      .subscribe(res => {
+        this.fetureCampaignLoader = false;
+        this.featureCampaignMsg = true;
+        setTimeout(() => {
+          this.featureCampaignMsg = false;
+          this._changeDetectorRef.markForCheck();
+        }, 2500);
+        this._changeDetectorRef.markForCheck();
+      }, (err => {
+        this.fetureCampaignLoader = false;
+        this._changeDetectorRef.markForCheck();
+      }))
   }
 }

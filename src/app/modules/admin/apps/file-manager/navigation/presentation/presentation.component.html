@@ -593,15 +593,30 @@
             <div class="mt-5 fa fa-info-circle" style="color: rgb(101, 124, 174)">
               Select max 2 campaigns to feature in the home page of the store.
             </div>
+            <div class="mt-5 text-center" style="color: rgb(101, 124, 174)" *ngIf="campaignData.length == 0">
+              No campaigns were found on this store.
+            </div>
             <div class="col-12 my-4 font-weight-bold" *ngFor="let item of campaignData; let i = index">
-              <mat-checkbox class="example-margin" name="{{ i }}" [checked]="item.blnActive">
+              <mat-checkbox class="example-margin" name="{{ i }}" [checked]="item.isFeature">
                 {{ item.objective }}
               </mat-checkbox>
             </div>
-            <div class="col-md-4">
-              <button class="my-5" mat-flat-button mat-stroked-button [matTooltip]="'Update'" [color]="'primary'">
-                <span class="px-2">Update</span>
-              </button>
+            <div class="col-12 flex items-center justify-end w-full" *ngIf="campaignData.length > 0">
+              <div class="flex items-center my-2">
+                <div class="flex items-center mr-4" *ngIf="featureCampaignMsg">
+                  <ng-container *ngIf="featureCampaignMsg">
+                    <mat-icon class="text-green-500" [svgIcon]="'heroicons_outline:check'"></mat-icon>
+                    <span class="ml-2">Featured Campaigns Updated Successfully</span>
+                  </ng-container>
+                </div>
+                <button class="min-w-40" mat-stroked-button [matTooltip]="'Update'" (click)="UpdateFeatureCampaign()"
+                  [disabled]="fetureCampaignLoader">
+                  <mat-progress-spinner *ngIf="fetureCampaignLoader" [diameter]="24" [mode]="'indeterminate'">
+                  </mat-progress-spinner>
+                  <mat-icon *ngIf="!fetureCampaignLoader" svgIcon="mode_edit_outline"></mat-icon>
+                  <span class="px-2">Update</span>
+                </button>
+              </div>
             </div>
           </div>
         </div>
