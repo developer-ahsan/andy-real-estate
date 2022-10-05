@@ -108,6 +108,8 @@ export class ProductDescriptionResolver implements Resolve<any>
         return this._inventoryService.getProductByProductId(id);
     }
 }
+
+// Distribution code
 @Injectable({
     providedIn: 'root'
 })
