@@ -578,7 +578,7 @@ export class ImprintComponent implements OnInit, OnDestroy {
     }
 
     const { pk_productID } = this.selectedProduct;
-    const finalImprintPaylaod = [];
+    const finalImprintPayload = [];
     for (const imprint of imprintsToUpdate) {
       const {
         fk_decoratorID,
@@ -625,12 +625,12 @@ export class ImprintComponent implements OnInit, OnDestroy {
         store_product_id_list: [],
         display_order: displayOrder
       };
-      finalImprintPaylaod.push(imprintObj);
+      finalImprintPayload.push(imprintObj);
     }
 
     const payload = {
       standard_imprint: true,
-      imprint_obj: finalImprintPaylaod
+      imprint_obj: finalImprintPayload
     };
 
     this.standardImprintAddLoader = true;
