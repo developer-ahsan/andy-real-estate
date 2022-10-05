@@ -21,7 +21,8 @@
                         <mat-form-field class="w-full">
                             <input type="text" placeholder="Select Color" matInput [formControl]="colorName"
                                 [matAutocomplete]="auto">
-
+                            <mat-hint><span *ngFor="let item of selectedColorsList">{{item.colorName}}, </span>
+                            </mat-hint>
                             <mat-autocomplete #auto="matAutocomplete">
                                 <mat-option *ngFor="let result of results" (click)="colorSelected(result)"
                                     [value]="result.colorName">
@@ -70,6 +71,9 @@
                                     <input matInput type="color" value="{{colorValue}}" (change)="changeColor($event)"
                                         placeholder="Color">
                                 </mat-form-field>
+                            </div>
+                            <div class="col-12">
+                                <input type="file" accept=".jpg" id="image" (change)="uploadImage($event)" />
                             </div>
                         </div>
                     </form>

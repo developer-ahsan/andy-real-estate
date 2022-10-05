@@ -10,6 +10,17 @@ import { IDropdownSettings } from 'ng-multiselect-dropdown';
 import * as _ from 'lodash';
 import { environment } from 'environments/environment';
 
+export interface PostColor {
+  product_id: number;
+  color: true;
+  colors: Color[]
+};
+interface Color {
+  color_id: number;
+  the_run: string;
+  rgb: string;
+};
+
 @Component({
   selector: 'app-color',
   templateUrl: './color.component.html'
@@ -38,6 +49,7 @@ export class ColorComponent implements OnInit, OnDestroy {
   fileName: string = "";
 
   colorsList: any = [];
+  selectedColorsList: any = [];
   dummyColorsList: any = [];
   colorList = [];
   defaultResetValue: number = 0.00;
@@ -55,6 +67,7 @@ export class ColorComponent implements OnInit, OnDestroy {
   public colorName = new FormControl();
   results: any[];
 
+  imageValue: any;
   constructor(
     private _changeDetectorRef: ChangeDetectorRef,
     private _inventoryService: InventoryService,
@@ -62,14 +75,15 @@ export class ColorComponent implements OnInit, OnDestroy {
     private _snackBar: MatSnackBar
   ) { }
 
-  ngOnInit(): void {
-
+  initColorForm() {
     this.colorForm = this._formBuilder.group({
       colors: ['', Validators.required],
       run: ['0.00'],
       hex: ['']
     });
-
+  }
+  ngOnInit(): void {
+    this.initColorForm();
     this.colorDropdownSettings = {
       singleSelection: false,
       idField: 'pk_colorID',
@@ -86,7 +100,7 @@ export class ColorComponent implements OnInit, OnDestroy {
     // Color select autocomplete field
     this.colorName.valueChanges.subscribe(
       term => {
-        if (term.length > 1) {
+        if (term && term.length > 1) {
           this._inventoryService.getSearchedColors(term).subscribe(
             result => {
               this.results = result["data"] as any[];
@@ -99,7 +113,18 @@ export class ColorComponent implements OnInit, OnDestroy {
   };
 
   colorSelected(result: any): void {
+    if (this.selectedColorsList.length == 0) {
+      this.selectedColorsList.push({ colorId: result.pk_colorID, colorName: result.colorName });
+    } else {
+      var obj = this.selectedColorsList.filter((val) => {
+        return val.colorId == result.pk_colorID;
+      });
+      if (obj.length == 0) {
+        this.selectedColorsList.push({ colorId: result.pk_colorID, colorName: result.colorName });
+      }
+    }
     this.selectedColor = result;
+    this.colorName.setValue(null);
   };
 
   onItemSelect(item: any) {
@@ -161,7 +186,18 @@ export class ColorComponent implements OnInit, OnDestroy {
       });
   };
 
-  uploadImage(): void {
+  uploadImage(event): void {
+    this.updateImageTouched = true;
+    const file = event.target.files[0];
+    let type = file["type"];
+    const reader = new FileReader();
+    reader.readAsDataURL(file);
+    reader.onload = () => {
+      this.imageValue = {
+        imageUpload: reader.result,
+        type: file["type"]
+      };
+    };
   };
 
   changeColor(event) {
@@ -332,6 +368,9 @@ export class ColorComponent implements OnInit, OnDestroy {
 
     const { pk_colorID } = this.selectedColor;
 
+
+
+
     if (!pk_colorID) {
       return this._snackBar.open("Please select color", '', {
         horizontalPosition: 'center',
@@ -340,21 +379,40 @@ export class ColorComponent implements OnInit, OnDestroy {
       });
     };
 
+    const { imageUpload, type } = this.imageValue;
+    if (imageUpload) {
+      let paylaod = {
+        imageUpload: imageUpload,
+        type: type,
+        name: pk_colorID
+      }
+      this.uploadColorMedia(paylaod);
+    }
+    let colors: any = [];
+    this.selectedColorsList.forEach(element => {
+      colors.push({
+        color_id: element.colorId,
+        the_run: run,
+        rgb: hex
+      })
+    });
     const payload = {
       product_id: pk_productID,
-      color_name: [],
-      color_id: [pk_colorID],
-      the_run: [run],
-      rgb: [hex || this.hexColor],
-      color: true
+      color: true,
+      colors: colors
     };
 
     this.colorAddLoader = true;
     this._inventoryService.addColors(payload)
       .subscribe((response) => {
+        let val: any = document.getElementById('image')
+        val.value = null;
+        this.imageValue = null;
         this._inventoryService.getColors(pk_productID)
           .pipe(takeUntil(this._unsubscribeAll))
           .subscribe((colors) => {
+            this.colorName.setValue(null);
+            this.selectedColor = {};
             for (const color of colors["data"]) {
               const { fk_colorID } = color;
               let image = `${environment.productMedia}/Colors/${pk_productID}/${fk_colorID}.jpg`;

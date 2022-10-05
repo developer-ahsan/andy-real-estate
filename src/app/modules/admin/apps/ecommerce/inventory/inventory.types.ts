@@ -441,6 +441,16 @@ export interface createColorObj {
     the_run: string[];
     rgb: string[];
 }
+export interface PostColor {
+    product_id: number;
+    color: boolean;
+    colors: Color[]
+};
+export interface Color {
+    color_id: number;
+    the_run: string;
+    rgb: string;
+};
 
 export interface priceInclusionObj {
     product_id: number;
