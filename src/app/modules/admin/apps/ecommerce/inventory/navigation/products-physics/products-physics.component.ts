@@ -106,6 +106,8 @@ export class ProductsPhysicsComponent implements OnInit, OnDestroy {
     // Fill flat rate form
     this.flatRateShippingForm.patchValue(flatRateObj);
 
+
+    // Dimension added
     this._inventoryService.product$
       .pipe(takeUntil(this._unsubscribeAll))
       .subscribe((productDetails) => {
