@@ -477,13 +477,21 @@ export class NetCostComponent implements OnInit, OnDestroy {
 
   updateNetCost(): void {
     const formValues = this.netCostForm.getRawValue();
-    const quantityListArray = [parseInt(formValues.quantityOne) || null, parseInt(formValues.quantityTwo) || null, parseInt(formValues.quantityThree) || null, parseInt(formValues.quantityFour) || null, parseInt(formValues.quantityFive) || null, parseInt(formValues.quantitySix) || null];
+    const quantityListArray = [Number(formValues.quantityOne) || null, Number(formValues.quantityTwo) || null, Number(formValues.quantityThree) || null, Number(formValues.quantityFour) || null, Number(formValues.quantityFive) || null, Number(formValues.quantitySix) || null];
     const blankListArray = [parseInt(formValues.blankCostOne) || null, parseInt(formValues.blankCostTwo) || null, parseInt(formValues.blankCostThree) || null, parseInt(formValues.blankCostFour) || null, parseInt(formValues.blankCostFive) || null, parseInt(formValues.blankCostSix) || null];
     const standardCostList = [Number(formValues.standardCostOne) || null, Number(formValues.standardCostTwo) || null, Number(formValues.standardCostThree) || null, Number(formValues.standardCostFour) || null, Number(formValues.standardCostFive) || null, Number(formValues.standardCostSix) || null];
     const realQuantityList = this.removeNull(quantityListArray);
     const realBlankList = this.removeNull(blankListArray);
     const realStandardCostList = this.removeNull(standardCostList);
 
+    if (realQuantityList.length != realStandardCostList.length) {
+      this._snackBar.open("Quantity list must be equal to standard cost list", '', {
+        horizontalPosition: 'center',
+        verticalPosition: 'bottom',
+        duration: 3500
+      });
+      return;
+    }
     const { pk_productID } = this.selectedProduct;
     const payload = {
       product_id: parseInt(pk_productID),
@@ -559,8 +567,11 @@ export class NetCostComponent implements OnInit, OnDestroy {
   };
 
   updateCost(event, selectField) {
-    const { distrDiscount } = event.value;
+    const { distrDiscount, distrDiscountCode } = event.value;
     const discountedValue = 1 - distrDiscount;
+    if (distrDiscountCode == "COST") {
+      return;
+    };
 
     if (selectField == "standardCostOne") {
 

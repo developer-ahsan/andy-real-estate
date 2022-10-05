@@ -72,6 +72,9 @@ export class ProductsPhysicsComponent implements OnInit, OnDestroy {
       weight: ['', Validators.required],
       unitsInWeight: ['', Validators.required],
       dimensions: [''],
+      productWidth: [''],
+      productHeight: [''],
+      productLength: [''],
       unitsInShippingPackage: [''],
       overPackCharge: ['']
     });
@@ -111,11 +114,14 @@ export class ProductsPhysicsComponent implements OnInit, OnDestroy {
         this.sliderMaxValue = prodTimeMax;
         this.sliderMinValue = prodTimeMin;
         this.blnShipingValue = blnIncludeShipping ? 'YES' : 'NO';
+        const dimensionsSplit = dimensions.split(",");
 
         let physics = {
           weight: Number(weight).toFixed(2),
           unitsInWeight: unitsInWeight,
-          dimensions: dimensions,
+          productWidth: dimensionsSplit[0],
+          productHeight: dimensionsSplit[1],
+          productLength: dimensionsSplit[2],
           unitsInShippingPackage: unitsInShippingPackage,
           overPackCharge: Number(overPackCharge).toFixed(4)
         };

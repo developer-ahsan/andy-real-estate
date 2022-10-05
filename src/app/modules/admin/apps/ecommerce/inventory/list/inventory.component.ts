@@ -641,8 +641,12 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
     };
 
     updateCost(event, selectField) {
-        const { distrDiscount } = event.value;
+        const { distrDiscount, distrDiscountCode } = event.value;
         const discountedValue = 1 - distrDiscount;
+
+        if (distrDiscountCode == "COST") {
+            return;
+        };
 
         if (selectField == "standardCostOne") {
             if (this.netCostDefaultStandardCost?.standardCostOne) {
@@ -960,6 +964,12 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
 
         const productId = null;
 
+        const productDimensions = [
+            productWidth ? productWidth : 0,
+            productHeight ? productHeight : 0,
+            productLength ? productLength : 0
+        ];
+
         const shipping = {
             bln_include_shipping: doChargesApply == "Yes" ? 1 : 0,
             fob_location_list: [],
@@ -970,7 +980,7 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
 
         const physics = {
             bln_apparel: radio.name === "Apparel Item" ? true : false,
-            dimensions: null,
+            dimensions: productDimensions.toString(),
             over_pack_charge: overPackageCharge || null,
             product_id: productId,
             shipping: shipping,

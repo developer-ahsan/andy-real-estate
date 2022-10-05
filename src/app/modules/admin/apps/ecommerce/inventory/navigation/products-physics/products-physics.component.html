@@ -35,10 +35,25 @@
                                     <mat-error>This field is required</mat-error>
                                 </mat-form-field>
                             </div>
-                            <div class="col-lg-11 col-12" *ngIf="!selectedProduct?.blnApparel">
-                                <mat-form-field class="w-full">
-                                    <mat-label>Product Dimensions</mat-label>
-                                    <input matInput [formControlName]="'dimensions'">
+                            <div class="col-12 mb-2" *ngIf="!selectedProduct?.blnApparel">
+                                <div class="font-medium text-secondary">PRODUCT DIMENSIONS</div>
+                            </div>
+                            <div class="col-lg-4 col-12" *ngIf="!selectedProduct?.blnApparel">
+                                <mat-form-field appearance="fill" class="w-full">
+                                    <mat-label>Product Width</mat-label>
+                                    <input matInput type="number" [formControlName]="'productWidth'">
+                                </mat-form-field>
+                            </div>
+                            <div class="col-lg-4 col-12" *ngIf="!selectedProduct?.blnApparel">
+                                <mat-form-field appearance="fill" class="w-full">
+                                    <mat-label>Product Height</mat-label>
+                                    <input matInput type="number" [formControlName]="'productHeight'">
+                                </mat-form-field>
+                            </div>
+                            <div class="col-lg-4 col-12" *ngIf="!selectedProduct?.blnApparel">
+                                <mat-form-field appearance="fill" class="w-full">
+                                    <mat-label>Product Length</mat-label>
+                                    <input matInput type="number" [formControlName]="'productLength'">
                                 </mat-form-field>
                             </div>
                             <div class="col-lg-11 col-12">
