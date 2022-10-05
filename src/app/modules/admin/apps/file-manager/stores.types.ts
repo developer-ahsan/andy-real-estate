@@ -100,6 +100,38 @@ export interface AddSurvey {
     survey: boolean
 };
 
+export interface CreateStoreSettings {
+    fk_storeID: number;
+    blnOffer: boolean;
+    offerText: string;
+    offerTextBox: string;
+    offerFooter: string;
+    typeKitID: string;
+    registrationText: string;
+    blnCostCenterCodes: boolean;
+    blnShowCostCenterCodes: boolean;
+    blnWelcomeEmail: boolean;
+    googleTag: string;
+    bingTag: string;
+    blnRequireCostCenterCode: boolean;
+    blnRequireLocation: boolean;
+    blnProductNumbers: boolean;
+    blnPDFInvoice: boolean;
+    blnLogoBank: boolean;
+    blnDecliningProgramNotifications: boolean;
+    blnCheckoutReferral: boolean;
+    campaignTitle: string;
+    blnExpandedProductSearch: boolean;
+    blnQuoteHelp: boolean;
+    blnExitSurvey: boolean;
+    blnRequireAccountCode: boolean;
+    blnSmartArtQuotes: boolean;
+    blnCustomerLogoBank: boolean;
+    blnSalesReport: boolean;
+    blnPDFShippingNotifications: boolean;
+    blnEProcurement: boolean;
+    add_new_store_settings: boolean;
+};
 export interface CreateStore {
     storeName: string;
     storeCode: string;
@@ -127,4 +159,5 @@ export interface CreateStore {
     protocol: string;
     businessName: string;
     reportColor: string;
+    add_new_store: boolean;
 };

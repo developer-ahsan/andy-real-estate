@@ -7,7 +7,8 @@ import { FuseMediaWatcherService } from '@fuse/services/media-watcher';
 import { FileManagerService } from 'app/modules/admin/apps/file-manager/store-manager.service';
 import { Item, Items, StoreList } from 'app/modules/admin/apps/file-manager/stores.types';
 import { Form, FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
-
+import { MatStepper } from '@angular/material/stepper';
+import moment from 'moment';
 @Component({
     selector: 'file-manager-list',
     templateUrl: './list.component.html',
@@ -57,6 +58,11 @@ export class StoresListComponent implements OnInit, OnDestroy {
 
 
     createStoreForm: FormGroup;
+    settingStoreForm: FormGroup;
+    createStoreLoader: boolean = false;
+    settingStoreLoader: boolean = false;
+    @ViewChild('stepper') private myStepper: MatStepper;
+
     constructor(
         private _activatedRoute: ActivatedRoute,
         private _changeDetectorRef: ChangeDetectorRef,
@@ -86,8 +92,8 @@ export class StoresListComponent implements OnInit, OnDestroy {
             margin5: new FormControl(27, Validators.required),
             margin6: new FormControl(24, Validators.required),
             storeHandling: new FormControl(0.00),
-            siteMaxSiteID: new FormControl(''),
-            siteMaxQueueID: new FormControl(''),
+            siteMaxSiteID: new FormControl(0),
+            siteMaxQueueID: new FormControl(0),
             googleAnalyticsID: new FormControl(''),
             tagLine: new FormControl(''),
             championName: new FormControl('', Validators.required),
@@ -98,11 +104,50 @@ export class StoresListComponent implements OnInit, OnDestroy {
             metaDesc: new FormControl(''),
             metaKeywords: new FormControl(''),
             blnShipping: new FormControl(false),
-            launchDate: new FormControl(new Date()),
+            launchDate: new FormControl(moment().format('MM-DD-YYYY')),
             protocol: new FormControl('Http', Validators.required),
             businessName: new FormControl(''),
-            reportColor: new FormControl('')
+            reportColor: new FormControl(''),
+            add_new_store: new FormControl(true)
         });
+        this.settingStoreForm = this._formBuilder.group({
+            fk_storeID: new FormControl(''),
+            blnOffer: new FormControl(false),
+            offerText: new FormControl(''),
+            offerTextBox: new FormControl(''),
+            offerFooter: new FormControl(''),
+            typeKitID: new FormControl(''),
+            registrationText: new FormControl(''),
+            blnCostCenterCodes: new FormControl(false),
+            blnShowCostCenterCodes: new FormControl(false),
+            blnWelcomeEmail: new FormControl(false),
+            googleTag: new FormControl(''),
+            bingTag: new FormControl(''),
+            blnRequireCostCenterCode: new FormControl(false),
+            blnRequireLocation: new FormControl(false),
+            blnProductNumbers: new FormControl(false),
+            blnPDFInvoice: new FormControl(false),
+            blnLogoBank: new FormControl(false),
+            blnDecliningProgramNotifications: new FormControl(false),
+            blnCheckoutReferral: new FormControl(false),
+            campaignTitle: new FormControl(''),
+            blnExpandedProductSearch: new FormControl(false),
+            blnQuoteHelp: new FormControl(false),
+            blnExitSurvey: new FormControl(true),
+            blnRequireAccountCode: new FormControl(false),
+            blnSmartArtQuotes: new FormControl(false),
+            blnCustomerLogoBank: new FormControl(true),
+            blnSalesReport: new FormControl(true),
+            blnPDFShippingNotifications: new FormControl(false),
+            blnEProcurement: new FormControl(false),
+            add_new_store_settings: new FormControl(true),
+        })
+    }
+    get cs() {
+        return this.createStoreForm.controls;
+    }
+    get ss() {
+        return this.settingStoreForm.controls;
     }
     ngOnInit(): void {
         this.initCreateStoreForm();
@@ -189,5 +234,41 @@ export class StoresListComponent implements OnInit, OnDestroy {
      */
     trackByFn(index: number, item: any): any {
         return item.id || index;
+    }
+    createStore() {
+        if (this.createStoreForm.valid) {
+            this.createStoreLoader = true;
+            this._fileManagerService.CreateNewStore(this.createStoreForm.value).subscribe(res => {
+                this.settingStoreForm.patchValue({ fk_storeID: res["message"].newStoreId });
+                this.createStoreLoader = false;
+                this.goForward();
+                this._changeDetectorRef.markForCheck();
+            }, err => {
+                this.createStoreLoader = false;
+                this._changeDetectorRef.markForCheck();
+            });
+        }
+    }
+    createStoreSettings() {
+        if (this.settingStoreForm.valid) {
+            this.settingStoreLoader = true;
+            this._fileManagerService.CreateStoreSettings(this.settingStoreForm.value).subscribe(res => {
+                this.settingStoreLoader = false;
+                this._changeDetectorRef.markForCheck();
+                const { fk_storeID } = this.settingStoreForm.getRawValue();
+                this._router.navigate([`/apps/stores/${fk_storeID}`]);
+            }, err => {
+                this.settingStoreLoader = false;
+                this._changeDetectorRef.markForCheck();
+            });
+        }
+    }
+
+    goBack() {
+        this.myStepper.previous();
+    }
+
+    goForward() {
+        this.myStepper.next();
     }
 };
