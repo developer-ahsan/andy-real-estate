@@ -501,7 +501,7 @@
                                         </mat-form-field>
                                     </div>
                                     <div class="col-lg-6 col-12" style="line-height: 2.3;"
-                                        *ngIf="supplierType == 'Apparel Item'">
+                                        *ngIf="supplierType != 'Apparel Item'">
                                         <p class="font-semibold">Group run</p>
                                         <mat-checkbox [formControlName]="'allowGroupRun'">Allow group run?
                                         </mat-checkbox>
@@ -1811,7 +1811,7 @@
                                                 </mat-form-field>
                                             </div>
                                             <div class="col-lg-6 col-12" style="line-height: 2.3;"
-                                                *ngIf="supplierType == 'Apparel Item'">
+                                                *ngIf="supplierType != 'Apparel Item'">
                                                 <p class="font-semibold">Group run</p>
                                                 <mat-checkbox [formControlName]="'allowGroupRun'">Allow group run?
                                                 </mat-checkbox>

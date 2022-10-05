@@ -234,7 +234,7 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
         supplierLink: [''],
         mainDescription: ['', Validators.required],
         miniDescription: ['', Validators.required],
-        allowGroupRun: [''],
+        allowGroupRun: [true],
         keywords: [''],
         quantityOne: [''],
         quantityTwo: [''],
@@ -281,7 +281,7 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
         unitsInWeight: ['1'],
         flatRate: [''],
         doChargesApply: ['Yes'],
-        allowGroupRun: [''],
+        allowGroupRun: [true],
         brandName: ['', Validators.required],
         overPackageCharge: [''],
         supplierLink: [''],
@@ -951,7 +951,7 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
         const { supplierLink, mainDescription, miniDescription, flatRate, weight, doChargesApply, unitsInWeight, caseWidth, caseLength, caseHeight, overPackageCharge, keywords, productNumber, productName, msrp, internalComments } = finalForm;
 
         const { firstQuantity, secondQuantity, thirdQuantity, fourthQuantity, fifthQuantity, sixthQuantity, standardCostOne, standardCostTwo, standardCostThree, standardCostFour, standardCostFive, standardCostSix } = finalForm;
-        const { quantityOne, quantityTwo, quantityThree, quantityFour, quantityFive, quantitySix, productWidth, productHeight, productLength } = finalForm;
+        const { quantityOne, quantityTwo, quantityThree, quantityFour, quantityFive, quantitySix, productWidth, productHeight, productLength, allowGroupRun } = finalForm;
 
         let quantityList = [parseInt(firstQuantity) || null, parseInt(secondQuantity) || null, parseInt(thirdQuantity) || null, parseInt(fourthQuantity) || null, parseInt(fifthQuantity) || null, parseInt(sixthQuantity) || null];
         quantityList = this.removeNull(quantityList);
@@ -1091,7 +1091,7 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
             product: true,
             supplier_id: this.supplierId,
             item_type: radio.name === "Apparel Item" ? 2 : 1,
-            bln_group_run: false,
+            bln_group_run: allowGroupRun,
             permalink: null,
             description: description,
             physics: physics,
