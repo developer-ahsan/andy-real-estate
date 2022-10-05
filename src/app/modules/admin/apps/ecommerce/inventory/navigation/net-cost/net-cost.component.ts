@@ -117,13 +117,9 @@ export class NetCostComponent implements OnInit, OnDestroy {
 
     this.getCoOps();
 
-    this._inventoryService.getSystemDistributorCodes()
+    this._inventoryService.distributionCodes$
       .subscribe((response) => {
         this.distributionCodes = response["data"];
-        this.distributionCodes.push({
-          distrDiscount: -1,
-          distrDiscountCode: "COST"
-        });
         const countryDefault = this.distributionCodes.find(c => c.distrDiscount == -1);
         this.netCostForm.patchValue({
           standardCostDropOne: countryDefault,
@@ -193,12 +189,12 @@ export class NetCostComponent implements OnInit, OnDestroy {
           quantityFour: netCost["data"][3]?.quantity || "",
           quantityFive: netCost["data"][4]?.quantity || "",
           quantitySix: netCost["data"][5]?.quantity || "",
-          standardCostOne: netCost["data"][0]?.cost || "",
-          standardCostTwo: netCost["data"][1]?.cost || "",
-          standardCostThree: netCost["data"][2]?.cost || "",
-          standardCostFour: netCost["data"][3]?.cost || "",
-          standardCostFive: netCost["data"][4]?.cost || "",
-          standardCostSix: netCost["data"][5]?.cost || "",
+          standardCostOne: netCost["data"][0]?.cost.toFixed(3) || "",
+          standardCostTwo: netCost["data"][1]?.cost.toFixed(3) || "",
+          standardCostThree: netCost["data"][2]?.cost.toFixed(3) || "",
+          standardCostFour: netCost["data"][3]?.cost.toFixed(3) || "",
+          standardCostFive: netCost["data"][4]?.cost.toFixed(3) || "",
+          standardCostSix: netCost["data"][5]?.cost.toFixed(3) || "",
           blankCostOne: netCost["data"][0]?.blankCost || "",
           blankCostTwo: netCost["data"][1]?.blankCost || "",
           blankCostThree: netCost["data"][2]?.blankCost || "",
@@ -274,12 +270,12 @@ export class NetCostComponent implements OnInit, OnDestroy {
     this.selectedDropdown = this.distributionCodes.find(item => item.distrDiscountCode === value);
     const { distrDiscount } = this.selectedDropdown;
     this.netCostForm.patchValue({
-      standardCostOne: this.netCostDefaultStandardCost.standardCostOne,
-      standardCostTwo: this.netCostDefaultStandardCost.standardCostTwo,
-      standardCostThree: this.netCostDefaultStandardCost.standardCostThree,
-      standardCostFour: this.netCostDefaultStandardCost.standardCostFour,
-      standardCostFive: this.netCostDefaultStandardCost.standardCostFive,
-      standardCostSix: this.netCostDefaultStandardCost.standardCostSix
+      standardCostOne: this.netCostDefaultStandardCost.standardCostOne.toFixed(3),
+      standardCostTwo: this.netCostDefaultStandardCost.standardCostTwo.toFixed(3),
+      standardCostThree: this.netCostDefaultStandardCost.standardCostThree.toFixed(3),
+      standardCostFour: this.netCostDefaultStandardCost.standardCostFour.toFixed(3),
+      standardCostFive: this.netCostDefaultStandardCost.standardCostFive.toFixed(3),
+      standardCostSix: this.netCostDefaultStandardCost.standardCostSix.toFixed(3)
     });
 
     const { standardCostOne, standardCostTwo, standardCostThree, standardCostFour, standardCostFive, standardCostSix } = this.netCostForm.getRawValue();
@@ -291,12 +287,12 @@ export class NetCostComponent implements OnInit, OnDestroy {
       standardCostDropFour: this.selectedDropdown,
       standardCostDropFive: this.selectedDropdown,
       standardCostDropSix: this.selectedDropdown,
-      standardCostOne: standardCostOne ? Number((standardCostOne * (1 - distrDiscount)).toFixed(3)) : null,
-      standardCostTwo: standardCostTwo ? Number((standardCostTwo * (1 - distrDiscount)).toFixed(3)) : null,
-      standardCostThree: standardCostThree ? Number((standardCostThree * (1 - distrDiscount)).toFixed(3)) : null,
-      standardCostFour: standardCostFour ? Number((standardCostFour * (1 - distrDiscount)).toFixed(3)) : null,
-      standardCostFive: standardCostFive ? Number((standardCostFive * (1 - distrDiscount)).toFixed(3)) : null,
-      standardCostSix: standardCostSix ? Number((standardCostSix * (1 - distrDiscount)).toFixed(3)) : null
+      standardCostOne: standardCostOne ? Number((standardCostOne * (1 - distrDiscount))).toFixed(3) : null,
+      standardCostTwo: standardCostTwo ? Number((standardCostTwo * (1 - distrDiscount))).toFixed(3) : null,
+      standardCostThree: standardCostThree ? Number((standardCostThree * (1 - distrDiscount))).toFixed(3) : null,
+      standardCostFour: standardCostFour ? Number((standardCostFour * (1 - distrDiscount))).toFixed(3) : null,
+      standardCostFive: standardCostFive ? Number((standardCostFive * (1 - distrDiscount))).toFixed(3) : null,
+      standardCostSix: standardCostSix ? Number((standardCostSix * (1 - distrDiscount))).toFixed(3) : null
     };
 
     this.netCostForm.patchValue(sample);
@@ -485,7 +481,7 @@ export class NetCostComponent implements OnInit, OnDestroy {
     const realStandardCostList = this.removeNull(standardCostList);
 
     if (realQuantityList.length != realStandardCostList.length) {
-      this._snackBar.open("Quantity list must be equal to standard cost list", '', {
+      this._snackBar.open("Number of quantity list breaks must be equal to number of standard cost breaks", '', {
         horizontalPosition: 'center',
         verticalPosition: 'bottom',
         duration: 3500
@@ -575,59 +571,71 @@ export class NetCostComponent implements OnInit, OnDestroy {
 
     if (selectField == "standardCostOne") {
 
-      this.netCostForm.patchValue({
-        standardCostOne: this.netCostDefaultStandardCost.standardCostOne
-      });
+      if (distrDiscountCode == '0') {
+        this.netCostForm.patchValue({
+          standardCostOne: this.netCostDefaultStandardCost.standardCostOne
+        });
+      }
       const { standardCostOne } = this.netCostForm.getRawValue();
       this.netCostForm.patchValue({
-        standardCostOne: standardCostOne ? Number((standardCostOne * discountedValue).toFixed(3)) : null
+        standardCostOne: standardCostOne ? Number((standardCostOne * discountedValue)).toFixed(3) : null
       });
 
     } else if (selectField == "standardCostTwo") {
 
-      this.netCostForm.patchValue({
-        standardCostTwo: this.netCostDefaultStandardCost.standardCostTwo
-      });
+      if (distrDiscountCode == '0') {
+        this.netCostForm.patchValue({
+          standardCostTwo: this.netCostDefaultStandardCost.standardCostTwo
+        });
+      }
       const { standardCostTwo } = this.netCostForm.getRawValue();
       this.netCostForm.patchValue({
-        standardCostTwo: standardCostTwo ? Number((standardCostTwo * discountedValue).toFixed(3)) : null
+        standardCostTwo: standardCostTwo ? Number((standardCostTwo * discountedValue)).toFixed(3) : null
       });
 
     } else if (selectField == "standardCostThree") {
 
-      this.netCostForm.patchValue({
-        standardCostThree: this.netCostDefaultStandardCost.standardCostThree
-      });
+      if (distrDiscountCode == '0') {
+        this.netCostForm.patchValue({
+          standardCostThree: this.netCostDefaultStandardCost.standardCostThree
+        });
+      }
       const { standardCostThree } = this.netCostForm.getRawValue();
       this.netCostForm.patchValue({
-        standardCostThree: standardCostThree ? Number((standardCostThree * discountedValue).toFixed(3)) : null
+        standardCostThree: standardCostThree ? Number((standardCostThree * discountedValue)).toFixed(3) : null
       });
 
     } else if (selectField == "standardCostFour") {
 
-      this.netCostForm.patchValue({
-        standardCostFour: this.netCostDefaultStandardCost.standardCostFour
-      });
+      if (distrDiscountCode == '0') {
+        this.netCostForm.patchValue({
+          standardCostFour: this.netCostDefaultStandardCost.standardCostFour
+        });
+      }
       const { standardCostFour } = this.netCostForm.getRawValue();
       this.netCostForm.patchValue({
-        standardCostFour: standardCostFour ? Number((standardCostFour * discountedValue).toFixed(3)) : null
+        standardCostFour: standardCostFour ? Number((standardCostFour * discountedValue)).toFixed(3) : null
       });
 
     } else if (selectField == "standardCostFive") {
 
-      this.netCostForm.patchValue({
-        standardCostFive: this.netCostDefaultStandardCost.standardCostFive
-      });
+      if (distrDiscountCode == '0') {
+        this.netCostForm.patchValue({
+          standardCostFive: this.netCostDefaultStandardCost.standardCostFive
+        });
+      }
       const { standardCostFive } = this.netCostForm.getRawValue();
       this.netCostForm.patchValue({
-        standardCostFive: standardCostFive ? Number((standardCostFive * discountedValue).toFixed(3)) : null
+        standardCostFive: standardCostFive ? Number((standardCostFive * discountedValue)).toFixed(3) : null
       });
 
     } else if (selectField == "standardCostSix") {
 
-      this.netCostForm.patchValue({
-        standardCostSix: this.netCostDefaultStandardCost.standardCostSix
-      });
+      if (distrDiscountCode == '0') {
+        this.netCostForm.patchValue({
+          standardCostSix: this.netCostDefaultStandardCost.standardCostSix
+        });
+      }
       const { standardCostSix } = this.netCostForm.getRawValue();
       this.netCostForm.patchValue({
         standardCostSix: standardCostSix ? (standardCostSix * discountedValue).toFixed(3) : null

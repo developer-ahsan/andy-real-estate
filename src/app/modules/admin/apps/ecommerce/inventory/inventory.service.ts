@@ -18,6 +18,7 @@ export class InventoryService {
     private _categories: BehaviorSubject<InventoryCategory[] | null> = new BehaviorSubject(null);
     private _pagination: BehaviorSubject<InventoryPagination | null> = new BehaviorSubject(null);
     private _product: BehaviorSubject<ProductsList | null> = new BehaviorSubject(null);
+    private _distributionCodes: BehaviorSubject<any | null> = new BehaviorSubject(null);
     private _products: BehaviorSubject<ProductsList[] | null> = new BehaviorSubject(null);
     private _tags: BehaviorSubject<InventoryTag[] | null> = new BehaviorSubject(null);
     private _vendors: BehaviorSubject<InventoryVendor[] | null> = new BehaviorSubject(null);
@@ -66,7 +67,10 @@ export class InventoryService {
     get product$(): Observable<any> {
         return this._product.asObservable();
     }
-
+    // Distribution Codes
+    get distributionCodes$(): Observable<any> {
+        return this._distributionCodes.asObservable();
+    }
     /**
      * Getter for products
      */
@@ -401,6 +405,23 @@ export class InventoryService {
         );
     };
 
+    getSystemDistributorCodes(): Observable<any[]> {
+        return this._httpClient.get<any[]>(environment.system, {
+            params: {
+                distributor_code: true,
+                size: 100
+            }
+        }).pipe(
+            tap((codes) => {
+                codes["data"].push({
+                    distrDiscount: -1,
+                    distrDiscountCode: "COST"
+                });
+                this._distributionCodes.next(codes);
+            })
+        );
+    }
+
     getMarginsByProductId(productId): Observable<any[]> {
         return this._httpClient.get<any[]>(environment.products, {
             params: {
@@ -732,14 +753,7 @@ export class InventoryService {
         })
     }
 
-    getSystemDistributorCodes() {
-        return this._httpClient.get(environment.system, {
-            params: {
-                distributor_code: true,
-                size: 100
-            }
-        })
-    }
+
 
     getChargeValue(value) {
         return this._httpClient.get(environment.products, {

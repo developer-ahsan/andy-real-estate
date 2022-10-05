@@ -412,7 +412,7 @@ export class ImprintComponent implements OnInit, OnDestroy {
 
   getRunSetup() {
     this.runSetupLoaderFetching = true;
-    this._inventoryService.getSystemDistributorCodes()
+    this._inventoryService.distributionCodes$
       .subscribe((response) => {
         this.runSetupLoaderFetching = false;
         this.runSetupDistributorCodes = response["data"];

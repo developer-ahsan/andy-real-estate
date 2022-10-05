@@ -1,7 +1,7 @@
 import { Route } from '@angular/router';
 import { InventoryComponent } from 'app/modules/admin/apps/ecommerce/inventory/inventory.component';
 import { InventoryListComponent } from 'app/modules/admin/apps/ecommerce/inventory/list/inventory.component';
-import { ProductDescriptionResolver, ProductsListsResolver, StoresListResolver, SuppliersListResolver } from 'app/modules/admin/apps/ecommerce/inventory/inventory.resolvers';
+import { ProductDescriptionResolver, ProductsListsResolver, StoresListResolver, SuppliersListResolver, SystemDistributorCodes } from 'app/modules/admin/apps/ecommerce/inventory/inventory.resolvers';
 import { CustomersComponent } from 'app/modules/admin/apps/ecommerce/customers/customers.component';
 import { CustomersListComponent } from 'app/modules/admin/apps/ecommerce/customers/list/customers.component';
 import { CustomersBrandsResolver, CustomersCategoriesResolver, CustomersProductsResolver, CustomersTagsResolver, CustomersVendorsResolver } from 'app/modules/admin/apps/ecommerce/customers/customers.resolvers';
@@ -19,6 +19,9 @@ export const ecommerceRoutes: Route[] = [
     {
         path: 'inventory',
         component: InventoryComponent,
+        resolve: {
+            distributor: SystemDistributorCodes
+        },
         children: [
             {
                 path: '',
