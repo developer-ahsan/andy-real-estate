@@ -109,6 +109,7 @@ export class ProductDescriptionResolver implements Resolve<any>
     }
 }
 
+// System distributor codes resolver
 @Injectable({
     providedIn: 'root'
 })
