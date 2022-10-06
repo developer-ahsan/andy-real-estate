@@ -20,7 +20,8 @@ export const ecommerceRoutes: Route[] = [
         path: 'inventory',
         component: InventoryComponent,
         resolve: {
-            distributor: SystemDistributorCodes
+            distributor: SystemDistributorCodes,
+            suppliers: SuppliersListResolver
         },
         children: [
             {
@@ -28,8 +29,7 @@ export const ecommerceRoutes: Route[] = [
                 component: InventoryListComponent,
                 resolve: {
                     products: ProductsListsResolver,
-                    stores: StoresListResolver,
-                    suppliers: SuppliersListResolver
+                    stores: StoresListResolver
                 }
             },
             {
@@ -37,7 +37,6 @@ export const ecommerceRoutes: Route[] = [
                 pathMatch: 'full',
                 component: ProductDetailsComponent,
                 resolve: {
-                    suppliers: SuppliersListResolver,
                     product: ProductDescriptionResolver
                 }
             },
@@ -46,7 +45,6 @@ export const ecommerceRoutes: Route[] = [
                 pathMatch: 'full',
                 component: ProductDetailsComponent,
                 resolve: {
-                    suppliers: SuppliersListResolver
                 }
             },
         ]
