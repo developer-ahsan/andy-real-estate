@@ -1195,6 +1195,7 @@ export class InventoryService {
             })
         );
     };
+    // Available colors supplier specified
     getProductsData(params): Observable<any[]> {
         return this._httpClient.get<any[]>(environment.products, {
             params: params
