@@ -177,6 +177,7 @@ export class ImprintComponent implements OnInit, OnDestroy {
   allowRunBoolean: boolean;
 
   showImprintScreen = "";
+  colorsCollectionIdsArray: any = [];
 
   constructor(
     private _changeDetectorRef: ChangeDetectorRef,
@@ -1171,6 +1172,7 @@ export class ImprintComponent implements OnInit, OnDestroy {
   }
 
   generateCollectionId() {
+    this.getSupplierColorCollections();
     this.getImprintColorCollectionLoader = true;
     const { pk_companyID } = this.selectedSupplier;
     this._inventoryService.getCollectionIds(pk_companyID)
@@ -1215,7 +1217,28 @@ export class ImprintComponent implements OnInit, OnDestroy {
         this._changeDetectorRef.markForCheck();
       });
   };
+  getSupplierColorCollections() {
+    const { pk_companyID } = this.selectedSupplier;
 
+    let params = {
+      supplier_available_colors: true,
+      supplier_id: pk_companyID
+    }
+    this._inventoryService.getProductsData(params)
+      .pipe(takeUntil(this._unsubscribeAll))
+      .subscribe((colors) => {
+        this.colorsCollectionIdsArray = colors["data"];
+        this._changeDetectorRef.markForCheck();
+      }, err => {
+        this._snackBar.open("Unable to fetch imprint colors right now. Try again", '', {
+          horizontalPosition: 'center',
+          verticalPosition: 'bottom',
+          duration: 3500
+        });
+        // Mark for check
+        this._changeDetectorRef.markForCheck();
+      });
+  }
   onItemSelect(item: any) {
     this.selectedCollectionId = [item];
     this.customColorId = item["fk_collectionID"];

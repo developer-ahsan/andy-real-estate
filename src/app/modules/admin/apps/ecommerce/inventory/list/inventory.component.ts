@@ -359,6 +359,7 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
     maxColors = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12];
     maxColorSelected = 1;
     collectionIdsArray = [];
+    colorsCollectionIdsArray = [];
     selectedCollectionId;
     priceInclusionArray = [
         {
@@ -1935,6 +1936,7 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
 
     generateCollectionId() {
         this.getImprintColorCollectionLoader = true;
+        this.getSupplierColorCollections();
         this._inventoryService.getCollectionIds(this.supplierId)
             .pipe(takeUntil(this._unsubscribeAll))
             .subscribe((collection_ids) => {
@@ -1977,7 +1979,26 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
                 this._changeDetectorRef.markForCheck();
             });
     };
-
+    getSupplierColorCollections() {
+        let params = {
+            supplier_available_colors: true,
+            supplier_id: this.supplierId
+        }
+        this._inventoryService.getProductsData(params)
+            .pipe(takeUntil(this._unsubscribeAll))
+            .subscribe((colors) => {
+                this.colorsCollectionIdsArray = colors["data"];
+                this._changeDetectorRef.markForCheck();
+            }, err => {
+                this._snackBar.open("Unable to fetch imprint colors right now. Try again", '', {
+                    horizontalPosition: 'center',
+                    verticalPosition: 'bottom',
+                    duration: 3500
+                });
+                // Mark for check
+                this._changeDetectorRef.markForCheck();
+            });
+    }
     onImprintColorSelect(item: any) {
         this.selectedCollectionId = [item];
         this.customColorId = item["fk_collectionID"];

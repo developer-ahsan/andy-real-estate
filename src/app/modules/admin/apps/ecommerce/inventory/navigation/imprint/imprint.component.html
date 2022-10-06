@@ -330,6 +330,13 @@
                         <div class="my-1">
                             <mat-form-field class="w-full">
                                 <input matInput placeholder="Enter Collection ID" [(ngModel)]='customColorId'>
+                                <mat-hint class="mb-1 ">
+                                    <span class="text-gray-600 border-b-8 mr-1"
+                                        *ngFor="let item of colorsCollectionIdsArray; let i=index"
+                                        [ngStyle]="{'border-color': '#' + item['RGB']}">{{item.imprintColorName}}<span
+                                            *ngIf="i < colorsCollectionIdsArray.length - 1">,</span>
+                                    </span>
+                                </mat-hint>
                             </mat-form-field>
                         </div>
                     </div>

@@ -1188,4 +1188,9 @@ export class InventoryService {
             })
         );
     };
+    getProductsData(params): Observable<any[]> {
+        return this._httpClient.get<any[]>(environment.products, {
+            params: params
+        });
+    };
 }

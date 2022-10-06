@@ -21,7 +21,9 @@
                         <mat-form-field class="w-full">
                             <input type="text" placeholder="Select Color" matInput [formControl]="colorName"
                                 [matAutocomplete]="auto">
-                            <mat-hint><span *ngFor="let item of selectedColorsList">{{item.colorName}}, </span>
+                            <mat-hint class="mb-1"><span
+                                    *ngFor="let item of selectedColorsList; let i=index">{{item.colorName}}<span
+                                        *ngIf="i < selectedColorsList.length-1">, </span></span>
                             </mat-hint>
                             <mat-autocomplete #auto="matAutocomplete">
                                 <mat-option *ngFor="let result of results" (click)="colorSelected(result)"

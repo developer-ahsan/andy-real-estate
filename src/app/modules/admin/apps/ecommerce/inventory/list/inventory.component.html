@@ -777,7 +777,6 @@
                                             <div class="col-12 mt-2">
                                                 <mat-divider></mat-divider>
                                             </div>
-                                            <!-- Standard COST -->
                                             <div class="col-12 mt-5 flex justify-between">
                                                 <b>Standard Cost</b>
                                                 <p>
@@ -909,7 +908,6 @@
                                                 <mat-divider></mat-divider>
                                             </div>
 
-                                            <!-- Other Form -->
                                             <div class="col-12 mt-4">
                                                 <mat-form-field class="w-full">
                                                     <mat-label>MSRP</mat-label>
@@ -1434,6 +1432,13 @@
                                                 <mat-form-field class="w-full">
                                                     <input matInput placeholder="Enter Collection ID"
                                                         [(ngModel)]='customColorId'>
+                                                    <mat-hint class="mb-1 ">
+                                                        <span class="text-gray-600 border-b-8 mr-1"
+                                                            *ngFor="let item of colorsCollectionIdsArray; let i=index"
+                                                            [ngStyle]="{'border-color': '#' + item['RGB']}">{{item.imprintColorName}}<span
+                                                                *ngIf="i < colorsCollectionIdsArray.length - 1">,</span>
+                                                        </span>
+                                                    </mat-hint>
                                                 </mat-form-field>
                                             </div>
                                         </div>
