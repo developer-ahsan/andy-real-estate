@@ -210,9 +210,12 @@ export class PromostandardsListComponent implements OnInit, OnDestroy {
             }
             this._promostandardsService.postPromoData(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
                 this.getPromostandards(this.page, 'add');
+                this.isAddLoader = false;
+                this.closeDrawer();
                 this._changeDetectorRef.markForCheck();
             }, err => {
                 this.isAddLoader = false;
+                this.closeDrawer();
                 this._changeDetectorRef.markForCheck();
             })
         }
@@ -231,6 +234,8 @@ export class PromostandardsListComponent implements OnInit, OnDestroy {
                 id, supplier_id, url, username, password, type, bln_active, version, promostandard_credentials_put: true
             }
             this._promostandardsService.putPromoData(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+                this.isAddLoader = false;
+                this.closeDrawer()
                 this.getPromostandards(this.page, 'add');
                 this._changeDetectorRef.markForCheck();
             }, err => {
