@@ -87,6 +87,7 @@ import { PromostandardColorsComponent } from './inventory/navigation/promostanda
 import { ProductStoreComponent } from './product-store/store.component';
 import { StoreProductDetailsComponent } from './product-store/details/product-store-details.component';
 import { ProductSizesComponent } from './inventory/list/product-sizes/product-sizes.component';
+import { ProductImprintsComponent } from './inventory/list/product-imprints/product-imprints';
 
 @NgModule({
     declarations: [
@@ -142,7 +143,8 @@ import { ProductSizesComponent } from './inventory/list/product-sizes/product-si
         // Product Stores
         ProductStoreComponent,
         StoreProductDetailsComponent,
-        ProductSizesComponent
+        ProductSizesComponent,
+        ProductImprintsComponent
     ],
     imports: [
         RouterModule.forChild(ecommerceRoutes),

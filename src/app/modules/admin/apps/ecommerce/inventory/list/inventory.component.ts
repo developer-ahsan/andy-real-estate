@@ -16,10 +16,13 @@ import { Options } from '@angular-slider/ngx-slider';
 import { MatRadioChange } from '@angular/material/radio';
 import { IDropdownSettings } from 'ng-multiselect-dropdown';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { ProductImprintsComponent } from './product-imprints/product-imprints';
 
 @Component({
     selector: 'inventory-list',
     templateUrl: './inventory.component.html',
+    styles: ['.mat-tab-body-content {overflow: hidden !important}'],
+
     encapsulation: ViewEncapsulation.None,
     changeDetection: ChangeDetectionStrategy.OnPush,
     animations: fuseAnimations
@@ -28,6 +31,7 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
     @ViewChild(MatPaginator) private _paginator: MatPaginator;
     @ViewChild(MatSort) private _sort: MatSort;
     @ViewChild('stepper') private myStepper: MatStepper;
+    @ViewChild('prodStandardImprints') prodStandardImprints: ProductImprintsComponent;
 
     products$: Observable<InventoryProduct[]>;
 
@@ -415,7 +419,7 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
     licensingTermPayload = null;
     licensingTermPayloadBoolean: boolean = true;
 
-    productId: any;
+    productId: any = 19700;
     createProductDetailLoader: boolean = false;
     updateProductLicensingLoader: boolean = false;
     updateProductFeatureLoader: boolean = false;
@@ -1437,6 +1441,7 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
         const { selectedIndex } = stepper;
 
         if (selectedIndex === 0) {
+
             if (!this.selectedItems.length) {
                 this._snackBar.open("Please select a supplier", '', {
                     horizontalPosition: 'center',
@@ -2897,7 +2902,9 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
 
             return;
         };
-
+        if (this.prodStandardImprints) {
+            this.prodStandardImprints.saveStandardImprints();
+        }
         let processMode;
         if (this.favoriteSeason === 'Per color (i.e. silk screening, pad printing, etc.)') {
             processMode = 0;

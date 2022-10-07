@@ -1,0 +1,55 @@
+<div class="w-full">
+    <ngx-skeleton-loader count="8" appearance="line" animation="pulse" *ngIf="standardImprintLoader">
+    </ngx-skeleton-loader>
+    <div class="row" *ngIf="!standardImprintLoader">
+        <div class="col-lg-9 col-12">
+            <div class="text-2xl font-bold">
+                Standard Imprints
+            </div>
+        </div>
+        <div class="col-lg-3 col-12">
+            <button class="w-full" mat-stroked-button [matTooltip]="'Clear all options'"
+                (click)="clearAllStandardImprintOptions()">
+                Un/Select All
+            </button>
+        </div>
+    </div>
+    <div class="gap-y-4 mt-6" *ngIf="!standardImprintLoader">
+        <div class="row border-b-2 py-5" *ngFor="let standard of standardImprints">
+            <div class="col-12 mb-3">
+                <b class="my-5 text-secondary">
+                    {{standard.standard_imprints.name}}
+                </b>
+                <b class="text-secondary float-right cursor-pointer" (click)="selectCheckedOption(standard)">
+                    <u>Un/Select</u>
+                </b>
+            </div>
+            <div class="col-lg-4 col-md-6 col-12" *ngFor="let subStandard of standard.sub_standard_imprints">
+                <mat-checkbox (change)="subStandard.isChecked = !subStandard.isChecked"
+                    [checked]='subStandard.isChecked'>
+                    <div class="font-medium text-sm">{{subStandard.name}}</div>
+                </mat-checkbox>
+            </div>
+        </div>
+
+        <div class="flex items-center justify-end w-full">
+            <div class="flex items-center my-2">
+                <div class="flex items-center mr-4" *ngIf="flashMessage">
+                    <ng-container *ngIf="flashMessage === 'success'">
+                        <mat-icon class="text-green-500" [svgIcon]="'heroicons_outline:check'">
+                        </mat-icon>
+                        <span class="ml-2">Standard Imprints Added successfully</span>
+                    </ng-container>
+                    <ng-container *ngIf="flashMessage === 'error'">
+                        <mat-icon class="text-red-500" [svgIcon]="'heroicons_outline:x'"></mat-icon>
+                        <span class="ml-2">An error occurred, try again!</span>
+                    </ng-container>
+                    <ng-container *ngIf="flashMessage === 'countError'">
+                        <mat-icon class="text-red-500" [svgIcon]="'heroicons_outline:x'"></mat-icon>
+                        <span class="ml-2">Please select atleast one imprint option!</span>
+                    </ng-container>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
