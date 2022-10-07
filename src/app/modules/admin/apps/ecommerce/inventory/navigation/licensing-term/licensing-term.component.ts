@@ -54,6 +54,7 @@ export class LicensingTermComponent implements OnInit, OnDestroy {
     this._inventoryService.getLicensingCompanyByProductId(pk_productID)
       .pipe(takeUntil(this._unsubscribeAll))
       .subscribe((companyTerms) => {
+
         if (companyTerms["data"]?.length) {
           this.radioButtonForm = true;
 
@@ -63,9 +64,10 @@ export class LicensingTermComponent implements OnInit, OnDestroy {
             .pipe(takeUntil(this._unsubscribeAll))
             .subscribe((licensingTerms) => {
               this.licensingTerms = licensingTerms["data"];
+              console.log(licensingTerms)
               this.dummyLicensingTerms = licensingTerms["data"];
               for (const term of this.licensingTerms) {
-                if (term.Selected === "true") {
+                if (term.Selected == "true") {
                   this.selectedTerm = term;
                   this.selectedTermObject = term;
                 }
@@ -91,11 +93,12 @@ export class LicensingTermComponent implements OnInit, OnDestroy {
               this._inventoryService.getLicensingTerms(pk_productID)
                 .pipe(takeUntil(this._unsubscribeAll))
                 .subscribe((licensingTerms) => {
+
                   this.licensingTerms = licensingTerms["data"];
                   this.dummyLicensingTerms = licensingTerms["data"];
 
                   for (const term of this.licensingTerms) {
-                    if (term.Selected === "true") {
+                    if (term.Selected == "true") {
                       this.selectedTerm = term;
                       this.selectedTermObject = term;
                     }

@@ -27,6 +27,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy {
     @ViewChild(MatPaginator) private _paginator: MatPaginator;
     @ViewChild(MatSort) private _sort: MatSort;
+    @ViewChild('stepper') private myStepper: MatStepper;
 
     products$: Observable<InventoryProduct[]>;
 
@@ -178,6 +179,8 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
             helperText: 'Weight per units is determined in the "sizes" section for apparel, after the item has been added.'
         }
     ];
+    imageValue: { imageUpload: string | ArrayBuffer; type: any; };
+    stepperIndex: any;
 
     selectEvent(item) {
         // do something with selected item
@@ -331,6 +334,10 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
         run: ['0.00'],
         hex: ['']
     });
+    colorsForm = this._formBuilder.group({
+        run: ['0.00'],
+        hex: ['']
+    });
 
     colorValue = '#000000';
     hexColor;
@@ -407,6 +414,19 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
     uniqueFeaturesPayload: boolean = true;
     licensingTermPayload = null;
     licensingTermPayloadBoolean: boolean = true;
+
+    productId: any;
+    createProductDetailLoader: boolean = false;
+    updateProductLicensingLoader: boolean = false;
+    updateProductFeatureLoader: boolean = false;
+    updateProductColorLoader: boolean = false;
+    updateProductCostLoader: boolean = false;
+    updateProductImprintLoader: boolean = false;
+
+    public colorName = new FormControl();
+    results: any[];
+    selectedColorsList: any = [];
+    selectedColor: any = {};
 
     /**
      * Constructor
@@ -598,6 +618,20 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
             allowSearchFilter: true,
             limitSelection: 1
         };
+
+        // Color select autocomplete field
+        this.colorName.valueChanges.subscribe(
+            term => {
+                if (term && term.length > 1) {
+                    this._inventoryService.getSearchedColors(term).subscribe(
+                        result => {
+                            this.results = result["data"] as any[];
+
+                            // Mark for check
+                            this._changeDetectorRef.markForCheck();
+                        })
+                }
+            })
     };
 
     searchLicensingTerm(event): void {
@@ -1169,7 +1203,7 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
 
     expansionOpened(license): void {
         const { pk_licensingTermID } = license;
-
+        this.selectedTermObject = null;
         if (this.selectedExpansionLicensingTerm != pk_licensingTermID || this.selectedExpansionLicensingTerm == null) {
             this.expansionLoader = true;
             this.selectedExpansionLicensingTerm = pk_licensingTermID;
@@ -1252,7 +1286,7 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
                                 if (details?.description?.length) {
                                     detailsDescription = !Array.isArray(details.description) ? [details.description] : details.description;
                                 };
-
+                                this.productId = details.productId;
                                 const product = {
                                     productName: details.productName,
                                     productNumber: details.productId,
@@ -1571,16 +1605,6 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
             this.netCostForm.patchValue(obj);
         };
 
-        if (selectedIndex === 3) {
-            if (!this.selectedTermObject) {
-                this._snackBar.open("Please select one sub category", '', {
-                    horizontalPosition: 'center',
-                    verticalPosition: 'bottom',
-                    duration: 3500
-                });
-                return;
-            };
-        };
 
         if (selectedIndex === 6) {
             const setupRunForm = this.runSetup.getRawValue();
@@ -1683,7 +1707,7 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
                         multiValue = multi_color["data"];
                         payload.multi_color_min_id = multiValue?.length ? multiValue[0].pk_multiColorMinQID : 1;
                         this.imprintPayload = payload;
-
+                        console.log(this.imprintPayload)
                         // Mark for check
                         this._changeDetectorRef.markForCheck();
                     });
@@ -2397,4 +2421,563 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
         };
         this.getProducts(this.page);
     };
+
+    // Add Product Details
+    addProductDetail() {
+        const firstFormGroup = this.firstFormGroup.getRawValue();
+        const finalForm = this.secondFormGroup.getRawValue();
+        const { radio } = firstFormGroup;
+
+        const { supplierLink, mainDescription, miniDescription, flatRate, weight, doChargesApply, unitsInWeight, caseWidth, caseLength, caseHeight, overPackageCharge, keywords, productNumber, productName, msrp, internalComments } = finalForm;
+
+        const { firstQuantity, secondQuantity, thirdQuantity, fourthQuantity, fifthQuantity, sixthQuantity, standardCostOne, standardCostTwo, standardCostThree, standardCostFour, standardCostFive, standardCostSix } = finalForm;
+        const { quantityOne, quantityTwo, quantityThree, quantityFour, quantityFive, quantitySix, productWidth, productHeight, productLength, allowGroupRun } = finalForm;
+
+        if (!mainDescription) {
+            this._snackBar.open("Main description is required", '', {
+                horizontalPosition: 'center',
+                verticalPosition: 'bottom',
+                duration: 3500
+            });
+            return;
+        };
+
+        if (!this.fruits.length) {
+            this._snackBar.open("Please add keywords", '', {
+                horizontalPosition: 'center',
+                verticalPosition: 'bottom',
+                duration: 3500
+            });
+            return;
+        };
+        this.createProductDetailLoader = true;
+        let quantityList = [parseInt(firstQuantity) || null, parseInt(secondQuantity) || null, parseInt(thirdQuantity) || null, parseInt(fourthQuantity) || null, parseInt(fifthQuantity) || null, parseInt(sixthQuantity) || null];
+        quantityList = this.removeNull(quantityList);
+
+        let standardCost = [parseFloat(standardCostOne) || null, parseFloat(standardCostTwo) || null, parseFloat(standardCostThree) || null, parseFloat(standardCostFour) || null, parseFloat(standardCostFive) || null, parseFloat(standardCostSix) || null];
+        standardCost = this.removeNull(standardCost);
+
+        let caseQuantitiesList = [parseInt(quantityOne) || null, parseInt(quantityTwo) || null, parseInt(quantityThree) || null, parseInt(quantityFour) || null, parseInt(quantityFive) || null, parseInt(quantitySix) || null]
+        caseQuantitiesList = this.removeNull(caseQuantitiesList);
+        let productId;
+        if (this.productId) {
+            productId = this.productId;
+        } else {
+            productId = null;
+            this.productId = null;
+        }
+
+        const productDimensions = [
+            productWidth ? productWidth : 0,
+            productHeight ? productHeight : 0,
+            productLength ? productLength : 0
+        ];
+
+        const shipping = {
+            bln_include_shipping: doChargesApply == "Yes" ? 1 : 0,
+            fob_location_list: [],
+            prod_time_max: this.sliderMaxValue || 10,
+            prod_time_min: this.sliderMinValue || 7,
+            units_in_shipping_package: 1
+        };
+
+        const physics = {
+            bln_apparel: radio.name === "Apparel Item" ? true : false,
+            dimensions: productDimensions.toString(),
+            over_pack_charge: overPackageCharge || null,
+            product_id: productId,
+            shipping: shipping,
+            weight: weight || null,
+            weight_in_units: Number(unitsInWeight) || null
+        };
+
+        const flatRateObj = {
+            flat_rate_shipping: Number(flatRate) || null,
+            product_id: productId
+        };
+
+        const caseDimension = {
+            case_height: Number(caseHeight) || null,
+            case_length: Number(caseLength) || null,
+            case_width: Number(caseWidth) || null,
+            product_id: productId
+        };
+
+        const caseQuantities = {
+            case_quantities: caseQuantitiesList,
+            product_id: productId
+        };
+
+        let keywordsString = null;
+        if (keywords.length) {
+            keywordsString = keywords;
+        } else if (this.fruits.length) {
+            const keywordsSliced = this.fruits.slice(0, 10)
+            let names = keywordsSliced.map(function (item) {
+                return item['name'];
+            });
+            keywordsString = names.toString().replace(/'/g, "-");
+        };
+
+        const description = {
+            name: String(productName),
+            product_number: String(productNumber),
+            product_desc: String(mainDescription?.replace(/'/g, "''")) || null,
+            mini_desc: String(miniDescription?.replace(/'/g, "''")) || null,
+            keywords: String(keywordsString) ? String(keywordsString) : null,
+            notes: null,
+            purchase_order_notes: null,
+            supplier_link: String(supplierLink) || null,
+            meta_desc: String(miniDescription?.replace(/'/g, "''")) || null,
+            sex: this.supplierType == "Apparel Item" ? parseInt(this.selectedSex) : null,
+            search_keywords: String(keywords) || null,
+            last_update_by: null,
+            last_update_date: null,
+            update_history: null,
+            product_id: productId,
+            supplier_id: this.supplierId,
+            permalink: null
+        };
+        let payload = {
+            description: description,
+            physics: physics,
+            item_type: radio.name === "Apparel Item" ? 2 : 1,
+            supplier_id: this.supplierId,
+            flat_rate: flatRateObj,
+            case_dimension: caseDimension,
+            case_quantities: caseQuantities,
+            shipping: shipping,
+            technologo_sku: null,
+            bln_group_run: allowGroupRun,
+            create_product: true
+        }
+        if (!this.productId) {
+            this.createProductDetailLoader = false;
+            this._changeDetectorRef.markForCheck();
+            this._inventoryService.checkIfProductExist(productNumber, productName, this.supplierId)
+                .pipe(takeUntil(this._unsubscribeAll))
+                .subscribe((response: any) => {
+                    const isDataExist = response["data_exists"];
+                    if (isDataExist) {
+                        this.createProductDetailLoader = false;
+                        this._snackBar.open("Product already exists", '', {
+                            horizontalPosition: 'center',
+                            verticalPosition: 'bottom',
+                            duration: 3500
+                        });
+                        // Mark for check
+                        this._changeDetectorRef.markForCheck();
+                    } else {
+                        this._inventoryService.createProductDetail(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+                            this.createProductDetailLoader = false;
+                            this.stepperIndex = res["product_id"];
+                            this.myStepper.next();
+                            this._changeDetectorRef.markForCheck();
+                            this.productId = res["product_id"];
+                        }, err => {
+                            this._snackBar.open("Something went wrong", '', {
+                                horizontalPosition: 'center',
+                                verticalPosition: 'bottom',
+                                duration: 3500
+                            });
+                            this.createProductDetailLoader = false;
+                            this._changeDetectorRef.markForCheck();
+                        })
+                    }
+                });
+        } else {
+            let payload = {
+                name: String(productName),
+                product_number: productNumber,
+                product_desc: String(mainDescription?.replace(/'/g, "''")) || null,
+                mini_desc: String(miniDescription?.replace(/'/g, "''")) || null,
+                keywords: String(keywordsString) ? String(keywordsString) : null,
+                notes: null,
+                supplier_link: String(supplierLink) || null,
+                meta_desc: String(miniDescription?.replace(/'/g, "''")) || null,
+                sex: this.supplierType == "Apparel Item" ? parseInt(this.selectedSex) : null,
+                search_keywords: String(keywords) || null,
+                purchase_order_notes: null,
+                last_update_by: null,
+                last_update_date: null,
+                update_history: null,
+                product_id: this.productId,
+                supplier_id: this.supplierId,
+                permalink: null,
+                flat_rate_shipping: Number(flatRate) || null,
+                prod_time_max: this.sliderMaxValue || 10,
+                prod_time_min: this.sliderMinValue || 7,
+                units_in_shipping_package: 1,
+                bln_include_shipping: doChargesApply == "Yes" ? 1 : 0,
+                fob_location_list: [],
+                dimensions: productDimensions.toString(),
+                weight: weight || null,
+                weight_in_units: Number(unitsInWeight) || null,
+                over_pack_charge: overPackageCharge || null,
+                bln_apparel: radio.name === "Apparel Item" ? true : false,
+                update_new_product: true
+            }
+            this._inventoryService.UpdateProductDescription(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+                this.createProductDetailLoader = false;
+                this.stepperIndex = this.productId;
+                this.productId = this.productId;
+                this.myStepper.next();
+                this._changeDetectorRef.markForCheck();
+            }, err => {
+                this._snackBar.open("Something went wrong", '', {
+                    horizontalPosition: 'center',
+                    verticalPosition: 'bottom',
+                    duration: 3500
+                });
+                this.createProductDetailLoader = false;
+                this._changeDetectorRef.markForCheck();
+            })
+        }
+    }
+    addLicencingTerm() {
+        if (!this.selectedTermObject) {
+            this._snackBar.open("Please select one sub category", '', {
+                horizontalPosition: 'center',
+                verticalPosition: 'bottom',
+                duration: 3500
+            });
+            return;
+        };
+        this.updateProductLicensingLoader = true;
+        let payload = {
+            product_id: this.productId,
+            licensing_term_id: this.selectedRadioOption.fk_licensingTermID,
+            sub_category_id: this.selectedRadioOption.pk_licensingTermSubCategoryID,
+            licensing_term: true
+        };
+        this._inventoryService.updateProductLicensingTerm(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+            this.updateProductLicensingLoader = false;
+            this.myStepper.next();
+            this._changeDetectorRef.markForCheck();
+        }, err => {
+            this._snackBar.open("Something went wrong", '', {
+                horizontalPosition: 'center',
+                verticalPosition: 'bottom',
+                duration: 3500
+            });
+            this.updateProductLicensingLoader = false;
+            this._changeDetectorRef.markForCheck();
+        })
+    }
+    addProductFeatures() {
+        let featureArray = [];
+        const features = this.featureForm.getRawValue();
+        for (const item of features["items"]) {
+            const { order, feature } = item;
+            featureArray.push({
+                attribute_type_id: 1,
+                attribute_text: feature,
+                supplier_id: this.supplierId,
+                order: Number(order),
+                user_full_name: null
+            })
+        };
+
+        let uniqueFeatures = [...new Map(featureArray.map(item => [item["attribute_text"], item])).values()];
+        this.updateProductFeatureLoader = true;
+        let payload = {
+            product_id: this.productId,
+            features: uniqueFeatures,
+            create_product_feature: true
+        };
+        this._inventoryService.UpdateProductFeature(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+            this.updateProductFeatureLoader = false;
+            this.myStepper.next();
+            this._changeDetectorRef.markForCheck();
+        }, err => {
+            this._snackBar.open("Something went wrong", '', {
+                horizontalPosition: 'center',
+                verticalPosition: 'bottom',
+                duration: 3500
+            });
+            this.updateProductFeatureLoader = false;
+            this._changeDetectorRef.markForCheck();
+        })
+    }
+    // Colors
+    colorSelected(result: any): void {
+        if (this.selectedColorsList.length == 0) {
+            this.selectedColorsList.push({ colorId: result.pk_colorID, colorName: result.colorName });
+        } else {
+            var obj = this.selectedColorsList.filter((val) => {
+                return val.colorId == result.pk_colorID;
+            });
+            if (obj.length == 0) {
+                this.selectedColorsList.push({ colorId: result.pk_colorID, colorName: result.colorName });
+            }
+        }
+        this.selectedColor = result;
+        this.colorName.setValue(null);
+    };
+    addProductColor() {
+        const { run, hex } = this.colorsForm.getRawValue();
+        const { pk_colorID } = this.selectedColor;
+        const { imageUpload, type } = this.imageValue;
+
+
+        if (!pk_colorID) {
+            return this._snackBar.open("Please select color", '', {
+                horizontalPosition: 'center',
+                verticalPosition: 'bottom',
+                duration: 3500
+            });
+        };
+        if (imageUpload) {
+            let paylaod = {
+                imageUpload: imageUpload,
+                type: type,
+                name: pk_colorID
+            }
+            this.uploadColorMedia(paylaod);
+        }
+        let colors: any = [];
+        this.selectedColorsList.forEach(element => {
+            colors.push({
+                color_id: element.colorId,
+                the_run: run,
+                rgb: hex
+            })
+        });
+        const payload = {
+            product_id: this.productId,
+            create_product_color: true,
+            colors: colors
+        };
+
+        this.updateProductColorLoader = true;
+        this._changeDetectorRef.markForCheck();
+        this._inventoryService.UpdateProductColors(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe((response) => {
+            this.updateProductColorLoader = false;
+            this.myStepper.next();
+            this._changeDetectorRef.markForCheck();
+        }, err => {
+            this._snackBar.open("Something went wrong", '', {
+                horizontalPosition: 'center',
+                verticalPosition: 'bottom',
+                duration: 3500
+            });
+            this.updateProductColorLoader = false;
+            this._changeDetectorRef.markForCheck();
+        });
+    };
+    uploadColorMedia(obj: any) {
+        const { imageUpload, name, type } = obj;
+        let image = new Image;
+        image.src = imageUpload;
+        image.onload = () => {
+            if (image.width != 600 || image.height != 600) {
+                this._snackBar.open("Dimentions allowed are 600px x 600px", '', {
+                    horizontalPosition: 'center',
+                    verticalPosition: 'bottom',
+                    duration: 3500
+                });
+                return;
+            };
+
+            if (type != "image/jpeg") {
+                this._snackBar.open("Image extensions are allowed in JPG", '', {
+                    horizontalPosition: 'center',
+                    verticalPosition: 'bottom',
+                    duration: 3500
+                });
+                return;
+            }
+
+            const base64 = imageUpload.split(",")[1];
+            const payload = {
+                file_upload: true,
+                image_file: base64,
+                image_path: `/globalAssets/Products/Colors/${this.productId}/${name}.jpg`
+            };
+
+            this._inventoryService.addColorMedia(payload)
+                .subscribe((response) => {
+
+                    // Mark for check
+                    this._changeDetectorRef.markForCheck();
+                })
+        };
+    }
+    uploadImage(event): void {
+        const file = event.target.files[0];
+        let type = file["type"];
+        const reader = new FileReader();
+        reader.readAsDataURL(file);
+        reader.onload = () => {
+            this.imageValue = {
+                imageUpload: reader.result,
+                type: file["type"]
+            };
+        };
+    };
+    // NetCost
+    addNetCost() {
+
+        const { firstQuantity, secondQuantity, thirdQuantity, fourthQuantity, fifthQuantity, sixthQuantity, standardCostOne, standardCostTwo, standardCostThree, standardCostFour, standardCostFive, standardCostSix, standardCostDropOne, standardCostDropTwo, standardCostDropThree, standardCostDropFour, standardCostDropFive, standardCostDropSix, msrp, internalComments, coOp } = this.netCostForm.getRawValue();
+
+
+        let quantityList = [parseInt(firstQuantity) || null, parseInt(secondQuantity) || null, parseInt(thirdQuantity) || null, parseInt(fourthQuantity) || null, parseInt(fifthQuantity) || null, parseInt(sixthQuantity) || null];
+        quantityList = this.removeNull(quantityList);
+
+        let standardCost = [parseFloat(standardCostOne) || null, parseFloat(standardCostTwo) || null, parseFloat(standardCostThree) || null, parseFloat(standardCostFour) || null, parseFloat(standardCostFive) || null, parseFloat(standardCostSix) || null];
+        standardCost = this.removeNull(standardCost);
+
+        this.updateProductCostLoader = true;
+
+        let payload = {
+            product_id: this.productId,
+            quantity_list: [...new Set(quantityList)],
+            cost_list: [...new Set(standardCost)],
+            blank_cost_list: [],
+            cost_comment: internalComments || null,
+            coop_id: this.selectedCooP || null,
+            live_cost_comment: this.redPriceCommentText || null,
+            msrp: Number(msrp) || null,
+            create_product_cost: true
+        }
+        this._inventoryService.UpdateProductNetCost(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe((response) => {
+            this.updateProductCostLoader = false;
+            this.myStepper.next();
+            this._changeDetectorRef.markForCheck();
+        }, err => {
+            this._snackBar.open("Something went wrong", '', {
+                horizontalPosition: 'center',
+                verticalPosition: 'bottom',
+                duration: 3500
+            });
+            this.updateProductCostLoader = false;
+            this._changeDetectorRef.markForCheck();
+        });
+    }
+    // addImprints
+    addProductImprints() {
+        const setupRunForm = this.runSetup.getRawValue();
+        const { run, setup } = setupRunForm;
+
+        if (!this.selectedLocation) {
+            this._snackBar.open("New LOCATION was not specified correctly", '', {
+                horizontalPosition: 'center',
+                verticalPosition: 'bottom',
+                duration: 3500
+            });
+            return;
+        };
+
+        if (this.areaValue === "") {
+            this._snackBar.open("Imprint AREA has not been defined correctly.", '', {
+                horizontalPosition: 'center',
+                verticalPosition: 'bottom',
+                duration: 3500
+            });
+            return;
+        };
+
+        if (this.defaultImprintColorSpecification === 'Yes') {
+            if (!this.collectionIdsArray.length && !this.customColorId) {
+                this._snackBar.open("Select a color collection", '', {
+                    horizontalPosition: 'center',
+                    verticalPosition: 'bottom',
+                    duration: 3500
+                });
+                return;
+            };
+        };
+
+        if (run === "" || setup === "") {
+            this._snackBar.open("Select a SETUP or RUN charge", '', {
+                horizontalPosition: 'center',
+                verticalPosition: 'bottom',
+                duration: 3500
+            });
+
+            return;
+        };
+
+        let processMode;
+        if (this.favoriteSeason === 'Per color (i.e. silk screening, pad printing, etc.)') {
+            processMode = 0;
+        } else if (this.favoriteSeason === 'Per Stitch (embroidering)') {
+            processMode = 1;
+        } else if (this.favoriteSeason === 'Simple Process (i.e. laser engraving, full color, etc.)') {
+            processMode = 2;
+        };
+
+        let second, third, fourth, fifth;
+        let multiValue;
+        if (processMode === 0) {
+            const {
+                twoColorQ,
+                threeColorQ,
+                fourColorQ,
+                fiveColorQ
+            } = this.values.getRawValue();
+            second = twoColorQ;
+            third = threeColorQ;
+            fourth = fourColorQ;
+            fifth = fiveColorQ;
+        };
+
+        const payload = {
+            product_id: this.productId,
+            decorator_id: this.supplierId || null,
+            method_id: this.selectedMethod.pk_methodID || null,
+            location_id: this.selectedLocation.pk_locationID || null,
+            setup_charge_id: setup || 17,
+            run_charge_id: run || 17,
+            bln_includable: this.priceInclusionSelected.value === 'Yes' ? 1 : 0,
+            area: this.areaValue,
+            bln_user_color_selection: this.defaultImprintColorSpecification === 'Yes' ? 1 : 0,
+            multi_color_min_id: 1,
+            collection_id: this.collectionIdsArray.length ? this.selectedCollectionId[0].fk_collectionID : Number(this.customColorId),
+            max_colors: this.defaultImprintColorSpecification === 'Yes' ? this.maxColorSelected : null,
+            bln_process_mode: processMode,
+            min_product_qty: this.minQuantity || 1,
+            imprint_comments: this.addImprintComment || "",
+            digitizer_id: processMode == 1 ? this.selectedDigitizer.pfk_digitizerID : null,
+            bln_active: 1,
+            bln_singleton: this.imprintItselfSelected.value === 'Yes' ? true : false,
+            bln_color_selection: this.defaultImprintColorSpecification === 'Yes' ? true : false,
+            imprint_id: null,
+            store_product_id_list: [],
+            imprint_image: null,
+            display_order: Number(this.addImprintDisplayOrderValue) || 1,
+            create_product_imprint: true
+        };
+        this.updateProductImprintLoader = true;
+        if (payload.bln_process_mode === 0) {
+            this._inventoryService.getMultiColorValue(second, third, fourth, fifth)
+                .pipe(takeUntil(this._unsubscribeAll))
+                .subscribe((multi_color) => {
+                    multiValue = multi_color["data"];
+                    payload.multi_color_min_id = multiValue?.length ? multiValue[0].pk_multiColorMinQID : 1;
+                    this.imprintPayload = payload;
+                    this._inventoryService.UpdateProductImprint(this.imprintPayload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+                        this.updateProductImprintLoader = false;
+                        this.myStepper.next();
+                        this._changeDetectorRef.markForCheck();
+                    }, err => {
+                        this.updateProductImprintLoader = false;
+                        this._changeDetectorRef.markForCheck();
+                    });
+                }, err => {
+                    this.updateProductImprintLoader = false;
+                    this._changeDetectorRef.markForCheck();
+                });
+        } else {
+            this.imprintPayload = payload;
+            this._inventoryService.UpdateProductImprint(this.imprintPayload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+                this.updateProductImprintLoader = false;
+                this.myStepper.next();
+                this._changeDetectorRef.markForCheck();
+            }, err => {
+                this.updateProductImprintLoader = false;
+                this._changeDetectorRef.markForCheck();
+            });
+        };
+    }
 }

@@ -86,6 +86,7 @@ import { NgMultiSelectDropDownModule } from 'ng-multiselect-dropdown';
 import { PromostandardColorsComponent } from './inventory/navigation/promostandard-colors/promostandard-colors.component';
 import { ProductStoreComponent } from './product-store/store.component';
 import { StoreProductDetailsComponent } from './product-store/details/product-store-details.component';
+import { ProductSizesComponent } from './inventory/list/product-sizes/product-sizes.component';
 
 @NgModule({
     declarations: [
@@ -140,7 +141,8 @@ import { StoreProductDetailsComponent } from './product-store/details/product-st
         PromostandardColorsComponent,
         // Product Stores
         ProductStoreComponent,
-        StoreProductDetailsComponent
+        StoreProductDetailsComponent,
+        ProductSizesComponent
     ],
     imports: [
         RouterModule.forChild(ecommerceRoutes),
