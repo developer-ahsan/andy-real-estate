@@ -13,6 +13,7 @@ import { navigations } from 'app/modules/admin/apps/ecommerce/inventory/navigati
 })
 export class InventoryService {
     public selectedIndex = null;
+    public standardImprints: any;
     // Private
     private _brands: BehaviorSubject<InventoryBrand[] | null> = new BehaviorSubject(null);
     private _categories: BehaviorSubject<InventoryCategory[] | null> = new BehaviorSubject(null);

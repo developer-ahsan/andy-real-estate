@@ -272,7 +272,8 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
     });
 
     firstFormGroup = this._formBuilder.group({
-        radio: ['', Validators.required]
+        radio: ['', Validators.required],
+        supplier: ['', Validators.required]
     });
 
     secondFormGroup = this._formBuilder.group({
@@ -419,7 +420,7 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
     licensingTermPayload = null;
     licensingTermPayloadBoolean: boolean = true;
 
-    productId: any = 19700;
+    productId: any;
     createProductDetailLoader: boolean = false;
     updateProductLicensingLoader: boolean = false;
     updateProductFeatureLoader: boolean = false;
@@ -878,6 +879,7 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
 
     onItemSelect(item: any) {
         const { pk_companyID, companyName } = item;
+        this.selectedItems = item;
         this.supplierId = pk_companyID;
         this.supplierName = companyName;
     };
@@ -1441,8 +1443,7 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
         const { selectedIndex } = stepper;
 
         if (selectedIndex === 0) {
-
-            if (!this.selectedItems.length) {
+            if (!this.selectedItems) {
                 this._snackBar.open("Please select a supplier", '', {
                     horizontalPosition: 'center',
                     verticalPosition: 'bottom',
@@ -2446,6 +2447,14 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
             });
             return;
         };
+        if (!miniDescription) {
+            this._snackBar.open("Meta description is required", '', {
+                horizontalPosition: 'center',
+                verticalPosition: 'bottom',
+                duration: 3500
+            });
+            return;
+        };
 
         if (!this.fruits.length) {
             this._snackBar.open("Please add keywords", '', {
@@ -2471,7 +2480,6 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
             productId = null;
             this.productId = null;
         }
-
         const productDimensions = [
             productWidth ? productWidth : 0,
             productHeight ? productHeight : 0,
@@ -2557,7 +2565,7 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
             create_product: true
         }
         if (!this.productId) {
-            this.createProductDetailLoader = false;
+            this.createProductDetailLoader = true;
             this._changeDetectorRef.markForCheck();
             this._inventoryService.checkIfProductExist(productNumber, productName, this.supplierId)
                 .pipe(takeUntil(this._unsubscribeAll))
@@ -2600,7 +2608,7 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
                 notes: null,
                 supplier_link: String(supplierLink) || null,
                 meta_desc: String(miniDescription?.replace(/'/g, "''")) || null,
-                sex: this.supplierType == "Apparel Item" ? parseInt(this.selectedSex) : null,
+                sex: this.supplierType == "Apparel Item" ? parseInt(this.selectedSex) : 0,
                 search_keywords: String(keywords) || null,
                 purchase_order_notes: null,
                 last_update_by: null,
@@ -2624,7 +2632,9 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
             }
             this._inventoryService.UpdateProductDescription(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
                 this.createProductDetailLoader = false;
-                this.stepperIndex = this.productId;
+                setTimeout(() => {
+                    this.stepperIndex = this.productId;
+                }, 200);
                 this.productId = this.productId;
                 this.myStepper.next();
                 this._changeDetectorRef.markForCheck();
@@ -2902,9 +2912,7 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
 
             return;
         };
-        if (this.prodStandardImprints) {
-            this.prodStandardImprints.saveStandardImprints();
-        }
+
         let processMode;
         if (this.favoriteSeason === 'Per color (i.e. silk screening, pad printing, etc.)') {
             processMode = 0;
@@ -2956,6 +2964,7 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
             create_product_imprint: true
         };
         this.updateProductImprintLoader = true;
+        this._changeDetectorRef.markForCheck();
         if (payload.bln_process_mode === 0) {
             this._inventoryService.getMultiColorValue(second, third, fourth, fifth)
                 .pipe(takeUntil(this._unsubscribeAll))
@@ -2965,6 +2974,9 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
                     this.imprintPayload = payload;
                     this._inventoryService.UpdateProductImprint(this.imprintPayload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
                         this.updateProductImprintLoader = false;
+                        if (this._inventoryService.standardImprints) {
+                            this.saveStandardImprints();
+                        }
                         this.myStepper.next();
                         this._changeDetectorRef.markForCheck();
                     }, err => {
@@ -2986,5 +2998,89 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
                 this._changeDetectorRef.markForCheck();
             });
         };
+    }
+    goToProductDetails() {
+        this._router.navigate([`/apps/ecommerce/inventory/${this.productId}`]);
+    }
+    saveStandardImprints(): void {
+        let count = 0;
+        let imprintsToUpdate = [];
+        for (const standardImprint of this._inventoryService.standardImprints) {
+            const { sub_standard_imprints } = standardImprint;
+            for (const sub_standard_imprint of sub_standard_imprints) {
+                if (sub_standard_imprint.isChecked) {
+                    imprintsToUpdate.push(sub_standard_imprint);
+                }
+            }
+            count = count + sub_standard_imprints.filter(function (s) { return s.isChecked }).length;
+        };
+
+        if (!count) {
+
+            // return;
+        } else {
+            this._changeDetectorRef.markForCheck();
+            const finalImprintPayload = [];
+            for (const imprint of imprintsToUpdate) {
+                const {
+                    fk_decoratorID,
+                    fk_methodID,
+                    fk_locationID,
+                    fk_setupChargeID,
+                    fk_runChargeID,
+                    blnIncludable,
+                    area,
+                    blnUserColorSelection,
+                    maxColors,
+                    fk_multiColorMinQID,
+                    fk_collectionID,
+                    blnSingleProcess,
+                    minProductQty,
+                    imprintComments,
+                    fk_digitizerID,
+                    blnActive,
+                    blnSingleton,
+                    pk_standardImprintID,
+                    displayOrder
+                } = imprint;
+                const imprintObj = {
+                    product_id: this.productId,
+                    decorator_id: fk_decoratorID,
+                    method_id: fk_methodID,
+                    location_id: fk_locationID,
+                    setup_charge_id: fk_setupChargeID,
+                    run_charge_id: fk_runChargeID,
+                    bln_includable: blnIncludable,
+                    area: area,
+                    bln_user_color_selection: blnUserColorSelection,
+                    max_colors: maxColors,
+                    multi_color_min_id: fk_multiColorMinQID,
+                    collection_id: fk_collectionID,
+                    bln_process_mode: blnSingleProcess,
+                    min_product_qty: minProductQty,
+                    imprint_comments: imprintComments,
+                    digitizer_id: fk_digitizerID,
+                    bln_active: blnActive,
+                    bln_singleton: blnSingleton,
+                    bln_color_selection: blnUserColorSelection,
+                    imprint_id: pk_standardImprintID,
+                    store_product_id_list: [],
+                    display_order: displayOrder
+                };
+                finalImprintPayload.push(imprintObj);
+            }
+
+            const payload = {
+                standard_imprint: true,
+                imprint_obj: finalImprintPayload
+            };
+
+            this._inventoryService.addStandardImprints(payload)
+                .subscribe((response) => {
+                    // Mark for check
+                    this._changeDetectorRef.markForCheck();
+                })
+        }
+
     }
 }

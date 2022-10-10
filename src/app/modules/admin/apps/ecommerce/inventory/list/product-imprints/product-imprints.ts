@@ -32,8 +32,7 @@ export class ProductImprintsComponent implements OnInit, OnDestroy {
   ) { }
 
   ngOnInit(): void {
-    if (this.standardImprints.length == 0) {
-      console.log('dddd')
+    if (!this._inventoryService.standardImprints) {
       this.getStandardImprints();
     }
   };
@@ -65,6 +64,7 @@ export class ProductImprintsComponent implements OnInit, OnDestroy {
             };
 
             this.standardImprints = tempArray;
+            this._inventoryService.standardImprints = tempArray;
             for (let subImprints of this.standardImprints) {
               const { sub_standard_imprints } = subImprints;
               for (const sub_standard of sub_standard_imprints) {
@@ -80,7 +80,7 @@ export class ProductImprintsComponent implements OnInit, OnDestroy {
   };
   clearAllStandardImprintOptions(): void {
     this.isSelectAll = !this.isSelectAll;
-    for (let subImprints of this.standardImprints) {
+    for (let subImprints of this._inventoryService.standardImprints) {
       const { standard_imprints, sub_standard_imprints } = subImprints;
       standard_imprints["isChecked"] = false;
       for (const sub_standard of sub_standard_imprints) {
@@ -98,7 +98,7 @@ export class ProductImprintsComponent implements OnInit, OnDestroy {
   public saveStandardImprints(): void {
     let count = 0;
     let imprintsToUpdate = [];
-    for (const standardImprint of this.standardImprints) {
+    for (const standardImprint of this._inventoryService.standardImprints) {
       const { sub_standard_imprints } = standardImprint;
       for (const sub_standard_imprint of sub_standard_imprints) {
         if (sub_standard_imprint.isChecked) {
@@ -110,73 +110,75 @@ export class ProductImprintsComponent implements OnInit, OnDestroy {
 
     if (!count) {
 
-      return;
-    }
-    this.standardImprintAddLoader = true;
-    this._changeDetectorRef.markForCheck();
-    const { pk_productID } = this.selectedProduct;
-    const finalImprintPayload = [];
-    for (const imprint of imprintsToUpdate) {
-      const {
-        fk_decoratorID,
-        fk_methodID,
-        fk_locationID,
-        fk_setupChargeID,
-        fk_runChargeID,
-        blnIncludable,
-        area,
-        blnUserColorSelection,
-        maxColors,
-        fk_multiColorMinQID,
-        fk_collectionID,
-        blnSingleProcess,
-        minProductQty,
-        imprintComments,
-        fk_digitizerID,
-        blnActive,
-        blnSingleton,
-        pk_standardImprintID,
-        displayOrder
-      } = imprint;
-      const imprintObj = {
-        product_id: pk_productID,
-        decorator_id: fk_decoratorID,
-        method_id: fk_methodID,
-        location_id: fk_locationID,
-        setup_charge_id: fk_setupChargeID,
-        run_charge_id: fk_runChargeID,
-        bln_includable: blnIncludable,
-        area: area,
-        bln_user_color_selection: blnUserColorSelection,
-        max_colors: maxColors,
-        multi_color_min_id: fk_multiColorMinQID,
-        collection_id: fk_collectionID,
-        bln_process_mode: blnSingleProcess,
-        min_product_qty: minProductQty,
-        imprint_comments: imprintComments,
-        digitizer_id: fk_digitizerID,
-        bln_active: blnActive,
-        bln_singleton: blnSingleton,
-        bln_color_selection: blnUserColorSelection,
-        imprint_id: pk_standardImprintID,
-        store_product_id_list: [],
-        display_order: displayOrder
+      // return;
+    } else {
+      this.standardImprintAddLoader = true;
+      this._changeDetectorRef.markForCheck();
+      const { pk_productID } = this.selectedProduct;
+      const finalImprintPayload = [];
+      for (const imprint of imprintsToUpdate) {
+        const {
+          fk_decoratorID,
+          fk_methodID,
+          fk_locationID,
+          fk_setupChargeID,
+          fk_runChargeID,
+          blnIncludable,
+          area,
+          blnUserColorSelection,
+          maxColors,
+          fk_multiColorMinQID,
+          fk_collectionID,
+          blnSingleProcess,
+          minProductQty,
+          imprintComments,
+          fk_digitizerID,
+          blnActive,
+          blnSingleton,
+          pk_standardImprintID,
+          displayOrder
+        } = imprint;
+        const imprintObj = {
+          product_id: pk_productID,
+          decorator_id: fk_decoratorID,
+          method_id: fk_methodID,
+          location_id: fk_locationID,
+          setup_charge_id: fk_setupChargeID,
+          run_charge_id: fk_runChargeID,
+          bln_includable: blnIncludable,
+          area: area,
+          bln_user_color_selection: blnUserColorSelection,
+          max_colors: maxColors,
+          multi_color_min_id: fk_multiColorMinQID,
+          collection_id: fk_collectionID,
+          bln_process_mode: blnSingleProcess,
+          min_product_qty: minProductQty,
+          imprint_comments: imprintComments,
+          digitizer_id: fk_digitizerID,
+          bln_active: blnActive,
+          bln_singleton: blnSingleton,
+          bln_color_selection: blnUserColorSelection,
+          imprint_id: pk_standardImprintID,
+          store_product_id_list: [],
+          display_order: displayOrder
+        };
+        finalImprintPayload.push(imprintObj);
+      }
+
+      const payload = {
+        standard_imprint: true,
+        imprint_obj: finalImprintPayload
       };
-      finalImprintPayload.push(imprintObj);
+
+      this._inventoryService.addStandardImprints(payload)
+        .subscribe((response) => {
+          this.standardImprintAddLoader = false;
+
+          // Mark for check
+          this._changeDetectorRef.markForCheck();
+        })
     }
 
-    const payload = {
-      standard_imprint: true,
-      imprint_obj: finalImprintPayload
-    };
-
-    this._inventoryService.addStandardImprints(payload)
-      .subscribe((response) => {
-        this.standardImprintAddLoader = false;
-
-        // Mark for check
-        this._changeDetectorRef.markForCheck();
-      })
   }
   ngOnDestroy(): void {
     // Unsubscribe from all subscriptions

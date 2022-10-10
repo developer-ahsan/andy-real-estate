@@ -15,7 +15,7 @@
         </div>
     </div>
     <div class="gap-y-4 mt-6" *ngIf="!standardImprintLoader">
-        <div class="row border-b-2 py-5" *ngFor="let standard of standardImprints">
+        <div class="row border-b-2 py-5" *ngFor="let standard of _inventoryService.standardImprints">
             <div class="col-12 mb-3">
                 <b class="my-5 text-secondary">
                     {{standard.standard_imprints.name}}
