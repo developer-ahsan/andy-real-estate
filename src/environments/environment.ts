@@ -14,7 +14,7 @@ export const environment = {
   stores: "https://consolidus-staging.azurewebsites.net/api/stores",
   storeNewUrl: "https://stores-staging.azurewebsites.net/api/stores",
   storeNewUrlRapidBuild: "https://stores-staging.azurewebsites.net/api/rapid_build",
-  products: "https://consolidus-staging.azurewebsites.net/api/products",
+  products: "http://localhost:7071/api/products",
   system: "https://consolidus-staging.azurewebsites.net/api/system",
   productMedia: "https://assets.consolidus.com/globalAssets/Products",
   rapidBuildMedia: "https://assets.consolidus.com/globalAssets/rapidBuild",
@@ -32,6 +32,7 @@ export const environment = {
     appId: "1:187396735094:web:4127587a84d92215ec1f57",
   },
 };
+
 
 /*
  * For easier debugging in development mode, you can import the following file

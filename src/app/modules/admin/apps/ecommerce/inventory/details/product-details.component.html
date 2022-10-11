@@ -22,7 +22,7 @@
     <ngx-skeleton-loader count="14" appearance="line" animation="pulse" class="p-5" *ngIf="isProductFetched">
     </ngx-skeleton-loader>
 
-    <mat-drawer-container class="sub-nav-component bg-light" autosize *ngIf="!isProductFetched">
+    <mat-drawer-container class="sub-nav-component bg-light" autosize *ngIf="!isProductFetched && !StoreProduct">
         <mat-drawer #drawer class="sub-sidenav bg-light" [mode]="drawerMode" [opened]="drawerOpened">
             <div *ngFor="let route of routes;let i = index">
                 <button style="padding: 15px;"
@@ -242,6 +242,215 @@
                     </ng-template>
                 </div>
             </div>
+        </div>
+
+    </mat-drawer-container>
+
+    <!-- Store Product -->
+    <mat-drawer-container class="sub-nav-component bg-light" *ngIf="!isProductFetched && StoreProduct" autosize>
+        <mat-drawer #drawer class="sub-sidenav bg-light" [mode]="drawerMode" [opened]="drawerOpened">
+            <div *ngFor="let route of routes;let i = index">
+                <button style="padding: 15px;"
+                    [style.background-color]="route.title === selectedIndex ? '#d4d7dd' : 'transparent'"
+                    [ngClass]="route.title === selectedIndex ? 'opacity-100' : 'opacity-80'" mat-button
+                    class="w-full my-1 mr-2 justify-content-start" (click)="clicked(route)">
+                    <mat-icon svgIcon="{{route.icon}}" class="icon-size-5 text-primary"></mat-icon>
+                    <span style="font-size: 13px; font-weight: bold; margin-left: 10px;"> {{route.title}} </span>
+                </button>
+            </div>
+        </mat-drawer>
+
+        <div class="sub-sidenav-content bg-light p-2">
+            <!-- <div class="flex justify-content-between">
+                <mat-icon class="subnav-menu-icon ml-1" svgIcon="heroicons_outline:menu" (click)="toggleDrawer()">
+                </mat-icon>
+                <mat-slide-toggle (change)="onTogglePromoStandards($event)" [(ngModel)]="promoStandardBoolean"
+                    [disabled]="isLoading">
+                    Enable/Disable PromoStandards
+                </mat-slide-toggle>
+            </div> -->
+
+            <ng-template #myCard>
+                <div class="bg-card shadow p-4">
+                    <div class="flex mr-7" style="justify-content: space-between;">
+                        <div class="text-2xl font-bold">Products</div>
+                        <div class="text-2xl font-bold"
+                            [ngStyle]="selectedProduct?.blnActive ? {'color':'#0ecd0e'} : {'color': '#ff0000'}">
+                            {{selectedProduct?.blnActive ? 'Active' : 'Inactive' }}
+                        </div>
+                    </div>
+                    <div class="row w-full">
+                        <div class="col-lg-4 col-md-6 col-12">
+                            <b class="text-secondary text-sm">PID</b>
+                            <p class="float-right text-sm">{{selectedProduct?.pk_productID || not_available}}</p>
+                        </div>
+                        <div class="col-lg-4 col-md-6 col-12">
+                            <b class="text-secondary text-sm">Supplier</b>
+                            <a class="float-right text-sm"
+                                style="color: #959595; text-decoration: underline; cursor: pointer;"
+                                href="{{selectedProduct?.websiteURL}}" target="_blank">
+                                {{selectedProduct?.companyName || not_available}}
+                            </a>
+                        </div>
+                        <div class="col-lg-4 col-md-6 col-12" *ngIf="selectedProduct?.supplierLink">
+                            <b class="text-secondary text-sm">Product Link</b>
+                            <a class="float-right text-sm"
+                                style="color: #959595; text-decoration: underline; cursor: pointer;"
+                                href="{{selectedProduct?.supplierLink}}" target="_blank">
+                                Click Here
+                            </a>
+                        </div>
+                        <div class="col-lg-4 col-md-6 col-12" *ngIf="selectedProduct.vendorRelation !== 1">
+                            <b class="text-secondary text-sm">Supplier Relationship</b>
+                            <p class="float-right text-sm" *ngIf="selectedProduct.vendorRelation === 2"
+                                style="color: #7b8404">
+                                Preferred
+                            </p>
+                            <p class="float-right text-sm" *ngIf="selectedProduct.vendorRelation === 3"
+                                style="color: #0ecd0e">
+                                Partner
+                            </p>
+                        </div>
+                        <div class="col-lg-4 col-md-6 col-12">
+                            <b class="text-secondary text-sm">Last Updated</b>
+                            <p class="float-right text-sm">{{last_updated}}</p>
+                        </div>
+                        <div class="col-lg-4 col-md-6 col-12">
+                            <b class="text-secondary text-sm">Last Ordered By</b>
+                            <p class="float-right text-sm">{{selectedProduct?.lastUpdatedBy || not_available}}</p>
+                        </div>
+                        <div class="col-lg-4 col-md-6 col-12">
+                            <b class="text-secondary text-sm">Current Co-Op Program</b>
+                            <p class="float-right text-sm">{{selectedProduct?.fk_coopID || 'NONE'}}</p>
+                        </div>
+                        <div class="col-lg-4 col-md-6 col-12">
+                            <b class="text-secondary text-sm">Core Product</b>
+                            <p class="float-right text-sm">{{selectedProduct?.blnCore ? 'YES' : 'NO' }}</p>
+                        </div>
+                    </div>
+                </div>
+            </ng-template>
+            <div class="row">
+                <div class="col-12 my-3">
+                    <!-- <ng-container *ngTemplateOutlet="myCard"></ng-container> -->
+                </div>
+                <div class="col-12">
+                    <ng-template [ngIf]="selectedIndex === 'Pricing'">
+                        <app-pricing [(isLoading)]="isLoading" [selectedProduct]="selectedProduct">
+                        </app-pricing>
+                    </ng-template>
+                </div>
+                <div class="col-12">
+                    <ng-template [ngIf]="selectedIndex === 'Shipping'">
+                        <app-shipping [(isLoading)]="isLoading" [selectedProduct]="selectedProduct">
+                        </app-shipping>
+                    </ng-template>
+                </div>
+                <div class="col-12">
+                    <ng-template [ngIf]="selectedIndex === 'Store-Level Coop'">
+                        <app-store-level-coop [(isLoading)]="isLoading" [selectedProduct]="selectedProduct">
+                        </app-store-level-coop>
+                    </ng-template>
+                </div>
+                <div class="col-12">
+                    <ng-template [ngIf]="selectedIndex === 'Categories'">
+                        <app-net-cost [(isLoading)]="isLoading" [selectedProduct]="selectedProduct"></app-net-cost>
+                    </ng-template>
+                </div>
+                <div class="col-12">
+                    <ng-template [ngIf]="selectedIndex === 'Extrinsic Category'">
+                        <app-sizes [(isLoading)]="isLoading" [selectedProduct]="selectedProduct"></app-sizes>
+                    </ng-template>
+                </div>
+                <div class="col-12">
+                    <ng-template [ngIf]="selectedIndex === 'Special Description'">
+                        <app-color [(isLoading)]="isLoading" [selectedProduct]="selectedProduct"></app-color>
+                    </ng-template>
+                </div>
+                <div class="col-12">
+                    <ng-template [ngIf]="selectedIndex === 'Permalink'">
+                        <app-permalink [(isLoading)]="isLoading" [selectedProduct]="selectedProduct">
+                        </app-permalink>
+                    </ng-template>
+                </div>
+                <div class="col-12">
+                    <ng-template [ngIf]="selectedIndex === 'Related Products'">
+                        <app-feature [(isLoading)]="isLoading" [selectedProduct]="selectedProduct"></app-feature>
+                    </ng-template>
+                </div>
+                <div class="col-12">
+                    <ng-template [ngIf]="selectedIndex === 'Royality Settings'">
+                        <app-default-margins [(isLoading)]="isLoading" [selectedProduct]="selectedProduct">
+                        </app-default-margins>
+                    </ng-template>
+                </div>
+                <div class="col-12">
+                    <ng-template [ngIf]="selectedIndex === 'Images'">
+                        <app-package [(isLoading)]="isLoading" [selectedProduct]="selectedProduct"></app-package>
+                    </ng-template>
+                </div>
+                <div class="col-12">
+                    <ng-template [ngIf]="selectedIndex === 'Video'">
+                        <app-default-image [(isLoading)]="isLoading" [selectedProduct]="selectedProduct">
+                        </app-default-image>
+                    </ng-template>
+                </div>
+                <div class="col-12">
+                    <ng-template [ngIf]="selectedIndex === 'Video'">
+                        <app-video [(isLoading)]="isLoading" [selectedProduct]="selectedProduct"></app-video>
+                    </ng-template>
+                </div>
+                <div class="col-12">
+                    <ng-template [ngIf]="selectedIndex === 'Colors'">
+                        <app-artwork [(isLoading)]="isLoading" [selectedProduct]="selectedProduct"></app-artwork>
+                    </ng-template>
+                </div>
+                <div class="col-12">
+                    <ng-template [ngIf]="selectedIndex === 'Imprints'">
+                        <app-reviews [(isLoading)]="isLoading" [selectedProduct]="selectedProduct"></app-reviews>
+                    </ng-template>
+                </div>
+                <div class="col-12">
+                    <ng-template [ngIf]="selectedIndex === 'Virtual Proof Images'">
+                        <app-warehouse [(isLoading)]="isLoading" [selectedProduct]="selectedProduct"></app-warehouse>
+                    </ng-template>
+                </div>
+                <div class="col-12">
+                    <ng-template [ngIf]="selectedIndex === 'Product Reviews'">
+                        <app-core-products [(isLoading)]="isLoading" [selectedProduct]="selectedProduct">
+                        </app-core-products>
+                    </ng-template>
+                </div>
+                <div class="col-12">
+                    <ng-template [ngIf]="selectedIndex === 'Profit Calculator'">
+                        <app-update-history [(isLoading)]="isLoading" [selectedProduct]="selectedProduct">
+                        </app-update-history>
+                    </ng-template>
+                </div>
+                <div class="col-12">
+                    <ng-template [ngIf]="selectedIndex === 'Simulator'">
+                        <app-order-history [(isLoading)]="isLoading" [selectedProduct]="selectedProduct">
+                        </app-order-history>
+                    </ng-template>
+                </div>
+                <div class="col-12">
+                    <ng-template [ngIf]="selectedIndex === 'Update History'">
+                        <app-internal-notes [(isLoading)]="isLoading" [selectedProduct]="selectedProduct">
+                        </app-internal-notes>
+                    </ng-template>
+                </div>
+                <div class="col-12">
+                    <ng-template [ngIf]="selectedIndex === 'Master Product'">
+                        <app-duplicate [(isLoading)]="isLoading" [selectedProduct]="selectedProduct"></app-duplicate>
+                    </ng-template>
+                </div>
+                <div class="col-12">
+                    <ng-template [ngIf]="selectedIndex === 'Store Versions'">
+                        <app-imprint [(isLoading)]="isLoading" [selectedProduct]="selectedProduct"></app-imprint>
+                    </ng-template>
+                </div>
+            </div>
+
         </div>
 
     </mat-drawer-container>

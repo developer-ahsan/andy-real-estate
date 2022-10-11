@@ -1,0 +1,18 @@
+<ngx-skeleton-loader count="8" appearance="line" animation="pulse" *ngIf="isLoading">
+</ngx-skeleton-loader>
+<div class="row my-3" *ngIf="!isLoading">
+    <div class="col-12">
+        <fuse-card class="rounded-2xl shadow bg-card flex flex-col lg:flex-row w-full">
+            <div class="p-6 sm:p-8 lg:p-10 w-full">
+                <div class="text-2xl font-bold">
+                    Shipping Options
+                </div>
+                <div class="mt-5">
+                    <mat-checkbox class="example-margin">Override master product shipping option?</mat-checkbox>
+                    <br>
+                    <button [matTooltip]="'Update'" mat-stroked-button class="min-w-40">Update</button>
+                </div>
+            </div>
+        </fuse-card>
+    </div>
+</div>

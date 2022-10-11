@@ -17,6 +17,7 @@ import { MatRadioChange } from '@angular/material/radio';
 import { IDropdownSettings } from 'ng-multiselect-dropdown';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { ProductImprintsComponent } from './product-imprints/product-imprints';
+import { ContactsContactResolver } from '../../../contacts/contacts.resolvers';
 
 @Component({
     selector: 'inventory-list',
@@ -185,6 +186,7 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
     ];
     imageValue: { imageUpload: string | ArrayBuffer; type: any; };
     stepperIndex: any;
+    reviewProductDetailLoader: boolean = false;
 
     selectEvent(item) {
         // do something with selected item
@@ -277,6 +279,33 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
     });
 
     secondFormGroup = this._formBuilder.group({
+        productName: ['', Validators.required],
+        productNumber: ['', Validators.required],
+        caseHeight: [''],
+        caseWidth: [''],
+        caseLength: [''],
+        productHeight: [''],
+        productWidth: [''],
+        productLength: [''],
+        weight: [''],
+        unitsInWeight: ['1'],
+        flatRate: [''],
+        doChargesApply: ['Yes'],
+        allowGroupRun: [true],
+        brandName: ['', Validators.required],
+        overPackageCharge: [''],
+        supplierLink: [''],
+        mainDescription: ['', Validators.required],
+        miniDescription: ['', Validators.required],
+        keywords: [''],
+        quantityOne: [''],
+        quantityTwo: [''],
+        quantityThree: [''],
+        quantityFour: [''],
+        quantityFive: [''],
+        quantitySix: ['']
+    });
+    reviewsecondFormGroup = this._formBuilder.group({
         productName: ['', Validators.required],
         productNumber: ['', Validators.required],
         caseHeight: [''],
@@ -421,6 +450,7 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
     licensingTermPayloadBoolean: boolean = true;
 
     productId: any;
+    pk_productId: any;
     createProductDetailLoader: boolean = false;
     updateProductLicensingLoader: boolean = false;
     updateProductFeatureLoader: boolean = false;
@@ -1292,7 +1322,7 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
                                 if (details?.description?.length) {
                                     detailsDescription = !Array.isArray(details.description) ? [details.description] : details.description;
                                 };
-                                this.productId = details.productId;
+                                // this.productId = details.productId;
                                 const product = {
                                     productName: details.productName,
                                     productNumber: details.productId,
@@ -1713,7 +1743,6 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
                         multiValue = multi_color["data"];
                         payload.multi_color_min_id = multiValue?.length ? multiValue[0].pk_multiColorMinQID : 1;
                         this.imprintPayload = payload;
-                        console.log(this.imprintPayload)
                         // Mark for check
                         this._changeDetectorRef.markForCheck();
                     });
@@ -1798,7 +1827,7 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
 
         // Imprint screen callings
         if (selectedIndex === 2) {
-
+            this.reviewsecondFormGroup.patchValue(this.secondFormGroup);
             // Get imprint methods
             this.getImprintMethods();
 
@@ -1807,20 +1836,26 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
         };
 
         // Review Screen
-        if (selectedIndex === 7) {
-            this.isReviewFormReached = true;
-            this.reviewFormSliderMaxValue = this.sliderMaxValue;
-            this.reviewFormSliderMinValue = this.sliderMinValue;
-            const firstForm = this.firstFormGroup.value;
-            const secondForm = this.secondFormGroup.value;
-            const thirdForm = this.netCostForm.value;
-            const finalForm = {
-                ...firstForm,
-                ...secondForm,
-                ...thirdForm
-            };
+        if (selectedIndex === 7 || selectedIndex == 8) {
+            const finalForm = this.secondFormGroup.getRawValue();
+            const { supplierLink, mainDescription, miniDescription, flatRate, weight, doChargesApply, unitsInWeight, caseWidth, caseLength, caseHeight, overPackageCharge, keywords, productNumber, productName, msrp, internalComments } = finalForm;
 
-            this.reviewForm.patchValue(finalForm);
+            const { firstQuantity, secondQuantity, thirdQuantity, fourthQuantity, fifthQuantity, sixthQuantity, standardCostOne, standardCostTwo, standardCostThree, standardCostFour, standardCostFive, standardCostSix } = finalForm;
+            const { quantityOne, quantityTwo, quantityThree, quantityFour, quantityFive, quantitySix, productWidth, productHeight, productLength, allowGroupRun } = finalForm;
+            this.reviewsecondFormGroup.patchValue(finalForm);
+            // this.isReviewFormReached = true;
+            // this.reviewFormSliderMaxValue = this.sliderMaxValue;
+            // this.reviewFormSliderMinValue = this.sliderMinValue;
+            // const firstForm = this.firstFormGroup.value;
+            // const secondForm = this.secondFormGroup.value;
+            // const thirdForm = this.netCostForm.value;
+            // const finalForm = {
+            //     ...firstForm,
+            //     ...secondForm,
+            //     ...thirdForm
+            // };
+
+            // this.reviewForm.patchValue(finalForm);
         };
     };
 
@@ -2732,7 +2767,6 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
     addProductColor() {
         const { run, hex } = this.colorsForm.getRawValue();
         const { pk_colorID } = this.selectedColor;
-        const { imageUpload, type } = this.imageValue;
 
 
         if (!pk_colorID) {
@@ -2742,13 +2776,16 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
                 duration: 3500
             });
         };
-        if (imageUpload) {
-            let paylaod = {
-                imageUpload: imageUpload,
-                type: type,
-                name: pk_colorID
+        if (this.imageValue) {
+            const { imageUpload, type } = this.imageValue;
+            if (imageUpload) {
+                let paylaod = {
+                    imageUpload: imageUpload,
+                    type: type,
+                    name: pk_colorID
+                }
+                this.uploadColorMedia(paylaod);
             }
-            this.uploadColorMedia(paylaod);
         }
         let colors: any = [];
         this.selectedColorsList.forEach(element => {
@@ -3000,7 +3037,119 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
         };
     }
     goToProductDetails() {
-        this._router.navigate([`/apps/ecommerce/inventory/${this.productId}`]);
+        const firstFormGroup = this.firstFormGroup.getRawValue();
+        const finalForm = this.reviewsecondFormGroup.getRawValue();
+
+        const { radio } = firstFormGroup;
+
+        const { supplierLink, mainDescription, miniDescription, flatRate, weight, doChargesApply, unitsInWeight, caseWidth, caseLength, caseHeight, overPackageCharge, keywords, productNumber, productName, msrp, internalComments } = finalForm;
+
+        const { firstQuantity, secondQuantity, thirdQuantity, fourthQuantity, fifthQuantity, sixthQuantity, standardCostOne, standardCostTwo, standardCostThree, standardCostFour, standardCostFive, standardCostSix } = finalForm;
+        const { quantityOne, quantityTwo, quantityThree, quantityFour, quantityFive, quantitySix, productWidth, productHeight, productLength, allowGroupRun } = finalForm;
+
+        if (!mainDescription) {
+            this._snackBar.open("Main description is required", '', {
+                horizontalPosition: 'center',
+                verticalPosition: 'bottom',
+                duration: 3500
+            });
+            return;
+        };
+        if (!miniDescription) {
+            this._snackBar.open("Meta description is required", '', {
+                horizontalPosition: 'center',
+                verticalPosition: 'bottom',
+                duration: 3500
+            });
+            return;
+        };
+
+        if (!this.fruits.length) {
+            this._snackBar.open("Please add keywords", '', {
+                horizontalPosition: 'center',
+                verticalPosition: 'bottom',
+                duration: 3500
+            });
+            return;
+        };
+        this.reviewProductDetailLoader = true;
+        let quantityList = [parseInt(firstQuantity) || null, parseInt(secondQuantity) || null, parseInt(thirdQuantity) || null, parseInt(fourthQuantity) || null, parseInt(fifthQuantity) || null, parseInt(sixthQuantity) || null];
+        quantityList = this.removeNull(quantityList);
+
+        let standardCost = [parseFloat(standardCostOne) || null, parseFloat(standardCostTwo) || null, parseFloat(standardCostThree) || null, parseFloat(standardCostFour) || null, parseFloat(standardCostFive) || null, parseFloat(standardCostSix) || null];
+        standardCost = this.removeNull(standardCost);
+
+        let caseQuantitiesList = [parseInt(quantityOne) || null, parseInt(quantityTwo) || null, parseInt(quantityThree) || null, parseInt(quantityFour) || null, parseInt(quantityFive) || null, parseInt(quantitySix) || null]
+        caseQuantitiesList = this.removeNull(caseQuantitiesList);
+        let productId;
+        if (this.productId) {
+            productId = this.productId;
+        }
+        const productDimensions = [
+            productWidth ? productWidth : 0,
+            productHeight ? productHeight : 0,
+            productLength ? productLength : 0
+        ];
+
+
+        let keywordsString = null;
+        if (keywords.length) {
+            keywordsString = keywords;
+        } else if (this.fruits.length) {
+            const keywordsSliced = this.fruits.slice(0, 10)
+            let names = keywordsSliced.map(function (item) {
+                return item['name'];
+            });
+            keywordsString = names.toString().replace(/'/g, "-");
+        };
+
+
+        let payload = {
+            name: String(productName),
+            product_number: productNumber,
+            product_desc: String(mainDescription?.replace(/'/g, "''")) || null,
+            mini_desc: String(miniDescription?.replace(/'/g, "''")) || null,
+            keywords: String(keywordsString) ? String(keywordsString) : null,
+            notes: null,
+            supplier_link: String(supplierLink) || null,
+            meta_desc: String(miniDescription?.replace(/'/g, "''")) || null,
+            sex: this.supplierType == "Apparel Item" ? parseInt(this.selectedSex) : 0,
+            search_keywords: String(keywords) || null,
+            purchase_order_notes: null,
+            last_update_by: null,
+            last_update_date: null,
+            update_history: null,
+            product_id: this.productId,
+            supplier_id: this.supplierId,
+            permalink: null,
+            flat_rate_shipping: Number(flatRate) || null,
+            prod_time_max: this.sliderMaxValue || 10,
+            prod_time_min: this.sliderMinValue || 7,
+            units_in_shipping_package: 1,
+            bln_include_shipping: doChargesApply == "Yes" ? 1 : 0,
+            fob_location_list: [],
+            dimensions: productDimensions.toString(),
+            weight: weight || null,
+            weight_in_units: Number(unitsInWeight) || null,
+            over_pack_charge: overPackageCharge || null,
+            bln_apparel: radio.name === "Apparel Item" ? true : false,
+            update_new_product: true
+        }
+        this._inventoryService.UpdateProductDescription(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+            this.reviewProductDetailLoader = false;
+            this._router.navigate([`/apps/ecommerce/inventory/${this.productId}`]);
+            this.productId = this.productId;
+            // this.myStepper.next();
+            this._changeDetectorRef.markForCheck();
+        }, err => {
+            this._snackBar.open("Something went wrong", '', {
+                horizontalPosition: 'center',
+                verticalPosition: 'bottom',
+                duration: 3500
+            });
+            this.reviewProductDetailLoader = false;
+            this._changeDetectorRef.markForCheck();
+        })
     }
     saveStandardImprints(): void {
         let count = 0;
@@ -3082,5 +3231,7 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
                 })
         }
 
+    }
+    stepperSelectionCheck() {
     }
 }

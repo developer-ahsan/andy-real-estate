@@ -379,15 +379,18 @@ export class ColorComponent implements OnInit, OnDestroy {
       });
     };
 
-    const { imageUpload, type } = this.imageValue;
-    if (imageUpload) {
-      let paylaod = {
-        imageUpload: imageUpload,
-        type: type,
-        name: pk_colorID
+    if (this.imageValue) {
+      const { imageUpload, type } = this.imageValue;
+      if (imageUpload) {
+        let paylaod = {
+          imageUpload: imageUpload,
+          type: type,
+          name: pk_colorID
+        }
+        this.uploadColorMedia(paylaod);
       }
-      this.uploadColorMedia(paylaod);
     }
+
     let colors: any = [];
     this.selectedColorsList.forEach(element => {
       colors.push({

@@ -40,6 +40,13 @@
                 <div class="gap-y-4">
                     <form [formGroup]="colorForm">
                         <div class="row">
+                            <div class="col-12">
+                                <mat-form-field class="w-full">
+                                    <mat-label>Color: ({{colorValue}})</mat-label>
+                                    <input matInput type="color" value="{{colorValue}}" (change)="changeColor($event)"
+                                        placeholder="Color">
+                                </mat-form-field>
+                            </div>
                             <div class="col-lg-6 col-12">
                                 <mat-form-field class="w-full">
                                     <mat-label>
@@ -67,13 +74,7 @@
                                     <mat-error>This field is required</mat-error>
                                 </mat-form-field>
                             </div>
-                            <div class="col-12">
-                                <mat-form-field class="w-full">
-                                    <mat-label>Color: ({{colorValue}})</mat-label>
-                                    <input matInput type="color" value="{{colorValue}}" (change)="changeColor($event)"
-                                        placeholder="Color">
-                                </mat-form-field>
-                            </div>
+
                             <div class="col-12">
                                 <input type="file" accept=".jpg" id="image" (change)="uploadImage($event)" />
                             </div>
