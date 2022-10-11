@@ -88,6 +88,24 @@ import { ProductStoreComponent } from './product-store/store.component';
 import { StoreProductDetailsComponent } from './product-store/details/product-store-details.component';
 import { ProductSizesComponent } from './inventory/list/product-sizes/product-sizes.component';
 import { ProductImprintsComponent } from './inventory/list/product-imprints/product-imprints';
+import { PricingComponent } from './product-store/navigation/pricing/pricing.component';
+import { ShippingComponent } from './product-store/navigation/shipping/shipping.component';
+import { StoreColorsComponent } from './product-store/navigation/colors/colors.component';
+import { ExtrinsicComponent } from './product-store/navigation/extrinsic-categories copy/extrinsic-categories.component';
+import { StoreImagesComponent } from './product-store/navigation/images/images.component';
+import { StoreImprintsComponent } from './product-store/navigation/imprints/imprints.component';
+import { PermalinkComponent } from './product-store/navigation/permalink/permalink.component';
+import { ProductOptionsComponent } from './product-store/navigation/product-options/product-options.component';
+import { ProductReviewsComponent } from './product-store/navigation/product-reviews/product-reviews.component';
+import { ProfitCalculatorComponent } from './product-store/navigation/profit-calculator/profit-calculator.component';
+import { RelatedProdcutsComponent } from './product-store/navigation/related-products/related-products.component';
+import { RoyalitySettingsComponent } from './product-store/navigation/royality-settings/royality-settings.component';
+import { SpecialDescComponent } from './product-store/navigation/special-description/special-description.component';
+import { StoreCategoryComponent } from './product-store/navigation/store-categories/store-categories.component';
+import { StoreLevelCoopComponent } from './product-store/navigation/store-level-coop/store-level-coop.component';
+import { StoreUpdateHistoryComponent } from './product-store/navigation/update-history/update-history.component';
+import { VirtualProofImagesComponent } from './product-store/navigation/virtual-proof-images/virtual-proof-images.component';
+import { StoreProductVideosComponent } from './product-store/navigation/videos/videos.component';
 
 @NgModule({
     declarations: [
@@ -144,7 +162,26 @@ import { ProductImprintsComponent } from './inventory/list/product-imprints/prod
         ProductStoreComponent,
         StoreProductDetailsComponent,
         ProductSizesComponent,
-        ProductImprintsComponent
+        ProductImprintsComponent,
+        // Store Products
+        PricingComponent,
+        ShippingComponent,
+        StoreColorsComponent,
+        ExtrinsicComponent,
+        StoreImagesComponent,
+        StoreImprintsComponent,
+        PermalinkComponent,
+        ProductOptionsComponent,
+        ProductReviewsComponent,
+        ProfitCalculatorComponent,
+        RelatedProdcutsComponent,
+        RoyalitySettingsComponent,
+        SpecialDescComponent,
+        StoreCategoryComponent,
+        StoreLevelCoopComponent,
+        StoreUpdateHistoryComponent,
+        StoreProductVideosComponent,
+        VirtualProofImagesComponent
     ],
     imports: [
         RouterModule.forChild(ecommerceRoutes),
