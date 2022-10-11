@@ -36,7 +36,7 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
 
     products$: Observable<InventoryProduct[]>;
 
-    products: ProductsList[];
+    products: any;
     isLinear = true;
     isReviewFormReached = false;
     productNumberLoader = false;
@@ -578,6 +578,9 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
                 this.suppliers = supplier["data"];
                 this.dropdownList = this.suppliers;
                 this.isSupplierNotReceived = false;
+                if (this._inventoryService.productSearchFilter.supplier) {
+                    this.selectedSupplier = this._inventoryService.productSearchFilter.supplier;
+                }
 
                 // Mark for check
                 this._changeDetectorRef.markForCheck();
@@ -593,7 +596,9 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
             .subscribe((stores) => {
                 this.stores = stores["data"];
                 this.isStoreNotReceived = false;
-
+                if (this._inventoryService.productSearchFilter.store) {
+                    this.selectedStore = this._inventoryService.productSearchFilter.store;
+                }
                 // Mark for check
                 this._changeDetectorRef.markForCheck();
             }, err => {
@@ -603,18 +608,36 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
             })
         this.getDistributionCodes();
 
-        // Get the products
-        this._inventoryService.products$
-            .pipe(takeUntil(this._unsubscribeAll))
-            .subscribe((products: ProductsList[]) => {
-                this.products = products["data"];
-                this.productsCount = products["totalRecords"];
-                this.productsOnClearFilter = products["data"];
-                this.productsOnClearFilterCount = products["totalRecords"];
 
-                // Mark for check
-                this._changeDetectorRef.markForCheck();
-            });
+        const { store, supplier, term, product_id } = this._inventoryService.productSearchFilter;
+        if (store) {
+            this.onFilterData();
+            this.selectByStore(store);
+        } else if (supplier) {
+            this.onFilterData();
+            this.selectBySupplier(supplier);
+        } else if (term) {
+            this.onFilterData();
+            this.searchKeyword(term);
+        } else if (product_id) {
+            this.onFilterData();
+            this.searchByPID(product_id);
+        } else {
+            // Get the products
+            this._inventoryService.products$
+                .pipe(takeUntil(this._unsubscribeAll))
+                .subscribe((products: ProductsList[]) => {
+                    this.products = products["data"];
+                    this.productsCount = products["totalRecords"];
+                    this.productsOnClearFilter = products["data"];
+                    this.productsOnClearFilterCount = products["totalRecords"];
+
+                    // Mark for check
+                    this._changeDetectorRef.markForCheck();
+                });
+        }
+
+
 
         // Subscribe to search input field value changes
         this.searchInputControl.valueChanges
@@ -668,6 +691,17 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
                 }
             })
     };
+    onFilterData() {
+        this._inventoryService.products$
+            .pipe(takeUntil(this._unsubscribeAll))
+            .subscribe((products: ProductsList[]) => {
+                this.productsOnClearFilter = products["data"];
+                this.productsOnClearFilterCount = products["totalRecords"];
+
+                // Mark for check
+                this._changeDetectorRef.markForCheck();
+            });
+    }
 
     searchLicensingTerm(event): void {
         const value = event.target.value;
@@ -944,7 +978,8 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
     // -----------------------------------------------------------------------------------------------------
 
     selectByStore(event): void {
-        const { pk_storeID } = event;
+        const pk_storeID = event;
+        this._inventoryService.productSearchFilter.store = pk_storeID;
         this.isFiltering = true;
         this.isLoading = true;
         // Get the products by selected suppliers
@@ -962,7 +997,8 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
     };
 
     selectBySupplier(event): void {
-        const { pk_companyID } = event;
+        const pk_companyID = event;
+        this._inventoryService.productSearchFilter.supplier = pk_companyID;
 
         this.isFiltering = true;
         this.isLoading = true;
@@ -981,7 +1017,10 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
     };
 
     clearFilter() {
-
+        this._inventoryService.productSearchFilter.supplier = null;
+        this._inventoryService.productSearchFilter.store = null;
+        this._inventoryService.productSearchFilter.product_id = null;
+        this._inventoryService.productSearchFilter.term = null;
         this.isLoading = true;
         this.products = this.productsOnClearFilter;
         this.productsCount = this.productsOnClearFilterCount;
@@ -2236,9 +2275,10 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
     };
 
     searchByPID(event): void {
-        let keyword = event.target.value ? event.target.value : '';
+        let keyword = event ? event : '';
 
         if (!keyword) {
+            this._inventoryService.productSearchFilter.product_id = null;
             this._snackBar.open("Enter PID to search", '', {
                 horizontalPosition: 'center',
                 verticalPosition: 'bottom',
@@ -2247,7 +2287,7 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
             return;
         };
         this.isLoading = true;
-
+        this._inventoryService.productSearchFilter.product_id = keyword;
         this._inventoryService.getProductByProductId(keyword)
             .pipe(takeUntil(this._unsubscribeAll))
             .subscribe((products) => {
@@ -2266,9 +2306,10 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
     };
 
     searchKeyword(event): void {
-        let keyword = event.target.value ? event.target.value : '';
+        let keyword = event ? event : '';
 
         if (!keyword) {
+            this._inventoryService.productSearchFilter.term = null;
             this._snackBar.open("Enter text to search", '', {
                 horizontalPosition: 'center',
                 verticalPosition: 'bottom',
@@ -2277,6 +2318,7 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
             return;
         };
         this.isLoading = true;
+        this._inventoryService.productSearchFilter.product_id = keyword;
 
         this._inventoryService.searchProductKeywords(keyword)
             .pipe(takeUntil(this._unsubscribeAll))
@@ -2301,6 +2343,12 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
     };
 
     resetSearch(): void {
+        this._inventoryService.productSearchFilter = {
+            product_id: null,
+            term: null,
+            supplier: null,
+            store: null
+        };
         // Get the products
         this._inventoryService.products$
             .pipe(takeUntil(this._unsubscribeAll))

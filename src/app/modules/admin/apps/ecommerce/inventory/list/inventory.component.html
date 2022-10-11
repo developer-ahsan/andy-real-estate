@@ -46,9 +46,9 @@
         <div class="col-lg-3 col-6 p-2">
             <mat-form-field class="fuse-mat-dense fuse-mat-no-subscript w-full">
                 <mat-label>Search by Product ID</mat-label>
-                <input class="h-6" matInput [matTooltip]="'Press enter key after typing'"
-                    (keyup.enter)="searchByPID($event)" type="number" [autocomplete]="'off'"
-                    [placeholder]="'Search by Product ID'">
+                <input class="h-6" [(ngModel)]="_inventoryService.productSearchFilter.product_id" matInput
+                    [matTooltip]="'Press enter key after typing'" (keyup.enter)="searchByPID($event.target.value)"
+                    type="number" [autocomplete]="'off'" [placeholder]="'Search by Product ID'">
                 <mat-icon matPrefix [svgIcon]="'heroicons_outline:search'"></mat-icon>
             </mat-form-field>
         </div>
@@ -57,8 +57,9 @@
             <!-- Search -->
             <mat-form-field class="fuse-mat-dense fuse-mat-no-subscript w-full">
                 <mat-label>Search Products</mat-label>
-                <input class="h-6" matInput [matTooltip]="'Press enter key after typing'"
-                    (keyup.enter)="searchKeyword($event)" [autocomplete]="'off'" [placeholder]="'Search Products'">
+                <input class="h-6" [(ngModel)]="_inventoryService.productSearchFilter.term" matInput
+                    [matTooltip]="'Press enter key after typing'" (keyup.enter)="searchKeyword($event.target.value)"
+                    [autocomplete]="'off'" [placeholder]="'Search Products'">
                 <mat-icon matPrefix [svgIcon]="'heroicons_outline:search'"></mat-icon>
                 <!-- <mat-icon matPrefix [svgIcon]="'heroicons_outline:x'"></mat-icon> -->
             </mat-form-field>
@@ -73,7 +74,7 @@
                 </mat-label>
                 <mat-select [(ngModel)]="selectedSupplier" disableRipple [disabled]="isSupplierNotReceived">
                     <mat-option (click)="clearFilter()" value="All Suppliers">All Suppliers</mat-option>
-                    <mat-option (click)="selectBySupplier(supplier)" value="{{supplier}}"
+                    <mat-option (click)="selectBySupplier(supplier.pk_companyID)" [value]="supplier.pk_companyID"
                         *ngFor="let supplier of suppliers">
                         {{supplier.companyName}}
                     </mat-option>
@@ -90,7 +91,8 @@
                 </mat-label>
                 <mat-select [(ngModel)]="selectedStore" disableRipple [disabled]="isStoreNotReceived">
                     <mat-option (click)="clearFilter()" value="All Stores">All Stores</mat-option>
-                    <mat-option (click)="selectByStore(store)" value="{{store}}" *ngFor="let store of stores">
+                    <mat-option (click)="selectByStore(store.pk_storeID)" [value]="store.pk_storeID"
+                        *ngFor="let store of stores">
                         {{store.storeName}}
                     </mat-option>
                 </mat-select>
@@ -109,7 +111,7 @@
     <div class="flex flex-auto overflow-hidden">
 
         <!-- Products list -->
-        <div class="flex flex-col flex-auto sm:mb-18 overflow-hidden">
+        <div class="flex flex-col flex-auto sm:mb-18 overflow-hidden" *ngIf="products">
 
             <ng-container *ngIf="productsCount > 0; else noProducts">
 
@@ -1778,7 +1780,8 @@
                                         </div>
                                     </ng-template>
                                 </mat-tab>
-                                <mat-tab label="Standard Imprints">
+                                <mat-tab label="Standard Imprints"
+                                    *ngIf="firstFormGroup.get('radio').value.name == 'Apparel Item'">
                                     <ng-template matTabContent>
                                         <div class="col-12 text-right mb-1">
                                             <button class="min-w-40" (click)="skipStep(stepper)" mat-stroked-button>
