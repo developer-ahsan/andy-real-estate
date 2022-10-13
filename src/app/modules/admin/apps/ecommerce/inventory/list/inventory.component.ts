@@ -25,7 +25,7 @@ import { filter } from 'lodash';
 @Component({
     selector: 'inventory-list',
     templateUrl: './inventory.component.html',
-    styles: ['.mat-tab-body-content {overflow: hidden !important}'],
+    styles: ['.mat-tab-body-content {overflow: hidden !important} fuse-alert .fuse-alert-container .mat-icon {color: gray !important} fuse-alert.fuse-alert-appearance-soft.fuse-alert-type-info .fuse-alert-container .fuse-alert-message {color: gray !important}'],
 
     encapsulation: ViewEncapsulation.None,
     changeDetection: ChangeDetectionStrategy.OnPush,
@@ -458,6 +458,8 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
     licensingTermPayload = null;
     licensingTermPayloadBoolean: boolean = true;
 
+
+    productStepComplete: boolean = false;
     productId: any;
     pk_productId: any;
     createProductDetailLoader: boolean = false;
@@ -1588,130 +1590,7 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
         };
 
         // Net Cost screen
-        if (selectedIndex === 1) {
-            const { radio } = this.firstFormGroup.value;
-            const { name } = radio;
-            let obj = {};
-            if (name === 'Normal Promotional Material') {
-                if (this.pricingDataArray?.length) {
-                    for (let i = 0; i <= 5; i++) {
-                        if (typeof (this.pricingDataArray[i]) == "object") {
-                            if ("PartPriceArray" in this.pricingDataArray[i]) {
-                                const { minQuantity, price } = this.pricingDataArray[i]["PartPriceArray"][0];
-                                if (i == 0) {
-                                    obj["firstQuantity"] = minQuantity;
-                                    obj["standardCostOne"] = price;
-                                }
 
-                                if (i == 1) {
-                                    obj["secondQuantity"] = minQuantity + 1;
-                                    obj["standardCostTwo"] = price;
-                                }
-
-                                if (i == 2) {
-                                    obj["thirdQuantity"] = minQuantity + 2;
-                                    obj["standardCostThree"] = price;
-                                }
-
-                                if (i == 3) {
-                                    obj["fourthQuantity"] = minQuantity + 3;
-                                    obj["standardCostFour"] = price;
-                                }
-
-                                if (i == 4) {
-                                    obj["fifthQuantity"] = minQuantity + 4;
-                                    obj["standardCostFive"] = price;
-                                    obj["sixthQuantity"] = minQuantity + 5;
-                                    obj["standardCostSix"] = price;
-                                }
-
-                                // if (i == 5) {
-                                //     obj["sixthQuantity"] = minQuantity;
-                                //     obj["standardCostSix"] = price;
-                                // }
-                            };
-                        };
-                    };
-                    this.netCostDefaultStandardCost = {
-                        standardCostOne: obj["standardCostOne"],
-                        standardCostTwo: obj["standardCostTwo"],
-                        standardCostThree: obj["standardCostThree"],
-                        standardCostFour: obj["standardCostFour"],
-                        standardCostFive: obj["standardCostFive"],
-                        standardCostSix: obj["standardCostSix"]
-                    };
-
-                } else {
-                    obj = {
-                        firstQuantity: null,
-                        secondQuantity: null,
-                        thirdQuantity: null,
-                        fourthQuantity: null,
-                        fifthQuantity: null,
-                        sixthQuantity: null,
-                        standardCostOne: null,
-                        standardCostTwo: null,
-                        standardCostThree: null,
-                        standardCostFour: null,
-                        standardCostFive: null,
-                        standardCostSix: null
-                    };
-                }
-            } else {
-                if (this.pricingDataArray?.length) {
-                    for (let i = 0; i <= 5; i++) {
-                        if (typeof (this.pricingDataArray[i]) == "object") {
-                            if ("PartPriceArray" in this.pricingDataArray[i]) {
-                                const { price } = this.pricingDataArray[i]["PartPriceArray"][0];
-                                if (i == 0) {
-                                    obj["standardCostOne"] = price
-                                }
-
-                                if (i == 1) {
-                                    obj["standardCostTwo"] = price
-                                }
-
-                                if (i == 2) {
-                                    obj["standardCostThree"] = price
-                                }
-
-                                if (i == 3) {
-                                    obj["standardCostFour"] = price
-                                }
-
-                                if (i == 4) {
-                                    obj["standardCostFive"] = price
-                                    obj["standardCostSix"] = price
-                                }
-
-                                // if (i == 5) {
-                                //     obj["standardCostSix"] = price
-                                // }
-                            };
-                        };
-                    };
-
-                    this.netCostDefaultStandardCost = {
-                        standardCostOne: obj["standardCostOne"],
-                        standardCostTwo: obj["standardCostTwo"],
-                        standardCostThree: obj["standardCostThree"],
-                        standardCostFour: obj["standardCostFour"],
-                        standardCostFive: obj["standardCostFive"],
-                        standardCostSix: obj["standardCostSix"]
-                    };
-                } else {
-                    obj = {
-                        standardCostOne: null,
-                        standardCostTwo: null,
-                        standardCostThree: null,
-                        standardCostFour: null,
-                        standardCostFive: null,
-                        standardCostSix: null
-                    };
-                }
-            };
-            this.netCostForm.patchValue(obj);
-        };
 
 
         if (selectedIndex === 6) {
@@ -1865,7 +1744,131 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
 
             this.getCoOps();
         };
+        // Net Cost
+        if (selectedIndex === 1) {
+            const { radio } = this.firstFormGroup.value;
+            const { name } = radio;
+            let obj = {};
+            if (name === 'Normal Promotional Material') {
+                if (this.pricingDataArray?.length) {
+                    for (let i = 0; i <= 5; i++) {
+                        if (typeof (this.pricingDataArray[i]) == "object") {
+                            if ("PartPriceArray" in this.pricingDataArray[i]) {
+                                const { minQuantity, price } = this.pricingDataArray[i]["PartPriceArray"][0];
+                                if (i == 0) {
+                                    obj["firstQuantity"] = minQuantity;
+                                    obj["standardCostOne"] = price;
+                                }
 
+                                if (i == 1) {
+                                    obj["secondQuantity"] = minQuantity + 1;
+                                    obj["standardCostTwo"] = price;
+                                }
+
+                                if (i == 2) {
+                                    obj["thirdQuantity"] = minQuantity + 2;
+                                    obj["standardCostThree"] = price;
+                                }
+
+                                if (i == 3) {
+                                    obj["fourthQuantity"] = minQuantity + 3;
+                                    obj["standardCostFour"] = price;
+                                }
+
+                                if (i == 4) {
+                                    obj["fifthQuantity"] = minQuantity + 4;
+                                    obj["standardCostFive"] = price;
+                                    obj["sixthQuantity"] = minQuantity + 5;
+                                    obj["standardCostSix"] = price;
+                                }
+
+                                // if (i == 5) {
+                                //     obj["sixthQuantity"] = minQuantity;
+                                //     obj["standardCostSix"] = price;
+                                // }
+                            };
+                        };
+                    };
+                    this.netCostDefaultStandardCost = {
+                        standardCostOne: obj["standardCostOne"],
+                        standardCostTwo: obj["standardCostTwo"],
+                        standardCostThree: obj["standardCostThree"],
+                        standardCostFour: obj["standardCostFour"],
+                        standardCostFive: obj["standardCostFive"],
+                        standardCostSix: obj["standardCostSix"]
+                    };
+
+                } else {
+                    obj = {
+                        firstQuantity: null,
+                        secondQuantity: null,
+                        thirdQuantity: null,
+                        fourthQuantity: null,
+                        fifthQuantity: null,
+                        sixthQuantity: null,
+                        standardCostOne: null,
+                        standardCostTwo: null,
+                        standardCostThree: null,
+                        standardCostFour: null,
+                        standardCostFive: null,
+                        standardCostSix: null
+                    };
+                }
+            } else {
+                if (this.pricingDataArray?.length) {
+                    for (let i = 0; i <= 5; i++) {
+                        if (typeof (this.pricingDataArray[i]) == "object") {
+                            if ("PartPriceArray" in this.pricingDataArray[i]) {
+                                const { price } = this.pricingDataArray[i]["PartPriceArray"][0];
+                                if (i == 0) {
+                                    obj["standardCostOne"] = price
+                                }
+
+                                if (i == 1) {
+                                    obj["standardCostTwo"] = price
+                                }
+
+                                if (i == 2) {
+                                    obj["standardCostThree"] = price
+                                }
+
+                                if (i == 3) {
+                                    obj["standardCostFour"] = price
+                                }
+
+                                if (i == 4) {
+                                    obj["standardCostFive"] = price
+                                    obj["standardCostSix"] = price
+                                }
+
+                                // if (i == 5) {
+                                //     obj["standardCostSix"] = price
+                                // }
+                            };
+                        };
+                    };
+
+                    this.netCostDefaultStandardCost = {
+                        standardCostOne: obj["standardCostOne"],
+                        standardCostTwo: obj["standardCostTwo"],
+                        standardCostThree: obj["standardCostThree"],
+                        standardCostFour: obj["standardCostFour"],
+                        standardCostFive: obj["standardCostFive"],
+                        standardCostSix: obj["standardCostSix"]
+                    };
+                } else {
+                    obj = {
+                        standardCostOne: null,
+                        standardCostTwo: null,
+                        standardCostThree: null,
+                        standardCostFour: null,
+                        standardCostFive: null,
+                        standardCostSix: null
+                    };
+                }
+            };
+            this.netCostForm.patchValue(obj);
+        };
         // Licensing term screen
         if (selectedIndex === 3) {
             if (!this.licensingTerms.length) {
@@ -2554,6 +2557,22 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
         const { firstQuantity, secondQuantity, thirdQuantity, fourthQuantity, fifthQuantity, sixthQuantity, standardCostOne, standardCostTwo, standardCostThree, standardCostFour, standardCostFive, standardCostSix } = finalForm;
         const { quantityOne, quantityTwo, quantityThree, quantityFour, quantityFive, quantitySix, productWidth, productHeight, productLength, allowGroupRun } = finalForm;
 
+        if (!productName) {
+            this._snackBar.open("Product Name is required", '', {
+                horizontalPosition: 'center',
+                verticalPosition: 'bottom',
+                duration: 3500
+            });
+            return;
+        };
+        if (!productNumber) {
+            this._snackBar.open("Product Number is required", '', {
+                horizontalPosition: 'center',
+                verticalPosition: 'bottom',
+                duration: 3500
+            });
+            return;
+        };
         if (!mainDescription) {
             this._snackBar.open("Main description is required", '', {
                 horizontalPosition: 'center',
@@ -2698,10 +2717,12 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
                     } else {
                         this._inventoryService.createProductDetail(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
                             this.createProductDetailLoader = false;
+                            this.productStepComplete = true;
                             setTimeout(() => {
                                 this.stepperIndex = res["product_id"];
+                                this.myStepper.next();
+
                             }, 200);
-                            this.myStepper.next();
                             this._changeDetectorRef.markForCheck();
                             this.productId = res["product_id"];
                         }, err => {
@@ -2749,11 +2770,12 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
             }
             this._inventoryService.UpdateProductDescription(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
                 this.createProductDetailLoader = false;
+                this.productStepComplete = true;
                 setTimeout(() => {
                     this.stepperIndex = this.productId;
+                    this.myStepper.next();
                 }, 200);
                 this.productId = this.productId;
-                this.myStepper.next();
                 this._changeDetectorRef.markForCheck();
             }, err => {
                 this._snackBar.open("Something went wrong", '', {
@@ -3406,7 +3428,6 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
                 });
                 this.colorName.setValue('');
                 this.colorTempImage = null;
-                console.log(this.selectedColorsListArray)
             }
         }
     }

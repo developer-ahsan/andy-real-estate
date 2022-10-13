@@ -378,7 +378,7 @@
 
                     <!-- [ngClass]="isReviewFormReached ? 'myStepperAuto' : 'myStepperNone'"
                         [orientation]="(stepperOrientation | async)!" -->
-                    <mat-stepper (selectionChange)="selectionChange($event)" #stepper [linear]="isLinear"
+                    <mat-stepper (selectionChange)="selectionChange($event)" #stepper [linear]="true"
                         class="example-stepper">
 
                         <!-- Product Type -->
@@ -449,7 +449,7 @@
 
                         <!-- Product Details -->
                         <!-- [stepControl]="secondFormGroup" -->
-                        <mat-step [stepControl]="secondFormGroup" label="Details" [editable]="true">
+                        <mat-step [completed]="productStepComplete" label="Details" [editable]="true">
                             <form [formGroup]="secondFormGroup" class="mt-3">
                                 <div class="row">
                                     <div class="col-12 mb-1">
@@ -1853,9 +1853,10 @@
                                 [selectedProduct]="stepperIndex" [myStepper]="myStepper">
                             </app-product-sizes>
                             <div class="text-center font-bold mt-5" *ngIf="
-                                firstFormGroup.get('radio').value.name !='Apparel Item'">Sizes are not available for
-                                non
-                                apparel items.</div>
+                                firstFormGroup.get('radio').value.name !='Apparel Item'">
+                                <fuse-alert [appearance]="'soft'" [name]="'alertBox4'" [type]="'info'">Please select
+                                    apparel type to view the available sizes </fuse-alert>
+                            </div>
                         </mat-step>
                         <!-- Product Detail -->
                         <mat-step label="Review">

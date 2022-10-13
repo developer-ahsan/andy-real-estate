@@ -105,6 +105,7 @@ import { StoreLevelCoopComponent } from './product-store/navigation/store-level-
 import { StoreUpdateHistoryComponent } from './product-store/navigation/update-history/update-history.component';
 import { VirtualProofImagesComponent } from './product-store/navigation/virtual-proof-images/virtual-proof-images.component';
 import { StoreProductVideosComponent } from './product-store/navigation/videos/videos.component';
+import { FuseAlertModule } from '@fuse/components/alert';
 
 @NgModule({
     declarations: [
@@ -217,7 +218,8 @@ import { StoreProductVideosComponent } from './product-store/navigation/videos/v
         MatButtonToggleModule,
         QuillModule.forRoot(),
         AutocompleteLibModule,
-        NgMultiSelectDropDownModule
+        NgMultiSelectDropDownModule,
+        FuseAlertModule
     ]
 })
 export class ECommerceModule {
