@@ -1396,7 +1396,7 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
                                 };
                                 // this.productId = details.productId;
                                 const product = {
-                                    productName: details.productName,
+                                    productName: details.productName.replace(details?.productId, ""),
                                     productNumber: details.productId,
                                     brandName: details.productBrand,
                                     mainDescription: detailsDescription?.length ? detailsDescription.toString().split(",").join("\n") : "",
