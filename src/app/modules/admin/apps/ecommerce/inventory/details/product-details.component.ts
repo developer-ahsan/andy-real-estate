@@ -16,7 +16,7 @@ import { ProductsDetails } from "app/modules/admin/apps/ecommerce/inventory/inve
 import moment from "moment";
 import { MatSlideToggleChange } from "@angular/material/slide-toggle";
 import { MatSnackBar } from "@angular/material/snack-bar";
-import { ProductStoreService } from "../../product-store/store.service";
+import { StoreProductService } from "../../product-store/store.service";
 
 @Component({
   selector: "app-product-details",
@@ -30,6 +30,7 @@ export class ProductDetailsComponent implements OnInit, OnDestroy {
   isProductFetched: boolean = true;
   ordersCount: number = 0;
   selectedProduct: ProductsDetails = null;
+  storeData: any = null;
   private _unsubscribeAll: Subject<any> = new Subject<any>();
   routes = [];
   selectedIndex: string = "Name & Description";
@@ -53,7 +54,7 @@ export class ProductDetailsComponent implements OnInit, OnDestroy {
     private _router: Router,
     private _fuseMediaWatcherService: FuseMediaWatcherService,
     private _snackBar: MatSnackBar,
-    private _storeProductService: ProductStoreService,
+    private _storeProductService: StoreProductService,
     private route: ActivatedRoute
   ) { }
 
@@ -64,15 +65,30 @@ export class ProductDetailsComponent implements OnInit, OnDestroy {
   /**
    * On init
    */
+  getStoreProductDetail(id) {
+    this._storeProductService.getStoreProductsDetail(id).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+      this.selectedProduct = res["data"][0];
+      this.getStoreDetails(res["data"][0].fk_storeID);
+    }, err => {
+      this.isLoading = false;
+      this._changeDetectorRef.markForCheck();
+    })
+  }
+  getStoreDetails(id) {
+    this._storeProductService.getStoreDetail(id).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+      this.storeData = res["data"][0];
+      this.isLoading = false;
+      this._changeDetectorRef.markForCheck();
+    })
+  }
   ngOnInit(): void {
     this.route.params.subscribe((res) => {
       if (this._router.url.includes('storeProduct')) {
         this.StoreProduct = true;
         this.routes = this._storeProductService.navigationLabels;
-        const productId = res.id;
         this.isProductFetched = false;
-        this.isLoading = false;
         this.selectedIndex = "Pricing";
+        this.getStoreProductDetail(res.id);
       } else {
         this.StoreProduct = false;
         if (this._inventoryService.selectedIndex) {

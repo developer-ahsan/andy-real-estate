@@ -271,68 +271,48 @@
             </div> -->
 
             <ng-template #myCard>
-                <div class="bg-card shadow p-4">
+                <div class="bg-card shadow p-4" *ngIf="selectedProduct">
                     <div class="flex mr-7" style="justify-content: space-between;">
-                        <div class="text-2xl font-bold">Products</div>
-                        <div class="text-2xl font-bold"
-                            [ngStyle]="selectedProduct?.blnActive ? {'color':'#0ecd0e'} : {'color': '#ff0000'}">
-                            {{selectedProduct?.blnActive ? 'Active' : 'Inactive' }}
-                        </div>
+                        <div class="text-2xl font-bold">{{selectedProduct?.productNumber}}:
+                            {{selectedProduct?.productName}}</div>
                     </div>
                     <div class="row w-full">
-                        <div class="col-lg-4 col-md-6 col-12">
-                            <b class="text-secondary text-sm">PID</b>
-                            <p class="float-right text-sm">{{selectedProduct?.pk_productID || not_available}}</p>
+                        <div class="col-12 col-lg-6">
+                            <div class="flex">
+                                <b class="text-secondary text-sm">PID:</b>
+                                <p class="ml-3 text-sm">{{selectedProduct?.fk_productID || not_available}}</p>
+                            </div>
+                            <div class="flex">
+                                <b class="text-secondary text-sm">SPID:</b>
+                                <p class="ml-3 text-sm">{{selectedProduct?.pk_storeProductID || not_available}}</p>
+                            </div>
+                            <div class="flex">
+                                <b class="text-secondary text-sm">Store:</b>
+                                <p class="ml-3 text-sm" storeData>
+                                    <a class="float-right text-sm"
+                                        style="color: #959595; text-decoration: underline; cursor: pointer;"
+                                        href="{{storeData?.storeURL}}" target="_blank">
+                                        {{storeData?.storeURL || not_available}}
+                                    </a>
+                                </p>
+                            </div>
                         </div>
-                        <div class="col-lg-4 col-md-6 col-12">
-                            <b class="text-secondary text-sm">Supplier</b>
-                            <a class="float-right text-sm"
-                                style="color: #959595; text-decoration: underline; cursor: pointer;"
-                                href="{{selectedProduct?.websiteURL}}" target="_blank">
-                                {{selectedProduct?.companyName || not_available}}
-                            </a>
-                        </div>
-                        <div class="col-lg-4 col-md-6 col-12" *ngIf="selectedProduct?.supplierLink">
-                            <b class="text-secondary text-sm">Product Link</b>
-                            <a class="float-right text-sm"
-                                style="color: #959595; text-decoration: underline; cursor: pointer;"
-                                href="{{selectedProduct?.supplierLink}}" target="_blank">
-                                Click Here
-                            </a>
-                        </div>
-                        <div class="col-lg-4 col-md-6 col-12" *ngIf="selectedProduct.vendorRelation !== 1">
-                            <b class="text-secondary text-sm">Supplier Relationship</b>
-                            <p class="float-right text-sm" *ngIf="selectedProduct.vendorRelation === 2"
-                                style="color: #7b8404">
-                                Preferred
-                            </p>
-                            <p class="float-right text-sm" *ngIf="selectedProduct.vendorRelation === 3"
-                                style="color: #0ecd0e">
-                                Partner
-                            </p>
-                        </div>
-                        <div class="col-lg-4 col-md-6 col-12">
-                            <b class="text-secondary text-sm">Last Updated</b>
-                            <p class="float-right text-sm">{{last_updated}}</p>
-                        </div>
-                        <div class="col-lg-4 col-md-6 col-12">
-                            <b class="text-secondary text-sm">Last Ordered By</b>
-                            <p class="float-right text-sm">{{selectedProduct?.lastUpdatedBy || not_available}}</p>
-                        </div>
-                        <div class="col-lg-4 col-md-6 col-12">
-                            <b class="text-secondary text-sm">Current Co-Op Program</b>
-                            <p class="float-right text-sm">{{selectedProduct?.fk_coopID || 'NONE'}}</p>
-                        </div>
-                        <div class="col-lg-4 col-md-6 col-12">
-                            <b class="text-secondary text-sm">Core Product</b>
-                            <p class="float-right text-sm">{{selectedProduct?.blnCore ? 'YES' : 'NO' }}</p>
+                        <div class="col-12 col-lg-6">
+                            <div class="text-2xl font-bold"
+                                [ngStyle]="selectedProduct?.blnActive ? {'color':'#0ecd0e'} : {'color': '#ff0000'}">
+                                {{selectedProduct?.blnActive ? 'Active' : 'Inactive' }}
+                            </div>
+                            <div class="text-2xl font-bold"
+                                [ngStyle]="selectedProduct?.blnStoreActive ? {'color':'#0ecd0e'} : {'color': '#ff0000'}">
+                                {{selectedProduct?.blnStoreActive ? 'Online' : 'Offline' }}
+                            </div>
                         </div>
                     </div>
                 </div>
             </ng-template>
-            <div class="row">
+            <div class="row" *ngIf="selectedProduct">
                 <div class="col-12 my-3">
-                    <!-- <ng-container *ngTemplateOutlet="myCard"></ng-container> -->
+                    <ng-container *ngTemplateOutlet="myCard"></ng-container>
                 </div>
                 <div class="col-12">
                     <ng-template [ngIf]="selectedIndex === 'Pricing'">
@@ -359,7 +339,8 @@
                 </div>
                 <div class="col-12">
                     <ng-template [ngIf]="selectedIndex === 'Extrinsic Category'">
-                        <app-sizes [(isLoading)]="isLoading" [selectedProduct]="selectedProduct"></app-sizes>
+                        <app-extrinsic-categories [(isLoading)]="isLoading" [selectedProduct]="selectedProduct">
+                        </app-extrinsic-categories>
                     </ng-template>
                 </div>
                 <div class="col-12">
@@ -380,8 +361,8 @@
                 </div>
                 <div class="col-12">
                     <ng-template [ngIf]="selectedIndex === 'Royality Settings'">
-                        <app-default-margins [(isLoading)]="isLoading" [selectedProduct]="selectedProduct">
-                        </app-default-margins>
+                        <app-royality-settings [(isLoading)]="isLoading" [selectedProduct]="selectedProduct">
+                        </app-royality-settings>
                     </ng-template>
                 </div>
                 <div class="col-12">

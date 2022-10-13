@@ -5,7 +5,35 @@
         <fuse-card class="rounded-2xl shadow bg-card flex flex-col lg:flex-row w-full">
             <div class="p-6 sm:p-8 lg:p-10 w-full">
                 <div class="text-2xl font-bold">
-                    Shipping Options
+                    Royality Settings
+                </div>
+                <note class="text-sm">This area will tell our sytem to override the master store level logic for
+                    royalties. This is only
+                    to be used in certain circumstances, like when the product is blank or uses a pre-approved design.
+                    Generally, all products on a store will follow the standard royalty bearing procedures.
+                </note>
+                <div class="row mt-5">
+                    <div class="col-12">
+                        <mat-form-field class="w-full">
+                            <mat-label>Royality Settings</mat-label>
+                            <mat-select [(ngModel)]="royaltySetting">
+                                <mat-option [value]="1">This item is always royalty bearing</mat-option>
+                                <mat-option [value]="2">This item is never royalty bearing</mat-option>
+                                <mat-option [value]="3">This item should follow the standard royalty bearing procedure
+                                </mat-option>
+                            </mat-select>
+                        </mat-form-field>
+                    </div>
+                    <div class="col-12 text-right">
+                        <button [matTooltip]="'Update'" mat-stroked-button class="min-w-40" (click)="updateShipping()"
+                            [disabled]="isUpdateLoading">
+                            <mat-progress-spinner *ngIf="isUpdateLoading" [diameter]="24" [mode]="'indeterminate'">
+                            </mat-progress-spinner>
+                            <span *ngIf="!isUpdateLoading" class="ml-1 mr-1">
+                                Update
+                            </span>
+                        </button>
+                    </div>
                 </div>
             </div>
         </fuse-card>

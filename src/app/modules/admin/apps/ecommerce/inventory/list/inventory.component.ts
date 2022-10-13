@@ -1,9 +1,9 @@
-import { AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnInit, ViewChild, ViewEncapsulation } from '@angular/core';
+import { AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, OnDestroy, OnInit, ViewChild, ViewEncapsulation } from '@angular/core';
 import { FormArray, FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatSort, Sort } from '@angular/material/sort';
 import { merge, Observable, Subject } from 'rxjs';
-import { debounceTime, map, startWith, switchMap, takeUntil } from 'rxjs/operators';
+import { debounceTime, finalize, map, startWith, switchMap, takeUntil, tap } from 'rxjs/operators';
 import { fuseAnimations } from '@fuse/animations';
 import { InventoryBrand, InventoryCategory, InventoryPagination, InventoryProduct, InventoryTag, InventoryVendor, ProductsList } from 'app/modules/admin/apps/ecommerce/inventory/inventory.types';
 import { InventoryService } from 'app/modules/admin/apps/ecommerce/inventory/inventory.service';
@@ -18,6 +18,9 @@ import { IDropdownSettings } from 'ng-multiselect-dropdown';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { ProductImprintsComponent } from './product-imprints/product-imprints';
 import { ContactsContactResolver } from '../../../contacts/contacts.resolvers';
+import { HttpClient } from '@angular/common/http';
+import { environment } from 'environments/environment';
+import { filter } from 'lodash';
 
 @Component({
     selector: 'inventory-list',
@@ -65,7 +68,7 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
 
     pricingDataArray = [];
     dropdownList = [];
-    selectedItems = [];
+    selectedItems: any;
     dropdownSettings: IDropdownSettings = {};
     imprintColorsDropdownSettings: IDropdownSettings = {};
 
@@ -184,9 +187,12 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
             helperText: 'Weight per units is determined in the "sizes" section for apparel, after the item has been added.'
         }
     ];
-    imageValue: { imageUpload: string | ArrayBuffer; type: any; };
+    imageValue: { imageUpload: any | ArrayBuffer; type: any; };
     stepperIndex: any;
     reviewProductDetailLoader: boolean = false;
+    isColorLoading: boolean = false;
+
+    selectedColorsListArray = [];
 
     selectEvent(item) {
         // do something with selected item
@@ -369,13 +375,16 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
         hex: ['']
     });
     colorsForm = this._formBuilder.group({
+        colorId: [''],
+        colorName: [''],
         run: ['0.00'],
-        hex: ['']
+        hex: [''],
+        image: [null]
     });
 
     colorValue = '#000000';
     hexColor;
-
+    colorTempImage = null;
     // Imprint values intializing
     runSetup: FormGroup;
     getChargesLoader = null;
@@ -462,7 +471,10 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
     results: any[];
     selectedColorsList: any = [];
     selectedColor: any = {};
-
+    @ViewChild('colorpicker') colorpicker: ElementRef;
+    clickButton(): void {
+        this.colorpicker.nativeElement.click()
+    }
     /**
      * Constructor
      */
@@ -472,7 +484,9 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
         private _inventoryService: InventoryService,
         private _router: Router,
         breakpointObserver: BreakpointObserver,
-        private _snackBar: MatSnackBar
+        private _snackBar: MatSnackBar,
+        private _httpClient: HttpClient,
+
     ) {
         this.stepperOrientation = breakpointObserver
             .observe('(min-width: 800px)')
@@ -678,18 +692,37 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
         };
 
         // Color select autocomplete field
-        this.colorName.valueChanges.subscribe(
-            term => {
-                if (term && term.length > 1) {
-                    this._inventoryService.getSearchedColors(term).subscribe(
-                        result => {
-                            this.results = result["data"] as any[];
+        this.colorName.valueChanges.pipe(debounceTime(500), tap(() => {
+            //   this.errorMsg = "";
+            this.results = [];
+            this.isColorLoading = true;
+        }),
+            switchMap(value => this._httpClient.get(environment.products + "?color=true&size=20&color_name=" + value)
+                .pipe(
+                    finalize(() => {
+                        this.isColorLoading = false
+                    }),
+                )
+            )
+        )
+            .subscribe(data => {
+                this.results = data["data"] as any[];
+                this._changeDetectorRef.markForCheck();
+            });
 
-                            // Mark for check
-                            this._changeDetectorRef.markForCheck();
-                        })
-                }
-            })
+
+        // this.colorName.valueChanges.subscribe(
+        //     term => {
+        //         if (term && term.length > 1) {
+        //             this._inventoryService.getSearchedColors(term).subscribe(
+        //                 result => {
+        //                     this.results = result["data"] as any[];
+
+        //                     // Mark for check
+        //                     this._changeDetectorRef.markForCheck();
+        //                 })
+        //         }
+        //     })
     };
     onFilterData() {
         this._inventoryService.products$
@@ -1038,9 +1071,9 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
         });
     };
 
-    copyColorToHex() {
-        this.hexColor = this.colorValue
-    };
+    // copyColorToHex() {
+    //     this.hexColor = this.colorValue
+    // };
 
     changeColor(event) {
         const { value } = event.target;
@@ -1682,112 +1715,111 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
 
 
         if (selectedIndex === 6) {
-            const setupRunForm = this.runSetup.getRawValue();
-            const { run, setup } = setupRunForm;
+            // const setupRunForm = this.runSetup.getRawValue();
+            // const { run, setup } = setupRunForm;
 
-            if (!this.selectedLocation) {
-                this._snackBar.open("New LOCATION was not specified correctly", '', {
-                    horizontalPosition: 'center',
-                    verticalPosition: 'bottom',
-                    duration: 3500
-                });
-                return;
-            };
+            // if (!this.selectedLocation) {
+            //     this._snackBar.open("New LOCATION was not specified correctly", '', {
+            //         horizontalPosition: 'center',
+            //         verticalPosition: 'bottom',
+            //         duration: 3500
+            //     });
+            //     return;
+            // };
 
-            if (this.areaValue === "") {
-                this._snackBar.open("Imprint AREA has not been defined correctly.", '', {
-                    horizontalPosition: 'center',
-                    verticalPosition: 'bottom',
-                    duration: 3500
-                });
-                return;
-            };
+            // if (this.areaValue === "") {
+            //     this._snackBar.open("Imprint AREA has not been defined correctly.", '', {
+            //         horizontalPosition: 'center',
+            //         verticalPosition: 'bottom',
+            //         duration: 3500
+            //     });
+            //     return;
+            // };
 
-            if (this.defaultImprintColorSpecification === 'Yes') {
-                if (!this.collectionIdsArray.length && !this.customColorId) {
-                    this._snackBar.open("Select a color collection", '', {
-                        horizontalPosition: 'center',
-                        verticalPosition: 'bottom',
-                        duration: 3500
-                    });
-                    return;
-                };
-            };
+            // if (this.defaultImprintColorSpecification === 'Yes') {
+            //     if (!this.collectionIdsArray.length && !this.customColorId) {
+            //         this._snackBar.open("Select a color collection", '', {
+            //             horizontalPosition: 'center',
+            //             verticalPosition: 'bottom',
+            //             duration: 3500
+            //         });
+            //         return;
+            //     };
+            // };
 
-            if (run === "" || setup === "") {
-                this._snackBar.open("Select a SETUP or RUN charge", '', {
-                    horizontalPosition: 'center',
-                    verticalPosition: 'bottom',
-                    duration: 3500
-                });
+            // if (run === "" || setup === "") {
+            //     this._snackBar.open("Select a SETUP or RUN charge", '', {
+            //         horizontalPosition: 'center',
+            //         verticalPosition: 'bottom',
+            //         duration: 3500
+            //     });
 
-                return;
-            };
+            //     return;
+            // };
 
-            let processMode;
-            if (this.favoriteSeason === 'Per color (i.e. silk screening, pad printing, etc.)') {
-                processMode = 0;
-            } else if (this.favoriteSeason === 'Per Stitch (embroidering)') {
-                processMode = 1;
-            } else if (this.favoriteSeason === 'Simple Process (i.e. laser engraving, full color, etc.)') {
-                processMode = 2;
-            };
+            // let processMode;
+            // if (this.favoriteSeason === 'Per color (i.e. silk screening, pad printing, etc.)') {
+            //     processMode = 0;
+            // } else if (this.favoriteSeason === 'Per Stitch (embroidering)') {
+            //     processMode = 1;
+            // } else if (this.favoriteSeason === 'Simple Process (i.e. laser engraving, full color, etc.)') {
+            //     processMode = 2;
+            // };
 
-            let second, third, fourth, fifth;
-            let multiValue;
-            if (processMode === 0) {
-                const {
-                    twoColorQ,
-                    threeColorQ,
-                    fourColorQ,
-                    fiveColorQ
-                } = this.values.getRawValue();
-                second = twoColorQ;
-                third = threeColorQ;
-                fourth = fourColorQ;
-                fifth = fiveColorQ;
-            };
+            // let second, third, fourth, fifth;
+            // let multiValue;
+            // if (processMode === 0) {
+            //     const {
+            //         twoColorQ,
+            //         threeColorQ,
+            //         fourColorQ,
+            //         fiveColorQ
+            //     } = this.values.getRawValue();
+            //     second = twoColorQ;
+            //     third = threeColorQ;
+            //     fourth = fourColorQ;
+            //     fifth = fiveColorQ;
+            // };
 
-            const payload = {
-                product_id: null,
-                decorator_id: this.supplierId || null,
-                method_id: this.selectedMethod.pk_methodID || null,
-                location_id: this.selectedLocation.pk_locationID || null,
-                digitizer_id: processMode == 1 ? this.selectedDigitizer.pfk_digitizerID : null,
-                setup_charge_id: setup || 17,
-                run_charge_id: run || 17,
-                bln_includable: this.priceInclusionSelected.value === 'Yes' ? 1 : 0,
-                area: this.areaValue,
-                multi_color_min_id: 1,
-                bln_user_color_selection: this.defaultImprintColorSpecification === 'Yes' ? 1 : 0,
-                max_colors: this.defaultImprintColorSpecification === 'Yes' ? this.maxColorSelected : null,
-                collection_id: this.collectionIdsArray.length ? this.selectedCollectionId[0].fk_collectionID : Number(this.customColorId),
-                bln_process_mode: processMode,
-                min_product_qty: this.minQuantity || 1,
-                imprint_comments: this.addImprintComment || "",
-                bln_active: 1,
-                bln_singleton: this.imprintItselfSelected.value === 'Yes' ? true : false,
-                bln_color_selection: this.defaultImprintColorSpecification === 'Yes' ? true : false,
-                imprint_id: null,
-                store_product_id_list: [],
-                imprint_image: null,
-                display_order: this.addImprintDisplayOrderValue || 1,
-                imprint: true
-            };
+            // const payload = {
+            //     product_id: null,
+            //     decorator_id: this.supplierId || null,
+            //     method_id: this.selectedMethod.pk_methodID || null,
+            //     location_id: this.selectedLocation.pk_locationID || null,
+            //     digitizer_id: processMode == 1 ? this.selectedDigitizer.pfk_digitizerID : null,
+            //     setup_charge_id: setup || 17,
+            //     run_charge_id: run || 17,
+            //     bln_includable: this.priceInclusionSelected.value === 'Yes' ? 1 : 0,
+            //     area: this.areaValue,
+            //     multi_color_min_id: 1,
+            //     bln_user_color_selection: this.defaultImprintColorSpecification === 'Yes' ? 1 : 0,
+            //     max_colors: this.defaultImprintColorSpecification === 'Yes' ? this.maxColorSelected : null,
+            //     collection_id: this.collectionIdsArray.length ? this.selectedCollectionId[0].fk_collectionID : Number(this.customColorId),
+            //     bln_process_mode: processMode,
+            //     min_product_qty: this.minQuantity || 1,
+            //     imprint_comments: this.addImprintComment || "",
+            //     bln_active: 1,
+            //     bln_singleton: this.imprintItselfSelected.value === 'Yes' ? true : false,
+            //     bln_color_selection: this.defaultImprintColorSpecification === 'Yes' ? true : false,
+            //     imprint_id: null,
+            //     store_product_id_list: [],
+            //     imprint_image: null,
+            //     display_order: this.addImprintDisplayOrderValue || 1,
+            //     imprint: true
+            // };
 
-            if (payload.bln_process_mode === 0) {
-                this._inventoryService.getMultiColorValue(second, third, fourth, fifth)
-                    .pipe(takeUntil(this._unsubscribeAll))
-                    .subscribe((multi_color) => {
-                        multiValue = multi_color["data"];
-                        payload.multi_color_min_id = multiValue?.length ? multiValue[0].pk_multiColorMinQID : 1;
-                        this.imprintPayload = payload;
-                        // Mark for check
-                        this._changeDetectorRef.markForCheck();
-                    });
-            } else {
-                this.imprintPayload = payload;
-            };
+            // if (payload.bln_process_mode === 0) {
+            //     this._inventoryService.getMultiColorValue(second, third, fourth, fifth)
+            //         .pipe(takeUntil(this._unsubscribeAll))
+            //         .subscribe((multi_color) => {
+            //             multiValue = multi_color["data"];
+            //             payload.multi_color_min_id = multiValue?.length ? multiValue[0].pk_multiColorMinQID : 1;
+            //             this.imprintPayload = payload;
+            //             this._changeDetectorRef.markForCheck();
+            //         });
+            // } else {
+            //     this.imprintPayload = payload;
+            // };
         };
 
         stepper.next();
@@ -2666,7 +2698,9 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
                     } else {
                         this._inventoryService.createProductDetail(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
                             this.createProductDetailLoader = false;
-                            this.stepperIndex = res["product_id"];
+                            setTimeout(() => {
+                                this.stepperIndex = res["product_id"];
+                            }, 200);
                             this.myStepper.next();
                             this._changeDetectorRef.markForCheck();
                             this.productId = res["product_id"];
@@ -2801,109 +2835,135 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
     colorSelected(result: any): void {
         if (this.selectedColorsList.length == 0) {
             this.selectedColorsList.push({ colorId: result.pk_colorID, colorName: result.colorName });
+            this.selectedColorsListArray.push({ colorId: result.pk_colorID, colorName: result.colorName, image: null, run: '0.0', hex: '' });
         } else {
             var obj = this.selectedColorsList.filter((val) => {
                 return val.colorId == result.pk_colorID;
             });
             if (obj.length == 0) {
                 this.selectedColorsList.push({ colorId: result.pk_colorID, colorName: result.colorName });
+                this.selectedColorsListArray.push({ colorId: result.pk_colorID, colorName: result.colorName, image: null, run: '0.0', hex: '' });
+                this.colorName.setValue('');
+                this.colorTempImage = null;
             }
         }
         this.selectedColor = result;
         this.colorName.setValue(null);
     };
     addProductColor() {
-        const { run, hex } = this.colorsForm.getRawValue();
-        const { pk_colorID } = this.selectedColor;
+        // const { run, hex } = this.colorsForm.getRawValue();
+        // const { pk_colorID } = this.selectedColor;
 
 
-        if (!pk_colorID) {
-            return this._snackBar.open("Please select color", '', {
-                horizontalPosition: 'center',
-                verticalPosition: 'bottom',
-                duration: 3500
-            });
-        };
-        if (this.imageValue) {
-            const { imageUpload, type } = this.imageValue;
-            if (imageUpload) {
-                let paylaod = {
-                    imageUpload: imageUpload,
-                    type: type,
-                    name: pk_colorID
+        // if (!pk_colorID) {
+        //     return this._snackBar.open("Please select color", '', {
+        //         horizontalPosition: 'center',
+        //         verticalPosition: 'bottom',
+        //         duration: 3500
+        //     });
+        // };
+        // if (this.imageValue) {
+        //     const { imageUpload, type } = this.imageValue;
+        //     if (imageUpload) {
+        //         let paylaod = {
+        //             imageUpload: imageUpload,
+        //             type: type,
+        //             name: pk_colorID
+        //         }
+        //         this.uploadColorMedia(paylaod);
+        //     }
+        // }
+        // let colors: any = [];
+        // this.selectedColorsList.forEach(element => {
+        //     colors.push({
+        //         color_id: element.colorId,
+        //         the_run: run,
+        //         rgb: hex
+        //     })
+        // });
+        // const payload = {
+        //     product_id: this.productId,
+        //     create_product_color: true,
+        //     colors: colors
+        // };
+
+        // this.updateProductColorLoader = true;
+        // this._changeDetectorRef.markForCheck();
+        // this._inventoryService.UpdateProductColors(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe((response) => {
+        //     this.updateProductColorLoader = false;
+        //     this.myStepper.next();
+        //     this._changeDetectorRef.markForCheck();
+        // }, err => {
+        //     this._snackBar.open("Something went wrong", '', {
+        //         horizontalPosition: 'center',
+        //         verticalPosition: 'bottom',
+        //         duration: 3500
+        //     });
+        //     this.updateProductColorLoader = false;
+        //     this._changeDetectorRef.markForCheck();
+        // });
+        if (this.selectedColorsListArray.length > 0) {
+
+            // Upload Images
+            this.selectedColorsListArray.forEach(element => {
+                if (element.image) {
+                    let paylaod = {
+                        imageUpload: element.image,
+                        type: 'image/jpeg',
+                        name: element.colorId
+                    }
+                    this.uploadColorMedia(paylaod);
                 }
-                this.uploadColorMedia(paylaod);
-            }
-        }
-        let colors: any = [];
-        this.selectedColorsList.forEach(element => {
-            colors.push({
-                color_id: element.colorId,
-                the_run: run,
-                rgb: hex
-            })
-        });
-        const payload = {
-            product_id: this.productId,
-            create_product_color: true,
-            colors: colors
-        };
-
-        this.updateProductColorLoader = true;
-        this._changeDetectorRef.markForCheck();
-        this._inventoryService.UpdateProductColors(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe((response) => {
-            this.updateProductColorLoader = false;
-            this.myStepper.next();
-            this._changeDetectorRef.markForCheck();
-        }, err => {
-            this._snackBar.open("Something went wrong", '', {
-                horizontalPosition: 'center',
-                verticalPosition: 'bottom',
-                duration: 3500
             });
-            this.updateProductColorLoader = false;
+
+            let colors: any = [];
+            this.selectedColorsListArray.forEach(element => {
+                colors.push({
+                    color_id: element.colorId,
+                    the_run: element.run,
+                    rgb: element.hex
+                })
+            });
+
+            const payload = {
+                product_id: this.productId,
+                create_product_color: true,
+                colors: colors
+            };
+
+            this.updateProductColorLoader = true;
             this._changeDetectorRef.markForCheck();
-        });
+            this._inventoryService.UpdateProductColors(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe((response) => {
+                this.updateProductColorLoader = false;
+                this.myStepper.next();
+                this._changeDetectorRef.markForCheck();
+            }, err => {
+                this._snackBar.open("Something went wrong", '', {
+                    horizontalPosition: 'center',
+                    verticalPosition: 'bottom',
+                    duration: 3500
+                });
+                this.updateProductColorLoader = false;
+                this._changeDetectorRef.markForCheck();
+            });
+        } else {
+            this.myStepper.next();
+        }
     };
     uploadColorMedia(obj: any) {
         const { imageUpload, name, type } = obj;
-        let image = new Image;
-        image.src = imageUpload;
-        image.onload = () => {
-            if (image.width != 600 || image.height != 600) {
-                this._snackBar.open("Dimentions allowed are 600px x 600px", '', {
-                    horizontalPosition: 'center',
-                    verticalPosition: 'bottom',
-                    duration: 3500
-                });
-                return;
-            };
-
-            if (type != "image/jpeg") {
-                this._snackBar.open("Image extensions are allowed in JPG", '', {
-                    horizontalPosition: 'center',
-                    verticalPosition: 'bottom',
-                    duration: 3500
-                });
-                return;
-            }
-
-            const base64 = imageUpload.split(",")[1];
-            const payload = {
-                file_upload: true,
-                image_file: base64,
-                image_path: `/globalAssets/Products/Colors/${this.productId}/${name}.jpg`
-            };
-
-            this._inventoryService.addColorMedia(payload)
-                .subscribe((response) => {
-
-                    // Mark for check
-                    this._changeDetectorRef.markForCheck();
-                })
+        const payload = {
+            file_upload: true,
+            image_file: imageUpload,
+            image_path: `/globalAssets/Products/Colors/${this.productId}/${name}.jpg`
         };
+        this._inventoryService.addColorMedia(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe((response) => {
+            // Mark for check
+            this._changeDetectorRef.markForCheck();
+        })
     }
-    uploadImage(event): void {
+    uploadImage(event, index): void {
+        this.imageValue = null;
         const file = event.target.files[0];
         let type = file["type"];
         const reader = new FileReader();
@@ -2913,7 +2973,35 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
                 imageUpload: reader.result,
                 type: file["type"]
             };
-        };
+            let image: any = new Image;
+            image.src = reader.result;
+            image.onload = () => {
+                if (image.width != 600 || image.height != 600) {
+                    this._snackBar.open("Dimentions allowed are 600px x 600px", '', {
+                        horizontalPosition: 'center',
+                        verticalPosition: 'bottom',
+                        duration: 3500
+                    });
+                    this.imageValue = null;
+                    this.selectedColorsListArray[index]["image"] = null;
+                    this.colorTempImage = null;
+                    return;
+                };
+
+                if (type != "image/jpeg") {
+                    this._snackBar.open("Image extensions are allowed in JPG", '', {
+                        horizontalPosition: 'center',
+                        verticalPosition: 'bottom',
+                        duration: 3500
+                    });
+                    this.colorTempImage = null;
+                    this.selectedColorsListArray[index]["image"] = null;
+                    return;
+                }
+                const base64 = this.imageValue.imageUpload.split(",")[1];
+                this.selectedColorsListArray[index]["image"] = base64;
+            };
+        }
     };
     // NetCost
     addNetCost() {
@@ -3059,9 +3147,9 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
                     this.imprintPayload = payload;
                     this._inventoryService.UpdateProductImprint(this.imprintPayload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
                         this.updateProductImprintLoader = false;
-                        if (this._inventoryService.standardImprints) {
-                            this.saveStandardImprints();
-                        }
+                        // if (this._inventoryService.standardImprints) {
+                        //     this.saveStandardImprints();
+                        // }
                         this.myStepper.next();
                         this._changeDetectorRef.markForCheck();
                     }, err => {
@@ -3200,6 +3288,8 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
         })
     }
     saveStandardImprints(): void {
+        this.updateProductImprintLoader = true;
+        this._changeDetectorRef.markForCheck();
         let count = 0;
         let imprintsToUpdate = [];
         for (const standardImprint of this._inventoryService.standardImprints) {
@@ -3274,12 +3364,54 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
 
             this._inventoryService.addStandardImprints(payload)
                 .subscribe((response) => {
-                    // Mark for check
+                    this.updateProductImprintLoader = false;
+                    this.myStepper.next();
+                    this._changeDetectorRef.markForCheck();
+                }, err => {
+                    this.updateProductImprintLoader = false;
                     this._changeDetectorRef.markForCheck();
                 })
         }
 
     }
-    stepperSelectionCheck() {
+    // Colors
+    copyColorToHex(index) {
+        this.selectedColorsListArray[index]['hex'] = this.colorValue;
+    }
+    addColorToArrayList() {
+
+        const { run, hex, colorId, colorName, image } = this.colorsForm.getRawValue();
+        if (colorId == '') {
+            this._snackBar.open("Please select any color", '', {
+                horizontalPosition: 'center',
+                verticalPosition: 'bottom',
+                duration: 3000
+            });
+        } else {
+            let color = this.selectedColorsListArray.filter(item => item.colorId == colorId);
+            if (color.length > 0) {
+                this._snackBar.open("Color already exist", '', {
+                    horizontalPosition: 'center',
+                    verticalPosition: 'bottom',
+                    duration: 3000
+                });
+            } else {
+                this.selectedColorsListArray.push({ run: run, hex: hex, colorId: colorId, colorName: colorName, image: image });
+                this.colorsForm.patchValue({
+                    colorId: '',
+                    colorName: '',
+                    run: '0.00',
+                    hex: '',
+                    image: null
+                });
+                this.colorName.setValue('');
+                this.colorTempImage = null;
+                console.log(this.selectedColorsListArray)
+            }
+        }
+    }
+    removeColorFromArrayList(index) {
+        this.selectedColorsListArray.splice(index, 1);
+        this.selectedColorsList.splice(index, 1);
     }
 }

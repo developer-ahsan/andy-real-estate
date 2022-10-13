@@ -3,17 +3,17 @@ import { Subject } from 'rxjs';
 import { StoreProductService } from '../../store.service';
 
 @Component({
-  selector: 'app-permalink',
-  templateUrl: './permalink.component.html'
+  selector: 'app-extrinsic-categories',
+  templateUrl: './extrinsic-categories.component.html'
 })
-export class PermalinkComponent implements OnInit, OnDestroy {
+export class ExtrinsicComponent implements OnInit, OnDestroy {
   @Input() selectedProduct: any;
   @Input() isLoading: boolean;
   @Output() isLoadingChange = new EventEmitter<boolean>();
   private _unsubscribeAll: Subject<any> = new Subject<any>();
 
 
-  permalink: string = '';
+  extrinsicCat: string = '';
   isUpdateLoading: boolean = false;
 
   constructor(
@@ -22,7 +22,7 @@ export class PermalinkComponent implements OnInit, OnDestroy {
   ) { }
 
   ngOnInit(): void {
-    this.permalink = this.selectedProduct.permalink;
+    this.extrinsicCat = this.selectedProduct.extrinsicCategory;
     this.isLoadingChange.emit(false);
     this.isLoading = false;
     this._changeDetectorRef.markForCheck();

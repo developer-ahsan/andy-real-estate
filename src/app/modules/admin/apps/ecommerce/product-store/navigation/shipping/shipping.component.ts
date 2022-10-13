@@ -1,10 +1,7 @@
 import { Component, Input, OnInit, Output, EventEmitter, ChangeDetectorRef, OnDestroy } from '@angular/core';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
-import { InventoryService } from 'app/modules/admin/apps/ecommerce/inventory/inventory.service';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { MatRadioChange } from '@angular/material/radio';
-import { MatSnackBar } from '@angular/material/snack-bar';
+import { StoreProductService } from '../../store.service';
 
 @Component({
   selector: 'app-shipping',
@@ -16,26 +13,60 @@ export class ShippingComponent implements OnInit, OnDestroy {
   @Output() isLoadingChange = new EventEmitter<boolean>();
   private _unsubscribeAll: Subject<any> = new Subject<any>();
 
-
+  blnOverride: boolean = false;
+  blnIncludeShipping: boolean = false;
+  isUpdateLoading: boolean = false;
 
   constructor(
     private _changeDetectorRef: ChangeDetectorRef,
-    private _inventoryService: InventoryService,
-    private _formBuilder: FormBuilder,
-    private _snackBar: MatSnackBar
+    private _storeService: StoreProductService
   ) { }
 
   ngOnInit(): void {
-    // Create the selected product form
-    setTimeout(() => {
-      this.isLoading = false;
-      this._changeDetectorRef.markForCheck()
-    }, 1000);
-
+    this.isLoading = true;
+    this.getShipping();
   }
 
+  getShipping() {
+    let params = {
+      shipping: true,
+      store_product_id: this.selectedProduct.pk_storeProductID
+    }
+    this._storeService.getStoreProducts(params).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+      if (res["data"].length > 0) {
+        this.blnOverride = true;
+        this.blnIncludeShipping = res["data"][0].blnIncludeShipping;
+      } else {
+        this.blnOverride = false;
+        this.blnIncludeShipping = false;
+      }
+      this.isLoading = false;
+      this.isLoadingChange.emit(false);
+      this._changeDetectorRef.markForCheck();
+    }, err => {
+      this.isLoadingChange.emit(false);
+      this.isLoading = false;
+      this._changeDetectorRef.markForCheck();
+    })
+  }
 
-
+  updateShipping() {
+    this.isUpdateLoading = true;
+    let payload = {
+      blnOverride: this.blnOverride,
+      blnIncludeShipping: this.blnIncludeShipping,
+      storeProductID: Number(this.selectedProduct.pk_storeProductID),
+      update_shipping: true
+    }
+    this._storeService.updateShipping(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+      this.isUpdateLoading = false;
+      this._storeService.snackBar('Shipping Options Updated Successfully');
+      this._changeDetectorRef.markForCheck();
+    }, err => {
+      this.isUpdateLoading = false;
+      this._changeDetectorRef.markForCheck();
+    })
+  }
   /**
      * On destroy
      */

@@ -8,9 +8,25 @@
                     Shipping Options
                 </div>
                 <div class="mt-5">
-                    <mat-checkbox class="example-margin">Override master product shipping option?</mat-checkbox>
+                    <mat-checkbox [(ngModel)]="blnOverride" class="example-margin">Override master product shipping
+                        option?</mat-checkbox>
                     <br>
-                    <button [matTooltip]="'Update'" mat-stroked-button class="min-w-40">Update</button>
+                    <mat-form-field class="min-w-90" *ngIf="blnOverride">
+                        <mat-label>Do shipping charges apply?</mat-label>
+                        <mat-select [(ngModel)]="blnIncludeShipping">
+                            <mat-option [value]="true">Yes</mat-option>
+                            <mat-option [value]="false">No</mat-option>
+                        </mat-select>
+                    </mat-form-field>
+                    <br>
+                    <button [matTooltip]="'Update'" mat-stroked-button class="min-w-40" (click)="updateShipping()"
+                        [disabled]="isUpdateLoading">
+                        <mat-progress-spinner *ngIf="isUpdateLoading" [diameter]="24" [mode]="'indeterminate'">
+                        </mat-progress-spinner>
+                        <span *ngIf="!isUpdateLoading" class="ml-1 mr-1">
+                            Update
+                        </span>
+                    </button>
                 </div>
             </div>
         </fuse-card>

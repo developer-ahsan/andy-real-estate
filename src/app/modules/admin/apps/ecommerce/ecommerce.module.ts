@@ -85,13 +85,12 @@ import { AutocompleteLibModule } from 'angular-ng-autocomplete';
 import { NgMultiSelectDropDownModule } from 'ng-multiselect-dropdown';
 import { PromostandardColorsComponent } from './inventory/navigation/promostandard-colors/promostandard-colors.component';
 import { ProductStoreComponent } from './product-store/store.component';
-import { StoreProductDetailsComponent } from './product-store/details/product-store-details.component';
 import { ProductSizesComponent } from './inventory/list/product-sizes/product-sizes.component';
 import { ProductImprintsComponent } from './inventory/list/product-imprints/product-imprints';
 import { PricingComponent } from './product-store/navigation/pricing/pricing.component';
 import { ShippingComponent } from './product-store/navigation/shipping/shipping.component';
 import { StoreColorsComponent } from './product-store/navigation/colors/colors.component';
-import { ExtrinsicComponent } from './product-store/navigation/extrinsic-categories copy/extrinsic-categories.component';
+import { ExtrinsicComponent } from './product-store/navigation/extrinsic-categories/extrinsic-categories.component';
 import { StoreImagesComponent } from './product-store/navigation/images/images.component';
 import { StoreImprintsComponent } from './product-store/navigation/imprints/imprints.component';
 import { PermalinkComponent } from './product-store/navigation/permalink/permalink.component';
@@ -160,7 +159,6 @@ import { StoreProductVideosComponent } from './product-store/navigation/videos/v
         PromostandardColorsComponent,
         // Product Stores
         ProductStoreComponent,
-        StoreProductDetailsComponent,
         ProductSizesComponent,
         ProductImprintsComponent,
         // Store Products

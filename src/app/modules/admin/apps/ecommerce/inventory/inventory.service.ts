@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { BehaviorSubject, Observable } from 'rxjs';
-import { debounceTime, map, tap } from 'rxjs/operators';
+import { debounceTime, distinctUntilChanged, map, retry, switchMap, tap } from 'rxjs/operators';
 import { AddCore, AddFeature, AddPackage, CaseDimensionObj, CaseQuantityObj, Comment, CreateProduct, DeleteComment, displayOrderObj, duplicateObj, featureUpdateObj, FlatRateShippingObj, Imprint, InventoryBrand, InventoryCategory, InventoryPagination, InventoryTag, InventoryVendor, Licensing, NetCostUpdate, overlapUpdateObj, PhysicsObj, physicsUpdateObject, PostColor, priceInclusionObj, Product, ProductColor, ProductFeature, ProductLicensing_Term, ProductNetCost, ProductsList, updateAllowRun, updateColorObj, updateImprintObj, UpdateMargin, updatePackageObj, UpdateProductDescription, updateProductSize, updatePromostandardObj, updateSize, videoObj, Warehouse } from 'app/modules/admin/apps/ecommerce/inventory/inventory.types';
 import { environment } from 'environments/environment';
 import { productDescription } from 'app/modules/admin/apps/ecommerce/inventory/inventory.types';
@@ -251,7 +251,8 @@ export class InventoryService {
             }
         }).pipe(
             debounceTime(400),
-            map(
+            distinctUntilChanged(),
+            switchMap(
                 (data: any) => {
                     return (
                         data.length != 0 ? data as any[] : [{ "Result": "No Record Found" } as any]
@@ -851,7 +852,7 @@ export class InventoryService {
                 size: 10,
                 page: page
             }
-        });
+        }).pipe(retry(3));
     };
 
     getCharts(productId, page): Observable<any[]> {

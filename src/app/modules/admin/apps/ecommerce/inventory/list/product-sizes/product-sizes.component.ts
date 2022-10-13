@@ -61,6 +61,8 @@ export class ProductSizesComponent implements OnInit, OnDestroy {
   };
 
   getSizes(page: number): void {
+    this.isLoading = true;
+    this._changeDetectorRef.markForCheck();
     const pk_productID = this.selectedProduct;
 
     this._inventoryService.getSizes(pk_productID, page)
@@ -70,6 +72,7 @@ export class ProductSizesComponent implements OnInit, OnDestroy {
         this._inventoryService.getCharts(pk_productID, page)
           .pipe(takeUntil(this._unsubscribeAll))
           .subscribe((charts) => {
+            this.isLoading = false;
             this.dataSourceCharts = charts["data"];
             this.chartsLength = charts["totalRecords"];
 
@@ -83,7 +86,6 @@ export class ProductSizesComponent implements OnInit, OnDestroy {
             // Mark for check
             this._changeDetectorRef.markForCheck();
           });
-
       });
   };
 

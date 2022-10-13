@@ -8,7 +8,6 @@ import { CustomersBrandsResolver, CustomersCategoriesResolver, CustomersProducts
 import { CustomersTabComponent } from 'app/modules/admin/apps/ecommerce/customers/tabs/customers.component';
 import { ProductDetailsComponent } from 'app/modules/admin/apps/ecommerce/inventory/details/product-details.component';
 import { ProductStoreComponent } from './product-store/store.component';
-import { StoreProductDetailsComponent } from './product-store/details/product-store-details.component';
 
 export const ecommerceRoutes: Route[] = [
     {
@@ -83,21 +82,5 @@ export const ecommerceRoutes: Route[] = [
             }
         ]
     },
-    {
-        path: 'store',
-        component: ProductStoreComponent,
-        children: [
-            {
-                path: ':id',
-                component: StoreProductDetailsComponent,
-                resolve: {
-                    // brands: CustomersBrandsResolver,
-                    // categories: CustomersCategoriesResolver,
-                    // products: CustomersProductsResolver,
-                    // tags: CustomersTagsResolver,
-                    // vendors: CustomersVendorsResolver
-                }
-            }
-        ]
-    }
+
 ];

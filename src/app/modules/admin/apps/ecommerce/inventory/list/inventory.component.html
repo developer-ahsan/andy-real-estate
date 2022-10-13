@@ -567,7 +567,7 @@
                                     </div>
                                     <div class="col-12" *ngIf="supplierType == 'Apparel Item'">
                                         <mat-form-field class="w-full">
-                                            <mat-label>Units in weight</mat-label>
+                                            <mat-label>Units per Shipping Package</mat-label>
                                             <input matInput type="number" min="1"
                                                 [formControlName]="'unitsInWeight'"><small
                                                 class="text-secondary font-semibold">
@@ -1154,9 +1154,9 @@
                                     </div>
                                 </div>
                                 <div class="col-12">
-                                    <form [formGroup]="colorForm">
+                                    <form [formGroup]="colorsForm">
                                         <div class="row">
-                                            <div class="col-12">
+                                            <div class="col-9">
                                                 <mat-form-field class="w-full">
                                                     <mat-label>
                                                         <span class="ml-1">Color</span>
@@ -1168,69 +1168,78 @@
                                                                 *ngIf="i < selectedColorsList.length-1">, </span></span>
                                                     </mat-hint>
                                                     <mat-autocomplete #auto="matAutocomplete">
-                                                        <mat-option *ngFor="let result of results"
-                                                            (click)="colorSelected(result)" [value]="result.colorName">
-                                                            ({{result.pk_colorID}}) - {{ result.colorName }}
+                                                        <mat-option *ngIf="isColorLoading" class="is-loading">Loading...
                                                         </mat-option>
+                                                        <ng-container *ngIf="!isColorLoading">
+                                                            <mat-option *ngFor="let result of results"
+                                                                (click)="colorSelected(result)"
+                                                                [value]="result.colorName">
+                                                                ({{result.pk_colorID}}) - {{ result.colorName }}
+                                                            </mat-option>
+                                                        </ng-container>
                                                     </mat-autocomplete>
-
                                                 </mat-form-field>
-                                                <!-- <mat-form-field class="w-full">
-                                                    <mat-label>
-                                                        <span class="ml-1">Color</span>
-                                                    </mat-label>
-                                                    <input matInput [formControlName]="'colors'"
-                                                        placeholder="Enter list of colors, spearated by comma">
-                                                    <mat-error>This field is required</mat-error>
-                                                </mat-form-field> -->
                                             </div>
-                                            <div class="col-12">
+                                            <div class="col-3">
                                                 <mat-form-field class="w-full">
-                                                    <mat-label>Color: {{colorValue}}</mat-label>
-                                                    <input matInput type="color" value="{{colorValue}}"
-                                                        (change)="changeColor($event)" placeholder="Color">
+                                                    <mat-label>Color Palette: {{colorValue}}</mat-label>
+                                                    <mat-icon (click)="clickButton()"
+                                                        svgIcon="heroicons_outline:color-swatch"></mat-icon>
+                                                    <input class="p-0" matInput #colorpicker type="color"
+                                                        value="{{colorValue}}" (change)="changeColor($event)"
+                                                        placeholder="Color">
                                                 </mat-form-field>
-                                            </div>
-                                            <div class="col-lg-6 col-12">
-                                                <mat-form-field class="w-full">
-                                                    <mat-label>
-                                                        Run
-                                                    </mat-label>
-                                                    <input matInput [formControlName]="'run'" type="number" value="0.00"
-                                                        placeholder="Run">
-                                                    <mat-icon class="icon-size-5 text-secondary cursor-pointer"
-                                                        [matTooltip]="'Reset run value to 0.00'"
-                                                        (click)="resetRunValue()" svgIcon="heroicons_outline:refresh">
-                                                    </mat-icon>
-                                                </mat-form-field>
-                                            </div>
-                                            <div class="col-lg-6 col-12">
-                                                <button
-                                                    [matTooltip]="'Enter the hexadecimal value for corresponding color. This hexadecimal color will be used to create color swatches in multiple places on the SmartSites. You can enter upto five hexadecimal colors separated by entering Enter key.'">
-                                                    <i class="fa fa-info-circle"></i>
-                                                </button>
-                                                <span class="ml-1">Hex</span>
-                                                <mat-form-field class="w-full">
-                                                    <input matInput [formControlName]="'hex'" value="{{hexColor}}"
-                                                        placeholder="Hex">
-                                                    <mat-icon class="icon-size-5 text-secondary ml-2"
-                                                        style="cursor: pointer;" (click)="copyColorToHex()"
-                                                        [matTooltip]="'Copy hex from color palette'"
-                                                        svgIcon="mat_outline:content_copy">
-                                                    </mat-icon>
-                                                    <mat-error>This field is required</mat-error>
-                                                </mat-form-field>
-                                            </div>
-
-                                            <div class="col-12">
-                                                <input type="file" accept=".jpg" id="image"
-                                                    (change)="uploadImage($event)" />
                                             </div>
                                         </div>
                                     </form>
                                 </div>
+                                <div class="col-12 my-3 text-center" *ngIf="selectedColorsListArray.length == 0">
+                                    <b>No Color Selected</b>
+                                </div>
+                                <div class="col-12 mt-3" *ngIf="selectedColorsListArray.length > 0">
+                                    <div class="row mb-2 border-b">
+                                        <div class="col-3 font-bold">Color Name</div>
+                                        <div class="col-2 font-bold">Run</div>
+                                        <div class="col-2 font-bold">Hex</div>
+                                        <div class="col-3 font-bold">Image</div>
+                                        <div class="col-2 font-bold">Action</div>
+                                    </div>
+                                    <div class="row border-b p-2"
+                                        *ngFor="let item of selectedColorsListArray;let i = index">
+                                        <div class="col-3">{{item.colorId +'-'+ item.colorName}}</div>
+                                        <div class="col-2">
+                                            <mat-form-field class="w-full">
+                                                <input matInput [(ngModel)]="item.run" type="number" value="0.00"
+                                                    placeholder="Run">
+                                            </mat-form-field>
+                                        </div>
+                                        <div class="col-2">
+                                            <mat-form-field class="w-full">
+                                                <input [matTooltip]="'Copy hex from color palette'" matInput
+                                                    [(ngModel)]="item.hex" placeholder="Hex">
+                                                <mat-icon class="icon-size-5 text-secondary ml-2"
+                                                    style="cursor: pointer;" (click)="copyColorToHex(i)"
+                                                    [matTooltip]="'Copy hex from color palette'"
+                                                    svgIcon="mat_outline:content_copy">
+                                                </mat-icon>
+                                                <mat-error>This field is required</mat-error>
+                                            </mat-form-field>
+                                        </div>
+                                        <div class="col-3" *ngIf="item.image">
+                                            <img style="width: 20%;" src="{{'data:image/jpg;base64,' + item.image}}">
+                                        </div>
+                                        <div class="col-3" *ngIf="!item.image">
+                                            <input [(ngModel)]="colorTempImage" type="file" accept=".jpg" id="image"
+                                                (change)="uploadImage($event, i)" />
+                                        </div>
+                                        <div class="col-2">
+                                            <mat-icon (click)="removeColorFromArrayList(i)" class="cursor-pointer">
+                                                delete</mat-icon>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
-                            <div class="row">
+                            <div class="row my-2">
                                 <div class="col-lg-8 col-12"></div>
                                 <div class="col-lg-2 col-12">
                                     <button class="w-full" (click)="goBack(stepper)" mat-stroked-button>
@@ -1778,6 +1787,23 @@
                                                 </div>
                                             </div>
                                         </div>
+                                        <div class="row">
+                                            <div class="col-lg-8 col-12"></div>
+                                            <div class="col-lg-2 col-12">
+                                                <button class="w-full" (click)="goBack(stepper)" mat-stroked-button>
+                                                    Back
+                                                </button>
+                                            </div>
+                                            <div class="col-lg-2 col-12">
+                                                <button class="w-full" (click)="addProductImprints()" mat-stroked-button
+                                                    [disabled]="updateProductImprintLoader">
+                                                    <mat-progress-spinner *ngIf="updateProductImprintLoader"
+                                                        [diameter]="24" [mode]="'indeterminate'">
+                                                    </mat-progress-spinner>
+                                                    <span *ngIf="!updateProductImprintLoader">Save & Continue</span>
+                                                </button>
+                                            </div>
+                                        </div>
                                     </ng-template>
                                 </mat-tab>
                                 <mat-tab label="Standard Imprints"
@@ -1789,30 +1815,28 @@
                                             </button>
                                         </div>
                                         <app-product-imprints #prodStandardImprints></app-product-imprints>
+                                        <div class="row">
+                                            <div class="col-lg-8 col-12"></div>
+                                            <div class="col-lg-2 col-12">
+                                                <button class="w-full" (click)="goBack(stepper)" mat-stroked-button>
+                                                    Back
+                                                </button>
+                                            </div>
+                                            <div class="col-lg-2 col-12">
+                                                <button class="w-full" (click)="saveStandardImprints()"
+                                                    mat-stroked-button [disabled]="updateProductImprintLoader">
+                                                    <mat-progress-spinner *ngIf="updateProductImprintLoader"
+                                                        [diameter]="24" [mode]="'indeterminate'">
+                                                    </mat-progress-spinner>
+                                                    <span *ngIf="!updateProductImprintLoader">Save & Continue</span>
+                                                </button>
+                                            </div>
+                                        </div>
                                     </ng-template>
                                 </mat-tab>
                             </mat-tab-group>
-                            <div class="row">
-                                <div class="col-lg-8 col-12"></div>
-                                <div class="col-lg-2 col-12">
-                                    <button class="w-full" (click)="goBack(stepper)" mat-stroked-button>
-                                        Back
-                                    </button>
-                                </div>
-                                <div class="col-lg-2 col-12">
-                                    <button class="w-full" (click)="addProductImprints()" mat-stroked-button
-                                        [disabled]="updateProductImprintLoader">
-                                        <mat-progress-spinner *ngIf="updateProductImprintLoader" [diameter]="24"
-                                            [mode]="'indeterminate'">
-                                        </mat-progress-spinner>
-                                        <span *ngIf="!updateProductImprintLoader">Save & Continue</span>
-                                    </button>
-                                </div>
-                            </div>
                         </mat-step>
-
-                        <mat-step *ngIf="firstFormGroup.get('radio').value.name == 'Apparel Item'" label="Sizes"
-                            [editable]="true">
+                        <mat-step label="Sizes" [editable]="true">
                             <div class="row">
                                 <div class="col-12">
                                     <ng-template matStepLabel>Sizes</ng-template>
@@ -1824,9 +1848,14 @@
                                     </button>
                                 </div>
                             </div>
-                            <app-product-sizes *ngIf="stepperIndex" [selectedProduct]="stepperIndex"
-                                [myStepper]="myStepper">
+                            <app-product-sizes *ngIf="stepperIndex && 
+                                firstFormGroup.get('radio').value.name=='Apparel Item'"
+                                [selectedProduct]="stepperIndex" [myStepper]="myStepper">
                             </app-product-sizes>
+                            <div class="text-center font-bold mt-5" *ngIf="
+                                firstFormGroup.get('radio').value.name !='Apparel Item'">Sizes are not available for
+                                not
+                                apparel items.</div>
                         </mat-step>
                         <!-- Product Detail -->
                         <mat-step label="Review">
@@ -1841,16 +1870,16 @@
                                         <div class="row">
                                             <div class="col-lg-6 col-12">
                                                 <mat-form-field appearance="fill" class="w-full">
-                                                    <mat-label>Product Number</mat-label>
-                                                    <input matInput formControlName="productNumber" required>
-                                                    <mat-error>Product Number is required</mat-error>
+                                                    <mat-label>Product Name</mat-label>
+                                                    <input matInput formControlName="productName" required>
+                                                    <mat-error>Product Name is required</mat-error>
                                                 </mat-form-field>
                                             </div>
                                             <div class="col-lg-6 col-12">
                                                 <mat-form-field appearance="fill" class="w-full">
-                                                    <mat-label>Product Name</mat-label>
-                                                    <input matInput formControlName="productName" required>
-                                                    <mat-error>Product Name is required</mat-error>
+                                                    <mat-label>Product Number</mat-label>
+                                                    <input matInput formControlName="productNumber" required>
+                                                    <mat-error>Product Number is required</mat-error>
                                                 </mat-form-field>
                                             </div>
                                             <div class="col-12" *ngIf="supplierType === 'Apparel Item'">
@@ -1983,7 +2012,7 @@
                                             </div>
                                             <div class="col-12" *ngIf="supplierType == 'Apparel Item'">
                                                 <mat-form-field class="w-full">
-                                                    <mat-label>Units in weight</mat-label>
+                                                    <mat-label>Units per Shipping Package</mat-label>
                                                     <input matInput type="number" min="1"
                                                         [formControlName]="'unitsInWeight'"><small
                                                         class="text-secondary font-semibold">

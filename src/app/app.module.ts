@@ -15,6 +15,7 @@ import { appRoutes } from 'app/app.routing';
 import { HttpClientModule } from '@angular/common/http';
 import { environment } from 'environments/environment';
 import { AngularFireModule } from '@angular/fire/compat';
+import { MatSnackBarModule } from '@angular/material/snack-bar';
 
 const routerConfig: ExtraOptions = {
     scrollPositionRestoration: 'enabled',
@@ -42,7 +43,7 @@ const routerConfig: ExtraOptions = {
 
         // Layout
         LayoutModule,
-
+        MatSnackBarModule,
         // 3rd party modules
         MarkdownModule.forRoot({})
     ],

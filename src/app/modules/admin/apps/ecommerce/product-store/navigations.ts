@@ -36,7 +36,7 @@ export const navigations = [
     },
     {
         id: 8,
-        title: 'Realated Products',
+        title: 'Related Products',
         icon: 'mat_outline:checklist'
     },
     {
