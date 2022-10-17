@@ -19,7 +19,7 @@ export const ecommerceRoutes: Route[] = [
         path: 'inventory',
         component: InventoryComponent,
         resolve: {
-            // distributor: SystemDistributorCodes,
+            distributor: SystemDistributorCodes,
             suppliers: SuppliersListResolver
         },
         children: [

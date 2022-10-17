@@ -38,6 +38,13 @@ export class ProductsStatusComponent implements OnInit {
         this._changeDetectorRef.markForCheck();
         this.isLoadingChange.emit(false);
       });
+    let params = {
+      list: true,
+      product_id: this.selectedProduct.pk_productID
+    }
+    this._inventoryService.getProductsData(params).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+      console.log(res);
+    })
   }
 
   assignStore(): void {

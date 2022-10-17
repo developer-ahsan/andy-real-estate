@@ -27,6 +27,7 @@ export class PricingComponent implements OnInit, OnDestroy {
   isUpdateLoading: boolean = false;
 
   storeData: any;
+
   constructor(
     private _changeDetectorRef: ChangeDetectorRef,
     private _storeService: StoreProductService,

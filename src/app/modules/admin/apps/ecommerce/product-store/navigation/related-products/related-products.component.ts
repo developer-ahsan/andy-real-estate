@@ -70,7 +70,7 @@ export class RelatedProdcutsComponent implements OnInit, OnDestroy {
     let params = {
       related_product: true,
       store_id: this.storeData.pk_storeID,
-      page: page
+      page: Number(page)
     }
     this._storeService.commonGetCalls(params).subscribe(res => {
       if (this.relationTypes.length == 0) {
@@ -92,7 +92,7 @@ export class RelatedProdcutsComponent implements OnInit, OnDestroy {
     let params = {
       current_related_product: true,
       store_id: this.storeData.pk_storeID,
-      page: page
+      page: Number(page)
     }
     this._storeService.commonGetCalls(params).subscribe(res => {
       this.currentRelatedProduct = res["data"];

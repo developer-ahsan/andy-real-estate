@@ -16,8 +16,20 @@ export class ProductOptionsComponent implements OnInit, OnDestroy {
   @Input() isLoading: boolean;
   @Output() isLoadingChange = new EventEmitter<boolean>();
   private _unsubscribeAll: Subject<any> = new Subject<any>();
-  storeData: any;
 
+  storeData: any;
+  searchTerm: string = '';
+
+  productOptionTotal: Number = 0;
+
+  productsList = [];
+  productsListColumns: string[] = ['select', 'id', 'number', 'name'];
+  productListTotal: Number = 0;
+  productListPage = 1;
+  tempProductsList = [];
+  tempProductListTotal: Number = 0;
+
+  checkedProductsList = [];
 
 
   constructor(
@@ -26,16 +38,31 @@ export class ProductOptionsComponent implements OnInit, OnDestroy {
   ) { }
 
   ngOnInit(): void {
+    this._storeService.store$.pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+      this.storeData = res["data"][0];
+      this.getProductList(1);
+    });
     this.isLoading = true;
-    this.getProductOptions();
   }
-
+  searchKeyword(ev) {
+    const keyword = ev.target.value;
+    this.searchTerm = keyword;
+    if (keyword.length > 0) {
+      this.productListPage = 1;
+      this.getProductList(1);
+    } else {
+      this.productListPage = 1;
+      this.productsList = this.tempProductsList;
+      this.productListTotal = this.tempProductListTotal;
+    }
+  }
   getProductOptions() {
     let params = {
       product_options: true,
       store_product_id: Number(this.selectedProduct.pk_storeProductID)
     }
     this._storeService.commonGetCalls(params).subscribe(res => {
+      this.productOptionTotal = res["totalRecords"];
       this.isLoadingChange.emit(false);
       this.isLoading = false;
       this._changeDetectorRef.markForCheck();
@@ -45,8 +72,46 @@ export class ProductOptionsComponent implements OnInit, OnDestroy {
       this._changeDetectorRef.markForCheck();
     })
   }
+  getProductList(page) {
+    let params = {
+      product_options_supplier_products: true,
+      page: page,
+      keyword: this.searchTerm,
+      store_id: Number(this.storeData.pk_storeID)
+    }
+    this._storeService.commonGetCalls(params).subscribe(res => {
+      this.productListTotal = res["totalRecords"];
+      this.productsList = res["data"];
+      if (this.searchTerm == '') {
+        this.tempProductListTotal = res["totalRecords"];
+        this.tempProductsList = res["data"];
+      }
+      this.getProductOptions();
+    }, err => {
+      this.isLoadingChange.emit(false);
+      this.isLoading = false;
+      this._changeDetectorRef.markForCheck();
+    })
+  }
+  getNextData(event) {
+    const { previousPageIndex, pageIndex } = event;
 
+    if (pageIndex > previousPageIndex) {
+      this.productListPage++;
+    } else {
+      this.productListPage--;
+    };
+    this.getProductList(this.productListPage);
+  };
 
+  checkedListItems(item) {
+    let check = this.checkedProductsList.findIndex(element => element.fk_productID == item.fk_productID);
+    if (check < 0) {
+      this.checkedProductsList.push(item);
+    } else {
+      this.checkedProductsList.splice(check, 1);
+    }
+  }
 
   /**
      * On destroy
