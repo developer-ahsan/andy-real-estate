@@ -1,5 +1,6 @@
 import { Component, Input, OnInit, Output, EventEmitter, ChangeDetectorRef, OnDestroy } from '@angular/core';
 import { Subject } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
 import { StoreProductService } from '../../store.service';
 
 @Component({
@@ -28,22 +29,23 @@ export class ExtrinsicComponent implements OnInit, OnDestroy {
     this._changeDetectorRef.markForCheck();
   }
 
-  updateShipping() {
-    // this.isUpdateLoading = true;
-    // let payload = {
-    //   blnOverride: this.blnOverride,
-    //   blnIncludeShipping: this.blnIncludeShipping,
-    //   storeProductID: Number(this.selectedProduct.pk_storeProductID),
-    //   update_shipping: true
-    // }
-    // this._storeService.updateShipping(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
-    //   this.isUpdateLoading = false;
-    //   this._storeService.snackBar('Shipping Options Updated Successfully');
-    //   this._changeDetectorRef.markForCheck();
-    // }, err => {
-    //   this.isUpdateLoading = false;
-    //   this._changeDetectorRef.markForCheck();
-    // })
+  UpdateExtrinsicCategory() {
+    this.isUpdateLoading = true;
+    let payload = {
+      extrinsicCategory: this.extrinsicCat,
+      storeProductID: Number(this.selectedProduct.pk_storeProductID),
+      update_extrinsic_category: true
+    }
+    this._storeService.UpdateExtrinsicCategory(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+      this.isUpdateLoading = false;
+      this._storeService.snackBar('Extrinsic Category Updated Successfully');
+      this.selectedProduct.extrinsicCategory = this.extrinsicCat;
+      this._storeService._storeProduct.next(this.selectedProduct);
+      this._changeDetectorRef.markForCheck();
+    }, err => {
+      this.isUpdateLoading = false;
+      this._changeDetectorRef.markForCheck();
+    })
   }
 
   /**

@@ -39,7 +39,9 @@ export class SizesComponent implements OnInit, OnDestroy {
   featureAddLoader = false;
   sizeUpdateLoader = false;
 
-
+  searchKeywordTerm = '';
+  tempDataSource = [];
+  tempDataCount = 0;
   constructor(
     private _changeDetectorRef: ChangeDetectorRef,
     private _inventoryService: InventoryService,
@@ -55,11 +57,20 @@ export class SizesComponent implements OnInit, OnDestroy {
 
     this.getSizes(this.page);
   };
-
+  searchKeyword(ev) {
+    const keyword = ev.target.value;
+    this.searchKeywordTerm = keyword;
+    if (keyword.length > 0) {
+      this.getSizes(1);
+    } else {
+      this.dataSource = this.tempDataSource;
+      this.sizesLength = this.tempDataCount;
+    }
+  }
   getSizes(page: number): void {
     const { pk_productID } = this.selectedProduct;
 
-    this._inventoryService.getSizes(pk_productID, page)
+    this._inventoryService.getSizes(pk_productID, this.searchKeywordTerm, page)
       .pipe(takeUntil(this._unsubscribeAll))
       .subscribe((sizes) => {
 
@@ -75,6 +86,12 @@ export class SizesComponent implements OnInit, OnDestroy {
             }
             this.dataSource = selected.concat(unSelected);
             this.sizesLength = sizes["totalRecords"];
+            if (this.searchKeywordTerm == '') {
+              this.tempDataSource = selected.concat(unSelected);
+              this.tempDataCount = sizes["totalRecords"];
+            }
+
+
             this.isLoadingChange.emit(false);
             // Mark for check
             this._changeDetectorRef.markForCheck();

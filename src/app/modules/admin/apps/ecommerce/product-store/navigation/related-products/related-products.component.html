@@ -1,13 +1,137 @@
 <ngx-skeleton-loader count="8" appearance="line" animation="pulse" *ngIf="isLoading">
 </ngx-skeleton-loader>
+<ngx-skeleton-loader count="8" appearance="line" animation="pulse" *ngIf="isCurrentLoading">
+</ngx-skeleton-loader>
 <div class="row my-3" *ngIf="!isLoading">
     <div class="col-12">
         <fuse-card class="rounded-2xl shadow bg-card flex flex-col lg:flex-row w-full">
-            <div class="p-6 sm:p-8 lg:p-10 w-full">
-                <div class="text-2xl font-bold">
-                    Shipping Options
+            <div class="w-full">
+                <div class="p-6 sm:p-8 lg:p-10 w-full">
+                    <div class="text-2xl font-bold">
+                        Related Products
+                    </div>
+                    <div>
+                        <mat-button-toggle-group #group="matButtonToggleGroup" [value]="mainScreen"
+                            (change)="calledScreen(group.value)">
+                            <mat-button-toggle value="Related Products">
+                                Related Products
+                            </mat-button-toggle>
+                            <mat-button-toggle value="Current Related Products">
+                                Current Related Products
+                            </mat-button-toggle>
+                        </mat-button-toggle-group>
+                    </div>
+                </div>
+                <div *ngIf="mainScreen == 'Related Products'">
+                    <table mat-table *ngIf="relatedProduct.length> 0" [dataSource]="relatedProduct"
+                        class="w-full border-t">
+                        <ng-container matColumnDef="id">
+                            <th mat-header-cell *matHeaderCellDef class="w-15 min-w-15">
+                                Product ID
+                            </th>
+                            <td mat-cell *matCellDef="let element">
+                                {{element.fk_productID}}
+                            </td>
+                        </ng-container>
+
+                        <!-- Size Column -->
+                        <ng-container matColumnDef="number">
+                            <th mat-header-cell *matHeaderCellDef class="w-24 min-w-24"> Product Number </th>
+                            <td mat-cell *matCellDef="let element"> {{element.productNumber}} </td>
+                        </ng-container>
+
+                        <!-- Run Column -->
+                        <ng-container matColumnDef="name">
+                            <th mat-header-cell *matHeaderCellDef class="w-24 min-w-24"> Name </th>
+                            <td mat-cell *matCellDef="let element">
+                                {{element.productName}}
+                            </td>
+                        </ng-container>
+
+                        <!-- Weight Column -->
+                        <ng-container matColumnDef="type">
+                            <th mat-header-cell *matHeaderCellDef class="w-24 min-w-24"> Type </th>
+                            <td mat-cell *matCellDef="let element" class="p-3">
+                                <mat-form-field class="w-full">
+                                    <mat-select matInput [(ngModel)]="element.prod_type">
+                                        <mat-option *ngFor="let item of relationTypes" [value]="item.relationTypeName">
+                                            {{item.relationTypeName}}</mat-option>
+                                    </mat-select>
+                                </mat-form-field>
+                            </td>
+                        </ng-container>
+
+                        <!-- Units Column -->
+                        <ng-container matColumnDef="action">
+                            <th mat-header-cell *matHeaderCellDef class="w-40 min-w-40 text-center"> Action </th>
+                            <td mat-cell *matCellDef="let element" class="text-center">
+                                <button [matTooltip]="'Add Relation'" mat-stroked-button>Add Relation</button>
+                            </td>
+                        </ng-container>
+
+                        <tr mat-header-row *matHeaderRowDef="relatedProductColumns;" class="h-18 bg-light"></tr>
+                        <tr mat-row *matRowDef="let row; columns: relatedProductColumns;"
+                            class="h-14 hover:bg-gray-100 dark:hover:bg-hover" style="cursor: pointer;">
+                        </tr>
+                    </table>
+                    <mat-paginator
+                        class="sm:absolute sm:inset-x-0 border-b sm:border-t sm:border-b-0 z-10 bg-gray-50 dark:bg-transparent"
+                        [ngClass]="{'pointer-events-none': isLoading}" [length]="relatedProductTotal" [pageIndex]="0"
+                        [pageSize]="relatedProduct.length" (page)="getNextData($event)" [hidePageSize]="true">
+                    </mat-paginator>
+                </div>
+                <div *ngIf="mainScreen == 'Current Related Products' && !isCurrentLoading">
+                    <table mat-table *ngIf="currentRelatedProduct.length> 0" [dataSource]="currentRelatedProduct"
+                        class="w-full border-t">
+                        <ng-container matColumnDef="select">
+                            <th mat-header-cell *matHeaderCellDef class="w-10">Select</th>
+                            <td mat-cell *matCellDef="let element" class="text-center">
+                                <mat-checkbox></mat-checkbox>
+                            </td>
+                        </ng-container>
+                        <!-- Size Column -->
+                        <ng-container matColumnDef="number">
+                            <th mat-header-cell *matHeaderCellDef class="w-10"> Product Number </th>
+                            <td mat-cell *matCellDef="let element"> {{element.productNumber}} </td>
+                        </ng-container>
+
+                        <!-- Run Column -->
+                        <ng-container matColumnDef="name">
+                            <th mat-header-cell *matHeaderCellDef class="w-40"> Name </th>
+                            <td mat-cell *matCellDef="let element">
+                                {{element.productName}}
+                            </td>
+                        </ng-container>
+
+                        <!-- Weight Column -->
+                        <ng-container matColumnDef="type">
+                            <th mat-header-cell *matHeaderCellDef class="w-10"> Type </th>
+                            <td mat-cell *matCellDef="let element" class="p-3">
+                                {{element.relationTypeName}}
+                            </td>
+                        </ng-container>
+
+                        <!-- Units Column -->
+                        <ng-container matColumnDef="action">
+                            <th mat-header-cell *matHeaderCellDef class="w-10 text-center"> Action </th>
+                            <td mat-cell *matCellDef="let element" class="text-center">
+                                <button [matTooltip]="'Delete'" mat-stroked-button>Delete</button>
+                            </td>
+                        </ng-container>
+
+                        <tr mat-header-row *matHeaderRowDef="currentRelatedProductColumns;" class="h-18 bg-light"></tr>
+                        <tr mat-row *matRowDef="let row; columns: currentRelatedProductColumns;"
+                            class="h-14 hover:bg-gray-100 dark:hover:bg-hover" style="cursor: pointer;">
+                        </tr>
+                    </table>
+                    <mat-paginator
+                        class="sm:absolute sm:inset-x-0 border-b sm:border-t sm:border-b-0 z-10 bg-gray-50 dark:bg-transparent"
+                        [ngClass]="{'pointer-events-none': isLoading}" [length]="relatedProductTotal" [pageIndex]="0"
+                        [pageSize]="currentRelatedProduct.length" (page)="getNextData($event)" [hidePageSize]="true">
+                    </mat-paginator>
                 </div>
             </div>
+
         </fuse-card>
     </div>
 </div>

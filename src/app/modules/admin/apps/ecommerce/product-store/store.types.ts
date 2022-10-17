@@ -22,3 +22,23 @@ export interface Quantities {
     quantity: number;
     margin: number;
 };
+export interface UpdateExtrinsicCategory {
+    extrinsicCategory: string;
+    storeProductID: number;
+    update_extrinsic_category: boolean;
+};
+export interface UpdateSpecialDescription {
+    masterDescription: string;
+    masterMiniDescription: string;
+    specialDescription: string;
+    specialMiniDescription: string;
+    specialMetaDescription: string;
+    productID: number;
+    storeProductID: number;
+    update_special_description: boolean;
+};
+export interface UpdatePermaLink {
+    permalink: string;
+    storeProductID: number;
+    update_permalink: boolean;
+}; 

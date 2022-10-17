@@ -28,7 +28,7 @@ export class SpecialDescComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     // Create the selected product form
     this.isLoading = false;
-
+    console.log(this.selectedProduct)
   }
 
 

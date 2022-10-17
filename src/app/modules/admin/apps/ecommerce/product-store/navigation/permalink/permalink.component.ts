@@ -1,5 +1,6 @@
 import { Component, Input, OnInit, Output, EventEmitter, ChangeDetectorRef, OnDestroy } from '@angular/core';
 import { Subject } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
 import { StoreProductService } from '../../store.service';
 
 @Component({
@@ -28,22 +29,23 @@ export class PermalinkComponent implements OnInit, OnDestroy {
     this._changeDetectorRef.markForCheck();
   }
 
-  updateShipping() {
-    // this.isUpdateLoading = true;
-    // let payload = {
-    //   blnOverride: this.blnOverride,
-    //   blnIncludeShipping: this.blnIncludeShipping,
-    //   storeProductID: Number(this.selectedProduct.pk_storeProductID),
-    //   update_shipping: true
-    // }
-    // this._storeService.updateShipping(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
-    //   this.isUpdateLoading = false;
-    //   this._storeService.snackBar('Shipping Options Updated Successfully');
-    //   this._changeDetectorRef.markForCheck();
-    // }, err => {
-    //   this.isUpdateLoading = false;
-    //   this._changeDetectorRef.markForCheck();
-    // })
+  UpdatePermaLink() {
+    this.isUpdateLoading = true;
+    let payload = {
+      permalink: this.permalink,
+      storeProductID: Number(this.selectedProduct.pk_storeProductID),
+      update_permalink: true
+    }
+    this._storeService.UpdatePermaLink(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+      this.isUpdateLoading = false;
+      this._storeService.snackBar('Shipping Options Updated Successfully');
+      this.selectedProduct.permalink = this.permalink;
+      this._storeService._storeProduct.next(this.selectedProduct);
+      this._changeDetectorRef.markForCheck();
+    }, err => {
+      this.isUpdateLoading = false;
+      this._changeDetectorRef.markForCheck();
+    })
   }
 
   /**

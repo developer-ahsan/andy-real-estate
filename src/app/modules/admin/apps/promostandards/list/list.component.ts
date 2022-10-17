@@ -248,6 +248,7 @@ export class PromostandardsListComponent implements OnInit, OnDestroy {
         this.sidenav.toggle();
         this.drawerType = type;
         if (type == 'add') {
+            this.initPromoForm();
             this.drawerTitle = 'Add New Promostandard';
         } else {
             this.drawerTitle = 'Update Promostandard';

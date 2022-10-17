@@ -9,34 +9,59 @@
                 </div>
                 <div class="row">
                     <div class="col-2"></div>
-                    <div class="col-2 text-center">1</div>
-                    <div class="col-2 text-center">2</div>
-                    <div class="col-2 text-center">3</div>
-                    <div class="col-2 text-center">4</div>
-                    <div class="col-1 text-center">5</div>
-                    <div class="col-1 text-center">6</div>
+                    <div class="col-10">
+                        <div class="row">
+                            <div class="col-2 text-center">1</div>
+                            <div class="col-2 text-center">2</div>
+                            <div class="col-2 text-center">3</div>
+                            <div class="col-2 text-center">4</div>
+                            <div class="col-2 text-center">5</div>
+                            <div class="col-2 text-center">6</div>
+                        </div>
+                    </div>
                     <div class="col-12 text-center font-bold bg-light p-2">CURRENT PRICING</div>
                 </div>
-                <div class="row mb-2">
+                <div class="row mb-2 mt-2">
                     <div class="col-2">Quantity</div>
-                    <div class="col-2 text-center" *ngFor="let item of quantityData">{{item}}</div>
+                    <div class="col-10">
+                        <div class="row ">
+                            <div class="col-2 text-center" *ngFor="let item of quantityData">{{item}}</div>
+                        </div>
+                    </div>
                 </div>
-                <div class="row mb-2">
+                <div class="row">
                     <div class="col-2">Standard Price</div>
-                    <div class="col-2 text-center" *ngFor="let item of priceData">{{item | currency}}</div>
+                    <div class="col-10">
+                        <div class="row mb-2">
+                            <div class="col-2 text-center" *ngFor="let item of priceData">{{item | currency}}</div>
+                        </div>
+                    </div>
                 </div>
-                <div class="row mb-2">
+                <div class="row">
                     <div class="col-2">Standard Cost</div>
-                    <div class="col-2 text-center" *ngFor="let item of costData">{{item | currency}}</div>
+                    <div class="col-10">
+                        <div class="row mb-2">
+                            <div class="col-2 text-center" *ngFor="let item of costData">{{item | currency}}</div>
+                        </div>
+                    </div>
                 </div>
-                <div class="row mb-2">
+                <div class="row">
                     <div class="col-2">Blank Price</div>
-                    <div class="col-2 text-center" *ngFor="let item of blankData">{{item | currency}}</div>
+                    <div class="col-10">
+                        <div class="row mb-2">
+                            <div class="col-2 text-center" *ngFor="let item of blankData">{{item | currency}}</div>
+                        </div>
+                    </div>
                 </div>
-                <div class="row mb-2">
+                <div class="row">
                     <div class="col-2">Blank Cost</div>
-                    <div class="col-2 text-center" *ngFor="let item of blankCostData">{{item | currency}}</div>
+                    <div class="col-10">
+                        <div class="row mb-2">
+                            <div class="col-2 text-center" *ngFor="let item of blankCostData">{{item | currency}}</div>
+                        </div>
+                    </div>
                 </div>
+
                 <div class="row">
                     <div class="col-12 text-center font-bold bg-light p-2">Update Margin</div>
                 </div>

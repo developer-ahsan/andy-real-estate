@@ -288,11 +288,11 @@
                             </div>
                             <div class="flex">
                                 <b class="text-secondary text-sm">Store:</b>
-                                <p class="ml-3 text-sm" storeData>
+                                <p class="ml-3 text-sm">
                                     <a class="float-right text-sm"
                                         style="color: #959595; text-decoration: underline; cursor: pointer;"
-                                        href="{{storeData?.storeURL}}" target="_blank">
-                                        {{storeData?.storeURL || not_available}}
+                                        href="{{storeData.storeURL}}" target="_blank">
+                                        {{storeData.storeURL || not_available}}
                                     </a>
                                 </p>
                             </div>
@@ -345,7 +345,8 @@
                 </div>
                 <div class="col-12">
                     <ng-template [ngIf]="selectedIndex === 'Special Description'">
-                        <app-color [(isLoading)]="isLoading" [selectedProduct]="selectedProduct"></app-color>
+                        <app-special-description [(isLoading)]="isLoading" [selectedProduct]="selectedProduct">
+                        </app-special-description>
                     </ng-template>
                 </div>
                 <div class="col-12">
@@ -356,7 +357,14 @@
                 </div>
                 <div class="col-12">
                     <ng-template [ngIf]="selectedIndex === 'Related Products'">
-                        <app-feature [(isLoading)]="isLoading" [selectedProduct]="selectedProduct"></app-feature>
+                        <app-related-products [(isLoading)]="isLoading" [selectedProduct]="selectedProduct">
+                        </app-related-products>
+                    </ng-template>
+                </div>
+                <div class="col-12">
+                    <ng-template [ngIf]="selectedIndex === 'Product Options'">
+                        <app-product-options [(isLoading)]="isLoading" [selectedProduct]="selectedProduct">
+                        </app-product-options>
                     </ng-template>
                 </div>
                 <div class="col-12">

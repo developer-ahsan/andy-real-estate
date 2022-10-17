@@ -844,14 +844,26 @@ export class InventoryService {
         });
     };
 
-    getSizes(productId, page): Observable<any[]> {
-        return this._httpClient.get<any[]>(environment.products, {
-            params: {
+    getSizes(productId, keyword, page): Observable<any[]> {
+        let params;
+        if (keyword != '') {
+            params = {
                 product_id: productId,
                 sizes: true,
-                size: 10,
+                keyword: keyword,
+                size: 50,
                 page: page
             }
+        } else {
+            params = {
+                product_id: productId,
+                sizes: true,
+                size: 50,
+                page: page
+            }
+        }
+        return this._httpClient.get<any[]>(environment.products, {
+            params: params
         }).pipe(retry(3));
     };
 

@@ -6,15 +6,15 @@ import { environment } from 'environments/environment';
 import { productDescription } from 'app/modules/admin/apps/ecommerce/inventory/inventory.types';
 import { AuthService } from 'app/core/auth/auth.service';
 import { navigations } from 'app/modules/admin/apps/ecommerce/product-store/navigations';
-import { UpdatePricing, UpdateShipping, UpdateStoreLevelCoop } from './store.types';
+import { UpdateExtrinsicCategory, UpdatePermaLink, UpdatePricing, UpdateShipping, UpdateSpecialDescription, UpdateStoreLevelCoop } from './store.types';
 import { MatSnackBar } from '@angular/material/snack-bar';
 
 @Injectable({
     providedIn: 'root'
 })
 export class StoreProductService {
-    private _storeProduct: BehaviorSubject<any | null> = new BehaviorSubject(null);
-    private _storeDetail: BehaviorSubject<any | null> = new BehaviorSubject(null);
+    public _storeProduct: BehaviorSubject<any | null> = new BehaviorSubject(null);
+    public _storeDetail: BehaviorSubject<any | null> = new BehaviorSubject(null);
 
 
 
@@ -49,6 +49,10 @@ export class StoreProductService {
         });
     }
     // Store Products Get Calls
+    commonGetCalls(params) {
+        return this._httpClient.get(environment.storeProducts, { params: params })
+            .pipe(retry(3));
+    }
     getStoreDetail(id): Observable<any[]> {
         return this._httpClient.get<any[]>(environment.stores, {
             params: {
@@ -81,16 +85,31 @@ export class StoreProductService {
     updateShipping(payload: UpdateShipping) {
         const headers = { 'Authorization': `Bearer ${this._authService.accessToken}` };
         return this._httpClient.put(
-            environment.products, payload, { headers });
+            environment.storeProducts, payload, { headers });
     };
     UpdateStoreLevelCoop(payload: UpdateStoreLevelCoop) {
         const headers = { 'Authorization': `Bearer ${this._authService.accessToken}` };
         return this._httpClient.put(
-            environment.products, payload, { headers });
+            environment.storeProducts, payload, { headers });
     };
     UpdatePricing(payload: UpdatePricing) {
         const headers = { 'Authorization': `Bearer ${this._authService.accessToken}` };
         return this._httpClient.put(
-            environment.products, payload, { headers });
+            environment.storeProducts, payload, { headers });
+    };
+    UpdateExtrinsicCategory(payload: UpdateExtrinsicCategory) {
+        const headers = { 'Authorization': `Bearer ${this._authService.accessToken}` };
+        return this._httpClient.put(
+            environment.storeProducts, payload, { headers });
+    };
+    UpdateSpecialDescription(payload: UpdateSpecialDescription) {
+        const headers = { 'Authorization': `Bearer ${this._authService.accessToken}` };
+        return this._httpClient.put(
+            environment.storeProducts, payload, { headers });
+    };
+    UpdatePermaLink(payload: UpdatePermaLink) {
+        const headers = { 'Authorization': `Bearer ${this._authService.accessToken}` };
+        return this._httpClient.put(
+            environment.storeProducts, payload, { headers });
     };
 }

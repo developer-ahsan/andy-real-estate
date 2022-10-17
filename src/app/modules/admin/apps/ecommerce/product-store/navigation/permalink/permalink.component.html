@@ -15,7 +15,7 @@
                         </mat-form-field>
                     </div>
                     <div class="col-12 text-right">
-                        <button [matTooltip]="'Update'" mat-stroked-button class="min-w-40" (click)="updateShipping()"
+                        <button [matTooltip]="'Update'" mat-stroked-button class="min-w-40" (click)="UpdatePermaLink()"
                             [disabled]="isUpdateLoading">
                             <mat-progress-spinner *ngIf="isUpdateLoading" [diameter]="24" [mode]="'indeterminate'">
                             </mat-progress-spinner>
