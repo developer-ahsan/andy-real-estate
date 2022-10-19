@@ -1,14 +1,13 @@
-import { Component, Input, OnInit, Output, EventEmitter, ChangeDetectorRef, OnDestroy } from '@angular/core';
+import { Component, Input, OnInit, Output, EventEmitter, ChangeDetectorRef, OnDestroy, ViewEncapsulation } from '@angular/core';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
-import { InventoryService } from 'app/modules/admin/apps/ecommerce/inventory/inventory.service';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { MatRadioChange } from '@angular/material/radio';
-import { MatSnackBar } from '@angular/material/snack-bar';
+import { StoreProductService } from '../../store.service';
 
 @Component({
   selector: 'app-store-colors',
-  templateUrl: './colors.component.html'
+  templateUrl: './colors.component.html',
+  styles: ['fuse-alert .fuse-alert-container .mat-icon {color: gray !important} fuse-alert.fuse-alert-appearance-soft.fuse-alert-type-info .fuse-alert-container .fuse-alert-message {color: gray !important}'],
+  encapsulation: ViewEncapsulation.None,
 })
 export class StoreColorsComponent implements OnInit, OnDestroy {
   @Input() selectedProduct: any;
@@ -16,23 +15,66 @@ export class StoreColorsComponent implements OnInit, OnDestroy {
   @Output() isLoadingChange = new EventEmitter<boolean>();
   private _unsubscribeAll: Subject<any> = new Subject<any>();
 
+  colorColumns: string[] = ['id', 'name', 'select'];
+  colorData = [];
+
+  isUpdateLoading: boolean = false;
+  storeData: any;
 
 
   constructor(
     private _changeDetectorRef: ChangeDetectorRef,
-    private _inventoryService: InventoryService,
-    private _formBuilder: FormBuilder,
-    private _snackBar: MatSnackBar
+    private _storeService: StoreProductService
   ) { }
 
   ngOnInit(): void {
+    this._storeService.store$.pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+      this.storeData = res["data"][0];
+    });
     // Create the selected product form
-    this.isLoading = false;
-
+    this.isLoading = true;
+    this.getColors();
   }
 
+  getColors() {
+    let params = {
+      color: true,
+      store_product_id: this.selectedProduct.pk_storeProductID
+    }
+    this._storeService.getStoreProducts(params).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+      this.colorData = res["data"];
+      this.isLoading = false;
+      this.isLoadingChange.emit(false);
+      this._changeDetectorRef.markForCheck();
+    }, err => {
+      this.isLoadingChange.emit(false);
+      this.isLoading = false;
+      this._changeDetectorRef.markForCheck();
+    })
+  }
 
-
+  updateColors() {
+    this.isUpdateLoading = true;
+    let colors: number[] = [];
+    this.colorData.forEach(element => {
+      if (element.blnStoreProductColorActive) {
+        colors.push(element.fk_colorID);
+      }
+    });
+    let payload = {
+      colorIDS: colors,
+      storeProductID: Number(this.selectedProduct.pk_storeProductID),
+      update_color: true
+    }
+    this._storeService.updateColors(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+      this.isUpdateLoading = false;
+      this._storeService.snackBar('Shipping Options Updated Successfully');
+      this._changeDetectorRef.markForCheck();
+    }, err => {
+      this.isUpdateLoading = false;
+      this._changeDetectorRef.markForCheck();
+    })
+  }
   /**
      * On destroy
      */

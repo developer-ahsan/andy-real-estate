@@ -1,5 +1,6 @@
 import { Component, Input, OnInit, Output, EventEmitter, ChangeDetectorRef, OnDestroy } from '@angular/core';
 import { Subject } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
 import { StoreProductService } from '../../store.service';
 
 @Component({
@@ -15,6 +16,7 @@ export class RoyalitySettingsComponent implements OnInit, OnDestroy {
 
   royaltySetting: number;
   isUpdateLoading: boolean = false;
+  storeData: any;
 
   constructor(
     private _changeDetectorRef: ChangeDetectorRef,
@@ -22,28 +24,34 @@ export class RoyalitySettingsComponent implements OnInit, OnDestroy {
   ) { }
 
   ngOnInit(): void {
+    this._storeService.store$.pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+      this.storeData = res["data"][0];
+    });
     this.royaltySetting = this.selectedProduct.royaltySetting;
     this.isLoadingChange.emit(false);
     this.isLoading = false;
     this._changeDetectorRef.markForCheck();
   }
 
-  updateShipping() {
-    // this.isUpdateLoading = true;
-    // let payload = {
-    //   blnOverride: this.blnOverride,
-    //   blnIncludeShipping: this.blnIncludeShipping,
-    //   storeProductID: Number(this.selectedProduct.pk_storeProductID),
-    //   update_shipping: true
-    // }
-    // this._storeService.updateShipping(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
-    //   this.isUpdateLoading = false;
-    //   this._storeService.snackBar('Shipping Options Updated Successfully');
-    //   this._changeDetectorRef.markForCheck();
-    // }, err => {
-    //   this.isUpdateLoading = false;
-    //   this._changeDetectorRef.markForCheck();
-    // })
+  UpdateRoyalty() {
+    this.isUpdateLoading = true;
+    let payload = {
+      royaltySetting: this.royaltySetting,
+      storeName: this.storeData.storeName,
+      store_product_id: Number(this.selectedProduct.pk_storeProductID),
+      product_id: Number(this.selectedProduct.pk_productID),
+      update_royalty: true
+    }
+    this._storeService.UpdateRoyalty(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+      this.isUpdateLoading = false;
+      this._storeService.snackBar('Store product royalty settings updated successfully');
+      this.selectedProduct.royaltySetting = this.royaltySetting;
+      this._storeService._storeProduct.next(this.selectedProduct);
+      this._changeDetectorRef.markForCheck();
+    }, err => {
+      this.isUpdateLoading = false;
+      this._changeDetectorRef.markForCheck();
+    })
   }
 
   /**

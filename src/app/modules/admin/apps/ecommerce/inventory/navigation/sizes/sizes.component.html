@@ -23,12 +23,17 @@
                 <div class="col-12">
                     <mat-form-field class="fuse-mat-dense fuse-mat-no-subscript w-full">
                         <mat-icon matPrefix [svgIcon]="'heroicons_outline:search'"></mat-icon>
-                        <input class="h-6" matInput (keyup.enter)="searchKeyword($event)" [autocomplete]="'off'"
+                        <input class="h-6" matInput (keyup.enter)="searchKeyword($event)"
+                            [(ngModel)]="searchKeywordTerm" [autocomplete]="'off'"
                             [placeholder]="'Search Sizes (Press Enter key to search)'">
                     </mat-form-field>
+                    <ngx-skeleton-loader class="mt-5" count="8" appearance="line" animation="pulse"
+                        *ngIf="isSearchLoading">
+                    </ngx-skeleton-loader>
                 </div>
             </div>
-            <div *ngIf="dataSource.length > 0;else other_content">
+
+            <div *ngIf="dataSource.length > 0 && !isSearchLoading;else other_content">
                 <table mat-table [dataSource]="dataSource" class="w-full border-t">
 
                     <!-- Checkbox Column -->
@@ -98,7 +103,7 @@
                 </mat-paginator>
             </div>
             <ng-template #other_content>
-                <div class="text-secondary font-semibold p-5">
+                <div class="text-secondary font-semibold p-5" *ngIf="!isSearchLoading">
                     No sizes found.
                 </div>
             </ng-template>
@@ -106,7 +111,7 @@
     </div>
 </div>
 
-<div class="row my-5 mt-7" *ngIf="!isLoading">
+<div class="row my-5 mt-7" *ngIf="!isLoading && !isSearchLoading">
     <div class="col-12">
         <mat-card class="w-full p-0 mb-10 h-full rounded-2xl">
             <div class="row p-5">

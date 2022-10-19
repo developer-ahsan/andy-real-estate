@@ -1,10 +1,6 @@
 import { Component, Input, OnInit, Output, EventEmitter, ChangeDetectorRef, OnDestroy } from '@angular/core';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
-import { InventoryService } from 'app/modules/admin/apps/ecommerce/inventory/inventory.service';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { MatRadioChange } from '@angular/material/radio';
-import { MatSnackBar } from '@angular/material/snack-bar';
 import { StoreProductService } from '../../store.service';
 
 @Component({
@@ -20,9 +16,12 @@ export class ProductOptionsComponent implements OnInit, OnDestroy {
   storeData: any;
   searchTerm: string = '';
 
+  productOptionList = [];
   productOptionTotal: Number = 0;
+  productOptionPage = 1;
 
   productsList = [];
+  productsLists = [];
   productsListColumns: string[] = ['select', 'id', 'number', 'name'];
   productListTotal: Number = 0;
   productListPage = 1;
@@ -31,6 +30,7 @@ export class ProductOptionsComponent implements OnInit, OnDestroy {
 
   checkedProductsList = [];
 
+  isUpdateLoading: boolean = false;
 
   constructor(
     private _changeDetectorRef: ChangeDetectorRef,
@@ -63,6 +63,17 @@ export class ProductOptionsComponent implements OnInit, OnDestroy {
     }
     this._storeService.commonGetCalls(params).subscribe(res => {
       this.productOptionTotal = res["totalRecords"];
+      this.productOptionList = res["data"];
+      this.productOptionList.forEach(element => {
+        this.productListTotal = Number(this.productListTotal) - 1;
+        this.tempProductListTotal = Number(this.tempProductListTotal) - 1;
+        element.fk_productID = element.pk_productID;
+        element.selected = true;
+        const index = this.productsList.findIndex(elem => elem.fk_productID == element.pk_productID);
+        this.productsList.splice(index, 1);
+        this.checkedListItems(element);
+      });
+      // this.checkedProductsList = this.productOptionList;
       this.isLoadingChange.emit(false);
       this.isLoading = false;
       this._changeDetectorRef.markForCheck();
@@ -107,12 +118,40 @@ export class ProductOptionsComponent implements OnInit, OnDestroy {
   checkedListItems(item) {
     let check = this.checkedProductsList.findIndex(element => element.fk_productID == item.fk_productID);
     if (check < 0) {
+      item.selected = true;
       this.checkedProductsList.push(item);
     } else {
+      item.selected = false;
       this.checkedProductsList.splice(check, 1);
     }
   }
 
+  updateProductotpions() {
+    this.isUpdateLoading = true;
+    let productIDs: number[] = [];
+    this.checkedProductsList.forEach(element => {
+      productIDs.push(element.fk_productID);
+    });
+    let payload = {
+      optionalGuidelines: '',
+      product_id: Number(this.selectedProduct.fk_productID),
+      storeName: this.storeData.storeName,
+      productIDs: productIDs,
+      storeProductID: Number(this.selectedProduct.pk_storeProductID),
+      update_product_options: true
+    }
+    this._storeService.UpdateProductOptions(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+      this.checkedProductsList = [];
+      this.isUpdateLoading = false;
+      this._storeService.snackBar('Store product options updated successfully');
+      this.isLoading = true;
+      this.getProductList(1);
+      this._changeDetectorRef.markForCheck();
+    }, err => {
+      this.isUpdateLoading = false;
+      this._changeDetectorRef.markForCheck();
+    })
+  }
   /**
      * On destroy
      */

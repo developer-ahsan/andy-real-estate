@@ -6,7 +6,7 @@ import { environment } from 'environments/environment';
 import { productDescription } from 'app/modules/admin/apps/ecommerce/inventory/inventory.types';
 import { AuthService } from 'app/core/auth/auth.service';
 import { navigations } from 'app/modules/admin/apps/ecommerce/product-store/navigations';
-import { UpdateExtrinsicCategory, UpdatePermaLink, UpdatePricing, UpdateShipping, UpdateSpecialDescription, UpdateStoreLevelCoop } from './store.types';
+import { RemoveVideo, UpdateColor, UpdateExtrinsicCategory, UpdateImprint, UpdateImprintStatus, UpdatePermaLink, UpdatePricing, UpdateProductOptions, UpdateRoyalty, UpdateShipping, UpdateSpecialDescription, UpdateStoreLevelCoop, videoObj } from './store.types';
 import { MatSnackBar } from '@angular/material/snack-bar';
 
 @Injectable({
@@ -108,6 +108,41 @@ export class StoreProductService {
             environment.storeProducts, payload, { headers });
     };
     UpdatePermaLink(payload: UpdatePermaLink) {
+        const headers = { 'Authorization': `Bearer ${this._authService.accessToken}` };
+        return this._httpClient.put(
+            environment.storeProducts, payload, { headers });
+    };
+    UpdateRoyalty(payload: UpdateRoyalty) {
+        const headers = { 'Authorization': `Bearer ${this._authService.accessToken}` };
+        return this._httpClient.put(
+            environment.storeProducts, payload, { headers });
+    };
+    UpdateVideo(payload: videoObj) {
+        const headers = { 'Authorization': `Bearer ${this._authService.accessToken}` };
+        return this._httpClient.put(
+            environment.storeProducts, payload, { headers });
+    };
+    RemoveVideo(payload: RemoveVideo) {
+        const headers = { 'Authorization': `Bearer ${this._authService.accessToken}` };
+        return this._httpClient.put(
+            environment.storeProducts, payload, { headers });
+    };
+    updateColors(payload: UpdateColor) {
+        const headers = { 'Authorization': `Bearer ${this._authService.accessToken}` };
+        return this._httpClient.put(
+            environment.storeProducts, payload, { headers });
+    };
+    UpdateImprintStatus(payload: UpdateImprintStatus) {
+        const headers = { 'Authorization': `Bearer ${this._authService.accessToken}` };
+        return this._httpClient.put(
+            environment.storeProducts, payload, { headers });
+    };
+    UpdateImprint(payload: UpdateImprint) {
+        const headers = { 'Authorization': `Bearer ${this._authService.accessToken}` };
+        return this._httpClient.put(
+            environment.storeProducts, payload, { headers });
+    };
+    UpdateProductOptions(payload: UpdateProductOptions) {
         const headers = { 'Authorization': `Bearer ${this._authService.accessToken}` };
         return this._httpClient.put(
             environment.storeProducts, payload, { headers });

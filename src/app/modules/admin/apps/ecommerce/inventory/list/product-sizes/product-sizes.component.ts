@@ -43,6 +43,8 @@ export class ProductSizesComponent implements OnInit, OnDestroy {
   searchKeywordTerm = '';
   tempDataSource = [];
   tempDataCount = 0;
+
+  isSearchLoading: boolean = false;
   constructor(
     private _changeDetectorRef: ChangeDetectorRef,
     private _inventoryService: InventoryService,
@@ -65,6 +67,7 @@ export class ProductSizesComponent implements OnInit, OnDestroy {
     const keyword = ev.target.value;
     this.searchKeywordTerm = keyword;
     if (keyword.length > 0) {
+      this.isSearchLoading = true;
       this.getSizes(1);
     } else {
       this.dataSource = this.tempDataSource;
@@ -98,10 +101,24 @@ export class ProductSizesComponent implements OnInit, OnDestroy {
               this.tempDataSource = selected.concat(unSelected);
               this.tempDataCount = sizes["totalRecords"];
             }
+            this.isSearchLoading = false;
+            this.isLoading = false;
+            this.isLoadingChange.emit(false);
+            // Mark for check
+            this._changeDetectorRef.markForCheck();
+          }, err => {
+            this.isSearchLoading = false;
+            this.isLoading = false;
             this.isLoadingChange.emit(false);
             // Mark for check
             this._changeDetectorRef.markForCheck();
           });
+      }, err => {
+        this.isSearchLoading = false;
+        this.isLoading = false;
+        this.isLoadingChange.emit(false);
+        // Mark for check
+        this._changeDetectorRef.markForCheck();
       });
   };
 

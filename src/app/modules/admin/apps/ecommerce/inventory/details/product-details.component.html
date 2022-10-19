@@ -172,7 +172,8 @@
                 </div>
                 <div class="col-12">
                     <ng-template [ngIf]="selectedIndex === 'Video'">
-                        <app-video [(isLoading)]="isLoading" [selectedProduct]="selectedProduct"></app-video>
+                        <app-video [(isLoading)]="isLoading" [selectedProduct]="selectedProduct">
+                        </app-video>
                     </ng-template>
                 </div>
                 <div class="col-12">
@@ -291,8 +292,8 @@
                                 <p class="ml-3 text-sm">
                                     <a class="float-right text-sm"
                                         style="color: #959595; text-decoration: underline; cursor: pointer;"
-                                        href="{{storeData.storeURL}}" target="_blank">
-                                        {{storeData.storeURL || not_available}}
+                                        href="{{storeData?.storeURL}}" target="_blank">
+                                        {{storeData?.storeURL || not_available}}
                                     </a>
                                 </p>
                             </div>
@@ -379,24 +380,27 @@
                     </ng-template>
                 </div>
                 <div class="col-12">
-                    <ng-template [ngIf]="selectedIndex === 'Video'">
+                    <ng-template [ngIf]="selectedIndex === 'Images'">
                         <app-default-image [(isLoading)]="isLoading" [selectedProduct]="selectedProduct">
                         </app-default-image>
                     </ng-template>
                 </div>
                 <div class="col-12">
                     <ng-template [ngIf]="selectedIndex === 'Video'">
-                        <app-video [(isLoading)]="isLoading" [selectedProduct]="selectedProduct"></app-video>
+                        <app-store-videos [(isLoading)]="isLoading" [selectedProduct]="selectedProduct">
+                        </app-store-videos>
                     </ng-template>
                 </div>
                 <div class="col-12">
                     <ng-template [ngIf]="selectedIndex === 'Colors'">
-                        <app-artwork [(isLoading)]="isLoading" [selectedProduct]="selectedProduct"></app-artwork>
+                        <app-store-colors [(isLoading)]="isLoading" [selectedProduct]="selectedProduct">
+                        </app-store-colors>
                     </ng-template>
                 </div>
                 <div class="col-12">
                     <ng-template [ngIf]="selectedIndex === 'Imprints'">
-                        <app-reviews [(isLoading)]="isLoading" [selectedProduct]="selectedProduct"></app-reviews>
+                        <app-store-imprints [(isLoading)]="isLoading" [selectedProduct]="selectedProduct">
+                        </app-store-imprints>
                     </ng-template>
                 </div>
                 <div class="col-12">

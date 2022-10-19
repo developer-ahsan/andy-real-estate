@@ -115,7 +115,7 @@ export class ProductsPhysicsComponent implements OnInit, OnDestroy {
         this.sliderMaxValue = prodTimeMax;
         this.sliderMinValue = prodTimeMin;
         this.blnShipingValue = blnIncludeShipping ? 'YES' : 'NO';
-        const dimensionsSplit = dimensions.split(",");
+        const dimensionsSplit = dimensions ? dimensions.split(",") : [0, 0, 0];
 
         let physics = {
           weight: Number(weight).toFixed(2),

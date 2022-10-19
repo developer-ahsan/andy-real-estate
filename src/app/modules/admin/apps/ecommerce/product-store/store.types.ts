@@ -41,4 +41,49 @@ export interface UpdatePermaLink {
     permalink: string;
     storeProductID: number;
     update_permalink: boolean;
-}; 
+};
+
+export interface UpdateRoyalty {
+    royaltySetting: number;
+    storeName: string;
+    store_product_id: number;
+    product_id: number;
+    update_royalty: boolean;
+};
+
+export interface videoObj {
+    video: string;
+    button: string;
+    store_product_id: number;
+    video_update: boolean;
+};
+export interface RemoveVideo {
+    store_product_id: number;
+    delete_store_product_video: boolean;
+};
+export interface UpdateColor {
+    colorIDS: number[];
+    storeProductID: number;
+    update_color: boolean;
+};
+export interface UpdateImprintStatus {
+    imprint_ids: number[];
+    storeProductID: number;
+    update_imprint_status: boolean;
+};
+export interface UpdateImprint {
+    storeProductID: number;
+    fk_decoratorID: number;
+    fk_setupChargeID: number;
+    fk_runChargeID: number;
+    fk_collectionID: number;
+    update_imprint: boolean;
+};
+export interface UpdateProductOptions {
+    optionalGuidelines: string;
+    productIDs: number[];
+    product_id: number;
+    storeName: string;
+    storeProductID: number;
+    update_product_options: boolean
+};

@@ -16,21 +16,39 @@ export class SpecialDescComponent implements OnInit, OnDestroy {
   @Output() isLoadingChange = new EventEmitter<boolean>();
   private _unsubscribeAll: Subject<any> = new Subject<any>();
 
+  isUpdateLoading: boolean = false;
+  description: string = '';
+  miniDescription: string = '';
+  metaDescription: string = '';
 
 
   constructor(
     private _changeDetectorRef: ChangeDetectorRef,
     private _inventoryService: InventoryService,
-    private _formBuilder: FormBuilder,
-    private _snackBar: MatSnackBar
   ) { }
 
   ngOnInit(): void {
     // Create the selected product form
-    this.isLoading = false;
-    console.log(this.selectedProduct)
+    this.isLoading = true;
+    this.getDescription();
   }
-
+  getDescription() {
+    this._inventoryService
+      .getProductDescription(this.selectedProduct.fk_productID)
+      .pipe(takeUntil(this._unsubscribeAll))
+      .subscribe((description) => {
+        this.description = description["data"][0].productDesc;
+        this.miniDescription = description["data"][0].miniDesc;
+        this.metaDescription = description["data"][0].metaDesc;
+        this.isLoadingChange.emit(false);
+        this.isLoading = false;
+        this._changeDetectorRef.markForCheck();
+      }, err => {
+        this.isLoadingChange.emit(false);
+        this.isLoading = false;
+        this._changeDetectorRef.markForCheck();
+      });
+  }
 
 
   /**

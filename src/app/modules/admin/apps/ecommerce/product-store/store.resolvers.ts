@@ -3,33 +3,6 @@ import { ActivatedRouteSnapshot, Resolve, Router, RouterStateSnapshot } from '@a
 import { Observable, throwError } from 'rxjs';
 import { InventoryService } from 'app/modules/admin/apps/ecommerce/inventory/inventory.service';
 import { InventoryPagination, ProductsList } from 'app/modules/admin/apps/ecommerce/inventory/inventory.types';
-import { ProductStoreService } from './store.service';
-
-@Injectable({
-    providedIn: 'root'
-})
-export class ProductsListsResolver implements Resolve<any>
-{
-    /**
-     * Constructor
-     */
-    constructor(private _productStoreService: ProductStoreService) {
-    }
-
-    // -----------------------------------------------------------------------------------------------------
-    // @ Public methods
-    // -----------------------------------------------------------------------------------------------------
-
-    /**
-     * Resolver
-     *
-     * @param route
-     * @param state
-     */
-    resolve(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<ProductsList[]> {
-        return this._productStoreService.getProductsList(1);
-    }
-}
 
 @Injectable({
     providedIn: 'root'

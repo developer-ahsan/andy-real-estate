@@ -21,6 +21,7 @@ import { ContactsContactResolver } from '../../../contacts/contacts.resolvers';
 import { HttpClient } from '@angular/common/http';
 import { environment } from 'environments/environment';
 import { filter } from 'lodash';
+import { MatChipInputEvent } from '@angular/material/chips';
 
 @Component({
     selector: 'inventory-list',
@@ -210,9 +211,9 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
     readonly separatorKeysCodes = [ENTER, COMMA] as const;
     fruits = [];
 
-    add(event): void {
+    add(event: MatChipInputEvent): void {
         const value = (event.value || '').trim();
-
+        console.log(value)
         // Add our fruit
         if (value) {
             this.fruits.push({ name: value });
@@ -474,6 +475,13 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
     selectedColorsList: any = [];
     selectedColor: any = {};
     @ViewChild('colorpicker') colorpicker: ElementRef;
+
+
+    // Imprints
+    imprintsLocalList = [];
+    imprintLocalTableColumns: string[] = ['location', 'method', 'decorator', 'action'];
+
+
     clickButton(): void {
         this.colorpicker.nativeElement.click()
     }
@@ -1354,7 +1362,11 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
             this.productNumberText = this.productNumberText.replace('#', '');
         };
     };
-
+    htmlDecode(str) {
+        var div = document.createElement("div");
+        div.innerHTML = str;
+        return div.textContent || div.innerText;
+    }
     fetchProductNumberData(): void {
         if (!this.supplierId) {
             this._snackBar.open("Please select a supplier", '', {
@@ -1398,9 +1410,9 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
                                 };
                                 // this.productId = details.productId;
                                 const product = {
-                                    productName: details.productName.replace(details?.productId, ""),
-                                    productNumber: details.productId,
-                                    brandName: details.productBrand,
+                                    productName: this.htmlDecode(details.productName.replace(details?.productId, "")),
+                                    productNumber: this.htmlDecode(details.productId),
+                                    brandName: this.htmlDecode(details.productBrand),
                                     mainDescription: detailsDescription?.length ? detailsDescription.toString().split(",").join("\n") : "",
                                     miniDescription: "Mini description"
                                 };
@@ -1749,6 +1761,8 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
             const { radio } = this.firstFormGroup.value;
             const { name } = radio;
             let obj = {};
+            // console.log(this.pricingDataArray);
+
             if (name === 'Normal Promotional Material') {
                 if (this.pricingDataArray?.length) {
                     for (let i = 0; i <= 5; i++) {
@@ -1867,6 +1881,7 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
                     };
                 }
             };
+            // console.log("obj", obj)
             this.netCostForm.patchValue(obj);
         };
         // Licensing term screen
@@ -2667,7 +2682,7 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
         };
 
         const description = {
-            name: String(productName),
+            name: String(productName.replace(/'/g, '"')),
             product_number: String(productNumber),
             product_desc: String(mainDescription?.replace(/'/g, "''")) || null,
             mini_desc: String(miniDescription?.replace(/'/g, "''")) || null,
@@ -2735,10 +2750,18 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
                             this._changeDetectorRef.markForCheck();
                         })
                     }
+                }, err => {
+                    this._snackBar.open("Something went wrong", '', {
+                        horizontalPosition: 'center',
+                        verticalPosition: 'bottom',
+                        duration: 3500
+                    });
+                    this.createProductDetailLoader = false;
+                    this._changeDetectorRef.markForCheck();
                 });
         } else {
             let payload = {
-                name: String(productName),
+                name: String(productName.replace(/'/g, '"')),
                 product_number: productNumber,
                 product_desc: String(mainDescription?.replace(/'/g, "''")) || null,
                 mini_desc: String(miniDescription?.replace(/'/g, "''")) || null,
@@ -3065,6 +3088,102 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
         });
     }
     // addImprints
+
+    addProductLocalImprints() {
+        const setupRunForm = this.runSetup.getRawValue();
+        const { run, setup } = setupRunForm;
+
+        if (!this.selectedLocation) {
+            this._snackBar.open("New LOCATION was not specified correctly", '', {
+                horizontalPosition: 'center',
+                verticalPosition: 'bottom',
+                duration: 3500
+            });
+            return;
+        };
+
+        if (this.areaValue === "") {
+            this._snackBar.open("Imprint AREA has not been defined correctly.", '', {
+                horizontalPosition: 'center',
+                verticalPosition: 'bottom',
+                duration: 3500
+            });
+            return;
+        };
+
+        if (this.defaultImprintColorSpecification === 'Yes') {
+            if (!this.collectionIdsArray.length && !this.customColorId) {
+                this._snackBar.open("Select a color collection", '', {
+                    horizontalPosition: 'center',
+                    verticalPosition: 'bottom',
+                    duration: 3500
+                });
+                return;
+            };
+        };
+
+        if (run === "" || setup === "") {
+            this._snackBar.open("Select a SETUP or RUN charge", '', {
+                horizontalPosition: 'center',
+                verticalPosition: 'bottom',
+                duration: 3500
+            });
+
+            return;
+        };
+
+        let processMode;
+        if (this.favoriteSeason === 'Per color (i.e. silk screening, pad printing, etc.)') {
+            processMode = 0;
+        } else if (this.favoriteSeason === 'Per Stitch (embroidering)') {
+            processMode = 1;
+        } else if (this.favoriteSeason === 'Simple Process (i.e. laser engraving, full color, etc.)') {
+            processMode = 2;
+        };
+
+        let second, third, fourth, fifth;
+        let multiValue;
+        if (processMode === 0) {
+            const {
+                twoColorQ,
+                threeColorQ,
+                fourColorQ,
+                fiveColorQ
+            } = this.values.getRawValue();
+            second = twoColorQ;
+            third = threeColorQ;
+            fourth = fourColorQ;
+            fifth = fiveColorQ;
+        };
+
+        const payload = {
+            product_id: this.productId,
+            decorator_id: this.supplierId || null,
+            method_id: this.selectedMethod.pk_methodID || null,
+            location_id: this.selectedLocation.pk_locationID || null,
+            setup_charge_id: setup || 17,
+            run_charge_id: run || 17,
+            bln_includable: this.priceInclusionSelected.value === 'Yes' ? 1 : 0,
+            area: this.areaValue,
+            bln_user_color_selection: this.defaultImprintColorSpecification === 'Yes' ? 1 : 0,
+            multi_color_min_id: 1,
+            collection_id: this.collectionIdsArray.length ? this.selectedCollectionId[0].fk_collectionID : Number(this.customColorId),
+            max_colors: this.defaultImprintColorSpecification === 'Yes' ? this.maxColorSelected : null,
+            bln_process_mode: processMode,
+            min_product_qty: this.minQuantity || 1,
+            imprint_comments: this.addImprintComment || "",
+            digitizer_id: processMode == 1 ? this.selectedDigitizer.pfk_digitizerID : null,
+            bln_active: 1,
+            bln_singleton: this.imprintItselfSelected.value === 'Yes' ? true : false,
+            bln_color_selection: this.defaultImprintColorSpecification === 'Yes' ? true : false,
+            imprint_id: null,
+            store_product_id_list: [],
+            imprint_image: null,
+            display_order: Number(this.addImprintDisplayOrderValue) || 1,
+            create_product_imprint: true
+        };
+        this.imprintsLocalList.push(payload);
+    }
     addProductImprints() {
         const setupRunForm = this.runSetup.getRawValue();
         const { run, setup } = setupRunForm;

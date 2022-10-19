@@ -91,7 +91,7 @@
                             </div>
                             <div class="col-12" *ngIf="!selectedProduct?.blnApparel">
                                 <p class="pb-4">Ships from</p>
-                                <mat-checkbox (change)="showOptions($event)">
+                                <mat-checkbox (change)="showOptions($event)" [checked]="true">
                                     {{selectedProduct?.companyName}}
                                 </mat-checkbox>
                             </div>
