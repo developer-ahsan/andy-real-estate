@@ -10,6 +10,17 @@
                 </div>
 
                 <div class="row mt-6">
+                    <div class="col-12 flex justify-between">
+                        <p></p>
+                        <p class="text-secondary cursor-pointer underline">
+                            <span *ngIf="!isDefaultColor" (click)="changeDefaultColor()">
+                                Default Colors
+                            </span>
+                            <span *ngIf="isDefaultColor" (click)="changeDefaultColor()">
+                                Custom Colors
+                            </span>
+                        </p>
+                    </div>
                     <div class="col-12">
                         <p>
                             <button
@@ -26,12 +37,15 @@
                                         *ngIf="i < selectedColorsList.length-1">, </span></span>
                             </mat-hint>
                             <mat-autocomplete #auto="matAutocomplete">
-                                <mat-option *ngFor="let result of results" (click)="colorSelected(result)"
-                                    [value]="result.colorName">
-                                    ({{result.pk_colorID}}) - {{ result.colorName }}
+                                <mat-option *ngIf="isColorLoading" class="is-loading">Loading...
                                 </mat-option>
+                                <ng-container *ngIf="!isColorLoading">
+                                    <mat-option *ngFor="let result of results" (click)="colorSelected(result)"
+                                        [value]="result.colorName">
+                                        ({{result.pk_colorID}}) - {{ result.colorName }}
+                                    </mat-option>
+                                </ng-container>
                             </mat-autocomplete>
-
                         </mat-form-field>
                     </div>
                 </div>

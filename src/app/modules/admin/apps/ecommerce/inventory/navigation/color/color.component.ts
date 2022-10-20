@@ -3,12 +3,13 @@ import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms'
 import { InventoryService } from 'app/modules/admin/apps/ecommerce/inventory/inventory.service';
 import { Colors } from 'app/modules/admin/apps/ecommerce/inventory/inventory.types';
 import { Subject } from 'rxjs';
-import { takeUntil } from 'rxjs/operators';
+import { debounceTime, finalize, switchMap, takeUntil, tap } from 'rxjs/operators';
 import { SelectionModel } from '@angular/cdk/collections';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { IDropdownSettings } from 'ng-multiselect-dropdown';
 import * as _ from 'lodash';
 import { environment } from 'environments/environment';
+import { HttpClient } from '@angular/common/http';
 
 export interface PostColor {
   product_id: number;
@@ -68,10 +69,14 @@ export class ColorComponent implements OnInit, OnDestroy {
   results: any[];
 
   imageValue: any;
+  isColorLoading: boolean;
+
+  isDefaultColor: boolean = false;
   constructor(
     private _changeDetectorRef: ChangeDetectorRef,
     private _inventoryService: InventoryService,
     private _formBuilder: FormBuilder,
+    private _httpClient: HttpClient,
     private _snackBar: MatSnackBar
   ) { }
 
@@ -98,18 +103,25 @@ export class ColorComponent implements OnInit, OnDestroy {
     this.getColors();
 
     // Color select autocomplete field
-    this.colorName.valueChanges.subscribe(
-      term => {
-        if (term && term.length > 1) {
-          this._inventoryService.getSearchedColors(term).subscribe(
-            result => {
-              this.results = result["data"] as any[];
 
-              // Mark for check
-              this._changeDetectorRef.markForCheck();
-            })
-        }
-      })
+    this.colorName.valueChanges.pipe(debounceTime(500), tap(() => {
+      //   this.errorMsg = "";
+      this.results = [];
+      this.isColorLoading = true;
+    }),
+      switchMap(value => this._httpClient.get(environment.products + "?color=true&size=20&color_name=" + value)
+        .pipe(
+          finalize(() => {
+            this.isColorLoading = false
+          }),
+        )
+      )
+    )
+      .subscribe(data => {
+        this.results = data["data"] as any[];
+        this._changeDetectorRef.markForCheck();
+      });
+
   };
 
   colorSelected(result: any): void {

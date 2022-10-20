@@ -479,7 +479,7 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
     selectedColorsList: any = [];
     selectedColor: any = {};
     @ViewChild('colorpicker') colorpicker: ElementRef;
-    isDefaultColor: boolean = true;
+    isDefaultColor: boolean = false;
     customColorsList: any = [];
 
     // Imprints

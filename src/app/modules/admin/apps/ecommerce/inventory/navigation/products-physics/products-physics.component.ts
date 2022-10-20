@@ -53,7 +53,7 @@ export class ProductsPhysicsComponent implements OnInit, OnDestroy {
     ceil: 120
   };
 
-  shipsFromCheck = false;
+  shipsFromCheck = true;
 
   constructor(
     private _changeDetectorRef: ChangeDetectorRef,
