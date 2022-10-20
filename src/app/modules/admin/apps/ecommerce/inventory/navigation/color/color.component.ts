@@ -10,6 +10,8 @@ import { IDropdownSettings } from 'ng-multiselect-dropdown';
 import * as _ from 'lodash';
 import { environment } from 'environments/environment';
 import { HttpClient } from '@angular/common/http';
+import { MatChipInputEvent } from '@angular/material/chips';
+import { COMMA, ENTER } from '@angular/cdk/keycodes';
 
 export interface PostColor {
   product_id: number;
@@ -24,7 +26,8 @@ interface Color {
 
 @Component({
   selector: 'app-color',
-  templateUrl: './color.component.html'
+  templateUrl: './color.component.html',
+  styles: ['.img_wrp { display: inline - block; position: relative;} .close {position: absolute;top: 10px;right: 150px;}']
 })
 export class ColorComponent implements OnInit, OnDestroy {
   @Input() selectedProduct: any;
@@ -35,7 +38,7 @@ export class ColorComponent implements OnInit, OnDestroy {
   isColorsFetching: boolean = false;
   colors: Colors[] = [];
   displayedColumns: string[] = ['select', 'color', 'run', 'hex', 'upload'];
-  dataSource: Colors[] = [];
+  dataSource: any = [];
   selection = new SelectionModel<any>(true, []);
 
   selectedColor: any = {};
@@ -72,6 +75,10 @@ export class ColorComponent implements OnInit, OnDestroy {
   isColorLoading: boolean;
 
   isDefaultColor: boolean = false;
+  customColorsList: any = [];
+  addOnBlur = true;
+  readonly separatorKeysCodes = [ENTER, COMMA] as const;
+  colorTempImage: any;
   constructor(
     private _changeDetectorRef: ChangeDetectorRef,
     private _inventoryService: InventoryService,
@@ -86,6 +93,25 @@ export class ColorComponent implements OnInit, OnDestroy {
       run: ['0.00'],
       hex: ['']
     });
+  }
+  changeDefaultColor() {
+    this.isDefaultColor = !this.isDefaultColor;
+  }
+  addCustomColors(event: MatChipInputEvent): void {
+    const value = (event.value || '').trim();
+    // Add our fruit
+    if (value) {
+      this.customColorsList.push({ colorId: null, colorName: value, run: '0.0', hex: '' });
+    }
+    // Clear the input value
+    event.chipInput!.clear();
+  }
+
+  removeCustomColor(color): void {
+    const index = this.customColorsList.findIndex(colors => colors.colorName == color.colorName);
+    if (index >= 0) {
+      this.customColorsList.splice(index, 1);
+    }
   }
   ngOnInit(): void {
     this.initColorForm();
@@ -237,60 +263,84 @@ export class ColorComponent implements OnInit, OnDestroy {
     };
   };
 
-  upload(event, element) {
-    const { fk_colorID } = element;
+  upload(event, index) {
     this.updateImageTouched = true;
+    // this.imagesArrayToUpdate.push({
+    //   imageUpload: reader.result,
+    //   name: fk_colorID,
+    //   type: file["type"]
+    // });
+
+    this.imageValue = null;
     const file = event.target.files[0];
     let type = file["type"];
     const reader = new FileReader();
     reader.readAsDataURL(file);
     reader.onload = () => {
-      this.imagesArrayToUpdate.push({
+      this.imageValue = {
         imageUpload: reader.result,
-        name: fk_colorID,
         type: file["type"]
-      });
-    };
+      };
+      let image: any = new Image;
+      image.src = reader.result;
+      image.onload = () => {
+        if (image.width != 600 || image.height != 600) {
+          this._snackBar.open("Dimentions allowed are 600px x 600px", '', {
+            horizontalPosition: 'center',
+            verticalPosition: 'bottom',
+            duration: 3500
+          });
+          this.imageValue = null;
+          this.colorTempImage = null;
+          this._changeDetectorRef.markForCheck();
+          return;
+        };
+
+        if (type != "image/jpeg") {
+          this._snackBar.open("Image extensions are allowed in JPG", '', {
+            horizontalPosition: 'center',
+            verticalPosition: 'bottom',
+            duration: 3500
+          });
+          this.colorTempImage = null;
+          this._changeDetectorRef.markForCheck();
+          return;
+        }
+        const base64 = this.imageValue.imageUpload.split(",")[1];
+        this.colorTempImage = null;
+        this.dataSource[index]["media"] = this.imageValue.imageUpload;
+        this.dataSource[index]["type"] = type;
+        this._changeDetectorRef.markForCheck();
+      };
+    }
   };
+  removeColorImage(index) {
+    this.colorTempImage = null;
+    this.dataSource[index].media = null;
+    this.dataSource[index].type = null;
+
+    this._changeDetectorRef.markForCheck();
+  }
 
   uploadColorMedia(obj: any) {
+    console.log(obj)
     const { pk_productID } = this.selectedProduct;
     const { imageUpload, name, type } = obj;
-    let image = new Image;
-    image.src = imageUpload;
-    image.onload = () => {
-      if (image.width != 600 || image.height != 600) {
-        this._snackBar.open("Dimentions allowed are 600px x 600px", '', {
-          horizontalPosition: 'center',
-          verticalPosition: 'bottom',
-          duration: 3500
-        });
-        return;
-      };
 
-      if (type != "image/jpeg") {
-        this._snackBar.open("Image extensions are allowed in JPG", '', {
-          horizontalPosition: 'center',
-          verticalPosition: 'bottom',
-          duration: 3500
-        });
-        return;
-      }
 
-      const base64 = imageUpload.split(",")[1];
-      const payload = {
-        file_upload: true,
-        image_file: base64,
-        image_path: `/globalAssets/Products/Colors/${pk_productID}/${name}.jpg`
-      };
-
-      this._inventoryService.addColorMedia(payload)
-        .subscribe((response) => {
-
-          // Mark for check
-          this._changeDetectorRef.markForCheck();
-        })
+    const base64 = imageUpload.split(",")[1];
+    const payload = {
+      file_upload: true,
+      image_file: base64,
+      image_path: `/globalAssets/Products/Colors/${pk_productID}/${name}.jpg`
     };
+
+    this._inventoryService.addColorMedia(payload)
+      .subscribe((response) => {
+
+        // Mark for check
+        this._changeDetectorRef.markForCheck();
+      })
   }
 
   updateColor() {
@@ -298,8 +348,17 @@ export class ColorComponent implements OnInit, OnDestroy {
 
     if (this.updateImageTouched) {
 
-      for (const obj of this.imagesArrayToUpdate) {
-        this.uploadColorMedia(obj);
+      for (const obj of this.dataSource) {
+        console.log(obj)
+        if (obj.media && obj.type) {
+          let payload = {
+            imageUpload: obj.media,
+            name: obj.fk_colorID,
+            type: obj.type
+          }
+          this.uploadColorMedia(payload);
+        }
+        console.log(obj)
       };
     };
 
@@ -372,6 +431,7 @@ export class ColorComponent implements OnInit, OnDestroy {
   }
   copyColorToHex() {
     this.hexColor = this.colorValue
+    this.colorForm.patchValue({ hex: this.colorValue });
   };
 
   addColor() {
@@ -383,7 +443,7 @@ export class ColorComponent implements OnInit, OnDestroy {
 
 
 
-    if (!pk_colorID) {
+    if (!pk_colorID && this.customColorsList.length == 0) {
       return this._snackBar.open("Please select color", '', {
         horizontalPosition: 'center',
         verticalPosition: 'bottom',
@@ -391,17 +451,17 @@ export class ColorComponent implements OnInit, OnDestroy {
       });
     };
 
-    if (this.imageValue) {
-      const { imageUpload, type } = this.imageValue;
-      if (imageUpload) {
-        let paylaod = {
-          imageUpload: imageUpload,
-          type: type,
-          name: pk_colorID
-        }
-        this.uploadColorMedia(paylaod);
-      }
-    }
+    // if (this.imageValue) {
+    //   const { imageUpload, type } = this.imageValue;
+    //   if (imageUpload) {
+    //     let paylaod = {
+    //       imageUpload: imageUpload,
+    //       type: type,
+    //       name: pk_colorID
+    //     }
+    //     this.uploadColorMedia(paylaod);
+    //   }
+    // }
 
     let colors: any = [];
     this.selectedColorsList.forEach(element => {
@@ -411,23 +471,33 @@ export class ColorComponent implements OnInit, OnDestroy {
         rgb: hex
       })
     });
+    let custom_colors: any = [];
+    this.customColorsList.forEach(element => {
+      custom_colors.push({
+        color_name: element.colorName,
+        the_run: run,
+        rgb: hex
+      })
+    });
     const payload = {
       product_id: pk_productID,
       color: true,
-      colors: colors
+      colors: colors,
+      custom_colors: custom_colors
     };
 
     this.colorAddLoader = true;
     this._inventoryService.addColors(payload)
       .subscribe((response) => {
-        let val: any = document.getElementById('image')
-        val.value = null;
-        this.imageValue = null;
+        // let val: any = document.getElementById('image')
+        // val.value = null;
+        // this.imageValue = null;
         this._inventoryService.getColors(pk_productID)
           .pipe(takeUntil(this._unsubscribeAll))
           .subscribe((colors) => {
             this.colorName.setValue(null);
-            this.selectedColor = {};
+            this.selectedColor = [];
+            this.customColorsList = [];
             for (const color of colors["data"]) {
               const { fk_colorID } = color;
               let image = `${environment.productMedia}/Colors/${pk_productID}/${fk_colorID}.jpg`;
@@ -443,6 +513,11 @@ export class ColorComponent implements OnInit, OnDestroy {
             this.colorValue = '#000000';
 
             this.colorAddLoader = false;
+            this._snackBar.open("Colors added successfully", '', {
+              horizontalPosition: 'center',
+              verticalPosition: 'bottom',
+              duration: 3500
+            });
             this.showFlashMessage(
               response["success"] === true ?
                 'success' :

@@ -1432,7 +1432,7 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
             .subscribe((productDetails) => {
 
                 if (productDetails["data"] == 'no data found.') {
-                    this._snackBar.open("No data found please try again", '', {
+                    this._snackBar.open("No data found for this supplier and product number", '', {
                         horizontalPosition: 'center',
                         verticalPosition: 'bottom',
                         duration: 3500
@@ -3043,7 +3043,20 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
         const value = (event.value || '').trim();
         // Add our fruit
         if (value) {
-            this.customColorsList.push({ colorId: null, colorName: value, image: null, run: '0.0', hex: '' });
+            if (this.customColorsList.length == 0) {
+                this.customColorsList.push({ colorId: null, colorName: value, image: null, run: '0.0', hex: '' });
+            } else {
+                const index = this.customColorsList.findIndex(color => color.colorName == value);
+                if (index >= 0) {
+                    this._snackBar.open("Color already exist in the list", '', {
+                        horizontalPosition: 'center',
+                        verticalPosition: 'bottom',
+                        duration: 3000
+                    });
+                } else {
+                    this.customColorsList.push({ colorId: null, colorName: value, image: null, run: '0.0', hex: '' });
+                }
+            }
         }
         // Clear the input value
         event.chipInput!.clear();

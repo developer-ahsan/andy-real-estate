@@ -424,8 +424,10 @@ export interface createColorObj {
 export interface PostColor {
     product_id: number;
     color: boolean;
-    colors: Color[]
+    colors: Color[];
+    custom_colors: CustomColors[];
 };
+
 export interface Color {
     color_id: number;
     the_run: string;

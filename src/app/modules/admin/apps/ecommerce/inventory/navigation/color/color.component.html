@@ -11,24 +11,34 @@
 
                 <div class="row mt-6">
                     <div class="col-12 flex justify-between">
-                        <p></p>
+                        <p class="text-secondary font-bold">
+                            <span *ngIf="isDefaultColor">
+                                <button
+                                    [matTooltip]="'Type keywords to fetch colors list. This field is required to be filled.'">
+                                    <i class="fa fa-info-circle"></i>
+                                </button>
+                                Select Color
+                            </span>
+
+                            <span *ngIf="!isDefaultColor">
+                                Custom Colors (Comma-seperated)
+                            </span>
+                        </p>
                         <p class="text-secondary cursor-pointer underline">
                             <span *ngIf="!isDefaultColor" (click)="changeDefaultColor()">
-                                Default Colors
+                                <button
+                                    [matTooltip]="'Type keywords to fetch colors list. This field is required to be filled.'">
+                                    <i class="fa fa-info-circle"></i>
+                                </button>
+                                Select Color
                             </span>
+
                             <span *ngIf="isDefaultColor" (click)="changeDefaultColor()">
-                                Custom Colors
+                                Custom Colors (Comma-seperated)
                             </span>
                         </p>
                     </div>
-                    <div class="col-12">
-                        <p>
-                            <button
-                                [matTooltip]="'Type keywords to fetch colors list. This field is required to be filled.'">
-                                <i class="fa fa-info-circle"></i>
-                            </button>
-                            Select Color
-                        </p>
+                    <div class="col-12" *ngIf="isDefaultColor">
                         <mat-form-field class="w-full">
                             <input type="text" placeholder="Select Color" matInput [formControl]="colorName"
                                 [matAutocomplete]="auto">
@@ -46,6 +56,22 @@
                                     </mat-option>
                                 </ng-container>
                             </mat-autocomplete>
+                        </mat-form-field>
+                    </div>
+                    <div class="col-12" *ngIf="!isDefaultColor">
+                        <mat-form-field class="example-chip-list w-full" appearance="fill">
+                            <mat-chip-list class="pt-1" #colorchiplist>
+                                <mat-chip [removable]="true" [selectable]="true" *ngFor="let color of customColorsList"
+                                    (removed)="removeCustomColor(color)">
+                                    {{color.colorName}}
+                                    <mat-icon class="icon-size-5" matChipRemove
+                                        [svgIcon]="'heroicons_solid:minus-circle'"></mat-icon>
+                                </mat-chip>
+                                <input [matChipInputFor]="colorchiplist" placeholder="New Color"
+                                    [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
+                                    [matChipInputAddOnBlur]="addOnBlur"
+                                    (matChipInputTokenEnd)="addCustomColors($event)">
+                            </mat-chip-list>
                         </mat-form-field>
                     </div>
                 </div>
@@ -80,7 +106,7 @@
                                 </button>
                                 <span class="ml-1">Hex</span>
                                 <mat-form-field class="w-full">
-                                    <input matInput [formControlName]="'hex'" value="{{hexColor}}" placeholder="Hex">
+                                    <input matInput [formControlName]="'hex'" placeholder="Hex">
                                     <mat-icon class="icon-size-5 text-secondary ml-2" style="cursor: pointer;"
                                         (click)="copyColorToHex()" [matTooltip]="'Copy hex from color palette'"
                                         svgIcon="mat_outline:content_copy">
@@ -89,9 +115,9 @@
                                 </mat-form-field>
                             </div>
 
-                            <div class="col-12">
+                            <!-- <div class="col-12">
                                 <input type="file" accept=".jpg" id="image" (change)="uploadImage($event)" />
-                            </div>
+                            </div> -->
                         </div>
                     </form>
                 </div>
@@ -204,12 +230,18 @@
                     <!-- Image Column -->
                     <ng-container matColumnDef="upload">
                         <th mat-header-cell *matHeaderCellDef class="w-40 min-w-40"> Image </th>
-                        <td mat-cell *matCellDef="let element" class="py-1">
+                        <td mat-cell *matCellDef="let element; let i=index" class="py-1">
                             <ng-container *ngIf="element.media; else defaultValue">
-                                <img class="object-cover rounded-2xl shadow-sm w-24" src="{{element.media}}">
+                                <!-- <img class="object-cover rounded-2xl shadow-sm w-24" src="{{element.media}}"> -->
+                                <div ng-repeat="file in imagefinaldata" class="img_wrp">
+                                    {{ element.media}}
+                                    <img style="width: 20% !important;" src="{{ element.media}}" />
+                                    <mat-icon (click)="removeColorImage(i)" class="close cursor-pointer">
+                                        close</mat-icon>
+                                </div>
                             </ng-container>
                             <ng-template #defaultValue>
-                                <input type="file" accept=".jpg" id="myfile" (change)="upload($event, element)" />
+                                <input type="file" accept=".jpg" id="myfile" (change)="upload($event, i)" />
                             </ng-template>
                         </td>
                     </ng-container>
