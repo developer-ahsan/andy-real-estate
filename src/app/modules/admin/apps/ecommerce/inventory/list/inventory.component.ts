@@ -26,7 +26,7 @@ import { MatChipInputEvent } from '@angular/material/chips';
 @Component({
     selector: 'inventory-list',
     templateUrl: './inventory.component.html',
-    styles: ['.mat-tab-body-content {overflow: hidden !important} fuse-alert .fuse-alert-container .mat-icon {color: gray !important} fuse-alert.fuse-alert-appearance-soft.fuse-alert-type-info .fuse-alert-container .fuse-alert-message {color: gray !important}'],
+    styles: ['.mat-tab-body-content {overflow: hidden !important} fuse-alert .fuse-alert-container .mat-icon {color: gray !important} fuse-alert.fuse-alert-appearance-soft.fuse-alert-type-info .fuse-alert-container .fuse-alert-message {color: gray !important} .img_wrp { display: inline - block; position: relative;} .close {position: absolute;top: 10px;right: 150px;}'],
 
     encapsulation: ViewEncapsulation.None,
     changeDetection: ChangeDetectionStrategy.OnPush,
@@ -213,7 +213,6 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
 
     add(event: MatChipInputEvent): void {
         const value = (event.value || '').trim();
-        console.log(value)
         // Add our fruit
         if (value) {
             this.fruits.push({ name: value });
@@ -230,6 +229,9 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
             this.fruits.splice(index, 1);
         }
     }
+
+
+
 
     netCostDefaultStandardCost = null;
     reviewForm = this._formBuilder.group({
@@ -310,7 +312,8 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
         quantityThree: [''],
         quantityFour: [''],
         quantityFive: [''],
-        quantitySix: ['']
+        quantitySix: [''],
+        unitsInShippingPackage: ['']
     });
     reviewsecondFormGroup = this._formBuilder.group({
         productName: ['', Validators.required],
@@ -337,7 +340,8 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
         quantityThree: [''],
         quantityFour: [''],
         quantityFive: [''],
-        quantitySix: ['']
+        quantitySix: [''],
+        unitsInShippingPackage: ['']
     });
     netCostForm = this._formBuilder.group({
         firstQuantity: [''],
@@ -475,12 +479,20 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
     selectedColorsList: any = [];
     selectedColor: any = {};
     @ViewChild('colorpicker') colorpicker: ElementRef;
-
+    isDefaultColor: boolean = true;
+    customColorsList: any = [];
 
     // Imprints
     imprintsLocalList = [];
+    imprintsLocalListLoader: boolean = false;
     imprintLocalTableColumns: string[] = ['location', 'method', 'decorator', 'action'];
 
+
+    // 
+    methodControl = new FormControl('');
+    methodFilteredOptions: Observable<any>;
+    locationControl = new FormControl('');
+    locationFilteredOptions: Observable<any>;
 
     clickButton(): void {
         this.colorpicker.nativeElement.click()
@@ -510,7 +522,35 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
     /**
      * On init
      */
+    changeDefaultColor() {
+        this.isDefaultColor = !this.isDefaultColor;
+    }
+    private _filter(value: string): string[] {
+        const filterValue = value.toLowerCase();
+        return this.addImprintMethods.filter(option => option.methodName.toLowerCase().includes(filterValue));
+    }
+    private _filterLocation(value: string): string[] {
+        const filterValue = value.toLowerCase();
+        return this.addImprintLocations.filter(option => option.locationName.toLowerCase().includes(filterValue));
+    }
+    methodSelected(obj) {
+        this.selectedMethod = obj;
+    }
+    locationSelected(obj) {
+        this.selectedLocation = obj;
+    }
     ngOnInit(): void {
+
+        this.methodFilteredOptions = this.methodControl.valueChanges.pipe(
+            startWith(''),
+            map(value => this._filter(value || '')),
+        );
+
+        this.locationFilteredOptions = this.locationControl.valueChanges.pipe(
+            startWith(''),
+            map(value => this._filterLocation(value || '')),
+        );
+
         this.pageNo = 0;
 
         this.imprintColorsDropdownSettings = {
@@ -1390,99 +1430,121 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
         this._inventoryService.getPromoStandardProductDetails(this.productNumberText, this.supplierId)
             .pipe(takeUntil(this._unsubscribeAll))
             .subscribe((productDetails) => {
-                this._inventoryService.getPromoStandardProductPricingDetails(this.productNumberText, this.supplierId)
-                    .pipe(takeUntil(this._unsubscribeAll))
-                    .subscribe((productPricing) => {
-                        if (productPricing["data"]["result"]["Envelope"]["Body"]["GetConfigurationAndPricingResponse"]?.ErrorMessage?.description != "Data not found") {
-                            this._snackBar.open("Data fetched successfully", '', {
-                                horizontalPosition: 'center',
-                                verticalPosition: 'bottom',
-                                duration: 3500
+
+                if (productDetails["data"] == 'no data found.') {
+                    this._snackBar.open("No data found please try again", '', {
+                        horizontalPosition: 'center',
+                        verticalPosition: 'bottom',
+                        duration: 3500
+                    });
+                    this.productNumberLoader = false;
+
+                    // Mark for check
+                    this._changeDetectorRef.markForCheck();
+                } else {
+                    let customColorData = productDetails["data"]["result"]["Product"]["ProductPartArray"];
+                    customColorData.forEach(element => {
+                        if (element.ColorArray) {
+                            element.ColorArray.forEach(colors => {
+                                this.customColorsList.push({ colorId: null, colorName: colors.colorName, image: null, run: '0.0', hex: colors.hex });
                             });
-
-                            const { success } = productDetails["data"];
-                            if (success) {
-                                const details = productDetails["data"].result.Product;
-
-                                let detailsDescription;
-                                if (details?.description?.length) {
-                                    detailsDescription = !Array.isArray(details.description) ? [details.description] : details.description;
-                                };
-                                // this.productId = details.productId;
-                                const product = {
-                                    productName: this.htmlDecode(details.productName.replace(details?.productId, "")),
-                                    productNumber: this.htmlDecode(details.productId),
-                                    brandName: this.htmlDecode(details.productBrand),
-                                    mainDescription: detailsDescription?.length ? detailsDescription.toString().split(",").join("\n") : "",
-                                    miniDescription: "Mini description"
-                                };
-
-                                if ("ProductKeywordArray" in details) {
-                                    const string = details.ProductKeywordArray[0].keyword;
-                                    if (string?.length) {
-                                        for (const value of string.split(',')) {
-                                            let temp = {
-                                                name: value
-                                            }
-                                            this.fruits.push(temp);
-                                        };
-                                    };
-                                } else {
-                                    this.fruits = [];
-                                }
-
-                                this.secondFormGroup.patchValue(product);
-
-                                this.pricingDataArray = productPricing["data"]["result"]["Envelope"]["Body"]["GetConfigurationAndPricingResponse"]["Configuration"]["PartArray"];
-                                this.productNumberLoader = false;
-
-                                // Mark for check
-                                this._changeDetectorRef.markForCheck();
-                            } else {
-                                this._snackBar.open("Product details not found", '', {
+                        }
+                    });
+                    this._inventoryService.getPromoStandardProductPricingDetails(this.productNumberText, this.supplierId)
+                        .pipe(takeUntil(this._unsubscribeAll))
+                        .subscribe((productPricing) => {
+                            if (productPricing["data"]["result"]["Envelope"]["Body"]["GetConfigurationAndPricingResponse"]?.ErrorMessage?.description != "Data not found") {
+                                this._snackBar.open("Data fetched successfully", '', {
                                     horizontalPosition: 'center',
                                     verticalPosition: 'bottom',
                                     duration: 3500
                                 });
+
+                                const { success } = productDetails["data"];
+                                if (success) {
+                                    const details = productDetails["data"].result.Product;
+
+                                    let detailsDescription;
+                                    if (details?.description?.length) {
+                                        detailsDescription = !Array.isArray(details.description) ? [details.description] : details.description;
+                                    };
+                                    // this.productId = details.productId;
+                                    const product = {
+                                        productName: this.htmlDecode(details.productName.replace(details?.productId, "")),
+                                        productNumber: this.htmlDecode(details.productId),
+                                        brandName: this.htmlDecode(details.productBrand),
+                                        mainDescription: detailsDescription?.length ? detailsDescription.toString().split(",").join("\n") : "",
+                                        miniDescription: "Mini description"
+                                    };
+
+                                    if ("ProductKeywordArray" in details) {
+                                        const string = details.ProductKeywordArray[0].keyword;
+                                        if (string?.length) {
+                                            for (const value of string.split(',')) {
+                                                let temp = {
+                                                    name: value
+                                                }
+                                                this.fruits.push(temp);
+                                            };
+                                        };
+                                    } else {
+                                        this.fruits = [];
+                                    }
+
+                                    this.secondFormGroup.patchValue(product);
+
+                                    this.pricingDataArray = productPricing["data"]["result"]["Envelope"]["Body"]["GetConfigurationAndPricingResponse"]["Configuration"]["PartArray"];
+                                    this.productNumberLoader = false;
+
+                                    // Mark for check
+                                    this._changeDetectorRef.markForCheck();
+                                } else {
+                                    this._snackBar.open("Product details not found", '', {
+                                        horizontalPosition: 'center',
+                                        verticalPosition: 'bottom',
+                                        duration: 3500
+                                    });
+                                    this.productNumberLoader = false;
+
+                                    // Mark for check
+                                    this._changeDetectorRef.markForCheck();
+                                }
+                            } else {
+                                this._snackBar.open("Data not found against this product number", '', {
+                                    horizontalPosition: 'center',
+                                    verticalPosition: 'bottom',
+                                    duration: 3500
+                                });
+
+                                const product = {
+                                    productName: null,
+                                    productNumber: null,
+                                    brandName: null,
+                                    mainDescription: null
+                                };
+
+                                this.fruits = [];
+                                this.secondFormGroup.patchValue(product);
+                                this.pricingDataArray = [];
                                 this.productNumberLoader = false;
 
                                 // Mark for check
                                 this._changeDetectorRef.markForCheck();
-                            }
-                        } else {
-                            this._snackBar.open("Data not found against this product number", '', {
+                            };
+
+                        }, err => {
+                            this._snackBar.open("Some error occured", '', {
                                 horizontalPosition: 'center',
                                 verticalPosition: 'bottom',
                                 duration: 3500
                             });
-
-                            const product = {
-                                productName: null,
-                                productNumber: null,
-                                brandName: null,
-                                mainDescription: null
-                            };
-
-                            this.fruits = [];
-                            this.secondFormGroup.patchValue(product);
-                            this.pricingDataArray = [];
                             this.productNumberLoader = false;
 
                             // Mark for check
                             this._changeDetectorRef.markForCheck();
-                        };
-
-                    }, err => {
-                        this._snackBar.open("Some error occured", '', {
-                            horizontalPosition: 'center',
-                            verticalPosition: 'bottom',
-                            duration: 3500
                         });
-                        this.productNumberLoader = false;
+                }
 
-                        // Mark for check
-                        this._changeDetectorRef.markForCheck();
-                    });
             }, err => {
                 this._snackBar.open("Some error occured", '', {
                     horizontalPosition: 'center',
@@ -1760,8 +1822,22 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
         if (selectedIndex === 1) {
             const { radio } = this.firstFormGroup.value;
             const { name } = radio;
-            let obj = {};
-            // console.log(this.pricingDataArray);
+            let obj = {
+                standardCostOne: null,
+                standardCostTwo: null,
+                standardCostThree: null,
+                standardCostFour: null,
+                standardCostFive: null,
+                standardCostSix: null,
+                firstQuantity: null,
+                secondQuantity: null,
+                thirdQuantity: null,
+                fourthQuantity: null,
+                fifthQuantity: null,
+                sixthQuantity: null
+            };
+            let cost = [];
+            let quantity = []
 
             if (name === 'Normal Promotional Material') {
                 if (this.pricingDataArray?.length) {
@@ -1770,30 +1846,42 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
                             if ("PartPriceArray" in this.pricingDataArray[i]) {
                                 const { minQuantity, price } = this.pricingDataArray[i]["PartPriceArray"][0];
                                 if (i == 0) {
-                                    obj["firstQuantity"] = minQuantity;
-                                    obj["standardCostOne"] = price;
+                                    cost[i] = price;
+                                    quantity[i] = minQuantity;
+                                    // obj["firstQuantity"] = minQuantity;
+                                    // obj["standardCostOne"] = price;
                                 }
 
                                 if (i == 1) {
-                                    obj["secondQuantity"] = minQuantity + 1;
-                                    obj["standardCostTwo"] = price;
+                                    cost[i] = price;
+                                    quantity[i] = minQuantity + 1;
+                                    // obj["secondQuantity"] = minQuantity + 1;
+                                    // obj["standardCostTwo"] = price;
                                 }
 
                                 if (i == 2) {
-                                    obj["thirdQuantity"] = minQuantity + 2;
-                                    obj["standardCostThree"] = price;
+                                    cost[i] = price;
+                                    quantity[i] = minQuantity + 2;
+                                    // obj["thirdQuantity"] = minQuantity + 2;
+                                    // obj["standardCostThree"] = price;
                                 }
 
                                 if (i == 3) {
-                                    obj["fourthQuantity"] = minQuantity + 3;
-                                    obj["standardCostFour"] = price;
+                                    cost[i] = price;
+                                    quantity[i] = minQuantity + 3;
+                                    // obj["fourthQuantity"] = minQuantity + 3;
+                                    // obj["standardCostFour"] = price;
                                 }
 
                                 if (i == 4) {
-                                    obj["fifthQuantity"] = minQuantity + 4;
-                                    obj["standardCostFive"] = price;
-                                    obj["sixthQuantity"] = minQuantity + 5;
-                                    obj["standardCostSix"] = price;
+                                    cost[i] = price;
+                                    quantity[i] = minQuantity + 4;
+                                    cost[i + 1] = price;
+                                    quantity[i + 1] = minQuantity + 5;
+                                    // obj["fifthQuantity"] = minQuantity + 4;
+                                    // obj["standardCostFive"] = price;
+                                    // obj["sixthQuantity"] = minQuantity + 5;
+                                    // obj["standardCostSix"] = price;
                                 }
 
                                 // if (i == 5) {
@@ -1803,14 +1891,47 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
                             };
                         };
                     };
-                    this.netCostDefaultStandardCost = {
-                        standardCostOne: obj["standardCostOne"],
-                        standardCostTwo: obj["standardCostTwo"],
-                        standardCostThree: obj["standardCostThree"],
-                        standardCostFour: obj["standardCostFour"],
-                        standardCostFive: obj["standardCostFive"],
-                        standardCostSix: obj["standardCostSix"]
-                    };
+                    cost = cost.filter((value, index, self) => self.indexOf(value) === index)
+                    cost.forEach((element, index) => {
+                        if (index == 0) {
+                            this.netCostDefaultStandardCost = { standardCostOne: element };
+                            obj["standardCostOne"] = element;
+                            obj["firstQuantity"] = quantity[index];
+                        }
+                        if (index == 1) {
+                            this.netCostDefaultStandardCost = { standardCostTwo: element };
+                            obj["standardCostTwo"] = element;
+                            obj["secondQuantity"] = quantity[index];
+                        }
+                        if (index == 2) {
+                            this.netCostDefaultStandardCost = { standardCostThree: element };
+                            obj["standardCostThree"] = element;
+                            obj["thirdQuantity"] = quantity[index];
+                        }
+                        if (index == 3) {
+                            this.netCostDefaultStandardCost = { standardCostFour: element };
+                            obj["standardCostFour"] = element;
+                            obj["fourthQuantity"] = quantity[index];
+                        }
+                        if (index == 4) {
+                            this.netCostDefaultStandardCost = { standardCostFive: element };
+                            obj["standardCostFive"] = element;
+                            obj["fifthQuantity"] = quantity[index];
+                        }
+                        if (index == 5) {
+                            this.netCostDefaultStandardCost = { standardCostSix: element };
+                            obj["standardCostSix"] = element;
+                            obj["sixthQuantity"] = quantity[index];
+                        }
+                    });
+                    // this.netCostDefaultStandardCost = {
+                    //     standardCostOne: obj["standardCostOne"],
+                    //     standardCostTwo: obj["standardCostTwo"],
+                    //     standardCostThree: obj["standardCostThree"],
+                    //     standardCostFour: obj["standardCostFour"],
+                    //     standardCostFive: obj["standardCostFive"],
+                    //     standardCostSix: obj["standardCostSix"]
+                    // };
 
                 } else {
                     obj = {
@@ -1835,24 +1956,31 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
                             if ("PartPriceArray" in this.pricingDataArray[i]) {
                                 const { price } = this.pricingDataArray[i]["PartPriceArray"][0];
                                 if (i == 0) {
-                                    obj["standardCostOne"] = price
+                                    // obj["standardCostOne"] = price
+                                    cost[i] = price
                                 }
 
                                 if (i == 1) {
-                                    obj["standardCostTwo"] = price
+                                    cost[i] = price
+                                    // obj["standardCostTwo"] = price
                                 }
 
                                 if (i == 2) {
-                                    obj["standardCostThree"] = price
+                                    cost[i] = price
+                                    // obj["standardCostThree"] = price
                                 }
 
                                 if (i == 3) {
-                                    obj["standardCostFour"] = price
+                                    cost[i] = price
+                                    // obj["standardCostFour"] = price
                                 }
 
                                 if (i == 4) {
-                                    obj["standardCostFive"] = price
-                                    obj["standardCostSix"] = price
+                                    // obj["standardCostFive"] = price
+                                    cost[i] = price
+                                    cost[i + 1] = price
+
+                                    // obj["standardCostSix"] = price
                                 }
 
                                 // if (i == 5) {
@@ -1862,26 +1990,58 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
                         };
                     };
 
-                    this.netCostDefaultStandardCost = {
-                        standardCostOne: obj["standardCostOne"],
-                        standardCostTwo: obj["standardCostTwo"],
-                        standardCostThree: obj["standardCostThree"],
-                        standardCostFour: obj["standardCostFour"],
-                        standardCostFive: obj["standardCostFive"],
-                        standardCostSix: obj["standardCostSix"]
-                    };
+                    cost = cost.filter((value, index, self) => self.indexOf(value) === index)
+                    cost.forEach((element, index) => {
+                        if (index == 0) {
+                            this.netCostDefaultStandardCost = { standardCostOne: element };
+                            obj["standardCostOne"] = element;
+                        }
+                        if (index == 1) {
+                            this.netCostDefaultStandardCost = { standardCostTwo: element };
+                            obj["standardCostTwo"] = element;
+                        }
+                        if (index == 2) {
+                            this.netCostDefaultStandardCost = { standardCostThree: element };
+                            obj["standardCostThree"] = element;
+                        }
+                        if (index == 3) {
+                            this.netCostDefaultStandardCost = { standardCostFour: element };
+                            obj["standardCostFour"] = element;
+                        }
+                        if (index == 4) {
+                            this.netCostDefaultStandardCost = { standardCostFive: element };
+                            obj["standardCostFive"] = element;
+                        }
+                        if (index == 5) {
+                            this.netCostDefaultStandardCost = { standardCostSix: element };
+                            obj["standardCostSix"] = element;
+                        }
+                    });
+                    // this.netCostDefaultStandardCost = {
+                    //     standardCostOne: obj["standardCostOne"],
+                    //     standardCostTwo: obj["standardCostTwo"],
+                    //     standardCostThree: obj["standardCostThree"],
+                    //     standardCostFour: obj["standardCostFour"],
+                    //     standardCostFive: obj["standardCostFive"],
+                    //     standardCostSix: obj["standardCostSix"]
+                    // };
                 } else {
-                    obj = {
-                        standardCostOne: null,
-                        standardCostTwo: null,
-                        standardCostThree: null,
-                        standardCostFour: null,
-                        standardCostFive: null,
-                        standardCostSix: null
-                    };
+                    // obj = {
+                    //     standardCostOne: null,
+                    //     standardCostTwo: null,
+                    //     standardCostThree: null,
+                    //     standardCostFour: null,
+                    //     standardCostFive: null,
+                    //     standardCostSix: null
+                    // };
+                    obj.standardCostOne = null,
+                        obj.standardCostTwo = null,
+                        obj.standardCostThree = null,
+                        obj.standardCostFour = null,
+                        obj.standardCostFive = null,
+                        obj.standardCostSix = null
                 }
             };
-            // console.log("obj", obj)
             this.netCostForm.patchValue(obj);
         };
         // Licensing term screen
@@ -2180,6 +2340,7 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
             .subscribe((methods) => {
                 this.addImprintMethods = methods["data"];
                 this.selectedMethod = this.addImprintMethods.find(x => x.pk_methodID === 254) || this.addImprintMethods[0];
+                this.methodControl.setValue(this.selectedMethod.methodName);
                 this.getImprintLocations();
 
                 // Mark for check
@@ -2198,6 +2359,7 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
             .subscribe((location) => {
                 this.addImprintLocations = location["data"];
                 this.selectedLocation = this.addImprintLocations[0];
+                this.locationControl.setValue(this.selectedLocation.locationName);
 
                 // Mark for check
                 this._changeDetectorRef.markForCheck();
@@ -2567,7 +2729,7 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
         const finalForm = this.secondFormGroup.getRawValue();
         const { radio } = firstFormGroup;
 
-        const { supplierLink, mainDescription, miniDescription, flatRate, weight, doChargesApply, unitsInWeight, caseWidth, caseLength, caseHeight, overPackageCharge, keywords, productNumber, productName, msrp, internalComments } = finalForm;
+        const { supplierLink, mainDescription, miniDescription, flatRate, weight, doChargesApply, unitsInWeight, caseWidth, caseLength, caseHeight, overPackageCharge, keywords, productNumber, productName, msrp, internalComments, unitsInShippingPackage } = finalForm;
 
         const { firstQuantity, secondQuantity, thirdQuantity, fourthQuantity, fifthQuantity, sixthQuantity, standardCostOne, standardCostTwo, standardCostThree, standardCostFour, standardCostFive, standardCostSix } = finalForm;
         const { quantityOne, quantityTwo, quantityThree, quantityFour, quantityFive, quantitySix, productWidth, productHeight, productLength, allowGroupRun } = finalForm;
@@ -2640,7 +2802,7 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
             fob_location_list: [],
             prod_time_max: this.sliderMaxValue || 10,
             prod_time_min: this.sliderMinValue || 7,
-            units_in_shipping_package: 1
+            units_in_shipping_package: unitsInShippingPackage ? unitsInShippingPackage : 0
         };
 
         const physics = {
@@ -2781,7 +2943,7 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
                 flat_rate_shipping: Number(flatRate) || null,
                 prod_time_max: this.sliderMaxValue || 10,
                 prod_time_min: this.sliderMinValue || 7,
-                units_in_shipping_package: 1,
+                units_in_shipping_package: unitsInShippingPackage,
                 bln_include_shipping: doChargesApply == "Yes" ? 1 : 0,
                 fob_location_list: [],
                 dimensions: productDimensions.toString(),
@@ -2877,6 +3039,22 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
         })
     }
     // Colors
+    addCustomColors(event: MatChipInputEvent): void {
+        const value = (event.value || '').trim();
+        // Add our fruit
+        if (value) {
+            this.customColorsList.push({ colorId: null, colorName: value, image: null, run: '0.0', hex: '' });
+        }
+        // Clear the input value
+        event.chipInput!.clear();
+    }
+
+    removeCustomColor(color): void {
+        const index = this.customColorsList.findIndex(colors => colors.colorName == color.colorName);
+        if (index >= 0) {
+            this.customColorsList.splice(index, 1);
+        }
+    }
     colorSelected(result: any): void {
         if (this.selectedColorsList.length == 0) {
             this.selectedColorsList.push({ colorId: result.pk_colorID, colorName: result.colorName });
@@ -2969,11 +3147,19 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
                     rgb: element.hex
                 })
             });
-
+            let custom_colors = [];
+            this.customColorsList.forEach(element => {
+                custom_colors.push({
+                    color_name: element.colorName,
+                    the_run: element.run,
+                    rgb: element.hex
+                })
+            });
             const payload = {
                 product_id: this.productId,
                 create_product_color: true,
-                colors: colors
+                colors: colors,
+                custom_colors: custom_colors
             };
 
             this.updateProductColorLoader = true;
@@ -3007,7 +3193,7 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
             this._changeDetectorRef.markForCheck();
         })
     }
-    uploadImage(event, index): void {
+    uploadImage(event, index, check): void {
         this.imageValue = null;
         const file = event.target.files[0];
         let type = file["type"];
@@ -3028,8 +3214,13 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
                         duration: 3500
                     });
                     this.imageValue = null;
-                    this.selectedColorsListArray[index]["image"] = null;
+                    if (check == 'default') {
+                        this.selectedColorsListArray[index]["image"] = null;
+                    } else {
+                        this.customColorsList[index]["image"] = null;
+                    }
                     this.colorTempImage = null;
+                    this._changeDetectorRef.markForCheck();
                     return;
                 };
 
@@ -3040,11 +3231,21 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
                         duration: 3500
                     });
                     this.colorTempImage = null;
-                    this.selectedColorsListArray[index]["image"] = null;
+                    if (check == 'default') {
+                        this.selectedColorsListArray[index]["image"] = null;
+                    } else {
+                        this.customColorsList[index]["image"] = null;
+                    }
+                    this._changeDetectorRef.markForCheck();
                     return;
                 }
                 const base64 = this.imageValue.imageUpload.split(",")[1];
-                this.selectedColorsListArray[index]["image"] = base64;
+                if (check == 'default') {
+                    this.selectedColorsListArray[index]["image"] = base64;
+                } else {
+                    this.customColorsList[index]["image"] = base64;
+                }
+                this._changeDetectorRef.markForCheck();
             };
         }
     };
@@ -3053,19 +3254,33 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
 
         const { firstQuantity, secondQuantity, thirdQuantity, fourthQuantity, fifthQuantity, sixthQuantity, standardCostOne, standardCostTwo, standardCostThree, standardCostFour, standardCostFive, standardCostSix, standardCostDropOne, standardCostDropTwo, standardCostDropThree, standardCostDropFour, standardCostDropFive, standardCostDropSix, msrp, internalComments, coOp } = this.netCostForm.getRawValue();
 
-
         let quantityList = [parseInt(firstQuantity) || null, parseInt(secondQuantity) || null, parseInt(thirdQuantity) || null, parseInt(fourthQuantity) || null, parseInt(fifthQuantity) || null, parseInt(sixthQuantity) || null];
         quantityList = this.removeNull(quantityList);
 
         let standardCost = [parseFloat(standardCostOne) || null, parseFloat(standardCostTwo) || null, parseFloat(standardCostThree) || null, parseFloat(standardCostFour) || null, parseFloat(standardCostFive) || null, parseFloat(standardCostSix) || null];
         standardCost = this.removeNull(standardCost);
-
+        if (quantityList.length != standardCost.length) {
+            this._snackBar.open("Number of quantity list breaks must be equal to number of standard cost breaks", '', {
+                horizontalPosition: 'center',
+                verticalPosition: 'bottom',
+                duration: 3500
+            });
+            return;
+        }
+        if (!this.checkIfArrayIsUnique(quantityList) || !this.checkIfArrayIsUnique(standardCost)) {
+            this._snackBar.open("Quantities and Cost should be unique", '', {
+                horizontalPosition: 'center',
+                verticalPosition: 'bottom',
+                duration: 3500
+            });
+            return;
+        }
         this.updateProductCostLoader = true;
 
         let payload = {
             product_id: this.productId,
-            quantity_list: [...new Set(quantityList)],
-            cost_list: [...new Set(standardCost)],
+            quantity_list: quantityList,
+            cost_list: standardCost,
             blank_cost_list: [],
             cost_comment: internalComments || null,
             coop_id: this.selectedCooP || null,
@@ -3087,106 +3302,23 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
             this._changeDetectorRef.markForCheck();
         });
     }
+    checkIfArrayIsUnique(myArray) {
+        return myArray.length === new Set(myArray).size;
+    }
     // addImprints
 
     addProductLocalImprints() {
         const setupRunForm = this.runSetup.getRawValue();
         const { run, setup } = setupRunForm;
 
-        if (!this.selectedLocation) {
-            this._snackBar.open("New LOCATION was not specified correctly", '', {
+        if (!this.selectedMethod) {
+            this._snackBar.open("New Method was not specified correctly", '', {
                 horizontalPosition: 'center',
                 verticalPosition: 'bottom',
                 duration: 3500
             });
             return;
         };
-
-        if (this.areaValue === "") {
-            this._snackBar.open("Imprint AREA has not been defined correctly.", '', {
-                horizontalPosition: 'center',
-                verticalPosition: 'bottom',
-                duration: 3500
-            });
-            return;
-        };
-
-        if (this.defaultImprintColorSpecification === 'Yes') {
-            if (!this.collectionIdsArray.length && !this.customColorId) {
-                this._snackBar.open("Select a color collection", '', {
-                    horizontalPosition: 'center',
-                    verticalPosition: 'bottom',
-                    duration: 3500
-                });
-                return;
-            };
-        };
-
-        if (run === "" || setup === "") {
-            this._snackBar.open("Select a SETUP or RUN charge", '', {
-                horizontalPosition: 'center',
-                verticalPosition: 'bottom',
-                duration: 3500
-            });
-
-            return;
-        };
-
-        let processMode;
-        if (this.favoriteSeason === 'Per color (i.e. silk screening, pad printing, etc.)') {
-            processMode = 0;
-        } else if (this.favoriteSeason === 'Per Stitch (embroidering)') {
-            processMode = 1;
-        } else if (this.favoriteSeason === 'Simple Process (i.e. laser engraving, full color, etc.)') {
-            processMode = 2;
-        };
-
-        let second, third, fourth, fifth;
-        let multiValue;
-        if (processMode === 0) {
-            const {
-                twoColorQ,
-                threeColorQ,
-                fourColorQ,
-                fiveColorQ
-            } = this.values.getRawValue();
-            second = twoColorQ;
-            third = threeColorQ;
-            fourth = fourColorQ;
-            fifth = fiveColorQ;
-        };
-
-        const payload = {
-            product_id: this.productId,
-            decorator_id: this.supplierId || null,
-            method_id: this.selectedMethod.pk_methodID || null,
-            location_id: this.selectedLocation.pk_locationID || null,
-            setup_charge_id: setup || 17,
-            run_charge_id: run || 17,
-            bln_includable: this.priceInclusionSelected.value === 'Yes' ? 1 : 0,
-            area: this.areaValue,
-            bln_user_color_selection: this.defaultImprintColorSpecification === 'Yes' ? 1 : 0,
-            multi_color_min_id: 1,
-            collection_id: this.collectionIdsArray.length ? this.selectedCollectionId[0].fk_collectionID : Number(this.customColorId),
-            max_colors: this.defaultImprintColorSpecification === 'Yes' ? this.maxColorSelected : null,
-            bln_process_mode: processMode,
-            min_product_qty: this.minQuantity || 1,
-            imprint_comments: this.addImprintComment || "",
-            digitizer_id: processMode == 1 ? this.selectedDigitizer.pfk_digitizerID : null,
-            bln_active: 1,
-            bln_singleton: this.imprintItselfSelected.value === 'Yes' ? true : false,
-            bln_color_selection: this.defaultImprintColorSpecification === 'Yes' ? true : false,
-            imprint_id: null,
-            store_product_id_list: [],
-            imprint_image: null,
-            display_order: Number(this.addImprintDisplayOrderValue) || 1,
-            create_product_imprint: true
-        };
-        this.imprintsLocalList.push(payload);
-    }
-    addProductImprints() {
-        const setupRunForm = this.runSetup.getRawValue();
-        const { run, setup } = setupRunForm;
 
         if (!this.selectedLocation) {
             this._snackBar.open("New LOCATION was not specified correctly", '', {
@@ -3254,7 +3386,10 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
         const payload = {
             product_id: this.productId,
             decorator_id: this.supplierId || null,
+            supplierName: this.supplierName,
+            methodName: this.selectedMethod.methodName,
             method_id: this.selectedMethod.pk_methodID || null,
+            locationName: this.selectedLocation.locationName,
             location_id: this.selectedLocation.pk_locationID || null,
             setup_charge_id: setup || 17,
             run_charge_id: run || 17,
@@ -3277,41 +3412,154 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
             display_order: Number(this.addImprintDisplayOrderValue) || 1,
             create_product_imprint: true
         };
-        this.updateProductImprintLoader = true;
-        this._changeDetectorRef.markForCheck();
-        if (payload.bln_process_mode === 0) {
-            this._inventoryService.getMultiColorValue(second, third, fourth, fifth)
-                .pipe(takeUntil(this._unsubscribeAll))
-                .subscribe((multi_color) => {
-                    multiValue = multi_color["data"];
-                    payload.multi_color_min_id = multiValue?.length ? multiValue[0].pk_multiColorMinQID : 1;
-                    this.imprintPayload = payload;
-                    this._inventoryService.UpdateProductImprint(this.imprintPayload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
-                        this.updateProductImprintLoader = false;
-                        // if (this._inventoryService.standardImprints) {
-                        //     this.saveStandardImprints();
-                        // }
-                        this.myStepper.next();
+        let index = this.imprintsLocalList.findIndex(elem => elem.method_id == payload.method_id && elem.location_id == payload.location_id);
+        if (index > -1) {
+            this._snackBar.open("Imprint already listed", '', {
+                horizontalPosition: 'center',
+                verticalPosition: 'bottom',
+                duration: 3500
+            });
+        } else {
+            let imprints = this.imprintsLocalList;
+            this.imprintsLocalList = [];
+            if (payload.bln_process_mode === 0) {
+                this.imprintsLocalListLoader = true;
+                this._inventoryService.getMultiColorValue(second, third, fourth, fifth)
+                    .pipe(takeUntil(this._unsubscribeAll))
+                    .subscribe((multi_color) => {
+                        multiValue = multi_color["data"];
+                        payload.multi_color_min_id = multiValue?.length ? multiValue[0].pk_multiColorMinQID : 1;
+                        imprints.push(payload)
+                        setTimeout(() => {
+                            this.imprintsLocalList = imprints;
+                            this._changeDetectorRef.markForCheck();
+                        }, 100);
+                        this._snackBar.open("Imprint listed successfully", '', {
+                            horizontalPosition: 'center',
+                            verticalPosition: 'bottom',
+                            duration: 3500
+                        });
+                        this.imprintsLocalListLoader = false;
                         this._changeDetectorRef.markForCheck();
                     }, err => {
-                        this.updateProductImprintLoader = false;
+                        this.imprintsLocalListLoader = false;
                         this._changeDetectorRef.markForCheck();
                     });
-                }, err => {
-                    this.updateProductImprintLoader = false;
+            } else {
+                imprints.push(payload)
+                setTimeout(() => {
+                    this.imprintsLocalList = imprints;
                     this._changeDetectorRef.markForCheck();
+                }, 100);
+                this._changeDetectorRef.markForCheck();
+                this._snackBar.open("Imprint listed successfully", '', {
+                    horizontalPosition: 'center',
+                    verticalPosition: 'bottom',
+                    duration: 3500
                 });
+            }
+        }
+
+    }
+    removeLocalImprints(index) {
+        let imprints = this.imprintsLocalList;
+        this.imprintsLocalList = [];
+        imprints.splice(index, 1);
+
+        setTimeout(() => {
+            this.imprintsLocalList = imprints;
+            this._changeDetectorRef.markForCheck();
+        }, 100);
+    }
+    addProductImprints() {
+        if (this.imprintsLocalList.length == 0) {
+            this.myStepper.next();
         } else {
-            this.imprintPayload = payload;
-            this._inventoryService.UpdateProductImprint(this.imprintPayload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+            this.updateProductImprintLoader = true;
+            let imprints = [];
+            this.imprintsLocalList.forEach(element => {
+                const { product_id, decorator_id, method_id, location_id, setup_charge_id, run_charge_id, bln_includable, area, bln_user_color_selection, multi_color_min_id, collection_id, max_colors, bln_process_mode, min_product_qty, imprint_comments, digitizer_id, bln_active, bln_singleton, bln_color_selection, imprint_id, store_product_id_list, imprint_image, display_order } = element;
+                const payload = {
+                    decorator_id,
+                    method_id,
+                    location_id,
+                    setup_charge_id,
+                    run_charge_id,
+                    bln_includable,
+                    area,
+                    bln_user_color_selection,
+                    multi_color_min_id,
+                    collection_id,
+                    max_colors,
+                    bln_process_mode,
+                    min_product_qty,
+                    imprint_comments,
+                    digitizer_id,
+                    bln_active,
+                    bln_singleton,
+                    bln_color_selection,
+                    imprint_id,
+                    store_product_id_list,
+                    imprint_image,
+                    display_order
+                };
+                imprints.push(payload);
+            });
+            const payload = {
+                product_id: this.productId,
+                imprints: imprints,
+                create_product_imprint: true
+            };
+            this._inventoryService.UpdateMultiProductImprint(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
                 this.updateProductImprintLoader = false;
+                this._snackBar.open("Imprint saved successfully", '', {
+                    horizontalPosition: 'center',
+                    verticalPosition: 'bottom',
+                    duration: 3500
+                });
                 this.myStepper.next();
                 this._changeDetectorRef.markForCheck();
             }, err => {
                 this.updateProductImprintLoader = false;
                 this._changeDetectorRef.markForCheck();
             });
-        };
+        }
+
+        // this.updateProductImprintLoader = true;
+        // this._changeDetectorRef.markForCheck();
+        // if (payload.bln_process_mode === 0) {
+        //     this._inventoryService.getMultiColorValue(second, third, fourth, fifth)
+        //         .pipe(takeUntil(this._unsubscribeAll))
+        //         .subscribe((multi_color) => {
+        //             multiValue = multi_color["data"];
+        //             payload.multi_color_min_id = multiValue?.length ? multiValue[0].pk_multiColorMinQID : 1;
+        //             this.imprintPayload = payload;
+        //             this._inventoryService.UpdateProductImprint(this.imprintPayload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+        //                 this.updateProductImprintLoader = false;
+        //                 // if (this._inventoryService.standardImprints) {
+        //                 //     this.saveStandardImprints();
+        //                 // }
+        //                 this.myStepper.next();
+        //                 this._changeDetectorRef.markForCheck();
+        //             }, err => {
+        //                 this.updateProductImprintLoader = false;
+        //                 this._changeDetectorRef.markForCheck();
+        //             });
+        //         }, err => {
+        //             this.updateProductImprintLoader = false;
+        //             this._changeDetectorRef.markForCheck();
+        //         });
+        // } else {
+        //     this.imprintPayload = payload;
+        //     this._inventoryService.UpdateProductImprint(this.imprintPayload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+        //         this.updateProductImprintLoader = false;
+        //         this.myStepper.next();
+        //         this._changeDetectorRef.markForCheck();
+        //     }, err => {
+        //         this.updateProductImprintLoader = false;
+        //         this._changeDetectorRef.markForCheck();
+        //     });
+        // };
     }
     goToProductDetails() {
         const firstFormGroup = this.firstFormGroup.getRawValue();
@@ -3319,7 +3567,7 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
 
         const { radio } = firstFormGroup;
 
-        const { supplierLink, mainDescription, miniDescription, flatRate, weight, doChargesApply, unitsInWeight, caseWidth, caseLength, caseHeight, overPackageCharge, keywords, productNumber, productName, msrp, internalComments } = finalForm;
+        const { supplierLink, mainDescription, miniDescription, flatRate, weight, doChargesApply, unitsInWeight, caseWidth, caseLength, caseHeight, overPackageCharge, keywords, productNumber, productName, msrp, internalComments, unitsInShippingPackage } = finalForm;
 
         const { firstQuantity, secondQuantity, thirdQuantity, fourthQuantity, fifthQuantity, sixthQuantity, standardCostOne, standardCostTwo, standardCostThree, standardCostFour, standardCostFive, standardCostSix } = finalForm;
         const { quantityOne, quantityTwo, quantityThree, quantityFour, quantityFive, quantitySix, productWidth, productHeight, productLength, allowGroupRun } = finalForm;
@@ -3402,7 +3650,7 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
             flat_rate_shipping: Number(flatRate) || null,
             prod_time_max: this.sliderMaxValue || 10,
             prod_time_min: this.sliderMinValue || 7,
-            units_in_shipping_package: 1,
+            units_in_shipping_package: unitsInShippingPackage,
             bln_include_shipping: doChargesApply == "Yes" ? 1 : 0,
             fob_location_list: [],
             dimensions: productDimensions.toString(),
@@ -3516,8 +3764,12 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
 
     }
     // Colors
-    copyColorToHex(index) {
-        this.selectedColorsListArray[index]['hex'] = this.colorValue;
+    copyColorToHex(index, check) {
+        if (check == 'default') {
+            this.selectedColorsListArray[index]['hex'] = this.colorValue;
+        } else {
+            this.customColorsList[index]['hex'] = this.colorValue;
+        }
     }
     addColorToArrayList() {
 
@@ -3553,5 +3805,15 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
     removeColorFromArrayList(index) {
         this.selectedColorsListArray.splice(index, 1);
         this.selectedColorsList.splice(index, 1);
+    }
+    removeColorImage(index, check) {
+        if (check == 'default') {
+            this.colorTempImage = null;
+            this.selectedColorsListArray[index].image = null;
+        } else {
+            this.colorTempImage = null;
+            this.customColorsList[index].image = null;
+        }
+        this._changeDetectorRef.markForCheck();
     }
 }

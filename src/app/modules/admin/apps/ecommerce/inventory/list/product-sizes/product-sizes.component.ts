@@ -59,6 +59,7 @@ export class ProductSizesComponent implements OnInit, OnDestroy {
         feature: ['', Validators.required]
       });
 
+      this.isLoading = true;
       this.getSizes(this.page);
     }
 
@@ -68,6 +69,7 @@ export class ProductSizesComponent implements OnInit, OnDestroy {
     this.searchKeywordTerm = keyword;
     if (keyword.length > 0) {
       this.isSearchLoading = true;
+      this._changeDetectorRef.markForCheck();
       this.getSizes(1);
     } else {
       this.dataSource = this.tempDataSource;
@@ -75,7 +77,6 @@ export class ProductSizesComponent implements OnInit, OnDestroy {
     }
   }
   getSizes(page: number): void {
-    this.isLoading = true;
     this._changeDetectorRef.markForCheck();
     const pk_productID = this.selectedProduct;
 

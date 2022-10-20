@@ -1,7 +1,6 @@
 // This file can be replaced during build by using the `fileReplacements` array.
 // `ng build --prod` replaces `environment.ts` with `environment.prod.ts`.
 // The list of file replacements can be found in `angular.json`.
-
 export const environment = {
   production: false,
   signInAuth:
@@ -11,12 +10,12 @@ export const environment = {
   customerList: "https://consolidus-staging.azurewebsites.net/api/users",
   customer: "https://consolidus-staging.azurewebsites.net/api/user",
   orders: "https://consolidus-staging.azurewebsites.net/api/orders",
-  stores: "https://consolidus-staging.azurewebsites.net/api/stores",
+  stores: "https://stores-staging.azurewebsites.net/api/stores",
   storeNewUrl: "https://stores-staging.azurewebsites.net/api/stores",
   storeNewUrlRapidBuild: "https://stores-staging.azurewebsites.net/api/rapid_build",
-  products: "https://consolidus-staging.azurewebsites.net/api/products",
-  storeProducts: "https://consolidus-staging.azurewebsites.net/api/store_products",
-  system: "https://consolidus-staging.azurewebsites.net/api/system",
+  products: "http://localhost:7071/api/products",
+  storeProducts: "http://localhost:7100/api/store_products",
+  system: "http://localhost:7071/api/system",
   productMedia: "https://assets.consolidus.com/globalAssets/Products",
   rapidBuildMedia: "https://assets.consolidus.com/globalAssets/rapidBuild",
   storeMedia: "https://assets.consolidus.com/globalAssets/Stores",
@@ -33,8 +32,6 @@ export const environment = {
     appId: "1:187396735094:web:4127587a84d92215ec1f57",
   },
 };
-
-
 /*
  * For easier debugging in development mode, you can import the following file
  * to ignore zone related error stack frames such as `zone.run`, `zoneDelegate.invokeTask`.

@@ -1,6 +1,6 @@
 import { Component, Input, OnInit, Output, EventEmitter, ChangeDetectorRef, OnDestroy } from '@angular/core';
-import { Subject } from 'rxjs';
-import { takeUntil } from 'rxjs/operators';
+import { Observable, Subject } from 'rxjs';
+import { map, startWith, takeUntil } from 'rxjs/operators';
 import { InventoryService } from 'app/modules/admin/apps/ecommerce/inventory/inventory.service';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { FormBuilder, FormControl, FormGroup } from '@angular/forms';
@@ -179,6 +179,26 @@ export class ImprintComponent implements OnInit, OnDestroy {
   showImprintScreen = "";
   colorsCollectionIdsArray: any = [];
 
+  methodControl = new FormControl('');
+  methodFilteredOptions: Observable<any>;
+  locationControl = new FormControl('');
+  locationFilteredOptions: Observable<any>;
+
+  private _filter(value: string): string[] {
+    const filterValue = value.toLowerCase();
+    return this.addImprintMethods.filter(option => option.methodName.toLowerCase().includes(filterValue));
+  }
+  private _filterLocation(value: string): string[] {
+    const filterValue = value.toLowerCase();
+    return this.addImprintLocations.filter(option => option.locationName.toLowerCase().includes(filterValue));
+  }
+  methodSelected(obj) {
+    this.selectedMethod = obj;
+  }
+  locationSelected(obj) {
+    this.selectedLocation = obj;
+  }
+
   constructor(
     private _changeDetectorRef: ChangeDetectorRef,
     private _inventoryService: InventoryService,
@@ -187,6 +207,16 @@ export class ImprintComponent implements OnInit, OnDestroy {
   ) { }
 
   ngOnInit(): void {
+    this.methodFilteredOptions = this.methodControl.valueChanges.pipe(
+      startWith(''),
+      map(value => this._filter(value || '')),
+    );
+
+    this.locationFilteredOptions = this.locationControl.valueChanges.pipe(
+      startWith(''),
+      map(value => this._filterLocation(value || '')),
+    );
+
     const { blnGroupRun } = this.selectedProduct;
     this.allowRunBoolean = blnGroupRun;
     this.chargeDistribution = this._formBuilder.group({
@@ -1613,9 +1643,13 @@ export class ImprintComponent implements OnInit, OnDestroy {
       .pipe(takeUntil(this._unsubscribeAll))
       .subscribe((location) => {
         this.addImprintLocations = location["data"];
-        if (data) {
-          const { pk_locationID } = data
-          this.selectedLocation = this.addImprintLocations.find(x => x.pk_locationID === pk_locationID) || this.addImprintLocations[0];
+        if (this.addImprintLocations) {
+          // const { pk_locationID } = data
+          this.selectedLocation = this.addImprintLocations[0];
+          this.locationControl.setValue(this.selectedLocation.locationName);
+          // this.selectedLocation = this.addImprintLocations.find(x => x.pk_locationID === pk_locationID) || this.addImprintLocations[0];
+          // this.locationControl.setValue(this.selectedLocation.locationName);
+          // console.log(this.selectedLocation)
         }
 
         // Mark for check
@@ -1630,9 +1664,13 @@ export class ImprintComponent implements OnInit, OnDestroy {
         .subscribe((methods) => {
           this.addImprintMethods = methods["data"];
           this.selectedMethod = this.addImprintMethods.find(x => x.pk_methodID === 254) || this.addImprintMethods[0];
+          this.methodControl.setValue(this.selectedMethod.methodName);
+
           if (data) {
             const { pk_methodID } = data
             this.selectedMethod = this.addImprintMethods.find(x => x.pk_methodID === pk_methodID) || this.addImprintMethods[0];
+            this.methodControl.setValue(this.selectedMethod.methodName);
+
           }
 
           // Mark for check

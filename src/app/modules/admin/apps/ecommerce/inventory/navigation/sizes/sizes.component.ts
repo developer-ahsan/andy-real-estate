@@ -64,6 +64,7 @@ export class SizesComponent implements OnInit, OnDestroy {
     this.searchKeywordTerm = keyword;
     if (keyword.length > 0) {
       this.isSearchLoading = true;
+      this._changeDetectorRef.markForCheck();
       this.getSizes(1);
     } else {
       this.dataSource = this.tempDataSource;

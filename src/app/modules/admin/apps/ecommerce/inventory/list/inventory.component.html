@@ -567,11 +567,11 @@
                                             </mat-select>
                                         </mat-form-field>
                                     </div>
-                                    <div class="col-12" *ngIf="supplierType == 'Apparel Item'">
+                                    <div class="col-12">
                                         <mat-form-field class="w-full">
                                             <mat-label>Units per Shipping Package</mat-label>
                                             <input matInput type="number" min="1"
-                                                [formControlName]="'unitsInWeight'"><small
+                                                [formControlName]="'unitsInShippingPackage'"><small
                                                 class="text-secondary font-semibold">
                                                 unit(s) </small>
                                         </mat-form-field>
@@ -1162,7 +1162,45 @@
                                 <div class="col-12">
                                     <form [formGroup]="colorsForm">
                                         <div class="row">
-                                            <div class="col-9">
+                                            <div class="col-9 flex justify-between">
+                                                <p></p>
+                                                <p class="text-secondary cursor-pointer underline">
+                                                    <span *ngIf="!isDefaultColor" (click)="changeDefaultColor()">
+                                                        Default Colors
+                                                    </span>
+                                                    <span *ngIf="isDefaultColor" (click)="changeDefaultColor()">
+                                                        Custom Colors
+                                                    </span>
+                                                </p>
+                                            </div>
+                                            <div class="col-9" *ngIf="!isDefaultColor">
+                                                <mat-form-field class="example-chip-list w-full" appearance="fill">
+                                                    <mat-label>
+                                                        <span class="ml-1">Custom Color (Comma-seperated)</span>
+                                                    </mat-label>
+                                                    <mat-chip-list class="pt-1" #colorchiplist>
+                                                        <mat-chip [removable]="true" [selectable]="true"
+                                                            *ngFor="let color of customColorsList"
+                                                            (removed)="removeCustomColor(color)">
+                                                            {{color.colorName}}
+                                                            <mat-icon class="icon-size-5" matChipRemove
+                                                                [svgIcon]="'heroicons_solid:minus-circle'"></mat-icon>
+                                                        </mat-chip>
+                                                        <input [matChipInputFor]="colorchiplist" placeholder="New Color"
+                                                            [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
+                                                            [matChipInputAddOnBlur]="addOnBlur"
+                                                            (matChipInputTokenEnd)="addCustomColors($event)">
+                                                    </mat-chip-list>
+                                                </mat-form-field>
+                                                <!-- <mat-form-field class="w-full">
+                                                    <mat-label>
+                                                        <span class="ml-1">Custom Color (Comma-seperated)</span>
+                                                    </mat-label>
+                                                    <input matInput [(ngModel)]="customColorsList"
+                                                        [ngModelOptions]="{standalone: true}">
+                                                </mat-form-field> -->
+                                            </div>
+                                            <div class="col-9" *ngIf="isDefaultColor">
                                                 <mat-form-field class="w-full">
                                                     <mat-label>
                                                         <span class="ml-1">Color</span>
@@ -1199,10 +1237,12 @@
                                         </div>
                                     </form>
                                 </div>
-                                <div class="col-12 my-3 text-center" *ngIf="selectedColorsListArray.length == 0">
+                                <div class="col-12 my-3 text-center"
+                                    *ngIf="selectedColorsListArray.length == 0 && customColorsList.length == 0">
                                     <b>No Color Selected</b>
                                 </div>
-                                <div class="col-12 mt-3" *ngIf="selectedColorsListArray.length > 0">
+                                <div class="col-12 mt-3"
+                                    *ngIf="selectedColorsListArray.length > 0 || customColorsList.length > 0">
                                     <div class="row mb-2 border-b">
                                         <div class="col-3 font-bold">Color Name</div>
                                         <div class="col-2 font-bold">Run</div>
@@ -1210,6 +1250,7 @@
                                         <div class="col-3 font-bold">Image</div>
                                         <div class="col-2 font-bold">Action</div>
                                     </div>
+                                    <!-- Default -->
                                     <div class="row border-b p-2"
                                         *ngFor="let item of selectedColorsListArray;let i = index">
                                         <div class="col-3">{{item.colorId +'-'+ item.colorName}}</div>
@@ -1224,22 +1265,73 @@
                                                 <input [matTooltip]="'Copy hex from color palette'" matInput
                                                     [(ngModel)]="item.hex" placeholder="Hex">
                                                 <mat-icon class="icon-size-5 text-secondary ml-2"
-                                                    style="cursor: pointer;" (click)="copyColorToHex(i)"
+                                                    style="cursor: pointer;" (click)="copyColorToHex(i,'default')"
                                                     [matTooltip]="'Copy hex from color palette'"
                                                     svgIcon="mat_outline:content_copy">
                                                 </mat-icon>
                                                 <mat-error>This field is required</mat-error>
                                             </mat-form-field>
                                         </div>
-                                        <div class="col-3" *ngIf="item.image">
-                                            <img style="width: 20%;" src="{{'data:image/jpg;base64,' + item.image}}">
+                                        <div class="col-3 text-center" *ngIf="item.image">
+                                            <div ng-repeat="file in imagefinaldata" class="img_wrp">
+                                                <img style="width: 20%;"
+                                                    src="{{'data:image/jpg;base64,' + item.image}}" />
+                                                <mat-icon (click)="removeColorImage(i,'default')"
+                                                    class="close cursor-pointer">
+                                                    close</mat-icon>
+                                            </div>
+                                            <!-- <mat-icon (click)="removeColorImage(i)" class="cursor-pointer">
+                                                close</mat-icon>
+                                            <img style="width: 20%;" src="{{'data:image/jpg;base64,' + item.image}}"> -->
                                         </div>
                                         <div class="col-3" *ngIf="!item.image">
                                             <input [(ngModel)]="colorTempImage" type="file" accept=".jpg" id="image"
-                                                (change)="uploadImage($event, i)" />
+                                                (change)="uploadImage($event, i,'default')" />
                                         </div>
                                         <div class="col-2">
                                             <mat-icon (click)="removeColorFromArrayList(i)" class="cursor-pointer">
+                                                delete</mat-icon>
+                                        </div>
+                                    </div>
+                                    <!-- Custom -->
+                                    <div class="row border-b p-2" *ngFor="let item of customColorsList;let i = index">
+                                        <div class="col-3">{{ item.colorName}}</div>
+                                        <div class="col-2">
+                                            <mat-form-field class="w-full">
+                                                <input matInput [(ngModel)]="item.run" type="number" value="0.00"
+                                                    placeholder="Run">
+                                            </mat-form-field>
+                                        </div>
+                                        <div class="col-2">
+                                            <mat-form-field class="w-full">
+                                                <input [matTooltip]="'Copy hex from color palette'" matInput
+                                                    [(ngModel)]="item.hex" placeholder="Hex">
+                                                <mat-icon class="icon-size-5 text-secondary ml-2"
+                                                    style="cursor: pointer;" (click)="copyColorToHex(i,'custom')"
+                                                    [matTooltip]="'Copy hex from color palette'"
+                                                    svgIcon="mat_outline:content_copy">
+                                                </mat-icon>
+                                                <mat-error>This field is required</mat-error>
+                                            </mat-form-field>
+                                        </div>
+                                        <div class="col-3 text-center" *ngIf="item.image">
+                                            <div ng-repeat="file in imagefinaldata" class="img_wrp">
+                                                <img style="width: 20%;"
+                                                    src="{{'data:image/jpg;base64,' + item.image}}" />
+                                                <mat-icon (click)="removeColorImage(i,'custom')"
+                                                    class="close cursor-pointer">
+                                                    close</mat-icon>
+                                            </div>
+                                            <!-- <mat-icon (click)="removeColorImage(i)" class="cursor-pointer">
+                                                close</mat-icon>
+                                            <img style="width: 20%;" src="{{'data:image/jpg;base64,' + item.image}}"> -->
+                                        </div>
+                                        <div class="col-3" *ngIf="!item.image">
+                                            <input [(ngModel)]="colorTempImage" type="file" accept=".jpg" id="image"
+                                                (change)="uploadImage($event, i,'custom')" />
+                                        </div>
+                                        <div class="col-2">
+                                            <mat-icon (click)="removeCustomColor(item)" class="cursor-pointer">
                                                 delete</mat-icon>
                                         </div>
                                     </div>
@@ -1274,9 +1366,607 @@
                                                 Skip
                                             </button>
                                         </div>
-                                        <!-- <mat-tab-group>
+                                        <mat-tab-group>
                                             <mat-tab label="Add New">
-                                                
+                                                <div class="row">
+                                                    <div class="col-12 my-1">
+                                                        <div class="text-2xl font-bold">
+                                                            Add Imprint
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-12">
+                                                        <div class="row">
+                                                            <!-- Imprint Method -->
+                                                            <div class="col-12">
+                                                                <b>
+                                                                    <button
+                                                                        [matTooltip]="'To add a new method, select (NEW METHOD) in the menu and then enter the name in the box to the right'">
+                                                                        <i class="fa fa-info-circle"></i>
+                                                                    </button>
+                                                                    Imprint Method <span
+                                                                        *ngIf="!addImprintMethods.length"
+                                                                        class="text-sm text-secondary font-semibold ml-2">
+                                                                        (Fetching
+                                                                        Methods...) </span>
+                                                                </b>
+                                                            </div>
+                                                            <div class="col-lg-6 col-12">
+                                                                <mat-form-field class="w-full" appearance="fill">
+                                                                    <input type="text" placeholder="Imprint Method"
+                                                                        aria-label="Number" matInput
+                                                                        [formControl]="methodControl"
+                                                                        [matAutocomplete]="auto"
+                                                                        [readonly]="addImprintMethods.length ? false : true">
+                                                                    <mat-autocomplete autoActiveFirstOption
+                                                                        #auto="matAutocomplete">
+                                                                        <mat-option
+                                                                            *ngFor="let method of methodFilteredOptions | async"
+                                                                            [value]="method.methodName"
+                                                                            (click)="methodSelected(method)">
+                                                                            <small>{{method.methodName}}
+                                                                                ({{method.pk_methodID}})</small>
+                                                                        </mat-option>
+                                                                    </mat-autocomplete>
+                                                                </mat-form-field>
+
+                                                                <!-- <mat-form-field class="w-full" appearance="fill">
+                                                                    <mat-select [(ngModel)]="selectedMethod"
+                                                                        name="method"
+                                                                        [disabled]="addImprintMethods.length ? false : true">
+                                                                        <mat-option
+                                                                            *ngFor="let method of addImprintMethods"
+                                                                            [value]="method">
+                                                                            <small>{{method.methodName}}
+                                                                                ({{method.pk_methodID}})</small>
+                                                                        </mat-option>
+                                                                    </mat-select>
+                                                                </mat-form-field> -->
+                                                            </div>
+                                                            <div class="col-lg-6 col-12">
+                                                                <mat-form-field appearance="fill" class="w-full">
+                                                                    <input matInput placeholder="New Method Name">
+                                                                </mat-form-field>
+                                                            </div>
+
+                                                            <!-- Location -->
+                                                            <div class="col-12">
+                                                                <b>
+                                                                    <button
+                                                                        [matTooltip]="'To add a new location, select (NEW LOCATION) in the menu and then enter the name in the box to the right'">
+                                                                        <i class="fa fa-info-circle"></i>
+                                                                    </button>
+                                                                    Location <span *ngIf="!addImprintLocations.length"
+                                                                        class="text-sm text-secondary font-semibold ml-2">
+                                                                        (Fetching
+                                                                        Locations...) </span>
+                                                                </b>
+                                                            </div>
+                                                            <div class="col-lg-6 col-12">
+                                                                <mat-form-field class="w-full" appearance="fill">
+                                                                    <input type="text" placeholder="Imprint Location"
+                                                                        aria-label="Number" matInput
+                                                                        [formControl]="locationControl"
+                                                                        [matAutocomplete]="auto1"
+                                                                        [readonly]="addImprintLocations.length ? false : true">
+                                                                    <mat-autocomplete autoActiveFirstOption
+                                                                        #auto1="matAutocomplete">
+                                                                        <mat-option
+                                                                            *ngFor="let location of locationFilteredOptions | async"
+                                                                            [value]="location.locationName"
+                                                                            (click)="locationSelected(location)">
+                                                                            <small>{{location.locationName}}
+                                                                                ({{location.pk_locationID}})</small>
+                                                                        </mat-option>
+                                                                    </mat-autocomplete>
+                                                                </mat-form-field>
+                                                                <!-- <mat-form-field class="w-full" appearance="fill">
+                                                                    <mat-select [(ngModel)]="selectedLocation"
+                                                                        name="location"
+                                                                        [disabled]="addImprintLocations.length ? false : true">
+                                                                        <mat-option
+                                                                            *ngFor="let location of addImprintLocations"
+                                                                            [value]="location">
+                                                                            <small>{{location.locationName}}
+                                                                                ({{location.pk_locationID}})</small>
+                                                                        </mat-option>
+                                                                    </mat-select>
+                                                                </mat-form-field> -->
+                                                            </div>
+                                                            <div class="col-lg-6 col-12">
+                                                                <mat-form-field appearance="fill" class="w-full">
+                                                                    <input matInput placeholder="New Location Name">
+                                                                </mat-form-field>
+                                                            </div>
+
+                                                            <!-- Imprint Area -->
+                                                            <div class="col-12">
+                                                                <b>Imprint Area (max)</b>
+                                                            </div>
+                                                            <div class="col-12">
+                                                                <mat-form-field appearance="fill" class="w-full">
+                                                                    <input matInput
+                                                                        (input)="addArea($event.target.value)">
+                                                                </mat-form-field>
+                                                            </div>
+
+                                                            <!-- Details -->
+                                                            <div class="col-12">
+                                                                <b>How are the charges applied?</b>
+                                                            </div>
+                                                            <div class="col-12">
+                                                                <mat-radio-group
+                                                                    aria-labelledby="example-radio-group-label"
+                                                                    class="example-radio-group"
+                                                                    [(ngModel)]="favoriteSeason">
+                                                                    <mat-radio-button class="example-radio-button"
+                                                                        *ngFor="let season of seasons" [value]="season">
+                                                                        {{season}}
+                                                                    </mat-radio-button>
+                                                                </mat-radio-group>
+                                                            </div>
+
+                                                            <div class="col-12">
+                                                                <!-- Quantity restrictions -->
+
+                                                                <div class="row"
+                                                                    *ngIf="favoriteSeason === 'Per color (i.e. silk screening, pad printing, etc.)'">
+                                                                    <div class="col-12">
+                                                                        <button
+                                                                            [matTooltip]="'Set all quantities to1 if no restrictions. Use quantity=1 instead of product minimum quantity'">
+                                                                            <i class="fa fa-info-circle"></i>
+                                                                        </button>
+                                                                        <b class="pl-1">Quantity restrictions for
+                                                                            multiple
+                                                                            colors</b>
+                                                                    </div>
+                                                                </div>
+
+                                                                <div class="row"
+                                                                    *ngIf="favoriteSeason === 'Per color (i.e. silk screening, pad printing, etc.)'">
+                                                                    <div class="col-lg-3 col-12">
+                                                                        <b class="text-secondary"># of Colors</b>
+                                                                    </div>
+                                                                    <div class="col-9"></div>
+
+                                                                    <form [formGroup]="values">
+                                                                        <div class="row">
+                                                                            <div class="col-3">
+                                                                                <p class="font-semibold"
+                                                                                    style="line-height: 3.5;">Min
+                                                                                    Product Qty</p>
+                                                                            </div>
+                                                                            <div class="col-2">
+                                                                                <mat-form-field appearance="fill"
+                                                                                    class="w-full">
+                                                                                    <mat-label>Two</mat-label>
+                                                                                    <input matInput type="number"
+                                                                                        min="1" value="1"
+                                                                                        [formControlName]="'twoColorQ'">
+                                                                                </mat-form-field>
+                                                                            </div>
+                                                                            <div class="col-2">
+                                                                                <mat-form-field appearance="fill"
+                                                                                    class="w-full">
+                                                                                    <mat-label>Three</mat-label>
+                                                                                    <input matInput type="number"
+                                                                                        min="1" value="1"
+                                                                                        [formControlName]="'threeColorQ'">
+                                                                                </mat-form-field>
+                                                                            </div>
+                                                                            <div class="col-2">
+                                                                                <mat-form-field appearance="fill"
+                                                                                    class="w-full">
+                                                                                    <mat-label>Four</mat-label>
+                                                                                    <input matInput type="number"
+                                                                                        min="1" value="1"
+                                                                                        [formControlName]="'fourColorQ'">
+                                                                                </mat-form-field>
+                                                                            </div>
+                                                                            <div class="col-2">
+                                                                                <mat-form-field appearance="fill"
+                                                                                    class="w-full">
+                                                                                    <mat-label>Five</mat-label>
+                                                                                    <input matInput type="number"
+                                                                                        min="1" value="1"
+                                                                                        [formControlName]="'fiveColorQ'">
+                                                                                </mat-form-field>
+                                                                            </div>
+                                                                        </div>
+                                                                    </form>
+                                                                </div>
+
+                                                                <!-- Digitizer -->
+                                                                <div class="row"
+                                                                    *ngIf="favoriteSeason === 'Per Stitch (embroidering)'">
+                                                                    <div class="col-12">
+                                                                        <b>Digitizer</b>
+                                                                    </div>
+                                                                </div>
+                                                                <div class="row"
+                                                                    *ngIf="favoriteSeason === 'Per Stitch (embroidering)'">
+                                                                    <div class="col-12">
+                                                                        <mat-form-field class="w-full"
+                                                                            appearance="fill">
+                                                                            <mat-select [(ngModel)]="selectedDigitizer"
+                                                                                name="food"
+                                                                                [disabled]="addImprintDigitizers.length ? false : true">
+                                                                                <mat-option
+                                                                                    *ngFor="let digitzier of addImprintDigitizers"
+                                                                                    [value]="digitzier">
+                                                                                    {{digitzier.companyName}}
+                                                                                </mat-option>
+                                                                            </mat-select>
+                                                                        </mat-form-field>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+
+                                                            <div class="col-12 mt-2">
+                                                                <b>Does the user need to specify imprint colors?</b>
+                                                            </div>
+                                                            <div class="col-12">
+                                                                <mat-radio-group
+                                                                    aria-labelledby="example-radio-group-label"
+                                                                    class="example-radio-group"
+                                                                    [(ngModel)]="defaultImprintColorSpecification">
+                                                                    <mat-radio-button class="example-radio-button"
+                                                                        *ngFor="let imprintOption of specifyImrpintArray"
+                                                                        [value]="imprintOption">
+                                                                        {{imprintOption}}
+                                                                    </mat-radio-button>
+                                                                </mat-radio-group>
+                                                            </div>
+                                                            <div class="col-12 my-2"
+                                                                *ngIf="defaultImprintColorSpecification === 'Yes'">
+                                                                <mat-form-field class="w-full">
+                                                                    <mat-label>Max Colors</mat-label>
+                                                                    <mat-select [(ngModel)]="maxColorSelected"
+                                                                        name="maxColor">
+                                                                        <mat-option *ngFor="let maxColor of maxColors"
+                                                                            [value]="maxColor">
+                                                                            {{maxColor}}
+                                                                        </mat-option>
+                                                                    </mat-select>
+                                                                </mat-form-field>
+                                                            </div>
+
+                                                            <div class="col-12 mt-2"
+                                                                *ngIf="defaultImprintColorSpecification === 'Yes'">
+                                                                <p class="font-semibold my-1">
+                                                                    Imprint Color Collection
+                                                                </p>
+                                                                <div>
+                                                                    <button class="min-w-40" mat-flat-button
+                                                                        [color]="'primary'"
+                                                                        [matTooltip]="'Get Imprint Color Collection Ids'"
+                                                                        (click)="generateCollectionId()"
+                                                                        [disabled]="getImprintColorCollectionLoader">
+                                                                        <mat-progress-spinner
+                                                                            *ngIf="getImprintColorCollectionLoader"
+                                                                            [diameter]="24" [mode]="'indeterminate'">
+                                                                        </mat-progress-spinner>
+                                                                        <span *ngIf="!getImprintColorCollectionLoader"
+                                                                            class="ml-1 mr-1">
+                                                                            Color Collection ID
+                                                                        </span>
+                                                                    </button>
+                                                                </div>
+                                                                <div *ngIf="!collectionIdsArray.length">
+                                                                    <small class="font-semibold ml-3"
+                                                                        *ngIf="!collectionIdsArray.length">
+                                                                        * No collections available. Click on the button
+                                                                        to
+                                                                        generate list of
+                                                                        collections
+                                                                    </small>
+                                                                </div>
+
+                                                                <div class="my-2" *ngIf="collectionIdsArray.length">
+                                                                    <b>Select Imprint Color</b>
+                                                                    <ng-multiselect-dropdown
+                                                                        [placeholder]="'Imprint Color Collections'"
+                                                                        [settings]="imprintColorsDropdownSettings"
+                                                                        [data]="collectionIdsArray"
+                                                                        [(ngModel)]="selectedCollectionId"
+                                                                        (onSelect)="onImprintColorSelect($event)">
+                                                                    </ng-multiselect-dropdown>
+                                                                </div>
+
+                                                                <div class="my-1">
+                                                                    <mat-form-field class="w-full">
+                                                                        <input matInput
+                                                                            placeholder="Enter Collection ID"
+                                                                            [(ngModel)]='customColorId'>
+                                                                        <!-- <mat-hint class="mb-1 ">
+                                                                                    
+                                                                                </mat-hint> -->
+                                                                    </mat-form-field>
+                                                                    <span class="text-gray-600 border-b-8 mr-1 "
+                                                                        style="line-height: 3;"
+                                                                        *ngFor="let item of colorsCollectionIdsArray; let i=index"
+                                                                        [ngStyle]="{'border-color': '#' + item['RGB']}">{{item.imprintColorName}}<span
+                                                                            *ngIf="i < colorsCollectionIdsArray.length - 1">,</span>
+                                                                    </span>
+                                                                </div>
+                                                            </div>
+
+                                                            <!-- Imprint order itself -->
+                                                            <div class="col-12 my-2 mt-4">
+                                                                <b>Can this imprint be ordered by itself?</b>
+                                                            </div>
+                                                            <div class="col-12">
+                                                                <small
+                                                                    class="leading-relaxed text-secondary font-semibold">
+                                                                    *This option determines whether this imprint can be
+                                                                    ordered
+                                                                    by
+                                                                    itself. For example, if the
+                                                                    location of this imprint is "second side," this
+                                                                    implies that
+                                                                    there
+                                                                    must be a first side, and
+                                                                    so it cannot be ordered by itself.
+                                                                </small>
+                                                            </div>
+                                                            <div class="col-12">
+                                                                <mat-radio-group
+                                                                    aria-labelledby="example-radio-group-label"
+                                                                    class="example-radio-group"
+                                                                    [(ngModel)]="imprintItselfSelected">
+                                                                    <mat-radio-button class="example-radio-button"
+                                                                        *ngFor="let imprintItselfVal of imprintItself"
+                                                                        [value]="imprintItselfVal">
+                                                                        {{imprintItselfVal.imprintItselfText}}
+                                                                    </mat-radio-button>
+                                                                </mat-radio-group>
+                                                            </div>
+                                                            <!-- Imprint order itself -->
+                                                            <div class="col-12">
+                                                                <b>Price Inclusion?</b>
+                                                            </div>
+                                                            <div class="col-12">
+                                                                <mat-radio-group
+                                                                    aria-labelledby="example-radio-group-label"
+                                                                    class="example-radio-group"
+                                                                    [(ngModel)]="priceInclusionSelected">
+                                                                    <mat-radio-button class="example-radio-button"
+                                                                        *ngFor="let priceInclusion of priceInclusionArray"
+                                                                        [value]="priceInclusion">
+                                                                        {{priceInclusion.priceInclusionText}}
+                                                                    </mat-radio-button>
+                                                                </mat-radio-group>
+                                                            </div>
+
+                                                            <!-- Charge Distributions -->
+                                                            <div class="col-12 my-2">
+                                                                <button
+                                                                    [matTooltip]="'Enter an imprint charge and corresponding discount code to find existing charge
+                                                                            distributions that include it. For example for a silk-screened additional color/location
+                                                                            charge of $0.25(G), enter 0.25, select G and click the button.'">
+                                                                    <i class="fa fa-info-circle"></i>
+                                                                </button>
+                                                                <b class="pl-1">Charge Distributions</b>
+                                                            </div>
+                                                            <div class="col-12">
+                                                                <small class="text-danger font-semibold">
+                                                                    * When setup/run charges are $0.00, please type code
+                                                                    "17" in
+                                                                    the
+                                                                    respective field.
+                                                                </small>
+                                                            </div>
+
+                                                            <!-- Run/Setup charges found -->
+                                                            <div class="col-lg-3 col-12 my-2"
+                                                                *ngIf="!runSetupDistributorCodes.length">
+                                                                <button class="w-full" mat-flat-button
+                                                                    [color]="'primary'" [matTooltip]="'Add run/setup'"
+                                                                    (click)="getRunSetup()"
+                                                                    [disabled]="runSetupLoaderFetching">
+                                                                    <mat-progress-spinner *ngIf="runSetupLoaderFetching"
+                                                                        [diameter]="24" [mode]="'indeterminate'">
+                                                                    </mat-progress-spinner>
+                                                                    <span *ngIf="!runSetupLoaderFetching"
+                                                                        class="ml-1 mr-1">
+                                                                        Add Run/Setup
+                                                                    </span>
+                                                                </button>
+                                                            </div>
+                                                            <div class="col-lg-9 col-12"></div>
+
+                                                            <!-- Run/Setup charges not found -->
+                                                            <div class="col-lg-4 my-2"
+                                                                *ngIf="runSetupDistributorCodes.length">
+                                                                <form [formGroup]="chargeDistribution">
+                                                                    <mat-form-field appearance="fill" class="w-full">
+                                                                        <mat-label>Charge</mat-label>
+                                                                        <input matInput [formControlName]="'charge'"
+                                                                            type="number" value="0">
+                                                                    </mat-form-field>
+                                                                </form>
+                                                            </div>
+                                                            <div class="col-lg-4 my-2"
+                                                                *ngIf="runSetupDistributorCodes.length">
+                                                                <mat-form-field class="w-full">
+                                                                    <mat-label>Cost</mat-label>
+                                                                    <mat-select [(ngModel)]="selectedDiscountCode"
+                                                                        name="collection">
+                                                                        <mat-option
+                                                                            *ngFor="let code of runSetupDistributorCodes"
+                                                                            [value]="code">
+                                                                            <small>{{code.distrDiscountCode}}</small>
+                                                                        </mat-option>
+                                                                    </mat-select>
+                                                                </mat-form-field>
+                                                            </div>
+                                                            <div class="col-lg-4 col-12 lg:mt-4 lg:pt-5"
+                                                                *ngIf="runSetupDistributorCodes.length">
+                                                                <button class="w-full" mat-flat-button
+                                                                    [color]="'primary'" [matTooltip]="'Get all charges'"
+                                                                    (click)="getCharges()"
+                                                                    [disabled]="getChargesLoader">
+                                                                    <mat-progress-spinner *ngIf="getChargesLoader"
+                                                                        [diameter]="24" [mode]="'indeterminate'">
+                                                                    </mat-progress-spinner>
+                                                                    <span *ngIf="!getChargesLoader" class="ml-1 mr-1">
+                                                                        Get Charges
+                                                                    </span>
+                                                                </button>
+                                                            </div>
+
+                                                            <form [formGroup]="runSetup" class="w-full">
+                                                                <div class="row px-4">
+                                                                    <div class="col-lg-6 col-12 my-2">
+                                                                        <mat-form-field appearance="fill"
+                                                                            class="w-full">
+                                                                            <mat-label>Setup</mat-label>
+                                                                            <input matInput [formControlName]="'setup'"
+                                                                                type="number">
+                                                                        </mat-form-field>
+                                                                    </div>
+                                                                    <div class="col-lg-6 col-12 my-2">
+                                                                        <mat-form-field appearance="fill"
+                                                                            class="w-full">
+                                                                            <mat-label>Run</mat-label>
+                                                                            <input matInput [formControlName]="'run'"
+                                                                                type="number">
+                                                                        </mat-form-field>
+                                                                    </div>
+                                                                </div>
+                                                            </form>
+
+                                                            <div class="col-12 p-5 my-5 border-2 d-flex overflow-x-auto"
+                                                                style="max-height: 500px;"
+                                                                *ngIf="chargesTableArray.length">
+                                                                <div class="border-2 mx-5"
+                                                                    *ngFor="let chargeData of chargesTableArray">
+                                                                    <div class="row">
+                                                                        <div class="col-12">
+                                                                            <p
+                                                                                class="bg-primary text-white text-center text-1xl font-semibold p-3">
+                                                                                {{chargeData.chargeId}}
+                                                                            </p>
+                                                                        </div>
+                                                                        <div class="col-12">
+                                                                            <a href="" class="mx-2 text-sm"
+                                                                                (click)="setRun($event,chargeData.chargeId)">
+                                                                                +
+                                                                                Run</a>
+                                                                        </div>
+                                                                        <div class="col-12">
+                                                                            <a href="" class="ml-2 text-sm"
+                                                                                (click)="setSetup($event,chargeData.chargeId)">
+                                                                                +
+                                                                                Setup</a>
+                                                                        </div>
+                                                                    </div>
+                                                                    <table class="m-2 w-2/4">
+                                                                        <col>
+                                                                        <colgroup span="1"></colgroup>
+                                                                        <colgroup span="1"></colgroup>
+                                                                        <tr>
+                                                                            <th scope="col"
+                                                                                class="text-1xl font-semibold text-center bg-gray-100 p-3">
+                                                                            </th>
+                                                                            <th scope="col"
+                                                                                class="text-1xl font-semibold text-center bg-gray-100 p-3 p-3"
+                                                                                *ngFor="let productQuantity of chargeData.uniqueProductQuantities">
+                                                                                {{productQuantity}}
+                                                                            </th>
+                                                                        </tr>
+                                                                        <tr
+                                                                            *ngFor="let rowFill of chargeData.rowsRendering">
+                                                                            <th scope="row"
+                                                                                class="text-1xl font-semibold text-center bg-gray-100 p-3 p-3">
+                                                                                {{rowFill.verticalColumnName}}
+                                                                            </th>
+                                                                            <td class="p-3 bg-gray-50 text-center"
+                                                                                *ngFor="let rowChargeValue of rowFill.renderedArray">
+                                                                                {{rowChargeValue[2]}}
+                                                                            </td>
+                                                                        </tr>
+                                                                    </table>
+                                                                </div>
+                                                            </div>
+
+                                                            <!-- Minimum Product Quantity -->
+                                                            <div class="col-lg-6 col-12 mt-3">
+                                                                <b>
+                                                                    <button
+                                                                        [matTooltip]="'Other than one (1) only if this imprint requires a product qty more than the min'">
+                                                                        <i class="fa fa-info-circle"></i>
+                                                                    </button>
+                                                                    Minimum Product Quantity
+                                                                </b>
+                                                                <mat-form-field appearance="fill" class="w-full">
+                                                                    <input matInput value="{{minValue}}" type="number"
+                                                                        (input)="addMinQuantity($event.target.value)">
+                                                                </mat-form-field>
+                                                            </div>
+
+                                                            <!-- Display Order -->
+                                                            <div class="col-lg-6 col-12 mt-3">
+                                                                <b>Display Order</b>
+                                                                <mat-form-field appearance="fill" class="w-full">
+                                                                    <input matInput value="{{displayOrder}}"
+                                                                        type="number" min="1"
+                                                                        (input)="addImprintDisplayOrder($event.target.value)">
+                                                                </mat-form-field>
+                                                            </div>
+
+                                                            <!-- Live Imprint Comments -->
+                                                            <div class="col-12">
+                                                                <b>
+                                                                    Live Imprint Comments - 250 characters max
+                                                                </b>
+                                                            </div>
+                                                            <div class="col-12">
+                                                                <mat-form-field appearance="fill" class="w-full">
+                                                                    <textarea value="{{commentText}}" maxlength="250"
+                                                                        (input)="addImprintComments($event.target.value)"
+                                                                        matInput rows="5"></textarea>
+                                                                </mat-form-field>
+                                                            </div>
+
+                                                            <!-- Image -->
+                                                            <div class="col-12 hidden">
+                                                                <b>
+                                                                    <button
+                                                                        [matTooltip]="'JPG, GIF, and PNG file types only!'">
+                                                                        <i class="fa fa-info-circle"></i>
+                                                                    </button>
+                                                                    Image (optional)
+                                                                </b>
+                                                            </div>
+                                                            <div class="col-12 hidden">
+                                                                <small
+                                                                    class="leading-relaxed text-secondary font-semibold">
+                                                                    Add an image that will accompany the imprint for the
+                                                                    user to
+                                                                    use as
+                                                                    reference when choosing
+                                                                    an imprint location.
+                                                                </small>
+                                                            </div>
+                                                            <div class="col-12 my-3 hidden" style="line-height: 3.5;">
+                                                                <input type="file" (change)="uploadFile($event)">
+                                                            </div>
+                                                            <div class="col-12 text-right">
+                                                                <button [matTooltip]="'Add Imprint To List'"
+                                                                    class="min-w-40" (click)="addProductLocalImprints()"
+                                                                    mat-stroked-button
+                                                                    [disabled]="imprintsLocalListLoader">
+                                                                    <mat-progress-spinner
+                                                                        *ngIf="imprintsLocalListLoader" [diameter]="24"
+                                                                        [mode]="'indeterminate'">
+                                                                    </mat-progress-spinner>
+                                                                    <span *ngIf="!imprintsLocalListLoader">Add
+                                                                        Imprint</span>
+                                                                </button>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
                                             </mat-tab>
                                             <mat-tab label="Imprint List">
                                                 <div *ngIf="imprintsLocalList.length > 0;else other_content">
@@ -1284,33 +1974,34 @@
                                                         class="w-full border-t">
                                                         <ng-container matColumnDef="location">
                                                             <th mat-header-cell *matHeaderCellDef
-                                                                class="w-24 min-w-24 bg-gray-50 dark:bg-black dark:bg-opacity-5">
+                                                                class="min-w-24 bg-gray-50 dark:bg-black dark:bg-opacity-5">
                                                                 Location </th>
                                                             <td mat-cell *matCellDef="let element">
-                                                                {{element.location_id}} </td>
+                                                                {{element.locationName}} </td>
                                                         </ng-container>
 
                                                         <ng-container matColumnDef="method">
                                                             <th mat-header-cell *matHeaderCellDef
-                                                                class="w-24 min-w-24 bg-gray-50 dark:bg-black dark:bg-opacity-5">
+                                                                class="min-w-30 bg-gray-50 dark:bg-black dark:bg-opacity-5">
                                                                 Method </th>
                                                             <td mat-cell *matCellDef="let element">
-                                                                {{element.method_id}} </td>
+                                                                {{element.methodName}} </td>
                                                         </ng-container>
 
                                                         <ng-container matColumnDef="decorator">
                                                             <th mat-header-cell *matHeaderCellDef
-                                                                class="w-40 min-w-40 bg-gray-50 dark:bg-black dark:bg-opacity-5">
+                                                                class="min-w-30 bg-gray-50 dark:bg-black dark:bg-opacity-5">
                                                                 Decorator </th>
                                                             <td mat-cell *matCellDef="let element">
-                                                                {{element.decorator_id}} </td>
+                                                                {{element.supplierName}} </td>
                                                         </ng-container>
                                                         <ng-container matColumnDef="action">
                                                             <th mat-header-cell *matHeaderCellDef
                                                                 class="w-10 min-w-10 bg-gray-50 dark:bg-black dark:bg-opacity-5">
                                                                 Action </th>
-                                                            <td mat-cell *matCellDef="let element">
-                                                                <button class="px-3 mr-1" mat-button>
+                                                            <td mat-cell *matCellDef="let element; let i=index">
+                                                                <button class="px-3 mr-1" mat-button
+                                                                    (click)="removeLocalImprints(i)">
                                                                     <mat-icon class="icon-size-2 text-gray-500"
                                                                         svgIcon="mat_outline:delete">
                                                                     </mat-icon>
@@ -1334,538 +2025,9 @@
                                                     </div>
                                                 </ng-template>
                                             </mat-tab>
-                                        </mat-tab-group> -->
+                                        </mat-tab-group>
 
-                                        <div class="row">
-                                            <div class="col-12 my-1">
-                                                <div class="text-2xl font-bold">
-                                                    Add Imprint
-                                                </div>
-                                            </div>
-                                            <div class="col-12">
-                                                <div class="row">
-                                                    <!-- Imprint Method -->
-                                                    <div class="col-12">
-                                                        <b>
-                                                            <button
-                                                                [matTooltip]="'To add a new method, select (NEW METHOD) in the menu and then enter the name in the box to the right'">
-                                                                <i class="fa fa-info-circle"></i>
-                                                            </button>
-                                                            Imprint Method <span *ngIf="!addImprintMethods.length"
-                                                                class="text-sm text-secondary font-semibold ml-2">
-                                                                (Fetching
-                                                                Methods...) </span>
-                                                        </b>
-                                                    </div>
-                                                    <div class="col-lg-6 col-12">
-                                                        <mat-form-field class="w-full" appearance="fill">
-                                                            <mat-select [(ngModel)]="selectedMethod" name="method"
-                                                                [disabled]="addImprintMethods.length ? false : true">
-                                                                <mat-option *ngFor="let method of addImprintMethods"
-                                                                    [value]="method">
-                                                                    <small>{{method.methodName}}
-                                                                        ({{method.pk_methodID}})</small>
-                                                                </mat-option>
-                                                            </mat-select>
-                                                        </mat-form-field>
-                                                    </div>
-                                                    <div class="col-lg-6 col-12">
-                                                        <mat-form-field appearance="fill" class="w-full">
-                                                            <input matInput placeholder="New Method Name">
-                                                        </mat-form-field>
-                                                    </div>
 
-                                                    <!-- Location -->
-                                                    <div class="col-12">
-                                                        <b>
-                                                            <button
-                                                                [matTooltip]="'To add a new location, select (NEW LOCATION) in the menu and then enter the name in the box to the right'">
-                                                                <i class="fa fa-info-circle"></i>
-                                                            </button>
-                                                            Location <span *ngIf="!addImprintLocations.length"
-                                                                class="text-sm text-secondary font-semibold ml-2">
-                                                                (Fetching
-                                                                Locations...) </span>
-                                                        </b>
-                                                    </div>
-                                                    <div class="col-lg-6 col-12">
-                                                        <mat-form-field class="w-full" appearance="fill">
-                                                            <mat-select [(ngModel)]="selectedLocation" name="location"
-                                                                [disabled]="addImprintLocations.length ? false : true">
-                                                                <mat-option *ngFor="let location of addImprintLocations"
-                                                                    [value]="location">
-                                                                    <small>{{location.locationName}}
-                                                                        ({{location.pk_locationID}})</small>
-                                                                </mat-option>
-                                                            </mat-select>
-                                                        </mat-form-field>
-                                                    </div>
-                                                    <div class="col-lg-6 col-12">
-                                                        <mat-form-field appearance="fill" class="w-full">
-                                                            <input matInput placeholder="New Location Name">
-                                                        </mat-form-field>
-                                                    </div>
-
-                                                    <!-- Imprint Area -->
-                                                    <div class="col-12">
-                                                        <b>Imprint Area (max)</b>
-                                                    </div>
-                                                    <div class="col-12">
-                                                        <mat-form-field appearance="fill" class="w-full">
-                                                            <input matInput (input)="addArea($event.target.value)">
-                                                        </mat-form-field>
-                                                    </div>
-
-                                                    <!-- Details -->
-                                                    <div class="col-12">
-                                                        <b>How are the charges applied?</b>
-                                                    </div>
-                                                    <div class="col-12">
-                                                        <mat-radio-group aria-labelledby="example-radio-group-label"
-                                                            class="example-radio-group" [(ngModel)]="favoriteSeason">
-                                                            <mat-radio-button class="example-radio-button"
-                                                                *ngFor="let season of seasons" [value]="season">
-                                                                {{season}}
-                                                            </mat-radio-button>
-                                                        </mat-radio-group>
-                                                    </div>
-
-                                                    <div class="col-12">
-                                                        <!-- Quantity restrictions -->
-
-                                                        <div class="row"
-                                                            *ngIf="favoriteSeason === 'Per color (i.e. silk screening, pad printing, etc.)'">
-                                                            <div class="col-12">
-                                                                <button
-                                                                    [matTooltip]="'Set all quantities to1 if no restrictions. Use quantity=1 instead of product minimum quantity'">
-                                                                    <i class="fa fa-info-circle"></i>
-                                                                </button>
-                                                                <b class="pl-1">Quantity restrictions for
-                                                                    multiple
-                                                                    colors</b>
-                                                            </div>
-                                                        </div>
-
-                                                        <div class="row"
-                                                            *ngIf="favoriteSeason === 'Per color (i.e. silk screening, pad printing, etc.)'">
-                                                            <div class="col-lg-3 col-12">
-                                                                <b class="text-secondary"># of Colors</b>
-                                                            </div>
-                                                            <div class="col-9"></div>
-
-                                                            <form [formGroup]="values">
-                                                                <div class="row">
-                                                                    <div class="col-3">
-                                                                        <p class="font-semibold"
-                                                                            style="line-height: 3.5;">Min
-                                                                            Product Qty</p>
-                                                                    </div>
-                                                                    <div class="col-2">
-                                                                        <mat-form-field appearance="fill"
-                                                                            class="w-full">
-                                                                            <mat-label>Two</mat-label>
-                                                                            <input matInput type="number" min="1"
-                                                                                value="1"
-                                                                                [formControlName]="'twoColorQ'">
-                                                                        </mat-form-field>
-                                                                    </div>
-                                                                    <div class="col-2">
-                                                                        <mat-form-field appearance="fill"
-                                                                            class="w-full">
-                                                                            <mat-label>Three</mat-label>
-                                                                            <input matInput type="number" min="1"
-                                                                                value="1"
-                                                                                [formControlName]="'threeColorQ'">
-                                                                        </mat-form-field>
-                                                                    </div>
-                                                                    <div class="col-2">
-                                                                        <mat-form-field appearance="fill"
-                                                                            class="w-full">
-                                                                            <mat-label>Four</mat-label>
-                                                                            <input matInput type="number" min="1"
-                                                                                value="1"
-                                                                                [formControlName]="'fourColorQ'">
-                                                                        </mat-form-field>
-                                                                    </div>
-                                                                    <div class="col-2">
-                                                                        <mat-form-field appearance="fill"
-                                                                            class="w-full">
-                                                                            <mat-label>Five</mat-label>
-                                                                            <input matInput type="number" min="1"
-                                                                                value="1"
-                                                                                [formControlName]="'fiveColorQ'">
-                                                                        </mat-form-field>
-                                                                    </div>
-                                                                </div>
-                                                            </form>
-                                                        </div>
-
-                                                        <!-- Digitizer -->
-                                                        <div class="row"
-                                                            *ngIf="favoriteSeason === 'Per Stitch (embroidering)'">
-                                                            <div class="col-12">
-                                                                <b>Digitizer</b>
-                                                            </div>
-                                                        </div>
-                                                        <div class="row"
-                                                            *ngIf="favoriteSeason === 'Per Stitch (embroidering)'">
-                                                            <div class="col-12">
-                                                                <mat-form-field class="w-full" appearance="fill">
-                                                                    <mat-select [(ngModel)]="selectedDigitizer"
-                                                                        name="food"
-                                                                        [disabled]="addImprintDigitizers.length ? false : true">
-                                                                        <mat-option
-                                                                            *ngFor="let digitzier of addImprintDigitizers"
-                                                                            [value]="digitzier">
-                                                                            {{digitzier.companyName}}
-                                                                        </mat-option>
-                                                                    </mat-select>
-                                                                </mat-form-field>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-
-                                                    <div class="col-12 mt-2">
-                                                        <b>Does the user need to specify imprint colors?</b>
-                                                    </div>
-                                                    <div class="col-12">
-                                                        <mat-radio-group aria-labelledby="example-radio-group-label"
-                                                            class="example-radio-group"
-                                                            [(ngModel)]="defaultImprintColorSpecification">
-                                                            <mat-radio-button class="example-radio-button"
-                                                                *ngFor="let imprintOption of specifyImrpintArray"
-                                                                [value]="imprintOption">
-                                                                {{imprintOption}}
-                                                            </mat-radio-button>
-                                                        </mat-radio-group>
-                                                    </div>
-                                                    <div class="col-12 my-2"
-                                                        *ngIf="defaultImprintColorSpecification === 'Yes'">
-                                                        <mat-form-field class="w-full">
-                                                            <mat-label>Max Colors</mat-label>
-                                                            <mat-select [(ngModel)]="maxColorSelected" name="maxColor">
-                                                                <mat-option *ngFor="let maxColor of maxColors"
-                                                                    [value]="maxColor">
-                                                                    {{maxColor}}
-                                                                </mat-option>
-                                                            </mat-select>
-                                                        </mat-form-field>
-                                                    </div>
-
-                                                    <div class="col-12 mt-2"
-                                                        *ngIf="defaultImprintColorSpecification === 'Yes'">
-                                                        <p class="font-semibold my-1">
-                                                            Imprint Color Collection
-                                                        </p>
-                                                        <div>
-                                                            <button class="min-w-40" mat-flat-button [color]="'primary'"
-                                                                [matTooltip]="'Get Imprint Color Collection Ids'"
-                                                                (click)="generateCollectionId()"
-                                                                [disabled]="getImprintColorCollectionLoader">
-                                                                <mat-progress-spinner
-                                                                    *ngIf="getImprintColorCollectionLoader"
-                                                                    [diameter]="24" [mode]="'indeterminate'">
-                                                                </mat-progress-spinner>
-                                                                <span *ngIf="!getImprintColorCollectionLoader"
-                                                                    class="ml-1 mr-1">
-                                                                    Color Collection ID
-                                                                </span>
-                                                            </button>
-                                                        </div>
-                                                        <div *ngIf="!collectionIdsArray.length">
-                                                            <small class="font-semibold ml-3"
-                                                                *ngIf="!collectionIdsArray.length">
-                                                                * No collections available. Click on the button
-                                                                to
-                                                                generate list of
-                                                                collections
-                                                            </small>
-                                                        </div>
-
-                                                        <div class="my-2" *ngIf="collectionIdsArray.length">
-                                                            <b>Select Imprint Color</b>
-                                                            <ng-multiselect-dropdown
-                                                                [placeholder]="'Imprint Color Collections'"
-                                                                [settings]="imprintColorsDropdownSettings"
-                                                                [data]="collectionIdsArray"
-                                                                [(ngModel)]="selectedCollectionId"
-                                                                (onSelect)="onImprintColorSelect($event)">
-                                                            </ng-multiselect-dropdown>
-                                                        </div>
-
-                                                        <div class="my-1">
-                                                            <mat-form-field class="w-full">
-                                                                <input matInput placeholder="Enter Collection ID"
-                                                                    [(ngModel)]='customColorId'>
-                                                                <!-- <mat-hint class="mb-1 ">
-                                                                            
-                                                                        </mat-hint> -->
-                                                            </mat-form-field>
-                                                            <span class="text-gray-600 border-b-8 mr-1 pt-2"
-                                                                *ngFor="let item of colorsCollectionIdsArray; let i=index"
-                                                                [ngStyle]="{'border-color': '#' + item['RGB']}">{{item.imprintColorName}}<span
-                                                                    *ngIf="i < colorsCollectionIdsArray.length - 1">,</span>
-                                                            </span>
-                                                        </div>
-                                                    </div>
-
-                                                    <!-- Imprint order itself -->
-                                                    <div class="col-12 my-2 mt-4">
-                                                        <b>Can this imprint be ordered by itself?</b>
-                                                    </div>
-                                                    <div class="col-12">
-                                                        <small class="leading-relaxed text-secondary font-semibold">
-                                                            *This option determines whether this imprint can be
-                                                            ordered
-                                                            by
-                                                            itself. For example, if the
-                                                            location of this imprint is "second side," this
-                                                            implies that
-                                                            there
-                                                            must be a first side, and
-                                                            so it cannot be ordered by itself.
-                                                        </small>
-                                                    </div>
-                                                    <div class="col-12">
-                                                        <mat-radio-group aria-labelledby="example-radio-group-label"
-                                                            class="example-radio-group"
-                                                            [(ngModel)]="imprintItselfSelected">
-                                                            <mat-radio-button class="example-radio-button"
-                                                                *ngFor="let imprintItselfVal of imprintItself"
-                                                                [value]="imprintItselfVal">
-                                                                {{imprintItselfVal.imprintItselfText}}
-                                                            </mat-radio-button>
-                                                        </mat-radio-group>
-                                                    </div>
-                                                    <!-- Imprint order itself -->
-                                                    <div class="col-12">
-                                                        <b>Price Inclusion?</b>
-                                                    </div>
-                                                    <div class="col-12">
-                                                        <mat-radio-group aria-labelledby="example-radio-group-label"
-                                                            class="example-radio-group"
-                                                            [(ngModel)]="priceInclusionSelected">
-                                                            <mat-radio-button class="example-radio-button"
-                                                                *ngFor="let priceInclusion of priceInclusionArray"
-                                                                [value]="priceInclusion">
-                                                                {{priceInclusion.priceInclusionText}}
-                                                            </mat-radio-button>
-                                                        </mat-radio-group>
-                                                    </div>
-
-                                                    <!-- Charge Distributions -->
-                                                    <div class="col-12 my-2">
-                                                        <button
-                                                            [matTooltip]="'Enter an imprint charge and corresponding discount code to find existing charge
-                                                                    distributions that include it. For example for a silk-screened additional color/location
-                                                                    charge of $0.25(G), enter 0.25, select G and click the button.'">
-                                                            <i class="fa fa-info-circle"></i>
-                                                        </button>
-                                                        <b class="pl-1">Charge Distributions</b>
-                                                    </div>
-                                                    <div class="col-12">
-                                                        <small class="text-danger font-semibold">
-                                                            * When setup/run charges are $0.00, please type code
-                                                            "17" in
-                                                            the
-                                                            respective field.
-                                                        </small>
-                                                    </div>
-
-                                                    <!-- Run/Setup charges found -->
-                                                    <div class="col-lg-3 col-12 my-2"
-                                                        *ngIf="!runSetupDistributorCodes.length">
-                                                        <button class="w-full" mat-flat-button [color]="'primary'"
-                                                            [matTooltip]="'Add run/setup'" (click)="getRunSetup()"
-                                                            [disabled]="runSetupLoaderFetching">
-                                                            <mat-progress-spinner *ngIf="runSetupLoaderFetching"
-                                                                [diameter]="24" [mode]="'indeterminate'">
-                                                            </mat-progress-spinner>
-                                                            <span *ngIf="!runSetupLoaderFetching" class="ml-1 mr-1">
-                                                                Add Run/Setup
-                                                            </span>
-                                                        </button>
-                                                    </div>
-                                                    <div class="col-lg-9 col-12"></div>
-
-                                                    <!-- Run/Setup charges not found -->
-                                                    <div class="col-lg-4 my-2" *ngIf="runSetupDistributorCodes.length">
-                                                        <form [formGroup]="chargeDistribution">
-                                                            <mat-form-field appearance="fill" class="w-full">
-                                                                <mat-label>Charge</mat-label>
-                                                                <input matInput [formControlName]="'charge'"
-                                                                    type="number" value="0">
-                                                            </mat-form-field>
-                                                        </form>
-                                                    </div>
-                                                    <div class="col-lg-4 my-2" *ngIf="runSetupDistributorCodes.length">
-                                                        <mat-form-field class="w-full">
-                                                            <mat-label>Cost</mat-label>
-                                                            <mat-select [(ngModel)]="selectedDiscountCode"
-                                                                name="collection">
-                                                                <mat-option
-                                                                    *ngFor="let code of runSetupDistributorCodes"
-                                                                    [value]="code">
-                                                                    <small>{{code.distrDiscountCode}}</small>
-                                                                </mat-option>
-                                                            </mat-select>
-                                                        </mat-form-field>
-                                                    </div>
-                                                    <div class="col-lg-4 col-12 lg:mt-4 lg:pt-5"
-                                                        *ngIf="runSetupDistributorCodes.length">
-                                                        <button class="w-full" mat-flat-button [color]="'primary'"
-                                                            [matTooltip]="'Get all charges'" (click)="getCharges()"
-                                                            [disabled]="getChargesLoader">
-                                                            <mat-progress-spinner *ngIf="getChargesLoader"
-                                                                [diameter]="24" [mode]="'indeterminate'">
-                                                            </mat-progress-spinner>
-                                                            <span *ngIf="!getChargesLoader" class="ml-1 mr-1">
-                                                                Get Charges
-                                                            </span>
-                                                        </button>
-                                                    </div>
-
-                                                    <form [formGroup]="runSetup" class="w-full">
-                                                        <div class="row px-4">
-                                                            <div class="col-lg-6 col-12 my-2">
-                                                                <mat-form-field appearance="fill" class="w-full">
-                                                                    <mat-label>Setup</mat-label>
-                                                                    <input matInput [formControlName]="'setup'"
-                                                                        type="number">
-                                                                </mat-form-field>
-                                                            </div>
-                                                            <div class="col-lg-6 col-12 my-2">
-                                                                <mat-form-field appearance="fill" class="w-full">
-                                                                    <mat-label>Run</mat-label>
-                                                                    <input matInput [formControlName]="'run'"
-                                                                        type="number">
-                                                                </mat-form-field>
-                                                            </div>
-                                                        </div>
-                                                    </form>
-
-                                                    <div class="col-12 p-5 my-5 border-2 d-flex overflow-x-auto"
-                                                        style="max-height: 500px;" *ngIf="chargesTableArray.length">
-                                                        <div class="border-2 mx-5"
-                                                            *ngFor="let chargeData of chargesTableArray">
-                                                            <div class="row">
-                                                                <div class="col-12">
-                                                                    <p
-                                                                        class="bg-primary text-white text-center text-1xl font-semibold p-3">
-                                                                        {{chargeData.chargeId}}
-                                                                    </p>
-                                                                </div>
-                                                                <div class="col-12">
-                                                                    <a href="" class="mx-2 text-sm"
-                                                                        (click)="setRun($event,chargeData.chargeId)">
-                                                                        +
-                                                                        Run</a>
-                                                                </div>
-                                                                <div class="col-12">
-                                                                    <a href="" class="ml-2 text-sm"
-                                                                        (click)="setSetup($event,chargeData.chargeId)">
-                                                                        +
-                                                                        Setup</a>
-                                                                </div>
-                                                            </div>
-                                                            <table class="m-2 w-2/4">
-                                                                <col>
-                                                                <colgroup span="1"></colgroup>
-                                                                <colgroup span="1"></colgroup>
-                                                                <tr>
-                                                                    <th scope="col"
-                                                                        class="text-1xl font-semibold text-center bg-gray-100 p-3">
-                                                                    </th>
-                                                                    <th scope="col"
-                                                                        class="text-1xl font-semibold text-center bg-gray-100 p-3 p-3"
-                                                                        *ngFor="let productQuantity of chargeData.uniqueProductQuantities">
-                                                                        {{productQuantity}}
-                                                                    </th>
-                                                                </tr>
-                                                                <tr *ngFor="let rowFill of chargeData.rowsRendering">
-                                                                    <th scope="row"
-                                                                        class="text-1xl font-semibold text-center bg-gray-100 p-3 p-3">
-                                                                        {{rowFill.verticalColumnName}}
-                                                                    </th>
-                                                                    <td class="p-3 bg-gray-50 text-center"
-                                                                        *ngFor="let rowChargeValue of rowFill.renderedArray">
-                                                                        {{rowChargeValue[2]}}
-                                                                    </td>
-                                                                </tr>
-                                                            </table>
-                                                        </div>
-                                                    </div>
-
-                                                    <!-- Minimum Product Quantity -->
-                                                    <div class="col-lg-6 col-12 mt-3">
-                                                        <b>
-                                                            <button
-                                                                [matTooltip]="'Other than one (1) only if this imprint requires a product qty more than the min'">
-                                                                <i class="fa fa-info-circle"></i>
-                                                            </button>
-                                                            Minimum Product Quantity
-                                                        </b>
-                                                        <mat-form-field appearance="fill" class="w-full">
-                                                            <input matInput value="{{minValue}}" type="number"
-                                                                (input)="addMinQuantity($event.target.value)">
-                                                        </mat-form-field>
-                                                    </div>
-
-                                                    <!-- Display Order -->
-                                                    <div class="col-lg-6 col-12 mt-3">
-                                                        <b>Display Order</b>
-                                                        <mat-form-field appearance="fill" class="w-full">
-                                                            <input matInput value="{{displayOrder}}" type="number"
-                                                                min="1"
-                                                                (input)="addImprintDisplayOrder($event.target.value)">
-                                                        </mat-form-field>
-                                                    </div>
-
-                                                    <!-- Live Imprint Comments -->
-                                                    <div class="col-12">
-                                                        <b>
-                                                            Live Imprint Comments - 250 characters max
-                                                        </b>
-                                                    </div>
-                                                    <div class="col-12">
-                                                        <mat-form-field appearance="fill" class="w-full">
-                                                            <textarea value="{{commentText}}" maxlength="250"
-                                                                (input)="addImprintComments($event.target.value)"
-                                                                matInput rows="5"></textarea>
-                                                        </mat-form-field>
-                                                    </div>
-
-                                                    <!-- Image -->
-                                                    <div class="col-12 hidden">
-                                                        <b>
-                                                            <button [matTooltip]="'JPG, GIF, and PNG file types only!'">
-                                                                <i class="fa fa-info-circle"></i>
-                                                            </button>
-                                                            Image (optional)
-                                                        </b>
-                                                    </div>
-                                                    <div class="col-12 hidden">
-                                                        <small class="leading-relaxed text-secondary font-semibold">
-                                                            Add an image that will accompany the imprint for the
-                                                            user to
-                                                            use as
-                                                            reference when choosing
-                                                            an imprint location.
-                                                        </small>
-                                                    </div>
-                                                    <div class="col-12 my-3 hidden" style="line-height: 3.5;">
-                                                        <input type="file" (change)="uploadFile($event)">
-                                                    </div>
-                                                    <!-- <div class="col-12 text-right">
-                                                                <button [matTooltip]="'Add Imprint To List'"
-                                                                    class="min-w-40" (click)="addProductLocalImprints()"
-                                                                    mat-stroked-button>
-                                                                    <span>Add Imprint</span>
-                                                                </button>
-                                                            </div> -->
-                                                </div>
-                                            </div>
-                                        </div>
                                         <div class="row">
                                             <div class="col-lg-8 col-12"></div>
                                             <div class="col-lg-2 col-12">
@@ -2090,11 +2252,11 @@
                                                     <mat-error>This field is required</mat-error>
                                                 </mat-form-field>
                                             </div>
-                                            <div class="col-12" *ngIf="supplierType == 'Apparel Item'">
+                                            <div class="col-12">
                                                 <mat-form-field class="w-full">
                                                     <mat-label>Units per Shipping Package</mat-label>
                                                     <input matInput type="number" min="1"
-                                                        [formControlName]="'unitsInWeight'"><small
+                                                        [formControlName]="'unitsInShippingPackage'"><small
                                                         class="text-secondary font-semibold">
                                                         unit(s) </small>
                                                 </mat-form-field>

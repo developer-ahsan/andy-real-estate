@@ -431,7 +431,22 @@ export interface Color {
     the_run: string;
     rgb: string;
 };
-
+export interface ProductColor {
+    create_product_color: boolean;
+    colors: Colors[];
+    custom_colors: CustomColors[];
+    product_id: number;
+};
+export interface Colors {
+    color_id: number;
+    the_run: string;
+    rgb: string;
+}
+export interface CustomColors {
+    color_name: number;
+    the_run: string;
+    rgb: string;
+};
 export interface priceInclusionObj {
     product_id: number;
     imprint_list: imprintInclusionObj[];
@@ -570,16 +585,16 @@ export interface productDescription {
     permalink: string;
 }
 // Colors
-export interface ProductColor {
-    create_product_color: boolean;
-    colors: ProductColors[];
-    product_id: number;
-};
-export interface ProductColors {
-    color_id: number;
-    the_run: string;
-    rgb: string;
-};
+// export interface ProductColor {
+//     create_product_color: boolean;
+//     colors: ProductColors[];
+//     product_id: number;
+// };
+// export interface ProductColors {
+//     color_id: number;
+//     the_run: string;
+//     rgb: string;
+// };
 // Feature
 export interface ProductFeature {
     create_product_feature: boolean;
@@ -684,3 +699,33 @@ export interface productsSizeObj {
     weight: number;
     unit_per_weight: number;
 }
+
+export interface MultiImprint {
+    product_id: number;
+    imprints: ImprintObj[];
+    create_product_imprint: boolean;
+};
+export interface ImprintObj {
+    decorator_id: number;
+    method_id: number;
+    location_id: number;
+    setup_charge_id: number;
+    run_charge_id: number;
+    bln_includable: number;
+    area: string;
+    bln_user_color_selection: number;
+    max_colors: number;
+    multi_color_min_id: number;
+    collection_id: number;
+    bln_process_mode: number;
+    min_product_qty: number;
+    imprint_comments: string;
+    digitizer_id: number;
+    bln_active: number;
+    bln_singleton: boolean;
+    bln_color_selection: boolean;
+    imprint_id: number;
+    store_product_id_list: number[];
+    imprint_image: File;
+    display_order: number;
+};
