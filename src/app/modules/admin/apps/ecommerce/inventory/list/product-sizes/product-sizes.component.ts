@@ -206,6 +206,9 @@ export class ProductSizesComponent implements OnInit, OnDestroy {
         this.myStepper.next();
         // Mark for check
         this._changeDetectorRef.markForCheck();
+      }, err => {
+        this.sizeUpdateLoader = false;
+        this._changeDetectorRef.markForCheck();
       });
   };
 

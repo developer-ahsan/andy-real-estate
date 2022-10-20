@@ -2943,7 +2943,7 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
                 flat_rate_shipping: Number(flatRate) || null,
                 prod_time_max: this.sliderMaxValue || 10,
                 prod_time_min: this.sliderMinValue || 7,
-                units_in_shipping_package: unitsInShippingPackage,
+                units_in_shipping_package: unitsInShippingPackage ? unitsInShippingPackage : 0,
                 bln_include_shipping: doChargesApply == "Yes" ? 1 : 0,
                 fob_location_list: [],
                 dimensions: productDimensions.toString(),
@@ -3650,7 +3650,7 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
             flat_rate_shipping: Number(flatRate) || null,
             prod_time_max: this.sliderMaxValue || 10,
             prod_time_min: this.sliderMinValue || 7,
-            units_in_shipping_package: unitsInShippingPackage,
+            units_in_shipping_package: unitsInShippingPackage ? unitsInShippingPackage : 0,
             bln_include_shipping: doChargesApply == "Yes" ? 1 : 0,
             fob_location_list: [],
             dimensions: productDimensions.toString(),
@@ -3755,6 +3755,11 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
                 .subscribe((response) => {
                     this.updateProductImprintLoader = false;
                     this.myStepper.next();
+                    this._snackBar.open("Standard Imprints saved successfully", '', {
+                        horizontalPosition: 'center',
+                        verticalPosition: 'bottom',
+                        duration: 3000
+                    });
                     this._changeDetectorRef.markForCheck();
                 }, err => {
                     this.updateProductImprintLoader = false;
