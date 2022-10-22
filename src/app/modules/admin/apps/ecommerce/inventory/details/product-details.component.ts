@@ -200,6 +200,9 @@ export class ProductDetailsComponent implements OnInit, OnDestroy {
     if (title === this.selectedIndex) {
       return;
     }
+    if (title == 'Master Product') {
+      this._router.navigate(['apps/ecommerce/inventory/' + this.selectedProduct["fk_productID"]]);
+    }
     this.isLoading = true;
     this.selectedIndex = title;
   }

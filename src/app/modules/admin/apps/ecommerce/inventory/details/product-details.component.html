@@ -410,14 +410,14 @@
                 </div>
                 <div class="col-12">
                     <ng-template [ngIf]="selectedIndex === 'Product Reviews'">
-                        <app-core-products [(isLoading)]="isLoading" [selectedProduct]="selectedProduct">
-                        </app-core-products>
+                        <app-product-reviews [(isLoading)]="isLoading" [selectedProduct]="selectedProduct">
+                        </app-product-reviews>
                     </ng-template>
                 </div>
                 <div class="col-12">
                     <ng-template [ngIf]="selectedIndex === 'Profit Calculator'">
-                        <app-update-history [(isLoading)]="isLoading" [selectedProduct]="selectedProduct">
-                        </app-update-history>
+                        <app-update-historys [(isLoading)]="isLoading" [selectedProduct]="selectedProduct">
+                        </app-update-historys>
                     </ng-template>
                 </div>
                 <div class="col-12">
@@ -428,15 +428,15 @@
                 </div>
                 <div class="col-12">
                     <ng-template [ngIf]="selectedIndex === 'Update History'">
-                        <app-internal-notes [(isLoading)]="isLoading" [selectedProduct]="selectedProduct">
-                        </app-internal-notes>
+                        <app-update-historys [(isLoading)]="isLoading" [selectedProduct]="selectedProduct">
+                        </app-update-historys>
                     </ng-template>
                 </div>
-                <div class="col-12">
+                <!-- <div class="col-12">
                     <ng-template [ngIf]="selectedIndex === 'Master Product'">
                         <app-duplicate [(isLoading)]="isLoading" [selectedProduct]="selectedProduct"></app-duplicate>
                     </ng-template>
-                </div>
+                </div> -->
                 <div class="col-12">
                     <ng-template [ngIf]="selectedIndex === 'Store Versions'">
                         <app-imprint [(isLoading)]="isLoading" [selectedProduct]="selectedProduct"></app-imprint>

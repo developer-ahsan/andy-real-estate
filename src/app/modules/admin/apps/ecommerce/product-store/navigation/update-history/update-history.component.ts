@@ -5,9 +5,10 @@ import { InventoryService } from 'app/modules/admin/apps/ecommerce/inventory/inv
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { MatRadioChange } from '@angular/material/radio';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { StoreProductService } from '../../store.service';
 
 @Component({
-  selector: 'app-update-history',
+  selector: 'app-update-historys',
   templateUrl: './update-history.component.html'
 })
 export class StoreUpdateHistoryComponent implements OnInit, OnDestroy {
@@ -17,22 +18,35 @@ export class StoreUpdateHistoryComponent implements OnInit, OnDestroy {
   private _unsubscribeAll: Subject<any> = new Subject<any>();
 
 
+  updateData = [];
 
   constructor(
     private _changeDetectorRef: ChangeDetectorRef,
-    private _inventoryService: InventoryService,
-    private _formBuilder: FormBuilder,
-    private _snackBar: MatSnackBar
+    private _storeService: StoreProductService
   ) { }
 
   ngOnInit(): void {
     // Create the selected product form
-    this.isLoading = false;
+    this.isLoading = true;
+    this.getUpdateHistory();
 
   }
-
-
-
+  getUpdateHistory() {
+    let params = {
+      store_product_update_history: true,
+      store_product_id: this.selectedProduct.pk_storeProductID
+    }
+    this._storeService.commonGetCalls(params).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+      this.updateData = res["data"];
+      this.isLoading = false;
+      this.isLoadingChange.emit(false);
+      this._changeDetectorRef.markForCheck();
+    }, err => {
+      this.isLoadingChange.emit(false);
+      this.isLoading = false;
+      this._changeDetectorRef.markForCheck();
+    })
+  }
   /**
      * On destroy
      */

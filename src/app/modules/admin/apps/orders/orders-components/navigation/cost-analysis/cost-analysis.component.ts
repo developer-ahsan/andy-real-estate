@@ -13,6 +13,10 @@ export class CostAnalysisComponent implements OnInit {
   constructor() { }
 
   ngOnInit(): void {
+    setTimeout(() => {
+      this.isLoading = false;
+      this.isLoadingChange.emit(false)
+    }, 100);
   }
 
   public exportHtmlToPDF() {

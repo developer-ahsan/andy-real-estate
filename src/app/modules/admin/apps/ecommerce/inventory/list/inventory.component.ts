@@ -1494,6 +1494,7 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
                                     this.secondFormGroup.patchValue(product);
 
                                     this.pricingDataArray = productPricing["data"]["result"]["Envelope"]["Body"]["GetConfigurationAndPricingResponse"]["Configuration"]["PartArray"];
+
                                     this.productNumberLoader = false;
 
                                     // Mark for check

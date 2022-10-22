@@ -22,122 +22,111 @@
     <mat-drawer-container class="sub-nav-component bg-light" autosize>
         <mat-drawer #drawer class="sub-sidenav bg-light" [mode]="drawerMode" [opened]="drawerOpened">
             <div *ngFor="let route of routes;let i = index">
-                <button [style.background-color]="i === selectedIndex ? '#e4e8ed' : 'transparent'"
-                    [ngClass]="i === selectedIndex ? 'opacity-1' : 'opacity-9'" mat-button
-                    class="w-full my-1 justify-content-start" (click)="clicked(i)">
-                    <mat-icon svgIcon="{{route.icon}}" class="mr-1 opacity-8"></mat-icon>
-                    <span> {{route.title}} </span>
+                <button style="padding: 15px;"
+                    [style.background-color]="route.title === selectedScreeen ? '#d4d7dd' : 'transparent'"
+                    [ngClass]="route.title === selectedScreeen ? 'opacity-100' : 'opacity-80'" mat-button
+                    class="w-full my-1 mr-2 justify-content-start" (click)="clicked(route.title)">
+                    <mat-icon svgIcon="{{route.icon}}" class="icon-size-5 text-primary"></mat-icon>
+                    <span style="font-size: 13px; font-weight: bold; margin-left: 10px;"> {{route.title}} </span>
                 </button>
             </div>
         </mat-drawer>
 
-        <div class="sub-sidenav-content bg-light p-5">
-            <mat-icon class="subnav-menu-icon ml-2 mb-2" svgIcon="heroicons_outline:menu" (click)="toggleDrawer()">
+        <div class="sub-sidenav-content bg-light p-2">
+            <mat-icon class="subnav-menu-icon ml-1" svgIcon="heroicons_outline:menu" (click)="toggleDrawer()">
             </mat-icon>
-            <div class="row">
-                <ngx-skeleton-loader count="8" appearance="line" animation="pulse">
-                </ngx-skeleton-loader>
-            </div>
-
             <ng-template #myCard>
-                <div class="bg-card rounded-2xl shadow-lg">
-                    <div class="row w-full px-10 py-3">
-                        <b class="w-full text-lg border-b float-left text-info pb-3">Order</b>
+                <div class="bg-card shadow p-4" *ngIf="selectedOrder">
+                    <div class="flex mr-7" style="justify-content: space-between;">
+                        <div class="text-2xl font-bold">Order</div>
                     </div>
-                    <div class="row w-full px-5 pb-3">
-                        <div class="col-lg-4 col-12">
-                            <b class="text-secondary">Order Date:</b>
-                            <p class="float-right">{{selectedOrder?.orderDate || not_available}}</p>
+                    <div class="row w-full">
+                        <div class="col-lg-4 col-md-6 col-12">
+                            <b class="text-secondary text-sm">Order Date:</b>
+                            <p class="float-right text-sm">{{selectedOrder?.orderDate || not_available}}</p>
                         </div>
-                        <div class="col-lg-4 col-12">
-                            <b class="text-secondary">Payment Date:</b>
-                            <p class="float-right">{{selectedOrder?.paymentDate || not_available}}</p>
+                        <div class="col-lg-4 col-md-6 col-12">
+                            <b class="text-secondary text-sm">Payment Date:</b>
+                            <p class="float-right text-sm">{{selectedOrder?.paymentDate ? selectedOrder?.paymentDate :
+                                not_available || not_available}}</p>
                         </div>
-                        <div class="col-lg-4 col-12">
-                            <b class="text-secondary">Store:</b>
-                            <p class="float-right">{{selectedOrder?.storeName || not_available}}</p>
+                        <div class="col-lg-4 col-md-6 col-12">
+                            <b class="text-secondary text-sm">Manager:</b>
+                            <p class="float-right text-sm">Adam Biats</p>
                         </div>
-                        <div class="col-lg-4 col-12">
-                            <b class="text-secondary">Status:</b>
-                            <p class="float-right">Processing</p>
+                        <div class="col-lg-4 col-md-6 col-12">
+                            <b class="text-secondary text-sm">Group Order ID:</b>
+                            <p class="float-right text-sm">{{selectedOrder?.fk_groupOrderID || not_available}}</p>
                         </div>
-                        <div class="col-lg-4 col-12">
-                            <b class="text-secondary">Manager:</b>
-                            <p class="float-right">Adam Biats</p>
+                        <div class="col-lg-4 col-md-6 col-12">
+                            <b class="text-secondary text-sm">Total:</b>
+                            <p class="float-right text-sm">${{selectedOrder?.total || not_available}}</p>
                         </div>
-                        <div class="col-lg-4 col-12">
-                            <b class="text-secondary">Group Order ID:</b>
-                            <p class="float-right">{{selectedOrder?.fk_groupOrderID || not_available}}</p>
+                        <div class="col-lg-4 col-md-6 col-12">
+                            <b class="text-secondary text-sm">Customer:</b>
+                            <p class="float-right text-sm">{{selectedOrder?.firstName || not_available}}</p>
                         </div>
-                        <div class="col-lg-4 col-12">
-                            <b class="text-secondary">Total:</b>
-                            <p class="float-right">${{selectedOrder?.total || not_available}}</p>
+                        <div class="col-lg-4 col-md-6 col-12">
+                            <b class="text-secondary text-sm">Company:</b>
+                            <p class="float-right text-sm">{{selectedOrder?.companyName || not_available}}</p>
                         </div>
-                        <div class="col-lg-4 col-12">
-                            <b class="text-secondary">Customer:</b>
-                            <p class="float-right">{{selectedOrder?.firstName || not_available}}</p>
+                        <div class="col-lg-4 col-md-6 col-12">
+                            <b class="text-secondary text-sm">Location:</b>
+                            <p class="float-right text-sm">{{selectedOrder?.locationName || not_available}}</p>
                         </div>
-                        <div class="col-lg-4 col-12">
-                            <b class="text-secondary">Company:</b>
-                            <p class="float-right">{{selectedOrder?.companyName || not_available}}</p>
-                        </div>
-                        <div class="col-lg-4 col-12">
-                            <b class="text-secondary">Location:</b>
-                            <p class="float-right">{{selectedOrder?.locationName || not_available}}</p>
-                        </div>
-                        <div class="col-lg-4 col-12">
-                            <b class="text-secondary">Cart/Quote ID:</b>
-                            <p class="float-right">319713</p>
+                        <div class="col-lg-4 col-md-6 col-12">
+                            <b class="text-secondary text-sm">Cart/Quote ID:</b>
+                            <p class="float-right text-sm">319713</p>
                         </div>
                     </div>
                 </div>
             </ng-template>
             <div class="row">
-                <div class="col-12">
+                <div class="col-12 my-3">
                     <ng-container *ngTemplateOutlet="myCard"></ng-container>
                 </div>
                 <div class="col-12">
-                    <ng-template [ngIf]="selectedIndex == 0">
+                    <ng-template [ngIf]="selectedScreeen == 'Summary'">
                         <app-orders-summary [(isLoading)]="isLoading"></app-orders-summary>
                     </ng-template>
                 </div>
                 <div class="col-12">
-                    <ng-template [ngIf]="selectedIndex == 1">
+                    <ng-template [ngIf]="selectedScreeen == 'Entities List'">
                         <app-orders-entities-list [(isLoading)]="isLoading"></app-orders-entities-list>
                     </ng-template>
                 </div>
                 <div class="col-12">
-                    <ng-template [ngIf]="selectedIndex == 2">
+                    <ng-template [ngIf]="selectedScreeen == 'Reports'">
                         <app-orders-report [(isLoading)]="isLoading"></app-orders-report>
                     </ng-template>
                 </div>
                 <div class="col-12">
-                    <ng-template [ngIf]="selectedIndex == 3">
+                    <ng-template [ngIf]="selectedScreeen == 'Invoice'">
                         <app-invoices [(isLoading)]="isLoading"></app-invoices>
                     </ng-template>
                 </div>
                 <div class="col-12">
-                    <ng-template [ngIf]="selectedIndex == 4">
+                    <ng-template [ngIf]="selectedScreeen == 'Purchase Orders'">
                         <app-orders-purchases [(isLoading)]="isLoading"></app-orders-purchases>
                     </ng-template>
                 </div>
                 <div class="col-12">
-                    <ng-template [ngIf]="selectedIndex == 5">
+                    <ng-template [ngIf]="selectedScreeen == 'Shipping Report'">
                         <app-orders-shipping-reports [(isLoading)]="isLoading"></app-orders-shipping-reports>
                     </ng-template>
                 </div>
                 <div class="col-12">
-                    <ng-template [ngIf]="selectedIndex == 6">
+                    <ng-template [ngIf]="selectedScreeen == 'Cost Analysis'">
                         <app-cost-analysis [(isLoading)]="isLoading"></app-cost-analysis>
                     </ng-template>
                 </div>
                 <div class="col-12">
-                    <ng-template [ngIf]="selectedIndex == 7">
+                    <ng-template [ngIf]="selectedScreeen == 'Timeline'">
                         <app-timeline [(isLoading)]="isLoading"></app-timeline>
                     </ng-template>
                 </div>
                 <div class="col-12">
-                    <ng-template [ngIf]="selectedIndex == 8">
+                    <ng-template [ngIf]="selectedScreeen == 'Incident Reports'">
                         <app-incident-reports [(isLoading)]="isLoading"></app-incident-reports>
                     </ng-template>
                 </div>

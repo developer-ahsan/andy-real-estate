@@ -1,489 +1,576 @@
-<div class="mt-5">
-    <ngx-skeleton-loader count="15" appearance="line" animation="pulse" *ngIf="isLoading">
-    </ngx-skeleton-loader>
-    <mat-tab-group mat-align-tabs="start" *ngIf="!isLoading">
-        <mat-tab label="Order Report">
-            <div class="row">
-                <div class="w-full" *ngIf="showReport;else other_content">
-                    <div class="col-12">
-                        Select a group order participant:
-                        <mat-form-field class="w-full">
-                            <mat-select name="order">
-                                <mat-option (click)="orderSelection(order)"
-                                    *ngFor="let order of orderParticipants; let first = first;" [value]="order">
-                                    <ng-container *ngIf="first">
-                                        {{order?.billingFirstName}}
-                                    </ng-container>
-                                    <ng-container *ngIf="!first">
-                                        *INITIATOR - {{order?.billingFirstName}} {{order?.billingLastName}}
-                                        ({{order?.billingEmail}})
-                                    </ng-container>
-                                </mat-option>
-                            </mat-select>
-                        </mat-form-field>
-                    </div>
+<ngx-skeleton-loader count="15" appearance="line" animation="pulse" *ngIf="isLoading">
+</ngx-skeleton-loader>
+<div class="row" *ngIf="!isLoading">
+    <div class="col-12 my-2">
+        <fuse-card class="rounded-2xl shadow bg-card flex flex-col lg:flex-row w-full">
+            <div class="p-6 sm:p-8 lg:p-10 w-full">
+                <div class="text-2xl font-bold ">
+                    Reports
                 </div>
+                <div class="row mt-5 w-full">
+                    <mat-tab-group mat-align-tabs="start" class="w-full">
+                        <mat-tab label="Order Report">
+                            <div class="row">
+                                <div class="w-full" *ngIf="showReport;else other_content">
+                                    <div class="col-12">
+                                        Select a group order participant:
+                                        <mat-form-field class="w-full">
+                                            <mat-select name="order">
+                                                <mat-option (click)="orderSelection(order)"
+                                                    *ngFor="let order of orderParticipants; let first = first;"
+                                                    [value]="order">
+                                                    <ng-container *ngIf="first">
+                                                        {{order?.billingFirstName}}
+                                                    </ng-container>
+                                                    <ng-container *ngIf="!first">
+                                                        *INITIATOR - {{order?.billingFirstName}}
+                                                        {{order?.billingLastName}}
+                                                        ({{order?.billingEmail}})
+                                                    </ng-container>
+                                                </mat-option>
+                                            </mat-select>
+                                        </mat-form-field>
+                                    </div>
+                                </div>
 
-                <ng-template #other_content>
-                    <div class="col-12 mt-2">
-                        <button (click)="exportHtmlToPDF()" class="float-right mr-3" mat-stroked-button
-                            [matTooltip]="'Save report as PDF'">
-                            <mat-icon svgIcon="mat_outline:picture_as_pdf"></mat-icon>
-                            <span class="ml-2 mr-1">PDF</span>
-                        </button>
+                                <ng-template #other_content>
+                                    <div class="col-12 mt-2">
+                                        <button (click)="exportHtmlToPDF()" class="float-right mr-3" mat-stroked-button
+                                            [matTooltip]="'Save report as PDF'">
+                                            <mat-icon svgIcon="mat_outline:picture_as_pdf"></mat-icon>
+                                            <span class="ml-2 mr-1">PDF</span>
+                                        </button>
 
-                        <!-- Main -->
-                        <div class="inline-block p-0 sm:pt-6 text-left print:p-0" id="htmltable" #htmltable>
+                                        <!-- Main -->
+                                        <div class="inline-block p-0 sm:pt-6 text-left print:p-0" id="htmltable"
+                                            #htmltable>
 
-                            <!-- Shipping Report -->
-                            <div
-                                class="min-w-240 p-3 rounded-2xl shadow bg-card print:w-auto print:p-0 print:rounded-none print:shadow-none print:bg-transparent">
+                                            <!-- Shipping Report -->
+                                            <div
+                                                class="min-w-240 p-3 rounded-2xl shadow bg-card print:w-auto print:p-0 print:rounded-none print:shadow-none print:bg-transparent">
 
-                                <div class="flex items-start">
-                                    <div class="grid grid-rows-1 mt-5">
-                                        <div class="grid auto-cols-max grid-flow-col gap-x-2">
-                                            <div class="w-100 text-left text-2xl text-secondary">
-                                                Confidential Order Report
+                                                <div class="flex items-start">
+                                                    <div class="grid grid-rows-1 mt-5">
+                                                        <div class="grid auto-cols-max grid-flow-col gap-x-2">
+                                                            <div class="w-100 text-left text-2xl text-secondary">
+                                                                Confidential Order Report
+                                                            </div>
+                                                        </div>
+                                                        <div class="grid grid-flow-col mt-5">
+                                                            <div
+                                                                class="place-self-center w-24 text-center text-2xl text-secondary">
+                                                                Ship To
+                                                            </div>
+                                                            <div class="pl-6 border-l text-md">
+                                                                <div class="font-medium">TheCHCStore RAKSHANI</div>
+                                                                <div>526 South Main Street, Akron, OH, USA</div>
+                                                                <div>Akron US, OH 44311</div>
+                                                                <div>3305104384</div>
+                                                                <div>service@thechcstore.com</div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="grid grid-cols-2 gap-x-4 gap-y-1 ml-auto pr-8">
+                                                        <div
+                                                            class="justify-self-end font-semibold text-3xl tracking-tight">
+                                                            Order</div>
+                                                        <div class="justify-self-start text-3xl font-semibold">
+                                                            #{{selectedOrder.pk_orderID}}
+                                                        </div>
+                                                        <div
+                                                            class="justify-self-end font-medium tracking-tight text-secondary">
+                                                            USER
+                                                        </div>
+                                                        <div class="font-medium">{{selectedOrder.firstName}}
+                                                            {{selectedOrder.lastName}}
+                                                        </div>
+                                                        <div
+                                                            class="justify-self-end font-medium tracking-tight text-secondary">
+                                                            ORDER
+                                                            DATE
+                                                        </div>
+                                                        <div class="font-medium">{{selectedOrder.orderDate ||
+                                                            not_available}}</div>
+                                                        <div
+                                                            class="justify-self-end font-medium tracking-tight text-secondary">
+                                                            PAYMENT
+                                                            DATE
+                                                        </div>
+                                                        <div class="font-medium">{{selectedOrder.paymentDate ||
+                                                            not_available}}</div>
+                                                        <div
+                                                            class="justify-self-end font-medium tracking-tight text-secondary">
+                                                            CLIENT
+                                                        </div>
+                                                        <div class="font-medium">{{selectedOrder.companyName ||
+                                                            not_available}}</div>
+                                                        <div
+                                                            class="justify-self-end font-medium tracking-tight text-secondary">
+                                                            DUE DATE
+                                                        </div>
+                                                        <div class="font-medium">{{selectedOrder.inHandsDate ||
+                                                            not_available}}</div>
+                                                        <div
+                                                            class="justify-self-end font-medium tracking-tight text-secondary">
+                                                            TOTAL
+                                                            DUE
+                                                        </div>
+                                                        <div class="font-medium">{{selectedOrderTotals.BalanceDue |
+                                                            currency}}</div>
+
+                                                    </div>
+                                                </div>
+
+                                                <div class="grid grid-cols-12 gap-x-1 mt-16">
+                                                    <!-- Columns -->
+                                                    <div class="col-span-8 font-medium text-md text-secondary">SERVICE
+                                                    </div>
+                                                    <div class="font-medium text-md text-left text-secondary">QTY</div>
+                                                    <div class="font-medium text-md text-left text-secondary">COST</div>
+                                                    <div
+                                                        class="col-span-2 font-medium text-md text-left text-secondary">
+                                                        PRICE</div>
+
+                                                    <!-- Divider -->
+                                                    <div class="col-span-12 my-4 border-b"></div>
+
+                                                    <ng-container
+                                                        *ngFor="let order of selectedOrderDetails; let last = last;">
+                                                        <!-- Item -->
+                                                        <div class="col-span-8">
+                                                            <div class="text-md font-medium"> #{{order.pk_productID}}
+                                                            </div>
+                                                            <div class="mt-2 text-lg font-semibold text-secondary">
+                                                                {{order.productName}}
+                                                            </div>
+                                                        </div>
+                                                        <div class="self-center text-left"> {{order.quantity}} </div>
+                                                        <div class="self-center text-left"> {{order.orderCost |
+                                                            currency}} </div>
+                                                        <div class="col-span-2 self-center text-left">
+                                                            {{order.orderTotal | currency}}
+                                                        </div>
+
+                                                        <!-- Divider -->
+                                                        <div class="col-span-12 my-3 border-b" *ngIf="!last"></div>
+                                                    </ng-container>
+
+                                                    <!-- Spacer -->
+                                                    <div class="col-span-12 mt-16"></div>
+
+                                                    <!-- Subtotal -->
+                                                    <div
+                                                        class="col-span-10 self-center font-medium tracking-tight text-secondary">
+                                                        TOTAL
+                                                        DISCOUNT
+                                                    </div>
+                                                    <div class="col-span-2 text-left text-lg">
+                                                        {{selectedOrderTotals.discount |
+                                                        currency}}
+                                                    </div>
+
+                                                    <!-- Divider -->
+                                                    <div class="col-span-12 my-3 border-b"></div>
+
+                                                    <!-- Tax -->
+                                                    <div
+                                                        class="col-span-10 self-center font-medium tracking-tight text-secondary">
+                                                        TOTAL
+                                                        TAX
+                                                    </div>
+                                                    <div class="col-span-2 text-left text-lg"> {{selectedOrderTotals.tax
+                                                        | currency}}
+                                                    </div>
+
+                                                    <!-- Divider -->
+                                                    <div class="col-span-12 my-3 border-b"></div>
+
+                                                    <!-- Discount -->
+                                                    <div
+                                                        class="col-span-10 self-center font-medium tracking-tight text-secondary">
+                                                        ADJUSTMENTS
+                                                    </div>
+                                                    <div class="col-span-2 text-right text-lg"></div>
+                                                    <!-- Divider -->
+                                                    <div class="col-span-12 my-3 border-b"></div>
+
+                                                    <!-- Total -->
+                                                    <div
+                                                        class="col-span-8 self-center text-2xl font-medium tracking-tight text-secondary">
+                                                        GRAND TOTAL
+                                                    </div>
+                                                    <div
+                                                        class="col-span-2 text-left font-medium text-2xl text-secondary">
+                                                        {{selectedOrderTotals.cost | currency}}
+                                                    </div>
+                                                    <div
+                                                        class="col-span-2 text-left font-medium text-2xl text-secondary">
+                                                        {{selectedOrderTotals.BalanceDue |
+                                                        currency}} </div>
+                                                </div>
+
+                                                <div class="mt-10">
+                                                    <div style="text-align: -webkit-center;">
+                                                        <img class="w-40" src="assets/images/logo/consolidus-logo.jpeg">
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                        </div>
+                                    </div>
+                                    <div class="col-12 mt-2">
+                                        <mat-card class="p-2 h-full shadow-lg rounded-2xl">
+                                            <mat-card-title class="font-size-medium">Internal comments
+                                            </mat-card-title>
+                                            <mat-divider></mat-divider>
+                                            <mat-card-content
+                                                class="text-secondary py-4 font-semibold h-60 overflow-auto">
+                                                <div [innerHTML]="htmlComment"></div>
+                                            </mat-card-content>
+                                        </mat-card>
+                                    </div>
+                                    <div class="col-12 mt-2">
+                                        <mat-card class="p-2 h-60 shadow-lg rounded-2xl">
+                                            <mat-card-title class="font-size-medium">Details</mat-card-title>
+                                            <mat-divider></mat-divider>
+                                            <div class="row w-full">
+                                                <div class="col-lg-6 col-md-6 col-12 my-1">
+                                                    <div class="row">
+                                                        <div class="col-6">
+                                                            <b>Instructions</b>
+                                                        </div>
+                                                        <div class="col-6">
+                                                            N/A
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="col-lg-6 col-md-6 col-12 my-1">
+                                                    <div class="row">
+                                                        <div class="col-6">
+                                                            <b>Promocode</b>
+                                                        </div>
+                                                        <div class="col-6">
+                                                            N/A
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="row w-full">
+                                                <div class="col-lg-6 col-md-6 col-12 my-1">
+                                                    <div class="row">
+                                                        <div class="col-6">
+                                                            <b>Purchase Order</b>
+                                                        </div>
+                                                        <div class="col-6">
+                                                            N/A
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="col-lg-6 col-md-6 col-12 my-1">
+                                                    <div class="row">
+                                                        <div class="col-6">
+                                                            <b>Additional Status</b>
+                                                        </div>
+                                                        <div class="col-6">
+                                                            N/A
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="row w-full">
+                                                <div class="col-lg-6 col-md-6 col-12 my-1">
+                                                    <div class="row">
+                                                        <div class="col-6">
+                                                            <b>Account/charge Code</b>
+                                                        </div>
+                                                        <div class="col-6">
+                                                            N/A
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="col-lg-6 col-md-6 col-12 my-1">
+                                                    <div class="row">
+                                                        <div class="col-6">
+                                                            <b>Shipping</b>
+                                                        </div>
+                                                        <div class="col-6">
+                                                            UPS / UPS Ground
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </mat-card>
+                                    </div>
+                                </ng-template>
+
+                                <div class="col-12 mt-2" *ngIf="showForm">
+                                    <button (click)="exportHtmlToPDF()" class="float-right mr-3" mat-stroked-button
+                                        [matTooltip]="'Save report as PDF'">
+                                        <mat-icon svgIcon="mat_outline:picture_as_pdf"></mat-icon>
+                                        <span class="ml-2 mr-1">PDF</span>
+                                    </button>
+
+                                    <!-- Main -->
+                                    <div class="inline-block p-0 sm:pt-6 text-left print:p-0" id="htmltable" #htmltable>
+
+                                        <!-- Shipping Report -->
+                                        <div
+                                            class="min-w-240 p-3 rounded-2xl shadow bg-card print:w-auto print:p-0 print:rounded-none print:shadow-none print:bg-transparent">
+
+                                            <div class="flex items-start">
+                                                <div class="grid grid-rows-1 mt-5">
+                                                    <div class="grid auto-cols-max grid-flow-col gap-x-2">
+                                                        <div class="w-100 text-left text-2xl text-secondary">
+                                                            Confidential Order Report
+                                                        </div>
+                                                    </div>
+                                                    <div class="grid grid-flow-col mt-5">
+                                                        <div
+                                                            class="place-self-center w-24 text-center text-2xl text-secondary">
+                                                            Ship To
+                                                        </div>
+                                                        <div class="pl-6 border-l text-md">
+                                                            <div class="font-medium">TheCHCStore RAKSHANI</div>
+                                                            <div>526 South Main Street, Akron, OH, USA</div>
+                                                            <div>Akron US, OH 44311</div>
+                                                            <div>3305104384</div>
+                                                            <div>service@thechcstore.com</div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="grid grid-cols-2 gap-x-4 gap-y-1 ml-auto pr-8">
+                                                    <div class="justify-self-end font-semibold text-3xl tracking-tight">
+                                                        Order</div>
+                                                    <div class="justify-self-start text-3xl font-semibold">
+                                                        #{{selectedOrder.pk_orderID}}
+                                                    </div>
+                                                    <div
+                                                        class="justify-self-end font-medium tracking-tight text-secondary">
+                                                        USER
+                                                    </div>
+                                                    <div class="font-medium">{{selectedOrder.firstName}}
+                                                        {{selectedOrder.lastName}}
+                                                    </div>
+                                                    <div
+                                                        class="justify-self-end font-medium tracking-tight text-secondary">
+                                                        ORDER DATE
+                                                    </div>
+                                                    <div class="font-medium">{{selectedOrder.orderDate ||
+                                                        not_available}}</div>
+                                                    <div
+                                                        class="justify-self-end font-medium tracking-tight text-secondary">
+                                                        PAYMENT
+                                                        DATE
+                                                    </div>
+                                                    <div class="font-medium">{{selectedOrder.paymentDate ||
+                                                        not_available}}</div>
+                                                    <div
+                                                        class="justify-self-end font-medium tracking-tight text-secondary">
+                                                        CLIENT
+                                                    </div>
+                                                    <div class="font-medium">{{selectedOrder.companyName ||
+                                                        not_available}}</div>
+                                                    <div
+                                                        class="justify-self-end font-medium tracking-tight text-secondary">
+                                                        DUE DATE
+                                                    </div>
+                                                    <div class="font-medium">{{selectedOrder.inHandsDate ||
+                                                        not_available}}</div>
+                                                    <div
+                                                        class="justify-self-end font-medium tracking-tight text-secondary">
+                                                        TOTAL DUE
+                                                    </div>
+                                                    <div class="font-medium">{{selectedOrderTotals.BalanceDue |
+                                                        currency}}</div>
+
+                                                </div>
+                                            </div>
+
+                                            <div class="grid grid-cols-12 gap-x-1 mt-16">
+                                                <!-- Columns -->
+                                                <div class="col-span-8 font-medium text-md text-secondary">SERVICE</div>
+                                                <div class="font-medium text-md text-left text-secondary">QTY</div>
+                                                <div class="font-medium text-md text-left text-secondary">COST</div>
+                                                <div class="col-span-2 font-medium text-md text-left text-secondary">
+                                                    PRICE</div>
+
+                                                <!-- Divider -->
+                                                <div class="col-span-12 my-4 border-b"></div>
+
+                                                <ng-container
+                                                    *ngFor="let order of selectedOrderDetails; let last = last;">
+                                                    <!-- Item -->
+                                                    <div class="col-span-8">
+                                                        <div class="text-md font-medium"> #{{order.pk_productID}}
+                                                        </div>
+                                                        <div class="mt-2 text-lg font-semibold text-secondary">
+                                                            {{order.productName}}
+                                                        </div>
+                                                    </div>
+                                                    <div class="self-center text-left"> {{order.quantity}} </div>
+                                                    <div class="self-center text-left"> {{order.orderCost | currency}}
+                                                    </div>
+                                                    <div class="col-span-2 self-center text-left"> {{order.orderTotal |
+                                                        currency}}
+                                                    </div>
+
+                                                    <!-- Divider -->
+                                                    <div class="col-span-12 my-3 border-b" *ngIf="!last"></div>
+                                                </ng-container>
+
+                                                <!-- Spacer -->
+                                                <div class="col-span-12 mt-16"></div>
+
+                                                <!-- Subtotal -->
+                                                <div
+                                                    class="col-span-10 self-center font-medium tracking-tight text-secondary">
+                                                    TOTAL
+                                                    DISCOUNT
+                                                </div>
+                                                <div class="col-span-2 text-left text-lg">
+                                                    {{selectedOrderTotals.discount | currency}}
+                                                </div>
+
+                                                <!-- Divider -->
+                                                <div class="col-span-12 my-3 border-b"></div>
+
+                                                <!-- Tax -->
+                                                <div
+                                                    class="col-span-10 self-center font-medium tracking-tight text-secondary">
+                                                    TOTAL TAX
+                                                </div>
+                                                <div class="col-span-2 text-left text-lg"> {{selectedOrderTotals.tax |
+                                                    currency}}
+                                                </div>
+
+                                                <!-- Divider -->
+                                                <div class="col-span-12 my-3 border-b"></div>
+
+                                                <!-- Discount -->
+                                                <div
+                                                    class="col-span-10 self-center font-medium tracking-tight text-secondary">
+                                                    ADJUSTMENTS
+                                                </div>
+                                                <div class="col-span-2 text-right text-lg"></div>
+                                                <!-- Divider -->
+                                                <div class="col-span-12 my-3 border-b"></div>
+
+                                                <!-- Total -->
+                                                <div
+                                                    class="col-span-8 self-center text-2xl font-medium tracking-tight text-secondary">
+                                                    GRAND TOTAL
+                                                </div>
+                                                <div class="col-span-2 text-left font-medium text-2xl text-secondary">
+                                                    {{selectedOrderTotals.cost | currency}}
+                                                </div>
+                                                <div class="col-span-2 text-left font-medium text-2xl text-secondary">
+                                                    {{selectedOrderTotals.BalanceDue |
+                                                    currency}} </div>
+                                            </div>
+
+                                            <div class="mt-10">
+                                                <div style="text-align: -webkit-center;">
+                                                    <img class="w-40" src="assets/images/logo/consolidus-logo.jpeg">
+                                                </div>
                                             </div>
                                         </div>
-                                        <div class="grid grid-flow-col mt-5">
-                                            <div class="place-self-center w-24 text-center text-2xl text-secondary">
-                                                Ship To
-                                            </div>
-                                            <div class="pl-6 border-l text-md">
-                                                <div class="font-medium">TheCHCStore RAKSHANI</div>
-                                                <div>526 South Main Street, Akron, OH, USA</div>
-                                                <div>Akron US, OH 44311</div>
-                                                <div>3305104384</div>
-                                                <div>service@thechcstore.com</div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="grid grid-cols-2 gap-x-4 gap-y-1 ml-auto pr-8">
-                                        <div class="justify-self-end font-semibold text-3xl tracking-tight">Order</div>
-                                        <div class="justify-self-start text-3xl font-semibold">
-                                            #{{selectedOrder.pk_orderID}}
-                                        </div>
-                                        <div class="justify-self-end font-medium tracking-tight text-secondary">USER
-                                        </div>
-                                        <div class="font-medium">{{selectedOrder.firstName}} {{selectedOrder.lastName}}
-                                        </div>
-                                        <div class="justify-self-end font-medium tracking-tight text-secondary">ORDER
-                                            DATE
-                                        </div>
-                                        <div class="font-medium">{{selectedOrder.orderDate || not_available}}</div>
-                                        <div class="justify-self-end font-medium tracking-tight text-secondary">PAYMENT
-                                            DATE
-                                        </div>
-                                        <div class="font-medium">{{selectedOrder.paymentDate || not_available}}</div>
-                                        <div class="justify-self-end font-medium tracking-tight text-secondary">CLIENT
-                                        </div>
-                                        <div class="font-medium">{{selectedOrder.companyName || not_available}}</div>
-                                        <div class="justify-self-end font-medium tracking-tight text-secondary">DUE DATE
-                                        </div>
-                                        <div class="font-medium">{{selectedOrder.inHandsDate || not_available}}</div>
-                                        <div class="justify-self-end font-medium tracking-tight text-secondary">TOTAL
-                                            DUE
-                                        </div>
-                                        <div class="font-medium">{{selectedOrderTotals.BalanceDue | currency}}</div>
 
                                     </div>
                                 </div>
-
-                                <div class="grid grid-cols-12 gap-x-1 mt-16">
-                                    <!-- Columns -->
-                                    <div class="col-span-8 font-medium text-md text-secondary">SERVICE</div>
-                                    <div class="font-medium text-md text-left text-secondary">QTY</div>
-                                    <div class="font-medium text-md text-left text-secondary">COST</div>
-                                    <div class="col-span-2 font-medium text-md text-left text-secondary">PRICE</div>
-
-                                    <!-- Divider -->
-                                    <div class="col-span-12 my-4 border-b"></div>
-
-                                    <ng-container *ngFor="let order of selectedOrderDetails; let last = last;">
-                                        <!-- Item -->
-                                        <div class="col-span-8">
-                                            <div class="text-md font-medium"> #{{order.pk_productID}}
+                                <div class="col-12 mt-2" *ngIf="showForm">
+                                    <mat-card class="p-2 h-full shadow-lg rounded-2xl">
+                                        <mat-card-title class="font-size-medium">Internal comments
+                                        </mat-card-title>
+                                        <mat-divider></mat-divider>
+                                        <mat-card-content class="text-secondary py-4 font-semibold h-60 overflow-auto">
+                                            <div [innerHTML]="htmlComment"></div>
+                                        </mat-card-content>
+                                    </mat-card>
+                                </div>
+                                <div class="col-12 mt-2" *ngIf="showForm">
+                                    <mat-card class="p-2 h-60 shadow-lg rounded-2xl">
+                                        <mat-card-title class="font-size-medium">Details</mat-card-title>
+                                        <mat-divider></mat-divider>
+                                        <div class="row w-full">
+                                            <div class="col-lg-6 col-md-6 col-12 my-1">
+                                                <div class="row">
+                                                    <div class="col-6">
+                                                        <b>Instructions</b>
+                                                    </div>
+                                                    <div class="col-6">
+                                                        N/A
+                                                    </div>
+                                                </div>
                                             </div>
-                                            <div class="mt-2 text-lg font-semibold text-secondary">
-                                                {{order.productName}}
+                                            <div class="col-lg-6 col-md-6 col-12 my-1">
+                                                <div class="row">
+                                                    <div class="col-6">
+                                                        <b>Promocode</b>
+                                                    </div>
+                                                    <div class="col-6">
+                                                        N/A
+                                                    </div>
+                                                </div>
                                             </div>
                                         </div>
-                                        <div class="self-center text-left"> {{order.quantity}} </div>
-                                        <div class="self-center text-left"> {{order.orderCost | currency}} </div>
-                                        <div class="col-span-2 self-center text-left"> {{order.orderTotal | currency}}
+                                        <div class="row w-full">
+                                            <div class="col-lg-6 col-md-6 col-12 my-1">
+                                                <div class="row">
+                                                    <div class="col-6">
+                                                        <b>Purchase Order</b>
+                                                    </div>
+                                                    <div class="col-6">
+                                                        N/A
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-lg-6 col-md-6 col-12 my-1">
+                                                <div class="row">
+                                                    <div class="col-6">
+                                                        <b>Additional Status</b>
+                                                    </div>
+                                                    <div class="col-6">
+                                                        N/A
+                                                    </div>
+                                                </div>
+                                            </div>
                                         </div>
-
-                                        <!-- Divider -->
-                                        <div class="col-span-12 my-3 border-b" *ngIf="!last"></div>
-                                    </ng-container>
-
-                                    <!-- Spacer -->
-                                    <div class="col-span-12 mt-16"></div>
-
-                                    <!-- Subtotal -->
-                                    <div class="col-span-10 self-center font-medium tracking-tight text-secondary">TOTAL
-                                        DISCOUNT
-                                    </div>
-                                    <div class="col-span-2 text-left text-lg"> {{selectedOrderTotals.discount |
-                                        currency}}
-                                    </div>
-
-                                    <!-- Divider -->
-                                    <div class="col-span-12 my-3 border-b"></div>
-
-                                    <!-- Tax -->
-                                    <div class="col-span-10 self-center font-medium tracking-tight text-secondary">TOTAL
-                                        TAX
-                                    </div>
-                                    <div class="col-span-2 text-left text-lg"> {{selectedOrderTotals.tax | currency}}
-                                    </div>
-
-                                    <!-- Divider -->
-                                    <div class="col-span-12 my-3 border-b"></div>
-
-                                    <!-- Discount -->
-                                    <div class="col-span-10 self-center font-medium tracking-tight text-secondary">
-                                        ADJUSTMENTS
-                                    </div>
-                                    <div class="col-span-2 text-right text-lg"></div>
-                                    <!-- Divider -->
-                                    <div class="col-span-12 my-3 border-b"></div>
-
-                                    <!-- Total -->
-                                    <div
-                                        class="col-span-8 self-center text-2xl font-medium tracking-tight text-secondary">
-                                        GRAND TOTAL
-                                    </div>
-                                    <div class="col-span-2 text-left font-medium text-2xl text-secondary">
-                                        {{selectedOrderTotals.cost | currency}}
-                                    </div>
-                                    <div class="col-span-2 text-left font-medium text-2xl text-secondary">
-                                        {{selectedOrderTotals.BalanceDue |
-                                        currency}} </div>
-                                </div>
-
-                                <div class="mt-10">
-                                    <div style="text-align: -webkit-center;">
-                                        <img class="w-40" src="assets/images/logo/consolidus-logo.jpeg">
-                                    </div>
+                                        <div class="row w-full">
+                                            <div class="col-lg-6 col-md-6 col-12 my-1">
+                                                <div class="row">
+                                                    <div class="col-6">
+                                                        <b>Account/charge Code</b>
+                                                    </div>
+                                                    <div class="col-6">
+                                                        N/A
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-lg-6 col-md-6 col-12 my-1">
+                                                <div class="row">
+                                                    <div class="col-6">
+                                                        <b>Shipping</b>
+                                                    </div>
+                                                    <div class="col-6">
+                                                        UPS / UPS Ground
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </mat-card>
                                 </div>
                             </div>
-
-                        </div>
-                    </div>
-                    <div class="col-12 mt-2">
-                        <mat-card class="p-2 h-full shadow-lg rounded-2xl">
-                            <mat-card-title class="text-info font-size-medium">Internal comments</mat-card-title>
-                            <mat-divider></mat-divider>
-                            <mat-card-content class="text-secondary py-4 font-semibold h-60 overflow-auto">
-                                <div [innerHTML]="htmlComment"></div>
-                            </mat-card-content>
-                        </mat-card>
-                    </div>
-                    <div class="col-12 mt-2">
-                        <mat-card class="p-2 h-60 shadow-lg rounded-2xl">
-                            <mat-card-title class="text-info font-size-medium">Details</mat-card-title>
-                            <mat-divider></mat-divider>
-                            <div class="row w-full">
-                                <div class="col-lg-6 col-md-6 col-12 my-1">
-                                    <div class="row">
-                                        <div class="col-6">
-                                            <b>Instructions</b>
-                                        </div>
-                                        <div class="col-6">
-                                            N/A
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="col-lg-6 col-md-6 col-12 my-1">
-                                    <div class="row">
-                                        <div class="col-6">
-                                            <b>Promocode</b>
-                                        </div>
-                                        <div class="col-6">
-                                            N/A
-                                        </div>
-                                    </div>
-                                </div>
+                        </mat-tab>
+                        <mat-tab label="Original Order Report">
+                            <div class="p-8 sm:p-16 text-2xl font-semibold not-found-color">
+                                <img src="assets/gifs/not-found.gif" class="rounded-circle" style="width: 250px;">
+                                No reports found!
                             </div>
-                            <div class="row w-full">
-                                <div class="col-lg-6 col-md-6 col-12 my-1">
-                                    <div class="row">
-                                        <div class="col-6">
-                                            <b>Purchase Order</b>
-                                        </div>
-                                        <div class="col-6">
-                                            N/A
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="col-lg-6 col-md-6 col-12 my-1">
-                                    <div class="row">
-                                        <div class="col-6">
-                                            <b>Additional Status</b>
-                                        </div>
-                                        <div class="col-6">
-                                            N/A
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="row w-full">
-                                <div class="col-lg-6 col-md-6 col-12 my-1">
-                                    <div class="row">
-                                        <div class="col-6">
-                                            <b>Account/charge Code</b>
-                                        </div>
-                                        <div class="col-6">
-                                            N/A
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="col-lg-6 col-md-6 col-12 my-1">
-                                    <div class="row">
-                                        <div class="col-6">
-                                            <b>Shipping</b>
-                                        </div>
-                                        <div class="col-6">
-                                            UPS / UPS Ground
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </mat-card>
-                    </div>
-                </ng-template>
-
-                <div class="col-12 mt-2" *ngIf="showForm">
-                    <button (click)="exportHtmlToPDF()" class="float-right mr-3" mat-stroked-button
-                        [matTooltip]="'Save report as PDF'">
-                        <mat-icon svgIcon="mat_outline:picture_as_pdf"></mat-icon>
-                        <span class="ml-2 mr-1">PDF</span>
-                    </button>
-
-                    <!-- Main -->
-                    <div class="inline-block p-0 sm:pt-6 text-left print:p-0" id="htmltable" #htmltable>
-
-                        <!-- Shipping Report -->
-                        <div
-                            class="min-w-240 p-3 rounded-2xl shadow bg-card print:w-auto print:p-0 print:rounded-none print:shadow-none print:bg-transparent">
-
-                            <div class="flex items-start">
-                                <div class="grid grid-rows-1 mt-5">
-                                    <div class="grid auto-cols-max grid-flow-col gap-x-2">
-                                        <div class="w-100 text-left text-2xl text-secondary">
-                                            Confidential Order Report
-                                        </div>
-                                    </div>
-                                    <div class="grid grid-flow-col mt-5">
-                                        <div class="place-self-center w-24 text-center text-2xl text-secondary">
-                                            Ship To
-                                        </div>
-                                        <div class="pl-6 border-l text-md">
-                                            <div class="font-medium">TheCHCStore RAKSHANI</div>
-                                            <div>526 South Main Street, Akron, OH, USA</div>
-                                            <div>Akron US, OH 44311</div>
-                                            <div>3305104384</div>
-                                            <div>service@thechcstore.com</div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="grid grid-cols-2 gap-x-4 gap-y-1 ml-auto pr-8">
-                                    <div class="justify-self-end font-semibold text-3xl tracking-tight">Order</div>
-                                    <div class="justify-self-start text-3xl font-semibold">#{{selectedOrder.pk_orderID}}
-                                    </div>
-                                    <div class="justify-self-end font-medium tracking-tight text-secondary">USER
-                                    </div>
-                                    <div class="font-medium">{{selectedOrder.firstName}} {{selectedOrder.lastName}}
-                                    </div>
-                                    <div class="justify-self-end font-medium tracking-tight text-secondary">ORDER DATE
-                                    </div>
-                                    <div class="font-medium">{{selectedOrder.orderDate || not_available}}</div>
-                                    <div class="justify-self-end font-medium tracking-tight text-secondary">PAYMENT
-                                        DATE
-                                    </div>
-                                    <div class="font-medium">{{selectedOrder.paymentDate || not_available}}</div>
-                                    <div class="justify-self-end font-medium tracking-tight text-secondary">CLIENT
-                                    </div>
-                                    <div class="font-medium">{{selectedOrder.companyName || not_available}}</div>
-                                    <div class="justify-self-end font-medium tracking-tight text-secondary">DUE DATE
-                                    </div>
-                                    <div class="font-medium">{{selectedOrder.inHandsDate || not_available}}</div>
-                                    <div class="justify-self-end font-medium tracking-tight text-secondary">TOTAL DUE
-                                    </div>
-                                    <div class="font-medium">{{selectedOrderTotals.BalanceDue | currency}}</div>
-
-                                </div>
-                            </div>
-
-                            <div class="grid grid-cols-12 gap-x-1 mt-16">
-                                <!-- Columns -->
-                                <div class="col-span-8 font-medium text-md text-secondary">SERVICE</div>
-                                <div class="font-medium text-md text-left text-secondary">QTY</div>
-                                <div class="font-medium text-md text-left text-secondary">COST</div>
-                                <div class="col-span-2 font-medium text-md text-left text-secondary">PRICE</div>
-
-                                <!-- Divider -->
-                                <div class="col-span-12 my-4 border-b"></div>
-
-                                <ng-container *ngFor="let order of selectedOrderDetails; let last = last;">
-                                    <!-- Item -->
-                                    <div class="col-span-8">
-                                        <div class="text-md font-medium"> #{{order.pk_productID}}
-                                        </div>
-                                        <div class="mt-2 text-lg font-semibold text-secondary">
-                                            {{order.productName}}
-                                        </div>
-                                    </div>
-                                    <div class="self-center text-left"> {{order.quantity}} </div>
-                                    <div class="self-center text-left"> {{order.orderCost | currency}} </div>
-                                    <div class="col-span-2 self-center text-left"> {{order.orderTotal | currency}}
-                                    </div>
-
-                                    <!-- Divider -->
-                                    <div class="col-span-12 my-3 border-b" *ngIf="!last"></div>
-                                </ng-container>
-
-                                <!-- Spacer -->
-                                <div class="col-span-12 mt-16"></div>
-
-                                <!-- Subtotal -->
-                                <div class="col-span-10 self-center font-medium tracking-tight text-secondary">TOTAL
-                                    DISCOUNT
-                                </div>
-                                <div class="col-span-2 text-left text-lg"> {{selectedOrderTotals.discount | currency}}
-                                </div>
-
-                                <!-- Divider -->
-                                <div class="col-span-12 my-3 border-b"></div>
-
-                                <!-- Tax -->
-                                <div class="col-span-10 self-center font-medium tracking-tight text-secondary">TOTAL TAX
-                                </div>
-                                <div class="col-span-2 text-left text-lg"> {{selectedOrderTotals.tax | currency}}
-                                </div>
-
-                                <!-- Divider -->
-                                <div class="col-span-12 my-3 border-b"></div>
-
-                                <!-- Discount -->
-                                <div class="col-span-10 self-center font-medium tracking-tight text-secondary">
-                                    ADJUSTMENTS
-                                </div>
-                                <div class="col-span-2 text-right text-lg"></div>
-                                <!-- Divider -->
-                                <div class="col-span-12 my-3 border-b"></div>
-
-                                <!-- Total -->
-                                <div class="col-span-8 self-center text-2xl font-medium tracking-tight text-secondary">
-                                    GRAND TOTAL
-                                </div>
-                                <div class="col-span-2 text-left font-medium text-2xl text-secondary">
-                                    {{selectedOrderTotals.cost | currency}}
-                                </div>
-                                <div class="col-span-2 text-left font-medium text-2xl text-secondary">
-                                    {{selectedOrderTotals.BalanceDue |
-                                    currency}} </div>
-                            </div>
-
-                            <div class="mt-10">
-                                <div style="text-align: -webkit-center;">
-                                    <img class="w-40" src="assets/images/logo/consolidus-logo.jpeg">
-                                </div>
-                            </div>
-                        </div>
-
-                    </div>
-                </div>
-                <div class="col-12 mt-2" *ngIf="showForm">
-                    <mat-card class="p-2 h-full shadow-lg rounded-2xl">
-                        <mat-card-title class="text-info font-size-medium">Internal comments</mat-card-title>
-                        <mat-divider></mat-divider>
-                        <mat-card-content class="text-secondary py-4 font-semibold h-60 overflow-auto">
-                            <div [innerHTML]="htmlComment"></div>
-                        </mat-card-content>
-                    </mat-card>
-                </div>
-                <div class="col-12 mt-2" *ngIf="showForm">
-                    <mat-card class="p-2 h-60 shadow-lg rounded-2xl">
-                        <mat-card-title class="text-info font-size-medium">Details</mat-card-title>
-                        <mat-divider></mat-divider>
-                        <div class="row w-full">
-                            <div class="col-lg-6 col-md-6 col-12 my-1">
-                                <div class="row">
-                                    <div class="col-6">
-                                        <b>Instructions</b>
-                                    </div>
-                                    <div class="col-6">
-                                        N/A
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-lg-6 col-md-6 col-12 my-1">
-                                <div class="row">
-                                    <div class="col-6">
-                                        <b>Promocode</b>
-                                    </div>
-                                    <div class="col-6">
-                                        N/A
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="row w-full">
-                            <div class="col-lg-6 col-md-6 col-12 my-1">
-                                <div class="row">
-                                    <div class="col-6">
-                                        <b>Purchase Order</b>
-                                    </div>
-                                    <div class="col-6">
-                                        N/A
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-lg-6 col-md-6 col-12 my-1">
-                                <div class="row">
-                                    <div class="col-6">
-                                        <b>Additional Status</b>
-                                    </div>
-                                    <div class="col-6">
-                                        N/A
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="row w-full">
-                            <div class="col-lg-6 col-md-6 col-12 my-1">
-                                <div class="row">
-                                    <div class="col-6">
-                                        <b>Account/charge Code</b>
-                                    </div>
-                                    <div class="col-6">
-                                        N/A
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-lg-6 col-md-6 col-12 my-1">
-                                <div class="row">
-                                    <div class="col-6">
-                                        <b>Shipping</b>
-                                    </div>
-                                    <div class="col-6">
-                                        UPS / UPS Ground
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </mat-card>
+                        </mat-tab>
+                    </mat-tab-group>
                 </div>
             </div>
-        </mat-tab>
-        <mat-tab label="Original Order Report">
-            <div class="p-8 sm:p-16 text-2xl font-semibold not-found-color">
-                <img src="assets/gifs/not-found.gif" class="rounded-circle" style="width: 250px;">
-                No reports found!
-            </div>
-        </mat-tab>
-    </mat-tab-group>
+        </fuse-card>
+    </div>
+
 </div>

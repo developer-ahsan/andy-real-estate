@@ -15,14 +15,18 @@ export class TimelineComponent implements OnInit {
   @Output() isLoadingChange = new EventEmitter<boolean>();
   displayedColumns: string[] = ['item', 'min', 'max'];
   transactions: Transaction[] = [
-    {item: 'ARTWORK', min: 1, max: 5},
-    {item: 'PRODUCTION', min: 3, max: 3},
-    {item: 'SHIPPINH', min: 4, max: 4},
+    { item: 'ARTWORK', min: 1, max: 5 },
+    { item: 'PRODUCTION', min: 3, max: 3 },
+    { item: 'SHIPPINH', min: 4, max: 4 },
   ];
 
   constructor() { }
 
   ngOnInit(): void {
+    setTimeout(() => {
+      this.isLoading = false;
+      this.isLoadingChange.emit(false)
+    }, 100);
   }
 
   getTotalMin() {

@@ -414,10 +414,9 @@ export class InventoryService {
     };
 
     getSystemDistributorCodes(): Observable<any[]> {
-        return this._httpClient.get<any[]>(environment.system, {
+        return this._httpClient.get<any[]>(environment.products, {
             params: {
-                distributor_code: true,
-                size: 100
+                product_level_distributor: true
             }
         }).pipe(
             tap((codes) => {
@@ -929,6 +928,11 @@ export class InventoryService {
 
     // ADD DEFAULT COLOR IMAGE
     addColorMedia(payload) {
+        const headers = { 'Authorization': `Bearer ${this._authService.accessToken}` };
+        return this._httpClient.post(
+            environment.products, payload, { headers });
+    };
+    addImprintMedia(payload) {
         const headers = { 'Authorization': `Bearer ${this._authService.accessToken}` };
         return this._httpClient.post(
             environment.products, payload, { headers });

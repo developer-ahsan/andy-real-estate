@@ -100,9 +100,30 @@ export class ColorComponent implements OnInit, OnDestroy {
   addCustomColors(event: MatChipInputEvent): void {
     const value = (event.value || '').trim();
     // Add our fruit
-    if (value) {
-      this.customColorsList.push({ colorId: null, colorName: value, run: '0.0', hex: '' });
+    const index = this.dataSource.findIndex(color => color.colorName == value);
+    if (index >= 0) {
+      this._snackBar.open("Color already exist in the list", '', {
+        horizontalPosition: 'center',
+        verticalPosition: 'bottom',
+        duration: 3000
+      });
+    } else {
+      if (this.customColorsList.length == 0) {
+        this.customColorsList.push({ colorId: null, colorName: value, image: null, run: '0.0', hex: '' });
+      } else {
+        const index = this.customColorsList.findIndex(color => color.colorName == value);
+        if (index >= 0) {
+          // this._snackBar.open("Color already exist in the list", '', {
+          //   horizontalPosition: 'center',
+          //   verticalPosition: 'bottom',
+          //   duration: 3000
+          // });
+        } else {
+          this.customColorsList.push({ colorId: null, colorName: value, image: null, run: '0.0', hex: '' });
+        }
+      }
     }
+
     // Clear the input value
     event.chipInput!.clear();
   }
@@ -151,17 +172,27 @@ export class ColorComponent implements OnInit, OnDestroy {
   };
 
   colorSelected(result: any): void {
-    if (this.selectedColorsList.length == 0) {
-      this.selectedColorsList.push({ colorId: result.pk_colorID, colorName: result.colorName });
-    } else {
-      var obj = this.selectedColorsList.filter((val) => {
-        return val.colorId == result.pk_colorID;
+    const index = this.dataSource.findIndex(color => color.colorName == result.colorName);
+    if (index >= 0) {
+      this._snackBar.open("Color already exist in the list", '', {
+        horizontalPosition: 'center',
+        verticalPosition: 'bottom',
+        duration: 3000
       });
-      if (obj.length == 0) {
+    } else {
+      if (this.selectedColorsList.length == 0) {
         this.selectedColorsList.push({ colorId: result.pk_colorID, colorName: result.colorName });
+      } else {
+        var obj = this.selectedColorsList.filter((val) => {
+          return val.colorId == result.pk_colorID;
+        });
+        if (obj.length == 0) {
+          this.selectedColorsList.push({ colorId: result.pk_colorID, colorName: result.colorName });
+        }
       }
+      this.selectedColor = result;
     }
-    this.selectedColor = result;
+
     this.colorName.setValue(null);
   };
 
@@ -349,7 +380,6 @@ export class ColorComponent implements OnInit, OnDestroy {
     if (this.updateImageTouched) {
 
       for (const obj of this.dataSource) {
-        console.log(obj)
         if (obj.media && obj.type) {
           let payload = {
             imageUpload: obj.media,
@@ -358,7 +388,6 @@ export class ColorComponent implements OnInit, OnDestroy {
           }
           this.uploadColorMedia(payload);
         }
-        console.log(obj)
       };
     };
 

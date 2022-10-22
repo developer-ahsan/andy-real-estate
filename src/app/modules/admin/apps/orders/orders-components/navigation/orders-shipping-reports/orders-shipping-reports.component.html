@@ -1,95 +1,114 @@
-<div class="mt-5 inset-0 min-w-0 text-center print:overflow-visible" cdkScrollable>
+<div class="row" *ngIf="!isLoading" cdkScrollable>
+    <div class="col-12 my-2">
+        <fuse-card class="rounded-2xl shadow bg-card flex flex-col lg:flex-row w-full">
+            <div class="p-6 sm:p-8 lg:p-10 w-full">
+                <div class="text-2xl font-bold ">
+                    Shipping Report
+                </div>
+                <div class="row mt-5 w-full">
+                    <div class="col-12 text-right mb-3">
+                        <button (click)="exportHtmlToPDF()" class="float-right mr-3" mat-stroked-button
+                            [matTooltip]="'Save report as PDF'">
+                            <mat-icon svgIcon="mat_outline:picture_as_pdf"></mat-icon>
+                            <span class="ml-2 mr-1">PDF</span>
+                        </button>
+                    </div>
+                    <div class="col-12 text-center print:overflow-visible">
+                        <div class="inline-block  text-left print:p-0" id="htmltable" #htmltable>
 
-    <button (click)="exportHtmlToPDF()" class="float-right mr-3" mat-stroked-button [matTooltip]="'Save report as PDF'">
-        <mat-icon svgIcon="mat_outline:picture_as_pdf"></mat-icon>
-        <span class="ml-2 mr-1">PDF</span>
-    </button>
+                            <!-- Shipping Report -->
+                            <div
+                                class="min-w-240 print:w-auto print:p-0 print:rounded-none print:shadow-none print:bg-transparent">
 
-    <!-- Main -->
-    <div class="inline-block p-6 sm:p-6 text-left print:p-0" id="htmltable" #htmltable>
+                                <div class="flex items-start">
+                                    <div class="grid grid-rows-1 mt-5">
+                                        <div class="grid auto-cols-max grid-flow-col gap-x-2">
+                                            <div class="w-100 text-left text-2xl text-secondary">
+                                                Confidential Shipping Report
+                                            </div>
+                                        </div>
+                                        <div class="grid grid-flow-col mt-5">
+                                            <div class="place-self-center w-24 text-center text-2xl text-secondary">
+                                                Ship To
+                                            </div>
+                                            <div class="pl-6 border-l text-md">
+                                                <div class="font-medium">TheCHCStore RAKSHANI</div>
+                                                <div>526 South Main Street, Akron, OH, USA</div>
+                                                <div>Akron US, OH 44311</div>
+                                                <div>3305104384</div>
+                                                <div>service@thechcstore.com</div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="grid grid-cols-2 gap-x-4 gap-y-1 ml-auto pr-16">
+                                        <div class="justify-self-start font-semibold text-3xl tracking-tight">Order
+                                        </div>
+                                        <div class="justify-self-start text-3xl font-semibold">#56165</div>
+                                        <div class="justify-self-start font-medium tracking-tight text-secondary">ORDER
+                                            DATE</div>
+                                        <div class="font-medium">Feb 19, 2022</div>
+                                        <div class="justify-self-start font-medium tracking-tight text-secondary">DUE
+                                            DATE</div>
+                                        <div class="font-medium">Aug 19, 2022</div>
+                                        <div class="justify-self-start font-medium tracking-tight text-secondary">TOTAL
+                                            DUE</div>
+                                        <div class="font-medium">$49,000.00</div>
+                                    </div>
+                                </div>
 
-        <!-- Shipping Report -->
-        <div
-            class="min-w-240 p-3 rounded-2xl shadow bg-card print:w-auto print:p-0 print:rounded-none print:shadow-none print:bg-transparent">
+                                <div class="grid grid-cols-12 gap-x-1 mt-16">
+                                    <!-- Columns -->
+                                    <div class="col-span-8 font-medium text-md text-secondary">SERVICE</div>
+                                    <div class="font-medium text-md text-right text-secondary">QTY</div>
+                                    <div class="font-medium text-md text-right text-secondary">RATE</div>
+                                    <div class="col-span-2 font-medium text-md text-right text-secondary">PRICE</div>
 
-            <div class="flex items-start">
-                <div class="grid grid-rows-1 mt-5">
-                    <div class="grid auto-cols-max grid-flow-col gap-x-2">
-                        <div class="w-100 text-left text-2xl text-secondary">
-                            Confidential Shipping Report
+                                    <!-- Divider -->
+                                    <div class="col-span-12 my-4 border-b"></div>
+
+                                    <!-- Item -->
+                                    <div class="col-span-8">
+                                        <div class="text-lg font-medium">(18016) H332: 3-Ply Disposable Face Mask Level
+                                            3 ASTM</div>
+                                        <div class="mt-2 text-md text-secondary">
+                                            Prototyping of the application's general workflow and the detailed design of
+                                            its 72 screens as a
+                                            working prototype.
+                                        </div>
+                                        <div class="mt-2 text-md text-secondary">
+                                            Expected: 1 package X 20.00lbs/package = 20.00lbs.
+                                        </div>
+                                    </div>
+                                    <div class="self-center text-right">2000</div>
+                                    <div class="self-center text-right">$75.00</div>
+                                    <div class="col-span-2 self-center text-right">$180.00</div>
+
+                                    <!-- Spacer -->
+                                    <div class="col-span-12 mt-16"></div>
+
+                                    <!-- Divider -->
+                                    <div class="col-span-12 my-3 border-b"></div>
+
+                                    <!-- Total -->
+                                    <div
+                                        class="col-span-8 self-center text-2xl font-medium tracking-tight text-secondary">
+                                        TOTAL SHIPPING & HANDLING
+                                    </div>
+                                    <div class="col-span-2 text-right font-medium">$75.00</div>
+                                    <div class="col-span-2 text-right font-medium">$180.00</div>
+                                </div>
+
+                                <div class="mt-10">
+                                    <div style="text-align: -webkit-center;">
+                                        <img class="w-40" src="assets/images/logo/consolidus-logo.jpeg">
+                                    </div>
+                                </div>
+                            </div>
+
                         </div>
                     </div>
-                    <div class="grid grid-flow-col mt-5">
-                        <div class="place-self-center w-24 text-center text-2xl text-secondary">
-                            Ship To
-                        </div>
-                        <div class="pl-6 border-l text-md">
-                            <div class="font-medium">TheCHCStore RAKSHANI</div>
-                            <div>526 South Main Street, Akron, OH, USA</div>
-                            <div>Akron US, OH 44311</div>
-                            <div>3305104384</div>
-                            <div>service@thechcstore.com</div>
-                        </div>
-                    </div>
-                </div>
-                <div class="grid grid-cols-2 gap-x-4 gap-y-1 ml-auto pr-16">
-                    <div class="justify-self-start font-semibold text-3xl tracking-tight">Order</div>
-                    <div class="justify-self-start text-3xl font-semibold">#56165</div>
-                    <div class="justify-self-start font-medium tracking-tight text-secondary">ORDER DATE</div>
-                    <div class="font-medium">Feb 19, 2022</div>
-                    <div class="justify-self-start font-medium tracking-tight text-secondary">DUE DATE</div>
-                    <div class="font-medium">Aug 19, 2022</div>
-                    <div class="justify-self-start font-medium tracking-tight text-secondary">TOTAL DUE</div>
-                    <div class="font-medium">$49,000.00</div>
                 </div>
             </div>
-
-            <div class="grid grid-cols-12 gap-x-1 mt-16">
-                <!-- Columns -->
-                <div class="col-span-8 font-medium text-md text-secondary">SERVICE</div>
-                <div class="font-medium text-md text-right text-secondary">QTY</div>
-                <div class="font-medium text-md text-right text-secondary">RATE</div>
-                <div class="col-span-2 font-medium text-md text-right text-secondary">PRICE</div>
-
-                <!-- Divider -->
-                <div class="col-span-12 my-4 border-b"></div>
-
-                <!-- Item -->
-                <div class="col-span-8">
-                    <div class="text-lg font-medium">(18016) H332: 3-Ply Disposable Face Mask Level 3 ASTM</div>
-                    <div class="mt-2 text-md text-secondary">
-                        Prototyping of the application's general workflow and the detailed design of its 72 screens as a
-                        working prototype.
-                    </div>
-                    <div class="mt-2 text-md text-secondary">
-                        Expected: 1 package X 20.00lbs/package = 20.00lbs.
-                    </div>
-                </div>
-                <div class="self-center text-right">2000</div>
-                <div class="self-center text-right">$75.00</div>
-                <div class="col-span-2 self-center text-right">$180.00</div>
-
-                <!-- Spacer -->
-                <div class="col-span-12 mt-16"></div>
-
-                <!-- Divider -->
-                <div class="col-span-12 my-3 border-b"></div>
-
-                <!-- Total -->
-                <div class="col-span-8 self-center text-2xl font-medium tracking-tight text-secondary">
-                    TOTAL SHIPPING & HANDLING
-                </div>
-                <div class="col-span-2 text-right font-medium">$75.00</div>
-                <div class="col-span-2 text-right font-medium">$180.00</div>
-            </div>
-
-            <div class="mt-10">
-                <div style="text-align: -webkit-center;">
-                    <img class="w-40" src="assets/images/logo/consolidus-logo.jpeg">
-                </div>
-            </div>
-        </div>
-
+        </fuse-card>
     </div>
-
 </div>

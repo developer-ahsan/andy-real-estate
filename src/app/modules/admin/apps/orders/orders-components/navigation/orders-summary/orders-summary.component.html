@@ -5,7 +5,7 @@
         <div class="row">
             <div class="col-lg-4 col-md-4 col-6 my-1">
                 <mat-card class="w-full p-2 h-40 rounded-2xl shadow-lg">
-                    <mat-card-title class="text-info font-size-medium">
+                    <mat-card-title class="font-size-medium">
                         <i class="fas fa-history"></i>
                         Status
                     </mat-card-title>
@@ -17,61 +17,61 @@
             </div>
             <div class="col-lg-4 col-md-4 col-6 my-1">
                 <mat-card class="w-full p-2 h-40 rounded-2xl shadow-lg">
-                    <mat-card-title class="text-info font-size-medium">
+                    <mat-card-title class="font-size-medium">
                         <i class='fas fa-calendar-check'></i>
                         Payment Date
                     </mat-card-title>
                     <mat-divider></mat-divider>
                     <mat-card-content class="text-secondary py-4 font-semibold text-center">
-                        {{selectedOrder.paymentDate || not_available}}
+                        {{selectedOrder?.paymentDate || not_available}}
                     </mat-card-content>
                 </mat-card>
             </div>
             <div class="col-lg-4 col-md-4 col-6 my-1">
                 <mat-card class="w-full p-2 h-40 rounded-2xl shadow-lg">
-                    <mat-card-title class="text-info font-size-medium">
+                    <mat-card-title class="font-size-medium">
                         <i class='far fa-calendar-alt'></i>
                         In-Hands Date
                     </mat-card-title>
                     <mat-divider></mat-divider>
                     <mat-card-content class="text-secondary py-4 font-semibold text-center">
-                        {{selectedOrder.inHandsDate || not_available}}
+                        {{selectedOrder?.inHandsDate || not_available}}
                     </mat-card-content>
                 </mat-card>
             </div>
             <div class="col-lg-4 col-md-4 col-6 my-1">
                 <mat-card class="w-full p-2 h-40 rounded-2xl shadow-lg">
-                    <mat-card-title class="text-info font-size-medium">
+                    <mat-card-title class="font-size-medium">
                         <mat-icon svgIcon="mat_outline:payments"></mat-icon>
                         Total Payments
                     </mat-card-title>
                     <mat-divider></mat-divider>
                     <mat-card-content class="text-danger py-4 font-semibold text-center">
-                        ${{selectedOrder.total || not_available_price}}
+                        ${{selectedOrder?.total || not_available_price}}
                     </mat-card-content>
                 </mat-card>
             </div>
             <div class="col-lg-4 col-md-4 col-6 my-1">
                 <mat-card class="w-full p-2 h-40 rounded-2xl shadow-lg">
-                    <mat-card-title class="text-info font-size-medium">
+                    <mat-card-title class="font-size-medium">
                         <mat-icon svgIcon="mat_solid:price_check"></mat-icon>
                         Paid
                     </mat-card-title>
                     <mat-divider></mat-divider>
                     <mat-card-content class="text-danger py-4 font-semibold text-center">
-                        ${{selectedOrder.currentTotal || not_available_price}}
+                        ${{selectedOrder?.currentTotal || not_available_price}}
                     </mat-card-content>
                 </mat-card>
             </div>
             <div class="col-lg-4 col-md-4 col-6 my-1">
                 <mat-card class="w-full p-2 h-40 rounded-2xl shadow-lg">
-                    <mat-card-title class="text-info font-size-medium">
+                    <mat-card-title class="font-size-medium">
                         <i class="fas fa-landmark"></i>
                         Balance Due
                     </mat-card-title>
                     <mat-divider></mat-divider>
                     <mat-card-content class="text-danger py-4 font-semibold text-center">
-                        ${{selectedOrder.total - selectedOrder.currentTotal || not_available_price}}
+                        ${{selectedOrder?.total - selectedOrder?.currentTotal || not_available_price}}
                     </mat-card-content>
                 </mat-card>
             </div>
@@ -80,7 +80,7 @@
         <div class="row mt-2">
             <div class="col-12">
                 <mat-card class="w-full p-2 h-60 rounded-2xl shadow-lg">
-                    <mat-card-title class="text-info font-size-medium">Additional Information</mat-card-title>
+                    <mat-card-title class="font-size-medium">Additional Information</mat-card-title>
                     <mat-divider></mat-divider>
                     <div class="row w-full">
                         <div class="col-lg-6 col-md-6 col-12 my-1">
@@ -155,7 +155,7 @@
         <div class="row">
             <div class="col-lg-6 col-md-6 mt-2">
                 <mat-card class="w-full p-2 h-full rounded-2xl shadow-lg">
-                    <mat-card-title class="text-info font-size-medium">Order comments</mat-card-title>
+                    <mat-card-title class="font-size-medium">Order comments</mat-card-title>
                     <mat-divider></mat-divider>
                     <mat-card-content class="text-secondary py-4 font-semibold h-80 overflow-auto">
                         <div [innerHTML]="htmlComment"></div>
@@ -171,7 +171,7 @@
             </div>
             <div class="col-lg-6 col-md-6 mt-2">
                 <mat-card class="w-full p-2 h-full rounded-2xl shadow-lg">
-                    <mat-card-title class="text-info font-size-medium">Customer Information</mat-card-title>
+                    <mat-card-title class="font-size-medium">Customer Information</mat-card-title>
                     <mat-divider></mat-divider>
                     <mat-card-content class="text-secondary py-4 font-semibold h-80 overflow-auto">
                         <span class="flex justify-between">

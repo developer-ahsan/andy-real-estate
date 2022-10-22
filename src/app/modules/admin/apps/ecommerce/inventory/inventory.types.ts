@@ -475,7 +475,9 @@ export interface updateImprintObj {
     product_id: number;
     decorator_id: number;
     method_id: number;
+    method_name: string;
     location_id: number;
+    location_name: string;
     digitizer_id: number;
     setup_charge_id: number;
     run_charge_id: number;

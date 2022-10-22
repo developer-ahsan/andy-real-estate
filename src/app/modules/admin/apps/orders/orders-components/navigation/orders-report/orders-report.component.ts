@@ -1,4 +1,4 @@
-import { ChangeDetectorRef, Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { ChangeDetectorRef, Component, EventEmitter, Input, OnInit, Output, ViewEncapsulation } from '@angular/core';
 import { OrdersService } from 'app/modules/admin/apps/orders/orders-components/orders.service';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
@@ -13,7 +13,9 @@ interface Transaction {
 
 @Component({
   selector: 'app-orders-report',
-  templateUrl: './orders-report.component.html'
+  templateUrl: './orders-report.component.html',
+  styles: ['.fuse-mat-rounded .mat-tab-group .mat-tab-body-content {overflow-x: hidden !important}'],
+  encapsulation: ViewEncapsulation.None,
 })
 export class OrdersReportComponent implements OnInit {
   @Input() isLoading: boolean;

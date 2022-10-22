@@ -234,7 +234,6 @@
                             <ng-container *ngIf="element.media; else defaultValue">
                                 <!-- <img class="object-cover rounded-2xl shadow-sm w-24" src="{{element.media}}"> -->
                                 <div ng-repeat="file in imagefinaldata" class="img_wrp">
-                                    {{ element.media}}
                                     <img style="width: 20% !important;" src="{{ element.media}}" />
                                     <mat-icon (click)="removeColorImage(i)" class="close cursor-pointer">
                                         close</mat-icon>

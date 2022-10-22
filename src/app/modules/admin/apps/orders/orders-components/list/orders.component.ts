@@ -1,4 +1,4 @@
-import { AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnInit, ViewChild, ViewEncapsulation } from '@angular/core';
+import { AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, EventEmitter, OnDestroy, OnInit, Output, ViewChild, ViewEncapsulation } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { MatCheckboxChange } from '@angular/material/checkbox';
 import { MatPaginator } from '@angular/material/paginator';
@@ -44,6 +44,8 @@ export class OrdersListComponent implements OnInit, AfterViewInit, OnDestroy {
 
     pageSize: number;
     pageNo: number;
+    keyword: string;
+    @Output() isLoadingChange = new EventEmitter<boolean>();
 
     /**
      * Constructor
@@ -105,6 +107,8 @@ export class OrdersListComponent implements OnInit, AfterViewInit, OnDestroy {
                 console.log("orders on first time =>", orders);
                 this.orders = orders["data"];
                 this.ordersLength = orders["totalRecords"];
+                this.isLoading = false;
+                this.isLoadingChange.emit(false);
 
                 // Mark for check
                 this._changeDetectorRef.markForCheck();
@@ -169,10 +173,12 @@ export class OrdersListComponent implements OnInit, AfterViewInit, OnDestroy {
     // -----------------------------------------------------------------------------------------------------
 
     getOrders(size, pageNo) {
-        this._orderService.getOrders(size, pageNo)
+        this._orderService.getOrders(size, pageNo, this.keyword)
             .pipe(takeUntil(this._unsubscribeAll))
             .subscribe((orders) => {
                 this.orders = orders["data"];
+                this.isLoading = false;
+                this.isLoadingChange.emit(false);
 
                 // Mark for check
                 this._changeDetectorRef.markForCheck();
@@ -526,22 +532,12 @@ export class OrdersListComponent implements OnInit, AfterViewInit, OnDestroy {
         this.isLoading = true;
         let keyword;
         if (event.target.value) {
-            keyword = event.target.value;
+            this.keyword = event.target.value;
         } else {
-            keyword = '';
+            this.keyword = '';
         }
 
-        this._orderService.getOrderDetails(keyword)
-            .pipe(takeUntil(this._unsubscribeAll))
-            .subscribe((orders) => {
-                console.log("orders on search =>", orders);
-                this.orders = orders["data"];
-                this.ordersLength = orders["totalRecords"];
-                this.isLoading = false;
-
-                // Mark for check
-                this._changeDetectorRef.markForCheck();
-            });
+        this.getOrders(10, 1)
     }
 
     /**

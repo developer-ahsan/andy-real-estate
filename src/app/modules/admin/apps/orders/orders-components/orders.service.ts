@@ -63,6 +63,26 @@ export class OrdersService {
             id: 9,
             title: 'Incident Reports',
             icon: 'heroicons_outline:document-report',
+        },
+        {
+            id: 10,
+            title: 'Customer Info',
+            icon: 'heroicons_outline:users',
+        },
+        {
+            id: 11,
+            title: 'Survey',
+            icon: 'heroicons_outline:document',
+        },
+        {
+            id: 12,
+            title: 'Artwork Details',
+            icon: 'heroicons_outline:document-text',
+        },
+        {
+            id: 13,
+            title: 'FLPS',
+            icon: 'heroicons_outline:document-report',
         }
     ]
 

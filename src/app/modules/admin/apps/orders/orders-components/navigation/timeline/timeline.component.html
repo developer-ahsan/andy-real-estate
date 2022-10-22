@@ -1,14 +1,23 @@
-<div class="mt-3">
-  <ngx-skeleton-loader count="8" appearance="line" animation="pulse" *ngIf="isLoading">
-  </ngx-skeleton-loader>
-  <div class="row">
-    <div class="col-12">
-      <mat-card class="shadow-lg rounded-2xl">
-        <mat-card-title class="font-semibold text-secondary">Timeline</mat-card-title>
-        <mat-card-subtitle class="font-semibold text-sm">SINCE THE PAYMENT WAS APPROVED ON MONDAY, JULY 13 2015, THE
-          DELIVERY SHOULD BE BETWEEN
-          THURSDAY, JULY 30 2015 AND THURSDAY, AUGUST 06 2015</mat-card-subtitle>
-        <mat-card-content>
+<ngx-skeleton-loader count="8" appearance="line" animation="pulse" *ngIf="isLoading">
+</ngx-skeleton-loader>
+<div class="row" *ngIf="!isLoading">
+  <div class="col-12 my-2">
+    <fuse-card class="rounded-2xl shadow bg-card flex flex-col lg:flex-row w-full">
+      <div class="w-full">
+        <div class="p-6 sm:p-8 lg:p-10 w-full">
+          <div class="text-2xl font-bold ">
+            Timeline
+          </div>
+          <div class="row mt-5 w-full">
+            <div class="col-12">
+              <note class="font-semibold text-sm">SINCE THE PAYMENT WAS APPROVED ON MONDAY, JULY 13 2015, THE
+                DELIVERY SHOULD BE BETWEEN
+                THURSDAY, JULY 30 2015 AND THURSDAY, AUGUST 06 2015</note>
+            </div>
+
+          </div>
+        </div>
+        <div class="pb-10">
           <table mat-table [dataSource]="transactions" class="w-full">
             <!-- Item Column -->
             <ng-container matColumnDef="item">
@@ -43,8 +52,8 @@
           <p class="text-center mt-5 font-semibold text-sm">PRODUCTION TIME PER PRODUCT | 3-Ply Disposable Face Mask
             Level
             3 ASTM: 1-5 days</p>
-        </mat-card-content>
-      </mat-card>
-    </div>
+        </div>
+      </div>
+    </fuse-card>
   </div>
 </div>

@@ -23,6 +23,7 @@ export class OrdersDetailsComponent implements OnInit, OnDestroy {
     private _unsubscribeAll: Subject<any> = new Subject<any>();
     routes = [];
     selectedIndex: number = 0;
+    selectedScreeen = 'Summary';
     not_available: string = 'N/A';
 
     // Sidebar stuff
@@ -97,11 +98,14 @@ export class OrdersDetailsComponent implements OnInit, OnDestroy {
     // -----------------------------------------------------------------------------------------------------
     // @ Public methods
     // -----------------------------------------------------------------------------------------------------
-    clicked(index) {
-        if (index !== 1) {
+    clicked(title) {
+        this.selectedScreeen = title;
+        if (this.selectedScreeen !== 'Entities List') {
             this.isLoading = true;
         }
-        this.selectedIndex = index;
+        if (this.selectedScreeen == 'Customer Info') {
+
+        }
     }
 
     toggleDrawer() {
