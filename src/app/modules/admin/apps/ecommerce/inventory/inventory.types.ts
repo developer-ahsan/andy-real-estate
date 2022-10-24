@@ -732,4 +732,6 @@ export interface ImprintObj {
     store_product_id_list: number[];
     imprint_image: File;
     display_order: number;
+    method_name: string;
+    location_name: string;
 };

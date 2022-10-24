@@ -6,6 +6,8 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { FormBuilder, FormControl, FormGroup } from '@angular/forms';
 import { MatSlideToggleChange } from '@angular/material/slide-toggle';
 import { IDropdownSettings } from 'ng-multiselect-dropdown';
+import { I } from '@angular/cdk/keycodes';
+import { environment } from 'environments/environment';
 
 @Component({
   selector: 'app-imprint',
@@ -183,6 +185,10 @@ export class ImprintComponent implements OnInit, OnDestroy {
   methodFilteredOptions: Observable<any>;
   locationControl = new FormControl('');
   locationFilteredOptions: Observable<any>;
+
+  location_name = '';
+  method_name = '';
+  imageValue: { imageUpload: string | ArrayBuffer; type: any; };
 
   private _filter(value: string): string[] {
     const filterValue = value.toLowerCase();
@@ -1277,14 +1283,50 @@ export class ImprintComponent implements OnInit, OnDestroy {
   uploadFile(event) {
     this.files = event.target.files;
   };
-
+  uploadImage(event): void {
+    this.imageValue = null;
+    const file = event.target.files[0];
+    let type = file["type"];
+    const reader = new FileReader();
+    reader.readAsDataURL(file);
+    reader.onload = () => {
+      this.imageValue = {
+        imageUpload: reader.result,
+        type: file["type"]
+      };
+      this._changeDetectorRef.markForCheck();
+    };
+  };
+  removeAddImprintImage() {
+    this.imageValue = null;
+    this._changeDetectorRef.markForCheck();
+  }
   addImprint() {
     const { pk_productID } = this.selectedProduct;
     const setupRunForm = this.runSetup.getRawValue();
     const { run, setup } = setupRunForm;
-
-    if (!this.selectedLocation) {
+    if (this.location_name) {
+      const index = this.addImprintLocations.findIndex(loc => loc.locationName == this.location_name);
+      if (index >= 0) {
+        this.selectedLocation = this.addImprintLocations[index];
+      }
+    }
+    if (!this.selectedLocation.pk_locationID && !this.location_name) {
       this._snackBar.open("New LOCATION was not specified correctly", '', {
+        horizontalPosition: 'center',
+        verticalPosition: 'bottom',
+        duration: 3500
+      });
+      return;
+    };
+    if (this.method_name) {
+      const index = this.addImprintMethods.findIndex(loc => loc.methodName == this.method_name);
+      if (index >= 0) {
+        this.selectedMethod = this.addImprintMethods[index];
+      }
+    }
+    if (!this.selectedMethod.pk_methodID && !this.method_name) {
+      this._snackBar.open("New Method was not specified correctly", '', {
         horizontalPosition: 'center',
         verticalPosition: 'bottom',
         duration: 3500
@@ -1321,8 +1363,17 @@ export class ImprintComponent implements OnInit, OnDestroy {
 
       return;
     };
-
+    const indexCheck = this.dataSource.findIndex(imprint => imprint.locationName == this.location_name ? this.location_name : this.selectedLocation.locationName && imprint.methodName == this.method_name ? this.method_name : this.selectedLocation.methodName);
+    if (indexCheck >= 0) {
+      this._snackBar.open("Imprint already listed for this location and method", '', {
+        horizontalPosition: 'center',
+        verticalPosition: 'bottom',
+        duration: 3500
+      });
+      return;
+    }
     this.addImprintLoader = true;
+    this._changeDetectorRef.markForCheck();
     let processMode;
     if (this.favoriteSeason === 'Per color (i.e. silk screening, pad printing, etc.)') {
       processMode = 0;
@@ -1346,7 +1397,6 @@ export class ImprintComponent implements OnInit, OnDestroy {
       fourth = fourColorQ;
       fifth = fiveColorQ;
     };
-
     const payload = {
       product_id: pk_productID,
       decorator_id: this.selectedSupplier.pk_companyID || null,
@@ -1371,9 +1421,10 @@ export class ImprintComponent implements OnInit, OnDestroy {
       store_product_id_list: [],
       imprint_image: this.files || null,
       display_order: this.addImprintDisplayOrderValue || 1,
-      imprint: true
+      imprint: true,
+      method_name: this.method_name ? this.method_name : null,
+      location_name: this.location_name ? this.location_name : null
     };
-
     if (payload.bln_process_mode === 0) {
       this._inventoryService.getMultiColorValue(second, third, fourth, fifth)
         .pipe(takeUntil(this._unsubscribeAll))
@@ -1389,11 +1440,19 @@ export class ImprintComponent implements OnInit, OnDestroy {
                   'error'
               );
               this.addImprintLoader = false;
+              if (this.imageValue) {
+                this.uploadMediaImage(response["imprint_id"]);
+              }
+              this.getImprints(1);
 
               // Mark for check
               this._changeDetectorRef.markForCheck();
             });
-        });
+        }, err => { });
+      this.addImprintLoader = false;
+
+      // Mark for check
+      this._changeDetectorRef.markForCheck();
       return;
     };
 
@@ -1405,13 +1464,40 @@ export class ImprintComponent implements OnInit, OnDestroy {
             'error'
         );
         this.addImprintLoader = false;
+        if (this.imageValue) {
+          this.uploadMediaImage(response["imprint_id"]);
+        }
+        this.getImprints(1);
+
+        // Mark for check
+        this._changeDetectorRef.markForCheck();
+      }, err => {
+        this.addImprintLoader = false;
 
         // Mark for check
         this._changeDetectorRef.markForCheck();
       });
 
   };
+  uploadMediaImage(id) {
+    const { pk_productID } = this.selectedProduct;
+    const { imageUpload, type } = this.imageValue;
+    let image: any = imageUpload
+    let types = type.replace('image/', '');
+    const base64 = image.split(",")[1];
+    const payload = {
+      file_upload: true,
+      image_file: base64,
+      image_path: `/globalAssets/Imprints/Images/${id}/${id}.${types}`
+    };
 
+    this._inventoryService.addImprintMedia(payload)
+      .subscribe((response) => {
+        this.imageValue = null;
+        // Mark for check
+        this._changeDetectorRef.markForCheck();
+      })
+  }
   showImprintList() {
     this.isEditImprintScreen = false;
   };
@@ -1511,7 +1597,9 @@ export class ImprintComponent implements OnInit, OnDestroy {
       store_product_id_list: [],
       imprint_image: this.files || null,
       display_order: this.addImprintDisplayOrderValue || 1,
-      imprint: true
+      imprint: true,
+      method_name: this.method_name ? this.method_name : null,
+      location_name: this.location_name ? this.location_name : null
     };
 
     if (payload.bln_process_mode === 0) {
@@ -1550,7 +1638,22 @@ export class ImprintComponent implements OnInit, OnDestroy {
         this._changeDetectorRef.markForCheck();
       });
   }
+  checkIfImageExists(url) {
+    const img = new Image();
+    img.src = url;
 
+    if (img.complete) {
+      return true;
+    } else {
+      img.onload = () => {
+        return true;
+      };
+
+      img.onerror = () => {
+        return false;
+      };
+    }
+  };
   editImprint(imprint) {
     this.editImprintObj = imprint;
     this.isEditImprintScreen = true;
@@ -1639,13 +1742,15 @@ export class ImprintComponent implements OnInit, OnDestroy {
   }
 
   getAddImprintLocations(data?: any) {
+    this.addImprintLocations = [];
     this._inventoryService.getAllImprintLocations()
       .pipe(takeUntil(this._unsubscribeAll))
       .subscribe((location) => {
-        this.addImprintLocations = location["data"];
+        this.addImprintLocations.push({ locationName: 'New Location >>>', pk_locationID: null });
+        this.addImprintLocations = [...this.addImprintLocations, ...location["data"]];
         if (this.addImprintLocations) {
           // const { pk_locationID } = data
-          this.selectedLocation = this.addImprintLocations[0];
+          this.selectedLocation = { locationName: 'New Location >>>', pk_locationID: null };
           this.locationControl.setValue(this.selectedLocation.locationName);
           // this.selectedLocation = this.addImprintLocations.find(x => x.pk_locationID === pk_locationID) || this.addImprintLocations[0];
           // this.locationControl.setValue(this.selectedLocation.locationName);
@@ -1658,11 +1763,13 @@ export class ImprintComponent implements OnInit, OnDestroy {
   }
 
   getAddImprintMethods(data?: any) {
+    this.addImprintMethods = [];
     setTimeout(() => {
       this._inventoryService.getAllImprintMethods()
         .pipe(takeUntil(this._unsubscribeAll))
         .subscribe((methods) => {
-          this.addImprintMethods = methods["data"];
+          this.addImprintMethods.push({ methodName: 'New Method >>>', pk_methodID: null });
+          this.addImprintMethods = [...this.addImprintMethods, ...methods["data"]];
           this.selectedMethod = this.addImprintMethods.find(x => x.pk_methodID === 254) || this.addImprintMethods[0];
           this.methodControl.setValue(this.selectedMethod.methodName);
 

@@ -465,7 +465,7 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
 
 
     productStepComplete: boolean = false;
-    productId: any;
+    productId: any = 19696;
     pk_productId: any;
     createProductDetailLoader: boolean = false;
     updateProductLicensingLoader: boolean = false;
@@ -494,6 +494,9 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
     locationControl = new FormControl('');
     locationFilteredOptions: Observable<any>;
 
+
+    location_name: any = '';
+    method_name: any = '';
     clickButton(): void {
         this.colorpicker.nativeElement.click()
     }
@@ -527,6 +530,7 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
     }
     private _filter(value: string): string[] {
         const filterValue = value.toLowerCase();
+        console.log(filterValue)
         return this.addImprintMethods.filter(option => option.methodName.toLowerCase().includes(filterValue));
     }
     private _filterLocation(value: string): string[] {
@@ -2336,10 +2340,16 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
     }
 
     getImprintMethods() {
+        this.addImprintMethods = [];
         this._inventoryService.getAllImprintMethods()
             .pipe(takeUntil(this._unsubscribeAll))
             .subscribe((methods) => {
-                this.addImprintMethods = methods["data"];
+                // this.addImprintMethods = methods["data"];
+                // this.selectedMethod = this.addImprintMethods.find(x => x.pk_methodID === 254) || this.addImprintMethods[0];
+                // this.methodControl.setValue(this.selectedMethod.methodName);
+
+                this.addImprintMethods.push({ methodName: 'New Method >>>', pk_methodID: null });
+                this.addImprintMethods = [...this.addImprintMethods, ...methods["data"]];
                 this.selectedMethod = this.addImprintMethods.find(x => x.pk_methodID === 254) || this.addImprintMethods[0];
                 this.methodControl.setValue(this.selectedMethod.methodName);
                 this.getImprintLocations();
@@ -2355,12 +2365,23 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
     };
 
     getImprintLocations() {
+        this.addImprintLocations = [];
         this._inventoryService.getAllImprintLocations()
             .pipe(takeUntil(this._unsubscribeAll))
             .subscribe((location) => {
-                this.addImprintLocations = location["data"];
-                this.selectedLocation = this.addImprintLocations[0];
-                this.locationControl.setValue(this.selectedLocation.locationName);
+                // this.selectedLocation = this.addImprintLocations[0];
+                // this.locationControl.setValue(this.selectedLocation.locationName);
+
+                this.addImprintLocations.push({ locationName: 'New Location >>>', pk_locationID: null });
+                this.addImprintLocations = [...this.addImprintLocations, ...location["data"]];
+                if (this.addImprintLocations) {
+                    // const { pk_locationID } = data
+                    this.selectedLocation = { locationName: 'New Location >>>', pk_locationID: null };
+                    this.locationControl.setValue(this.selectedLocation.locationName);
+                    // this.selectedLocation = this.addImprintLocations.find(x => x.pk_locationID === pk_locationID) || this.addImprintLocations[0];
+                    // this.locationControl.setValue(this.selectedLocation.locationName);
+                    // console.log(this.selectedLocation)
+                }
 
                 // Mark for check
                 this._changeDetectorRef.markForCheck();
@@ -3325,7 +3346,7 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
         const setupRunForm = this.runSetup.getRawValue();
         const { run, setup } = setupRunForm;
 
-        if (!this.selectedMethod) {
+        if (!this.selectedMethod.pk_methodID && !this.method_name) {
             this._snackBar.open("New Method was not specified correctly", '', {
                 horizontalPosition: 'center',
                 verticalPosition: 'bottom',
@@ -3334,7 +3355,7 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
             return;
         };
 
-        if (!this.selectedLocation) {
+        if (!this.selectedLocation.pk_locationID && !this.location_name) {
             this._snackBar.open("New LOCATION was not specified correctly", '', {
                 horizontalPosition: 'center',
                 verticalPosition: 'bottom',
@@ -3396,14 +3417,37 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
             fourth = fourColorQ;
             fifth = fiveColorQ;
         };
-
+        let method = '';
+        if (this.method_name && !this.selectedMethod.pk_methodID) {
+            const index = this.addImprintMethods.findIndex(loc => loc.methodName == this.method_name);
+            if (index >= 0) {
+                this.selectedMethod = this.addImprintMethods[index];
+                method = this.selectedMethod.methodName;
+            } else {
+                method = this.method_name;
+            }
+        } else {
+            method = this.selectedMethod.methodName;
+        }
+        let location = '';
+        if (this.location_name && !this.selectedLocation.pk_locationID) {
+            const index = this.addImprintLocations.findIndex(loc => loc.locationName == this.location_name);
+            if (index >= 0) {
+                this.selectedLocation = this.addImprintLocations[index];
+                location = this.selectedLocation.locationName;
+            } else {
+                location = this.location_name;
+            }
+        } else {
+            location = this.selectedMethod.locationName;
+        }
         const payload = {
             product_id: this.productId,
             decorator_id: this.supplierId || null,
             supplierName: this.supplierName,
-            methodName: this.selectedMethod.methodName,
+            methodName: method,
             method_id: this.selectedMethod.pk_methodID || null,
-            locationName: this.selectedLocation.locationName,
+            locationName: location,
             location_id: this.selectedLocation.pk_locationID || null,
             setup_charge_id: setup || 17,
             run_charge_id: run || 17,
@@ -3424,9 +3468,10 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
             store_product_id_list: [],
             imprint_image: null,
             display_order: Number(this.addImprintDisplayOrderValue) || 1,
-            create_product_imprint: true
+            create_product_imprint: true,
         };
-        let index = this.imprintsLocalList.findIndex(elem => elem.method_id == payload.method_id && elem.location_id == payload.location_id);
+
+        let index = this.imprintsLocalList.findIndex(elem => elem.methodName == method && elem.locationName == location);
         if (index > -1) {
             this._snackBar.open("Imprint already listed", '', {
                 horizontalPosition: 'center',
@@ -3492,7 +3537,7 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
             this.updateProductImprintLoader = true;
             let imprints = [];
             this.imprintsLocalList.forEach(element => {
-                const { product_id, decorator_id, method_id, location_id, setup_charge_id, run_charge_id, bln_includable, area, bln_user_color_selection, multi_color_min_id, collection_id, max_colors, bln_process_mode, min_product_qty, imprint_comments, digitizer_id, bln_active, bln_singleton, bln_color_selection, imprint_id, store_product_id_list, imprint_image, display_order } = element;
+                const { product_id, decorator_id, method_id, location_id, setup_charge_id, run_charge_id, bln_includable, area, bln_user_color_selection, multi_color_min_id, collection_id, max_colors, bln_process_mode, min_product_qty, imprint_comments, digitizer_id, bln_active, bln_singleton, bln_color_selection, imprint_id, store_product_id_list, imprint_image, display_order, methodName, locationName } = element;
                 const payload = {
                     decorator_id,
                     method_id,
@@ -3515,7 +3560,9 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
                     imprint_id,
                     store_product_id_list,
                     imprint_image,
-                    display_order
+                    display_order,
+                    method_name: methodName,
+                    lcoation_name: locationName
                 };
                 imprints.push(payload);
             });

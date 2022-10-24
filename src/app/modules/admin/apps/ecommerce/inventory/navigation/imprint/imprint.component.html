@@ -159,7 +159,7 @@
                     </div>
                     <div class="col-lg-6 col-12">
                         <mat-form-field appearance="fill" class="w-full">
-                            <input matInput placeholder="New Method Name">
+                            <input matInput placeholder="New Method Name" [(ngModel)]="method_name">
                         </mat-form-field>
                     </div>
 
@@ -198,7 +198,7 @@
                     </div>
                     <div class="col-lg-6 col-12">
                         <mat-form-field appearance="fill" class="w-full">
-                            <input matInput placeholder="New Location Name">
+                            <input matInput placeholder="New Location Name" [(ngModel)]="location_name">
                         </mat-form-field>
                     </div>
 
@@ -354,14 +354,12 @@
                         <div class="my-1">
                             <mat-form-field class="w-full">
                                 <input matInput placeholder="Enter Collection ID" [(ngModel)]='customColorId'>
-                                <mat-hint class="mb-1 ">
-                                    <span class="text-gray-600 border-b-8 mr-1"
-                                        *ngFor="let item of colorsCollectionIdsArray; let i=index"
-                                        [ngStyle]="{'border-color': '#' + item['RGB']}">{{item.imprintColorName}}<span
-                                            *ngIf="i < colorsCollectionIdsArray.length - 1">,</span>
-                                    </span>
-                                </mat-hint>
                             </mat-form-field>
+                            <span class="text-gray-600 border-b-8 mr-1" style="line-height: 2;"
+                                *ngFor="let item of colorsCollectionIdsArray; let i=index"
+                                [ngStyle]="{'border-color': '#' + item['RGB']}">{{item.imprintColorName}}<span
+                                    *ngIf="i < colorsCollectionIdsArray.length - 1">,</span>
+                            </span>
                         </div>
                     </div>
 
@@ -545,7 +543,7 @@
                     </div>
 
                     <!-- Image -->
-                    <div class="col-12 hidden">
+                    <div class="col-12">
                         <b>
                             <button [matTooltip]="'JPG, GIF, and PNG file types only!'">
                                 <i class="fa fa-info-circle"></i>
@@ -553,14 +551,21 @@
                             Image (optional)
                         </b>
                     </div>
-                    <div class="col-12 hidden">
+                    <div class="col-12">
                         <small class="leading-relaxed text-secondary font-semibold">
                             Add an image that will accompany the imprint for the user to use as reference when choosing
                             an imprint location.
                         </small>
                     </div>
-                    <div class="col-12 my-3 hidden" style="line-height: 3.5;">
-                        <input type="file" (change)="uploadFile($event)">
+                    <div class="col-12 my-3" style="line-height: 3.5;" *ngIf="!imageValue">
+                        <input type="file" accept="image/png, image/gif, image/jpeg" (change)="uploadImage($event)">
+                    </div>
+                    <div class="col-12 my-3" *ngIf="imageValue">
+                        <img style="width:50px; display: inline;" src="{{imageValue?.imageUpload}}" alt="">
+                        <p class="text-red-500 cursor-pointer" (click)="removeAddImprintImage()">
+                            Remove
+                        </p>
+
                     </div>
 
                     <!-- Display Order -->
@@ -1529,6 +1534,7 @@
                     </div>
 
                     <!-- Image -->
+                    <!-- Image -->
                     <div class="col-12">
                         <b>
                             <button [matTooltip]="'JPG, GIF, and PNG file types only!'">
@@ -1543,9 +1549,16 @@
                             an imprint location.
                         </small>
                     </div>
-                    <div class="col-12 my-3" style="line-height: 3.5;">
-                        <input type="file" (change)="uploadFile($event)">
+                    <div class="col-12 my-3" style="line-height: 3.5;" *ngIf="!imageValue">
+                        <input type="file" accept="image/png, image/gif, image/jpeg" (change)="uploadImage($event)">
                     </div>
+                    <div class="col-12 my-3" *ngIf="imageValue">
+                        <img style="width:50px; display: inline;" src="{{imageValue?.imageUpload}}" alt="">
+                        <p class="text-red-500 cursor-pointer" (click)="removeAddImprintImage()">
+                            Remove
+                        </p>
+                    </div>
+
 
                     <!-- Display Order -->
                     <div class="col-12">
