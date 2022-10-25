@@ -530,7 +530,6 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
     }
     private _filter(value: string): string[] {
         const filterValue = value.toLowerCase();
-        console.log(filterValue)
         return this.addImprintMethods.filter(option => option.methodName.toLowerCase().includes(filterValue));
     }
     private _filterLocation(value: string): string[] {
@@ -3160,7 +3159,6 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
         //     this.updateProductColorLoader = false;
         //     this._changeDetectorRef.markForCheck();
         // });
-        console.log(this.selectedColorsListArray);
         if (this.selectedColorsListArray.length > 0 || this.customColorsList.length > 0) {
 
             // Upload Images
