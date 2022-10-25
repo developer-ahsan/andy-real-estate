@@ -38,6 +38,8 @@ import { InvoicesComponent } from 'app/modules/admin/apps/orders/orders-componen
 import { CostAnalysisComponent } from 'app/modules/admin/apps/orders/orders-components/navigation/cost-analysis/cost-analysis.component';
 import { TimelineComponent } from 'app/modules/admin/apps/orders/orders-components/navigation/timeline/timeline.component';
 import { IncidentReportsComponent } from 'app/modules/admin/apps/orders/orders-components/navigation/incident-reports/incident-reports.component';
+import { FlpsComponent } from './orders-components/navigation/flps/flps.component';
+import { OriginalOrderComponent } from './orders-components/navigation/original-order-report/original-order-report.component';
 
 @NgModule({
     declarations: [
@@ -53,7 +55,9 @@ import { IncidentReportsComponent } from 'app/modules/admin/apps/orders/orders-c
         InvoicesComponent,
         CostAnalysisComponent,
         TimelineComponent,
-        IncidentReportsComponent
+        IncidentReportsComponent,
+        FlpsComponent,
+        OriginalOrderComponent
     ],
     imports: [
         RouterModule.forChild(ordersRoutes),

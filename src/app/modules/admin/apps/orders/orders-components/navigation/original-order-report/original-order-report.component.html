@@ -1,0 +1,12 @@
+<ngx-skeleton-loader count="8" appearance="line" animation="pulse" *ngIf="isLoading">
+</ngx-skeleton-loader>
+<div class="row my-3" *ngIf="!isLoading">
+    <div class="col-12">
+        <fuse-card class="rounded-2xl shadow bg-card flex flex-col lg:flex-row w-full">
+            <div class="p-4 w-full">
+                <iframe class="w-full " style="height: 100vh" scrolling="no" frameborder="0"
+                    src="https://assets.consolidus.com/globalAssets/Orders/originalOrderReport/56159.html"></iframe>
+            </div>
+        </fuse-card>
+    </div>
+</div>

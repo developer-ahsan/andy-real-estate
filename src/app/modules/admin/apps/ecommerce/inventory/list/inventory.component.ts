@@ -465,7 +465,7 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
 
 
     productStepComplete: boolean = false;
-    productId: any = 19696;
+    productId: any;
     pk_productId: any;
     createProductDetailLoader: boolean = false;
     updateProductLicensingLoader: boolean = false;
@@ -3562,7 +3562,7 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
                     imprint_image,
                     display_order,
                     method_name: methodName,
-                    lcoation_name: locationName
+                    location_name: locationName
                 };
                 imprints.push(payload);
             });

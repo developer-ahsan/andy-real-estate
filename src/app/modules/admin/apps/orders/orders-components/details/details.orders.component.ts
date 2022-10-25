@@ -20,6 +20,7 @@ export class OrdersDetailsComponent implements OnInit, OnDestroy {
     pagination: OrdersPagination;
     ordersCount: number = 0;
     selectedOrder: OrdersList = null;
+    selectedOrderDetail: any = null;
     private _unsubscribeAll: Subject<any> = new Subject<any>();
     routes = [];
     selectedIndex: number = 0;
@@ -48,6 +49,20 @@ export class OrdersDetailsComponent implements OnInit, OnDestroy {
     /**
      * On init
      */
+    getOrderDetail(orderId) {
+        let params = {
+            main: true,
+            order_id: orderId
+        }
+        this._orderService.getOrderMainDetail(params).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+            this.selectedOrderDetail = res["data"][0];
+            this.isLoading = false;
+            this._changeDetectorRef.markForCheck();
+        }, err => {
+            this.isLoading = false;
+            this._changeDetectorRef.markForCheck();
+        })
+    }
     ngOnInit(): void {
         this.isLoading = true;
 
@@ -56,11 +71,12 @@ export class OrdersDetailsComponent implements OnInit, OnDestroy {
         this._orderService.getOrderDetails(orderId)
             .pipe(takeUntil(this._unsubscribeAll))
             .subscribe((orders) => {
-                console.log("orders detailing", orders["data"][0]);
                 this.selectedOrder = orders["data"][0];
-                this.isLoading = false;
-
+                this.getOrderDetail(orderId);
                 // Mark for check
+                this._changeDetectorRef.markForCheck();
+            }, err => {
+                this.isLoading = false;
                 this._changeDetectorRef.markForCheck();
             });
 

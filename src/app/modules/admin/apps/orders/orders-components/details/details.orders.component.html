@@ -43,32 +43,42 @@
                     <div class="row w-full">
                         <div class="col-lg-4 col-md-6 col-12">
                             <b class="text-secondary text-sm">Order Date:</b>
-                            <p class="float-right text-sm">{{selectedOrder?.orderDate || not_available}}</p>
+                            <p class="float-right text-sm">{{selectedOrder?.orderDate? selectedOrder?.orderDate:
+                                not_available}}</p>
                         </div>
                         <div class="col-lg-4 col-md-6 col-12">
                             <b class="text-secondary text-sm">Payment Date:</b>
-                            <p class="float-right text-sm">{{selectedOrder?.paymentDate ? selectedOrder?.paymentDate :
-                                not_available || not_available}}</p>
+                            <p class="float-right text-sm">{{selectedOrder?.paymentDate ? (selectedOrder.paymentDate |
+                                date) :
+                                not_available }}</p>
                         </div>
                         <div class="col-lg-4 col-md-6 col-12">
                             <b class="text-secondary text-sm">Manager:</b>
                             <p class="float-right text-sm">Adam Biats</p>
                         </div>
                         <div class="col-lg-4 col-md-6 col-12">
-                            <b class="text-secondary text-sm">Group Order ID:</b>
-                            <p class="float-right text-sm">{{selectedOrder?.fk_groupOrderID || not_available}}</p>
-                        </div>
-                        <div class="col-lg-4 col-md-6 col-12">
                             <b class="text-secondary text-sm">Total:</b>
-                            <p class="float-right text-sm">${{selectedOrder?.total || not_available}}</p>
+                            <p class="float-right text-sm">{{(selectedOrder?.total | currency) || not_available}}</p>
                         </div>
                         <div class="col-lg-4 col-md-6 col-12">
                             <b class="text-secondary text-sm">Customer:</b>
-                            <p class="float-right text-sm">{{selectedOrder?.firstName || not_available}}</p>
+                            <p class="float-right text-sm">
+                                <a target="_blank"
+                                    routerLink="/apps/ecommerce/customers/{{selectedOrder?.fk_storeUserID}}">
+                                    {{selectedOrder?.firstName + ' ' + selectedOrder?.lastName}}</a>
+                            </p>
                         </div>
                         <div class="col-lg-4 col-md-6 col-12">
                             <b class="text-secondary text-sm">Company:</b>
-                            <p class="float-right text-sm">{{selectedOrder?.companyName || not_available}}</p>
+                            <p class="float-right text-sm">{{selectedOrder?.billingCompanyName || not_available}}</p>
+                        </div>
+                        <div class="col-lg-4 col-md-6 col-12">
+                            <b class="text-secondary text-sm">Store:</b>
+                            <p class="float-right text-sm">
+                                <a target="_blank" routerLink="/apps/stores/{{selectedOrder.pk_storeID}}">
+                                    {{selectedOrder?.storeName ||
+                                    not_available}}</a>
+                            </p>
                         </div>
                         <div class="col-lg-4 col-md-6 col-12">
                             <b class="text-secondary text-sm">Location:</b>
@@ -76,7 +86,7 @@
                         </div>
                         <div class="col-lg-4 col-md-6 col-12">
                             <b class="text-secondary text-sm">Cart/Quote ID:</b>
-                            <p class="float-right text-sm">319713</p>
+                            <p class="float-right text-sm">{{selectedOrderDetail?.fk_cartID || not_available}}</p>
                         </div>
                     </div>
                 </div>
@@ -87,7 +97,8 @@
                 </div>
                 <div class="col-12">
                     <ng-template [ngIf]="selectedScreeen == 'Summary'">
-                        <app-orders-summary [(isLoading)]="isLoading"></app-orders-summary>
+                        <app-orders-summary [selectedOrder]="selectedOrder" [(isLoading)]="isLoading">
+                        </app-orders-summary>
                     </ng-template>
                 </div>
                 <div class="col-12">
@@ -98,6 +109,12 @@
                 <div class="col-12">
                     <ng-template [ngIf]="selectedScreeen == 'Reports'">
                         <app-orders-report [(isLoading)]="isLoading"></app-orders-report>
+                    </ng-template>
+                </div>
+                <div class="col-12">
+                    <ng-template [ngIf]="selectedScreeen == 'Order Original Report'">
+                        <app-original-order-report [selectedOrder]="selectedOrder" [(isLoading)]="isLoading">
+                        </app-original-order-report>
                     </ng-template>
                 </div>
                 <div class="col-12">
@@ -128,6 +145,11 @@
                 <div class="col-12">
                     <ng-template [ngIf]="selectedScreeen == 'Incident Reports'">
                         <app-incident-reports [(isLoading)]="isLoading"></app-incident-reports>
+                    </ng-template>
+                </div>
+                <div class="col-12">
+                    <ng-template [ngIf]="selectedScreeen == 'FLPS'">
+                        <app-flps-users [(isLoading)]="isLoading"></app-flps-users>
                     </ng-template>
                 </div>
             </div>

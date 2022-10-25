@@ -3,206 +3,269 @@
     </ngx-skeleton-loader>
     <div *ngIf="!isLoading">
         <div class="row">
+
             <div class="col-lg-4 col-md-4 col-6 my-1">
-                <mat-card class="w-full p-2 h-40 rounded-2xl shadow-lg">
-                    <mat-card-title class="font-size-medium">
-                        <i class="fas fa-history"></i>
-                        Status
-                    </mat-card-title>
-                    <mat-divider></mat-divider>
-                    <mat-card-content class="text-secondary py-4 font-semibold text-center">
-                        Processing
-                    </mat-card-content>
-                </mat-card>
+                <fuse-card class="rounded-2xl shadow bg-card flex flex-col lg:flex-row w-full">
+                    <div class="p-4 w-full">
+                        <div class="text-lg font-medium tracking-tight leading-6 truncate">
+                            Status
+                        </div>
+                        <div class="text-lg text-center w-full">
+                            <div class="text-7xl sm:text-8xl font-bold tracking-tight leading-none ">
+                                <mat-icon svgIcon="heroicons_outline:clock"></mat-icon>
+                            </div>
+                            <div class="text-secondary text-lg font-medium">Processing</div>
+                        </div>
+                    </div>
+                </fuse-card>
             </div>
             <div class="col-lg-4 col-md-4 col-6 my-1">
-                <mat-card class="w-full p-2 h-40 rounded-2xl shadow-lg">
-                    <mat-card-title class="font-size-medium">
-                        <i class='fas fa-calendar-check'></i>
-                        Payment Date
-                    </mat-card-title>
-                    <mat-divider></mat-divider>
-                    <mat-card-content class="text-secondary py-4 font-semibold text-center">
-                        {{selectedOrder?.paymentDate || not_available}}
-                    </mat-card-content>
-                </mat-card>
+                <fuse-card class="rounded-2xl shadow bg-card flex flex-col lg:flex-row w-full">
+                    <div class="p-4 w-full">
+                        <div class="text-lg font-medium tracking-tight leading-6 truncate">
+                            Payment Date
+                        </div>
+                        <div class="text-lg text-center w-full">
+                            <div class="text-7xl sm:text-8xl font-bold tracking-tight leading-none ">
+                                <mat-icon svgIcon="heroicons_outline:calendar"></mat-icon>
+                            </div>
+                            <div class="text-secondary text-lg font-medium">{{(selectedOrder?.paymentDate | date) ||
+                                not_available}}</div>
+                        </div>
+                    </div>
+                </fuse-card>
             </div>
             <div class="col-lg-4 col-md-4 col-6 my-1">
-                <mat-card class="w-full p-2 h-40 rounded-2xl shadow-lg">
-                    <mat-card-title class="font-size-medium">
-                        <i class='far fa-calendar-alt'></i>
-                        In-Hands Date
-                    </mat-card-title>
-                    <mat-divider></mat-divider>
-                    <mat-card-content class="text-secondary py-4 font-semibold text-center">
-                        {{selectedOrder?.inHandsDate || not_available}}
-                    </mat-card-content>
-                </mat-card>
+                <fuse-card class="rounded-2xl shadow bg-card flex flex-col lg:flex-row w-full">
+                    <div class="p-4 w-full">
+                        <div class="text-lg font-medium tracking-tight leading-6 truncate">
+                            In-Hands Date
+                        </div>
+                        <div class="text-lg text-center w-full">
+                            <div class="text-7xl sm:text-8xl font-bold tracking-tight leading-none ">
+                                <mat-icon svgIcon="mat_outline:date_range"></mat-icon>
+                            </div>
+                            <div class="text-secondary text-lg font-medium">{{(selectedOrder?.inHandsDate | date) ||
+                                not_available}}</div>
+                        </div>
+                    </div>
+                </fuse-card>
             </div>
             <div class="col-lg-4 col-md-4 col-6 my-1">
-                <mat-card class="w-full p-2 h-40 rounded-2xl shadow-lg">
-                    <mat-card-title class="font-size-medium">
-                        <mat-icon svgIcon="mat_outline:payments"></mat-icon>
-                        Total Payments
-                    </mat-card-title>
-                    <mat-divider></mat-divider>
-                    <mat-card-content class="text-danger py-4 font-semibold text-center">
-                        ${{selectedOrder?.total || not_available_price}}
-                    </mat-card-content>
-                </mat-card>
+                <fuse-card class="rounded-2xl shadow bg-card flex flex-col lg:flex-row w-full">
+                    <div class="p-4 w-full">
+                        <div class="text-lg font-medium tracking-tight leading-6 truncate">
+                            Total Payments
+                        </div>
+                        <div class="text-lg text-center w-full">
+                            <div class="text-7xl sm:text-8xl font-bold tracking-tight leading-none ">
+                                <mat-icon svgIcon="mat_outline:money"></mat-icon>
+                            </div>
+                            <div class="text-secondary text-lg font-medium">{{(selectedOrder?.total | currency) ||
+                                not_available_price}}</div>
+                        </div>
+                    </div>
+                </fuse-card>
             </div>
             <div class="col-lg-4 col-md-4 col-6 my-1">
-                <mat-card class="w-full p-2 h-40 rounded-2xl shadow-lg">
-                    <mat-card-title class="font-size-medium">
-                        <mat-icon svgIcon="mat_solid:price_check"></mat-icon>
-                        Paid
-                    </mat-card-title>
-                    <mat-divider></mat-divider>
-                    <mat-card-content class="text-danger py-4 font-semibold text-center">
-                        ${{selectedOrder?.currentTotal || not_available_price}}
-                    </mat-card-content>
-                </mat-card>
+                <fuse-card class="rounded-2xl shadow bg-card flex flex-col lg:flex-row w-full">
+                    <div class="p-4 w-full">
+                        <div class="text-lg font-medium tracking-tight leading-6 truncate">
+                            Paid
+                        </div>
+                        <div class="text-lg text-center w-full">
+                            <div class="text-7xl sm:text-8xl font-bold tracking-tight leading-none ">
+                                <mat-icon svgIcon="mat_outline:attach_money"></mat-icon>
+                            </div>
+                            <div class="text-secondary text-lg font-medium">{{(selectedOrder?.currentTotal | currency)
+                                || not_available_price}}</div>
+                        </div>
+                    </div>
+                </fuse-card>
             </div>
             <div class="col-lg-4 col-md-4 col-6 my-1">
-                <mat-card class="w-full p-2 h-40 rounded-2xl shadow-lg">
-                    <mat-card-title class="font-size-medium">
-                        <i class="fas fa-landmark"></i>
-                        Balance Due
-                    </mat-card-title>
-                    <mat-divider></mat-divider>
-                    <mat-card-content class="text-danger py-4 font-semibold text-center">
-                        ${{selectedOrder?.total - selectedOrder?.currentTotal || not_available_price}}
-                    </mat-card-content>
-                </mat-card>
+                <fuse-card class="rounded-2xl shadow bg-card flex flex-col lg:flex-row w-full">
+                    <div class="p-4 w-full">
+                        <div class="text-lg font-medium tracking-tight leading-6 truncate">
+                            Balance Due
+                        </div>
+                        <div class="text-lg text-center w-full">
+                            <div class="text-7xl sm:text-8xl font-bold tracking-tight leading-none ">
+                                <mat-icon svgIcon="mat_outline:monetization_on"></mat-icon>
+                            </div>
+                            <div class="text-secondary text-lg font-medium">{{((selectedOrder?.total -
+                                selectedOrder?.currentTotal) | currency) || not_available_price}}</div>
+                        </div>
+                    </div>
+                </fuse-card>
             </div>
         </div>
 
         <div class="row mt-2">
-            <div class="col-12">
-                <mat-card class="w-full p-2 h-60 rounded-2xl shadow-lg">
-                    <mat-card-title class="font-size-medium">Additional Information</mat-card-title>
-                    <mat-divider></mat-divider>
-                    <div class="row w-full">
-                        <div class="col-lg-6 col-md-6 col-12 my-1">
-                            <div class="row">
-                                <div class="col-6">
-                                    <b>Instructions</b>
+            <div class="col-6">
+                <fuse-card class="rounded-2xl shadow bg-card flex flex-col lg:flex-row w-full">
+                    <div class="p-4 w-full">
+                        <div class="text-lg font-medium tracking-tight leading-6 truncate ">
+                            Customer Information
+                        </div>
+                        <div class="py-2">
+                            <span class="flex">
+                                <h2>
+                                    <mat-icon svgIcon="mat_solid:person"></mat-icon>
+                                </h2>
+                                <h2 class="ml-2">{{selectedOrder?.firstName + ' ' + selectedOrder?.lastName}}
+                                </h2>
+                            </span>
+                            <span class="flex">
+                                <h2>
+                                    <mat-icon svgIcon="mat_solid:local_phone"></mat-icon>
+                                </h2>
+                                <h2 class="ml-2">{{orderSummaryDetail?.billingPhone || not_available}}
+                                </h2>
+                            </span>
+                            <span class="flex">
+                                <h2>
+                                    <mat-icon svgIcon="mat_solid:email"></mat-icon>
+                                </h2>
+                                <h2 class="ml-2">{{orderSummaryDetail?.billingEmail || not_available}}
+                                </h2>
+                            </span>
+                            <span class="flex mt-1">
+                                <h2 class="font-bold">
+                                    Company:
+                                </h2>
+                                <h2 class="ml-2">{{orderSummaryDetail?.billingCompanyName || not_available}}
+                                </h2>
+                            </span>
+                            <span class="flex  mt-1">
+                                <h2 class="font-bold">
+                                    Location:
+                                </h2>
+                                <h2 class="ml-2">{{orderSummaryDetail?.billingLocation || not_available}}
+                                </h2>
+                            </span>
+                            <span class="flex  mt-1">
+                                <h2 class="font-bold">
+                                    Address:
+                                </h2>
+                                <h2 class="ml-2">{{(orderSummaryDetail?.billingAddress + ', ' +
+                                    orderSummaryDetail?.billingCity + ', ' +orderSummaryDetail?.billingState + ' '
+                                    +orderSummaryDetail?.billingZip) || not_available}}
+                                </h2>
+                            </span>
+                            <span class="flex  mt-1">
+                                <h2 class="font-bold">
+                                    Account Charge Code:
+                                </h2>
+                                <h2 class="ml-2">{{orderSummaryDetail?.accountChargeCode || not_available}}
+                                </h2>
+                            </span>
+                        </div>
+                        <div class="text-right">
+                            <button mat-stroked-button>
+                                <mat-icon svgIcon="heroicons_outline:eye"></mat-icon>
+                                <span class="ml-2">View Customer</span>
+                            </button>
+                        </div>
+                    </div>
+                </fuse-card>
+            </div>
+            <div class="col-6">
+                <fuse-card class="rounded-2xl shadow bg-card flex flex-col lg:flex-row w-full">
+                    <div class="p-4 w-full">
+                        <div class="text-lg font-medium tracking-tight leading-6 truncate ">
+                            Additional Information
+                        </div>
+                        <div class="row w-full pt-2">
+                            <div class="col-lg-6 col-md-6 col-12 my-1">
+                                <div class="row">
+                                    <div class="col-6">
+                                        <b>Instructions</b>
+                                    </div>
+                                    <div class="col-6">
+                                        {{orderSummaryDetail.instructions || not_available}}
+                                    </div>
                                 </div>
-                                <div class="col-6">
-                                    N/A
+                            </div>
+                            <div class="col-lg-6 col-md-6 col-12 my-1">
+                                <div class="row">
+                                    <div class="col-6">
+                                        <b>Promocode</b>
+                                    </div>
+                                    <div class="col-6">
+                                        {{orderSummaryDetail.discountCode || not_available}}
+                                    </div>
                                 </div>
                             </div>
                         </div>
-                        <div class="col-lg-6 col-md-6 col-12 my-1">
-                            <div class="row">
-                                <div class="col-6">
-                                    <b>Promocode</b>
+                        <div class="row w-full">
+                            <div class="col-lg-6 col-md-6 col-12 my-1">
+                                <div class="row">
+                                    <div class="col-6">
+                                        <b>Purchase Order</b>
+                                    </div>
+                                    <div class="col-6">
+                                        {{orderSummaryDetail.purchaseOrderNum || not_available}}
+                                    </div>
                                 </div>
-                                <div class="col-6">
-                                    N/A
+                            </div>
+                            <div class="col-lg-6 col-md-6 col-12 my-1">
+                                <div class="row">
+                                    <div class="col-6">
+                                        <b>Additional Status</b>
+                                    </div>
+                                    <div class="col-6">
+                                        {{orderSummaryDetail.accountChargeCode || not_available}}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row w-full">
+                            <div class="col-lg-6 col-md-6 col-12 my-1">
+                                <div class="row">
+                                    <div class="col-6">
+                                        <b>Account/charge Code</b>
+                                    </div>
+                                    <div class="col-6">
+                                        N/A
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-lg-6 col-md-6 col-12 my-1">
+                                <div class="row">
+                                    <div class="col-6">
+                                        <b>Shipping</b>
+                                    </div>
+                                    <div class="col-6">
+                                        {{(orderSummaryDetail.shippingCarrierName + '/' +
+                                        orderSummaryDetail.shippingServiceName) || not_available}}
+                                        {{orderSummaryDetail.shippingCustomerAccountNumber}}
+                                    </div>
                                 </div>
                             </div>
                         </div>
                     </div>
-                    <div class="row w-full">
-                        <div class="col-lg-6 col-md-6 col-12 my-1">
-                            <div class="row">
-                                <div class="col-6">
-                                    <b>Purchase Order</b>
-                                </div>
-                                <div class="col-6">
-                                    N/A
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-lg-6 col-md-6 col-12 my-1">
-                            <div class="row">
-                                <div class="col-6">
-                                    <b>Additional Status</b>
-                                </div>
-                                <div class="col-6">
-                                    N/A
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="row w-full">
-                        <div class="col-lg-6 col-md-6 col-12 my-1">
-                            <div class="row">
-                                <div class="col-6">
-                                    <b>Account/charge Code</b>
-                                </div>
-                                <div class="col-6">
-                                    N/A
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-lg-6 col-md-6 col-12 my-1">
-                            <div class="row">
-                                <div class="col-6">
-                                    <b>Shipping</b>
-                                </div>
-                                <div class="col-6">
-                                    UPS / UPS Ground
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </mat-card>
+                </fuse-card>
             </div>
         </div>
 
-        <div class="row">
-            <div class="col-lg-6 col-md-6 mt-2">
-                <mat-card class="w-full p-2 h-full rounded-2xl shadow-lg">
-                    <mat-card-title class="font-size-medium">Order comments</mat-card-title>
-                    <mat-divider></mat-divider>
-                    <mat-card-content class="text-secondary py-4 font-semibold h-80 overflow-auto">
+        <div class="my-2">
+            <fuse-card class="rounded-2xl shadow bg-card flex flex-col lg:flex-row w-full">
+                <div class="p-4 w-full">
+                    <div class="text-lg font-medium tracking-tight leading-6 truncate ">
+                        Order comments
+                    </div>
+                    <div class="h-80 overflow-auto">
                         <div [innerHTML]="htmlComment"></div>
-                    </mat-card-content>
-                    <mat-divider></mat-divider>
-                    <mat-card-actions class="p-2 mb-1 float-right">
+                    </div>
+                    <div class="text-right">
                         <button mat-stroked-button>
                             <mat-icon svgIcon="heroicons_outline:plus"></mat-icon>
                             <span class="ml-2">Add Comment</span>
                         </button>
-                    </mat-card-actions>
-                </mat-card>
-            </div>
-            <div class="col-lg-6 col-md-6 mt-2">
-                <mat-card class="w-full p-2 h-full rounded-2xl shadow-lg">
-                    <mat-card-title class="font-size-medium">Customer Information</mat-card-title>
-                    <mat-divider></mat-divider>
-                    <mat-card-content class="text-secondary py-4 font-semibold h-80 overflow-auto">
-                        <span class="flex justify-between">
-                            <h2>
-                                <mat-icon svgIcon="mat_solid:person"></mat-icon>
-                            </h2>
-                            <h2 style="line-height: 2;">TheCHCStore .</h2>
-                        </span>
-                        <span class="flex justify-between">
-                            <h2>
-                                <mat-icon svgIcon="mat_solid:local_phone"></mat-icon>
-                            </h2>
-                            <h2 class="text-height-2">3305104384 </h2>
-                        </span>
-                        <span class="flex justify-between">
-                            <h2>
-                                <mat-icon svgIcon="mat_solid:email"></mat-icon>
-                            </h2>
-                            <h2 style="text-decoration: underline; color: #959595; cursor: pointer; line-height: 2;">
-                                service@thechcstore.com</h2>
-                        </span>
-                    </mat-card-content>
-                    <mat-divider></mat-divider>
-                    <mat-card-actions class="p-2 mb-1 float-right">
-                        <button mat-stroked-button>
-                            <mat-icon svgIcon="heroicons_outline:eye"></mat-icon>
-                            <span class="ml-2">View Customer</span>
-                        </button>
-                    </mat-card-actions>
-                </mat-card>
-            </div>
+                    </div>
+                </div>
+            </fuse-card>
         </div>
     </div>
 </div>

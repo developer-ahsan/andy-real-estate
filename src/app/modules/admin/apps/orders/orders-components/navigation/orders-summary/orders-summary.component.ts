@@ -9,32 +9,39 @@ import { OrdersList } from 'app/modules/admin/apps/orders/orders-components/orde
   templateUrl: './orders-summary.component.html'
 })
 export class OrdersSummaryComponent implements OnInit {
+  @Input() selectedOrder: any;
   @Input() isLoading: boolean;
   @Output() isLoadingChange = new EventEmitter<boolean>();
   private _unsubscribeAll: Subject<any> = new Subject<any>();
 
-  selectedOrder: OrdersList = null;
   not_available: string = 'N/A';
   not_available_price: string = '0';
   htmlComment: string = '';
 
+  orderSummary: any;
+  orderSummaryDetail: any;
   constructor(
     private _changeDetectorRef: ChangeDetectorRef,
     private _orderService: OrdersService
   ) { }
 
   ngOnInit(): void {
-
     // Get the order
-    this._orderService.orders$
-      .pipe(takeUntil(this._unsubscribeAll))
-      .subscribe((orders: OrdersList[]) => {
-        this.selectedOrder = orders["data"].find(x => x.pk_orderID == location.pathname.split('/')[3]);
-        this.htmlComment = this.selectedOrder["internalComments"];
+    setTimeout(() => {
+      this.isLoading = false;
+      this.isLoadingChange.emit(false);
+      this._changeDetectorRef.markForCheck();
+    }, 100);
 
-        // Mark for check
-        this._changeDetectorRef.markForCheck();
-      });
+    this.getOrderSummary();
+  }
+  getOrderSummary() {
+    this._orderService.orderDetail$.pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+      if (res) {
+        this.htmlComment = res["data"][0]["internalComments"];
+        this.orderSummaryDetail = res["data"][0];
+      }
+    })
   }
 
 }

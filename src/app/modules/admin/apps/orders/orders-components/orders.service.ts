@@ -14,10 +14,12 @@ export class OrdersService {
     private _categories: BehaviorSubject<OrdersCategory[] | null> = new BehaviorSubject(null);
     private _pagination: BehaviorSubject<OrdersPagination | null> = new BehaviorSubject(null);
     private _product: BehaviorSubject<OrdersProduct | null> = new BehaviorSubject(null);
+    private _orderDetail: BehaviorSubject<OrdersProduct | null> = new BehaviorSubject(null);
     private _products: BehaviorSubject<OrdersProduct[] | null> = new BehaviorSubject(null);
     private _tags: BehaviorSubject<OrdersTag[] | null> = new BehaviorSubject(null);
     private _vendors: BehaviorSubject<OrdersVendor[] | null> = new BehaviorSubject(null);
     private _orders: BehaviorSubject<OrdersList[] | null> = new BehaviorSubject(null);
+    private _order: BehaviorSubject<OrdersList[] | null> = new BehaviorSubject(null);
     public navigationLabels = [
         {
             id: 1,
@@ -25,13 +27,11 @@ export class OrdersService {
             icon: 'heroicons_outline:document-report'
         },
         {
-            id: 2,
-            title: 'Entities List',
-            icon: 'mat_solid:view_list',
+            title: 'Order Report',
+            icon: 'heroicons_outline:document-report',
         },
         {
-            id: 3,
-            title: 'Reports',
+            title: 'Order Original Report',
             icon: 'heroicons_outline:document-report',
         },
         {
@@ -55,6 +55,11 @@ export class OrdersService {
             icon: 'mat_outline:price_change'
         },
         {
+            id: 2,
+            title: 'Entities List',
+            icon: 'mat_solid:view_list',
+        },
+        {
             id: 8,
             title: 'Timeline',
             icon: 'mat_solid:timeline',
@@ -65,14 +70,14 @@ export class OrdersService {
             icon: 'heroicons_outline:document-report',
         },
         {
-            id: 10,
-            title: 'Customer Info',
-            icon: 'heroicons_outline:users',
-        },
-        {
             id: 11,
             title: 'Survey',
             icon: 'heroicons_outline:document',
+        },
+        {
+            id: 10,
+            title: 'Customer Info',
+            icon: 'heroicons_outline:users',
         },
         {
             id: 12,
@@ -83,7 +88,43 @@ export class OrdersService {
             id: 13,
             title: 'FLPS',
             icon: 'heroicons_outline:document-report',
-        }
+        },
+        {
+            title: 'Send Reorder Email',
+            icon: 'mat_outline:email',
+        },
+        {
+            title: 'Send Review Email',
+            icon: 'mat_outline:reviews',
+        },
+        {
+            title: 'Payment Link Email',
+            icon: 'mat_outline:payments',
+        },
+        {
+            title: 'Send Receipt Email',
+            icon: 'mat_outline:email',
+        },
+        {
+            title: 'Order Flags',
+            icon: 'mat_outline:flag',
+        },
+        {
+            title: 'Adjustments',
+            icon: 'mat_outline:adjust',
+        },
+        {
+            title: 'Modify Orders',
+            icon: 'heroicons_outline:document-report',
+        },
+        {
+            title: 'Comments',
+            icon: 'mat_outline:comment',
+        },
+        {
+            title: 'Enter Payments',
+            icon: 'mat_outline:payment',
+        },
     ]
 
     /**
@@ -151,6 +192,12 @@ export class OrdersService {
     get orders$(): Observable<OrdersList[]> {
         return this._orders.asObservable();
     }
+    get order$(): Observable<any> {
+        return this._order.asObservable();
+    }
+    get orderDetail$(): Observable<any> {
+        return this._orderDetail.asObservable();
+    }
 
     // -----------------------------------------------------------------------------------------------------
     // @ Public methods
@@ -166,8 +213,12 @@ export class OrdersService {
         );
     }
 
-    getOrderDetails(id) {
-        return this._httpClient.get(`${environment.orders}?list=true&order_id=${id}`)
+    getOrderDetails(id): Observable<any> {
+        return this._httpClient.get(`${environment.orders}?list=true&order_id=${id}`).pipe(
+            tap((order) => {
+                this._order.next(order);
+            })
+        )
     }
 
     getOrderTotals(id) {
@@ -267,6 +318,13 @@ export class OrdersService {
                 }
 
                 return of(product);
+            })
+        );
+    }
+    getOrderMainDetail(params): Observable<any> {
+        return this._httpClient.get<any>(environment.orders, { params: params }).pipe(
+            tap((order) => {
+                this._orderDetail.next(order);
             })
         );
     }
@@ -528,4 +586,10 @@ export class OrdersService {
             ))
         );
     }*/
+
+    getOrderCommonCall(params) {
+        return this._httpClient.get(environment.orders, {
+            params: params
+        })
+    }
 }
