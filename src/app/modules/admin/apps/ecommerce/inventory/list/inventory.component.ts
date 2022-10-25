@@ -3160,7 +3160,8 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
         //     this.updateProductColorLoader = false;
         //     this._changeDetectorRef.markForCheck();
         // });
-        if (this.selectedColorsListArray.length > 0) {
+        console.log(this.selectedColorsListArray);
+        if (this.selectedColorsListArray.length > 0 || this.customColorsList.length > 0) {
 
             // Upload Images
             this.selectedColorsListArray.forEach(element => {
@@ -3491,6 +3492,11 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
                         imprints.push(payload)
                         setTimeout(() => {
                             this.imprintsLocalList = imprints;
+                            this.location_name = '';
+                            this.method_name = '';
+                            this.selectedLocation = { locationName: 'New Location >>>', pk_locationID: null };
+                            this.selectedMethod = this.addImprintMethods.find(x => x.pk_methodID === 254) || this.addImprintMethods[0];
+
                             this._changeDetectorRef.markForCheck();
                         }, 100);
                         this._snackBar.open("Imprint listed successfully", '', {

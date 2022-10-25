@@ -255,13 +255,21 @@ export class NetCostComponent implements OnInit, OnDestroy {
   }
 
   clearFields(): void {
+    const countryDefault = this.distributionCodes.find(c => c.distrDiscount == -1);
+
     const sample = {
       standardCostOne: "",
       standardCostTwo: "",
       standardCostThree: "",
       standardCostFour: "",
       standardCostFive: "",
-      standardCostSix: ""
+      standardCostSix: "",
+      standardCostDropOne: countryDefault,
+      standardCostDropTwo: countryDefault,
+      standardCostDropThree: countryDefault,
+      standardCostDropFour: countryDefault,
+      standardCostDropFive: countryDefault,
+      standardCostDropSix: countryDefault
     };
     this.netCostForm.patchValue(sample);
   };
@@ -269,16 +277,6 @@ export class NetCostComponent implements OnInit, OnDestroy {
   setDropdownValue(value: string) {
     this.selectedDropdown = this.distributionCodes.find(item => item.distrDiscountCode === value);
     const { distrDiscount } = this.selectedDropdown;
-    this.netCostForm.patchValue({
-      standardCostOne: this.netCostDefaultStandardCost.standardCostOne.toFixed(3),
-      standardCostTwo: this.netCostDefaultStandardCost.standardCostTwo.toFixed(3),
-      standardCostThree: this.netCostDefaultStandardCost.standardCostThree.toFixed(3),
-      standardCostFour: this.netCostDefaultStandardCost.standardCostFour.toFixed(3),
-      standardCostFive: this.netCostDefaultStandardCost.standardCostFive.toFixed(3),
-      standardCostSix: this.netCostDefaultStandardCost.standardCostSix.toFixed(3)
-    });
-
-    const { standardCostOne, standardCostTwo, standardCostThree, standardCostFour, standardCostFive, standardCostSix } = this.netCostForm.getRawValue();
 
     const sample = {
       standardCostDropOne: this.selectedDropdown,
@@ -286,16 +284,34 @@ export class NetCostComponent implements OnInit, OnDestroy {
       standardCostDropThree: this.selectedDropdown,
       standardCostDropFour: this.selectedDropdown,
       standardCostDropFive: this.selectedDropdown,
-      standardCostDropSix: this.selectedDropdown,
-      standardCostOne: standardCostOne ? Number((standardCostOne * (1 - distrDiscount))).toFixed(3) : null,
-      standardCostTwo: standardCostTwo ? Number((standardCostTwo * (1 - distrDiscount))).toFixed(3) : null,
-      standardCostThree: standardCostThree ? Number((standardCostThree * (1 - distrDiscount))).toFixed(3) : null,
-      standardCostFour: standardCostFour ? Number((standardCostFour * (1 - distrDiscount))).toFixed(3) : null,
-      standardCostFive: standardCostFive ? Number((standardCostFive * (1 - distrDiscount))).toFixed(3) : null,
-      standardCostSix: standardCostSix ? Number((standardCostSix * (1 - distrDiscount))).toFixed(3) : null
+      standardCostDropSix: this.selectedDropdown
     };
 
     this.netCostForm.patchValue(sample);
+
+    if (this.netCostDefaultStandardCost) {
+      this.netCostForm.patchValue({
+        standardCostOne: this.netCostDefaultStandardCost.standardCostOne,
+        standardCostTwo: this.netCostDefaultStandardCost.standardCostTwo,
+        standardCostThree: this.netCostDefaultStandardCost.standardCostThree,
+        standardCostFour: this.netCostDefaultStandardCost.standardCostFour,
+        standardCostFive: this.netCostDefaultStandardCost.standardCostFive,
+        standardCostSix: this.netCostDefaultStandardCost.standardCostSix
+      });
+
+      const { standardCostOne, standardCostTwo, standardCostThree, standardCostFour, standardCostFive, standardCostSix } = this.netCostForm.getRawValue();
+
+      const sample = {
+        standardCostOne: standardCostOne ? Number((standardCostOne * (1 - distrDiscount)).toFixed(3)) : null,
+        standardCostTwo: standardCostTwo ? Number((standardCostTwo * (1 - distrDiscount)).toFixed(3)) : null,
+        standardCostThree: standardCostThree ? Number((standardCostThree * (1 - distrDiscount)).toFixed(3)) : null,
+        standardCostFour: standardCostFour ? Number((standardCostFour * (1 - distrDiscount)).toFixed(3)) : null,
+        standardCostFive: standardCostFive ? Number((standardCostFive * (1 - distrDiscount)).toFixed(3)) : null,
+        standardCostSix: standardCostSix ? Number((standardCostSix * (1 - distrDiscount)).toFixed(3)) : null
+      };
+
+      this.netCostForm.patchValue(sample);
+    };
   };
 
   changeIsCustom(): void {
