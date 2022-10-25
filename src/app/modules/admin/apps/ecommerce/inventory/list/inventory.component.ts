@@ -1449,7 +1449,10 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
                     customColorData.forEach(element => {
                         if (element.ColorArray) {
                             element.ColorArray.forEach(colors => {
-                                this.customColorsList.push({ colorId: null, colorName: colors.colorName, image: null, run: '0.0', hex: colors.hex });
+                                const index = this.customColorsList.findIndex(c => c.colorName.toLowerCase() == colors.colorName.toLowerCase());
+                                if (index == -1) {
+                                    this.customColorsList.push({ colorId: null, colorName: colors.colorName, image: null, run: '0.0', hex: colors.hex });
+                                }
                             });
                         }
                     });
