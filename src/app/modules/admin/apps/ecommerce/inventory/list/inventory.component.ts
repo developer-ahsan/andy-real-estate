@@ -929,14 +929,14 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
         this.netCostForm.patchValue(sample);
 
         if (this.netCostDefaultStandardCost) {
-            this.netCostForm.patchValue({
-                standardCostOne: this.netCostDefaultStandardCost.standardCostOne,
-                standardCostTwo: this.netCostDefaultStandardCost.standardCostTwo,
-                standardCostThree: this.netCostDefaultStandardCost.standardCostThree,
-                standardCostFour: this.netCostDefaultStandardCost.standardCostFour,
-                standardCostFive: this.netCostDefaultStandardCost.standardCostFive,
-                standardCostSix: this.netCostDefaultStandardCost.standardCostSix
-            });
+            // this.netCostForm.patchValue({
+            //     standardCostOne: this.netCostDefaultStandardCost.standardCostOne,
+            //     standardCostTwo: this.netCostDefaultStandardCost.standardCostTwo,
+            //     standardCostThree: this.netCostDefaultStandardCost.standardCostThree,
+            //     standardCostFour: this.netCostDefaultStandardCost.standardCostFour,
+            //     standardCostFive: this.netCostDefaultStandardCost.standardCostFive,
+            //     standardCostSix: this.netCostDefaultStandardCost.standardCostSix
+            // });
 
             const { standardCostOne, standardCostTwo, standardCostThree, standardCostFour, standardCostFive, standardCostSix } = this.netCostForm.getRawValue();
 

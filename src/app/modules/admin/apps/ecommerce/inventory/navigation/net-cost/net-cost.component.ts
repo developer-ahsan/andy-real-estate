@@ -288,19 +288,8 @@ export class NetCostComponent implements OnInit, OnDestroy {
     };
 
     this.netCostForm.patchValue(sample);
-
     if (this.netCostDefaultStandardCost) {
-      this.netCostForm.patchValue({
-        standardCostOne: this.netCostDefaultStandardCost.standardCostOne,
-        standardCostTwo: this.netCostDefaultStandardCost.standardCostTwo,
-        standardCostThree: this.netCostDefaultStandardCost.standardCostThree,
-        standardCostFour: this.netCostDefaultStandardCost.standardCostFour,
-        standardCostFive: this.netCostDefaultStandardCost.standardCostFive,
-        standardCostSix: this.netCostDefaultStandardCost.standardCostSix
-      });
-
       const { standardCostOne, standardCostTwo, standardCostThree, standardCostFour, standardCostFive, standardCostSix } = this.netCostForm.getRawValue();
-
       const sample = {
         standardCostOne: standardCostOne ? Number((standardCostOne * (1 - distrDiscount)).toFixed(3)) : null,
         standardCostTwo: standardCostTwo ? Number((standardCostTwo * (1 - distrDiscount)).toFixed(3)) : null,
