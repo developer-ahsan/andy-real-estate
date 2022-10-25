@@ -1375,11 +1375,6 @@ export class ImprintComponent implements OnInit, OnDestroy {
       return;
     };
 
-    this.dataSource.filter((imprint) => {
-      if (imprint.locationName == (!this.selectedLocation.pk_locationID ? this.selectedLocation.locationName : this.location_name) && imprint.methodName == (!this.selectedLocation.pk_methodID ? this.selectedLocation.methodName : this.method_name)) {
-        console.log(imprint);
-      }
-    })
 
     let method = '';
     if (this.method_name && !this.selectedMethod.pk_methodID) {
