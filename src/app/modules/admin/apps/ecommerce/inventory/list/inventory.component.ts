@@ -3441,7 +3441,7 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
                 location = this.location_name;
             }
         } else {
-            location = this.selectedMethod.locationName;
+            location = this.selectedLocation.locationName;
         }
         const payload = {
             product_id: this.productId,

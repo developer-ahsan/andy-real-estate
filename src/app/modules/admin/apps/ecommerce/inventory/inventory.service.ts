@@ -400,7 +400,7 @@ export class InventoryService {
 
     // Made suppliers observable
     getAllSuppliers(): Observable<any[]> {
-        return this._httpClient.get<any[]>(environment.stores, {
+        return this._httpClient.get<any[]>(environment.products, {
             params: {
                 supplier: true,
                 bln_active: 1,
