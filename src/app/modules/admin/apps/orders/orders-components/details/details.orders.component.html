@@ -103,7 +103,8 @@
                 </div>
                 <div class="col-12">
                     <ng-template [ngIf]="selectedScreeen == 'Entities List'">
-                        <app-orders-entities-list [(isLoading)]="isLoading"></app-orders-entities-list>
+                        <app-orders-entities-list [selectedOrder]="selectedOrder" [(isLoading)]="isLoading">
+                        </app-orders-entities-list>
                     </ng-template>
                 </div>
                 <div class="col-12">

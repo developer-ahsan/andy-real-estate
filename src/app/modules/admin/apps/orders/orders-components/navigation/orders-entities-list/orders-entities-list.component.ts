@@ -10,10 +10,10 @@ import { OrdersList } from 'app/modules/admin/apps/orders/orders-components/orde
 })
 export class OrdersEntitiesListComponent implements OnInit {
   @Input() isLoading: boolean;
+  @Input() selectedOrder: boolean;
   @Output() isLoadingChange = new EventEmitter<boolean>();
   private _unsubscribeAll: Subject<any> = new Subject<any>();
 
-  selectedOrder: OrdersList = null;
   not_available: string = 'N/A';
 
   constructor(
@@ -24,14 +24,6 @@ export class OrdersEntitiesListComponent implements OnInit {
   ngOnInit(): void {
 
     // Get the order
-    this._orderService.orders$
-      .pipe(takeUntil(this._unsubscribeAll))
-      .subscribe((orders: OrdersList[]) => {
-        this.selectedOrder = orders["data"].find(x => x.pk_orderID == location.pathname.split('/')[3]);
-
-        // Mark for check
-        this._changeDetectorRef.markForCheck();
-      });
     this.isLoadingChange.emit(false);
   }
 

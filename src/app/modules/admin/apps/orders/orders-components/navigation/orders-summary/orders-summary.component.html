@@ -183,7 +183,7 @@
                                         <b>Instructions</b>
                                     </div>
                                     <div class="col-6">
-                                        {{orderSummaryDetail.instructions || not_available}}
+                                        {{orderSummaryDetail?.instructions || not_available}}
                                     </div>
                                 </div>
                             </div>
@@ -193,7 +193,7 @@
                                         <b>Promocode</b>
                                     </div>
                                     <div class="col-6">
-                                        {{orderSummaryDetail.discountCode || not_available}}
+                                        {{orderSummaryDetail?.discountCode || not_available}}
                                     </div>
                                 </div>
                             </div>
@@ -205,7 +205,7 @@
                                         <b>Purchase Order</b>
                                     </div>
                                     <div class="col-6">
-                                        {{orderSummaryDetail.purchaseOrderNum || not_available}}
+                                        {{orderSummaryDetail?.purchaseOrderNum || not_available}}
                                     </div>
                                 </div>
                             </div>
@@ -215,7 +215,7 @@
                                         <b>Additional Status</b>
                                     </div>
                                     <div class="col-6">
-                                        {{orderSummaryDetail.accountChargeCode || not_available}}
+                                        {{orderSummaryDetail?.accountChargeCode || not_available}}
                                     </div>
                                 </div>
                             </div>
@@ -237,9 +237,9 @@
                                         <b>Shipping</b>
                                     </div>
                                     <div class="col-6">
-                                        {{(orderSummaryDetail.shippingCarrierName + '/' +
-                                        orderSummaryDetail.shippingServiceName) || not_available}}
-                                        {{orderSummaryDetail.shippingCustomerAccountNumber}}
+                                        {{(orderSummaryDetail?.shippingCarrierName + '/' +
+                                        orderSummaryDetail?.shippingServiceName) || not_available}}
+                                        {{orderSummaryDetail?.shippingCustomerAccountNumber}}
                                     </div>
                                 </div>
                             </div>

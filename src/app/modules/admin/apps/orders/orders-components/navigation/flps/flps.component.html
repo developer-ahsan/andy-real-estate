@@ -2,58 +2,59 @@
 </ngx-skeleton-loader>
 <div class="row my-3" *ngIf="!isLoading">
     <div class="col-12">
-        <mat-card class="w-full p-0 mb-10 h-full rounded-2xl">
-            <div class="row p-5">
-                <div class="col-lg-9 col-12">
+        <fuse-card class="rounded-2xl shadow bg-card flex flex-col lg:flex-row w-full">
+            <div class="row">
+                <div class="col-12">
                     <div class="text-2xl font-bold">
                         FLPS Users
                     </div>
                 </div>
-            </div>
+                <div *ngIf="dataSource.length > 0;else other_content" class="col-12">
+                    <table mat-table [dataSource]="dataSource" class="w-full border-t">
 
-            <div *ngIf="dataSource.length > 0;else other_content">
-                <table mat-table [dataSource]="dataSource" class="w-full border-t">
+                        <!-- Checkbox Column -->
+                        <ng-container matColumnDef="id">
+                            <th mat-header-cell *matHeaderCellDef class="w-15 min-w-15">
+                                ID
+                            </th>
+                            <td mat-cell *matCellDef="let element">
+                                {{element.fk_FLPSUserID}}
+                            </td>
+                        </ng-container>
 
-                    <!-- Checkbox Column -->
-                    <ng-container matColumnDef="id">
-                        <th mat-header-cell *matHeaderCellDef class="w-15 min-w-15">
-                            ID
-                        </th>
-                        <td mat-cell *matCellDef="let element">
-                            {{element.fk_FLPSUserID}}
-                        </td>
-                    </ng-container>
+                        <!-- Size Column -->
+                        <ng-container matColumnDef="name">
+                            <th mat-header-cell *matHeaderCellDef class="w-24 min-w-24"> User Name </th>
+                            <td mat-cell *matCellDef="let element"> {{element.firstName + ' ' + element.lastName}} </td>
+                        </ng-container>
 
-                    <!-- Size Column -->
-                    <ng-container matColumnDef="name">
-                        <th mat-header-cell *matHeaderCellDef class="w-24 min-w-24"> User Name </th>
-                        <td mat-cell *matCellDef="let element"> {{element.firstName + ' ' + element.lastName}} </td>
-                    </ng-container>
+                        <!-- Run Column -->
+                        <ng-container matColumnDef="status">
+                            <th mat-header-cell *matHeaderCellDef class="w-24 min-w-24"> Paid </th>
+                            <td mat-cell *matCellDef="let element">
+                                {{element.commissionPaidDate ? element.commissionPaidDate : 'Not Paid'}}
+                            </td>
+                        </ng-container>
 
-                    <!-- Run Column -->
-                    <ng-container matColumnDef="status">
-                        <th mat-header-cell *matHeaderCellDef class="w-24 min-w-24"> Paid </th>
-                        <td mat-cell *matCellDef="let element">
-                            {{element.commissionPaidDate ? element.commissionPaidDate : 'Not Paid'}}
-                        </td>
-                    </ng-container>
-
-                    <tr mat-header-row *matHeaderRowDef="displayedColumns;" class="h-18 bg-light"></tr>
-                    <tr mat-row *matRowDef="let row; columns: displayedColumns;"
-                        class="h-14 hover:bg-gray-100 dark:hover:bg-hover" style="cursor: pointer;">
-                    </tr>
-                </table>
-                <mat-paginator
-                    class="sm:absolute sm:inset-x-0 border-b sm:border-t sm:border-b-0 z-10 bg-gray-50 dark:bg-transparent"
-                    [ngClass]="{'pointer-events-none': isLoading}" [length]="totalUsers" [pageIndex]="0"
-                    [pageSize]="dataSource.length" (page)="getNextData($event)" [hidePageSize]="true">
-                </mat-paginator>
-            </div>
-            <ng-template #other_content>
-                <div class="text-secondary font-semibold p-5">
-                    No FLPS Users found.
+                        <tr mat-header-row *matHeaderRowDef="displayedColumns;" class="h-18 bg-light"></tr>
+                        <tr mat-row *matRowDef="let row; columns: displayedColumns;"
+                            class="h-14 hover:bg-gray-100 dark:hover:bg-hover" style="cursor: pointer;">
+                        </tr>
+                    </table>
+                    <mat-paginator
+                        class="sm:absolute sm:inset-x-0 border-b sm:border-t sm:border-b-0 z-10 bg-gray-50 dark:bg-transparent"
+                        [ngClass]="{'pointer-events-none': isLoading}" [length]="totalUsers" [pageIndex]="0"
+                        [pageSize]="dataSource.length" (page)="getNextData($event)" [hidePageSize]="true">
+                    </mat-paginator>
                 </div>
-            </ng-template>
-        </mat-card>
+                <ng-template #other_content>
+                    <div class="text-secondary font-semibold p-5">
+                        No FLPS Users found.
+                    </div>
+                </ng-template>
+            </div>
+
+
+        </fuse-card>
     </div>
 </div>

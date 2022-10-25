@@ -5,7 +5,8 @@ import { OrdersService } from '../../orders.service';
 
 @Component({
   selector: 'app-original-order-report',
-  templateUrl: './original-order-report.component.html'
+  templateUrl: './original-order-report.component.html',
+  styles: ['::-webkit-scrollbar {width: 2px !important}']
 })
 export class OriginalOrderComponent implements OnInit, OnDestroy {
   @Input() isLoading: boolean;
