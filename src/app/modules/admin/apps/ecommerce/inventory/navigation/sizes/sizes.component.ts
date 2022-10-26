@@ -164,7 +164,6 @@ export class SizesComponent implements OnInit, OnDestroy {
   updateSizes() {
     const { pk_productID } = this.selectedProduct;
     let tempSizeArray = [];
-    console.log(this.arrayToUpdate)
     for (const size of this.arrayToUpdate) {
       const { run, weight, unitsPerWeight, fk_sizeID, pk_sizeID } = size;
       if (isNaN(run) || isNaN(weight) || isNaN(unitsPerWeight)) {
@@ -192,6 +191,7 @@ export class SizesComponent implements OnInit, OnDestroy {
     this.sizeUpdateLoader = true;
     this._inventoryService.updateSizes(payload)
       .subscribe((response) => {
+        this.getSizes(1);
         this.sizeUpdateLoader = false;
         const message = response["success"] === true
           ? "Product sizes were updated successfully"
