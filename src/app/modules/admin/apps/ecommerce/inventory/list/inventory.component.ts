@@ -211,6 +211,7 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
     readonly separatorKeysCodes = [ENTER, COMMA] as const;
     fruits = [];
 
+    checkProductExistOrNotLoader: boolean = false;
     add(event: MatChipInputEvent): void {
         const value = (event.value || '').trim();
         // Add our fruit
@@ -2748,6 +2749,65 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
     };
 
     // Add Product Details
+    checkProductExistOrNot() {
+        const finalForm = this.secondFormGroup.getRawValue();
+        const { productNumber, productName } = finalForm;
+        if (!this.supplierId) {
+            this._snackBar.open("Supplier is required", '', {
+                horizontalPosition: 'center',
+                verticalPosition: 'bottom',
+                duration: 3500
+            });
+            return;
+        }
+        if (!productNumber) {
+            this._snackBar.open("Product Number is required", '', {
+                horizontalPosition: 'center',
+                verticalPosition: 'bottom',
+                duration: 3500
+            });
+            return;
+        }
+        if (!productName) {
+            this._snackBar.open("Product Name is required", '', {
+                horizontalPosition: 'center',
+                verticalPosition: 'bottom',
+                duration: 3500
+            });
+            return;
+        }
+        this.checkProductExistOrNotLoader = true;
+        this._changeDetectorRef.markForCheck();
+        this._inventoryService.checkIfProductExist(productNumber, productName, this.supplierId)
+            .pipe(takeUntil(this._unsubscribeAll))
+            .subscribe((response: any) => {
+                const isDataExist = response["data_exists"];
+                this.checkProductExistOrNotLoader = false;
+                if (isDataExist) {
+                    this._snackBar.open("Product already exists", '', {
+                        horizontalPosition: 'center',
+                        verticalPosition: 'bottom',
+                        duration: 3500
+                    });
+                    // Mark for check
+                } else {
+                    this._snackBar.open("Product does not exists", '', {
+                        horizontalPosition: 'center',
+                        verticalPosition: 'bottom',
+                        duration: 3500
+                    });
+                }
+                this._changeDetectorRef.markForCheck();
+            }, err => {
+                this._snackBar.open("Something went wrong", '', {
+                    horizontalPosition: 'center',
+                    verticalPosition: 'bottom',
+                    duration: 3500
+                });
+                this.checkProductExistOrNotLoader = false;
+                this._changeDetectorRef.markForCheck();
+            });
+    }
     addProductDetail() {
         const firstFormGroup = this.firstFormGroup.getRawValue();
         const finalForm = this.secondFormGroup.getRawValue();
