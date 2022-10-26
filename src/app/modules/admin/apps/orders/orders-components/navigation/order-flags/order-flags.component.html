@@ -1,0 +1,86 @@
+<ngx-skeleton-loader count="8" appearance="line" animation="pulse" *ngIf="isLoading || !orderDetail">
+</ngx-skeleton-loader>
+<div class="row my-3" *ngIf="!isLoading && orderDetail">
+    <div class="col-12">
+        <fuse-card class="rounded-2xl shadow bg-card flex flex-col lg:flex-row w-full">
+            <div class="p-6 sm:p-8 lg:p-10 w-full">
+                <div class="text-2xl font-bold">
+                    Order Flags
+                </div>
+                <div class="row mt-5">
+                    <div class="col-md-6 col-12">
+                        <mat-form-field class="w-full">
+                            <mat-label>Has this order been cancelled?</mat-label>
+                            <mat-select matInput [(ngModel)]="orderDetail.blnFulfillmentCancel">
+                                <mat-option [value]="true">Yes</mat-option>
+                                <mat-option [value]="false">No</mat-option>
+                            </mat-select>
+                        </mat-form-field>
+                    </div>
+                    <div class="col-md-6 col-12">
+                        <mat-form-field class="w-full">
+                            <mat-label>Is this order finalized?</mat-label>
+                            <mat-select matInput [(ngModel)]="orderDetail.blnFinalized">
+                                <mat-option [value]="true">Yes</mat-option>
+                                <mat-option [value]="false">No</mat-option>
+                            </mat-select>
+                        </mat-form-field>
+                    </div>
+                    <div class="col-md-6 col-12">
+                        <mat-form-field class="w-full">
+                            <mat-label>Ignore Commission Logs?</mat-label>
+                            <mat-select matInput [(ngModel)]="orderDetail.blnIgnore">
+                                <mat-option [value]="true">Yes</mat-option>
+                                <mat-option [value]="false">No</mat-option>
+                            </mat-select>
+                        </mat-form-field>
+                    </div>
+                    <div class="col-md-6 col-12">
+                        <mat-form-field class="w-full">
+                            <mat-label>Ignore Rapid Reorder System?</mat-label>
+                            <mat-select matInput [(ngModel)]="orderDetail.blnReorderIgnore">
+                                <mat-option [value]="true">Yes</mat-option>
+                                <mat-option [value]="false">No</mat-option>
+                            </mat-select>
+                        </mat-form-field>
+                    </div>
+                    <div class="col-md-6 col-12">
+                        <mat-form-field class="w-full">
+                            <mat-label>Ignore Product Review System?</mat-label>
+                            <mat-select matInput [(ngModel)]="orderDetail.blnReviewIgnore">
+                                <mat-option [value]="true">Yes</mat-option>
+                                <mat-option [value]="false">No</mat-option>
+                            </mat-select>
+                        </mat-form-field>
+                    </div>
+                    <div class="col-md-6 col-12">
+                        <mat-form-field class="w-full">
+                            <mat-label>Ignore Royalty Reports?</mat-label>
+                            <mat-select matInput [(ngModel)]="orderDetail.blnRoyaltyIgnore">
+                                <mat-option [value]="true">Yes</mat-option>
+                                <mat-option [value]="false">No</mat-option>
+                            </mat-select>
+                        </mat-form-field>
+                    </div>
+                    <div class="col-md-6 col-12">
+                        <mat-form-field class="w-full">
+                            <mat-label>Ignore sales reports?</mat-label>
+                            <mat-select matInput [(ngModel)]="orderDetail.blnIgnoreSales">
+                                <mat-option [value]="true">Yes</mat-option>
+                                <mat-option [value]="false">No</mat-option>
+                            </mat-select>
+                        </mat-form-field>
+                    </div>
+                    <div class="col-12 text-right">
+                        <button class="min-w-40" mat-stroked-button>
+                            <!-- <mat-progress-spinner *ngIf="createProductDetailLoader" [diameter]="24"
+                                                [mode]="'indeterminate'">
+                                            </mat-progress-spinner> -->
+                            <span>Apply</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </fuse-card>
+    </div>
+</div>

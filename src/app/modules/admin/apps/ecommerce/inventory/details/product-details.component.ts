@@ -115,9 +115,9 @@ export class ProductDetailsComponent implements OnInit, OnDestroy {
                 this.selectedProduct;
               this.promoStandardBoolean = blnPromoStandard;
 
-              if (blnService) {
-                this.routes = this.filterNavigation(this.routes, "Imprints");
-              }
+              // if (blnService) {
+              //   this.routes = this.filterNavigation(this.routes, "Imprints");
+              // }
 
               if (!blnApparel) {
                 this.routes = this.filterNavigation(this.routes, "Sizes");

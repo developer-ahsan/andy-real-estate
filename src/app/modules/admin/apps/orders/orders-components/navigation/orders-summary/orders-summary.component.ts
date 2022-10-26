@@ -27,12 +27,6 @@ export class OrdersSummaryComponent implements OnInit {
 
   ngOnInit(): void {
     // Get the order
-    setTimeout(() => {
-      this.isLoading = false;
-      this.isLoadingChange.emit(false);
-      this._changeDetectorRef.markForCheck();
-    }, 100);
-
     this.getOrderSummary();
   }
   getOrderSummary() {
@@ -40,6 +34,11 @@ export class OrdersSummaryComponent implements OnInit {
       if (res) {
         this.htmlComment = res["data"][0]["internalComments"];
         this.orderSummaryDetail = res["data"][0];
+        setTimeout(() => {
+          this.isLoading = false;
+          this.isLoadingChange.emit(false);
+          this._changeDetectorRef.markForCheck();
+        }, 100);
       }
     })
   }

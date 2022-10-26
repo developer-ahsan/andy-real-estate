@@ -3,13 +3,13 @@
 <div class="row my-3" *ngIf="!isLoading">
     <div class="col-12">
         <fuse-card class="rounded-2xl shadow bg-card flex flex-col lg:flex-row w-full">
-            <div class="row">
-                <div class="col-12">
+            <div class="w-full ">
+                <div class="p-6 sm:p-8 lg:p-10">
                     <div class="text-2xl font-bold">
                         FLPS Users
                     </div>
                 </div>
-                <div *ngIf="dataSource.length > 0;else other_content" class="col-12">
+                <div *ngIf="dataSource.length > 0;else other_content">
                     <table mat-table [dataSource]="dataSource" class="w-full border-t">
 
                         <!-- Checkbox Column -->
@@ -41,8 +41,7 @@
                             class="h-14 hover:bg-gray-100 dark:hover:bg-hover" style="cursor: pointer;">
                         </tr>
                     </table>
-                    <mat-paginator
-                        class="sm:absolute sm:inset-x-0 border-b sm:border-t sm:border-b-0 z-10 bg-gray-50 dark:bg-transparent"
+                    <mat-paginator class="border-b sm:border-t sm:border-b-0 z-10 bg-gray-50 dark:bg-transparent"
                         [ngClass]="{'pointer-events-none': isLoading}" [length]="totalUsers" [pageIndex]="0"
                         [pageSize]="dataSource.length" (page)="getNextData($event)" [hidePageSize]="true">
                     </mat-paginator>

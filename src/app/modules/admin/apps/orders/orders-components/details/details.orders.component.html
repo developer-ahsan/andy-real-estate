@@ -63,8 +63,8 @@
                         <div class="col-lg-4 col-md-6 col-12">
                             <b class="text-secondary text-sm">Customer:</b>
                             <p class="float-right text-sm">
-                                <a target="_blank"
-                                    routerLink="/apps/ecommerce/customers/{{selectedOrder?.fk_storeUserID}}">
+                                <a target="_blank" [routerLink]="'/apps/ecommerce/customer'"
+                                    [queryParams]="{customerId: selectedOrderDetail?.fk_storeUserID}">
                                     {{selectedOrder?.firstName + ' ' + selectedOrder?.lastName}}</a>
                             </p>
                         </div>
@@ -119,13 +119,39 @@
                     </ng-template>
                 </div>
                 <div class="col-12">
+                    <ng-template [ngIf]="selectedScreeen == 'Comments'">
+                        <app-order-comments [selectedOrder]="selectedOrder" [(isLoading)]="isLoading">
+                        </app-order-comments>
+                    </ng-template>
+                </div>
+                <div class="col-12">
+                    <ng-template [ngIf]="selectedScreeen == 'Adjustments'">
+                        <app-order-adjustment [selectedOrder]="selectedOrder" [(isLoading)]="isLoading">
+                        </app-order-adjustment>
+                    </ng-template>
+                </div>
+                <div class="col-12">
+                    <ng-template [ngIf]="selectedScreeen == 'Enter Payments'">
+                        <app-order-payments [selectedOrder]="selectedOrder" [(isLoading)]="isLoading">
+                        </app-order-payments>
+                    </ng-template>
+                </div>
+                <div class="col-12">
                     <ng-template [ngIf]="selectedScreeen == 'Invoice'">
                         <app-invoices [(isLoading)]="isLoading"></app-invoices>
                     </ng-template>
                 </div>
                 <div class="col-12">
                     <ng-template [ngIf]="selectedScreeen == 'Purchase Orders'">
-                        <app-orders-purchases [(isLoading)]="isLoading"></app-orders-purchases>
+                        <app-orders-purchases [selectedOrder]="selectedOrder" [(isLoading)]="isLoading">
+                        </app-orders-purchases>
+                    </ng-template>
+                </div>
+                <div class="col-12">
+                    <ng-template [ngIf]="selectedScreeen == 'Order Flags'">
+                        <app-order-flags sm:p-8 lg:p-10 w-full [selectedOrder]="selectedOrder"
+                            [(isLoading)]="isLoading">
+                        </app-order-flags>
                     </ng-template>
                 </div>
                 <div class="col-12">
@@ -140,7 +166,7 @@
                 </div>
                 <div class="col-12">
                     <ng-template [ngIf]="selectedScreeen == 'Timeline'">
-                        <app-timeline [(isLoading)]="isLoading"></app-timeline>
+                        <app-timeline [selectedOrder]="selectedOrder" [(isLoading)]="isLoading"></app-timeline>
                     </ng-template>
                 </div>
                 <div class="col-12">

@@ -328,7 +328,7 @@ export class FeatureComponent implements OnInit, OnDestroy {
 
                     // Mark for check
                     this._changeDetectorRef.markForCheck();
-                    return this._snackBar.open(`Unable to add feature. ${response["message"]}`, '', {
+                    return this._snackBar.open(`Note: This feature already exists in the database.`, '', {
                       horizontalPosition: 'center',
                       verticalPosition: 'bottom',
                       duration: 5000

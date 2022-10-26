@@ -10,7 +10,8 @@
           </div>
           <div class="row mt-5 w-full">
             <div class="col-12">
-              <note class="font-semibold text-sm">SINCE THE PAYMENT WAS APPROVED ON MONDAY, JULY 13 2015, THE
+              <note class="font-semibold text-secondary text-sm">SINCE THE PAYMENT WAS APPROVED ON MONDAY, JULY 13 2015,
+                THE
                 DELIVERY SHOULD BE BETWEEN
                 THURSDAY, JULY 30 2015 AND THURSDAY, AUGUST 06 2015</note>
             </div>
@@ -49,8 +50,7 @@
 
             <tr mat-footer-row *matFooterRowDef="displayedColumns" class="example-first-footer-row h-18"></tr>
           </table>
-          <p class="text-center mt-5 font-semibold text-sm">PRODUCTION TIME PER PRODUCT | 3-Ply Disposable Face Mask
-            Level
+          <p class="text-center mt-5 font-semibold text-sm">PRODUCTION TIME PER PRODUCT | {{selectedOrder?.productName}}
             3 ASTM: 1-5 days</p>
         </div>
       </div>

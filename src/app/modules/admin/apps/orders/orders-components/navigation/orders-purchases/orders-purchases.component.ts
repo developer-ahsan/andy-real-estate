@@ -20,10 +20,10 @@ interface OrdersPurchases {
 })
 export class OrdersPurchasesComponent implements OnInit {
   @Input() isLoading: boolean;
+  @Input() selectedOrder: any;
   @Output() isLoadingChange = new EventEmitter<boolean>();
   private _unsubscribeAll: Subject<any> = new Subject<any>();
 
-  selectedOrder: OrdersList = null;
   displayedColumns: string[] = ['company', 'supplies', 'decorates', 'digitizes', 'total'];
   transactions: OrdersPurchases[] = [
     { company: 'ARTWORK', supplies: true, decorates: false, digitizes: false, total: 255 }
@@ -37,13 +37,6 @@ export class OrdersPurchasesComponent implements OnInit {
 
   ngOnInit(): void {
 
-    this._orderService.orders$
-      .pipe(takeUntil(this._unsubscribeAll))
-      .subscribe((orders: OrdersList[]) => {
-        this.selectedOrder = orders["data"].find(x => x.pk_orderID == location.pathname.split('/')[3]);
-
-        this._changeDetectorRef.markForCheck();
-      });
 
 
 

@@ -1479,7 +1479,7 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
                                         productName: this.htmlDecode(details.productName.replace(details?.productId, "").replace('.', '')),
                                         productNumber: this.htmlDecode(details.productId),
                                         brandName: this.htmlDecode(details.productBrand),
-                                        mainDescription: detailsDescription?.length ? detailsDescription.toString().split(",").join("\n") : "",
+                                        mainDescription: detailsDescription?.length ? details?.description.join('.').trim() : "",
                                         miniDescription: "Mini description"
                                     };
 
@@ -3305,7 +3305,7 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
             return;
         }
         if (!this.checkIfArrayIsUnique(quantityList) || !this.checkIfArrayIsUnique(standardCost)) {
-            this._snackBar.open("Quantities and Cost should be unique", '', {
+            this._snackBar.open("Note: Quantities and Cost should be unique", '', {
                 horizontalPosition: 'center',
                 verticalPosition: 'bottom',
                 duration: 3500

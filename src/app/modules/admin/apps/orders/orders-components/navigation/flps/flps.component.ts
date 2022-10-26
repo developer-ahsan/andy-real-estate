@@ -5,7 +5,8 @@ import { OrdersService } from '../../orders.service';
 
 @Component({
   selector: 'app-flps-users',
-  templateUrl: './flps.component.html'
+  templateUrl: './flps.component.html',
+  styles: [".mat-paginator {border-radius: 16px !important}"]
 })
 export class FlpsComponent implements OnInit, OnDestroy {
   @Input() isLoading: boolean;

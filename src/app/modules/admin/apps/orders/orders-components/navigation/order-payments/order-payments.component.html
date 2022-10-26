@@ -1,0 +1,30 @@
+<ngx-skeleton-loader count="8" appearance="line" animation="pulse" *ngIf="isLoading">
+</ngx-skeleton-loader>
+<div class="row" *ngIf="!isLoading">
+  <div class="col-12 my-2">
+    <fuse-card class="rounded-2xl shadow bg-card flex flex-col lg:flex-row w-full">
+      <div class="w-full">
+        <div class="p-6 sm:p-8 lg:p-10 w-full">
+          <div class="text-2xl font-bold ">
+            Enter Payments For Order {{selectedOrder?.pk_orderID}}
+          </div>
+          <div class="row mt-5 w-full">
+            <div class="col-12">
+              <note class="font-semibold text-secondary text-sm">Use this tool to enter a payment. The order will not be
+                marked paid until the entire order total amount is paid. You cannot enter payments that exceed the total
+                amount.
+              </note>
+              <br>
+              <div class="mt-2"></div>
+              <note class="text-red-500 text-sm ">
+                Enter negative amounts to subtract from the "currently paid" amount.
+              </note>
+              <div class=""></div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+    </fuse-card>
+  </div>
+</div>

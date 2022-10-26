@@ -7,10 +7,10 @@ interface Transaction {
 }
 
 @Component({
-  selector: 'app-timeline',
-  templateUrl: './timeline.component.html'
+  selector: 'app-order-payments',
+  templateUrl: './order-payments.component.html'
 })
-export class TimelineComponent implements OnInit {
+export class OrderPaymentComponent implements OnInit {
   @Input() isLoading: boolean;
   @Input() selectedOrder: boolean;
   @Output() isLoadingChange = new EventEmitter<boolean>();

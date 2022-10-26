@@ -79,4 +79,5 @@ export interface OrdersList {
     TotalRequests?: number;
     inHandsDate?: string;
     currentTotal?: number;
+    fk_storeUserID: number;
 }

@@ -40,6 +40,13 @@ import { TimelineComponent } from 'app/modules/admin/apps/orders/orders-componen
 import { IncidentReportsComponent } from 'app/modules/admin/apps/orders/orders-components/navigation/incident-reports/incident-reports.component';
 import { FlpsComponent } from './orders-components/navigation/flps/flps.component';
 import { OriginalOrderComponent } from './orders-components/navigation/original-order-report/original-order-report.component';
+import { OrderCommentsComponent } from './orders-components/navigation/order-comments/order-comments.component';
+import { MatButtonToggleModule } from '@angular/material/button-toggle';
+import { NgMultiSelectDropDownModule } from 'ng-multiselect-dropdown';
+import { MatChipsModule } from '@angular/material/chips';
+import { OrderFlagsComponent } from './orders-components/navigation/order-flags/order-flags.component';
+import { OrderAdjustmentComponent } from './orders-components/navigation/order-adjustment/order-adjustment.component';
+import { OrderPaymentComponent } from './orders-components/navigation/order-payments/order-payments.component';
 
 @NgModule({
     declarations: [
@@ -57,7 +64,11 @@ import { OriginalOrderComponent } from './orders-components/navigation/original-
         TimelineComponent,
         IncidentReportsComponent,
         FlpsComponent,
-        OriginalOrderComponent
+        OriginalOrderComponent,
+        OrderFlagsComponent,
+        OrderCommentsComponent,
+        OrderAdjustmentComponent,
+        OrderPaymentComponent
     ],
     imports: [
         RouterModule.forChild(ordersRoutes),
@@ -84,7 +95,10 @@ import { OriginalOrderComponent } from './orders-components/navigation/original-
         MatListModule,
         MatSidenavModule,
         MatProgressSpinnerModule,
-        NgxSkeletonLoaderModule
+        NgxSkeletonLoaderModule,
+        MatButtonToggleModule,
+        NgMultiSelectDropDownModule,
+        MatChipsModule
     ]
 })
 export class OrdersModule {
