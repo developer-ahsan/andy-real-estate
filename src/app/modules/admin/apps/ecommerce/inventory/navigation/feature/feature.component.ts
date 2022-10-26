@@ -296,12 +296,29 @@ export class FeatureComponent implements OnInit, OnDestroy {
     const { pk_productID, fk_supplierID } = this.selectedProduct;
     const { pk_attributeTypeID } = this.featureType;
     const { order, feature } = this.featureForm.getRawValue();
+    if (!feature) {
+      this._snackBar.open(`Note: Feature is required.`, '', {
+        horizontalPosition: 'center',
+        verticalPosition: 'bottom',
+        duration: 5000
+      });
+      return;
+    }
+    const index = this.dataSource.findIndex(item => item.attributeText.toLowerCase() == feature.toLowerCase());
+    if (index >= 0) {
+      this._snackBar.open(`Note: This feature already exists in the list.`, '', {
+        horizontalPosition: 'center',
+        verticalPosition: 'bottom',
+        duration: 5000
+      });
+      return;
+    }
     const payload = {
-      attribute_type_id: parseInt(pk_attributeTypeID),
+      attribute_type_id: Number(pk_attributeTypeID),
       attribute_text: feature,
-      supplier_id: parseInt(fk_supplierID),
-      product_id: parseInt(pk_productID),
-      order: parseInt(order),
+      supplier_id: Number(fk_supplierID),
+      product_id: Number(pk_productID),
+      order: Number(order),
       feature: true
     };
 
@@ -322,19 +339,18 @@ export class FeatureComponent implements OnInit, OnDestroy {
                   feature: ''
                 });
 
-                if (response["success"] === false) {
-                  if (response["message"] === 'Data already exists in Database') {
-                    this.featureAddLoader = false;
+                // if (response["success"] === false) {
+                //   if (response["message"] === 'Data already exists in Database') {
+                //     this.featureAddLoader = false;
 
-                    // Mark for check
-                    this._changeDetectorRef.markForCheck();
-                    return this._snackBar.open(`Note: This feature already exists in the database.`, '', {
-                      horizontalPosition: 'center',
-                      verticalPosition: 'bottom',
-                      duration: 5000
-                    });
-                  };
-                };
+                //     this._changeDetectorRef.markForCheck();
+                //     return this._snackBar.open(`Note: This feature already exists in the database.`, '', {
+                //       horizontalPosition: 'center',
+                //       verticalPosition: 'bottom',
+                //       duration: 5000
+                //     });
+                //   };
+                // };
 
                 this.featureAddLoader = false;
                 this.showFlashMessage(
