@@ -89,6 +89,7 @@ export class SizesComponent implements OnInit, OnDestroy {
               const index = unSelected.findIndex(elem => elem.pk_sizeID == selectedObj.fk_sizeID);
               unSelected.splice(index, 1);
             }
+            this.arrayToUpdate = selected;
             this.dataSource = selected.concat(unSelected);
             this.sizesLength = sizes["totalRecords"];
             if (this.searchKeywordTerm == '') {
@@ -163,6 +164,7 @@ export class SizesComponent implements OnInit, OnDestroy {
   updateSizes() {
     const { pk_productID } = this.selectedProduct;
     let tempSizeArray = [];
+    console.log(this.arrayToUpdate)
     for (const size of this.arrayToUpdate) {
       const { run, weight, unitsPerWeight, fk_sizeID, pk_sizeID } = size;
       if (isNaN(run) || isNaN(weight) || isNaN(unitsPerWeight)) {
@@ -213,9 +215,9 @@ export class SizesComponent implements OnInit, OnDestroy {
     if (title === 'unitsPerWeight') {
       sizeObj.unitsPerWeight = parseInt(value);
     } else if (title === 'weight') {
-      sizeObj.weight = parseInt(value);
+      sizeObj.weight = Number(value);
     } else if (title === 'run') {
-      sizeObj.run = parseFloat(value);
+      sizeObj.run = Number(value);
     }
 
     if (!this.arrayToUpdate?.length) {

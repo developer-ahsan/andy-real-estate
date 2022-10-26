@@ -219,9 +219,9 @@ export class ProductSizesComponent implements OnInit, OnDestroy {
     if (title === 'unitsPerWeight') {
       sizeObj.unitsPerWeight = parseInt(value);
     } else if (title === 'weight') {
-      sizeObj.weight = parseInt(value);
+      sizeObj.weight = Number(value);
     } else if (title === 'run') {
-      sizeObj.run = parseFloat(value);
+      sizeObj.run = Number(value);
     }
 
     if (!this.arrayToUpdate?.length) {
