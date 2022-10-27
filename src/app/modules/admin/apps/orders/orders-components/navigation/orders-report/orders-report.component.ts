@@ -43,13 +43,14 @@ export class OrdersReportComponent implements OnInit {
   orderDetail: any;
   orderProducts = [];
 
+  grandTotalCost = 0;
+  grandTotalPrice = 0;
   constructor(
     private _orderService: OrdersService,
     private _changeDetectorRef: ChangeDetectorRef
   ) { }
 
   ngOnInit(): void {
-    console.log(this.selectedOrder);
     // this._orderService.orders$
     //   .pipe(takeUntil(this._unsubscribeAll))
     //   .subscribe((orders: OrdersList[]) => {
@@ -90,7 +91,6 @@ export class OrdersReportComponent implements OnInit {
     this._orderService.orderDetail$.pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
       if (res) {
         this.orderDetail = res["data"][0];
-        console.log(res)
       }
     })
     this._orderService.orderProducts$.pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
@@ -106,11 +106,33 @@ export class OrdersReportComponent implements OnInit {
   }
   getLineProducts(value) {
     let params = {
+      order_line_item: true,
+      order_line_id: value
+    }
+    this._orderService.getOrderCommonCall(params).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+      this.getProductImprints(value, res["data"]);
+    }, err => {
+      this.isLoading = true;
+      this.isLoadingChange.emit(false);
+      this._changeDetectorRef.markForCheck();
+    })
+  }
+  getProductImprints(value, data) {
+    let params = {
       imprint_report: true,
       order_line_id: value
     }
     this._orderService.getOrderCommonCall(params).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
-      console.log(res);
+      let tempArr = [];
+      data.forEach(element => {
+        res["data"].forEach(item => {
+          if (item.fk_orderLineID == element.fk_orderLineID) {
+            tempArr.push({ product: element, imprints: item });
+          }
+        });
+      });
+      this.orderProducts = tempArr;
+      this.getProductTotal();
       this.isLoading = false;
       this.isLoadingChange.emit(false);
       this._changeDetectorRef.markForCheck();
@@ -119,6 +141,14 @@ export class OrdersReportComponent implements OnInit {
       this.isLoadingChange.emit(false);
       this._changeDetectorRef.markForCheck();
     })
+  }
+  getProductTotal() {
+    this.grandTotalCost = 0;
+    this.grandTotalPrice = 0;
+    this.orderProducts.forEach(element => {
+      this.grandTotalCost = this.grandTotalCost + ((element.product.cost * element.product.quantity) + (element.imprints.runCost * element.product.quantity) + (element.imprints.setupCost));
+      this.grandTotalPrice = this.grandTotalPrice + ((element.product.price * element.product.quantity) + (element.imprints.runPrice * element.product.quantity) + (element.imprints.setupPrice))
+    });
   }
   orderSelection(order) {
     this.showForm = true;
