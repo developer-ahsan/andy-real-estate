@@ -41,7 +41,7 @@ export class OrdersReportComponent implements OnInit {
 
   orderParticipants = [];
   orderDetail: any;
-
+  orderProducts = [];
 
   constructor(
     private _orderService: OrdersService,
@@ -90,8 +90,12 @@ export class OrdersReportComponent implements OnInit {
     this._orderService.orderDetail$.pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
       if (res) {
         this.orderDetail = res["data"][0];
+        console.log(res)
       }
-      console.log(res["data"])
+    })
+    this._orderService.orderProducts$.pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+      console.log(res);
+      this.orderProducts = res["data"];
     })
     setTimeout(() => {
       this.isLoading = true;

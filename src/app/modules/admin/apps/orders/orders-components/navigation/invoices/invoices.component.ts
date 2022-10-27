@@ -12,10 +12,11 @@ import { Subject } from 'rxjs';
 })
 export class InvoicesComponent implements OnInit {
   @Input() isLoading: boolean;
+  @Input() selectedOrder: any;
   @Output() isLoadingChange = new EventEmitter<boolean>();
   private _unsubscribeAll: Subject<any> = new Subject<any>();
 
-  selectedOrder: OrdersList = null;
+  // selectedOrder: OrdersList = null;
   selectedOrderDetails = [];
   showReport = false;
   showForm = false;
@@ -31,7 +32,7 @@ export class InvoicesComponent implements OnInit {
     this._orderService.orders$
       .pipe(takeUntil(this._unsubscribeAll))
       .subscribe((orders: OrdersList[]) => {
-        this.selectedOrder = orders["data"].find(x => x.pk_orderID == location.pathname.split('/')[3]);
+        // this.selectedOrder = orders["data"].find(x => x.pk_orderID == location.pathname.split('/')[3]);
 
         if (this.selectedOrder["fk_groupOrderID"]) {
           this.showReport = true;

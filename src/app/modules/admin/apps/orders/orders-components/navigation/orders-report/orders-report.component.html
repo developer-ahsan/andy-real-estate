@@ -92,15 +92,18 @@
                                             <div class="justify-self-start font-medium tracking-tight text-secondary">
                                                 ORDER DATE
                                             </div>
-                                            <div class="font-medium">{{selectedOrder?.orderDate}}</div>
+                                            <div class="font-medium">{{selectedOrder?.orderDate ||
+                                                not_available}}</div>
                                             <div class="justify-self-start font-medium tracking-tight text-secondary">
                                                 Payment Date</div>
-                                            <div class="font-medium">{{selectedOrder?.paymentDate | date:'medium'}}
+                                            <div class="font-medium">{{(selectedOrder?.paymentDate | date:'medium') ||
+                                                not_available}}
                                             </div>
                                             <div class="justify-self-start font-medium tracking-tight text-secondary">
                                                 In-Hands Date
                                             </div>
-                                            <div class="font-medium">{{selectedOrder?.inHandsDate | date:'medium'}}
+                                            <div class="font-medium">{{(selectedOrder?.inHandsDate | date:'medium') ||
+                                                not_available}}
                                             </div>
                                             <div class="justify-self-start font-medium tracking-tight text-secondary">
                                                 Purchase Order
@@ -114,6 +117,30 @@
                                             Comments
                                         </div>
                                         <div class="col-span-12" [innerHtml]="orderDetail?.internalComments"></div>
+                                    </div>
+                                    <div class="grid grid-cols-12 gap-x-1 mt-8" *ngIf="orderProducts?.length > 0">
+                                        <div class="col-span-12 border-b font-bold text-medium">
+                                            Promo Code: {{orderDetail?.discountCode || not_available}}
+                                        </div>
+                                        <div class="col-span-12 border-b" *ngFor="let item of orderProducts">
+                                            <div class="row">
+                                                <div class="col-9">
+                                                    <p class="font-bold text-secondary text-medium">
+                                                        ({{item.fk_productID}}) 4x4 FC
+                                                        Removable: 4x4
+                                                        Removable Stickers - Full Color</p>
+                                                    <p class="font-bold text-medium text-secondary">PO:
+                                                        {{selectedOrder?.pk_orderID +
+                                                        '-' + item.pk_orderLineID}}</p>
+                                                    <p class="text-secondary">Quantity: {{item.quantity}}</p>
+                                                    <p class="text-secondary">Supplier: Test</p>
+                                                </div>
+                                                <div class="col-3 text-right w-full">
+                                                    <img style="display: inline;width:50%"
+                                                        src="https://assets.consolidus.com/globalAssets/Products/coming_soon.jpg">
+                                                </div>
+                                            </div>
+                                        </div>
                                     </div>
                                     <div class="grid grid-cols-12 gap-x-1 mt-16">
                                         <!-- Columns -->

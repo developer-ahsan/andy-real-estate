@@ -30,6 +30,31 @@ export class OrdersBrandsResolver implements Resolve<any>
         return this._orderService.getBrands();
     }
 }
+@Injectable({
+    providedIn: 'root'
+})
+export class OrderProductsLineResolver implements Resolve<any>
+{
+    /**
+     * Constructor
+     */
+    constructor(private _orderService: OrdersService) {
+    }
+
+    // -----------------------------------------------------------------------------------------------------
+    // @ Public methods
+    // -----------------------------------------------------------------------------------------------------
+
+    /**
+     * Resolver
+     *
+     * @param route
+     * @param state
+     */
+    resolve(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<any> {
+        return this._orderService.getOrderProducts(route.params.id);
+    }
+}
 
 @Injectable({
     providedIn: 'root'

@@ -115,7 +115,7 @@ import { OrderReceiptEmailComponent } from './orders-components/navigation/order
         MatChipsModule,
         MatExpansionModule,
         FuseAlertModule
-    ]
+    ],
 })
 export class OrdersModule {
 }

@@ -82,7 +82,8 @@
                         </div>
                         <div class="col-lg-4 col-md-6 col-12">
                             <b class="text-secondary text-sm">Manager:</b>
-                            <p class="float-right text-sm">Adam Biats</p>
+                            <p class="float-right text-sm">{{selectedOrderDetail?.managerFirstName + ' ' +
+                                selectedOrderDetail?.managerLastName}}</p>
                         </div>
                         <div class="col-lg-4 col-md-6 col-12">
                             <b class="text-secondary text-sm">Total:</b>
@@ -169,7 +170,7 @@
                 </div>
                 <div class="col-12">
                     <ng-template [ngIf]="selectedScreeen == 'Invoice'">
-                        <app-invoices [(isLoading)]="isLoading"></app-invoices>
+                        <app-invoices [(isLoading)]="isLoading" [selectedOrder]="selectedOrder"></app-invoices>
                     </ng-template>
                 </div>
                 <div class="col-12">

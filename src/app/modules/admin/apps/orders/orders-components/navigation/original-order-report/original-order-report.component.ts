@@ -20,7 +20,6 @@ export class OriginalOrderComponent implements OnInit, OnDestroy {
   ) { }
 
   ngOnInit(): void {
-    console.log(this.selectedOrder)
     setTimeout(() => {
       this.isLoading = true;
       this.isLoadingChange.emit(false);

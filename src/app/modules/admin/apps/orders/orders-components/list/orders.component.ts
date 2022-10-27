@@ -67,7 +67,7 @@ export class OrdersListComponent implements OnInit, AfterViewInit, OnDestroy {
      */
     ngOnInit(): void {
 
-        this.pageSize = 10;
+        this.pageSize = 20;
         this.pageNo = 0;
 
         // Create the selected order form
@@ -537,7 +537,7 @@ export class OrdersListComponent implements OnInit, AfterViewInit, OnDestroy {
             this.keyword = '';
         }
 
-        this.getOrders(10, 1)
+        this.getOrders(20, 1)
     }
 
     /**
