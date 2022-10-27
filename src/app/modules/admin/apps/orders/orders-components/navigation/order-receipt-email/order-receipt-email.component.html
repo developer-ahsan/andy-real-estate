@@ -1,0 +1,47 @@
+<ngx-skeleton-loader count="8" appearance="line" animation="pulse" *ngIf="isLoading || !orderDetail">
+</ngx-skeleton-loader>
+<div class="row my-3" *ngIf="!isLoading && orderDetail">
+    <div class="col-12">
+        <fuse-card class="rounded-2xl shadow bg-card flex flex-col lg:flex-row w-full">
+            <div class="p-6 sm:p-8 lg:p-10 w-full">
+                <div class="text-2xl font-bold">
+                    Send Customer Receipt Email
+                </div>
+                <div class="row mt-5">
+                    <div class="col-12 ">
+                        <note class="text-red-500 font-bold">The email that will be sent to the customer will contain
+                            the following information:</note>
+                        <br>
+                        <p class="text-secondary">Your recent online payment with BrandItShop.com was successfully
+                            processed.</p>
+                        <p class="mt-5">OrderID: 56159</p>
+                        <p>Order Date: Tue, February 09 2021</p>
+                        <p>Purchase Order :</p>
+                        <p>Amount: $3,016.46</p>
+                        <p>Transaction ID: 2727295372 (keep for your records)</p>
+                        <p>Transaction Date: Tue, February 09 2021</p>
+                        <p class="mt-5">Note that BrandItShop.com is a subsidiary of Consolidus, L.L.C.</p>
+                        <p>Please be aware that your credit card statement will show Consolidus, L.L.C.</p>
+                        <p class="mt-5">Thank you for your business!</p>
+                        <p>The BrandItShop.com Team</p>
+                        <note class="text-red-500 font-bold">The receipt will be sent to the email on record associated
+                            with this order, or you can enter your own below.</note>
+                        <mat-form-field class="w-full">
+                            <input matInput>
+                        </mat-form-field>
+                        <br>
+                    </div>
+
+                    <div class="col-12 text-right">
+                        <button [matTooltip]="'Send Receipt Email'" class="min-w-40" mat-stroked-button>
+                            <!-- <mat-progress-spinner *ngIf="createProductDetailLoader" [diameter]="24"
+                                            [mode]="'indeterminate'">
+                                        </mat-progress-spinner> -->
+                            <span>Send Email</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </fuse-card>
+    </div>
+</div>

@@ -47,6 +47,14 @@ import { MatChipsModule } from '@angular/material/chips';
 import { OrderFlagsComponent } from './orders-components/navigation/order-flags/order-flags.component';
 import { OrderAdjustmentComponent } from './orders-components/navigation/order-adjustment/order-adjustment.component';
 import { OrderPaymentComponent } from './orders-components/navigation/order-payments/order-payments.component';
+import { MatExpansionModule } from '@angular/material/expansion';
+import { OrderSurveyComponent } from './orders-components/navigation/order-survey/order-survey.component';
+import { OrderArtWorkComponent } from './orders-components/navigation/order-artwork/order-artwork.component';
+import { OrderReorderEmailComponent } from './orders-components/navigation/order-reorder-emails/order-reorder-email.component';
+import { FuseAlertModule } from '@fuse/components/alert';
+import { OrderReviewEmailComponent } from './orders-components/navigation/order-review-email/order-review-email.component';
+import { OrderPaymentEmailComponent } from './orders-components/navigation/order-payment-email/order-payment-email.component';
+import { OrderReceiptEmailComponent } from './orders-components/navigation/order-receipt-email/order-receipt-email.component';
 
 @NgModule({
     declarations: [
@@ -68,7 +76,13 @@ import { OrderPaymentComponent } from './orders-components/navigation/order-paym
         OrderFlagsComponent,
         OrderCommentsComponent,
         OrderAdjustmentComponent,
-        OrderPaymentComponent
+        OrderPaymentComponent,
+        OrderSurveyComponent,
+        OrderArtWorkComponent,
+        OrderReorderEmailComponent,
+        OrderReviewEmailComponent,
+        OrderPaymentEmailComponent,
+        OrderReceiptEmailComponent
     ],
     imports: [
         RouterModule.forChild(ordersRoutes),
@@ -98,7 +112,9 @@ import { OrderPaymentComponent } from './orders-components/navigation/order-paym
         NgxSkeletonLoaderModule,
         MatButtonToggleModule,
         NgMultiSelectDropDownModule,
-        MatChipsModule
+        MatChipsModule,
+        MatExpansionModule,
+        FuseAlertModule
     ]
 })
 export class OrdersModule {

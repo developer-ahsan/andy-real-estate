@@ -19,10 +19,11 @@ interface Transaction {
 })
 export class OrdersReportComponent implements OnInit {
   @Input() isLoading: boolean;
+  @Input() selectedOrder: any;
   @Output() isLoadingChange = new EventEmitter<boolean>();
   private _unsubscribeAll: Subject<any> = new Subject<any>();
 
-  selectedOrder: OrdersList = null;
+  // selectedOrder: OrdersList = null;
   selectedOrderDetails = [];
   selectedOrderTotals: Object = null;
   htmlComment: string = '';
@@ -39,6 +40,7 @@ export class OrdersReportComponent implements OnInit {
   showForm: boolean = false;
 
   orderParticipants = [];
+  orderDetail: any;
 
 
   constructor(
@@ -47,46 +49,54 @@ export class OrdersReportComponent implements OnInit {
   ) { }
 
   ngOnInit(): void {
+    console.log(this.selectedOrder);
+    // this._orderService.orders$
+    //   .pipe(takeUntil(this._unsubscribeAll))
+    //   .subscribe((orders: OrdersList[]) => {
+    //     this.selectedOrder = orders["data"].find(x => x.pk_orderID == location.pathname.split('/')[3]);
+    //     this.htmlComment = this.selectedOrder["internalComments"];
 
-    this._orderService.orders$
-      .pipe(takeUntil(this._unsubscribeAll))
-      .subscribe((orders: OrdersList[]) => {
-        this.selectedOrder = orders["data"].find(x => x.pk_orderID == location.pathname.split('/')[3]);
-        this.htmlComment = this.selectedOrder["internalComments"];
+    //     if (this.selectedOrder["fk_groupOrderID"]) {
+    //       this.showReport = true;
+    //       this._orderService.getOrderParticipants(this.selectedOrder.pk_orderID)
+    //         .pipe(takeUntil(this._unsubscribeAll))
+    //         .subscribe((orderParticipants) => {
+    //           const firstOption = {
+    //             billingFirstName: "COMBINED ORDER REPORT",
+    //             billingLastName: "",
+    //             billingEmail: ""
+    //           };
+    //           const combinedParticipants = [firstOption].concat(orderParticipants["data"]);
+    //           this.orderParticipants = combinedParticipants;
 
-        if (this.selectedOrder["fk_groupOrderID"]) {
-          this.showReport = true;
-          this._orderService.getOrderParticipants(this.selectedOrder.pk_orderID)
-            .pipe(takeUntil(this._unsubscribeAll))
-            .subscribe((orderParticipants) => {
-              const firstOption = {
-                billingFirstName: "COMBINED ORDER REPORT",
-                billingLastName: "",
-                billingEmail: ""
-              };
-              const combinedParticipants = [firstOption].concat(orderParticipants["data"]);
-              this.orderParticipants = combinedParticipants;
+    //           this._changeDetectorRef.markForCheck();
+    //         });
+    //     }
 
-              this._changeDetectorRef.markForCheck();
-            });
-        }
+    //     this._orderService.getOrderDetails(this.selectedOrder.pk_orderID)
+    //       .pipe(takeUntil(this._unsubscribeAll))
+    //       .subscribe((orderDetails) => {
+    //         this.selectedOrderDetails = orderDetails["data"];
+    //         this._changeDetectorRef.markForCheck();
+    //       });
+    //   });
 
-        this._orderService.getOrderDetails(this.selectedOrder.pk_orderID)
-          .pipe(takeUntil(this._unsubscribeAll))
-          .subscribe((orderDetails) => {
-            this.selectedOrderDetails = orderDetails["data"];
-            this._changeDetectorRef.markForCheck();
-          });
-      });
-
-    this._orderService.getOrderTotals(this.selectedOrder.pk_orderID)
-      .pipe(takeUntil(this._unsubscribeAll))
-      .subscribe((orderTotals) => {
-        this.selectedOrderTotals = orderTotals["data"][0];
-        this._changeDetectorRef.markForCheck();
-      });
-
-    this.isLoadingChange.emit(false);
+    // this._orderService.getOrderTotals(this.selectedOrder.pk_orderID)
+    //   .pipe(takeUntil(this._unsubscribeAll))
+    //   .subscribe((orderTotals) => {
+    //     this.selectedOrderTotals = orderTotals["data"][0];
+    //     this._changeDetectorRef.markForCheck();
+    //   });
+    this._orderService.orderDetail$.pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+      if (res) {
+        this.orderDetail = res["data"][0];
+      }
+      console.log(res["data"])
+    })
+    setTimeout(() => {
+      this.isLoading = true;
+      this.isLoadingChange.emit(false);
+    }, 100);
   }
 
   orderSelection(order) {

@@ -4,11 +4,11 @@ import { takeUntil } from 'rxjs/operators';
 import { OrdersService } from '../../orders.service';
 
 @Component({
-  selector: 'app-order-flags',
-  templateUrl: './order-flags.component.html',
+  selector: 'app-order-survey',
+  templateUrl: './order-survey.component.html',
   styles: ['::-webkit-scrollbar {width: 2px !important}']
 })
-export class OrderFlagsComponent implements OnInit, OnDestroy {
+export class OrderSurveyComponent implements OnInit, OnDestroy {
   @Input() isLoading: boolean;
   @Input() selectedOrder: boolean;
   @Output() isLoadingChange = new EventEmitter<boolean>();

@@ -24,107 +24,140 @@ export class OrdersService {
         {
             id: 1,
             title: 'Summary',
-            icon: 'heroicons_outline:document-report'
-        },
-        {
-            title: 'Order Report',
             icon: 'heroicons_outline:document-report',
+            children: []
         },
         {
-            title: 'Order Original Report',
+            title: 'Report',
             icon: 'heroicons_outline:document-report',
-        },
-        {
-            id: 4,
-            title: 'Invoice',
-            icon: 'mat_outline:inventory'
-        },
-        {
-            id: 5,
-            title: 'Purchase Orders',
-            icon: 'mat_outline:featured_play_list',
-        },
-        {
-            id: 6,
-            title: 'Shipping Report',
-            icon: 'mat_outline:local_shipping',
-        },
-        {
-            id: 7,
-            title: 'Cost Analysis',
-            icon: 'mat_outline:price_change'
-        },
-        {
-            id: 2,
-            title: 'Entities List',
-            icon: 'mat_solid:view_list',
-        },
-        {
-            id: 8,
-            title: 'Timeline',
-            icon: 'mat_solid:timeline',
-        },
-        {
-            id: 9,
-            title: 'Incident Reports',
-            icon: 'heroicons_outline:document-report',
-        },
-        {
-            id: 11,
-            title: 'Survey',
-            icon: 'heroicons_outline:document',
+            children: [
+                {
+                    title: 'Order Report',
+                    icon: 'heroicons_outline:document-report',
+                },
+                {
+                    title: 'Order Original Report',
+                    icon: 'heroicons_outline:document-report',
+                },
+                {
+                    id: 4,
+                    title: 'Invoice',
+                    icon: 'mat_outline:inventory'
+                },
+                {
+                    id: 5,
+                    title: 'Purchase Orders',
+                    icon: 'mat_outline:featured_play_list',
+                },
+                {
+                    id: 6,
+                    title: 'Shipping Report',
+                    icon: 'mat_outline:local_shipping',
+                },
+                {
+                    id: 7,
+                    title: 'Cost Analysis',
+                    icon: 'mat_outline:price_change'
+                },
+                {
+                    id: 2,
+                    title: 'Entities List',
+                    icon: 'mat_solid:view_list',
+                },
+                {
+                    id: 8,
+                    title: 'Timeline',
+                    icon: 'mat_solid:timeline',
+                },
+                {
+                    id: 9,
+                    title: 'Incident Reports',
+                    icon: 'heroicons_outline:document-report',
+                },
+                {
+                    id: 11,
+                    title: 'Survey',
+                    icon: 'heroicons_outline:document',
+                }
+            ]
         },
         {
             id: 10,
-            title: 'Customer Info',
+            title: 'Information',
             icon: 'heroicons_outline:users',
+            children: [
+                {
+                    id: 10,
+                    title: 'Customer Info',
+                    icon: 'heroicons_outline:users',
+                },
+                {
+                    id: 12,
+                    title: 'Artwork Details',
+                    icon: 'heroicons_outline:document-text',
+                },
+                {
+                    id: 13,
+                    title: 'FLPS',
+                    icon: 'heroicons_outline:document-report',
+                }
+            ]
         },
         {
-            id: 12,
-            title: 'Artwork Details',
-            icon: 'heroicons_outline:document-text',
-        },
-        {
-            id: 13,
-            title: 'FLPS',
-            icon: 'heroicons_outline:document-report',
-        },
-        {
-            title: 'Send Reorder Email',
+            title: 'Emails',
             icon: 'mat_outline:email',
+            children: [
+                {
+                    title: 'Send Reorder Email',
+                    icon: 'mat_outline:email',
+                },
+                {
+                    title: 'Send Review Email',
+                    icon: 'mat_outline:reviews',
+                },
+                {
+                    title: 'Payment Link Email',
+                    icon: 'mat_outline:payments',
+                },
+                {
+                    title: 'Send Receipt Email',
+                    icon: 'mat_outline:email',
+                }
+            ]
         },
         {
-            title: 'Send Review Email',
-            icon: 'mat_outline:reviews',
+            title: 'Settings',
+            icon: 'mat_outline:settings',
+            children: [
+                {
+                    title: 'Order Flags',
+                    icon: 'mat_outline:flag',
+                },
+                {
+                    title: 'Adjustments',
+                    icon: 'mat_outline:adjust',
+                },
+                {
+                    title: 'Modify Orders',
+                    icon: 'heroicons_outline:document-report',
+                },
+                {
+                    title: 'Comments',
+                    icon: 'mat_outline:comment',
+                }
+            ]
         },
         {
-            title: 'Payment Link Email',
-            icon: 'mat_outline:payments',
-        },
-        {
-            title: 'Send Receipt Email',
-            icon: 'mat_outline:email',
-        },
-        {
-            title: 'Order Flags',
-            icon: 'mat_outline:flag',
-        },
-        {
-            title: 'Adjustments',
-            icon: 'mat_outline:adjust',
-        },
-        {
-            title: 'Modify Orders',
-            icon: 'heroicons_outline:document-report',
-        },
-        {
-            title: 'Comments',
-            icon: 'mat_outline:comment',
-        },
-        {
-            title: 'Enter Payments',
+            title: 'Payments',
             icon: 'mat_outline:payment',
-        },
+            children: [
+                {
+                    title: 'Enter Payments',
+                    icon: 'mat_outline:payment',
+                }
+            ]
+        }
+
     ]
 
     /**

@@ -1,0 +1,17 @@
+<ngx-skeleton-loader count="8" appearance="line" animation="pulse" *ngIf="isLoading || !orderDetail">
+</ngx-skeleton-loader>
+<div class="row my-3" *ngIf="!isLoading && orderDetail">
+    <div class="col-12">
+        <fuse-card class="rounded-2xl shadow bg-card flex flex-col lg:flex-row w-full">
+            <div class="p-6 sm:p-8 lg:p-10 w-full">
+                <div class="text-2xl font-bold">
+                    Order Survey
+                </div>
+                <div class="text-center mt-5">
+                    <note class="text-secondary font-bold"> The customer has not submitted a survey for this order.
+                    </note>
+                </div>
+            </div>
+        </fuse-card>
+    </div>
+</div>

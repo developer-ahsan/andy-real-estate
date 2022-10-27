@@ -366,7 +366,7 @@ export class InventoryService {
 
     // Made stores observable
     getAllStores(): Observable<any[]> {
-        return this._httpClient.get<any[]>(environment.stores, {
+        return this._httpClient.get<any[]>(environment.products, {
             params: {
                 list: true,
                 size: 2000

@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnInit, ViewEncapsulation } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnInit, ViewChild, ViewEncapsulation } from '@angular/core';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { fuseAnimations } from '@fuse/animations';
@@ -30,6 +30,7 @@ export class OrdersDetailsComponent implements OnInit, OnDestroy {
     // Sidebar stuff
     drawerMode: 'over' | 'side' = 'side';
     drawerOpened: boolean = true;
+    @ViewChild("panel") panel;
 
     /**
      * Constructor
@@ -49,6 +50,10 @@ export class OrdersDetailsComponent implements OnInit, OnDestroy {
     /**
      * On init
      */
+    doSomething() {
+        //do stuff
+        this.panel.close();
+    }
     getOrderDetail(orderId) {
         let params = {
             main: true,

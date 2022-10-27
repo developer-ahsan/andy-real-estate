@@ -1,0 +1,75 @@
+<ngx-skeleton-loader count="8" appearance="line" animation="pulse" *ngIf="isLoading || !orderDetail">
+</ngx-skeleton-loader>
+<div class="row my-3" *ngIf="!isLoading">
+    <div class="col-12">
+        <fuse-card class="rounded-2xl shadow bg-card flex flex-col lg:flex-row w-full">
+            <div class="p-6 sm:p-8 lg:p-10 w-full">
+                <div class="text-2xl font-bold">
+                    Artwork Details
+                </div>
+                <div class="mt-5">
+                    <!-- <mat-accordion class="example-headers-align">
+                        <mat-expansion-panel *ngFor="let item of [1,2,3]; first as isFirst" [expanded]="isFirst">
+                          <mat-expansion-panel-header>
+                            <mat-panel-title> {{item}} </mat-panel-title>
+                          </mat-expansion-panel-header>
+                          {{item}}
+                        </mat-expansion-panel>
+                      </mat-accordion> -->
+                    <mat-accordion>
+                        <mat-expansion-panel [expanded]="true">
+                            <mat-expansion-panel-header>
+                                <mat-panel-title>
+                                    (18818) Explorer Mug
+                                </mat-panel-title>
+                                <mat-panel-description>
+                                    977204/55/79/15/60/72/94/84
+                                </mat-panel-description>
+                            </mat-expansion-panel-header>
+                            <div>
+                                <p><b>Quantity:</b> 200</p>
+                                <p><b>Supplier:</b> ETS Express</p>
+                                <div class="row mt-3">
+                                    <div class="col-12">56159-96000</div>
+                                    <div class="col-12 col-md-6">
+                                        <p class="font-bold">Imprint</p>
+                                        <p>(72060) Wrap / Screen Print </p>
+                                    </div>
+                                    <div class="col-12 col-md-6">
+                                        <p class="font-bold">Status</p>
+                                        <p>Awaiting Artwork Approval</p>
+                                    </div>
+                                    <div class="col-12 col-md-6">
+                                        <p class="font-bold">Att</p>
+                                        <p>N/A</p>
+                                    </div>
+                                    <div class="col-12 col-md-6">
+                                        <p class="font-bold">Proofs</p>
+                                        <p>N/A</p>
+                                    </div>
+                                    <div class="col-12 col-md-6">
+                                        <p class="font-bold">Comments</p>
+                                        <p>TEst</p>
+                                    </div>
+                                    <div class="col-12 col-md-6">
+                                        <p class="font-bold">Approval History</p>
+                                        <div class="row">
+                                            <div class="col-6">
+                                                <p class="font-bold">Name</p>
+                                                <p></p>
+                                            </div>
+                                            <div class="col-6">
+                                                <p class="font-bold">Date</p>
+                                                <p></p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </mat-expansion-panel>
+                    </mat-accordion>
+                </div>
+            </div>
+        </fuse-card>
+    </div>
+</div>
