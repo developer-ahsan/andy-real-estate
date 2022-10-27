@@ -94,15 +94,32 @@ export class OrdersReportComponent implements OnInit {
       }
     })
     this._orderService.orderProducts$.pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
-      console.log(res);
+      let value = [];
+      res["data"].forEach((element, index) => {
+        value.push(element.pk_orderLineID);
+        if (index == res["data"].length - 1) {
+          this.getLineProducts(value.toString());
+        }
+      });
       this.orderProducts = res["data"];
     })
-    setTimeout(() => {
+  }
+  getLineProducts(value) {
+    let params = {
+      imprint_report: true,
+      order_line_id: value
+    }
+    this._orderService.getOrderCommonCall(params).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+      console.log(res);
+      this.isLoading = false;
+      this.isLoadingChange.emit(false);
+      this._changeDetectorRef.markForCheck();
+    }, err => {
       this.isLoading = true;
       this.isLoadingChange.emit(false);
-    }, 100);
+      this._changeDetectorRef.markForCheck();
+    })
   }
-
   orderSelection(order) {
     this.showForm = true;
   }
