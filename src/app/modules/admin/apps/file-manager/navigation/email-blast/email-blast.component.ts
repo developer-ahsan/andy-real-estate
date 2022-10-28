@@ -266,6 +266,7 @@ export class EmailBlastComponent implements OnInit, OnDestroy {
         .subscribe(res => {
           this.processDataLoader = false;
           this.processData = res["data"]
+          console.log(this.processData)
           this._changeDetectorRef.markForCheck();
         }, err => {
           this.processDataLoader = false;

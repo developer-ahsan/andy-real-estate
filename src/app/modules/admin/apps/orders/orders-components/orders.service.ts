@@ -21,6 +21,9 @@ export class OrdersService {
     private _orders: BehaviorSubject<OrdersList[] | null> = new BehaviorSubject(null);
     private _order: BehaviorSubject<OrdersList[] | null> = new BehaviorSubject(null);
     private _order_products: BehaviorSubject<OrdersList[] | null> = new BehaviorSubject(null);
+    private _orderLineProducts: BehaviorSubject<OrdersList[] | null> = new BehaviorSubject(null);
+    private _stores: BehaviorSubject<OrdersList[] | null> = new BehaviorSubject(null);
+
     public navigationLabels = [
         {
             id: 1,
@@ -235,15 +238,29 @@ export class OrdersService {
     get orderProducts$(): Observable<any> {
         return this._order_products.asObservable();
     }
+    get orderLineProducts$(): Observable<any> {
+        return this._orderLineProducts.asObservable();
+    }
+    get stores$(): Observable<any> {
+        return this._stores.asObservable();
+    }
 
     // -----------------------------------------------------------------------------------------------------
     // @ Public methods
     // -----------------------------------------------------------------------------------------------------
 
-    getOrders(size, pageNumber, keyword?: string): Observable<OrdersList[]> {
-        const search = keyword ? keyword : '';
-        const url = `${environment.orders}?list=true&size=20&page=${pageNumber}&keyword=${search}`;
-        return this._httpClient.get<OrdersList[]>(url).pipe(
+    // getOrders(size, pageNumber, keyword?: string): Observable<OrdersList[]> {
+    //     const search = keyword ? keyword : '';
+    //     const url = `${environment.orders}?list=true&size=20&page=${pageNumber}&keyword=${search}`;
+    //     return this._httpClient.get<OrdersList[]>(url).pipe(
+    //         tap((orders) => {
+    //             this._orders.next(orders);
+    //         })
+    //     );
+    // }
+    getOrders(params): Observable<OrdersList[]> {
+        const url = `${environment.orders}`;
+        return this._httpClient.get<OrdersList[]>(url, { params: params }).pipe(
             tap((orders) => {
                 this._orders.next(orders);
             })
@@ -257,6 +274,27 @@ export class OrdersService {
             })
         )
     }
+
+    getOrderLineProducts(params): Observable<any> {
+        return this._httpClient.get(environment.orders, { params: params }).pipe(
+            tap((order) => {
+                this._orderLineProducts.next(order);
+            })
+        )
+    }
+    getAllStores(): Observable<any[]> {
+        return this._httpClient.get<any[]>(environment.stores, {
+            params: {
+                list: true,
+                size: 2000
+            }
+        }).pipe(
+            tap((response: any) => {
+                this._stores.next(response);
+            })
+        );
+    };
+
     getOrderProducts(id): Observable<any> {
         return this._httpClient.get(`${environment.orders}?order_line=true&order_id=${id}`).pipe(
             tap((order) => {

@@ -8,7 +8,7 @@ import { MatInputModule } from '@angular/material/input';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatPaginatorModule } from '@angular/material/paginator';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
-import { MatRippleModule } from '@angular/material/core';
+import { MatNativeDateModule, MatRippleModule } from '@angular/material/core';
 import { MatSortModule } from '@angular/material/sort';
 import { MatSelectModule } from '@angular/material/select';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
@@ -55,6 +55,7 @@ import { FuseAlertModule } from '@fuse/components/alert';
 import { OrderReviewEmailComponent } from './orders-components/navigation/order-review-email/order-review-email.component';
 import { OrderPaymentEmailComponent } from './orders-components/navigation/order-payment-email/order-payment-email.component';
 import { OrderReceiptEmailComponent } from './orders-components/navigation/order-receipt-email/order-receipt-email.component';
+import { MatDatepickerModule } from '@angular/material/datepicker';
 
 @NgModule({
     declarations: [
@@ -114,7 +115,9 @@ import { OrderReceiptEmailComponent } from './orders-components/navigation/order
         NgMultiSelectDropDownModule,
         MatChipsModule,
         MatExpansionModule,
-        FuseAlertModule
+        FuseAlertModule,
+        MatDatepickerModule,
+        MatNativeDateModule
     ],
 })
 export class OrdersModule {

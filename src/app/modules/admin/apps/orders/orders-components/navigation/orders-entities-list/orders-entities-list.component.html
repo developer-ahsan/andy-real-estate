@@ -28,19 +28,22 @@
                                         {{selectedOrder?.firstName + ' ' + selectedOrder?.lastName}}</a>
                                 </p>
                             </div>
-                            <!-- <div class="col-12 col-md-6">Vendor</div>
+                            <div class="col-12 col-md-6">Vendors</div>
                             <div class="col-12 col-md-6">
-                                <p style="text-decoration: underline; color: #959595; cursor: pointer; line-height: 2;">
-                                    High Caliber
+                                <p style="text-decoration: underline; color: #959595; cursor: pointer; line-height: 2;"
+                                    *ngFor="let item of supplierList">
+                                    <!-- {{selectedOrder.productName || not_available}} -->
+                                    <a target="_blank" routerLink="{{item.link}}">
+                                        {{item?.name || not_available}}</a>
                                 </p>
-                            </div> -->
+                            </div>
                             <div class="col-12 col-md-6">Products</div>
                             <div class="col-12 col-md-6">
-                                <p style="text-decoration: underline; color: #959595; cursor: pointer; line-height: 2;">
+                                <p style="text-decoration: underline; color: #959595; cursor: pointer; line-height: 2;"
+                                    *ngFor="let item of productsList">
                                     <!-- {{selectedOrder.productName || not_available}} -->
-                                    <a target="_blank"
-                                        routerLink="/apps/ecommerce/inventory/{{selectedOrder?.pk_productID}}">
-                                        {{selectedOrder?.productName || not_available}}</a>
+                                    <a target="_blank" routerLink="/apps/ecommerce/inventory/{{item?.id}}">
+                                        {{item?.name || not_available}}</a>
                                 </p>
                             </div>
                         </div>

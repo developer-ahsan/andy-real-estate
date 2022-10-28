@@ -1,238 +1,336 @@
-<div class="absolute inset-0 flex flex-col min-w-0 overflow-hidden bg-card dark:bg-transparent">
-
-    <!-- Header -->
-    <div
-        class="relative flex flex-col sm:flex-row flex-0 sm:items-center sm:justify-between py-8 px-6 md:px-8 border-b">
-        <!-- Loader -->
-        <div class="absolute inset-x-0 bottom-1" *ngIf="isLoading">
+<div class="absolute inset-0 flex flex-col min-w-0 overflow-auto bg-card">
+    <div class="relative flex flex-col sm:flex-row flex-0 sm:items-center sm:justify-between py-1 border-b"
+        *ngIf="isLoading">
+        <div class="absolute inset-x-0 bottom-1">
             <mat-progress-bar [mode]="'indeterminate'"></mat-progress-bar>
         </div>
-        <!-- Title -->
-        <div class="text-4xl font-extrabold tracking-tight">Orders</div>
-        <!-- Actions -->
-        <div class="flex flex-shrink-0 items-center mt-6 sm:mt-0 sm:ml-4">
-            <!-- Search -->
-            <mat-form-field class="fuse-mat-dense fuse-mat-no-subscript min-w-50">
-                <mat-icon matPrefix [svgIcon]="'heroicons_outline:search'"></mat-icon>
-                <input matInput (keyup.enter)="searchKeyword($event)" [autocomplete]="'off'"
-                    [placeholder]="'Search order'">
-            </mat-form-field>
-            <!-- Add order button -->
-            <!-- <button class="ml-4" mat-flat-button [color]="'primary'" (click)="createProduct()">
-                <mat-icon [svgIcon]="'heroicons_outline:plus'"></mat-icon>
-                <span class="ml-2 mr-1">Add Order</span>
-            </button> -->
-        </div>
     </div>
+    <mat-drawer-container class="example-container w-full bg-white" [hasBackdrop]="false">
+        <mat-drawer #drawer [mode]="'over'" position="end" style="width: 400px !important; ">
+            <div class="row w-full p-5 m-0">
+                <div class="col-9">
+                    <div class="text-2xl font-extrabold tracking-tight leading-none"> Advanced Search
+                    </div>
+                </div>
+                <div class="col-3 text-right">
+                    <mat-icon (click)="openAdvancedSearch()" class="mr-2 cursor-pointer"
+                        [svgIcon]="'mat_outline:close'">
+                    </mat-icon>
+                </div>
+                <div class="col-12 mt-5">
+                    <mat-form-field class="w-full">
+                        <mat-label>Store:</mat-label>
+                        <mat-select [(ngModel)]="advancedSearchForm.store_id">
+                            <mat-option *ngFor="let item of storesList" [value]="item.pk_storeID">{{item.storeName}}
+                            </mat-option>
+                        </mat-select>
+                    </mat-form-field>
+                </div>
+                <div class="col-12">
+                    <mat-form-field class="w-full">
+                        <mat-label>Order Type:</mat-label>
+                        <mat-select [(ngModel)]="advancedSearchForm.order_type">
+                            <mat-option [value]="1">Normal and fulfillment</mat-option>
+                            <mat-option [value]="2">Normal only</mat-option>
+                            <mat-option [value]="3">Fulfillment only</mat-option>
+                        </mat-select>
+                    </mat-form-field>
+                </div>
+                <div class="col-12">
+                    <mat-form-field class="w-full">
+                        <mat-label>Per Page:</mat-label>
+                        <mat-select ngModeladvancedSearchForm.size>
+                            <mat-option [value]="20">20</mat-option>
+                            <mat-option [value]="30">30</mat-option>
+                            <mat-option [value]="50">50</mat-option>
+                        </mat-select>
+                    </mat-form-field>
+                </div>
+                <div class="col-12">
+                    <mat-form-field class="w-full">
+                        <mat-label>Order ID:</mat-label>
+                        <input matInput [(ngModel)]="advancedSearchForm.search_order_id">
+                    </mat-form-field>
+                </div>
+                <div class="col-md-12 col-12">
+                    <mat-form-field appearance="fill" class="w-full">
+                        <mat-label>Time Span</mat-label>
+                        <mat-date-range-input [rangePicker]="picker">
+                            <input readonly matStartDate placeholder="Start date"
+                                [(ngModel)]="advancedSearchForm.range_start">
+                            <input readonly matEndDate placeholder="End date"
+                                [(ngModel)]="advancedSearchForm.range_end">
+                        </mat-date-range-input>
+                        <!-- <mat-hint>MM/DD/YYYY – MM/DD/YYYY</mat-hint> -->
+                        <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+                        <mat-date-range-picker #picker></mat-date-range-picker>
+                    </mat-form-field>
+                </div>
+                <div class="col-12 ">
+                    <button [color]="'primary'" [matTooltip]="'Search Order'" (click)="searchOrder()" class="w-full"
+                        mat-stroked-button>
+                        <!-- <mat-progress-spinner *ngIf="createProductDetailLoader" [diameter]="24"
+                                            [mode]="'indeterminate'">
+                                        </mat-progress-spinner> -->
+                        <span>Search</span>
+                    </button>
+                </div>
+            </div>
+        </mat-drawer>
+        <mat-drawer-content style="height: 100vh;">
+            <div class="flex flex-col flex-auto">
+                <!-- Header -->
+                <div class="flex flex-col sm:flex-row items-start sm:items-center sm:justify-between pt-4 px-6 md:px-8">
+                    <!-- Title -->
+                    <div>
+                        <div class="text-4xl font-extrabold tracking-tight leading-none">Orders</div>
+                    </div>
+                    <!-- Actions -->
+                    <div class="mt-4 sm:mt-0">
+                        <!-- Add section button -->
+                        <button mat-button (click)="openAdvancedSearch()">Filter</button>
+                    </div>
+                </div>
+                <!-- <div class="flex flex-col sm:flex-row items-start sm:items-center sm:justify-end py-4 px-6 md:px-8">
+                        <mat-form-field class="w-full md:w-60">
+                            <input matInput placeholder="Search Promostandard" [matTooltip]="'Press enter key after typing'"
+                                (keyup.enter)="searchPromostandards($event)" type="text" [autocomplete]="'off'"
+                                [placeholder]="'Search Promostandard'">
+                        </mat-form-field>
+                    </div> -->
+                <!-- Main -->
+                <div class="flex flex-auto overflow-hidden">
+                    <!-- Products list -->
+                    <div class="flex flex-col flex-auto sm:mb-18 overflow-hidden">
 
-    <!-- Main -->
-    <div class="flex flex-auto overflow-hidden">
+                        <ng-container *ngIf="ordersLength > 0; else noOrders">
 
-        <!-- Products list -->
-        <div class="flex flex-col flex-auto sm:mb-18 overflow-hidden">
+                            <!-- Table wrapper -->
+                            <div class="overflow-x-hidden sm:overflow-y-auto" cdkScrollable>
 
-            <ng-container *ngIf="ordersLength > 0; else noOrders">
+                                <!-- Table -->
+                                <table class="w-full min-w-320 table-fixed bg-transparent"
+                                    [ngClass]="{'pointer-events-none': isLoading}" mat-table matSort
+                                    [matSortActive]="'name'" [matSortDisableClear]="true" [matSortDirection]="'asc'"
+                                    [multiTemplateDataRows]="true" [dataSource]="orders" [trackBy]="trackByFn">
 
-                <!-- Table wrapper -->
-                <div class="overflow-x-auto sm:overflow-y-auto" cdkScrollable>
+                                    <!-- SKU -->
+                                    <ng-container matColumnDef="sku">
+                                        <th class="w-10 bg-gray-50 dark:bg-black dark:bg-opacity-5" mat-header-cell
+                                            *matHeaderCellDef disableClear>
+                                            Date
+                                        </th>
+                                        <td class="px-8" mat-cell *matCellDef="let order"
+                                            (click)="orderDetails(order.pk_orderID)" style="cursor: pointer;">
+                                            <div class="flex items-center">
+                                                <span class="truncate">{{order.orderDate}}</span>
+                                            </div>
+                                        </td>
+                                    </ng-container>
 
-                    <!-- Table -->
-                    <table class="w-full min-w-320 table-fixed bg-transparent"
-                        [ngClass]="{'pointer-events-none': isLoading}" mat-table matSort [matSortActive]="'name'"
-                        [matSortDisableClear]="true" [matSortDirection]="'asc'" [multiTemplateDataRows]="true"
-                        [dataSource]="orders" [trackBy]="trackByFn">
+                                    <!-- Name -->
+                                    <ng-container matColumnDef="name">
+                                        <th class="w-15 bg-gray-50 dark:bg-black dark:bg-opacity-5" mat-header-cell
+                                            *matHeaderCellDef disableClear>
+                                            Name
+                                        </th>
+                                        <td class="pr-8 truncate" mat-cell *matCellDef="let order"
+                                            (click)="orderDetails(order.pk_orderID)" style="cursor: pointer;">
+                                            <b>{{order.firstName}} {{order.lastName}}</b>
+                                            <p>{{order.companyName}}</p>
+                                            <span><b>{{order.pk_orderID}}</b> - {{order.storeName}}</span>
+                                        </td>
+                                    </ng-container>
 
-                        <!-- SKU -->
-                        <ng-container matColumnDef="sku">
-                            <th class="w-10 bg-gray-50 dark:bg-black dark:bg-opacity-5" mat-header-cell
-                                *matHeaderCellDef mat-sort-header disableClear>
-                                Date
-                            </th>
-                            <td class="px-8" mat-cell *matCellDef="let order" (click)="orderDetails(order.pk_orderID)"
-                                style="cursor: pointer;">
-                                <div class="flex items-center">
-                                    <span class="truncate">{{order.orderDate}}</span>
-                                </div>
-                            </td>
-                        </ng-container>
+                                    <!-- Price -->
+                                    <ng-container matColumnDef="price">
+                                        <th class="w-10 bg-gray-50 dark:bg-black dark:bg-opacity-5" mat-header-cell
+                                            *matHeaderCellDef disableClear>
+                                            Price
+                                        </th>
+                                        <td class="pr-4" mat-cell *matCellDef="let order"
+                                            (click)="orderDetails(order.pk_orderID)" style="cursor: pointer;">
+                                            ${{order.total}}
+                                        </td>
+                                    </ng-container>
 
-                        <!-- Name -->
-                        <ng-container matColumnDef="name">
-                            <th class="w-15 bg-gray-50 dark:bg-black dark:bg-opacity-5" mat-header-cell
-                                *matHeaderCellDef mat-sort-header disableClear>
-                                Name
-                            </th>
-                            <td class="pr-8 truncate" mat-cell *matCellDef="let order"
-                                (click)="orderDetails(order.pk_orderID)" style="cursor: pointer;">
-                                <b>{{order.firstName}} {{order.lastName}}</b>
-                                <p>{{order.companyName}}</p>
-                                <span><b>{{order.pk_orderID}}</b> - {{order.storeName}}</span>
-                            </td>
-                        </ng-container>
+                                    <!-- Stock -->
+                                    <ng-container matColumnDef="stock">
+                                        <th class="w-10 bg-gray-50 dark:bg-black dark:bg-opacity-5" mat-header-cell
+                                            *matHeaderCellDef disableClear>
+                                            Type
+                                        </th>
+                                        <td class="pr-4" mat-cell *matCellDef="let order"
+                                            (click)="orderDetails(order.pk_orderID)" style="cursor: pointer;">
+                                            <mat-icon class="text-gray-400 icon-size-5" *ngIf="order.fk_groupOrderID"
+                                                [svgIcon]="'heroicons_outline:user-group'"></mat-icon>
+                                            <mat-icon class="text-gray-400 icon-size-5" *ngIf="!order.fk_groupOrderID"
+                                                [svgIcon]="'heroicons_outline:user'">
+                                            </mat-icon>
+                                        </td>
+                                    </ng-container>
 
-                        <!-- Price -->
-                        <ng-container matColumnDef="price">
-                            <th class="w-10 bg-gray-50 dark:bg-black dark:bg-opacity-5" mat-header-cell
-                                *matHeaderCellDef mat-sort-header disableClear>
-                                Price
-                            </th>
-                            <td class="pr-4" mat-cell *matCellDef="let order" (click)="orderDetails(order.pk_orderID)"
-                                style="cursor: pointer;">
-                                ${{order.total}}
-                            </td>
-                        </ng-container>
+                                    <!-- Active -->
+                                    <ng-container matColumnDef="active">
+                                        <th class="w-10 bg-gray-50 dark:bg-black dark:bg-opacity-5" mat-header-cell
+                                            *matHeaderCellDef disableClear>
+                                            Status
+                                        </th>
+                                        <td class="pr-4" mat-cell *matCellDef="let order"
+                                            (click)="orderDetails(order.pk_orderID)" style="cursor: pointer;">
+                                            <mat-icon class="text-green-400 icon-size-5" *ngIf="order.blnCancelled"
+                                                [svgIcon]="'heroicons_solid:check'"></mat-icon>
+                                            <mat-icon class="text-red-400 icon-size-5" *ngIf="!order.blnCancelled"
+                                                [svgIcon]="'heroicons_solid:x'"></mat-icon>
+                                        </td>
+                                    </ng-container>
 
-                        <!-- Stock -->
-                        <ng-container matColumnDef="stock">
-                            <th class="w-10 bg-gray-50 dark:bg-black dark:bg-opacity-5" mat-header-cell
-                                *matHeaderCellDef mat-sort-header disableClear>
-                                Type
-                            </th>
-                            <td class="pr-4" mat-cell *matCellDef="let order" (click)="orderDetails(order.pk_orderID)"
-                                style="cursor: pointer;">
-                                <mat-icon class="text-gray-400 icon-size-5" *ngIf="order.fk_groupOrderID"
-                                    [svgIcon]="'heroicons_outline:user-group'"></mat-icon>
-                                <mat-icon class="text-gray-400 icon-size-5" *ngIf="!order.fk_groupOrderID"
-                                    [svgIcon]="'heroicons_outline:user'"></mat-icon>
-                            </td>
-                        </ng-container>
+                                    <!-- Details -->
+                                    <!-- <ng-container matColumnDef="details">
+                        <th class="w-10 pr-8 bg-gray-50 dark:bg-black dark:bg-opacity-5" mat-header-cell
+                            *matHeaderCellDef>
+                            Details
+                        </th>
+                        <td class="pr-8" mat-cell *matCellDef="let order">
+                            <button class="min-w-10 min-h-7 h-7 px-2 leading-6" mat-stroked-button
+                                (click)="toggleOrderDetails(order.pk_orderID)">
+                                <mat-icon class="icon-size-5"
+                                    [svgIcon]="selectedOrder?.pk_orderID === order.pk_orderID ? 'heroicons_solid:chevron-up' : 'heroicons_solid:chevron-down'">
+                                </mat-icon>
+                            </button>
+                        </td>
+                    </ng-container> -->
 
-                        <!-- Active -->
-                        <ng-container matColumnDef="active">
-                            <th class="w-10 bg-gray-50 dark:bg-black dark:bg-opacity-5" mat-header-cell
-                                *matHeaderCellDef mat-sort-header disableClear>
-                                Status
-                            </th>
-                            <td class="pr-4" mat-cell *matCellDef="let order" (click)="orderDetails(order.pk_orderID)"
-                                style="cursor: pointer;">
-                                <mat-icon class="text-green-400 icon-size-5" *ngIf="order.blnCancelled"
-                                    [svgIcon]="'heroicons_solid:check'"></mat-icon>
-                                <mat-icon class="text-red-400 icon-size-5" *ngIf="!order.blnCancelled"
-                                    [svgIcon]="'heroicons_solid:x'"></mat-icon>
-                            </td>
-                        </ng-container>
+                                    <!-- Product details row -->
+                                    <ng-container matColumnDef="orderDetails">
+                                        <td class="p-0 border-b-0" mat-cell *matCellDef="let order"
+                                            [attr.colspan]="ordersTableColumns.length">
+                                            <div class="shadow-lg overflow-hidden"
+                                                [@expandCollapse]="selectedOrder?.pk_orderID === order.pk_orderID ? 'expanded' : 'collapsed'">
+                                                <div class="border-b">
+                                                    <!-- Selected order form -->
+                                                    <form class="mt-3" [formGroup]="selectedProductForm">
+                                                        <div class="row px-5">
+                                                            <div class="col-lg-4 col-md-6 col-12">
+                                                                <mat-form-field class="w-full">
+                                                                    <mat-label>Order Id</mat-label>
+                                                                    <input matInput [formControlName]="'pk_orderID'"
+                                                                        readonly>
+                                                                </mat-form-field>
+                                                            </div>
+                                                            <div class="col-lg-4 col-md-6 col-12">
+                                                                <mat-form-field class="w-full">
+                                                                    <mat-label>Cost</mat-label>
+                                                                    <span matPrefix>$</span>
+                                                                    <input matInput [formControlName]="'total'"
+                                                                        readonly>
+                                                                </mat-form-field>
+                                                            </div>
+                                                            <div class="col-lg-4 col-md-6 col-12">
+                                                                <mat-form-field class="w-full">
+                                                                    <mat-label>Order Date</mat-label>
+                                                                    <input type="text" matInput
+                                                                        [formControlName]="'orderDate'" readonly>
+                                                                </mat-form-field>
+                                                            </div>
+                                                            <div class="col-lg-4 col-md-6 col-12">
+                                                                <mat-form-field class="w-full">
+                                                                    <mat-label>Price</mat-label>
+                                                                    <span matSuffix>$</span>
+                                                                    <input matInput [formControlName]="'total'"
+                                                                        readonly>
+                                                                </mat-form-field>
+                                                            </div>
+                                                            <div class="col-lg-4 col-md-6 col-12">
+                                                                <mat-form-field class="w-full">
+                                                                    <mat-label>Store</mat-label>
+                                                                    <input matInput [formControlName]="'storeName'"
+                                                                        readonly>
+                                                                </mat-form-field>
+                                                            </div>
+                                                            <div class="col-lg-4 col-md-6 col-12">
+                                                                <mat-form-field class="w-full">
+                                                                    <mat-label>Company</mat-label>
+                                                                    <input matInput [formControlName]="'companyName'"
+                                                                        readonly>
+                                                                </mat-form-field>
+                                                            </div>
+                                                        </div>
 
-                        <!-- Details -->
-                        <!-- <ng-container matColumnDef="details">
-                            <th class="w-10 pr-8 bg-gray-50 dark:bg-black dark:bg-opacity-5" mat-header-cell
-                                *matHeaderCellDef>
-                                Details
-                            </th>
-                            <td class="pr-8" mat-cell *matCellDef="let order">
-                                <button class="min-w-10 min-h-7 h-7 px-2 leading-6" mat-stroked-button
-                                    (click)="toggleOrderDetails(order.pk_orderID)">
-                                    <mat-icon class="icon-size-5"
-                                        [svgIcon]="selectedOrder?.pk_orderID === order.pk_orderID ? 'heroicons_solid:chevron-up' : 'heroicons_solid:chevron-down'">
-                                    </mat-icon>
-                                </button>
-                            </td>
-                        </ng-container> -->
+                                                        <div
+                                                            class="flex items-center justify-between w-full border-t px-8 py-4">
+                                                            <button class="-ml-4" mat-button [color]="'warn'"
+                                                                (click)="deleteSelectedProduct()">
+                                                                Delete
+                                                            </button>
+                                                            <div class="flex items-center">
+                                                                <div class="flex items-center mr-4"
+                                                                    *ngIf="flashMessage">
+                                                                    <ng-container *ngIf="flashMessage === 'success'">
+                                                                        <mat-icon class="text-green-500"
+                                                                            [svgIcon]="'heroicons_outline:check'">
+                                                                        </mat-icon>
+                                                                        <span class="ml-2">Product updated</span>
+                                                                    </ng-container>
+                                                                    <ng-container *ngIf="flashMessage === 'error'">
+                                                                        <mat-icon class="text-red-500"
+                                                                            [svgIcon]="'heroicons_outline:x'">
+                                                                        </mat-icon>
+                                                                        <span class="ml-2">An error occurred, try
+                                                                            again!</span>
+                                                                    </ng-container>
+                                                                </div>
+                                                                <button mat-flat-button [color]="'primary'"
+                                                                    (click)="updateSelectedProduct()">
+                                                                    Update
+                                                                </button>
+                                                            </div>
+                                                        </div>
 
-                        <!-- Product details row -->
-                        <ng-container matColumnDef="orderDetails">
-                            <td class="p-0 border-b-0" mat-cell *matCellDef="let order"
-                                [attr.colspan]="ordersTableColumns.length">
-                                <div class="shadow-lg overflow-hidden"
-                                    [@expandCollapse]="selectedOrder?.pk_orderID === order.pk_orderID ? 'expanded' : 'collapsed'">
-                                    <div class="border-b">
-                                        <!-- Selected order form -->
-                                        <form class="mt-3" [formGroup]="selectedProductForm">
-                                            <div class="row px-5">
-                                                <div class="col-lg-4 col-md-6 col-12">
-                                                    <mat-form-field class="w-full">
-                                                        <mat-label>Order Id</mat-label>
-                                                        <input matInput [formControlName]="'pk_orderID'" readonly>
-                                                    </mat-form-field>
-                                                </div>
-                                                <div class="col-lg-4 col-md-6 col-12">
-                                                    <mat-form-field class="w-full">
-                                                        <mat-label>Cost</mat-label>
-                                                        <span matPrefix>$</span>
-                                                        <input matInput [formControlName]="'total'" readonly>
-                                                    </mat-form-field>
-                                                </div>
-                                                <div class="col-lg-4 col-md-6 col-12">
-                                                    <mat-form-field class="w-full">
-                                                        <mat-label>Order Date</mat-label>
-                                                        <input type="text" matInput [formControlName]="'orderDate'"
-                                                            readonly>
-                                                    </mat-form-field>
-                                                </div>
-                                                <div class="col-lg-4 col-md-6 col-12">
-                                                    <mat-form-field class="w-full">
-                                                        <mat-label>Price</mat-label>
-                                                        <span matSuffix>$</span>
-                                                        <input matInput [formControlName]="'total'" readonly>
-                                                    </mat-form-field>
-                                                </div>
-                                                <div class="col-lg-4 col-md-6 col-12">
-                                                    <mat-form-field class="w-full">
-                                                        <mat-label>Store</mat-label>
-                                                        <input matInput [formControlName]="'storeName'" readonly>
-                                                    </mat-form-field>
-                                                </div>
-                                                <div class="col-lg-4 col-md-6 col-12">
-                                                    <mat-form-field class="w-full">
-                                                        <mat-label>Company</mat-label>
-                                                        <input matInput [formControlName]="'companyName'" readonly>
-                                                    </mat-form-field>
+                                                    </form>
                                                 </div>
                                             </div>
+                                        </td>
+                                    </ng-container>
 
-                                            <div class="flex items-center justify-between w-full border-t px-8 py-4">
-                                                <button class="-ml-4" mat-button [color]="'warn'"
-                                                    (click)="deleteSelectedProduct()">
-                                                    Delete
-                                                </button>
-                                                <div class="flex items-center">
-                                                    <div class="flex items-center mr-4" *ngIf="flashMessage">
-                                                        <ng-container *ngIf="flashMessage === 'success'">
-                                                            <mat-icon class="text-green-500"
-                                                                [svgIcon]="'heroicons_outline:check'"></mat-icon>
-                                                            <span class="ml-2">Product updated</span>
-                                                        </ng-container>
-                                                        <ng-container *ngIf="flashMessage === 'error'">
-                                                            <mat-icon class="text-red-500"
-                                                                [svgIcon]="'heroicons_outline:x'"></mat-icon>
-                                                            <span class="ml-2">An error occurred, try again!</span>
-                                                        </ng-container>
-                                                    </div>
-                                                    <button mat-flat-button [color]="'primary'"
-                                                        (click)="updateSelectedProduct()">
-                                                        Update
-                                                    </button>
-                                                </div>
-                                            </div>
+                                    <tr class="shadow" mat-header-row
+                                        *matHeaderRowDef="ordersTableColumns; sticky: true"></tr>
+                                    <tr class="h-18 hover:bg-gray-100 dark:hover:bg-hover" mat-row
+                                        *matRowDef="let order; columns: ordersTableColumns;"></tr>
+                                    <tr class="h-0" mat-row *matRowDef="let row; columns: ['orderDetails']"></tr>
 
-                                        </form>
-                                    </div>
-                                </div>
-                            </td>
+                                </table>
+
+                            </div>
+
+                            <!-- <mat-paginator
+                class="sm:absolute sm:inset-x-0 sm:bottom-0 border-b sm:border-t sm:border-b-0 z-10 bg-gray-50 dark:bg-transparent"
+                [ngClass]="{'pointer-events-none': isLoading}" [length]="ordersLength" [pageIndex]="pageNo"
+                [pageSize]="pageSize" (page)="pageEvents($event)">
+            </mat-paginator> -->
+
+
+                            <mat-paginator
+                                class="sm:inset-x-0 sm:bottom-0 border-b sm:border-t sm:border-b-0 z-10 bg-gray-50 dark:bg-transparent"
+                                [ngClass]="{'pointer-events-none': isLoading}" [length]="ordersLength" [pageIndex]="0"
+                                [pageSize]="pageSize" (page)="pageEvents($event)" [hidePageSize]="true">
+                            </mat-paginator>
+
                         </ng-container>
 
-                        <tr class="shadow" mat-header-row *matHeaderRowDef="ordersTableColumns; sticky: true"></tr>
-                        <tr class="h-18 hover:bg-gray-100 dark:hover:bg-hover" mat-row
-                            *matRowDef="let order; columns: ordersTableColumns;"></tr>
-                        <tr class="h-0" mat-row *matRowDef="let row; columns: ['orderDetails']"></tr>
+                        <ng-template #noOrders>
+                            <div class="p-8 sm:p-16 border-t text-4xl font-semibold tracking-tight text-center">
+                                There are no orders!
+                            </div>
+                        </ng-template>
 
-                    </table>
+                    </div>
 
                 </div>
+            </div>
+        </mat-drawer-content>
+    </mat-drawer-container>
 
-                <mat-paginator
-                    class="sm:absolute sm:inset-x-0 sm:bottom-0 border-b sm:border-t sm:border-b-0 z-10 bg-gray-50 dark:bg-transparent"
-                    [ngClass]="{'pointer-events-none': isLoading}" [length]="ordersLength" [pageIndex]="pageNo"
-                    [pageSize]="pageSize" [pageSizeOptions]="[10, 25]" (page)="pageEvents($event)">
-                </mat-paginator>
-            </ng-container>
 
-            <ng-template #noOrders>
-                <div class="p-8 sm:p-16 border-t text-4xl font-semibold tracking-tight text-center">There are no orders!
-                </div>
-            </ng-template>
-
-        </div>
-
-    </div>
 
 </div>

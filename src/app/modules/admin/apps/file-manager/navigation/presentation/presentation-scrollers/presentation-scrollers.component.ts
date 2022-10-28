@@ -63,7 +63,9 @@ export class PresentationScrollersComponent implements OnInit {
   ngOnInit() {
     this.initAddTestimonialForm();
     this._fileManagerService.settings$.pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
-      this.testimonialToggle = res["data"][0].blnTestimonials;
+      if (res) {
+        this.testimonialToggle = res["data"][0].blnTestimonials;
+      }
     });
     this.getScreenData('scroller', 'Scrollers', 'get');
   }

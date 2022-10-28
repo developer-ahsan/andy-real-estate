@@ -6,10 +6,11 @@ import { MatSort } from '@angular/material/sort';
 import { merge, Observable, Subject } from 'rxjs';
 import { debounceTime, map, switchMap, takeUntil } from 'rxjs/operators';
 import { fuseAnimations } from '@fuse/animations';
-import { OrdersBrand, OrdersCategory, OrdersList, OrdersPagination, OrdersProduct, OrdersTag, OrdersVendor } from 'app/modules/admin/apps/orders/orders-components/orders.types';
+import { OrdersBrand, OrdersCategory, OrdersList, OrdersPagination, OrdersProduct, OrdersTag, OrdersVendor, SearchOrder } from 'app/modules/admin/apps/orders/orders-components/orders.types';
 import { OrdersService } from 'app/modules/admin/apps/orders/orders-components/orders.service';
 import { Router } from '@angular/router';
-
+import moment from 'moment';
+import { MatDrawer } from '@angular/material/sidenav';
 @Component({
     selector: 'orders-list',
     templateUrl: './orders.component.html',
@@ -44,8 +45,24 @@ export class OrdersListComponent implements OnInit, AfterViewInit, OnDestroy {
 
     pageSize: number;
     pageNo: number;
+    pageIndex = 0;
     keyword: string;
     @Output() isLoadingChange = new EventEmitter<boolean>();
+
+
+    advancedSearch: boolean = false;
+    storesList: any;
+    advancedSearchForm: SearchOrder = {
+        store_id: 0,
+        range_end: '',
+        range_start: '',
+        search_order_id: 0,
+        size: 20,
+        order_type: 0
+    };
+    tempOrdersArray = [];
+    tempTotalCount = 0;
+    @ViewChild('drawer', { static: true }) sidenav: MatDrawer;
 
     /**
      * Constructor
@@ -68,7 +85,7 @@ export class OrdersListComponent implements OnInit, AfterViewInit, OnDestroy {
     ngOnInit(): void {
 
         this.pageSize = 20;
-        this.pageNo = 0;
+        this.pageNo = 1;
 
         // Create the selected order form
         this.selectedProductForm = this._formBuilder.group({
@@ -104,9 +121,12 @@ export class OrdersListComponent implements OnInit, AfterViewInit, OnDestroy {
         this._orderService.orders$
             .pipe(takeUntil(this._unsubscribeAll))
             .subscribe((orders: OrdersList[]) => {
-                console.log("orders on first time =>", orders);
                 this.orders = orders["data"];
                 this.ordersLength = orders["totalRecords"];
+                if (this.tempOrdersArray.length == 0) {
+                    this.tempOrdersArray = orders["data"];
+                    this.tempTotalCount = orders["totalRecords"];
+                }
                 this.isLoading = false;
                 this.isLoadingChange.emit(false);
 
@@ -129,6 +149,8 @@ export class OrdersListComponent implements OnInit, AfterViewInit, OnDestroy {
                 })
             )
             .subscribe();
+
+        this.getStoresList();
     }
 
     /**
@@ -172,11 +194,33 @@ export class OrdersListComponent implements OnInit, AfterViewInit, OnDestroy {
     // @ Public methods
     // -----------------------------------------------------------------------------------------------------
 
-    getOrders(size, pageNo) {
-        this._orderService.getOrders(size, pageNo, this.keyword)
+    getOrders(sizes, pageNo) {
+        let { store_id, range_end, range_start, search_order_id, size, order_type } = this.advancedSearchForm;
+        if (!range_end) {
+            range_end = '';
+        } else {
+            range_end = moment(range_end).format('MM/DD/YYYY');
+        }
+        if (!range_start) {
+            range_start = '';
+        } else {
+            range_start = moment(range_start).format('MM/DD/YYYY');
+        }
+        let params = {
+            list: true,
+            size: sizes,
+            page: pageNo,
+            store_id,
+            range_end,
+            range_start,
+            order_type,
+            search_order_id
+        }
+        this._orderService.getOrders(params)
             .pipe(takeUntil(this._unsubscribeAll))
             .subscribe((orders) => {
                 this.orders = orders["data"];
+                this.ordersLength = orders["totalRecords"];
                 this.isLoading = false;
                 this.isLoadingChange.emit(false);
 
@@ -235,27 +279,32 @@ export class OrdersListComponent implements OnInit, AfterViewInit, OnDestroy {
     }
 
     pageEvents(event: any) {
-        const { pageSize, pageIndex } = event;
+        // const { pageSize, pageIndex } = event;
 
-        if (pageSize !== this.pageSize) {
-            if (this.pageNo === 0) {
-                this.pageNo = 1;
-            }
-            this.getOrders(pageSize, this.pageNo);
-            return;
-        }
+        // if (pageSize !== this.pageSize) {
+        //     if (this.pageNo === 0) {
+        //         this.pageNo = 1;
+        //     }
+        //     this.getOrders(pageSize, this.pageNo);
+        //     return;
+        // }
 
-        if (pageIndex > this.pageNo) {
-            if (this.pageNo === 0) {
-                this.pageNo = 2;
-            } else {
-                this.pageNo++;
-            }
+        // if (pageIndex > this.pageNo) {
+        //     if (this.pageNo === 0) {
+        //         this.pageNo = 2;
+        //     } else {
+        //         this.pageNo++;
+        //     }
+        // } else {
+        //     this.pageNo--;
+        // };
+        const { previousPageIndex, pageIndex } = event;
+        if (pageIndex > previousPageIndex) {
+            this.pageNo++;
         } else {
             this.pageNo--;
         };
-
-        this.getOrders(this.pageSize, this.pageNo);
+        this.getOrders(20, this.pageNo);
     }
 
     /**
@@ -548,5 +597,36 @@ export class OrdersListComponent implements OnInit, AfterViewInit, OnDestroy {
      */
     trackByFn(index: number, item: any): any {
         return item.id || index;
+    }
+
+    openAdvancedSearch() {
+        this.sidenav.toggle();
+    }
+    closeAdvancedSearch() {
+        this.advancedSearch = false;
+        this.advancedSearchForm = {
+            store_id: 0,
+            range_end: '',
+            range_start: '',
+            search_order_id: 0,
+            size: 20,
+            order_type: 0
+        };
+        this.orders = this.tempOrdersArray;
+        this.ordersLength = this.tempTotalCount;
+        this._changeDetectorRef.markForCheck();
+    }
+    getStoresList() {
+        this._orderService.stores$.pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+            this.storesList = res["data"];
+        })
+    }
+    searchOrder() {
+        this.pageNo = 1;
+        this.pageIndex = 0;
+        this.isLoading = true;
+        // this.advancedSearch = false;
+        this.pageSize = this.advancedSearchForm.size;
+        this.getOrders(this.advancedSearchForm.size, 1);
     }
 }

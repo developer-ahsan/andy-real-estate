@@ -131,6 +131,10 @@ export class PresentationComponent implements OnInit, OnDestroy {
   fetureCampaignLoader: boolean = false;
   featureCampaignMsg: boolean = false;
 
+  quickGuides = {
+    screens: ['Quick Guide Header', 'New Quick Guide', 'Current Quick Guides'],
+    mainScreen: 'Quick Guide Header'
+  }
   constructor(
     private _fileManagerService: FileManagerService,
     private _changeDetectorRef: ChangeDetectorRef,
@@ -143,8 +147,9 @@ export class PresentationComponent implements OnInit, OnDestroy {
     this.isLoadingChange.emit(false);
     this.initialize();
     this._fileManagerService.settings$.pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
-      this.ngBlnColorHeader = res["data"][0].blnColorHeaders;
-      console.log(res)
+      if (res) {
+        this.ngBlnColorHeader = res["data"][0].blnColorHeaders;
+      }
     })
   }
   initialize() {
@@ -268,7 +273,9 @@ export class PresentationComponent implements OnInit, OnDestroy {
   // dataSource = [];
   displayedColumns: string[] = ["spid", "name", "master", "store"];
   dataSource = [];
-
+  calledScreenQuickGuide(screenName) {
+    this.quickGuides.mainScreen = screenName;
+  }
   calledScreen(screenName): void {
     this.drawerOpened = false;
     if (screenName != this.presentationScreen) {

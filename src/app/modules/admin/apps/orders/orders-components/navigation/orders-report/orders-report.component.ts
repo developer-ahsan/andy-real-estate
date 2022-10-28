@@ -109,10 +109,10 @@ export class OrdersReportComponent implements OnInit {
       order_line_item: true,
       order_line_id: value
     }
-    this._orderService.getOrderCommonCall(params).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+    this._orderService.getOrderLineProducts(params).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
       this.getProductImprints(value, res["data"]);
     }, err => {
-      this.isLoading = true;
+      this.isLoading = false;
       this.isLoadingChange.emit(false);
       this._changeDetectorRef.markForCheck();
     })
@@ -137,7 +137,7 @@ export class OrdersReportComponent implements OnInit {
       this.isLoadingChange.emit(false);
       this._changeDetectorRef.markForCheck();
     }, err => {
-      this.isLoading = true;
+      this.isLoading = false;
       this.isLoadingChange.emit(false);
       this._changeDetectorRef.markForCheck();
     })

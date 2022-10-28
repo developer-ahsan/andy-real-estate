@@ -81,3 +81,12 @@ export interface OrdersList {
     currentTotal?: number;
     fk_storeUserID: number;
 }
+
+export interface SearchOrder {
+    store_id: number;
+    range_start: string;
+    range_end: string;
+    order_type: number;
+    search_order_id: number;
+    size: number;
+}
