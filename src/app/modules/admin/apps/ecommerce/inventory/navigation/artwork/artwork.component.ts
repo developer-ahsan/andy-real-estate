@@ -51,7 +51,7 @@ export class ArtworkComponent implements OnInit, OnDestroy {
     if (file) {
       let fileExtension = file["name"].split('.').pop();  //return the extension
       let fileName = !this.artWorkData.length ? `1.${fileExtension}` : `${this.artWorkData.length + 1}.${fileExtension}`;
-      let fileType = fileExtension == "pdf" ? "application/pdf" : file["type"];
+      let fileType = fileExtension;
       const reader = new FileReader();
       reader.readAsDataURL(file);
       reader.onload = () => {
@@ -76,9 +76,8 @@ export class ArtworkComponent implements OnInit, OnDestroy {
 
     const { fileUpload, fileType, fileName } = this.images;
 
-    if (fileType == 'image/jpeg' ||
-      fileType == 'application/pdf' ||
-      fileType == 'application/postscript') {
+    const allowedTypes = ['jpg', 'psd', 'ai', 'pdf', 'eps'];
+    if (allowedTypes.includes(fileType)) {
       const { pk_productID } = this.selectedProduct;
       const base64 = fileUpload.split(",")[1];
       const payload = {
@@ -87,29 +86,31 @@ export class ArtworkComponent implements OnInit, OnDestroy {
         image_path: `/globalAssets/Products/ArtworkTemplates/${pk_productID}/${pk_productID}-${fileName}`
       };
 
+      const dbPayload = {
+        product_id: pk_productID,
+        template_name: fileType,
+        artwork: true
+      };
+
       this.imageUploadLoader = true;
       this._inventoryService.addArtworkTemplate(payload)
         .subscribe((response) => {
-          this._inventoryService.getArtworkTemplateByProductId(pk_productID)
-            .pipe(takeUntil(this._unsubscribeAll))
-            .subscribe((artwork) => {
-              this.artWorkData = artwork["data"];
+          this._inventoryService.addArtworkTemplateToDb(dbPayload)
+            .subscribe((dbResponse) => {
+              console.log("dbResponse", dbResponse)
+              this.artWorkData = dbResponse["artworks"];
               this._snackBar.open("File uploaded successfully", '', {
                 horizontalPosition: 'center',
                 verticalPosition: 'bottom',
                 duration: 3500
               });
               this.imageUploadLoader = false;
-              this.artWorkData.push({
-                pk_artworkTemplateID: 1,
-                extension: "pdf"
-              });
 
               // Mark for check
               this._changeDetectorRef.markForCheck();
             }, err => {
               this.imageUploadLoader = false;
-              this._snackBar.open("Some error occured", '', {
+              this._snackBar.open("Some error occured while saving file details to server", '', {
                 horizontalPosition: 'center',
                 verticalPosition: 'bottom',
                 duration: 3500
@@ -117,7 +118,7 @@ export class ArtworkComponent implements OnInit, OnDestroy {
 
               // Mark for check
               this._changeDetectorRef.markForCheck();
-            });
+            })
         }, err => {
           this.imageUploadLoader = false;
           this._snackBar.open("Some error occured", '', {
@@ -139,7 +140,7 @@ export class ArtworkComponent implements OnInit, OnDestroy {
     };
   };
 
-  openPdf(artWork) {
+  accessFile(artWork) {
     const { pk_productID } = this.selectedProduct;
     const url = `${environment.productMedia}/artworkTemplates/${pk_productID}/1.pdf`;
     window.open(url);

@@ -5,11 +5,11 @@
     <div class="col-12 my-2">
         <fuse-card class="rounded-2xl shadow bg-card flex flex-col lg:flex-row w-full">
             <div class="p-6 sm:p-8 lg:p-10 w-full">
-                <div class="text-2xl font-bold">
-                    <button [matTooltip]="'PDF, EPS, AI, PSD, and JPG file formats only!'">
-                        <i class="fa fa-info-circle"></i>
-                    </button>
+                <div class="text-3xl font-semibold tracking-tight leading-8">
                     Upload Artwork Template
+                </div>
+                <div class="font-medium tracking-tight text-secondary">
+                    PDF, EPS, AI, PSD, and JPG file formats only!
                 </div>
                 <!-- Artwork template -->
                 <div class="gap-y-4 mt-6">
@@ -40,32 +40,27 @@
     <div class="col-12 my-2">
         <fuse-card class="rounded-2xl shadow bg-card flex flex-col lg:flex-row w-full">
             <div class="p-6 sm:p-8 lg:p-10 w-full">
-                <div class="text-2xl font-bold">
+                <div class="text-3xl font-semibold tracking-tight leading-8">
                     Current artwork templates
                 </div>
-                <!-- <div class="row">
-                    <div class="col-12 text-secondary">
-                        PDF, EPS, AI, PSD, and JPG file formats only!
-                    </div>
-                </div> -->
+                <div class="font-medium tracking-tight text-secondary">
+                    {{artWorkData.length}} records found
+                </div>
+
                 <!-- Artwork template -->
                 <div class="gap-y-4 mt-6">
                     <div class="row p-2" *ngIf="artWorkData.length > 0;else other_content">
-                        <div class="col-lg-4 col-12" *ngFor="let artWork of artWorkData">
-                            <fuse-card class="flex flex-col items-center w-full p-8 filter-info bg-light rounded-2xl">
+                        <div class="col-lg-3 col-4" *ngFor="let artWork of artWorkData">
+                            <fuse-card class="flex flex-col items-center w-full p-8 shadow-xl bg-light rounded-2xl">
                                 <div class="flex items-center justify-center p-5 rounded-full bg-primary-100 dark:bg-gray-600 hover:cursor-pointer hover:opacity-80"
-                                    style="cursor: pointer;" (click)="openPdf(artWork)">
+                                    style="cursor: pointer;" (click)="accessFile(artWork)">
                                     <mat-icon class="icon-size-10 text-primary-500 dark:text-primary-300"
                                         svgIcon="mat_solid:picture_as_pdf"></mat-icon>
                                 </div>
                                 <div class="flex items-center justify-center p-2 font-semibold text-sm hover:cursor-pointer hover:opacity-80"
-                                    style="cursor: pointer;" (click)="openPdf(artWork)">
+                                    style="cursor: pointer;" (click)="accessFile(artWork)">
                                     {{artWork.name}}
                                 </div>
-                                <!-- <button class="px-6 mt-8" mat-stroked-button>
-                                    <mat-icon svgIcon="mat_outline:remove_circle_outline"></mat-icon>
-                                    <span class="ml-2">Remove</span>
-                                </button> -->
                             </fuse-card>
                         </div>
                     </div>

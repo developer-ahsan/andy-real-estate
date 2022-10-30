@@ -921,6 +921,13 @@ export class InventoryService {
             environment.products, payload, { headers });
     };
 
+    // ADD ARTWORK TEMPLATE INTO DB
+    addArtworkTemplateToDb(payload) {
+        const headers = { 'Authorization': `Bearer ${this._authService.accessToken}` };
+        return this._httpClient.post(
+            environment.products, payload, { headers });
+    };
+
     // ADD DIETARY MEDIA
     addDietaryMedia(payload) {
         const headers = { 'Authorization': `Bearer ${this._authService.accessToken}` };
