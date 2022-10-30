@@ -1,6 +1,6 @@
 <ngx-skeleton-loader count="8" appearance="line" animation="pulse" *ngIf="isLoading">
 </ngx-skeleton-loader>
-<div class="row my-3" *ngIf="!isLoading && selectedTerm">
+<div class="row my-3" *ngIf="!isLoading && selectedTerm && radioButtonForm">
     <div class="col-12">
         <fuse-card class="rounded-2xl shadow bg-card flex flex-col lg:flex-row w-full">
             <div class="p-6 sm:p-8 lg:p-10 w-full">
@@ -58,7 +58,7 @@
                         Licensing Terms
                     </div>
                 </div>
-                <div class="col-lg-5 col-12">
+                <div class="col-lg-5 col-12" *ngIf="radioButtonForm">
                     <mat-form-field class="fuse-mat-dense fuse-mat-no-subscript w-full mt-3">
                         <mat-icon matPrefix [svgIcon]="'heroicons_outline:search'"></mat-icon>
                         <input class="h-6" matInput (input)="searchKeyword($event)" [autocomplete]="'off'"
@@ -67,7 +67,7 @@
                 </div>
             </div>
             <form [formGroup]="licensingForm">
-                <div class="row" *ngIf="!radioButtonForm">
+                <div class="row p-6 pt-0 sm:p-8 sm:pt-0 lg:p-6 lg:pt-0 w-full" *ngIf="!radioButtonForm">
                     <div class="col-12 my-3">
                         <mat-form-field class="w-full" appearance="fill">
                             <mat-label>Select licensing company</mat-label>
@@ -95,7 +95,7 @@
                                     <mat-expansion-panel class="my-2"
                                         [expanded]="license.pk_licensingTermID === selectedTermObject.pk_licensingTermID ? true : false"
                                         (opened)="expansionOpened(license)"
-                                        [ngStyle]="license.Selected ? {'background-color':'rgba(15,23,42,0.36)'} : {'background-color': 'transparent'}">
+                                        [ngStyle]="license.Selected ? {'background-color':'#0F172A'} : {'background-color': 'transparent'}">
                                         <mat-expansion-panel-header>
                                             <mat-panel-title
                                                 [ngStyle]="license.Selected ? {'color':'white'} : {'color': 'black'}">
@@ -145,7 +145,7 @@
 <ng-template #myCard>
     <ngx-skeleton-loader count="4" appearance="line" animation="pulse" *ngIf="expansionLoader">
     </ngx-skeleton-loader>
-    <div class="row" *ngIf="!expansionLoader">
+    <div class="row mt-4" *ngIf="!expansionLoader">
         <div class="col-lg-6 col-12" *ngFor="let item of subCategoryItems">
             <mat-radio-group name="internalList">
                 <mat-radio-button style="min-width: -webkit-fill-available;" [checked]="item.Selected" [value]="item"

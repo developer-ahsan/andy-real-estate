@@ -30,6 +30,7 @@ export class InventoryService {
     private _tags: BehaviorSubject<InventoryTag[] | null> = new BehaviorSubject(null);
     private _vendors: BehaviorSubject<InventoryVendor[] | null> = new BehaviorSubject(null);
     private _suppliers: BehaviorSubject<any[] | null> = new BehaviorSubject<any[]>(null);
+    private _productLicensingTerms: BehaviorSubject<any[] | null> = new BehaviorSubject<any[]>(null);
     private _stores: BehaviorSubject<any[] | null> = new BehaviorSubject<any[]>(null);
     public navigationLabels = navigations;
     opts = [];
@@ -105,6 +106,10 @@ export class InventoryService {
 
     get stores$(): Observable<any[]> {
         return this._stores.asObservable();
+    };
+
+    get productLicensingTerms$(): Observable<any[]> {
+        return this._productLicensingTerms.asObservable();
     };
 
     // -----------------------------------------------------------------------------------------------------
@@ -366,9 +371,9 @@ export class InventoryService {
 
     // Made stores observable
     getAllStores(): Observable<any[]> {
-        return this._httpClient.get<any[]>(environment.stores, {
+        return this._httpClient.get<any[]>(environment.products, {
             params: {
-                list: true,
+                stores_list: true,
                 size: 2000
             }
         }).pipe(
@@ -801,7 +806,11 @@ export class InventoryService {
                 product_id: productId,
                 size: 500
             }
-        });
+        }).pipe(
+            tap((response: any) => {
+                this._productLicensingTerms.next(response);
+            })
+        );
     };
 
     getPromoStandardProductDetails(productNumber, supplierId): Observable<any[]> {
@@ -1224,9 +1233,9 @@ export class InventoryService {
         return this._httpClient.post(
             environment.products, payload, { headers });
     };
-    updateProductLicensingTerm(payload: ProductLicensing_Term) {
+    updateProductLicensingTerm(payload: any) {
         const headers = { 'Authorization': `Bearer ${this._authService.accessToken}` };
-        return this._httpClient.put(
+        return this._httpClient.post(
             environment.products, payload, { headers });
     };
     UpdateProductDescription(payload: UpdateProductDescription) {

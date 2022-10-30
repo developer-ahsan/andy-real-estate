@@ -1,8 +1,8 @@
 import { Injectable } from '@angular/core';
 import { ActivatedRouteSnapshot, Resolve, Router, RouterStateSnapshot } from '@angular/router';
-import { Observable, throwError } from 'rxjs';
+import { Observable } from 'rxjs';
 import { InventoryService } from 'app/modules/admin/apps/ecommerce/inventory/inventory.service';
-import { InventoryPagination, ProductsList } from 'app/modules/admin/apps/ecommerce/inventory/inventory.types';
+import { ProductsList } from 'app/modules/admin/apps/ecommerce/inventory/inventory.types';
 
 @Injectable({
     providedIn: 'root'
@@ -137,6 +137,32 @@ export class SystemDistributorCodes implements Resolve<any>
     }
 }
 
+@Injectable({
+    providedIn: 'root'
+})
+export class LicensingTermResolver implements Resolve<any>
+{
+    /**
+     * Constructor
+     */
+    constructor(private _inventoryService: InventoryService) {
+    }
+
+    // -----------------------------------------------------------------------------------------------------
+    // @ Public methods
+    // -----------------------------------------------------------------------------------------------------
+
+    /**
+     * Resolver
+     *
+     * @param route
+     * @param state
+     */
+    resolve(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<any[]> {
+        const id = route.params['id'];
+        return this._inventoryService.getLicensingTerms(id);
+    }
+};
 
 
 

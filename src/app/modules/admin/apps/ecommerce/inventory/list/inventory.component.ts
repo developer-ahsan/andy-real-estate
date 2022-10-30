@@ -3071,7 +3071,7 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
             product_id: this.productId,
             licensing_term_id: this.selectedRadioOption.fk_licensingTermID,
             sub_category_id: this.selectedRadioOption.pk_licensingTermSubCategoryID,
-            licensing_term: true
+            create_product_licensing: true
         };
         this._inventoryService.updateProductLicensingTerm(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
             this.updateProductLicensingLoader = false;

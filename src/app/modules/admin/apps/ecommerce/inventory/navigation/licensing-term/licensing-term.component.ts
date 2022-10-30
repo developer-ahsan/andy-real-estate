@@ -60,11 +60,10 @@ export class LicensingTermComponent implements OnInit, OnDestroy {
 
           // Mark for check
           this._changeDetectorRef.markForCheck();
-          this._inventoryService.getLicensingTerms(pk_productID)
+          this._inventoryService.productLicensingTerms$
             .pipe(takeUntil(this._unsubscribeAll))
             .subscribe((licensingTerms) => {
               this.licensingTerms = licensingTerms["data"];
-              console.log(licensingTerms)
               this.dummyLicensingTerms = licensingTerms["data"];
               for (const term of this.licensingTerms) {
                 if (term.Selected == "true") {
@@ -90,19 +89,15 @@ export class LicensingTermComponent implements OnInit, OnDestroy {
               this.licensingCompanies = licensingCompany["data"];
               // Mark for check
               this._changeDetectorRef.markForCheck();
-              this._inventoryService.getLicensingTerms(pk_productID)
+              this._inventoryService.productLicensingTerms$
                 .pipe(takeUntil(this._unsubscribeAll))
                 .subscribe((licensingTerms) => {
 
                   this.licensingTerms = licensingTerms["data"];
                   this.dummyLicensingTerms = licensingTerms["data"];
 
-                  for (const term of this.licensingTerms) {
-                    if (term.Selected == "true") {
-                      this.selectedTerm = term;
-                      this.selectedTermObject = term;
-                    }
-                  };
+                  this.selectedTerm = this.licensingTerms[0];
+                  this.selectedTermObject = this.licensingTerms[0];
 
                   this._inventoryService.getLicensingSubCategory(this.selectedTerm?.pk_licensingTermID, pk_productID)
                     .pipe(takeUntil(this._unsubscribeAll))
