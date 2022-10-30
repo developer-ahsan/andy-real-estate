@@ -29,7 +29,8 @@ export class LicensingTermComponent implements OnInit, OnDestroy {
   selectedRadioOption = null;
   termUpdateLoader = false;
   selectedTermUpdateLoader = false;
-  radioButtonForm = false;
+  radioButtonForm = true;
+  showCompanyDropdown: boolean = false;
 
   isSelectedUpdating: boolean = false;
 
@@ -55,61 +56,35 @@ export class LicensingTermComponent implements OnInit, OnDestroy {
       .pipe(takeUntil(this._unsubscribeAll))
       .subscribe((companyTerms) => {
 
-        if (companyTerms["data"]?.length) {
-          this.radioButtonForm = true;
+        this._inventoryService.productLicensingTerms$
+          .pipe(takeUntil(this._unsubscribeAll))
+          .subscribe((licensingTerms) => {
 
-          // Mark for check
-          this._changeDetectorRef.markForCheck();
-          this._inventoryService.productLicensingTerms$
-            .pipe(takeUntil(this._unsubscribeAll))
-            .subscribe((licensingTerms) => {
-              this.licensingTerms = licensingTerms["data"];
-              this.dummyLicensingTerms = licensingTerms["data"];
+            // Licensing terms list
+            this.licensingTerms = licensingTerms["data"];
+            this.dummyLicensingTerms = licensingTerms["data"];
+
+            if (companyTerms["data"]?.length) {
               for (const term of this.licensingTerms) {
                 if (term.Selected == "true") {
                   this.selectedTerm = term;
                   this.selectedTermObject = term;
                 }
               };
-
-              this._inventoryService.getLicensingSubCategory(this.selectedTerm?.pk_licensingTermID, pk_productID)
+            } else {
+              this.selectedTerm = this.licensingTerms[0];
+              this.selectedTermObject = this.licensingTerms[0];
+              this._inventoryService.getLicensingCompany()
                 .pipe(takeUntil(this._unsubscribeAll))
-                .subscribe((subCategories) => {
-                  this.selectedSubCategItems = subCategories["data"];
+                .subscribe((licensingCompany) => {
+                  this.licensingCompanies = licensingCompany["data"];
 
-                  // Mark for check
-                  this._changeDetectorRef.markForCheck();
-                  this.isLoadingChange.emit(false);
-                });
-            });
-        } else {
-          this._inventoryService.getLicensingCompany()
-            .pipe(takeUntil(this._unsubscribeAll))
-            .subscribe((licensingCompany) => {
-              this.licensingCompanies = licensingCompany["data"];
-              // Mark for check
-              this._changeDetectorRef.markForCheck();
-              this._inventoryService.productLicensingTerms$
-                .pipe(takeUntil(this._unsubscribeAll))
-                .subscribe((licensingTerms) => {
-
-                  this.licensingTerms = licensingTerms["data"];
-                  this.dummyLicensingTerms = licensingTerms["data"];
-
-                  this.selectedTerm = this.licensingTerms[0];
-                  this.selectedTermObject = this.licensingTerms[0];
-
-                  this._inventoryService.getLicensingSubCategory(this.selectedTerm?.pk_licensingTermID, pk_productID)
-                    .pipe(takeUntil(this._unsubscribeAll))
-                    .subscribe((subCategories) => {
-                      this.selectedSubCategItems = subCategories["data"];
-
-                      this.isLoadingChange.emit(false);
-                      // Mark for check
-                      this._changeDetectorRef.markForCheck();
-                    });
+                  if (this.licensingCompanies.length > 1) {
+                    this.showCompanyDropdown = true;
+                    this.radioButtonForm = false;
+                  };
                 }, err => {
-                  this._snackBar.open("Some error occured while fetching subcate", '', {
+                  this._snackBar.open("Some error occured while fetching Licensing companies", '', {
                     horizontalPosition: 'center',
                     verticalPosition: 'bottom',
                     duration: 3500
@@ -119,8 +94,34 @@ export class LicensingTermComponent implements OnInit, OnDestroy {
                   // Mark for check
                   this._changeDetectorRef.markForCheck();
                 });
-            });
-        }
+            };
+
+            this._inventoryService.getLicensingSubCategory(this.selectedTerm?.pk_licensingTermID, pk_productID)
+              .pipe(takeUntil(this._unsubscribeAll))
+              .subscribe((subCategories) => {
+                this.selectedSubCategItems = subCategories["data"];
+
+                this.isLoadingChange.emit(false);
+
+
+                // Mark for check
+                this._changeDetectorRef.markForCheck();
+              }, err => {
+                this._snackBar.open("Some error occured while fetching subcategories", '', {
+                  horizontalPosition: 'center',
+                  verticalPosition: 'bottom',
+                  duration: 3500
+                });
+                this.isLoadingChange.emit(false);
+
+                // Mark for check
+                this._changeDetectorRef.markForCheck();
+              });
+
+
+            // Mark for check
+            this._changeDetectorRef.markForCheck();
+          });
       }, err => {
         this._snackBar.open("Some error occured", '', {
           horizontalPosition: 'center',

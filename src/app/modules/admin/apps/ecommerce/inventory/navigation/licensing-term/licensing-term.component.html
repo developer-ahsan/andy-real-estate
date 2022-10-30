@@ -67,7 +67,8 @@
                 </div>
             </div>
             <form [formGroup]="licensingForm">
-                <div class="row p-6 pt-0 sm:p-8 sm:pt-0 lg:p-6 lg:pt-0 w-full" *ngIf="!radioButtonForm">
+                <div class="row p-6 pt-0 sm:p-8 sm:pt-0 lg:p-6 lg:pt-0 w-full"
+                    *ngIf="!radioButtonForm && showCompanyDropdown">
                     <div class="col-12 my-3">
                         <mat-form-field class="w-full" appearance="fill">
                             <mat-label>Select licensing company</mat-label>
