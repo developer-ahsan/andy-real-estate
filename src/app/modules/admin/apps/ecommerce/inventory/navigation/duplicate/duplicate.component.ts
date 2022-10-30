@@ -44,6 +44,12 @@ export class DuplicateComponent implements OnInit, OnDestroy {
   ) { }
 
   ngOnInit(): void {
+
+    // Loader setting to false
+    this.isLoadingChange.emit(false);
+
+    // Mark for check
+    this._changeDetectorRef.markForCheck();
   }
 
   addDuplicate(): void {
