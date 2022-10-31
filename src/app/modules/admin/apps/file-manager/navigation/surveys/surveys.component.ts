@@ -16,7 +16,7 @@ export class SurveysComponent implements OnInit, OnDestroy {
   private _unsubscribeAll: Subject<any> = new Subject<any>();
 
   dataSource = [];
-  displayedColumns: string[] = ['pk_surveyID', 'dateCreated', 'name', 'blnFinalized', 'blnAutomate'];
+  displayedColumns: string[] = ['pk_surveyID', 'dateCreated', 'name', 'blnAutomate', 'blnFinalized'];
   duplicatedDataSource = [];
   dataSourceLoading: boolean = true;
   dataSourceTotalRecord: number;

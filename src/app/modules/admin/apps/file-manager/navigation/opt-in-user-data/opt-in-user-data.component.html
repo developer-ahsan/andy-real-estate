@@ -12,30 +12,34 @@
               </div>
             </div>
             <div class="col-12 pt-6">
-              <form>
-                <div class="row">
-                  <div class="col-12">
-                    <mat-form-field class="w-full">
-                      <mat-label>What contacts do you want to include:</mat-label>
-                      <mat-select matInput [(ngModel)]="ngFilterType" name="filter">
-                        <mat-option value="all">All Contacts</mat-option>
-                        <mat-option [value]="1">Opt-in Contacts Only</mat-option>
-                        <mat-option [value]="0">Opt-out Contacts Only</mat-option>
-                      </mat-select>
-                    </mat-form-field>
-                  </div>
-                  <div class="col-12 flex justify-end">
-                    <mat-label></mat-label>
-                    <button class="w-full md:w-50 lg:w-50" mat-stroked-button [matTooltip]="'Opt-In User Data File'"
-                      (click)="getUserData()" [disabled]="isPageLoading">
-                      <mat-progress-spinner *ngIf="isPageLoading" [diameter]="24" [mode]="'indeterminate'">
-                      </mat-progress-spinner>
-                      <span *ngIf="!isPageLoading"><i class='fas fa-cloud-download-alt'></i></span>
-                      <span class="ml-2 mr-1">Go</span>
-                    </button>
-                  </div>
+              <div class="row">
+                <div class="col-12">
+                  <mat-form-field class="w-full">
+                    <mat-label>What contacts do you want to include:</mat-label>
+                    <mat-select matInput [(ngModel)]="ngFilterType" name="filter">
+                      <mat-option value="all">All Contacts</mat-option>
+                      <mat-option [value]="1">Opt-in Contacts Only</mat-option>
+                      <mat-option [value]="0">Opt-out Contacts Only</mat-option>
+                    </mat-select>
+                  </mat-form-field>
                 </div>
-              </form>
+                <div class="col-12 flex justify-end">
+                  <mat-label></mat-label>
+                  <button class="w-full md:w-50 lg:w-50" mat-stroked-button [matTooltip]="'Opt-In User Data File'"
+                    (click)="getUserData()" [disabled]="isPageLoading">
+                    <mat-progress-spinner *ngIf="isPageLoading" [diameter]="24" [mode]="'indeterminate'">
+                    </mat-progress-spinner>
+                    <svg *ngIf="!isPageLoading" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"
+                      fill="currentColor" fit="" height="24" width="24" preserveAspectRatio="xMidYMid meet"
+                      focusable="false">
+                      <path
+                        d="M7.707 10.293a1 1 0 10-1.414 1.414l3 3a1 1 0 001.414 0l3-3a1 1 0 00-1.414-1.414L11 11.586V6h5a2 2 0 012 2v7a2 2 0 01-2 2H4a2 2 0 01-2-2V8a2 2 0 012-2h5v5.586l-1.293-1.293zM9 4a1 1 0 012 0v2H9V4z">
+                      </path>
+                    </svg>
+                    <span class="ml-2 mr-1">Export</span>
+                  </button>
+                </div>
+              </div>
             </div>
           </div>
         </div>

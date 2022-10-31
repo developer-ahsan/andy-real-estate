@@ -38,74 +38,83 @@
 
                 <div class="col-12 h-full" *ngIf="!isKeywordSearch">
                     <ng-container *ngIf="dataSource.length > 0; else noRecords">
-                        <table mat-table [dataSource]="dataSource" class="w-full">
-                            <div class="color-blue">
-                                <!-- PID Column -->
-                                <ng-container matColumnDef="pid">
-                                    <th class="min-w-10 bg-gray-50 dark:bg-black dark:bg-opacity-5" mat-header-cell
-                                        *matHeaderCellDef>
-                                        PID
-                                    </th>
-                                    <td mat-cell *matCellDef="let element">{{ element.fk_productID }}</td>
-                                </ng-container>
+                        <div class="overflow-auto" cdkScrollable>
+                            <table mat-table [dataSource]="dataSource" class="w-full">
+                                <div class="color-blue">
+                                    <!-- PID Column -->
+                                    <ng-container matColumnDef="pid">
+                                        <th class="min-w-10 bg-gray-50 dark:bg-black dark:bg-opacity-5" mat-header-cell
+                                            *matHeaderCellDef>
+                                            PID
+                                        </th>
+                                        <td mat-cell *matCellDef="let element">{{ element.fk_productID }}</td>
+                                    </ng-container>
 
-                                <!-- SPID Column -->
-                                <ng-container matColumnDef="spid">
-                                    <th class="min-w-10 bg-gray-50 dark:bg-black dark:bg-opacity-5" mat-header-cell
-                                        *matHeaderCellDef>
-                                        SPID
-                                    </th>
-                                    <td mat-cell *matCellDef="let element">{{ element.pk_storeProductID }}</td>
-                                </ng-container>
+                                    <!-- SPID Column -->
+                                    <ng-container matColumnDef="spid">
+                                        <th class="min-w-10 bg-gray-50 dark:bg-black dark:bg-opacity-5" mat-header-cell
+                                            *matHeaderCellDef>
+                                            SPID
+                                        </th>
+                                        <td mat-cell *matCellDef="let element">{{ element.pk_storeProductID }}</td>
+                                    </ng-container>
 
-                                <!-- SID Column -->
-                                <ng-container matColumnDef="sid">
-                                    <th class="min-w-10 bg-gray-50 dark:bg-black dark:bg-opacity-5" mat-header-cell
-                                        *matHeaderCellDef>
-                                        SID
-                                    </th>
-                                    <td mat-cell *matCellDef="let element">{{ element.productNumber }}</td>
-                                </ng-container>
+                                    <!-- SID Column -->
+                                    <ng-container matColumnDef="sid">
+                                        <th class="min-w-10 bg-gray-50 dark:bg-black dark:bg-opacity-5" mat-header-cell
+                                            *matHeaderCellDef>
+                                            SID
+                                        </th>
+                                        <td mat-cell *matCellDef="let element">{{ element.productNumber }}</td>
+                                    </ng-container>
 
-                                <!-- Name Column -->
-                                <ng-container matColumnDef="name">
-                                    <th class="min-w-40 bg-gray-50 dark:bg-black dark:bg-opacity-5" mat-header-cell
-                                        *matHeaderCellDef>
-                                        Product
-                                    </th>
-                                    <td mat-cell *matCellDef="let element">
-                                        {{ element.productName }}
-                                    </td>
-                                </ng-container>
+                                    <!-- Name Column -->
+                                    <ng-container matColumnDef="name">
+                                        <th class="min-w-40 bg-gray-50 dark:bg-black dark:bg-opacity-5" mat-header-cell
+                                            *matHeaderCellDef>
+                                            Product
+                                        </th>
+                                        <td mat-cell *matCellDef="let element">
+                                            {{ element.productName }}
+                                        </td>
+                                    </ng-container>
 
-                                <!-- Master Column -->
-                                <ng-container matColumnDef="master">
-                                    <th class="min-w-24 bg-gray-50 dark:bg-black dark:bg-opacity-5" mat-header-cell
-                                        *matHeaderCellDef>
-                                        Master
-                                    </th>
-                                    <td mat-cell *matCellDef="let element">
-                                        <span *ngIf="element.blnActive" style="color: green;">Active</span>
-                                        <span *ngIf="!element.blnActive" style="color: red;">Inactive</span>
-                                    </td>
-                                </ng-container>
+                                    <!-- Master Column -->
+                                    <ng-container matColumnDef="master">
+                                        <th class="min-w-24 bg-gray-50 dark:bg-black dark:bg-opacity-5" mat-header-cell
+                                            *matHeaderCellDef>
+                                            Master
+                                        </th>
+                                        <td mat-cell *matCellDef="let element">
+                                            <span *ngIf="element.blnActive" style="color: green;">Active</span>
+                                            <span *ngIf="!element.blnActive" style="color: red;">Inactive</span>
+                                        </td>
+                                    </ng-container>
 
-                                <!-- Store Column -->
-                                <ng-container matColumnDef="store">
-                                    <th class="min-w-24 bg-gray-50 dark:bg-black dark:bg-opacity-5" mat-header-cell
-                                        *matHeaderCellDef>
-                                        Store
-                                    </th>
-                                    <td mat-cell *matCellDef="let element">
-                                        <span *ngIf="element.blnStoreActive" style="color: green;">Online</span>
-                                        <span *ngIf="!element.blnStoreActive" style="color: red;">Offline</span>
-                                    </td>
-                                </ng-container>
-                            </div>
-                            <tr mat-header-row class="h-16 shadow bg-card" *matHeaderRowDef="displayedColumns"></tr>
-                            <tr mat-row class="hover:bg-gray-100 dark:hover:bg-hover" style="cursor: pointer;"
-                                *matRowDef="let row; columns: displayedColumns"></tr>
-                        </table>
+                                    <!-- Store Column -->
+                                    <ng-container matColumnDef="store">
+                                        <th class="min-w-24 bg-gray-50 dark:bg-black dark:bg-opacity-5" mat-header-cell
+                                            *matHeaderCellDef>
+                                            Store
+                                        </th>
+                                        <td mat-cell *matCellDef="let element">
+                                            <span *ngIf="element.blnStoreActive" style="color: green;">Online</span>
+                                            <span *ngIf="!element.blnStoreActive" style="color: red;">Offline</span>
+                                        </td>
+                                    </ng-container>
+                                </div>
+                                <tr mat-header-row class="h-16 shadow bg-card" *matHeaderRowDef="displayedColumns"></tr>
+                                <tr mat-row class="hover:bg-gray-100 dark:hover:bg-hover" style="cursor: pointer;"
+                                    *matRowDef="let row; columns: displayedColumns"></tr>
+                            </table>
+                        </div>
+
+                        <mat-paginator
+                            class="sm:absolute sm:inset-x-0 sm:bottom-0 border-b sm:border-t sm:border-b-0 z-10 bg-gray-50 dark:bg-transparent"
+                            [ngClass]="{'pointer-events-none': isLoading}" (page)="getNextData($event)"
+                            [length]="dataSourceTotalRecord" [pageIndex]="0" [pageSize]="20" [hidePageSize]="true">
+                        </mat-paginator>
+
                     </ng-container>
                     <ng-template #noRecords>
                         <div class="font-semibold tracking-tight text-center">
@@ -113,13 +122,13 @@
                         </div>
                     </ng-template>
                 </div>
-                <div class="col-12" *ngIf="!isKeywordSearch">
+                <!-- <div class="col-12" *ngIf="!isKeywordSearch">
                     <mat-paginator
                         class="sm:absolute sm:inset-x-0 sm:bottom-0 border-b sm:border-t sm:border-b-0 z-10 bg-gray-50 dark:bg-transparent"
                         [ngClass]="{'pointer-events-none': isLoading}" (page)="getNextData($event)"
                         [length]="dataSourceTotalRecord" [pageIndex]="0" [pageSize]="20" [hidePageSize]="true">
                     </mat-paginator>
-                </div>
+                </div> -->
             </div>
         </fuse-card>
     </div>

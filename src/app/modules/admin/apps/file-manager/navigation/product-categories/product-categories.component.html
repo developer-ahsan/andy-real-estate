@@ -40,24 +40,6 @@
                                         element.categoryName }}</td>
                                 </ng-container>
 
-                                <!-- Vendor Column -->
-                                <!-- <ng-container matColumnDef="vendor">
-                                    <th class="min-w-10 bg-gray-50 dark:bg-black dark:bg-opacity-5 text-center"
-                                        mat-header-cell *matHeaderCellDef>
-                                        PRODUCTS
-                                    </th>
-                                    <td mat-cell *matCellDef="let element" class="text-center">{{ element.vendor }}</td>
-                                </ng-container> -->
-
-                                <!-- Master Column -->
-                                <!-- <ng-container matColumnDef="master">
-                                    <th class="min-w-10 bg-gray-50 dark:bg-black dark:bg-opacity-5 text-center"
-                                        mat-header-cell *matHeaderCellDef>
-                                        ACTIVE
-                                    </th>
-                                    <td mat-cell *matCellDef="let element" class="text-center">{{ element.master }}</td>
-                                </ng-container> -->
-
                                 <!-- isRecommended Column -->
                                 <ng-container matColumnDef="isRecommended">
                                     <th class="min-w-10 bg-gray-50 dark:bg-black dark:bg-opacity-5 text-center"
@@ -117,29 +99,6 @@
                                             </mat-icon>
                                         </button>
                                     </td>
-                                    <!-- <td mat-cell *matCellDef="let element">
-                                        <mat-accordion>
-                                            <mat-expansion-panel
-                                                [expanded]="selectedCategory?.pk_categoryID == element?.pk_categoryID ? true : false"
-                                                (opened)="openedAccordion(element)" hideToggle>
-                                                <mat-expansion-panel-header>
-                                                    <mat-panel-title>
-                                                        Subcategories
-                                                    </mat-panel-title>
-                                                </mat-expansion-panel-header>
-                                                <ngx-skeleton-loader count="3" appearance="line" animation="pulse"
-                                                    *ngIf="!subCategories.length">
-                                                </ngx-skeleton-loader>
-                                                <div *ngIf="subCategories.length">
-                                                    <mat-action-row *ngFor="let subCategory of subCategories"
-                                                        class="justify-content-start">
-                                                        <small class="hover:border-b"
-                                                            style="font-size: 10px;">{{subCategory.subCategoryName}}</small>
-                                                    </mat-action-row>
-                                                </div>
-                                            </mat-expansion-panel>
-                                        </mat-accordion>
-                                    </td> -->
                                 </ng-container>
 
                                 <!-- Sub categories row -->
@@ -208,7 +167,7 @@
 
                             </div>
 
-                            <tr class="shadow" mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+                            <tr class="shadow h-16" mat-header-row *matHeaderRowDef="displayedColumns"></tr>
                             <tr mat-row class="cursor-pointer" *matRowDef="let row; columns: displayedColumns"></tr>
                             <tr class="h-0 border-b-1" mat-row *matRowDef="let row; columns: ['SubCategoriesList']">
                             </tr>
@@ -239,7 +198,7 @@
                         {{item.categoryName}}
                     </mat-checkbox>
                 </div>
-                <div class="col-12 px-10">
+                <div class="col-12 px-10 mt-2 flex justify-end">
                     <button class="min-w-40" mat-stroked-button [matTooltip]="'Update'" (click)="updateOnlineStatus()"
                         [disabled]="updateStatusLoader">
                         <mat-progress-spinner *ngIf="updateStatusLoader" [diameter]="24" [mode]="'indeterminate'">
@@ -267,7 +226,7 @@
                         </mat-select>
                     </mat-form-field>
                 </div>
-                <div class="col-12 px-10">
+                <div class="col-12 px-10 flex justify-end">
                     <button class="min-w-40" mat-stroked-button [matTooltip]="'Update'"
                         (click)="updateListOrderStatus()" [disabled]="updateOrderLoader">
                         <mat-progress-spinner *ngIf="updateOrderLoader" [diameter]="24" [mode]="'indeterminate'">
@@ -330,7 +289,7 @@
                         </div>
                     </form>
                 </div>
-                <div class="col-12 px-10">
+                <div class="col-12 px-10 flex justify-end">
                     <button class="min-w-40" mat-stroked-button [matTooltip]="'Add Category'" (click)="addNewCategory()"
                         [disabled]="addCategoryLoader">
                         <mat-progress-spinner *ngIf="addCategoryLoader" [diameter]="24" [mode]="'indeterminate'">

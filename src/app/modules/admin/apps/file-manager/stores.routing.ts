@@ -8,13 +8,17 @@ export const storeRoutes: Route[] = [
     {
         path: '',
         component: FileManagerComponent,
+        resolve: {
+            items: FileManagerItemsResolver,
+            suppliers: SupplierResolver
+        },
         children: [
             {
                 path: '',
                 component: StoresListComponent,
                 resolve: {
-                    items: FileManagerItemsResolver,
-                    suppliers: SupplierResolver
+                    // items: FileManagerItemsResolver,
+                    // suppliers: SupplierResolver
                 },
             },
             {
@@ -22,8 +26,6 @@ export const storeRoutes: Route[] = [
                 pathMatch: 'full',
                 component: StoresDetailsComponent,
                 resolve: {
-                    items: FileManagerItemsResolver,
-                    suppliers: SupplierResolver,
                     details: StoreDetailsByID,
                     settings: StoreSettingsByID
                 }
