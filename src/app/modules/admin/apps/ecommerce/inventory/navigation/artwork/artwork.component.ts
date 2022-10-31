@@ -21,6 +21,7 @@ export class ArtworkComponent implements OnInit, OnDestroy {
   imageRequired: string = '';
   artWorkData = [];
   imageUploadLoader: boolean = false;
+  showFiller = false;
 
   constructor(
     private _changeDetectorRef: ChangeDetectorRef,
@@ -82,8 +83,7 @@ export class ArtworkComponent implements OnInit, OnDestroy {
       const base64 = fileUpload.split(",")[1];
       const payload = {
         file_upload: true,
-        image_file: base64,
-        image_path: `/globalAssets/Products/ArtworkTemplates/${pk_productID}/${pk_productID}-${fileName}`
+        image_file: base64
       };
 
       const dbPayload = {
@@ -93,12 +93,13 @@ export class ArtworkComponent implements OnInit, OnDestroy {
       };
 
       this.imageUploadLoader = true;
-      this._inventoryService.addArtworkTemplate(payload)
-        .subscribe((response) => {
-          this._inventoryService.addArtworkTemplateToDb(dbPayload)
-            .subscribe((dbResponse) => {
-              console.log("dbResponse", dbResponse)
-              this.artWorkData = dbResponse["artworks"];
+
+      this._inventoryService.addArtworkTemplateToDb(dbPayload)
+        .subscribe((dbResponse) => {
+          payload["image_path"] = `/globalAssets/Products/ArtworkTemplates/${pk_productID}/${dbResponse["artwork_id"]}.${fileType}`;
+          this.artWorkData = dbResponse["artworks"];
+          this._inventoryService.addArtworkTemplate(payload)
+            .subscribe((response) => {
               this._snackBar.open("File uploaded successfully", '', {
                 horizontalPosition: 'center',
                 verticalPosition: 'bottom',
@@ -118,10 +119,10 @@ export class ArtworkComponent implements OnInit, OnDestroy {
 
               // Mark for check
               this._changeDetectorRef.markForCheck();
-            })
+            });
         }, err => {
           this.imageUploadLoader = false;
-          this._snackBar.open("Some error occured", '', {
+          this._snackBar.open("Some error occured while saving file details to database", '', {
             horizontalPosition: 'center',
             verticalPosition: 'bottom',
             duration: 3500
@@ -140,9 +141,10 @@ export class ArtworkComponent implements OnInit, OnDestroy {
     };
   };
 
-  accessFile(artWork) {
+  accessFile(artwork) {
+    const { extension, pk_artworkTemplateID } = artwork;
     const { pk_productID } = this.selectedProduct;
-    const url = `${environment.productMedia}/artworkTemplates/${pk_productID}/1.pdf`;
+    const url = `${environment.productMedia}/artworkTemplates/${pk_productID}/${pk_artworkTemplateID}.${extension}`;
     window.open(url);
   };
 

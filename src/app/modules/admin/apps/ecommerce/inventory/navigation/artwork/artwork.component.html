@@ -1,76 +1,145 @@
 <ngx-skeleton-loader count="8" appearance="line" animation="pulse" *ngIf="isLoading">
 </ngx-skeleton-loader>
 
-<div class="row" *ngIf="!isLoading">
-    <div class="col-12 my-2">
-        <fuse-card class="rounded-2xl shadow bg-card flex flex-col lg:flex-row w-full">
-            <div class="p-6 sm:p-8 lg:p-10 w-full">
-                <div class="text-3xl font-semibold tracking-tight leading-8">
+<mat-drawer-container class="bg-light" style="min-height: 100vh;" autosize *ngIf="!isLoading">
+    <mat-drawer #drawer position="end" class="example-sidenav" mode="over">
+        <div class="flex justify-between px-8 mt-10">
+            <div>
+                <div class="text-xl font-semibold tracking-tight leading-8">
                     Upload Artwork Template
                 </div>
                 <div class="font-medium tracking-tight text-secondary">
                     PDF, EPS, AI, PSD, and JPG file formats only!
                 </div>
-                <!-- Artwork template -->
-                <div class="gap-y-4 mt-6">
-                    <div class="row">
-                        <div class="col-12 my-1">
-                            <input type="file" accept="all" (change)="upload($event)" style="line-height: 2.5;" />
-                            <small class="text-danger font-semibold"> {{imageRequired}} </small>
+            </div>
+            <svg (click)="drawer.toggle()" [matTooltip]="'Close'" xmlns="http://www.w3.org/2000/svg" width="16"
+                height="16" fill="currentColor" class="bi bi-x-lg cursor-pointer" viewBox="0 0 16 16">
+                <path
+                    d="M2.146 2.854a.5.5 0 1 1 .708-.708L8 7.293l5.146-5.147a.5.5 0 0 1 .708.708L8.707 8l5.147 5.146a.5.5 0 0 1-.708.708L8 8.707l-5.146 5.147a.5.5 0 0 1-.708-.708L7.293 8 2.146 2.854Z" />
+            </svg>
+        </div>
+        <div class="row" *ngIf="!isLoading">
+            <div class="col-12">
+                <fuse-card class="flex flex-col lg:flex-row w-full">
+                    <div class="p-6 w-full">
+
+                        <!-- Artwork template -->
+                        <div class="gap-y-4 mt-6">
+                            <div class="row">
+                                <div class="col-12 my-1">
+                                    <input type="file" accept="all" (change)="upload($event)"
+                                        style="line-height: 2.5;" />
+                                    <small class="text-danger font-semibold"> {{imageRequired}} </small>
+                                </div>
+                                <div class="col-12 flex justify-end">
+                                    <button class="min-w-40" (click)="uploadFile()" mat-stroked-button
+                                        [disabled]="imageUploadLoader"
+                                        [matTooltip]="'PDF, EPS, AI, PSD, and JPG file formats only!'">
+                                        <mat-progress-spinner *ngIf="imageUploadLoader" [diameter]="24"
+                                            [mode]="'indeterminate'"></mat-progress-spinner>
+                                        <mat-icon *ngIf="!imageUploadLoader" [svgIcon]="'heroicons_outline:upload'">
+                                        </mat-icon>
+                                        <span *ngIf="!imageUploadLoader" class="ml-1 mr-1">Upload</span>
+                                    </button>
+                                </div>
+                            </div>
                         </div>
-                        <div class="col-12 flex justify-end">
-                            <button class="min-w-40" (click)="uploadFile()" mat-stroked-button
-                                [disabled]="imageUploadLoader"
-                                [matTooltip]="'PDF, EPS, AI, PSD, and JPG file formats only!'">
-                                <mat-progress-spinner *ngIf="imageUploadLoader" [diameter]="24"
-                                    [mode]="'indeterminate'"></mat-progress-spinner>
-                                <mat-icon *ngIf="!imageUploadLoader" [svgIcon]="'heroicons_outline:upload'">
+                    </div>
+                </fuse-card>
+            </div>
+        </div>
+    </mat-drawer>
+
+    <div class="bg-light p-2 overflow-x-hidden">
+        <div class="row">
+            <div class="col-12 flex justify-between">
+                <div class="text-2xl font-semibold tracking-tight leading-8">
+                    Artwork templates
+                </div>
+                <button class="min-w-40" mat-flat-button [color]="'primary'" [matTooltip]="'Upload Artwork Template'"
+                    (click)="drawer.toggle()">
+                    <span class="ml-1 mr-1">Upload file</span>
+                </button>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-12">
+                <div class="flex flex-wrap -m-2 mt-2" *ngIf="artWorkData.length > 0;else other_content">
+                    <a class="flex flex-col w-40 h-40 m-2 p-4 shadow rounded-2xl bg-card ng-star-inserted"
+                        *ngFor="let artWork of artWorkData">
+                        <div (click)="accessFile(artWork)"
+                            class="flex cursor-pointer items-center justify-center h-full">
+                            <div class="relative">
+                                <mat-icon role="img"
+                                    class="mat-icon notranslate icon-size-14 text-hint opacity-50 mat-icon-no-color"
+                                    aria-hidden="true" data-mat-icon-type="svg" data-mat-icon-name="document"
+                                    data-mat-icon-namespace="heroicons_solid"><svg xmlns="http://www.w3.org/2000/svg"
+                                        viewBox="0 0 20 20" fill="currentColor" fit="" height="100%" width="100%"
+                                        preserveAspectRatio="xMidYMid meet" focusable="false">
+                                        <path fill-rule="evenodd"
+                                            d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4z"
+                                            clip-rule="evenodd"></path>
+                                    </svg>
                                 </mat-icon>
-                                <span *ngIf="!imageUploadLoader" class="ml-1 mr-1">Upload</span>
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </fuse-card>
-    </div>
-</div>
-
-<div class="row" *ngIf="!isLoading">
-    <div class="col-12 my-2">
-        <fuse-card class="rounded-2xl shadow bg-card flex flex-col lg:flex-row w-full">
-            <div class="p-6 sm:p-8 lg:p-10 w-full">
-                <div class="text-3xl font-semibold tracking-tight leading-8">
-                    Current artwork templates
-                </div>
-                <div class="font-medium tracking-tight text-secondary">
-                    {{artWorkData.length}} records found
-                </div>
-
-                <!-- Artwork template -->
-                <div class="gap-y-4 mt-6">
-                    <div class="row p-2" *ngIf="artWorkData.length > 0;else other_content">
-                        <div class="col-lg-3 col-4" *ngFor="let artWork of artWorkData">
-                            <fuse-card class="flex flex-col items-center w-full p-8 shadow-xl bg-light rounded-2xl">
-                                <div class="flex items-center justify-center p-5 rounded-full bg-primary-100 dark:bg-gray-600 hover:cursor-pointer hover:opacity-80"
-                                    style="cursor: pointer;" (click)="accessFile(artWork)">
-                                    <mat-icon class="icon-size-10 text-primary-500 dark:text-primary-300"
-                                        svgIcon="mat_solid:picture_as_pdf"></mat-icon>
+                                <div *ngIf="artWork.extension == 'jpg'">
+                                    <div
+                                        class="absolute left-0 bottom-0 px-1.5 rounded text-sm font-semibold leading-5 text-white bg-amber-600">
+                                        {{artWork.extension}}
+                                    </div>
                                 </div>
-                                <div class="flex items-center justify-center p-2 font-semibold text-sm hover:cursor-pointer hover:opacity-80"
-                                    style="cursor: pointer;" (click)="accessFile(artWork)">
-                                    {{artWork.name}}
+
+                                <div *ngIf="artWork.extension == 'pdf'">
+                                    <div
+                                        class="absolute left-0 bottom-0 px-1.5 rounded text-sm font-semibold leading-5 text-white bg-red-600">
+                                        {{artWork.extension}}
+                                    </div>
                                 </div>
-                            </fuse-card>
+
+                                <div *ngIf="artWork.extension == 'ai'">
+                                    <div
+                                        class="absolute left-0 bottom-0 px-1.5 rounded text-sm font-semibold leading-5 text-white bg-green-600">
+                                        {{artWork.extension}}
+                                    </div>
+                                </div>
+
+                                <div *ngIf="artWork.extension == 'psd'">
+                                    <div
+                                        class="absolute left-0 bottom-0 px-1.5 rounded text-sm font-semibold leading-5 text-white bg-gray-600">
+                                        {{artWork.extension}}
+                                    </div>
+                                </div>
+
+                                <div *ngIf="artWork.extension == 'eps'">
+                                    <div
+                                        class="absolute left-0 bottom-0 px-1.5 rounded text-sm font-semibold leading-5 text-white bg-red-800">
+                                        {{artWork.extension}}
+                                    </div>
+                                </div>
+
+                            </div>
                         </div>
-                    </div>
-                    <ng-template #other_content>
-                        <p class="text-secondary font-semibold my-5">
-                            *There are currently no artwork templates uploaded for this product.
-                        </p>
-                    </ng-template>
+                    </a>
                 </div>
+                <ng-template #other_content>
+                    <div class="flex flex-auto flex-col mt-10 items-center justify-center">
+                        <mat-icon role="img" class="mat-icon notranslate icon-size-24 mat-icon-no-color"
+                            aria-hidden="true" data-mat-icon-type="svg" data-mat-icon-name="document-search"
+                            data-mat-icon-namespace="heroicons_outline"><svg xmlns="http://www.w3.org/2000/svg"
+                                fill="none" viewBox="0 0 24 24" stroke="currentColor" fit="" height="100%" width="100%"
+                                preserveAspectRatio="xMidYMid meet" focusable="false">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M10 21h7a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v11m0 5l4.879-4.879m0 0a3 3 0 104.243-4.242 3 3 0 00-4.243 4.242z">
+                                </path>
+                            </svg>
+                        </mat-icon>
+                        <div class="mt-6 text-2xl font-semibold tracking-tight text-secondary">
+                            No artwork templates found!
+                        </div>
+
+                    </div>
+                </ng-template>
             </div>
-        </fuse-card>
+        </div>
     </div>
-</div>
+
+</mat-drawer-container>
