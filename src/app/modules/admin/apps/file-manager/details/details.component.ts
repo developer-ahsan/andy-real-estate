@@ -38,7 +38,7 @@ export class StoresDetailsComponent implements OnInit, OnDestroy {
   drawerOpened: boolean = true;
 
   // Default details screen
-  selectedIndex: string = "Campaigns";
+  selectedIndex: string = "Dashboard";
 
   /**
    * Constructor

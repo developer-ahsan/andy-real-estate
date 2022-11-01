@@ -62,12 +62,13 @@
               </mat-form-field>
             </div>
             <div class="col-12 flex justify-end">
-              <button class="w-full md:w-60 lg:w-60" mat-stroked-button [matTooltip]="'Create User Data File'"
-                (click)="getUserData()" [disabled]="isPageLoading">
+              <button class="w-full md:w-60 lg:w-60" mat-stroked-button
+                [matTooltip]="'Select file type and Create User Data File'" (click)="getUserData()"
+                [disabled]="isPageLoading">
                 <mat-progress-spinner *ngIf="isPageLoading" [diameter]="24" [mode]="'indeterminate'">
                 </mat-progress-spinner>
                 <span *ngIf="!isPageLoading"><i class='fas fa-cloud-download-alt'></i></span>
-                <span class="ml-2 mr-1">Create User Data File</span>
+                <span class="ml-2 mr-1">Download</span>
               </button>
             </div>
           </div>
