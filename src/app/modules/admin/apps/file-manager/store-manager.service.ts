@@ -458,6 +458,12 @@ export class FileManagerService {
       .pipe(retry(3));
   }
 
+  getMainCampaign(params) {
+    return this._httpClient
+      .get<any[]>(environment.storeNewUrl, { params: params })
+      .pipe(retry(3));
+  }
+
   getStoresData(params) {
     return this._httpClient
       .get<any[]>(environment.stores, { params: params })

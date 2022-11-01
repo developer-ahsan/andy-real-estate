@@ -241,7 +241,7 @@ export class CampaignsComponent implements OnInit, OnDestroy {
       main_campaign: true
     }
     // Get the supplier products
-    this._storeManagerService.getStoresData(params)
+    this._storeManagerService.getMainCampaign(params)
       .pipe(takeUntil(this._unsubscribeAll))
       .subscribe((response: any) => {
         this.mainCampaign.loader = false;
