@@ -22,6 +22,7 @@ import {
   ApexTitleSubtitle,
   ApexLegend,
   ApexPlotOptions,
+  ApexFill
 } from "ng-apexcharts";
 import { takeUntil } from "rxjs/operators";
 import { FileManagerService } from "../../store-manager.service";
@@ -60,6 +61,8 @@ export type ChartOptionsOne = {
   stroke: ApexStroke;
   yaxis: ApexYAxis;
   title: ApexTitleSubtitle;
+  fill: ApexFill;
+  colors: string[];
 };
 
 export type ChartOptionsTwo = {
@@ -71,6 +74,8 @@ export type ChartOptionsTwo = {
   stroke: ApexStroke;
   yaxis: ApexYAxis;
   title: ApexTitleSubtitle;
+  fill: ApexFill;
+  colors: string[];
 };
 
 export type ChartOptionsThree = {
@@ -82,6 +87,8 @@ export type ChartOptionsThree = {
   yaxis: ApexYAxis;
   stroke: ApexStroke;
   title: ApexTitleSubtitle;
+  fill: ApexFill;
+  colors: string[];
 };
 
 @Component({
@@ -105,18 +112,18 @@ export class DashboardComponent implements OnInit, OnDestroy {
   isPageLoadingHistory: boolean = false;
   isPageLoadingYTD: boolean = false;
   isPageLoadingSales: boolean = false;
-  isPageLoadingCustomers: boolean = false;
+  isPageLoadingCustomers: boolean = true;
   selectedYear: any = "2017";
   yearArray: any;
 
   topCustomers: any = [];
   displayedColumns: string[] = [
     "cName",
-    "Company",
-    "Total",
-    "Sales",
     "Email",
+    "Company",
     "Phone",
+    "Sales",
+    "Total"
   ];
 
   constructor(
@@ -132,30 +139,26 @@ export class DashboardComponent implements OnInit, OnDestroy {
         },
       ],
       chart: {
-        height: 300,
-        type: "line",
+        height: 170,
+        type: "area",
         zoom: {
           enabled: false,
         },
         toolbar: {
           show: false,
         },
+        sparkline: {
+          enabled: true
+        }
       },
       stroke: {
-        curve: "straight",
-      },
-      title: {
-        text: "Number Of Sales, Past 5 Years",
-        align: "left",
-      },
-      grid: {
-        row: {
-          colors: ["#f3f3f3", "transparent"], // takes an array which will be repeated on columns
-          opacity: 0.5,
-        },
+        curve: 'straight'
       },
       xaxis: {
         categories: [],
+        labels: {
+          show: false
+        }
       },
       yaxis: {
         labels: {
@@ -163,6 +166,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
             return val.toFixed(0);
           },
         },
+        show: false
       },
     };
 
@@ -174,27 +178,25 @@ export class DashboardComponent implements OnInit, OnDestroy {
         },
       ],
       chart: {
-        height: 300,
-        type: "line",
+        height: 170,
+        type: "area",
         zoom: {
           enabled: false,
         },
         toolbar: {
           show: false,
         },
+        sparkline: {
+          enabled: true
+        }
+      },
+      colors: ['#34D399'],
+      fill: {
+        colors: ['#34D399'],
+        opacity: 0.5
       },
       stroke: {
-        curve: "straight",
-      },
-      title: {
-        text: "Average Size Of Sales, Past 5 Years",
-        align: "left",
-      },
-      grid: {
-        row: {
-          colors: ["#f3f3f3", "transparent"], // takes an array which will be repeated on columns
-          opacity: 0.5,
-        },
+        curve: 'straight'
       },
       xaxis: {
         categories: [],
@@ -216,27 +218,20 @@ export class DashboardComponent implements OnInit, OnDestroy {
         },
       ],
       chart: {
-        height: 300,
-        type: "line",
+        height: 170,
+        type: "area",
         zoom: {
           enabled: false,
         },
         toolbar: {
           show: false,
         },
+        sparkline: {
+          enabled: true
+        }
       },
       stroke: {
-        curve: "straight",
-      },
-      title: {
-        text: "Margin, Past 5 Years",
-        align: "left",
-      },
-      grid: {
-        row: {
-          colors: ["#f3f3f3", "transparent"], // takes an array which will be repeated on columns
-          opacity: 0.5,
-        },
+        curve: 'straight'
       },
       xaxis: {
         categories: [],
@@ -252,10 +247,6 @@ export class DashboardComponent implements OnInit, OnDestroy {
 
     this.chartOptionsBar = {
       series: [],
-      title: {
-        text: "Store Sales, Year To Date, by Month",
-        align: "left",
-      },
       chart: {
         type: "bar",
         height: 350,
@@ -272,7 +263,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
       yaxis: {
         labels: {
           formatter: function (val) {
-            return "$" + val.toFixed(0);
+            return '$' + `${val.toLocaleString()}`;
           },
         },
       },
@@ -290,34 +281,31 @@ export class DashboardComponent implements OnInit, OnDestroy {
         },
       ],
       chart: {
-        height: 350,
-        type: "line",
-        dropShadow: {
-          enabled: true,
-          color: "#000",
-          top: 18,
-          left: 7,
-          blur: 10,
-          opacity: 0.2,
+        animations: {
+          speed: 400,
+          animateGradually: {
+            enabled: false
+          }
         },
+        fontFamily: 'inherit',
+        foreColor: 'inherit',
+        width: '100%',
+        height: '350',
+        type: 'area',
         toolbar: {
-          show: false,
+          show: false
         },
+        zoom: {
+          enabled: false
+        }
       },
-      colors: ["#FFF666", "#77bc1f"],
+      colors: ['#818CF8'],
       stroke: {
-        curve: "smooth",
-      },
-      title: {
-        text: "Historical Store Sales",
-        align: "left",
+        width: 2
       },
       grid: {
         borderColor: "#e7e7e7",
-        row: {
-          colors: ["#f3f3f3", "transparent"], // takes an array which will be repeated on columns
-          opacity: 0.5,
-        },
+        show: true
       },
       markers: {
         size: 2,
@@ -325,20 +313,24 @@ export class DashboardComponent implements OnInit, OnDestroy {
       xaxis: {
         categories: [],
       },
+      dataLabels: {
+        enabled: false
+      },
       yaxis: {
         labels: {
           formatter: function (val) {
-            return "$" + val.toFixed(2);
+            return '$' + `${val.toLocaleString()}`;
           },
         },
-      },
-      legend: {
-        position: "top",
-        horizontalAlign: "right",
-        floating: true,
-        offsetY: -25,
-        offsetX: -5,
-      },
+        axisTicks: {
+          show: false
+        },
+        axisBorder: {
+          show: false
+        },
+        tickAmount: 5,
+        show: true
+      }
     };
   }
 
@@ -358,6 +350,10 @@ export class DashboardComponent implements OnInit, OnDestroy {
     this.getDashboardGraphsData("historical_store_sales");
     this.getDashboardGraphsData("sales_average_margin");
     this.getDashboardGraphsData("ytd_month");
+
+    setTimeout(() => {
+      this.getDashboardGraphsData("top_customer");
+    }, 5000);
   }
   initialize() {
     this.yearArray = [];
@@ -385,7 +381,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
       year: Number(this.selectedYear),
     };
     this._fileManagerService
-      .getPresentationData(params)
+      .getDashboardGraphData(params)
       .pipe(takeUntil(this._unsubscribeAll))
       .subscribe((res: any) => {
         if (value == "historical_store_sales") {

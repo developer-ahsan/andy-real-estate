@@ -89,7 +89,7 @@ export class FileManagerService {
 
   getAllSuppliers(): Observable<any[]> {
     return this._httpClient
-      .get<any[]>(environment.stores, {
+      .get<any[]>(environment.storeNewUrl, {
         params: {
           supplier: true,
           bln_active: 1,
@@ -133,7 +133,7 @@ export class FileManagerService {
 
   getAllStores(): Observable<any[]> {
     return this._httpClient
-      .get<any[]>(environment.stores, {
+      .get<any[]>(environment.storeNewUrl, {
         params: {
           list: true,
           bln_active: true,
@@ -445,9 +445,16 @@ export class FileManagerService {
       .get<any[]>(environment.stores, { params: params })
       .pipe(retry(3));
   }
+
   getDashboardData(params) {
     return this._httpClient
       .get<any[]>(environment.stores, { params: params })
+      .pipe(retry(3));
+  }
+
+  getDashboardGraphData(params) {
+    return this._httpClient
+      .get<any[]>(environment.storeNewUrl, { params: params })
       .pipe(retry(3));
   }
 

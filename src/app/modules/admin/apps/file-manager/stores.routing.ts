@@ -2,14 +2,14 @@ import { Route } from '@angular/router';
 import { FileManagerComponent } from 'app/modules/admin/apps/file-manager/store-manager.component';
 import { StoresListComponent } from 'app/modules/admin/apps/file-manager/list/list.component';
 import { StoresDetailsComponent } from 'app/modules/admin/apps/file-manager/details/details.component';
-import { FileManagerItemsResolver, StoreDetailsByID, StoreSettingsByID, SupplierResolver } from 'app/modules/admin/apps/file-manager/store-manager.resolvers';
+import { StoresListResolver, StoreDetailsByID, StoreSettingsByID, SupplierResolver } from 'app/modules/admin/apps/file-manager/store-manager.resolvers';
 
 export const storeRoutes: Route[] = [
     {
         path: '',
         component: FileManagerComponent,
         resolve: {
-            items: FileManagerItemsResolver,
+            items: StoresListResolver,
             suppliers: SupplierResolver
         },
         children: [
@@ -17,7 +17,7 @@ export const storeRoutes: Route[] = [
                 path: '',
                 component: StoresListComponent,
                 resolve: {
-                    // items: FileManagerItemsResolver,
+                    // items: StoresListResolver,
                     // suppliers: SupplierResolver
                 },
             },

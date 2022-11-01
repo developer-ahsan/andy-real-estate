@@ -7,7 +7,7 @@ import { Item } from 'app/modules/admin/apps/file-manager/stores.types';
 @Injectable({
     providedIn: 'root'
 })
-export class FileManagerItemsResolver implements Resolve<any>
+export class StoresListResolver implements Resolve<any>
 {
     /**
      * Constructor
