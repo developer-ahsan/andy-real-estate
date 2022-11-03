@@ -5,7 +5,7 @@
         <fuse-card class="rounded-2xl shadow bg-card flex pb-10">
             <div class="row" style="width: -webkit-fill-available;">
                 <div class="col-12">
-                    <div class="p-6 sm:p-8 lg:p-10 w-full">
+                    <div class="p-6 pb-2 sm:p-8 dm:pb-2 lg:p-10 lg:pb-2 w-full">
                         <div class="row">
                             <div class="col-lg-6 col-12">
                                 <div class="text-2xl font-bold">
@@ -144,8 +144,8 @@
                                     </td>
                                 </ng-container>
                             </div>
-                            <tr mat-header-row class="h-16 shadow bg-card" *matHeaderRowDef="displayedColumns"></tr>
-                            <tr mat-row class="hover:bg-gray-100 dark:hover:bg-hover" style="cursor: pointer;"
+                            <tr mat-header-row class="h-20" *matHeaderRowDef="displayedColumns"></tr>
+                            <tr mat-row class="h:16 hover:bg-gray-100 dark:hover:bg-hover" style="cursor: pointer;"
                                 *matRowDef="let row; columns: displayedColumns"></tr>
                         </table>
                     </ng-container>

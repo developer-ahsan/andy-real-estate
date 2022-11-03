@@ -466,16 +466,23 @@ export class FileManagerService {
 
   getStoresData(params) {
     return this._httpClient
-      .get<any[]>(environment.stores, { params: params })
+      .get<any[]>(environment.storeNewUrl, { params: params })
       .pipe(retry(3));
   }
+
+  getUserData(params) {
+    return this._httpClient
+      .get<any[]>(environment.storeNewUrl, { params: params })
+      .pipe(retry(3));
+  }
+
   putStoresData(payload) {
     const headers = { 'Authorization': `Bearer ${this._authService.accessToken}` };
-    return this._httpClient.put(environment.stores, payload, { headers }).pipe(retry(3));
+    return this._httpClient.put(environment.storeNewUrl, payload, { headers }).pipe(retry(3));
   }
   postStoresData(payload) {
     const headers = { 'Authorization': `Bearer ${this._authService.accessToken}` };
-    return this._httpClient.post(environment.stores, payload, { headers }).pipe(retry(3));
+    return this._httpClient.post(environment.storeNewUrl, payload, { headers }).pipe(retry(3));
   }
   getRapidData(params) {
     return this._httpClient

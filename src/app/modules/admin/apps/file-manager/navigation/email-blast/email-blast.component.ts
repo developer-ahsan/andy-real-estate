@@ -1,9 +1,9 @@
 import { Component, Input, Output, OnInit, EventEmitter, ChangeDetectorRef, OnDestroy } from '@angular/core';
-import { FormControl, FormGroup, Validators } from '@angular/forms';
+import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
-import { FileManagerService } from '../../store-manager.service';
+import { FileManagerService } from 'app/modules/admin/apps/file-manager/store-manager.service';
 import moment from "moment";
 
 @Component({
@@ -16,7 +16,8 @@ export class EmailBlastComponent implements OnInit, OnDestroy {
   @Input() isLoading: boolean;
   @Output() isLoadingChange = new EventEmitter<boolean>();
   private _unsubscribeAll: Subject<any> = new Subject<any>();
-  presentationScreen: string = "Main";
+  presentationScreen: string = "Dropdowns";
+  templatesValues = ["Campaigns", "Featured"];
   selected = 'YES';
   quillModules: any = {
     toolbar: [
@@ -71,13 +72,26 @@ export class EmailBlastComponent implements OnInit, OnDestroy {
   processDataColumns: string[] = ['clicks', 'requests', 'processed', 'delivered'];
   processDate: any;
   subProcessData: any;
+
+  campaignsList: any[] = [];
+  viewCampaignsLoader: boolean = false;
+  sendEmailForm: FormGroup;
+
   constructor(
     private _fileManagerService: FileManagerService,
     private _changeDetectorRef: ChangeDetectorRef,
     private _snackBar: MatSnackBar,
+    private _formBuilder: FormBuilder
   ) { }
 
   ngOnInit(): void {
+    this.sendEmailForm = this._formBuilder.group({
+      email_list: ['', Validators.required],
+      heading: ['', Validators.required],
+      message: ['', Validators.required],
+      campaign: ['', Validators.required]
+    });
+
     this.isLoadingChange.emit(false);
     this.initAddForm();
     this.getEmailTemplate('get');
@@ -88,6 +102,29 @@ export class EmailBlastComponent implements OnInit, OnDestroy {
       blnActive: new FormControl(true)
     })
   }
+
+  seeCampaigns(): void {
+    const { pk_storeID } = this.selectedStore;
+    this.viewCampaignsLoader = true;
+    this.presentationScreen = "Form Screen";
+
+    // Get the supplier products
+    this._fileManagerService.getCampaigns(pk_storeID)
+      .pipe(takeUntil(this._unsubscribeAll))
+      .subscribe((response: any) => {
+        this.campaignsList = response["data"];
+        this.viewCampaignsLoader = false;
+
+        // Mark for check
+        this._changeDetectorRef.markForCheck();
+      }, err => {
+        this.viewCampaignsLoader = false;
+
+        // Mark for check
+        this._changeDetectorRef.markForCheck();
+      });
+  }
+
   calledScreen(screenName): void {
     this.drawerOpened = false;
     this.presentationScreen = screenName;
@@ -229,12 +266,12 @@ export class EmailBlastComponent implements OnInit, OnDestroy {
         this._changeDetectorRef.markForCheck();
       })
   }
-  getEmailTemplatePreview(element) {
+  getEmailTemplatePreview() {
     this.previewData = null;
     this.presentationScreen = 'Preview';
     let params = {
       emails: true,
-      template_id: element.id
+      template_id: this.mainDataSource[0].id
     }
     this._fileManagerService.getStoresData(params)
       .pipe(takeUntil(this._unsubscribeAll))
@@ -277,8 +314,45 @@ export class EmailBlastComponent implements OnInit, OnDestroy {
     this.processDate = item.date;
     this.subProcessData = item.stats;
   }
-  backToUpdateTemplate() {
-    this.presentationScreen = 'Main';
+  backToFormScreen() {
+    this.presentationScreen = 'Form Screen';
+  };
+
+  sendEmail() {
+
+    console.log("send email form", this.sendEmailForm.getRawValue());
+    let payload = {
+
+      "email_list": ["rakshanihamad@gmail.com", "ehsansoomro306@gmail.com"],
+
+      "subject": "testing sendgrid",
+
+      "store_name": "mysummashop.com",
+
+      "html_body": true,
+
+      "template_id": "d-0c08fac499b14cc88cac4c8bb4320d55",
+
+      "email": true
+
+    }
+
+    this._fileManagerService.postStoresData(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+
+      console.log(res)
+
+      this._snackBar.open("Email sent successfully", '', {
+
+        horizontalPosition: 'center',
+
+        verticalPosition: 'bottom',
+
+        duration: 3000
+
+      });
+
+    })
+
   }
 
   ngOnDestroy(): void {

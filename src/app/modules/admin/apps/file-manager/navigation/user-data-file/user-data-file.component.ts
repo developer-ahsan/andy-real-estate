@@ -52,11 +52,9 @@ export class UserDataFileComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.isLoadingChange.emit(false);
-    // setTimeout(() => {
-    //   this.select.options.forEach((item: MatOption) => {
-    //     item.select()
-    //   });
-    // }, 1000);
+
+    // Mark for observable
+    this._changeDetectorRef.markForCheck();
   }
   getUserData() {
     this.isPageLoading = true;
@@ -64,7 +62,7 @@ export class UserDataFileComponent implements OnInit, OnDestroy {
       store_id: this.selectedStore.pk_storeID,
       user_data: true
     }
-    this._fileManagerService.getStoresData(params)
+    this._fileManagerService.getUserData(params)
       .pipe(takeUntil(this._unsubscribeAll))
       .subscribe(res => {
         this.fileUserRecord = res["data"];
