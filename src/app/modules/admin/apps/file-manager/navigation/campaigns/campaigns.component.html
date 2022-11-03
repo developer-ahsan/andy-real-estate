@@ -73,7 +73,7 @@
       </fuse-card>
       <fuse-card class="rounded-2xl shadow bg-card flex mt-5 overflow-x-auto"
         *ngIf="mainScreen == 'Campaigns' && !dataSourceLoading">
-        <div class="row" style="width: -webkit-fill-available;">
+        <div class="row w-full">
           <div class="col-12">
             <div class="p-6 sm:p-8 lg:p-10 w-full">
               <div class="text-2xl font-extrabold tracking-tight leading-none">
@@ -94,7 +94,7 @@
                     </th>
                     <td class="w-10 truncate pr-8 cursor-pointer" mat-cell *matCellDef="let element"
                       (click)="campaignEdit(element)">
-                      {{ element.objective}}
+                      {{ element.title}}
                     </td>
                   </ng-container>
 
@@ -249,81 +249,84 @@
               <div class="text-2xl font-extrabold tracking-tight leading-none">
                 New Campaign
               </div>
-              <div class="row">
+              <div class="row" [formGroup]="addCampaignForm">
                 <div class="col-12">
                   <mat-form-field appearance="fill" class="w-full">
-                    <mat-label>Title (50)</mat-label>
-                    <input maxlength="50" matInput />
+                    <mat-label>Title (50) *</mat-label>
+                    <input formControlName="title" maxlength="50" matInput />
                   </mat-form-field>
                 </div>
                 <div class="col-12">
                   <mat-form-field appearance="fill" class="w-full">
                     <mat-label>Permalink (300)</mat-label>
-                    <input maxlength="300" matInput />
+                    <input formControlName="permalink" maxlength="300" matInput />
                   </mat-form-field>
                 </div>
                 <div class="col-12">
                   <mat-form-field appearance="fill" class="w-full">
-                    <mat-label>Objective (100)</mat-label>
-                    <input maxlength="100" matInput />
+                    <mat-label>Objective (100) *</mat-label>
+                    <input formControlName="objective" maxlength="100" matInput />
                   </mat-form-field>
                 </div>
                 <div class="col-12">
-                  <div style="font-weight: 500">Short Descr (250)</div>
-                  <quill-editor [modules]="quillModules"> </quill-editor>
+                  <div style="font-weight: 500">Short Descr (250) *</div>
+                  <quill-editor formControlName="shortDesc" [modules]="quillModules"> </quill-editor>
                 </div>
                 <div class="col-12 mt-5">
-                  <div style="font-weight: 500">Strategy (3000)</div>
-                  <quill-editor [modules]="quillModules"> </quill-editor>
+                  <div style="font-weight: 500">Strategy (3000) *</div>
+                  <quill-editor formControlName="strategy" [modules]="quillModules"> </quill-editor>
                 </div>
                 <div class="col-12 mt-5">
-                  <div style="font-weight: 500">Results (3000)</div>
-                  <quill-editor [modules]="quillModules"> </quill-editor>
+                  <div style="font-weight: 500">Results (3000) *</div>
+                  <quill-editor formControlName="results" [modules]="quillModules"> </quill-editor>
                 </div>
                 <div class="col-12 mt-5">
-                  <mat-form-field appearance="fill" class="w-full">
-                    <mat-label>
-                      Select Products
-                      <span style="color: red">(4 products max)</span>
-                    </mat-label>
-                    <mat-select [(value)]="selected">
-                      <mat-option value="option1">Yes</mat-option>
-                      <mat-option value="option2">No</mat-option>
-                    </mat-select>
-                  </mat-form-field>
+                  <!-- <mat-form-field appearance="fill" class="w-full"> -->
+                  <mat-label class="font-semibold">
+                    Select Products
+                    <span style="color: red">(4 products max) *</span>
+                  </mat-label>
+                  <ng-multiselect-dropdown [placeholder]="'Select Products'" [settings]="dropdownSettings"
+                    [data]="dropdownList" formControlName="store_product_list_id">
+                  </ng-multiselect-dropdown>
+                  <!-- </mat-form-field> -->
                 </div>
                 <div class="col-12">
                   <p style="margin-bottom: 5px">Campaign Banner:</p>
                   <br />
-                  <input type="file" class="file-upload" onchange="console.log(event.target.files)" />
+                  <input type="file" accept=".jpg" class="file-upload" (change)="uploadImage($event)" />
                 </div>
                 <div class="col-12 mt-4">
                   <mat-form-field appearance="fill" class="w-full">
                     <mat-label>Video URL <span style="color: red">(Optional)</span></mat-label>
-                    <input maxlength="50" matInput />
+                    <input maxlength="50" formControlName="videoURL" matInput />
                   </mat-form-field>
                 </div>
                 <div class="col-lg-6 col-12">
                   <mat-form-field appearance="fill" class="w-full">
                     <mat-label> Active?</mat-label>
-                    <mat-select [(value)]="selected">
-                      <mat-option value="option1">Yes</mat-option>
-                      <mat-option value="option2">No</mat-option>
+                    <mat-select formControlName="blnActive">
+                      <mat-option [value]="true">Yes</mat-option>
+                      <mat-option [value]="false">No</mat-option>
                     </mat-select>
                   </mat-form-field>
                 </div>
                 <div class="col-lg-6 col-12">
                   <mat-form-field appearance="fill" class="w-full">
                     <mat-label> Featured?</mat-label>
-                    <mat-select [(value)]="selected">
-                      <mat-option value="option1">Yes</mat-option>
-                      <mat-option value="option2">No</mat-option>
+                    <mat-select formControlName="blnFeature">
+                      <mat-option [value]="true">Yes</mat-option>
+                      <mat-option [value]="false">No</mat-option>
                     </mat-select>
                   </mat-form-field>
                 </div>
                 <div class="col-12 text-right">
-                  <button class="my-5" mat-flat-button mat-stroked-button [matTooltip]="'Update'">
-                    <span class="px-2">Update</span>
+                  <button class="min-w-40 my-5" mat-stroked-button [matTooltip]="'Add New Campaign'"
+                    (click)="addnewCampaign()" [disabled]="addNewCampaignLoader">
+                    <mat-progress-spinner *ngIf="addNewCampaignLoader" [diameter]="24" [mode]="'indeterminate'">
+                    </mat-progress-spinner>
+                    <mat-icon *ngIf="!addNewCampaignLoader" svgIcon="mat_outline:add"></mat-icon>
+                    <span class="px-2">Add New Campaign</span>
                   </button>
                 </div>
               </div>
@@ -397,6 +400,7 @@
                   <div class="col-12">
                     <p style="margin-bottom: 5px">Campaign Banner:</p>
                     <br />
+                    <img *ngIf="campaignForm.get('image').value" src="{{campaignForm.get('image').value}}">
                     <input type="file" class="file-upload" onchange="console.log(event.target.files)" />
                   </div>
                   <div class="col-12 mt-4">

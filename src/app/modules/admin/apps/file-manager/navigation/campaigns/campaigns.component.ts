@@ -5,6 +5,8 @@ import { takeUntil } from 'rxjs/operators';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { FormArray, FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { I } from '@angular/cdk/keycodes';
+import { IDropdownSettings } from 'ng-multiselect-dropdown';
+import { environment } from 'environments/environment';
 
 @Component({
   selector: 'app-campaigns',
@@ -51,6 +53,7 @@ export class CampaignsComponent implements OnInit, OnDestroy {
   updateFeatureLoading: boolean = false;
   isEditCampaign: boolean = false;
   campaignForm: FormGroup;
+  addCampaignForm: FormGroup;
   flashMessage: 'success' | 'error' | 'errorMessage' | null = null;
 
   mainCampaign = {
@@ -59,6 +62,11 @@ export class CampaignsComponent implements OnInit, OnDestroy {
     update_loader: false,
     update_msg: false
   }
+
+  dropdownSettings: IDropdownSettings = {};
+  dropdownList: any;
+  addNewCampaignLoader: boolean = false;
+  imageValue: { imageUpload: string | ArrayBuffer; type: any; campaign_id: any; };
   constructor(
     private _storeManagerService: FileManagerService,
     private _changeDetectorRef: ChangeDetectorRef,
@@ -67,13 +75,134 @@ export class CampaignsComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.dataSourceLoading = true;
+    this.getStoreProducts();
     this.initialize();
     this.getFirstCall('get');
     this.getMainCampaign();
   };
+  getStoreProducts() {
+    this._storeManagerService.getExtendedListStoreProducts(this.selectedStore.pk_storeID, 1).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+      this.dropdownList = res["data"];
+    });
+  }
+  addnewCampaign() {
+    const { fk_storeID, objective, strategy, results, store_product_list_id, title, shortDesc, blnFeature, blnActive, videoURL, permalink, add_new_campaign } = this.addCampaignForm.getRawValue();
+    let products = [];
+    store_product_list_id.forEach(element => {
+      products.push(element.pk_storeProductID);
+    });
+    if (title == '' || objective == '' || strategy == '' || results == '' || shortDesc == '') {
+      this._snackBar.open("Please fill out the required fields", '', {
+        horizontalPosition: 'center',
+        verticalPosition: 'bottom',
+        duration: 3500
+      });
+      return;
+    }
+    if (products.length == 0) {
+      this._snackBar.open("Please select four products to feature for this campaign.", '', {
+        horizontalPosition: 'center',
+        verticalPosition: 'bottom',
+        duration: 3500
+      });
+      return;
+    }
+    this.addNewCampaignLoader = true;
+    let payload = {
+      fk_storeID,
+      objective,
+      strategy,
+      results,
+      store_product_list_id: products,
+      title,
+      shortDesc,
+      blnFeature, blnActive, videoURL, permalink, add_new_campaign
+    }
+    this._storeManagerService.AddCampaign(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+      if (res["success"]) {
+        if (this.imageValue) {
+          this.imageValue.campaign_id = res["campaign_id"];
+          this.uploadMediaCampaign(this.imageValue);
+        }
+        this.getFirstCall('add');
+      }
+
+    }, err => {
+      this.addNewCampaignLoader = false;
+      this._changeDetectorRef.markForCheck();
+    })
+  }
+  uploadImage(event): void {
+    const file = event.target.files[0];
+    const reader = new FileReader();
+    reader.readAsDataURL(file);
+
+    reader.onload = () => {
+      let image: any = new Image;
+      image.src = reader.result;
+      image.onload = () => {
+        if (image.width != 700 || image.height != 200) {
+          this._snackBar.open("Dimentions allowed are 700px x 200px", '', {
+            horizontalPosition: 'center',
+            verticalPosition: 'bottom',
+            duration: 3500
+          });
+          this.imageValue = null;
+          this._changeDetectorRef.markForCheck();
+          return;
+        };
+        this.imageValue = {
+          imageUpload: reader.result,
+          type: file["type"],
+          campaign_id: null
+        };
+      }
+    };
+  };
+  uploadMediaCampaign(obj) {
+    // const { pk_productID } = this.selectedProduct;
+    const { imageUpload, type, campaign_id } = obj;
+    const base64 = imageUpload.split(",")[1];
+    const payload = {
+      file_upload: true,
+      image_file: base64,
+      image_path: `/globalAssets/Campaigns/Banners/${campaign_id}.jpg`
+    };
+
+    this._storeManagerService.addCampaignMedia(payload)
+      .subscribe((response) => {
+        // Mark for check
+        this._changeDetectorRef.markForCheck();
+      })
+  }
   initialize() {
+    this.dropdownSettings = {
+      singleSelection: false,
+      idField: 'pk_storeProductID',
+      textField: 'productName',
+      selectAllText: 'Select All',
+      unSelectAllText: 'UnSelect All',
+      itemsShowLimit: 4,
+      allowSearchFilter: true,
+      limitSelection: 4
+    };
+    this.addCampaignForm = new FormGroup({
+      fk_storeID: new FormControl(this.selectedStore.pk_storeID),
+      objective: new FormControl(''),
+      strategy: new FormControl(''),
+      results: new FormControl(''),
+      store_product_list_id: new FormControl([]),
+      title: new FormControl(''),
+      shortDesc: new FormControl(''),
+      blnFeature: new FormControl(false),
+      blnActive: new FormControl(true),
+      videoURL: new FormControl(''),
+      permalink: new FormControl(''),
+      add_new_campaign: new FormControl(true),
+    })
     this.campaignForm = new FormGroup({
       pk_campaignID: new FormControl(''),
+      image: new FormControl(''),
       title: new FormControl(''),
       permalink: new FormControl(''),
       objective: new FormControl(''),
@@ -96,12 +225,17 @@ export class CampaignsComponent implements OnInit, OnDestroy {
         this.duplicatedDataSource = this.dataSource;
         this.dataSourceTotalRecord = response["totalRecords"];
         this.dataSourceLoading = false;
+        if (type == 'add') {
+          this.initialize();
+          this.mainScreen = 'Campaigns';
+          this.addNewCampaignLoader = false;
+          this._changeDetectorRef.markForCheck();
+        }
         if (type != 'get') {
           this.updateFeatureLoading = false;
           this.flashMessage = type;
           this.hideFlashMessage();
         }
-
         // Mark for check
         this._changeDetectorRef.markForCheck();
       }, err => {
@@ -210,6 +344,9 @@ export class CampaignsComponent implements OnInit, OnDestroy {
   }
   campaignEdit(campaign) {
     this.isEditCampaign = true;
+    this.campaignForm.patchValue({
+      image: environment.campaignMedia + `/Banners/${campaign.pk_campaignID}.jpg`
+    })
     this.campaignForm.patchValue(campaign)
   }
   backToCampaigns() {

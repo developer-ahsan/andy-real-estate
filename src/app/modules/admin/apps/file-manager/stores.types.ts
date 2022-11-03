@@ -161,3 +161,17 @@ export interface CreateStore {
     reportColor: string;
     add_new_store: boolean;
 };
+export interface AddCampaign {
+    fk_storeID: number;
+    objective: string;
+    strategy: string;
+    results: string;
+    store_product_list_id: number[];
+    title: string;
+    shortDesc: string;
+    blnFeature: boolean;
+    blnActive: boolean;
+    videoURL: string;
+    permalink: string;
+    add_new_campaign: boolean;
+};

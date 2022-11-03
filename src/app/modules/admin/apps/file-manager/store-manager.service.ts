@@ -3,6 +3,7 @@ import { HttpClient } from "@angular/common/http";
 import { BehaviorSubject, Observable, of, throwError } from "rxjs";
 import { map, retry, switchMap, take, tap } from "rxjs/operators";
 import {
+  AddCampaign,
   AddSurvey,
   CreateStore,
   CreateStoreSettings,
@@ -200,6 +201,18 @@ export class FileManagerService {
         store_id: storeID,
         view_type: 1,
         size: 20,
+        page: pageNo,
+      },
+    });
+  }
+
+  getExtendedListStoreProducts(storeID, pageNo): Observable<any[]> {
+    return this._httpClient.get<any[]>(environment.storeNewUrl, {
+      params: {
+        store_product: true,
+        store_id: storeID,
+        view_type: 1,
+        size: 30,
         page: pageNo,
       },
     });
@@ -581,4 +594,13 @@ export class FileManagerService {
     const headers = { 'Authorization': `Bearer ${this._authService.accessToken}` };
     return this._httpClient.put(environment.stores, payload, { headers }).pipe(retry(3));
   }
+  AddCampaign(payload: AddCampaign) {
+    const headers = { 'Authorization': `Bearer ${this._authService.accessToken}` };
+    return this._httpClient.post(environment.stores, payload, { headers }).pipe(retry(3));
+  }
+  addCampaignMedia(payload) {
+    const headers = { 'Authorization': `Bearer ${this._authService.accessToken}` };
+    return this._httpClient.post(
+      environment.stores, payload, { headers });
+  };
 }

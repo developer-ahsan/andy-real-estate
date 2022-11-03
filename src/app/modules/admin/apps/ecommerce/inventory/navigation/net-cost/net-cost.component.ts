@@ -476,11 +476,44 @@ export class NetCostComponent implements OnInit, OnDestroy {
     return array.filter(x => x !== null)
   };
 
+  isArraySorted(arr) {
+    for (let i = 0; i < arr.length; i++) {
+      if (arr[i + 1] && (arr[i + 1] > arr[i])) {
+        continue;
+      } else if (arr[i + 1] && (arr[i + 1] < arr[i])) {
+        return false;
+      }
+    }
+    return true;
+  }
+
   updateNetCost(): void {
     const formValues = this.netCostForm.getRawValue();
     const quantityListArray = [Number(formValues.quantityOne) || null, Number(formValues.quantityTwo) || null, Number(formValues.quantityThree) || null, Number(formValues.quantityFour) || null, Number(formValues.quantityFive) || null, Number(formValues.quantitySix) || null];
     const blankListArray = [parseInt(formValues.blankCostOne) || null, parseInt(formValues.blankCostTwo) || null, parseInt(formValues.blankCostThree) || null, parseInt(formValues.blankCostFour) || null, parseInt(formValues.blankCostFive) || null, parseInt(formValues.blankCostSix) || null];
     const standardCostList = [Number(formValues.standardCostOne) || null, Number(formValues.standardCostTwo) || null, Number(formValues.standardCostThree) || null, Number(formValues.standardCostFour) || null, Number(formValues.standardCostFive) || null, Number(formValues.standardCostSix) || null];
+
+
+    const quantity_sort = this.isArraySorted(quantityListArray);
+    const cost_sort = this.isArraySorted(standardCostList);
+
+    if (!quantity_sort) {
+      this._snackBar.open("Quantity values must be entered in ascending order", '', {
+        horizontalPosition: 'center',
+        verticalPosition: 'bottom',
+        duration: 3500
+      });
+      return;
+    }
+    if (!cost_sort) {
+      this._snackBar.open("Costs values must be entered in ascending order", '', {
+        horizontalPosition: 'center',
+        verticalPosition: 'bottom',
+        duration: 3500
+      });
+      return;
+    }
+
     const realQuantityList = this.removeNull(quantityListArray);
     const realBlankList = this.removeNull(blankListArray);
     const realStandardCostList = this.removeNull(standardCostList);
