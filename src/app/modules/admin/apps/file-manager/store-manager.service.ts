@@ -596,11 +596,11 @@ export class FileManagerService {
   }
   AddCampaign(payload: AddCampaign) {
     const headers = { 'Authorization': `Bearer ${this._authService.accessToken}` };
-    return this._httpClient.post(environment.stores, payload, { headers }).pipe(retry(3));
+    return this._httpClient.post(environment.storeNewUrl, payload, { headers }).pipe(retry(3));
   }
   addCampaignMedia(payload) {
     const headers = { 'Authorization': `Bearer ${this._authService.accessToken}` };
     return this._httpClient.post(
-      environment.stores, payload, { headers });
+      environment.storeNewUrl, payload, { headers });
   };
 }

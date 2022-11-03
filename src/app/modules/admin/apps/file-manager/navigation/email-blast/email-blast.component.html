@@ -18,8 +18,8 @@
 
       <mat-form-field class="w-full" *ngIf="!mainDataLoader">
         <mat-label>Select Template Type</mat-label>
-        <mat-select (change)="eventSelection($event.value)">
-          <mat-option *ngFor="let template of mainDataSource" [value]="template">
+        <mat-select>
+          <mat-option (click)="selectTemplate(template)" *ngFor="let template of mainDataSource" [value]="template">
             {{template.name}}
           </mat-option>
         </mat-select>
@@ -34,7 +34,7 @@
       </div>
     </div>
 
-    <div class="col-12 p-10 pt-0" *ngIf="presentationScreen == 'Form Screen'">
+    <div class="col-12 p-12 pt-0" *ngIf="presentationScreen == 'Form Screen'">
       <ngx-skeleton-loader count="8" appearance="line" animation="pulse" *ngIf="viewCampaignsLoader">
       </ngx-skeleton-loader>
 
@@ -70,11 +70,26 @@
             </mat-form-field>
           </div>
 
-          <div class="col-12">
+          <!-- <div class="col-12">
             <mat-form-field appearance="fill" class="w-full">
               <mat-label>Emails</mat-label>
-              <input matInput [formControlName]="'email_list'" />
+              <input matInput type="email" [formControlName]="'email_list'" />
               <mat-error>Emails are required</mat-error>
+            </mat-form-field>
+          </div> -->
+
+          <div class="col-12">
+            <mat-form-field class="example-chip-list w-full" appearance="fill">
+              <mat-label>Emails (Comma-seperated)</mat-label>
+              <mat-chip-list class="pt-1" #chipList1>
+                <mat-chip [removable]="true" [selectable]="true" *ngFor="let fruit of fruits" (removed)="remove(fruit)">
+                  {{fruit}}
+                  <mat-icon class="icon-size-5" matChipRemove [svgIcon]="'heroicons_solid:minus-circle'"></mat-icon>
+                </mat-chip>
+                <input [matChipInputFor]="chipList1" placeholder="Add Emails"
+                  [matChipInputSeparatorKeyCodes]="separatorKeysCodes" [matChipInputAddOnBlur]="addOnBlur"
+                  (matChipInputTokenEnd)="add($event)">
+              </mat-chip-list>
             </mat-form-field>
           </div>
 
@@ -89,11 +104,15 @@
       </form>
 
       <div class="flex justify-between" *ngIf="!viewCampaignsLoader">
-        <button class="ml-4" mat-stroked-button [matTooltip]="'View Templates List'" (click)="viewTemplateType()">
+        <button class="ml-4" mat-stroked-button [disabled]="sendEmailLoader" [matTooltip]="'View Templates List'"
+          (click)="viewTemplateType()">
           <span class="ml-2 mr-1">Back</span>
         </button>
 
-        <button class="ml-4" mat-flat-button [color]="'primary'" [matTooltip]="'Send an Email'" (click)="sendEmail()">
+        <button class="ml-4 min-w-40" mat-flat-button [color]="'primary'" [disabled]="sendEmailLoader"
+          [matTooltip]="'Send an Email'" (click)="sendEmail()">
+          <mat-progress-spinner *ngIf="sendEmailLoader" [diameter]="24" [mode]="'indeterminate'">
+          </mat-progress-spinner>
           <span class="ml-2 mr-1">Send Email</span>
         </button>
       </div>
@@ -151,6 +170,10 @@
     </div>
   </div>
 </fuse-card>
+
+<div *ngIf="presentationScreen == 'Dropdowns' && processData">
+  <app-stat_analysis [processData]="processData"></app-stat_analysis>
+</div>
 
 <mat-drawer-container class="sub-nav-component bg-light hidden" autosize *ngIf="!isLoading">
   <mat-drawer #drawer class="sub-sidenav bg-light" [mode]="drawerMode" [opened]="drawerOpened">

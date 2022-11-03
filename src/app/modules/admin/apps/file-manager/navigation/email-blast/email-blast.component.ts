@@ -5,6 +5,8 @@ import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { FileManagerService } from 'app/modules/admin/apps/file-manager/store-manager.service';
 import moment from "moment";
+import { COMMA, ENTER } from '@angular/cdk/keycodes';
+import { MatChipInputEvent } from '@angular/material/chips';
 
 @Component({
   selector: 'app-email-blast',
@@ -65,7 +67,7 @@ export class EmailBlastComponent implements OnInit, OnDestroy {
 
   previewData: any;
 
-  selectedTemplate
+  selectedTemplate: any = [];
   ngStartDate: any;
   ngEndDate: any;
   processData: any;
@@ -77,6 +79,30 @@ export class EmailBlastComponent implements OnInit, OnDestroy {
   campaignsList: any[] = [];
   viewCampaignsLoader: boolean = false;
   sendEmailForm: FormGroup;
+  sendEmailLoader: boolean = false;
+
+  addOnBlur = true;
+  readonly separatorKeysCodes = [ENTER, COMMA] as const;
+  fruits = [];
+
+  add(event: MatChipInputEvent): void {
+    const value = (event.value || '').trim();
+    // Add our fruit
+    if (value) {
+      this.fruits.push(value);
+    }
+
+    // Clear the input value
+    event.chipInput!.clear();
+  }
+
+  remove(fruit): void {
+    const index = this.fruits.indexOf(fruit);
+
+    if (index >= 0) {
+      this.fruits.splice(index, 1);
+    }
+  }
 
   constructor(
     private _fileManagerService: FileManagerService,
@@ -87,7 +113,6 @@ export class EmailBlastComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.sendEmailForm = this._formBuilder.group({
-      email_list: ['', Validators.required],
       heading: ['', Validators.required],
       message: ['', Validators.required],
       campaign: ['', Validators.required]
@@ -250,7 +275,7 @@ export class EmailBlastComponent implements OnInit, OnDestroy {
   }
 
   selectTemplate(data): void {
-    console.log("selectTemplate", data);
+    this.selectedTemplate = data;
   };
 
   getEmailTemplate(check) {
@@ -265,18 +290,15 @@ export class EmailBlastComponent implements OnInit, OnDestroy {
       .pipe(takeUntil(this._unsubscribeAll))
       .subscribe(res => {
         let statsParams = {
-          start_date: "2022-10-29",
-          end_date: "2022-11-03",
           email_stats: true,
-          aggregated_by: 'day'
+          start_date: "2022-10-29",
+          end_date: "2022-11-03"
         }
         this._fileManagerService.getStoresData(statsParams)
           .pipe(takeUntil(this._unsubscribeAll))
           .subscribe(statsRes => {
             this.processData = statsRes["data"]
             this.mainDataSource = res["data"].result;
-            console.log("this.mainDataSource", this.mainDataSource)
-            console.log("this.processData", this.processData)
 
             if (check == 'get') {
               this.mainDataLoader = false;
@@ -297,12 +319,20 @@ export class EmailBlastComponent implements OnInit, OnDestroy {
     this.presentationScreen = 'Preview';
     let params = {
       emails: true,
-      template_id: this.mainDataSource[0].id
+      template_id: this.selectedTemplate.id
     }
+
+    const { pk_storeID } = this.selectedStore;
     this._fileManagerService.getStoresData(params)
       .pipe(takeUntil(this._unsubscribeAll))
       .subscribe(res => {
-        this.previewData = res["data"].versions[0].html_content;
+        console.log("html_content", res["data"].versions[0].html_content);
+
+        const html = res["data"].versions[0].html_content;
+        html.replace("{{store_id}}", pk_storeID);
+        console.log("after", html);
+
+        this.previewData = html;
         this._changeDetectorRef.markForCheck();
       }, err => {
         this.mainDataLoader = false;
@@ -349,41 +379,52 @@ export class EmailBlastComponent implements OnInit, OnDestroy {
   };
 
   sendEmail() {
+    const { pk_storeID } = this.selectedStore;
+    const { heading, campaign, message } = this.sendEmailForm.getRawValue();
 
-    console.log("send email form", this.sendEmailForm.getRawValue());
+    if (!this.fruits.length) {
+      this._snackBar.open("Emails are needed", '', {
+        horizontalPosition: 'center',
+        verticalPosition: 'bottom',
+        duration: 3000
+      });
+      return;
+    };
+
+    this.sendEmailLoader = true;
     let payload = {
-
-      "email_list": ["rakshanihamad@gmail.com", "ehsansoomro306@gmail.com"],
-
-      "subject": "testing sendgrid",
-
-      "store_name": "mysummashop.com",
-
-      "html_body": true,
-
-      "template_id": "d-0c08fac499b14cc88cac4c8bb4320d55",
-
+      "email_list": this.fruits,
+      "subject": heading,
+      "store_id": pk_storeID,
+      "campaign_id": campaign.pk_campaignID,
+      "heading": heading,
+      "message": message,
+      "template_id": this.selectedTemplate?.id,
       "email": true
-
     }
 
-    this._fileManagerService.postStoresData(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
-
-      console.log(res)
-
-      this._snackBar.open("Email sent successfully", '', {
-
-        horizontalPosition: 'center',
-
-        verticalPosition: 'bottom',
-
-        duration: 3000
-
+    console.log("payload => ", payload);
+    this._fileManagerService.postStoresData(payload)
+      .pipe(takeUntil(this._unsubscribeAll))
+      .subscribe(res => {
+        this.sendEmailLoader = false;
+        this._snackBar.open("Email sent successfully", '', {
+          horizontalPosition: 'center',
+          verticalPosition: 'bottom',
+          duration: 3000
+        });
+        this._changeDetectorRef.markForCheck();
+      }, err => {
+        this._snackBar.open("Error occured while sending email", '', {
+          horizontalPosition: 'center',
+          verticalPosition: 'bottom',
+          duration: 3000
+        });
+        this.sendEmailLoader = false;
+        this._changeDetectorRef.markForCheck();
       });
 
-    })
-
-  }
+  };
 
   ngOnDestroy(): void {
     // Unsubscribe from all subscriptions
