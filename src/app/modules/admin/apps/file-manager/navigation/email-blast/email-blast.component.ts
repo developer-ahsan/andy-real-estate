@@ -65,6 +65,7 @@ export class EmailBlastComponent implements OnInit, OnDestroy {
 
   previewData: any;
 
+  selectedTemplate
   ngStartDate: any;
   ngEndDate: any;
   processData: any;
@@ -104,25 +105,27 @@ export class EmailBlastComponent implements OnInit, OnDestroy {
   }
 
   seeCampaigns(): void {
-    const { pk_storeID } = this.selectedStore;
-    this.viewCampaignsLoader = true;
     this.presentationScreen = "Form Screen";
+    if (!this.campaignsList.length) {
+      const { pk_storeID } = this.selectedStore;
+      this.viewCampaignsLoader = true;
 
-    // Get the supplier products
-    this._fileManagerService.getCampaigns(pk_storeID)
-      .pipe(takeUntil(this._unsubscribeAll))
-      .subscribe((response: any) => {
-        this.campaignsList = response["data"];
-        this.viewCampaignsLoader = false;
+      // Get the supplier products
+      this._fileManagerService.getCampaigns(pk_storeID)
+        .pipe(takeUntil(this._unsubscribeAll))
+        .subscribe((response: any) => {
+          this.campaignsList = response["data"];
+          this.viewCampaignsLoader = false;
 
-        // Mark for check
-        this._changeDetectorRef.markForCheck();
-      }, err => {
-        this.viewCampaignsLoader = false;
+          // Mark for check
+          this._changeDetectorRef.markForCheck();
+        }, err => {
+          this.viewCampaignsLoader = false;
 
-        // Mark for check
-        this._changeDetectorRef.markForCheck();
-      });
+          // Mark for check
+          this._changeDetectorRef.markForCheck();
+        });
+    }
   }
 
   calledScreen(screenName): void {
@@ -245,6 +248,11 @@ export class EmailBlastComponent implements OnInit, OnDestroy {
         this._changeDetectorRef.markForCheck();
       })
   }
+
+  selectTemplate(data): void {
+    console.log("selectTemplate", data);
+  };
+
   getEmailTemplate(check) {
     if (check == 'get') {
       this.mainDataLoader = true;
@@ -256,11 +264,29 @@ export class EmailBlastComponent implements OnInit, OnDestroy {
     this._fileManagerService.getStoresData(params)
       .pipe(takeUntil(this._unsubscribeAll))
       .subscribe(res => {
-        this.mainDataSource = res["data"].result;
-        if (check == 'get') {
-          this.mainDataLoader = false;
+        let statsParams = {
+          start_date: "2022-10-29",
+          end_date: "2022-11-03",
+          email_stats: true,
+          aggregated_by: 'day'
         }
-        this._changeDetectorRef.markForCheck();
+        this._fileManagerService.getStoresData(statsParams)
+          .pipe(takeUntil(this._unsubscribeAll))
+          .subscribe(statsRes => {
+            this.processData = statsRes["data"]
+            this.mainDataSource = res["data"].result;
+            console.log("this.mainDataSource", this.mainDataSource)
+            console.log("this.processData", this.processData)
+
+            if (check == 'get') {
+              this.mainDataLoader = false;
+            }
+            this._changeDetectorRef.markForCheck();
+          }, err => {
+            this.processDataLoader = false;
+            this._changeDetectorRef.markForCheck();
+          })
+
       }, err => {
         this.mainDataLoader = false;
         this._changeDetectorRef.markForCheck();
@@ -316,6 +342,10 @@ export class EmailBlastComponent implements OnInit, OnDestroy {
   }
   backToFormScreen() {
     this.presentationScreen = 'Form Screen';
+  };
+
+  viewTemplateType() {
+    this.presentationScreen = 'Dropdowns';
   };
 
   sendEmail() {

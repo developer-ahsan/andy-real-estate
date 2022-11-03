@@ -12,16 +12,20 @@
     </div>
 
     <div class="col-12 p-10 pt-0" *ngIf="presentationScreen == 'Dropdowns'">
-      <mat-form-field class="w-full">
+
+      <ngx-skeleton-loader count="8" appearance="line" animation="pulse" *ngIf="mainDataLoader">
+      </ngx-skeleton-loader>
+
+      <mat-form-field class="w-full" *ngIf="!mainDataLoader">
         <mat-label>Select Template Type</mat-label>
-        <mat-select>
-          <mat-option *ngFor="let template of templatesValues" [value]="template">
-            {{template}}
+        <mat-select (change)="eventSelection($event.value)">
+          <mat-option *ngFor="let template of mainDataSource" [value]="template">
+            {{template.name}}
           </mat-option>
         </mat-select>
       </mat-form-field>
 
-      <div class="flex justify-end">
+      <div class="flex justify-end" *ngIf="!mainDataLoader">
         <button class="ml-4" mat-flat-button mat-stroked-button [matTooltip]="'Continue to see available campaigns'"
           (click)="seeCampaigns()">
           <mat-icon [svgIcon]="'heroicons_outline:arrow-narrow-right'"></mat-icon>
@@ -84,14 +88,18 @@
         </div>
       </form>
 
-      <div class="flex justify-end" *ngIf="!viewCampaignsLoader">
-        <button class="ml-4" mat-flat-button mat-stroked-button [matTooltip]="'Send an Email'" (click)="sendEmail()">
+      <div class="flex justify-between" *ngIf="!viewCampaignsLoader">
+        <button class="ml-4" mat-stroked-button [matTooltip]="'View Templates List'" (click)="viewTemplateType()">
+          <span class="ml-2 mr-1">Back</span>
+        </button>
+
+        <button class="ml-4" mat-flat-button [color]="'primary'" [matTooltip]="'Send an Email'" (click)="sendEmail()">
           <span class="ml-2 mr-1">Send Email</span>
         </button>
       </div>
     </div>
 
-    <div class="col-12" *ngIf="presentationScreen == 'Preview'">
+    <div class="col-12 p-10 pt-0" *ngIf="presentationScreen == 'Preview'">
       <ngx-skeleton-loader count="8" appearance="line" animation="pulse" *ngIf="!previewData">
       </ngx-skeleton-loader>
       <div *ngIf="previewData" class="flex justify-end mb-3">
