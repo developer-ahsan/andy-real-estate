@@ -1,0 +1,56 @@
+<div *ngIf="!isLoading">
+  <fuse-card class="rounded-2xl shadow bg-card flex">
+    <div class="row" style="width: -webkit-fill-available;">
+      <div class="col-12">
+        <div class="p-6 sm:p-8 lg:p-10 w-full">
+          <div class="row">
+            <div class="col-lg-12 col-12 pb-6 sm:pb-8 lg:pb-8">
+              <div class="text-2xl font-bold">
+                Statistics Analysis
+              </div>
+              <note class="text-md">Here's your recent email activity.
+              </note>
+            </div>
+            <div class="col-12" *ngIf="showChart">
+              <apx-chart [series]="chartOptions.series" [chart]="chartOptions.chart" [xaxis]="chartOptions.xaxis"
+                [yaxis]="chartOptions.yaxis" [markers]="markers" [colors]="chartOptions.colors"
+                [dataLabels]="chartOptions.dataLabels" [grid]="chartOptions.grid" [stroke]="chartOptions.stroke"
+                [title]="chartOptions.title"></apx-chart>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </fuse-card>
+  <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 w-full px-1 my-6 text-center">
+    <div class="sm:col-span-1 lg:col-span-1 flex flex-col flex-auto bg-card shadow-lg rounded-2xl overflow-hidden h-40">
+      <div class="m-6 mb-0">
+        <div class="text-lg font-medium tracking-tight leading-6 truncate">Requests</div>
+      </div>
+
+      <div class="text-7xl font-bold mb-3" style="color: #eb3c0f">
+        {{totalRequests}}
+      </div>
+    </div>
+
+    <div class="sm:col-span-1 lg:col-span-1 flex flex-col flex-auto bg-card shadow-lg rounded-2xl overflow-hidden h-40">
+      <div class="m-6 mb-0">
+        <div class="text-lg font-medium tracking-tight leading-6 truncate">Clicked</div>
+      </div>
+
+      <div class="text-7xl font-bold mb-3" style="color: #999999">
+        {{totalClicks}}
+      </div>
+    </div>
+
+    <div class="sm:col-span-1 lg:col-span-1 flex flex-col flex-auto bg-card shadow-lg rounded-2xl overflow-hidden h-40">
+      <div class="m-6 mb-0">
+        <div class="text-lg font-medium tracking-tight leading-6 truncate">Opened</div>
+      </div>
+
+      <div class="text-7xl font-bold mb-3" style="color: #9e068b">
+        {{totalOpens}}
+      </div>
+    </div>
+  </div>
+</div>

@@ -76,6 +76,7 @@ import { ConsolidatedBillComponent } from "./navigation/consolidated-bill/consol
 import { MatStepperModule } from '@angular/material/stepper';
 import { PresentationScrollersComponent } from "./navigation/presentation/presentation-scrollers/presentation-scrollers.component";
 import { MatSlideToggleModule } from "@angular/material/slide-toggle";
+import { StatAnalysisComponent } from "./navigation/email-blast/stats_analysis/stat_analysis.component";
 
 @NgModule({
   declarations: [
@@ -121,7 +122,8 @@ import { MatSlideToggleModule } from "@angular/material/slide-toggle";
     StudentOrgComponent,
     ArtApprovalComponent,
     ConsolidatedBillComponent,
-    PresentationScrollersComponent
+    PresentationScrollersComponent,
+    StatAnalysisComponent
   ],
   imports: [
     RouterModule.forChild(storeRoutes),
