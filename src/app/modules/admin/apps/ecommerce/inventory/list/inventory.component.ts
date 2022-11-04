@@ -1902,7 +1902,7 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
                             };
                         };
                     };
-                    cost = cost.filter((value, index, self) => self.indexOf(value) === index)
+                    // cost = cost.filter((value, index, self) => self.indexOf(value) === index)
                     cost.forEach((element, index) => {
                         if (index == 0) {
                             this.netCostDefaultStandardCost = { standardCostOne: element };
@@ -2001,7 +2001,7 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
                         };
                     };
 
-                    cost = cost.filter((value, index, self) => self.indexOf(value) === index)
+                    // cost = cost.filter((value, index, self) => self.indexOf(value) === index)
                     cost.forEach((element, index) => {
                         if (index == 0) {
                             this.netCostDefaultStandardCost = { standardCostOne: element };
@@ -3350,6 +3350,21 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
         }
     };
     // NetCost
+
+    isArraySorted(arr) {
+        for (let i = 0; i < arr.length; i++) {
+            if (arr[i + 1] && (arr[i + 1] > arr[i])) {
+                continue;
+            } else if (arr[i + 1] && (arr[i + 1] < arr[i])) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    checkIfArrayIsUnique(myArray) {
+        return (new Set(myArray)).size !== myArray.length;
+    }
     addNetCost() {
 
         const { firstQuantity, secondQuantity, thirdQuantity, fourthQuantity, fifthQuantity, sixthQuantity, standardCostOne, standardCostTwo, standardCostThree, standardCostFour, standardCostFive, standardCostSix, standardCostDropOne, standardCostDropTwo, standardCostDropThree, standardCostDropFour, standardCostDropFive, standardCostDropSix, msrp, internalComments, coOp } = this.netCostForm.getRawValue();
@@ -3359,6 +3374,38 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
 
         let standardCost = [parseFloat(standardCostOne) || null, parseFloat(standardCostTwo) || null, parseFloat(standardCostThree) || null, parseFloat(standardCostFour) || null, parseFloat(standardCostFive) || null, parseFloat(standardCostSix) || null];
         standardCost = this.removeNull(standardCost);
+
+        const realStandardCostList = this.removeNull(standardCost);
+        const realQuantityList = this.removeNull(quantityList);
+
+
+        const quantity_sort = this.isArraySorted(realQuantityList);
+        const cost_sort = this.isArraySorted(realStandardCostList);
+        const quantity_unique = this.checkIfArrayIsUnique(realQuantityList);
+        if (!quantity_sort) {
+            this._snackBar.open("Quantity values must be entered in ascending order", '', {
+                horizontalPosition: 'center',
+                verticalPosition: 'bottom',
+                duration: 3500
+            });
+            return;
+        }
+        if (quantity_unique) {
+            this._snackBar.open("Quantity values must be unique", '', {
+                horizontalPosition: 'center',
+                verticalPosition: 'bottom',
+                duration: 3500
+            });
+            return;
+        }
+        if (!cost_sort) {
+            this._snackBar.open("Costs values must be entered in ascending order", '', {
+                horizontalPosition: 'center',
+                verticalPosition: 'bottom',
+                duration: 3500
+            });
+            return;
+        }
         if (quantityList.length != standardCost.length) {
             this._snackBar.open("Number of quantity list breaks must be equal to number of standard cost breaks", '', {
                 horizontalPosition: 'center',
@@ -3367,14 +3414,14 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
             });
             return;
         }
-        if (!this.checkIfArrayIsUnique(quantityList) || !this.checkIfArrayIsUnique(standardCost)) {
-            this._snackBar.open("Note: Quantities and Cost should be unique", '', {
-                horizontalPosition: 'center',
-                verticalPosition: 'bottom',
-                duration: 3500
-            });
-            return;
-        }
+        // if (!this.checkIfArrayIsUnique(quantityList) || !this.checkIfArrayIsUnique(standardCost)) {
+        //     this._snackBar.open("Note: Quantities and Cost should be unique", '', {
+        //         horizontalPosition: 'center',
+        //         verticalPosition: 'bottom',
+        //         duration: 3500
+        //     });
+        //     return;
+        // }
         this.updateProductCostLoader = true;
 
         let payload = {
@@ -3401,9 +3448,6 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
             this.updateProductCostLoader = false;
             this._changeDetectorRef.markForCheck();
         });
-    }
-    checkIfArrayIsUnique(myArray) {
-        return myArray.length === new Set(myArray).size;
     }
     // addImprints
 
