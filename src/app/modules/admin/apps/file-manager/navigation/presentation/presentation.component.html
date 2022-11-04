@@ -214,11 +214,15 @@
                 GIF image format only! 369px W by 82px H
               </p>
               <br />
-              <input type="file" class="file-upload" onchange="console.log(event.target.files)" />
+              <input type="file" accept=".gif" class="file-upload" (change)="uploadImage($event)" />
             </div>
           </div>
-          <div class="col-md-4">
-            <button mat-flat-button [matTooltip]="'Update'" [color]="'primary'">
+          <div class="col-md-12 text-right">
+            <button class="min-w-40" mat-stroked-button [matTooltip]="'Update'" (click)="uploadMediaCampaign()"
+              [disabled]="masHeadLoader">
+              <mat-progress-spinner *ngIf="masHeadLoader" [diameter]="24" [mode]="'indeterminate'">
+              </mat-progress-spinner>
+              <mat-icon *ngIf="!masHeadLoader" svgIcon="mode_edit_outline"></mat-icon>
               <span class="px-2">Update</span>
             </button>
           </div>
@@ -1580,21 +1584,40 @@
           <div class="text-2xl font-extrabold tracking-tight leading-none my-3">
             Order Options Header Image
           </div>
-          <div class="mt-5 fa fa-info-circle" style="color: rgb(101, 124, 174)">
-            There is no order options header uploaded for this store.
-          </div>
-          <p>
-            <strong> Upload a header: </strong>
-          </p>
-          <p style="color: red">(1500px X 300px, JPG ONLY!)</p>
-          <div class="row">
-            <input type="file" class="file-upload my-3 ml-3" onchange="console.log(event.target.files)" />
-          </div>
-          <div class="row">
-            <div class="col-md-4">
-              <button class="my-5" mat-flat-button [color]="'primary'">
-                <span class="px-2">Upload</span>
+
+          <div *ngIf="orderOptions.check">
+            <img src="{{orderOptions.image}}" (error)="checkImageExist('options')">
+            <div class="text-right w-full py-4">
+              <button class="min-w-40" mat-stroked-button [matTooltip]="'Remove image'"
+                [disabled]="quickGuideImageLoader">
+                <mat-progress-spinner *ngIf="quickGuideImageLoader" [diameter]="24" [mode]="'indeterminate'">
+                </mat-progress-spinner>
+                <mat-icon *ngIf="!quickGuideImageLoader" svgIcon="heroicons_outline:trash"></mat-icon>
+                <span class="px-2">Remove image</span>
               </button>
+            </div>
+          </div>
+          <div *ngIf="!orderOptions.check">
+            <div class="mt-5 fa fa-info-circle" style="color: rgb(101, 124, 174)">
+              There is no order options header uploaded for this store.
+            </div>
+            <p>
+              <strong> Upload a header: </strong>
+            </p>
+            <p style="color: red">(1500px X 300px, JPG ONLY!)</p>
+            <div class="row">
+              <input type="file" class="file-upload my-3 ml-3" accept=".jpg" (change)="uploadFile($event,'options')" />
+            </div>
+            <div class="row">
+              <div class="col-md-12 text-right">
+                <button class="min-w-40" (click)="uploadMedia('options')" mat-stroked-button [matTooltip]="'Upload'"
+                  [disabled]="orderOptions.loader">
+                  <mat-progress-spinner *ngIf="orderOptions.loader" [diameter]="24" [mode]="'indeterminate'">
+                  </mat-progress-spinner>
+                  <mat-icon *ngIf="!orderOptions.loader" svgIcon="mode_edit_outline"></mat-icon>
+                  <span class="px-2">Upload</span>
+                </button>
+              </div>
             </div>
           </div>
         </div>
@@ -1683,18 +1706,36 @@
           <div class="text-2xl font-extrabold tracking-tight leading-none my-3">
             Add quick guide header
           </div>
-          <p>
-            <strong> Header image file: </strong>
-          </p>
-          <p style="color: red">1500px W by 300px H JPG only!</p>
-          <div class="row">
-            <input type="file" class="file-upload my-3 ml-3" onchange="console.log(event.target.files)" />
-          </div>
-          <div class="row">
-            <div class="col-md-4">
-              <button class="my-5" mat-flat-button [color]="'primary'">
-                <span class="px-2">Add quick guide header image</span>
+          <div *ngIf="quickGuideCheck">
+            <img src="{{quickGuideImage}}" (error)="CheckQuickGuideImage(this)">
+            <div class="text-right w-full py-4">
+              <button class="min-w-40" mat-stroked-button [matTooltip]="'Remove image'"
+                [disabled]="quickGuideImageLoader">
+                <mat-progress-spinner *ngIf="quickGuideImageLoader" [diameter]="24" [mode]="'indeterminate'">
+                </mat-progress-spinner>
+                <mat-icon *ngIf="!quickGuideImageLoader" svgIcon="heroicons_outline:trash"></mat-icon>
+                <span class="px-2">Remove image</span>
               </button>
+            </div>
+          </div>
+          <div *ngIf="!quickGuideCheck">
+            <p class="mt-5">
+              <strong> Header image file: </strong>
+            </p>
+            <p style="color: red">1500px W by 300px H JPG only!</p>
+            <div class="row">
+              <input type="file" class="file-upload my-3 ml-3" accept=".jpg" (change)="uploadQuickImage($event)" />
+            </div>
+            <div class="row">
+              <div class="col-md-12 text-right">
+                <button class="min-w-40" mat-stroked-button [matTooltip]="'Add quick guide header image'"
+                  (click)="uploadQuickMediaCampaign()" [disabled]="quickGuideImageLoader">
+                  <mat-progress-spinner *ngIf="quickGuideImageLoader" [diameter]="24" [mode]="'indeterminate'">
+                  </mat-progress-spinner>
+                  <mat-icon *ngIf="!quickGuideImageLoader" svgIcon="mode_edit_outline"></mat-icon>
+                  <span class="px-2">Add quick guide header image</span>
+                </button>
+              </div>
             </div>
           </div>
         </div>

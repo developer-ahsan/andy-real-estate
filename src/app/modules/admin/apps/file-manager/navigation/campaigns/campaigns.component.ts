@@ -142,7 +142,7 @@ export class CampaignsComponent implements OnInit, OnDestroy {
       image.src = reader.result;
       image.onload = () => {
         if (image.width != 700 || image.height != 200) {
-          this._snackBar.open("Dimentions allowed are 700px x 200px", '', {
+          this._snackBar.open("Dimensions allowed are 700px x 200px", '', {
             horizontalPosition: 'center',
             verticalPosition: 'bottom',
             duration: 3500

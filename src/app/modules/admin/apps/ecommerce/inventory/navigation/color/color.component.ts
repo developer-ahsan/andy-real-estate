@@ -316,7 +316,7 @@ export class ColorComponent implements OnInit, OnDestroy {
       image.src = reader.result;
       image.onload = () => {
         if (image.width != 600 || image.height != 600) {
-          this._snackBar.open("Dimentions allowed are 600px x 600px", '', {
+          this._snackBar.open("Dimensions allowed are 600px x 600px", '', {
             horizontalPosition: 'center',
             verticalPosition: 'bottom',
             duration: 3500

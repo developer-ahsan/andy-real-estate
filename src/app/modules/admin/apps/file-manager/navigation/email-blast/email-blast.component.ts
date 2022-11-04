@@ -146,7 +146,6 @@ export class EmailBlastComponent implements OnInit, OnDestroy {
       message: ['', Validators.required],
       campaign: ['', Validators.required]
     });
-
     this.isLoadingChange.emit(false);
     this.initAddForm();
     this.getEmailTemplate('get');
@@ -156,6 +155,12 @@ export class EmailBlastComponent implements OnInit, OnDestroy {
       email: new FormControl('', Validators.required),
       blnActive: new FormControl(true)
     })
+  }
+  getDateArray() {
+    let dateTo = moment().format('YYYY-MM-DD');
+    let dateFrom = moment().subtract(6, 'd').format('YYYY-MM-DD');
+    return { to: dateTo, from: dateFrom }
+
   }
 
   seeCampaigns(): void {
@@ -315,13 +320,14 @@ export class EmailBlastComponent implements OnInit, OnDestroy {
     let params = {
       emails: true
     }
+    let date = this.getDateArray();
     this._fileManagerService.getStoresData(params)
       .pipe(takeUntil(this._unsubscribeAll))
       .subscribe(res => {
         let statsParams = {
           email_stats: true,
-          start_date: "2022-10-29",
-          end_date: "2022-11-03"
+          start_date: date.from,
+          end_date: date.to
         }
         this._fileManagerService.getStoresData(statsParams)
           .pipe(takeUntil(this._unsubscribeAll))
@@ -344,31 +350,82 @@ export class EmailBlastComponent implements OnInit, OnDestroy {
       })
   }
   getEmailTemplatePreview() {
+    const { pk_storeID, storeName } = this.selectedStore;
+    const { heading, campaign, message } = this.sendEmailForm.getRawValue();
+
+    console.log(campaign)
+    if (!campaign) {
+      this._snackBar.open("Please select campaign", '', {
+        horizontalPosition: 'center',
+        verticalPosition: 'bottom',
+        duration: 3000
+      });
+      return;
+    }
+    if (!heading) {
+      this._snackBar.open("Subject is required", '', {
+        horizontalPosition: 'center',
+        verticalPosition: 'bottom',
+        duration: 3000
+      });
+      return;
+    }
+    if (!message) {
+      this._snackBar.open("Message is required", '', {
+        horizontalPosition: 'center',
+        verticalPosition: 'bottom',
+        duration: 3000
+      });
+      return;
+    }
+    if (!this.fruits.length) {
+      this._snackBar.open("Emails are needed", '', {
+        horizontalPosition: 'center',
+        verticalPosition: 'bottom',
+        duration: 3000
+      });
+      return;
+    };
+
+
+    console.log("this.selectedTemplate", this.sendEmailForm.getRawValue)
+
     this.previewData = null;
     this.presentationScreen = 'Preview';
-    let params = {
-      emails: true,
-      template_id: this.selectedTemplate.id
+    let payload = {
+      get_emails_template: true,
+      title: campaign.title,
+      objective: campaign.objective,
+      strategy: campaign.strategy,
+      template_id: this.selectedTemplate.id,
+      store_id: pk_storeID,
+      store_name: storeName,
+      campaign_id: campaign.pk_campaignID,
+      subject: heading,
+      header: heading,
+      message: message,
+      emails: this.fruits
     }
 
-    const { pk_storeID, storeName } = this.selectedStore;
-    this._fileManagerService.getStoresData(params)
+    this._fileManagerService.getEmailPriviewTemplate(payload)
       .pipe(takeUntil(this._unsubscribeAll))
-      .subscribe(res => {
+      .subscribe((res: any) => {
+        this.previewData = res.data;
         // console.log("html_content", res["data"].versions[0].html_content);
 
-        let html = res["data"].versions[0].html_content;
-        // html = html.toString();
-        html.toString().replace(/{{store_name}}/gi, `${storeName}`);
-        console.log("after", html);
+        // let html = res["data"].versions[0].html_content;
+        // // html = html.toString();
+        // html.toString().replace(/{{store_name}}/gi, `${storeName}`);
+        // console.log("after", html);
 
-        this.previewData = html.toString().replace(/{{store_name}}/gi, `${storeName}`);
+        // this.previewData = html.toString().replace(/{{store_name}}/gi, `${storeName}`);
         this._changeDetectorRef.markForCheck();
       }, err => {
         this.mainDataLoader = false;
         this._changeDetectorRef.markForCheck();
       })
   }
+
   getGraphData() {
     if (!this.ngStartDate || !this.ngEndDate) {
       this._snackBar.open("Please Select Date Range", '', {
@@ -433,7 +490,6 @@ export class EmailBlastComponent implements OnInit, OnDestroy {
       "email": true
     }
 
-    console.log("payload => ", payload);
     this._fileManagerService.postStoresData(payload)
       .pipe(takeUntil(this._unsubscribeAll))
       .subscribe(res => {

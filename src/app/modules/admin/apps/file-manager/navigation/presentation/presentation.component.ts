@@ -135,6 +135,24 @@ export class PresentationComponent implements OnInit, OnDestroy {
     screens: ['Quick Guide Header', 'New Quick Guide', 'Current Quick Guides'],
     mainScreen: 'Quick Guide Header'
   }
+  imageValue: any;
+  masHeadLoader: boolean = false;
+
+  quickGuideImage = '';
+  quickGuideCheck: boolean = true;
+  quickGuideImageLoader: boolean = false;
+  QuickimageValue: any;
+
+  // Order Options
+  orderOptions: any = {
+    image: '',
+    check: true,
+    loader: false,
+    imageValue: {
+      imageUpload: '',
+      type: ''
+    }
+  }
   constructor(
     private _fileManagerService: FileManagerService,
     private _changeDetectorRef: ChangeDetectorRef,
@@ -157,11 +175,8 @@ export class PresentationComponent implements OnInit, OnDestroy {
     this.initSpecialOfferForm();
     this.initNewsFeedForm();
     this.initDashboardEmailForm();
-    this.mastHeadImg =
-      environment.storeMedia +
-      `/mastheads/` +
-      this.selectedStore.pk_storeID +
-      ".gif";
+    this.mastHeadImg = environment.storeMedia + `/mastheads/` + this.selectedStore.pk_storeID + ".gif?" + Math.random();
+    this.quickGuideImage = environment.storeMedia + `/quickGuides/headers/` + this.selectedStore.pk_storeID + ".jpg?" + Math.random();
     this.featureImageUrl = environment.featureImage + this.selectedStore.pk_storeID + "/";
 
     this.socialMediaForm = new FormGroup({
@@ -651,5 +666,203 @@ export class PresentationComponent implements OnInit, OnDestroy {
         this.fetureCampaignLoader = false;
         this._changeDetectorRef.markForCheck();
       }))
+  }
+  // MastHead
+  uploadImage(event): void {
+    const file = event.target.files[0];
+    const reader = new FileReader();
+    reader.readAsDataURL(file);
+
+    reader.onload = () => {
+      let image: any = new Image;
+      image.src = reader.result;
+      image.onload = () => {
+        if (image.width != 369 || image.height != 82) {
+          this._snackBar.open("Dimensions allowed are 369px x 82px", '', {
+            horizontalPosition: 'center',
+            verticalPosition: 'bottom',
+            duration: 3500
+          });
+          this.imageValue = null;
+          this._changeDetectorRef.markForCheck();
+          return;
+        };
+        this.imageValue = {
+          imageUpload: reader.result,
+          type: file["type"]
+        };
+      }
+    };
+  };
+  uploadMediaCampaign() {
+    if (!this.imageValue) {
+      this._snackBar.open("File is required", '', {
+        horizontalPosition: 'center',
+        verticalPosition: 'bottom',
+        duration: 3000
+      });
+      return;
+    }
+    this.masHeadLoader = true;
+    const { imageUpload, type } = this.imageValue;
+    const base64 = imageUpload.split(",")[1];
+    const payload = {
+      file_upload: true,
+      image_file: base64,
+      image_path: `/globalAssets/Stores/mastheads/${this.selectedStore.pk_storeID}.gif`
+    };
+
+    this._fileManagerService.addPresentationMedia(payload)
+      .subscribe((response) => {
+        this.mastHeadImg = environment.storeMedia + `/mastheads/` + this.selectedStore.pk_storeID + ".gif?" + Math.random();
+        this.masHeadLoader = false;
+        // Mark for check
+        this._changeDetectorRef.markForCheck();
+      }, err => {
+        this.masHeadLoader = false;
+        // Mark for check
+        this._changeDetectorRef.markForCheck();
+      })
+  }
+  // Quick Guides
+  CheckQuickGuideImage(image) {
+    this.quickGuideCheck = false;
+  }
+  uploadQuickImage(event): void {
+    const file = event.target.files[0];
+    const reader = new FileReader();
+    reader.readAsDataURL(file);
+
+    reader.onload = () => {
+      let image: any = new Image;
+      image.src = reader.result;
+      image.onload = () => {
+        if (image.width != 1500 || image.height != 300) {
+          this._snackBar.open("Dimensions allowed are 1500px x 300px", '', {
+            horizontalPosition: 'center',
+            verticalPosition: 'bottom',
+            duration: 3500
+          });
+          this.QuickimageValue = null;
+          this._changeDetectorRef.markForCheck();
+          return;
+        };
+        this.QuickimageValue = {
+          imageUpload: reader.result,
+          type: file["type"]
+        };
+      }
+    };
+  };
+  uploadQuickMediaCampaign() {
+    if (!this.QuickimageValue) {
+      this._snackBar.open("File is required", '', {
+        horizontalPosition: 'center',
+        verticalPosition: 'bottom',
+        duration: 3000
+      });
+      return;
+    }
+    this.quickGuideImageLoader = true;
+    const { imageUpload, type } = this.QuickimageValue;
+    const base64 = imageUpload.split(",")[1];
+    const payload = {
+      file_upload: true,
+      image_file: base64,
+      image_path: `/globalAssets/Stores/quickGuides/headers/${this.selectedStore.pk_storeID}.jpg`
+    };
+
+    this._fileManagerService.addPresentationMedia(payload)
+      .subscribe((response) => {
+        this.mastHeadImg = environment.storeMedia + `/quickGuides/headers/` + this.selectedStore.pk_storeID + ".jpg?" + Math.random();
+        this.quickGuideCheck = true;
+        this.quickGuideImageLoader = false;
+        // Mark for check
+        this._changeDetectorRef.markForCheck();
+      }, err => {
+        this.quickGuideImageLoader = false;
+        // Mark for check
+        this._changeDetectorRef.markForCheck();
+      })
+  }
+
+  // Common Upload File Function
+  uploadFile(event, type): void {
+    const file = event.target.files[0];
+    const reader = new FileReader();
+    reader.readAsDataURL(file);
+    reader.onload = () => {
+      let image: any = new Image;
+      image.src = reader.result;
+      image.onload = () => {
+        if (type == 'options') {
+          if (image.width != 1500 || image.height != 300) {
+            this._snackBar.open("Dimensions allowed are 1500px x 300px", '', {
+              horizontalPosition: 'center',
+              verticalPosition: 'bottom',
+              duration: 3500
+            });
+            this.orderOptions.imageValue = null;
+            this._changeDetectorRef.markForCheck();
+            return;
+          };
+          this.orderOptions.imageValue = {
+            imageUpload: reader.result,
+            type: file["type"]
+          };
+        }
+      }
+    };
+  };
+  uploadMedia(check) {
+    let base64;
+    let img_path = '';
+    let url;
+    if (check == 'options') {
+      if (!this.orderOptions.imageValue) {
+        this._snackBar.open("File is required", '', {
+          horizontalPosition: 'center',
+          verticalPosition: 'bottom',
+          duration: 3000
+        });
+        return;
+      } else {
+        this.orderOptions.loader = true;
+        const { imageUpload } = this.orderOptions.imageValue;
+        base64 = imageUpload.split(",")[1];
+        img_path = `/globalAssets/Stores/orderOptionsHeaders/${this.selectedStore.pk_storeID}.jpg`
+        url = environment.storeMedia + `/orderOptionsHeaders/` + this.selectedStore.pk_storeID + ".jpg?" + Math.random();
+      }
+    }
+
+    const payload = {
+      file_upload: true,
+      image_file: base64,
+      image_path: img_path
+    };
+
+    this._fileManagerService.addPresentationMedia(payload)
+      .subscribe((response) => {
+        this.mastHeadImg = url;
+        if (check == 'options') {
+          this.orderOptions.image = url;
+          this.orderOptions.check = true;
+          this.orderOptions.loader = false;
+        }
+        // Mark for check
+        this._changeDetectorRef.markForCheck();
+      }, err => {
+        if (check == 'options') {
+          this.orderOptions.check = true;
+          this.orderOptions.loader = false;
+        }
+        // Mark for check
+        this._changeDetectorRef.markForCheck();
+      })
+  }
+  checkImageExist(check) {
+    if (check == 'options') {
+      this.orderOptions.check = false;
+    }
   }
 }

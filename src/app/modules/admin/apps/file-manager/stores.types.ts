@@ -175,3 +175,19 @@ export interface AddCampaign {
     permalink: string;
     add_new_campaign: boolean;
 };
+export interface email_preview {
+    campaign_id: number;
+    title: string;
+
+    objective: string;
+
+    strategy: string;
+    store_id: number;
+    template_id: string;
+    store_name: string;
+    subject: string;
+    message: string;
+    header: string;
+    emails: string[];
+    get_emails_template: boolean;
+}

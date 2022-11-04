@@ -7,6 +7,7 @@ import {
   AddSurvey,
   CreateStore,
   CreateStoreSettings,
+  email_preview,
   GroupBuy,
   ShippingNotification,
   StoreList,
@@ -599,6 +600,16 @@ export class FileManagerService {
     return this._httpClient.post(environment.storeNewUrl, payload, { headers }).pipe(retry(3));
   }
   addCampaignMedia(payload) {
+    const headers = { 'Authorization': `Bearer ${this._authService.accessToken}` };
+    return this._httpClient.post(
+      environment.storeNewUrl, payload, { headers });
+  };
+  addPresentationMedia(payload) {
+    const headers = { 'Authorization': `Bearer ${this._authService.accessToken}` };
+    return this._httpClient.post(
+      environment.storeNewUrl, payload, { headers });
+  };
+  getEmailPriviewTemplate(payload: email_preview) {
     const headers = { 'Authorization': `Bearer ${this._authService.accessToken}` };
     return this._httpClient.post(
       environment.storeNewUrl, payload, { headers });
