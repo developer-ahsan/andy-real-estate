@@ -354,7 +354,6 @@ export class ColorComponent implements OnInit, OnDestroy {
   }
 
   uploadColorMedia(obj: any) {
-    console.log(obj)
     const { pk_productID } = this.selectedProduct;
     const { imageUpload, name, type } = obj;
 
@@ -426,12 +425,12 @@ export class ColorComponent implements OnInit, OnDestroy {
           .subscribe((colors) => {
             for (const color of colors["data"]) {
               const { fk_colorID } = color;
+              color.media = `${environment.productMedia}/Colors/${pk_productID}/${fk_colorID}.jpg?${Math.random()}`;
               let image = `${environment.productMedia}/Colors/${pk_productID}/${fk_colorID}.jpg`;
               this.checkIfImageExists(image, color);
             };
 
             this.dataSource = colors["data"];
-
             this.colorUpdateLoader = false;
             const message = response["success"] === true
               ? "Colors updated successfully"
@@ -494,19 +493,24 @@ export class ColorComponent implements OnInit, OnDestroy {
 
     let colors: any = [];
     this.selectedColorsList.forEach(element => {
-      colors.push({
-        color_id: element.colorId,
-        the_run: run,
-        rgb: hex
-      })
+      if (element.colorId != "") {
+        colors.push({
+          color_id: element.colorId,
+          the_run: run,
+          rgb: hex
+        })
+      }
     });
     let custom_colors: any = [];
     this.customColorsList.forEach(element => {
-      custom_colors.push({
-        color_name: element.colorName,
-        the_run: run,
-        rgb: hex
-      })
+      if (element.colorName != "") {
+        custom_colors.push({
+          color_name: element.colorName,
+          the_run: run,
+          rgb: hex
+        })
+      }
+
     });
     const payload = {
       product_id: pk_productID,

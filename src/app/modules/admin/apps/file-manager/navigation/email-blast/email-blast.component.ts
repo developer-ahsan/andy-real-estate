@@ -353,7 +353,6 @@ export class EmailBlastComponent implements OnInit, OnDestroy {
     const { pk_storeID, storeName } = this.selectedStore;
     const { heading, campaign, message } = this.sendEmailForm.getRawValue();
 
-    console.log(campaign)
     if (!campaign) {
       this._snackBar.open("Please select campaign", '', {
         horizontalPosition: 'center',
@@ -388,7 +387,6 @@ export class EmailBlastComponent implements OnInit, OnDestroy {
     };
 
 
-    console.log("this.selectedTemplate", this.sendEmailForm.getRawValue)
 
     this.previewData = null;
     this.presentationScreen = 'Preview';

@@ -487,18 +487,30 @@ export class NetCostComponent implements OnInit, OnDestroy {
     return true;
   }
 
+  checkIfArrayIsUnique(myArray) {
+    return (new Set(myArray)).size !== myArray.length;
+  }
   updateNetCost(): void {
     const formValues = this.netCostForm.getRawValue();
     const quantityListArray = [Number(formValues.quantityOne) || null, Number(formValues.quantityTwo) || null, Number(formValues.quantityThree) || null, Number(formValues.quantityFour) || null, Number(formValues.quantityFive) || null, Number(formValues.quantitySix) || null];
     const blankListArray = [parseInt(formValues.blankCostOne) || null, parseInt(formValues.blankCostTwo) || null, parseInt(formValues.blankCostThree) || null, parseInt(formValues.blankCostFour) || null, parseInt(formValues.blankCostFive) || null, parseInt(formValues.blankCostSix) || null];
     const standardCostList = [Number(formValues.standardCostOne) || null, Number(formValues.standardCostTwo) || null, Number(formValues.standardCostThree) || null, Number(formValues.standardCostFour) || null, Number(formValues.standardCostFive) || null, Number(formValues.standardCostSix) || null];
 
+    const realQuantityList = this.removeNull(quantityListArray);
 
-    const quantity_sort = this.isArraySorted(quantityListArray);
+    const quantity_sort = this.isArraySorted(realQuantityList);
     const cost_sort = this.isArraySorted(standardCostList);
-
+    const quantity_unique = this.checkIfArrayIsUnique(realQuantityList);
     if (!quantity_sort) {
       this._snackBar.open("Quantity values must be entered in ascending order", '', {
+        horizontalPosition: 'center',
+        verticalPosition: 'bottom',
+        duration: 3500
+      });
+      return;
+    }
+    if (quantity_unique) {
+      this._snackBar.open("Quantity values must be unique", '', {
         horizontalPosition: 'center',
         verticalPosition: 'bottom',
         duration: 3500
@@ -514,7 +526,6 @@ export class NetCostComponent implements OnInit, OnDestroy {
       return;
     }
 
-    const realQuantityList = this.removeNull(quantityListArray);
     const realBlankList = this.removeNull(blankListArray);
     const realStandardCostList = this.removeNull(standardCostList);
 
