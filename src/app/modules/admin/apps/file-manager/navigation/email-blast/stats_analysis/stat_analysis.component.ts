@@ -61,7 +61,6 @@ export class StatAnalysisComponent implements OnInit, OnDestroy {
   ngOnInit() {
     this.isLoading = false;
     this.isLoadingChange.emit(false);
-    console.log(this.processData)
     this.initialize();
     this.statsAnalysisFormation();
   }

@@ -1,4 +1,4 @@
-import { Component, Input, Output, OnInit, EventEmitter, ChangeDetectorRef, OnDestroy } from '@angular/core';
+import { Component, Input, Output, OnInit, EventEmitter, ChangeDetectorRef, OnDestroy, ViewChild, ElementRef } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { Subject } from 'rxjs';
@@ -7,6 +7,7 @@ import { FileManagerService } from 'app/modules/admin/apps/file-manager/store-ma
 import moment from "moment";
 import { COMMA, ENTER } from '@angular/cdk/keycodes';
 import { MatChipInputEvent } from '@angular/material/chips';
+import * as XLSX from 'xlsx';
 
 @Component({
   selector: 'app-email-blast',
@@ -84,6 +85,34 @@ export class EmailBlastComponent implements OnInit, OnDestroy {
   addOnBlur = true;
   readonly separatorKeysCodes = [ENTER, COMMA] as const;
   fruits = [];
+
+  @ViewChild('chipList', { static: false }) chipList: ElementRef<HTMLInputElement>;
+  incomingfile(event) {
+    const target: DataTransfer = <DataTransfer>(event.target);
+    if (target.files.length !== 1) {
+      throw new Error('Cannot use multiple files');
+    }
+    const reader: FileReader = new FileReader();
+    reader.readAsBinaryString(target.files[0]);
+    reader.onload = (e: any) => {
+      /* create workbook */
+      const binarystr: string = e.target.result;
+      const wb: XLSX.WorkBook = XLSX.read(binarystr, { type: 'binary' });
+      /* selected the first sheet */
+      const wsname: string = wb.SheetNames[0];
+      const ws: XLSX.WorkSheet = wb.Sheets[wsname];
+      /* save data */
+      const data = XLSX.utils.sheet_to_json(ws); // to get 2d array pass 2nd parameter as object {header: 1}
+      data.forEach((element: any) => {
+        const value = (element.email || '').trim();
+        // Add our fruit
+        if (value) {
+          this.fruits.push(value);
+          this.chipList.nativeElement.focus();
+        }
+      });
+    };
+  }
 
   add(event: MatChipInputEvent): void {
     const value = (event.value || '').trim();
@@ -322,17 +351,18 @@ export class EmailBlastComponent implements OnInit, OnDestroy {
       template_id: this.selectedTemplate.id
     }
 
-    const { pk_storeID } = this.selectedStore;
+    const { pk_storeID, storeName } = this.selectedStore;
     this._fileManagerService.getStoresData(params)
       .pipe(takeUntil(this._unsubscribeAll))
       .subscribe(res => {
-        console.log("html_content", res["data"].versions[0].html_content);
+        // console.log("html_content", res["data"].versions[0].html_content);
 
-        const html = res["data"].versions[0].html_content;
-        html.replace("{{store_id}}", pk_storeID);
+        let html = res["data"].versions[0].html_content;
+        // html = html.toString();
+        html.toString().replace(/{{store_name}}/gi, `${storeName}`);
         console.log("after", html);
 
-        this.previewData = html;
+        this.previewData = html.toString().replace(/{{store_name}}/gi, `${storeName}`);
         this._changeDetectorRef.markForCheck();
       }, err => {
         this.mainDataLoader = false;

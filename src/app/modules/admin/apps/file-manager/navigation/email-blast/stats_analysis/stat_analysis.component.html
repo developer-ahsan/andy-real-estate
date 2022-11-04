@@ -1,14 +1,14 @@
 <div *ngIf="!isLoading">
-  <fuse-card class="rounded-2xl shadow bg-card flex">
+  <fuse-card class="rounded-2xl shadow-lg bg-card flex">
     <div class="row" style="width: -webkit-fill-available;">
       <div class="col-12">
         <div class="p-6 sm:p-8 lg:p-10 w-full">
           <div class="row">
             <div class="col-lg-12 col-12 pb-6 sm:pb-8 lg:pb-8">
               <div class="text-2xl font-bold">
-                Statistics Analysis
+                Email activities
               </div>
-              <note class="text-md">Here's your recent email activity.
+              <note class="text-md text-secondary">Here's your recent email activity.
               </note>
             </div>
             <div class="col-12" *ngIf="showChart">
@@ -22,20 +22,21 @@
       </div>
     </div>
   </fuse-card>
-  <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 w-full px-1 my-6 text-center">
-    <div class="sm:col-span-1 lg:col-span-1 flex flex-col flex-auto bg-card shadow-lg rounded-2xl overflow-hidden h-40">
-      <div class="m-6 mb-0">
-        <div class="text-lg font-medium tracking-tight leading-6 truncate">Requests</div>
-      </div>
 
-      <div class="text-7xl font-bold mb-3" style="color: #eb3c0f">
-        {{totalRequests}}
-      </div>
+  <div class="mt-5 px-6 sm:px-8 lg:px-8">
+    <div class="text-2xl font-bold">
+      Today's analytics
     </div>
+    <note class="text-md text-secondary">
+      Today's reuqest, clicked and opened response
+    </note>
+  </div>
+
+  <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 w-full px-1 my-6 text-center">
 
     <div class="sm:col-span-1 lg:col-span-1 flex flex-col flex-auto bg-card shadow-lg rounded-2xl overflow-hidden h-40">
       <div class="m-6 mb-0">
-        <div class="text-lg font-medium tracking-tight leading-6 truncate">Clicked</div>
+        <div class="text-lg font-medium tracking-tight leading-6 truncate">Clicks</div>
       </div>
 
       <div class="text-7xl font-bold mb-3" style="color: #999999">
@@ -50,6 +51,16 @@
 
       <div class="text-7xl font-bold mb-3" style="color: #9e068b">
         {{totalOpens}}
+      </div>
+    </div>
+
+    <div class="sm:col-span-1 lg:col-span-1 flex flex-col flex-auto bg-card shadow-lg rounded-2xl overflow-hidden h-40">
+      <div class="m-6 mb-0">
+        <div class="text-lg font-medium tracking-tight leading-6 truncate">Requests</div>
+      </div>
+
+      <div class="text-7xl font-bold mb-3" style="color: #eb3c0f">
+        {{totalRequests}}
       </div>
     </div>
   </div>

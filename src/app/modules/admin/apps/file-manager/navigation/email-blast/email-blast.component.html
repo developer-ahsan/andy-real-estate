@@ -42,10 +42,14 @@
         <div class="row mb-3">
 
           <div class="col-12">
-            <div class="flex justify-end">
-              <div class="text-md font-semibold cursor-pointer underline text-green-700 hover:text-green-900"
+            <div class="text-right">
+              <div class="hidden text-md font-semibold cursor-pointer underline text-green-700 hover:text-green-900"
                 (click)="getEmailTemplatePreview()">
                 Preview Template
+              </div>
+              <div class="text-md font-semibold cursor-pointer underline text-green-700 hover:text-green-900">
+                <input class="hidden" #file type="file" accept=".xlsx,.csv,.excel" (change)="incomingfile($event)">
+                <label class="cursor-pointer" (click)="file.click()">Import emails from excel file</label>
               </div>
             </div>
           </div>
@@ -86,7 +90,7 @@
                   {{fruit}}
                   <mat-icon class="icon-size-5" matChipRemove [svgIcon]="'heroicons_solid:minus-circle'"></mat-icon>
                 </mat-chip>
-                <input [matChipInputFor]="chipList1" placeholder="Add Emails"
+                <input #chipList [matChipInputFor]="chipList1" placeholder="Add Emails"
                   [matChipInputSeparatorKeyCodes]="separatorKeysCodes" [matChipInputAddOnBlur]="addOnBlur"
                   (matChipInputTokenEnd)="add($event)">
               </mat-chip-list>
