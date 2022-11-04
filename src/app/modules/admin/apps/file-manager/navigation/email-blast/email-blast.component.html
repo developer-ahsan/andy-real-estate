@@ -43,10 +43,15 @@
 
           <div class="col-12">
             <div class="text-right">
-              <div class="hidden text-md font-semibold cursor-pointer underline text-green-700 hover:text-green-900"
+              <div class="text-md font-semibold cursor-pointer underline text-green-700 hover:text-green-900"
                 (click)="getEmailTemplatePreview()">
                 Preview Template
               </div>
+            </div>
+          </div>
+
+          <div class="col-12">
+            <div class="text-right">
               <div class="text-md font-semibold cursor-pointer underline text-green-700 hover:text-green-900">
                 <input class="hidden" #file type="file" accept=".xlsx,.csv,.excel" (change)="incomingfile($event)">
                 <label class="cursor-pointer" (click)="file.click()">Import emails from excel file</label>
