@@ -1470,17 +1470,20 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
                                 const { success } = productDetails["data"];
                                 if (success) {
                                     const details = productDetails["data"].result.Product;
-
-                                    let detailsDescription;
-                                    if (details?.description?.length) {
-                                        detailsDescription = !Array.isArray(details.description) ? [details.description] : details.description;
-                                    };
+                                    // console.log(Array.isArray(details.description))
+                                    let detailsDescription = "";
+                                    if (Array.isArray(details.description)) {
+                                        let val = !Array.isArray(details.description) ? [details.description] : details.description;
+                                        detailsDescription = details?.description.join('.').trim();
+                                    } else {
+                                        detailsDescription = details?.description;
+                                    }
                                     // this.productId = details.productId;
                                     const product = {
                                         productName: this.htmlDecode(details.productName.replace(details?.productId, "").replace('.', '')),
                                         productNumber: this.htmlDecode(details.productId),
                                         brandName: this.htmlDecode(details.productBrand),
-                                        mainDescription: detailsDescription?.length ? details?.description.join('.').trim() : "",
+                                        mainDescription: detailsDescription,
                                         miniDescription: "Mini description"
                                     };
 
