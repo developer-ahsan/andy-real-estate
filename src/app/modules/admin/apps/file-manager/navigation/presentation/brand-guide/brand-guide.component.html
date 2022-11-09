@@ -1,0 +1,37 @@
+<div class="row">
+  <div class="col-12 bg-card sm:p-6 md:p-6 lg:p-10 rounded-2xl shadow">
+    <div class="text-2xl font-extrabold tracking-tight leading-none my-3">
+      Add Brand Guide
+    </div>
+    <p>
+      <strong> Brand Guide File: </strong>
+    </p>
+    <p style="color: red">PDF Only!</p>
+    <div class="row">
+      <input type="file" accept=".pdf" class="file-upload my-3 ml-3" (change)="uploadFile($event)" />
+    </div>
+    <div class="row mt-5">
+      <div class="col-md-4">
+        <button class="min-w-40" mat-stroked-button [matTooltip]="'Upload'" (click)="uploadMedia()"
+          [disabled]="updateLoader">
+          <mat-progress-spinner *ngIf="updateLoader" [diameter]="24" [mode]="'indeterminate'">
+          </mat-progress-spinner>
+          <mat-icon *ngIf="!updateLoader" svgIcon="heroicons_outline:pencil-alt"></mat-icon>
+          <span class="px-2">Upload</span>
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="row my-5 bg-light overflow-auto">
+  <div class="col-12 bg-card sm:p-6 md:p-6 lg:p-10 rounded-2xl shadow">
+    <div class="text-2xl font-extrabold tracking-tight leading-none my-3">
+      Current Brand Guide
+    </div>
+    <p>
+      <strong>
+        There are currently no news items in the feed for this store.
+      </strong>
+    </p>
+  </div>
+</div>

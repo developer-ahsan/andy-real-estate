@@ -77,6 +77,16 @@ import { MatStepperModule } from '@angular/material/stepper';
 import { PresentationScrollersComponent } from "./navigation/presentation/presentation-scrollers/presentation-scrollers.component";
 import { MatSlideToggleModule } from "@angular/material/slide-toggle";
 import { StatAnalysisComponent } from "./navigation/email-blast/stats_analysis/stat_analysis.component";
+import { PresentationSocialMediaComponent } from "./navigation/presentation/presentation-social-media/presentation-social-media.component";
+import { PresentationSupportTeamComponent } from "./navigation/presentation/presentation-support-team/presentation-support-team.component";
+import { PresentationSpecialOffersComponent } from "./navigation/presentation/special-offers/special-offers.component";
+import { PresentationNewsFeedComponent } from "./navigation/presentation/news-feed/news-feed.component";
+import { PresentationDashboardEmailsComponent } from "./navigation/presentation/dashboard-emails/dashboard-emails.component";
+import { PresentationFeatureImagesComponent } from "./navigation/presentation/feature-images/feature-images.component";
+import { PresentationPaymentMethodsComponent } from "./navigation/presentation/payment-methods/payment-methods.component";
+import { PresentationBrandGuideComponent } from "./navigation/presentation/brand-guide/brand-guide.component";
+import { PresentationArtworkTagsComponent } from "./navigation/presentation/artwork-tags/artwork-tags.component";
+import { PresentationSiteColorsComponent } from "./navigation/presentation/site-colors/site-colors.component";
 
 @NgModule({
   declarations: [
@@ -123,7 +133,17 @@ import { StatAnalysisComponent } from "./navigation/email-blast/stats_analysis/s
     ArtApprovalComponent,
     ConsolidatedBillComponent,
     PresentationScrollersComponent,
-    StatAnalysisComponent
+    StatAnalysisComponent,
+    PresentationSocialMediaComponent,
+    PresentationSupportTeamComponent,
+    PresentationSpecialOffersComponent,
+    PresentationNewsFeedComponent,
+    PresentationDashboardEmailsComponent,
+    PresentationFeatureImagesComponent,
+    PresentationPaymentMethodsComponent,
+    PresentationBrandGuideComponent,
+    PresentationArtworkTagsComponent,
+    PresentationSiteColorsComponent
   ],
   imports: [
     RouterModule.forChild(storeRoutes),

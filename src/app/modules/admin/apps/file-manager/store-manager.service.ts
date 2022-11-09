@@ -3,15 +3,28 @@ import { HttpClient } from "@angular/common/http";
 import { BehaviorSubject, Observable, of, throwError } from "rxjs";
 import { map, retry, switchMap, take, tap } from "rxjs/operators";
 import {
+  AddArtwork,
+  AddAvailableMember,
   AddCampaign,
+  AddFeatureImage,
+  AddStaticFeatureImage,
   AddSurvey,
   CreateStore,
   CreateStoreSettings,
+  DeleteAvailableMember,
+  DeleteFeatureImage,
+  DeleteMobileImage,
+  EditAvailableMember,
+  editSocialMedia,
+  EditStaticFeatureImage,
   email_preview,
   GroupBuy,
   ShippingNotification,
   StoreList,
   StoreSettings,
+  UpdateArtworkDisplayOrder,
+  UpdateFeatureImage,
+  UpdatePaymentMethod,
 } from "app/modules/admin/apps/file-manager/stores.types";
 import { environment } from "environments/environment";
 import { navigations } from "./navigation-data";
@@ -614,4 +627,59 @@ export class FileManagerService {
     return this._httpClient.post(
       environment.storeNewUrl, payload, { headers });
   };
+  UpdateSocialMedia(payload: editSocialMedia) {
+    const headers = { 'Authorization': `Bearer ${this._authService.accessToken}` };
+    return this._httpClient.put(environment.storeNewUrl, payload, { headers }).pipe(retry(3));
+  }
+  AddStaticFeatureImage(payload: AddStaticFeatureImage) {
+    const headers = { 'Authorization': `Bearer ${this._authService.accessToken}` };
+    return this._httpClient.post(environment.storeNewUrl, payload, { headers }).pipe(retry(3));
+  }
+  EditStaticFeatureImage(payload: EditStaticFeatureImage) {
+    const headers = { 'Authorization': `Bearer ${this._authService.accessToken}` };
+    return this._httpClient.put(environment.storeNewUrl, payload, { headers }).pipe(retry(3));
+  }
+  DeleteMobileImage(payload: DeleteMobileImage) {
+    const headers = { 'Authorization': `Bearer ${this._authService.accessToken}` };
+    return this._httpClient.put(environment.storeNewUrl, payload, { headers }).pipe(retry(3));
+  }
+  AddFeatureImage(payload: AddFeatureImage) {
+    const headers = { 'Authorization': `Bearer ${this._authService.accessToken}` };
+    return this._httpClient.post(environment.storeNewUrl, payload, { headers }).pipe(retry(3));
+  }
+  UpdateFeatureImage(payload: UpdateFeatureImage) {
+    const headers = { 'Authorization': `Bearer ${this._authService.accessToken}` };
+    return this._httpClient.put(environment.storeNewUrl, payload, { headers }).pipe(retry(3));
+  }
+  DeleteFeatureImage(payload: DeleteFeatureImage) {
+    const headers = { 'Authorization': `Bearer ${this._authService.accessToken}` };
+    return this._httpClient.put(environment.storeNewUrl, payload, { headers }).pipe(retry(3));
+  }
+  // Support Team
+  AddAvailableMember(payload: AddAvailableMember) {
+    const headers = { 'Authorization': `Bearer ${this._authService.accessToken}` };
+    return this._httpClient.post(environment.storeNewUrl, payload, { headers }).pipe(retry(3));
+  }
+  EditAvailableMember(payload: EditAvailableMember) {
+    const headers = { 'Authorization': `Bearer ${this._authService.accessToken}` };
+    return this._httpClient.put(environment.storeNewUrl, payload, { headers }).pipe(retry(3));
+  }
+  DeleteAvailableMember(payload: DeleteAvailableMember) {
+    const headers = { 'Authorization': `Bearer ${this._authService.accessToken}` };
+    return this._httpClient.put(environment.storeNewUrl, payload, { headers }).pipe(retry(3));
+  }
+  // Payment Methods
+  UpdatePaymentMethod(payload: UpdatePaymentMethod) {
+    const headers = { 'Authorization': `Bearer ${this._authService.accessToken}` };
+    return this._httpClient.put(environment.storeNewUrl, payload, { headers }).pipe(retry(3));
+  }
+  // Artwork Tags
+  UpdateArtworkDisplayOrder(payload: UpdateArtworkDisplayOrder) {
+    const headers = { 'Authorization': `Bearer ${this._authService.accessToken}` };
+    return this._httpClient.put(environment.storeNewUrl, payload, { headers }).pipe(retry(3));
+  }
+  AddArtwork(payload: AddArtwork) {
+    const headers = { 'Authorization': `Bearer ${this._authService.accessToken}` };
+    return this._httpClient.post(environment.storeNewUrl, payload, { headers }).pipe(retry(3));
+  }
 }

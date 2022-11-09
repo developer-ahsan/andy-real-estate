@@ -1,0 +1,231 @@
+<div class="row">
+  <div class="col-6 mb-3" *ngIf="!addNewFeature">
+    <div class="text-2xl font-extrabold tracking-tight leading-none my-5">
+      Scroller Feature Images
+    </div>
+  </div>
+  <div class="col-6 mb-3 text-right" *ngIf="!addNewFeature">
+    <button mat-flat-button class="bg-accent-100 border" (click)="addNewFeatureImageToggle()">
+      <mat-icon [svgIcon]="'heroicons_outline:plus'"></mat-icon>
+      <span class="ml-2">Add New</span>
+    </button>
+  </div>
+  <div class="col-12" *ngIf="!addNewFeature">
+    <div class="row">
+      <div class="col-md-4 col-12 mb-2" *ngFor="let item of featureImagesData">
+        <div class="bg-card p-0 rounded-2xl shadow mb-3">
+          <img class="w-full object-cover rounded-t-2xl h-30"
+            src="{{ imgUrl + item.pk_featureImageID }}.jpg?{{random()}}">
+          <div class="flex w-full justify-between mt-3 mx-3">
+            <p class="font-medium text-secondary pt-2" *ngIf="item.blnActive">Active</p>
+            <p class="font-medium text-red-500 pt-2" *ngIf="!item.blnActive">In-Active</p>
+            <button (click)="EditFeatureImage(item)" class="px-3 mr-3" mat-button [color]="'primary'">
+              Edit
+            </button>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+  <!-- Mobile Static -->
+  <div class="col-12 bg-card sm:p-6 md:p-6 lg:p-10 rounded-2xl shadow" *ngIf="!addNewFeature && mobileData">
+    <div class="row">
+      <div class="col-12 mb-3">
+        <div class="text-2xl font-extrabold tracking-tight leading-none">
+          Update Mobile Feature Image
+        </div>
+      </div>
+      <div class="col-12" style="color: rgb(101, 124, 174)">
+        The mobile feature image will replace the feature image scroller
+        defined above for mobile devices and those with smaller screen
+        sizes. The mobile feature image will not scroll, and will be a
+        static image.
+      </div>
+      <div class="col-12 mt-3" *ngIf="mobileData.pk_mobileFeatureImageID">
+        <img *ngIf="mobileImageCheck" src="{{imgUrlMobile}}" (error)="checkImageExist('options')" alt="picture" />
+        <p *ngIf="!mobileImageCheck"> There is no mobile feature image defined for this store.</p>
+      </div>
+      <div class="col-12 mb-4">
+        <p class="" style="color: rgb(101, 124, 174)">
+          Images must be 1242px W by 450px H. JPG format only.
+        </p>
+        <br />
+        <input type="file" class="file-upload my-3" (change)="uploadFile($event)" />
+      </div>
+      <div class="col-12 col-md-6">
+        <mat-form-field appearance="fill" class="w-full">
+          <mat-label>Feature image link URL: </mat-label>
+          <input [(ngModel)]="mobileData.imageURL" matInput />
+        </mat-form-field>
+      </div>
+      <div class="col-12 col-md-6 ">
+        <mat-form-field appearance="fill" class="w-full">
+          <mat-label>Open link in new window: </mat-label>
+          <mat-select [(ngModel)]="mobileData.blnNewWindow">
+            <mat-option [value]="true">Yes</mat-option>
+            <mat-option [value]="false">No</mat-option>
+          </mat-select>
+        </mat-form-field>
+      </div>
+      <div class="w-full flex justify-end mt-2">
+        <div class="flex items-center my-2">
+          <div class="flex items-center mr-4">
+            <ng-container *ngIf="updateMobileMsg">
+              <mat-icon class="text-green-500" [svgIcon]="'heroicons_outline:check'"></mat-icon>
+              <span *ngIf="updateMobileMsg" class="ml-2">Mobile Static Image Updated Successfully</span>
+            </ng-container>
+          </div>
+          <button *ngIf="!mobileData.pk_mobileFeatureImageID" class="min-w-40" mat-stroked-button [matTooltip]="'Add'"
+            (click)="addMobileStatic()" [disabled]="updateMobileLoader">
+            <mat-progress-spinner *ngIf="updateMobileLoader" [diameter]="24" [mode]="'indeterminate'">
+            </mat-progress-spinner>
+            <mat-icon *ngIf="!updateMobileLoader" svgIcon="heroicons_outline:plus"></mat-icon>
+            <span class="px-2">Add</span>
+          </button>
+          <button *ngIf="mobileData.pk_mobileFeatureImageID" class="min-w-40 mr-2 " mat-stroked-button
+            [matTooltip]="'Update'" (click)="removeMobileImage()" [disabled]="removeMobileLoader">
+            <mat-progress-spinner *ngIf="removeMobileLoader" [diameter]="24" [mode]="'indeterminate'">
+            </mat-progress-spinner>
+            <mat-icon *ngIf="!removeMobileLoader" svgIcon="heroicons_outline:trash"></mat-icon>
+            <span class="px-2">Remove</span>
+          </button>
+          <button *ngIf="mobileData.pk_mobileFeatureImageID" class="min-w-40" mat-stroked-button [matTooltip]="'Update'"
+            (click)="updateMobile()" [disabled]="updateMobileLoader">
+            <mat-progress-spinner *ngIf="updateMobileLoader" [diameter]="24" [mode]="'indeterminate'">
+            </mat-progress-spinner>
+            <mat-icon *ngIf="!updateMobileLoader" svgIcon="heroicons_outline:pencil-alt"></mat-icon>
+            <span class="px-2">Update</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="col-6 mb-3" *ngIf="addNewFeature">
+    <div class="text-2xl font-extrabold tracking-tight leading-none my-5">
+      Create New Feature Image
+    </div>
+  </div>
+  <div class="col-6 mb-3 text-right" *ngIf="addNewFeature">
+    <button mat-flat-button class="bg-accent-100 border" (click)="addNewFeatureImageToggle()">
+      <mat-icon [svgIcon]="'heroicons_outline:arrow-left'"></mat-icon>
+      <span class="ml-2">Back To List</span>
+    </button>
+  </div>
+  <div class="col-12 bg-card sm:p-6 md:p-6 lg:p-10 rounded-2xl shadow" *ngIf="addNewFeature">
+    <img *ngIf="featureImageObj" class="w-full object-cover"
+      src="{{ imgUrl + featureImageObj.pk_featureImageID }}.jpg?{{random()}}">
+    <fuse-alert class="m-1" [dismissible]="true" [dismissed]="false" [type]="'info'" [appearance]="'soft'">
+      Please note: the main text/header copy and the button copy are not
+      required. If the button copy is left blank, the button will not
+      show up at all on the feature image.
+    </fuse-alert>
+    <fuse-alert class="m-1" [dismissible]="true" [dismissed]="false" [type]="'info'" [appearance]="'soft'">
+      <span fuseAlertTitle>Select an Image</span>
+      images must be 1500px W by 300px H. JPG format only.<br />
+      Try to make the main content of the image be no wider than 768px,
+      centered on the image. The image background should expand to the
+      entire width of the image (1500px), but the main content of the
+      feature image should be contained within a 768px box (this
+      includes any main images and text).<br />
+      <a href="https://admin.consolidus.com/ssadm/controller/view/system/images/feature-image-wireframe.jpg"
+        _target="_blank">Click here to see an example</a>
+    </fuse-alert>
+    <form class="flex flex-col flex-auto py-6 sm:py-8 overflow-y-auto" [formGroup]="addfeatureImageForm">
+      <!-- To -->
+      <mat-form-field>
+        <input matInput accept=".jpg" type="File" (change)="uploadFeatureFile($event)" placeholder="Choose image" />
+      </mat-form-field>
+      <mat-form-field>
+        <mat-label>Main text/header copy: </mat-label>
+        <textarea formControlName="headerCopy" matInput placeholder="Header text copy"></textarea>
+      </mat-form-field>
+      <div>
+        <mat-form-field class="input-width mr-1">
+          <mat-label>Feature image link URL: </mat-label>
+          <input formControlName="imageURL" matInput placeholder="Feature image link URL" />
+        </mat-form-field>
+        <mat-form-field class="input-width ml-1">
+          <mat-label>Main text/header text color: </mat-label>
+          <input formControlName="headerCopyColor" type="color" matInput placeholder="Main text/header text color" />
+        </mat-form-field>
+
+        <mat-form-field class="input-width mr-1">
+          <mat-label>Button copy: </mat-label>
+          <input formControlName="buttonCopy" matInput placeholder="Button copy" />
+        </mat-form-field>
+        <mat-form-field class="input-width ml-1">
+          <mat-label>Button URL: </mat-label>
+          <input formControlName="buttonURL" matInput placeholder="Button URL" />
+        </mat-form-field>
+
+        <mat-form-field class="input-width mr-1">
+          <mat-label>Button background color: </mat-label>
+          <input formControlName="buttonBackgroundColor" type="color" matInput
+            placeholder="Button background color (hex value)" />
+        </mat-form-field>
+        <mat-form-field class="input-width ml-1">
+          <mat-label>Button text color: </mat-label>
+          <input formControlName="buttonColor" type="color" matInput placeholder="Button text color (hex value)" />
+        </mat-form-field>
+
+        <mat-form-field class="input-width mr-1">
+          <mat-label>Arrow color: </mat-label>
+          <input formControlName="arrowColor" type="color" matInput placeholder="Arrow color (hex value)" />
+        </mat-form-field>
+        <mat-form-field class="input-width ml-1">
+          <mat-label>Content alignment: </mat-label>
+          <mat-select formControlName="align">
+            <mat-option [value]="0">Left</mat-option>
+            <mat-option [value]="1">Right</mat-option>
+            <mat-option [value]="2">Center</mat-option>
+          </mat-select>
+        </mat-form-field>
+
+        <mat-form-field class="input-width mr-1">
+          <mat-label>Display order: </mat-label>
+          <input formControlName="displayOrder" type="number" matInput placeholder="Display order" />
+        </mat-form-field>
+        <mat-form-field class="input-width ml-1">
+          <mat-label>Open link in new window: </mat-label>
+          <mat-select formControlName="blnNewWindow">
+            <mat-option [value]="true">Yes</mat-option>
+            <mat-option [value]="false">No</mat-option>
+          </mat-select>
+        </mat-form-field>
+      </div>
+      <!-- Actions -->
+      <div class="w-full flex justify-end mt-2">
+        <div class="flex items-center my-2">
+          <div class="flex items-center mr-4">
+            <!-- <ng-container *ngIf="updateMobileMsg">
+              <mat-icon class="text-green-500" [svgIcon]="'heroicons_outline:check'"></mat-icon>
+              <span *ngIf="updateMobileMsg" class="ml-2">Mobile Static Image Updated Successfully</span>
+            </ng-container> -->
+          </div>
+          <button *ngIf="!featureImageObj" class="min-w-40" mat-stroked-button [matTooltip]="'Add new feature image'"
+            (click)="AddFeatureImage()" [disabled]="addNewFeatureLoader">
+            <mat-progress-spinner *ngIf="addNewFeatureLoader" [diameter]="24" [mode]="'indeterminate'">
+            </mat-progress-spinner>
+            <mat-icon *ngIf="!addNewFeatureLoader" svgIcon="heroicons_outline:plus"></mat-icon>
+            <span class="px-2">Add new feature image</span>
+          </button>
+          <button *ngIf="featureImageObj" class="min-w-40 mr-2 " mat-stroked-button [matTooltip]="'Remove'"
+            (click)="removeFeatureImage()" [disabled]="removeFeatureLoader">
+            <mat-progress-spinner *ngIf="removeFeatureLoader" [diameter]="24" [mode]="'indeterminate'">
+            </mat-progress-spinner>
+            <mat-icon *ngIf="!removeFeatureLoader" svgIcon="heroicons_outline:trash"></mat-icon>
+            <span class="px-2">Remove</span>
+          </button>
+          <button *ngIf="featureImageObj" class="min-w-40" mat-stroked-button [matTooltip]="'Update Feature Image'"
+            (click)="UpdateFeatureImage()" [disabled]="addNewFeatureLoader">
+            <mat-progress-spinner *ngIf="addNewFeatureLoader" [diameter]="24" [mode]="'indeterminate'">
+            </mat-progress-spinner>
+            <mat-icon *ngIf="!addNewFeatureLoader" svgIcon="heroicons_outline:pencil-alt"></mat-icon>
+            <span class="px-2">Update</span>
+          </button>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>

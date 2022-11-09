@@ -3345,6 +3345,7 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
                 } else {
                     this.customColorsList[index]["image"] = base64;
                 }
+                console.clear();
                 this._changeDetectorRef.markForCheck();
             };
         }

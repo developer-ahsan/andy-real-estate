@@ -7,16 +7,15 @@
                 <div class="text-2xl font-bold">
                     Order Original Report
                 </div>
-                <div>
-                    <note class="font-bold text-secondary">An original order report does not exist for this order.
-                    </note>
-                    <object type="text/html" class="w-full"
-                        data="https://assets.consolidus.com/globalAssets/Orders/originalOrderReport/{{selectedOrder.pk_orderID}}.html"
+                <div *ngIf="url">
+                    <!-- <note class="font-bold text-secondary">An original order report does not exist for this order.
+                    </note> -->
+                    <!-- <object type="text/html" class="w-full"
+                        data="https://assets.consolidus.com/globalAssets/Orders/originalOrderReport/{{url}}.html"
                         style="min-height: 955px;">
-                    </object>
+                    </object> -->
                 </div>
-                <!-- <iframe class="w-full " style="height: 100vh" frameborder="0"
-                    src="https://assets.consolidus.com/globalAssets/Orders/originalOrderReport/56159.html"></iframe> -->
+                <iframe class="w-full " style="height: 100vh" frameborder="0" [src]="urlSafe"></iframe>
             </div>
         </fuse-card>
     </div>

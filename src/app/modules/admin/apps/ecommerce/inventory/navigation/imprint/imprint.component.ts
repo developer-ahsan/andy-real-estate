@@ -1581,7 +1581,7 @@ export class ImprintComponent implements OnInit, OnDestroy {
     };
 
     if (this.defaultImprintColorSpecification === 'Yes') {
-      if (!this.collectionIdsArray.length) {
+      if (!this.collectionIdsArray.length && !this.customColorId) {
         this._snackBar.open("Select a color collection", '', {
           horizontalPosition: 'center',
           verticalPosition: 'bottom',

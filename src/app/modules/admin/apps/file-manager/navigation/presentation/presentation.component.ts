@@ -153,6 +153,13 @@ export class PresentationComponent implements OnInit, OnDestroy {
       type: ''
     }
   }
+  presentationData: any;
+
+  // Product Builder Settings
+  productBuilderSettings: any;
+  productBuilderLoader: boolean = false;
+  productBuilderMsg: boolean = false;
+
   constructor(
     private _fileManagerService: FileManagerService,
     private _changeDetectorRef: ChangeDetectorRef,
@@ -292,6 +299,7 @@ export class PresentationComponent implements OnInit, OnDestroy {
     this.quickGuides.mainScreen = screenName;
   }
   calledScreen(screenName): void {
+    this.presentationData = null;
     this.drawerOpened = false;
     if (screenName != this.presentationScreen) {
       this.addNewFeature = false;
@@ -316,10 +324,13 @@ export class PresentationComponent implements OnInit, OnDestroy {
         this.getScreenData("support_team", screenName);
         this.getScreenData("available_support_team", screenName);
       } else if (screenName == "Feature Images") {
-        this.getScreenData("feature_image", screenName);
+        this.getScreenData("presentation_feature_image", screenName);
       } else if (screenName == "Default Dashboard Emails") {
         this.getScreenData("presentation_default_emails", screenName);
-      } else if (screenName == '') {
+      } else if (screenName == 'Artwork tags') {
+        this.getScreenData("artwork_tags_presentation", screenName);
+      } else if (screenName == 'Product Builder Settings') {
+        this.getScreenData("product_builder_presentation", screenName);
       }
     }
   }
@@ -340,18 +351,20 @@ export class PresentationComponent implements OnInit, OnDestroy {
             homeFeatureLink: res.data[0].HomeFeatureLink
           })
         } else if (screen == "Social Media") {
-          this.socialMediaForm.patchValue(res.data[0]);
+          this.presentationData = res.data[0];
         } else if (screen == "News Feed") {
           this.isNewsFeedAdd = false;
           this.isNewsFeedupdate = false;
+          this.presentationData = res.data;
           this.newsFeedData = res.data;
         } else if (screen == "Special offers") {
-          this.specialOfferForm.patchValue(res.data[0]);
+          this.presentationData = res.data[0];
         } else if (screen == "Typekit") {
           this.ngTypeKit = res.data[0].typeKitID;
         } else if (screen == "Feature Campaign") {
           this.campaignData = res.data;
         } else if (screen == "Payment methods") {
+          this.presentationData = res.data;
           this.onlineCreditForm.patchValue(res.data[0]);
           this.prepaymentForm.patchValue(res.data[1]);
           this.thirdPartyForm.patchValue(res.data[2]);
@@ -361,26 +374,18 @@ export class PresentationComponent implements OnInit, OnDestroy {
             this.availableTeamData = res.data;
           } else {
             this.teamData = res.data;
-            this.teamForm = this.formBuilder.group({
-              memberDetails: this.formBuilder.array(
-                this.teamData.map((x) =>
-                  this.formBuilder.group({
-                    roleName: [x.roleName, [Validators.required]],
-                    email: [x.email, [Validators.required]],
-                    blnProgramManager: [
-                      x.blnProgramManager,
-                      [Validators.required],
-                    ],
-                    displayOrder: [x.displayOrder, [Validators.required]],
-                  })
-                )
-              ),
-            });
+            this.presentationData = res.data;
           }
         } else if (screen == "Feature Images") {
           this.featureImagesData = res.data;
+          this.presentationData = res.data;
         } else if (screen == "Default Dashboard Emails") {
-          this.dashboardEmailsForm.patchValue(res.data[0]);
+          // this.dashboardEmailsForm.patchValue(res.data[0]);
+          this.presentationData = res.data[0];
+        } else if (screen == "Artwork tags") {
+          this.presentationData = res.data;
+        } else if (screen == "Product Builder Settings") {
+          this.productBuilderSettings = res.data[0];
         }
         this.isPageLoading = false;
         this._changeDetectorRef.markForCheck();
@@ -529,7 +534,6 @@ export class PresentationComponent implements OnInit, OnDestroy {
     this.isNewsFeedAdd = false;
     this.isNewsFeedupdate = check;
     if (check) {
-      console.log(obj)
       this.newsFeedUpdateForm.patchValue(obj);
     }
   }
@@ -864,5 +868,25 @@ export class PresentationComponent implements OnInit, OnDestroy {
     if (check == 'options') {
       this.orderOptions.check = false;
     }
+  }
+  updateProductBuilderSettings() {
+    this.productBuilderLoader = true;
+    let payload = {
+      // store_id: this.selectedStore.pk_storeID,
+      // payment_methods: payment,
+      // update_payment_method: true
+    }
+    // this._fileManagerService.UpdatePaymentMethod(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+    //   this.productBuilderLoader = false;
+    //   this.productBuilderMsg = true;
+    //   setTimeout(() => {
+    //     this.productBuilderMsg = false;
+    //     this._changeDetectorRef.markForCheck();
+    //   }, 3000);
+    //   this._changeDetectorRef.markForCheck();
+    // }, err => {
+    //   this.productBuilderLoader = false;
+    //   this._changeDetectorRef.markForCheck();
+    // })
   }
 }

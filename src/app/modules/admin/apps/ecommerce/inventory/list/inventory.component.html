@@ -1318,20 +1318,17 @@
                                             </mat-form-field>
                                         </div>
                                         <div class="col-3 text-center" *ngIf="item.image">
-                                            <div ng-repeat="file in imagefinaldata" class="img_wrp">
+                                            <!-- <div ng-repeat="file in imagefinaldata" class="img_wrp">
                                                 <img style="width: 20%;"
                                                     src="{{'data:image/jpg;base64,' + item.image}}" />
                                                 <mat-icon (click)="removeColorImage(i,'custom')"
                                                     class="close cursor-pointer">
                                                     close</mat-icon>
-                                            </div>
-                                            <!-- <mat-icon (click)="removeColorImage(i)" class="cursor-pointer">
-                                                close</mat-icon>
-                                            <img style="width: 20%;" src="{{'data:image/jpg;base64,' + item.image}}"> -->
+                                            </div> -->
                                         </div>
                                         <div class="col-3" *ngIf="!item.image">
-                                            <input [(ngModel)]="colorTempImage" type="file" accept=".jpg" id="image"
-                                                (change)="uploadImage($event, i,'custom')" />
+                                            <!-- <input [(ngModel)]="colorTempImage" type="file" accept=".jpg" id="image"
+                                                (change)="uploadImage($event, i,'custom')" /> -->
                                         </div>
                                         <div class="col-2">
                                             <mat-icon (click)="removeCustomColor(item)" class="cursor-pointer">

@@ -1,0 +1,70 @@
+<div class="row">
+  <div class="col-12 bg-card sm:p-6 md:p-6 lg:p-10 rounded-2xl shadow">
+    <div class="text-2xl font-extrabold tracking-tight leading-none my-3">
+      Social Media Details
+    </div>
+    <p class="tracking-tight leading-none">
+      Enter the URL of the Facebook or Twitter page below. If no
+      Facebook or Twitter page, leave blank. To remove a Facebook or
+      Twitter page, remove the link (leave blank) and hit update.
+    </p>
+    <form [formGroup]="socialMediaForm">
+      <div class="row">
+        <div class="mt-4 col-md-6">
+          <mat-form-field appearance="fill" class="w-full">
+            <mat-label> <strong>Facebook</strong></mat-label>
+            <input formControlName="facebookPage" matInput />
+          </mat-form-field>
+        </div>
+        <div class="mt-4 col-md-6">
+          <mat-form-field appearance="fill" class="w-full">
+            <mat-label> <strong>Twitter</strong></mat-label>
+            <input formControlName="twitterPage" matInput />
+          </mat-form-field>
+        </div>
+      </div>
+      <div class="row">
+        <div class="mt-4 col-md-6">
+          <mat-form-field appearance="fill" class="w-full">
+            <mat-label> <strong>LinkedIn</strong></mat-label>
+            <input formControlName="linkedInPage" matInput />
+          </mat-form-field>
+        </div>
+        <div class="mt-4 col-md-6">
+          <mat-form-field appearance="fill" class="w-full">
+            <mat-label> <strong>Instagram</strong></mat-label>
+            <input formControlName="instagramPage" matInput />
+          </mat-form-field>
+        </div>
+      </div>
+      <div class="w-full flex justify-end mt-2">
+        <div class="flex items-center my-2">
+          <div class="flex items-center mr-4" *ngIf="socialUpdateMsg">
+            <ng-container *ngIf="socialUpdateMsg">
+              <mat-icon class="text-green-500" [svgIcon]="'heroicons_outline:check'"></mat-icon>
+              <span class="ml-2">Social Media Updated Successfully</span>
+            </ng-container>
+          </div>
+          <button class="min-w-40" mat-stroked-button [matTooltip]="'Update'" (click)="UpdateSocialMedia()"
+            [disabled]="updateLoader">
+            <mat-progress-spinner *ngIf="updateLoader" [diameter]="24" [mode]="'indeterminate'">
+            </mat-progress-spinner>
+            <mat-icon *ngIf="!updateLoader" svgIcon="heroicons_outline:pencil-alt"></mat-icon>
+            <span class="px-2">Update</span>
+          </button>
+        </div>
+      </div>
+      <!-- <div class="row">
+        <div class="col-md-12 text-right">
+          <button class="min-w-40" mat-stroked-button [matTooltip]="'Update'" [disabled]="updateLoader"
+            (click)="UpdateSocialMedia()">
+            <mat-progress-spinner *ngIf="updateLoader" [diameter]="24" [mode]="'indeterminate'">
+            </mat-progress-spinner>
+            <mat-icon *ngIf="!updateLoader" svgIcon="mode_edit_outline"></mat-icon>
+            <span class="px-2">Update</span>
+          </button>
+        </div>
+      </div> -->
+    </form>
+  </div>
+</div>

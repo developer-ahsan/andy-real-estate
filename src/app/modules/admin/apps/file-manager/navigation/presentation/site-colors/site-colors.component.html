@@ -1,0 +1,56 @@
+<form [formGroup]="specialOfferForm">
+  <div class="row">
+    <div class="col-12 bg-card sm:p-6 md:p-6 lg:p-10 rounded-2xl shadow">
+      <div class="text-2xl font-extrabold tracking-tight leading-none my-3">
+        Special offers
+      </div>
+      <div class="row">
+        <div class="col-6 mt-5">
+          <mat-form-field appearance="fill" class="w-full">
+            <mat-label>Does this store offer special offers?
+            </mat-label>
+            <mat-select formControlName="blnOffer">
+              <mat-option [value]="true">Yes</mat-option>
+              <mat-option [value]="false">No</mat-option>
+            </mat-select>
+          </mat-form-field>
+        </div>
+        <div class="mt-4 col-12">
+          <mat-form-field appearance="fill" class="w-full">
+            <mat-label> Offer Text: (50)</mat-label>
+            <input formControlName="offerText" maxlength="50" matInput />
+          </mat-form-field>
+        </div>
+        <div class="mt-4 col-12">
+          <mat-form-field appearance="fill" class="w-full">
+            <mat-label> Offer Textbox Text: (30)</mat-label>
+            <input formControlName="offerTextBox" maxlength="30" matInput />
+          </mat-form-field>
+        </div>
+        <div class="mt-4 col-12">
+          <mat-form-field appearance="fill" class="w-full">
+            <mat-label> Footer Text: (40)</mat-label>
+            <input formControlName="offerFooter" maxlength="40" matInput />
+          </mat-form-field>
+        </div>
+        <div class="col-12 flex justify-end mt-2">
+          <div class="flex items-center my-2">
+            <div class="flex items-center mr-4" *ngIf="specialOfferMsg">
+              <ng-container *ngIf="specialOfferMsg">
+                <mat-icon class="text-green-500" [svgIcon]="'heroicons_outline:check'"></mat-icon>
+                <span class="ml-2">Special Offers Updated Successfully</span>
+              </ng-container>
+            </div>
+            <button class="min-w-40" mat-stroked-button [matTooltip]="'Update'" (click)="UpdateSpecialOffer()"
+              [disabled]="updateLoader">
+              <mat-progress-spinner *ngIf="updateLoader" [diameter]="24" [mode]="'indeterminate'">
+              </mat-progress-spinner>
+              <mat-icon *ngIf="!updateLoader" svgIcon="mode_edit_outline"></mat-icon>
+              <span class="px-2">Update</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</form>

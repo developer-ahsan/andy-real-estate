@@ -546,7 +546,7 @@ export class NetCostComponent implements OnInit, OnDestroy {
       cost_comment: formValues.internalComments,
       live_cost_comment: this.redPriceCommentText || "",
       coop_id: this.selectedCooP || 0,
-      msrp: parseInt(formValues.msrp),
+      msrp: Number(formValues.msrp),
       net_cost: true
     };
 

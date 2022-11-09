@@ -191,3 +191,124 @@ export interface email_preview {
     emails: string[];
     get_emails_template: boolean;
 }
+// Presentaions
+export interface editSocialMedia {
+    facebook_url: string;
+    twitter_url: string;
+    linkedin_url: string;
+    instagram_url: string;
+    store_id: number;
+}
+// Feature Images
+export interface AddStaticFeatureImage {
+    fk_storeID: number;
+    blnNewWindow: boolean;
+    imageURL: string;
+    add_static_mobile_image: boolean;
+};
+
+export interface EditStaticFeatureImage {
+    pk_mobileFeatureImageID: number;
+    blnNewWindow: boolean;
+    imageURL: string;
+    update_static_mobile_image: boolean;
+};
+
+export interface DeleteMobileImage {
+    pk_mobileFeatureImageID: number;
+    delete_mobile_image: boolean;
+};
+export interface AddFeatureImage {
+    store_id: number;
+    buttonURL: string;
+    displayOrder: number;
+    blnNewWindow: boolean;
+    headerCopy: string;
+    buttonCopy: string;
+    align: number;
+    headerCopyColor: string;
+    buttonBackgroundColor: string;
+    buttonColor: string;
+    arrowColor: string;
+    imageURL: string;
+    add_presentation_feature_image: boolean;
+};
+export interface UpdateFeatureImage {
+    pk_featureImageID: number;
+    buttonURL: string;
+    displayOrder: number;
+    blnNewWindow: boolean;
+    headerCopy: string;
+    buttonCopy: string;
+    align: number;
+    headerCopyColor: string;
+    buttonBackgroundColor: string;
+    buttonColor: string;
+    arrowColor: string;
+    imageURL: string;
+    blnActive: boolean;
+    update_presentation_feature_image: boolean;
+};
+export interface DeleteFeatureImage {
+    pk_featureImageID: number;
+    delete_presentation_feature_image: boolean;
+};
+
+// Support Team
+export interface AddAvailableMember {
+    fk_storeID: number;
+    fk_defaultMemberID: number;
+    roleName: string;
+    email: string;
+    add_available_member: boolean;
+};
+
+export interface EditAvailableMember {
+    pk_memberID: number;
+    roleName: string;
+    email: string;
+    blnProgramManager: boolean;
+    displayOrder: number;
+    update_available_member: boolean;
+};
+
+export interface DeleteAvailableMember {
+    pk_memberID: number;
+    delete_available_member: boolean;
+};
+
+// Payment Methods
+export interface UpdatePaymentMethod {
+    store_id: number;
+    payment_methods: PaymentObj[];
+    update_payment_method: boolean;
+};
+
+export interface PaymentObj {
+    title: string;
+    description: string;
+    blnActive: boolean;
+    blnPrimary: boolean;
+    displayOrder: number;
+    fk_paymentMethodID: number;
+};
+
+// ADD:
+export interface AddArtwork {
+    store_id: number;
+    name: string;
+    description: string;
+    display_order: number;
+    add_artwork_presentation: boolean;
+};
+
+//    EDIT DISPLAY ORDER:
+export interface UpdateArtworkDisplayOrder {
+    artworks: Artworks[];
+    update_artwork_order: boolean;
+};
+
+export interface Artworks {
+    displayOrder: number;
+    pk_artworkTagID: number;
+};

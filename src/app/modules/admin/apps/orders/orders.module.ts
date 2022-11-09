@@ -56,6 +56,7 @@ import { OrderReviewEmailComponent } from './orders-components/navigation/order-
 import { OrderPaymentEmailComponent } from './orders-components/navigation/order-payment-email/order-payment-email.component';
 import { OrderReceiptEmailComponent } from './orders-components/navigation/order-receipt-email/order-receipt-email.component';
 import { MatDatepickerModule } from '@angular/material/datepicker';
+import { SafePipe } from './orders-components/safe-pipe';
 
 @NgModule({
     declarations: [
@@ -83,7 +84,8 @@ import { MatDatepickerModule } from '@angular/material/datepicker';
         OrderReorderEmailComponent,
         OrderReviewEmailComponent,
         OrderPaymentEmailComponent,
-        OrderReceiptEmailComponent
+        OrderReceiptEmailComponent,
+        SafePipe
     ],
     imports: [
         RouterModule.forChild(ordersRoutes),

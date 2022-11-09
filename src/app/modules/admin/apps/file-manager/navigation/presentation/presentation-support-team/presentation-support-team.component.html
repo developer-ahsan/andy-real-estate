@@ -1,0 +1,86 @@
+<div class="row mb-3">
+  <div class="col-12 bg-card sm:p-6 md:p-6 lg:p-10 rounded-2xl shadow">
+    <div class="text-2xl font-extrabold tracking-tight leading-none my-3">
+      Support Team
+    </div>
+    <div class="row" *ngIf="availableTeamData">
+      <div class="col-md-2 col-4" style="text-align: -webkit-center" *ngFor="let item of availableTeamData">
+        <div ng-repeat="file in imagefinaldata" class="img_wrp">
+          <img height="200" width="250" src="{{ teamImageUrl + item.fk_defaultMemberID }}.jpg"
+            onError="this.src='https://assets.consolidus.com/globalAssets/Support/anonymous.png'"
+            alt="{{ item.name }}" />
+          <p class="text-lg mt-2">{{ item.name }}</p>
+          <mat-progress-spinner class="close cursor-pointer bg-gray-100" *ngIf="item?.loader" [diameter]="24"
+            [mode]="'indeterminate'">
+          </mat-progress-spinner>
+          <mat-icon *ngIf="!item?.loader" (click)="addNewTeamMember(item)" [matTooltip]="'Add Memeber'"
+            class="close cursor-pointer" [svgIcon]="'heroicons_solid:check-circle'"></mat-icon>
+          <!-- <img
+          class="close"
+          src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSNnBYwnpEUhBQQ83LsiN2RvVkfQW75_JNfrfL1NiY&s"
+        /> -->
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div *ngIf="screenData">
+  <div class="row w-full bg-card rounded-2xl shadow mb-3 py-5" *ngFor="let item of screenData; let $index = index">
+    <div class="col-lg-3 col-md-4 col-12" style="text-align: -webkit-center">
+      <img class="rounded-full img-fluid image" src="{{ teamImageUrl + item.fk_defaultMemberID }}.jpg"
+        onError="this.src='https://assets.consolidus.com/globalAssets/Support/anonymous.png'" alt="{{ item.name }}" />
+      <p class="text-lg mt-2">{{ item.name }}</p>
+    </div>
+    <div class="col-lg-9 col-md-8 col-12">
+      <div class="row">
+        <div class="col-lg-6 col-md-6 col-12">
+          <mat-form-field class="input">
+            <mat-label>Program Manger: </mat-label>
+            <mat-select [(ngModel)]="item.blnProgramManager">
+              <mat-option [value]="true">Yes</mat-option>
+              <mat-option [value]="false">No</mat-option>
+            </mat-select>
+          </mat-form-field>
+        </div>
+        <div class="col-lg-6 col-md-6 col-12">
+          <mat-form-field class="input">
+            <mat-label>Email: </mat-label>
+            <input [(ngModel)]="item.email" matInput placeholder="Email" />
+          </mat-form-field>
+        </div>
+        <div class="col-lg-6 col-md-6 col-12">
+          <mat-form-field class="input">
+            <mat-label>Role Name: </mat-label>
+            <input [(ngModel)]="item.roleName" matInput placeholder="Role Name" />
+          </mat-form-field>
+        </div>
+        <div class="col-lg-6 col-md-6 col-12">
+          <mat-form-field class="input">
+            <mat-label>Display Order: </mat-label>
+            <input [(ngModel)]="item.displayOrder" matInput placeholder="Display Order" />
+          </mat-form-field>
+        </div>
+        <div class="col-12 text-right">
+          <div class="mt-4 sm:mt-0">
+            <!-- Discard -->
+            <button class="min-w-40 mr-2 " mat-stroked-button [matTooltip]="'Remove'" (click)="removeMember(item)"
+              [disabled]="item?.loader">
+              <mat-progress-spinner *ngIf="item?.loader" [diameter]="24" [mode]="'indeterminate'">
+              </mat-progress-spinner>
+              <mat-icon *ngIf="!item?.loader" svgIcon="heroicons_outline:trash"></mat-icon>
+              <span class="px-2">Remove</span>
+            </button>
+            <button class="min-w-40" mat-stroked-button [matTooltip]="'Update'" (click)="updateTeamMember(item)"
+              [disabled]="item?.updateLoader">
+              <mat-progress-spinner *ngIf="item?.updateLoader" [diameter]="24" [mode]="'indeterminate'">
+              </mat-progress-spinner>
+              <mat-icon *ngIf="!item?.updateLoader" svgIcon="heroicons_outline:pencil-alt"></mat-icon>
+              <span class="px-2">Update</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

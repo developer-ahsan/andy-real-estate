@@ -1,0 +1,124 @@
+<div class="row bg-card sm:p-6 md:p-6 lg:p-10 mb-3 rounded-2xl shadow" [formGroup]="dashboardEmailsForm">
+  <div class="col-12 ">
+    <div class="text-2xl font-extrabold tracking-tight leading-none">
+      Default Reschedule Artwork Follow Up Email
+    </div>
+    <div class="col-12 p-0 mb-3">
+      <div style="font-weight: 500">
+        This email is sent from the order status dashboard for program
+        managers to remind customers to approve their artwork for orders
+        that have been sitting on hold for too long.
+      </div>
+      <quill-editor [modules]="quillModules" formControlName="rescheduleFollowUp"> </quill-editor>
+    </div>
+  </div>
+  <!-- Payment -->
+  <div class="col-12 mt-5">
+    <div class="text-2xl font-extrabold tracking-tight leading-none">
+      Default Payment Notification Email
+    </div>
+    <div class="col-12 p-0 mb-3">
+      <div style="font-weight: 500">
+        This email is sent from the order status dashboard for program
+        managers to remind customers that their orders are awaiting
+        payment.
+      </div>
+      <quill-editor [modules]="quillModules" formControlName="paymentNotification"> </quill-editor>
+    </div>
+  </div>
+  <!-- Sample -->
+  <div class="col-12 mt-5">
+    <div class="text-2xl font-extrabold tracking-tight leading-none">
+      Default Sample Email
+    </div>
+    <div class="col-12 p-0 mb-3">
+      <div style="font-weight: 500">
+        This email is sent from the "Sample Status" area of the program
+        manager dashboard. This email reminds customers of their sample
+        orders and asks if they want to place a real order.
+      </div>
+      <quill-editor [modules]="quillModules" formControlName="sampleEmail"> </quill-editor>
+    </div>
+  </div>
+  <!-- Around this time -->
+  <div class="col-12 mt-5">
+    <div class="text-2xl font-extrabold tracking-tight leading-none">
+      Default "Around This Time Last Year" Email
+    </div>
+    <div class="col-12 p-0 mb-3">
+      <div style="font-weight: 500">
+        This email is sent from the "Around This Time Last Year" area of
+        the program manager dashboard.
+      </div>
+      <quill-editor [modules]="quillModules" formControlName="followUpEmail"> </quill-editor>
+    </div>
+  </div>
+  <!-- Post-Sale Activity -->
+  <div class="col-12 mt-5">
+    <div class="text-2xl font-extrabold tracking-tight leading-none">
+      Default "Post-Sale Activity" Email
+    </div>
+    <div class="col-12 p-0 mb-3">
+      <div style="font-weight: 500">
+        This email is sent from the "Post-Sale Activity" area of the
+        program manager dashboard.
+      </div>
+      <quill-editor [modules]="quillModules" formControlName="reorderEmail"> </quill-editor>
+    </div>
+  </div>
+  <!-- Customer Survey -->
+  <div class="col-12 mt-5">
+    <div class="text-2xl font-extrabold tracking-tight leading-none">
+      Default Customer Survey Email
+    </div>
+    <div style="font-weight: 500">
+      This email is sent from the "Post-Sale Activity" area of the
+      program manager dashboard.
+    </div>
+    <div class="mt-4 col-12 p-0">
+      <mat-form-field appearance="fill" class="w-full">
+        <mat-label> <strong>Subject:</strong> </mat-label>
+        <input matInput formControlName="surveyEmailSubject" />
+      </mat-form-field>
+    </div>
+    <div class="col-12 p-0">
+      <quill-editor [modules]="quillModules" formControlName="surveyEmail"> </quill-editor>
+    </div>
+  </div>
+  <!-- Quote Email -->
+  <div class="col-12 mt-5">
+    <div class="text-2xl font-extrabold tracking-tight leading-none ">
+      Default Quote Email
+    </div>
+    <div style="font-weight: 500">
+      This email is sent from the "Pending Quotes" area of the program
+      manager dashboard.
+    </div>
+    <div class="mt-4 col-12 p-0">
+      <mat-form-field appearance="fill" class="w-full">
+        <mat-label> <strong>Subject:</strong> </mat-label>
+        <input matInput formControlName="quoteEmailSubject" />
+      </mat-form-field>
+    </div>
+    <div class="col-12 p-0">
+      <quill-editor [modules]="quillModules" formControlName="quoteEmail"> </quill-editor>
+    </div>
+  </div>
+  <div class="col-12 flex justify-end mt-2">
+    <div class="flex items-center my-2">
+      <div class="flex items-center mr-4" *ngIf="dashboardEmailMsg">
+        <ng-container *ngIf="dashboardEmailMsg">
+          <mat-icon class="text-green-500" [svgIcon]="'heroicons_outline:check'"></mat-icon>
+          <span class="ml-2">Dashboard Emails Updated Successfully</span>
+        </ng-container>
+      </div>
+      <button class="min-w-40" mat-stroked-button [matTooltip]="'Update'" (click)="DefaultEmailUpdate()"
+        [disabled]="dashboardEmailLoader">
+        <mat-progress-spinner *ngIf="dashboardEmailLoader" [diameter]="24" [mode]="'indeterminate'">
+        </mat-progress-spinner>
+        <mat-icon *ngIf="!dashboardEmailLoader" svgIcon="mode_edit_outline"></mat-icon>
+        <span class="px-2">Update</span>
+      </button>
+    </div>
+  </div>
+</div>
