@@ -30,7 +30,7 @@ export class CustomersListComponent implements OnInit, AfterViewInit, OnDestroy 
     isLoading: boolean = false;
     pagination: CustomersPagination;
     customersCount: number;
-    customerTableColumns: string[] = ['_id', 'first_name', 'last_name', 'customer_email', 'customer_store', 'customer_company', 'details'];
+    customerTableColumns: string[] = ['_id', 'first_name', 'last_name', 'customer_email', 'customer_store', 'customer_company'];
     searchInputControl: FormControl = new FormControl();
     selectedCustomer: CustomersProduct | null = null;
     selectedCustomerForm: FormGroup;
