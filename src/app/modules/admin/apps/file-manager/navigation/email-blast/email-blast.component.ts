@@ -409,14 +409,8 @@ export class EmailBlastComponent implements OnInit, OnDestroy {
       .pipe(takeUntil(this._unsubscribeAll))
       .subscribe((res: any) => {
         this.previewData = res.data;
-        // console.log("html_content", res["data"].versions[0].html_content);
 
-        // let html = res["data"].versions[0].html_content;
-        // // html = html.toString();
-        // html.toString().replace(/{{store_name}}/gi, `${storeName}`);
-        // console.log("after", html);
-
-        // this.previewData = html.toString().replace(/{{store_name}}/gi, `${storeName}`);
+        // Mark for check
         this._changeDetectorRef.markForCheck();
       }, err => {
         this.mainDataLoader = false;
