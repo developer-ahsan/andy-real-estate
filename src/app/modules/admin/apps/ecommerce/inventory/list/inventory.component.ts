@@ -1389,6 +1389,9 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
 
     selectedSubCategory(item) {
         this.selectedTermObject = item;
+
+        // Mark for check
+        this._changeDetectorRef.markForCheck();
     };
 
     onSearchChange(event): void {
@@ -3072,8 +3075,8 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
         this.updateProductLicensingLoader = true;
         let payload = {
             product_id: this.productId,
-            licensing_term_id: this.selectedRadioOption.fk_licensingTermID,
-            sub_category_id: this.selectedRadioOption.pk_licensingTermSubCategoryID,
+            licensing_term_id: this.selectedTermObject.fk_licensingTermID,
+            sub_category_id: this.selectedTermObject.pk_licensingTermSubCategoryID,
             create_product_licensing: true
         };
         this._inventoryService.updateProductLicensingTerm(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
