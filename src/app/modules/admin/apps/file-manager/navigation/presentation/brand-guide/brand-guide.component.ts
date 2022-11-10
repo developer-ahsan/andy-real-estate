@@ -19,6 +19,8 @@ export class PresentationBrandGuideComponent implements OnInit {
   imageValue: any;
 
   file_path = '';
+  checkPdfExist: boolean = false;
+  pdfChecked: boolean = false;
   constructor(
     private _storeManagerService: FileManagerService,
     private _snackBar: MatSnackBar,
@@ -27,7 +29,12 @@ export class PresentationBrandGuideComponent implements OnInit {
 
 
   ngOnInit() {
-    this.file_path = environment.storeMedia + '/brandGuide/' + this.selectedStore.pk_storeID + '.pdf';
+    this.file_path = environment.storeMedia + '/brandGuide/' + this.selectedStore.pk_storeID + '.pdf?' + Math.random();
+    this.urlExists(this.file_path).then(result => {
+      this.pdfChecked = true;
+      this.checkPdfExist = result;
+      this._changeDetectorRef.markForCheck();
+    });
   }
   uploadFile(event): void {
     const file = event.target.files[0];
@@ -46,13 +53,11 @@ export class PresentationBrandGuideComponent implements OnInit {
     const { imageUpload } = this.imageValue;
     base64 = imageUpload.split(",")[1];
     const img_path = `/globalAssets/Stores/brandGuide/${this.selectedStore.pk_storeID}.pdf`;
-    console.log(base64)
     const payload = {
       file_upload: true,
       image_file: base64,
       image_path: img_path
     };
-    console.log(payload)
 
     this._storeManagerService.addPresentationMedia(payload)
       .subscribe((response) => {
@@ -66,4 +71,14 @@ export class PresentationBrandGuideComponent implements OnInit {
         this._changeDetectorRef.markForCheck();
       })
   }
+  urlExists(url) {
+    return fetch(url, { mode: "no-cors" })
+      .then(res => true)
+      .catch(err => false)
+  }
+  openPdf() {
+    window.open(this.file_path, '_blank');
+  }
+
+
 }

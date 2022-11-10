@@ -87,6 +87,8 @@ import { PresentationPaymentMethodsComponent } from "./navigation/presentation/p
 import { PresentationBrandGuideComponent } from "./navigation/presentation/brand-guide/brand-guide.component";
 import { PresentationArtworkTagsComponent } from "./navigation/presentation/artwork-tags/artwork-tags.component";
 import { PresentationSiteColorsComponent } from "./navigation/presentation/site-colors/site-colors.component";
+import { PresentationQuickGuidesComponent } from "./navigation/presentation/quick-guides/quick-guides.component";
+import { PresentationHeaderImageComponent } from "./navigation/presentation/header-image/header-image.component";
 
 @NgModule({
   declarations: [
@@ -143,7 +145,9 @@ import { PresentationSiteColorsComponent } from "./navigation/presentation/site-
     PresentationPaymentMethodsComponent,
     PresentationBrandGuideComponent,
     PresentationArtworkTagsComponent,
-    PresentationSiteColorsComponent
+    PresentationSiteColorsComponent,
+    PresentationQuickGuidesComponent,
+    PresentationHeaderImageComponent
   ],
   imports: [
     RouterModule.forChild(storeRoutes),

@@ -1,0 +1,43 @@
+<div class="row">
+  <div class="col-12 bg-card sm:p-6 md:p-6 lg:p-10 rounded-2xl shadow">
+    <div class="text-2xl font-extrabold tracking-tight leading-none my-3">
+      Header Image
+    </div>
+    <div class="mt-5 fa fa-info-circle" style="color: rgb(101, 124, 174)">
+      This lets you customize the header image that appears to the right
+      of the search bar on the SmartSites. You can also specify a link
+      for this image as well. Removing the image will force the default
+      image to appear.
+    </div>
+    <div class="col-12 mt-2">
+      <p *ngIf="!imageCheck">There is no header image for this store.</p>
+      <img src="{{headerImage}}" style="width: 241px;" (error)="checkImageExist($event)" *ngIf="imageCheck">
+    </div>
+    <div class="row">
+      <div class="mt-4 col-12">
+        <mat-form-field appearance="fill" class="w-full">
+          <mat-label> URL: </mat-label>
+          <input matInput />
+        </mat-form-field>
+      </div>
+    </div>
+    <p>
+      <strong> Add a custom header image: </strong>
+    </p>
+    <p style="color: red">PNG, 261px X 44px</p>
+    <div class="row">
+      <input type="file" accept=".png" class="file-upload my-3 ml-3" (change)="uploadQuickImage($event)" />
+    </div>
+    <div class="row">
+      <div class="col-md-12 text-right">
+        <button class="min-w-40" mat-stroked-button [matTooltip]="'Update'" (click)="UpdateHeaderImage()"
+          [disabled]="updateLoader">
+          <mat-progress-spinner *ngIf="updateLoader" [diameter]="24" [mode]="'indeterminate'">
+          </mat-progress-spinner>
+          <mat-icon *ngIf="!updateLoader" svgIcon="heroicons_outline:pencil-alt"></mat-icon>
+          <span class="px-2">Update</span>
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

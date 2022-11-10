@@ -160,6 +160,7 @@ export class PresentationComponent implements OnInit, OnDestroy {
   productBuilderLoader: boolean = false;
   productBuilderMsg: boolean = false;
 
+
   constructor(
     private _fileManagerService: FileManagerService,
     private _changeDetectorRef: ChangeDetectorRef,
@@ -331,6 +332,10 @@ export class PresentationComponent implements OnInit, OnDestroy {
         this.getScreenData("artwork_tags_presentation", screenName);
       } else if (screenName == 'Product Builder Settings') {
         this.getScreenData("product_builder_presentation", screenName);
+      } else if (screenName == 'Quick guides') {
+        this.getScreenData("quickGuides_presentation", screenName);
+      } else if (screenName == 'Header Image') {
+        this.getScreenData("header_image_presentation", screenName);
       }
     }
   }
@@ -386,6 +391,10 @@ export class PresentationComponent implements OnInit, OnDestroy {
           this.presentationData = res.data;
         } else if (screen == "Product Builder Settings") {
           this.productBuilderSettings = res.data[0];
+        } else if (screen == "Quick guides") {
+          this.presentationData = res.data;
+        } else if (screen == "Header Image") {
+          this.presentationData = res.data[0];
         }
         this.isPageLoading = false;
         this._changeDetectorRef.markForCheck();
@@ -872,21 +881,21 @@ export class PresentationComponent implements OnInit, OnDestroy {
   updateProductBuilderSettings() {
     this.productBuilderLoader = true;
     let payload = {
-      // store_id: this.selectedStore.pk_storeID,
-      // payment_methods: payment,
-      // update_payment_method: true
+      store_id: this.selectedStore.pk_storeID,
+      blnAllowImprintColorSelection: this.productBuilderSettings.blnAllowImprintColorSelection,
+      update_product_builder: true
     }
-    // this._fileManagerService.UpdatePaymentMethod(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
-    //   this.productBuilderLoader = false;
-    //   this.productBuilderMsg = true;
-    //   setTimeout(() => {
-    //     this.productBuilderMsg = false;
-    //     this._changeDetectorRef.markForCheck();
-    //   }, 3000);
-    //   this._changeDetectorRef.markForCheck();
-    // }, err => {
-    //   this.productBuilderLoader = false;
-    //   this._changeDetectorRef.markForCheck();
-    // })
+    this._fileManagerService.UpdateProductBuilder(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+      this.productBuilderLoader = false;
+      this.productBuilderMsg = true;
+      setTimeout(() => {
+        this.productBuilderMsg = false;
+        this._changeDetectorRef.markForCheck();
+      }, 3000);
+      this._changeDetectorRef.markForCheck();
+    }, err => {
+      this.productBuilderLoader = false;
+      this._changeDetectorRef.markForCheck();
+    })
   }
 }

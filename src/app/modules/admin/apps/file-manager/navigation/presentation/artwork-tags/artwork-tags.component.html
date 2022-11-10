@@ -36,14 +36,14 @@
             <mat-icon svgIcon="mat_solid:picture_as_pdf"></mat-icon>
             <span class="px-2">View PDF</span>
           </button>
-          <button class="min-w-40 mr-2 " mat-stroked-button [matTooltip]="'Remove'" (click)="DeleteArtwork()"
+          <button class="min-w-40 mr-2 " mat-stroked-button [matTooltip]="'Remove'" (click)="DeleteArtwork(item)"
             [disabled]="item?.delLoader">
             <mat-progress-spinner *ngIf="item?.delLoader" [diameter]="24" [mode]="'indeterminate'">
             </mat-progress-spinner>
             <mat-icon *ngIf="!item?.delLoader" svgIcon="heroicons_outline:trash"></mat-icon>
             <span class="px-2">Delete</span>
           </button>
-          <button class="min-w-40" mat-stroked-button [matTooltip]="'Update'" (click)="UpdateArtwork()"
+          <button class="min-w-40" mat-stroked-button [matTooltip]="'Update'" (click)="UpdateArtwork(item)"
             [disabled]="item?.updateLoader">
             <mat-progress-spinner *ngIf="item?.updateLoader" [diameter]="24" [mode]="'indeterminate'">
             </mat-progress-spinner>

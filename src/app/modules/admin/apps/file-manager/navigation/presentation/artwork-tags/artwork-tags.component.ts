@@ -90,25 +90,48 @@ export class PresentationArtworkTagsComponent implements OnInit {
       this._changeDetectorRef.markForCheck();
     })
   }
-  UpdateArtwork() {
-    // this.displayOrderLoader = true;
-    // this._storeManagerService.UpdateSpecialOffer(this.UpdateArtwork.value).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
-    //   this.displayOrderLoader = false;
-    //   if (res["success"]) {
-    //     this.displayOrderMsg = true;
-    //     setTimeout(() => {
-    //       this.displayOrderMsg = false;
-    //       this._changeDetectorRef.markForCheck();
-    //     }, 3000);
-    //   }
-    //   this._changeDetectorRef.markForCheck();
-    // }, err => {
-    //   this.displayOrderLoader = false;
-    //   this._changeDetectorRef.markForCheck();
-    // })
+  UpdateArtwork(item) {
+    item.updateLoader = true;
+    let payload = {
+      name: item.name,
+      description: item.description,
+      extension: item.extension,
+      displayOrder: item.displayOrder,
+      pk_artworkTagID: item.pk_artworkTagID,
+      update_artwork_tag: true
+    }
+    this._storeManagerService.UpdateArtwork(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+      item.updateLoader = false;
+      this._snackBar.open("Artwork updated successfully", '', {
+        horizontalPosition: 'center',
+        verticalPosition: 'bottom',
+        duration: 3500
+      });
+      this._changeDetectorRef.markForCheck();
+    }, err => {
+      item.updateLoader = false;
+      this._changeDetectorRef.markForCheck();
+    })
   }
-  DeleteArtwork() {
-
+  DeleteArtwork(item) {
+    item.delLoader = true;
+    let payload = {
+      pk_artworkTagID: item.pk_artworkTagID,
+      delete_artwork_tag: true
+    }
+    this._storeManagerService.DeleteArtwork(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+      item.delLoader = false;
+      this._snackBar.open("Artwork removed successfully", '', {
+        horizontalPosition: 'center',
+        verticalPosition: 'bottom',
+        duration: 3500
+      });
+      this.screenData = this.screenData.filter(element => element.pk_artworkTagID != item.pk_artworkTagID);
+      this._changeDetectorRef.markForCheck();
+    }, err => {
+      item.delLoader = false;
+      this._changeDetectorRef.markForCheck();
+    })
   }
   UpdateArtworkDisplayOrder() {
     this.displayOrderLoader = true;

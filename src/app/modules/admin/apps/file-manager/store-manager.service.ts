@@ -7,10 +7,12 @@ import {
   AddAvailableMember,
   AddCampaign,
   AddFeatureImage,
+  AddQuickGuide,
   AddStaticFeatureImage,
   AddSurvey,
   CreateStore,
   CreateStoreSettings,
+  DeleteArtwork,
   DeleteAvailableMember,
   DeleteFeatureImage,
   DeleteMobileImage,
@@ -19,12 +21,16 @@ import {
   EditStaticFeatureImage,
   email_preview,
   GroupBuy,
+  RemoveQuickGuide,
   ShippingNotification,
   StoreList,
   StoreSettings,
+  UpdateArtwork,
   UpdateArtworkDisplayOrder,
   UpdateFeatureImage,
+  UpdateHeaderImage,
   UpdatePaymentMethod,
+  UpdateProductBuilder,
 } from "app/modules/admin/apps/file-manager/stores.types";
 import { environment } from "environments/environment";
 import { navigations } from "./navigation-data";
@@ -681,5 +687,32 @@ export class FileManagerService {
   AddArtwork(payload: AddArtwork) {
     const headers = { 'Authorization': `Bearer ${this._authService.accessToken}` };
     return this._httpClient.post(environment.storeNewUrl, payload, { headers }).pipe(retry(3));
+  }
+  DeleteArtwork(payload: DeleteArtwork) {
+    const headers = { 'Authorization': `Bearer ${this._authService.accessToken}` };
+    return this._httpClient.put(environment.storeNewUrl, payload, { headers }).pipe(retry(3));
+  }
+  UpdateArtwork(payload: UpdateArtwork) {
+    const headers = { 'Authorization': `Bearer ${this._authService.accessToken}` };
+    return this._httpClient.put(environment.storeNewUrl, payload, { headers }).pipe(retry(3));
+  }
+  // Product Builder
+  UpdateProductBuilder(payload: UpdateProductBuilder) {
+    const headers = { 'Authorization': `Bearer ${this._authService.accessToken}` };
+    return this._httpClient.put(environment.storeNewUrl, payload, { headers }).pipe(retry(3));
+  }
+  // Quick Guides
+  RemoveQuickGuide(payload: RemoveQuickGuide) {
+    const headers = { 'Authorization': `Bearer ${this._authService.accessToken}` };
+    return this._httpClient.put(environment.storeNewUrl, payload, { headers }).pipe(retry(3));
+  }
+  AddQuickGuide(payload: AddQuickGuide) {
+    const headers = { 'Authorization': `Bearer ${this._authService.accessToken}` };
+    return this._httpClient.post(environment.storeNewUrl, payload, { headers }).pipe(retry(3));
+  }
+  // Header Image
+  UpdateHeaderImage(payload: UpdateHeaderImage) {
+    const headers = { 'Authorization': `Bearer ${this._authService.accessToken}` };
+    return this._httpClient.put(environment.storeNewUrl, payload, { headers }).pipe(retry(3));
   }
 }

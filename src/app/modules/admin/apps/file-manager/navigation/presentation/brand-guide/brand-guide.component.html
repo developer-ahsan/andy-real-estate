@@ -23,15 +23,19 @@
     </div>
   </div>
 </div>
-<div class="row my-5 bg-light overflow-auto">
+<div class="row my-5">
   <div class="col-12 bg-card sm:p-6 md:p-6 lg:p-10 rounded-2xl shadow">
     <div class="text-2xl font-extrabold tracking-tight leading-none my-3">
       Current Brand Guide
     </div>
-    <p>
-      <strong>
-        There are currently no news items in the feed for this store.
-      </strong>
+    <p *ngIf="!checkPdfExist && pdfChecked">
+      There is currently no brand guide for this store.
     </p>
+    <div *ngIf="checkPdfExist && pdfChecked">
+      <mat-icon (click)="openPdf()" class="cursor-pointer h-20 w-20" [svgIcon]="'heroicons_solid:document-text'">
+      </mat-icon>
+      <br>
+      <a href="{{file_path}}" target="_blank">Click here to open brand guide.</a>
+    </div>
   </div>
 </div>

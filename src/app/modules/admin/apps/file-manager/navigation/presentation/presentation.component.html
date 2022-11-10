@@ -577,41 +577,7 @@
     </div>
     <!------------- Header Image--------------->
     <div *ngIf="presentationScreen == 'Header Image'">
-      <div class="row">
-        <div class="col-12 bg-card sm:p-6 md:p-6 lg:p-10 rounded-2xl shadow">
-          <div class="text-2xl font-extrabold tracking-tight leading-none my-3">
-            Header Image
-          </div>
-          <div class="mt-5 fa fa-info-circle" style="color: rgb(101, 124, 174)">
-            This lets you customize the header image that appears to the right
-            of the search bar on the SmartSites. You can also specify a link
-            for this image as well. Removing the image will force the default
-            image to appear.
-          </div>
-          <div class="row">
-            <div class="mt-4 col-12">
-              <mat-form-field appearance="fill" class="w-full">
-                <mat-label> URL: </mat-label>
-                <input matInput />
-              </mat-form-field>
-            </div>
-          </div>
-          <p>
-            <strong> Add a custom header image: </strong>
-          </p>
-          <p style="color: red">PNG, 261px X 44px</p>
-          <div class="row">
-            <input type="file" class="file-upload my-3 ml-3" onchange="console.log(event.target.files)" />
-          </div>
-          <div class="row">
-            <div class="col-md-4">
-              <button class="my-5" mat-flat-button [matTooltip]="'Update'" [color]="'primary'">
-                <span class="px-2">Update</span>
-              </button>
-            </div>
-          </div>
-        </div>
-      </div>
+      <app-header-image [selectedStore]="selectedStore" [screenData]="presentationData"></app-header-image>
     </div>
     <!------------- Product Builder Settings--------------->
     <div *ngIf="presentationScreen == 'Product Builder Settings'">
@@ -708,113 +674,7 @@
 
     <!------------- Quick Guides--------------->
     <div *ngIf="presentationScreen == 'Quick guides'">
-      <mat-button-toggle-group #group1="matButtonToggleGroup" [value]="quickGuides.mainScreen"
-        (change)="calledScreenQuickGuide(group1.value)">
-        <mat-button-toggle *ngFor="let buttonValue of quickGuides.screens" value="{{buttonValue}}">
-          {{ buttonValue }}
-        </mat-button-toggle>
-      </mat-button-toggle-group>
-      <div class="row my-3">
-        <div class="col-12 bg-card sm:p-6 md:p-6 lg:p-10 rounded-2xl shadow"
-          *ngIf="quickGuides.mainScreen == 'Quick Guide Header'">
-          <div class="text-2xl font-extrabold tracking-tight leading-none my-3">
-            Add quick guide header
-          </div>
-          <div *ngIf="quickGuideCheck">
-            <img src="{{quickGuideImage}}" (error)="CheckQuickGuideImage(this)">
-            <div class="text-right w-full py-4">
-              <button class="min-w-40" mat-stroked-button [matTooltip]="'Remove image'"
-                [disabled]="quickGuideImageLoader">
-                <mat-progress-spinner *ngIf="quickGuideImageLoader" [diameter]="24" [mode]="'indeterminate'">
-                </mat-progress-spinner>
-                <mat-icon *ngIf="!quickGuideImageLoader" svgIcon="heroicons_outline:trash"></mat-icon>
-                <span class="px-2">Remove image</span>
-              </button>
-            </div>
-          </div>
-          <div *ngIf="!quickGuideCheck">
-            <p class="mt-5">
-              <strong> Header image file: </strong>
-            </p>
-            <p style="color: red">1500px W by 300px H JPG only!</p>
-            <div class="row">
-              <input type="file" class="file-upload my-3 ml-3" accept=".jpg" (change)="uploadQuickImage($event)" />
-            </div>
-            <div class="row">
-              <div class="col-md-12 text-right">
-                <button class="min-w-40" mat-stroked-button [matTooltip]="'Add quick guide header image'"
-                  (click)="uploadQuickMediaCampaign()" [disabled]="quickGuideImageLoader">
-                  <mat-progress-spinner *ngIf="quickGuideImageLoader" [diameter]="24" [mode]="'indeterminate'">
-                  </mat-progress-spinner>
-                  <mat-icon *ngIf="!quickGuideImageLoader" svgIcon="mode_edit_outline"></mat-icon>
-                  <span class="px-2">Add quick guide header image</span>
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-        <div class="col-12 bg-card sm:p-6 md:p-6 lg:p-10 rounded-2xl shadow"
-          *ngIf="quickGuides.mainScreen == 'New Quick Guide'">
-          <div class="text-2xl font-extrabold tracking-tight leading-none my-3">
-            Add New Quick Guide
-          </div>
-          <p>
-            <strong> PDF Artwork Template File: </strong>
-          </p>
-          <p style="color: red">PDF file only!</p>
-          <div class="row">
-            <input type="file" class="file-upload my-3 ml-3" onchange="console.log(event.target.files)" />
-          </div>
-          <div class="row">
-            <div class="mt-4 col-12">
-              <mat-form-field appearance="fill" class="w-full">
-                <mat-label> Name </mat-label>
-                <input matInput />
-              </mat-form-field>
-            </div>
-          </div>
-          <div class="row">
-            <div class="col-md-4">
-              <button class="my-5" mat-flat-button [color]="'primary'">
-                <span class="px-2">Add quick guide</span>
-              </button>
-            </div>
-          </div>
-        </div>
-        <div class="col-12 bg-card sm:p-6 md:p-6 lg:p-10 rounded-2xl shadow"
-          *ngIf="quickGuides.mainScreen == 'Current Quick Guides'">
-          <div class="text-2xl font-extrabold tracking-tight leading-none my-3">
-            Current Quick Guides
-          </div>
-          <div class="row">
-            <div class="col-md-3 col-6 text-center">
-              <p class="text-gray-500 text-lg font-bold">
-                Tradeshow Lookbook
-              </p>
-              <br />
-              <mat-icon class="cursor-pointer h-20 w-20" [svgIcon]="'heroicons_solid:document-text'"></mat-icon>
-              <br />
-              <button mat-flat-button [matTooltip]="'Delete'" class="bg-accent-100 border">
-                <mat-icon class="cursor-pointer" [svgIcon]="'heroicons_solid:trash'"></mat-icon>
-              </button>
-            </div>
-            <div class="col-md-3 col-6 text-center">
-              <p class="text-gray-500 text-lg font-bold">
-                Tradeshow Lookbook
-              </p>
-              <br />
-              <mat-icon class="cursor-pointer h-20 w-20" [svgIcon]="'heroicons_solid:document-text'"></mat-icon>
-              <br />
-              <button mat-flat-button [matTooltip]="'Delete'" class="bg-accent-100 border">
-                <mat-icon class="cursor-pointer" [svgIcon]="'heroicons_solid:trash'"></mat-icon>
-              </button>
-            </div>
-          </div>
-          <!-- <div class="text-2xl font-extrabold tracking-tight leading-none my-3">
-          Decoration Methods
-        </div> -->
-        </div>
-      </div>
+      <app-quick-guides [selectedStore]="selectedStore" [screenData]="presentationData"></app-quick-guides>
     </div>
   </div>
 </div>

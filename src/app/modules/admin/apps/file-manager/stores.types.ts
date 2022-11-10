@@ -312,3 +312,40 @@ export interface Artworks {
     displayOrder: number;
     pk_artworkTagID: number;
 };
+
+// Artwork update
+export interface UpdateArtwork {
+    name: string;
+    description: string;
+    extension: string;
+    displayOrder: number;
+    pk_artworkTagID: number;
+    update_artwork_tag: boolean;
+};
+// Delete artwork
+export interface DeleteArtwork {
+    pk_artworkTagID: number;
+    delete_artwork_tag: boolean;
+};
+// Product Builder
+export interface UpdateProductBuilder {
+    store_id: number;
+    blnAllowImprintColorSelection: boolean;
+    update_product_builder: boolean;
+};
+// Quick Guides
+export interface RemoveQuickGuide {
+    pk_quickGuideID: number;
+    remove_quick_guide: boolean;
+};
+export interface AddQuickGuide {
+    fk_storeID: number;
+    name: string;
+    add_quick_guide: boolean;
+};
+export interface UpdateHeaderImage {
+    store_id: number;
+    blnImage: boolean;
+    link: string;
+    update_header_image: boolean;
+};
