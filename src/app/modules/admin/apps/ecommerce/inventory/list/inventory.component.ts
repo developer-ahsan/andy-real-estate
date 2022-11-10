@@ -1473,7 +1473,6 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
                                 const { success } = productDetails["data"];
                                 if (success) {
                                     const details = productDetails["data"].result.Product;
-                                    // console.log(Array.isArray(details.description))
                                     let detailsDescription = "";
                                     if (Array.isArray(details.description)) {
                                         let val = !Array.isArray(details.description) ? [details.description] : details.description;
@@ -2389,7 +2388,6 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
                     this.locationControl.setValue(this.selectedLocation.locationName);
                     // this.selectedLocation = this.addImprintLocations.find(x => x.pk_locationID === pk_locationID) || this.addImprintLocations[0];
                     // this.locationControl.setValue(this.selectedLocation.locationName);
-                    // console.log(this.selectedLocation)
                 }
 
                 // Mark for check
