@@ -64,7 +64,6 @@ export class ProductImprintsComponent implements OnInit, OnDestroy {
             };
 
             this.standardImprints = tempArray;
-            this._inventoryService.standardImprints = tempArray;
             for (let subImprints of this.standardImprints) {
               let { sub_standard_imprints } = subImprints;
               if (!sub_standard_imprints) {
@@ -77,6 +76,7 @@ export class ProductImprintsComponent implements OnInit, OnDestroy {
                 };
               }
             };
+            this._inventoryService.standardImprints = this.standardImprints;
             this.standardImprintLoader = false;
 
             // Mark for Check
