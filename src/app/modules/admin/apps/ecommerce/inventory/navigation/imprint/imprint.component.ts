@@ -284,9 +284,6 @@ export class ImprintComponent implements OnInit, OnDestroy {
             const standardgroupArray = standard_groups["data"];
             const standardSubGroupArray = standard_sub_imprints["data"];
 
-            console.log("standardgroupArray", standardgroupArray);
-            console.log("standardSubGroupArray", standardSubGroupArray);
-
             var groupedStandard = standardSubGroupArray.reduce(function (results, org) {
               (results[org.fk_standardImprintGroupID] = results[org.fk_standardImprintGroupID] || []).push(org);
               return results;
@@ -303,14 +300,18 @@ export class ImprintComponent implements OnInit, OnDestroy {
             };
 
             this.standardImprints = tempArray;
-            console.log("standardImprints before", this.standardImprints);
             for (let subImprints of this.standardImprints) {
-              const { sub_standard_imprints } = subImprints;
-              for (const sub_standard of sub_standard_imprints) {
-                sub_standard["isChecked"] = false;
+              let { sub_standard_imprints } = subImprints;
+              if (!sub_standard_imprints) {
+                sub_standard_imprints = [];
               };
+
+              if (sub_standard_imprints.length) {
+                for (const sub_standard of sub_standard_imprints) {
+                  sub_standard["isChecked"] = false;
+                };
+              }
             };
-            console.log("this.standardImprints afer", this.standardImprints);
             this.standardImprintLoader = false;
 
             // Mark for Check
