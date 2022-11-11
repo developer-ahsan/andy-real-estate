@@ -163,6 +163,35 @@ export class ArtworkComponent implements OnInit, OnDestroy {
       });
 
   };
+  UpdateArtwork(data): void {
+    console.log(data)
+    data.updateLoader = true;
+    const { pk_artworkTemplateID, name } = data;
+    const { pk_productID } = this.selectedProduct;
+    const payload = {
+      name: name,
+      template_id: pk_artworkTemplateID,
+      artwork_update: true
+    };
+
+    this._inventoryService.UpdateArtwork(payload)
+      .subscribe((response) => {
+        data.updateLoader = false;
+        this._snackBar.open("Artwork name updated successfully", '', {
+          horizontalPosition: 'center',
+          verticalPosition: 'bottom',
+          duration: 3500
+        });
+
+        // Mark for check
+        this._changeDetectorRef.markForCheck();
+      }, err => {
+        data.updateLoader = false;
+        this._changeDetectorRef.markForCheck();
+
+      });
+
+  };
 
   accessFile(artwork) {
     const { extension, pk_artworkTemplateID } = artwork;

@@ -745,3 +745,8 @@ export interface charge_obj {
     product_quantity: number;
     charge: number;
 }
+export interface UpdateArtwork {
+    template_id: string;
+    name: string;
+    artwork_update: boolean;
+};
