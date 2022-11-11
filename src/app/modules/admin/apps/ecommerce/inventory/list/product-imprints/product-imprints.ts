@@ -66,10 +66,16 @@ export class ProductImprintsComponent implements OnInit, OnDestroy {
             this.standardImprints = tempArray;
             this._inventoryService.standardImprints = tempArray;
             for (let subImprints of this.standardImprints) {
-              const { sub_standard_imprints } = subImprints;
-              for (const sub_standard of sub_standard_imprints) {
-                sub_standard["isChecked"] = false;
+              let { sub_standard_imprints } = subImprints;
+              if (!sub_standard_imprints) {
+                sub_standard_imprints = [];
               };
+
+              if (sub_standard_imprints.length) {
+                for (const sub_standard of sub_standard_imprints) {
+                  sub_standard["isChecked"] = false;
+                };
+              }
             };
             this.standardImprintLoader = false;
 
