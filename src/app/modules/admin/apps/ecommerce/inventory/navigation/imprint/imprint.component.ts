@@ -8,6 +8,9 @@ import { MatSlideToggleChange } from '@angular/material/slide-toggle';
 import { IDropdownSettings } from 'ng-multiselect-dropdown';
 import { I } from '@angular/cdk/keycodes';
 import { environment } from 'environments/environment';
+import { MatDialog } from '@angular/material/dialog';
+import { ImprintRunComponent } from './imprint-run/imprint-run.component';
+import { ScrollStrategy, ScrollStrategyOptions } from '@angular/cdk/overlay';
 
 @Component({
   selector: 'app-imprint',
@@ -190,6 +193,8 @@ export class ImprintComponent implements OnInit, OnDestroy {
   method_name = '';
   imageValue: { imageUpload: string | ArrayBuffer; type: any; };
 
+  scrollStrategy: ScrollStrategy;
+
   private _filter(value: string): string[] {
     const filterValue = value.toLowerCase();
     return this.addImprintMethods.filter(option => option.methodName.toLowerCase().includes(filterValue));
@@ -209,9 +214,29 @@ export class ImprintComponent implements OnInit, OnDestroy {
     private _changeDetectorRef: ChangeDetectorRef,
     private _inventoryService: InventoryService,
     private _snackBar: MatSnackBar,
-    private _formBuilder: FormBuilder
-  ) { }
+    private _formBuilder: FormBuilder,
+    public dialog: MatDialog,
+    private readonly sso: ScrollStrategyOptions
+  ) {
+    this.scrollStrategy = this.sso.noop();
+  }
 
+  openModal() {
+    const dialogRef = this.dialog.open(ImprintRunComponent, {
+      // data: dialogData,
+      minWidth: "300px",
+      maxHeight: '90vh',
+      scrollStrategy: this.scrollStrategy
+    });
+    dialogRef.afterClosed().subscribe(dialogResult => {
+      this.runSetup.patchValue({
+        run: this._inventoryService.run,
+        setup: this._inventoryService.setup
+      })
+      if (dialogResult) {
+      }
+    })
+  }
   ngOnInit(): void {
     this.methodFilteredOptions = this.methodControl.valueChanges.pipe(
       startWith(''),

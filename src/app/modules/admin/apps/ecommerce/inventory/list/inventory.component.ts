@@ -22,6 +22,9 @@ import { HttpClient } from '@angular/common/http';
 import { environment } from 'environments/environment';
 import { filter } from 'lodash';
 import { MatChipInputEvent } from '@angular/material/chips';
+import { MatDialog } from '@angular/material/dialog';
+import { ScrollStrategy, ScrollStrategyOptions } from '@angular/cdk/overlay';
+import { ImprintRunComponent } from '../navigation/imprint/imprint-run/imprint-run.component';
 
 @Component({
     selector: 'inventory-list',
@@ -180,12 +183,12 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
     productNumberText = "";
     addProductTypeRadios = [
         {
-            name: 'Normal Promotional Material',
-            helperText: ''
-        },
-        {
             name: 'Apparel Item',
             helperText: 'Weight per units is determined in the "sizes" section for apparel, after the item has been added.'
+        },
+        {
+            name: 'Normal Promotional Material',
+            helperText: ''
         }
     ];
     imageValue: { imageUpload: any | ArrayBuffer; type: any; };
@@ -501,6 +504,26 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
     clickButton(): void {
         this.colorpicker.nativeElement.click()
     }
+
+    scrollStrategy: ScrollStrategy;
+
+    // Open Modal
+    openModal() {
+        const dialogRef = this.dialog.open(ImprintRunComponent, {
+            // data: dialogData,
+            minWidth: "300px",
+            maxHeight: '90vh',
+            scrollStrategy: this.scrollStrategy
+        });
+        dialogRef.afterClosed().subscribe(dialogResult => {
+            this.runSetup.patchValue({
+                run: this._inventoryService.run,
+                setup: this._inventoryService.setup
+            })
+            if (dialogResult) {
+            }
+        })
+    }
     /**
      * Constructor
      */
@@ -512,8 +535,12 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
         breakpointObserver: BreakpointObserver,
         private _snackBar: MatSnackBar,
         private _httpClient: HttpClient,
+        public dialog: MatDialog,
+        private readonly sso: ScrollStrategyOptions
 
     ) {
+        this.scrollStrategy = this.sso.noop();
+
         this.stepperOrientation = breakpointObserver
             .observe('(min-width: 800px)')
             .pipe(map(({ matches }) => (matches ? 'horizontal' : 'vertical')));
@@ -1852,55 +1879,53 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
             let cost = [];
             let quantity = []
 
+            let checkPrice = null;
+            for (let i = 0; i <= 5; i++) {
+                if (typeof (this.pricingDataArray[i]) == "object") {
+                    if ("PartPriceArray" in this.pricingDataArray[i]) {
+                        const { minQuantity, price } = this.pricingDataArray[i]["PartPriceArray"][0];
+                        checkPrice = price;
+                    }
+                }
+            }
             if (name === 'Normal Promotional Material') {
                 if (this.pricingDataArray?.length) {
                     for (let i = 0; i <= 5; i++) {
                         if (typeof (this.pricingDataArray[i]) == "object") {
                             if ("PartPriceArray" in this.pricingDataArray[i]) {
                                 const { minQuantity, price } = this.pricingDataArray[i]["PartPriceArray"][0];
+
                                 if (i == 0) {
-                                    cost[i] = price;
                                     quantity[i] = minQuantity;
-                                    // obj["firstQuantity"] = minQuantity;
-                                    // obj["standardCostOne"] = price;
+                                    cost[i] = checkPrice;
                                 }
 
                                 if (i == 1) {
-                                    cost[i] = price;
                                     quantity[i] = minQuantity + 1;
-                                    // obj["secondQuantity"] = minQuantity + 1;
-                                    // obj["standardCostTwo"] = price;
+                                    cost[i] = checkPrice;
                                 }
 
                                 if (i == 2) {
-                                    cost[i] = price;
                                     quantity[i] = minQuantity + 2;
-                                    // obj["thirdQuantity"] = minQuantity + 2;
-                                    // obj["standardCostThree"] = price;
+                                    cost[i] = checkPrice;
                                 }
 
                                 if (i == 3) {
-                                    cost[i] = price;
+                                    cost[i] = checkPrice;
                                     quantity[i] = minQuantity + 3;
-                                    // obj["fourthQuantity"] = minQuantity + 3;
-                                    // obj["standardCostFour"] = price;
                                 }
 
                                 if (i == 4) {
-                                    cost[i] = price;
+                                    cost[i] = checkPrice;
+                                    cost[i + 1] = checkPrice;
                                     quantity[i] = minQuantity + 4;
-                                    cost[i + 1] = price;
                                     quantity[i + 1] = minQuantity + 5;
-                                    // obj["fifthQuantity"] = minQuantity + 4;
-                                    // obj["standardCostFive"] = price;
-                                    // obj["sixthQuantity"] = minQuantity + 5;
-                                    // obj["standardCostSix"] = price;
                                 }
 
-                                // if (i == 5) {
-                                //     obj["sixthQuantity"] = minQuantity;
-                                //     obj["standardCostSix"] = price;
-                                // }
+                                if (i == 5) {
+                                    obj["sixthQuantity"] = minQuantity;
+                                    obj["standardCostSix"] = checkPrice;
+                                }
                             };
                         };
                     };
@@ -1968,30 +1993,36 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
                         if (typeof (this.pricingDataArray[i]) == "object") {
                             if ("PartPriceArray" in this.pricingDataArray[i]) {
                                 const { price } = this.pricingDataArray[i]["PartPriceArray"][0];
+                                if (!checkPrice) {
+                                    checkPrice = price;
+                                }
+                                if (checkPrice > price) {
+                                    checkPrice = price;
+                                }
                                 if (i == 0) {
                                     // obj["standardCostOne"] = price
-                                    cost[i] = price
+                                    cost[i] = checkPrice
                                 }
 
                                 if (i == 1) {
-                                    cost[i] = price
+                                    cost[i] = checkPrice
                                     // obj["standardCostTwo"] = price
                                 }
 
                                 if (i == 2) {
-                                    cost[i] = price
+                                    cost[i] = checkPrice
                                     // obj["standardCostThree"] = price
                                 }
 
                                 if (i == 3) {
-                                    cost[i] = price
+                                    cost[i] = checkPrice
                                     // obj["standardCostFour"] = price
                                 }
 
                                 if (i == 4) {
                                     // obj["standardCostFive"] = price
-                                    cost[i] = price
-                                    cost[i + 1] = price
+                                    cost[i] = checkPrice
+                                    cost[i + 1] = checkPrice
 
                                     // obj["standardCostSix"] = price
                                 }

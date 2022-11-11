@@ -445,7 +445,7 @@
                                     </div>
                                 </div>
                             </form>
-                            <p *ngIf="firstFormGroup.get('radio').value == 'Apparel Item'">dsad</p>
+                            <!-- <p *ngIf="firstFormGroup.get('radio').value == 'Apparel Item'">dsad</p> -->
                         </mat-step>
 
                         <!-- Product Details -->
@@ -1759,11 +1759,12 @@
                                                             </div>
 
                                                             <!-- Run/Setup charges found -->
+                                                            <!-- (click)="getRunSetup()" -->
                                                             <div class="col-lg-3 col-12 my-2"
                                                                 *ngIf="!runSetupDistributorCodes.length">
                                                                 <button class="w-full" mat-flat-button
                                                                     [color]="'primary'" [matTooltip]="'Add run/setup'"
-                                                                    (click)="getRunSetup()"
+                                                                    (click)="openModal()"
                                                                     [disabled]="runSetupLoaderFetching">
                                                                     <mat-progress-spinner *ngIf="runSetupLoaderFetching"
                                                                         [diameter]="24" [mode]="'indeterminate'">
@@ -2079,7 +2080,8 @@
                                 </mat-tab>
                             </mat-tab-group>
                         </mat-step>
-                        <mat-step label="Sizes" [editable]="true">
+                        <mat-step *ngIf="firstFormGroup.get('radio').value.name == 'Apparel Item'" label="Sizes"
+                            [editable]="true">
                             <div class="row">
                                 <div class="col-12">
                                     <ng-template matStepLabel>Sizes</ng-template>

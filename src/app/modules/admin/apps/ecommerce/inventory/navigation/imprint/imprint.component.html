@@ -1,3 +1,5 @@
+<!-- <app-imprint-run></app-imprint-run> -->
+
 <ngx-skeleton-loader count="8" appearance="line" animation="pulse" *ngIf="isLoading">
 </ngx-skeleton-loader>
 <div class="row my-2 py-5 mx-5 overflow-auto" *ngIf="!isLoading">
@@ -412,9 +414,10 @@
                             * When setup/run charges are $0.00, please type code "17" in the respective field.
                         </small>
                     </div>
+                    <!-- (click)="getRunSetup()" -->
                     <div class="col-lg-3 col-12 my-2" *ngIf="!runSetupDistributorCodes.length">
                         <button class="w-full" mat-flat-button [color]="'primary'" [matTooltip]="'Add run/setup'"
-                            (click)="getRunSetup()" [disabled]="runSetupLoaderFetching">
+                            (click)="openModal()" [disabled]="runSetupLoaderFetching">
                             <mat-progress-spinner *ngIf="runSetupLoaderFetching" [diameter]="24"
                                 [mode]="'indeterminate'">
                             </mat-progress-spinner>
@@ -1403,9 +1406,10 @@
                             * When setup/run charges are $0.00, please type code "17" in the respective field.
                         </small>
                     </div>
+                    <!-- (click)="getRunSetup()" -->
                     <div class="col-lg-3 col-12 my-2" *ngIf="!runSetupDistributorCodes.length">
                         <button class="w-full" mat-flat-button [color]="'primary'" [matTooltip]="'Add run/setup'"
-                            (click)="getRunSetup()" [disabled]="runSetupLoaderFetching">
+                            (click)="openModal()" [disabled]="runSetupLoaderFetching">
                             <mat-progress-spinner *ngIf="runSetupLoaderFetching" [diameter]="24"
                                 [mode]="'indeterminate'">
                             </mat-progress-spinner>

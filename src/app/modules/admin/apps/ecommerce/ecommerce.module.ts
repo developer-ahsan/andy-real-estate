@@ -106,6 +106,8 @@ import { StoreUpdateHistoryComponent } from './product-store/navigation/update-h
 import { VirtualProofImagesComponent } from './product-store/navigation/virtual-proof-images/virtual-proof-images.component';
 import { StoreProductVideosComponent } from './product-store/navigation/videos/videos.component';
 import { FuseAlertModule } from '@fuse/components/alert';
+import { ImprintRunComponent } from './inventory/navigation/imprint/imprint-run/imprint-run.component';
+import { MatDialogModule } from '@angular/material/dialog';
 
 @NgModule({
     declarations: [
@@ -180,7 +182,8 @@ import { FuseAlertModule } from '@fuse/components/alert';
         StoreLevelCoopComponent,
         StoreUpdateHistoryComponent,
         StoreProductVideosComponent,
-        VirtualProofImagesComponent
+        VirtualProofImagesComponent,
+        ImprintRunComponent
     ],
     imports: [
         RouterModule.forChild(ecommerceRoutes),
@@ -219,8 +222,10 @@ import { FuseAlertModule } from '@fuse/components/alert';
         QuillModule.forRoot(),
         AutocompleteLibModule,
         NgMultiSelectDropDownModule,
-        FuseAlertModule
-    ]
+        FuseAlertModule,
+        MatDialogModule
+    ],
+    entryComponents: [ImprintRunComponent]
 })
 export class ECommerceModule {
 }

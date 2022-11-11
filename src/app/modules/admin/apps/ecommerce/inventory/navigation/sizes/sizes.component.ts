@@ -89,6 +89,9 @@ export class SizesComponent implements OnInit, OnDestroy {
               const index = unSelected.findIndex(elem => elem.pk_sizeID == selectedObj.fk_sizeID);
               unSelected.splice(index, 1);
             }
+            unSelected.forEach(element => {
+              element.run = Number(0.00)
+            });
             this.arrayToUpdate = selected;
             this.dataSource = selected.concat(unSelected);
             this.sizesLength = sizes["totalRecords"];
