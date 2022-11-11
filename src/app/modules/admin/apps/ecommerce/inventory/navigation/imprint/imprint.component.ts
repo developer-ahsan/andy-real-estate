@@ -631,10 +631,16 @@ export class ImprintComponent implements OnInit, OnDestroy {
     let count = 0;
     let imprintsToUpdate = [];
     for (const standardImprint of this.standardImprints) {
-      const { sub_standard_imprints } = standardImprint;
-      for (const sub_standard_imprint of sub_standard_imprints) {
-        if (sub_standard_imprint.isChecked) {
-          imprintsToUpdate.push(sub_standard_imprint);
+      let { sub_standard_imprints } = standardImprint;
+      if (!sub_standard_imprints) {
+        sub_standard_imprints = [];
+      };
+
+      if (sub_standard_imprints.length) {
+        for (const sub_standard_imprint of sub_standard_imprints) {
+          if (sub_standard_imprint.isChecked) {
+            imprintsToUpdate.push(sub_standard_imprint);
+          }
         }
       }
       count = count + sub_standard_imprints.filter(function (s) { return s.isChecked }).length;
