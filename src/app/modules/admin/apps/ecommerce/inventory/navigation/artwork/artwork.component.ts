@@ -18,10 +18,11 @@ export class ArtworkComponent implements OnInit, OnDestroy {
 
   imageUploadForm: FormGroup;
   images = null;
+  artwork_name: string = "";
   imageRequired: string = '';
   artWorkData = [];
   imageUploadLoader: boolean = false;
-  showFiller = false;
+  deleteLoader: boolean = false;
 
   constructor(
     private _changeDetectorRef: ChangeDetectorRef,
@@ -88,7 +89,8 @@ export class ArtworkComponent implements OnInit, OnDestroy {
 
       const dbPayload = {
         product_id: pk_productID,
-        template_name: fileType,
+        template_name: this.artwork_name,
+        extension: fileType,
         artwork: true
       };
 
@@ -139,6 +141,27 @@ export class ArtworkComponent implements OnInit, OnDestroy {
       });
       return;
     };
+  };
+
+  artworkDelete(data): void {
+    const { pk_artworkTemplateID } = data;
+    const { pk_productID } = this.selectedProduct;
+    const payload = {
+      product_id: pk_productID,
+      template_id: pk_artworkTemplateID,
+      artwork_delete: true
+    };
+
+    this.deleteLoader = true;
+    this._inventoryService.deleteArtwork(payload)
+      .subscribe((response) => {
+        this.deleteLoader = false;
+        this.artWorkData = response["artworks"];
+
+        // Mark for check
+        this._changeDetectorRef.markForCheck();
+      });
+
   };
 
   accessFile(artwork) {

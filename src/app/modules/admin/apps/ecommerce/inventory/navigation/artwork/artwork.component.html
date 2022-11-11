@@ -31,6 +31,13 @@
                                         style="line-height: 2.5;" />
                                     <small class="text-danger font-semibold"> {{imageRequired}} </small>
                                 </div>
+                                <div class="col-12 my-1">
+                                    <mat-form-field class="fuse-mat-dense fuse-mat-no-subscript w-full">
+                                        <mat-label>Name (Optional)</mat-label>
+                                        <input class="h-6" [(ngModel)]="artwork_name" matInput type="string"
+                                            [autocomplete]="'off'" [placeholder]="'Enter artwork name'">
+                                    </mat-form-field>
+                                </div>
                                 <div class="col-12 flex justify-end">
                                     <button class="min-w-40" (click)="uploadFile()" mat-stroked-button
                                         [disabled]="imageUploadLoader"
@@ -67,8 +74,8 @@
                 <div class="flex flex-wrap -m-2 mt-2" *ngIf="artWorkData.length > 0;else other_content">
                     <a class="flex flex-col w-40 h-40 m-3 p-4 pb-8 shadow rounded-2xl bg-card ng-star-inserted"
                         *ngFor="let artWork of artWorkData">
-                        <div class="flex justify-end w-full hidden">
-                            <button mat-icon-button="" matprefix=""
+                        <div class="flex h-1 justify-end w-full">
+                            <button (click)="artworkDelete(artWork)" mat-icon-button="" matprefix=""
                                 class="mat-focus-indicator mat-icon-button mat-button-base">
                                 <mat-icon role="img" class="icon-size-5">
                                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"
@@ -131,6 +138,11 @@
                                     </div>
                                 </div>
 
+                            </div>
+                        </div>
+                        <div class="flex flex-col flex-auto justify-center text-center text-sm font-medium">
+                            <div class="mat-tooltip-trigger truncate">
+                                {{artWork.name || ''}}
                             </div>
                         </div>
                     </a>
