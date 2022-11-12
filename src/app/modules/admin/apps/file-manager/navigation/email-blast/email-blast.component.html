@@ -64,7 +64,7 @@
               <mat-label>Select Campaign</mat-label>
               <mat-select [formControlName]="'campaign'">
                 <mat-option *ngFor="let campaign of campaignsList" [value]="campaign">
-                  <span class="text-xs">{{campaign.objective}}</span>
+                  <span class="text-xs">{{campaign.title}}</span>
                 </mat-option>
               </mat-select>
               <mat-error>Please select campaign</mat-error>
