@@ -2,8 +2,10 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { BehaviorSubject, Observable, of, throwError } from 'rxjs';
 import { filter, map, switchMap, take, tap } from 'rxjs/operators';
-import { OrdersBrand, OrdersCategory, OrdersList, OrdersPagination, OrdersProduct, OrdersTag, OrdersVendor } from 'app/modules/admin/apps/orders/orders-components/orders.types';
+import { addComment, OrdersBrand, OrdersCategory, OrdersList, OrdersPagination, OrdersProduct, OrdersTag, OrdersVendor } from 'app/modules/admin/apps/orders/orders-components/orders.types';
 import { environment } from 'environments/environment';
+import { AuthService } from 'app/core/auth/auth.service';
+import { MatSnackBar } from '@angular/material/snack-bar';
 
 @Injectable({
     providedIn: 'root'
@@ -14,7 +16,7 @@ export class OrdersService {
     private _categories: BehaviorSubject<OrdersCategory[] | null> = new BehaviorSubject(null);
     private _pagination: BehaviorSubject<OrdersPagination | null> = new BehaviorSubject(null);
     private _product: BehaviorSubject<OrdersProduct | null> = new BehaviorSubject(null);
-    private _orderDetail: BehaviorSubject<OrdersProduct | null> = new BehaviorSubject(null);
+    public _orderDetail: BehaviorSubject<OrdersProduct | null> = new BehaviorSubject(null);
     private _products: BehaviorSubject<OrdersProduct[] | null> = new BehaviorSubject(null);
     private _tags: BehaviorSubject<OrdersTag[] | null> = new BehaviorSubject(null);
     private _vendors: BehaviorSubject<OrdersVendor[] | null> = new BehaviorSubject(null);
@@ -167,9 +169,19 @@ export class OrdersService {
     /**
      * Constructor
      */
-    constructor(private _httpClient: HttpClient) {
+    constructor(
+        private _snackBar: MatSnackBar,
+        private _httpClient: HttpClient,
+        private _authService: AuthService) {
     }
 
+    snackBar(msg) {
+        this._snackBar.open(msg, '', {
+            horizontalPosition: 'center',
+            verticalPosition: 'bottom',
+            duration: 3500
+        });
+    }
     // -----------------------------------------------------------------------------------------------------
     // @ Accessors
     // -----------------------------------------------------------------------------------------------------
@@ -674,4 +686,25 @@ export class OrdersService {
             params: params
         })
     }
+    // Get Order Commentator Emails
+    getCommentatorEmails(value) {
+        let params = {
+            keyword: value,
+            get_commentators_emails: true
+        }
+        return this._httpClient.get(environment.orders, {
+            params: params
+        })
+    }
+    AddComment(payload: addComment) {
+        const headers = { 'Authorization': `Bearer ${this._authService.accessToken}` };
+        return this._httpClient.post(
+            environment.orders, payload, { headers });
+    };
+    // Update Calls
+    updateOrderCalls(payload) {
+        const headers = { 'Authorization': `Bearer ${this._authService.accessToken}` };
+        return this._httpClient.put(
+            environment.orders, payload, { headers });
+    };
 }

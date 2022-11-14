@@ -18,7 +18,7 @@ export class TimelineComponent implements OnInit {
   transactions: Transaction[] = [
     { item: 'ARTWORK', min: 1, max: 5 },
     { item: 'PRODUCTION', min: 3, max: 3 },
-    { item: 'SHIPPINH', min: 4, max: 4 },
+    { item: 'SHIPPING', min: 4, max: 4 },
   ];
 
   constructor() { }

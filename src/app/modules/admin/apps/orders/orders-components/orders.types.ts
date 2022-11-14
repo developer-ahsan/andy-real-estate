@@ -90,3 +90,28 @@ export interface SearchOrder {
     search_order_id: number;
     size: number;
 }
+
+export interface addComment {
+    order_id: number;
+    comment: string;
+    emails: string[];
+    add_comment: true;
+};
+export interface UpdateOrderFlag {
+    blnFulfillmentCancel: boolean;
+    blnFinalized: boolean;
+    blnIgnore: boolean;
+    blnReorderIgnore: boolean;
+    blnReviewIgnore: boolean;
+    blnRoyaltyIgnore: boolean;
+    blnIgnoreSales: boolean;
+    isblnFulfillmentCancelChanged: boolean;
+    isblnFinalizedChanged: boolean;
+    isblnIgnoreChanged: boolean;
+    isblnReorderIgnoreChanged: boolean;
+    isblnReviewIgnoreChanged: boolean;
+    isblnRoyaltyIgnoreChanged: boolean;
+    isblnIgnoreSalesChanged: boolean;
+    order_id: number;
+    update_order_flag: boolean;
+};

@@ -14,7 +14,7 @@
                         </button>
                     </div>
                     <div class="col-12 text-center print:overflow-visible" cdkScrollable>
-                        <div class="inline-block  text-left print:p-0" id="htmltable" #htmltable>
+                        <div class="inline-block  text-left print:p-0 w-full" id="htmltable" #htmltable>
 
                             <!-- Invoice -->
                             <div
@@ -28,7 +28,7 @@
                                             </div>
                                         </div>
                                     </div>
-                                    <div class="grid grid-cols-2 gap-x-4 gap-y-1 ml-auto pr-16">
+                                    <div class="grid grid-cols-2 gap-x-4 gap-y-1 ml-auto ">
                                         <div class="justify-self-start font-semibold text-3xl tracking-tight">Order
                                         </div>
                                         <div class="justify-self-start text-3xl font-semibold">#56165</div>
@@ -44,78 +44,114 @@
                                     </div>
                                 </div>
 
-                                <div class="grid grid-cols-12 gap-x-1 mt-16">
-                                    <!-- Columns -->
-                                    <div class="col-span-8 font-medium text-md text-secondary">SERVICE</div>
-                                    <div class="font-medium text-md text-right text-secondary">QTY</div>
-                                    <div class="font-medium text-md text-right text-secondary">RATE</div>
-                                    <div class="col-span-2 font-medium text-md text-right text-secondary">PRICE</div>
-
-                                    <!-- Divider -->
-                                    <div class="col-span-12 my-4 border-b"></div>
-
-                                    <!-- Item -->
-                                    <div class="col-span-8">
-                                        <div class="text-lg font-medium">(18016) H332: 3-Ply Disposable Face Mask Level
-                                            3 ASTM</div>
-                                        <div class="mt-2 text-md text-secondary">
-                                            Prototyping of the application's general workflow and the detailed design of
-                                            its 72 screens as a
-                                            working prototype.
+                                <div class="grid grid-cols-12 gap-x-1 mt-8" *ngIf="orderProducts?.length > 0">
+                                    <div class="col-span-12 border-b" *ngFor="let item of orderProducts">
+                                        <div class="row">
+                                            <div class="col-9">
+                                                <p class="font-bold text-secondary text-medium">
+                                                    ({{item.product?.pk_productID}})
+                                                    {{item.product?.productNumber}}: {{item.product?.productName}}
+                                                </p>
+                                            </div>
                                         </div>
-                                        <div class="mt-2 text-md text-secondary">
-                                            Expected: 1 package X 20.00lbs/package = 20.00lbs.
+                                        <div class="grid grid-cols-12 gap-x-1 mt-1">
+                                            <div class="col-span-7 font-medium text-md text-secondary">DETAILS</div>
+                                            <div class="font-medium text-md text-center text-secondary">QTY</div>
+                                            <div class="font-medium col-span-2  text-md text-center text-secondary">
+                                                <p>COST</p>
+                                                <p>unit*qty</p>
+                                            </div>
+                                            <div class="font-medium col-span-2 text-md text-center text-secondary">
+                                                <p>PRICE</p>
+                                                <p>price*qty</p>
+                                            </div>
+                                            <!-- Divider -->
+                                            <div class="col-span-12 my-4 border-b"></div>
+                                            <div class="col-span-7 font-medium text-md text-secondary">
+                                                <p>COLOR/SIZE BREAKDOWN</p>
+                                                <p>{{item.product?.colorName}}</p>
+                                            </div>
+                                            <div class="font-medium text-md  text-center text-secondary">
+                                                {{item.product?.quantity}}</div>
+                                            <div class="col-span-2 text-center font-medium text-md  text-secondary">
+                                                <!-- (${{item.product?.cost}} * {{item.product?.quantity}} = -->
+                                                <p>{{item.product?.cost}} * {{item.product?.quantity}}</p>
+                                                <p>=</p>
+                                                {{(item.product?.cost * item.product?.quantity) | currency}}
+                                            </div>
+                                            <div class="text-center font-medium col-span-2 text-md text-secondary">
+                                                <!-- (${{item.product?.price}} * {{item.product?.quantity}} = -->
+                                                <p>{{item.product?.price}} * {{item.product?.quantity}}</p>
+                                                <p>=</p>
+                                                {{(item.product?.price * item.product?.quantity) | currency}}
+                                            </div>
+
+                                            <!-- imprints -->
+                                            <div *ngIf="item.imprints"
+                                                class="mt-2 col-span-7 font-medium text-md text-secondary">
+                                                <p>Imprints</p>
+                                                <p>{{item.imprints?.locationName}} ({{item.imprints?.methodName}})
+                                                </p>
+                                                <p class="text-red-500 font-bold">Reorder#:
+                                                    {{item?.imprints.reorderNumber}}</p>
+                                            </div>
+                                            <div class="font-medium text-md  text-center text-secondary">
+                                                {{item.product?.quantity}}</div>
+                                            <div class="col-span-2 text-center font-medium text-md  text-secondary">
+                                                {{(item.imprints?.runCost * item.imprints?.quantity) | currency}}
+                                            </div>
+                                            <div class="text-center font-medium col-span-2 text-md text-secondary">
+                                                {{(item.imprints?.runPrice * item.imprints?.quantity) | currency}}
+                                            </div>
+                                            <!-- Setups -->
+                                            <div *ngIf="item.imprints"
+                                                class="mt-2 col-span-7 font-medium text-right text-md text-secondary">
+                                                <p>Setup(s)</p>
+                                            </div>
+                                            <div class="font-medium text-md  text-center text-secondary">
+                                            </div>
+                                            <div class="col-span-2 text-center font-medium text-md  text-secondary">
+                                                {{(item.imprints?.setupCost) | currency}}</div>
+                                            <div class="text-center font-medium col-span-2 text-md text-secondary">
+                                                {{(item.imprints?.setupPrice) | currency}}</div>
+
+                                            <!-- Mechandise Subtotal -->
+                                            <div class="mt-2 col-span-7 font-medium text-md text-secondary mb-4">
+                                                <p>Merchandise SubTotal</p>
+                                            </div>
+                                            <div class="font-medium text-md  text-center text-secondary">
+                                            </div>
+                                            <div class="col-span-2 text-center font-medium text-md  font-bold">
+                                                {{((item.imprints?.runCost * item.product?.quantity) +
+                                                (item.product?.cost * item.product?.quantity) +
+                                                (item.imprints?.setupCost) ) | currency}}</div>
+                                            <div class="text-center font-medium col-span-2 text-md font-bold">
+                                                {{((item.imprints?.runPrice * item.product?.quantity) +
+                                                (item.product?.price * item.product?.quantity) +
+                                                (item.imprints?.setupPrice) ) | currency}}</div>
                                         </div>
                                     </div>
-                                    <div class="self-center text-right">2000</div>
-                                    <div class="self-center text-right">$75.00</div>
-                                    <div class="col-span-2 self-center text-right">$180.00</div>
-
-                                    <!-- Spacer -->
-                                    <div class="col-span-12 mt-16"></div>
-
-                                    <!-- Divider -->
-                                    <div class="col-span-12 my-3 border-b"></div>
-                                    <!-- Subtotal -->
                                     <div class="col-span-10 self-center font-medium tracking-tight text-secondary">
-                                        SUBTOTAL</div>
-                                    <div class="col-span-2 text-right text-lg">$47,315.00</div>
-
-                                    <!-- Divider -->
-                                    <div class="col-span-12 my-3 border-b"></div>
-
-                                    <!-- Discount -->
-                                    <div class="col-span-10 self-center font-medium tracking-tight text-secondary">TOTAL
-                                        DISCOUNT</div>
-                                    <div class="col-span-2 text-right text-lg">$180.75</div>
-
-                                    <!-- Adjustments -->
+                                        TOTAL DISCOUNT
+                                    </div>
+                                    <div class="col-span-2 text-right text-lg">$0.00</div>
                                     <div class="col-span-10 self-center font-medium tracking-tight text-secondary">
-                                        ADJUSTMENTS</div>
-                                    <div class="col-span-2 text-right text-lg">$2,365.75</div>
-
-
-                                    <!-- B.T -->
-                                    <div class="col-span-10 self-center font-medium tracking-tight text-secondary">TOTAL
-                                        B.T</div>
-                                    <div class="col-span-2 text-right text-lg">$2,365.75</div>
-
-
-                                    <!-- Tax -->
-                                    <div class="col-span-10 self-center font-medium tracking-tight text-secondary">TAX
+                                        TOTAL TAX
                                     </div>
-                                    <div class="col-span-2 text-right text-lg">$2,365.75</div>
-                                    <!-- Divider -->
-                                    <div class="col-span-12 my-3 border-b"></div>
-
-                                    <!-- Total -->
-                                    <div
-                                        class="col-span-8 self-center text-2xl font-medium tracking-tight text-secondary">
-                                        TOTAL
+                                    <div class="col-span-2 text-right text-lg">$0.00</div>
+                                    <div class="col-span-10 self-center font-medium tracking-tight text-secondary">
+                                        ADJUSTMENTS
                                     </div>
-                                    <div class="col-span-2 text-right font-medium">$75.00</div>
-                                    <div class="col-span-2 text-right font-medium">$180.00</div>
+                                    <div class="col-span-2 text-right text-lg">$0.00</div>
+                                    <div class="col-span-8 self-center font-medium tracking-tight text-secondary">
+                                        GRAND TOTAL
+                                    </div>
+                                    <div class="col-span-2 text-right text-lg">{{grandTotalCost | currency}}</div>
+                                    <div class="col-span-2 text-right text-lg">{{grandTotalPrice | currency}}</div>
                                 </div>
+
+
+
 
                                 <div class="mt-10">
                                     <div style="text-align: -webkit-center;">

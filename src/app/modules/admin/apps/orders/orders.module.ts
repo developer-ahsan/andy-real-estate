@@ -57,6 +57,8 @@ import { OrderPaymentEmailComponent } from './orders-components/navigation/order
 import { OrderReceiptEmailComponent } from './orders-components/navigation/order-receipt-email/order-receipt-email.component';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { SafePipe } from './orders-components/safe-pipe';
+import { MatAutocompleteModule } from '@angular/material/autocomplete';
+import { MatSnackBarModule } from '@angular/material/snack-bar';
 
 @NgModule({
     declarations: [
@@ -119,7 +121,9 @@ import { SafePipe } from './orders-components/safe-pipe';
         MatExpansionModule,
         FuseAlertModule,
         MatDatepickerModule,
-        MatNativeDateModule
+        MatNativeDateModule,
+        MatAutocompleteModule,
+        MatSnackBarModule
     ],
 })
 export class OrdersModule {

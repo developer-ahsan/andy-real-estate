@@ -224,6 +224,14 @@ export class OrdersListComponent implements OnInit, AfterViewInit, OnDestroy {
                 this.isLoading = false;
                 this.isLoadingChange.emit(false);
 
+                this.advancedSearchForm = {
+                    store_id: 0,
+                    range_end: '',
+                    range_start: '',
+                    search_order_id: 0,
+                    size: 20,
+                    order_type: 0
+                };
                 // Mark for check
                 this._changeDetectorRef.markForCheck();
             });
@@ -622,6 +630,7 @@ export class OrdersListComponent implements OnInit, AfterViewInit, OnDestroy {
         })
     }
     searchOrder() {
+        this.openAdvancedSearch();
         this.pageNo = 1;
         this.pageIndex = 0;
         this.isLoading = true;
