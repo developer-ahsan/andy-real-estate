@@ -2,7 +2,7 @@ import { Route } from '@angular/router';
 import { OrdersComponent } from 'app/modules/admin/apps/orders/orders-components/orders.component';
 import { OrdersListComponent } from 'app/modules/admin/apps/orders/orders-components/list/orders.component';
 import { OrdersDetailsComponent } from 'app/modules/admin/apps/orders/orders-components/details/details.orders.component';
-import { OrderProductsLineResolver, OrdersBrandsResolver, OrdersCategoriesResolver, OrdersListResolver, OrdersProductsResolver, OrdersTagsResolver, OrdersVendorsResolver, StoresListResolver } from 'app/modules/admin/apps/orders/orders-components/orders.resolvers';
+import { OrderProductsLineResolver, OrdersBrandsResolver, OrdersCategoriesResolver, OrdersListResolver, OrdersProductsResolver, OrdersTagsResolver, OrderStatusResolver, OrdersVendorsResolver, StoresListResolver } from 'app/modules/admin/apps/orders/orders-components/orders.resolvers';
 
 export const ordersRoutes: Route[] = [
     {

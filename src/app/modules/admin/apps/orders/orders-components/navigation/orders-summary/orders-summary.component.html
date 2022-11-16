@@ -5,10 +5,50 @@
         <div class="row">
             <div class="col-lg-4 col-md-4 col-6 my-2">
                 <fuse-card class="rounded-2xl shadow bg-card flex items-center max-w-80 w-full p-6 filter-info">
-                    <mat-icon role="img" class="icon-size-10 mr-6" svgIcon="heroicons_outline:clock"></mat-icon>
+                    <mat-icon *ngIf="selectedOrder?.OrderStatus == false" class="icon-size-10 mr-6" svgIcon="close">
+                    </mat-icon>
+                    <mat-icon *ngIf="selectedOrder?.OrderStatus == 'Processing'" role="img" class="icon-size-10 mr-6"
+                        svgIcon="heroicons_outline:clock"></mat-icon>
+                    <mat-icon *ngIf="selectedOrder?.OrderStatus == 'Shipped'" class="icon-size-10 mr-6"
+                        svgIcon="local_shipping"></mat-icon>
+                    <mat-icon *ngIf="selectedOrder?.OrderStatus == 'Delivered'" class="icon-size-10 mr-6"
+                        svgIcon="delivery_dining"></mat-icon>
+                    <mat-icon *ngIf="selectedOrder?.OrderStatus == 'P.O. Needed'" class="icon-size-10 mr-6"
+                        svgIcon="heroicons_outline:gift"></mat-icon>
+                    <mat-icon *ngIf="selectedOrder?.OrderStatus == 'Picked up'" class="icon-size-10 mr-6"
+                        svgIcon="heroicons_outline:cube"></mat-icon>
+                    <mat-icon *ngIf="selectedOrder?.OrderStatus == 'Awaiting Group Order'" class="icon-size-10 mr-6"
+                        svgIcon="heroicons_outline:user-group"></mat-icon>
+                    <mat-icon *ngIf="selectedOrder?.OrderStatus == 'N/A'" class="icon-size-10 mr-6"
+                        svgIcon="heroicons_outline:user-group"></mat-icon>
+
                     <div class="flex flex-col ">
                         <div class="text-xl font-semibold leading-tight">Status</div>
-                        <div class="text-md text-secondary">Processing</div>
+                        <span *ngIf="selectedOrder?.OrderStatus == 'Processing'"
+                            class="text-xs px-2.5 py-0.5 rounded-full tracking-wide bg-red-200 text-red-800 dark:bg-red-600 dark:text-red-50">
+                            <span class="leading-relaxed whitespace-nowrap">{{selectedOrder?.OrderStatus}}</span>
+                        </span>
+                        <span *ngIf="selectedOrder?.OrderStatus == 'Shipped'"
+                            class="text-xs px-2.5 py-0.5 rounded-full tracking-wide bg-blue-200 text-blue-800 dark:bg-blue-600 dark:text-blue-50"><span
+                                class="leading-relaxed whitespace-nowrap">{{selectedOrder?.OrderStatus}}</span></span>
+                        <span *ngIf="selectedOrder?.OrderStatus == 'Delivered'"
+                            class="text-xs px-2.5 py-0.5 rounded-full tracking-wide bg-green-200 text-green-800 dark:bg-green-600 dark:text-green-50"><span
+                                class="leading-relaxed whitespace-nowrap">{{selectedOrder?.OrderStatus}}</span></span>
+                        <span *ngIf="selectedOrder?.OrderStatus == 'P.O. Needed'"
+                            class="text-xs px-2.5 py-0.5 rounded-full tracking-wide bg-green-200 text-green-800 dark:bg-green-600 dark:text-green-50"><span
+                                class="leading-relaxed whitespace-nowrap">{{selectedOrder?.OrderStatus}}</span></span>
+                        <span *ngIf="selectedOrder?.OrderStatus == 'Picked up'"
+                            class="text-xs px-2.5 py-0.5 rounded-full tracking-wide bg-green-200 text-green-800 dark:bg-green-600 dark:text-green-50"><span
+                                class="leading-relaxed whitespace-nowrap">{{selectedOrder?.OrderStatus}}</span></span>
+                        <span *ngIf="selectedOrder?.OrderStatus == 'Awaiting Group Order'"
+                            class="text-xs px-2.5 py-0.5 rounded-full tracking-wide bg-green-200 text-green-800 dark:bg-green-600 dark:text-green-50"><span
+                                class="leading-relaxed whitespace-nowrap">{{selectedOrder?.OrderStatus}}</span></span>
+                        <span *ngIf="selectedOrder?.OrderStatus == false"
+                            class="text-xs px-2.5 py-0.5 rounded-full tracking-wide bg-red-200 text-red-800 dark:bg-red-600 dark:text-red-50"><span
+                                class="leading-relaxed whitespace-nowrap">Cancelled</span></span>
+                        <span *ngIf="selectedOrder?.OrderStatus == 'N/A'"
+                            class="text-xs px-2.5 py-0.5 rounded-full tracking-wide bg-red-200 text-red-800 dark:bg-red-600 dark:text-red-50"><span
+                                class="leading-relaxed whitespace-nowrap">N/A</span></span>
                     </div>
                 </fuse-card>
             </div>

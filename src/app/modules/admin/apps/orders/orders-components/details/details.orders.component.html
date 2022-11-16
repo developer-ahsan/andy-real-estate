@@ -193,7 +193,8 @@
                 </div>
                 <div class="col-12">
                     <ng-template [ngIf]="selectedScreeen == 'Cost Analysis'">
-                        <app-cost-analysis [(isLoading)]="isLoading"></app-cost-analysis>
+                        <app-cost-analysis [(isLoading)]="isLoading" [selectedOrder]="selectedOrder">
+                        </app-cost-analysis>
                     </ng-template>
                 </div>
                 <div class="col-12">
@@ -238,7 +239,8 @@
                 </div>
                 <div class="col-12">
                     <ng-template [ngIf]="selectedScreeen == 'Incident Reports'">
-                        <app-incident-reports [(isLoading)]="isLoading"></app-incident-reports>
+                        <app-incident-reports [(isLoading)]="isLoading" [selectedOrder]="selectedOrder">
+                        </app-incident-reports>
                     </ng-template>
                 </div>
                 <div class="col-12">

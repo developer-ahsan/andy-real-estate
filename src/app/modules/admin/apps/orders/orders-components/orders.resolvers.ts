@@ -268,3 +268,31 @@ export class OrdersListResolver implements Resolve<any>
         return this._orderService.getOrders(params);
     }
 }
+
+
+// OrderStatus 
+@Injectable({
+    providedIn: 'root'
+})
+export class OrderStatusResolver implements Resolve<any>
+{
+    /**
+     * Constructor
+     */
+    constructor(private _orderService: OrdersService) {
+    }
+
+    // -----------------------------------------------------------------------------------------------------
+    // @ Public methods
+    // -----------------------------------------------------------------------------------------------------
+
+    /**
+     * Resolver
+     *
+     * @param route
+     * @param state
+     */
+    resolve(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<any> {
+        return this._orderService.getOrderStatus(route.params.id);
+    }
+}

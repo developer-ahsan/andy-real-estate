@@ -115,3 +115,25 @@ export interface UpdateOrderFlag {
     order_id: number;
     update_order_flag: boolean;
 };
+
+// Incident Report
+export interface CreateIncidentReport {
+    store_id: number;
+    order_id: number;
+    date: string;
+    store_user_id: number;
+    priority1: string;
+    priority2: string;
+    priority3: string;
+    priority4: string;
+    rerunCost: string;
+    explanation: string;
+    corrected: string;
+    how: string;
+    recommend: string;
+    company_id: number;
+    admin_user_id: number;
+    soruce_admin_user_id: number;
+    dateModified: string;
+    create_incident_report: boolean;
+};

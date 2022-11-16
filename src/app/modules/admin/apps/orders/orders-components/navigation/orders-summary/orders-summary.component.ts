@@ -32,6 +32,7 @@ export class OrdersSummaryComponent implements OnInit {
   getOrderSummary() {
     this._orderService.orderDetail$.pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
       if (res) {
+        console.log(this.selectedOrder)
         if (res["data"]) {
           this.htmlComment = res["data"][0]["internalComments"];
           this.orderSummaryDetail = res["data"][0];

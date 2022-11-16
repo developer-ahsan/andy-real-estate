@@ -61,6 +61,27 @@ export class OrdersDetailsComponent implements OnInit, OnDestroy {
         }
         this._orderService.getOrderMainDetail(params).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
             this.selectedOrderDetail = res["data"][0];
+            if (!this.selectedOrder.blnCancelled) {
+                this.getOrderStatus(orderId);
+            } else {
+                this.selectedOrder['OrderStatus'] = false;
+                this._orderService.OrderCancelled = true;
+            }
+            // this.isLoading = false;
+            // this._changeDetectorRef.markForCheck();
+        }, err => {
+            this.isLoading = false;
+            this._changeDetectorRef.markForCheck();
+        })
+    }
+    getOrderStatus(orderId) {
+        let params = {
+            order_status: true,
+            order_id: orderId
+        }
+        this._orderService.getOrderStatus(params).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+            this.selectedOrder['OrderStatus'] = res.resultStatus;
+
             this.isLoading = false;
             this._changeDetectorRef.markForCheck();
         }, err => {
@@ -78,12 +99,14 @@ export class OrdersDetailsComponent implements OnInit, OnDestroy {
             .subscribe((orders) => {
                 this.selectedOrder = orders["data"][0];
                 this.getOrderDetail(orderId);
+
                 // Mark for check
                 this._changeDetectorRef.markForCheck();
             }, err => {
                 this.isLoading = false;
                 this._changeDetectorRef.markForCheck();
             });
+
 
         // this.drawerMode = "side";
         this.routes = this._orderService.navigationLabels;

@@ -22,10 +22,12 @@ export class OrdersService {
     private _vendors: BehaviorSubject<OrdersVendor[] | null> = new BehaviorSubject(null);
     private _orders: BehaviorSubject<OrdersList[] | null> = new BehaviorSubject(null);
     private _order: BehaviorSubject<OrdersList[] | null> = new BehaviorSubject(null);
+    private _orderStatus: BehaviorSubject<OrdersList[] | null> = new BehaviorSubject(null);
     private _order_products: BehaviorSubject<OrdersList[] | null> = new BehaviorSubject(null);
     private _orderLineProducts: BehaviorSubject<OrdersList[] | null> = new BehaviorSubject(null);
     private _stores: BehaviorSubject<OrdersList[] | null> = new BehaviorSubject(null);
 
+    public OrderCancelled: boolean = false;
     public navigationLabels = [
         {
             id: 1,
@@ -257,6 +259,9 @@ export class OrdersService {
         return this._stores.asObservable();
     }
 
+    get orderStatus$(): Observable<any> {
+        return this._orderStatus.asObservable();
+    }
     // -----------------------------------------------------------------------------------------------------
     // @ Public methods
     // -----------------------------------------------------------------------------------------------------
@@ -270,6 +275,15 @@ export class OrdersService {
     //         })
     //     );
     // }
+    // Order Status
+    getOrderStatus(params): Observable<any> {
+        return this._httpClient.get(`${environment.orders}`, { params: params }).pipe(
+            tap((order) => {
+                this._orderStatus.next(order);
+            })
+        )
+    }
+    // Orders List
     getOrders(params): Observable<OrdersList[]> {
         const url = `${environment.orders}`;
         return this._httpClient.get<OrdersList[]>(url, { params: params }).pipe(
