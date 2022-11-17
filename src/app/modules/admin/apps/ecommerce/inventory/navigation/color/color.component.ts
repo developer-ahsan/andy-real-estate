@@ -97,7 +97,8 @@ export class ColorComponent implements OnInit, OnDestroy {
 
   changeDefaultColor() {
     this.isDefaultColor = !this.isDefaultColor;
-  }
+  };
+
   addCustomColors(event: MatChipInputEvent): void {
     const value = (event.value || '').trim();
     // Add our fruit
