@@ -93,7 +93,8 @@ export class ColorComponent implements OnInit, OnDestroy {
       run: ['0.00'],
       hex: ['']
     });
-  }
+  };
+
   changeDefaultColor() {
     this.isDefaultColor = !this.isDefaultColor;
   }
