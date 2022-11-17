@@ -37,7 +37,10 @@ export class OrdersEntitiesListComponent implements OnInit {
         })
       } else {
         res["data"].forEach(element => {
-          this.productsList.push({ name: element.productName, id: element.pk_productID });
+          const proIndex = this.productsList.findIndex(item => item.id == element.pk_productID);
+          if (proIndex < 0) {
+            this.productsList.push({ name: element.productName, id: element.pk_productID });
+          }
           const index = this.supplierList.findIndex(item => item.id == element.supplier_id);
           if (index < 0) {
             this.supplierList.push({ name: element.supplier_name, id: element.supplier_id, link: element.supplierLink });
@@ -56,6 +59,7 @@ export class OrdersEntitiesListComponent implements OnInit {
       order_line_id: value
     }
     this._orderService.getOrderLineProducts(params).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+
       // res["data"].forEach(element => {
       //   this.productsList.push({ name: element.productName, id: element.pk_productID });
       //   const index = this.supplierList.findIndex(item => item.id == element.supplier_id);

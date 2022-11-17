@@ -183,6 +183,32 @@ export class IncidentReportsComponent implements OnInit {
     })
   }
   CreateIncidentReport() {
+    console.log(this.supplierList);
+    let reports_sources = [];
+    this.formModal.reportsSources.forEach(element => {
+      reports_sources.push(element.pk_sourceID);
+    });
+    let payload = {
+      store_id: this.selectedOrder.pk_storeID,
+      order_id: this.selectedOrder.pk_orderID,
+      date: this.todayDate,
+      // store_user_id: number;
+      priority1: this.formModal.priority1,
+      priority2: 'TBD',
+      priority3: this.formModal.priority3,
+      priority4: 'TBD',
+      rerunCost: this.formModal.rerunCost,
+      explanation: this.formModal.explanation,
+      corrected: this.formModal.corrected,
+      how: this.formModal.how,
+      recommend: this.formModal.recommend,
+      // source_supplier: number;
+      // admin_user_id: number;
+      // source_employee: number;
+      dateModified: this.todayDate,
+      incident_sources: reports_sources,
+      create_incident_report: true
+    }
     // let payload = {
     //   store_id: this.selectedOrder.pk_storeID,
     //   order_id: this.selectedOrder.pk_orderID,
@@ -205,17 +231,16 @@ export class IncidentReportsComponent implements OnInit {
     // }
   }
   addAndRemoveFromCheckBox(ev, item) {
-    const index = this.formModal.reportsSources.findIndex(elem => elem == item.sourceName);
+    const index = this.formModal.reportsSources.findIndex(elem => elem.sourceName == item.sourceName);
     if (ev.checked) {
       if (index < 0) {
-        this.formModal.reportsSources.push(item.sourceName);
+        this.formModal.reportsSources.push(item);
       }
     } else {
       if (index >= 0) {
         this.formModal.reportsSources.splice(index, 1);
       }
     }
-    console.log(this.formModal)
   }
   userSelected(user) {
     console.log(user);

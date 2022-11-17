@@ -131,9 +131,10 @@ export interface CreateIncidentReport {
     corrected: string;
     how: string;
     recommend: string;
-    company_id: number;
+    source_supplier: number;
     admin_user_id: number;
-    soruce_admin_user_id: number;
+    source_employee: number;
     dateModified: string;
+    incident_sources: number[];
     create_incident_report: boolean;
 };

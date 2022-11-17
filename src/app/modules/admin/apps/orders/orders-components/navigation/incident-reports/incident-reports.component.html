@@ -294,7 +294,7 @@
                         </div>
                     </div>
                     <div class="col-lg-6 col-md-6 col-12">
-                        <mat-form-field class="w-full">
+                        <!-- <mat-form-field class="w-full">
                             <input type="text" placeholder="Search User" matInput [formControl]="users"
                                 [matAutocomplete]="auto">
                             <mat-autocomplete #auto="matAutocomplete">
@@ -307,7 +307,7 @@
                                     </mat-option>
                                 </ng-container>
                             </mat-autocomplete>
-                        </mat-form-field>
+                        </mat-form-field> -->
                     </div>
                 </div>
                 <div class="row py-3 border-b"></div>
@@ -400,7 +400,7 @@
                     <mat-progress-spinner *ngIf="isButtonLoader" [diameter]="24" [mode]="'indeterminate'"
                         class="mr-2 mt-2"></mat-progress-spinner>
                     <button [disabled]="isButtonLoader" class="min-w-50" mat-stroked-button
-                        [matTooltip]="'Submit Incident Report'" (click)="createIncidentReport()">
+                        [matTooltip]="'Submit Incident Report'" (click)="CreateIncidentReport()">
                         <mat-icon svgIcon="heroicons_solid:plus"></mat-icon>
                         <span class="ml-2"> Submit Report </span>
                     </button>
