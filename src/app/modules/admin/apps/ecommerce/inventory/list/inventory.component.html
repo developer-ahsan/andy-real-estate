@@ -451,7 +451,7 @@
                         <!-- Product Details -->
                         <!-- [stepControl]="secondFormGroup" -->
                         <!-- [completed]="productStepComplete" -->
-                        <mat-step label="Details" [editable]="true">
+                        <mat-step [completed]="productStepComplete" label="Details" [editable]="true">
                             <form [formGroup]="secondFormGroup" class="mt-3">
                                 <div class="row">
                                     <div class="col-6 mb-2">
