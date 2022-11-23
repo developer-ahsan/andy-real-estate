@@ -386,7 +386,19 @@ export class InventoryService {
             })
         );
     };
-
+    getAllActiveStores(): Observable<any[]> {
+        return this._httpClient.get<any[]>(environment.products, {
+            params: {
+                stores_list: true,
+                bln_active: 1,
+                size: 2000
+            }
+        }).pipe(
+            tap((response: any) => {
+                this._stores.next(response);
+            })
+        );
+    };
     getProductsBySupplierId(supplierId: string): Observable<any[]> {
         return this._httpClient.get<any[]>(environment.products, {
             params: {

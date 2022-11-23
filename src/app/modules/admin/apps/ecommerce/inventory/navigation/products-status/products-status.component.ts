@@ -30,7 +30,7 @@ export class ProductsStatusComponent implements OnInit {
   ngOnInit(): void {
     this.isRapidBuild = true;
 
-    this._inventoryService.getAllStores()
+    this._inventoryService.getAllActiveStores()
       .pipe(takeUntil(this._unsubscribeAll))
       .subscribe((stores) => {
         this.storesData = stores["data"];
