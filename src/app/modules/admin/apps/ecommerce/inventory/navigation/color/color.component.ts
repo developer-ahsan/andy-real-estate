@@ -11,7 +11,7 @@ import * as _ from 'lodash';
 import { environment } from 'environments/environment';
 import { HttpClient } from '@angular/common/http';
 import { MatChipInputEvent } from '@angular/material/chips';
-import { COMMA, ENTER } from '@angular/cdk/keycodes';
+import { COMMA, ENTER, Z } from '@angular/cdk/keycodes';
 
 export interface PostColor {
   product_id: number;
@@ -425,31 +425,44 @@ export class ColorComponent implements OnInit, OnDestroy {
     this.colorUpdateLoader = true;
     this._inventoryService.updateColors(payload)
       .subscribe((response) => {
-        this._inventoryService.getColors(pk_productID)
-          .pipe(takeUntil(this._unsubscribeAll))
-          .subscribe((colors) => {
-            for (const color of colors["data"]) {
-              const { fk_colorID } = color;
-              color.media = `${environment.productMedia}/Colors/${pk_productID}/${fk_colorID}.jpg?${Math.random()}`;
-              // let image = `${environment.productMedia}/Colors/${pk_productID}/${fk_colorID}.jpg`;
-              // this.checkIfImageExists(image, color);
-            };
+        // this._inventoryService.getColors(pk_productID)
+        //   .pipe(takeUntil(this._unsubscribeAll))
+        //   .subscribe((colors) => {
+        //     for (const color of colors["data"]) {
+        //       const { fk_colorID } = color;
+        //       color.media = `${environment.productMedia}/Colors/${pk_productID}/${fk_colorID}.jpg?${Math.random()}`;
+        //       // let image = `${environment.productMedia}/Colors/${pk_productID}/${fk_colorID}.jpg`;
+        //       // this.checkIfImageExists(image, color);
+        //     };
 
-            this.dataSource = colors["data"];
-            this.colorUpdateLoader = false;
-            const message = response["success"] === true
-              ? "Colors updated successfully"
-              : "Some error occured. Please try again";
-            this.selection.clear();
-            this._snackBar.open(message, '', {
-              horizontalPosition: 'center',
-              verticalPosition: 'bottom',
-              duration: 3500
-            });
-            this.arrayToUpdate = [];
-            // Mark for check
-            this._changeDetectorRef.markForCheck();
-          });
+        //     this.dataSource = colors["data"];
+        //     this.colorUpdateLoader = false;
+        //     const message = response["success"] === true
+        //       ? "Colors updated successfully"
+        //       : "Some error occured. Please try again";
+        //     this.selection.clear();
+        //     this._snackBar.open(message, '', {
+        //       horizontalPosition: 'center',
+        //       verticalPosition: 'bottom',
+        //       duration: 3500
+        //     });
+        //     this.arrayToUpdate = [];
+        //     // Mark for check
+        //     this._changeDetectorRef.markForCheck();
+        //   });
+        this.colorUpdateLoader = false;
+        const message = response["success"] === true
+          ? "Colors updated successfully"
+          : "Some error occured. Please try again";
+        this.selection.clear();
+        this._snackBar.open(message, '', {
+          horizontalPosition: 'center',
+          verticalPosition: 'bottom',
+          duration: 3500
+        });
+        this.arrayToUpdate = [];
+        // Mark for check
+        this._changeDetectorRef.markForCheck();
       }, err => {
         this._snackBar.open("Some error occured", '', {
           horizontalPosition: 'center',
@@ -604,7 +617,6 @@ export class ColorComponent implements OnInit, OnDestroy {
       };
       tempColorArray.push(obj);
     };
-
     const payload = {
       product_id: pk_productID,
       color_id: tempColorArray.map(a => a.fk_colorID),
@@ -617,24 +629,46 @@ export class ColorComponent implements OnInit, OnDestroy {
     this.deleteLoader = true;
     this._inventoryService.updateColors(payload)
       .subscribe((response) => {
-        this._inventoryService.getColors(pk_productID)
-          .pipe(takeUntil(this._unsubscribeAll))
-          .subscribe((colors) => {
-            this.dataSource = colors["data"];
-            this.deleteLoader = false;
-            const message = response["success"] === true
-              ? "Colors deleted successfully"
-              : "Some error occured. Please try again";
-            this.selection.clear();
-            this._snackBar.open(message, '', {
-              horizontalPosition: 'center',
-              verticalPosition: 'bottom',
-              duration: 3500
-            });
+        // this._inventoryService.getColors(pk_productID)
+        //   .pipe(takeUntil(this._unsubscribeAll))
+        //   .subscribe((colors) => {
+        //     for (const color of colors["data"]) {
+        //       const { fk_colorID } = color;
+        //       color.media = `${environment.productMedia}/Colors/${pk_productID}/${fk_colorID}.jpg?${Math.random()}`;
+        //       // let image = `${environment.productMedia}/Colors/${pk_productID}/${fk_colorID}.jpg`;
+        //       // this.checkIfImageExists(image, color);
+        //     };
+        //     this.dataSource = colors["data"];
+        //     this.deleteLoader = false;
+        //     const message = response["success"] === true
+        //       ? "Colors deleted successfully"
+        //       : "Some error occured. Please try again";
+        //     this.selection.clear();
+        //     this._snackBar.open(message, '', {
+        //       horizontalPosition: 'center',
+        //       verticalPosition: 'bottom',
+        //       duration: 3500
+        //     });
 
-            // Mark for check
-            this._changeDetectorRef.markForCheck();
-          });
+        //     // Mark for check
+        //     this._changeDetectorRef.markForCheck();
+        //   });
+        tempColorArray.forEach(element => {
+          this.dataSource = this.dataSource.filter(x => x.fk_colorID != element.fk_colorID);
+        });
+        this.deleteLoader = false;
+        const message = response["success"] === true
+          ? "Colors deleted successfully"
+          : "Some error occured. Please try again";
+        this.selection.clear();
+        this._snackBar.open(message, '', {
+          horizontalPosition: 'center',
+          verticalPosition: 'bottom',
+          duration: 3500
+        });
+
+        // Mark for check
+        this._changeDetectorRef.markForCheck();
       }, err => {
         this._snackBar.open("Some error occured", '', {
           horizontalPosition: 'center',

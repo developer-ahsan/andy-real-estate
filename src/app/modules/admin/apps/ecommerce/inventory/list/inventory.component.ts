@@ -469,7 +469,7 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
 
 
     productStepComplete: boolean = false;
-    productId: any = 19696;
+    productId: any;
     pk_productId: any;
     createProductDetailLoader: boolean = false;
     updateProductLicensingLoader: boolean = false;

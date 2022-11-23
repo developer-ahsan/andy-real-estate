@@ -106,9 +106,9 @@
 
                     <!-- Color Column -->
                     <ng-container matColumnDef="order">
-                        <th mat-header-cell *matHeaderCellDef class="w-5 min-w-5"> Order </th>
+                        <th mat-header-cell *matHeaderCellDef class="w-10 min-w-10"> Order </th>
                         <td mat-cell *matCellDef="let element">
-                            <mat-form-field class="w-1/4 mt-2" appearance="fill">
+                            <mat-form-field class="w-1/2 mt-2" appearance="fill">
                                 <input matInput type="number" placeholder="Order#" value="{{element.listOrder}}"
                                     (input)="rowUpdate(element, 'listOrder', $event)">
                             </mat-form-field>
