@@ -1,1 +1,469 @@
-<p>orders-invoice works!</p>
+<ngx-skeleton-loader count="15" appearance="line" animation="pulse" *ngIf="isLoading">
+</ngx-skeleton-loader>
+
+<div class="row" *ngIf="!isLoading">
+    <div class="col-12 my-2">
+        <fuse-card class="rounded-2xl shadow bg-card flex flex-col lg:flex-row w-full">
+            <div class="p-6 sm:p-8 lg:p-10 w-full">
+                <div class="text-2xl font-bold ">
+                    Invoice
+                </div>
+                <div class="row w-full">
+                    <div class="col-12  mt-5 mb-2" *ngIf="showReport;else other_content">
+                        Select a group order participant:
+                        <mat-form-field class="w-full">
+                            <mat-select name="order">
+                                <mat-option (click)="orderSelection(order)" *ngFor="let order of orderParticipants;"
+                                    [value]="order">
+                                    *INITIATOR - {{order?.billingFirstName}} {{order?.billingLastName}}
+                                    ({{order?.billingEmail}})
+                                </mat-option>
+                            </mat-select>
+                        </mat-form-field>
+                    </div>
+                    <ng-template #other_content>
+                        <div class="col-12">
+                            <button (click)="exportHtmlToPDF()" class="float-right mr-3" mat-stroked-button
+                                [matTooltip]="'Save report as PDF'">
+                                <mat-icon svgIcon="mat_outline:picture_as_pdf"></mat-icon>
+                                <span class="ml-2 mr-1">PDF</span>
+                            </button>
+
+                            <!-- Main -->
+                            <div class="inline-block p-6 sm:p-6 text-left print:p-0" id="htmltable" #htmltable>
+
+                                <!-- Invoice -->
+                                <div
+                                    class="print:w-auto print:p-0 print:rounded-none print:shadow-none print:bg-transparent">
+
+                                    <div class="flex items-start">
+                                        <div class="grid grid-rows-2 place-items-start gap-y-12 mt-5">
+                                            <div class="grid auto-cols-max grid-flow-col gap-x-2">
+                                                <div class="place-self-center w-24 text-center text-2xl text-secondary">
+                                                    Bill To
+                                                </div>
+                                                <div class="pl-6 border-l text-md">
+                                                    <div class="font-medium">{{orderDetail?.billingFirstName}}
+                                                        {{orderDetail?.billingFirstName}}</div>
+                                                    <div>{{orderDetail?.billingAddress}}</div>
+                                                    <div>{{orderDetail?.billingCity + ' ' + orderDetail?.billingState +
+                                                        ' ' + orderDetail?.billingZip}}</div>
+                                                    <div>{{orderDetail?.billingPhone}}</div>
+                                                    <div>{{orderDetail?.billingEmail}}</div>
+                                                </div>
+                                            </div>
+                                            <div class="grid auto-cols-max grid-flow-col gap-x-2">
+                                                <div class="place-self-center w-24 text-center text-2xl text-secondary">
+                                                    Ship To
+                                                </div>
+                                                <div class="pl-6 border-l text-md">
+                                                    <div class="font-medium">{{orderDetail?.shippingFirstName}}
+                                                        {{orderDetail?.shippingLastName}}</div>
+                                                    <div>{{orderDetail?.shippingAddress}}</div>
+                                                    <div>{{orderDetail?.shippingCity + ' ' + orderDetail?.shippingState
+                                                        +
+                                                        ' ' + orderDetail?.shippingZip}}</div>
+                                                    <div>{{orderDetail?.shippingPhone}}</div>
+                                                    <div>{{orderDetail?.shippingEmail}}</div>
+                                                </div>
+                                            </div>
+                                            <div class="grid auto-cols-max grid-flow-col gap-x-2">
+                                                <div class="place-self-center w-24 text-center text-2xl text-secondary">
+                                                    Order Placed By
+                                                </div>
+                                                <div class="pl-6 border-l text-md">
+                                                    <!-- <div class="font-medium">{{selectedOrder}}</div> -->
+                                                    <div class="font-medium">{{orderDetail?.billingFirstName}}
+                                                        {{orderDetail?.billingFirstName}}</div>
+                                                    <div>{{orderDetail?.billingCity + ' ' + orderDetail?.billingState +
+                                                        ' ' + orderDetail?.billingZip}}</div>
+                                                    <div>{{orderDetail?.billingPhone}}</div>
+                                                    <div>{{orderDetail?.billingEmail}}</div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="grid grid-cols-2 gap-x-4 gap-y-1 ml-auto pr-16">
+                                            <div
+                                                class="justify-self-start font-semibold text-3xl tracking-tight text-secondary">
+                                                Order
+                                            </div>
+                                            <div class="justify-self-start text-3xl font-semibold">
+                                                #{{selectedOrder.pk_orderID}}</div>
+                                            <div class="justify-self-start font-medium tracking-tight text-secondary">
+                                                ORDER DATE
+                                            </div>
+                                            <div class="font-medium">{{selectedOrder?.orderDate ||
+                                                not_available}}</div>
+                                            <div class="justify-self-start font-medium tracking-tight text-secondary">
+                                                PAYMENT DATE</div>
+                                            <div class="font-medium">{{(selectedOrder?.paymentDate | date:'medium') ||
+                                                not_available}}</div>
+                                        </div>
+                                    </div>
+
+                                    <div class="grid grid-cols-12 gap-x-1 mt-8" *ngIf="orderProducts?.length > 0">
+                                        <div class="col-span-12 border-b" *ngFor="let item of orderProducts">
+                                            <div class="row">
+                                                <div class="col-9">
+                                                    <p class="font-bold text-medium">
+                                                        ({{item.products[0]?.pk_productID}})
+                                                        {{item.products[0]?.productNumber}}:
+                                                        {{item.products[0]?.productName}}
+                                                    </p>
+                                                    <p class="font-bold text-medium">PO:
+                                                        {{selectedOrder?.pk_orderID +
+                                                        '-' + item.products[0]?.fk_orderLineID}}</p>
+                                                    <p class="text-secondary">Supplier:
+                                                        {{item.products[0]?.supplier_name}}
+                                                    </p>
+                                                    <p class="text-secondary">Quantity:
+                                                        {{item.totalQuantity}}
+                                                    </p>
+                                                </div>
+                                                <div class="col-3 text-right w-full">
+                                                    <img style="display: inline;width:50%"
+                                                        src="https://assets.consolidus.com/globalAssets/Products/coming_soon.jpg">
+                                                </div>
+                                            </div>
+                                            <div class="grid grid-cols-12 gap-x-1 mt-1">
+                                                <div class="col-span-9 font-medium text-md text-secondary">DETAILS</div>
+                                                <div class="font-medium text-md text-center text-secondary">QTY</div>
+
+                                                <div class="font-medium col-span-2 text-md text-center text-secondary">
+                                                    <p>PRICE</p>
+                                                    <p>price*qty</p>
+                                                </div>
+                                                <!-- Divider -->
+                                                <div class="col-span-12 my-4 border-b"></div>
+                                                <!-- Colors -->
+                                                <div class="col-span-12 font-medium text-md font-bold">
+                                                    <p>COLOR/SIZE BREAKDOWN</p>
+                                                </div>
+                                                <div class="col-span-12 my-2" *ngFor="let colors of item.products">
+                                                    <div class="grid grid-cols-12">
+                                                        <div class="col-span-9 font-medium text-md text-secondary">
+                                                            <p>{{colors.colorName}} <span *ngIf="colors.sizeName"> &
+                                                                    {{colors.sizeName}}</span></p>
+                                                        </div>
+                                                        <div class="font-medium text-md  text-center text-secondary">
+                                                            {{colors.quantity}}</div>
+                                                        <div
+                                                            class="col-span-2 text-center font-medium text-md  text-secondary">
+                                                            {{(colors.price * colors.quantity).toFixed(2) | currency}}
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <!-- Imprints -->
+                                                <div class="mt-2 col-span-12 font-medium font-bold text-md">
+                                                    <p>IMPRINTS</p>
+                                                </div>
+                                                <div class="col-span-12 my-2" *ngFor="let imprint of item.imprints">
+                                                    <div class="grid grid-cols-12">
+                                                        <div class="col-span-9 font-medium text-md text-secondary">
+                                                            <p>{{imprint?.locationName}} ({{imprint?.methodName}})</p>
+                                                        </div>
+                                                        <div class="font-medium text-md  text-center text-secondary">
+                                                            {{imprint?.quantity}}
+                                                        </div>
+                                                        <div
+                                                            class=" col-span-2 text-center font-medium text-md  text-secondary">
+                                                            {{(imprint?.runPrice *
+                                                            imprint?.quantity).toFixed(2) | currency}}
+                                                        </div>
+                                                        <!-- Setups -->
+                                                        <div
+                                                            class="mt-2 col-span-9 font-medium text-right text-md text-secondary">
+                                                            <p>Setup(s)</p>
+                                                            <p>Total Colors: {{imprint.processQuantity}}/Colors:
+                                                                {{imprint.imprintColors}}</p>
+                                                        </div>
+                                                        <div class="font-medium text-md  text-center text-secondary">
+                                                        </div>
+                                                        <div
+                                                            class="mt-2 col-span-2 text-center font-medium text-md  text-secondary">
+                                                            {{(imprint?.setupPrice).toFixed(2) | currency}}
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <!-- ACCESSORIES -->
+                                                <div class="mt-2 col-span-12 font-medium font-bold text-md "
+                                                    *ngIf="item.accessories.length > 0">
+                                                    <p>ACCESSORIES</p>
+                                                </div>
+                                                <div class="col-span-12 my-2" *ngFor="let access of item.accessories">
+                                                    <div class="grid grid-cols-12">
+                                                        <div class=" col-span-9 font-medium text-md text-secondary">
+                                                            <p>{{access.packagingName}}</p>
+                                                        </div>
+                                                        <div class=" font-medium text-md  text-center text-secondary">
+                                                            {{access.quantity}}</div>
+                                                        <div
+                                                            class="font-medium text-md text-secondary col-span-2 text-center">
+                                                            {{(access?.runPrice * access.quantity).toFixed(2)}}</div>
+                                                    </div>
+                                                </div>
+                                                <!-- SHIPPING & HANDLING	 -->
+                                                <div class="mt-2 col-span-9 font-medium font-bold text-md mb-4">
+                                                    <p>SHIPPING & HANDLING</p>
+                                                </div>
+                                                <div class="font-medium text-md  text-center text-secondary"></div>
+                                                <div
+                                                    class="mt-2 col-span-2 text-secondary text-center font-medium text-md">
+                                                    {{item.products[0]?.shippingPrice | currency}}</div>
+                                                <!-- Mechandise Subtotal -->
+                                                <div class="mt-2 col-span-9 font-bold font-medium text-md  mb-4">
+                                                    <p>Merchandise SubTotal</p>
+                                                </div>
+                                                <div class="font-medium text-md  text-center text-secondary"></div>
+                                                <div class="mt-2 text-center font-medium col-span-2 text-md font-bold">
+                                                    {{item.totalMerchendisePrice.toFixed(2) | currency}}
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div
+                                            class="col-span-9 my-2 self-center font-medium tracking-tight text-secondary">
+                                            TOTAL MERCHANDISE
+                                        </div>
+                                        <div class="font-medium my-2  text-md  text-center text-secondary"></div>
+                                        <div class="col-span-2 my-2 text-center  font-medium text-md">
+                                            {{orderTotal.cost.toFixed(2) | currency}}
+                                        </div>
+                                        <div
+                                            class="col-span-9 my-2 self-center font-medium tracking-tight text-secondary">
+                                            TOTAL DISCOUNT
+                                        </div>
+                                        <div class="font-medium my-2  text-md  text-center text-secondary"></div>
+                                        <div class="col-span-2 my-2 text-center  font-medium text-md">
+                                            {{orderTotal.discount.toFixed(2) | currency}}
+                                        </div>
+                                        <div
+                                            class="col-span-9 my-2 self-center font-medium tracking-tight text-secondary">
+                                            TOTAL TAX
+                                        </div>
+                                        <div class="font-medium my-2 text-md  text-center text-secondary"></div>
+                                        <div class="col-span-2 my-2 text-center  font-medium text-md">{{orderTotal.tax |
+                                            currency}}
+                                        </div>
+                                        <!-- <div class="col-span-7 self-center font-medium tracking-tight text-secondary">
+                                            ADJUSTMENTS
+                                        </div> -->
+                                        <!-- <div class="col-span-1  text-center  font-medium text-md">$0.00</div> -->
+                                        <div
+                                            class="col-span-9 my-2 self-center font-medium tracking-tight text-secondary">
+                                            GRAND TOTAL
+                                        </div>
+                                        <div class="font-medium text-md my-2 text-center text-secondary"></div>
+                                        <div class="col-span-2 text-center my-2 font-medium text-md font-bold">
+                                            {{orderTotal.total.toFixed(2) | currency}}
+                                        </div>
+                                        <div
+                                            class="col-span-9 my-2 self-center font-medium tracking-tight text-secondary">
+                                            BALANCE DUE
+                                        </div>
+                                        <div class="font-medium text-md my-2 text-center text-secondary"></div>
+                                        <div class="col-span-2 text-center my-2 font-medium text-md font-bold">
+                                            {{orderTotal.BalanceDue.toFixed(2) | currency}}
+                                        </div>
+                                    </div>
+                                    <div class="mt-10">
+                                        <div style="text-align: -webkit-center;">
+                                            <img class="w-40" src="assets/images/logo/consolidus-logo.jpeg">
+                                        </div>
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
+                    </ng-template>
+                    <div class="col-12 mt-2" *ngIf="showForm">
+                        <button (click)="exportHtmlToPDF()" class="float-right mr-3" mat-stroked-button
+                            [matTooltip]="'Save report as PDF'">
+                            <mat-icon svgIcon="mat_outline:picture_as_pdf"></mat-icon>
+                            <span class="ml-2 mr-1">PDF</span>
+                        </button>
+
+                        <!-- Main -->
+                        <div class="inline-block p-6 sm:p-6 text-left print:p-0" id="htmltable" #htmltable>
+
+                            <!-- Invoice -->
+                            <div
+                                class="min-w-240 p-5 print:w-auto print:p-0 print:rounded-none print:shadow-none print:bg-transparent">
+
+                                <div class="flex items-start">
+                                    <div class="grid grid-rows-2 place-items-start gap-y-12 mt-10">
+                                        <div class="grid auto-cols-max grid-flow-col gap-x-2">
+                                            <div class="place-self-center w-24 text-center text-2xl text-secondary">
+                                                Bill To
+                                            </div>
+                                            <div class="pl-6 border-l text-md">
+                                                <div class="font-medium">TheCHCStore RAKSHANI</div>
+                                                <div>526 South Main Street, Akron, OH, USA</div>
+                                                <div>Akron US, OH 44311</div>
+                                                <div>3305104384</div>
+                                                <div>service@thechcstore.com</div>
+                                            </div>
+                                        </div>
+                                        <div class="grid auto-cols-max grid-flow-col gap-x-2">
+                                            <div class="place-self-center w-24 text-center text-2xl text-secondary">
+                                                Ship To
+                                            </div>
+                                            <div class="pl-6 border-l text-md">
+                                                <div class="font-medium">HAMAD</div>
+                                                <div>526 South Main Street, Akron, OH, USA</div>
+                                                <div>Akron US, OH 44311</div>
+                                                <div>3305104384</div>
+                                                <div>service@thechcstore.com</div>
+                                            </div>
+                                        </div>
+                                        <div class="grid auto-cols-max grid-flow-col gap-x-2">
+                                            <div class="place-self-center w-24 text-center text-2xl text-secondary">
+                                                Order By
+                                            </div>
+                                            <div class="pl-6 border-l text-md">
+                                                <div class="font-medium">TheCHCStore</div>
+                                                <div>52 Calle de Ercilla</div>
+                                                <div>Madrid MD , 28005</div>
+                                                <div>3305104384</div>
+                                                <div>service@thechcstore.com</div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="grid grid-cols-2 gap-x-4 gap-y-1 ml-auto pr-16">
+                                        <div class="justify-self-start font-semibold text-3xl tracking-tight">Order
+                                        </div>
+                                        <div class="justify-self-start text-3xl font-semibold">#56165</div>
+                                        <div class="justify-self-start font-medium tracking-tight text-secondary">ORDER
+                                            DATE</div>
+                                        <div class="font-medium">Feb 19, 2022</div>
+                                        <div class="justify-self-start font-medium tracking-tight text-secondary">DUE
+                                            DATE</div>
+                                        <div class="font-medium">Aug 19, 2022</div>
+                                        <div class="justify-self-start font-medium tracking-tight text-secondary">TOTAL
+                                            DUE</div>
+                                        <div class="font-medium">$49,000.00</div>
+                                    </div>
+                                </div>
+
+                                <div class="grid grid-cols-12 gap-x-1 mt-16">
+                                    <!-- Columns -->
+                                    <div class="col-span-8 font-medium text-md text-secondary">SERVICE</div>
+                                    <div class="font-medium text-md text-right text-secondary">RATE</div>
+                                    <div class="font-medium text-md text-right text-secondary">QTY</div>
+                                    <div class="col-span-2 font-medium text-md text-right text-secondary">TOTAL</div>
+
+                                    <!-- Divider -->
+                                    <div class="col-span-12 my-4 border-b"></div>
+
+                                    <!-- Item -->
+                                    <div class="col-span-8">
+                                        <div class="text-lg font-medium">Prototype & Design</div>
+                                        <div class="mt-2 text-md text-secondary">
+                                            Prototyping of the application's general workflow and the detailed design of
+                                            its 72
+                                            screens as a
+                                            working prototype.
+                                        </div>
+                                    </div>
+                                    <div class="self-center text-right">$75.00</div>
+                                    <div class="self-center text-right">240</div>
+                                    <div class="col-span-2 self-center text-right">$18,000.00</div>
+
+                                    <!-- Divider -->
+                                    <div class="col-span-12 my-4 border-b"></div>
+
+                                    <!-- Item -->
+                                    <div class="col-span-8">
+                                        <div class="text-lg font-medium">Development</div>
+                                        <div class="mt-2 text-md text-secondary">
+                                            The web and mobile development of the application using appropriate tools
+                                            and
+                                            registering it to
+                                            major application stores.
+                                        </div>
+                                    </div>
+                                    <div class="self-center text-right">$60.50</div>
+                                    <div class="self-center text-right">350</div>
+                                    <div class="col-span-2 self-center text-right">$21,175.00</div>
+
+                                    <!-- Divider -->
+                                    <div class="col-span-12 my-4 border-b"></div>
+
+                                    <!-- Item -->
+                                    <div class="col-span-8">
+                                        <div class="text-lg font-medium">Testing</div>
+                                        <div class="mt-2 text-md text-secondary">
+                                            Extensive testing of the application using various mobile and desktop
+                                            devices with
+                                            different
+                                            operating systems.
+                                        </div>
+                                    </div>
+                                    <div class="self-center text-right">$25.00</div>
+                                    <div class="self-center text-right">50</div>
+                                    <div class="col-span-2 self-center text-right">$1,250.00</div>
+
+                                    <!-- Divider -->
+                                    <div class="col-span-12 my-4 border-b"></div>
+
+                                    <!-- Item -->
+                                    <div class="col-span-8">
+                                        <div class="text-lg font-medium">Documentation & Training</div>
+                                        <div class="mt-2 text-md text-secondary">
+                                            Development of the detailed documentation, preparing guides and
+                                            instructional videos and
+                                            extensive training of 2 people.
+                                        </div>
+                                    </div>
+                                    <div class="self-center text-right">$26.50</div>
+                                    <div class="self-center text-right">260</div>
+                                    <div class="col-span-2 self-center text-right">$6,890.00</div>
+
+                                    <!-- Spacer -->
+                                    <div class="col-span-12 mt-16"></div>
+
+                                    <!-- Subtotal -->
+                                    <div class="col-span-10 self-center font-medium tracking-tight text-secondary">
+                                        SUBTOTAL</div>
+                                    <div class="col-span-2 text-right text-lg">$47,315.00</div>
+
+                                    <!-- Divider -->
+                                    <div class="col-span-12 my-3 border-b"></div>
+
+                                    <!-- Tax -->
+                                    <div class="col-span-10 self-center font-medium tracking-tight text-secondary">TAX
+                                    </div>
+                                    <div class="col-span-2 text-right text-lg">$2,365.75</div>
+
+                                    <!-- Divider -->
+                                    <div class="col-span-12 my-3 border-b"></div>
+
+                                    <!-- Discount -->
+                                    <div class="col-span-10 self-center font-medium tracking-tight text-secondary">
+                                        DISCOUNT</div>
+                                    <div class="col-span-2 text-right text-lg">$180.75</div>
+
+                                    <!-- Divider -->
+                                    <div class="col-span-12 my-3 border-b"></div>
+
+                                    <!-- Total -->
+                                    <div
+                                        class="col-span-10 self-center text-2xl font-medium tracking-tight text-secondary">
+                                        TOTAL
+                                    </div>
+                                    <div class="col-span-2 text-right text-2xl font-medium">$49,000.00</div>
+                                </div>
+
+                                <div class="mt-10">
+                                    <div style="text-align: -webkit-center;">
+                                        <img class="w-40" src="assets/images/logo/consolidus-logo.jpeg">
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </fuse-card>
+    </div>
+</div>

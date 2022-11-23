@@ -12,7 +12,7 @@ import { AuthService } from 'app/core/auth/auth.service';
 @Component({
   selector: 'app-imprint-run',
   templateUrl: './imprint-run.component.html',
-  styles: ['.col-width {width: 11.11%} .data-width {width: 70px}']
+  styles: ['.col-width {width: 11.11%} .data-width {width: 100px}']
 })
 export class ImprintRunComponent implements OnInit, OnDestroy {
 

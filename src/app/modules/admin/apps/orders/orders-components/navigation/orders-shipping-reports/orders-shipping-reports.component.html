@@ -1,3 +1,5 @@
+<ngx-skeleton-loader count="15" appearance="line" animation="pulse" *ngIf="isLoading">
+</ngx-skeleton-loader>
 <div class="row" *ngIf="!isLoading" cdkScrollable>
     <div class="col-12 my-2">
         <fuse-card class="rounded-2xl shadow bg-card flex flex-col lg:flex-row w-full">
@@ -14,88 +16,110 @@
                         </button>
                     </div>
                     <div class="col-12 text-center print:overflow-visible">
-                        <div class="inline-block  text-left print:p-0" id="htmltable" #htmltable>
+                        <div class="inline-block  text-left print:p-0 w-full" id="htmltable" #htmltable>
 
                             <!-- Shipping Report -->
                             <div
-                                class="print:w-auto print:p-0 print:rounded-none print:shadow-none print:bg-transparent">
+                                class="print:w-auto print:p-0 print:rounded-none print:shadow-none print:bg-transparent ">
 
-                                <div class="flex items-start">
+                                <div class="flex items-start ">
                                     <div class="grid grid-rows-1 mt-5">
-                                        <div class="grid auto-cols-max grid-flow-col gap-x-2">
-                                            <div class="w-100 text-left text-2xl text-secondary">
-                                                Confidential Shipping Report
-                                            </div>
-                                        </div>
                                         <div class="grid grid-flow-col mt-5">
-                                            <div class="place-self-center w-24 text-center text-2xl text-secondary">
+                                            <div
+                                                class="place-self-center w-24 text-center text-2xl text-secondary font-semibold">
                                                 Ship To
                                             </div>
-                                            <div class="pl-6 border-l text-md">
-                                                <div class="font-medium">TheCHCStore RAKSHANI</div>
-                                                <div>526 South Main Street, Akron, OH, USA</div>
-                                                <div>Akron US, OH 44311</div>
-                                                <div>3305104384</div>
-                                                <div>service@thechcstore.com</div>
+                                            <div
+                                                class="pl-6 border-l text-md font-medium tracking-tight text-secondary">
+                                                <div>Consolidus LLC</div>
+                                                <div>526 S.Main St.</div>
+                                                <div>Suite 804</div>
+                                                <div>Akron, OH 44311</div>
+                                                <div>P: 1-866-776-6643, F: 330-319-7214</div>
                                             </div>
                                         </div>
                                     </div>
                                     <div class="grid grid-cols-2 gap-x-4 gap-y-1 ml-auto pr-16">
-                                        <div class="justify-self-start font-semibold text-3xl tracking-tight">Order
+                                        <div
+                                            class="justify-self-start font-semibold text-3xl tracking-tight text-secondary">
+                                            Order
                                         </div>
-                                        <div class="justify-self-start text-3xl font-semibold">#56165</div>
-                                        <div class="justify-self-start font-medium tracking-tight text-secondary">ORDER
-                                            DATE</div>
-                                        <div class="font-medium">Feb 19, 2022</div>
-                                        <div class="justify-self-start font-medium tracking-tight text-secondary">DUE
-                                            DATE</div>
-                                        <div class="font-medium">Aug 19, 2022</div>
-                                        <div class="justify-self-start font-medium tracking-tight text-secondary">TOTAL
-                                            DUE</div>
-                                        <div class="font-medium">$49,000.00</div>
+                                        <div class="justify-self-start text-3xl font-semibold">
+                                            #{{selectedOrder.pk_orderID}}</div>
+                                        <div class="justify-self-start font-medium tracking-tight text-secondary">
+                                            ORDER DATE
+                                        </div>
+                                        <div class="font-medium">{{selectedOrder?.orderDate ||
+                                            not_available}}</div>
+                                        <div class="justify-self-start font-medium tracking-tight text-secondary">
+                                            Carrier
+                                        </div>
+                                        <div class="font-medium">{{(orderDetail?.shippingCarrierName) ||
+                                            not_available}}
+                                        </div>
+                                        <div class="justify-self-start font-medium tracking-tight text-secondary">
+                                            Service
+                                        </div>
+                                        <div class="font-medium">{{orderDetail?.shippingServiceName ||
+                                            not_available}}</div>
+                                        <div class="justify-self-start font-medium tracking-tight text-secondary">
+                                            Customer Acct#</div>
+                                        <div class="font-medium">{{(orderDetail?.shippingCustomerAccountNumber) ||
+                                            not_available}}
+                                        </div>
                                     </div>
                                 </div>
 
-                                <div class="grid grid-cols-12 gap-x-1 mt-16">
+                                <div class="grid grid-cols-12 gap-x-1 mt-16 w-full">
                                     <!-- Columns -->
-                                    <div class="col-span-8 font-medium text-md text-secondary">SERVICE</div>
-                                    <div class="font-medium text-md text-right text-secondary">QTY</div>
-                                    <div class="font-medium text-md text-right text-secondary">RATE</div>
-                                    <div class="col-span-2 font-medium text-md text-right text-secondary">PRICE</div>
+                                    <div class="col-span-8 font-medium text-md text-secondary">Detail</div>
+                                    <div class="col-span-2 font-medium text-md text-center text-secondary">RATE</div>
+                                    <div class="col-span-2 font-medium text-md text-center text-secondary">PRICE</div>
 
                                     <!-- Divider -->
                                     <div class="col-span-12 my-4 border-b"></div>
 
                                     <!-- Item -->
-                                    <div class="col-span-8">
-                                        <div class="text-lg font-medium">(18016) H332: 3-Ply Disposable Face Mask Level
-                                            3 ASTM</div>
-                                        <div class="mt-2 text-md text-secondary">
-                                            Prototyping of the application's general workflow and the detailed design of
-                                            its 72 screens as a
-                                            working prototype.
-                                        </div>
-                                        <div class="mt-2 text-md text-secondary">
-                                            Expected: 1 package X 20.00lbs/package = 20.00lbs.
+                                    <div class="col-span-12 my-2 w-full" *ngFor="let item of orderProducts">
+                                        <div class="grid grid-cols-12 border-b w-full">
+                                            <div class="col-span-8 text-lg font-medium">
+                                                <p class="">
+                                                    ({{item.products[0]?.pk_productID}})
+                                                    {{item.products[0]?.productNumber}}:
+                                                    {{item.products[0]?.productName}}
+                                                </p>
+                                                <p>Quantity: {{item.products[0]?.quantity}}</p>
+                                            </div>
+                                            <div class="col-span-2 font-medium text-center">
+                                                <p>
+                                                    {{item.products[0]?.shippingCost | currency}}
+                                                </p>
+                                            </div>
+                                            <div class="col-span-2 font-medium text-center">
+                                                <p>
+                                                    {{item.products[0]?.shippingPrice | currency}}
+                                                </p>
+                                            </div>
+                                            <div class="col-span-12 text-md text-secondary">
+                                                Supplier Zip: {{orderDetail?.shippingZip}} → Customer Zip:
+                                                {{orderDetail?.billingZip}}
+                                            </div>
+                                            <div class="col-span-12 text-md text-secondary">
+                                                Expected: 1 package X 25.00lbs/package = 25.00lbs
+                                            </div>
+                                            <!-- Spacer -->
+                                            <div class="col-span-12 mt-6"></div>
                                         </div>
                                     </div>
-                                    <div class="self-center text-right">2000</div>
-                                    <div class="self-center text-right">$75.00</div>
-                                    <div class="col-span-2 self-center text-right">$180.00</div>
-
-                                    <!-- Spacer -->
-                                    <div class="col-span-12 mt-16"></div>
-
-                                    <!-- Divider -->
-                                    <div class="col-span-12 my-3 border-b"></div>
-
                                     <!-- Total -->
                                     <div
                                         class="col-span-8 self-center text-2xl font-medium tracking-tight text-secondary">
                                         TOTAL SHIPPING & HANDLING
                                     </div>
-                                    <div class="col-span-2 text-right font-medium">$75.00</div>
-                                    <div class="col-span-2 text-right font-medium">$180.00</div>
+                                    <div class="col-span-2 text-center font-medium">{{totalShippingCost | currency}}
+                                    </div>
+                                    <div class="col-span-2 text-center font-medium">{{totalShippingPrice | currency}}
+                                    </div>
                                 </div>
 
                                 <div class="mt-10">

@@ -1,75 +1,104 @@
-<ngx-skeleton-loader count="8" appearance="line" animation="pulse" *ngIf="isLoading || !orderDetail">
+<ngx-skeleton-loader count="8" appearance="line" animation="pulse" *ngIf="isLoading">
 </ngx-skeleton-loader>
-<div class="row my-3" *ngIf="!isLoading">
+<div class="row my-3">
     <div class="col-12">
-        <fuse-card class="rounded-2xl shadow bg-card flex flex-col lg:flex-row w-full">
-            <div class="p-6 sm:p-8 lg:p-10 w-full">
-                <div class="text-2xl font-bold">
-                    Artwork Details
+        <mat-drawer-container class="example-container w-full bg-light" [hasBackdrop]="true">
+            <mat-drawer #drawer [mode]="'over'" position="end" style="width: 400px !important;">
+                <div class="row p-5">
+                    <div class="col-9">
+                        <div class="text-2xl font-extrabold tracking-tight leading-none"> Imprint Details
+                        </div>
+                    </div>
+                    <div class="col-3 text-right">
+                        <mat-icon (click)="closeSideNav()" class="mr-2 cursor-pointer" [svgIcon]="'mat_outline:close'">
+                        </mat-icon>
+                    </div>
+                    <div class="col-12 my-2" *ngIf="sideNavData?.status.fk_storeUserApprovalContactID">
+                        <p class="text-lg text-secondary tracking-tight font-bold leading-none my-2 border-b py-2">
+                            Approval
+                            History
+                        </p>
+                        <div class="row">
+                            <div class="col-12 col-md-6">
+                                <p class="text-secondary text-md font-bold">Name</p>
+                                <p class="text-secondary text-md">{{sideNavData?.status.approvalName || not_available}}
+                                </p>
+                            </div>
+                            <div class="col-12 col-md-6">
+                                <p class="text-secondary text-md font-bold">Date</p>
+                                <p class="text-secondary text-md">{{(sideNavData?.status.statusDate | date) ||
+                                    not_available}}
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-12 my-2">
+                        <p class="text-lg text-secondary tracking-tight font-bold leading-none my-2 border-b py-2">
+                            Comments
+                        </p>
+                        <p class="hv-100 overflow-y-auto text-secondary" *ngIf="sideNavData?.customerArtworkComment"
+                            [innerHtml]="sideNavData?.customerArtworkComment"></p>
+                        <p *ngIf="!sideNavData?.customerArtworkComment" class="text-secondary">No Comments Available</p>
+                    </div>
                 </div>
-                <div class="mt-5">
-                    <!-- <mat-accordion class="example-headers-align">
-                        <mat-expansion-panel *ngFor="let item of [1,2,3]; first as isFirst" [expanded]="isFirst">
-                          <mat-expansion-panel-header>
-                            <mat-panel-title> {{item}} </mat-panel-title>
-                          </mat-expansion-panel-header>
-                          {{item}}
-                        </mat-expansion-panel>
-                      </mat-accordion> -->
-                    <mat-accordion>
-                        <mat-expansion-panel [expanded]="true">
-                            <mat-expansion-panel-header>
-                                <mat-panel-title>
-                                    (18818) Explorer Mug
-                                </mat-panel-title>
-                                <mat-panel-description>
-                                    977204/55/79/15/60/72/94/84
-                                </mat-panel-description>
-                            </mat-expansion-panel-header>
-                            <div>
-                                <p><b>Quantity:</b> 200</p>
-                                <p><b>Supplier:</b> ETS Express</p>
-                                <div class="row mt-3">
-                                    <div class="col-12">56159-96000</div>
-                                    <div class="col-12 col-md-6">
-                                        <p class="font-bold">Imprint</p>
-                                        <p>(72060) Wrap / Screen Print </p>
-                                    </div>
-                                    <div class="col-12 col-md-6">
-                                        <p class="font-bold">Status</p>
-                                        <p>Awaiting Artwork Approval</p>
-                                    </div>
-                                    <div class="col-12 col-md-6">
-                                        <p class="font-bold">Att</p>
-                                        <p>N/A</p>
-                                    </div>
-                                    <div class="col-12 col-md-6">
-                                        <p class="font-bold">Proofs</p>
-                                        <p>N/A</p>
-                                    </div>
-                                    <div class="col-12 col-md-6">
-                                        <p class="font-bold">Comments</p>
-                                        <p>TEst</p>
-                                    </div>
-                                    <div class="col-12 col-md-6">
-                                        <p class="font-bold">Approval History</p>
-                                        <div class="row">
-                                            <div class="col-6">
-                                                <p class="font-bold">Name</p>
-                                                <p></p>
-                                            </div>
-                                            <div class="col-6">
-                                                <p class="font-bold">Date</p>
-                                                <p></p>
-                                            </div>
-                                        </div>
-                                    </div>
+            </mat-drawer>
+            <mat-drawer-content *ngIf="!isLoading" class="p-2">
+                <fuse-card class="flex flex-col w-full p-8 pb-4 filter-article my-4" *ngFor="let item of orderProducts">
+                    <div class="flex items-center justify-between">
+                        <div class="flex flex-col mr-6">
+                            <div class="text-2xl font-semibold leading-tight">
+                                ({{item.products[0]?.pk_productID}})
+                                {{item.products[0]?.productNumber}}:
+                                {{item.products[0]?.productName}}</div>
+                            <div class="text-secondary font-medium text-md">
+                                <p>Quantity: {{item.totalQuantity}}</p>
+                                <p>Supplier: {{item.products[0]?.supplier_name}}</p>
+                            </div>
+                        </div>
+                        <img class="w-20 rounded-lg object-cover"
+                            src="{{imgUrl}}/thumbnails/{{item.products[0].pk_storeProductID}}.jpg"
+                            onError="this.src='https://assets.consolidus.com/globalAssets/Products/coming_soon.jpg'"
+                            alt="Product Image">
+                    </div>
+                    <div class="grid grid-cols-12 w-full mt-5">
+                        <!-- Columns -->
+                        <div class="col-span-6 font-medium text-md text-secondary">Imprint</div>
+                        <div class="col-span-2 font-medium text-md text-left text-secondary">Status</div>
+                        <div class="col-span-1 font-medium text-md text-left text-secondary">Attr</div>
+                        <div class="col-span-1 font-medium text-md text-left text-secondary">Proof</div>
+                        <div class="col-span-2 font-medium text-md text-left text-secondary">Details</div>
+                        <!-- Divider -->
+                        <div class="col-span-12 my-2 border-b"></div>
+                        <div class="col-span-12" *ngFor="let imprint of item.imprints;let last=last">
+                            <div class="grid grid-cols-12 w-full mt-2">
+                                <div class="col-span-6 text-md text-secondary">
+                                    ({{imprint.pk_imprintID}}) {{imprint.locationName}}/{{imprint.methodName}}
+                                </div>
+                                <div class="col-span-2 text-md text-left text-secondary">
+                                    {{imprint?.status.statusName || not_available}}
+                                </div>
+                                <div
+                                    class="col-span-1 text-md text-left text-secondary cursor-pointer hover:text-gray-700">
+                                    <a class="text-decoration-none"
+                                        href="https://assets.consolidus.com/artwork/{{selectedOrder.pk_storeID}}/{{orderDetail.fk_storeUserID}}/{{selectedOrder.pk_orderID}}/{{item.order_line_id}}/{{imprint.pk_imprintID}}.jpg"
+                                        target="_blank">View</a>
+                                </div>
+                                <div
+                                    class="col-span-1 text-md text-left text-secondary cursor-pointer hover:text-gray-700">
+                                    <a class="text-decoration-none"
+                                        href="https://assets.consolidus.com/artwork/Proof/{{orderDetail.fk_storeUserID}}/{{selectedOrder.pk_orderID}}/{{item.order_line_id}}/{{imprint.pk_imprintID}}.jpg"
+                                        target="_blank">View</a>
+                                </div>
+                                <div class="col-span-2 text-md text-left text-secondary cursor-pointer hover:text-gray-700"
+                                    (click)="openSideNav(imprint)">
+                                    View Details
                                 </div>
                             </div>
-                        </mat-expansion-panel>
-                    </mat-accordion>
-                </div>
-            </div>
-        </fuse-card>
+                            <div class="col-span-12 my-2 border-b" *ngIf="!last"></div>
+                        </div>
+                    </div>
+                </fuse-card>
+            </mat-drawer-content>
+        </mat-drawer-container>
     </div>
 </div>

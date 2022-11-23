@@ -85,7 +85,7 @@
                     <ng-container *ngTemplateOutlet="myCard"></ng-container>
                 </div>
                 <div class="col-12">
-                    <ng-template [ngIf]="selectedIndex === 'User Info'">
+                    <ng-template [ngIf]="selectedIndex === 'User Info' && selectedCustomer">
                         <app-user-info [currentSelectedCustomer]="selectedCustomer" [selectedTab]="selectedIndex"
                             [(isLoading)]="isLoading">
                         </app-user-info>

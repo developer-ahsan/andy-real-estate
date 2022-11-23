@@ -59,6 +59,7 @@ import { MatDatepickerModule } from '@angular/material/datepicker';
 import { SafePipe } from './orders-components/safe-pipe';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
+import { FuseCardModule } from '@fuse/components/card';
 
 @NgModule({
     declarations: [
@@ -123,7 +124,8 @@ import { MatSnackBarModule } from '@angular/material/snack-bar';
         MatDatepickerModule,
         MatNativeDateModule,
         MatAutocompleteModule,
-        MatSnackBarModule
+        MatSnackBarModule,
+        FuseCardModule
     ],
 })
 export class OrdersModule {

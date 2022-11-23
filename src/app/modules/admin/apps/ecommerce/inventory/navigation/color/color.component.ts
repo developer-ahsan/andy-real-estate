@@ -237,8 +237,9 @@ export class ColorComponent implements OnInit, OnDestroy {
       .subscribe((colors) => {
         for (const color of colors["data"]) {
           const { fk_colorID } = color;
-          let image = `${environment.productMedia}/Colors/${pk_productID}/${fk_colorID}.jpg`;
-          this.checkIfImageExists(image, color);
+          color.media = `${environment.productMedia}/Colors/${pk_productID}/${fk_colorID}.jpg?${Math.random()}`;
+          // let image = `${environment.productMedia}/Colors/${pk_productID}/${fk_colorID}.jpg`;
+          // this.checkIfImageExists(image, color);
         };
 
         this.dataSource = colors["data"];
@@ -277,11 +278,13 @@ export class ColorComponent implements OnInit, OnDestroy {
   };
 
   rowUpdate(colorObj, title, event) {
+    console.log(colorObj)
+    console.log(colorObj)
     const { value } = event.target;
     const { fk_colorID } = colorObj;
 
     if (title === 'run') {
-      colorObj.run = parseInt(value);
+      colorObj.run = Number(value);
     } else if (title === 'rgb') {
       colorObj.rgb = value;
     };
@@ -428,8 +431,8 @@ export class ColorComponent implements OnInit, OnDestroy {
             for (const color of colors["data"]) {
               const { fk_colorID } = color;
               color.media = `${environment.productMedia}/Colors/${pk_productID}/${fk_colorID}.jpg?${Math.random()}`;
-              let image = `${environment.productMedia}/Colors/${pk_productID}/${fk_colorID}.jpg`;
-              this.checkIfImageExists(image, color);
+              // let image = `${environment.productMedia}/Colors/${pk_productID}/${fk_colorID}.jpg`;
+              // this.checkIfImageExists(image, color);
             };
 
             this.dataSource = colors["data"];
@@ -443,7 +446,7 @@ export class ColorComponent implements OnInit, OnDestroy {
               verticalPosition: 'bottom',
               duration: 3500
             });
-
+            this.arrayToUpdate = [];
             // Mark for check
             this._changeDetectorRef.markForCheck();
           });
@@ -462,6 +465,11 @@ export class ColorComponent implements OnInit, OnDestroy {
   copyColorToHex() {
     this.hexColor = this.colorValue
     this.colorForm.patchValue({ hex: this.colorValue });
+  };
+  copyColorToHexx(index) {
+    this.dataSource[index].rgb = this.colorValue;
+    let event = { target: { value: this.colorValue } };
+    this.rowUpdate(this.dataSource[index], 'rgb', event)
   };
 
   addColor() {

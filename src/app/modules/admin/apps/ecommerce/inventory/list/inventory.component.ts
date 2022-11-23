@@ -469,7 +469,7 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
 
 
     productStepComplete: boolean = false;
-    productId: any;
+    productId: any = 19696;
     pk_productId: any;
     createProductDetailLoader: boolean = false;
     updateProductLicensingLoader: boolean = false;
@@ -507,6 +507,7 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
 
     scrollStrategy: ScrollStrategy;
 
+    getSizes: boolean = false;
     // Open Modal
     openModal() {
         const dialogRef = this.dialog.open(ImprintRunComponent, {
@@ -1819,6 +1820,8 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
     };
 
     selectionChange(event) {
+        const { radio } = this.firstFormGroup.value;
+        const { name } = radio;
         const { selectedIndex, previouslySelectedIndex } = event;
 
         if (previouslySelectedIndex > selectedIndex) {
@@ -1845,6 +1848,12 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
             };
             return;
         };
+        if (name != 'Apparel Item') {
+            this.getSizes = false;
+        }
+        if (selectedIndex == 7 && name == 'Apparel Item') {
+            this.getSizes = true;
+        }
 
         // Description screen
         if (selectedIndex === 1) {
@@ -3260,16 +3269,16 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
         if (this.selectedColorsListArray.length > 0 || this.customColorsList.length > 0) {
 
             // Upload Images
-            this.selectedColorsListArray.forEach(element => {
-                if (element.image) {
-                    let paylaod = {
-                        imageUpload: element.image,
-                        type: 'image/jpeg',
-                        name: element.colorId
-                    }
-                    this.uploadColorMedia(paylaod);
-                }
-            });
+            // this.selectedColorsListArray.forEach(element => {
+            //     if (element.image) {
+            //         let paylaod = {
+            //             imageUpload: element.image,
+            //             type: 'image/jpeg',
+            //             name: element.colorId
+            //         }
+            //         this.uploadColorMedia(paylaod);
+            //     }
+            // });
 
             let colors: any = [];
             this.selectedColorsListArray.forEach(element => {
@@ -3281,10 +3290,11 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
             });
             let custom_colors = [];
             this.customColorsList.forEach(element => {
+                let hex = element.hex ? element.hex : '';
                 custom_colors.push({
                     color_name: element.colorName,
                     the_run: element.run,
-                    rgb: element.hex
+                    rgb: hex
                 })
             });
             const payload = {

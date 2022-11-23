@@ -167,7 +167,10 @@ export class ProductSizesComponent implements OnInit, OnDestroy {
     const pk_productID = this.selectedProduct;
     let tempSizeArray = [];
     for (const size of this.arrayToUpdate) {
-      const { run, weight, unitsPerWeight, fk_sizeID, pk_sizeID } = size;
+      let { run, weight, unitsPerWeight, fk_sizeID, pk_sizeID } = size;
+      if (isNaN(run)) {
+        run = 0;
+      }
       if (isNaN(run) || isNaN(weight) || isNaN(unitsPerWeight)) {
         return this._snackBar.open('A value appears to be missing', '', {
           horizontalPosition: 'center',
@@ -189,7 +192,6 @@ export class ProductSizesComponent implements OnInit, OnDestroy {
       product_size: tempSizeArray,
       create_product_size: true
     };
-
     this.sizeUpdateLoader = true;
     this._inventoryService.UpdateProductSizes(payload)
       .subscribe((response) => {

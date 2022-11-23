@@ -61,7 +61,6 @@ export class OrderSurveyComponent implements OnInit, OnDestroy {
     this.isSurveyLoader = true;
     this._orderService.getOrderCommonCall(params).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
       this.surveyDetail = res["data"];
-      console.log(this.surveyDetail)
       this.isSurveyLoader = false;
       this.isLoadingChange.emit(false);
       this._changeDetectorRef.markForCheck();

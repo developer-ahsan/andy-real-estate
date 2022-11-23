@@ -219,10 +219,21 @@
                     <!-- Hex Column -->
                     <ng-container matColumnDef="hex">
                         <th mat-header-cell *matHeaderCellDef class="w-24 min-w-24"> Hex </th>
-                        <td mat-cell *matCellDef="let element">
+                        <td mat-cell *matCellDef="let element;let i=index">
                             <mat-form-field class="w-2/3 mt-2" appearance="fill">
-                                <input matInput type="text" class="text-xs" placeholder="RGB" value="{{element.rgb}}"
+                                <input [(ngModel)]="element.rgb" (input)="rowUpdate(element, 'rgb', $event)"
+                                    placeholder="RGB" matInput>
+                                <mat-icon class="icon-size-5 text-secondary ml-2" style="cursor: pointer;"
+                                    (click)="copyColorToHexx(i)" [matTooltip]="'Copy hex from color palette'"
+                                    svgIcon="mat_outline:content_copy">
+                                </mat-icon>
+
+                                <!-- <input matInput type="text" class="text-xs" placeholder="RGB" value="{{element.rgb}}"
                                     (input)="rowUpdate(element, 'rgb', $event)">
+                                    <mat-icon class="icon-size-5 text-secondary ml-2" style="cursor: pointer;"
+                                        (click)="copyColorToHexx(i)" [matTooltip]="'Copy hex from color palette'"
+                                        svgIcon="mat_outline:content_copy">
+                                    </mat-icon> -->
                             </mat-form-field>
                         </td>
                     </ng-container>
@@ -234,7 +245,8 @@
                             <ng-container *ngIf="element.media; else defaultValue">
                                 <!-- <img class="object-cover rounded-2xl shadow-sm w-24" src="{{element.media}}"> -->
                                 <div ng-repeat="file in imagefinaldata" class="img_wrp">
-                                    <img style="width: 20% !important;" src="{{ element.media}}" />
+                                    <img style="width: 20% !important;" (error)="removeColorImage(i)"
+                                        src="{{ element.media}}" alt="No image" />
                                     <mat-icon (click)="removeColorImage(i)" class="close cursor-pointer">
                                         close</mat-icon>
                                 </div>

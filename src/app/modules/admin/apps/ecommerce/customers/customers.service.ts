@@ -270,6 +270,16 @@ export class CustomersService {
     /**
      * Get product by id
      */
+
+    getCustomerDetails(id) {
+        let params = {
+            user: true,
+            user_id: id
+        }
+        return this._httpClient.get(environment.customerList, {
+            params: params
+        });
+    }
     getCustomerById(id: string): Observable<CustomersProduct> {
         return this._customers.pipe(
             take(1),

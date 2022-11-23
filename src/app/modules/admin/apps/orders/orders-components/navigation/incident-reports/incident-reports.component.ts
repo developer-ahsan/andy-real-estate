@@ -7,6 +7,8 @@ import { debounceTime, finalize, switchMap, takeUntil, tap } from 'rxjs/operator
 import moment from 'moment';
 import { FormControl } from '@angular/forms';
 import { environment } from 'environments/environment';
+import { I } from '@angular/cdk/keycodes';
+import { CreateIncidentReport } from '../../orders.types';
 interface IncidentReports {
   id: string;
   created: string;
@@ -29,9 +31,8 @@ export class IncidentReportsComponent implements OnInit {
   todayDate = moment().format('MM/DD/YYYY');
 
   displayedColumns: string[] = ['id', 'created', 'created_by', 'store', 'source', 'source_entities'];
-  transactions: IncidentReports[] = [
-    { id: '215', created: "10/31/2016", created_by: "false", store: "LeadingAgeOhioShop.com", source: "Supplier", source_entities: "Hit Promotional Products" }
-  ];
+  dataSource = [];
+
   isView: boolean = false;
   isViewCreateIncidentReportForm: boolean = false;
   selectedorder: string = 'select_order';
@@ -54,11 +55,18 @@ export class IncidentReportsComponent implements OnInit {
     corrected: 'TBD',
     explanation: "",
     how: "",
-    recommend: ''
+    recommend: '',
+    source_supplier: null,
+    source_employee: null
   }
   public users = new FormControl();
   isUserLoader: boolean = false;
   usersList: any;
+
+  // Create Incident 
+  employeeSource: boolean = false;
+  supplierSource: boolean = false;
+  isIncidentLoader: boolean = false;
   constructor(
     private _orderService: OrdersService,
     private _changeDetectorRef: ChangeDetectorRef
@@ -107,18 +115,31 @@ export class IncidentReportsComponent implements OnInit {
             this.supplierList.push({ name: element.supplier_name, id: element.supplier_id, link: element.supplierLink });
           }
         });
-        this.isLoading = false;
-        this.isLoadingChange.emit(false);
-        this._changeDetectorRef.markForCheck();
       }
     });
     this.getIncidentReports();
+    this.getReports();
+  }
+  getReports() {
+    let params = {
+      incident_report: true,
+      order_id: this.selectedOrder.pk_orderID
+    }
+    this._orderService.getOrderCommonCall(params).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+      this.dataSource = res["data"];
+      this.isLoading = false;
+      this.isLoadingChange.emit(false);
+      this._changeDetectorRef.markForCheck();
+    }, err => {
+      this.isLoading = false;
+      this.isLoadingChange.emit(false);
+      this._changeDetectorRef.markForCheck();
+    })
   }
   getOrderDetail() {
     this._orderService.orderDetail$.pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
       this.orderDetail = res["data"][0];
       console.log(this.orderDetail)
-      this.isLoading = false;
       this._changeDetectorRef.markForCheck();
     }, err => {
       this.isLoading = false;
@@ -171,7 +192,7 @@ export class IncidentReportsComponent implements OnInit {
   }
   getIncidentReports() {
     let params = {
-      incident_report_sources: true
+      all_report_sources: true
     }
     this._orderService.getOrderCommonCall(params).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
       this.reportSources = res["data"];
@@ -183,16 +204,15 @@ export class IncidentReportsComponent implements OnInit {
     })
   }
   CreateIncidentReport() {
-    console.log(this.supplierList);
     let reports_sources = [];
     this.formModal.reportsSources.forEach(element => {
       reports_sources.push(element.pk_sourceID);
     });
-    let payload = {
+    let payload: CreateIncidentReport = {
       store_id: this.selectedOrder.pk_storeID,
       order_id: this.selectedOrder.pk_orderID,
       date: this.todayDate,
-      // store_user_id: number;
+      store_user_id: this.orderDetail.fk_storeUserID,
       priority1: this.formModal.priority1,
       priority2: 'TBD',
       priority3: this.formModal.priority3,
@@ -202,33 +222,23 @@ export class IncidentReportsComponent implements OnInit {
       corrected: this.formModal.corrected,
       how: this.formModal.how,
       recommend: this.formModal.recommend,
-      // source_supplier: number;
-      // admin_user_id: number;
-      // source_employee: number;
+      source_supplier: this.formModal.source_supplier,
+      source_employee: this.formModal.source_employee,
+      admin_user_id: this.orderDetail.fk_adminUserID,
       dateModified: this.todayDate,
       incident_sources: reports_sources,
       create_incident_report: true
     }
-    // let payload = {
-    //   store_id: this.selectedOrder.pk_storeID,
-    //   order_id: this.selectedOrder.pk_orderID,
-    //   date: this.todayDate,
-    //   store_user_id: number;
-    //   priority1: string;
-    //   priority2: string;
-    //   priority3: string;
-    //   priority4: string;
-    //   rerunCost: string;
-    //   explanation: string;
-    //   corrected: string;
-    //   how: string;
-    //   recommend: string;
-    //   company_id: number;
-    //   admin_user_id: number;
-    //   soruce_admin_user_id: number;
-    //   dateModified: this.todayDate,
-    //   create_incident_report: true
-    // }
+    console.log(payload)
+    this.isIncidentLoader = true;
+    this._orderService.CreateIncidentReport(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+      console.log(res);
+      this.isIncidentLoader = false;
+      this._changeDetectorRef.markForCheck();
+    }, err => {
+      this.isIncidentLoader = false;
+      this._changeDetectorRef.markForCheck();
+    })
   }
   addAndRemoveFromCheckBox(ev, item) {
     const index = this.formModal.reportsSources.findIndex(elem => elem.sourceName == item.sourceName);
@@ -241,9 +251,45 @@ export class IncidentReportsComponent implements OnInit {
         this.formModal.reportsSources.splice(index, 1);
       }
     }
+    if (this.formModal.reportsSources.length == 0) {
+      this.employeeSource = false;
+      this.supplierSource = false;
+    }
+    this.employeeSource = this.formModal.reportsSources.some(elem => {
+      if (elem.sourceName == 'Program Manager/Service Rep' || elem.sourceName == 'Customer' || elem.sourceName == 'Support') {
+        return true;
+      } else {
+        return false;
+      }
+    });
+    this.supplierSource = this.formModal.reportsSources.some(elem => {
+      if (elem.sourceName == 'Supplier') {
+        return true;
+      } else {
+        this.formModal.source_supplier = null;
+        return false;
+      }
+    });
   }
   userSelected(user) {
     console.log(user);
+    this.formModal.source_employee = user.pk_userID;
+  }
+  checkEmployeeSourceValue(val) {
+    this.employeeSource = false;
+    this.formModal.reportsSources.filter(elem => {
+      if (elem.sourceName == val) {
+        this.employeeSource = true;
+      }
+    });
+  }
+  checkSupplierSourceValue(val) {
+    this.supplierSource = false;
+    this.formModal.reportsSources.filter(elem => {
+      if (elem.sourceName == val) {
+        this.supplierSource = true;
+      }
+    })
   }
 }
 

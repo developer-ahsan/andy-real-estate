@@ -288,57 +288,58 @@
                                             </div>
                                         </div>
                                     </div>
-                                    <div class="col-span-5 self-center font-medium tracking-tight text-secondary">
+                                    <div class="col-span-5 self-center my-2 font-medium tracking-tight text-secondary">
                                         TOTAL DISCOUNT
                                     </div>
-                                    <div class="font-medium text-md  text-center text-secondary"></div>
+                                    <div class="font-medium text-md my-2  text-center text-secondary"></div>
                                     <div class="col-span-1"></div>
                                     <div class="col-span-1"></div>
                                     <div class="col-span-1"></div>
-                                    <div class="col-span-1 text-center  font-medium text-md">
+                                    <div class="col-span-1 text-center my-2  font-medium text-md">
                                         -{{orderTotal.discount.toFixed(2)}}
                                     </div>
-                                    <div class="col-span-1 text-center  font-medium text-md">
+                                    <div class="col-span-1 text-center my-2 font-medium text-md">
                                         -{{orderTotal.discount.toFixed(2)}}
                                     </div>
-                                    <div class="col-span-5 self-center font-medium tracking-tight text-secondary">
+                                    <div class="col-span-5 self-center my-2 font-medium tracking-tight text-secondary">
                                         TOTAL B T
                                     </div>
-                                    <div class="font-medium text-md  text-center text-secondary"></div>
+                                    <div class="font-medium text-md my-2 text-center text-secondary"></div>
                                     <div class="col-span-1"></div>
-                                    <div class="col-span-1 text-center  font-medium text-md">
+                                    <div class="col-span-1 text-center my-2 font-medium text-md">
                                         {{orderTotal.cost.toFixed(2)}}</div>
                                     <div class="col-span-1"></div>
-                                    <div class="col-span-1 text-center  font-medium text-md">
+                                    <div class="col-span-1 text-center my-2 font-medium text-md">
                                         {{orderTotal.price.toFixed(2)}}
                                     </div>
-                                    <div class="col-span-1 text-center  font-medium text-md">{{(orderTotal.price -
+                                    <div class="col-span-1 text-center my-2 font-medium text-md">{{(orderTotal.price -
                                         orderTotal.cost).toFixed(2)}}
                                     </div>
-                                    <div class="col-span-1 text-center  font-medium text-md">
+                                    <div class="col-span-1 text-center my-2 font-medium text-md">
                                         {{orderTotal.margin.toFixed(2)}}%
                                     </div>
-                                    <div class="col-span-5 self-center font-medium tracking-tight text-secondary">
+                                    <div class="col-span-5 self-center my-2 font-medium tracking-tight text-secondary">
                                         TOTAL TAX
                                     </div>
-                                    <div class="font-medium text-md  text-center text-secondary"></div>
+                                    <div class="font-medium text-md my-2 text-center text-secondary"></div>
                                     <div class="col-span-1"></div>
                                     <div class="col-span-1"></div>
-                                    <div class="col-span-1  text-center  font-medium text-md"></div>
-                                    <div class="col-span-1  text-center  font-medium text-md">{{orderTotal.tax}}</div>
+                                    <div class="col-span-1  text-center my-2 font-medium text-md"></div>
+                                    <div class="col-span-1  text-center my-2  font-medium text-md">{{orderTotal.tax}}
+                                    </div>
                                     <!-- <div class="col-span-5 self-center font-medium tracking-tight text-secondary">
                                         ADJUSTMENTS
                                     </div> -->
                                     <!-- <div class="col-span-1  text-center  font-medium text-md">$0.00</div> -->
-                                    <div class="col-span-5 self-center font-medium tracking-tight text-secondary">
+                                    <div class="col-span-5 self-center my-2 font-medium tracking-tight text-secondary">
                                         GRAND TOTAL
                                     </div>
-                                    <div class="font-medium text-md  text-center text-secondary"></div>
+                                    <div class="font-medium text-md my-2 text-center text-secondary"></div>
                                     <div class="col-span-1"></div>
-                                    <div class="col-span-1 text-center  font-medium text-md font-bold">
+                                    <div class="col-span-1 my-2 text-center  font-medium text-md font-bold">
                                         {{orderTotal.cost.toFixed(2) | currency}}</div>
                                     <div class="col-span-1"></div>
-                                    <div class="col-span-1 text-center  font-medium text-md font-bold">
+                                    <div class="col-span-1 my-2 text-center  font-medium text-md font-bold">
                                         {{orderTotal.total.toFixed(2) | currency}}
                                     </div>
                                 </div>
