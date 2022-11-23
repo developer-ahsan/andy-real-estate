@@ -440,7 +440,7 @@ export class ColorComponent implements OnInit, OnDestroy {
             const message = response["success"] === true
               ? "Colors updated successfully"
               : "Some error occured. Please try again";
-
+            this.selection.clear();
             this._snackBar.open(message, '', {
               horizontalPosition: 'center',
               verticalPosition: 'bottom',
@@ -625,7 +625,7 @@ export class ColorComponent implements OnInit, OnDestroy {
             const message = response["success"] === true
               ? "Colors deleted successfully"
               : "Some error occured. Please try again";
-
+            this.selection.clear();
             this._snackBar.open(message, '', {
               horizontalPosition: 'center',
               verticalPosition: 'bottom',
@@ -670,9 +670,12 @@ export class ColorComponent implements OnInit, OnDestroy {
 
   /** Whether the number of selected elements matches the total number of rows. */
   isAllSelected() {
-    const numSelected = this.selection.selected.length;
+    // const numSelected = this.selection.selected.length;
     // const numRows = this.dataSource.data.length;
     // return numSelected === numRows;
+    const numSelected = this.selection.selected.length;
+    const numRows = this.dataSource.length;
+    return numSelected === numRows;
   }
 
   /** Selects all rows if they are not all selected; otherwise clear selection. */
@@ -681,8 +684,10 @@ export class ColorComponent implements OnInit, OnDestroy {
     //   this.selection.clear();
     //   return;
     // }
-
     // this.selection.select(...this.dataSource.data);
+    this.isAllSelected() ?
+      this.selection.clear() :
+      this.dataSource.forEach(row => this.selection.select(row));
   }
 
   /** The label for the checkbox on the passed row */

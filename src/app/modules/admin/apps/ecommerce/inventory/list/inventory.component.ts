@@ -2588,7 +2588,6 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
 
     searchKeyword(event): void {
         let keyword = event ? event : '';
-
         if (!keyword) {
             this._inventoryService.productSearchFilter.term = null;
             this._snackBar.open("Enter text to search", '', {
@@ -2599,7 +2598,7 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
             return;
         };
         this.isLoading = true;
-        this._inventoryService.productSearchFilter.product_id = keyword;
+        this._inventoryService.productSearchFilter.term = keyword;
 
         this._inventoryService.searchProductKeywords(keyword)
             .pipe(takeUntil(this._unsubscribeAll))

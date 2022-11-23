@@ -189,7 +189,7 @@ export class InventoryService {
         return this._httpClient.get<ProductsList[]>(environment.products, {
             params: {
                 list: true,
-                keyword: keyword
+                keyword: keyword.replace("'", "''")
             }
         });
     };
