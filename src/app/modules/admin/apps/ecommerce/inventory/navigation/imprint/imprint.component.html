@@ -1201,7 +1201,7 @@
                     </div>
                     <div class="col-12">
                         <mat-form-field appearance="fill" class="w-full">
-                            <input matInput (input)="addArea($event.target.value)">
+                            <input matInput [(ngModel)]="areaValue" (input)="addArea($event.target.value)">
                         </mat-form-field>
                     </div>
 

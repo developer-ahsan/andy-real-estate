@@ -1,6 +1,6 @@
 import { Component, Input, OnInit, Output, EventEmitter, ChangeDetectorRef, OnDestroy } from '@angular/core';
 import { Observable, Subject } from 'rxjs';
-import { map, startWith, takeUntil } from 'rxjs/operators';
+import { map, startWith, switchMap, takeUntil } from 'rxjs/operators';
 import { InventoryService } from 'app/modules/admin/apps/ecommerce/inventory/inventory.service';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { FormBuilder, FormControl, FormGroup } from '@angular/forms';
@@ -263,7 +263,8 @@ export class ImprintComponent implements OnInit, OnDestroy {
     this.showImprintScreen = 'Imprints';
     this.getImprints(this.page);
     this.getSuppliers();
-    this.getAllImprints();
+    this.getAllImprintsMethods();
+    // this.getAllImprints();
 
     this.priceInclusionForm = this._formBuilder.group({
       checkBox: ['']
@@ -297,6 +298,7 @@ export class ImprintComponent implements OnInit, OnDestroy {
       allowSearchFilter: true,
       limitSelection: 1
     };
+
   };
 
   getStandardImprints(): void {
@@ -1216,7 +1218,6 @@ export class ImprintComponent implements OnInit, OnDestroy {
       this.getSuppliers();
       this.getAddImprintLocations();
       this.getAddImprintMethods();
-      this.getAddImprintDigitizers();
     }
 
     if (screenName === "Standard Imprints") {
@@ -1677,7 +1678,7 @@ export class ImprintComponent implements OnInit, OnDestroy {
       multi_color_min_id: 1,
       bln_user_color_selection: this.defaultImprintColorSpecification === 'Yes' ? 1 : 0,
       max_colors: this.defaultImprintColorSpecification === 'Yes' ? this.maxColorSelected : null,
-      collection_id: this.collectionIdsArray.length ? this.selectedCollectionId[0].fk_collectionID : null,
+      collection_id: this.collectionIdsArray.length ? this.selectedCollectionId[0].fk_collectionID : this.customColorId,
       bln_process_mode: processMode,
       min_product_qty: this.minQuantity || 1,
       imprint_comments: this.addImprintComment || "",
@@ -1702,6 +1703,7 @@ export class ImprintComponent implements OnInit, OnDestroy {
 
           this._inventoryService.updateImprintObj(payload)
             .subscribe((response) => {
+              this.getImprints(1);
               this.showFlashMessage(
                 response["success"] === true ?
                   'success' :
@@ -1718,6 +1720,7 @@ export class ImprintComponent implements OnInit, OnDestroy {
 
     this._inventoryService.updateImprintObj(payload)
       .subscribe((response) => {
+        this.getImprints(1);
         this.showFlashMessage(
           response["success"] === true ?
             'success' :
@@ -1772,7 +1775,8 @@ export class ImprintComponent implements OnInit, OnDestroy {
       blnStitchProcess,
       blnSingleProcess,
       fk_setupChargeID,
-      fk_runChargeID
+      fk_runChargeID,
+      fk_collectionID
     } = imprint;
 
     const runSetupObj = {
@@ -1790,6 +1794,7 @@ export class ImprintComponent implements OnInit, OnDestroy {
       this.favoriteSeason = this.seasons[2];
     }
 
+    this.customColorId = fk_collectionID;
     this.areaValue = area;
     this.defaultImprintColorSpecification = blnUserColorSelection ? 'Yes' : 'No';
     this.maxColorSelected = maxColors;
@@ -1802,7 +1807,10 @@ export class ImprintComponent implements OnInit, OnDestroy {
 
   getSuppliers(data?: any) {
     const { fk_supplierID } = this.selectedProduct;
-
+    let fk_decoratorID = null;
+    if (data) {
+      fk_decoratorID = data.fk_decoratorID;
+    }
     // Get the suppliers
     this._inventoryService.Suppliers$
       .pipe(takeUntil(this._unsubscribeAll))
@@ -1810,7 +1818,9 @@ export class ImprintComponent implements OnInit, OnDestroy {
         if (supplier) {
           this.suppliers = supplier["data"];
           this.selectedSupplier = this.suppliers.find(x => x.pk_companyID === fk_supplierID) || this.suppliers[2]
-
+          if (data) {
+            this.selectedSupplier = this.suppliers.find(x => x.pk_companyID === fk_decoratorID) || this.suppliers[2]
+          }
           // Mark for check
           this._changeDetectorRef.markForCheck();
         } else {
@@ -1821,7 +1831,7 @@ export class ImprintComponent implements OnInit, OnDestroy {
               this.selectedSupplier = this.suppliers.find(x => x.pk_companyID === fk_supplierID) || this.suppliers[2];
               if (data) {
                 const { pk_companyID } = data
-                this.selectedSupplier = this.suppliers.find(x => x.pk_companyID === pk_companyID) || this.suppliers[2]
+                this.selectedSupplier = this.suppliers.find(x => x.pk_companyID === fk_decoratorID) || this.suppliers[2]
               }
 
               // Mark for check
@@ -1831,69 +1841,113 @@ export class ImprintComponent implements OnInit, OnDestroy {
       });
 
   }
-
-  getAddImprintLocations(data?: any) {
+  getAllImprintLocations() {
     this.addImprintLocations = [];
-    this._inventoryService.getAllImprintLocations()
+    this._inventoryService.getAllImprintLocationsObs()
       .pipe(takeUntil(this._unsubscribeAll))
       .subscribe((location) => {
+        this.getAddImprintDigitizers()
         this.addImprintLocations.push({ locationName: 'New Location >>>', pk_locationID: null });
         this.addImprintLocations = [...this.addImprintLocations, ...location["data"]];
-        if (this.addImprintLocations) {
-          // const { pk_locationID } = data
-          this.selectedLocation = { locationName: 'New Location >>>', pk_locationID: null };
-          this.locationControl.setValue(this.selectedLocation.locationName);
-          // this.selectedLocation = this.addImprintLocations.find(x => x.pk_locationID === pk_locationID) || this.addImprintLocations[0];
-          // this.locationControl.setValue(this.selectedLocation.locationName);
-          // console.log(this.selectedLocation)
+        this.selectedLocation = { locationName: 'New Location >>>', pk_locationID: null };
+        this.locationControl.setValue(this.selectedLocation.locationName);
+        // Mark for check
+        this._changeDetectorRef.markForCheck();
+      });
+  }
+  getAddImprintLocations(data?: any) {
+    this._inventoryService.imprintLocations$.pipe(takeUntil(this._unsubscribeAll)).subscribe((methods) => {
+      if (data) {
+        const { pk_locationID } = data
+        this.selectedLocation = this.addImprintLocations.find(x => x.pk_locationID === pk_locationID) || this.addImprintLocations[0];
+        this.locationControl.setValue(this.selectedLocation.locationName);
+      }
+      // Mark for check
+      this._changeDetectorRef.markForCheck();
+    })
+    // this._inventoryService.getAllImprintLocations()
+    //   .pipe(takeUntil(this._unsubscribeAll))
+    //   .subscribe((location) => {
+    //     this.addImprintLocations.push({ locationName: 'New Location >>>', pk_locationID: null });
+    //     this.addImprintLocations = [...this.addImprintLocations, ...location["data"]];
+    //     if (this.addImprintLocations) {
+    //       // const { pk_locationID } = data
+    //       this.selectedLocation = { locationName: 'New Location >>>', pk_locationID: null };
+    //       this.locationControl.setValue(this.selectedLocation.locationName);
+    //       // this.selectedLocation = this.addImprintLocations.find(x => x.pk_locationID === pk_locationID) || this.addImprintLocations[0];
+    //       // this.locationControl.setValue(this.selectedLocation.locationName);
+    //       // console.log(this.selectedLocation)
+    //     }
+
+    //     // Mark for check
+    //     this._changeDetectorRef.markForCheck();
+    //   });
+  }
+  getAllImprintsMethods() {
+    this.addImprintMethods = [];
+    this._inventoryService.getAllImprintMethodsObs().pipe(takeUntil(this._unsubscribeAll)).subscribe((methods) => {
+      this.getAllImprintLocations();
+      this.addImprintMethods.push({ methodName: 'New Method >>>', pk_methodID: null });
+      this.addImprintMethods = [...this.addImprintMethods, ...methods["data"]];
+      this.selectedMethod = this.addImprintMethods.find(x => x.pk_methodID === 254) || this.addImprintMethods[0];
+      this.methodControl.setValue(this.selectedMethod.methodName);
+      this._changeDetectorRef.markForCheck();
+    });
+  }
+  getAddImprintMethods(data?: any) {
+    this.addImprintMethods = [];
+    this._inventoryService.imprintMethods$.pipe(takeUntil(this._unsubscribeAll)).subscribe((methods) => {
+      this.addImprintMethods.push({ methodName: 'New Method >>>', pk_methodID: null });
+      this.addImprintMethods = [...this.addImprintMethods, ...methods["data"]];
+
+      if (data) {
+        const { pk_methodID } = data
+        this.selectedMethod = this.addImprintMethods.find(x => x.pk_methodID === pk_methodID) || this.addImprintMethods[0];
+        this.methodControl.setValue(this.selectedMethod.methodName);
+      } else {
+        this.selectedMethod = this.addImprintMethods.find(x => x.pk_methodID === 254) || this.addImprintMethods[0];
+        this.methodControl.setValue(this.selectedMethod.methodName);
+      }
+      // Mark for check
+      this._changeDetectorRef.markForCheck();
+    })
+    // setTimeout(() => {
+    //   this._inventoryService.getAllImprintMethods()
+    //     .pipe(takeUntil(this._unsubscribeAll))
+    //     .subscribe((methods) => {
+    //       this.addImprintMethods.push({ methodName: 'New Method >>>', pk_methodID: null });
+    //       this.addImprintMethods = [...this.addImprintMethods, ...methods["data"]];
+    //       this.selectedMethod = this.addImprintMethods.find(x => x.pk_methodID === 254) || this.addImprintMethods[0];
+    //       this.methodControl.setValue(this.selectedMethod.methodName);
+
+    //       if (data) {
+    //         const { pk_methodID } = data
+    //         this.selectedMethod = this.addImprintMethods.find(x => x.pk_methodID === pk_methodID) || this.addImprintMethods[0];
+    //         this.methodControl.setValue(this.selectedMethod.methodName);
+
+    //       }
+
+    //       // Mark for check
+    //       this._changeDetectorRef.markForCheck();
+    //     });
+    // }, 2000)
+  };
+
+  getAddImprintDigitizers(data?: any) {
+    this._inventoryService.getAllDigitizers()
+      .pipe(takeUntil(this._unsubscribeAll))
+      .subscribe((digitizers) => {
+        this.addImprintDigitizers = digitizers["data"];
+        this.selectedDigitizer = this.addImprintDigitizers[0];
+
+        if (data) {
+          const { fk_digitizerID } = data
+          this.selectedDigitizer = this.addImprintDigitizers.find(x => x.pfk_digitizerID === fk_digitizerID) || this.addImprintDigitizers[0];
         }
 
         // Mark for check
         this._changeDetectorRef.markForCheck();
       });
-  }
-
-  getAddImprintMethods(data?: any) {
-    this.addImprintMethods = [];
-    setTimeout(() => {
-      this._inventoryService.getAllImprintMethods()
-        .pipe(takeUntil(this._unsubscribeAll))
-        .subscribe((methods) => {
-          this.addImprintMethods.push({ methodName: 'New Method >>>', pk_methodID: null });
-          this.addImprintMethods = [...this.addImprintMethods, ...methods["data"]];
-          this.selectedMethod = this.addImprintMethods.find(x => x.pk_methodID === 254) || this.addImprintMethods[0];
-          this.methodControl.setValue(this.selectedMethod.methodName);
-
-          if (data) {
-            const { pk_methodID } = data
-            this.selectedMethod = this.addImprintMethods.find(x => x.pk_methodID === pk_methodID) || this.addImprintMethods[0];
-            this.methodControl.setValue(this.selectedMethod.methodName);
-
-          }
-
-          // Mark for check
-          this._changeDetectorRef.markForCheck();
-        });
-    }, 2000)
-  };
-
-  getAddImprintDigitizers(data?: any) {
-    setTimeout(() => {
-      this._inventoryService.getAllDigitizers()
-        .pipe(takeUntil(this._unsubscribeAll))
-        .subscribe((digitizers) => {
-          this.addImprintDigitizers = digitizers["data"];
-          this.selectedDigitizer = this.addImprintDigitizers[0];
-
-          if (data) {
-            const { fk_digitizerID } = data
-            this.selectedDigitizer = this.addImprintDigitizers.find(x => x.pfk_digitizerID === fk_digitizerID) || this.addImprintDigitizers[0];
-          }
-
-          // Mark for check
-          this._changeDetectorRef.markForCheck();
-        });
-    }, 4000)
   };
 
   getNextData(event) {

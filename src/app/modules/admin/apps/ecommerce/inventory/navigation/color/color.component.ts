@@ -278,8 +278,6 @@ export class ColorComponent implements OnInit, OnDestroy {
   };
 
   rowUpdate(colorObj, title, event) {
-    console.log(colorObj)
-    console.log(colorObj)
     const { value } = event.target;
     const { fk_colorID } = colorObj;
 

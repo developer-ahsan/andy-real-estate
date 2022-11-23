@@ -36,6 +36,8 @@ export class InventoryService {
     private _suppliers: BehaviorSubject<any[] | null> = new BehaviorSubject<any[]>(null);
     private _productLicensingTerms: BehaviorSubject<any[] | null> = new BehaviorSubject<any[]>(null);
     private _stores: BehaviorSubject<any[] | null> = new BehaviorSubject<any[]>(null);
+    private _imprintMethods: BehaviorSubject<any[] | null> = new BehaviorSubject<any[]>(null);
+    private _imprintLocations: BehaviorSubject<any[] | null> = new BehaviorSubject<any[]>(null);
     public navigationLabels = navigations;
     opts = [];
 
@@ -114,6 +116,13 @@ export class InventoryService {
 
     get productLicensingTerms$(): Observable<any[]> {
         return this._productLicensingTerms.asObservable();
+    };
+
+    get imprintMethods$(): Observable<any[]> {
+        return this._imprintMethods.asObservable();
+    };
+    get imprintLocations$(): Observable<any[]> {
+        return this._imprintLocations.asObservable();
     };
 
     // -----------------------------------------------------------------------------------------------------
@@ -610,6 +619,19 @@ export class InventoryService {
             }
         });
     };
+    // getAllImprintLocations Observable
+    getAllImprintLocationsObs(): Observable<any[]> {
+        return this._httpClient.get<any[]>(environment.products, {
+            params: {
+                imprint: true,
+                location: true
+            }
+        }).pipe(
+            tap((response: any) => {
+                this._imprintLocations.next(response);
+            })
+        );
+    };
 
     getAllImprintMethods(): Observable<any[]> {
         return this._httpClient.get<any[]>(environment.products, {
@@ -618,6 +640,19 @@ export class InventoryService {
                 method: true
             }
         });
+    };
+    // getAllImprintMethods Observable
+    getAllImprintMethodsObs(): Observable<any[]> {
+        return this._httpClient.get<any[]>(environment.products, {
+            params: {
+                imprint: true,
+                method: true
+            }
+        }).pipe(
+            tap((response: any) => {
+                this._imprintMethods.next(response);
+            })
+        );
     };
 
     getTestPricing(productId, imprintId, processQuantity): Observable<any[]> {

@@ -43,7 +43,7 @@ export class ProductsStatusComponent implements OnInit {
       product_id: this.selectedProduct.pk_productID
     }
     this._inventoryService.getProductsData(params).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
-      console.log(res);
+      // console.log(res);
     })
   }
 
