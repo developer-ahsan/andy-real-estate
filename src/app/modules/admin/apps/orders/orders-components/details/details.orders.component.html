@@ -157,6 +157,12 @@
                     </ng-template>
                 </div>
                 <div class="col-12">
+                    <ng-template [ngIf]="selectedScreeen == 'Modify Orders'">
+                        <app-order-modify [selectedOrder]="selectedOrder" [(isLoading)]="isLoading">
+                        </app-order-modify>
+                    </ng-template>
+                </div>
+                <div class="col-12">
                     <ng-template [ngIf]="selectedScreeen == 'Adjustments'">
                         <app-order-adjustment [selectedOrder]="selectedOrder" [(isLoading)]="isLoading">
                         </app-order-adjustment>

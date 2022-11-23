@@ -373,6 +373,34 @@
             <ngx-skeleton-loader count="5" appearance="line" animation="pulse"></ngx-skeleton-loader>
         </div>
         <div class="col-12 overflow-auto" *ngIf="!productNumberLoader">
+            <div class="bg-card shadow p-4 m-8" *ngIf="productId">
+                <div class="flex mr-7" style="justify-content: space-between;">
+                    <div class="text-2xl font-bold">Product</div>
+                </div>
+                <div class="row w-full">
+                    <div class="col-md-6 col-12">
+                        <b class="text-secondary text-sm">PID</b>
+                        <p class="float-right text-sm">{{productId}}</p>
+                    </div>
+                    <div class="col-md-6 col-12">
+                        <b class="text-secondary text-sm">Product Name</b>
+                        <p class="float-right text-sm">{{secondFormGroup.get('productName').value}}</p>
+                    </div>
+                    <div class="col-md-6 col-12">
+                        <b class="text-secondary text-sm">Supplier</b>
+                        <p class="float-right text-sm">{{supplierName}}</p>
+                    </div>
+                    <div class="col-md-6 col-12">
+                        <b class="text-secondary text-sm">Product Link</b>
+                        <a class="float-right text-sm"
+                            style="color: #959595; text-decoration: underline; cursor: pointer;"
+                            [routerLink]="['/apps/ecommerce/inventory',productId]" target="_blank">
+                            Click Here
+                        </a>
+                    </div>
+
+                </div>
+            </div>
             <mat-card class="rounded-2xl m-8">
                 <mat-card-content>
 

@@ -60,6 +60,7 @@ import { SafePipe } from './orders-components/safe-pipe';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { FuseCardModule } from '@fuse/components/card';
+import { OrderModifyComponent } from './orders-components/navigation/order-modify/order-modify.component';
 
 @NgModule({
     declarations: [
@@ -88,6 +89,7 @@ import { FuseCardModule } from '@fuse/components/card';
         OrderReviewEmailComponent,
         OrderPaymentEmailComponent,
         OrderReceiptEmailComponent,
+        OrderModifyComponent,
         SafePipe
     ],
     imports: [
