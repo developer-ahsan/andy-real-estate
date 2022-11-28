@@ -61,6 +61,8 @@ import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { FuseCardModule } from '@fuse/components/card';
 import { OrderModifyComponent } from './orders-components/navigation/order-modify/order-modify.component';
+import { OrderApprovalSettingsComponent } from './orders-components/navigation/order-approval-settings/order-approval-settings.component';
+import { OrderProccurementComponent } from './orders-components/navigation/order-procurement-data/order-procurement-data.component';
 
 @NgModule({
     declarations: [
@@ -90,6 +92,8 @@ import { OrderModifyComponent } from './orders-components/navigation/order-modif
         OrderPaymentEmailComponent,
         OrderReceiptEmailComponent,
         OrderModifyComponent,
+        OrderApprovalSettingsComponent,
+        OrderProccurementComponent,
         SafePipe
     ],
     imports: [
@@ -127,7 +131,7 @@ import { OrderModifyComponent } from './orders-components/navigation/order-modif
         MatNativeDateModule,
         MatAutocompleteModule,
         MatSnackBarModule,
-        FuseCardModule
+        FuseCardModule,
     ],
 })
 export class OrdersModule {

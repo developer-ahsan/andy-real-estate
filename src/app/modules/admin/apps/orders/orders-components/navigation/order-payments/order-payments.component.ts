@@ -1,4 +1,7 @@
-import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
+import { Component, OnInit, Input, Output, EventEmitter, ChangeDetectorRef } from '@angular/core';
+import { Subject } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
+import { OrdersService } from '../../orders.service';
 
 interface Transaction {
   item: string;
@@ -12,29 +15,27 @@ interface Transaction {
 })
 export class OrderPaymentComponent implements OnInit {
   @Input() isLoading: boolean;
-  @Input() selectedOrder: boolean;
+  @Input() selectedOrder: any;
   @Output() isLoadingChange = new EventEmitter<boolean>();
-  displayedColumns: string[] = ['item', 'min', 'max'];
-  transactions: Transaction[] = [
-    { item: 'ARTWORK', min: 1, max: 5 },
-    { item: 'PRODUCTION', min: 3, max: 3 },
-    { item: 'SHIPPINH', min: 4, max: 4 },
-  ];
+  private _unsubscribeAll: Subject<any> = new Subject<any>();
+  orderDetail: any;
+  not_available_price: string = '0';
 
-  constructor() { }
+  constructor(
+    private _changeDetectorRef: ChangeDetectorRef,
+    private _orderService: OrdersService
+  ) { }
 
   ngOnInit(): void {
+    this.getOrderDetail();
     setTimeout(() => {
       this.isLoading = false;
       this.isLoadingChange.emit(false)
-    }, 100);
+    }, 10);
   }
-
-  getTotalMin() {
-    return this.transactions.map(t => t.min).reduce((acc, value) => acc + value, 0);
-  }
-
-  getTotalMax() {
-    return this.transactions.map(t => t.max).reduce((acc, value) => acc + value, 0);
+  getOrderDetail() {
+    this._orderService.orderDetail$.pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+      this.orderDetail = res["data"][0];
+    });
   }
 }

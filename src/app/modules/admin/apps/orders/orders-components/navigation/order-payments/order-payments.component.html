@@ -21,11 +21,12 @@
               </note>
               <div class="row mt-5">
                 <div class="col-6 font-bold">Order Total </div>
-                <div class="col-6">$3,016.46</div>
+                <div class="col-6">{{(selectedOrder?.total | currency) || not_available_price}}</div>
                 <div class="col-6 font-bold">Currently Paid</div>
-                <div class="col-6">$3,016.46</div>
+                <div class="col-6">{{(selectedOrder?.currentTotal | currency) || not_available_price}}</div>
                 <div class="col-6 font-bold">Balance Due</div>
-                <div class="col-6">$3,016.46</div>
+                <div class="col-6">{{((selectedOrder?.total - selectedOrder?.currentTotal) | currency) ||
+                  not_available_price}}</div>
               </div>
               <div class="row mt-3">
                 <div class="col-md-6 col-12">

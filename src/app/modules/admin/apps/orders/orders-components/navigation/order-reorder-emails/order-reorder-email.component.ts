@@ -10,26 +10,48 @@ import { OrdersService } from '../../orders.service';
 })
 export class OrderReorderEmailComponent implements OnInit, OnDestroy {
   @Input() isLoading: boolean;
-  @Input() selectedOrder: boolean;
+  @Input() selectedOrder: any;
   @Output() isLoadingChange = new EventEmitter<boolean>();
   private _unsubscribeAll: Subject<any> = new Subject<any>();
 
   orderDetail: any;
+  emailData: any;
+  optedEmail: boolean = false;
   constructor(
     private _changeDetectorRef: ChangeDetectorRef,
     private _orderService: OrdersService
   ) { }
 
   ngOnInit(): void {
+    this.isLoading = true;
+
     this._orderService.orderDetail$.pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
       this.orderDetail = res["data"][0];
-      console.log(res["data"])
+      this.getReorderEmail();
     })
-    setTimeout(() => {
-      this.isLoading = true;
-      this.isLoadingChange.emit(false);
-    }, 100);
   };
+  getReorderEmail() {
+    let params = {
+      opt_in: true,
+      store_id: this.selectedOrder.pk_storeID,
+      email: this.orderDetail.managerEmail
+    }
+    this._orderService.getOrderCommonCall(params).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+      this.emailData = res["data"];
+      if (this.emailData.length == 0 || (this.emailData.length != 0 && this.emailData.blnActive)) {
+        this.optedEmail = false;
+      } else {
+        this.optedEmail = true;
+      }
+      this.isLoading = false;
+      this.isLoadingChange.emit(false);
+      this._changeDetectorRef.markForCheck();
+    }, err => {
+      this.isLoading = false;
+      this.isLoadingChange.emit(false);
+      this._changeDetectorRef.markForCheck();
+    })
+  }
   /**
      * On destroy
      */

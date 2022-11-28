@@ -48,8 +48,8 @@
             <ng-template #myCard>
                 <div class="bg-card shadow p-4">
                     <div class="flex mr-7" style="justify-content: space-between;">
-                        <div class="text-2xl font-bold">Products</div>
-                        <div class="text-2xl font-bold"
+                        <div class="text-2xl font-bold">{{selectedProduct.productName}}</div>
+                        <div class="text-2xl font-bold cursor-pointer" (click)="changeProductStatus()"
                             [ngStyle]="selectedProduct?.blnActive ? {'color':'#0ecd0e'} : {'color': '#ff0000'}">
                             {{selectedProduct?.blnActive ? 'Active' : 'Inactive' }}
                         </div>
@@ -108,6 +108,13 @@
             <div class="row">
                 <div class="col-12 my-3">
                     <ng-container *ngTemplateOutlet="myCard"></ng-container>
+                </div>
+                <!-- Product Status -->
+                <div class="col-12">
+                    <ng-template [ngIf]="selectedIndex === 'Product Status'">
+                        <app-product-status [(isLoading)]="isLoading" [selectedProduct]="selectedProduct">
+                        </app-product-status>
+                    </ng-template>
                 </div>
                 <div class="col-12">
                     <ng-template [ngIf]="selectedIndex === 'Store Versions'">

@@ -1,0 +1,63 @@
+<ngx-skeleton-loader count="8" appearance="line" animation="pulse" *ngIf="isLoading">
+</ngx-skeleton-loader>
+<div class="row my-3" *ngIf="!isLoading">
+    <div class="col-12">
+        <fuse-card class="rounded-2xl shadow bg-card flex flex-col lg:flex-row w-full">
+            <div class="w-full">
+                <div class="p-6 sm:p-8 lg:p-10 w-full">
+                    <div class="text-2xl font-bold">
+                        Art Approval Settings For Order #{{selectedOrder.pk_orderID}}
+                    </div>
+                    <div class="mt-2 text-secondary font-bold">
+                        <div>You can override these settings by deactivating them below</div>
+                        <div>
+                            <mat-slide-toggle [color]="'primary'" (change)="UpdateArtApprovalSettings()"
+                                [(ngModel)]="orderDetail.blnAdditionalApprovalOverride">
+                                Include additional art approval contacts for this order
+                            </mat-slide-toggle>
+                        </div>
+                    </div>
+                </div>
+                <div>
+
+                    <div class="pb-5" *ngIf="currentApprovals.length > 0;else other_content">
+                        <table mat-table [dataSource]="currentApprovals" class="w-full">
+                            <!-- Item Column -->
+                            <ng-container matColumnDef="order">
+                                <th mat-header-cell *matHeaderCellDef class="bg-light"> Order </th>
+                                <td mat-cell *matCellDef="let transaction"> {{transaction.listOrder}}
+                                </td>
+                            </ng-container>
+
+                            <!-- Cost Column -->
+                            <ng-container matColumnDef="user">
+                                <th mat-header-cell *matHeaderCellDef class="bg-light"> User </th>
+                                <td mat-cell *matCellDef="let transaction"> {{transaction.firstName + '
+                                    ' + transaction.lastName}} </td>
+                            </ng-container>
+
+                            <!-- Cost Column -->
+                            <ng-container matColumnDef="email">
+                                <th mat-header-cell *matHeaderCellDef class="bg-light"> Author </th>
+                                <td mat-cell *matCellDef="let transaction"> {{transaction.email}} </td>
+                            </ng-container>
+
+                            <!-- The table will render two header rows, one data row per data object, and two footer rows. -->
+                            <tr mat-header-row *matHeaderRowDef="displayedColumns"
+                                class="example-first-header-row h-18">
+                            </tr>
+
+                            <tr mat-row *matRowDef="let row; columns: displayedColumns;"
+                                class="h-12 hover:bg-gray-100 dark:hover:bg-hover"></tr>
+                        </table>
+                    </div>
+                    <ng-template #other_content>
+                        <div class="text-secondary font-semibold p-5 text-center">
+                            No Approval Settings Were Found.
+                        </div>
+                    </ng-template>
+                </div>
+            </div>
+        </fuse-card>
+    </div>
+</div>

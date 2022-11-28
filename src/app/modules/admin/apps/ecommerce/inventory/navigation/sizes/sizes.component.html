@@ -2,7 +2,16 @@
 </ngx-skeleton-loader>
 <div class="row my-3" *ngIf="!isLoading">
     <div class="col-12">
-        <mat-card class="w-full p-0 mb-10 h-full rounded-2xl">
+        <div class="text-right" *ngIf="isColorSize">
+            <button mat-flat-button [color]="'primary'" (click)="colorsToggle()">Back to List</button>
+        </div>
+        <button *ngIf="!isColorSize" [disabled]="!isSizeOrColoCorrrection" class="my-2" mat-stroked-button
+            (click)="colorsToggle()">Sizes/Colors Price
+            Correction</button>
+        <div *ngIf="isColorSize">
+            <app-color-sizes [selectedProduct]="selectedProduct"></app-color-sizes>
+        </div>
+        <mat-card *ngIf="!isColorSize" class="w-full p-0 mb-10 h-full rounded-2xl">
             <div class="row p-5">
                 <div class="col-lg-9 col-12">
                     <div class="text-2xl font-bold">
@@ -113,7 +122,7 @@
     </div>
 </div>
 
-<div class="row my-5 mt-7" *ngIf="!isLoading && !isSearchLoading">
+<div class="row my-5 mt-7" *ngIf="!isLoading && !isSearchLoading && !isColorSize">
     <div class="col-12">
         <mat-card class="w-full p-0 mb-10 h-full rounded-2xl">
             <div class="row p-5">

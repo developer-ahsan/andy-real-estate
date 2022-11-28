@@ -44,6 +44,10 @@ export class SizesComponent implements OnInit, OnDestroy {
   tempDataCount = 0;
 
   isSearchLoading: boolean = false;
+
+
+  isColorSize: boolean = false;
+  isSizeOrColoCorrrection: boolean = false;
   constructor(
     private _changeDetectorRef: ChangeDetectorRef,
     private _inventoryService: InventoryService,
@@ -99,6 +103,8 @@ export class SizesComponent implements OnInit, OnDestroy {
               this.tempDataSource = selected.concat(unSelected);
               this.tempDataCount = sizes["totalRecords"];
             }
+            this.getColors();
+
             this.isSearchLoading = false;
             this.isLoading = false;
 
@@ -137,7 +143,21 @@ export class SizesComponent implements OnInit, OnDestroy {
         this._changeDetectorRef.markForCheck();
       });
   };
+  getColors(): void {
+    const { pk_productID } = this.selectedProduct;
 
+    this._inventoryService.getColors(pk_productID)
+      .pipe(takeUntil(this._unsubscribeAll))
+      .subscribe((colors) => {
+        if (colors["data"].length > 0 && this.arrayToUpdate.length > 0) {
+          this.isSizeOrColoCorrrection = true;
+        }
+        // Mark for check
+        this._changeDetectorRef.markForCheck();
+      }, err => {
+        this.getColors();
+      });
+  };
   /** Whether the number of selected elements matches the total number of rows. */
   isAllSelected() {
     this.selectedRowsLength = this.selection.selected.length;
@@ -309,6 +329,9 @@ export class SizesComponent implements OnInit, OnDestroy {
     }, 3500);
   };
 
+  colorsToggle() {
+    this.isColorSize = !this.isColorSize;
+  }
   /**
      * On destroy
      */

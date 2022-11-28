@@ -750,3 +750,24 @@ export interface UpdateArtwork {
     name: string;
     artwork_update: boolean;
 };
+export interface UpdateProductStatus {
+    product_id: number;
+    reason: string;
+    is_active: boolean;
+    update_product_status: boolean;
+};
+export interface AddDuplicateImprint {
+    product_id: number;
+    imprint_id: number;
+    method_id: number;
+    method_name: string;
+    location_id: number;
+    location_name: string;
+    duplicate_imprint: boolean;
+};
+export interface AddStoreProduct {
+    store_id: number[];
+    product_id: number;
+    add_store_product: boolean;
+};
+

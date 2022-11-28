@@ -1,0 +1,133 @@
+<ngx-skeleton-loader count="8" appearance="line" animation="pulse" *ngIf="isLoading || !orderDetail">
+</ngx-skeleton-loader>
+<div class="row my-3" *ngIf="!isLoading && orderDetail">
+    <div class="col-12">
+        <fuse-card class="rounded-2xl shadow bg-card flex flex-col lg:flex-row w-full">
+            <div class="p-6 sm:p-8 lg:p-10 w-full">
+                <div class="text-2xl font-bold">
+                    Procurement Data
+                </div>
+                <form [formGroup]="updateProcurementForm">
+                    <div class="row mt-5">
+                        <div class="col-12 col-md-4">
+                            <mat-form-field class="w-full">
+                                <mat-label>Unit</mat-label>
+                                <input matInput formControlName="unit">
+                            </mat-form-field>
+                        </div>
+                        <div class="col-12 col-md-4">
+                            <mat-form-field class="w-full">
+                                <mat-label>Division</mat-label>
+                                <input matInput formControlName="division">
+                            </mat-form-field>
+                        </div>
+                        <div class="col-12 col-md-4">
+                            <mat-form-field class="w-full">
+                                <mat-label>Organization</mat-label>
+                                <input matInput formControlName="organization">
+                            </mat-form-field>
+                        </div>
+                        <div class="col-12 col-md-4">
+                            <mat-form-field class="w-full">
+                                <mat-label>Location</mat-label>
+                                <input matInput formControlName="location">
+                            </mat-form-field>
+                        </div>
+                        <div class="col-12 col-md-4">
+                            <mat-form-field class="w-full">
+                                <mat-label>Fund Type</mat-label>
+                                <input matInput formControlName="fundType">
+                            </mat-form-field>
+                        </div>
+                        <div class="col-12 col-md-4">
+                            <mat-form-field class="w-full">
+                                <mat-label>Business Line</mat-label>
+                                <input matInput formControlName="businessLine">
+                            </mat-form-field>
+                        </div>
+                        <div class="col-12 col-md-4">
+                            <mat-form-field class="w-full">
+                                <mat-label>Account</mat-label>
+                                <input matInput formControlName="account">
+                            </mat-form-field>
+                        </div>
+                        <div class="col-12 col-md-4">
+                            <mat-form-field class="w-full">
+                                <mat-label>Activity</mat-label>
+                                <input matInput formControlName="activity">
+                            </mat-form-field>
+                        </div>
+                        <div class="col-12 col-md-4">
+                            <mat-form-field class="w-full">
+                                <mat-label>Expenditure Type</mat-label>
+                                <input matInput formControlName="expenditureType">
+                            </mat-form-field>
+                        </div>
+                        <div class="col-12 col-md-4">
+                            <mat-form-field class="w-full">
+                                <mat-label>Project</mat-label>
+                                <input matInput formControlName="project">
+                            </mat-form-field>
+                        </div>
+                        <div class="col-12 col-md-4">
+                            <mat-form-field class="w-full">
+                                <mat-label>Task</mat-label>
+                                <input matInput formControlName="task">
+                            </mat-form-field>
+                        </div>
+                        <div class="col-12 col-md-4">
+                            <mat-form-field class="w-full">
+                                <mat-label>Project Organization</mat-label>
+                                <input matInput formControlName="projectOrganization">
+                            </mat-form-field>
+                        </div>
+                        <div class="col-12 col-md-4">
+                            <mat-form-field class="w-full">
+                                <mat-label>RU Initiative</mat-label>
+                                <input matInput formControlName="RUInitiative">
+                            </mat-form-field>
+                        </div>
+                        <div class="col-12 col-md-4">
+                            <mat-form-field class="w-full">
+                                <mat-label>Activity 2</mat-label>
+                                <input matInput formControlName="activity2">
+                            </mat-form-field>
+                        </div>
+                        <div class="col-12 col-md-4">
+                            <mat-form-field class="w-full">
+                                <mat-label>Business Line 2</mat-label>
+                                <input matInput formControlName="businessLine2">
+                            </mat-form-field>
+                        </div>
+                        <div class="col-12 col-md-4">
+                            <mat-form-field class="w-full">
+                                <mat-label>Location 2</mat-label>
+                                <input matInput formControlName="location2">
+                            </mat-form-field>
+                        </div>
+                        <div class="col-12 col-md-4">
+                            <mat-form-field class="w-full">
+                                <mat-label>RU Initiative 2</mat-label>
+                                <input matInput formControlName="RUInitiative2">
+                            </mat-form-field>
+                        </div>
+                        <div class="col-12 col-md-4">
+                            <mat-form-field class="w-full">
+                                <mat-label>Contract Number</mat-label>
+                                <input matInput formControlName="contractNumber">
+                            </mat-form-field>
+                        </div>
+                        <div class="col-12 text-right">
+                            <button [matTooltip]="'Update Procurement Data'" class="min-w-40" mat-stroked-button
+                                (click)="updateProcurement()">
+                                <mat-progress-spinner *ngIf="isUpdateLoader" [diameter]="24" [mode]="'indeterminate'">
+                                </mat-progress-spinner>
+                                <span *ngIf="!isUpdateLoader">Update Procurement</span>
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </fuse-card>
+    </div>
+</div>

@@ -1,6 +1,11 @@
 export const navigations = [
     {
         id: 2,
+        title: 'Product Status',
+        icon: 'heroicons_outline:status-online',
+    },
+    {
+        id: 2,
         title: 'Name & Description',
         icon: 'mat_outline:edit_note',
     },

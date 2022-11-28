@@ -169,6 +169,18 @@
                     </ng-template>
                 </div>
                 <div class="col-12">
+                    <ng-template [ngIf]="selectedScreeen == 'Art Approval Settings'">
+                        <app-order-approval-settings [selectedOrder]="selectedOrder" [(isLoading)]="isLoading">
+                        </app-order-approval-settings>
+                    </ng-template>
+                </div>
+                <div class="col-12">
+                    <ng-template [ngIf]="selectedScreeen == 'Procurement Data'">
+                        <app-order-procurement-data [selectedOrder]="selectedOrder" [(isLoading)]="isLoading">
+                        </app-order-procurement-data>
+                    </ng-template>
+                </div>
+                <div class="col-12">
                     <ng-template [ngIf]="selectedScreeen == 'Enter Payments'">
                         <app-order-payments [selectedOrder]="selectedOrder" [(isLoading)]="isLoading">
                         </app-order-payments>

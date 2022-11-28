@@ -1,0 +1,193 @@
+<ngx-skeleton-loader class="mt-6" count="8" appearance="line" animation="pulse" *ngIf="isLoading">
+</ngx-skeleton-loader>
+<div class="row w-full" *ngIf="!isLoading">
+    <div class="col-12 my-2">
+        <fuse-card class="rounded-2xl shadow bg-card flex flex-col lg:flex-row w-full">
+            <div class="p-6 sm:p-8 lg:p-10 w-full">
+                <div class="text-2xl font-bold mb-3">
+                    Imprint Details
+                </div>
+                <div class="row">
+                    <div class="col-lg-4 col-md-6 col-12">
+                        <b class="text-secondary text-sm">DECORATOR</b>
+                        <p class="float-right text-sm">{{imprint?.companyName}}</p>
+                    </div>
+                    <div class="col-lg-4 col-md-6 col-12">
+                        <b class="text-secondary text-sm">MIN QTY</b>
+                        <p class="float-right text-sm">{{imprint?.minProductQty}}</p>
+                    </div>
+                    <div class="col-lg-4 col-md-6 col-12">
+                        <b class="text-secondary text-sm">METHOD</b>
+                        <p class="float-right text-sm">{{imprint?.methodName}}({{imprint?.fk_methodID}})</p>
+                    </div>
+                    <div class="col-lg-4 col-md-6 col-12">
+                        <b class="text-secondary text-sm">LOCATION</b>
+                        <p class="float-right text-sm">{{imprint?.locationName}}({{imprint?.fk_locationID}})</p>
+                    </div>
+                    <div class="col-lg-4 col-md-6 col-12">
+                        <b class="text-secondary text-sm">COLOR COLLECTION</b>
+                        <p class="float-right text-sm">{{imprint?.fk_collectionID ? 'YES' : 'NO'}}</p>
+                    </div>
+                    <div class="col-lg-4 col-md-6 col-12">
+                        <b class="text-secondary text-sm">AREA</b>
+                        <p class="float-right text-sm">{{imprint?.area}}</p>
+                    </div>
+                    <div class="col-lg-4 col-md-6 col-12">
+                        <b class="text-secondary text-sm">PRODUCT PRICE INCLUSION</b>
+                        <p class="float-right text-sm">{{imprint?.companyName}}</p>
+                    </div>
+                    <div class="col-lg-4 col-md-6 col-12">
+                        <b class="text-secondary text-sm">CHARGE APPLICATION</b>
+                        <p class="float-right text-sm">Per Color</p>
+                    </div>
+                    <div class="col-12">
+                        <b class="text-secondary text-sm">IMPRINT COMMENTS</b>
+                        <p class="float-right text-sm">{{imprint?.imprintComments}}</p>
+                    </div>
+                    <div class="col-12">
+                        <b class="text-secondary text-sm">NET COSTS</b>
+                        <div class="row">
+                            <div class="col-md-5 col-12 overflow-x-auto">
+                                <b>Setup</b>
+                                <table class="table table-striped table-responsive text-sm">
+                                    <thead>
+                                        <tr>
+                                            <th style="width: 10%;"></th>
+                                            <th style="width: 10%;" *ngFor="let item of setupQuantity">
+                                                {{item.productQuantity}}</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr *ngFor="let item of setupProcesses">
+                                            <td style="width: 10%;" class="font-bold">{{item.process}}</td>
+                                            <td style="width: 10%;" *ngFor="let elem of item.data">{{elem.charge}}</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                            <div class="col-md-7 col-12 overflow-x-auto">
+                                <b>Run</b>
+                                <table class="table table-striped table-responsive text-sm">
+                                    <thead>
+                                        <tr>
+                                            <th style="width: 10%;"></th>
+                                            <th style="width: 10%;" *ngFor="let item of runQuantity">
+                                                {{item.productQuantity}}</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr *ngFor="let item of runProcesses">
+                                            <td style="width: 10%;" class="font-bold">{{item.process}}</td>
+                                            <td style="width: 10%;" *ngFor="let elem of item.data">{{elem.charge}}</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-4 col-md-6 col-12" *ngIf="!isDuplicateImprint">
+                        <b class="text-secondary text-sm">MAXIMUM COLORS</b>
+                        <p class="float-right text-sm">{{imprint?.maxColors}}</p>
+                    </div>
+                    <!-- <div class="col-lg-4 col-md-6 col-12">
+                        <b class="text-secondary text-sm">COLOR SELECTION</b>
+                        <p class="float-right text-sm">{{imprint?.companyName}}</p>
+                    </div> -->
+                    <div class="col-lg-4 col-md-6 col-12" *ngIf="colorData && !isDuplicateImprint">
+                        <b class="text-secondary text-sm">MULTI COLOR RESTRICTIONS</b>
+                        <div class="float-right">
+                            <p class="text-right text-sm">Two Colors: {{colorData?.twoColorQ}}</p>
+                            <p class="text-right text-sm">Three Colors: {{colorData?.threeColorQ}}</p>
+                            <p class="text-right text-sm">Four Colors: {{colorData?.fourColorQ}}</p>
+                            <p class="text-right text-sm">Five Colors: {{colorData?.fiveColorQ}}</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="row" *ngIf="!isDuplicateImprint">
+                    <div class="col-12 text-right">
+                        <button class="min-w-40" mat-stroked-button [matTooltip]="'Duplicate Imprint'"
+                            (click)="duplicateImprint()">
+                            <span>Duplicate Imprint</span>
+                        </button>
+                    </div>
+                </div>
+                <div class="row" *ngIf="isDuplicateImprint">
+                    <div class="col-12">
+                        <b>
+                            <button
+                                [matTooltip]="'To add a new method, select (NEW METHOD) in the menu and then enter the name in the box to the right'">
+                                <i class="fa fa-info-circle"></i>
+                            </button>
+                            Imprint Method <span *ngIf="!addImprintMethods.length"
+                                class="text-sm text-secondary font-semibold ml-2"> (Fetching Methods...) </span>
+                        </b>
+                    </div>
+                    <div class="col-lg-6 col-12">
+                        <mat-form-field class="w-full" appearance="fill">
+                            <input type="text" placeholder="Imprint Method" aria-label="Number" matInput
+                                [formControl]="methodControl" [matAutocomplete]="auto"
+                                [readonly]="addImprintMethods.length ? false : true">
+                            <mat-autocomplete autoActiveFirstOption #auto="matAutocomplete">
+                                <mat-option *ngFor="let method of methodFilteredOptions | async"
+                                    [value]="method.methodName" (click)="methodSelected(method)">
+                                    <small>{{method.methodName}}
+                                        ({{method.pk_methodID}})</small>
+                                </mat-option>
+                            </mat-autocomplete>
+                        </mat-form-field>
+                    </div>
+                    <div class="col-lg-6 col-12">
+                        <mat-form-field appearance="fill" class="w-full">
+                            <input matInput placeholder="New Method Name" [(ngModel)]="method_name">
+                        </mat-form-field>
+                    </div>
+
+                    <!-- Location -->
+                    <div class="col-12">
+                        <b>
+                            <button
+                                [matTooltip]="'To add a new location, select (NEW LOCATION) in the menu and then enter the name in the box to the right'">
+                                <i class="fa fa-info-circle"></i>
+                            </button>
+                            Location <span *ngIf="!addImprintLocations.length"
+                                class="text-sm text-secondary font-semibold ml-2"> (Fetching Locations...) </span>
+                        </b>
+                    </div>
+                    <div class="col-lg-6 col-12">
+                        <mat-form-field class="w-full" appearance="fill">
+                            <input type="text" placeholder="Imprint Location" aria-label="Number" matInput
+                                [formControl]="locationControl" [matAutocomplete]="auto1"
+                                [readonly]="addImprintLocations.length ? false : true">
+                            <mat-autocomplete autoActiveFirstOption #auto1="matAutocomplete">
+                                <mat-option *ngFor="let location of locationFilteredOptions | async"
+                                    [value]="location.locationName" (click)="locationSelected(location)">
+                                    <small>{{location.locationName}}
+                                        ({{location.pk_locationID}})</small>
+                                </mat-option>
+                            </mat-autocomplete>
+                        </mat-form-field>
+                    </div>
+                    <div class="col-lg-6 col-12">
+                        <mat-form-field appearance="fill" class="w-full">
+                            <input matInput placeholder="New Location Name" [(ngModel)]="location_name">
+                        </mat-form-field>
+                    </div>
+                    <div class="col-12 flex">
+                        <button class="min-w-40 mr-2" mat-stroked-button [matTooltip]="'Cancel Duplicate Imprint'"
+                            (click)="backToDetails()">
+                            <span class="ml-1 mr-1">Cancel</span>
+                        </button>
+
+                        <button class="min-w-40" mat-stroked-button [matTooltip]="'Add Duplicate Imprint'"
+                            (click)="addDuplicateImprint()" [disabled]="isAddDuplicateLoader">
+                            <mat-progress-spinner *ngIf="isAddDuplicateLoader" [diameter]="24" [mode]="'indeterminate'">
+                            </mat-progress-spinner>
+                            <mat-icon *ngIf="!isAddDuplicateLoader" svgIcon="heroicons_outline:plus"></mat-icon>
+                            <span *ngIf="!isAddDuplicateLoader" class="ml-1 mr-1">Add Duplicate Imprint</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </fuse-card>
+    </div>
+</div>

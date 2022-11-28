@@ -108,6 +108,9 @@ import { StoreProductVideosComponent } from './product-store/navigation/videos/v
 import { FuseAlertModule } from '@fuse/components/alert';
 import { ImprintRunComponent } from './inventory/navigation/imprint/imprint-run/imprint-run.component';
 import { MatDialogModule } from '@angular/material/dialog';
+import { ProductStatusComponent } from './inventory/navigation/product-status/product-status.component';
+import { ImprintDetailsComponent } from './inventory/navigation/imprint/imprint-details/imprint-details.component';
+import { ProductColorSizesComponent } from './inventory/navigation/sizes/color-sizes/color-sizes.component';
 
 @NgModule({
     declarations: [
@@ -183,7 +186,10 @@ import { MatDialogModule } from '@angular/material/dialog';
         StoreUpdateHistoryComponent,
         StoreProductVideosComponent,
         VirtualProofImagesComponent,
-        ImprintRunComponent
+        ImprintRunComponent,
+        ProductStatusComponent,
+        ImprintDetailsComponent,
+        ProductColorSizesComponent
     ],
     imports: [
         RouterModule.forChild(ecommerceRoutes),

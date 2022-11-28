@@ -13,13 +13,31 @@
                         placed orders 3 weeks prior to today. You can manually send the review email using this tool.
                     </div>
                     <div class="col-12 py-2">
-                        <fuse-alert [appearance]="'soft'" [name]="'alertBox1'" [type]="'success'">
-                            This order was paid on 02/09/2021
+                        <fuse-alert [appearance]="'soft'" [name]="'alertBox1'" [type]="'success'"
+                            *ngIf="orderDetail.paymentDate">
+                            This order was paid on {{orderDetail.paymentDate | date}}.
+                        </fuse-alert>
+                        <fuse-alert [appearance]="'soft'" [name]="'alertBox1'" [type]="'warning'"
+                            *ngIf="!orderDetail.paymentDate">
+                            This order has not yet been paid for.
                         </fuse-alert>
                     </div>
-                    <div class="col-12 py-2">
-                        <fuse-alert [appearance]="'soft'" [name]="'alertBox1'" [type]="'success'">
+                    <div class="col-12 py-2" *ngIf="emailData">
+                        <fuse-alert [appearance]="'soft'" [name]="'alertBox1'" [type]="'success'" *ngIf="!optedEmail">
                             This user has not opted out of receiving email on this store.
+                        </fuse-alert>
+                        <fuse-alert [appearance]="'soft'" [name]="'alertBox1'" [type]="'success'" *ngIf="optedEmail">
+                            This user has opted out of receiving email on this store.
+                        </fuse-alert>
+                    </div>
+                    <div class="col-12 py-2" *ngIf="orderDetail.blnCancelled">
+                        <fuse-alert [appearance]="'soft'" [name]="'alertBox1'" [type]="'warning'">
+                            This order has been cancelled.
+                        </fuse-alert>
+                    </div>
+                    <div class="col-12 py-2" *ngIf="orderDetail.blnReorderIgnore">
+                        <fuse-alert [appearance]="'soft'" [name]="'alertBox1'" [type]="'warning'">
+                            This order has been flagged to be ignored by the reorder system.
                         </fuse-alert>
                     </div>
                     <div class="col-12">

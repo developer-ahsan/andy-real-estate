@@ -205,8 +205,11 @@ export class ProductDetailsComponent implements OnInit, OnDestroy {
     }
     this.isLoading = true;
     this.selectedIndex = title;
+    console.log(this.selectedIndex)
   }
-
+  changeProductStatus() {
+    this.selectedIndex = 'Product Status';
+  }
   onTogglePromoStandards(event: MatSlideToggleChange) {
     const eventState = event.checked;
     const { pk_productID } = this.selectedProduct;

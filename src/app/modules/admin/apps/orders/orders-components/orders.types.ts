@@ -120,8 +120,29 @@ export interface UpdateOrderFlag {
 export interface CreateIncidentReport {
     store_id: number;
     order_id: number;
-    date: string;
     store_user_id: number;
+    priority1: string;
+    priority2: string;
+    priority3: string;
+    priority4: string;
+    rerunCost: string;
+    explanation: string;
+    corrected: string;
+    how: string;
+    recommend: string;
+    source_supplier: number;
+    admin_user_id: number;
+    source_employee: number;
+    incident_sources: number[];
+    create_incident_report: boolean;
+};
+export interface DeleteIncidentReport {
+    incident_report_id: number;
+    remove_incident_report: boolean;
+};
+export interface UpdateIncidentReport {
+    store_user_id: number;
+    date: string;
     priority1: string;
     priority2: string;
     priority3: string;
@@ -136,5 +157,48 @@ export interface CreateIncidentReport {
     source_employee: number;
     dateModified: string;
     incident_sources: number[];
-    create_incident_report: boolean;
+    incident_report_id: number;
+    update_incident_report: boolean;
+};
+// Order Adjustments
+export interface AddAdjustment {
+    order_id: number;
+    cost: number;
+    price: number;
+    description: string;
+    add_adjustment: boolean;
+};
+export interface DeleteAdjustment {
+    adjustment_id: number;
+    order_id: number;
+    delete_adjustment: boolean;
+};
+// Art Approval Settings
+export interface UpdateArtApprovalSettings {
+    blnAdditionalApprovalOverride: boolean;
+    order_id: number;
+    update_art_approval: boolean;
+};
+// Procurement
+export interface UpdateProcurementData {
+    order_id: number;
+    unit: string;
+    division: string;
+    organization: string;
+    location: string;
+    fundType: string;
+    businessLine: string;
+    account: string;
+    activity: string;
+    expenditureType: string;
+    project: string;
+    task: string;
+    projectOrganization: string;
+    RUInitiative: string;
+    activity2: string;
+    businessLine2: string;
+    location2: string;
+    RUInitiative2: string;
+    contractNumber: string;
+    update_procurement_data: boolean;
 };

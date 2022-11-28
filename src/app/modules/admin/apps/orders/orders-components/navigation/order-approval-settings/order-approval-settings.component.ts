@@ -1,54 +1,48 @@
 import { COMMA, ENTER } from '@angular/cdk/keycodes';
 import { Component, Input, OnInit, Output, EventEmitter, ChangeDetectorRef, OnDestroy } from '@angular/core';
 import { MatChipInputEvent } from '@angular/material/chips';
+import { IDropdownSettings } from 'ng-multiselect-dropdown';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { OrdersService } from '../../orders.service';
+import { AddAdjustment, DeleteAdjustment, UpdateArtApprovalSettings } from '../../orders.types';
 
 @Component({
-  selector: 'app-order-review-email',
-  templateUrl: './order-review-email.component.html',
-  styles: ['::-webkit-scrollbar {width: 2px !important}']
+  selector: 'app-order-approval-settings',
+  templateUrl: './order-approval-settings.component.html',
+  styles: ['']
 })
-export class OrderReviewEmailComponent implements OnInit, OnDestroy {
+export class OrderApprovalSettingsComponent implements OnInit, OnDestroy {
   @Input() isLoading: boolean;
   @Input() selectedOrder: any;
   @Output() isLoadingChange = new EventEmitter<boolean>();
   private _unsubscribeAll: Subject<any> = new Subject<any>();
 
+  currentApprovals: any;
+  displayedColumns: string[] = ['order', 'user', 'email'];
   orderDetail: any;
-
-  addOnBlur = true;
-  readonly separatorKeysCodes = [ENTER, COMMA] as const;
-  emails = [];
-
-  emailData: any;
-  optedEmail: boolean = false;
   constructor(
     private _changeDetectorRef: ChangeDetectorRef,
     private _orderService: OrdersService
   ) { }
 
   ngOnInit(): void {
+    this.isLoading = true;
+    this.getOrderDetail();
+    this.getApprovals('get');
+  };
+  getOrderDetail() {
     this._orderService.orderDetail$.pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
       this.orderDetail = res["data"][0];
-      this.emails.push({ email: this.orderDetail.managerEmail });
-      this.getReorderEmail();
-    })
-  };
-  getReorderEmail() {
+    });
+  }
+  getApprovals(type) {
     let params = {
-      opt_in: true,
-      store_id: this.selectedOrder.pk_storeID,
-      email: this.orderDetail.managerEmail
+      art_approval_settings_list: true,
+      store_id: this.selectedOrder.pk_storeID
     }
     this._orderService.getOrderCommonCall(params).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
-      this.emailData = res["data"];
-      if (this.emailData.length == 0 || (this.emailData.length != 0 && this.emailData.blnActive)) {
-        this.optedEmail = false;
-      } else {
-        this.optedEmail = true;
-      }
+      this.currentApprovals = res["data"];
       this.isLoading = false;
       this.isLoadingChange.emit(false);
       this._changeDetectorRef.markForCheck();
@@ -56,22 +50,24 @@ export class OrderReviewEmailComponent implements OnInit, OnDestroy {
       this.isLoading = false;
       this.isLoadingChange.emit(false);
       this._changeDetectorRef.markForCheck();
+    });
+  }
+  UpdateArtApprovalSettings() {
+    this._changeDetectorRef.markForCheck();
+    let params: UpdateArtApprovalSettings = {
+      blnAdditionalApprovalOverride: this.orderDetail.blnAdditionalApprovalOverride,
+      order_id: this.selectedOrder.pk_orderID,
+      update_art_approval: true
+    }
+    this._orderService.updateOrderCalls(params).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+      this._changeDetectorRef.markForCheck();
+    }, err => {
+      this._changeDetectorRef.markForCheck();
     })
   }
-  add(event: MatChipInputEvent): void {
-    const value = (event.value || '').trim();
-    if (value) {
-      this.emails.push({ email: value });
-    }
-    event.chipInput!.clear();
-  }
 
-  remove(email): void {
-    const index = this.emails.indexOf(email);
-    if (index >= 0) {
-      this.emails.splice(index, 1);
-    }
-  }
+
+
   /**
      * On destroy
      */

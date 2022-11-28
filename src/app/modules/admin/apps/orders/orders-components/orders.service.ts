@@ -126,10 +126,6 @@ export class OrdersService {
                 {
                     title: 'Payment Link Email',
                     icon: 'mat_outline:payments',
-                },
-                {
-                    title: 'Send Receipt Email',
-                    icon: 'mat_outline:email',
                 }
             ]
         },
@@ -711,6 +707,12 @@ export class OrdersService {
         })
     }
     AddComment(payload: addComment) {
+        const headers = { 'Authorization': `Bearer ${this._authService.accessToken}` };
+        return this._httpClient.post(
+            environment.orders, payload, { headers });
+    };
+    // Post Calls
+    orderPostCalls(payload) {
         const headers = { 'Authorization': `Bearer ${this._authService.accessToken}` };
         return this._httpClient.post(
             environment.orders, payload, { headers });

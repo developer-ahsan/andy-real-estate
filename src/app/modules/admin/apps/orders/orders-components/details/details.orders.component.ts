@@ -61,6 +61,19 @@ export class OrdersDetailsComponent implements OnInit, OnDestroy {
         }
         this._orderService.getOrderMainDetail(params).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
             this.selectedOrderDetail = res["data"][0];
+            const { blnAdditionalArtApproval, blnProcurement, paymentDate } = this.selectedOrderDetail;
+            if (blnAdditionalArtApproval) {
+                this._orderService.navigationLabels[2].children.push({ id: 10, title: 'Art Approval Settings', icon: 'mat_outline:settings' });
+            }
+            if (blnProcurement) {
+                this._orderService.navigationLabels[2].children.push({ id: 10, title: 'Procurement Data', icon: 'heroicons_outline:database' });
+            }
+            if (paymentDate) {
+                this._orderService.navigationLabels[3].children.push({
+                    id: 10, title: 'Send Receipt Email', icon: 'mat_outline:email'
+                });
+            }
+            this.routes = this._orderService.navigationLabels;
 
             this.isLoading = false;
             this._changeDetectorRef.markForCheck();
@@ -109,7 +122,7 @@ export class OrdersDetailsComponent implements OnInit, OnDestroy {
 
 
         // this.drawerMode = "side";
-        this.routes = this._orderService.navigationLabels;
+
         // Subscribe to media changes
         this._fuseMediaWatcherService.onMediaChange$
             .pipe(takeUntil(this._unsubscribeAll))

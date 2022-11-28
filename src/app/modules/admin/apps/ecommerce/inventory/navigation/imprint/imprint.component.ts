@@ -195,6 +195,8 @@ export class ImprintComponent implements OnInit, OnDestroy {
 
   scrollStrategy: ScrollStrategy;
 
+  isImprintDetails: boolean = false;
+
   private _filter(value: string): string[] {
     const filterValue = value.toLowerCase();
     return this.addImprintMethods.filter(option => option.methodName.toLowerCase().includes(filterValue));
@@ -1748,6 +1750,19 @@ export class ImprintComponent implements OnInit, OnDestroy {
       };
     }
   };
+  viewImprintDetails(imprint) {
+    this.editImprintObj = imprint;
+    this.isEditImprintScreen = false;
+    this.isImprintDetails = true;
+  }
+  backToImprintList() {
+    this.editImprintObj = null;
+    this.isEditImprintScreen = false;
+    this.isImprintDetails = false;
+    if (this._inventoryService.duplicateCheck) {
+      this.getImprints(1);
+    }
+  }
   editImprint(imprint) {
     this.editImprintObj = imprint;
     this.isEditImprintScreen = true;
