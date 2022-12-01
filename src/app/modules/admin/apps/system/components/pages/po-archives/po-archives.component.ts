@@ -56,6 +56,11 @@ export class POArchivesComponent implements OnInit, OnDestroy {
     this._systemService.Suppliers$.pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
       this.suppliers = res["data"];
     });
+    setTimeout(() => {
+      this.isLoading = false;
+      this.isLoadingChange.emit(false);
+      this._changeDetectorRef.markForCheck()
+    }, 100);
 
     // this.isLoading = true;
     // this.getImprintMethods(1, 'get');
