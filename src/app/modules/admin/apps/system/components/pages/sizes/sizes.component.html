@@ -1,0 +1,189 @@
+<div class="w-full">
+    <div class="w-full">
+        <div class="px-2 pb-2">
+            <mat-button-toggle-group #group="matButtonToggleGroup" [value]="mainScreen"
+                (change)="calledScreen(group.value)">
+                <mat-button-toggle value="Current Sizes">
+                    Current Sizes
+                </mat-button-toggle>
+                <mat-button-toggle value="Add New Size">
+                    Add New Size
+                </mat-button-toggle>
+            </mat-button-toggle-group>
+        </div>
+        <div class="px-5" *ngIf="mainScreen == 'Current Sizes' && isLoading && !isProductSizes">
+            <ngx-skeleton-loader count="8" appearance="line" animation="pulse">
+            </ngx-skeleton-loader>
+        </div>
+        <div *ngIf="mainScreen == 'Current Sizes' && !isLoading && !isProductSizes">
+            <div class="px-3">
+                <mat-form-field class="w-full">
+                    <input matInput placeholder="Search Keyword" [disabled]="isSearching" [(ngModel)]="keyword"
+                        (keyup.enter)="searchSize($event.target.value)">
+                </mat-form-field>
+                <p class="text-secondary text-right font-medium cursor-pointer mb-2" *ngIf="!isSearching"
+                    (click)="resetSearch()">Reset</p>
+                <p class="text-secondary text-right font-medium mb-2" *ngIf="isSearching">Searching...</p>
+            </div>
+            <div class="flex justify-end mb-2">
+                <button [disabled]="isUpdateSizeLoader" class="min-w-40 mr-2" mat-stroked-button
+                    [matTooltip]="'Update Sizes'" (click)="updateSizes()">
+                    <mat-icon svgIcon="heroicons_solid:pencil-alt" *ngIf="!isUpdateSizeLoader"></mat-icon>
+                    <span class="ml-2" *ngIf="!isUpdateSizeLoader"> Update Sizes </span>
+                    <mat-progress-spinner *ngIf="isUpdateSizeLoader" [diameter]="24" [mode]="'indeterminate'">
+                    </mat-progress-spinner>
+                </button>
+                <button [disabled]="isDeleteLoader" class="min-w-40 mr-2" mat-stroked-button
+                    [matTooltip]="'Delete Selected Sizes'" (click)="deleteSizes()">
+                    <mat-icon svgIcon="heroicons_solid:trash" *ngIf="!isDeleteLoader"></mat-icon>
+                    <span class="ml-2" *ngIf="!isDeleteLoader"> Delete Sizes </span>
+                    <mat-progress-spinner *ngIf="isDeleteLoader" [diameter]="24" [mode]="'indeterminate'">
+                    </mat-progress-spinner>
+                </button>
+            </div>
+            <div *ngIf="dataSource.length > 0;else other_content" class="w-full">
+                <table mat-table [dataSource]="dataSource" class="w-full border-t">
+                    <ng-container matColumnDef="name">
+                        <th mat-header-cell *matHeaderCellDef class="w-40 min-w-40">
+                            Size
+                        </th>
+                        <td mat-cell *matCellDef="let element" class="pr-4">
+                            <input type="text" class="form-control" [(ngModel)]="element.sizeName">
+                        </td>
+                    </ng-container>
+                    <ng-container matColumnDef="order">
+                        <th mat-header-cell *matHeaderCellDef class="w-15 min-w-15">
+                            Order
+                        </th>
+                        <td mat-cell *matCellDef="let element" class="pr-4">
+                            <!-- <mat-form-field class="pt-2"> -->
+                            <input type="number" class="form-control" [(ngModel)]="element.listOrder">
+                            <!-- </mat-form-field> -->
+                        </td>
+                    </ng-container>
+                    <ng-container matColumnDef="products">
+                        <th mat-header-cell *matHeaderCellDef class="w-15 min-w-15 text-center"> Products </th>
+                        <td mat-cell *matCellDef="let element">
+                            <div class="text-center">
+                                <mat-icon svgIcon="heroicons_outline:eye" class="mr-2" [matTooltip]="'View Products'"
+                                    (click)="getSizeProducts(1,element)">
+                                </mat-icon>
+                            </div>
+                        </td>
+                    </ng-container>
+                    <ng-container matColumnDef="action">
+                        <th mat-header-cell *matHeaderCellDef class="w-15 min-w-15 text-center"> Action </th>
+                        <td mat-cell *matCellDef="let element" class="text-center">
+                            <div class="text-center">
+                                <mat-checkbox class="m-1" [disabled]="element.productsCount"
+                                    (change)="addNewCheckBox($event,element)"></mat-checkbox>
+                            </div>
+                        </td>
+                    </ng-container>
+                    <tr mat-header-row *matHeaderRowDef="displayedColumns;" class="h-18 bg-light"></tr>
+                    <tr mat-row *matRowDef="let row; columns: displayedColumns;"
+                        class="h-14 hover:bg-gray-100 dark:hover:bg-hover" style="cursor: pointer;">
+                    </tr>
+                </table>
+                <mat-paginator #paginator class="border-b sm:border-t sm:border-b-0 z-10 bg-gray-50 dark:bg-transparent"
+                    [ngClass]="{'pointer-events-none': isLoading}" [length]="totalUsers" [pageIndex]="0"
+                    [pageSize]="dataSource.length" (page)="getNextData($event)" [hidePageSize]="true">
+                </mat-paginator>
+            </div>
+            <!-- No color Found -->
+            <ng-template #other_content>
+                <div class="text-secondary font-semibold p-5 text-center">
+                    No Sizes found.
+                </div>
+            </ng-template>
+        </div>
+        <!-- Product List -->
+        <div class="px-5" *ngIf="mainScreen == 'Current Sizes' && isProductLoader && isProductSizes">
+            <ngx-skeleton-loader count="8" appearance="line" animation="pulse">
+            </ngx-skeleton-loader>
+        </div>
+        <div *ngIf="mainScreen == 'Current Sizes' && !isProductLoader && isProductSizes">
+            <div class="flex justify-end mb-2">
+                <button class="min-w-40 mr-2" mat-stroked-button [matTooltip]="'Update Sizes'"
+                    (click)="backToSizesList()">
+                    <span class="ml-2" *ngIf="!isUpdateSizeLoader"> Back To Sizes </span>
+                </button>
+            </div>
+            <div *ngIf="productData.length > 0;else other_content" class="w-full">
+                <table mat-table [dataSource]="productData" class="w-full border-t">
+                    <ng-container matColumnDef="id">
+                        <th mat-header-cell *matHeaderCellDef class="w-10 min-w-10">
+                            PID
+                        </th>
+                        <td mat-cell *matCellDef="let element" class="pr-4">
+                            {{element.pk_productID}}
+                        </td>
+                    </ng-container>
+                    <ng-container matColumnDef="name">
+                        <th mat-header-cell *matHeaderCellDef class="w-40 min-w-40">
+                            Name
+                        </th>
+                        <td mat-cell *matCellDef="let element" class="pr-4">
+                            {{element.productName}}
+                        </td>
+                    </ng-container>
+                    <ng-container matColumnDef="number">
+                        <th mat-header-cell *matHeaderCellDef class="w-15 min-w-15"> Number</th>
+                        <td mat-cell *matCellDef="let element">
+                            {{element.productNumber}}
+                        </td>
+                    </ng-container>
+                    <ng-container matColumnDef="active">
+                        <th mat-header-cell *matHeaderCellDef class="w-15 min-w-15 text-center"> Active </th>
+                        <td mat-cell *matCellDef="let element" class="text-center">
+                            <div class="text-center">
+                                <mat-icon class="text-green-500" *ngIf="element.blnActive"
+                                    svgIcon="heroicons_outline:check"></mat-icon>
+                                <mat-icon class="text-red-500" svgIcon="heroicons_outline:x" *ngIf="!element.blnActive">
+                                    check</mat-icon>
+                            </div>
+                        </td>
+                    </ng-container>
+                    <tr mat-header-row *matHeaderRowDef="displayedProductColumns;" class="h-18 bg-light"></tr>
+                    <tr mat-row *matRowDef="let row; columns: displayedProductColumns;"
+                        class="h-14 hover:bg-gray-100 dark:hover:bg-hover" style="cursor: pointer;">
+                    </tr>
+                </table>
+                <mat-paginator #paginator class="border-b sm:border-t sm:border-b-0 z-10 bg-gray-50 dark:bg-transparent"
+                    [ngClass]="{'pointer-events-none': isProductLoader}" [length]="productDataRecords" [pageIndex]="0"
+                    [pageSize]="20" (page)="getNextProductData($event)" [hidePageSize]="true">
+                </mat-paginator>
+            </div>
+            <!-- No color Found -->
+            <ng-template #other_content>
+                <div class="text-secondary font-semibold p-5 text-center">
+                    No Products found for this size.
+                </div>
+            </ng-template>
+        </div>
+        <!-- Add New Sizes -->
+        <div *ngIf="mainScreen == 'Add New Size'" class="p-6 row">
+            <div class="col-12 col-md-9">
+                <mat-form-field class="example-chip-list w-full" appearance="fill">
+                    <mat-label>Size Name</mat-label>
+                    <input matInput type="text" maxlength="15" placeholder="Size Name" [(ngModel)]="ngSizeName">
+                </mat-form-field>
+            </div>
+            <div class="col-12 col-md-3">
+                <mat-form-field class="example-chip-list w-full" appearance="fill">
+                    <mat-label>Order</mat-label>
+                    <input matInput type="number" maxlength="3" [(ngModel)]="ngSizeOrder">
+                </mat-form-field>
+            </div>
+            <div class="text-right col-12">
+                <button [disabled]="isAddSizeLoader" class="min-w-50" mat-stroked-button [matTooltip]="'Add New Size'"
+                    (click)="addNewSize()">
+                    <mat-icon svgIcon="heroicons_solid:plus" *ngIf="!isAddSizeLoader"></mat-icon>
+                    <span class="ml-2" *ngIf="!isAddSizeLoader"> Add New Size </span>
+                    <mat-progress-spinner *ngIf="isAddSizeLoader" [diameter]="24" [mode]="'indeterminate'"
+                        class="mr-2 mt-2"></mat-progress-spinner>
+                </button>
+            </div>
+        </div>
+    </div>
+</div>

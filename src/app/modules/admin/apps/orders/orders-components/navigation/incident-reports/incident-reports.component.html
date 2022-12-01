@@ -99,7 +99,7 @@
                 </mat-card-content>
             </mat-card>
         </div>
-        <div class="col-12 mt-2" *ngIf="isView" style="height: 100vh;">
+        <div class="col-12 mt-2" *ngIf="isView">
             <!-- Header -->
             <div
                 class="relative bg-light flex flex-col sm:flex-row flex-0 sm:items-center sm:justify-between md:px-8 border-b pb-2">
@@ -285,7 +285,7 @@
             </div>
         </div>
         <ng-template #noReports>
-            <div class="p-8 sm:p-16 text-2xl font-semibold not-found-color bg-light">
+            <div class="p-8 sm:p-16 text-2xl font-semibold not-found-color">
                 <!-- <img src="assets/gifs/not-found.gif" class="rounded-circle" style="width: 250px;"> -->
                 No Incident Reports found!
             </div>

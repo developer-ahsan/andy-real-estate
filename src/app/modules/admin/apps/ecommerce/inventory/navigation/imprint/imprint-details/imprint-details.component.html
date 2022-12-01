@@ -7,7 +7,7 @@
                 <div class="text-2xl font-bold mb-3">
                     Imprint Details
                 </div>
-                <div class="row">
+                <div class="row space-y-2">
                     <div class="col-lg-4 col-md-6 col-12">
                         <b class="text-secondary text-sm">DECORATOR</b>
                         <p class="float-right text-sm">{{imprint?.companyName}}</p>
@@ -38,16 +38,19 @@
                     </div>
                     <div class="col-lg-4 col-md-6 col-12">
                         <b class="text-secondary text-sm">CHARGE APPLICATION</b>
-                        <p class="float-right text-sm">Per Color</p>
+                        <p class="float-right text-sm" *ngIf="imprint.blnColorProcess">Per Color</p>
+                        <p class="float-right text-sm" *ngIf="imprint.blnStitchProcess">Per Stitch</p>
+                        <p class="float-right text-sm" *ngIf="imprint.blnSingleProcess">Simple</p>
                     </div>
-                    <div class="col-12">
+                    <div class="col-12 flex">
                         <b class="text-secondary text-sm">IMPRINT COMMENTS</b>
-                        <p class="float-right text-sm">{{imprint?.imprintComments}}</p>
+                        <p class="text-sm ml-5">{{imprint.imprintComments ? imprint.imprintComments :
+                            not_available}}</p>
                     </div>
                     <div class="col-12">
                         <b class="text-secondary text-sm">NET COSTS</b>
                         <div class="row">
-                            <div class="col-md-5 col-12 overflow-x-auto">
+                            <div class="col-md-5 col-12 overflow-x-auto" *ngIf="setupQuantity.length>0">
                                 <b>Setup</b>
                                 <table class="table table-striped table-responsive text-sm">
                                     <thead>
@@ -65,7 +68,7 @@
                                     </tbody>
                                 </table>
                             </div>
-                            <div class="col-md-7 col-12 overflow-x-auto">
+                            <div class="col-md-7 col-12 overflow-x-auto" *ngIf="runQuantity.length>0">
                                 <b>Run</b>
                                 <table class="table table-striped table-responsive text-sm">
                                     <thead>
@@ -93,14 +96,17 @@
                         <b class="text-secondary text-sm">COLOR SELECTION</b>
                         <p class="float-right text-sm">{{imprint?.companyName}}</p>
                     </div> -->
-                    <div class="col-lg-4 col-md-6 col-12" *ngIf="colorData && !isDuplicateImprint">
+                    <div class="col-lg-4 col-md-6 col-12" *ngIf="!isDuplicateImprint">
                         <b class="text-secondary text-sm">MULTI COLOR RESTRICTIONS</b>
-                        <div class="float-right">
+                        <div class="float-right" *ngIf="!colorDataLoader">
                             <p class="text-right text-sm">Two Colors: {{colorData?.twoColorQ}}</p>
                             <p class="text-right text-sm">Three Colors: {{colorData?.threeColorQ}}</p>
                             <p class="text-right text-sm">Four Colors: {{colorData?.fourColorQ}}</p>
                             <p class="text-right text-sm">Five Colors: {{colorData?.fiveColorQ}}</p>
                         </div>
+                        <div class="float-right" *ngIf="colorDataLoader">Fetching Colors...</div>
+                        <div class="float-right cursor-pointer" *ngIf="!colorDataLoader && colorData.length == 0"
+                            (click)="getMultiColorRestricton()">Fetch Colors</div>
                     </div>
                 </div>
                 <div class="row" *ngIf="!isDuplicateImprint">

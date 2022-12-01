@@ -90,6 +90,7 @@ export const appRoutes: Route[] = [
                     { path: 'chat', loadChildren: () => import('app/modules/admin/apps/chat/chat.module').then(m => m.ChatModule) },
                     { path: 'contacts', loadChildren: () => import('app/modules/admin/apps/contacts/contacts.module').then(m => m.ContactsModule) },
                     { path: 'ecommerce', loadChildren: () => import('app/modules/admin/apps/ecommerce/ecommerce.module').then(m => m.ECommerceModule) },
+                    { path: 'system', loadChildren: () => import('app/modules/admin/apps/system/system.module').then(m => m.SystemModule) },
                     { path: 'promostandards', loadChildren: () => import('app/modules/admin/apps/promostandards/promostandards.module').then(m => m.PromoStandardsModule) },
                     { path: 'stores', loadChildren: () => import('app/modules/admin/apps/file-manager/stores.module').then(m => m.StoresModule) },
                     { path: 'help-center', loadChildren: () => import('app/modules/admin/apps/help-center/help-center.module').then(m => m.HelpCenterModule) },

@@ -36,7 +36,8 @@ export class ImprintDetailsComponent implements OnInit, OnDestroy {
   createNewChargeLoader: boolean = false;
   currentChargeValue: any;
   errMsg = '';
-  colorData: any;
+  colorData: any = [];
+  colorDataLoader: boolean = false;
 
   runProcesses = [];
   runQuantity = [];
@@ -57,6 +58,8 @@ export class ImprintDetailsComponent implements OnInit, OnDestroy {
   addImprintLocations = [];
   selectedLocation: any;
   isAddDuplicateLoader: boolean = false;
+
+  not_available = 'N/A';
   constructor(
     private _changeDetectorRef: ChangeDetectorRef,
     private _inventoryService: InventoryService,
@@ -77,6 +80,7 @@ export class ImprintDetailsComponent implements OnInit, OnDestroy {
     this.selectedLocation = obj;
   }
   ngOnInit(): void {
+    console.log(this.imprint)
     this.isLoading = true;
     this.getAddImprintLocations();
     this.getAddImprintMethods();
@@ -93,6 +97,7 @@ export class ImprintDetailsComponent implements OnInit, OnDestroy {
     );
   };
   getMultiColorRestricton() {
+    this.colorDataLoader = true;
     let params = {
       imprint: true,
       decoration: true,
@@ -101,6 +106,11 @@ export class ImprintDetailsComponent implements OnInit, OnDestroy {
     };
     this._inventoryService.getProductsData(params).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
       this.colorData = res["data"][0];
+      this.colorDataLoader = false;
+      this._changeDetectorRef.markForCheck();
+    }, err => {
+      this.colorDataLoader = false;
+      this._changeDetectorRef.markForCheck();
     })
   }
   getCharges() {

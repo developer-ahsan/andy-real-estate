@@ -2,8 +2,10 @@ import {
   ChangeDetectionStrategy,
   ChangeDetectorRef,
   Component,
+  ElementRef,
   OnDestroy,
   OnInit,
+  ViewChild,
   ViewEncapsulation,
 } from "@angular/core";
 import { Subject } from "rxjs";
@@ -45,6 +47,8 @@ export class ProductDetailsComponent implements OnInit, OnDestroy {
   promoStandardBoolean: boolean;
 
   StoreProduct: boolean = false;
+  @ViewChild('topScrollAnchor') topScroll: ElementRef;
+
   /**
    * Constructor
    */
@@ -205,7 +209,7 @@ export class ProductDetailsComponent implements OnInit, OnDestroy {
     }
     this.isLoading = true;
     this.selectedIndex = title;
-    console.log(this.selectedIndex)
+    this.topScroll.nativeElement.scrollIntoView({ behavior: 'smooth' });
   }
   changeProductStatus() {
     this.selectedIndex = 'Product Status';

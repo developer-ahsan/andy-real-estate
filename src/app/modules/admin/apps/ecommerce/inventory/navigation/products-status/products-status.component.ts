@@ -1,6 +1,7 @@
-import { Component, Input, OnInit, Output, EventEmitter, ChangeDetectorRef } from '@angular/core';
+import { Component, Input, OnInit, Output, EventEmitter, ChangeDetectorRef, ViewChild, ElementRef } from '@angular/core';
+import { MatSnackBar } from '@angular/material/snack-bar';
 import { InventoryService } from 'app/modules/admin/apps/ecommerce/inventory/inventory.service';
-import { ProductsDetails } from 'app/modules/admin/apps/ecommerce/inventory/inventory.types';
+import { AddStoreProduct, ProductsDetails } from 'app/modules/admin/apps/ecommerce/inventory/inventory.types';
 import { environment } from 'environments/environment';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
@@ -14,6 +15,7 @@ export class ProductsStatusComponent implements OnInit {
   @Input() isLoading: boolean;
   @Output() isLoadingChange = new EventEmitter<boolean>();
   private _unsubscribeAll: Subject<any> = new Subject<any>();
+  @ViewChild('topScrollAnchor') topScroll: ElementRef;
 
   isStoreLoader: boolean = false;
   allStoresSelected = [];
@@ -29,10 +31,11 @@ export class ProductsStatusComponent implements OnInit {
   assignedStores = [];
   imgUrl = environment.productMedia;
   selectedTermUpdateLoader: boolean = false;
-
+  isViewMoreLoader: boolean = false;
   constructor(
     private _changeDetectorRef: ChangeDetectorRef,
-    private _inventoryService: InventoryService
+    private _inventoryService: InventoryService,
+    private _snackBar: MatSnackBar
   ) { }
 
   ngOnInit(): void {
@@ -59,6 +62,9 @@ export class ProductsStatusComponent implements OnInit {
     });
   }
   getAllActiveStores(page) {
+    if (page > 0) {
+      this.isViewMoreLoader = true;
+    }
     this.isStoreLoader = true;
     this.page = page + 1;
     let exlcude_list_product = [];
@@ -75,25 +81,57 @@ export class ProductsStatusComponent implements OnInit {
     this._inventoryService.getAllActiveStores(params)
       .pipe(takeUntil(this._unsubscribeAll))
       .subscribe((stores) => {
-        this.isStoreLoader = true;
+        this.isStoreLoader = false;
+        this.isViewMoreLoader = false;
+
         this.storesData = this.storesData.concat(stores["data"]);
         this.totalStoresData = stores["totalRecords"];
         this._changeDetectorRef.markForCheck();
         this.isLoadingChange.emit(false);
       }, err => {
         this.isStoreLoader = true;
+        this.isViewMoreLoader = false;
         this._changeDetectorRef.markForCheck();
         this.isLoadingChange.emit(false);
       });
   }
 
   addStoreProduct() {
+    if (this.allStoresSelected.length == 0) {
+      this._snackBar.open("Please select atleast one store", '', {
+        horizontalPosition: 'center',
+        verticalPosition: 'bottom',
+        duration: 3500
+      });
+      return;
+    }
+    let pk_storeID = [];
+    this.allStoresSelected.forEach(element => {
+      pk_storeID.push(element.pk_storeID);
+    });
     this.selectedTermUpdateLoader = true;
-    let params = {
-      store_id: [],
+    let payload: AddStoreProduct = {
+      store_id: pk_storeID,
       product_id: this.selectedProduct.pk_productID,
       add_store_product: true
     }
+    this._inventoryService.AddStoreProduct(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+      this._snackBar.open("Product assigned to the store successfully", '', {
+        horizontalPosition: 'center',
+        verticalPosition: 'bottom',
+        duration: 3500
+      });
+      this.storesData = [];
+      this.allStoresSelected = [];
+      this.getAssignedStores();
+      // this.getAllActiveStores(0);
+      this.topScroll.nativeElement.scrollIntoView({ behavior: 'smooth' });
+      this.selectedTermUpdateLoader = false;
+      this._changeDetectorRef.markForCheck();
+    }, err => {
+      this.selectedTermUpdateLoader = false;
+      this._changeDetectorRef.markForCheck();
+    })
   }
   assignStore(): void {
   }
@@ -106,8 +144,17 @@ export class ProductsStatusComponent implements OnInit {
 
     this._changeDetectorRef.markForCheck();
   };
-  checkOrRemoveChcekBoxes(event) {
-
+  checkOrRemoveCheckBoxes(ev, item) {
+    const index = this.allStoresSelected.findIndex(elem => elem.storeName == item.storeName);
+    if (ev.checked) {
+      if (index < 0) {
+        this.allStoresSelected.push(item);
+      }
+    } else {
+      if (index >= 0) {
+        this.allStoresSelected.splice(index, 1);
+      }
+    }
   }
   rapidBuildToggle(): void {
     this.isRapidBuild = !this.isRapidBuild;
