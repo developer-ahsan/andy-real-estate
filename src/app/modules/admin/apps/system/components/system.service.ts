@@ -394,20 +394,11 @@ export class SystemService {
 
     // Made stores observable
     getAllStores(): Observable<any[]> {
-        return this._httpClient.get<any[]>(environment.products, {
+        return this._httpClient.get<any[]>(environment.system, {
             params: {
                 stores_list: true,
                 size: 2000
             }
-        }).pipe(
-            tap((response: any) => {
-                this._stores.next(response);
-            })
-        );
-    };
-    getAllActiveStores(params): Observable<any[]> {
-        return this._httpClient.get<any[]>(environment.products, {
-            params: params
         }).pipe(
             tap((response: any) => {
                 this._stores.next(response);

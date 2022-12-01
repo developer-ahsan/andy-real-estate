@@ -72,6 +72,7 @@ export class PackAndAccessoriesComponent implements OnInit, OnDestroy {
         this.imageValue = null;
         this.ngPackageName = '';
       } else if (type == 'update') {
+        this.updateImage = this.imgUrl + 'Thumbnails/' + this.updatePackageData.pk_packagingID + '.jpg?' + Math.random();
         this.imageCompress = null;
         this.imageValue = null;
         this._systemService.snackBar('Package updated successfully');
@@ -118,6 +119,8 @@ export class PackAndAccessoriesComponent implements OnInit, OnDestroy {
   }
   // Update Package
   updatePackageToggle(item) {
+    this.updateImage = null;
+
     if (item) {
       this.updateImage = this.imgUrl + 'Thumbnails/' + item.pk_packagingID + '.jpg?' + Math.random();
       this.updatePackageData = item;
@@ -249,10 +252,10 @@ export class PackAndAccessoriesComponent implements OnInit, OnDestroy {
       image_path: `/globalAssets/Packagings/Thumbnails/${id}.jpg`
     };
     this._systemService.AddSystemData(payload1).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
-      this.updateImage = this.imgUrl + 'Thumbnails/' + id + '.jpg';
       if (type == 'add') {
         this.getPackAccessories(1, 'add');
       } else {
+
         this.getPackAccessories(1, 'update');
       }
       this._changeDetectorRef.markForCheck();

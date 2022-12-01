@@ -89,6 +89,30 @@
                         <app-imprint-methods [(isLoading)]="isLoading">
                         </app-imprint-methods>
                     </ng-template>
+                    <ng-template [ngIf]="selectedScreeen == 'Imprint Locations'">
+                        <app-imprint-locations [(isLoading)]="isLoading">
+                        </app-imprint-locations>
+                    </ng-template>
+                    <ng-template [ngIf]="selectedScreeen == 'Promo Codes'">
+                        <app-promo-codes [(isLoading)]="isLoading">
+                        </app-promo-codes>
+                    </ng-template>
+                    <ng-template [ngIf]="selectedScreeen == 'Default Blurbs'">
+                        <app-default-blurbs [(isLoading)]="isLoading">
+                        </app-default-blurbs>
+                    </ng-template>
+                    <ng-template [ngIf]="selectedScreeen == 'OH County Sales Tax'">
+                        <app-country-sales [(isLoading)]="isLoading">
+                        </app-country-sales>
+                    </ng-template>
+                    <ng-template [ngIf]="selectedScreeen == 'Active Stores'">
+                        <app-active-stores [(isLoading)]="isLoading">
+                        </app-active-stores>
+                    </ng-template>
+                    <ng-template [ngIf]="selectedScreeen == 'Default Support Team'">
+                        <app-support-team [(isLoading)]="isLoading">
+                        </app-support-team>
+                    </ng-template>
                 </div>
             </div>
         </div>

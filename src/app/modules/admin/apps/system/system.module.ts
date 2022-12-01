@@ -8,7 +8,7 @@ import { MatInputModule } from '@angular/material/input';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatPaginatorModule } from '@angular/material/paginator';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
-import { MatRippleModule } from '@angular/material/core';
+import { MatNativeDateModule, MatRippleModule } from '@angular/material/core';
 import { MatSortModule } from '@angular/material/sort';
 import { MatSelectModule } from '@angular/material/select';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
@@ -44,10 +44,17 @@ import { SizesComponent } from './components/pages/sizes/sizes.component';
 import { PackAndAccessoriesComponent } from './components/pages/pack-accessories/pack-accessories.component';
 import { ImprintColorsComponent } from './components/pages/imprint-colors/imprint-colors.component';
 import { ImprintMethodsComponent } from './components/pages/imprint-methods/imprint-methods.component';
+import { ImprintLocationsComponent } from './components/pages/imprint-locations/imprint-locations.component';
+import { PromoCodesComponent } from './components/pages/promo-codes/promo-codes.component';
+import { MatDatepickerModule } from '@angular/material/datepicker';
+import { DefaultBlurbsComponent } from './components/pages/default-blurbs/default-blurbs.component';
+import { CountrySalesComponent } from './components/pages/country-sales/country-sales.component';
+import { ActiveStoresComponent } from './components/pages/active-stores/active-stores.component';
+import { SupportTeamComponent } from './components/pages/support-team/support-team.component';
 
 @NgModule({
     declarations: [
-        SystemComponent, ColorsComponent, SizesComponent, PackAndAccessoriesComponent, ImprintColorsComponent, ImprintMethodsComponent
+        SystemComponent, ColorsComponent, SizesComponent, PackAndAccessoriesComponent, ImprintColorsComponent, ImprintMethodsComponent, ImprintLocationsComponent, PromoCodesComponent, DefaultBlurbsComponent, CountrySalesComponent, ActiveStoresComponent, SupportTeamComponent
     ],
     imports: [
         RouterModule.forChild(systemRoutes),
@@ -87,7 +94,9 @@ import { ImprintMethodsComponent } from './components/pages/imprint-methods/impr
         AutocompleteLibModule,
         NgMultiSelectDropDownModule,
         FuseAlertModule,
-        MatDialogModule
+        MatDialogModule,
+        MatDatepickerModule,
+        MatNativeDateModule
     ],
     entryComponents: []
 })
