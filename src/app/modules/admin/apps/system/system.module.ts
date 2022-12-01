@@ -51,10 +51,12 @@ import { DefaultBlurbsComponent } from './components/pages/default-blurbs/defaul
 import { CountrySalesComponent } from './components/pages/country-sales/country-sales.component';
 import { ActiveStoresComponent } from './components/pages/active-stores/active-stores.component';
 import { SupportTeamComponent } from './components/pages/support-team/support-team.component';
+import { UploadImagesComponent } from './components/pages/upload-images/upload-images.component';
+import { POArchivesComponent } from './components/pages/po-archives/po-archives.component';
 
 @NgModule({
     declarations: [
-        SystemComponent, ColorsComponent, SizesComponent, PackAndAccessoriesComponent, ImprintColorsComponent, ImprintMethodsComponent, ImprintLocationsComponent, PromoCodesComponent, DefaultBlurbsComponent, CountrySalesComponent, ActiveStoresComponent, SupportTeamComponent
+        SystemComponent, ColorsComponent, SizesComponent, PackAndAccessoriesComponent, ImprintColorsComponent, ImprintMethodsComponent, ImprintLocationsComponent, PromoCodesComponent, DefaultBlurbsComponent, CountrySalesComponent, ActiveStoresComponent, SupportTeamComponent, UploadImagesComponent, POArchivesComponent
     ],
     imports: [
         RouterModule.forChild(systemRoutes),

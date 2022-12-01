@@ -113,6 +113,14 @@
                         <app-support-team [(isLoading)]="isLoading">
                         </app-support-team>
                     </ng-template>
+                    <ng-template [ngIf]="selectedScreeen == 'Upload Images'">
+                        <app-upload-images [(isLoading)]="isLoading">
+                        </app-upload-images>
+                    </ng-template>
+                    <ng-template [ngIf]="selectedScreeen == 'P.O. Archives'">
+                        <app-po-archives [(isLoading)]="isLoading">
+                        </app-po-archives>
+                    </ng-template>
                 </div>
             </div>
         </div>
