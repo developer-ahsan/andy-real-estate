@@ -93,8 +93,7 @@
                             <b class="text-secondary text-sm">Customer:</b>
                             <p class="float-right text-sm">
                                 <a style="color: #959595; text-decoration: underline; cursor: pointer;" target="_blank"
-                                    [routerLink]="'/apps/ecommerce/customer'"
-                                    [queryParams]="{customerId: selectedOrderDetail?.fk_storeUserID}">
+                                    routerLink="/apps/ecommerce/customers/{{selectedOrderDetail?.fk_storeUserID}}">
                                     {{selectedOrder?.firstName + ' ' + selectedOrder?.lastName}}</a>
                             </p>
                         </div>

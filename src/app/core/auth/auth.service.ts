@@ -1,13 +1,12 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable, of, throwError } from 'rxjs';
+import { from, Observable, of, throwError } from 'rxjs';
 import { catchError, switchMap } from 'rxjs/operators';
 import { AngularFireAuth } from '@angular/fire/compat/auth';
 import { AuthUtils } from 'app/core/auth/auth.utils';
 import { UserService } from 'app/core/user/user.service';
 import { environment } from 'environments/environment';
 import { ActivatedRoute, Router } from '@angular/router';
-
 @Injectable()
 export class AuthService {
     private _authenticated: boolean = false;
@@ -77,7 +76,6 @@ export class AuthService {
             .signInWithEmailAndPassword(email, password)
             .then((response: any) => {
                 const result = response["user"]?.["_delegate"];
-
                 // Creating basic payload for sign in
                 const payload = {
                     accessToken: result["accessToken"],
@@ -106,6 +104,7 @@ export class AuthService {
 
                 // Login and do routing in ts
                 this._userLoginMessage = 0;
+
 
                 // Return a new observable with the response
                 return of(payload);

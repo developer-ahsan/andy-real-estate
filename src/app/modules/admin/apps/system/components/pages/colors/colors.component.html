@@ -62,12 +62,11 @@
             <div *ngIf="isUpdateColors" class="p-6">
                 <mat-form-field class="w-full">
                     <mat-label>Update Color Name</mat-label>
-                    <input matInput [(ngModel)]="updateColorData.colorName">
+                    <input matInput [(ngModel)]="ngUpdateColorName">
                 </mat-form-field>
                 <div class="justify-end flex">
                     <button [disabled]="isUpdateColorLoader" class="min-w-30 mr-2" mat-stroked-button
-                        [matTooltip]="'Back to list'" (click)="updateColorToggle(null)">
-                        <span class="ml-2"> Cancel </span>
+                        [matTooltip]="'Back to list'" (click)="updateColorToggle(null)"> Cancel
                     </button>
                     <button [disabled]="isUpdateColorLoader" class="min-w-40" mat-stroked-button
                         [matTooltip]="'Update Color Name'" (click)="updateColor()">

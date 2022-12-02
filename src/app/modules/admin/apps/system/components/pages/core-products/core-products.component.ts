@@ -5,14 +5,14 @@ import { MatPaginator } from '@angular/material/paginator';
 import { Subject } from 'rxjs';
 import { finalize, takeUntil } from 'rxjs/operators';
 import { SystemService } from '../../system.service';
-import { AddColor, DeleteColor, UpdateColor } from '../../system.types';
+import { AddColor, AddImprintColor, AddImprintMethod, DeleteColor, DeleteImprintColor, UpdateColor, UpdateImprintColor, UpdateImprintMethod } from '../../system.types';
 
 @Component({
-  selector: 'app-product-colors',
-  templateUrl: './colors.component.html',
+  selector: 'app-core-products',
+  templateUrl: './core-products.component.html',
   styles: [".mat-paginator {border-radius: 16px !important}"]
 })
-export class ColorsComponent implements OnInit, OnDestroy {
+export class CoreProductsComponent implements OnInit, OnDestroy {
   @ViewChild('paginator') paginator: MatPaginator;
   @Input() isLoading: boolean;
   @Output() isLoadingChange = new EventEmitter<boolean>();
@@ -20,24 +20,28 @@ export class ColorsComponent implements OnInit, OnDestroy {
 
   dataSource = [];
   tempDataSource = [];
-  displayedColumns: string[] = ['name', 'action'];
+  displayedColumns: string[] = ['name', 'rgb', 'action'];
   totalUsers = 0;
   tempRecords = 0;
   page = 1;
 
-  mainScreen: string = 'Current Colors';
+  mainScreen: string = 'Current Core Product Lists';
   keyword = '';
   not_available = 'N/A';
 
-  addOnBlur = true;
-  readonly separatorKeysCodes = [ENTER, COMMA] as const;
-  colorList = [];
-  isAddColorLoader: boolean = false;
-  isUpdateColorLoader: boolean = false;
-  isUpdateColors: boolean = false;
-  updateColorData: any;
+
   isSearching: boolean = false;
-  ngUpdateColorName: string = '';
+
+  // Add Method
+  ngName: string = '';
+  ngDesc: string = '';
+  isAddMethodLoader: boolean = false;
+
+  // Update Color
+  isUpdateMethodLoader: boolean = false;
+  isUpdateMethod: boolean = false;
+  updateMethodData: any;
+  ngRGBUpdate = '';
   constructor(
     private _changeDetectorRef: ChangeDetectorRef,
     private _systemService: SystemService
@@ -45,14 +49,14 @@ export class ColorsComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.isLoading = true;
-    this.getColors(1);
+    this.getImprintMethods(1, 'get');
   };
   calledScreen(value) {
     this.mainScreen = value;
   }
-  getColors(page) {
+  getImprintMethods(page, type) {
     let params = {
-      product_colors: true,
+      imprint_methods: true,
       keyword: this.keyword,
       page: page,
       size: 20
@@ -63,6 +67,13 @@ export class ColorsComponent implements OnInit, OnDestroy {
       if (this.keyword == '') {
         this.tempDataSource = res["data"];
         this.tempRecords = res["totalRecords"];
+      }
+      if (type == 'add') {
+        this.isAddMethodLoader = false;
+        this.ngName = '';
+        this.ngDesc = '';
+        this._systemService.snackBar('Method Added Successfully');
+        this.mainScreen = 'Current Imprint Methods';
       }
       this.isLoading = false;
       this.isSearching = false;
@@ -83,14 +94,15 @@ export class ColorsComponent implements OnInit, OnDestroy {
     } else {
       this.page--;
     };
-    this.getColors(this.page);
+    this.getImprintMethods(this.page, 'get');
   };
   searchColor(value) {
     this.paginator.firstPage();
+    this.page = 1;
     this.keyword = value;
     this.isSearching = true;
     this._changeDetectorRef.markForCheck();
-    this.getColors(1);
+    this.getImprintMethods(1, 'get');
   }
   resetSearch() {
     this.paginator.firstPage();
@@ -98,46 +110,45 @@ export class ColorsComponent implements OnInit, OnDestroy {
     this.dataSource = this.tempDataSource;
     this.totalUsers = this.tempRecords;
   }
-  addColors(event: MatChipInputEvent): void {
-    const value = (event.value || '').trim();
-    // Add our fruit
-    if (value != '') {
-      const index = this.colorList.findIndex(color => color == value);
-      if (index >= 0) {
-        this._systemService.snackBar('Color is already listed');
+
+  addNewMethod() {
+    if (this.ngName == '') {
+      this._systemService.snackBar('Imprint Method name is required');
+      return;
+    }
+    let payload: AddImprintMethod = {
+      method_name: this.ngName,
+      method_description: this.ngDesc,
+      add_imprint_method: true
+    }
+    this.isAddMethodLoader = true;
+    this._systemService.AddSystemData(payload).pipe(takeUntil(this._unsubscribeAll), finalize(() => {
+      this._changeDetectorRef.markForCheck();
+    })).subscribe(res => {
+      if (res["success"]) {
+        this.getImprintMethods(1, 'add')
       } else {
-        this.colorList.push(value);
+        this.isAddMethodLoader = false;
+        this._systemService.snackBar(res["message"]);
       }
-    }
-
-    // Clear the input value
-    event.chipInput!.clear();
-  }
-
-  removeColor(color): void {
-    const index = this.colorList.findIndex(colors => colors == color);
-    if (index >= 0) {
-      this.colorList.splice(index, 1);
-    }
-  }
-  addNewColor() {
-    let payload: AddColor = {
-      color_name: this.colorList,
-      add_color: true
-    }
+      this._changeDetectorRef.markForCheck();
+    }, err => {
+      this.isAddMethodLoader = false;
+      this._systemService.snackBar('Something went wrong');
+    })
   }
   // Delete Color
   deleteColor(item) {
     item.delLoader = true;
-    let payload: DeleteColor = {
-      color_id: item.pk_colorID,
-      delete_color: true
+    let payload: DeleteImprintColor = {
+      imprint_color_id: item.pk_imprintColorID,
+      delete_imprint_color: true
     }
     this._systemService.UpdateSystemData(payload).pipe(takeUntil(this._unsubscribeAll), finalize(() => {
       item.delLoader = false
       this._changeDetectorRef.markForCheck();
     })).subscribe(res => {
-      this.dataSource = this.dataSource.filter(color => color.pk_colorID != item.pk_colorID);
+      this.dataSource = this.dataSource.filter(color => color.pk_imprintColorID != item.pk_imprintColorID);
       this.totalUsers--;
       this._systemService.snackBar('Color Deleted Successfully');
       this._changeDetectorRef.markForCheck();
@@ -145,36 +156,36 @@ export class ColorsComponent implements OnInit, OnDestroy {
       this._systemService.snackBar('Something went wrong');
     });
   }
-  // Update Color
-  updateColorToggle(item) {
-    if (item) {
-      this.ngUpdateColorName = item.colorName;
-      this.updateColorData = item;
-    }
-    this.isUpdateColors = !this.isUpdateColors;
+  // Update Method
+  updateMethodToggle(item) {
+    console.log(item)
+    this.updateMethodData = item;
+    this.isUpdateMethod = !this.isUpdateMethod;
   }
-  updateColor() {
-    if (this.ngUpdateColorName == '') {
+  updateMethod() {
+    if (this.updateMethodData.imprintColorName == '') {
       this._systemService.snackBar('Color name is required');
       return;
     }
-    let payload: UpdateColor = {
-      color_id: this.updateColorData.pk_colorID,
-      color_name: this.ngUpdateColorName,
-      update_color: true
+    const rgb = this.ngRGBUpdate.replace('#', '');
+    let payload: UpdateImprintMethod = {
+      method_id: this.updateMethodData.pk_methodID,
+      method_name: this.updateMethodData.methodName,
+      description: this.updateMethodData.methodDescription,
+      update_imprint_method: true
     }
-    this.isUpdateColorLoader = true;
+    this.isUpdateMethodLoader = true;
     this._systemService.UpdateSystemData(payload).pipe(takeUntil(this._unsubscribeAll), finalize(() => {
-      this.isUpdateColorLoader = false
+      this.isUpdateMethodLoader = false
       this._changeDetectorRef.markForCheck();
     })).subscribe(res => {
-      this.updateColorData.colorName = this.ngUpdateColorName;
-      // this.dataSource.filter(color => {
-      //   if (color.pk_colorID == this.updateColorData.pk_colorID) {
-      //     color.colorName = this.updateColorData.colorName;
-      //   }
-      // });
-      this._systemService.snackBar('Color Updated Successfully');
+      this.dataSource.filter(elem => {
+        if (elem.pk_methodID == this.updateMethodData.pk_methodID) {
+          elem.methodName = this.updateMethodData.methodName;
+          elem.methodDescription = this.updateMethodData.methodDescription;
+        }
+      });
+      this._systemService.snackBar('Method Updated Successfully');
       this._changeDetectorRef.markForCheck();
     }, err => {
       this._systemService.snackBar('Something went wrong');

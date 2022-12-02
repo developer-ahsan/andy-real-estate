@@ -161,8 +161,8 @@ export class OrdersDetailsComponent implements OnInit, OnDestroy {
             this.isLoading = true;
         }
         if (this.selectedScreeen == 'Customer Info') {
-            let route = '/apps/ecommerce/customer';
-            this._router.navigate([route], { queryParams: { customerId: this.selectedOrderDetail.fk_storeUserID } });
+            let route = '/apps/ecommerce/customers/' + this.selectedOrderDetail.fk_storeUserID;
+            this._router.navigate([route]);
         }
     }
 
