@@ -8,59 +8,7 @@ import { CustomersBrand, CustomersCategory, CustomersPagination, CustomersProduc
 @Injectable({
     providedIn: 'root'
 })
-export class CustomersBrandsResolver implements Resolve<any>
-{
-    /**
-     * Constructor
-     */
-    constructor(private _customerService: CustomersService) {
-    }
-
-    // -----------------------------------------------------------------------------------------------------
-    // @ Public methods
-    // -----------------------------------------------------------------------------------------------------
-
-    /**
-     * Resolver
-     *
-     * @param route
-     * @param state
-     */
-    resolve(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<CustomersBrand[]> {
-        return this._customerService.getBrands();
-    }
-}
-
-@Injectable({
-    providedIn: 'root'
-})
-export class CustomersCategoriesResolver implements Resolve<any>
-{
-    /**
-     * Constructor
-     */
-    constructor(private _customerService: CustomersService) {
-    }
-
-    // -----------------------------------------------------------------------------------------------------
-    // @ Public methods
-    // -----------------------------------------------------------------------------------------------------
-
-    /**
-     * Resolver
-     *
-     * @param route
-     * @param state
-     */
-    resolve(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<CustomersCategory[]> {
-        return this._customerService.getCategories();
-    }
-}
-
-@Injectable({
-    providedIn: 'root'
-})
-export class CustomersProductResolver implements Resolve<any>
+export class GetCustomer implements Resolve<any>
 {
     /**
      * Constructor
@@ -106,7 +54,7 @@ export class CustomersProductResolver implements Resolve<any>
 @Injectable({
     providedIn: 'root'
 })
-export class CustomersProductsResolver implements Resolve<any>
+export class GetCustomersList implements Resolve<any>
 {
     /**
      * Constructor
@@ -125,58 +73,6 @@ export class CustomersProductsResolver implements Resolve<any>
      * @param state
      */
     resolve(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<CustomersProduct[]> {
-        return this._customerService.getCustomersList(10, 1);
+        return this._customerService.getCustomersList();
     }
-}
-
-@Injectable({
-    providedIn: 'root'
-})
-export class CustomersTagsResolver implements Resolve<any>
-{
-    /**
-     * Constructor
-     */
-    constructor(private _customerService: CustomersService) {
-    }
-
-    // -----------------------------------------------------------------------------------------------------
-    // @ Public methods
-    // -----------------------------------------------------------------------------------------------------
-
-    /**
-     * Resolver
-     *
-     * @param route
-     * @param state
-     */
-    resolve(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<CustomersTag[]> {
-        return this._customerService.getTags();
-    }
-}
-
-@Injectable({
-    providedIn: 'root'
-})
-export class CustomersVendorsResolver implements Resolve<any>
-{
-    /**
-     * Constructor
-     */
-    constructor(private _customerService: CustomersService) {
-    }
-
-    // -----------------------------------------------------------------------------------------------------
-    // @ Public methods
-    // -----------------------------------------------------------------------------------------------------
-
-    /**
-     * Resolver
-     *
-     * @param route
-     * @param state
-     */
-    resolve(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<CustomersVendor[]> {
-        return this._customerService.getVendors();
-    }
-}
+};

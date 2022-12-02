@@ -36,9 +36,6 @@ export class CustomersTabComponent implements OnInit, AfterViewInit, OnDestroy {
     searchInputControl: FormControl = new FormControl();
     selectedCustomer: CustomersProduct | null = null;
     selectedCustomerForm: FormGroup;
-    tags: CustomersTag[];
-    tagsEditMode: boolean = false;
-    vendors: CustomersVendor[];
     selectedCustomerId: string = "";
     selectedTab = "User Info";
     breakpoint: number;
@@ -126,42 +123,6 @@ export class CustomersTabComponent implements OnInit, AfterViewInit, OnDestroy {
             department: ['']
         });
 
-        // Get the brands
-        this._customerService.brands$
-            .pipe(takeUntil(this._unsubscribeAll))
-            .subscribe((brands: CustomersBrand[]) => {
-
-                // Update the brands
-                this.brands = brands;
-
-                // Mark for check
-                this._changeDetectorRef.markForCheck();
-            });
-
-        // Get the categories
-        this._customerService.categories$
-            .pipe(takeUntil(this._unsubscribeAll))
-            .subscribe((categories: CustomersCategory[]) => {
-
-                // Update the categories
-                this.categories = categories;
-
-                // Mark for check
-                this._changeDetectorRef.markForCheck();
-            });
-
-        // Get the pagination
-        this._customerService.pagination$
-            .pipe(takeUntil(this._unsubscribeAll))
-            .subscribe((pagination: CustomersPagination) => {
-
-                // Update the pagination
-                this.pagination = pagination;
-
-                // Mark for check
-                this._changeDetectorRef.markForCheck();
-            });
-
         // Get the products
         this.customers$ = this._customerService.customers$;
         this._customerService.customers$
@@ -170,31 +131,6 @@ export class CustomersTabComponent implements OnInit, AfterViewInit, OnDestroy {
 
                 // Update the counts
                 this.customersCount = products.length;
-
-                // Mark for check
-                this._changeDetectorRef.markForCheck();
-            });
-
-        // Get the tags
-        this._customerService.tags$
-            .pipe(takeUntil(this._unsubscribeAll))
-            .subscribe((tags: CustomersTag[]) => {
-
-                // Update the tags
-                this.tags = tags;
-                this.filteredTags = tags;
-
-                // Mark for check
-                this._changeDetectorRef.markForCheck();
-            });
-
-        // Get the vendors
-        this._customerService.vendors$
-            .pipe(takeUntil(this._unsubscribeAll))
-            .subscribe((vendors: CustomersVendor[]) => {
-
-                // Update the vendors
-                this.vendors = vendors;
 
                 // Mark for check
                 this._changeDetectorRef.markForCheck();
@@ -288,138 +224,7 @@ export class CustomersTabComponent implements OnInit, AfterViewInit, OnDestroy {
      */
     closeDetails(): void {
         this.selectedCustomer = null;
-    }
-
-    /**
-     * Cycle through images of selected product
-     */
-    cycleImages(forward: boolean = true): void {
-        // Get the image count and current image index
-        const count = this.selectedCustomerForm.get('images').value.length;
-        const currentIndex = this.selectedCustomerForm.get('currentImageIndex').value;
-
-        // Calculate the next and previous index
-        const nextIndex = currentIndex + 1 === count ? 0 : currentIndex + 1;
-        const prevIndex = currentIndex - 1 < 0 ? count - 1 : currentIndex - 1;
-
-        // If cycling forward...
-        if (forward) {
-            this.selectedCustomerForm.get('currentImageIndex').setValue(nextIndex);
-        }
-        // If cycling backwards...
-        else {
-            this.selectedCustomerForm.get('currentImageIndex').setValue(prevIndex);
-        }
-    }
-
-    /**
-     * Toggle the tags edit mode
-     */
-    toggleTagsEditMode(): void {
-        this.tagsEditMode = !this.tagsEditMode;
-    }
-
-    /**
-     * Filter tags
-     *
-     * @param event
-     */
-    filterTags(event): void {
-        // Get the value
-        const value = event.target.value.toLowerCase();
-
-        // Filter the tags
-        this.filteredTags = this.tags.filter(tag => tag.title.toLowerCase().includes(value));
-    }
-
-    /**
-     * Filter tags input key down event
-     *
-     * @param event
-     */
-    filterTagsInputKeyDown(event): void {
-        // Return if the pressed key is not 'Enter'
-        if (event.key !== 'Enter') {
-            return;
-        }
-
-        // If there is no tag available...
-        if (this.filteredTags.length === 0) {
-            // Create the tag
-            this.createTag(event.target.value);
-
-            // Clear the input
-            event.target.value = '';
-
-            // Return
-            return;
-        }
-
-        // If there is a tag...
-        const tag = this.filteredTags[0];
-        const isTagApplied = [].find(id => id === tag.id);
-
-        // If the found tag is already applied to the contact...
-        if (isTagApplied) {
-            // Remove the tag from the contact
-            this.removeTagFromProduct(tag);
-        }
-        else {
-            // Otherwise add the tag to the contact
-            this.addTagToProduct(tag);
-        }
-    }
-
-    /**
-     * Create a new tag
-     *
-     * @param title
-     */
-    createTag(title: string): void {
-        const tag = {
-            title
-        };
-
-        // Create tag on the server
-        this._customerService.createTag(tag)
-            .subscribe((response) => {
-
-                // Add the tag to the product
-                this.addTagToProduct(response);
-            });
-    }
-
-    /**
-     * Update the tag title
-     *
-     * @param tag
-     * @param event
-     */
-    updateTagTitle(tag: CustomersTag, event): void {
-        // Update the title on the tag
-        tag.title = event.target.value;
-
-        // Update the tag on the server
-        this._customerService.updateTag(tag.id, tag)
-            .pipe(debounceTime(300))
-            .subscribe();
-
-        // Mark for check
-        this._changeDetectorRef.markForCheck();
-    }
-
-    /**
-     * Delete the tag
-     *
-     * @param tag
-     */
-    deleteTag(tag: CustomersTag): void {
-        // Delete the tag from the server
-        this._customerService.deleteTag(tag.id).subscribe();
-
-        // Mark for check
-        this._changeDetectorRef.markForCheck();
-    }
+    };
 
     /**
      * Add tag to the product
@@ -435,47 +240,7 @@ export class CustomersTabComponent implements OnInit, AfterViewInit, OnDestroy {
 
         // Mark for check
         this._changeDetectorRef.markForCheck();
-    }
-
-    /**
-     * Remove tag from the product
-     *
-     * @param tag
-     */
-    removeTagFromProduct(tag: CustomersTag): void {
-        // Remove the tag
-        [].splice([].findIndex(item => item === tag.id), 1);
-
-        // Update the selected product form
-        this.selectedCustomerForm.get('tags').patchValue([]);
-
-        // Mark for check
-        this._changeDetectorRef.markForCheck();
-    }
-
-    /**
-     * Toggle product tag
-     *
-     * @param tag
-     * @param change
-     */
-    toggleProductTag(tag: CustomersTag, change: MatCheckboxChange): void {
-        if (change.checked) {
-            this.addTagToProduct(tag);
-        }
-        else {
-            this.removeTagFromProduct(tag);
-        }
-    }
-
-    /**
-     * Should the create tag button be visible
-     *
-     * @param inputValue
-     */
-    shouldShowCreateTagButton(inputValue: string): boolean {
-        return !!!(inputValue === '' || this.tags.findIndex(tag => tag.title.toLowerCase() === inputValue.toLowerCase()) > -1);
-    }
+    };
 
     /**
      * Create product
@@ -492,21 +257,6 @@ export class CustomersTabComponent implements OnInit, AfterViewInit, OnDestroy {
 
             // Mark for check
             this._changeDetectorRef.markForCheck();
-        });
-    }
-
-    /**
-     * Delete the selected product using the form mock-api
-     */
-    deleteSelectedCustomer(): void {
-        // Get the product object
-        const product = this.selectedCustomerForm.getRawValue();
-
-        // Delete the product on the server
-        this._customerService.deleteCustomer(product.id).subscribe(() => {
-
-            // Close the details
-            this.closeDetails();
         });
     }
 
@@ -538,12 +288,6 @@ export class CustomersTabComponent implements OnInit, AfterViewInit, OnDestroy {
      */
     trackByFn(index: number, item: any): any {
         return item.id || index;
-    }
-
-    tabChanged(tabChangeEvent): void {
-        this.selectedTab = tabChangeEvent.tab.textLabel;
-        this.isLoading = this.selectedTab === "Logo Bank" ? false : true;
-        this.otherComponentLoading = false;
     }
 
     backToCustomersScreen(): void {

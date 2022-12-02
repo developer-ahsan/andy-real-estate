@@ -4,7 +4,7 @@ import { InventoryListComponent } from 'app/modules/admin/apps/ecommerce/invento
 import { LicensingTermResolver, ProductDescriptionResolver, ProductsListsResolver, StoresListResolver, SuppliersListResolver, SystemDistributorCodes } from 'app/modules/admin/apps/ecommerce/inventory/inventory.resolvers';
 import { CustomersComponent } from 'app/modules/admin/apps/ecommerce/customers/customers.component';
 import { CustomersListComponent } from 'app/modules/admin/apps/ecommerce/customers/list/customers.component';
-import { CustomersBrandsResolver, CustomersCategoriesResolver, CustomersProductsResolver, CustomersTagsResolver, CustomersVendorsResolver } from 'app/modules/admin/apps/ecommerce/customers/customers.resolvers';
+import { GetCustomersList } from 'app/modules/admin/apps/ecommerce/customers/customers.resolvers';
 import { CustomersTabComponent } from 'app/modules/admin/apps/ecommerce/customers/tabs/customers.component';
 import { ProductDetailsComponent } from 'app/modules/admin/apps/ecommerce/inventory/details/product-details.component';
 import { ProductStoreComponent } from './product-store/store.component';
@@ -57,11 +57,7 @@ export const ecommerceRoutes: Route[] = [
                 path: '',
                 component: CustomersListComponent,
                 resolve: {
-                    brands: CustomersBrandsResolver,
-                    categories: CustomersCategoriesResolver,
-                    products: CustomersProductsResolver,
-                    tags: CustomersTagsResolver,
-                    vendors: CustomersVendorsResolver
+                    products: GetCustomersList,
                 }
             }
         ]
@@ -74,11 +70,7 @@ export const ecommerceRoutes: Route[] = [
                 path: '',
                 component: CustomersTabComponent,
                 resolve: {
-                    brands: CustomersBrandsResolver,
-                    categories: CustomersCategoriesResolver,
-                    products: CustomersProductsResolver,
-                    tags: CustomersTagsResolver,
-                    vendors: CustomersVendorsResolver
+                    products: GetCustomersList
                 }
             }
         ]

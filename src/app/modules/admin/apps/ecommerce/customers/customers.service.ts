@@ -2,115 +2,23 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { BehaviorSubject, Observable, of, throwError } from 'rxjs';
 import { filter, map, switchMap, take, tap } from 'rxjs/operators';
-import { CustomersBrand, CustomersCategory, CustomersPagination, CustomersProduct, CustomersTag, CustomersVendor, UserCreditTerms, AddUserComment, AddUserLocation, ApprovalContact, AddReminder, UpdateCashback, CreateStore, UserUpdateObject } from 'app/modules/admin/apps/ecommerce/customers/customers.types';
+import { CustomersProduct, UserCreditTerms, AddUserComment, AddUserLocation, ApprovalContact, AddReminder, UpdateCashback, CreateStore, UserUpdateObject } from 'app/modules/admin/apps/ecommerce/customers/customers.types';
 import { environment } from 'environments/environment';
 import { AuthService } from 'app/core/auth/auth.service';
+import { navigations } from 'app/modules/admin/apps/ecommerce/customers/customers.navigator';
 
 @Injectable({
     providedIn: 'root'
 })
 export class CustomersService {
     // Private
-    private _brands: BehaviorSubject<CustomersBrand[] | null> = new BehaviorSubject(null);
-    private _categories: BehaviorSubject<CustomersCategory[] | null> = new BehaviorSubject(null);
-    private _pagination: BehaviorSubject<CustomersPagination | null> = new BehaviorSubject(null);
     private _customer: BehaviorSubject<CustomersProduct | null> = new BehaviorSubject(null);
     private _customers: BehaviorSubject<CustomersProduct[] | null> = new BehaviorSubject(null);
-    private _tags: BehaviorSubject<CustomersTag[] | null> = new BehaviorSubject(null);
-    private _vendors: BehaviorSubject<CustomersVendor[] | null> = new BehaviorSubject(null);
 
-    public navigationLabels = [
-        {
-            id: 1,
-            title: 'User Info',
-            icon: 'heroicons_outline:user-circle'
-        },
-        {
-            id: 2,
-            title: 'User Addresses',
-            icon: 'mat_outline:location_city',
-        },
-        {
-            id: 3,
-            title: 'Metrics',
-            icon: 'heroicons_solid:trending-up',
-        },
-        {
-            id: 4,
-            title: 'Credit Terms',
-            icon: 'mat_outline:price_change'
-        },
-        {
-            id: 5,
-            title: 'Credit Applications',
-            icon: 'mat_outline:settings_applications',
-        },
-        {
-            id: 6,
-            title: 'User Comments',
-            icon: 'mat_outline:comment_bank',
-        },
-        {
-            id: 7,
-            title: 'Locations',
-            icon: 'mat_outline:location_on'
-        },
-        {
-            id: 8,
-            title: 'Approval Contacts',
-            icon: 'mat_outline:approval',
-        },
-        {
-            id: 9,
-            title: 'Reminders',
-            icon: 'mat_outline:doorbell',
-        },
-        {
-            id: 10,
-            title: 'Order History',
-            icon: 'mat_outline:history',
-        },
-        {
-            id: 11,
-            title: 'Fulfillment Orders',
-            icon: 'mat_outline:reorder',
-        },
-        {
-            id: 12,
-            title: 'Saved Carts',
-            icon: 'mat_outline:shopping_cart',
-        },
-        {
-            id: 13,
-            title: 'Quotes',
-            icon: 'mat_outline:format_quote',
-        },
-        {
-            id: 15,
-            title: 'Group Orders',
-            icon: 'mat_outline:groups',
-        },
-        {
-            id: 16,
-            title: 'Logo Bank',
-            icon: 'mat_outline:book',
-        },
-        {
-            id: 17,
-            title: 'Cashback',
-            icon: 'heroicons_outline:cash',
-        },
-        {
-            id: 18,
-            title: 'Store Usage',
-            icon: 'mat_outline:store',
-        },
-        {
-            id: 19,
-            title: 'Send Registration Emails',
-            icon: 'mat_outline:attach_email',
-        }
-    ]
+    pageSize: number = 20;
+    pageNumber: number = 1;
+
+    public navigationLabels = navigations;
 
     /**
      * Constructor
@@ -126,27 +34,6 @@ export class CustomersService {
     // -----------------------------------------------------------------------------------------------------
 
     /**
-     * Getter for brands
-     */
-    get brands$(): Observable<CustomersBrand[]> {
-        return this._brands.asObservable();
-    }
-
-    /**
-     * Getter for categories
-     */
-    get categories$(): Observable<CustomersCategory[]> {
-        return this._categories.asObservable();
-    }
-
-    /**
-     * Getter for pagination
-     */
-    get pagination$(): Observable<CustomersPagination> {
-        return this._pagination.asObservable();
-    }
-
-    /**
      * Getter for product
      */
     get product$(): Observable<CustomersProduct> {
@@ -160,49 +47,24 @@ export class CustomersService {
         return this._customers.asObservable();
     }
 
-    /**
-     * Getter for tags
-     */
-    get tags$(): Observable<CustomersTag[]> {
-        return this._tags.asObservable();
-    }
-
-    /**
-     * Getter for vendors
-     */
-    get vendors$(): Observable<CustomersVendor[]> {
-        return this._vendors.asObservable();
-    }
+    changePageNumber(status: 'increase' | 'decrease' | null = null): void {
+        status === 'increase' ? this.pageNumber++ : this.pageNumber--;
+    };
 
     // -----------------------------------------------------------------------------------------------------
     // @ Public methods
     // -----------------------------------------------------------------------------------------------------
 
-    /**
-     * Get brands
-     */
-    getBrands(): Observable<CustomersBrand[]> {
-        return this._httpClient.get<CustomersBrand[]>('api/apps/ecommerce/customers/brands').pipe(
-            tap((brands) => {
-                this._brands.next(brands);
-            })
-        );
-    }
-
-    /**
-     * Get categories
-     */
-    getCategories(): Observable<CustomersCategory[]> {
-        return this._httpClient.get<CustomersCategory[]>('api/apps/ecommerce/customers/categories').pipe(
-            tap((categories) => {
-                this._categories.next(categories);
-            })
-        );
-    }
-
-    getCustomersList(size, pageNumber, keyword?: string): Observable<CustomersProduct[]> {
+    getCustomersList(keyword?: string): Observable<CustomersProduct[]> {
         const search = keyword ? keyword : '';
-        return this._httpClient.get<CustomersProduct[]>(`${environment.customerList}?list=true&size=${size}&page=${pageNumber}&keyword=${search}`).pipe(
+        return this._httpClient.get<CustomersProduct[]>(environment.customerList, {
+            params: {
+                list: true,
+                size: this.pageSize,
+                page: this.pageNumber,
+                keyword: search
+            }
+        }).pipe(
             tap((customers) => {
                 this._customers.next(customers);
             })
@@ -268,7 +130,7 @@ export class CustomersService {
     }
 
     /**
-     * Get product by id
+     * Get customer by id
      */
 
     getCustomerDetails(id) {
@@ -279,7 +141,8 @@ export class CustomersService {
         return this._httpClient.get(environment.customerList, {
             params: params
         });
-    }
+    };
+
     getCustomerById(id: string): Observable<CustomersProduct> {
         return this._customers.pipe(
             take(1),
@@ -369,203 +232,7 @@ export class CustomersService {
                 ))
             ))
         );
-    }
-
-    /**
-     * Delete the product
-     *
-     * @param id
-     */
-    deleteCustomer(id: string): Observable<boolean> {
-        return this.customers$.pipe(
-            take(1),
-            switchMap(products => this._httpClient.delete('api/apps/ecommerce/customers/customer', { params: { id } }).pipe(
-                map((isDeleted: boolean) => {
-
-                    // Find the index of the deleted product
-                    const index = products.findIndex(item => item.pk_userID === id);
-
-                    // Delete the product
-                    products.splice(index, 1);
-
-                    // Update the products
-                    this._customers.next(products);
-
-                    // Return the deleted status
-                    return isDeleted;
-                })
-            ))
-        );
-    }
-
-    /**
-     * Get tags
-     */
-    getTags(): Observable<CustomersTag[]> {
-        return this._httpClient.get<CustomersTag[]>('api/apps/ecommerce/customers/tags').pipe(
-            tap((tags) => {
-                this._tags.next(tags);
-            })
-        );
-    }
-
-    /**
-     * Create tag
-     *
-     * @param tag
-     */
-    createTag(tag: CustomersTag): Observable<CustomersTag> {
-        return this.tags$.pipe(
-            take(1),
-            switchMap(tags => this._httpClient.post<CustomersTag>('api/apps/ecommerce/customers/tag', { tag }).pipe(
-                map((newTag) => {
-
-                    // Update the tags with the new tag
-                    this._tags.next([...tags, newTag]);
-
-                    // Return new tag from observable
-                    return newTag;
-                })
-            ))
-        );
-    }
-
-    /**
-     * Update the tag
-     *
-     * @param id
-     * @param tag
-     */
-    updateTag(id: string, tag: CustomersTag): Observable<CustomersTag> {
-        return this.tags$.pipe(
-            take(1),
-            switchMap(tags => this._httpClient.patch<CustomersTag>('api/apps/ecommerce/customers/tag', {
-                id,
-                tag
-            }).pipe(
-                map((updatedTag) => {
-
-                    // Find the index of the updated tag
-                    const index = tags.findIndex(item => item.id === id);
-
-                    // Update the tag
-                    tags[index] = updatedTag;
-
-                    // Update the tags
-                    this._tags.next(tags);
-
-                    // Return the updated tag
-                    return updatedTag;
-                })
-            ))
-        );
-    }
-
-    /**
-     * Delete the tag
-     *
-     * @param id
-     */
-    deleteTag(id: string): Observable<boolean> {
-        return this.tags$.pipe(
-            take(1),
-            switchMap(tags => this._httpClient.delete('api/apps/ecommerce/customers/tag', { params: { id } }).pipe(
-                map((isDeleted: boolean) => {
-
-                    // Find the index of the deleted tag
-                    const index = tags.findIndex(item => item.id === id);
-
-                    // Delete the tag
-                    tags.splice(index, 1);
-
-                    // Update the tags
-                    this._tags.next(tags);
-
-                    // Return the deleted status
-                    return isDeleted;
-                }),
-                filter(isDeleted => isDeleted),
-                switchMap(isDeleted => this.customers$.pipe(
-                    take(1),
-                    map((products) => {
-
-                        // Iterate through the contacts
-                        products.forEach((product) => {
-
-                            const tagIndex = [].findIndex(tag => tag === id);
-
-                            // If the contact has the tag, remove it
-                            if (tagIndex > -1) {
-                                [].splice(tagIndex, 1);
-                            }
-                        });
-
-                        // Return the deleted status
-                        return isDeleted;
-                    })
-                ))
-            ))
-        );
-    }
-
-    /**
-     * Get vendors
-     */
-    getVendors(): Observable<CustomersVendor[]> {
-        return this._httpClient.get<CustomersVendor[]>('api/apps/ecommerce/customers/vendors').pipe(
-            tap((vendors) => {
-                this._vendors.next(vendors);
-            })
-        );
-    }
-
-    /**
-     * Update the avatar of the given contact
-     *
-     * @param id
-     * @param avatar
-     */
-    /*uploadAvatar(id: string, avatar: File): Observable<Contact>
-    {
-        return this.contacts$.pipe(
-            take(1),
-            switchMap(contacts => this._httpClient.post<Contact>('api/apps/contacts/avatar', {
-                id,
-                avatar
-            }, {
-                headers: {
-                    'Content-Type': avatar.type
-                }
-            }).pipe(
-                map((updatedContact) => {
-
-                    // Find the index of the updated contact
-                    const index = contacts.findIndex(item => item.id === id);
-
-                    // Update the contact
-                    contacts[index] = updatedContact;
-
-                    // Update the contacts
-                    this._contacts.next(contacts);
-
-                    // Return the updated contact
-                    return updatedContact;
-                }),
-                switchMap(updatedContact => this.contact$.pipe(
-                    take(1),
-                    filter(item => item && item.id === id),
-                    tap(() => {
-
-                        // Update the contact if it's selected
-                        this._contact.next(updatedContact);
-
-                        // Return the updated contact
-                        return updatedContact;
-                    })
-                ))
-            ))
-        );
-    }*/
+    };
 
     /**
     * Get addresses of customers
