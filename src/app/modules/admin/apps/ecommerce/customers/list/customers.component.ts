@@ -207,7 +207,8 @@ export class CustomersListComponent implements OnInit, OnDestroy {
 
     editCustomer(customer) {
         this.isLoading = true;
-        let route = '/apps/ecommerce/customer';
-        this._router.navigate([route], { queryParams: { customerId: customer.pk_userID } });
+        const { pk_userID } = customer;
+        let route = `/apps/ecommerce/customers/${pk_userID}`;
+        this._router.navigate([route]);
     }
 }

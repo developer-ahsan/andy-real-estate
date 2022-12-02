@@ -36,7 +36,7 @@ export class CustomersService {
     /**
      * Getter for product
      */
-    get product$(): Observable<CustomersProduct> {
+    get customer$(): Observable<CustomersProduct> {
         return this._customer.asObservable();
     }
 
@@ -55,6 +55,8 @@ export class CustomersService {
     // @ Public methods
     // -----------------------------------------------------------------------------------------------------
 
+
+    // Getter for customers list
     getCustomersList(keyword?: string): Observable<CustomersProduct[]> {
         const search = keyword ? keyword : '';
         return this._httpClient.get<CustomersProduct[]>(environment.customerList, {
@@ -69,7 +71,21 @@ export class CustomersService {
                 this._customers.next(customers);
             })
         );
-    }
+    };
+
+    // Getter for customers per id
+    getCustomer(id: string): Observable<CustomersProduct[]> {
+        return this._httpClient.get<CustomersProduct[]>(environment.customerList, {
+            params: {
+                user: true,
+                user_id: id
+            }
+        }).pipe(
+            tap((res) => {
+                this._customer.next(res["data"][0]);
+            })
+        );
+    };
 
     /**
     * Get customers
@@ -218,7 +234,7 @@ export class CustomersService {
                     // Return the updated product
                     return updatedProduct;
                 }),
-                switchMap(updatedProduct => this.product$.pipe(
+                switchMap(updatedProduct => this.customer$.pipe(
                     take(1),
                     filter(item => item && item.pk_userID === id),
                     tap(() => {

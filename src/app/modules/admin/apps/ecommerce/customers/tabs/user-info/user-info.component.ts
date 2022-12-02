@@ -1,6 +1,8 @@
 import { Component, Input, OnInit, Output, EventEmitter, ChangeDetectorRef } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { CustomersService } from 'app/modules/admin/apps/ecommerce/customers/customers.service';
+import { takeUntil } from 'rxjs/operators';
+import { merge, Observable, Subject } from 'rxjs';
 
 @Component({
   selector: 'app-user-info',
@@ -11,6 +13,7 @@ export class UserInfoComponent implements OnInit {
   @Input() selectedTab: any;
   @Input() isLoading: boolean;
   @Output() isLoadingChange = new EventEmitter<boolean>();
+  private _unsubscribeAll: Subject<any> = new Subject<any>();
 
   selectedCustomerForm: FormGroup;
   updateUserLoader = false;
@@ -44,19 +47,10 @@ export class UserInfoComponent implements OnInit {
       department: ['']
     });
 
-    const { pk_userID } = this.currentSelectedCustomer;
-    this._customerService.getCustomerAddresses(pk_userID)
-      .subscribe((addresses) => {
-        this.isLoadingChange.emit(false);
-      });
-
-    // Get the customer by id
-    this._customerService.getSingleCustomerDetails(pk_userID)
-      .subscribe((customer) => {
-        console.log("customer", customer)
-
-        // Fill the form
-        this.selectedCustomerForm.patchValue(customer);
+    this._customerService.customer$
+      .pipe(takeUntil(this._unsubscribeAll))
+      .subscribe((response) => {
+        this.selectedCustomerForm.patchValue(response);
 
         // Mark for check
         this._changeDetectorRef.markForCheck();
@@ -67,7 +61,8 @@ export class UserInfoComponent implements OnInit {
      * Update the selected product using the form mock-api
      */
   updateCustomerProduct(): void {
-    const { pk_userID, blnActive } = this.currentSelectedCustomer;
+    const { pk_userID } = this.currentSelectedCustomer;
+
     // Get the product object
     const customerForm = this.selectedCustomerForm.getRawValue();
 

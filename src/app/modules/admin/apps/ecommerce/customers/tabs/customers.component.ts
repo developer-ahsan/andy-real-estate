@@ -1,10 +1,9 @@
 import { AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnInit, ViewChild, ViewEncapsulation } from '@angular/core';
-import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
-import { MatCheckboxChange } from '@angular/material/checkbox';
+import { FormBuilder, FormControl, FormGroup } from '@angular/forms';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
-import { merge, Observable, Subject } from 'rxjs';
-import { debounceTime, map, switchMap, takeUntil } from 'rxjs/operators';
+import { Observable, Subject } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
 import { fuseAnimations } from '@fuse/animations';
 import { CustomersBrand, CustomersCategory, CustomersPagination, CustomersProduct, CustomersTag, CustomersVendor } from 'app/modules/admin/apps/ecommerce/customers/customers.types';
 import { CustomersService } from 'app/modules/admin/apps/ecommerce/customers/customers.service';
@@ -23,10 +22,6 @@ export class CustomersTabComponent implements OnInit, AfterViewInit, OnDestroy {
     @ViewChild(MatSort) private _sort: MatSort;
 
     customers$: Observable<CustomersProduct[]>;
-
-    brands: CustomersBrand[];
-    categories: CustomersCategory[];
-    filteredTags: CustomersTag[];
     flashMessage: 'success' | 'error' | null = null;
     isLoading: boolean = false;
     otherComponentLoading: boolean = false;
@@ -92,15 +87,6 @@ export class CustomersTabComponent implements OnInit, AfterViewInit, OnDestroy {
                 this._changeDetectorRef.markForCheck();
             });
 
-        // get customerId from params
-        this.route.queryParamMap
-            .subscribe((parameters) => {
-                const obj = { ...parameters.keys, ...parameters };
-                const { customerId } = obj["params"];
-                this.selectedCustomerId = customerId;
-            }
-            );
-
         this.routes = this._customerService.navigationLabels;
 
         // Create the selected product form
@@ -123,36 +109,14 @@ export class CustomersTabComponent implements OnInit, AfterViewInit, OnDestroy {
             department: ['']
         });
 
-        // Get the products
-        this.customers$ = this._customerService.customers$;
-        this._customerService.customers$
+        this._customerService.customer$
             .pipe(takeUntil(this._unsubscribeAll))
-            .subscribe((products: CustomersProduct[]) => {
-
-                // Update the counts
-                this.customersCount = products.length;
+            .subscribe((response) => {
+                this.selectedCustomer = response;
 
                 // Mark for check
                 this._changeDetectorRef.markForCheck();
             });
-
-        // Subscribe to search input field value changes
-        this.searchInputControl.valueChanges
-            .pipe(
-                takeUntil(this._unsubscribeAll),
-                debounceTime(300),
-                switchMap((query) => {
-                    this.closeDetails();
-                    this.isLoading = true;
-                    return this._customerService.getCustomers(0, 10, 'name', 'asc', query);
-                }),
-                map(() => {
-                    this.isLoading = false;
-                })
-            )
-            .subscribe();
-
-        this.toggleDetails(this.selectedCustomerId);
     }
 
     /**
@@ -186,79 +150,7 @@ export class CustomersTabComponent implements OnInit, AfterViewInit, OnDestroy {
         const { title } = index;
         this.isLoading = true;
         this.selectedIndex = title;
-    }
-
-    /**
-     * Toggle customer details
-     *
-     * @param customerId
-     */
-    toggleDetails(customerId: string): void {
-        // If the customer is already selected...
-        if (this.selectedCustomer && this.selectedCustomer.pk_userID === customerId) {
-            // Close the details
-            this.closeDetails();
-            return;
-        }
-
-        // Get the customer by id
-        this._customerService.getSingleCustomerDetails(customerId)
-            .subscribe((customer) => {
-
-                // Set the selected customer
-                this.selectedCustomer = customer;
-
-                // Mark for check
-                this._changeDetectorRef.markForCheck();
-
-                // Fill the form
-                this.selectedCustomerForm.patchValue(customer);
-
-                // Mark for check
-                this._changeDetectorRef.markForCheck();
-            });
-    }
-
-    /**
-     * Close the details
-     */
-    closeDetails(): void {
-        this.selectedCustomer = null;
     };
-
-    /**
-     * Add tag to the product
-     *
-     * @param tag
-     */
-    addTagToProduct(tag: CustomersTag): void {
-        // Add the tag
-        [].unshift(tag.id);
-
-        // Update the selected product form
-        this.selectedCustomerForm.get('tags').patchValue([]);
-
-        // Mark for check
-        this._changeDetectorRef.markForCheck();
-    };
-
-    /**
-     * Create product
-     */
-    createCustomer(): void {
-        // Create the product
-        this._customerService.createCustomer().subscribe((newCustomer) => {
-
-            // Go to new product
-            this.selectedCustomer = newCustomer;
-
-            // Fill the form
-            this.selectedCustomerForm.patchValue(newCustomer);
-
-            // Mark for check
-            this._changeDetectorRef.markForCheck();
-        });
-    }
 
     /**
      * Show flash message
