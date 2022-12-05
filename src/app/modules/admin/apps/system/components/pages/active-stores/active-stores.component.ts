@@ -3,7 +3,7 @@ import { MatPaginator } from '@angular/material/paginator';
 import { Subject } from 'rxjs';
 import { finalize, takeUntil } from 'rxjs/operators';
 import { SystemService } from '../../system.service';
-import { AddImprintMethod, DeleteImprintColor, UpdateImprintMethod } from '../../system.types';
+import { AddImprintMethod, DeleteImprintColor, UpdateImprintMethod, UpdateStoreStatus } from '../../system.types';
 
 @Component({
   selector: 'app-active-stores',
@@ -36,7 +36,7 @@ export class ActiveStoresComponent implements OnInit, OnDestroy {
   isAddMethodLoader: boolean = false;
 
   // Update Color
-  isUpdateMethodLoader: boolean = false;
+  isUpdateStoresLoader: boolean = false;
   isUpdateMethod: boolean = false;
   updateMethodData: any;
   ngRGBUpdate = '';
@@ -54,7 +54,7 @@ export class ActiveStoresComponent implements OnInit, OnDestroy {
       this.isLoadingChange.emit(false);
       this._changeDetectorRef.markForCheck();
     })
-    this.getImprintMethods(1, 'get');
+    // this.getImprintMethods(1, 'get');
   };
   calledScreen(value) {
     this.mainScreen = value;
@@ -167,30 +167,24 @@ export class ActiveStoresComponent implements OnInit, OnDestroy {
     this.updateMethodData = item;
     this.isUpdateMethod = !this.isUpdateMethod;
   }
-  updateMethod() {
-    if (this.updateMethodData.imprintColorName == '') {
-      this._systemService.snackBar('Color name is required');
-      return;
+  updateStores() {
+    let stores = [];
+    this.stores.forEach(element => {
+      stores.push({
+        store_id: element.pk_storeID,
+        bln_active: element.blnActive
+      });
+    });
+    let payload: UpdateStoreStatus = {
+      stores: stores,
+      update_store_status: true
     }
-    const rgb = this.ngRGBUpdate.replace('#', '');
-    let payload: UpdateImprintMethod = {
-      method_id: this.updateMethodData.pk_methodID,
-      method_name: this.updateMethodData.methodName,
-      description: this.updateMethodData.methodDescription,
-      update_imprint_method: true
-    }
-    this.isUpdateMethodLoader = true;
+    this.isUpdateStoresLoader = true;
     this._systemService.UpdateSystemData(payload).pipe(takeUntil(this._unsubscribeAll), finalize(() => {
-      this.isUpdateMethodLoader = false
+      this.isUpdateStoresLoader = false
       this._changeDetectorRef.markForCheck();
     })).subscribe(res => {
-      this.dataSource.filter(elem => {
-        if (elem.pk_methodID == this.updateMethodData.pk_methodID) {
-          elem.methodName = this.updateMethodData.methodName;
-          elem.methodDescription = this.updateMethodData.methodDescription;
-        }
-      });
-      this._systemService.snackBar('Method Updated Successfully');
+      this._systemService.snackBar('Stores Updated Successfully');
       this._changeDetectorRef.markForCheck();
     }, err => {
       this._systemService.snackBar('Something went wrong');

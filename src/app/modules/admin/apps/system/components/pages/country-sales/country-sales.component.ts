@@ -1,11 +1,12 @@
 import { ENTER, COMMA } from '@angular/cdk/keycodes';
 import { Component, Input, OnInit, Output, EventEmitter, ChangeDetectorRef, OnDestroy, ViewChild } from '@angular/core';
+import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { MatChipInputEvent } from '@angular/material/chips';
 import { MatPaginator } from '@angular/material/paginator';
 import { Subject } from 'rxjs';
 import { finalize, takeUntil } from 'rxjs/operators';
 import { SystemService } from '../../system.service';
-import { AddColor, AddImprintColor, AddImprintMethod, DeleteColor, DeleteImprintColor, UpdateColor, UpdateImprintColor, UpdateImprintMethod } from '../../system.types';
+import { AddColor, AddImprintColor, AddImprintMethod, AddOhioTaxRate, DeleteColor, DeleteImprintColor, UpdateColor, UpdateImprintColor, UpdateImprintMethod, UpdateOhioTaxRate } from '../../system.types';
 
 @Component({
   selector: 'app-country-sales',
@@ -33,12 +34,13 @@ export class CountrySalesComponent implements OnInit, OnDestroy {
   isSearching: boolean = false;
 
   // Add Method
+  addOhioForm: FormGroup;
   ngName: string = '';
   ngDesc: string = '';
-  isAddMethodLoader: boolean = false;
+  isAddCountyLoader: boolean = false;
 
   // Update Color
-  isUpdateMethodLoader: boolean = false;
+  isUpdateOhioLoader: boolean = false;
   isUpdateMethod: boolean = false;
   updateMethodData: any;
   ngRGBUpdate = '';
@@ -49,14 +51,23 @@ export class CountrySalesComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.isLoading = true;
-    this.getImprintMethods(1, 'get');
+    this.initOhioForm();
+    this.getOhioList(1, 'get');
   };
+  initOhioForm() {
+    this.addOhioForm = new FormGroup({
+      zip: new FormControl('', Validators.required),
+      county: new FormControl('', Validators.required),
+      rate: new FormControl('', Validators.required),
+      add_ohio: new FormControl(true, Validators.required)
+    });
+  }
   calledScreen(value) {
     this.mainScreen = value;
   }
-  getImprintMethods(page, type) {
+  getOhioList(page, type) {
     let params = {
-      imprint_methods: true,
+      ohio_tax_rates: true,
       keyword: this.keyword,
       page: page,
       size: 20
@@ -69,11 +80,11 @@ export class CountrySalesComponent implements OnInit, OnDestroy {
         this.tempRecords = res["totalRecords"];
       }
       if (type == 'add') {
-        this.isAddMethodLoader = false;
+        this.isAddCountyLoader = false;
         this.ngName = '';
         this.ngDesc = '';
-        this._systemService.snackBar('Method Added Successfully');
-        this.mainScreen = 'Current Imprint Methods';
+        this._systemService.snackBar('Ohio Tax Added Successfully');
+        this.mainScreen = 'Current Ohio Country Tax Rates';
       }
       this.isLoading = false;
       this.isSearching = false;
@@ -94,46 +105,49 @@ export class CountrySalesComponent implements OnInit, OnDestroy {
     } else {
       this.page--;
     };
-    this.getImprintMethods(this.page, 'get');
+    this.getOhioList(this.page, 'get');
   };
   searchColor(value) {
-    this.paginator.firstPage();
+    if (this.dataSource.length != 0) {
+      this.paginator.firstPage();
+    }
     this.page = 1;
     this.keyword = value;
     this.isSearching = true;
     this._changeDetectorRef.markForCheck();
-    this.getImprintMethods(1, 'get');
+    this.getOhioList(1, 'get');
   }
   resetSearch() {
-    this.paginator.firstPage();
+    if (this.dataSource.length != 0) {
+      this.paginator.firstPage();
+    }
     this.keyword = '';
     this.dataSource = this.tempDataSource;
     this.totalUsers = this.tempRecords;
   }
 
-  addNewMethod() {
-    if (this.ngName == '') {
-      this._systemService.snackBar('Imprint Method name is required');
+  addNewCounty() {
+    const { county, zip, rate, add_ohio } = this.addOhioForm.getRawValue();
+    if (county == '' || zip == '' || rate == '') {
+      this._systemService.snackBar('Please fill out the required fields.');
       return;
     }
-    let payload: AddImprintMethod = {
-      method_name: this.ngName,
-      method_description: this.ngDesc,
-      add_imprint_method: true
+    let payload: AddOhioTaxRate = {
+      county, zip, rate, add_ohio
     }
-    this.isAddMethodLoader = true;
+    this.isAddCountyLoader = true;
     this._systemService.AddSystemData(payload).pipe(takeUntil(this._unsubscribeAll), finalize(() => {
       this._changeDetectorRef.markForCheck();
     })).subscribe(res => {
       if (res["success"]) {
-        this.getImprintMethods(1, 'add')
+        this.getOhioList(1, 'add')
       } else {
-        this.isAddMethodLoader = false;
+        this.isAddCountyLoader = false;
         this._systemService.snackBar(res["message"]);
       }
       this._changeDetectorRef.markForCheck();
     }, err => {
-      this.isAddMethodLoader = false;
+      this.isAddCountyLoader = false;
       this._systemService.snackBar('Something went wrong');
     })
   }
@@ -158,34 +172,39 @@ export class CountrySalesComponent implements OnInit, OnDestroy {
   }
   // Update Method
   updateMethodToggle(item) {
-    console.log(item)
     this.updateMethodData = item;
     this.isUpdateMethod = !this.isUpdateMethod;
   }
-  updateMethod() {
-    if (this.updateMethodData.imprintColorName == '') {
-      this._systemService.snackBar('Color name is required');
-      return;
+  updateOhio() {
+    let ohio_rates = [];
+    this.dataSource.forEach(element => {
+      // if (element.county == '' || element.zip == '' || element.rate == '') {
+      //   this._systemService.snackBar('Please fill out the required fields');
+      //   return;
+      // }
+      if (!element.is_delete) {
+        element.is_delete = false;
+      }
+      ohio_rates.push({
+        county: element.county,
+        zip: element.zip,
+        rate: element.rate,
+        county_id: element.pk_countyID,
+        is_delete: element.is_delete
+      });
+
+    });
+    let payload: UpdateOhioTaxRate = {
+      ohio_rates: ohio_rates,
+      update_ohio: true
     }
-    const rgb = this.ngRGBUpdate.replace('#', '');
-    let payload: UpdateImprintMethod = {
-      method_id: this.updateMethodData.pk_methodID,
-      method_name: this.updateMethodData.methodName,
-      description: this.updateMethodData.methodDescription,
-      update_imprint_method: true
-    }
-    this.isUpdateMethodLoader = true;
+    this.isUpdateOhioLoader = true;
     this._systemService.UpdateSystemData(payload).pipe(takeUntil(this._unsubscribeAll), finalize(() => {
-      this.isUpdateMethodLoader = false
+      this.isUpdateOhioLoader = false
       this._changeDetectorRef.markForCheck();
     })).subscribe(res => {
-      this.dataSource.filter(elem => {
-        if (elem.pk_methodID == this.updateMethodData.pk_methodID) {
-          elem.methodName = this.updateMethodData.methodName;
-          elem.methodDescription = this.updateMethodData.methodDescription;
-        }
-      });
-      this._systemService.snackBar('Method Updated Successfully');
+      this.dataSource = this.dataSource.filter(item => item.is_delete == false);
+      this._systemService.snackBar('Ohio Tax Rates Updated Successfully');
       this._changeDetectorRef.markForCheck();
     }, err => {
       this._systemService.snackBar('Something went wrong');

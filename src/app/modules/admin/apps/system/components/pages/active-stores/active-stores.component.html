@@ -5,6 +5,15 @@
             </ngx-skeleton-loader>
         </div>
         <div *ngIf="!isLoading">
+            <div class="text-right mb-3">
+                <button [disabled]="isUpdateStoresLoader" class="min-w-40 mr-2" mat-stroked-button
+                    [matTooltip]="'Update Stores'" (click)="updateStores()">
+                    <mat-icon svgIcon="heroicons_solid:pencil-alt" *ngIf="!isUpdateStoresLoader"></mat-icon>
+                    <span class="ml-2" *ngIf="!isUpdateStoresLoader"> Update Stores</span>
+                    <mat-progress-spinner *ngIf="isUpdateStoresLoader" [diameter]="24" [mode]="'indeterminate'">
+                    </mat-progress-spinner>
+                </button>
+            </div>
             <div *ngIf="stores.length > 0;else other_content" class="w-full pb-5">
                 <table mat-table [dataSource]="stores" class="w-full border-t">
                     <ng-container matColumnDef="name">

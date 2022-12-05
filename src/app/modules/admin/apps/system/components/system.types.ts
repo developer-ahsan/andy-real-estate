@@ -102,3 +102,33 @@ export interface charge_obj {
     product_quantity: number;
     charge: number;
 }
+
+export interface AddOhioTaxRate {
+    zip: string;
+    county: string;
+    rate: number;
+    add_ohio: boolean;
+};
+
+export interface UpdateOhioTaxRate {
+    ohio_rates: OhioRates[];
+    update_ohio: boolean;
+};
+
+interface OhioRates {
+    county: string;
+    zip: string;
+    rate: number;
+    county_id: number;
+    is_delete: boolean;
+};
+
+export interface UpdateStoreStatus {
+    stores: Store[];
+    update_store_status: boolean;
+};
+
+interface Store {
+    store_id: number;
+    bln_active: boolean;
+};
