@@ -38,6 +38,7 @@ export class ColorsComponent implements OnInit, OnDestroy {
   updateColorData: any;
   isSearching: boolean = false;
   ngUpdateColorName: string = '';
+  isAddMsg = '';
   constructor(
     private _changeDetectorRef: ChangeDetectorRef,
     private _systemService: SystemService
@@ -45,12 +46,12 @@ export class ColorsComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.isLoading = true;
-    this.getColors(1);
+    this.getColors(1, 'get');
   };
   calledScreen(value) {
     this.mainScreen = value;
   }
-  getColors(page) {
+  getColors(page, type) {
     let params = {
       product_colors: true,
       keyword: this.keyword,
@@ -63,6 +64,11 @@ export class ColorsComponent implements OnInit, OnDestroy {
       if (this.keyword == '') {
         this.tempDataSource = res["data"];
         this.tempRecords = res["totalRecords"];
+      }
+      if (type == 'add') {
+        this._systemService.snackBar('Color added successfully');
+        this.isAddColorLoader = false;
+        this.colorList = [];
       }
       this.isLoading = false;
       this.isSearching = false;
@@ -83,14 +89,14 @@ export class ColorsComponent implements OnInit, OnDestroy {
     } else {
       this.page--;
     };
-    this.getColors(this.page);
+    this.getColors(this.page, 'get');
   };
   searchColor(value) {
     this.paginator.firstPage();
     this.keyword = value;
     this.isSearching = true;
     this._changeDetectorRef.markForCheck();
-    this.getColors(1);
+    this.getColors(1, 'get');
   }
   resetSearch() {
     this.paginator.firstPage();
@@ -121,10 +127,45 @@ export class ColorsComponent implements OnInit, OnDestroy {
     }
   }
   addNewColor() {
+    this.isAddMsg = '';
+    if (this.colorList.length == 0) {
+      this._systemService.snackBar('Atleast 1 color name is required');
+      return;
+    }
+    this.isAddColorLoader = true;
     let payload: AddColor = {
-      color_name: this.colorList,
+      colors: this.colorList,
       add_color: true
     }
+    this._systemService.AddSystemData(payload).pipe(takeUntil(this._unsubscribeAll), finalize(() => {
+      this._changeDetectorRef.markForCheck();
+    })).subscribe(res => {
+      if (res["success"]) {
+        this.getColors(1, 'add');
+        if (res['already_exist_colors'].length > 0) {
+          let Colors = '';
+          res['already_exist_colors'].forEach(element => {
+            let comma = '';
+            if (Colors) {
+              comma = ',';
+            }
+            Colors = Colors + comma + element.colorName;
+          });
+          this.isAddMsg = Colors + ' already exists.';
+          setTimeout(() => {
+            this.isAddMsg = '';
+            this._changeDetectorRef.markForCheck();
+          }, 2000);
+        }
+      } else {
+        this.isAddColorLoader = false;
+      }
+      this._changeDetectorRef.markForCheck();
+    }, err => {
+      this.isAddColorLoader = false;
+      this._changeDetectorRef.markForCheck();
+      this._systemService.snackBar('Something went wrong');
+    });
   }
   // Delete Color
   deleteColor(item) {

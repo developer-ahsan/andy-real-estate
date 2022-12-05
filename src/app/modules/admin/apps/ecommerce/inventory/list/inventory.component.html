@@ -413,7 +413,7 @@
                         <!-- [stepControl]="firstFormGroup" -->
                         <mat-step [stepControl]="firstFormGroup" label="Type" [editable]="true">
                             <div class="row pt-2 pb-4">
-                                <div class="col-lg-9 col-12">
+                                <div class="col-lg-12 col-12">
                                     <!-- Search -->
                                     <mat-form-field class="fuse-mat-dense fuse-mat-no-subscript w-full">
                                         <mat-label>Product Number</mat-label>
@@ -422,7 +422,7 @@
                                             [autocomplete]="'off'" [placeholder]="'Product Number'">
                                     </mat-form-field>
                                 </div>
-                                <div class="col-lg-3 col-12">
+                                <!-- <div class="col-lg-3 col-12">
                                     <button class="w-full min-w-50 mt-2 lg:mt-7" mat-stroked-button
                                         [matTooltip]="'Go to products list'" (click)="fetchProductNumberData()"
                                         [disabled]="productNumberLoader">
@@ -431,7 +431,7 @@
                                         </mat-progress-spinner>
                                         <span class="ml-2 mr-1" *ngIf="!productNumberLoader">Fetch</span>
                                     </button>
-                                </div>
+                                </div> -->
                             </div>
                             <form [formGroup]="firstFormGroup" class="mt-3">
 
@@ -466,9 +466,16 @@
                                     </div>
                                 </div>
                                 <div class="row">
-                                    <div class="col-lg-10 col-12"></div>
-                                    <div class="col-lg-2 col-12">
-                                        <button class="w-full" (click)="goForward(stepper)"
+                                    <div class="col-12 flex justify-end">
+                                        <button class=" min-w-40 mr-2" mat-stroked-button
+                                            [matTooltip]="'Go to products list'" (click)="fetchProductNumberData()"
+                                            [disabled]="productNumberLoader">
+                                            <mat-progress-spinner *ngIf="productNumberLoader" [diameter]="24"
+                                                [mode]="'indeterminate'">
+                                            </mat-progress-spinner>
+                                            <span class="ml-2 mr-1" *ngIf="!productNumberLoader">Fetch</span>
+                                        </button>
+                                        <button class="min-w-50" (click)="goForward(stepper)"
                                             mat-stroked-button>Continue</button>
                                     </div>
                                 </div>

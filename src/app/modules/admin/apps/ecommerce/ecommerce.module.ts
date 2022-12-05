@@ -8,7 +8,7 @@ import { MatInputModule } from '@angular/material/input';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatPaginatorModule } from '@angular/material/paginator';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
-import { MatRippleModule } from '@angular/material/core';
+import { MatNativeDateModule, MatRippleModule } from '@angular/material/core';
 import { MatSortModule } from '@angular/material/sort';
 import { MatSelectModule } from '@angular/material/select';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
@@ -111,6 +111,7 @@ import { MatDialogModule } from '@angular/material/dialog';
 import { ProductStatusComponent } from './inventory/navigation/product-status/product-status.component';
 import { ImprintDetailsComponent } from './inventory/navigation/imprint/imprint-details/imprint-details.component';
 import { ProductColorSizesComponent } from './inventory/navigation/sizes/color-sizes/color-sizes.component';
+import { MatDatepickerModule } from '@angular/material/datepicker';
 
 @NgModule({
     declarations: [
@@ -229,7 +230,9 @@ import { ProductColorSizesComponent } from './inventory/navigation/sizes/color-s
         AutocompleteLibModule,
         NgMultiSelectDropDownModule,
         FuseAlertModule,
-        MatDialogModule
+        MatDialogModule,
+        MatDatepickerModule,
+        MatNativeDateModule
     ],
     entryComponents: [ImprintRunComponent]
 })

@@ -99,6 +99,10 @@
                         (matChipInputTokenEnd)="addColors($event)">
                 </mat-chip-list>
             </mat-form-field>
+            <fuse-alert class="mb-3" *ngIf="isAddMsg" [appearance]="'soft'" [dismissible]="true" [dismissed]="false"
+                [name]="'alertBox3'" [type]="'warning'">
+                {{isAddMsg}}
+            </fuse-alert>
             <div class="text-right">
                 <button [disabled]="isAddColorLoader" class="min-w-50" mat-stroked-button [matTooltip]="'Add Color'"
                     (click)="addNewColor()">

@@ -1,0 +1,190 @@
+<div class="row">
+    <div class="col-6">
+        <p class="text-lg font-bold">Charge Selection</p>
+    </div>
+    <div class="col-6 text-right">
+        <button mat-button class="close-icon" [mat-dialog-close]="true">
+            <mat-icon>close</mat-icon>
+        </button>
+    </div>
+    <div class="col-12">
+        <p class="text-secondary">Enter an imprint charge and corresponding discount code to find existing charge
+            distributions that include it. For example for a silk-screened additional color/location charge of $0.25(G),
+            enter 0.25, select G and click the button.</p>
+        <div class="row">
+            <div class="col-12 col-md-4">
+                <mat-form-field class="w-full">
+                    <input type="number" matInput [(ngModel)]="ngChargeCode">
+                </mat-form-field>
+            </div>
+            <div class="col-12 col-md-4">
+                <mat-form-field class="w-full">
+                    <mat-select [(ngModel)]="ngCostCode" name="collection">
+                        <mat-option *ngFor="let code of runSetupDistributorCodes" [value]="code">
+                            <small>{{code.distrDiscountCode}}</small>
+                        </mat-option>
+                    </mat-select>
+                </mat-form-field>
+            </div>
+            <div class="col-12 col-md-4">
+                <button class="min-w-30 mr-2 mb-2" mat-stroked-button [matTooltip]="'Get all charges'"
+                    (click)="getCharges()" [disabled]="getChargesLoader">
+                    <mat-progress-spinner *ngIf="getChargesLoader" [diameter]="24" [mode]="'indeterminate'">
+                    </mat-progress-spinner>
+                    <span *ngIf="!getChargesLoader" class="ml-1 mr-1">
+                        Get Charges
+                    </span>
+                </button>
+                <button mat-stroked-button class="mb-2 min-w-30" (click)="addNewChargeToggle()">Add New Charge</button>
+            </div>
+        </div>
+    </div>
+    <!-- Get Charges -->
+    <div class="col-12  d-flex overflow-x-auto" style="max-height: 500px;" *ngIf="chargesTableArray">
+        <div *ngIf="chargesTableArray.length == 0">{{errMsg}}</div>
+        <div *ngIf="chargesTableArray.length > 0"></div>
+        <div class="mx-5 shadow bg-card p-5 rounded-2xl p-5 my-5 border-2" *ngFor="let chargeData of chargesTableArray">
+            <div class="row">
+                <div class="col-12">
+                    <p class="bg-primary text-white text-center text-1xl font-semibold p-3">
+                        {{chargeData.chargeId}}
+                    </p>
+                </div>
+                <div class="col-12">
+                    <a href="" class="mx-2 text-sm" (click)="setRun($event,chargeData.chargeId)"> +
+                        Run</a>
+                </div>
+                <div class="col-12">
+                    <a href="" class="ml-2 text-sm" (click)="setSetup($event,chargeData.chargeId)"> +
+                        Setup</a>
+                </div>
+            </div>
+            <table class="m-2 w-2/4">
+                <col>
+                <colgroup span="1"></colgroup>
+                <colgroup span="1"></colgroup>
+                <tr>
+                    <th scope="col" class="text-1xl font-semibold text-center bg-gray-100 p-3"></th>
+                    <th scope="col" class="text-1xl font-semibold text-center bg-gray-100 p-3 p-3"
+                        *ngFor="let productQuantity of chargeData.uniqueProductQuantities">
+                        {{productQuantity}}
+                    </th>
+                </tr>
+                <tr *ngFor="let rowFill of chargeData.rowsRendering">
+                    <th scope="row" class="text-1xl font-semibold text-center bg-gray-100 p-3 p-3">
+                        {{rowFill.verticalColumnName}}
+                    </th>
+                    <td class="p-3 bg-gray-50 text-center" *ngFor="let rowChargeValue of rowFill.renderedArray">
+                        {{rowChargeValue[2]}}
+                    </td>
+                </tr>
+            </table>
+        </div>
+    </div>
+    <!-- Add New Charge -->
+    <div class="col-12" *ngIf="currentChargeValue">
+        <div class="flex">
+            <p class="mr-2">Charge was added successfully! Click the button to assign it to the imprint: </p>
+            <p class="cursor-pointer mr-2 text-green-300 hover:text-green-500" (click)="setCurrentRun()">Run</p>
+            <p class="cursor-pointer text-red-300 hover:text-red-500" (click)="setCurrentSetup()">Setup</p>
+        </div>
+    </div>
+    <div class="col-12  overflow-x-auto  shadow bg-card p-5 rounded-2xl p-5 my-5 border-2" *ngIf="isNewCharge">
+        <p class="text-xl font-bold">New Charge</p>
+        <p>REMEMBER: It's a good practice to re-use distributions. For silk-screening, even if the product cannot be
+            imprinted with 8 colors, enter a distribution that covers all 8 colors. Similarly, for embroidering go up to
+            30,000 stiches</p>
+        <div class="row">
+            <div class="col-12 col-md-4">
+                <p class="text-blue-500"> PRODUCT QUANTITY →</p>
+                <p class="text-blue-500"> PROCESS QUANTITY ↓</p>
+            </div>
+            <div class="col-12 col-md-4">
+                <mat-form-field class="w-full">
+                    <mat-select [(ngModel)]="newChargeValue" name="collection">
+                        <mat-option *ngFor="let code of runSetupDistributorCodes" [value]="code.distrDiscount">
+                            <small>{{code.distrDiscountCode}}</small>
+                        </mat-option>
+                    </mat-select>
+                </mat-form-field>
+            </div>
+            <div class="col-12 col-md-2">
+                <button class="min-w-30 mr-2 mb-2" mat-stroked-button [matTooltip]="'Add Charge'" (click)="createObj()"
+                    [disabled]="createNewChargeLoader">
+                    <mat-progress-spinner *ngIf="createNewChargeLoader" [diameter]="24" [mode]="'indeterminate'">
+                    </mat-progress-spinner>
+                    <span *ngIf="!createNewChargeLoader" class="ml-1 mr-1">
+                        Add Charge
+                    </span>
+                </button>
+            </div>
+        </div>
+        <div class="flex">
+            <div class="flex data-width mr-8">
+            </div>
+            <div class="data-width mr-1" *ngFor="let item of productQuantities;let i=index">
+                <mat-form-field class="w-full">
+                    <input matInput type="number" [(ngModel)]="item.value" [readonly]="i==0" />
+                </mat-form-field>
+            </div>
+        </div>
+        <!-- <div class="row">
+            <div class="col col-width"></div>
+            <div class="col col-width" *ngFor="let item of productQuantities;let i=index">
+                <mat-form-field class="w-full">
+                    <input matInput type="number" [(ngModel)]="item.value" [readonly]="i==0" />
+                </mat-form-field>
+            </div>
+        </div> -->
+        <div *ngFor="let element of processQuantities;let $i=index;let first=first">
+            <div class="flex">
+                <div class="flex data-width mr-8 justify-between">
+                    <mat-icon *ngIf="first" (click)="addValues($i)" class="mt-2 cursor-pointer"
+                        style="visibility: hidden;" svgIcon="heroicons_outline:plus">
+                    </mat-icon>
+                    <mat-icon *ngIf="!first" (click)="addValues($i)" class="mt-2 cursor-pointer"
+                        svgIcon="heroicons_outline:plus">
+                    </mat-icon>
+                    <mat-form-field class="w-full  mr-1">
+                        <input type="number" matInput [readonly]="$i==0" [(ngModel)]="element.value" />
+                    </mat-form-field>
+                </div>
+                <div class="flex data-width mr-1" *ngFor="let item of element.quantitiesVal;let i=index">
+                    <mat-form-field class="w-full">
+                        <input type="number" matInput [(ngModel)]="item.value" />
+                    </mat-form-field>
+                </div>
+            </div>
+        </div>
+        <!-- <div class="row" *ngFor="let element of processQuantities;let $i=index;let first=first">
+            <div class="col col-width">
+                <div class="flex justify-between">
+                    <mat-icon *ngIf="first" (click)="addValues($i)" class="mt-2 cursor-pointer"
+                        style="visibility: hidden;" svgIcon="heroicons_outline:plus">
+                    </mat-icon>
+                    <mat-icon *ngIf="!first" (click)="addValues($i)" class="mt-2 cursor-pointer"
+                        svgIcon="heroicons_outline:plus">
+                    </mat-icon>
+                    <mat-form-field class="w-full">
+                        <input type="number" matInput [readonly]="$i==0" [(ngModel)]="element.value" />
+                    </mat-form-field>
+                </div>
+
+            </div>
+            <div class="col col-width" *ngFor="let item of element.quantitiesVal;let i=index">
+                <mat-form-field class="w-full">
+                    <input type="number" matInput [(ngModel)]="item.value" />
+                </mat-form-field>
+            </div>
+        </div> -->
+    </div>
+    <!-- <div class="col-12 shadow bg-card p-5 rounded-2xl">
+        <p class="text-xl font-bold pb-5">Commonly Used</p>
+        <div class="row">
+            <div class="col-2">Name</div>
+            <div class="col-2">Value</div>
+            <div class="col-2 cursor-pointer hover:text-green-500">Run</div>
+            <div class="col-2 cursor-pointer hover:text-red-500">Setup</div>
+        </div>
+    </div> -->
+</div>

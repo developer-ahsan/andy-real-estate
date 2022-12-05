@@ -1,14 +1,15 @@
 import { Component, Input, OnInit, Output, EventEmitter, ChangeDetectorRef, OnDestroy } from '@angular/core';
 import { Subject } from 'rxjs';
-import { InventoryService } from 'app/modules/admin/apps/ecommerce/inventory/inventory.service';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { add_setup_charge } from '../../system.types';
+import { SystemService } from '../../system.service';
 
 @Component({
   selector: 'app-imprint-run',
   templateUrl: './imprint-run.component.html',
   styles: ['.col-width {width: 11.11%} .data-width {width: 100px}']
 })
-export class ImprintRunComponent implements OnInit, OnDestroy {
+export class SystemImprintRunComponent implements OnInit, OnDestroy {
 
   private _unsubscribeAll: Subject<any> = new Subject<any>();
 
@@ -31,7 +32,7 @@ export class ImprintRunComponent implements OnInit, OnDestroy {
   errMsg = '';
   constructor(
     private _changeDetectorRef: ChangeDetectorRef,
-    private _inventoryService: InventoryService,
+    private _systemService: SystemService,
     private _snackBar: MatSnackBar,
   ) { }
 
@@ -82,16 +83,14 @@ export class ImprintRunComponent implements OnInit, OnDestroy {
         });
       }
     });
-    let payload = {
+    let payload: add_setup_charge = {
       dist_code: this.newChargeValue,
       quantities: array,
       add_charge_setup: true
     }
     this.createNewChargeLoader = true;
-    this._inventoryService.AddSetupCharge(payload).subscribe(res => {
+    this._systemService.AddSystemData(payload).subscribe(res => {
       this.createNewChargeLoader = false;
-      // this._inventoryService.setup = res["new_charge"];
-      // this._inventoryService.run = res["new_charge"];
       this.currentChargeValue = res["new_charge"];
       this.isNewCharge = false;
       this._snackBar.open('Note: Charge was added successfully! Click the button to assign it to the imprint', '', {
@@ -115,7 +114,7 @@ export class ImprintRunComponent implements OnInit, OnDestroy {
     let chargeValue = intCharge * (1 - roundedDiscount);
     chargeValue = Math.round(chargeValue * 10000) / 10000;
     this.getChargesLoader = true;
-    this._inventoryService.getChargeValue(chargeValue)
+    this._systemService.getChargeValue(chargeValue)
       .subscribe((charges) => {
         if (!charges["data"]?.length) {
           const errorLog = `No charges containing ${intCharge} x (1-${roundedDiscount}) = ${chargeValue} were found. Check your inputs or add a new charge.`;
@@ -139,7 +138,7 @@ export class ImprintRunComponent implements OnInit, OnDestroy {
           chargeArray.push(fk_chargeID)
         };
 
-        this._inventoryService.getChargeValuesData(chargeArray.toString())
+        this._systemService.getChargeValuesData(chargeArray.toString())
           .subscribe((chargeValues) => {
             this.getChargesLoader = false;
 
@@ -215,7 +214,7 @@ export class ImprintRunComponent implements OnInit, OnDestroy {
   }
   setRun(e, value) {
     e.preventDefault();
-    this._inventoryService.run = value;
+    this._systemService.run = value;
     this._snackBar.open('Run assigned successfully', '', {
       horizontalPosition: 'center',
       verticalPosition: 'bottom',
@@ -226,7 +225,7 @@ export class ImprintRunComponent implements OnInit, OnDestroy {
 
   setSetup(e, value) {
     e.preventDefault();
-    this._inventoryService.setup = value;
+    this._systemService.setup = value;
     this._snackBar.open('Setup assigned successfully', '', {
       horizontalPosition: 'center',
       verticalPosition: 'bottom',
@@ -236,7 +235,7 @@ export class ImprintRunComponent implements OnInit, OnDestroy {
   };
   getRunSetup() {
     this.runSetupLoaderFetching = true;
-    this._inventoryService.distributionCodes$
+    this._systemService.distributionCodes$
       .subscribe((response) => {
         this.runSetupLoaderFetching = false;
         this.runSetupDistributorCodes = response["data"];
@@ -248,7 +247,7 @@ export class ImprintRunComponent implements OnInit, OnDestroy {
       });
   };
   setCurrentRun() {
-    this._inventoryService.run = this.currentChargeValue;
+    this._systemService.run = this.currentChargeValue;
     this._snackBar.open('Run assigned successfully', '', {
       horizontalPosition: 'center',
       verticalPosition: 'bottom',
@@ -258,7 +257,7 @@ export class ImprintRunComponent implements OnInit, OnDestroy {
   };
 
   setCurrentSetup() {
-    this._inventoryService.setup = this.currentChargeValue;
+    this._systemService.setup = this.currentChargeValue;
     this._snackBar.open('Setup assigned successfully', '', {
       horizontalPosition: 'center',
       verticalPosition: 'bottom',

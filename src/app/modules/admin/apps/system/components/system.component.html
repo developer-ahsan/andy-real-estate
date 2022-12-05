@@ -129,6 +129,10 @@
                         <app-core-products [(isLoading)]="isLoading">
                         </app-core-products>
                     </ng-template>
+                    <ng-template [ngIf]="selectedScreeen == 'Imprint Charges'">
+                        <app-imprint-charges [(isLoading)]="isLoading">
+                        </app-imprint-charges>
+                    </ng-template>
                 </div>
             </div>
         </div>

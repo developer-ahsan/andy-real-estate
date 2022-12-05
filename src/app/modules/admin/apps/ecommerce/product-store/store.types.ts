@@ -87,3 +87,29 @@ export interface UpdateProductOptions {
     storeProductID: number;
     update_product_options: boolean
 };
+
+export interface UpdateReview {
+    name: string;
+    date: string;
+    rating: number;
+    comment: string;
+    response: string;
+    blnActive: boolean;
+    pk_reviewID: number;
+    storeProductId: number;
+    update_review: boolean;
+};
+
+export interface AddReview {
+    storeProductId: number;
+    name: string;
+    date: string;
+    rating: number;
+    comment: string;
+    add_review: boolean;
+};
+
+export interface DeleteReview {
+    pk_reviewID: number;
+    delete_review: boolean;
+};

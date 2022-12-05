@@ -5,7 +5,7 @@
             </ngx-skeleton-loader>
         </div>
         <div *ngIf="!isLoading">
-            <div class="px-3" *ngIf="!isUpdateMethod">
+            <div class="px-3" *ngIf="!isUpdateLocation">
                 <mat-form-field class="w-full">
                     <input matInput placeholder="Search Keyword" [disabled]="isSearching" [(ngModel)]="keyword"
                         (keyup.enter)="searchColor($event.target.value)">
@@ -14,14 +14,14 @@
                     (click)="resetSearch()">Reset</p>
                 <p class="text-secondary text-right font-medium mb-2" *ngIf="isSearching">Searching...</p>
             </div>
-            <div *ngIf="dataSource.length > 0 && !isUpdateMethod;else other_content" class="w-full">
+            <div *ngIf="dataSource.length > 0 && !isUpdateLocation;else other_content" class="w-full">
                 <table mat-table [dataSource]="dataSource" class="w-full border-t">
                     <ng-container matColumnDef="id">
                         <th mat-header-cell *matHeaderCellDef class="w-15 min-w-15">
                             ID
                         </th>
                         <td mat-cell *matCellDef="let element">
-                            {{element.pk_methodID}}
+                            {{element.pk_locationID}}
                         </td>
                     </ng-container>
                     <ng-container matColumnDef="name">
@@ -29,7 +29,7 @@
                             Name
                         </th>
                         <td mat-cell *matCellDef="let element">
-                            {{element.methodName || not_available}}
+                            {{element.locationName || not_available}}
                         </td>
                     </ng-container>
 
@@ -37,7 +37,8 @@
                         <th mat-header-cell *matHeaderCellDef class="w-15 min-w-15 text-center"> Action </th>
                         <td mat-cell *matCellDef="let element">
                             <div class="flex justify-center">
-                                <mat-icon svgIcon="heroicons_outline:pencil-alt" (click)="updateMethodToggle(element)">
+                                <mat-icon svgIcon="heroicons_outline:pencil-alt"
+                                    (click)="updateLocationToggle(element)">
                                 </mat-icon>
                             </div>
                         </td>
@@ -53,28 +54,32 @@
                 </mat-paginator>
             </div>
             <!-- Update Method -->
-            <div *ngIf="isUpdateMethod" class="p-6">
+            <div *ngIf="isUpdateLocation" class="p-6">
+                <fuse-alert class="mb-3" [appearance]="'soft'" [type]="'basic'" [showIcon]="false">
+                    Please note: updating this imprint location name will update that location on all active imprints in
+                    the sytsem. Please use caution.
+                </fuse-alert>
                 <mat-form-field class="w-full">
                     <mat-label>Location Name (100)</mat-label>
-                    <input matInput [(ngModel)]="updateMethodData.methodName" maxlength="100">
+                    <input matInput [(ngModel)]="ngLocationName" maxlength="100">
                 </mat-form-field>
                 <div class="justify-end flex">
-                    <button [disabled]="isUpdateMethodLoader" class="min-w-30 mr-2" mat-stroked-button
-                        [matTooltip]="'Back to list'" (click)="updateMethodToggle(null)">
+                    <button [disabled]="isUpdateLocationLoader" class="min-w-30 mr-2" mat-stroked-button
+                        [matTooltip]="'Back to list'" (click)="updateLocationToggle(null)">
                         Cancel
                     </button>
-                    <button [disabled]="isUpdateMethodLoader" class="min-w-40" mat-stroked-button
-                        [matTooltip]="'Update Method'" (click)="updateMethod()">
-                        <mat-icon svgIcon="heroicons_solid:pencil" *ngIf="!isUpdateMethodLoader"></mat-icon>
-                        <span class="ml-2" *ngIf="!isUpdateMethodLoader"> Update Location </span>
-                        <mat-progress-spinner *ngIf="isUpdateMethodLoader" [diameter]="24" [mode]="'indeterminate'">
+                    <button [disabled]="isUpdateLocationLoader" class="min-w-40" mat-stroked-button
+                        [matTooltip]="'Update Location'" (click)="updateLocation()">
+                        <mat-icon svgIcon="heroicons_solid:pencil" *ngIf="!isUpdateLocationLoader"></mat-icon>
+                        <span class="ml-2" *ngIf="!isUpdateLocationLoader"> Update Location </span>
+                        <mat-progress-spinner *ngIf="isUpdateLocationLoader" [diameter]="24" [mode]="'indeterminate'">
                         </mat-progress-spinner>
                     </button>
                 </div>
             </div>
             <!-- No color Found -->
             <ng-template #other_content>
-                <div class="text-secondary font-semibold p-5 text-center" *ngIf="!isUpdateMethod">
+                <div class="text-secondary font-semibold p-5 text-center" *ngIf="!isUpdateLocation">
                     No Imprint Methods Found.
                 </div>
             </ng-template>

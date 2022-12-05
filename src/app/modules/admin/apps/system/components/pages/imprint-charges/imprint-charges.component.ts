@@ -1,18 +1,21 @@
 import { ENTER, COMMA } from '@angular/cdk/keycodes';
+import { ScrollStrategy, ScrollStrategyOptions } from '@angular/cdk/overlay';
 import { Component, Input, OnInit, Output, EventEmitter, ChangeDetectorRef, OnDestroy, ViewChild } from '@angular/core';
 import { MatChipInputEvent } from '@angular/material/chips';
+import { MatDialog } from '@angular/material/dialog';
 import { MatPaginator } from '@angular/material/paginator';
 import { Subject } from 'rxjs';
 import { finalize, takeUntil } from 'rxjs/operators';
 import { SystemService } from '../../system.service';
-import { AddColor, AddImprintColor, AddImprintMethod, DeleteColor, DeleteImprintColor, UpdateColor, UpdateImprintColor, UpdateImprintMethod, UpdateLocation } from '../../system.types';
+import { AddColor, AddImprintColor, AddImprintMethod, DeleteColor, DeleteImprintColor, UpdateColor, UpdateImprintColor, UpdateImprintMethod } from '../../system.types';
+import { SystemImprintRunComponent } from '../imprint-run/imprint-run.component';
 
 @Component({
-  selector: 'app-imprint-locations',
-  templateUrl: './imprint-locations.component.html',
+  selector: 'app-imprint-charges',
+  templateUrl: './imprint-charges.component.html',
   styles: [".mat-paginator {border-radius: 16px !important}"]
 })
-export class ImprintLocationsComponent implements OnInit, OnDestroy {
+export class ImprintChargesComponent implements OnInit, OnDestroy {
   @ViewChild('paginator') paginator: MatPaginator;
   @Input() isLoading: boolean;
   @Output() isLoadingChange = new EventEmitter<boolean>();
@@ -20,11 +23,12 @@ export class ImprintLocationsComponent implements OnInit, OnDestroy {
 
   dataSource = [];
   tempDataSource = [];
-  displayedColumns: string[] = ['id', 'name', 'action'];
+  displayedColumns: string[] = ['name', 'savings', 'threshold', 'exp', 'active', 'shipping', 'used'];
   totalUsers = 0;
   tempRecords = 0;
   page = 1;
 
+  mainScreen: string = 'Current Promo Codes';
   keyword = '';
   not_available = 'N/A';
 
@@ -37,23 +41,47 @@ export class ImprintLocationsComponent implements OnInit, OnDestroy {
   isAddMethodLoader: boolean = false;
 
   // Update Color
-  isUpdateLocationLoader: boolean = false;
-  isUpdateLocation: boolean = false;
-  updateLocationData: any;
+  isUpdateMethodLoader: boolean = false;
+  isUpdateMethod: boolean = false;
+  updateMethodData: any;
   ngRGBUpdate = '';
-  ngLocationName: any;
+  scrollStrategy: ScrollStrategy;
+
   constructor(
     private _changeDetectorRef: ChangeDetectorRef,
+    public dialog: MatDialog,
+    private readonly sso: ScrollStrategyOptions,
     private _systemService: SystemService
-  ) { }
+  ) {
+    this.scrollStrategy = this.sso.noop();
+  }
 
   ngOnInit(): void {
     this.isLoading = true;
-    this.getImprintLocations(1, 'get');
+    this.getImprintMethods(1, 'get');
   };
-  getImprintLocations(page, type) {
+  openModal() {
+    const dialogRef = this.dialog.open(SystemImprintRunComponent, {
+      // data: dialogData,
+      minWidth: "300px",
+      maxHeight: '90vh',
+      scrollStrategy: this.scrollStrategy
+    });
+    dialogRef.afterClosed().subscribe(dialogResult => {
+      // this.runSetup.patchValue({
+      //   run: this._inventoryService.run,
+      //   setup: this._inventoryService.setup
+      // })
+      if (dialogResult) {
+      }
+    })
+  }
+  calledScreen(value) {
+    this.mainScreen = value;
+  }
+  getImprintMethods(page, type) {
     let params = {
-      imprint_locations: true,
+      imprint_methods: true,
       keyword: this.keyword,
       page: page,
       size: 20
@@ -69,7 +97,8 @@ export class ImprintLocationsComponent implements OnInit, OnDestroy {
         this.isAddMethodLoader = false;
         this.ngName = '';
         this.ngDesc = '';
-        this._systemService.snackBar('Location Added Successfully');
+        this._systemService.snackBar('Method Added Successfully');
+        this.mainScreen = 'Current Imprint Methods';
       }
       this.isLoading = false;
       this.isSearching = false;
@@ -90,7 +119,7 @@ export class ImprintLocationsComponent implements OnInit, OnDestroy {
     } else {
       this.page--;
     };
-    this.getImprintLocations(this.page, 'get');
+    this.getImprintMethods(this.page, 'get');
   };
   searchColor(value) {
     this.paginator.firstPage();
@@ -98,7 +127,7 @@ export class ImprintLocationsComponent implements OnInit, OnDestroy {
     this.keyword = value;
     this.isSearching = true;
     this._changeDetectorRef.markForCheck();
-    this.getImprintLocations(1, 'get');
+    this.getImprintMethods(1, 'get');
   }
   resetSearch() {
     this.paginator.firstPage();
@@ -122,7 +151,7 @@ export class ImprintLocationsComponent implements OnInit, OnDestroy {
       this._changeDetectorRef.markForCheck();
     })).subscribe(res => {
       if (res["success"]) {
-        this.getImprintLocations(1, 'add')
+        this.getImprintMethods(1, 'add')
       } else {
         this.isAddMethodLoader = false;
         this._systemService.snackBar(res["message"]);
@@ -153,30 +182,35 @@ export class ImprintLocationsComponent implements OnInit, OnDestroy {
     });
   }
   // Update Method
-  updateLocationToggle(item) {
-    if (item) {
-      this.ngLocationName = item.locationName;
-      this.updateLocationData = item;
-    }
-    this.isUpdateLocation = !this.isUpdateLocation;
+  updateMethodToggle(item) {
+    console.log(item)
+    this.updateMethodData = item;
+    this.isUpdateMethod = !this.isUpdateMethod;
   }
-  updateLocation() {
-    if (this.ngLocationName == '') {
-      this._systemService.snackBar('Location name is required');
+  updateMethod() {
+    if (this.updateMethodData.imprintColorName == '') {
+      this._systemService.snackBar('Color name is required');
       return;
     }
-    let payload: UpdateLocation = {
-      location_name: this.ngLocationName,
-      location_id: this.updateLocationData.pk_locationID,
-      update_imprint_location: true
+    const rgb = this.ngRGBUpdate.replace('#', '');
+    let payload: UpdateImprintMethod = {
+      method_id: this.updateMethodData.pk_methodID,
+      method_name: this.updateMethodData.methodName,
+      description: this.updateMethodData.methodDescription,
+      update_imprint_method: true
     }
-    this.isUpdateLocationLoader = true;
+    this.isUpdateMethodLoader = true;
     this._systemService.UpdateSystemData(payload).pipe(takeUntil(this._unsubscribeAll), finalize(() => {
-      this.isUpdateLocationLoader = false;
+      this.isUpdateMethodLoader = false
       this._changeDetectorRef.markForCheck();
     })).subscribe(res => {
-      this.updateLocationData.locationName = this.ngLocationName;
-      this._systemService.snackBar('Location Updated Successfully');
+      this.dataSource.filter(elem => {
+        if (elem.pk_methodID == this.updateMethodData.pk_methodID) {
+          elem.methodName = this.updateMethodData.methodName;
+          elem.methodDescription = this.updateMethodData.methodDescription;
+        }
+      });
+      this._systemService.snackBar('Method Updated Successfully');
       this._changeDetectorRef.markForCheck();
     }, err => {
       this._systemService.snackBar('Something went wrong');

@@ -8,67 +8,283 @@
                     <div class="text-2xl font-bold">
                         Product Reviews
                     </div>
+                    <mat-button-toggle-group #group="matButtonToggleGroup" [value]="mainScreen"
+                        (change)="calledScreen(group.value)">
+                        <mat-button-toggle value="Current Reviews">
+                            Current Reviews
+                        </mat-button-toggle>
+                        <mat-button-toggle value="Create New Review">
+                            Create New Review
+                        </mat-button-toggle>
+                    </mat-button-toggle-group>
                 </div>
                 <!-- table -->
-                <div *ngIf="!isEditReview">
-                    <div *ngIf="reviewData.length > 0 ; else other_content">
-                        <table mat-table *ngIf="reviewData.length > 0" [dataSource]="reviewData"
-                            class="w-full border-t border-b-0">
-                            <ng-container matColumnDef="name">
-                                <th mat-header-cell *matHeaderCellDef class="w-20">
-                                    Name
-                                </th>
-                                <td mat-cell *matCellDef="let element; let i=index">
-                                    {{element?.name}}
-                                </td>
-                            </ng-container>
-                            <ng-container matColumnDef="date">
-                                <th mat-header-cell *matHeaderCellDef class="w-20"> Date </th>
-                                <td mat-cell *matCellDef="let element"> {{element?.date | date}} </td>
-                            </ng-container>
-                            <ng-container matColumnDef="rating">
-                                <th mat-header-cell *matHeaderCellDef class="w-20"> Rating </th>
-                                <td mat-cell *matCellDef="let element">
-                                    <span *ngIf="element?.rating == 1">Bad</span>
-                                    <span *ngIf="element?.rating == 2">Poor</span>
-                                    <span *ngIf="element?.rating == 3">Average</span>
-                                    <span *ngIf="element?.rating == 4">Good</span>
-                                    <span *ngIf="element?.rating == 5">Excellent</span>
-                                </td>
-                            </ng-container>
-                            <ng-container matColumnDef="status">
-                                <th mat-header-cell *matHeaderCellDef class="w-10 text-center"> Online </th>
-                                <td mat-cell *matCellDef="let element" class="text-center">
-                                    <mat-icon svgIcon="heroicons_outline:check" class="text-green-500"
-                                        *ngIf="element?.blnActive"></mat-icon>
-                                    <mat-icon svgIcon="heroicons_outline:x" class="text-red-500"
-                                        *ngIf="!element?.blnActive"></mat-icon>
-                                </td>
-                            </ng-container>
-                            <ng-container matColumnDef="action">
-                                <th mat-header-cell *matHeaderCellDef class="w-10 text-center"> Action </th>
-                                <td mat-cell *matCellDef="let element" class="text-center">
-                                    <mat-icon [matTooltip]="'Edit Review'" class="ml-2"
-                                        [svgIcon]="'heroicons_outline:pencil-alt'">
-                                    </mat-icon>
-                                </td>
-                            </ng-container>
-                            <tr mat-header-row *matHeaderRowDef="reviewColumns;" class="h-18 bg-light"></tr>
-                            <tr mat-row *matRowDef="let row; columns: reviewColumns;"
-                                class="h-14 hover:bg-gray-100 dark:hover:bg-hover" style="cursor: pointer;">
-                            </tr>
-                        </table>
-                        <mat-paginator
+
+                <div *ngIf="mainScreen == 'Current Reviews'">
+
+                    <div *ngIf="!isEditReview">
+                        <div *ngIf="reviewData.length > 0 ; else other_content" class="w-full">
+                            <table mat-table *ngIf="reviewData.length > 0" [dataSource]="reviewData"
+                                class="w-full border-t">
+                                <ng-container matColumnDef="name">
+                                    <th mat-header-cell *matHeaderCellDef class="w-20">
+                                        Name
+                                    </th>
+                                    <td mat-cell *matCellDef="let element; let i=index">
+                                        {{element?.name}}
+                                    </td>
+                                </ng-container>
+                                <ng-container matColumnDef="date">
+                                    <th mat-header-cell *matHeaderCellDef class="w-20"> Date </th>
+                                    <td mat-cell *matCellDef="let element"> {{element?.date | date}} </td>
+                                </ng-container>
+                                <ng-container matColumnDef="rating">
+                                    <th mat-header-cell *matHeaderCellDef class="w-20"> Rating </th>
+                                    <td mat-cell *matCellDef="let element">
+                                        <span *ngIf="element?.rating == 1">Bad</span>
+                                        <span *ngIf="element?.rating == 2">Poor</span>
+                                        <span *ngIf="element?.rating == 3">Average</span>
+                                        <span *ngIf="element?.rating == 4">Good</span>
+                                        <span *ngIf="element?.rating == 5">Excellent</span>
+                                    </td>
+                                </ng-container>
+                                <ng-container matColumnDef="status">
+                                    <th mat-header-cell *matHeaderCellDef class="w-10 text-center"> Online </th>
+                                    <td mat-cell *matCellDef="let element" class="text-center">
+                                        <mat-icon svgIcon="heroicons_outline:check" class="text-green-500"
+                                            *ngIf="element?.blnActive"></mat-icon>
+                                        <mat-icon svgIcon="heroicons_outline:x" class="text-red-500"
+                                            *ngIf="!element?.blnActive"></mat-icon>
+                                    </td>
+                                </ng-container>
+                                <ng-container matColumnDef="action">
+                                    <th mat-header-cell *matHeaderCellDef class="w-10 text-center"> Action </th>
+                                    <td mat-cell *matCellDef="let element" class="text-center">
+                                        <div class="flex justify-center">
+                                            <mat-icon [matTooltip]="'Edit Review'" class="ml-2"
+                                                (click)="editToggle(element)"
+                                                [svgIcon]="'heroicons_outline:pencil-alt'">
+                                            </mat-icon>
+                                            <mat-icon *ngIf="!element?.deleteLoader" [matTooltip]="'Delete Review'"
+                                                class="ml-2" (click)="removeReviews(element)"
+                                                [svgIcon]="'heroicons_outline:trash'">
+                                            </mat-icon>
+                                            <mat-progress-spinner *ngIf="element?.deleteLoader" [diameter]="24"
+                                                [mode]="'indeterminate'">
+                                            </mat-progress-spinner>
+                                        </div>
+                                    </td>
+                                </ng-container>
+                                <tr mat-header-row *matHeaderRowDef="reviewColumns;" class="h-18 bg-light"></tr>
+                                <tr mat-row *matRowDef="let row; columns: reviewColumns;"
+                                    class="h-14 hover:bg-gray-100 dark:hover:bg-hover" style="cursor: pointer;">
+                                </tr>
+                            </table>
+                            <mat-paginator #paginator
+                                class="border-b sm:border-t sm:border-b-0 z-10 bg-gray-50 dark:bg-transparent"
+                                [length]="reviewTotal" [pageIndex]="0" [pageSize]="20" (page)="getNextData($event)"
+                                [pageSize]="reviewData.length" [hidePageSize]="true">
+                            </mat-paginator>
+                            <!-- <mat-paginator
                             class="sm:absolute sm:inset-x-0 border-b sm:border-t sm:border-b-0 z-10 bg-gray-50 dark:bg-transparent"
                             [length]="reviewTotal" [pageIndex]="0" [pageSize]="reviewData.length"
                             (page)="getNextData($event)" [hidePageSize]="true">
-                        </mat-paginator>
-                    </div>
-                    <ng-template #other_content>
-                        <div class="text-secondary font-semibold p-5 text-center">
-                            No review found for this product.
+                        </mat-paginator> -->
                         </div>
-                    </ng-template>
+                        <ng-template #other_content>
+                            <div class="text-secondary font-semibold p-5 text-center">
+                                No review found for this product.
+                            </div>
+                        </ng-template>
+                    </div>
+                    <div class="row" style="width: -webkit-fill-available;" *ngIf="isEditReview">
+                        <div class="col-12">
+                            <div class="p-6 sm:p-8 lg:p-10 w-full">
+                                <div class="row">
+                                    <div class="col-lg-6 col-12">
+                                        <div class="text-2xl font-bold">
+                                            Edit Product Review
+                                        </div>
+                                    </div>
+
+                                    <div class="text-right col-lg-6 col-12">
+                                        <button class="ml-4" mat-stroked-button [matTooltip]="'Back to Product Reviews'"
+                                            (click)="backToReviews()">Product Reviews
+                                        </button>
+                                    </div>
+                                    <!-- Update Form -->
+                                    <div class="col-12 pt-6">
+                                        <form [formGroup]="updateProductReviewForm">
+                                            <div class="row">
+                                                <div class="col-md-6 col-12">
+                                                    <mat-form-field class="w-full">
+                                                        <mat-label>Name: *</mat-label>
+                                                        <input formControlName="name" matInput placeholder="Name" />
+                                                    </mat-form-field>
+                                                </div>
+                                                <div class="col-md-6 col-12">
+                                                    <mat-form-field class="w-full">
+                                                        <mat-label>Date: *</mat-label>
+                                                        <input readonly matInput formControlName="date"
+                                                            [matDatepicker]="picker">
+                                                        <mat-hint>MM/DD/YYYY</mat-hint>
+                                                        <mat-datepicker-toggle matIconSuffix [for]="picker">
+                                                        </mat-datepicker-toggle>
+                                                        <mat-datepicker #picker></mat-datepicker>
+                                                    </mat-form-field>
+                                                </div>
+                                                <div class="col-md-6 col-12">
+                                                    <mat-form-field class="w-full">
+                                                        <mat-label>Rating: </mat-label>
+                                                        <mat-select formControlName="rating" matInput>
+                                                            <mat-option [value]="1">Bad</mat-option>
+                                                            <mat-option [value]="2">Poor</mat-option>
+                                                            <mat-option [value]="3">Average</mat-option>
+                                                            <mat-option [value]="4">Good</mat-option>
+                                                            <mat-option [value]="5">Excellent</mat-option>
+                                                        </mat-select>
+                                                    </mat-form-field>
+                                                </div>
+                                                <div class="col-md-6 col-12">
+                                                    <mat-form-field class="w-full">
+                                                        <mat-label>Status: </mat-label>
+                                                        <mat-select formControlName="blnActive" matInput>
+                                                            <mat-option [value]="true">Online</mat-option>
+                                                            <mat-option [value]="false">Offline</mat-option>
+                                                        </mat-select>
+                                                    </mat-form-field>
+                                                </div>
+                                                <div class="col-12 col-md-6">
+                                                    <mat-form-field class="w-full">
+                                                        <mat-label>Comments:</mat-label>
+                                                        <textarea formControlName="comment" rows="10"
+                                                            matInput></textarea>
+                                                    </mat-form-field>
+                                                </div>
+                                                <div class="col-12  col-md-6">
+                                                    <mat-form-field class="w-full">
+                                                        <mat-label>Response:</mat-label>
+                                                        <textarea formControlName="response" rows="10"
+                                                            matInput></textarea>
+                                                    </mat-form-field>
+                                                </div>
+                                                <div class="col-12 flex items-center justify-end w-full">
+                                                    <button [disabled]="isUpdateLoader" (click)="updateProductReview()"
+                                                        [matTooltip]="'Update review'" class="order-first sm:order-last"
+                                                        mat-flat-button mat-stroked-button>
+                                                        <mat-progress-spinner *ngIf="isUpdateLoader" [diameter]="24"
+                                                            [mode]="'indeterminate'">
+                                                        </mat-progress-spinner>
+                                                        <mat-icon *ngIf="!isUpdateLoader" svgIcon="mat_outline:edit">
+                                                        </mat-icon>
+                                                        <span class="px-2">Update Review</span>
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div *ngIf="mainScreen == 'Create New Review'">
+                    <div class="row" style="width: -webkit-fill-available;">
+                        <div class="col-12">
+                            <div class="p-6 sm:p-8 lg:p-10 w-full">
+                                <div class="row">
+                                    <div class="col-lg-6 col-12">
+                                        <div class="text-2xl font-bold">
+                                            Add a Product Review
+                                        </div>
+                                    </div>
+                                    <!-- Update Form -->
+                                    <div class="col-12 pt-6">
+                                        <form [formGroup]="productAddReviewForm">
+                                            <div class="row">
+                                                <div class="col-md-4 col-12">
+                                                    <mat-form-field class="w-full">
+                                                        <mat-label>Name: *</mat-label>
+                                                        <input formControlName="name" matInput placeholder="Name" />
+                                                    </mat-form-field>
+                                                </div>
+                                                <div class="col-md-4 col-12">
+                                                    <mat-form-field class="w-full">
+                                                        <mat-label>Company: *</mat-label>
+                                                        <input formControlName="company" type="text" matInput>
+                                                    </mat-form-field>
+                                                </div>
+                                                <div class="col-md-4 col-12">
+                                                    <mat-form-field class="w-full">
+                                                        <mat-label>Rating: </mat-label>
+                                                        <mat-select formControlName="rating" matInput>
+                                                            <mat-option [value]="1">Bad</mat-option>
+                                                            <mat-option [value]="2">Poor</mat-option>
+                                                            <mat-option [value]="3">Average</mat-option>
+                                                            <mat-option [value]="4">Good</mat-option>
+                                                            <mat-option [value]="5">Excellent</mat-option>
+                                                        </mat-select>
+                                                    </mat-form-field>
+                                                </div>
+                                                <div class="col-12">
+                                                    <mat-form-field class="w-full">
+                                                        <mat-label>Customer Comments:</mat-label>
+                                                        <textarea formControlName="comment" rows="10"
+                                                            matInput></textarea>
+                                                    </mat-form-field>
+                                                </div>
+                                                <!-- <div class="col-12">
+                                      <mat-label>Upload an image with this review:</mat-label>
+                                      <p class="text-danger">JPG only. 600 x 600 minimum, 1500 x 1500 maximum.</p>
+                                      <input type="file" />
+                                    </div> -->
+                                                <div class="col-12 flex items-center justify-end w-full">
+
+                                                    <button [disabled]="isAddLoader" (click)="addProductReview()"
+                                                        [matTooltip]="'Add review'" class="order-first sm:order-last"
+                                                        mat-flat-button mat-stroked-button>
+                                                        <mat-progress-spinner *ngIf="isAddLoader" [diameter]="24"
+                                                            [mode]="'indeterminate'">
+                                                        </mat-progress-spinner>
+                                                        <mat-icon *ngIf="!isAddLoader" svgIcon="mat_outline:add">
+                                                        </mat-icon>
+                                                        <span class="px-2">Add Review</span>
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </form>
+                                    </div>
+                                    <!-- <div class="col-12 pt-3">
+                                <div class="row border-t pb-4 pt-2">
+                                  <div class="col-md-8 col-12">
+                                    <div class="text-lg">
+                                      Marybeth F - Akron Children's Hospital
+                                    </div>
+                                    <div>
+                                      <mat-icon svgIcon="heroicons_solid:star" style="color: #cdcd0c"></mat-icon>
+                                      <mat-icon svgIcon="heroicons_solid:star" style="color: #cdcd0c"></mat-icon>
+                                      <mat-icon svgIcon="heroicons_solid:star" style="color: #cdcd0c"></mat-icon>
+                                      <mat-icon svgIcon="heroicons_solid:star" style="color: #cdcd0c"></mat-icon>
+                                    </div>
+                                    <div class="text-md font-bold">08/24/2016</div>
+                                    <div>
+                                      <p>We had a special logo placed on these buttons for an event and were very pleased with our
+                                        final products! We'll definitely be ordering these again!!</p>
+                                    </div>
+                                  </div>
+                                  <div class="col-md-4 col-12 text-right">
+                                    <img src="https://assets.consolidus.com/globalAssets/Stores/mastheads/141.gif">
+                                    <button [matTooltip]="'Add review'" class="order-first sm:order-last" mat-flat-button
+                                      mat-stroked-button>
+                                      Add review
+                                    </button>
+                                  </div>
+                                </div>
+                              </div> -->
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </fuse-card>

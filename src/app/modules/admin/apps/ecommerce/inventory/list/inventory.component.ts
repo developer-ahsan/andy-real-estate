@@ -1536,7 +1536,10 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
                                     this.pricingDataArray = productPricing["data"]["result"]["Envelope"]["Body"]["GetConfigurationAndPricingResponse"]["Configuration"]["PartArray"];
 
                                     this.productNumberLoader = false;
-
+                                    setTimeout(() => {
+                                        this.myStepper.next();
+                                        this._changeDetectorRef.markForCheck();
+                                    }, 100);
                                     // Mark for check
                                     this._changeDetectorRef.markForCheck();
                                 } else {

@@ -55,10 +55,12 @@ import { UploadImagesComponent } from './components/pages/upload-images/upload-i
 import { POArchivesComponent } from './components/pages/po-archives/po-archives.component';
 import { ProductMigrationsComponent } from './components/pages/product-migrations/product-migrations.component';
 import { CoreProductsComponent } from './components/pages/core-products/core-products.component';
+import { SystemImprintRunComponent } from './components/pages/imprint-run/imprint-run.component';
+import { ImprintChargesComponent } from './components/pages/imprint-charges/imprint-charges.component';
 
 @NgModule({
     declarations: [
-        SystemComponent, ColorsComponent, SizesComponent, PackAndAccessoriesComponent, ImprintColorsComponent, ImprintMethodsComponent, ImprintLocationsComponent, PromoCodesComponent, DefaultBlurbsComponent, CountrySalesComponent, ActiveStoresComponent, SupportTeamComponent, UploadImagesComponent, POArchivesComponent, ProductMigrationsComponent, CoreProductsComponent
+        SystemComponent, ColorsComponent, SizesComponent, PackAndAccessoriesComponent, ImprintColorsComponent, ImprintMethodsComponent, ImprintLocationsComponent, PromoCodesComponent, DefaultBlurbsComponent, CountrySalesComponent, ActiveStoresComponent, SupportTeamComponent, UploadImagesComponent, POArchivesComponent, ProductMigrationsComponent, CoreProductsComponent, SystemImprintRunComponent, ImprintChargesComponent
     ],
     imports: [
         RouterModule.forChild(systemRoutes),
@@ -102,7 +104,7 @@ import { CoreProductsComponent } from './components/pages/core-products/core-pro
         MatDatepickerModule,
         MatNativeDateModule
     ],
-    entryComponents: []
+    entryComponents: [SystemImprintRunComponent]
 })
 export class SystemModule {
 }

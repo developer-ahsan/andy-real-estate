@@ -1,5 +1,5 @@
 export interface AddColor {
-    color_name: string[];
+    colors: string[];
     add_color: boolean;
 };
 export interface UpdateColor {
@@ -85,3 +85,20 @@ export interface UpdateImprintMethod {
     method_id: number;
     update_imprint_method: boolean;
 };
+
+export interface UpdateLocation {
+    location_name: string;
+    location_id: number;
+    update_imprint_location: boolean;
+};
+
+export interface add_setup_charge {
+    dist_code: number;
+    quantities: charge_obj[];
+    add_charge_setup: boolean;
+}
+export interface charge_obj {
+    process_quantity: number;
+    product_quantity: number;
+    charge: number;
+}
