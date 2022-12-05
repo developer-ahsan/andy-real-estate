@@ -427,7 +427,7 @@ export class SystemService {
 
     // Made suppliers observable
     getAllSuppliers(): Observable<any[]> {
-        return this._httpClient.get<any[]>(environment.products, {
+        return this._httpClient.get<any[]>(environment.system, {
             params: {
                 supplier: true,
                 bln_active: 1,
