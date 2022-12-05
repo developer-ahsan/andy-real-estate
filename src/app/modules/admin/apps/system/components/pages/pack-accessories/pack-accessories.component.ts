@@ -111,7 +111,7 @@ export class PackAndAccessoriesComponent implements OnInit, OnDestroy {
     })).subscribe(res => {
       this.dataSource = this.dataSource.filter(elem => elem.pk_packagingID != item.pk_packagingID);
       this.totalUsers--;
-      this._systemService.snackBar('PackAccessories Deleted Successfully');
+      this._systemService.snackBar('Package Deleted Successfully');
       this._changeDetectorRef.markForCheck();
     }, err => {
       this._systemService.snackBar('Something went wrong');

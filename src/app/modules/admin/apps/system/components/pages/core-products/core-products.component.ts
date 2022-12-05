@@ -97,7 +97,9 @@ export class CoreProductsComponent implements OnInit, OnDestroy {
     this.getImprintMethods(this.page, 'get');
   };
   searchColor(value) {
-    this.paginator.firstPage();
+    if (this.dataSource.length > 0) {
+      this.paginator.firstPage();
+    }
     this.page = 1;
     this.keyword = value;
     this.isSearching = true;
@@ -105,7 +107,9 @@ export class CoreProductsComponent implements OnInit, OnDestroy {
     this.getImprintMethods(1, 'get');
   }
   resetSearch() {
-    this.paginator.firstPage();
+    if (this.dataSource.length > 0) {
+      this.paginator.firstPage();
+    }
     this.keyword = '';
     this.dataSource = this.tempDataSource;
     this.totalUsers = this.tempRecords;

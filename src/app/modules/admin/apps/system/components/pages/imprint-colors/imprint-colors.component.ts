@@ -100,14 +100,18 @@ export class ImprintColorsComponent implements OnInit, OnDestroy {
     this.getColors(this.page, 'get');
   };
   searchColor(value) {
-    this.paginator.firstPage();
+    if (this.dataSource.length > 0) {
+      this.paginator.firstPage();
+    }
     this.keyword = value;
     this.isSearching = true;
     this._changeDetectorRef.markForCheck();
     this.getColors(1, 'get');
   }
   resetSearch() {
-    this.paginator.firstPage();
+    if (this.dataSource.length > 0) {
+      this.paginator.firstPage();
+    }
     this.keyword = '';
     this.dataSource = this.tempDataSource;
     this.totalUsers = this.tempRecords;

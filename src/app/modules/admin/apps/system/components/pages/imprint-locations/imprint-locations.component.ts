@@ -93,7 +93,9 @@ export class ImprintLocationsComponent implements OnInit, OnDestroy {
     this.getImprintLocations(this.page, 'get');
   };
   searchColor(value) {
-    this.paginator.firstPage();
+    if (this.dataSource.length > 0) {
+      this.paginator.firstPage();
+    }
     this.page = 1;
     this.keyword = value;
     this.isSearching = true;
@@ -101,7 +103,9 @@ export class ImprintLocationsComponent implements OnInit, OnDestroy {
     this.getImprintLocations(1, 'get');
   }
   resetSearch() {
-    this.paginator.firstPage();
+    if (this.dataSource.length > 0) {
+      this.paginator.firstPage();
+    }
     this.keyword = '';
     this.dataSource = this.tempDataSource;
     this.totalUsers = this.tempRecords;

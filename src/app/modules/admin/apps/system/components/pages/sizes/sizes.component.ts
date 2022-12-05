@@ -102,14 +102,18 @@ export class SizesComponent implements OnInit, OnDestroy {
     this.getSizes(this.page, 'get');
   };
   searchSize(value) {
-    this.paginator.firstPage();
+    if (this.dataSource.length > 0) {
+      this.paginator.firstPage();
+    }
     this.keyword = value;
     this.isSearching = true;
     this._changeDetectorRef.markForCheck();
     this.getSizes(1, 'get');
   }
   resetSearch() {
-    this.paginator.firstPage();
+    if (this.dataSource.length > 0) {
+      this.paginator.firstPage();
+    }
     this.keyword = '';
     this.dataSource = this.tempDataSource;
     this.totalUsers = this.tempRecords;
