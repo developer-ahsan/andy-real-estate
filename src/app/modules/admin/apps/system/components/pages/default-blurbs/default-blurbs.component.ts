@@ -5,7 +5,7 @@ import { MatPaginator } from '@angular/material/paginator';
 import { Subject } from 'rxjs';
 import { finalize, takeUntil } from 'rxjs/operators';
 import { SystemService } from '../../system.service';
-import { AddColor, AddImprintColor, AddImprintMethod, DeleteColor, DeleteImprintColor, UpdateColor, UpdateImprintColor, UpdateImprintMethod } from '../../system.types';
+import { AddBlurb, AddColor, AddImprintColor, AddImprintMethod, DeleteBlurb, DeleteColor, DeleteImprintColor, UpdateColor, UpdateImprintColor, UpdateImprintMethod } from '../../system.types';
 
 @Component({
   selector: 'app-default-blurbs',
@@ -34,7 +34,7 @@ export class DefaultBlurbsComponent implements OnInit, OnDestroy {
   // Add Method
   ngName: string = '';
   ngDesc: string = '';
-  isAddMethodLoader: boolean = false;
+  isAddLoader: boolean = false;
 
   // Update Color
   isUpdateMethodLoader: boolean = false;
@@ -48,43 +48,34 @@ export class DefaultBlurbsComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.isLoading = true;
-    this.getImprintMethods(1, 'get');
+    this.getBlurbs(1, 'get');
   };
-  getImprintMethods(page, type) {
-    setTimeout(() => {
+  getBlurbs(page, type) {
+    let params = {
+      get_blurbs: true,
+      page: page,
+      size: 20
+    }
+    this._systemService.getSystemsData(params).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+      this.dataSource = res["data"];
+      this.totalUsers = res["totalRecords"];
+      if (this.keyword == '') {
+        this.tempDataSource = res["data"];
+        this.tempRecords = res["totalRecords"];
+      }
+      if (type == 'add') {
+        this.isAddLoader = false;
+        this.ngName = '';
+        this._systemService.snackBar('Blurb Added Successfully');
+      }
       this.isLoading = false;
       this.isLoadingChange.emit(false);
       this._changeDetectorRef.markForCheck();
-    }, 100);
-    // let params = {
-    //   imprint_methods: true,
-    //   keyword: this.keyword,
-    //   page: page,
-    //   size: 20
-    // }
-    // this._systemService.getSystemsData(params).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
-    //   this.dataSource = res["data"];
-    //   this.totalUsers = res["totalRecords"];
-    //   if (this.keyword == '') {
-    //     this.tempDataSource = res["data"];
-    //     this.tempRecords = res["totalRecords"];
-    //   }
-    //   if (type == 'add') {
-    //     this.isAddMethodLoader = false;
-    //     this.ngName = '';
-    //     this.ngDesc = '';
-    //     this._systemService.snackBar('Method Added Successfully');
-    //   }
-    //   this.isLoading = false;
-    //   this.isSearching = false;
-    //   this.isLoadingChange.emit(false);
-    //   this._changeDetectorRef.markForCheck();
-    // }, err => {
-    //   this.isSearching = false;
-    //   this.isLoading = false;
-    //   this.isLoadingChange.emit(false);
-    //   this._changeDetectorRef.markForCheck();
-    // });
+    }, err => {
+      this.isLoading = false;
+      this.isLoadingChange.emit(false);
+      this._changeDetectorRef.markForCheck();
+    });
   }
   getNextData(event) {
     const { previousPageIndex, pageIndex } = event;
@@ -94,63 +85,48 @@ export class DefaultBlurbsComponent implements OnInit, OnDestroy {
     } else {
       this.page--;
     };
-    this.getImprintMethods(this.page, 'get');
+    this.getBlurbs(this.page, 'get');
   };
-  searchColor(value) {
-    this.paginator.firstPage();
-    this.page = 1;
-    this.keyword = value;
-    this.isSearching = true;
-    this._changeDetectorRef.markForCheck();
-    this.getImprintMethods(1, 'get');
-  }
-  resetSearch() {
-    this.paginator.firstPage();
-    this.keyword = '';
-    this.dataSource = this.tempDataSource;
-    this.totalUsers = this.tempRecords;
-  }
 
-  addNewMethod() {
+  addNewBlurb() {
     if (this.ngName == '') {
-      this._systemService.snackBar('Imprint Method name is required');
+      this._systemService.snackBar('Blurb name is required');
       return;
     }
-    let payload: AddImprintMethod = {
-      method_name: this.ngName,
-      method_description: this.ngDesc,
-      add_imprint_method: true
+    let payload: AddBlurb = {
+      blurb: this.ngName,
+      add_blurb: true
     }
-    this.isAddMethodLoader = true;
+    this.isAddLoader = true;
     this._systemService.AddSystemData(payload).pipe(takeUntil(this._unsubscribeAll), finalize(() => {
       this._changeDetectorRef.markForCheck();
     })).subscribe(res => {
       if (res["success"]) {
-        this.getImprintMethods(1, 'add')
+        this.getBlurbs(1, 'add')
       } else {
-        this.isAddMethodLoader = false;
+        this.isAddLoader = false;
         this._systemService.snackBar(res["message"]);
       }
       this._changeDetectorRef.markForCheck();
     }, err => {
-      this.isAddMethodLoader = false;
+      this.isAddLoader = false;
       this._systemService.snackBar('Something went wrong');
     })
   }
-  // Delete Color
-  deleteColor(item) {
+  // Delete Burb
+  deleteBurb(item) {
     item.delLoader = true;
-    let payload: DeleteImprintColor = {
-      imprint_color_id: item.pk_imprintColorID,
-      delete_imprint_color: true
+    let payload: DeleteBlurb = {
+      blurb_id: item.pk_blurbID,
+      delete_blurb: true
     }
     this._systemService.UpdateSystemData(payload).pipe(takeUntil(this._unsubscribeAll), finalize(() => {
       item.delLoader = false
       this._changeDetectorRef.markForCheck();
     })).subscribe(res => {
-      this.dataSource = this.dataSource.filter(color => color.pk_imprintColorID != item.pk_imprintColorID);
+      this.dataSource = this.dataSource.filter(elem => elem.pk_blurbID != item.pk_blurbID);
       this.totalUsers--;
-      this._systemService.snackBar('Color Deleted Successfully');
+      this._systemService.snackBar('Blurb Deleted Successfully');
       this._changeDetectorRef.markForCheck();
     }, err => {
       this._systemService.snackBar('Something went wrong');

@@ -132,3 +132,13 @@ interface Store {
     store_id: number;
     bln_active: boolean;
 };
+
+export interface AddBlurb {
+    blurb: string;
+    add_blurb: boolean;
+};
+
+export interface DeleteBlurb {
+    blurb_id: number;
+    delete_blurb: boolean;
+};
