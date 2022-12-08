@@ -57,10 +57,12 @@ import { ProductMigrationsComponent } from './components/pages/product-migration
 import { CoreProductsComponent } from './components/pages/core-products/core-products.component';
 import { SystemImprintRunComponent } from './components/pages/imprint-run/imprint-run.component';
 import { ImprintChargesComponent } from './components/pages/imprint-charges/imprint-charges.component';
+import { StandardImprintsComponent } from './components/pages/standard-imprints/standard-imprints.component';
+import { AddEditImprintsComponent } from './components/pages/standard-imprints/imprints/imprints.component';
 
 @NgModule({
     declarations: [
-        SystemComponent, ColorsComponent, SizesComponent, PackAndAccessoriesComponent, ImprintColorsComponent, ImprintMethodsComponent, ImprintLocationsComponent, PromoCodesComponent, DefaultBlurbsComponent, CountrySalesComponent, ActiveStoresComponent, SupportTeamComponent, UploadImagesComponent, POArchivesComponent, ProductMigrationsComponent, CoreProductsComponent, SystemImprintRunComponent, ImprintChargesComponent
+        SystemComponent, ColorsComponent, SizesComponent, PackAndAccessoriesComponent, ImprintColorsComponent, ImprintMethodsComponent, ImprintLocationsComponent, PromoCodesComponent, DefaultBlurbsComponent, CountrySalesComponent, ActiveStoresComponent, SupportTeamComponent, UploadImagesComponent, POArchivesComponent, ProductMigrationsComponent, CoreProductsComponent, SystemImprintRunComponent, ImprintChargesComponent, StandardImprintsComponent, AddEditImprintsComponent
     ],
     imports: [
         RouterModule.forChild(systemRoutes),

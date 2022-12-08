@@ -16,7 +16,7 @@
             </ngx-skeleton-loader>
         </div>
         <div *ngIf="mainScreen == 'Current Promo Codes' && !isLoading">
-            <div class="px-3" *ngIf="!isUpdateMethod">
+            <div class="px-3" *ngIf="!isUpdatePromo">
                 <mat-form-field class="w-full">
                     <input matInput placeholder="Search Keyword" [disabled]="isSearching" [(ngModel)]="keyword"
                         (keyup.enter)="searchColor($event.target.value)">
@@ -25,14 +25,14 @@
                     (click)="resetSearch()">Reset</p>
                 <p class="text-secondary text-right font-medium mb-2" *ngIf="isSearching">Searching...</p>
             </div>
-            <div *ngIf="dataSource.length > 0 && !isUpdateMethod;else other_content" class="w-full">
+            <div *ngIf="dataSource.length > 0 && !isUpdatePromo;else other_content" class="w-full">
                 <table mat-table [dataSource]="dataSource" class="w-full border-t">
                     <ng-container matColumnDef="name">
-                        <th mat-header-cell *matHeaderCellDef class="w-60 min-w-40">
+                        <th mat-header-cell *matHeaderCellDef class="w-40 min-w-40">
                             Name
                         </th>
                         <td mat-cell *matCellDef="let element">
-                            {{element.methodName || not_available}}
+                            {{element.promocode || not_available}}
                         </td>
                     </ng-container>
                     <ng-container matColumnDef="savings">
@@ -40,7 +40,7 @@
                             Savings
                         </th>
                         <td mat-cell *matCellDef="let element" class="text-center">
-                            $15.00
+                            {{element.amount | currency}}
                         </td>
                     </ng-container>
                     <ng-container matColumnDef="threshold">
@@ -48,7 +48,7 @@
                             Threshold
                         </th>
                         <td mat-cell *matCellDef="let element" class="text-center">
-                            $15.00
+                            {{element.threshold | currency}}
                         </td>
                     </ng-container>
                     <ng-container matColumnDef="exp">
@@ -56,7 +56,7 @@
                             Exp
                         </th>
                         <td mat-cell *matCellDef="let element" class="text-center">
-                            None
+                            {{element.expDate==0 ? 'None': element.expDate }}
                         </td>
                     </ng-container>
                     <ng-container matColumnDef="active">
@@ -64,7 +64,8 @@
                             Active
                         </th>
                         <td mat-cell *matCellDef="let element" class="text-center">
-                            <mat-icon svgIcon="heroicons_outline:check"></mat-icon>
+                            <mat-icon *ngIf="element.blnActive" svgIcon="heroicons_outline:check"></mat-icon>
+                            <mat-icon *ngIf="!element.blnActive" svgIcon="heroicons_outline:x"></mat-icon>
                         </td>
                     </ng-container>
                     <ng-container matColumnDef="shipping">
@@ -72,7 +73,8 @@
                             Free Shipping
                         </th>
                         <td mat-cell *matCellDef="let element" class="text-center">
-                            <mat-icon svgIcon="heroicons_outline:x"></mat-icon>
+                            <mat-icon *ngIf="element.blnShipping" svgIcon="heroicons_outline:check"></mat-icon>
+                            <mat-icon *ngIf="!element.blnShipping" svgIcon="heroicons_outline:x"></mat-icon>
                         </td>
                     </ng-container>
                     <ng-container matColumnDef="used">
@@ -80,10 +82,24 @@
                             Times Used
                         </th>
                         <td mat-cell *matCellDef="let element" class="text-center">
-                            2
+                            {{element.timesUsed}}
                         </td>
                     </ng-container>
-
+                    <ng-container matColumnDef="action">
+                        <th mat-header-cell *matHeaderCellDef class="w-15 min-w-15 text-center">
+                            Action
+                        </th>
+                        <td mat-cell *matCellDef="let element" class="text-center">
+                            <div class="flex justify-center">
+                                <mat-icon (click)="updatePromoToggle(element)" svgIcon="heroicons_outline:pencil-alt">
+                                </mat-icon>
+                                <mat-icon (click)="deletePromo(element)" svgIcon="heroicons_outline:trash"
+                                    *ngIf="!element?.delLoader"></mat-icon>
+                                <mat-progress-spinner *ngIf="element?.delLoader" [diameter]="24"
+                                    [mode]="'indeterminate'" class="ml-2"></mat-progress-spinner>
+                            </div>
+                        </td>
+                    </ng-container>
                     <tr mat-header-row *matHeaderRowDef="displayedColumns;" class="h-18 bg-light"></tr>
                     <tr mat-row *matRowDef="let row; columns: displayedColumns;"
                         class="h-14 hover:bg-gray-100 dark:hover:bg-hover" style="cursor: pointer;">
@@ -95,132 +111,219 @@
                 </mat-paginator>
             </div>
             <!-- Update Method -->
-            <div *ngIf="isUpdateMethod" class="p-6 row">
-                <div class="col-12 col-md-6">
-                    <mat-form-field class="w-full">
-                        <mat-label>Name*</mat-label>
-                        <input matInput maxlength="10">
-                        <mat-hint>10 characters max</mat-hint>
-                    </mat-form-field>
+            <div *ngIf="isUpdatePromo" class="p-6">
+                <div class="row" [formGroup]="updatePromoForm">
+                    <div class="col-12 col-md-6">
+                        <mat-label class="font-medium" [matTooltip]="'10 characters max'">Name* <i
+                                class="fas fa-question-circle"></i></mat-label>
+                        <mat-form-field class="w-full">
+                            <input matInput maxlength="10" formControlName="promocode">
+                        </mat-form-field>
+                    </div>
+                    <div class="col-12 col-md-6">
+                        <mat-label class="font-medium"
+                            [matTooltip]="'Determines whether the promo code deducts a dollar amount or a percentage off'">
+                            Type*
+                            <i class="fas fa-question-circle"></i>
+                        </mat-label>
+                        <mat-form-field class="w-full">
+                            <mat-select matInput formControlName="blnPercent">
+                                <mat-option [value]="false">Dollar Amount off</mat-option>
+                                <mat-option [value]="true">Percent off</mat-option>
+                            </mat-select>
+                        </mat-form-field>
+                    </div>
+                    <div class="col-12 col-md-6">
+                        <mat-label class="font-medium"
+                            [matTooltip]="'In the form of dollars and cents, if doing a dollar amount off. To add to order total, make negative. In the form of a percentage, if doing a percent off'">
+                            Savings amount* <i class="fas fa-question-circle"></i></mat-label>
+                        <mat-form-field class="w-full">
+                            <input matInput type="number" formControlName="amount">
+                        </mat-form-field>
+                    </div>
+                    <div class="col-12 col-md-6">
+                        <mat-label class="font-medium" [matTooltip]="'In the form of dollars and cents'">Threshold* <i
+                                class="fas fa-question-circle"></i></mat-label>
+                        <mat-form-field class="w-full">
+                            <input matInput type="number" formControlName="threshold">
+                        </mat-form-field>
+                    </div>
+                    <div class="col-12">
+                        <mat-label class="font-medium" [matTooltip]="'100 characters max'">Description* <i
+                                class="fas fa-question-circle"></i></mat-label>
+                        <mat-form-field class="w-full">
+                            <input matInput maxlength="100" formControlName="description">
+                        </mat-form-field>
+                    </div>
+                    <div class="col-12 col-md-6">
+                        <mat-label class="font-medium">Activation*</mat-label>
+                        <mat-form-field class="w-full">
+                            <mat-select matInput formControlName="blnActive">
+                                <mat-option [value]="true">Active</mat-option>
+                                <mat-option [value]="false">Disabled</mat-option>
+                            </mat-select>
+                        </mat-form-field>
+                    </div>
+                    <div class="col-12 col-md-6">
+                        <mat-label class="font-medium"
+                            [matTooltip]="'Enter in the form mm/dd/yy. If none, leave blank'">
+                            Expiration Date <i class="fas fa-question-circle"></i></mat-label>
+                        <mat-form-field class="w-full">
+                            <input readonly matInput [matDatepicker]="picker" formControlName="expDate">
+                            <mat-hint>MM/DD/YYYY</mat-hint>
+                            <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
+                            <mat-datepicker #picker></mat-datepicker>
+                        </mat-form-field>
+                    </div>
+                    <div class="col-12 col-md-6">
+                        <mat-label class="font-medium"
+                            [matTooltip]="'Setting this to yes will automatically remove whatever shipping is currently in the cart when this promo code is applied.'">
+                            Free Shipping*
+                            <i class="fas fa-question-circle"></i>
+                        </mat-label>
+                        <mat-form-field class="w-full">
+                            <mat-select matInput formControlName="blnShipping">
+                                <mat-option [value]="true">Yes</mat-option>
+                                <mat-option [value]="false">No</mat-option>
+                            </mat-select>
+                        </mat-form-field>
+                        <br>
+                        <div *ngIf="addPromoForm.get('blnShipping').value">
+                            <mat-checkbox formControlName="blnRemoveShippingCost">Remove shipping cost</mat-checkbox>
+                            <br>
+                            <mat-checkbox formControlName="blnRemoveShippingPrice">Remove shipping price</mat-checkbox>
+                        </div>
+                    </div>
+                    <div class="col-12 col-md-6">
+                        <mat-label class="font-medium">Remove cart totals</mat-label>
+                        <br>
+                        <mat-checkbox formControlName="blnRemoveCost">Remove cart cost</mat-checkbox>
+                        <br>
+                        <mat-checkbox formControlName="blnRemovePrice">Remove cart price</mat-checkbox>
+                    </div>
+
+                    <div class="justify-end flex col-12">
+                        <button [disabled]="isUpdatePromoLoader" class="min-w-30 mr-2" mat-stroked-button
+                            [matTooltip]="'Back to list'" (click)="updatePromoToggle(null)">
+                            Back
+                        </button>
+                        <button [disabled]="isUpdatePromoLoader || !updatePromoForm.valid" class="min-w-40"
+                            mat-stroked-button [matTooltip]="'Update Promo Code'" (click)="updatePromoCode()">
+                            <mat-icon svgIcon="heroicons_solid:pencil" *ngIf="!isUpdatePromoLoader"></mat-icon>
+                            <span class="ml-2" *ngIf="!isUpdatePromoLoader"> Update Promo Code </span>
+                            <mat-progress-spinner *ngIf="isUpdatePromoLoader" [diameter]="24" [mode]="'indeterminate'">
+                            </mat-progress-spinner>
+                        </button>
+                    </div>
                 </div>
-                <mat-form-field class="w-full">
-                    <mat-label>Description (500 - optional)</mat-label>
-                    <textarea cols="30" rows="5" matInput [(ngModel)]="updateMethodData.methodDescription"
-                        maxlength="500"></textarea>
-                </mat-form-field>
-                <div class="justify-end flex">
-                    <button [disabled]="isUpdateMethodLoader" class="min-w-30 mr-2" mat-stroked-button
-                        [matTooltip]="'Back to list'" (click)="updateMethodToggle(null)">
-                        Cancel
-                    </button>
-                    <button [disabled]="isUpdateMethodLoader" class="min-w-40" mat-stroked-button
-                        [matTooltip]="'Update Method'" (click)="updateMethod()">
-                        <mat-icon svgIcon="heroicons_solid:pencil" *ngIf="!isUpdateMethodLoader"></mat-icon>
-                        <span class="ml-2" *ngIf="!isUpdateMethodLoader"> Update Method </span>
-                        <mat-progress-spinner *ngIf="isUpdateMethodLoader" [diameter]="24" [mode]="'indeterminate'">
-                        </mat-progress-spinner>
-                    </button>
-                </div>
+
             </div>
             <!-- No color Found -->
             <ng-template #other_content>
-                <div class="text-secondary font-semibold p-5 text-center" *ngIf="!isUpdateMethod">
-                    No Imprint Methods Found.
+                <div class="text-secondary font-semibold p-5 text-center" *ngIf="!isUpdatePromo">
+                    No promoCodes Found.
                 </div>
             </ng-template>
         </div>
-        <div *ngIf="mainScreen == 'Add New Promo Code'" class="p-6 row">
-            <div class="col-12 col-md-6">
-                <mat-label class="font-medium" [matTooltip]="'10 characters max'">Name* <i
-                        class="fas fa-question-circle"></i></mat-label>
-                <mat-form-field class="w-full">
-                    <input matInput maxlength="10">
-                </mat-form-field>
-            </div>
-            <div class="col-12 col-md-6">
-                <mat-label class="font-medium"
-                    [matTooltip]="'Determines whether the promo code deducts a dollar amount or a percentage off'">Type*
-                    <i class="fas fa-question-circle"></i>
-                </mat-label>
-                <mat-form-field class="w-full">
-                    <mat-select matInput>
-                        <mat-option value="1">Dollar Amount off</mat-option>
-                        <mat-option value="2">Percent off</mat-option>
-                    </mat-select>
-                </mat-form-field>
-            </div>
-            <div class="col-12 col-md-6">
-                <mat-label class="font-medium"
-                    [matTooltip]="'In the form of dollars and cents, if doing a dollar amount off. To add to order total, make negative. In the form of a percentage, if doing a percent off'">
-                    Savings amount* <i class="fas fa-question-circle"></i></mat-label>
-                <mat-form-field class="w-full">
-                    <input matInput>
-                </mat-form-field>
-            </div>
-            <div class="col-12 col-md-6">
-                <mat-label class="font-medium" [matTooltip]="'In the form of dollars and cents'">Threshold* <i
-                        class="fas fa-question-circle"></i></mat-label>
-                <mat-form-field class="w-full">
-                    <input matInput>
-                </mat-form-field>
-            </div>
-            <div class="col-12">
-                <mat-label class="font-medium" [matTooltip]="'100 characters max'">Description* <i
-                        class="fas fa-question-circle"></i></mat-label>
-                <mat-form-field class="w-full">
-                    <input matInput maxlength="100">
-                </mat-form-field>
-            </div>
-            <div class="col-12 col-md-6">
-                <mat-label class="font-medium">Activation*</mat-label>
-                <mat-form-field class="w-full">
-                    <mat-select matInput>
-                        <mat-option value="1">Active</mat-option>
-                        <mat-option value="2">Disabled</mat-option>
-                    </mat-select>
-                </mat-form-field>
-            </div>
-            <div class="col-12 col-md-6">
-                <mat-label class="font-medium" [matTooltip]="'Enter in the form mm/dd/yy. If none, leave blank'">
-                    Expiration Date <i class="fas fa-question-circle"></i></mat-label>
-                <mat-form-field class="w-full">
-                    <input readonly matInput [matDatepicker]="picker">
-                    <mat-hint>MM/DD/YYYY</mat-hint>
-                    <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
-                    <mat-datepicker #picker></mat-datepicker>
-                </mat-form-field>
-            </div>
-            <div class="col-12 col-md-6">
-                <mat-label class="font-medium"
-                    [matTooltip]="'Setting this to yes will automatically remove whatever shipping is currently in the cart when this promo code is applied.'">
-                    Free Shipping*
-                    <i class="fas fa-question-circle"></i>
-                </mat-label>
-                <mat-form-field class="w-full">
-                    <mat-select matInput>
-                        <mat-option value="1">Yes</mat-option>
-                        <mat-option value="2">No</mat-option>
-                    </mat-select>
-                </mat-form-field>
-            </div>
-            <div class="col-12 col-md-6">
-                <mat-label class="font-medium">Remove cart totals</mat-label>
-                <mat-form-field class="w-full">
-                    <mat-select matInput multiple>
-                        <mat-option value="1">Remove cart cost</mat-option>
-                        <mat-option value="2">Remove cart price</mat-option>
-                    </mat-select>
-                </mat-form-field>
-            </div>
+        <div *ngIf="mainScreen == 'Add New Promo Code'" class="p-6 ">
+            <div class="row" [formGroup]="addPromoForm">
+                <div class="col-12 col-md-6">
+                    <mat-label class="font-medium" [matTooltip]="'10 characters max'">Name* <i
+                            class="fas fa-question-circle"></i></mat-label>
+                    <mat-form-field class="w-full">
+                        <input matInput maxlength="10" formControlName="promocode">
+                    </mat-form-field>
+                </div>
+                <div class="col-12 col-md-6">
+                    <mat-label class="font-medium"
+                        [matTooltip]="'Determines whether the promo code deducts a dollar amount or a percentage off'">
+                        Type*
+                        <i class="fas fa-question-circle"></i>
+                    </mat-label>
+                    <mat-form-field class="w-full">
+                        <mat-select matInput formControlName="blnPercent">
+                            <mat-option [value]="false">Dollar Amount off</mat-option>
+                            <mat-option [value]="true">Percent off</mat-option>
+                        </mat-select>
+                    </mat-form-field>
+                </div>
+                <div class="col-12 col-md-6">
+                    <mat-label class="font-medium"
+                        [matTooltip]="'In the form of dollars and cents, if doing a dollar amount off. To add to order total, make negative. In the form of a percentage, if doing a percent off'">
+                        Savings amount* <i class="fas fa-question-circle"></i></mat-label>
+                    <mat-form-field class="w-full">
+                        <input matInput type="number" formControlName="amount">
+                    </mat-form-field>
+                </div>
+                <div class="col-12 col-md-6">
+                    <mat-label class="font-medium" [matTooltip]="'In the form of dollars and cents'">Threshold* <i
+                            class="fas fa-question-circle"></i></mat-label>
+                    <mat-form-field class="w-full">
+                        <input matInput type="number" formControlName="threshold">
+                    </mat-form-field>
+                </div>
+                <div class="col-12">
+                    <mat-label class="font-medium" [matTooltip]="'100 characters max'">Description* <i
+                            class="fas fa-question-circle"></i></mat-label>
+                    <mat-form-field class="w-full">
+                        <input matInput maxlength="100" formControlName="description">
+                    </mat-form-field>
+                </div>
+                <div class="col-12 col-md-6">
+                    <mat-label class="font-medium">Activation*</mat-label>
+                    <mat-form-field class="w-full">
+                        <mat-select matInput formControlName="blnActive">
+                            <mat-option [value]="true">Active</mat-option>
+                            <mat-option [value]="false">Disabled</mat-option>
+                        </mat-select>
+                    </mat-form-field>
+                </div>
+                <div class="col-12 col-md-6">
+                    <mat-label class="font-medium" [matTooltip]="'Enter in the form mm/dd/yy. If none, leave blank'">
+                        Expiration Date <i class="fas fa-question-circle"></i></mat-label>
+                    <mat-form-field class="w-full">
+                        <input readonly matInput [matDatepicker]="picker" formControlName="expDate">
+                        <mat-hint>MM/DD/YYYY</mat-hint>
+                        <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
+                        <mat-datepicker #picker></mat-datepicker>
+                    </mat-form-field>
+                </div>
+                <div class="col-12 col-md-6">
+                    <mat-label class="font-medium"
+                        [matTooltip]="'Setting this to yes will automatically remove whatever shipping is currently in the cart when this promo code is applied.'">
+                        Free Shipping*
+                        <i class="fas fa-question-circle"></i>
+                    </mat-label>
+                    <mat-form-field class="w-full">
+                        <mat-select matInput formControlName="blnShipping">
+                            <mat-option [value]="true">Yes</mat-option>
+                            <mat-option [value]="false">No</mat-option>
+                        </mat-select>
+                    </mat-form-field>
+                    <br>
+                    <div *ngIf="addPromoForm.get('blnShipping').value">
+                        <mat-checkbox formControlName="blnRemoveShippingCost">Remove shipping cost</mat-checkbox>
+                        <br>
+                        <mat-checkbox formControlName="blnRemoveShippingPrice">Remove shipping price</mat-checkbox>
+                    </div>
+                </div>
+                <div class="col-12 col-md-6">
+                    <mat-label class="font-medium">Remove cart totals</mat-label>
+                    <br>
+                    <mat-checkbox formControlName="blnRemoveCost">Remove cart cost</mat-checkbox>
+                    <br>
+                    <mat-checkbox formControlName="blnRemovePrice">Remove cart price</mat-checkbox>
+                </div>
 
-            <div class="text-right col-12">
-                <button [disabled]="isAddMethodLoader" class="min-w-50" mat-stroked-button
-                    [matTooltip]="'Add Promo Code'" (click)="addNewMethod()">
-                    <mat-icon svgIcon="heroicons_solid:plus" *ngIf="!isAddMethodLoader"></mat-icon>
-                    <span class="ml-2" *ngIf="!isAddMethodLoader"> Add Promo Code </span>
-                    <mat-progress-spinner *ngIf="isAddMethodLoader" [diameter]="24" [mode]="'indeterminate'">
-                    </mat-progress-spinner>
-                </button>
+                <div class="text-right col-12">
+                    <button [disabled]="isAddPromoLoader || !addPromoForm.valid" class="min-w-50" mat-stroked-button
+                        [matTooltip]="'Add Promo Code'" (click)="addNewPromoCode()">
+                        <mat-icon svgIcon="heroicons_solid:plus" *ngIf="!isAddPromoLoader"></mat-icon>
+                        <span class="ml-2" *ngIf="!isAddPromoLoader"> Add Promo Code </span>
+                        <mat-progress-spinner *ngIf="isAddPromoLoader" [diameter]="24" [mode]="'indeterminate'">
+                        </mat-progress-spinner>
+                    </button>
+                </div>
             </div>
         </div>
     </div>

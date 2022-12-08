@@ -59,7 +59,7 @@
             </div>
         </mat-drawer>
 
-        <div class="sub-sidenav-content bg-light p-2" #topScrollAnchor>
+        <div class="mb-3 bg-light p-2" #topScrollAnchor>
             <mat-icon class="subnav-menu-icon ml-1" svgIcon="heroicons_outline:menu" (click)="toggleDrawer()">
             </mat-icon>
             <div class="rounded-2xl shadow bg-card flex flex-col lg:flex-row w-full">
@@ -132,6 +132,10 @@
                     <ng-template [ngIf]="selectedScreeen == 'Imprint Charges'">
                         <app-imprint-charges [(isLoading)]="isLoading">
                         </app-imprint-charges>
+                    </ng-template>
+                    <ng-template [ngIf]="selectedScreeen == 'Standard Imprints'">
+                        <app-standard-imprints [(isLoading)]="isLoading">
+                        </app-standard-imprints>
                     </ng-template>
                 </div>
             </div>

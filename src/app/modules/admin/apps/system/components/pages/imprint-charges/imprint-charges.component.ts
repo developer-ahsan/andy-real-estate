@@ -1,67 +1,81 @@
-import { ENTER, COMMA } from '@angular/cdk/keycodes';
 import { ScrollStrategy, ScrollStrategyOptions } from '@angular/cdk/overlay';
-import { Component, Input, OnInit, Output, EventEmitter, ChangeDetectorRef, OnDestroy, ViewChild } from '@angular/core';
-import { MatChipInputEvent } from '@angular/material/chips';
+import { Component, Input, OnInit, Output, EventEmitter, ChangeDetectorRef, OnDestroy } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
-import { MatPaginator } from '@angular/material/paginator';
+import { InventoryService } from 'app/modules/admin/apps/ecommerce/inventory/inventory.service';
+import { ImprintRunComponent } from 'app/modules/admin/apps/ecommerce/inventory/navigation/imprint/imprint-run/imprint-run.component';
 import { Subject } from 'rxjs';
-import { finalize, takeUntil } from 'rxjs/operators';
+import { takeUntil } from 'rxjs/operators';
 import { SystemService } from '../../system.service';
-import { AddColor, AddImprintColor, AddImprintMethod, DeleteColor, DeleteImprintColor, UpdateColor, UpdateImprintColor, UpdateImprintMethod } from '../../system.types';
-import { SystemImprintRunComponent } from '../imprint-run/imprint-run.component';
+import { UpdateCharge } from '../../system.types';
 
 @Component({
   selector: 'app-imprint-charges',
   templateUrl: './imprint-charges.component.html',
-  styles: [".mat-paginator {border-radius: 16px !important}"]
+  styles: ['.col-width {width: 11.11%} .data-width {width: 100px}']
 })
 export class ImprintChargesComponent implements OnInit, OnDestroy {
-  @ViewChild('paginator') paginator: MatPaginator;
   @Input() isLoading: boolean;
   @Output() isLoadingChange = new EventEmitter<boolean>();
   private _unsubscribeAll: Subject<any> = new Subject<any>();
 
-  dataSource = [];
-  tempDataSource = [];
-  displayedColumns: string[] = ['name', 'savings', 'threshold', 'exp', 'active', 'shipping', 'used'];
-  totalUsers = 0;
-  tempRecords = 0;
-  page = 1;
-
-  mainScreen: string = 'Current Promo Codes';
-  keyword = '';
-  not_available = 'N/A';
-
-
   isSearching: boolean = false;
-
-  // Add Method
-  ngName: string = '';
-  ngDesc: string = '';
-  isAddMethodLoader: boolean = false;
-
-  // Update Color
-  isUpdateMethodLoader: boolean = false;
-  isUpdateMethod: boolean = false;
-  updateMethodData: any;
-  ngRGBUpdate = '';
+  ngChargeID = '';
   scrollStrategy: ScrollStrategy;
+
+  chargeData: any;
+  chargeUsedData: any;
+  page = 0;
+  totalRecords = 0;
+  isViewMoreLoader: boolean = false;
+  processQuantities = new Array(30);
+  productQuantities = new Array(8);
+  horizontalArray = new Array(8);
+  mainScreen: string = 'Update Charges';
+  isUpdateChargeLoader: boolean = false;
 
   constructor(
     private _changeDetectorRef: ChangeDetectorRef,
     public dialog: MatDialog,
     private readonly sso: ScrollStrategyOptions,
-    private _systemService: SystemService
+    private _systemService: SystemService,
+    private _inventoryService: InventoryService
   ) {
     this.scrollStrategy = this.sso.noop();
   }
 
   ngOnInit(): void {
-    this.isLoading = true;
-    this.getImprintMethods(1, 'get');
+    this.getAllDistributionCodes();
+    this.isLoadingChange.emit(false);
+    this.initCharges();
   };
+  calledScreen(value) {
+    this.mainScreen = value;
+    if (value == 'Charge is used') {
+      if (!this.chargeUsedData) {
+        this.getChargeUsedData();
+      }
+    }
+  }
+  initCharges() {
+    const length = this.productQuantities.length;
+    const process_length = this.processQuantities.length;
+    for (let index = 0; index < length; index++) {
+      if (index == 0) {
+        this.productQuantities[0] = { value: 1 };
+      } else {
+        this.productQuantities[index] = { value: '' };
+      }
+    }
+    for (let index = 0; index < process_length; index++) {
+      if (index == 0) {
+        this.processQuantities[0] = { value: 1, quantitiesVal: [{ value: '' }, { value: '' }, { value: '' }, { value: '' }, { value: '' }, { value: '' }, { value: '' }, { value: '' }] };
+      } else {
+        this.processQuantities[index] = { value: '', quantitiesVal: [{ value: '' }, { value: '' }, { value: '' }, { value: '' }, { value: '' }, { value: '' }, { value: '' }, { value: '' }] };
+      }
+    }
+  }
   openModal() {
-    const dialogRef = this.dialog.open(SystemImprintRunComponent, {
+    const dialogRef = this.dialog.open(ImprintRunComponent, {
       // data: dialogData,
       minWidth: "300px",
       maxHeight: '90vh',
@@ -74,149 +88,150 @@ export class ImprintChargesComponent implements OnInit, OnDestroy {
       // })
       if (dialogResult) {
       }
-    })
-  }
-  calledScreen(value) {
-    this.mainScreen = value;
-  }
-  getImprintMethods(page, type) {
-    let params = {
-      imprint_methods: true,
-      keyword: this.keyword,
-      page: page,
-      size: 20
-    }
-    this._systemService.getSystemsData(params).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
-      this.dataSource = res["data"];
-      this.totalUsers = res["totalRecords"];
-      if (this.keyword == '') {
-        this.tempDataSource = res["data"];
-        this.tempRecords = res["totalRecords"];
-      }
-      if (type == 'add') {
-        this.isAddMethodLoader = false;
-        this.ngName = '';
-        this.ngDesc = '';
-        this._systemService.snackBar('Method Added Successfully');
-        this.mainScreen = 'Current Imprint Methods';
-      }
-      this.isLoading = false;
-      this.isSearching = false;
-      this.isLoadingChange.emit(false);
-      this._changeDetectorRef.markForCheck();
-    }, err => {
-      this.isSearching = false;
-      this.isLoading = false;
-      this.isLoadingChange.emit(false);
-      this._changeDetectorRef.markForCheck();
     });
   }
-  getNextData(event) {
-    const { previousPageIndex, pageIndex } = event;
-
-    if (pageIndex > previousPageIndex) {
-      this.page++;
-    } else {
-      this.page--;
-    };
-    this.getImprintMethods(this.page, 'get');
-  };
-  searchColor(value) {
-    this.paginator.firstPage();
-    this.page = 1;
-    this.keyword = value;
+  getAllDistributionCodes() {
+    this._inventoryService.distributionCodes$.pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+      if (!res) {
+        this._inventoryService.getSystemDistributorCodes().pipe(takeUntil(this._unsubscribeAll)).subscribe(codes => {
+        });
+      }
+    });
+  }
+  getChargeData() {
+    if (this.ngChargeID == '') {
+      this._systemService.snackBar('Please Enter Charge ID');
+      return;
+    }
     this.isSearching = true;
     this._changeDetectorRef.markForCheck();
-    this.getImprintMethods(1, 'get');
-  }
-  resetSearch() {
-    this.paginator.firstPage();
-    this.keyword = '';
-    this.dataSource = this.tempDataSource;
-    this.totalUsers = this.tempRecords;
-  }
+    let params = {
+      imprint: true,
+      decoration: true,
+      charge_distribution: true,
+      charge_id: this.ngChargeID
+    }
+    let run = [];
 
-  addNewMethod() {
-    if (this.ngName == '') {
-      this._systemService.snackBar('Imprint Method name is required');
-      return;
-    }
-    let payload: AddImprintMethod = {
-      method_name: this.ngName,
-      method_description: this.ngDesc,
-      add_imprint_method: true
-    }
-    this.isAddMethodLoader = true;
-    this._systemService.AddSystemData(payload).pipe(takeUntil(this._unsubscribeAll), finalize(() => {
-      this._changeDetectorRef.markForCheck();
-    })).subscribe(res => {
-      if (res["success"]) {
-        this.getImprintMethods(1, 'add')
+    this._systemService.getSystemsData(params).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+      this.chargeData = res["data"];
+      if (this.chargeData.length > 0) {
+        res["data"].forEach((element, index) => {
+          if (run.length == 0) {
+            run.push({ process: element.processQuantity, data: [element] });
+          } else {
+            const index = run.findIndex(item => item.process == element.processQuantity);
+            if (index > -1) {
+              run[index].data.push(element);
+            } else {
+              run.push({ process: element.processQuantity, data: [element] });
+            }
+          }
+        });
+        if (run.length) {
+          run[0].data.forEach((element, index) => {
+            this.productQuantities[index] = { value: element.productQuantity };
+          });
+          run.forEach((element, index) => {
+            this.processQuantities[index].value = element.process;
+            element.data.forEach((item, inner) => {
+              this.processQuantities[index]['quantitiesVal'][inner] = { value: item.charge.toFixed(3) };
+            });
+          });
+        }
       } else {
-        this.isAddMethodLoader = false;
-        this._systemService.snackBar(res["message"]);
+        this.backToList();
+        this._systemService.snackBar('No charges are found for this id');
       }
+
+      this.isSearching = false;
       this._changeDetectorRef.markForCheck();
     }, err => {
-      this.isAddMethodLoader = false;
-      this._systemService.snackBar('Something went wrong');
-    })
-  }
-  // Delete Color
-  deleteColor(item) {
-    item.delLoader = true;
-    let payload: DeleteImprintColor = {
-      imprint_color_id: item.pk_imprintColorID,
-      delete_imprint_color: true
-    }
-    this._systemService.UpdateSystemData(payload).pipe(takeUntil(this._unsubscribeAll), finalize(() => {
-      item.delLoader = false
+      this.isSearching = false;
       this._changeDetectorRef.markForCheck();
-    })).subscribe(res => {
-      this.dataSource = this.dataSource.filter(color => color.pk_imprintColorID != item.pk_imprintColorID);
-      this.totalUsers--;
-      this._systemService.snackBar('Color Deleted Successfully');
-      this._changeDetectorRef.markForCheck();
-    }, err => {
-      this._systemService.snackBar('Something went wrong');
     });
   }
-  // Update Method
-  updateMethodToggle(item) {
-    console.log(item)
-    this.updateMethodData = item;
-    this.isUpdateMethod = !this.isUpdateMethod;
-  }
-  updateMethod() {
-    if (this.updateMethodData.imprintColorName == '') {
-      this._systemService.snackBar('Color name is required');
-      return;
-    }
-    const rgb = this.ngRGBUpdate.replace('#', '');
-    let payload: UpdateImprintMethod = {
-      method_id: this.updateMethodData.pk_methodID,
-      method_name: this.updateMethodData.methodName,
-      description: this.updateMethodData.methodDescription,
-      update_imprint_method: true
-    }
-    this.isUpdateMethodLoader = true;
-    this._systemService.UpdateSystemData(payload).pipe(takeUntil(this._unsubscribeAll), finalize(() => {
-      this.isUpdateMethodLoader = false
-      this._changeDetectorRef.markForCheck();
-    })).subscribe(res => {
-      this.dataSource.filter(elem => {
-        if (elem.pk_methodID == this.updateMethodData.pk_methodID) {
-          elem.methodName = this.updateMethodData.methodName;
-          elem.methodDescription = this.updateMethodData.methodDescription;
+  addValues(length) {
+    for (let index = 1; index <= length; index++) {
+      this.processQuantities[index].value = this.processQuantities[index - 1].value + 1;
+      this.processQuantities[0].quantitiesVal.forEach((element, i) => {
+        if (element.value) {
+          this.processQuantities[index].quantitiesVal[i].value = (this.processQuantities[index].value * element.value).toFixed(3);
         }
       });
-      this._systemService.snackBar('Method Updated Successfully');
+    }
+  }
+  getMoareData() {
+    this.isViewMoreLoader = true;
+    this.getChargeUsedData();
+  }
+  getChargeUsedData() {
+    this.page++;
+    let params = {
+      imprint_charge_products: true,
+      charge_id: this.ngChargeID,
+      page: this.page
+    }
+    this._systemService.getSystemsData(params).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+      if (!this.chargeUsedData) {
+        this.chargeUsedData = res;
+      } else {
+        res["products"].forEach(element => {
+          this.chargeUsedData.products.push(element);
+        });
+      }
+      this.totalRecords = res['totalProducts'];
+      this.isViewMoreLoader = false;
       this._changeDetectorRef.markForCheck();
     }, err => {
-      this._systemService.snackBar('Something went wrong');
-    })
+      this.isViewMoreLoader = false;
+      this._changeDetectorRef.markForCheck();
+    });
   }
-
+  // Update Charge
+  updateImprintCharge() {
+    let ChargeValue = [];
+    this.processQuantities.forEach((element, i) => {
+      if (element.value) {
+        element.quantitiesVal.forEach((item, j) => {
+          if (element.value && this.productQuantities[j].value) {
+            ChargeValue.push(
+              {
+                process_quantity: element.value,
+                product_quantity: this.productQuantities[j].value,
+                value: item.value
+              }
+            )
+          }
+        });
+      }
+    });
+    let payload: UpdateCharge = {
+      charge_id: Number(this.ngChargeID),
+      charges: ChargeValue,
+      update_imprint_charges: true
+    }
+    this.isUpdateChargeLoader = true;
+    this._systemService.UpdateSystemData(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+      if (res["success"]) {
+        this._systemService.snackBar('Charge distribution updated successfully');
+      }
+      this.isUpdateChargeLoader = false;
+      this._changeDetectorRef.markForCheck();
+    }, err => {
+      this.isUpdateChargeLoader = false;
+      this._changeDetectorRef.markForCheck();
+    });
+  }
+  backToList() {
+    this.initCharges();
+    this.chargeData = null;
+    this.chargeUsedData = null;
+    this.totalRecords = 0;
+    this.page = 0;
+    this.isViewMoreLoader = false;
+    this.mainScreen = 'Update Charges';
+  }
   /**
      * On destroy
      */

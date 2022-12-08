@@ -18,8 +18,8 @@
         <div *ngIf="mainScreen == 'Current Ohio Country Tax Rates' && !isLoading">
             <div class="px-3">
                 <mat-form-field class="w-full">
-                    <input matInput placeholder="Search Keyword" [disabled]="isSearching" [(ngModel)]="keyword"
-                        (keyup.enter)="searchColor($event.target.value)">
+                    <input matInput placeholder="Search By County,Zip and Tax rates" [disabled]="isSearching"
+                        [(ngModel)]="keyword" (keyup.enter)="searchColor($event.target.value)">
                 </mat-form-field>
                 <p class="text-secondary text-right font-medium cursor-pointer mb-2" *ngIf="!isSearching"
                     (click)="resetSearch()">Reset</p>

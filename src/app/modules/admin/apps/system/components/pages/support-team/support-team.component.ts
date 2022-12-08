@@ -1,11 +1,12 @@
 import { ENTER, COMMA } from '@angular/cdk/keycodes';
 import { Component, Input, OnInit, Output, EventEmitter, ChangeDetectorRef, OnDestroy, ViewChild } from '@angular/core';
+import { FormControl, FormGroup } from '@angular/forms';
 import { MatChipInputEvent } from '@angular/material/chips';
 import { MatPaginator } from '@angular/material/paginator';
 import { Subject } from 'rxjs';
 import { finalize, takeUntil } from 'rxjs/operators';
 import { SystemService } from '../../system.service';
-import { AddColor, AddImprintColor, AddImprintMethod, DeleteColor, DeleteImprintColor, UpdateColor, UpdateImprintColor, UpdateImprintMethod } from '../../system.types';
+import { AddColor, AddDefaultSupportTeam, AddImprintColor, AddImprintMethod, AddMemberFeature, DeleteColor, DeleteImprintColor, DeleteMemberFeature, DeleteTeamMember, UpdateColor, UpdateDefaultSupportTeam, UpdateImprintColor, UpdateImprintMethod, UpdateMemberFeature } from '../../system.types';
 
 @Component({
   selector: 'app-support-team',
@@ -35,48 +36,53 @@ export class SupportTeamComponent implements OnInit, OnDestroy {
   // Add Method
   ngName: string = '';
   ngDesc: string = '';
-  isAddMethodLoader: boolean = false;
-
+  isAddTeamLoader: boolean = false;
+  addNewMemberForm: FormGroup;
   // Update Color
-  isUpdateMethodLoader: boolean = false;
-  isUpdateMethod: boolean = false;
-  updateMethodData: any;
-  ngRGBUpdate = '';
+  isUpdateMemberLoader: boolean = false;
+  isUpdateMember: boolean = false;
+  updateTeamData: any;
+  updateMemberForm: FormGroup;
+
+
+  // Member Feature
+  featureList: any;
+  featureTableColumns = ['name', 'action'];
+  teamMemberFeature: boolean = false;
+  memberFeatureName = '';
+  isAddFeatureLoader: boolean = false;
   constructor(
     private _changeDetectorRef: ChangeDetectorRef,
     private _systemService: SystemService
   ) { }
 
   ngOnInit(): void {
-    this.dataSource.push(
-      {
-        name: 'Alecia Moneypenny',
-        role: 'Director of Production',
-        email: 'orders@consolidus.com',
-        description: 'I ensure that all orders are delivered correct, on-time, every time in the fastest and most efficient manner. I am also available to provide information regarding order status and delivery dates.'
-      },
-      {
-        name: 'Bill Harris',
-        role: 'Senior Developer',
-        email: 'bill.harris@consolidus.com',
-        description: 'I ensure that all orders are delivered correct, on-time, every time in the fastest and most efficient manner. I am also available to provide information regarding order status and delivery dates.'
-      }
-    )
-    this.totalUsers = 2;
-    setTimeout(() => {
-      this.isLoading = false;
-      this.isLoadingChange.emit(false);
-      this._changeDetectorRef.markForCheck();
-    }, 100);
-    // this.isLoading = true;
-    // this.getImprintMethods(1, 'get');
+    this.addNewMemberForm = new FormGroup({
+      role_name: new FormControl(''),
+      name: new FormControl(''),
+      description: new FormControl(''),
+      email: new FormControl(''),
+      phone: new FormControl(''),
+      role_type: new FormControl(''),
+    });
+    this.updateMemberForm = new FormGroup({
+      pk_ID: new FormControl(''),
+      roleName: new FormControl(''),
+      name: new FormControl(''),
+      description: new FormControl(''),
+      email: new FormControl(''),
+      phone: new FormControl(''),
+      roleType: new FormControl(''),
+    });
+    this.isLoading = true;
+    this.getSupportTeam(1, 'get');
   };
   calledScreen(value) {
     this.mainScreen = value;
   }
-  getImprintMethods(page, type) {
+  getSupportTeam(page, type) {
     let params = {
-      imprint_methods: true,
+      default_support_team: true,
       keyword: this.keyword,
       page: page,
       size: 20
@@ -89,11 +95,11 @@ export class SupportTeamComponent implements OnInit, OnDestroy {
         this.tempRecords = res["totalRecords"];
       }
       if (type == 'add') {
-        this.isAddMethodLoader = false;
+        this.isAddTeamLoader = false;
         this.ngName = '';
         this.ngDesc = '';
-        this._systemService.snackBar('Method Added Successfully');
-        this.mainScreen = 'Current Imprint Methods';
+        this._systemService.snackBar('Team Member Added Successfully');
+        this.mainScreen = 'Current Support Team';
       }
       this.isLoading = false;
       this.isSearching = false;
@@ -114,95 +120,109 @@ export class SupportTeamComponent implements OnInit, OnDestroy {
     } else {
       this.page--;
     };
-    this.getImprintMethods(this.page, 'get');
+    this.getSupportTeam(this.page, 'get');
   };
   searchColor(value) {
-    this.paginator.firstPage();
+    if (this.dataSource.length != 0) {
+      this.paginator.firstPage();
+    }
     this.page = 1;
     this.keyword = value;
     this.isSearching = true;
     this._changeDetectorRef.markForCheck();
-    this.getImprintMethods(1, 'get');
+    this.getSupportTeam(1, 'get');
   }
   resetSearch() {
-    this.paginator.firstPage();
+    if (this.dataSource.length != 0) {
+      this.paginator.firstPage();
+    }
     this.keyword = '';
     this.dataSource = this.tempDataSource;
     this.totalUsers = this.tempRecords;
   }
 
-  addNewMethod() {
-    if (this.ngName == '') {
-      this._systemService.snackBar('Imprint Method name is required');
+  addNewTeam() {
+    const { role_name, name, email, role_type, description, phone } = this.addNewMemberForm.getRawValue();
+    if (description == '' || name == '' || email == '' || phone == '') {
+      this._systemService.snackBar('Please fill out the required fields');
       return;
     }
-    let payload: AddImprintMethod = {
-      method_name: this.ngName,
-      method_description: this.ngDesc,
-      add_imprint_method: true
+    let payload: AddDefaultSupportTeam = {
+      role_name, name, description: description.replace(/'/g, "''"), email, phone, role_type, add_default_support_team: true
     }
-    this.isAddMethodLoader = true;
+    this.isAddTeamLoader = true;
     this._systemService.AddSystemData(payload).pipe(takeUntil(this._unsubscribeAll), finalize(() => {
       this._changeDetectorRef.markForCheck();
     })).subscribe(res => {
       if (res["success"]) {
-        this.getImprintMethods(1, 'add')
+        this.getSupportTeam(1, 'add')
       } else {
-        this.isAddMethodLoader = false;
+        this.isAddTeamLoader = false;
         this._systemService.snackBar(res["message"]);
       }
       this._changeDetectorRef.markForCheck();
     }, err => {
-      this.isAddMethodLoader = false;
+      this.isAddTeamLoader = false;
       this._systemService.snackBar('Something went wrong');
     })
   }
-  // Delete Color
-  deleteColor(item) {
+  // Delete Memeber
+  deleteMemeber(item) {
     item.delLoader = true;
-    let payload: DeleteImprintColor = {
-      imprint_color_id: item.pk_imprintColorID,
-      delete_imprint_color: true
+    let payload: DeleteTeamMember = {
+      member_id: item.pk_ID,
+      delete_team_member: true
     }
     this._systemService.UpdateSystemData(payload).pipe(takeUntil(this._unsubscribeAll), finalize(() => {
       item.delLoader = false
       this._changeDetectorRef.markForCheck();
     })).subscribe(res => {
-      this.dataSource = this.dataSource.filter(color => color.pk_imprintColorID != item.pk_imprintColorID);
+      this.dataSource = this.dataSource.filter(elem => elem.pk_ID != item.pk_ID);
       this.totalUsers--;
-      this._systemService.snackBar('Color Deleted Successfully');
+      this._systemService.snackBar('Team Member Deleted Successfully');
       this._changeDetectorRef.markForCheck();
     }, err => {
       this._systemService.snackBar('Something went wrong');
     });
   }
-  // Update Method
-  updateMethodToggle(item) {
-    console.log(item)
-    this.updateMethodData = item;
-    this.isUpdateMethod = !this.isUpdateMethod;
+  // Update Member
+  updateMemberToggle(item) {
+    this.featureList = null;
+    this.teamMemberFeature = false;
+    if (item) {
+      this.updateMemberForm.patchValue(item);
+      this.getMemberFeatures(item.pk_ID);
+    }
+    this.updateTeamData = item;
+    this.isUpdateMember = !this.isUpdateMember;
   }
-  updateMethod() {
-    if (this.updateMethodData.imprintColorName == '') {
-      this._systemService.snackBar('Color name is required');
+
+  updateMember() {
+    const { roleName, name, email, roleType, description, phone, pk_ID } = this.updateMemberForm.getRawValue();
+    if (description == '' || name == '' || email == '' || phone == '') {
+      this._systemService.snackBar('Please fill out the required fields');
       return;
     }
-    const rgb = this.ngRGBUpdate.replace('#', '');
-    let payload: UpdateImprintMethod = {
-      method_id: this.updateMethodData.pk_methodID,
-      method_name: this.updateMethodData.methodName,
-      description: this.updateMethodData.methodDescription,
-      update_imprint_method: true
+    let payload: UpdateDefaultSupportTeam = {
+      role_name: roleName,
+      name: name,
+      description: description.replace(/'/g, "''"),
+      email: email,
+      phone: phone,
+      role_type: roleType,
+      member_id: pk_ID,
+      update_default_support_team: true
     }
-    this.isUpdateMethodLoader = true;
+    this.isUpdateMemberLoader = true;
     this._systemService.UpdateSystemData(payload).pipe(takeUntil(this._unsubscribeAll), finalize(() => {
-      this.isUpdateMethodLoader = false
+      this.isUpdateMemberLoader = false
       this._changeDetectorRef.markForCheck();
     })).subscribe(res => {
       this.dataSource.filter(elem => {
-        if (elem.pk_methodID == this.updateMethodData.pk_methodID) {
-          elem.methodName = this.updateMethodData.methodName;
-          elem.methodDescription = this.updateMethodData.methodDescription;
+        if (elem.pk_ID == this.updateTeamData.pk_ID) {
+          elem.name = name;
+          elem.email = email;
+          elem.roleName = roleName;
         }
       });
       this._systemService.snackBar('Method Updated Successfully');
@@ -211,7 +231,90 @@ export class SupportTeamComponent implements OnInit, OnDestroy {
       this._systemService.snackBar('Something went wrong');
     })
   }
-
+  // Memeber Feature
+  toggleMemberFeature() {
+    this.teamMemberFeature = !this.teamMemberFeature;
+  }
+  getMemberFeatures(id) {
+    let params = {
+      support_team_feature: true,
+      member_id: id
+    }
+    this._systemService.getSystemsData(params).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+      this.isAddFeatureLoader = false;
+      this.memberFeatureName = '';
+      this.featureList = res["data"];
+      this._changeDetectorRef.markForCheck();
+    }, err => {
+      this._changeDetectorRef.markForCheck();
+    });
+  }
+  addNewFeature() {
+    if (this.memberFeatureName == '') {
+      this._systemService.snackBar('Please fill out the required fields');
+      return;
+    }
+    let payload: AddMemberFeature = {
+      member_id: this.updateTeamData.pk_ID,
+      feature: this.memberFeatureName,
+      add_member_feature: true
+    }
+    this.isAddFeatureLoader = true;
+    this._systemService.AddSystemData(payload).pipe(takeUntil(this._unsubscribeAll), finalize(() => {
+      this._changeDetectorRef.markForCheck();
+    })).subscribe(res => {
+      if (res["success"]) {
+        this.getMemberFeatures(this.updateTeamData.pk_ID);
+      } else {
+        this.isAddFeatureLoader = false;
+        this._systemService.snackBar(res["message"]);
+      }
+      this._changeDetectorRef.markForCheck();
+    }, err => {
+      this.isAddFeatureLoader = false;
+      this._systemService.snackBar('Something went wrong');
+    })
+  }
+  deleteFeature(item) {
+    item.delLoader = true;
+    let payload: DeleteMemberFeature = {
+      member_id: item.fk_ID,
+      feature_id: item.pk_featureID,
+      delete_member_feature: true
+    }
+    this._systemService.UpdateSystemData(payload).pipe(takeUntil(this._unsubscribeAll), finalize(() => {
+      item.delLoader = false
+      this._changeDetectorRef.markForCheck();
+    })).subscribe(res => {
+      this.featureList = this.featureList.filter(elem => elem.pk_featureID != item.pk_featureID);
+      this._systemService.snackBar('Feature Deleted Successfully');
+      this._changeDetectorRef.markForCheck();
+    }, err => {
+      this._systemService.snackBar('Something went wrong');
+    });
+  }
+  updateFeature(item) {
+    if (item.feature == '') {
+      this._systemService.snackBar('Please fill out the required fields');
+      return;
+    }
+    item.updateLoader = true;
+    let payload: UpdateMemberFeature = {
+      feature: item.feature,
+      member_id: item.fk_ID,
+      feature_id: item.pk_featureID,
+      update_member_feature: true
+    }
+    this._systemService.UpdateSystemData(payload).pipe(takeUntil(this._unsubscribeAll), finalize(() => {
+      item.updateLoader = false
+      this._changeDetectorRef.markForCheck();
+    })).subscribe(res => {
+      this._systemService.snackBar('Feature Updated Successfully');
+      this._changeDetectorRef.markForCheck();
+    }, err => {
+      this._systemService.snackBar('Something went wrong');
+    })
+  }
   /**
      * On destroy
      */

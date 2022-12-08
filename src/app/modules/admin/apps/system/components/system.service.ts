@@ -41,6 +41,7 @@ export class SystemService {
     private _stores: BehaviorSubject<any[] | null> = new BehaviorSubject<any[]>(null);
     private _imprintMethods: BehaviorSubject<any[] | null> = new BehaviorSubject<any[]>(null);
     private _imprintLocations: BehaviorSubject<any[] | null> = new BehaviorSubject<any[]>(null);
+    private _imprintDigitizer: BehaviorSubject<any[] | null> = new BehaviorSubject<any[]>(null);
     opts = [];
 
     public duplicateCheck: boolean = false;
@@ -133,6 +134,9 @@ export class SystemService {
     };
     get imprintLocations$(): Observable<any[]> {
         return this._imprintLocations.asObservable();
+    };
+    get imprintDigitizer$(): Observable<any[]> {
+        return this._imprintDigitizer.asObservable();
     };
 
     // -----------------------------------------------------------------------------------------------------
@@ -640,7 +644,7 @@ export class SystemService {
     };
     // getAllImprintMethods Observable
     getAllImprintMethodsObs(): Observable<any[]> {
-        return this._httpClient.get<any[]>(environment.products, {
+        return this._httpClient.get<any[]>(environment.system, {
             params: {
                 imprint: true,
                 method: true
@@ -665,12 +669,16 @@ export class SystemService {
     };
 
     getAllDigitizers(): Observable<any[]> {
-        return this._httpClient.get<any[]>(environment.products, {
+        return this._httpClient.get<any[]>(environment.system, {
             params: {
                 imprint: true,
                 digitizer: true
             }
-        });
+        }).pipe(
+            tap((response: any) => {
+                this._imprintDigitizer.next(response);
+            })
+        );
     };
 
     getMultiColorValue(two, three, four, five): Observable<any[]> {

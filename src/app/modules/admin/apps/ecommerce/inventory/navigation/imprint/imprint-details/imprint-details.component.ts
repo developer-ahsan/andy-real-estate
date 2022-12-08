@@ -80,7 +80,6 @@ export class ImprintDetailsComponent implements OnInit, OnDestroy {
     this.selectedLocation = obj;
   }
   ngOnInit(): void {
-    console.log(this.imprint)
     this.isLoading = true;
     this.getAddImprintLocations();
     this.getAddImprintMethods();

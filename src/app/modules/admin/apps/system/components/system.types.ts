@@ -142,3 +142,97 @@ export interface DeleteBlurb {
     blurb_id: number;
     delete_blurb: boolean;
 };
+// Support Team
+export interface AddDefaultSupportTeam {
+    role_name: string;
+    name: string;
+    description: string;
+    email: string;
+    phone: string;
+    role_type: string;
+    add_default_support_team: boolean;
+};
+
+export interface UpdateDefaultSupportTeam {
+    role_name: string;
+    name: string;
+    description: string;
+    email: string;
+    phone: string;
+    role_type: string;
+    member_id: number;
+    update_default_support_team: boolean;
+};
+
+export interface DeleteTeamMember {
+    member_id: number;
+    delete_team_member: boolean;
+};
+
+export interface AddMemberFeature {
+    member_id: number;
+    feature: string;
+    add_member_feature: boolean;
+};
+
+export interface DeleteMemberFeature {
+    feature_id: number;
+    member_id: number;
+    delete_member_feature: boolean;
+};
+
+export interface UpdateMemberFeature {
+    feature: string;
+    feature_id: number;
+    member_id: number;
+    update_member_feature: boolean;
+};
+
+export interface AddPromoCode {
+    promocode: string;
+    amount: number;
+    threshold: number;
+    description: string;
+    blnActive: boolean;
+    expDate: string;
+    blnShipping: boolean;
+    blnRemoveShippingCost: boolean;
+    blnRemoveShippingPrice: boolean;
+    blnRemoveCost: boolean;
+    blnRemovePrice: boolean;
+    blnPercent: boolean;
+    add_promo_code: boolean;
+};
+
+export interface DeletePromoCode {
+    promocode: string;
+    delete_promo_code: boolean;
+};
+export interface UpdatePromoCode {
+    amount: number;
+    threshold: number;
+    description: string;
+    blnActive: boolean;
+    expDate: string;
+    blnShipping: boolean;
+    blnRemoveShippingCost: boolean;
+    blnRemoveShippingPrice: boolean;
+    blnRemoveCost: boolean;
+    blnRemovePrice: boolean;
+    blnPercent: boolean;
+    promocode: string;
+    update_promo_code: boolean;
+};
+
+// Run Charge
+export interface UpdateCharge {
+    charge_id: number;
+    charges: ChargeValue[];
+    update_imprint_charges: boolean;
+};
+
+interface ChargeValue {
+    product_quantity: number;
+    process_quantity: number;
+    value: number;
+};

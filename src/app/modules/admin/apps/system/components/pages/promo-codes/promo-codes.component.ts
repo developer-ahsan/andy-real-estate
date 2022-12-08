@@ -1,12 +1,13 @@
 import { ENTER, COMMA } from '@angular/cdk/keycodes';
 import { Component, Input, OnInit, Output, EventEmitter, ChangeDetectorRef, OnDestroy, ViewChild } from '@angular/core';
+import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { MatChipInputEvent } from '@angular/material/chips';
 import { MatPaginator } from '@angular/material/paginator';
 import { Subject } from 'rxjs';
 import { finalize, takeUntil } from 'rxjs/operators';
 import { SystemService } from '../../system.service';
-import { AddColor, AddImprintColor, AddImprintMethod, DeleteColor, DeleteImprintColor, UpdateColor, UpdateImprintColor, UpdateImprintMethod } from '../../system.types';
-
+import { AddPromoCode, DeleteImprintColor, DeletePromoCode, UpdateImprintMethod, UpdatePromoCode } from '../../system.types';
+import moment from 'moment';
 @Component({
   selector: 'app-promo-codes',
   templateUrl: './promo-codes.component.html',
@@ -20,7 +21,7 @@ export class PromoCodesComponent implements OnInit, OnDestroy {
 
   dataSource = [];
   tempDataSource = [];
-  displayedColumns: string[] = ['name', 'savings', 'threshold', 'exp', 'active', 'shipping', 'used'];
+  displayedColumns: string[] = ['name', 'savings', 'threshold', 'exp', 'active', 'shipping', 'used', 'action'];
   totalUsers = 0;
   tempRecords = 0;
   page = 1;
@@ -35,28 +36,66 @@ export class PromoCodesComponent implements OnInit, OnDestroy {
   // Add Method
   ngName: string = '';
   ngDesc: string = '';
-  isAddMethodLoader: boolean = false;
+  isAddPromoLoader: boolean = false;
 
   // Update Color
-  isUpdateMethodLoader: boolean = false;
-  isUpdateMethod: boolean = false;
-  updateMethodData: any;
+  isUpdatePromoLoader: boolean = false;
+  isUpdatePromo: boolean = false;
+  updatePromoData: any;
   ngRGBUpdate = '';
+
+  addPromoForm: FormGroup;
+  updatePromoForm: FormGroup;
   constructor(
     private _changeDetectorRef: ChangeDetectorRef,
     private _systemService: SystemService
   ) { }
 
+  initForm() {
+    this.addPromoForm = new FormGroup({
+      promocode: new FormControl('', Validators.required),
+      amount: new FormControl(0, Validators.required),
+      threshold: new FormControl(0, Validators.required),
+      description: new FormControl('', Validators.required),
+      blnActive: new FormControl(true, Validators.required),
+      expDate: new FormControl(''),
+      blnShipping: new FormControl(false, Validators.required),
+      blnRemoveShippingCost: new FormControl(true, Validators.required),
+      blnRemoveShippingPrice: new FormControl(true, Validators.required),
+      blnRemoveCost: new FormControl(false, Validators.required),
+      blnRemovePrice: new FormControl(false, Validators.required),
+      blnPercent: new FormControl(false, Validators.required)
+    });
+    this.updatePromoForm = new FormGroup({
+      promocode: new FormControl({ value: '', disabled: true }, [Validators.required]),
+      amount: new FormControl(0, Validators.required),
+      threshold: new FormControl(0, Validators.required),
+      description: new FormControl('', Validators.required),
+      blnActive: new FormControl(true, Validators.required),
+      expDate: new FormControl(''),
+      blnShipping: new FormControl(false, Validators.required),
+      blnRemoveShippingCost: new FormControl(true, Validators.required),
+      blnRemoveShippingPrice: new FormControl(true, Validators.required),
+      blnRemoveCost: new FormControl(false, Validators.required),
+      blnRemovePrice: new FormControl(false, Validators.required),
+      blnPercent: new FormControl(false, Validators.required)
+    });
+  }
   ngOnInit(): void {
+    this.initForm();
     this.isLoading = true;
-    this.getImprintMethods(1, 'get');
+    this.getPromoCodes(1, 'get');
   };
   calledScreen(value) {
+    this.initForm();
     this.mainScreen = value;
+    if (this.mainScreen == 'Add New Promo Code') {
+      this.isUpdatePromo = false;
+    }
   }
-  getImprintMethods(page, type) {
+  getPromoCodes(page, type) {
     let params = {
-      imprint_methods: true,
+      promo_codes: true,
       keyword: this.keyword,
       page: page,
       size: 20
@@ -69,11 +108,10 @@ export class PromoCodesComponent implements OnInit, OnDestroy {
         this.tempRecords = res["totalRecords"];
       }
       if (type == 'add') {
-        this.isAddMethodLoader = false;
-        this.ngName = '';
-        this.ngDesc = '';
-        this._systemService.snackBar('Method Added Successfully');
-        this.mainScreen = 'Current Imprint Methods';
+        this.isAddPromoLoader = false;
+        this.initForm();
+        this._systemService.snackBar('PromoCode Added Successfully');
+        this.mainScreen = 'Current Promo Codes';
       }
       this.isLoading = false;
       this.isSearching = false;
@@ -94,7 +132,7 @@ export class PromoCodesComponent implements OnInit, OnDestroy {
     } else {
       this.page--;
     };
-    this.getImprintMethods(this.page, 'get');
+    this.getPromoCodes(this.page, 'get');
   };
   searchColor(value) {
     if (this.dataSource.length > 0) {
@@ -104,7 +142,7 @@ export class PromoCodesComponent implements OnInit, OnDestroy {
     this.keyword = value;
     this.isSearching = true;
     this._changeDetectorRef.markForCheck();
-    this.getImprintMethods(1, 'get');
+    this.getPromoCodes(1, 'get');
   }
   resetSearch() {
     if (this.dataSource.length > 0) {
@@ -115,81 +153,109 @@ export class PromoCodesComponent implements OnInit, OnDestroy {
     this.totalUsers = this.tempRecords;
   }
 
-  addNewMethod() {
-    if (this.ngName == '') {
-      this._systemService.snackBar('Imprint Method name is required');
+  addNewPromoCode() {
+    const { promocode, amount, threshold, description, blnActive, expDate, blnShipping, blnRemoveShippingCost, blnRemoveShippingPrice, blnRemoveCost, blnRemovePrice, blnPercent } = this.addPromoForm.getRawValue();
+    if (promocode == '' || description == '') {
+      this._systemService.snackBar('Please fill out the required fields');
       return;
     }
-    let payload: AddImprintMethod = {
-      method_name: this.ngName,
-      method_description: this.ngDesc,
-      add_imprint_method: true
+    let date;
+    if (expDate) {
+      date = moment(expDate).format('MM/DD/YYYY');
+    } else {
+      date = 0;
     }
-    this.isAddMethodLoader = true;
+    let payload: AddPromoCode = {
+      promocode, amount, threshold, description, blnActive, expDate: date, blnShipping, blnRemoveShippingCost, blnRemoveShippingPrice, blnRemoveCost, blnRemovePrice, blnPercent, add_promo_code: true
+    }
+    this.isAddPromoLoader = true;
     this._systemService.AddSystemData(payload).pipe(takeUntil(this._unsubscribeAll), finalize(() => {
       this._changeDetectorRef.markForCheck();
     })).subscribe(res => {
       if (res["success"]) {
-        this.getImprintMethods(1, 'add')
+        this.getPromoCodes(1, 'add')
       } else {
-        this.isAddMethodLoader = false;
+        this.isAddPromoLoader = false;
         this._systemService.snackBar(res["message"]);
       }
       this._changeDetectorRef.markForCheck();
     }, err => {
-      this.isAddMethodLoader = false;
+      this.isAddPromoLoader = false;
       this._systemService.snackBar('Something went wrong');
     })
   }
-  // Delete Color
-  deleteColor(item) {
+  // Delete Promo
+  deletePromo(item) {
     item.delLoader = true;
-    let payload: DeleteImprintColor = {
-      imprint_color_id: item.pk_imprintColorID,
-      delete_imprint_color: true
+    let payload: DeletePromoCode = {
+      promocode: item.promocode,
+      delete_promo_code: true
     }
     this._systemService.UpdateSystemData(payload).pipe(takeUntil(this._unsubscribeAll), finalize(() => {
       item.delLoader = false
       this._changeDetectorRef.markForCheck();
     })).subscribe(res => {
-      this.dataSource = this.dataSource.filter(color => color.pk_imprintColorID != item.pk_imprintColorID);
+      this.dataSource = this.dataSource.filter(elem => elem.promocode != item.promocode);
       this.totalUsers--;
-      this._systemService.snackBar('Color Deleted Successfully');
+      this.tempDataSource = this.tempDataSource.filter(elem => elem.promocode != item.promocode);
+      this.tempRecords--;
+      this._systemService.snackBar('PromoCode Deleted Successfully');
       this._changeDetectorRef.markForCheck();
     }, err => {
       this._systemService.snackBar('Something went wrong');
     });
   }
-  // Update Method
-  updateMethodToggle(item) {
-    console.log(item)
-    this.updateMethodData = item;
-    this.isUpdateMethod = !this.isUpdateMethod;
+  // Update Promo
+  updatePromoToggle(item) {
+    if (item) {
+      this.updatePromoData = item;
+      this.updatePromoForm.patchValue(item);
+      if (item.expDate != 0) {
+        this.updatePromoForm.patchValue({
+          expDate: new Date(item.expDate)
+        });
+      }
+    }
+    this.isUpdatePromo = !this.isUpdatePromo;
   }
-  updateMethod() {
-    if (this.updateMethodData.imprintColorName == '') {
-      this._systemService.snackBar('Color name is required');
+  updatePromoCode() {
+    const { promocode, amount, threshold, description, blnActive, expDate, blnShipping, blnRemoveShippingCost, blnRemoveShippingPrice, blnRemoveCost, blnRemovePrice, blnPercent } = this.updatePromoForm.getRawValue();
+    if (promocode == '' || description == '') {
+      this._systemService.snackBar('Please fill out the required fields');
       return;
     }
-    const rgb = this.ngRGBUpdate.replace('#', '');
-    let payload: UpdateImprintMethod = {
-      method_id: this.updateMethodData.pk_methodID,
-      method_name: this.updateMethodData.methodName,
-      description: this.updateMethodData.methodDescription,
-      update_imprint_method: true
+    let date;
+    if (expDate) {
+      date = moment(expDate).format('MM/DD/YYYY');
+    } else {
+      date = 0;
     }
-    this.isUpdateMethodLoader = true;
+    let payload: UpdatePromoCode = {
+      amount, threshold, description, blnActive, expDate: date, blnShipping, blnRemoveShippingCost, blnRemoveShippingPrice, blnRemoveCost, blnRemovePrice, blnPercent, promocode, update_promo_code: true
+    }
+    this.isUpdatePromoLoader = true;
     this._systemService.UpdateSystemData(payload).pipe(takeUntil(this._unsubscribeAll), finalize(() => {
-      this.isUpdateMethodLoader = false
+      this.isUpdatePromoLoader = false
       this._changeDetectorRef.markForCheck();
     })).subscribe(res => {
       this.dataSource.filter(elem => {
-        if (elem.pk_methodID == this.updateMethodData.pk_methodID) {
-          elem.methodName = this.updateMethodData.methodName;
-          elem.methodDescription = this.updateMethodData.methodDescription;
+        if (elem.promocode == this.updatePromoData.promocode) {
+          elem.promocode = promocode;
+          elem.amount = amount;
+          elem.threshold = threshold;
+          elem.description = description;
+          elem.blnActive = blnActive;
+          elem.expDate = moment(expDate).format('MM/DD/YYYY');
+          elem.blnShipping = blnShipping;
+          elem.blnPercent = blnPercent;
+          elem.blnRemoveShippingCost = blnRemoveShippingCost;
+          elem.blnRemoveShippingPrice = blnRemoveShippingPrice;
+          elem.blnRemoveCost = blnRemoveCost;
+          elem.blnRemovePrice = blnRemovePrice;
         }
       });
-      this._systemService.snackBar('Method Updated Successfully');
+      this._systemService.snackBar('Promo Code Updated Successfully');
+      this.isUpdatePromo = false;
       this._changeDetectorRef.markForCheck();
     }, err => {
       this._systemService.snackBar('Something went wrong');
