@@ -1462,10 +1462,13 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
         };
 
         this.productNumberLoader = true;
+        this.featureForm = new FormGroup({
+            items: new FormArray([])
+        });
         this._inventoryService.getPromoStandardProductDetails(this.productNumberText, this.supplierId)
             .pipe(takeUntil(this._unsubscribeAll))
             .subscribe((productDetails) => {
-
+                this.addItem();
                 if (productDetails["data"] == 'no data found.') {
                     this._snackBar.open("No data found for this supplier and product number", '', {
                         horizontalPosition: 'center',
@@ -1503,6 +1506,19 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
                                     const details = productDetails["data"].result.Product;
                                     let detailsDescription = "";
                                     if (Array.isArray(details.description)) {
+                                        this.removeFeature(0);
+                                        details.description.forEach((element, index) => {
+                                            this.addItem();
+                                            setTimeout(() => {
+                                                this.items.at(index).setValue({
+                                                    feature: element,
+                                                    order: index + 1
+                                                });
+                                            }, 100);
+
+                                            // this.featureForm.get('items').con = element;
+                                        });
+
                                         let val = !Array.isArray(details.description) ? [details.description] : details.description;
                                         detailsDescription = details?.description.join('.').trim();
                                     } else {
@@ -1532,7 +1548,12 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
                                     }
 
                                     this.secondFormGroup.patchValue(product);
-
+                                    if (customColorData[0]["ShippingPackageArray"]) {
+                                        this.secondFormGroup.patchValue({
+                                            unitsInWeight: customColorData[0]["ShippingPackageArray"][0].quantity,
+                                            unitsInShippingPackage: customColorData[0]["ShippingPackageArray"][0].quantity
+                                        });
+                                    }
                                     this.pricingDataArray = productPricing["data"]["result"]["Envelope"]["Body"]["GetConfigurationAndPricingResponse"]["Configuration"]["PartArray"];
 
                                     this.productNumberLoader = false;
@@ -3140,7 +3161,7 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
             const { order, feature } = item;
             featureArray.push({
                 attribute_type_id: 1,
-                attribute_text: feature,
+                attribute_text: feature.replace(/'/g, "''"),
                 supplier_id: this.supplierId,
                 order: Number(order),
                 user_full_name: null

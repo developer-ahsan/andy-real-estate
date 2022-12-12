@@ -10,12 +10,12 @@
                     <div class="col-md-6 col-12">
                         <mat-form-field class="example-full-width w-full" appearance="fill">
                             <mat-label>Add standard imprint group</mat-label>
-                            <input maxlength="100" matInput placeholder="New Standard Imprint Group Name">
-                            <button matSuffix [disabled]="isUpdateMethodLoader" mat-button mat-icon-button
-                                [matTooltip]="'Add Group'" (click)="updateMethod()">
-                                <mat-icon svgIcon="heroicons_solid:plus" *ngIf="!isUpdateMethodLoader"></mat-icon>
-                                <mat-progress-spinner *ngIf="isUpdateMethodLoader" [diameter]="24"
-                                    [mode]="'indeterminate'">
+                            <input [(ngModel)]="ngName" maxlength="100" matInput
+                                placeholder="New Standard Imprint Group Name">
+                            <button matSuffix [disabled]="isAddGroupLoader" mat-button mat-icon-button
+                                [matTooltip]="'Add Group'" (click)="addNewGroup()">
+                                <mat-icon svgIcon="heroicons_solid:plus" *ngIf="!isAddGroupLoader"></mat-icon>
+                                <mat-progress-spinner *ngIf="isAddGroupLoader" [diameter]="24" [mode]="'indeterminate'">
                                 </mat-progress-spinner>
                             </button>
                         </mat-form-field>
@@ -49,12 +49,18 @@
                                 <mat-icon class="mr-1" svgIcon="heroicons_outline:plus" matTooltip="Add New Imprint"
                                     (click)="toggleNewImprint(element, null)">
                                 </mat-icon>
-                                <mat-icon class="mr-1" svgIcon="heroicons_outline:check" matTooltip="Update Group Name"
-                                    (click)="updateMethodToggle(element)">
+                                <mat-icon *ngIf="!element?.updateLoader" class="mr-1" svgIcon="heroicons_outline:check"
+                                    matTooltip="Update Group Name" (click)="updateGroup(element)">
                                 </mat-icon>
-                                <mat-icon class="mr-1" svgIcon="heroicons_outline:trash" matTooltip="Remove Group"
-                                    (click)="updateMethodToggle(element)">
+                                <mat-progress-spinner *ngIf="element.updateLoader" [diameter]="24"
+                                    [mode]="'indeterminate'">
+                                </mat-progress-spinner>
+                                <mat-icon class="mr-1" *ngIf="!element?.delLoader" svgIcon="heroicons_outline:trash"
+                                    matTooltip="Remove Group" (click)="deleteGroup(element)">
                                 </mat-icon>
+                                <mat-progress-spinner *ngIf="element.delLoader" [diameter]="24"
+                                    [mode]="'indeterminate'">
+                                </mat-progress-spinner>
                             </div>
                         </td>
                     </ng-container>
@@ -163,8 +169,10 @@
             <!-- No Imprints Found -->
             <ng-template #other_content>
                 <div class="text-secondary font-semibold p-5 text-center flex">
-                    <span>No Imprint Groups Found. <b (click)="getStandardGroup(1,'get')"
-                            class="cursor-pointer">Retry</b></span>
+                    <span>No Imprint Groups Found.
+                        <!-- <b (click)="getStandardGroup(1,'get')"
+                            class="cursor-pointer">Retry</b> -->
+                    </span>
 
                 </div>
             </ng-template>

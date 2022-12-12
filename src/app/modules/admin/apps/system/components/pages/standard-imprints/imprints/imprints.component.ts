@@ -4,7 +4,7 @@ import { MatChipInputEvent } from '@angular/material/chips';
 import { MatPaginator } from '@angular/material/paginator';
 import { Observable, Subject } from 'rxjs';
 import { finalize, map, startWith, takeUntil } from 'rxjs/operators';
-import { AddColor, AddImprintColor, AddImprintMethod, DeleteColor, DeleteImprintColor, UpdateColor, UpdateImprintColor, UpdateImprintMethod } from '../../../system.types';
+import { AddColor, AddImprintColor, AddImprintMethod, AddStandardImprint, DeleteColor, DeleteImprintColor, UpdateColor, UpdateImprintColor, UpdateImprintMethod } from '../../../system.types';
 import { fuseAnimations } from '@fuse/animations';
 import { SystemService } from '../../../system.service';
 import { FormBuilder, FormControl, FormGroup } from '@angular/forms';
@@ -358,6 +358,45 @@ export class AddEditImprintsComponent implements OnInit, OnDestroy {
         });
       }
     });
+  }
+
+  // Add New Imprint Method
+  addNewStandardImprint() {
+    if (!this.selectedMethod.pk_methodID && !this.method_name) {
+      this._systemService.snackBar("New Method was not specified correctly");
+      return;
+    }
+    console.log(this.selectedLocation)
+    if (!this.selectedLocation.pk_locationID && !this.location_name) {
+      this._systemService.snackBar("New Location was not specified correctly");
+      return;
+    }
+
+    console.log(this.selectedSupplier);
+    // let payload: AddStandardImprint = {
+    //   fk_standardImprintGroupID: this.pk_standardImprintGroupID,
+    // name: this.imprintName,
+    // fk_decoratorID: this.selectedSupplier.pk_companyID,
+    // fk_methodID: number;
+    // fk_locationID: number;
+    // fk_setupChargeID: number;
+    // fk_runChargeID: number;
+    // blnIncludable: boolean;
+    // area: string;
+    // blnUserColorSelection: boolean;
+    // maxColors: number;
+    // fk_multiColorMinQID: number;
+    // fk_collectionID: number;
+    // blnColorProcess: boolean;
+    // blnStitchProcess: boolean;
+    // blnSingleProcess: boolean;
+    // minProductQty: number;
+    // imprintComments: string;
+    // fk_digitizerID: number;
+    // displayOrder: number;
+    // blnSingleton: boolean;
+    // add_standard_imprint: boolean;
+    // } 
   }
   /**
      * On destroy

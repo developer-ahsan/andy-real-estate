@@ -5,7 +5,7 @@ import { MatPaginator } from '@angular/material/paginator';
 import { forkJoin, Subject } from 'rxjs';
 import { finalize, takeUntil } from 'rxjs/operators';
 import { SystemService } from '../../system.service';
-import { AddColor, AddImprintColor, AddImprintMethod, DeleteColor, DeleteImprintColor, UpdateColor, UpdateImprintColor, UpdateImprintMethod } from '../../system.types';
+import { AddColor, AddImprintColor, AddImprintMethod, AddStandardImprintGroup, DeleteColor, DeleteImprintColor, DeleteStandardImprintGroup, UpdateColor, UpdateImprintColor, UpdateImprintMethod, UpdateStandardImprintGroup } from '../../system.types';
 import { fuseAnimations } from '@fuse/animations';
 import { InventoryService } from 'app/modules/admin/apps/ecommerce/inventory/inventory.service';
 
@@ -38,7 +38,7 @@ export class StandardImprintsComponent implements OnInit, OnDestroy {
   // Add Method
   ngName: string = '';
   ngDesc: string = '';
-  isAddMethodLoader: boolean = false;
+  isAddGroupLoader: boolean = false;
 
   // Update Color
   isUpdateMethodLoader: boolean = false;
@@ -93,7 +93,7 @@ export class StandardImprintsComponent implements OnInit, OnDestroy {
         this.tempRecords = res["totalRecords"];
       }
       if (type == 'add') {
-        this.isAddMethodLoader = false;
+        this.isAddGroupLoader = false;
         this.ngName = '';
         this.ngDesc = '';
         this._systemService.snackBar('Method Added Successfully');
@@ -237,46 +237,47 @@ export class StandardImprintsComponent implements OnInit, OnDestroy {
       }
     });
   }
-  addNewMethod() {
+  addNewGroup() {
     if (this.ngName == '') {
-      this._systemService.snackBar('Imprint Method name is required');
+      this._systemService.snackBar('Imprint group name is required');
       return;
     }
-    let payload: AddImprintMethod = {
-      method_name: this.ngName,
-      method_description: this.ngDesc,
-      add_imprint_method: true
+    let payload: AddStandardImprintGroup = {
+      name: this.ngName,
+      add_standard_imprint_group: true
     }
-    this.isAddMethodLoader = true;
+    this.isAddGroupLoader = true;
     this._systemService.AddSystemData(payload).pipe(takeUntil(this._unsubscribeAll), finalize(() => {
       this._changeDetectorRef.markForCheck();
     })).subscribe(res => {
       if (res["success"]) {
         this.getStandardGroup(1, 'add')
       } else {
-        this.isAddMethodLoader = false;
+        this.isAddGroupLoader = false;
         this._systemService.snackBar(res["message"]);
       }
       this._changeDetectorRef.markForCheck();
     }, err => {
-      this.isAddMethodLoader = false;
+      this.isAddGroupLoader = false;
       this._systemService.snackBar('Something went wrong');
     })
   }
   // Delete Color
-  deleteColor(item) {
+  deleteGroup(item) {
     item.delLoader = true;
-    let payload: DeleteImprintColor = {
-      imprint_color_id: item.pk_imprintColorID,
-      delete_imprint_color: true
+    let payload: DeleteStandardImprintGroup = {
+      standardImprintGroupID: item.pk_standardImprintGroupID,
+      delete_standard_imprint_group: true
     }
     this._systemService.UpdateSystemData(payload).pipe(takeUntil(this._unsubscribeAll), finalize(() => {
       item.delLoader = false
       this._changeDetectorRef.markForCheck();
     })).subscribe(res => {
-      this.dataSource = this.dataSource.filter(color => color.pk_imprintColorID != item.pk_imprintColorID);
+      this.dataSource = this.dataSource.filter(elem => elem.pk_standardImprintGroupID != item.pk_standardImprintGroupID);
+      this.tempDataSource = this.tempDataSource.filter(elem => elem.pk_standardImprintGroupID != item.pk_standardImprintGroupID);
       this.totalUsers--;
-      this._systemService.snackBar('Color Deleted Successfully');
+      this.tempRecords--;
+      this._systemService.snackBar('Group Deleted Successfully');
       this._changeDetectorRef.markForCheck();
     }, err => {
       this._systemService.snackBar('Something went wrong');
@@ -288,34 +289,29 @@ export class StandardImprintsComponent implements OnInit, OnDestroy {
     this.updateMethodData = item;
     this.isUpdateMethod = !this.isUpdateMethod;
   }
-  updateMethod() {
-    if (this.updateMethodData.imprintColorName == '') {
-      this._systemService.snackBar('Color name is required');
+  updateGroup(element) {
+    if (element.name == '') {
+      this._systemService.snackBar('Imprint group name is required');
       return;
     }
-    const rgb = this.ngRGBUpdate.replace('#', '');
-    let payload: UpdateImprintMethod = {
-      method_id: this.updateMethodData.pk_methodID,
-      method_name: this.updateMethodData.methodName,
-      description: this.updateMethodData.methodDescription,
-      update_imprint_method: true
+    let payload: UpdateStandardImprintGroup = {
+      standardImprintGroupID: element.pk_standardImprintGroupID,
+      name: element.name,
+      update_standard_imprint_group: true
     }
-    this.isUpdateMethodLoader = true;
+    element.updateLoader = true;
     this._systemService.UpdateSystemData(payload).pipe(takeUntil(this._unsubscribeAll), finalize(() => {
-      this.isUpdateMethodLoader = false
+      element.updateLoader = false
       this._changeDetectorRef.markForCheck();
     })).subscribe(res => {
-      this.dataSource.filter(elem => {
-        if (elem.pk_methodID == this.updateMethodData.pk_methodID) {
-          elem.methodName = this.updateMethodData.methodName;
-          elem.methodDescription = this.updateMethodData.methodDescription;
-        }
-      });
-      this._systemService.snackBar('Method Updated Successfully');
+      element.updateLoader = false;
+      this._systemService.snackBar('Group Name Updated Successfully');
       this._changeDetectorRef.markForCheck();
     }, err => {
+      element.updateLoader = false;
       this._systemService.snackBar('Something went wrong');
-    })
+      this._changeDetectorRef.markForCheck();
+    });
   }
 
   /**

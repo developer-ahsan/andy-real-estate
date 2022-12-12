@@ -1,0 +1,146 @@
+<div class="w-full px-5">
+    <!-- Search -->
+    <div *ngIf="!storeProductData" class="mb-5">
+        <mat-form-field class="w-full">
+            <mat-label>Enter the store product ID</mat-label>
+            <input matInput type="number" [(ngModel)]="searchID">
+        </mat-form-field>
+        <div class="flex justify-end">
+            <button mat-stroked-button [disabled]="searchLoader" class="min-w-30" (click)="getStoreProductData()">
+                <span *ngIf="!searchLoader">Next</span>
+                <mat-progress-spinner *ngIf="searchLoader" [diameter]="24" [mode]="'indeterminate'">
+                </mat-progress-spinner>
+            </button>
+        </div>
+    </div>
+
+    <div *ngIf="storeProductData && !searchLoader">
+        <div class="text-right mb-3">
+            <button class="min-w-30" matTooltip="Back to search" mat-stroked-button
+                (click)="backToSearch()">Back</button>
+        </div>
+        <mat-stepper orientation="vertical" (selectionChange)="selectionChange($event)" [linear]="true">
+            <mat-step>
+                <ng-template matStepLabel>Quantity breakdown</ng-template>
+                <ng-template matStepContent>
+                    <p>Enter the quantity ordered per size and color. Make sure the total is no less than
+                        <b>{{pricingData}}</b>.
+                    </p>
+                    <div *ngIf="isFirstStepLoading">
+                        <ngx-skeleton-loader count="5" appearance="line" animation="pulse">
+                        </ngx-skeleton-loader>
+                    </div>
+                    <div *ngIf="!isFirstStepLoading">
+                        <div class="row bg-gray-300 p-2">
+                            <div class="col-4 text-center font-bold">Color</div>
+                            <div class="col-4 text-center font-bold">Size</div>
+                            <div class="col-4 text-center font-bold">QTY</div>
+                        </div>
+                        <div class="row" *ngFor="let item of colorLength">
+                            <div class="col-4 text-center p-2">
+                                <mat-form-field class="w-full">
+                                    <mat-select matInput [(ngModel)]="item.colorName">
+                                        <mat-option value=""></mat-option>
+                                        <mat-option *ngFor="let color of ColorData"
+                                            [value]="color.pk_colorID">{{color.colorName}}</mat-option>
+                                    </mat-select>
+                                </mat-form-field>
+                            </div>
+                            <div class="col-4 text-center p-2">
+                                <mat-form-field class="w-full">
+                                    <mat-select matInput>
+                                        <mat-option value="N/A" *ngIf="SizesData.length == 0">N/A</mat-option>
+                                        <mat-option *ngFor="let size of SizesData"
+                                            [value]="size.fk_sizeID">{{size.sizeName}}</mat-option>
+                                    </mat-select>
+                                </mat-form-field>
+                            </div>
+                            <div class="col-4 text-center p-2">
+                                <mat-form-field class="w-full">
+                                    <input matInput type="number">
+                                </mat-form-field>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="text-right">
+                        <button [disabled]="isFirstStepLoading" mat-stroked-button matStepperNext
+                            class="min-w-30">Next</button>
+                    </div>
+                </ng-template>
+            </mat-step>
+            <mat-step>
+                <ng-template matStepLabel>Packaging</ng-template>
+                <ng-template matStepContent>
+                    <p>Select optional packaging.</p>
+                    <div class="flex justify-end">
+                        <button class="mr-1 min-w-30" mat-stroked-button matStepperPrevious>Back</button>
+                        <button class="min-w-30" mat-stroked-button matStepperNext>Next</button>
+                    </div>
+                </ng-template>
+            </mat-step>
+            <mat-step>
+                <ng-template matStepLabel>Imprints</ng-template>
+                <p>Select the imprints and the appropriate process number. Margin on additional imprints is
+                    <select [(ngModel)]="percentageVal" class="border">
+                        <option *ngFor="let item of percentages" [value]="item">{{item}}%</option>
+                    </select>
+                    (currently, 20% at stores)
+                </p>
+                <div *ngIf="!imprintsData">
+                    <ngx-skeleton-loader count="5" appearance="line" animation="pulse">
+                    </ngx-skeleton-loader>
+                </div>
+                <div *ngIf="imprintsData">
+                    <div class="row bg-gray-300 p-2 mb-2">
+                        <div class="col-1 font-bold">Select</div>
+                        <div class="col-4 font-bold">Location</div>
+                        <div class="col-4 font-bold">Method</div>
+                        <div class="col-3 font-bold">Processes</div>
+                    </div>
+                    <div class="row space-y-2" *ngFor="let item of imprintsData">
+                        <div class="col-1 mt-3">
+                            <mat-checkbox [(ngModel)]="item.checked"></mat-checkbox>
+                        </div>
+                        <div class="col-4 ">
+                            {{item.locationName}}
+                        </div>
+                        <div class="col-4 ">{{item.methodName}}</div>
+                        <div class="col-3">
+                            <select class="border min-w-20 h-7" *ngIf="item.blnSingleProcess">
+                                <option value=""></option>
+                                <option [value]="1">1</option>
+                            </select>
+                            <div class="flex justify-between " *ngIf="item.blnColorProcess">
+                                <select class="border min-w-20 h-7">
+                                    <option value=""></option>
+                                    <option *ngFor="let item of createRange(item.maxColors);" [value]="1">{{item}}
+                                    </option>
+                                </select>
+                                <p> Colors</p>
+                            </div>
+                            <div class="flex justify-between items-center" *ngIf="item.blnStitchProcess">
+                                <input class="form-control text-sm min-w-20">
+                                <p> Stitches</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="flex justify-end mt-3">
+                    <button class="mr-1 min-w-30" mat-stroked-button matStepperPrevious>Back</button>
+                    <button class="min-w-30" [disabled]="!imprintsData" mat-stroked-button matStepperNext>Next</button>
+                </div>
+            </mat-step>
+            <mat-step>
+                <ng-template matStepLabel>Destination Zip Code</ng-template>
+                <mat-form-field class="w-full">
+                    <mat-label>Enter the 5-digit zip code where the item will be shipped</mat-label>
+                    <input matInput maxlength="5" [(ngModel)]="ngZipCode">
+                </mat-form-field>
+                <div class="flex justify-end">
+                    <button class="mr-2 min-w-30" mat-stroked-button matStepperPrevious>Back</button>
+                    <button class="min-w-40" mat-stroked-button>Calculate Pricing</button>
+                </div>
+            </mat-step>
+        </mat-stepper>
+    </div>
+</div>
