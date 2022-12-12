@@ -1548,12 +1548,15 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
                                     }
 
                                     this.secondFormGroup.patchValue(product);
-                                    if (customColorData[0]["ShippingPackageArray"]) {
-                                        this.secondFormGroup.patchValue({
-                                            unitsInWeight: customColorData[0]["ShippingPackageArray"][0].quantity,
-                                            unitsInShippingPackage: customColorData[0]["ShippingPackageArray"][0].quantity
-                                        });
+                                    if (this.supplierId == 25) {
+                                        if (customColorData[0]["ShippingPackageArray"]) {
+                                            this.secondFormGroup.patchValue({
+                                                unitsInWeight: customColorData[0]["ShippingPackageArray"][0].quantity,
+                                                unitsInShippingPackage: customColorData[0]["ShippingPackageArray"][0].quantity
+                                            });
+                                        }
                                     }
+
                                     this.pricingDataArray = productPricing["data"]["result"]["Envelope"]["Body"]["GetConfigurationAndPricingResponse"]["Configuration"]["PartArray"];
 
                                     this.productNumberLoader = false;
