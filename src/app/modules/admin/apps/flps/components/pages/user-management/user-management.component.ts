@@ -8,11 +8,11 @@ import { finalize, takeUntil } from 'rxjs/operators';
 import moment from 'moment';
 import { FLPSService } from '../../flps.service';
 @Component({
-  selector: 'app-user-management',
+  selector: 'app-user-flps-management',
   templateUrl: './user-management.component.html',
   styles: [".mat-paginator {border-radius: 16px !important}"]
 })
-export class UserManagementComponent implements OnInit, OnDestroy {
+export class FLPSUserManagementComponent implements OnInit, OnDestroy {
   @ViewChild('paginator') paginator: MatPaginator;
   @Input() isLoading: boolean;
   @Output() isLoadingChange = new EventEmitter<boolean>();
@@ -20,12 +20,12 @@ export class UserManagementComponent implements OnInit, OnDestroy {
 
   dataSource = [];
   tempDataSource = [];
-  displayedColumns: string[] = ['name', 'savings', 'threshold', 'exp', 'active', 'shipping', 'used', 'action'];
+  displayedColumns: string[] = ['id', 'f_name', 'l_name', 'action'];
   totalUsers = 0;
   tempRecords = 0;
   page = 1;
 
-  mainScreen: string = 'Current Promo Codes';
+  mainScreen: string = 'Current Users';
   keyword = '';
   not_available = 'N/A';
 

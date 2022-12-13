@@ -41,11 +41,13 @@ import { flpsRoutes } from './flps.routing';
 import { FLPSComponent } from './components/flps.component';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { ReportComponent } from './components/pages/report/report.component';
+import { FLPSUserManagementComponent } from './components/pages/user-management/user-management.component';
 
 @NgModule({
     declarations: [
         FLPSComponent,
-        ReportComponent
+        ReportComponent,
+        FLPSUserManagementComponent
     ],
     imports: [
         RouterModule.forChild(flpsRoutes),

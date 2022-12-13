@@ -38,7 +38,7 @@ import { ImprintRunComponent } from '../navigation/imprint/imprint-run/imprint-r
 export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy {
     @ViewChild(MatPaginator) private _paginator: MatPaginator;
     @ViewChild(MatSort) private _sort: MatSort;
-    @ViewChild('stepper') private myStepper: MatStepper;
+    @ViewChild('stepper') public myStepper: MatStepper;
     @ViewChild('prodStandardImprints') prodStandardImprints: ProductImprintsComponent;
 
     products$: Observable<InventoryProduct[]>;
@@ -1491,6 +1491,74 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
                             });
                         }
                     });
+                    // Map Product Data
+                    const { success } = productDetails["data"];
+                    if (success) {
+                        const details = productDetails["data"].result.Product;
+                        let detailsDescription = "";
+                        if (Array.isArray(details.description)) {
+                            this.removeFeature(0);
+                            details.description.forEach((element, index) => {
+                                this.addItem();
+                                setTimeout(() => {
+                                    this.items.at(index).setValue({
+                                        feature: element,
+                                        order: index + 1
+                                    });
+                                }, 100);
+
+                                // this.featureForm.get('items').con = element;
+                            });
+
+                            let val = !Array.isArray(details.description) ? [details.description] : details.description;
+                            detailsDescription = details?.description.join('.').trim();
+                        } else {
+                            detailsDescription = details?.description;
+                        }
+                        // this.productId = details.productId;
+                        const product = {
+                            productName: this.htmlDecode(details.productName.replace(details?.productId, "").replace('.', '')),
+                            productNumber: this.htmlDecode(details.productId),
+                            brandName: this.htmlDecode(details.productBrand),
+                            mainDescription: detailsDescription,
+                            miniDescription: "Mini description"
+                        };
+
+                        if ("ProductKeywordArray" in details) {
+                            const string = details.ProductKeywordArray[0].keyword;
+                            if (string?.length) {
+                                for (const value of string.split(',')) {
+                                    let temp = {
+                                        name: value
+                                    }
+                                    this.fruits.push(temp);
+                                };
+                            };
+                        } else {
+                            this.fruits = [];
+                        }
+                        this.secondFormGroup.patchValue(product);
+                        if (this.supplierId == 25) {
+                            if (customColorData[0]["ShippingPackageArray"]) {
+                                this.secondFormGroup.patchValue({
+                                    unitsInWeight: customColorData[0]["ShippingPackageArray"][0].quantity,
+                                    unitsInShippingPackage: customColorData[0]["ShippingPackageArray"][0].quantity
+                                });
+                            }
+                        }
+                        // Mark for check
+                        this._changeDetectorRef.markForCheck();
+                    } else {
+                        this._snackBar.open("Product details not found", '', {
+                            horizontalPosition: 'center',
+                            verticalPosition: 'bottom',
+                            duration: 3500
+                        });
+                        // Mark for check
+                        this._changeDetectorRef.markForCheck();
+                    }
+                    //  End Mapping
+
                     this._inventoryService.getPromoStandardProductPricingDetails(this.productNumberText, this.supplierId)
                         .pipe(takeUntil(this._unsubscribeAll))
                         .subscribe((productPricing) => {
@@ -1501,82 +1569,17 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
                                     duration: 3500
                                 });
 
-                                const { success } = productDetails["data"];
-                                if (success) {
-                                    const details = productDetails["data"].result.Product;
-                                    let detailsDescription = "";
-                                    if (Array.isArray(details.description)) {
-                                        this.removeFeature(0);
-                                        details.description.forEach((element, index) => {
-                                            this.addItem();
-                                            setTimeout(() => {
-                                                this.items.at(index).setValue({
-                                                    feature: element,
-                                                    order: index + 1
-                                                });
-                                            }, 100);
+                                this.pricingDataArray = productPricing["data"]["result"]["Envelope"]["Body"]["GetConfigurationAndPricingResponse"]["Configuration"]["PartArray"];
 
-                                            // this.featureForm.get('items').con = element;
-                                        });
-
-                                        let val = !Array.isArray(details.description) ? [details.description] : details.description;
-                                        detailsDescription = details?.description.join('.').trim();
-                                    } else {
-                                        detailsDescription = details?.description;
-                                    }
-                                    // this.productId = details.productId;
-                                    const product = {
-                                        productName: this.htmlDecode(details.productName.replace(details?.productId, "").replace('.', '')),
-                                        productNumber: this.htmlDecode(details.productId),
-                                        brandName: this.htmlDecode(details.productBrand),
-                                        mainDescription: detailsDescription,
-                                        miniDescription: "Mini description"
-                                    };
-
-                                    if ("ProductKeywordArray" in details) {
-                                        const string = details.ProductKeywordArray[0].keyword;
-                                        if (string?.length) {
-                                            for (const value of string.split(',')) {
-                                                let temp = {
-                                                    name: value
-                                                }
-                                                this.fruits.push(temp);
-                                            };
-                                        };
-                                    } else {
-                                        this.fruits = [];
-                                    }
-
-                                    this.secondFormGroup.patchValue(product);
-                                    if (this.supplierId == 25) {
-                                        if (customColorData[0]["ShippingPackageArray"]) {
-                                            this.secondFormGroup.patchValue({
-                                                unitsInWeight: customColorData[0]["ShippingPackageArray"][0].quantity,
-                                                unitsInShippingPackage: customColorData[0]["ShippingPackageArray"][0].quantity
-                                            });
-                                        }
-                                    }
-
-                                    this.pricingDataArray = productPricing["data"]["result"]["Envelope"]["Body"]["GetConfigurationAndPricingResponse"]["Configuration"]["PartArray"];
-
-                                    this.productNumberLoader = false;
-                                    setTimeout(() => {
-                                        this.myStepper.next();
-                                        this._changeDetectorRef.markForCheck();
-                                    }, 100);
-                                    // Mark for check
+                                this.productNumberLoader = false;
+                                // Move To Next Step
+                                setTimeout(() => {
+                                    this.myStepper.next();
                                     this._changeDetectorRef.markForCheck();
-                                } else {
-                                    this._snackBar.open("Product details not found", '', {
-                                        horizontalPosition: 'center',
-                                        verticalPosition: 'bottom',
-                                        duration: 3500
-                                    });
-                                    this.productNumberLoader = false;
-
-                                    // Mark for check
-                                    this._changeDetectorRef.markForCheck();
-                                }
+                                }, 200);
+                                // End Next Step
+                                // Mark for check
+                                this._changeDetectorRef.markForCheck();
                             } else {
                                 this._snackBar.open("Data not found against this product number", '', {
                                     horizontalPosition: 'center',
@@ -1591,11 +1594,16 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
                                     mainDescription: null
                                 };
 
-                                this.fruits = [];
-                                this.secondFormGroup.patchValue(product);
+                                // this.fruits = [];
+                                // this.secondFormGroup.patchValue(product);
                                 this.pricingDataArray = [];
                                 this.productNumberLoader = false;
-
+                                // Move To Next Step
+                                setTimeout(() => {
+                                    this.myStepper.next();
+                                    this._changeDetectorRef.markForCheck();
+                                }, 200);
+                                // End Next Step
                                 // Mark for check
                                 this._changeDetectorRef.markForCheck();
                             };

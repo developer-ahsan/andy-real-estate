@@ -50,6 +50,10 @@
                         <app-report [(isLoading)]="isLoading">
                         </app-report>
                     </ng-template>
+                    <ng-template [ngIf]="selectedScreeen == 'User Management'">
+                        <app-user-flps-management [(isLoading)]="isLoading">
+                        </app-user-flps-management>
+                    </ng-template>
                 </div>
             </div>
         </div>
