@@ -18,12 +18,43 @@
         <!-- Title -->
         <div class="mt-2">
             <h2 class="text-3xl md:text-4xl font-extrabold tracking-tight leading-7 sm:leading-10 truncate">
-                System Details
+                FLPS
             </h2>
         </div>
 
     </div>
-    <mat-drawer-container class="sub-nav-component bg-light" autosize>
+    <div class="sub-nav-component bg-light">
+        <div class="px-5 pt-5">
+            <mat-button-toggle-group #group="matButtonToggleGroup" [value]="selectedScreeen"
+                (change)="calledScreen(group.value)">
+                <mat-button-toggle value="Generate Report">
+                    Generate Report
+                </mat-button-toggle>
+                <mat-button-toggle value="User Management">
+                    User Management
+                </mat-button-toggle>
+                <mat-button-toggle value="Store Management">
+                    Store Management
+                </mat-button-toggle>
+            </mat-button-toggle-group>
+        </div>
+        <div class="p-5">
+            <div class="rounded-2xl shadow bg-card flex flex-col lg:flex-row w-full">
+                <div class="w-full">
+                    <div class="p-4 sm:p-4 lg:p-8">
+                        <div class="text-2xl font-bold">
+                            {{selectedScreeen}}
+                        </div>
+                    </div>
+                    <ng-template [ngIf]="selectedScreeen == 'Generate Report'">
+                        <app-report [(isLoading)]="isLoading">
+                        </app-report>
+                    </ng-template>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- <mat-drawer-container class="sub-nav-component bg-light" autosize>
         <mat-drawer #drawer class="sub-sidenav bg-light" [mode]="drawerMode" [opened]="drawerOpened">
             <div *ngFor="let route of routes;let i = index">
                 <mat-expansion-panel class="bg-light" #panel [class.mat-elevation-z0]="true" dense
@@ -62,84 +93,8 @@
         <div class="mb-3 bg-light p-2" #topScrollAnchor>
             <mat-icon class="subnav-menu-icon ml-1" svgIcon="heroicons_outline:menu" (click)="toggleDrawer()">
             </mat-icon>
-            <div class="rounded-2xl shadow bg-card flex flex-col lg:flex-row w-full">
-                <div class="w-full">
-                    <div class="p-4 sm:p-4 lg:p-8">
-                        <div class="text-2xl font-bold">
-                            {{selectedScreeen}}
-                        </div>
-                    </div>
-                    <ng-template [ngIf]="selectedScreeen == 'Product Colors'">
-                        <app-product-colors [(isLoading)]="isLoading">
-                        </app-product-colors>
-                    </ng-template>
-                    <ng-template [ngIf]="selectedScreeen == 'Product Sizes'">
-                        <app-product-system-sizes [(isLoading)]="isLoading">
-                        </app-product-system-sizes>
-                    </ng-template>
-                    <ng-template [ngIf]="selectedScreeen == 'Pack/Accessories'">
-                        <app-product-pack-accessories [(isLoading)]="isLoading">
-                        </app-product-pack-accessories>
-                    </ng-template>
-                    <ng-template [ngIf]="selectedScreeen == 'Imprint Colors'">
-                        <app-imprint-colors [(isLoading)]="isLoading">
-                        </app-imprint-colors>
-                    </ng-template>
-                    <ng-template [ngIf]="selectedScreeen == 'Imprint Methods'">
-                        <app-imprint-methods [(isLoading)]="isLoading">
-                        </app-imprint-methods>
-                    </ng-template>
-                    <ng-template [ngIf]="selectedScreeen == 'Imprint Locations'">
-                        <app-imprint-locations [(isLoading)]="isLoading">
-                        </app-imprint-locations>
-                    </ng-template>
-                    <ng-template [ngIf]="selectedScreeen == 'Promo Codes'">
-                        <app-promo-codes [(isLoading)]="isLoading">
-                        </app-promo-codes>
-                    </ng-template>
-                    <ng-template [ngIf]="selectedScreeen == 'Default Blurbs'">
-                        <app-default-blurbs [(isLoading)]="isLoading">
-                        </app-default-blurbs>
-                    </ng-template>
-                    <ng-template [ngIf]="selectedScreeen == 'OH County Sales Tax'">
-                        <app-country-sales [(isLoading)]="isLoading">
-                        </app-country-sales>
-                    </ng-template>
-                    <ng-template [ngIf]="selectedScreeen == 'Active Stores'">
-                        <app-active-stores [(isLoading)]="isLoading">
-                        </app-active-stores>
-                    </ng-template>
-                    <ng-template [ngIf]="selectedScreeen == 'Default Support Team'">
-                        <app-support-team [(isLoading)]="isLoading">
-                        </app-support-team>
-                    </ng-template>
-                    <ng-template [ngIf]="selectedScreeen == 'Upload Images'">
-                        <app-upload-images [(isLoading)]="isLoading">
-                        </app-upload-images>
-                    </ng-template>
-                    <ng-template [ngIf]="selectedScreeen == 'P.O. Archives'">
-                        <app-po-archives [(isLoading)]="isLoading">
-                        </app-po-archives>
-                    </ng-template>
-                    <ng-template [ngIf]="selectedScreeen == 'Product Migration'">
-                        <app-product-migrations [(isLoading)]="isLoading">
-                        </app-product-migrations>
-                    </ng-template>
-                    <ng-template [ngIf]="selectedScreeen == 'Core Products'">
-                        <app-core-products [(isLoading)]="isLoading">
-                        </app-core-products>
-                    </ng-template>
-                    <ng-template [ngIf]="selectedScreeen == 'Imprint Charges'">
-                        <app-imprint-charges [(isLoading)]="isLoading">
-                        </app-imprint-charges>
-                    </ng-template>
-                    <ng-template [ngIf]="selectedScreeen == 'Standard Imprints'">
-                        <app-standard-imprints [(isLoading)]="isLoading">
-                        </app-standard-imprints>
-                    </ng-template>
-                </div>
-            </div>
+            
         </div>
 
-    </mat-drawer-container>
+    </mat-drawer-container> -->
 </div>

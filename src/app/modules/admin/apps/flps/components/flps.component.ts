@@ -4,7 +4,7 @@ import { takeUntil } from 'rxjs/operators';
 import { fuseAnimations } from '@fuse/animations';
 import { Router } from '@angular/router';
 import { FuseMediaWatcherService } from '@fuse/services/media-watcher';
-import { SystemService } from './flps.service';
+import { FLPSService } from './flps.service';
 
 @Component({
     selector: 'flps',
@@ -16,7 +16,7 @@ export class FLPSComponent {
     isLoading: boolean = false;
     private _unsubscribeAll: Subject<any> = new Subject<any>();
     routes = [];
-    selectedScreeen = 'Product Colors';
+    selectedScreeen = 'Generate Report';
 
     // Sidebar stuff
     drawerMode: 'over' | 'side' = 'side';
@@ -29,7 +29,7 @@ export class FLPSComponent {
      */
     constructor(
         private _changeDetectorRef: ChangeDetectorRef,
-        private _systemService: SystemService,
+        private _flpsService: FLPSService,
         private _router: Router,
         private _fuseMediaWatcherService: FuseMediaWatcherService,
     ) {
@@ -44,9 +44,16 @@ export class FLPSComponent {
      */
 
     ngOnInit(): void {
-        this.routes = this._systemService.navigationLabels;
+        this.routes = this._flpsService.navigationLabels;
         this.isLoading = false;
         this.sideDrawer();
+    }
+    calledScreen(title) {
+        if (title != this.selectedScreeen) {
+            this.selectedScreeen = title;
+            this.isLoading = true;
+        }
+        this.topScroll.nativeElement.scrollIntoView({ behavior: 'smooth' });
     }
     // Close Drawer
     doSomething() {

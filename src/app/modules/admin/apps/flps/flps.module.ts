@@ -40,10 +40,12 @@ import { MatDialogModule } from '@angular/material/dialog';
 import { flpsRoutes } from './flps.routing';
 import { FLPSComponent } from './components/flps.component';
 import { MatDatepickerModule } from '@angular/material/datepicker';
+import { ReportComponent } from './components/pages/report/report.component';
 
 @NgModule({
     declarations: [
-        FLPSComponent
+        FLPSComponent,
+        ReportComponent
     ],
     imports: [
         RouterModule.forChild(flpsRoutes),

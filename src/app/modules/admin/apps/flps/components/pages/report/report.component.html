@@ -1,0 +1,118 @@
+<div class="w-full">
+    <div class="row px-8">
+        <div class="col-md-6 col-12">
+            <mat-form-field class="w-full">
+                <mat-label>Select an employee</mat-label>
+                <mat-select matInput>
+                    <mat-option value="1">Alex Snyder</mat-option>
+                    <mat-option value="2">Bill Harris</mat-option>
+                    <mat-option value="3">Brooke Cline</mat-option>
+                </mat-select>
+            </mat-form-field>
+        </div>
+        <div class="col-md-6 col-12">
+            <mat-form-field class="w-full">
+                <mat-label>Report type</mat-label>
+                <mat-select matInput>
+                    <mat-option value="1">Orders Pending FLPS System</mat-option>
+                    <mat-option value="2">Orders Marked FLPS Paid</mat-option>
+                </mat-select>
+            </mat-form-field>
+        </div>
+        <div class="col-12">
+            <mat-radio-group aria-labelledby="example-radio-group-label" [(ngModel)]="ngPeriod">
+                <mat-radio-button class="example-radio-button" value="Weekly">
+                    Weekly
+                </mat-radio-button>
+                <mat-radio-button class="example-radio-button" value="Monthly">
+                    Monthly
+                </mat-radio-button>
+                <mat-radio-button class="example-radio-button" value="Quarterly">
+                    Quarterly
+                </mat-radio-button>
+                <mat-radio-button class="example-radio-button" value="Yearly">
+                    Yearly
+                </mat-radio-button>
+                <mat-radio-button class="example-radio-button" value="Range">
+                    Range
+                </mat-radio-button>
+            </mat-radio-group>
+        </div>
+        <div class="col-12 mt-2 pb-10">
+            <div *ngIf="ngPeriod == 'Weekly'" class="col-6">
+                <mat-form-field appearance="fill" class="w-full">
+                    <mat-label>Choose a date</mat-label>
+                    <input matInput [matDatepicker]="picker" (click)="picker.open()" readonly [max]="maxDate">
+                    <mat-hint>MM/DD/YYYY</mat-hint>
+                    <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
+                    <mat-datepicker #picker></mat-datepicker>
+                </mat-form-field>
+            </div>
+            <div *ngIf="ngPeriod == 'Monthly'">
+                <div class="row">
+                    <div class="col-6">
+                        <mat-form-field class="w-full">
+                            <mat-label>Month</mat-label>
+                            <mat-select [(ngModel)]="month">
+                                <mat-option *ngFor="let item of months" [value]="item">{{item}}</mat-option>
+                            </mat-select>
+                        </mat-form-field>
+                    </div>
+                    <div class="col-6">
+                        <mat-form-field class="w-full">
+                            <mat-label>Year</mat-label>
+                            <mat-select [(ngModel)]="currentYear">
+                                <mat-option *ngFor="let item of years" [value]="item">{{item}}</mat-option>
+                            </mat-select>
+                        </mat-form-field>
+                    </div>
+                </div>
+            </div>
+            <div *ngIf="ngPeriod == 'Quarterly'" class="row">
+                <div class="col-6">
+                    <mat-form-field class="w-full">
+                        <mat-label>Quarter</mat-label>
+                        <mat-select [(ngModel)]="quarter">
+                            <mat-option *ngFor="let item of quarterly" [value]="item.value">{{item.text}}</mat-option>
+                        </mat-select>
+                    </mat-form-field>
+                </div>
+                <div class="col-6">
+                    <mat-form-field class="w-full">
+                        <mat-label>Year</mat-label>
+                        <mat-select [(ngModel)]="currentYear">
+                            <mat-option *ngFor="let item of years" [value]="item">{{item}}</mat-option>
+                        </mat-select>
+                    </mat-form-field>
+                </div>
+            </div>
+            <div *ngIf="ngPeriod == 'Yearly'">
+                <div class="col-6">
+                    <mat-form-field class="w-full">
+                        <mat-label>Year</mat-label>
+                        <mat-select [(ngModel)]="currentYear">
+                            <mat-option *ngFor="let item of years" [value]="item">{{item}}</mat-option>
+                        </mat-select>
+                    </mat-form-field>
+                </div>
+            </div>
+            <div *ngIf="ngPeriod == 'Range'">
+                <div class="col-6">
+                    <mat-form-field appearance="fill" class="w-full">
+                        <mat-label>Enter a date range</mat-label>
+                        <mat-date-range-input [rangePicker]="picker" (click)="picker.open()" [max]="maxDate">
+                            <input matStartDate placeholder="Start date" readonly>
+                            <input matEndDate placeholder="End date" readonly>
+                        </mat-date-range-input>
+                        <mat-hint>MM/DD/YYYY – MM/DD/YYYY</mat-hint>
+                        <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
+                        <mat-date-range-picker #picker></mat-date-range-picker>
+                    </mat-form-field>
+                </div>
+            </div>
+            <div class="col-12">
+                <button mat-stroked-button class="min-w-40">Generate FLPS Report</button>
+            </div>
+        </div>
+    </div>
+</div>

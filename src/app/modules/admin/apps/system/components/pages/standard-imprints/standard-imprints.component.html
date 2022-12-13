@@ -111,7 +111,7 @@
 
 
                                 <div class="p-5" *ngIf="!element.subLoader && element?.sub_imprints">
-                                    <div class="row pb-4" *ngFor="let item of element.sub_imprints">
+                                    <div class="row pb-4" *ngFor="let item of element.sub_imprints;let index=index">
                                         <div class="col-4"> {{item.name}} </div>
                                         <div class="col-2">{{item.locationName}}</div>
                                         <div class="col-2">{{item.methodName}}</div>

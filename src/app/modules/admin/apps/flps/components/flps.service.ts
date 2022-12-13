@@ -12,7 +12,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 @Injectable({
     providedIn: 'root'
 })
-export class SystemService {
+export class FLPSService {
     public navigationLabels = navigations;
 
     // Imprints

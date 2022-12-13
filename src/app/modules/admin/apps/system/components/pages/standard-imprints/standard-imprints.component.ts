@@ -185,9 +185,11 @@ export class StandardImprintsComponent implements OnInit, OnDestroy {
     this.getStandardImprints(this.subImprintsPage);
   }
   toggleNewImprint(element, data) {
+    this.imprintGroupData = null;
     if (element && !data) {
       element.check = 'add';
       this.imprintGroupData = element;
+      this.imprintGroupData.imprintData = null;
     } else if (element && data) {
       element.check = 'update';
       this.imprintGroupData = element;

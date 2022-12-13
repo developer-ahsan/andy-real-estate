@@ -317,35 +317,6 @@
             </button>
         </div>
         <div class="col-lg-9 col-12"></div>
-        <div class="col-lg-4 my-2" *ngIf="runSetupDistributorCodes.length">
-            <form [formGroup]="chargeDistribution">
-                <mat-form-field appearance="fill" class="w-full">
-                    <mat-label>Charge</mat-label>
-                    <input matInput [formControlName]="'charge'" type="number" value="0">
-                </mat-form-field>
-            </form>
-        </div>
-        <div class="col-lg-4 my-2" *ngIf="runSetupDistributorCodes.length">
-            <mat-form-field class="w-full">
-                <mat-label>Cost</mat-label>
-                <mat-select [(ngModel)]="selectedDiscountCode" name="collection">
-                    <mat-option *ngFor="let code of runSetupDistributorCodes" [value]="code">
-                        <small>{{code.distrDiscountCode}}</small>
-                    </mat-option>
-                </mat-select>
-            </mat-form-field>
-        </div>
-        <div class="col-lg-4 col-12 lg:mt-4 lg:pt-5" *ngIf="runSetupDistributorCodes.length">
-            <button class="w-full" mat-flat-button [color]="'primary'" [matTooltip]="'Get all charges'"
-                (click)="getCharges()" [disabled]="getChargesLoader">
-                <mat-progress-spinner *ngIf="getChargesLoader" [diameter]="24" [mode]="'indeterminate'">
-                </mat-progress-spinner>
-                <span *ngIf="!getChargesLoader" class="ml-1 mr-1">
-                    Get Charges
-                </span>
-            </button>
-        </div>
-
         <form [formGroup]="runSetup" class="w-full">
             <div class="row px-4">
                 <div class="col-lg-6 col-12 my-2">
@@ -362,47 +333,6 @@
                 </div>
             </div>
         </form>
-
-        <div class="col-12 p-5 my-5 border-2 d-flex overflow-x-auto" style="max-height: 500px;"
-            *ngIf="chargesTableArray.length">
-            <div class="border-2 mx-5" *ngFor="let chargeData of chargesTableArray">
-                <div class="row">
-                    <div class="col-12">
-                        <p class="bg-primary text-white text-center text-1xl font-semibold p-3">
-                            {{chargeData.chargeId}}
-                        </p>
-                    </div>
-                    <div class="col-12">
-                        <a href="" class="mx-2 text-sm" (click)="setRun($event,chargeData.chargeId)"> +
-                            Run</a>
-                    </div>
-                    <div class="col-12">
-                        <a href="" class="ml-2 text-sm" (click)="setSetup($event,chargeData.chargeId)"> +
-                            Setup</a>
-                    </div>
-                </div>
-                <table class="m-2 w-2/4">
-                    <col>
-                    <colgroup span="1"></colgroup>
-                    <colgroup span="1"></colgroup>
-                    <tr>
-                        <th scope="col" class="text-1xl font-semibold text-center bg-gray-100 p-3"></th>
-                        <th scope="col" class="text-1xl font-semibold text-center bg-gray-100 p-3 p-3"
-                            *ngFor="let productQuantity of chargeData.uniqueProductQuantities">
-                            {{productQuantity}}
-                        </th>
-                    </tr>
-                    <tr *ngFor="let rowFill of chargeData.rowsRendering">
-                        <th scope="row" class="text-1xl font-semibold text-center bg-gray-100 p-3 p-3">
-                            {{rowFill.verticalColumnName}}
-                        </th>
-                        <td class="p-3 bg-gray-50 text-center" *ngFor="let rowChargeValue of rowFill.renderedArray">
-                            {{rowChargeValue[2]}}
-                        </td>
-                    </tr>
-                </table>
-            </div>
-        </div>
 
         <!-- Minimum Product Quantity -->
         <div class="col-12 mt-3">

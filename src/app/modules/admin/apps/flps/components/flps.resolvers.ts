@@ -1,58 +1,57 @@
 import { Injectable } from '@angular/core';
 import { ActivatedRouteSnapshot, Resolve, Router, RouterStateSnapshot } from '@angular/router';
 import { Observable } from 'rxjs';
-import { SystemService } from './flps.service';
 
-@Injectable({
-    providedIn: 'root'
-})
-export class StoresListsResolver implements Resolve<any>
-{
-    /**
-     * Constructor
-     */
-    constructor(private _systemService: SystemService) {
-    }
+// @Injectable({
+//     providedIn: 'root'
+// })
+// export class StoresListsResolver implements Resolve<any>
+// {
+//     /**
+//      * Constructor
+//      */
+//     constructor() {
+//     }
 
-    // -----------------------------------------------------------------------------------------------------
-    // @ Public methods
-    // -----------------------------------------------------------------------------------------------------
+//     // -----------------------------------------------------------------------------------------------------
+//     // @ Public methods
+//     // -----------------------------------------------------------------------------------------------------
 
-    /**
-     * Resolver
-     *
-     * @param route
-     * @param state
-     */
-    resolve(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<any[]> {
-        return this._systemService.getAllStores();
-    }
-}
-@Injectable({
-    providedIn: 'root'
-})
-export class SuppliersListsResolver implements Resolve<any>
-{
-    /**
-     * Constructor
-     */
-    constructor(private _systemService: SystemService) {
-    }
+//     /**
+//      * Resolver
+//      *
+//      * @param route
+//      * @param state
+//      */
+//     resolve(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<any[]> {
+//         return this._systemService.getAllStores();
+//     }
+// }
+// @Injectable({
+//     providedIn: 'root'
+// })
+// export class SuppliersListsResolver implements Resolve<any>
+// {
+//     /**
+//      * Constructor
+//      */
+//     constructor(private _systemService: SystemService) {
+//     }
 
-    // -----------------------------------------------------------------------------------------------------
-    // @ Public methods
-    // -----------------------------------------------------------------------------------------------------
+//     // -----------------------------------------------------------------------------------------------------
+//     // @ Public methods
+//     // -----------------------------------------------------------------------------------------------------
 
-    /**
-     * Resolver
-     *
-     * @param route
-     * @param state
-     */
-    resolve(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<any[]> {
-        return this._systemService.getAllSuppliers();
-    }
-}
+//     /**
+//      * Resolver
+//      *
+//      * @param route
+//      * @param state
+//      */
+//     resolve(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<any[]> {
+//         return this._systemService.getAllSuppliers();
+//     }
+// }
 
 
 

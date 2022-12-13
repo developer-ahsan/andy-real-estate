@@ -1494,7 +1494,7 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
                     this._inventoryService.getPromoStandardProductPricingDetails(this.productNumberText, this.supplierId)
                         .pipe(takeUntil(this._unsubscribeAll))
                         .subscribe((productPricing) => {
-                            if (productPricing["data"]["result"]["Envelope"]["Body"]["GetConfigurationAndPricingResponse"]?.ErrorMessage?.description != "Data not found") {
+                            if (productPricing["data"]["success"]) {
                                 this._snackBar.open("Data fetched successfully", '', {
                                     horizontalPosition: 'center',
                                     verticalPosition: 'bottom',
