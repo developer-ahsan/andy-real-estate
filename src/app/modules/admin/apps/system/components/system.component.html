@@ -141,6 +141,14 @@
                         <app-simulator [(isLoading)]="isLoading">
                         </app-simulator>
                     </ng-template>
+                    <ng-template [ngIf]="selectedScreeen == 'Admin Tools'">
+                        <app-admin-tools [(isLoading)]="isLoading">
+                        </app-admin-tools>
+                    </ng-template>
+                    <ng-template [ngIf]="selectedScreeen == 'Diagnostics'">
+                        <app-diagonostics [(isLoading)]="isLoading">
+                        </app-diagonostics>
+                    </ng-template>
                 </div>
             </div>
         </div>

@@ -5,7 +5,7 @@ import { MatPaginator } from '@angular/material/paginator';
 import { forkJoin, Subject } from 'rxjs';
 import { finalize, takeUntil } from 'rxjs/operators';
 import { SystemService } from '../../system.service';
-import { AddColor, AddImprintColor, AddImprintMethod, AddStandardImprintGroup, DeleteColor, DeleteImprintColor, DeleteStandardImprintGroup, UpdateColor, UpdateImprintColor, UpdateImprintMethod, UpdateStandardImprintGroup } from '../../system.types';
+import { AddColor, AddImprintColor, AddImprintMethod, AddStandardImprintGroup, DeleteColor, DeleteImprintColor, DeleteStandardImprint, DeleteStandardImprintGroup, UpdateColor, UpdateImprintColor, UpdateImprintMethod, UpdateStandardImprintGroup } from '../../system.types';
 import { fuseAnimations } from '@fuse/animations';
 import { InventoryService } from 'app/modules/admin/apps/ecommerce/inventory/inventory.service';
 
@@ -202,7 +202,7 @@ export class StandardImprintsComponent implements OnInit, OnDestroy {
   getAllImprintMethods() {
     this._systemService.imprintMethods$.pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
       if (!res) {
-        this._systemService.getAllImprintMethodsObs().pipe(takeUntil(this._unsubscribeAll)).subscribe(methods => {
+        this._systemService.getAllImprintMethodsObs('').pipe(takeUntil(this._unsubscribeAll)).subscribe(methods => {
         });
       } else {
         this.getAllImprintLocation();
@@ -212,7 +212,7 @@ export class StandardImprintsComponent implements OnInit, OnDestroy {
   getAllImprintLocation() {
     this._systemService.imprintLocations$.pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
       if (!res) {
-        this._systemService.getAllImprintLocationsObs().pipe(takeUntil(this._unsubscribeAll)).subscribe(locations => {
+        this._systemService.getAllImprintLocationsObs('').pipe(takeUntil(this._unsubscribeAll)).subscribe(locations => {
         });
       } else {
         this.getAllImprintDigitizer();
@@ -315,7 +315,24 @@ export class StandardImprintsComponent implements OnInit, OnDestroy {
       this._changeDetectorRef.markForCheck();
     });
   }
-
+  deleteImprint(element, item) {
+    item.delLoader = true;
+    let payload: DeleteStandardImprint = {
+      pk_standardImprintID: item.pk_standardImprintID,
+      delete_standard_imprint: true
+    }
+    this._systemService.UpdateSystemData(payload).pipe(takeUntil(this._unsubscribeAll), finalize(() => {
+      item.delLoader = false
+      this._changeDetectorRef.markForCheck();
+    })).subscribe(res => {
+      element.sub_imprints = element.sub_imprints.filter(elem => elem.pk_standardImprintID != item.pk_standardImprintID);
+      element.sub_imprints_total--;
+      this._systemService.snackBar('Imprint Deleted Successfully');
+      this._changeDetectorRef.markForCheck();
+    }, err => {
+      this._systemService.snackBar('Something went wrong');
+    });
+  }
   /**
      * On destroy
      */

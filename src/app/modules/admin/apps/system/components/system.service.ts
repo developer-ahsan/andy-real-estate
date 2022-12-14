@@ -621,10 +621,12 @@ export class SystemService {
         });
     };
     // getAllImprintLocations Observable
-    getAllImprintLocationsObs(): Observable<any[]> {
+    getAllImprintLocationsObs(keyword): Observable<any[]> {
         return this._httpClient.get<any[]>(environment.products, {
             params: {
                 imprint: true,
+                keyword: keyword,
+                // paginated_location: true
                 location: true
             }
         }).pipe(
@@ -643,10 +645,12 @@ export class SystemService {
         });
     };
     // getAllImprintMethods Observable
-    getAllImprintMethodsObs(): Observable<any[]> {
-        return this._httpClient.get<any[]>(environment.system, {
+    getAllImprintMethodsObs(k): Observable<any[]> {
+        return this._httpClient.get<any[]>(environment.products, {
             params: {
                 imprint: true,
+                keyword: k,
+                // paginated_method: true
                 method: true
             }
         }).pipe(

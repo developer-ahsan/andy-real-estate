@@ -256,7 +256,9 @@ export interface AddStandardImprint {
     name: string;
     fk_decoratorID: number;
     fk_methodID: number;
+    method_name: string;
     fk_locationID: number;
+    location_name: string;
     fk_setupChargeID: number;
     fk_runChargeID: number;
     blnIncludable: boolean;
@@ -274,4 +276,58 @@ export interface AddStandardImprint {
     displayOrder: number;
     blnSingleton: boolean;
     add_standard_imprint: boolean;
+};
+export interface UpdateStandardImprint {
+    standardImprintGroupID: number;
+    name: string;
+    fk_decoratorID: number;
+    fk_methodID: number;
+    method_name: string;
+    fk_locationID: number;
+    location_name: string;
+    fk_setupChargeID: number;
+    fk_runChargeID: number;
+    blnIncludable: boolean;
+    area: string;
+    blnUserColorSelection: boolean;
+    maxColors: number;
+    fk_multiColorMinQID: number;
+    fk_collectionID: number;
+    blnColorProcess: boolean;
+    blnStitchProcess: boolean;
+    blnSingleProcess: boolean;
+    minProductQty: number;
+    imprintComments: string;
+    fk_digitizerID: number;
+    displayOrder: number;
+    blnSingleton: boolean;
+    pk_standardImprintID: number;
+    update_standard_imprint: boolean;
+};
+export interface DeleteStandardImprint {
+    pk_standardImprintID: number;
+    delete_standard_imprint: boolean;
+};
+// Admin tools
+export interface ClearStoreRapidbuild {
+    store_id: number;
+    clear_rapidbuild: boolean;
+};
+export interface RemoveUser {
+    user_id: number;
+    remove_user: boolean;
+};
+export interface RemoveOrder {
+    order_id: number;
+    remove_order: boolean;
+};
+export interface MergeUsers {
+    masterUserID: number;
+    slaveUserID: number;
+    merge_users: boolean;
+};
+export interface ClearUserCarts {
+    user_id: number;
+    date: string;
+    clear_user_cart: boolean;
 };

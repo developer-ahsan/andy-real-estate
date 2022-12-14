@@ -3,8 +3,8 @@ import { Component, Input, OnInit, Output, EventEmitter, ChangeDetectorRef, OnDe
 import { MatChipInputEvent } from '@angular/material/chips';
 import { MatPaginator } from '@angular/material/paginator';
 import { Observable, Subject } from 'rxjs';
-import { finalize, map, startWith, takeUntil } from 'rxjs/operators';
-import { AddColor, AddImprintColor, AddImprintMethod, AddStandardImprint, DeleteColor, DeleteImprintColor, UpdateColor, UpdateImprintColor, UpdateImprintMethod } from '../../../system.types';
+import { debounceTime, distinctUntilChanged, filter, finalize, map, startWith, switchMap, takeUntil, tap } from 'rxjs/operators';
+import { AddColor, AddImprintColor, AddImprintMethod, AddStandardImprint, DeleteColor, DeleteImprintColor, UpdateColor, UpdateImprintColor, UpdateImprintMethod, UpdateStandardImprint } from '../../../system.types';
 import { fuseAnimations } from '@fuse/animations';
 import { SystemService } from '../../../system.service';
 import { FormBuilder, FormControl, FormGroup } from '@angular/forms';
@@ -13,6 +13,7 @@ import { ImprintRunComponent } from 'app/modules/admin/apps/ecommerce/inventory/
 import { InventoryService } from 'app/modules/admin/apps/ecommerce/inventory/inventory.service';
 import { MatDialog } from '@angular/material/dialog';
 import { ScrollStrategy, ScrollStrategyOptions } from '@angular/cdk/overlay';
+import { environment } from 'environments/environment';
 
 @Component({
   selector: 'app-addEdit-imprints',
@@ -60,7 +61,7 @@ export class AddEditImprintsComponent implements OnInit, OnDestroy {
     }
   ];
   values: FormGroup;
-  defaultImprintColorSpecification = "Yes";
+  defaultImprintColorSpecification = true;
   specifyImrpintArray: string[] = [
     'Yes',
     'No'
@@ -70,22 +71,22 @@ export class AddEditImprintsComponent implements OnInit, OnDestroy {
   imprintItself = [
     {
       imprintItselfText: "Yes, this imprint can be ordered by itself.",
-      value: "Yes"
+      value: true
     },
     {
       imprintItselfText: "No, this imprint cannot be ordered by itself.",
-      value: "No"
+      value: false
     }
   ];
   imprintItselfSelected = this.imprintItself[0];
   priceInclusionArray = [
     {
       priceInclusionText: "Yes, when it's the only imprint, the first process is included in the product price.",
-      value: "Yes"
+      value: true
     },
     {
       priceInclusionText: "No, all processes, including the first are extra.",
-      value: "No"
+      value: false
     }
   ]
   priceInclusionSelected = this.priceInclusionArray[0];
@@ -109,6 +110,9 @@ export class AddEditImprintsComponent implements OnInit, OnDestroy {
   locationsFetch = 'Fetch Locations';
 
   addImprintLoader: boolean = false;
+
+  public locationSearchControl = new FormControl();
+  isLocationLoading: boolean = false;
   constructor(
     private _changeDetectorRef: ChangeDetectorRef,
     private _systemService: SystemService,
@@ -148,9 +152,34 @@ export class AddEditImprintsComponent implements OnInit, OnDestroy {
       limitSelection: 1
     };
   }
+  public colorName = new FormControl();
+  results: any;
   ngOnInit(): void {
     this.initForm();
-
+    this.locationSearchControl.valueChanges.pipe(debounceTime(500), filter(value => value != ''), tap(() => {
+      this.addImprintLocations = [];
+      console.log(this.addImprintLocations)
+      this.isLocationLoading = true;
+      this._changeDetectorRef.markForCheck();
+    }),
+      distinctUntilChanged(),
+      switchMap(value => this._systemService.getAllImprintLocationsObs(value)
+        .pipe(
+          finalize(() => {
+            this.isLocationLoading = false
+            this._changeDetectorRef.markForCheck();
+          }),
+        )
+      )
+    ).subscribe(data => {
+      this.addImprintLocations = [];
+      this.addImprintLocations.push({ locationName: 'New Location >>>', pk_locationID: null });
+      data["data"].forEach(element => {
+        this.addImprintMethods.push(element);
+      });
+      console.log(this.addImprintLocations)
+      this._changeDetectorRef.markForCheck();
+    });
     this.methodFilteredOptions = this.methodControl.valueChanges.pipe(
       startWith(''),
       map(value => this._filter(value || '')),
@@ -160,7 +189,6 @@ export class AddEditImprintsComponent implements OnInit, OnDestroy {
       startWith(''),
       map(value => this._filterLocation(value || '')),
     );
-    console.log(this.imprintData);
     if (this.imprintData.check == 'add') {
       this.getAddImprintDigitizers();
       this.getAddImprintMethods();
@@ -181,7 +209,7 @@ export class AddEditImprintsComponent implements OnInit, OnDestroy {
       this.addImprintDisplayOrderValue = displayOrder;
       this.priceInclusionSelected = blnIncludable ? this.priceInclusionArray[1] : this.priceInclusionArray[0];
       this.imprintItselfSelected = blnSingleton ? this.imprintItself[1] : this.imprintItself[0];
-      this.defaultImprintColorSpecification = blnUserColorSelection ? 'No' : 'Yes';
+      this.defaultImprintColorSpecification = blnUserColorSelection;
       if (blnColorProcess) {
         this.favoriteSeason = 0;
       } else if (blnStitchProcess) {
@@ -194,6 +222,7 @@ export class AddEditImprintsComponent implements OnInit, OnDestroy {
       this.getAddImprintLocations(this.imprintData.imprintData);
       this.getAllSuppliers(this.imprintData.imprintData);
     }
+    console.log(this.imprintData)
   };
   private _filter(value: string): string[] {
     const filterValue = value.toLowerCase();
@@ -367,7 +396,7 @@ export class AddEditImprintsComponent implements OnInit, OnDestroy {
     this.methodsFetch = 'Fetching Methods...';
     this._systemService.imprintMethods$.pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
       if (!res) {
-        this._systemService.getAllImprintMethodsObs().pipe(takeUntil(this._unsubscribeAll)).subscribe(methods => {
+        this._systemService.getAllImprintMethodsObs('').pipe(takeUntil(this._unsubscribeAll)).subscribe(methods => {
         });
       }
     });
@@ -377,7 +406,7 @@ export class AddEditImprintsComponent implements OnInit, OnDestroy {
 
     this._systemService.imprintLocations$.pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
       if (!res) {
-        this._systemService.getAllImprintLocationsObs().pipe(takeUntil(this._unsubscribeAll)).subscribe(locations => {
+        this._systemService.getAllImprintLocationsObs('').pipe(takeUntil(this._unsubscribeAll)).subscribe(locations => {
         });
       } else {
       }
@@ -410,7 +439,7 @@ export class AddEditImprintsComponent implements OnInit, OnDestroy {
       return;
     };
 
-    if (this.defaultImprintColorSpecification === 'Yes') {
+    if (this.defaultImprintColorSpecification) {
       if (!this.collectionIdsArray.length && !this.customColorId) {
         this._systemService.snackBar("Select a color collection");
         return;
@@ -421,10 +450,6 @@ export class AddEditImprintsComponent implements OnInit, OnDestroy {
       this._systemService.snackBar("Select a SETUP or RUN charge");
       return;
     };
-
-
-
-
     let colorProcess = false;
     let stitchProcess = false;
     let singleProcess = false;
@@ -453,27 +478,29 @@ export class AddEditImprintsComponent implements OnInit, OnDestroy {
     };
 
     let payload: AddStandardImprint = {
-      fk_standardImprintGroupID: this.pk_standardImprintGroupID,
+      fk_standardImprintGroupID: this.imprintData.pk_standardImprintGroupID,
       name: this.imprintName,
       fk_decoratorID: this.selectedSupplier.pk_companyID,
       fk_methodID: this.selectedMethod.pk_methodID,
+      method_name: this.method_name,
+      location_name: this.location_name,
       fk_locationID: this.selectedLocation.pk_locationID,
       fk_setupChargeID: setup,
       fk_runChargeID: run,
-      blnIncludable: this.priceInclusionSelected.value === 'Yes' ? true : false,
+      blnIncludable: this.priceInclusionSelected.value,
       area: this.areaValue,
-      blnUserColorSelection: this.defaultImprintColorSpecification === 'Yes' ? true : false,
-      maxColors: this.defaultImprintColorSpecification === 'Yes' ? this.maxColorSelected : null,
+      blnUserColorSelection: this.defaultImprintColorSpecification,
+      maxColors: this.defaultImprintColorSpecification ? this.maxColorSelected : null,
       fk_multiColorMinQID: 1,
       fk_collectionID: this.collectionIdsArray.length ? this.selectedCollectionId[0].fk_collectionID : Number(this.customColorId),
       blnColorProcess: colorProcess,
       blnStitchProcess: stitchProcess,
       blnSingleProcess: singleProcess,
       minProductQty: this.minQuantity,
-      imprintComments: this.addImprintComment,
+      imprintComments: this.addImprintComment ? " " : this.addImprintComment,
       fk_digitizerID: this.selectedDigitizer.pfk_digitizerID || null,
       displayOrder: this.addImprintDisplayOrderValue,
-      blnSingleton: this.imprintItselfSelected.value === 'Yes' ? true : false,
+      blnSingleton: this.imprintItselfSelected.value,
       add_standard_imprint: true
     }
     this.addImprintLoader = true;
@@ -498,6 +525,7 @@ export class AddEditImprintsComponent implements OnInit, OnDestroy {
         this.method_name = '';
         this.selectedLocation = { locationName: 'New Location >>>', pk_locationID: null };
         this.selectedMethod = this.addImprintMethods.find(x => x.pk_methodID === 254) || this.addImprintMethods[0];
+        this.getStandardImprints();
       } else {
         this.addImprintLoader = false;
       }
@@ -507,6 +535,178 @@ export class AddEditImprintsComponent implements OnInit, OnDestroy {
       this.addImprintLoader = false;
       this._changeDetectorRef.markForCheck();
     });
+  }
+  // Update Imprint
+  updateNewStandardImprint() {
+    if (!this.selectedMethod.pk_methodID && !this.method_name) {
+      this._systemService.snackBar("New Method was not specified correctly");
+      return;
+    }
+    if (!this.selectedLocation.pk_locationID && !this.location_name) {
+      this._systemService.snackBar("New Location was not specified correctly");
+      return;
+    }
+    const { run, setup } = this.runSetup.getRawValue();
+    if (this.areaValue === "") {
+      this._systemService.snackBar("Imprint AREA has not been defined correctly.");
+      return;
+    };
+
+    if (this.defaultImprintColorSpecification) {
+      if (!this.collectionIdsArray.length && !this.customColorId) {
+        this._systemService.snackBar("Select a color collection");
+        return;
+      };
+    };
+
+    if (run === "" || setup === "") {
+      this._systemService.snackBar("Select a SETUP or RUN charge");
+      return;
+    };
+    let colorProcess = false;
+    let stitchProcess = false;
+    let singleProcess = false;
+    let processMode = this.favoriteSeason;
+    if (processMode == 0) {
+      colorProcess = true;
+    } else if (processMode == 1) {
+      stitchProcess = true;
+    } else {
+      singleProcess = true;
+    }
+
+    let second, third, fourth, fifth;
+    let multiValue;
+    if (processMode === 0) {
+      const {
+        twoColorQ,
+        threeColorQ,
+        fourColorQ,
+        fiveColorQ
+      } = this.values.getRawValue();
+      second = twoColorQ;
+      third = threeColorQ;
+      fourth = fourColorQ;
+      fifth = fiveColorQ;
+    };
+
+    let payload: UpdateStandardImprint = {
+      standardImprintGroupID: this.imprintData.pk_standardImprintGroupID,
+      name: this.imprintName,
+      fk_decoratorID: this.selectedSupplier.pk_companyID,
+      fk_methodID: this.selectedMethod.pk_methodID,
+      method_name: this.method_name,
+      location_name: this.location_name,
+      fk_locationID: this.selectedLocation.pk_locationID,
+      fk_setupChargeID: setup,
+      fk_runChargeID: run,
+      blnIncludable: this.priceInclusionSelected.value,
+      area: this.areaValue,
+      blnUserColorSelection: this.defaultImprintColorSpecification,
+      maxColors: this.defaultImprintColorSpecification ? this.maxColorSelected : null,
+      fk_multiColorMinQID: 1,
+      fk_collectionID: this.collectionIdsArray.length ? this.selectedCollectionId[0].fk_collectionID : Number(this.customColorId),
+      blnColorProcess: colorProcess,
+      blnStitchProcess: stitchProcess,
+      blnSingleProcess: singleProcess,
+      minProductQty: this.minQuantity,
+      imprintComments: this.addImprintComment ? " " : this.addImprintComment,
+      fk_digitizerID: this.selectedDigitizer.pfk_digitizerID || null,
+      displayOrder: this.addImprintDisplayOrderValue,
+      blnSingleton: this.imprintItselfSelected.value,
+      pk_standardImprintID: this.imprintData.imprintData.pk_standardImprintID,
+      update_standard_imprint: true
+    }
+    this.addImprintLoader = true;
+    if (processMode == 0) {
+      this._systemService.getMultiColorValue(second, third, fourth, fifth).pipe(takeUntil(this._unsubscribeAll))
+        .subscribe((multi_color) => {
+          multiValue = multi_color["data"];
+          payload.fk_multiColorMinQID = multiValue?.length ? multiValue[0].pk_multiColorMinQID : 1;
+          this.updateStandardImprintOBJ(payload);
+        }, err => {
+          this.addImprintLoader = false;
+          this._changeDetectorRef.markForCheck();
+        });
+    } else {
+      this.updateStandardImprintOBJ(payload);
+    }
+  }
+  updateStandardImprintOBJ(payload) {
+    this._systemService.UpdateSystemData(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe((response) => {
+      if (response["success"]) {
+        this._systemService.snackBar('Standard Imprint Updated Successfully');
+        this.imprintData.imprintData.decoratorName = this.selectedSupplier.companyName;
+        this.imprintData.imprintData.locationName = this.selectedLocation.locationName;
+        this.imprintData.imprintData.methodName = this.selectedMethod.methodName;
+        this.imprintData.imprintData.area = payload.area;
+        this.imprintData.imprintData.blnColorProcess = payload.blnColorProcess;
+        this.imprintData.imprintData.blnIncludable = payload.blnIncludable == 'Yes' ? false : true;
+        this.imprintData.imprintData.blnSingleProcess = payload.blnSingleProcess;
+        this.imprintData.imprintData.blnSingleton = payload.blnSingleton == 'Yes' ? false : true;
+        this.imprintData.imprintData.blnStitchProcess = payload.blnStitchProcess;
+        this.imprintData.imprintData.blnUserColorSelection = payload.blnUserColorSelection == 'Yes' ? false : true;
+        this.imprintData.imprintData.displayOrder = payload.displayOrder;
+        this.imprintData.imprintData.fk_collectionID = payload.fk_collectionID;
+        this.imprintData.imprintData.fk_decoratorID = payload.fk_decoratorID;
+        this.imprintData.imprintData.fk_digitizerID = payload.fk_digitizerID;
+        this.imprintData.imprintData.fk_locationID = payload.fk_locationID;
+        this.imprintData.imprintData.fk_methodID = payload.fk_methodID;
+        this.imprintData.imprintData.fk_multiColorMinQID = payload.fk_multiColorMinQID;
+        this.imprintData.imprintData.fk_runChargeID = payload.fk_runChargeID;
+        this.imprintData.imprintData.fk_setupChargeID = payload.fk_setupChargeID;
+        this.imprintData.imprintData.imprintComments = payload.imprintComments;
+        this.imprintData.imprintData.maxColors = payload.maxColors;
+        this.imprintData.imprintData.minProductQty = payload.minProductQty;
+        this.imprintData.imprintData.name = payload.name;
+
+        console.log(this.imprintData);
+        this.addImprintLoader = false;
+      } else {
+        this.addImprintLoader = false;
+      }
+      // Mark for check
+      this._changeDetectorRef.markForCheck();
+    }, err => {
+      this.addImprintLoader = false;
+      this._changeDetectorRef.markForCheck();
+    });
+  }
+  // GEt Imprints
+  getStandardImprints() {
+    let params = {
+      imprint: true,
+      standard_group_id: this.imprintData.pk_standardImprintGroupID,
+      standard_imprint: true,
+      page: 1,
+      size: 10
+    }
+    this._systemService.getSystemsData(params).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+      this.imprintData.sub_imprints = res["data"];
+      this.imprintData.sub_imprints_total = res["totalRecords"];
+      this._systemService.snackBar('Imprint Added Successfully');
+      this.addImprintLoader = false;
+      this.imprintData.subLoader = false;
+      this._changeDetectorRef.markForCheck();
+    }, err => {
+      this.addImprintLoader = false;
+      this._changeDetectorRef.markForCheck();
+    });
+  }
+  changeProcessMode(ev) {
+    if (ev.value == 1) {
+      let digitizer = this.addImprintDigitizers.filter(digitizer => digitizer.pk_companyID == this.selectedSupplier.pk_companyID);
+      if (digitizer) {
+        this.selectedDigitizer = digitizer[0];
+      }
+      this._changeDetectorRef.markForCheck();
+    }
+  }
+  changeSupplerSelection() {
+    let digitizer = this.addImprintDigitizers.filter(digitizer => digitizer.pk_companyID == this.selectedSupplier.pk_companyID);
+    if (digitizer) {
+      this.selectedDigitizer = digitizer[0];
+    }
   }
   /**
      * On destroy

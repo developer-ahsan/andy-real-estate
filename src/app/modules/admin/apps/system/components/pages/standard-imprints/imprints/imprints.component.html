@@ -16,7 +16,8 @@
         </div>
         <div class="col-12">
             <mat-form-field class="w-full" appearance="fill">
-                <mat-select [(ngModel)]="selectedSupplier" name="supplier" [disabled]="suppliers.length ? false : true">
+                <mat-select [(ngModel)]="selectedSupplier" name="supplier" [disabled]="suppliers.length ? false : true"
+                    (selectionChange)="changeSupplerSelection()">
                     <mat-option *ngFor="let supplier of suppliers" [value]="supplier">
                         <small>{{supplier.companyName}}</small>
                     </mat-option>
@@ -81,6 +82,21 @@
             </b>
         </div>
         <div class="col-lg-6 col-12">
+            <!-- <mat-form-field class="w-full">
+                <input type="text" placeholder="Imprint Location" matInput [formControl]="locationSearchControl"
+                    [matAutocomplete]="auto">
+                <mat-autocomplete #auto="matAutocomplete">
+                    <mat-option *ngIf="isLocationLoading" class="is-loading">Loading...
+                    </mat-option>
+                    <ng-container *ngIf="!isLocationLoading">
+                        <mat-option *ngFor="let location of addImprintLocations" [value]="location.locationName"
+                            (click)="locationSelected(location)">
+                            <small>{{location.locationName}}
+                                ({{location.pk_locationID}})</small>
+                        </mat-option>
+                    </ng-container>
+                </mat-autocomplete>
+            </mat-form-field> -->
             <mat-form-field class="w-full" appearance="fill">
                 <input type="text" placeholder="Imprint Location" aria-label="Number" matInput
                     [formControl]="locationControl" [matAutocomplete]="auto1"
@@ -118,7 +134,8 @@
         <div class="col-12">
             <mat-radio-group aria-labelledby="example-radio-group-label" class="example-radio-group"
                 [(ngModel)]="favoriteSeason">
-                <mat-radio-button class="example-radio-button" *ngFor="let season of seasons" [value]="season.value">
+                <mat-radio-button (change)="changeProcessMode($event)" class="example-radio-button"
+                    *ngFor="let season of seasons" [value]="season.value">
                     {{season.text}}
                 </mat-radio-button>
             </mat-radio-group>
@@ -201,15 +218,15 @@
         <div class="col-12">
             <mat-radio-group aria-labelledby="example-radio-group-label" class="example-radio-group"
                 [(ngModel)]="defaultImprintColorSpecification">
-                <mat-radio-button class="example-radio-button" [value]="'Yes'">
+                <mat-radio-button class="example-radio-button" [value]="true">
                     Yes
                 </mat-radio-button>
-                <mat-radio-button class="example-radio-button" [value]="'No'">
+                <mat-radio-button class="example-radio-button" [value]="false">
                     No
                 </mat-radio-button>
             </mat-radio-group>
         </div>
-        <div class="col-12 my-2" *ngIf="defaultImprintColorSpecification === 'Yes'">
+        <div class="col-12 my-2" *ngIf="defaultImprintColorSpecification">
             <mat-form-field class="w-full">
                 <mat-label>Max Colors</mat-label>
                 <mat-select [(ngModel)]="maxColorSelected" name="maxColor">
@@ -220,7 +237,7 @@
             </mat-form-field>
         </div>
 
-        <div class="col-12 my-2" *ngIf="defaultImprintColorSpecification === 'Yes'">
+        <div class="col-12 my-2" *ngIf="defaultImprintColorSpecification">
             <div>
                 <button class="min-w-40" mat-flat-button [color]="'primary'"
                     [matTooltip]="'Get Imprint Color Collection Ids'" (click)="generateCollectionId()"
@@ -372,8 +389,19 @@
                 <input matInput [(ngModel)]="addImprintDisplayOrderValue" type="number" min="1">
             </mat-form-field>
         </div>
-        <div class="col-12">
-            <button mat-stroked-button (click)="addNewStandardImprint()">Add New Imprint</button>
+        <div class="col-12 text-right mb-5">
+            <button *ngIf="imprintData.check == 'add'" mat-stroked-button class="min-w-30"
+                (click)="addNewStandardImprint()">
+                <span *ngIf="!addImprintLoader">Add New Imprint</span>
+                <mat-progress-spinner *ngIf="addImprintLoader" [diameter]="24" [mode]="'indeterminate'">
+                </mat-progress-spinner>
+            </button>
+            <button *ngIf="imprintData.check != 'add'" mat-stroked-button class="min-w-30"
+                (click)="updateNewStandardImprint()">
+                <span *ngIf="!addImprintLoader">Update Imprint</span>
+                <mat-progress-spinner *ngIf="addImprintLoader" [diameter]="24" [mode]="'indeterminate'">
+                </mat-progress-spinner>
+            </button>
         </div>
     </div>
 </div>

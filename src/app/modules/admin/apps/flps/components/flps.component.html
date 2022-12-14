@@ -54,6 +54,10 @@
                         <app-user-flps-management [(isLoading)]="isLoading">
                         </app-user-flps-management>
                     </ng-template>
+                    <ng-template [ngIf]="selectedScreeen == 'Store Management'">
+                        <app-store-flps-management [(isLoading)]="isLoading">
+                        </app-store-flps-management>
+                    </ng-template>
                 </div>
             </div>
         </div>

@@ -567,6 +567,10 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
     }
     methodSelected(obj) {
         this.selectedMethod = obj;
+        if (obj.pk_methodID == 20) {
+            this.favoriteSeason = 'Per Stitch (embroidering)';
+        }
+        this._changeDetectorRef.markForCheck();
     }
     locationSelected(obj) {
         this.selectedLocation = obj;
@@ -4080,4 +4084,14 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
         }
         this._changeDetectorRef.markForCheck();
     }
+    changeProcessMode(ev) {
+        if (ev.value == 'Per Stitch (embroidering)') {
+            let digitizer = this.addImprintDigitizers.filter(digitizer => digitizer.pk_companyID == this.selectedSupplier);
+            if (digitizer) {
+                this.selectedDigitizer = digitizer[0];
+            }
+            this._changeDetectorRef.markForCheck();
+        }
+    }
+
 }
