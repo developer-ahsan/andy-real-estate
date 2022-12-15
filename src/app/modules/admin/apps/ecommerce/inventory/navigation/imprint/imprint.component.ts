@@ -1992,7 +1992,7 @@ export class ImprintComponent implements OnInit, OnDestroy {
     this.imprintList = false;
     this.getImprints(this.page);
   };
-
+  // 
   changeProcessMode(ev) {
     if (ev.value == 'Per Stitch (embroidering)') {
       let digitizer = this.addImprintDigitizers.filter(digitizer => digitizer.pk_companyID == this.selectedSupplier.pk_companyID);
