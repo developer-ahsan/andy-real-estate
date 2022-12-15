@@ -2139,30 +2139,9 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
         // Licensing term screen
         if (selectedIndex === 3) {
             if (!this.licensingTerms.length) {
-                this.licensingTermLoader = true;
-
+                this.getLicenceTerms();
                 // Get licensing company
-                this._inventoryService.getLicensingCompany()
-                    .pipe(takeUntil(this._unsubscribeAll))
-                    .subscribe((licensingCompany) => {
-                        if (licensingCompany["totalRecords"] === 1) {
-                            this._inventoryService.addProductGetLicensingTerms()
-                                .pipe(takeUntil(this._unsubscribeAll))
-                                .subscribe((licensingTerms) => {
-                                    this.licensingTerms = licensingTerms["data"];
-                                    this.dummyLicensingTerms = this.licensingTerms;
-                                    this.licensingTermLoader = false;
 
-                                    // Mark for check
-                                    this._changeDetectorRef.markForCheck();
-                                })
-                        } else {
-                            this.licensingTermLoader = false;
-                        }
-
-                        // Mark for check
-                        this._changeDetectorRef.markForCheck();
-                    })
             };
         };
 
@@ -2199,7 +2178,30 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
             // this.reviewForm.patchValue(finalForm);
         };
     };
+    getLicenceTerms() {
+        this.licensingTermLoader = true;
+        this._inventoryService.getLicensingCompany()
+            .pipe(takeUntil(this._unsubscribeAll))
+            .subscribe((licensingCompany) => {
+                if (licensingCompany["totalRecords"] === 1) {
+                    this._inventoryService.addProductGetLicensingTerms()
+                        .pipe(takeUntil(this._unsubscribeAll))
+                        .subscribe((licensingTerms) => {
+                            this.licensingTerms = licensingTerms["data"];
+                            this.dummyLicensingTerms = this.licensingTerms;
+                            this.licensingTermLoader = false;
 
+                            // Mark for check
+                            this._changeDetectorRef.markForCheck();
+                        })
+                } else {
+                    this.licensingTermLoader = false;
+                }
+
+                // Mark for check
+                this._changeDetectorRef.markForCheck();
+            })
+    }
     setRun(e, value) {
         e.preventDefault();
         this.runSetup.controls['run'].setValue(value);

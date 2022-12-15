@@ -16,7 +16,7 @@ export class SystemComponent {
     isLoading: boolean = false;
     private _unsubscribeAll: Subject<any> = new Subject<any>();
     routes = [];
-    selectedScreeen = 'Product Colors';
+    selectedScreeen = 'Standard Imprints';
 
     // Sidebar stuff
     drawerMode: 'over' | 'side' = 'side';

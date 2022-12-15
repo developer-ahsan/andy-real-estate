@@ -1092,8 +1092,9 @@
                                             </div>
                                         </div>
                                         <div class="row" *ngIf="!licensingTerms.length">
-                                            <div class="col-12">
-                                                No record found
+                                            <div class="col-12 cursor-pointer hover:text-gray-800"
+                                                (click)="getLicenceTerms()">
+                                                Please try again
                                             </div>
                                         </div>
                                     </mat-accordion>

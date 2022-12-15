@@ -612,11 +612,12 @@ export class SystemService {
         });
     };
 
-    getAllImprintLocations(): Observable<any[]> {
+    getAllImprintLocations(keyword): Observable<any[]> {
         return this._httpClient.get<any[]>(environment.products, {
             params: {
                 imprint: true,
-                location: true
+                paginated_location: true,
+                keyword: keyword
             }
         });
     };
@@ -625,9 +626,9 @@ export class SystemService {
         return this._httpClient.get<any[]>(environment.products, {
             params: {
                 imprint: true,
-                keyword: keyword,
-                // paginated_location: true
-                location: true
+                paginated_location: true,
+                keyword: keyword
+                // location: true
             }
         }).pipe(
             tap((response: any) => {

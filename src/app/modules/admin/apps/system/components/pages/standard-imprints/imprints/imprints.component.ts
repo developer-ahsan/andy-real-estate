@@ -152,34 +152,45 @@ export class AddEditImprintsComponent implements OnInit, OnDestroy {
       limitSelection: 1
     };
   }
-  public colorName = new FormControl();
-  results: any;
+  searchMoviesCtrl = new FormControl();
+  filteredMovies: any;
+  isLoadings = false;
+  errorMsg!: string;
+  minLengthTerm = 3;
+  selectedMovie: any = "";
+
+  searchPayload: any;
   ngOnInit(): void {
     this.initForm();
-    this.locationSearchControl.valueChanges.pipe(debounceTime(500), filter(value => value != ''), tap(() => {
-      this.addImprintLocations = [];
-      console.log(this.addImprintLocations)
-      this.isLocationLoading = true;
-      this._changeDetectorRef.markForCheck();
-    }),
-      distinctUntilChanged(),
-      switchMap(value => this._systemService.getAllImprintLocationsObs(value)
-        .pipe(
-          finalize(() => {
-            this.isLocationLoading = false
-            this._changeDetectorRef.markForCheck();
-          }),
+    this.locationSearchControl.valueChanges
+      .pipe(
+        filter(res => {
+          return res !== null && res.length >= this.minLengthTerm
+        }),
+        distinctUntilChanged(),
+        debounceTime(300),
+        tap(() => {
+          this.addImprintLocations = [];
+          this.isLoadings = true;
+          this._changeDetectorRef.markForCheck();
+        }),
+        switchMap(value => this._systemService.getAllImprintLocations(value)
+          .pipe(
+            finalize(() => {
+              this.isLoadings = false
+              this._changeDetectorRef.markForCheck();
+            }),
+          )
         )
       )
-    ).subscribe(data => {
-      this.addImprintLocations = [];
-      this.addImprintLocations.push({ locationName: 'New Location >>>', pk_locationID: null });
-      data["data"].forEach(element => {
-        this.addImprintMethods.push(element);
+      .subscribe((data: any) => {
+        this.addImprintLocations.push({ locationName: 'New Location >>>', pk_locationID: null });
+        data["data"].forEach(element => {
+          this.addImprintLocations.push(element);
+        });
       });
-      console.log(this.addImprintLocations)
-      this._changeDetectorRef.markForCheck();
-    });
+
+
     this.methodFilteredOptions = this.methodControl.valueChanges.pipe(
       startWith(''),
       map(value => this._filter(value || '')),
@@ -190,12 +201,14 @@ export class AddEditImprintsComponent implements OnInit, OnDestroy {
       map(value => this._filterLocation(value || '')),
     );
     if (this.imprintData.check == 'add') {
+      this.locationSearchControl.setValue('New Location >>>')
       this.getAddImprintDigitizers();
       this.getAddImprintMethods();
       this.getAddImprintLocations();
       this.getAllSuppliers();
     } else {
-      const { name, pk_standardImprintID, minProductQty, maxColors, imprintComments, fk_standardImprintGroupID, fk_setupChargeID, fk_runChargeID, fk_multiColorMinQID, fk_collectionID, displayOrder, blnUserColorSelection, blnStitchProcess, blnSingleton, blnSingleProcess, blnIncludable, blnColorProcess, area } = this.imprintData.imprintData;
+      const { name, pk_standardImprintID, minProductQty, maxColors, imprintComments, fk_standardImprintGroupID, fk_setupChargeID, fk_runChargeID, fk_multiColorMinQID, fk_collectionID, displayOrder, blnUserColorSelection, blnStitchProcess, blnSingleton, blnSingleProcess, blnIncludable, blnColorProcess, area, locationName } = this.imprintData.imprintData;
+      this.locationSearchControl.setValue(locationName)
       this.imprintName = name;
       this.minQuantity = minProductQty;
       this.maxColorSelected = maxColors;
@@ -304,12 +317,14 @@ export class AddEditImprintsComponent implements OnInit, OnDestroy {
         this.addImprintLocations.push({ locationName: 'New Location >>>', pk_locationID: null });
         this.addImprintLocations = [...this.addImprintLocations, ...location["data"]];
         if (data) {
-          const { fk_locationID } = data
-          this.selectedLocation = this.addImprintLocations.find(x => x.pk_locationID === fk_locationID) || this.addImprintLocations[0];
-          this.locationControl.setValue(this.selectedLocation.locationName);
+          const { fk_locationID, locationName } = data
+          this.selectedLocation = { locationName: locationName, pk_locationID: fk_locationID };
+
+          // this.selectedLocation = this.addImprintLocations.find(x => x.pk_locationID === fk_locationID) || this.addImprintLocations[0];
+          // this.locationControl.setValue(this.selectedLocation.locationName);
         } else {
           this.selectedLocation = { locationName: 'New Location >>>', pk_locationID: null };
-          this.locationControl.setValue(this.selectedLocation.locationName);
+          // this.locationControl.setValue(this.selectedLocation.locationName);
         }
       }
       // Mark for check

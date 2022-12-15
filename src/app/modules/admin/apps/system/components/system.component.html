@@ -149,6 +149,10 @@
                         <app-diagonostics [(isLoading)]="isLoading">
                         </app-diagonostics>
                     </ng-template>
+                    <ng-template [ngIf]="selectedScreeen == 'Admin Structure'">
+                        <app-admin-structure [(isLoading)]="isLoading">
+                        </app-admin-structure>
+                    </ng-template>
                 </div>
             </div>
         </div>

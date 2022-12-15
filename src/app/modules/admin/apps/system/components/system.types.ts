@@ -331,3 +331,22 @@ export interface ClearUserCarts {
     date: string;
     clear_user_cart: boolean;
 };
+// Admin Structure
+
+export interface AddNewNode {
+    name: string;
+    parent_id: number;
+    add_node: boolean;
+};
+
+export interface UpdateNode {
+    name: string;
+    section_id: number;
+    parent_id: number;
+    update_node: boolean;
+};
+
+export interface DeleteNode {
+    section_id: number;
+    delete_node: boolean;
+};

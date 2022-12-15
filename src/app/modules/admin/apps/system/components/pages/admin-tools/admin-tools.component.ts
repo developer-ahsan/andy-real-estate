@@ -6,7 +6,7 @@ import { MatPaginator } from '@angular/material/paginator';
 import { Subject } from 'rxjs';
 import { finalize, takeUntil } from 'rxjs/operators';
 import { SystemService } from '../../system.service';
-import { AddPromoCode, ClearStoreRapidbuild, DeleteImprintColor, DeletePromoCode, UpdateImprintMethod, UpdatePromoCode } from '../../system.types';
+import { AddPromoCode, ClearStoreRapidbuild, DeleteImprintColor, DeleteNode, DeletePromoCode, UpdateImprintMethod, UpdatePromoCode } from '../../system.types';
 import moment from 'moment';
 @Component({
   selector: 'app-admin-tools',
@@ -173,6 +173,8 @@ export class AdminToolsComponent implements OnInit, OnDestroy {
       this._systemService.snackBar('Something went wrong');
     })
   }
+
+
   /**
      * On destroy
      */
