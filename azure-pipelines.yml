@@ -9,6 +9,8 @@ steps:
   inputs:
     versionSpec: '16.17.0'
   displayName: 'Install Node.js'
+  env:
+    NODE_OPTIONS: --max_old_space_size=16384
 
 - script: |
     npm install -g @angular/cli
