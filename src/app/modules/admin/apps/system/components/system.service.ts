@@ -637,11 +637,12 @@ export class SystemService {
         );
     };
 
-    getAllImprintMethods(): Observable<any[]> {
+    getAllImprintMethods(k): Observable<any[]> {
         return this._httpClient.get<any[]>(environment.products, {
             params: {
                 imprint: true,
-                method: true
+                keyword: k,
+                paginated_method: true
             }
         });
     };
@@ -651,8 +652,8 @@ export class SystemService {
             params: {
                 imprint: true,
                 keyword: k,
-                // paginated_method: true
-                method: true
+                paginated_method: true
+                // method: true
             }
         }).pipe(
             tap((response: any) => {

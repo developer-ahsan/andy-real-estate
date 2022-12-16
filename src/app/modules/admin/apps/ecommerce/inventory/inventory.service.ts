@@ -608,20 +608,22 @@ export class InventoryService {
         });
     };
 
-    getAllImprintLocations(): Observable<any[]> {
+    getAllImprintLocations(keyword): Observable<any[]> {
         return this._httpClient.get<any[]>(environment.products, {
             params: {
                 imprint: true,
-                location: true
+                paginated_location: true,
+                keyword: keyword
             }
         });
     };
     // getAllImprintLocations Observable
-    getAllImprintLocationsObs(): Observable<any[]> {
+    getAllImprintLocationsObs(keyword): Observable<any[]> {
         return this._httpClient.get<any[]>(environment.products, {
             params: {
                 imprint: true,
-                location: true
+                paginated_location: true,
+                keyword: keyword
             }
         }).pipe(
             tap((response: any) => {
@@ -630,20 +632,22 @@ export class InventoryService {
         );
     };
 
-    getAllImprintMethods(): Observable<any[]> {
+    getAllImprintMethods(keyword): Observable<any[]> {
         return this._httpClient.get<any[]>(environment.products, {
             params: {
                 imprint: true,
-                method: true
+                paginated_method: true,
+                keyword: keyword
             }
         });
     };
     // getAllImprintMethods Observable
-    getAllImprintMethodsObs(): Observable<any[]> {
+    getAllImprintMethodsObs(keyword): Observable<any[]> {
         return this._httpClient.get<any[]>(environment.products, {
             params: {
                 imprint: true,
-                method: true
+                paginated_method: true,
+                keyword: keyword
             }
         }).pipe(
             tap((response: any) => {

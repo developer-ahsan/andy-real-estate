@@ -1,6 +1,6 @@
 import { Component, Input, OnInit, Output, EventEmitter, ChangeDetectorRef, OnDestroy } from '@angular/core';
 import { Observable, Subject } from 'rxjs';
-import { map, startWith, switchMap, takeUntil } from 'rxjs/operators';
+import { debounceTime, distinctUntilChanged, filter, finalize, map, startWith, switchMap, takeUntil, tap } from 'rxjs/operators';
 import { InventoryService } from 'app/modules/admin/apps/ecommerce/inventory/inventory.service';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { FormBuilder, FormControl, FormGroup } from '@angular/forms';
@@ -197,6 +197,15 @@ export class ImprintComponent implements OnInit, OnDestroy {
 
   isImprintDetails: boolean = false;
 
+
+
+  public locationSearchControl = new FormControl();
+  isLoadings: boolean = false;
+  public methodSearchControl = new FormControl();
+  isMethodLoading: boolean = false;
+
+
+
   private _filter(value: string): string[] {
     const filterValue = value.toLowerCase();
     return this.addImprintMethods.filter(option => option.methodName.toLowerCase().includes(filterValue));
@@ -215,6 +224,7 @@ export class ImprintComponent implements OnInit, OnDestroy {
   locationSelected(obj) {
     this.selectedLocation = obj;
   }
+  minLengthTerm = 3;
 
   constructor(
     private _changeDetectorRef: ChangeDetectorRef,
@@ -244,6 +254,61 @@ export class ImprintComponent implements OnInit, OnDestroy {
     })
   }
   ngOnInit(): void {
+    this.locationSearchControl.valueChanges
+      .pipe(
+        filter(res => {
+          return res !== null && res.length >= this.minLengthTerm
+        }),
+        distinctUntilChanged(),
+        debounceTime(300),
+        tap(() => {
+          this.addImprintLocations = [];
+          this.isLoadings = true;
+          this._changeDetectorRef.markForCheck();
+        }),
+        switchMap(value => this._inventoryService.getAllImprintLocations(value)
+          .pipe(
+            finalize(() => {
+              this.isLoadings = false
+              this._changeDetectorRef.markForCheck();
+            }),
+          )
+        )
+      )
+      .subscribe((data: any) => {
+        this.addImprintLocations.push({ locationName: 'New Location >>>', pk_locationID: null });
+        data["data"].forEach(element => {
+          this.addImprintLocations.push(element);
+        });
+      });
+
+    this.methodSearchControl.valueChanges
+      .pipe(
+        filter(res => {
+          return res !== null && res.length >= this.minLengthTerm
+        }),
+        distinctUntilChanged(),
+        debounceTime(300),
+        tap(() => {
+          this.addImprintMethods = [];
+          this.isMethodLoading = true;
+          this._changeDetectorRef.markForCheck();
+        }),
+        switchMap(value => this._inventoryService.getAllImprintMethods(value)
+          .pipe(
+            finalize(() => {
+              this.isMethodLoading = false
+              this._changeDetectorRef.markForCheck();
+            }),
+          )
+        )
+      )
+      .subscribe((data: any) => {
+        this.addImprintMethods.push({ methodName: 'New Method >>>', pk_methodID: null });
+        data["data"].forEach(element => {
+          this.addImprintMethods.push(element);
+        });
+      });
     this.methodFilteredOptions = this.methodControl.valueChanges.pipe(
       startWith(''),
       map(value => this._filter(value || '')),
@@ -1862,7 +1927,7 @@ export class ImprintComponent implements OnInit, OnDestroy {
   }
   getAllImprintLocations() {
     this.addImprintLocations = [];
-    this._inventoryService.getAllImprintLocationsObs()
+    this._inventoryService.getAllImprintLocationsObs('')
       .pipe(takeUntil(this._unsubscribeAll))
       .subscribe((location) => {
         this.getAddImprintDigitizers()
@@ -1877,9 +1942,11 @@ export class ImprintComponent implements OnInit, OnDestroy {
   getAddImprintLocations(data?: any) {
     this._inventoryService.imprintLocations$.pipe(takeUntil(this._unsubscribeAll)).subscribe((methods) => {
       if (data) {
-        const { pk_locationID } = data
+        const { pk_locationID, locationName } = data
+
         this.selectedLocation = this.addImprintLocations.find(x => x.pk_locationID === pk_locationID) || this.addImprintLocations[0];
         this.locationControl.setValue(this.selectedLocation.locationName);
+        this.locationSearchControl.setValue(this.selectedLocation.locationName);
       }
       // Mark for check
       this._changeDetectorRef.markForCheck();
@@ -1904,7 +1971,7 @@ export class ImprintComponent implements OnInit, OnDestroy {
   }
   getAllImprintsMethods() {
     this.addImprintMethods = [];
-    this._inventoryService.getAllImprintMethodsObs().pipe(takeUntil(this._unsubscribeAll)).subscribe((methods) => {
+    this._inventoryService.getAllImprintMethodsObs('').pipe(takeUntil(this._unsubscribeAll)).subscribe((methods) => {
       this.getAllImprintLocations();
       this.addImprintMethods.push({ methodName: 'New Method >>>', pk_methodID: null });
       this.addImprintMethods = [...this.addImprintMethods, ...methods["data"]];
@@ -1920,9 +1987,12 @@ export class ImprintComponent implements OnInit, OnDestroy {
       this.addImprintMethods = [...this.addImprintMethods, ...methods["data"]];
 
       if (data) {
-        const { pk_methodID } = data
-        this.selectedMethod = this.addImprintMethods.find(x => x.pk_methodID === pk_methodID) || this.addImprintMethods[0];
-        this.methodControl.setValue(this.selectedMethod.methodName);
+        const { pk_methodID, methodName } = data
+        this.selectedMethod = { methodName: methodName, pk_methodID: pk_methodID };
+        this.methodSearchControl.setValue(this.selectedMethod.methodName);
+        // const { pk_methodID } = data
+        // this.selectedMethod = this.addImprintMethods.find(x => x.pk_methodID === pk_methodID) || this.addImprintMethods[0];
+        // this.methodControl.setValue(this.selectedMethod.methodName);
       } else {
         this.selectedMethod = this.addImprintMethods.find(x => x.pk_methodID === 254) || this.addImprintMethods[0];
         this.methodControl.setValue(this.selectedMethod.methodName);

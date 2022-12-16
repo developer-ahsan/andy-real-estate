@@ -37,13 +37,11 @@
                     [matTooltip]="'To add a new method, select (NEW METHOD) in the menu and then enter the name in the box to the right'">
                     <i class="fa fa-info-circle"></i>
                 </button>
-                Imprint Method <span *ngIf="!addImprintMethods.length"
-                    class="text-sm text-secondary font-semibold ml-2 cursor-pointer" (click)="GetAllImprintMethods()">
-                    ({{methodsFetch}}) </span>
+                Imprint Method
             </b>
         </div>
         <div class="col-lg-6 col-12">
-            <mat-form-field class="w-full" appearance="fill">
+            <!-- <mat-form-field class="w-full" appearance="fill">
                 <input type="text" placeholder="Imprint Method" aria-label="Number" matInput
                     [formControl]="methodControl" [matAutocomplete]="auto"
                     [readonly]="addImprintMethods.length ? false : true">
@@ -53,6 +51,22 @@
                         <small>{{method.methodName}}
                             ({{method.pk_methodID}})</small>
                     </mat-option>
+                </mat-autocomplete>
+            </mat-form-field> -->
+            <mat-form-field class="w-full">
+                <input matInput placeholder="Imprint Method" [matAutocomplete]="auto2"
+                    [formControl]="methodSearchControl">
+                <mat-hint *ngIf="selectedMethod">{{selectedMethod.methodName}}
+                    ({{selectedMethod.pk_methodID}})</mat-hint>
+                <mat-autocomplete class="w-full" #auto2="matAutocomplete">
+                    <mat-option *ngIf="isMethodLoading" class="is-loading">Loading...</mat-option>
+                    <ng-container *ngIf="!isMethodLoading">
+                        <mat-option *ngFor="let method of addImprintMethods" [value]="method.methodName"
+                            (click)="methodSelected(method)">
+                            <small>{{method.methodName}}
+                                ({{method.pk_methodID}})</small>
+                        </mat-option>
+                    </ng-container>
                 </mat-autocomplete>
             </mat-form-field>
         </div>

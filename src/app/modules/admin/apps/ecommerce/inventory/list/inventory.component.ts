@@ -3,7 +3,7 @@ import { FormArray, FormBuilder, FormControl, FormGroup, Validators } from '@ang
 import { MatPaginator } from '@angular/material/paginator';
 import { MatSort, Sort } from '@angular/material/sort';
 import { merge, Observable, Subject } from 'rxjs';
-import { debounceTime, finalize, map, startWith, switchMap, takeUntil, tap } from 'rxjs/operators';
+import { debounceTime, distinctUntilChanged, filter, finalize, map, startWith, switchMap, takeUntil, tap } from 'rxjs/operators';
 import { fuseAnimations } from '@fuse/animations';
 import { InventoryBrand, InventoryCategory, InventoryPagination, InventoryProduct, InventoryTag, InventoryVendor, ProductsList } from 'app/modules/admin/apps/ecommerce/inventory/inventory.types';
 import { InventoryService } from 'app/modules/admin/apps/ecommerce/inventory/inventory.service';
@@ -17,10 +17,8 @@ import { MatRadioChange } from '@angular/material/radio';
 import { IDropdownSettings } from 'ng-multiselect-dropdown';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { ProductImprintsComponent } from './product-imprints/product-imprints';
-import { ContactsContactResolver } from '../../../contacts/contacts.resolvers';
 import { HttpClient } from '@angular/common/http';
 import { environment } from 'environments/environment';
-import { filter } from 'lodash';
 import { MatChipInputEvent } from '@angular/material/chips';
 import { MatDialog } from '@angular/material/dialog';
 import { ScrollStrategy, ScrollStrategyOptions } from '@angular/cdk/overlay';
@@ -501,6 +499,14 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
 
     location_name: any = '';
     method_name: any = '';
+
+    public locationSearchControl = new FormControl();
+    isLoadings: boolean = false;
+    public methodSearchControl = new FormControl();
+    isMethodLoading: boolean = false;
+    minLengthTerm = 3;
+
+
     clickButton(): void {
         this.colorpicker.nativeElement.click()
     }
@@ -576,6 +582,59 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
         this.selectedLocation = obj;
     }
     ngOnInit(): void {
+        this.locationSearchControl.valueChanges.pipe(filter(res => {
+            return res !== null && res.length >= this.minLengthTerm
+        }),
+            distinctUntilChanged(),
+            debounceTime(300),
+            tap(() => {
+                this.addImprintLocations = [];
+                this.isLoadings = true;
+                this._changeDetectorRef.markForCheck();
+            }),
+            switchMap(value => this._inventoryService.getAllImprintLocations(value)
+                .pipe(
+                    finalize(() => {
+                        this.isLoadings = false
+                        this._changeDetectorRef.markForCheck();
+                    }),
+                )
+            )
+        )
+            .subscribe((data: any) => {
+                this.addImprintLocations.push({ locationName: 'New Location >>>', pk_locationID: null });
+                data["data"].forEach(element => {
+                    this.addImprintLocations.push(element);
+                });
+            });
+
+        this.methodSearchControl.valueChanges
+            .pipe(
+                filter(res => {
+                    return res !== null && res.length >= this.minLengthTerm
+                }),
+                distinctUntilChanged(),
+                debounceTime(300),
+                tap(() => {
+                    this.addImprintMethods = [];
+                    this.isMethodLoading = true;
+                    this._changeDetectorRef.markForCheck();
+                }),
+                switchMap(value => this._inventoryService.getAllImprintMethods(value)
+                    .pipe(
+                        finalize(() => {
+                            this.isMethodLoading = false
+                            this._changeDetectorRef.markForCheck();
+                        }),
+                    )
+                )
+            )
+            .subscribe((data: any) => {
+                this.addImprintMethods.push({ methodName: 'New Method >>>', pk_methodID: null });
+                data["data"].forEach(element => {
+                    this.addImprintMethods.push(element);
+                });
+            });
 
         this.methodFilteredOptions = this.methodControl.valueChanges.pipe(
             startWith(''),
@@ -2430,7 +2489,7 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
 
     getImprintMethods() {
         this.addImprintMethods = [];
-        this._inventoryService.getAllImprintMethods()
+        this._inventoryService.getAllImprintMethods('')
             .pipe(takeUntil(this._unsubscribeAll))
             .subscribe((methods) => {
                 // this.addImprintMethods = methods["data"];
@@ -2455,7 +2514,7 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
 
     getImprintLocations() {
         this.addImprintLocations = [];
-        this._inventoryService.getAllImprintLocations()
+        this._inventoryService.getAllImprintLocations('')
             .pipe(takeUntil(this._unsubscribeAll))
             .subscribe((location) => {
                 // this.selectedLocation = this.addImprintLocations[0];

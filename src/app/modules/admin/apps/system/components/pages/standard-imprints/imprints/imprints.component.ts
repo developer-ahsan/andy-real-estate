@@ -113,6 +113,8 @@ export class AddEditImprintsComponent implements OnInit, OnDestroy {
 
   public locationSearchControl = new FormControl();
   isLocationLoading: boolean = false;
+  public methodSearchControl = new FormControl();
+  isMethodLoading: boolean = false;
   constructor(
     private _changeDetectorRef: ChangeDetectorRef,
     private _systemService: SystemService,
@@ -190,6 +192,37 @@ export class AddEditImprintsComponent implements OnInit, OnDestroy {
         });
       });
 
+    this.methodSearchControl.valueChanges
+      .pipe(
+        filter(res => {
+          if (res.length > 2) {
+            this.isMethodLoading = true;
+            this._changeDetectorRef.markForCheck();
+          }
+
+          return res !== null && res.length >= this.minLengthTerm
+        }),
+        distinctUntilChanged(),
+        debounceTime(300),
+        tap(() => {
+          this.addImprintMethods = [];
+          this._changeDetectorRef.markForCheck();
+        }),
+        switchMap(value => this._systemService.getAllImprintMethods(value)
+          .pipe(
+            finalize(() => {
+              this.isMethodLoading = false
+              this._changeDetectorRef.markForCheck();
+            }),
+          )
+        )
+      )
+      .subscribe((data: any) => {
+        this.addImprintMethods.push({ methodName: 'New Method >>>', pk_methodID: null });
+        data["data"].forEach(element => {
+          this.addImprintMethods.push(element);
+        });
+      });
 
     this.methodFilteredOptions = this.methodControl.valueChanges.pipe(
       startWith(''),
@@ -207,8 +240,9 @@ export class AddEditImprintsComponent implements OnInit, OnDestroy {
       this.getAddImprintLocations();
       this.getAllSuppliers();
     } else {
-      const { name, pk_standardImprintID, minProductQty, maxColors, imprintComments, fk_standardImprintGroupID, fk_setupChargeID, fk_runChargeID, fk_multiColorMinQID, fk_collectionID, displayOrder, blnUserColorSelection, blnStitchProcess, blnSingleton, blnSingleProcess, blnIncludable, blnColorProcess, area, locationName } = this.imprintData.imprintData;
-      this.locationSearchControl.setValue(locationName)
+      const { name, pk_standardImprintID, minProductQty, maxColors, imprintComments, fk_standardImprintGroupID, fk_setupChargeID, fk_runChargeID, fk_multiColorMinQID, fk_collectionID, displayOrder, blnUserColorSelection, blnStitchProcess, blnSingleton, blnSingleProcess, blnIncludable, blnColorProcess, area, locationName, methodName } = this.imprintData.imprintData;
+      this.locationSearchControl.setValue(locationName);
+      this.methodSearchControl.setValue(methodName);
       this.imprintName = name;
       this.minQuantity = minProductQty;
       this.maxColorSelected = maxColors;
@@ -235,7 +269,6 @@ export class AddEditImprintsComponent implements OnInit, OnDestroy {
       this.getAddImprintLocations(this.imprintData.imprintData);
       this.getAllSuppliers(this.imprintData.imprintData);
     }
-    console.log(this.imprintData)
   };
   private _filter(value: string): string[] {
     const filterValue = value.toLowerCase();
@@ -296,9 +329,10 @@ export class AddEditImprintsComponent implements OnInit, OnDestroy {
         this.addImprintMethods = [...this.addImprintMethods, ...methods["data"]];
 
         if (data) {
-          const { fk_methodID } = data
-          this.selectedMethod = this.addImprintMethods.find(x => x.pk_methodID === fk_methodID) || this.addImprintMethods[0];
-          this.methodControl.setValue(this.selectedMethod.methodName);
+          const { fk_methodID, methodName } = data
+          this.selectedMethod = { methodName: methodName, pk_methodID: fk_methodID };
+          // this.selectedMethod = this.addImprintMethods.find(x => x.pk_methodID === fk_methodID) || this.addImprintMethods[0];
+          // this.methodControl.setValue(this.selectedMethod.methodName);
         } else {
           this.selectedMethod = this.addImprintMethods.find(x => x.pk_methodID === 254) || this.addImprintMethods[0];
           this.methodControl.setValue(this.selectedMethod.methodName);
