@@ -15,8 +15,8 @@ steps:
 - script: |
     npm install -g @angular/cli
     npm install
-    ng build --prod
-  displayName: 'npm install and build'
+    node --max_old_space_size=16192 node_modules/@angular/cli/bin/ng build --configuration production
+  displayName: 'npm install, memory allocation and build'
 
 - task: AzureStaticWebApp@0
   inputs:
