@@ -1933,7 +1933,7 @@ export class ImprintComponent implements OnInit, OnDestroy {
         this.getAddImprintDigitizers()
         this.addImprintLocations.push({ locationName: 'New Location >>>', pk_locationID: null });
         this.addImprintLocations = [...this.addImprintLocations, ...location["data"]];
-        this.selectedLocation = { locationName: 'New Location >>>', pk_locationID: null };
+        this.selectedLocation = this.addImprintLocations[0];
         this.locationControl.setValue(this.selectedLocation.locationName);
         // Mark for check
         this._changeDetectorRef.markForCheck();
@@ -1942,9 +1942,10 @@ export class ImprintComponent implements OnInit, OnDestroy {
   getAddImprintLocations(data?: any) {
     this._inventoryService.imprintLocations$.pipe(takeUntil(this._unsubscribeAll)).subscribe((methods) => {
       if (data) {
-        const { pk_locationID, locationName } = data
+        const { fk_locationID, locationName } = data
+        this.selectedLocation = { locationName: locationName, pk_locationID: fk_locationID };
 
-        this.selectedLocation = this.addImprintLocations.find(x => x.pk_locationID === pk_locationID) || this.addImprintLocations[0];
+        // this.selectedLocation = this.addImprintLocations.find(x => x.pk_locationID === pk_locationID) || this.addImprintLocations[0];
         this.locationControl.setValue(this.selectedLocation.locationName);
         this.locationSearchControl.setValue(this.selectedLocation.locationName);
       }
@@ -1987,8 +1988,8 @@ export class ImprintComponent implements OnInit, OnDestroy {
       this.addImprintMethods = [...this.addImprintMethods, ...methods["data"]];
 
       if (data) {
-        const { pk_methodID, methodName } = data
-        this.selectedMethod = { methodName: methodName, pk_methodID: pk_methodID };
+        const { fk_methodID, methodName } = data
+        this.selectedMethod = { methodName: methodName, pk_methodID: fk_methodID };
         this.methodSearchControl.setValue(this.selectedMethod.methodName);
         // const { pk_methodID } = data
         // this.selectedMethod = this.addImprintMethods.find(x => x.pk_methodID === pk_methodID) || this.addImprintMethods[0];
