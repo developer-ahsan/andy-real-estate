@@ -83,44 +83,28 @@ export class ProductSizesComponent implements OnInit, OnDestroy {
     this._inventoryService.getSizes(pk_productID, this.searchKeywordTerm, page)
       .pipe(takeUntil(this._unsubscribeAll))
       .subscribe((sizes) => {
-        console.log(this.arrayToUpdate);
         const { selected, unSelected } = sizes["data"];
-        // for (const selectedObj of selected) {
-        //   selectedObj["isSelected"] = true;
-        // }
-        // if (selected.length > 0) {
-        //   selected.forEach(element => {
-        //     this.arrayToUpdate.push(selected);
-        //   });
-        // }
+        for (const selectedObj of this.arrayToUpdate) {
+          selectedObj["isSelected"] = true;
+        }
 
-
-        this.dataSource = unSelected;
         this.arrayToUpdate.forEach(elem => {
-          this.dataSource.filter(item => {
-            if (item.pk_sizeID == elem.pk_sizeID) {
-              item["isSelected"] = true;
-              item["run"] = elem.run;
-              item["weight"] = elem.weight;
-              item["unitsPerWeight"] = elem.unitsPerWeight
-            }
-          });
+          unSelected.filter(item => item.pk_sizeID != elem.pk_sizeID);
+          // this.dataSource.filter(item => {
+          //   if (item.pk_sizeID == elem.pk_sizeID) {
+          //     item["isSelected"] = true;
+          //     item["run"] = elem.run;
+          //     item["weight"] = elem.weight;
+          //     item["unitsPerWeight"] = elem.unitsPerWeight
+          //   }
+          // });
         });
+        this.dataSource = this.arrayToUpdate.concat(unSelected);
         this.sizesLength = sizes["totalRecords"];
 
         if (this.searchKeywordTerm == '') {
-          this.tempDataSource = unSelected;
+          this.tempDataSource = this.arrayToUpdate.concat(unSelected);
           this.tempDataCount = sizes["totalRecords"];
-          this.arrayToUpdate.forEach(elem => {
-            this.tempDataSource.filter(item => {
-              if (item.pk_sizeID == elem.pk_sizeID) {
-                item["isSelected"] = true;
-                item["run"] = elem.run;
-                item["weight"] = elem.weight;
-                item["unitsPerWeight"] = elem.unitsPerWeight
-              }
-            });
-          });
         }
         this.isSearchLoading = false;
         this.isLoading = false;
