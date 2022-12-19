@@ -1371,21 +1371,21 @@ export class FLPSService {
     };
 
     // Common get Calls
-    getSystemsData(params): Observable<any[]> {
-        return this._httpClient.get<any[]>(environment.system, {
+    getFlpsData(params): Observable<any[]> {
+        return this._httpClient.get<any[]>(environment.flps, {
             params: params
         });
     };
     // Common Post Call
-    AddSystemData(payload) {
+    AddFlpsData(payload) {
         const headers = { 'Authorization': `Bearer ${this._authService.accessToken}` };
         return this._httpClient.post(
-            environment.system, payload, { headers });
+            environment.flps, payload, { headers });
     };
     // Common put Call
-    UpdateSystemData(payload) {
+    UpdateFlpsData(payload) {
         const headers = { 'Authorization': `Bearer ${this._authService.accessToken}` };
         return this._httpClient.put(
-            environment.system, payload, { headers });
+            environment.flps, payload, { headers });
     };
 }

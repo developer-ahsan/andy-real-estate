@@ -23,41 +23,77 @@
         </div>
 
     </div>
-    <div class="sub-nav-component bg-light">
-        <div class="px-5 pt-5">
-            <mat-button-toggle-group #group="matButtonToggleGroup" [value]="selectedScreeen"
-                (change)="calledScreen(group.value)">
-                <mat-button-toggle value="Generate Report">
-                    Generate Report
-                </mat-button-toggle>
-                <mat-button-toggle value="User Management">
-                    User Management
-                </mat-button-toggle>
-                <mat-button-toggle value="Store Management">
-                    Store Management
-                </mat-button-toggle>
-            </mat-button-toggle-group>
+    <div class="sub-nav-component bg-light" #topScrollAnchor>
+        <div *ngIf="flpsToken">
+            <div class="px-5 pt-5">
+                <mat-button-toggle-group #group="matButtonToggleGroup" [value]="selectedScreeen"
+                    (change)="calledScreen(group.value)">
+                    <mat-button-toggle value="Generate Report">
+                        Generate Report
+                    </mat-button-toggle>
+                    <mat-button-toggle value="User Management">
+                        User Management
+                    </mat-button-toggle>
+                    <mat-button-toggle value="Store Management">
+                        Store Management
+                    </mat-button-toggle>
+                </mat-button-toggle-group>
+            </div>
+            <div class="p-5">
+                <div class="rounded-2xl shadow bg-card flex flex-col lg:flex-row w-full">
+                    <div class="w-full">
+                        <div class="p-4 sm:p-4 lg:p-8">
+                            <div class="text-2xl font-bold">
+                                {{selectedScreeen}}
+                            </div>
+                        </div>
+                        <ng-template [ngIf]="selectedScreeen == 'Generate Report'">
+                            <app-report [(isLoading)]="isLoading">
+                            </app-report>
+                        </ng-template>
+                        <ng-template [ngIf]="selectedScreeen == 'User Management'">
+                            <app-user-flps-management [(isLoading)]="isLoading">
+                            </app-user-flps-management>
+                        </ng-template>
+                        <ng-template [ngIf]="selectedScreeen == 'Store Management'">
+                            <app-store-flps-management [(isLoading)]="isLoading">
+                            </app-store-flps-management>
+                        </ng-template>
+                    </div>
+                </div>
+            </div>
         </div>
-        <div class="p-5">
+        <div class="p-5" *ngIf="!flpsToken">
             <div class="rounded-2xl shadow bg-card flex flex-col lg:flex-row w-full">
                 <div class="w-full">
                     <div class="p-4 sm:p-4 lg:p-8">
                         <div class="text-2xl font-bold">
-                            {{selectedScreeen}}
+                            FLPS User Login
+                        </div>
+                        <div class="row mt-2">
+                            <div class="col-md-6 col-12">
+                                <mat-form-field class="w-full">
+                                    <mat-label>Username*</mat-label>
+                                    <input type="email" matInput autocomplete="off" [(ngModel)]="ngEmail">
+                                </mat-form-field>
+                            </div>
+                            <div class="col-md-6 col-12">
+                                <mat-form-field class="w-full">
+                                    <mat-label>Password*</mat-label>
+                                    <input matInput type="password" autocomplete="off" [(ngModel)]="ngPassword">
+                                </mat-form-field>
+                            </div>
+                            <div class="col-12 text-right">
+                                <button [disabled]="isLoginLoader" class="min-w-40" mat-stroked-button
+                                    [matTooltip]="'Login'" (click)="loginFLPS()">
+                                    <span *ngIf="!isLoginLoader"> Login </span>
+                                    <mat-progress-spinner *ngIf="isLoginLoader" [diameter]="24"
+                                        [mode]="'indeterminate'">
+                                    </mat-progress-spinner>
+                                </button>
+                            </div>
                         </div>
                     </div>
-                    <ng-template [ngIf]="selectedScreeen == 'Generate Report'">
-                        <app-report [(isLoading)]="isLoading">
-                        </app-report>
-                    </ng-template>
-                    <ng-template [ngIf]="selectedScreeen == 'User Management'">
-                        <app-user-flps-management [(isLoading)]="isLoading">
-                        </app-user-flps-management>
-                    </ng-template>
-                    <ng-template [ngIf]="selectedScreeen == 'Store Management'">
-                        <app-store-flps-management [(isLoading)]="isLoading">
-                        </app-store-flps-management>
-                    </ng-template>
                 </div>
             </div>
         </div>

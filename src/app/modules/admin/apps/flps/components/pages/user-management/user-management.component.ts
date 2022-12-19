@@ -43,6 +43,8 @@ export class FLPSUserManagementComponent implements OnInit, OnDestroy {
   updatePromoData: any;
   ngRGBUpdate = '';
 
+  addNewUserForm: FormGroup;
+
   addPromoForm: FormGroup;
   updatePromoForm: FormGroup;
   constructor(
@@ -51,33 +53,16 @@ export class FLPSUserManagementComponent implements OnInit, OnDestroy {
   ) { }
 
   initForm() {
-    this.addPromoForm = new FormGroup({
-      promocode: new FormControl('', Validators.required),
-      amount: new FormControl(0, Validators.required),
-      threshold: new FormControl(0, Validators.required),
-      description: new FormControl('', Validators.required),
-      blnActive: new FormControl(true, Validators.required),
-      expDate: new FormControl(''),
-      blnShipping: new FormControl(false, Validators.required),
-      blnRemoveShippingCost: new FormControl(true, Validators.required),
-      blnRemoveShippingPrice: new FormControl(true, Validators.required),
-      blnRemoveCost: new FormControl(false, Validators.required),
-      blnRemovePrice: new FormControl(false, Validators.required),
-      blnPercent: new FormControl(false, Validators.required)
-    });
-    this.updatePromoForm = new FormGroup({
-      promocode: new FormControl({ value: '', disabled: true }, [Validators.required]),
-      amount: new FormControl(0, Validators.required),
-      threshold: new FormControl(0, Validators.required),
-      description: new FormControl('', Validators.required),
-      blnActive: new FormControl(true, Validators.required),
-      expDate: new FormControl(''),
-      blnShipping: new FormControl(false, Validators.required),
-      blnRemoveShippingCost: new FormControl(true, Validators.required),
-      blnRemoveShippingPrice: new FormControl(true, Validators.required),
-      blnRemoveCost: new FormControl(false, Validators.required),
-      blnRemovePrice: new FormControl(false, Validators.required),
-      blnPercent: new FormControl(false, Validators.required)
+    this.addNewUserForm = new FormGroup({
+      userName: new FormControl(''),
+      password: new FormControl(''),
+      email: new FormControl(''),
+      firstName: new FormControl(''),
+      lastName: new FormControl(''),
+      blnAdmin: new FormControl(false),
+      defaultCommission: new FormControl(''),
+      admin_user_id: new FormControl(''),
+      new_flps_user: new FormControl(true)
     });
   }
   ngOnInit(): void {
@@ -99,7 +84,7 @@ export class FLPSUserManagementComponent implements OnInit, OnDestroy {
       page: page,
       size: 20
     }
-    this._flpsService.getSystemsData(params).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+    this._flpsService.getFlpsData(params).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
       this.dataSource = res["data"];
       this.totalUsers = res["totalRecords"];
       if (this.keyword == '') {
@@ -152,36 +137,36 @@ export class FLPSUserManagementComponent implements OnInit, OnDestroy {
     this.totalUsers = this.tempRecords;
   }
 
-  addNewPromoCode() {
-    const { promocode, amount, threshold, description, blnActive, expDate, blnShipping, blnRemoveShippingCost, blnRemoveShippingPrice, blnRemoveCost, blnRemovePrice, blnPercent } = this.addPromoForm.getRawValue();
-    if (promocode == '' || description == '') {
-      this._flpsService.snackBar('Please fill out the required fields');
-      return;
-    }
-    let date;
-    if (expDate) {
-      date = moment(expDate).format('MM/DD/YYYY');
-    } else {
-      date = 0;
-    }
-    let payload = {
-      promocode, amount, threshold, description, blnActive, expDate: date, blnShipping, blnRemoveShippingCost, blnRemoveShippingPrice, blnRemoveCost, blnRemovePrice, blnPercent, add_promo_code: true
-    }
-    this.isAddPromoLoader = true;
-    this._flpsService.AddSystemData(payload).pipe(takeUntil(this._unsubscribeAll), finalize(() => {
-      this._changeDetectorRef.markForCheck();
-    })).subscribe(res => {
-      if (res["success"]) {
-        this.getPromoCodes(1, 'add')
-      } else {
-        this.isAddPromoLoader = false;
-        this._flpsService.snackBar(res["message"]);
-      }
-      this._changeDetectorRef.markForCheck();
-    }, err => {
-      this.isAddPromoLoader = false;
-      this._flpsService.snackBar('Something went wrong');
-    })
+  addNewUser() {
+    const { userName, password, email, firstName, lastName, blnAdmin, defaultCommission, admin_user_id, new_flps_user } = this.addNewUserForm.getRawValue();
+    // if (userName == '' || password == '' || email == '' || firstName == '' || lastName == '' || defaultCommission == '') {
+    //   this._flpsService.snackBar('Please fill out the required fields');
+    //   return;
+    // }
+    // let date;
+    // if (expDate) {
+    //   date = moment(expDate).format('MM/DD/YYYY');
+    // } else {
+    //   date = 0;
+    // }
+    // let payload = {
+    //   promocode, amount, threshold, description, blnActive, expDate: date, blnShipping, blnRemoveShippingCost, blnRemoveShippingPrice, blnRemoveCost, blnRemovePrice, blnPercent, add_promo_code: true
+    // }
+    // this.isAddPromoLoader = true;
+    // this._flpsService.AddFlpsData(payload).pipe(takeUntil(this._unsubscribeAll), finalize(() => {
+    //   this._changeDetectorRef.markForCheck();
+    // })).subscribe(res => {
+    //   if (res["success"]) {
+    //     this.getPromoCodes(1, 'add')
+    //   } else {
+    //     this.isAddPromoLoader = false;
+    //     this._flpsService.snackBar(res["message"]);
+    //   }
+    //   this._changeDetectorRef.markForCheck();
+    // }, err => {
+    //   this.isAddPromoLoader = false;
+    //   this._flpsService.snackBar('Something went wrong');
+    // })
   }
   // Delete Promo
   deletePromo(item) {
@@ -190,7 +175,7 @@ export class FLPSUserManagementComponent implements OnInit, OnDestroy {
       promocode: item.promocode,
       delete_promo_code: true
     }
-    this._flpsService.UpdateSystemData(payload).pipe(takeUntil(this._unsubscribeAll), finalize(() => {
+    this._flpsService.UpdateFlpsData(payload).pipe(takeUntil(this._unsubscribeAll), finalize(() => {
       item.delLoader = false
       this._changeDetectorRef.markForCheck();
     })).subscribe(res => {
@@ -233,7 +218,7 @@ export class FLPSUserManagementComponent implements OnInit, OnDestroy {
       amount, threshold, description, blnActive, expDate: date, blnShipping, blnRemoveShippingCost, blnRemoveShippingPrice, blnRemoveCost, blnRemovePrice, blnPercent, promocode, update_promo_code: true
     }
     this.isUpdatePromoLoader = true;
-    this._flpsService.UpdateSystemData(payload).pipe(takeUntil(this._unsubscribeAll), finalize(() => {
+    this._flpsService.UpdateFlpsData(payload).pipe(takeUntil(this._unsubscribeAll), finalize(() => {
       this.isUpdatePromoLoader = false
       this._changeDetectorRef.markForCheck();
     })).subscribe(res => {

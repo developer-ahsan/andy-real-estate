@@ -5,6 +5,8 @@ import { fuseAnimations } from '@fuse/animations';
 import { Router } from '@angular/router';
 import { FuseMediaWatcherService } from '@fuse/services/media-watcher';
 import { FLPSService } from './flps.service';
+import { UserService } from 'app/core/user/user.service';
+import { AuthService } from 'app/core/auth/auth.service';
 
 @Component({
     selector: 'flps',
@@ -18,10 +20,12 @@ export class FLPSComponent {
     routes = [];
     selectedScreeen = 'Generate Report';
 
+    flpsToken = sessionStorage.getItem('flpsAccessToken');
+    ngEmail = '';
+    ngPassword = '';
+    isLoginLoader: boolean = false;
+    user: any;
     // Sidebar stuff
-    drawerMode: 'over' | 'side' = 'side';
-    drawerOpened: boolean = true;
-    @ViewChild("panel") panel;
     @ViewChild('topScrollAnchor') topScroll: ElementRef;
 
     /**
@@ -31,6 +35,7 @@ export class FLPSComponent {
         private _changeDetectorRef: ChangeDetectorRef,
         private _flpsService: FLPSService,
         private _router: Router,
+        private _authService: AuthService,
         private _fuseMediaWatcherService: FuseMediaWatcherService,
     ) {
     }
@@ -44,9 +49,9 @@ export class FLPSComponent {
      */
 
     ngOnInit(): void {
+        this.loginCheck();
         this.routes = this._flpsService.navigationLabels;
         this.isLoading = false;
-        this.sideDrawer();
     }
     calledScreen(title) {
         if (title != this.selectedScreeen) {
@@ -55,42 +60,43 @@ export class FLPSComponent {
         }
         this.topScroll.nativeElement.scrollIntoView({ behavior: 'smooth' });
     }
-    // Close Drawer
-    doSomething() {
-        this.panel.close();
-    }
-    // Side Drawer 
-    sideDrawer() {
-        this._fuseMediaWatcherService.onMediaChange$
-            .pipe(takeUntil(this._unsubscribeAll))
-            .subscribe(({ matchingAliases }) => {
-                if (matchingAliases.includes('lg')) {
-                    this.drawerMode = 'side';
-                    this.drawerOpened = true;
-                }
-                else {
-                    this.drawerMode = 'over';
-                    this.drawerOpened = false;
-                }
-                // Mark for check
-                this._changeDetectorRef.markForCheck();
-            });
-    }
-
-
-    // -----------------------------------------------------------------------------------------------------
-    // @ Public methods
-    // -----------------------------------------------------------------------------------------------------
-    clicked(title) {
-        if (title != this.selectedScreeen) {
-            this.selectedScreeen = title;
-            this.isLoading = true;
+    loginCheck() {
+        this.user = this._authService.parseJwt(this._authService.accessToken);
+        let payload = {
+            login_check: true,
+            user_name: this.user.name
         }
-        this.topScroll.nativeElement.scrollIntoView({ behavior: 'smooth' });
+        this._flpsService.getFlpsData(payload).subscribe(res => {
+            if (res["success"]) {
+                sessionStorage.setItem('flpsAccessToken', 'userLoggedIn');
+                this.flpsToken = 'userLoggedIn';
+            }
+        })
     }
-    // Drawer Open Close
-    toggleDrawer() {
-        this.drawerOpened = !this.drawerOpened;
+    loginFLPS() {
+        if (this.ngEmail == '' || this.ngPassword == '') {
+            this._flpsService.snackBar('Username and password is required');
+            return;
+        }
+        this.isLoginLoader = true;
+        let payload = {
+            login_check: true,
+            user_name: this.ngEmail,
+            password: this.ngPassword
+        }
+        this._flpsService.getFlpsData(payload).subscribe(res => {
+            if (res["success"]) {
+                this.flpsToken = 'userLoggedIn';
+                sessionStorage.setItem('flpsAccessToken', 'userLoggedIn');
+            } else {
+                this._flpsService.snackBar(res["message"]);
+            }
+            this.isLoginLoader = false;
+            this._changeDetectorRef.markForCheck();
+        }, err => {
+            this.isLoginLoader = false;
+            this._changeDetectorRef.markForCheck();
+        })
     }
     /**
      * On destroy

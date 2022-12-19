@@ -99,7 +99,7 @@ export class FLPSStoreManagementComponent implements OnInit, OnDestroy {
       page: page,
       size: 20
     }
-    this._flpsService.getSystemsData(params).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+    this._flpsService.getFlpsData(params).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
       this.dataSource = res["data"];
       this.totalUsers = res["totalRecords"];
       if (this.keyword == '') {
@@ -168,7 +168,7 @@ export class FLPSStoreManagementComponent implements OnInit, OnDestroy {
       promocode, amount, threshold, description, blnActive, expDate: date, blnShipping, blnRemoveShippingCost, blnRemoveShippingPrice, blnRemoveCost, blnRemovePrice, blnPercent, add_promo_code: true
     }
     this.isAddPromoLoader = true;
-    this._flpsService.AddSystemData(payload).pipe(takeUntil(this._unsubscribeAll), finalize(() => {
+    this._flpsService.AddFlpsData(payload).pipe(takeUntil(this._unsubscribeAll), finalize(() => {
       this._changeDetectorRef.markForCheck();
     })).subscribe(res => {
       if (res["success"]) {
@@ -190,7 +190,7 @@ export class FLPSStoreManagementComponent implements OnInit, OnDestroy {
       promocode: item.promocode,
       delete_promo_code: true
     }
-    this._flpsService.UpdateSystemData(payload).pipe(takeUntil(this._unsubscribeAll), finalize(() => {
+    this._flpsService.UpdateFlpsData(payload).pipe(takeUntil(this._unsubscribeAll), finalize(() => {
       item.delLoader = false
       this._changeDetectorRef.markForCheck();
     })).subscribe(res => {
@@ -233,7 +233,7 @@ export class FLPSStoreManagementComponent implements OnInit, OnDestroy {
       amount, threshold, description, blnActive, expDate: date, blnShipping, blnRemoveShippingCost, blnRemoveShippingPrice, blnRemoveCost, blnRemovePrice, blnPercent, promocode, update_promo_code: true
     }
     this.isUpdatePromoLoader = true;
-    this._flpsService.UpdateSystemData(payload).pipe(takeUntil(this._unsubscribeAll), finalize(() => {
+    this._flpsService.UpdateFlpsData(payload).pipe(takeUntil(this._unsubscribeAll), finalize(() => {
       this.isUpdatePromoLoader = false
       this._changeDetectorRef.markForCheck();
     })).subscribe(res => {

@@ -83,37 +83,101 @@ export class ProductSizesComponent implements OnInit, OnDestroy {
     this._inventoryService.getSizes(pk_productID, this.searchKeywordTerm, page)
       .pipe(takeUntil(this._unsubscribeAll))
       .subscribe((sizes) => {
+        console.log(this.arrayToUpdate);
+        const { selected, unSelected } = sizes["data"];
+        // for (const selectedObj of selected) {
+        //   selectedObj["isSelected"] = true;
+        // }
+        // if (selected.length > 0) {
+        //   selected.forEach(element => {
+        //     this.arrayToUpdate.push(selected);
+        //   });
+        // }
 
-        this._inventoryService.getCharts(pk_productID, page)
-          .pipe(takeUntil(this._unsubscribeAll))
-          .subscribe((charts) => {
-            this.isLoading = false;
-            this.dataSourceCharts = charts["data"];
-            this.chartsLength = charts["totalRecords"];
 
-            const { selected, unSelected } = sizes["data"];
-            for (const selectedObj of selected) {
-              selectedObj["isSelected"] = true;
+        this.dataSource = unSelected;
+        this.arrayToUpdate.forEach(elem => {
+          this.dataSource.filter(item => {
+            if (item.pk_sizeID == elem.pk_sizeID) {
+              item["isSelected"] = true;
+              item["run"] = elem.run;
+              item["weight"] = elem.weight;
+              item["unitsPerWeight"] = elem.unitsPerWeight
             }
-            this.dataSource = selected.concat(unSelected);
-            this.sizesLength = sizes["totalRecords"];
-
-            if (this.searchKeywordTerm == '') {
-              this.tempDataSource = selected.concat(unSelected);
-              this.tempDataCount = sizes["totalRecords"];
-            }
-            this.isSearchLoading = false;
-            this.isLoading = false;
-            this.isLoadingChange.emit(false);
-            // Mark for check
-            this._changeDetectorRef.markForCheck();
-          }, err => {
-            this.isSearchLoading = false;
-            this.isLoading = false;
-            this.isLoadingChange.emit(false);
-            // Mark for check
-            this._changeDetectorRef.markForCheck();
           });
+        });
+        this.sizesLength = sizes["totalRecords"];
+
+        if (this.searchKeywordTerm == '') {
+          this.tempDataSource = unSelected;
+          this.tempDataCount = sizes["totalRecords"];
+          this.arrayToUpdate.forEach(elem => {
+            this.tempDataSource.filter(item => {
+              if (item.pk_sizeID == elem.pk_sizeID) {
+                item["isSelected"] = true;
+                item["run"] = elem.run;
+                item["weight"] = elem.weight;
+                item["unitsPerWeight"] = elem.unitsPerWeight
+              }
+            });
+          });
+        }
+        this.isSearchLoading = false;
+        this.isLoading = false;
+        this.isLoadingChange.emit(false);
+        // Mark for check
+        this._changeDetectorRef.markForCheck();
+        // this._inventoryService.getCharts(pk_productID, page)
+        //   .pipe(takeUntil(this._unsubscribeAll))
+        //   .subscribe((charts) => {
+        //     this.isLoading = false;
+        //     this.dataSourceCharts = charts["data"];
+        //     this.chartsLength = charts["totalRecords"];
+
+        //     const { selected, unSelected } = sizes["data"];
+        //     // for (const selectedObj of selected) {
+        //     //   selectedObj["isSelected"] = true;
+        //     // }
+        //     // if (selected.length > 0) {
+        //     //   selected.forEach(element => {
+        //     //     this.arrayToUpdate.push(selected);
+        //     //   });
+        //     // }
+
+
+        //     this.dataSource = unSelected;
+        //     this.arrayToUpdate.forEach(elem => {
+        //       this.dataSource.filter(item => {
+        //         if (item.pk_sizeID == elem.pk_sizeID) {
+        //           item["isSelected"] = true;
+        //         }
+        //       });
+        //     });
+        //     this.sizesLength = sizes["totalRecords"];
+
+        //     if (this.searchKeywordTerm == '') {
+        //       this.tempDataSource = unSelected;
+        //       this.tempDataCount = sizes["totalRecords"];
+        //       this.arrayToUpdate.forEach(elem => {
+        //         this.tempDataSource.filter(item => {
+        //           if (item.pk_sizeID == elem.pk_sizeID) {
+        //             item["isSelected"] = true;
+        //           }
+        //         });
+        //       });
+        //     }
+        //     this.isSearchLoading = false;
+        //     this.isLoading = false;
+        //     this.isLoadingChange.emit(false);
+        //     // Mark for check
+        //     this._changeDetectorRef.markForCheck();
+        //   }, err => {
+        //     this.isSearchLoading = false;
+        //     this.isLoading = false;
+        //     this.isLoadingChange.emit(false);
+        //     // Mark for check
+        //     this._changeDetectorRef.markForCheck();
+        //   });
       }, err => {
         this.isSearchLoading = false;
         this.isLoading = false;
@@ -225,15 +289,17 @@ export class ProductSizesComponent implements OnInit, OnDestroy {
     } else if (title === 'run') {
       sizeObj.run = Number(value);
     }
+    this.arrayToUpdate = this.selection.selected;
+    // if (!this.arrayToUpdate?.length) {
+    //   this.arrayToUpdate.push(sizeObj);
+    // } else {
+    //   let obj = this.arrayToUpdate.find(o => o.sizeName === sizeName);
+    //   if (!obj) {
+    //     this.arrayToUpdate.push(sizeObj);
+    //   }
+    // };
+    // console.log(this.selection.selected)
 
-    if (!this.arrayToUpdate?.length) {
-      this.arrayToUpdate.push(sizeObj);
-    } else {
-      let obj = this.arrayToUpdate.find(o => o.sizeName === sizeName);
-      if (!obj) {
-        this.arrayToUpdate.push(sizeObj);
-      }
-    };
   };
 
   getNextData(event) {
