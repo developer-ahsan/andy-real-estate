@@ -32,6 +32,7 @@ export class ProductsStatusComponent implements OnInit {
   imgUrl = environment.productMedia;
   selectedTermUpdateLoader: boolean = false;
   isViewMoreLoader: boolean = false;
+  ngComment = '';
   constructor(
     private _changeDetectorRef: ChangeDetectorRef,
     private _inventoryService: InventoryService,
@@ -109,13 +110,19 @@ export class ProductsStatusComponent implements OnInit {
     this.allStoresSelected.forEach(element => {
       pk_storeID.push(element.pk_storeID);
     });
+    if (!this.isRapidBuild) {
+      this.ngComment = '';
+    }
     this.selectedTermUpdateLoader = true;
     let payload: AddStoreProduct = {
       store_id: pk_storeID,
       product_id: this.selectedProduct.pk_productID,
+      blnAddToRapidBuild: this.isRapidBuild,
+      rapidBuildComments: this.ngComment,
       add_store_product: true
     }
     this._inventoryService.AddStoreProduct(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+      this.ngComment = '';
       this._snackBar.open("Product assigned to the store successfully", '', {
         horizontalPosition: 'center',
         verticalPosition: 'bottom',

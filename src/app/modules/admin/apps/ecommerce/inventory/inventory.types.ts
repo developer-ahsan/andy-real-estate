@@ -768,6 +768,8 @@ export interface AddDuplicateImprint {
 export interface AddStoreProduct {
     store_id: number[];
     product_id: number;
+    blnAddToRapidBuild: boolean;
+    rapidBuildComments: string;
     add_store_product: boolean;
 };
 
