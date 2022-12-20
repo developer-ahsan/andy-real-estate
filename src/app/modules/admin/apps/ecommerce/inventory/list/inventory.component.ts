@@ -2242,7 +2242,7 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
         this._inventoryService.getLicensingCompany()
             .pipe(takeUntil(this._unsubscribeAll))
             .subscribe((licensingCompany) => {
-                if (licensingCompany["totalRecords"] === 1) {
+                if (licensingCompany["totalRecords"] > 0) {
                     this._inventoryService.addProductGetLicensingTerms()
                         .pipe(takeUntil(this._unsubscribeAll))
                         .subscribe((licensingTerms) => {
@@ -2775,7 +2775,7 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
         this._inventoryService.getLicensingCompany()
             .pipe(takeUntil(this._unsubscribeAll))
             .subscribe((licensingCompany) => {
-                if (licensingCompany["totalRecords"] === 1) {
+                if (licensingCompany["totalRecords"] > 0) {
                     this._inventoryService.addProductGetLicensingTerms()
                         .pipe(takeUntil(this._unsubscribeAll))
                         .subscribe((licensingTerms) => {
