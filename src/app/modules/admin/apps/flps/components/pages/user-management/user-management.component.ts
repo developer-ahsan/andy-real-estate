@@ -7,6 +7,7 @@ import { Subject } from 'rxjs';
 import { finalize, takeUntil } from 'rxjs/operators';
 import moment from 'moment';
 import { FLPSService } from '../../flps.service';
+import { newFLPSUser, updateFLPSUser } from '../../flps.types';
 @Component({
   selector: 'app-user-flps-management',
   templateUrl: './user-management.component.html',
@@ -15,15 +16,31 @@ import { FLPSService } from '../../flps.service';
 export class FLPSUserManagementComponent implements OnInit, OnDestroy {
   @ViewChild('paginator') paginator: MatPaginator;
   @Input() isLoading: boolean;
-  @Output() isLoadingChange = new EventEmitter<boolean>();
+  // @Output() isLoadingChange = new EventEmitter<boolean>();
   private _unsubscribeAll: Subject<any> = new Subject<any>();
 
   dataSource = [];
   tempDataSource = [];
-  displayedColumns: string[] = ['id', 'f_name', 'l_name', 'action'];
+  displayedColumns: string[] = ['id', 'f_name', 'l_name', 'admin', 'action'];
   totalUsers = 0;
   tempRecords = 0;
   page = 1;
+
+  disabledDataSource = [];
+  temdisabledDataSource = [];
+  disabledDisplayedColumns: string[] = ['id', 'f_name', 'l_name', 'admin', 'action'];
+  distabledTotalUsers = 0;
+  tempdistabledTotalUsers = 0;
+  disabledPage = 1;
+  isDisabledLoading: boolean = true;
+
+  addNewUserForm: FormGroup;
+  isAddNewUserLoader: boolean = false;
+
+  updateUserForm: FormGroup;
+  isUpdateUserLoader: boolean = false;
+  isUpdateUser: boolean = false;
+  updateUserData: any;
 
   mainScreen: string = 'Current Users';
   keyword = '';
@@ -43,10 +60,12 @@ export class FLPSUserManagementComponent implements OnInit, OnDestroy {
   updatePromoData: any;
   ngRGBUpdate = '';
 
-  addNewUserForm: FormGroup;
 
   addPromoForm: FormGroup;
   updatePromoForm: FormGroup;
+
+  employeeUser = [];
+  employeeLoader: boolean = false;
   constructor(
     private _changeDetectorRef: ChangeDetectorRef,
     private _flpsService: FLPSService
@@ -61,51 +80,107 @@ export class FLPSUserManagementComponent implements OnInit, OnDestroy {
       lastName: new FormControl(''),
       blnAdmin: new FormControl(false),
       defaultCommission: new FormControl(''),
-      admin_user_id: new FormControl(''),
+      admin_user_id: new FormControl(0),
       new_flps_user: new FormControl(true)
+    });
+    this.updateUserForm = new FormGroup({
+      userName: new FormControl(''),
+      password: new FormControl(''),
+      firstName: new FormControl(''),
+      lastName: new FormControl(''),
+      blnAdmin: new FormControl(false),
+      blnActive: new FormControl(false),
+      defaultCommission: new FormControl(''),
+      email: new FormControl(''),
+      fk_adminUserID: new FormControl(0),
+      pk_userID: new FormControl(0),
+      update_flps_user: new FormControl(true)
     });
   }
   ngOnInit(): void {
     this.initForm();
     this.isLoading = true;
-    this.getPromoCodes(1, 'get');
+    this.getEmployeeUsers();
+    this.getFlpsUsers(1, 'get');
   };
   calledScreen(value) {
     this.initForm();
     this.mainScreen = value;
-    if (this.mainScreen == 'Add New Promo Code') {
-      this.isUpdatePromo = false;
+    if (this.mainScreen == 'Current Users') {
+      this.dataSource = this.tempDataSource;
+      this.page = 1;
+      this._changeDetectorRef.markForCheck();
+      if (this.dataSource.length == 0) {
+        this.getFlpsUsers(1, 'get');
+      }
+    } else if (this.mainScreen == 'View Disabled Users') {
+      this.disabledDataSource = this.temdisabledDataSource;
+      this.disabledPage = 1;
+      this._changeDetectorRef.markForCheck();
+      if (this.disabledDataSource.length == 0) {
+        this.getDisabledFlpsUsers(1);
+      }
+    } else {
+      if (this.employeeUser.length == 0) {
+        this.getEmployeeUsers();
+      }
     }
   }
-  getPromoCodes(page, type) {
+  getFlpsUsers(page, type) {
     let params = {
-      promo_codes: true,
-      keyword: this.keyword,
+      login_check: true,
+      bln_active: 1,
       page: page,
       size: 20
     }
     this._flpsService.getFlpsData(params).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
       this.dataSource = res["data"];
       this.totalUsers = res["totalRecords"];
-      if (this.keyword == '') {
+      if (this.tempDataSource.length == 0) {
         this.tempDataSource = res["data"];
         this.tempRecords = res["totalRecords"];
       }
       if (type == 'add') {
-        this.isAddPromoLoader = false;
+        this.isAddNewUserLoader = false;
         this.initForm();
-        this._flpsService.snackBar('PromoCode Added Successfully');
-        this.mainScreen = 'Current Promo Codes';
+        this._flpsService.snackBar('User Added Successfully');
+        this.mainScreen = 'Current Users';
       }
       this.isLoading = false;
-      this.isSearching = false;
-      this.isLoadingChange.emit(false);
+      // this.isLoadingChange.emit(false);
       this._changeDetectorRef.markForCheck();
     }, err => {
-      this.isSearching = false;
       this.isLoading = false;
-      this.isLoadingChange.emit(false);
+      // this.isLoadingChange.emit(false);
       this._changeDetectorRef.markForCheck();
+    });
+  }
+  getDisabledFlpsUsers(page) {
+    let params = {
+      login_check: true,
+      bln_active: 0,
+      page: page,
+      size: 20
+    }
+    this._flpsService.getFlpsData(params).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+      this.disabledDataSource = res["data"];
+      this.distabledTotalUsers = res["totalRecords"];
+      if (this.temdisabledDataSource.length == 0) {
+        this.temdisabledDataSource = res["data"];
+        this.tempdistabledTotalUsers = res["totalRecords"];
+      }
+      this.isDisabledLoading = false;
+      // this.isLoadingChange.emit(false);
+      this._changeDetectorRef.markForCheck();
+    }, err => {
+      this.isDisabledLoading = false;
+      // this.isLoadingChange.emit(false);
+      this._changeDetectorRef.markForCheck();
+    });
+  }
+  getEmployeeUsers() {
+    this._flpsService.employeeAdmins$.pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+      this.employeeUser = res["data"];
     });
   }
   getNextData(event) {
@@ -116,8 +191,29 @@ export class FLPSUserManagementComponent implements OnInit, OnDestroy {
     } else {
       this.page--;
     };
-    this.getPromoCodes(this.page, 'get');
+    this.getFlpsUsers(this.page, 'get');
   };
+  getNextDisabledData(event) {
+    const { previousPageIndex, pageIndex } = event;
+
+    if (pageIndex > previousPageIndex) {
+      this.disabledPage++;
+    } else {
+      this.disabledPage--;
+    };
+    this.getDisabledFlpsUsers(this.disabledPage);
+  };
+
+  toggleUpdateUserData(data, check) {
+    console.log(data);
+    this.isUpdateUser = check;
+    if (check) {
+      data.defaultCommission = data.defaultCommission * 100;
+      this.updateUserData = data;
+      this.updateUserForm.patchValue(data);
+    }
+
+  }
   searchColor(value) {
     if (this.dataSource.length > 0) {
       this.paginator.firstPage();
@@ -126,7 +222,7 @@ export class FLPSUserManagementComponent implements OnInit, OnDestroy {
     this.keyword = value;
     this.isSearching = true;
     this._changeDetectorRef.markForCheck();
-    this.getPromoCodes(1, 'get');
+    this.getFlpsUsers(1, 'get');
   }
   resetSearch() {
     if (this.dataSource.length > 0) {
@@ -139,34 +235,68 @@ export class FLPSUserManagementComponent implements OnInit, OnDestroy {
 
   addNewUser() {
     const { userName, password, email, firstName, lastName, blnAdmin, defaultCommission, admin_user_id, new_flps_user } = this.addNewUserForm.getRawValue();
-    // if (userName == '' || password == '' || email == '' || firstName == '' || lastName == '' || defaultCommission == '') {
-    //   this._flpsService.snackBar('Please fill out the required fields');
-    //   return;
-    // }
-    // let date;
-    // if (expDate) {
-    //   date = moment(expDate).format('MM/DD/YYYY');
-    // } else {
-    //   date = 0;
-    // }
-    // let payload = {
-    //   promocode, amount, threshold, description, blnActive, expDate: date, blnShipping, blnRemoveShippingCost, blnRemoveShippingPrice, blnRemoveCost, blnRemovePrice, blnPercent, add_promo_code: true
-    // }
-    // this.isAddPromoLoader = true;
-    // this._flpsService.AddFlpsData(payload).pipe(takeUntil(this._unsubscribeAll), finalize(() => {
-    //   this._changeDetectorRef.markForCheck();
-    // })).subscribe(res => {
-    //   if (res["success"]) {
-    //     this.getPromoCodes(1, 'add')
-    //   } else {
-    //     this.isAddPromoLoader = false;
-    //     this._flpsService.snackBar(res["message"]);
-    //   }
-    //   this._changeDetectorRef.markForCheck();
-    // }, err => {
-    //   this.isAddPromoLoader = false;
-    //   this._flpsService.snackBar('Something went wrong');
-    // })
+    let adminId = admin_user_id;
+    if (admin_user_id == 0) {
+      adminId = null;
+    }
+    if (userName == '' || password == '' || email == '') {
+      this._flpsService.snackBar('Please fill out the required fields');
+      return;
+    }
+    let payload: newFLPSUser = {
+      userName, password, email, firstName, lastName, blnAdmin, defaultCommission: defaultCommission / 100, admin_user_id: adminId, new_flps_user
+    }
+    this.isAddNewUserLoader = true;
+    this._flpsService.AddFlpsData(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+      if (res["success"]) {
+        this.page = 1;
+        this.getFlpsUsers(1, 'add');
+      } else {
+        this.isAddNewUserLoader = false;
+        this._changeDetectorRef.markForCheck();
+      }
+    }, err => {
+      this.isAddNewUserLoader = false;
+      this._changeDetectorRef.markForCheck();
+    });
+  }
+  updateUser() {
+    const { userName, password, email, firstName, lastName, blnAdmin, defaultCommission, fk_adminUserID, blnActive, pk_userID, update_flps_user } = this.updateUserForm.getRawValue();
+    let adminId = fk_adminUserID;
+    if (fk_adminUserID == 0) {
+      adminId = null;
+    }
+    if (userName == '' || password == '' || email == '') {
+      this._flpsService.snackBar('Please fill out the required fields');
+      return;
+    }
+    let payload: updateFLPSUser = {
+      userName, password, email, firstName, lastName, blnAdmin, defaultCommission: defaultCommission / 100, admin_user_id: adminId, update_flps_user, blnActive, user_id: pk_userID
+    }
+    this.isUpdateUserLoader = true;
+    this._flpsService.AddFlpsData(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+      if (res["success"]) {
+        this.updateUserData.firstName = firstName;
+        this.updateUserData.lastName = lastName;
+        this.updateUserData.blnAdmin = blnAdmin;
+        this.updateUserData.defaultCommission = defaultCommission;
+        this.updateUserData.fk_adminUserID = adminId;
+        this.updateUserData.pk_userID = pk_userID;
+        this.updateUserData.userName = userName;
+        this.updateUserData.password = password;
+        this.updateUserData.email = email;
+
+        this.isUpdateUserLoader = false;
+        this._flpsService.snackBar('User Updated Successfully');
+        this._changeDetectorRef.markForCheck();
+      } else {
+        this.isUpdateUserLoader = false;
+        this._changeDetectorRef.markForCheck();
+      }
+    }, err => {
+      this.isUpdateUserLoader = false;
+      this._changeDetectorRef.markForCheck();
+    });
   }
   // Delete Promo
   deletePromo(item) {

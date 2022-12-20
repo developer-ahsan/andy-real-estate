@@ -773,3 +773,7 @@ export interface AddStoreProduct {
     add_store_product: boolean;
 };
 
+export interface addRapidBuildStoreProduct {
+    store_product_ids: number[];
+    addRapidBuildStoreProduct: boolean;
+};

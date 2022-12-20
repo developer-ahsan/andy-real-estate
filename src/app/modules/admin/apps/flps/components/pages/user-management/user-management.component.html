@@ -1,6 +1,6 @@
 <div class="w-full">
     <div class="w-full">
-        <div class="px-2 pb-2">
+        <div class="px-2 pb-2" *ngIf="!isUpdateUser">
             <mat-button-toggle-group #group="matButtonToggleGroup" [value]="mainScreen"
                 (change)="calledScreen(group.value)">
                 <mat-button-toggle value="Current Users">
@@ -15,35 +15,28 @@
             </mat-button-toggle-group>
         </div>
         <div class="px-5" *ngIf="mainScreen == 'Current Users' && isLoading">
-            <ngx-skeleton-loader count="8" appearance="line" animation="pulse">
-            </ngx-skeleton-loader>
-        </div>
-        <div *ngIf="mainScreen == 'Current Users' && !isLoading">
-            <div class="px-3" *ngIf="!isUpdatePromo">
-                <mat-form-field class="w-full">
-                    <input matInput placeholder="Search Keyword" [disabled]="isSearching" [(ngModel)]="keyword"
-                        (keyup.enter)="searchColor($event.target.value)">
-                </mat-form-field>
-                <p class="text-secondary text-right font-medium cursor-pointer mb-2" *ngIf="!isSearching"
-                    (click)="resetSearch()">Reset</p>
-                <p class="text-secondary text-right font-medium mb-2" *ngIf="isSearching">Searching...</p>
+            <div class="rounded-2xl shadow bg-card p-5">
+                <ngx-skeleton-loader count="8" appearance="line" animation="pulse">
+                </ngx-skeleton-loader>
             </div>
-            <div *ngIf="dataSource.length > 0 && !isUpdatePromo;else other_content" class="w-full">
+        </div>
+        <div *ngIf="mainScreen == 'Current Users' && !isLoading && !isUpdateUser">
+            <div *ngIf="dataSource.length > 0;else other_content" class="w-full">
                 <table mat-table [dataSource]="dataSource" class="w-full border-t">
                     <ng-container matColumnDef="id">
                         <th mat-header-cell *matHeaderCellDef class="w-15 min-w-15">
                             ID
                         </th>
                         <td mat-cell *matCellDef="let element">
-                            {{element.amount || not_available}}
+                            {{element.pk_userID || not_available}}
                         </td>
                     </ng-container>
                     <ng-container matColumnDef="f_name">
                         <th mat-header-cell *matHeaderCellDef class="w-30 min-w-30">
                             Firs Name
-                        </th>
+                        </th>t
                         <td mat-cell *matCellDef="let element">
-                            {{element.promocode}}
+                            {{element.firstName}}
                         </td>
                     </ng-container>
                     <ng-container matColumnDef="l_name">
@@ -51,19 +44,31 @@
                             Last Name
                         </th>
                         <td mat-cell *matCellDef="let element">
-                            {{element.promocode}}
+                            {{element.lastName}}
                         </td>
                     </ng-container>
-                    <ng-container matColumnDef="action">
+                    <ng-container matColumnDef="admin">
                         <th mat-header-cell *matHeaderCellDef class="w-15 min-w-15 text-center">
                             Admin
                         </th>
                         <td mat-cell *matCellDef="let element" class="text-center">
                             <div class="flex justify-center">
-                                <mat-icon (click)="updatePromoToggle(element)" svgIcon="heroicons_outline:check">
-                                </mat-icon>
+                                <mat-icon (click)="updatePromoToggle(element)" svgIcon="heroicons_outline:check"
+                                    *ngIf="element.blnAdmin"></mat-icon>
                                 <mat-icon (click)="deletePromo(element)" svgIcon="heroicons_outline:x"
-                                    *ngIf="!element?.delLoader"></mat-icon>
+                                    *ngIf="!element.blnAdmin"></mat-icon>
+                            </div>
+                        </td>
+                    </ng-container>
+                    <ng-container matColumnDef="action">
+                        <th mat-header-cell *matHeaderCellDef class="w-15 min-w-15 text-center">
+                            Action
+                        </th>
+                        <td mat-cell *matCellDef="let element" class="text-center">
+                            <div class="flex justify-center">
+                                <mat-icon (click)="toggleUpdateUserData(element, true)"
+                                    svgIcon="heroicons_outline:pencil-alt"></mat-icon>
+                                <mat-icon (click)="deletePromo(element)" svgIcon="heroicons_outline:trash"></mat-icon>
                             </div>
                         </td>
                     </ng-container>
@@ -77,172 +82,65 @@
                     (page)="getNextData($event)" [hidePageSize]="true">
                 </mat-paginator>
             </div>
-            <!-- Update Method -->
-            <div *ngIf="isUpdatePromo" class="p-6">
-                <div class="row" [formGroup]="updatePromoForm">
-                    <div class="col-12 col-md-6">
-                        <mat-label class="font-medium" [matTooltip]="'10 characters max'">Name* <i
-                                class="fas fa-question-circle"></i></mat-label>
-                        <mat-form-field class="w-full">
-                            <input matInput maxlength="10" formControlName="promocode">
-                        </mat-form-field>
-                    </div>
-                    <div class="col-12 col-md-6">
-                        <mat-label class="font-medium"
-                            [matTooltip]="'Determines whether the promo code deducts a dollar amount or a percentage off'">
-                            Type*
-                            <i class="fas fa-question-circle"></i>
-                        </mat-label>
-                        <mat-form-field class="w-full">
-                            <mat-select matInput formControlName="blnPercent">
-                                <mat-option [value]="false">Dollar Amount off</mat-option>
-                                <mat-option [value]="true">Percent off</mat-option>
-                            </mat-select>
-                        </mat-form-field>
-                    </div>
-                    <div class="col-12 col-md-6">
-                        <mat-label class="font-medium"
-                            [matTooltip]="'In the form of dollars and cents, if doing a dollar amount off. To add to order total, make negative. In the form of a percentage, if doing a percent off'">
-                            Savings amount* <i class="fas fa-question-circle"></i></mat-label>
-                        <mat-form-field class="w-full">
-                            <input matInput type="number" formControlName="amount">
-                        </mat-form-field>
-                    </div>
-                    <div class="col-12 col-md-6">
-                        <mat-label class="font-medium" [matTooltip]="'In the form of dollars and cents'">Threshold* <i
-                                class="fas fa-question-circle"></i></mat-label>
-                        <mat-form-field class="w-full">
-                            <input matInput type="number" formControlName="threshold">
-                        </mat-form-field>
-                    </div>
-                    <div class="col-12">
-                        <mat-label class="font-medium" [matTooltip]="'100 characters max'">Description* <i
-                                class="fas fa-question-circle"></i></mat-label>
-                        <mat-form-field class="w-full">
-                            <input matInput maxlength="100" formControlName="description">
-                        </mat-form-field>
-                    </div>
-                    <div class="col-12 col-md-6">
-                        <mat-label class="font-medium">Activation*</mat-label>
-                        <mat-form-field class="w-full">
-                            <mat-select matInput formControlName="blnActive">
-                                <mat-option [value]="true">Active</mat-option>
-                                <mat-option [value]="false">Disabled</mat-option>
-                            </mat-select>
-                        </mat-form-field>
-                    </div>
-                    <div class="col-12 col-md-6">
-                        <mat-label class="font-medium"
-                            [matTooltip]="'Enter in the form mm/dd/yy. If none, leave blank'">
-                            Expiration Date <i class="fas fa-question-circle"></i></mat-label>
-                        <mat-form-field class="w-full">
-                            <input readonly matInput [matDatepicker]="picker" formControlName="expDate">
-                            <mat-hint>MM/DD/YYYY</mat-hint>
-                            <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
-                            <mat-datepicker #picker></mat-datepicker>
-                        </mat-form-field>
-                    </div>
-                    <div class="col-12 col-md-6">
-                        <mat-label class="font-medium"
-                            [matTooltip]="'Setting this to yes will automatically remove whatever shipping is currently in the cart when this promo code is applied.'">
-                            Free Shipping*
-                            <i class="fas fa-question-circle"></i>
-                        </mat-label>
-                        <mat-form-field class="w-full">
-                            <mat-select matInput formControlName="blnShipping">
-                                <mat-option [value]="true">Yes</mat-option>
-                                <mat-option [value]="false">No</mat-option>
-                            </mat-select>
-                        </mat-form-field>
-                        <br>
-                        <div *ngIf="addPromoForm.get('blnShipping').value">
-                            <mat-checkbox formControlName="blnRemoveShippingCost">Remove shipping cost</mat-checkbox>
-                            <br>
-                            <mat-checkbox formControlName="blnRemoveShippingPrice">Remove shipping price</mat-checkbox>
-                        </div>
-                    </div>
-                    <div class="col-12 col-md-6">
-                        <mat-label class="font-medium">Remove cart totals</mat-label>
-                        <br>
-                        <mat-checkbox formControlName="blnRemoveCost">Remove cart cost</mat-checkbox>
-                        <br>
-                        <mat-checkbox formControlName="blnRemovePrice">Remove cart price</mat-checkbox>
-                    </div>
-
-                    <div class="justify-end flex col-12">
-                        <button [disabled]="isUpdatePromoLoader" class="min-w-30 mr-2" mat-stroked-button
-                            [matTooltip]="'Back to list'" (click)="updatePromoToggle(null)">
-                            Back
-                        </button>
-                        <button [disabled]="isUpdatePromoLoader || !updatePromoForm.valid" class="min-w-40"
-                            mat-stroked-button [matTooltip]="'Update Promo Code'" (click)="updatePromoCode()">
-                            <mat-icon svgIcon="heroicons_solid:pencil" *ngIf="!isUpdatePromoLoader"></mat-icon>
-                            <span class="ml-2" *ngIf="!isUpdatePromoLoader"> Update Promo Code </span>
-                            <mat-progress-spinner *ngIf="isUpdatePromoLoader" [diameter]="24" [mode]="'indeterminate'">
-                            </mat-progress-spinner>
-                        </button>
-                    </div>
-                </div>
-
-            </div>
             <!-- No color Found -->
             <ng-template #other_content>
                 <div class="text-secondary font-semibold p-5 text-center" *ngIf="!isUpdatePromo">
-                    No promoCodes Found.
+                    No Users Found.
                 </div>
             </ng-template>
         </div>
-        <div *ngIf="mainScreen == 'New FLPS User'" class="p-6 ">
-            <div class="row">
+        <div *ngIf="mainScreen == 'New FLPS User' && !isUpdateUser" class="p-6">
+            <div class="row rounded-2xl shadow bg-card p-6" [formGroup]="addNewUserForm">
                 <div class="col-12 col-md-6">
                     <mat-form-field class="w-full">
                         <mat-label>Employee* </mat-label>
-                        <mat-select matInput>
-                            <mat-option [value]="false">Bill Harris</mat-option>
-                            <mat-option [value]="true">Brooke CLine</mat-option>
+                        <mat-select matInput formControlName="admin_user_id">
+                            <mat-option [value]="0">Select an employee</mat-option>
+                            <mat-option *ngFor="let item of employeeUser" [value]="item.pk_userID">{{item.firstName + '
+                                ' + item.lastName}}</mat-option>
                         </mat-select>
                     </mat-form-field>
                 </div>
                 <div class="col-12 col-md-6">
                     <mat-form-field class="w-full">
-                        <mat-label>First Name (30)* </mat-label>
-                        <input matInput type="text">
+                        <mat-label>First Name (30) </mat-label>
+                        <input matInput type="text" maxlength="30" formControlName="firstName">
                     </mat-form-field>
                 </div>
                 <div class="col-12 col-md-6">
                     <mat-form-field class="w-full">
-                        <mat-label>Last Name (50)* </mat-label>
-                        <input matInput type="text">
+                        <mat-label>Last Name (50) </mat-label>
+                        <input matInput type="text" maxlength="50" formControlName="lastName">
                     </mat-form-field>
                 </div>
                 <div class="col-12 col-md-6">
                     <mat-form-field class="w-full">
                         <mat-label>Email (50)* </mat-label>
-                        <input matInput type="text">
+                        <input matInput type="text" maxlength="50" formControlName="email">
                     </mat-form-field>
                 </div>
                 <div class="col-12 col-md-6">
                     <mat-form-field class="w-full">
                         <mat-label>UserName (15)* </mat-label>
-                        <input matInput type="text">
+                        <input matInput type="text" maxlength="15" formControlName="userName">
                     </mat-form-field>
                 </div>
                 <div class="col-12 col-md-6">
                     <mat-form-field class="w-full">
                         <mat-label>Password(15)* </mat-label>
-                        <input matInput type="text">
+                        <input matInput type="text" maxlength="15" formControlName="password">
                     </mat-form-field>
                 </div>
                 <div class="col-12 col-md-6">
                     <mat-form-field class="w-full">
-                        <mat-label>Default Commission (%)* </mat-label>
-                        <input matInput type="text">
+                        <mat-label>Default Commission (%) </mat-label>
+                        <input matInput type="number" formControlName="defaultCommission">
                     </mat-form-field>
                 </div>
                 <div class="col-12 col-md-6">
                     <mat-form-field class="w-full">
                         <mat-label>Admin User</mat-label>
-                        <mat-select matInput>
+                        <mat-select matInput formControlName="blnAdmin">
                             <mat-option [value]="false">No</mat-option>
                             <mat-option [value]="true">Yes</mat-option>
                         </mat-select>
@@ -250,15 +148,160 @@
                 </div>
 
                 <div class="text-right col-12">
-                    <button [disabled]="isAddPromoLoader || !addPromoForm.valid" class="min-w-50" mat-stroked-button
-                        [matTooltip]="'Add Promo Code'" (click)="addNewPromoCode()">
-                        <mat-icon svgIcon="heroicons_solid:plus" *ngIf="!isAddPromoLoader"></mat-icon>
-                        <span class="ml-2" *ngIf="!isAddPromoLoader"> Add Promo Code </span>
-                        <mat-progress-spinner *ngIf="isAddPromoLoader" [diameter]="24" [mode]="'indeterminate'">
+                    <button [disabled]="isAddNewUserLoader || !addNewUserForm.valid" class="min-w-50" mat-stroked-button
+                        [matTooltip]="'Add New User'" (click)="addNewUser()">
+                        <mat-icon svgIcon="heroicons_solid:plus" *ngIf="!isAddNewUserLoader"></mat-icon>
+                        <span class="ml-2" *ngIf="!isAddNewUserLoader"> Add New User </span>
+                        <mat-progress-spinner *ngIf="isAddNewUserLoader" [diameter]="24" [mode]="'indeterminate'">
                         </mat-progress-spinner>
                     </button>
                 </div>
             </div>
+        </div>
+        <div *ngIf="mainScreen == 'View Disabled Users' && !isUpdateUser">
+            <div class="px-5" *ngIf="isDisabledLoading">
+                <div class="rounded-2xl shadow bg-card p-5">
+                    <ngx-skeleton-loader count="8" appearance="line" animation="pulse">
+                    </ngx-skeleton-loader>
+                </div>
+            </div>
+            <div *ngIf="disabledDataSource.length > 0 && !isUpdatePromo && !isDisabledLoading;else other_content"
+                class="w-full">
+                <table mat-table [dataSource]="disabledDataSource" class="w-full border-t">
+                    <ng-container matColumnDef="id">
+                        <th mat-header-cell *matHeaderCellDef class="w-15 min-w-15">
+                            ID
+                        </th>
+                        <td mat-cell *matCellDef="let element">
+                            {{element.pk_userID || not_available}}
+                        </td>
+                    </ng-container>
+                    <ng-container matColumnDef="f_name">
+                        <th mat-header-cell *matHeaderCellDef class="w-30 min-w-30">
+                            First Name
+                        </th>
+                        <td mat-cell *matCellDef="let element">
+                            {{element.firstName}}
+                        </td>
+                    </ng-container>
+                    <ng-container matColumnDef="l_name">
+                        <th mat-header-cell *matHeaderCellDef class="w-30 min-w-30 ">
+                            Last Name
+                        </th>
+                        <td mat-cell *matCellDef="let element">
+                            {{element.lastName}}
+                        </td>
+                    </ng-container>
+                    <ng-container matColumnDef="admin">
+                        <th mat-header-cell *matHeaderCellDef class="w-15 min-w-15 text-center">
+                            Admin
+                        </th>
+                        <td mat-cell *matCellDef="let element" class="text-center">
+                            <div class="flex justify-center">
+                                <mat-icon class="text-green-900" svgIcon="heroicons_outline:check"
+                                    *ngIf="element.blnAdmin"></mat-icon>
+                                <mat-icon class="text-red-900" svgIcon="heroicons_outline:x"
+                                    *ngIf="!element.blnAdmin"></mat-icon>
+                            </div>
+                        </td>
+                    </ng-container>
+                    <ng-container matColumnDef="action">
+                        <th mat-header-cell *matHeaderCellDef class="w-15 min-w-15 text-center">
+                            Action
+                        </th>
+                        <td mat-cell *matCellDef="let element" class="text-center">
+                            <div class="flex justify-center">
+                                <mat-icon (click)="updatePromoToggle(element)"
+                                    svgIcon="heroicons_outline:pencil-alt"></mat-icon>
+                                <mat-icon (click)="deletePromo(element)" svgIcon="heroicons_outline:trash"></mat-icon>
+                            </div>
+                        </td>
+                    </ng-container>
+                    <tr mat-header-row *matHeaderRowDef="displayedColumns;" class="h-18 bg-light"></tr>
+                    <tr mat-row *matRowDef="let row; columns: displayedColumns;"
+                        class="h-14 hover:bg-gray-100 dark:hover:bg-hover" style="cursor: pointer;">
+                    </tr>
+                </table>
+                <mat-paginator #paginator class="border-b sm:border-t sm:border-b-0 z-10 bg-gray-50 dark:bg-transparent"
+                    [ngClass]="{'pointer-events-none': isDisabledLoading}" [length]="distabledTotalUsers"
+                    [pageIndex]="0" [pageSize]="20" (page)="getNextDisabledData($event)" [hidePageSize]="true">
+                </mat-paginator>
+            </div>
+        </div>
+        <!-- Update Method -->
+        <div *ngIf="isUpdateUser" class="p-6">
+            <div class="row rounded-2xl shadow bg-card p-6" [formGroup]="updateUserForm">
+                <div class="col-12 col-md-6">
+                    <mat-form-field class="w-full">
+                        <mat-label>Employee* </mat-label>
+                        <mat-select matInput formControlName="fk_adminUserID">
+                            <mat-option [value]="0">Select an employee</mat-option>
+                            <mat-option *ngFor="let item of employeeUser" [value]="item.pk_userID">{{item.firstName + '
+                                ' + item.lastName}}</mat-option>
+                        </mat-select>
+                    </mat-form-field>
+                </div>
+                <div class="col-12 col-md-6">
+                    <mat-form-field class="w-full">
+                        <mat-label>First Name (30) </mat-label>
+                        <input matInput type="text" maxlength="30" formControlName="firstName">
+                    </mat-form-field>
+                </div>
+                <div class="col-12 col-md-6">
+                    <mat-form-field class="w-full">
+                        <mat-label>Last Name (50) </mat-label>
+                        <input matInput type="text" maxlength="50" formControlName="lastName">
+                    </mat-form-field>
+                </div>
+                <div class="col-12 col-md-6">
+                    <mat-form-field class="w-full">
+                        <mat-label>Email (50)* </mat-label>
+                        <input matInput type="text" maxlength="50" formControlName="email">
+                    </mat-form-field>
+                </div>
+                <div class="col-12 col-md-6">
+                    <mat-form-field class="w-full">
+                        <mat-label>UserName (15)* </mat-label>
+                        <input matInput type="text" maxlength="15" formControlName="userName">
+                    </mat-form-field>
+                </div>
+                <div class="col-12 col-md-6">
+                    <mat-form-field class="w-full">
+                        <mat-label>Password(15)* </mat-label>
+                        <input matInput type="text" maxlength="15" formControlName="password">
+                    </mat-form-field>
+                </div>
+                <div class="col-12 col-md-6">
+                    <mat-form-field class="w-full">
+                        <mat-label>Default Commission (%) </mat-label>
+                        <input matInput type="number" formControlName="defaultCommission">
+                    </mat-form-field>
+                </div>
+                <div class="col-12 col-md-6">
+                    <mat-form-field class="w-full">
+                        <mat-label>Admin User</mat-label>
+                        <mat-select matInput formControlName="blnAdmin">
+                            <mat-option [value]="false">No</mat-option>
+                            <mat-option [value]="true">Yes</mat-option>
+                        </mat-select>
+                    </mat-form-field>
+                </div>
+
+                <div class="justify-end flex col-12">
+                    <button [disabled]="isUpdatePromoLoader" class="min-w-30 mr-2" mat-stroked-button
+                        [matTooltip]="'Back to list'" (click)="toggleUpdateUserData(null, false)">
+                        Back
+                    </button>
+                    <button [disabled]="isUpdateUserLoader" class="min-w-40" mat-stroked-button
+                        [matTooltip]="'Update User'" (click)="updateUser()">
+                        <mat-icon svgIcon="heroicons_solid:pencil" *ngIf="!isUpdateUserLoader"></mat-icon>
+                        <span class="ml-2" *ngIf="!isUpdateUserLoader"> Update User </span>
+                        <mat-progress-spinner *ngIf="isUpdateUserLoader" [diameter]="24" [mode]="'indeterminate'">
+                        </mat-progress-spinner>
+                    </button>
+                </div>
+            </div>
+
         </div>
     </div>
 </div>

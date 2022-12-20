@@ -43,13 +43,23 @@ import { MatDatepickerModule } from '@angular/material/datepicker';
 import { ReportComponent } from './components/pages/report/report.component';
 import { FLPSUserManagementComponent } from './components/pages/user-management/user-management.component';
 import { FLPSStoreManagementComponent } from './components/pages/store-management/store-management.component';
+import { SettingsAccountComponent } from './components/pages/account/account.component';
+import { SettingsNotificationsComponent } from './components/pages/notifications/notifications.component';
+import { SettingsSecurityComponent } from './components/pages/security/security.component';
+import { SettingsTeamComponent } from './components/pages/team/team.component';
+import { GenerateReportComponent } from './components/pages/generate-report/generate-report.component';
 
 @NgModule({
     declarations: [
         FLPSComponent,
         ReportComponent,
         FLPSUserManagementComponent,
-        FLPSStoreManagementComponent
+        FLPSStoreManagementComponent,
+        SettingsAccountComponent,
+        SettingsNotificationsComponent,
+        GenerateReportComponent,
+        SettingsSecurityComponent,
+        SettingsTeamComponent
     ],
     imports: [
         RouterModule.forChild(flpsRoutes),

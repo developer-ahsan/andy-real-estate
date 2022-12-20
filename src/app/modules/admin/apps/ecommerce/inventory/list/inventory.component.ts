@@ -573,7 +573,7 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
     }
     methodSelected(obj) {
         this.selectedMethod = obj;
-        if (obj.methodName.includes('Embroidery') || obj.methodName.includes('Embroidering')) {
+        if (obj.methodName.includes('Embroidery') || obj.methodName.includes('Embroidering') || obj.methodName.includes('Embroidered')) {
             this.favoriteSeason = 'Per Stitch (embroidering)';
         }
         this._changeDetectorRef.markForCheck();

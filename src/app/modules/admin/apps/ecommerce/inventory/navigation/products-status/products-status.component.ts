@@ -33,6 +33,9 @@ export class ProductsStatusComponent implements OnInit {
   selectedTermUpdateLoader: boolean = false;
   isViewMoreLoader: boolean = false;
   ngComment = '';
+
+  checkedStores = [];
+  isRapidBuilImageLoader: boolean = false;
   constructor(
     private _changeDetectorRef: ChangeDetectorRef,
     private _inventoryService: InventoryService,
@@ -42,9 +45,9 @@ export class ProductsStatusComponent implements OnInit {
   ngOnInit(): void {
     this.isRapidBuild = true;
     this.isLoading = true;
-    this.getAssignedStores();
+    this.getAssignedStores('get');
   }
-  getAssignedStores() {
+  getAssignedStores(type) {
     let params = {
       store_version: true,
       product_id: this.selectedProduct.pk_productID,
@@ -52,6 +55,17 @@ export class ProductsStatusComponent implements OnInit {
     }
     this._inventoryService.getProductsData(params).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
       this.assignedStores = res["data"];
+      if (type == 'add') {
+        this._snackBar.open("Product assigned to the store successfully", '', {
+          horizontalPosition: 'center',
+          verticalPosition: 'bottom',
+          duration: 3500
+        });
+        this.storesData = [];
+        this.allStoresSelected = [];
+        this.topScroll.nativeElement.scrollIntoView({ behavior: 'smooth' });
+        this.selectedTermUpdateLoader = false;
+      }
       this.getAllActiveStores(0);
       this.isLoading = false;
       this.isLoadingChange.emit(false);
@@ -123,17 +137,10 @@ export class ProductsStatusComponent implements OnInit {
     }
     this._inventoryService.AddStoreProduct(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
       this.ngComment = '';
-      this._snackBar.open("Product assigned to the store successfully", '', {
-        horizontalPosition: 'center',
-        verticalPosition: 'bottom',
-        duration: 3500
-      });
-      this.storesData = [];
-      this.allStoresSelected = [];
-      this.getAssignedStores();
+
+      this.getAssignedStores('add');
       // this.getAllActiveStores(0);
-      this.topScroll.nativeElement.scrollIntoView({ behavior: 'smooth' });
-      this.selectedTermUpdateLoader = false;
+
       this._changeDetectorRef.markForCheck();
     }, err => {
       this.selectedTermUpdateLoader = false;
@@ -171,8 +178,51 @@ export class ProductsStatusComponent implements OnInit {
 
   copyImageToggle(): void {
     this.isCopyImage = !this.isCopyImage;
-
     this._changeDetectorRef.markForCheck();
   };
-
+  addRapidBuildImages() {
+    if (this.checkedStores.length == 0) {
+      this._snackBar.open("Please select atleast one store", '', {
+        horizontalPosition: 'center',
+        verticalPosition: 'bottom',
+        duration: 3500
+      });
+      return;
+    }
+    this.isRapidBuilImageLoader = true;
+    let paylaod = {
+      store_product_ids: this.checkedStores,
+      addRapidBuildStoreProduct: true
+    }
+    this._inventoryService.AddRapidBuildImages(paylaod).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+      this.checkedStores.forEach(element => {
+        this.assignedStores.filter(item => {
+          if (item.pk_storeProductID == element) {
+            item.checked = false;
+          }
+        })
+      });
+      this.checkedStores = [];
+      this._snackBar.open(res["message"], '', {
+        horizontalPosition: 'center',
+        verticalPosition: 'bottom',
+        duration: 3500
+      });
+      this.isRapidBuilImageLoader = false;
+      this._changeDetectorRef.markForCheck();
+    }, err => {
+      this.isRapidBuilImageLoader = false;
+      this._changeDetectorRef.markForCheck();
+    })
+  }
+  storeCheckToggle(item) {
+    let index = this.checkedStores.findIndex(elem => item.pk_storeProductID == elem);
+    if (index >= 0) {
+      item.checked = false;
+      this.checkedStores.splice(index, 1);
+    } else {
+      item.checked = true;
+      this.checkedStores.push(item.pk_storeProductID);
+    }
+  }
 }

@@ -3,7 +3,42 @@
 <div #topScrollAnchor></div>
 <div class="row" *ngIf="!isLoading">
     <div class="col-12 space-y-3">
-        <fuse-card class="rounded-2xl shadow bg-card flex flex-col w-full px-8 pt-6 pb-4 filter-list"
+        <div class="row" *ngIf="assignedStores.length > 0">
+            <div class="col-4 mb-3" *ngFor="let item of assignedStores">
+                <fuse-card class="rounded-2xl shadow bg-card flex flex-col max-w-80 w-full p-8 pb-4 filter-article">
+                    <div class="flex items-center">
+                        <img class="w-20 rounded-lg object-cover" src="{{imgUrl}}/HiRes/{{item.pk_storeProductID}}.jpg"
+                            (error)="this.src='https://assets.consolidus.com/globalAssets/Products/coming_soon.jpg'"
+                            alt="Card cover image">
+                        <div class="flex flex-col ml-6">
+                            <div class="text-lg font-semibold leading-tight">
+                                <p>{{item.storeName}}</p>
+                            </div>
+                            <div class="text-secondary font-medium text-md">{{item.pk_storeProductID}}</div>
+                        </div>
+                    </div>
+                    <!-- <div class="mt-6">From rocky mountains to crystal clear lakes, these are the places you must see and
+                        enjoy.
+                    </div> -->
+                    <div class="mt-3 -mx-3 text-right">
+                        <mat-checkbox (change)="storeCheckToggle(item)" [(ngModel)]="item.checked">Add to
+                            rapidBuild</mat-checkbox>
+                    </div>
+                </fuse-card>
+            </div>
+            <div class="col-12 flex items-center justify-end">
+                <button class="px-3" [disabled]="isRapidBuilImageLoader" mat-stroked-button
+                    [matTooltip]="'Add select images to rapidBuild'" (click)="addRapidBuildImages()">
+                    <mat-progress-spinner *ngIf="isRapidBuilImageLoader" [diameter]="24" [mode]="'indeterminate'">
+                    </mat-progress-spinner>
+                    <mat-icon *ngIf="!isRapidBuilImageLoader" [svgIcon]="'heroicons_outline:plus'"></mat-icon>
+                    <span *ngIf="!isRapidBuilImageLoader" class="ml-1 mr-1">Add select images to rapidBuild</span>
+                </button>
+            </div>
+        </div>
+
+
+        <!-- <fuse-card class="rounded-2xl shadow bg-card flex flex-col w-full px-8 pt-6 pb-4 filter-list"
             *ngIf="assignedStores.length > 0">
             <div class="flex items-center justify-between">
                 <div class="text-2xl font-semibold leading-tight">Assigned Stores</div>
@@ -29,7 +64,7 @@
                     Add select images to rapidBuild
                 </button>
             </div>
-        </fuse-card>
+        </fuse-card> -->
         <!-- Assign to a new store -->
         <fuse-card class="rounded-2xl shadow bg-card flex flex-col lg:flex-row w-full">
             <div class="p-6 sm:p-8 lg:p-10 w-full">
@@ -49,7 +84,7 @@
                         <mat-checkbox [disabled]="true"> Take Online </mat-checkbox>
                     </div>
                     <div class="col-lg-3 col-md-3 col-6">
-                        <mat-checkbox [checked]="isRapidBuild" (click)="rapidBuildToggle()"> Add to rapid build
+                        <mat-checkbox [checked]="isRapidBuild" (change)="rapidBuildToggle()"> Add to rapid build
                         </mat-checkbox>
                     </div>
                     <div class="col-lg-4 col-md- 4 col-12">

@@ -216,7 +216,7 @@ export class ImprintComponent implements OnInit, OnDestroy {
   }
   methodSelected(obj) {
     this.selectedMethod = obj;
-    if (obj.methodName.includes('Embroidery') || obj.methodName.includes('Embroidering')) {
+    if (obj.methodName.includes('Embroidery') || obj.methodName.includes('Embroidering') || obj.methodName.includes('Embroidered')) {
       this.favoriteSeason = 'Per Stitch (embroidering)';
     }
     // if (obj.pk_methodID == 20) {

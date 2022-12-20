@@ -9,3 +9,16 @@ export interface newFLPSUser {
     admin_user_id: number;
     new_flps_user: boolean;
 };
+export interface updateFLPSUser {
+    userName: string;
+    password: string;
+    firstName: string;
+    lastName: string;
+    blnAdmin: boolean;
+    blnActive: boolean;
+    defaultCommission: number;
+    email: string;
+    admin_user_id: number;
+    user_id: number;
+    update_flps_user: boolean;
+};
