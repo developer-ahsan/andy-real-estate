@@ -131,7 +131,7 @@
         <mat-drawer-content class="flex flex-col">
 
             <!-- Main -->
-            <div class="flex-auto  pt-9 pb-12  md:pb-12 ">
+            <div class="flex-auto  pt-9 pb-12  md:pb-12" #topScrollAnchor>
 
                 <!-- Panel header -->
                 <div class="flex items-center px-6">
@@ -164,9 +164,6 @@
                             <settings-account></settings-account>
                         </ng-container>
                         <!-- Notifications -->
-                        <ng-container *ngSwitchCase="'notifications'">
-                            <settings-notifications></settings-notifications>
-                        </ng-container>
                     </ng-container>
                 </div>
 

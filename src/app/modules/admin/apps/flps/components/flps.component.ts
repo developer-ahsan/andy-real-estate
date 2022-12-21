@@ -8,7 +8,7 @@ import { FLPSService } from './flps.service';
 import { UserService } from 'app/core/user/user.service';
 import { AuthService } from 'app/core/auth/auth.service';
 import { MatDrawer } from '@angular/material/sidenav';
-
+import Swal from 'sweetalert2'
 @Component({
     selector: 'flps',
     templateUrl: './flps.component.html',
@@ -79,7 +79,7 @@ export class FLPSComponent {
                 description: 'Manage your subscription plan, payment method and billing information'
             },
             {
-                id: 'notifications',
+                id: 'logout',
                 icon: 'heroicons_outline:logout',
                 title: 'Logout',
                 description: 'Manage when you\'ll be notified on which channels'
@@ -104,6 +104,21 @@ export class FLPSComponent {
                 // Mark for check
                 this._changeDetectorRef.markForCheck();
             });
+    }
+    logout() {
+        Swal.fire({
+            title: 'Are you sure?',
+            text: "You won't be able to revert this!",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Logout'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                sessionStorage.removeItem('userLoggedIn');
+            }
+        })
     }
     calledScreen(title) {
         if (title != this.selectedScreeen) {
@@ -165,6 +180,11 @@ export class FLPSComponent {
         if (this.drawerMode === 'over') {
             this.drawer.close();
         }
+        if (this.selectedPanel == 'logout') {
+            this.selectedPanel = 'account';
+            this.logout();
+        }
+        this.topScroll.nativeElement.scrollIntoView({ behavior: 'smooth' });
     }
 
     /**

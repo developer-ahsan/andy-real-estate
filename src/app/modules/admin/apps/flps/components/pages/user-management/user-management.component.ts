@@ -7,7 +7,7 @@ import { Subject } from 'rxjs';
 import { finalize, takeUntil } from 'rxjs/operators';
 import moment from 'moment';
 import { FLPSService } from '../../flps.service';
-import { newFLPSUser, updateFLPSUser } from '../../flps.types';
+import { applyBlanketCustomerPercentage, newFLPSUser, removeFLPSUser, updateFLPSUser } from '../../flps.types';
 @Component({
   selector: 'app-user-flps-management',
   templateUrl: './user-management.component.html',
@@ -46,6 +46,26 @@ export class FLPSUserManagementComponent implements OnInit, OnDestroy {
   keyword = '';
   not_available = 'N/A';
 
+  mainScreenUser: string = 'Edit User';
+
+  ngBlanketPercentage = '';
+  isBlanketLoader: boolean = false;
+
+  // User Orders
+  ordersDataSource = [];
+  tempOrdersDataSource = [];
+  displayedOrdersColumns: string[] = ['id', 'date', 'store', 'customer', 'total', 'paid', 'cancel', 'status'];
+  totalOrders = 0;
+  tempTotalOrders = 0;
+  ordersPage = 1;
+
+  // User Customers
+  customersDataSource = [];
+  tempCustomersDataSource = [];
+  displayedCustomersColumns: string[] = ['id', 'name', 'company', 'email', 'last', 'commission'];
+  totalCustomers = 0;
+  tempTotalCustomers = 0;
+  customersPage = 1;
 
   isSearching: boolean = false;
 
@@ -106,6 +126,28 @@ export class FLPSUserManagementComponent implements OnInit, OnDestroy {
   calledScreen(value) {
     this.initForm();
     this.mainScreen = value;
+    if (this.mainScreen == 'Current Users') {
+      this.dataSource = this.tempDataSource;
+      this.page = 1;
+      this._changeDetectorRef.markForCheck();
+      if (this.dataSource.length == 0) {
+        this.getFlpsUsers(1, 'get');
+      }
+    } else if (this.mainScreen == 'View Disabled Users') {
+      this.disabledDataSource = this.temdisabledDataSource;
+      this.disabledPage = 1;
+      this._changeDetectorRef.markForCheck();
+      if (this.disabledDataSource.length == 0) {
+        this.getDisabledFlpsUsers(1);
+      }
+    } else {
+      if (this.employeeUser.length == 0) {
+        this.getEmployeeUsers();
+      }
+    }
+  }
+  calledUserScreen(value) {
+    this.mainScreenUser = value;
     if (this.mainScreen == 'Current Users') {
       this.dataSource = this.tempDataSource;
       this.page = 1;
@@ -205,10 +247,8 @@ export class FLPSUserManagementComponent implements OnInit, OnDestroy {
   };
 
   toggleUpdateUserData(data, check) {
-    console.log(data);
     this.isUpdateUser = check;
     if (check) {
-      data.defaultCommission = data.defaultCommission * 100;
       this.updateUserData = data;
       this.updateUserForm.patchValue(data);
     }
@@ -244,7 +284,7 @@ export class FLPSUserManagementComponent implements OnInit, OnDestroy {
       return;
     }
     let payload: newFLPSUser = {
-      userName, password, email, firstName, lastName, blnAdmin, defaultCommission: defaultCommission / 100, admin_user_id: adminId, new_flps_user
+      userName, password, email, firstName, lastName, blnAdmin, defaultCommission: defaultCommission, admin_user_id: adminId, new_flps_user
     }
     this.isAddNewUserLoader = true;
     this._flpsService.AddFlpsData(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
@@ -271,15 +311,29 @@ export class FLPSUserManagementComponent implements OnInit, OnDestroy {
       return;
     }
     let payload: updateFLPSUser = {
-      userName, password, email, firstName, lastName, blnAdmin, defaultCommission: defaultCommission / 100, admin_user_id: adminId, update_flps_user, blnActive, user_id: pk_userID
+      userName, password, email, firstName, lastName, blnAdmin, defaultCommission: defaultCommission, admin_user_id: adminId, update_flps_user, blnActive, user_id: pk_userID
     }
     this.isUpdateUserLoader = true;
-    this._flpsService.AddFlpsData(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+    this._flpsService.UpdateFlpsData(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
       if (res["success"]) {
+        // if (this.updateUserData.blnActive != blnActive) {
+        //   if(blnActive == false) {
+
+        //   } else {
+
+        //   }
+        // }
+        if (this.updateUserData.defaultCommission != defaultCommission) {
+          this.updateUserForm.patchValue({
+            defaultCommission: defaultCommission / 100
+          });
+          this.updateUserData.defaultCommission = defaultCommission / 100;
+        }
+
         this.updateUserData.firstName = firstName;
         this.updateUserData.lastName = lastName;
         this.updateUserData.blnAdmin = blnAdmin;
-        this.updateUserData.defaultCommission = defaultCommission;
+        this.updateUserData.blnActive = blnActive;
         this.updateUserData.fk_adminUserID = adminId;
         this.updateUserData.pk_userID = pk_userID;
         this.updateUserData.userName = userName;
@@ -298,27 +352,62 @@ export class FLPSUserManagementComponent implements OnInit, OnDestroy {
       this._changeDetectorRef.markForCheck();
     });
   }
-  // Delete Promo
-  deletePromo(item) {
+  deleteUser(item, type) {
+    if (this.isUpdateUser) {
+      if (item.blnActive) {
+        type = 1;
+      } else {
+        type = 0;
+      }
+    }
     item.delLoader = true;
-    let payload = {
-      promocode: item.promocode,
-      delete_promo_code: true
+    this._changeDetectorRef.markForCheck();
+    let payload: removeFLPSUser = {
+      user_id: item.pk_userID,
+      remove_flps_user: true
     }
     this._flpsService.UpdateFlpsData(payload).pipe(takeUntil(this._unsubscribeAll), finalize(() => {
       item.delLoader = false
       this._changeDetectorRef.markForCheck();
     })).subscribe(res => {
-      this.dataSource = this.dataSource.filter(elem => elem.promocode != item.promocode);
-      this.totalUsers--;
-      this.tempDataSource = this.tempDataSource.filter(elem => elem.promocode != item.promocode);
-      this.tempRecords--;
-      this._flpsService.snackBar('PromoCode Deleted Successfully');
+      if (type == 1) {
+        this.dataSource = this.dataSource.filter(elem => elem.pk_userID != item.pk_userID);
+        this.totalUsers--;
+        this.tempDataSource = this.tempDataSource.filter(elem => elem.pk_userID != item.pk_userID);
+        this.tempRecords--;
+      } else {
+        this.disabledDataSource = this.disabledDataSource.filter(elem => elem.pk_userID != item.pk_userID);
+        this.distabledTotalUsers--;
+        this.temdisabledDataSource = this.temdisabledDataSource.filter(elem => elem.pk_userID != item.pk_userID);
+        this.tempdistabledTotalUsers--;
+      }
+      this._flpsService.snackBar('FLPS User Deleted Successfully');
       this._changeDetectorRef.markForCheck();
     }, err => {
       this._flpsService.snackBar('Something went wrong');
     });
   }
+  addBlanketPercentage() {
+    if (this.ngBlanketPercentage == '') {
+      this._flpsService.snackBar('Please enter percentage value.');
+      return;
+    }
+    let payload: applyBlanketCustomerPercentage = {
+      user_id: this.updateUserData.pk_userID,
+      percentage: Number(this.ngBlanketPercentage),
+      apply_blanket_percentage: true
+    }
+    this.isBlanketLoader = true;
+    this._flpsService.UpdateFlpsData(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+      this._flpsService.snackBar(res["message"]);
+      this.isBlanketLoader = false;
+      this._changeDetectorRef.markForCheck();
+    }, err => {
+      this.isBlanketLoader = false;
+      this._changeDetectorRef.markForCheck();
+    });
+  }
+
   // Update Promo
   updatePromoToggle(item) {
     if (item) {

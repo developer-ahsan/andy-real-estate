@@ -22,3 +22,12 @@ export interface updateFLPSUser {
     user_id: number;
     update_flps_user: boolean;
 };
+export interface removeFLPSUser {
+    user_id: number;
+    remove_flps_user: boolean;
+};
+export interface applyBlanketCustomerPercentage {
+    user_id: number;
+    percentage: number;
+    apply_blanket_percentage: boolean;
+};
