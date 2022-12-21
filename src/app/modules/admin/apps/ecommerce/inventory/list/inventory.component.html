@@ -1416,18 +1416,6 @@
                                                                 </b>
                                                             </div>
                                                             <div class="col-lg-6 col-12">
-                                                                <!-- <mat-form-field class="w-full" appearance="fill">
-                                                                    <input type="text" placeholder="Imprint Method" aria-label="Number" matInput
-                                                                        [formControl]="methodControl" [matAutocomplete]="auto"
-                                                                        [readonly]="addImprintMethods.length ? false : true">
-                                                                    <mat-autocomplete autoActiveFirstOption #auto="matAutocomplete">
-                                                                        <mat-option *ngFor="let method of methodFilteredOptions | async"
-                                                                            [value]="method.methodName" (click)="methodSelected(method)">
-                                                                            <small>{{method.methodName}}
-                                                                                ({{method.pk_methodID}})</small>
-                                                                        </mat-option>
-                                                                    </mat-autocomplete>
-                                                                </mat-form-field> -->
                                                                 <mat-form-field class="w-full">
                                                                     <input matInput placeholder="Imprint Method"
                                                                         [matAutocomplete]="auto2"
@@ -1436,14 +1424,14 @@
                                                                         *ngIf="selectedMethod">{{selectedMethod.methodName}}
                                                                         ({{selectedMethod.pk_methodID}})</mat-hint>
                                                                     <mat-autocomplete class="w-full"
-                                                                        #auto2="matAutocomplete">
+                                                                        #auto2="matAutocomplete"
+                                                                        (optionSelected)="methodSelected($event.option.value)">
                                                                         <mat-option *ngIf="isMethodLoading"
                                                                             class="is-loading">Loading...</mat-option>
                                                                         <ng-container *ngIf="!isMethodLoading">
                                                                             <mat-option
                                                                                 *ngFor="let method of addImprintMethods"
-                                                                                [value]="method.methodName"
-                                                                                (click)="methodSelected(method)">
+                                                                                [value]="method">
                                                                                 <small>{{method.methodName}}
                                                                                     ({{method.pk_methodID}})</small>
                                                                             </mat-option>
@@ -1472,18 +1460,6 @@
                                                                 </b>
                                                             </div>
                                                             <div class="col-lg-6 col-12">
-                                                                <!-- <mat-form-field class="w-full" appearance="fill">
-                                                                    <input type="text" placeholder="Imprint Location" aria-label="Number" matInput
-                                                                        [formControl]="locationControl" [matAutocomplete]="auto1"
-                                                                        [readonly]="addImprintLocations.length ? false : true">
-                                                                    <mat-autocomplete autoActiveFirstOption #auto1="matAutocomplete">
-                                                                        <mat-option *ngFor="let location of locationFilteredOptions | async"
-                                                                            [value]="location.locationName" (click)="locationSelected(location)">
-                                                                            <small>{{location.locationName}}
-                                                                                ({{location.pk_locationID}})</small>
-                                                                        </mat-option>
-                                                                    </mat-autocomplete>
-                                                                </mat-form-field> -->
                                                                 <mat-form-field class="w-full">
                                                                     <input matInput placeholder="Imprint Location"
                                                                         [matAutocomplete]="auto1"
@@ -1492,14 +1468,14 @@
                                                                         *ngIf="selectedLocation">{{selectedLocation.locationName}}
                                                                         ({{selectedLocation.pk_locationID}})</mat-hint>
                                                                     <mat-autocomplete class="w-full"
-                                                                        #auto1="matAutocomplete">
+                                                                        #auto1="matAutocomplete"
+                                                                        (optionSelected)="locationSelected($event.option.value)">
                                                                         <mat-option *ngIf="isLoadings"
                                                                             class="is-loading">Loading...</mat-option>
                                                                         <ng-container *ngIf="!isLoadings">
                                                                             <mat-option
                                                                                 *ngFor="let location of addImprintLocations"
-                                                                                [value]="location.locationName"
-                                                                                (click)="locationSelected(location)">
+                                                                                [value]="location">
                                                                                 <small>{{location.locationName}}
                                                                                     ({{location.pk_locationID}})</small>
                                                                             </mat-option>

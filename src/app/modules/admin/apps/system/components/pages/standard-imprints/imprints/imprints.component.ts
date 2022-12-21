@@ -282,12 +282,15 @@ export class AddEditImprintsComponent implements OnInit, OnDestroy {
     this.selectedMethod = obj;
     if (obj.methodName.includes('Embroidery') || obj.methodName.includes('Embroidering') || obj.methodName.includes('Embroidered')) {
       this.favoriteSeason = 1;
-
     }
-
+    this.methodSearchControl.setValue(obj.methodName)
+    // if (obj.pk_methodID == 20) {
+    // }
+    this._changeDetectorRef.markForCheck();
   }
   locationSelected(obj) {
     this.selectedLocation = obj;
+    this.locationSearchControl.setValue(obj.locationName)
   }
   getAllSuppliers(data?: any) {
     this._systemService.Suppliers$

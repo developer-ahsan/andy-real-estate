@@ -58,11 +58,11 @@
                     [formControl]="methodSearchControl">
                 <mat-hint *ngIf="selectedMethod">{{selectedMethod.methodName}}
                     ({{selectedMethod.pk_methodID}})</mat-hint>
-                <mat-autocomplete class="w-full" #auto2="matAutocomplete">
+                <mat-autocomplete class="w-full" #auto2="matAutocomplete"
+                    (optionSelected)="methodSelected($event.option.value)">
                     <mat-option *ngIf="isMethodLoading" class="is-loading">Loading...</mat-option>
                     <ng-container *ngIf="!isMethodLoading">
-                        <mat-option *ngFor="let method of addImprintMethods" [value]="method.methodName"
-                            (click)="methodSelected(method)">
+                        <mat-option *ngFor="let method of addImprintMethods" [value]="method">
                             <small>{{method.methodName}}
                                 ({{method.pk_methodID}})</small>
                         </mat-option>
@@ -102,11 +102,11 @@
                     [formControl]="locationSearchControl">
                 <mat-hint *ngIf="selectedLocation">{{selectedLocation.locationName}}
                     ({{selectedLocation.pk_locationID}})</mat-hint>
-                <mat-autocomplete class="w-full" #auto1="matAutocomplete">
+                <mat-autocomplete class="w-full" #auto1="matAutocomplete"
+                    (optionSelected)="locationSelected($event.option.value)">
                     <mat-option *ngIf="isLoadings" class="is-loading">Loading...</mat-option>
                     <ng-container *ngIf="!isLoadings">
-                        <mat-option *ngFor="let location of addImprintLocations" [value]="location.locationName"
-                            (click)="locationSelected(location)">
+                        <mat-option *ngFor="let location of addImprintLocations" [value]="location">
                             <small>{{location.locationName}}
                                 ({{location.pk_locationID}})</small>
                         </mat-option>
