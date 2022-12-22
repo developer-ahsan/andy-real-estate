@@ -52,6 +52,7 @@ export class FLPSUserManagementComponent implements OnInit, OnDestroy {
   isBlanketLoader: boolean = false;
 
   // User Orders
+  ordersLoader: boolean = true;
   ordersDataSource = [];
   tempOrdersDataSource = [];
   displayedOrdersColumns: string[] = ['id', 'date', 'store', 'customer', 'total', 'paid', 'cancel', 'status'];
@@ -148,23 +149,12 @@ export class FLPSUserManagementComponent implements OnInit, OnDestroy {
   }
   calledUserScreen(value) {
     this.mainScreenUser = value;
-    if (this.mainScreen == 'Current Users') {
-      this.dataSource = this.tempDataSource;
-      this.page = 1;
+    if (this.mainScreenUser == 'View Orders') {
+      this.ordersDataSource = this.tempOrdersDataSource;
+      this.ordersPage = 1;
       this._changeDetectorRef.markForCheck();
-      if (this.dataSource.length == 0) {
-        this.getFlpsUsers(1, 'get');
-      }
-    } else if (this.mainScreen == 'View Disabled Users') {
-      this.disabledDataSource = this.temdisabledDataSource;
-      this.disabledPage = 1;
-      this._changeDetectorRef.markForCheck();
-      if (this.disabledDataSource.length == 0) {
-        this.getDisabledFlpsUsers(1);
-      }
-    } else {
-      if (this.employeeUser.length == 0) {
-        this.getEmployeeUsers();
+      if (this.ordersDataSource.length == 0) {
+        this.getUserOrders(1);
       }
     }
   }
@@ -249,6 +239,10 @@ export class FLPSUserManagementComponent implements OnInit, OnDestroy {
   toggleUpdateUserData(data, check) {
     this.isUpdateUser = check;
     if (check) {
+      this.ordersDataSource = [];
+      this.tempOrdersDataSource = [];
+      this.ordersPage = 1;
+      this.mainScreenUser = 'Edit User';
       this.updateUserData = data;
       this.updateUserForm.patchValue(data);
     }
@@ -381,6 +375,9 @@ export class FLPSUserManagementComponent implements OnInit, OnDestroy {
         this.temdisabledDataSource = this.temdisabledDataSource.filter(elem => elem.pk_userID != item.pk_userID);
         this.tempdistabledTotalUsers--;
       }
+      if (this.isUpdateUser) {
+        this.isUpdateUser = false;
+      }
       this._flpsService.snackBar('FLPS User Deleted Successfully');
       this._changeDetectorRef.markForCheck();
     }, err => {
@@ -407,63 +404,38 @@ export class FLPSUserManagementComponent implements OnInit, OnDestroy {
       this._changeDetectorRef.markForCheck();
     });
   }
-
-  // Update Promo
-  updatePromoToggle(item) {
-    if (item) {
-      this.updatePromoData = item;
-      this.updatePromoForm.patchValue(item);
-      if (item.expDate != 0) {
-        this.updatePromoForm.patchValue({
-          expDate: new Date(item.expDate)
-        });
-      }
-    }
-    this.isUpdatePromo = !this.isUpdatePromo;
-  }
-  updatePromoCode() {
-    const { promocode, amount, threshold, description, blnActive, expDate, blnShipping, blnRemoveShippingCost, blnRemoveShippingPrice, blnRemoveCost, blnRemovePrice, blnPercent } = this.updatePromoForm.getRawValue();
-    if (promocode == '' || description == '') {
-      this._flpsService.snackBar('Please fill out the required fields');
-      return;
-    }
-    let date;
-    if (expDate) {
-      date = moment(expDate).format('MM/DD/YYYY');
-    } else {
-      date = 0;
-    }
+  // Get Orders Associated
+  getUserOrders(page) {
     let payload = {
-      amount, threshold, description, blnActive, expDate: date, blnShipping, blnRemoveShippingCost, blnRemoveShippingPrice, blnRemoveCost, blnRemovePrice, blnPercent, promocode, update_promo_code: true
-    }
-    this.isUpdatePromoLoader = true;
-    this._flpsService.UpdateFlpsData(payload).pipe(takeUntil(this._unsubscribeAll), finalize(() => {
-      this.isUpdatePromoLoader = false
-      this._changeDetectorRef.markForCheck();
-    })).subscribe(res => {
-      this.dataSource.filter(elem => {
-        if (elem.promocode == this.updatePromoData.promocode) {
-          elem.promocode = promocode;
-          elem.amount = amount;
-          elem.threshold = threshold;
-          elem.description = description;
-          elem.blnActive = blnActive;
-          elem.expDate = moment(expDate).format('MM/DD/YYYY');
-          elem.blnShipping = blnShipping;
-          elem.blnPercent = blnPercent;
-          elem.blnRemoveShippingCost = blnRemoveShippingCost;
-          elem.blnRemoveShippingPrice = blnRemoveShippingPrice;
-          elem.blnRemoveCost = blnRemoveCost;
-          elem.blnRemovePrice = blnRemovePrice;
-        }
-      });
-      this._flpsService.snackBar('Promo Code Updated Successfully');
-      this.isUpdatePromo = false;
+      view_user_orders: true,
+      user_id: this.updateUserData.pk_userID,
+      page: page,
+      size: 20
+    };
+    this.ordersLoader = true;
+    this._flpsService.getFlpsData(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+      this.ordersDataSource = res["data"];
+      this.totalOrders = res["totalRecords"];
+      if (this.tempOrdersDataSource.length == 0) {
+        this.tempOrdersDataSource = res["data"];
+        this.tempTotalOrders = res["totalRecords"];
+      }
+      this.ordersLoader = false;
       this._changeDetectorRef.markForCheck();
     }, err => {
-      this._flpsService.snackBar('Something went wrong');
+      this.ordersLoader = false;
+      this._changeDetectorRef.markForCheck();
     })
   }
+  getNextOrderdData(event) {
+    const { previousPageIndex, pageIndex } = event;
+    if (pageIndex > previousPageIndex) {
+      this.ordersPage++;
+    } else {
+      this.ordersPage--;
+    };
+    this.getUserOrders(this.ordersPage);
+  };
 
   /**
      * On destroy

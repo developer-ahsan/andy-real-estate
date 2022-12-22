@@ -129,6 +129,7 @@ export class FLPSComponent {
     }
     loginCheck() {
         this.user = this._authService.parseJwt(this._authService.accessToken);
+        console.log(this.user);
         let payload = {
             login_check: true,
             user_name: this.user.name

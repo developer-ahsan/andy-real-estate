@@ -32,7 +32,7 @@ export class ProductsStatusComponent implements OnInit {
   imgUrl = environment.productMedia;
   selectedTermUpdateLoader: boolean = false;
   isViewMoreLoader: boolean = false;
-  ngComment = '';
+  ngComment: any;
 
   checkedStores = [];
   isRapidBuilImageLoader: boolean = false;
@@ -125,7 +125,7 @@ export class ProductsStatusComponent implements OnInit {
       pk_storeID.push(element.pk_storeID);
     });
     if (!this.isRapidBuild) {
-      this.ngComment = '';
+      this.ngComment = null;
     }
     this.selectedTermUpdateLoader = true;
     let payload: AddStoreProduct = {
@@ -136,7 +136,7 @@ export class ProductsStatusComponent implements OnInit {
       add_store_product: true
     }
     this._inventoryService.AddStoreProduct(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
-      this.ngComment = '';
+      this.ngComment = null;
 
       this.getAssignedStores('add');
       // this.getAllActiveStores(0);
