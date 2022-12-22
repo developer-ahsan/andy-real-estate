@@ -246,7 +246,7 @@
                 </mat-paginator>
             </div>
             <ng-template #other_content>
-                <div class="text-secondary font-semibold p-5 text-center">
+                <div class="text-secondary font-semibold p-5 text-center" *ngIf="!isDisabledLoading">
                     There are currently no FLPS users.
                 </div>
             </ng-template>
@@ -504,7 +504,7 @@
                 </div>
                 <!-- No color Found -->
                 <ng-template #other_content>
-                    <div class="text-secondary font-semibold p-5 text-center">
+                    <div class="text-secondary font-semibold p-5 text-center" *ngIf="!ordersLoader">
                         There are no orders associated with this FLPS user.
                     </div>
                 </ng-template>
