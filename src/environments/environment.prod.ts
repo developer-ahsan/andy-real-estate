@@ -10,7 +10,7 @@ export const environment = {
     storeNewUrl: "https://consolidus-store.azurewebsites.net/api/stores",
     storeNewUrlRapidBuild: "https://consolidus-store.azurewebsites.net/api/rapid_build",
     products: "https://consolidus.azurewebsites.net/api/products",
-    storeProducts: "https://consolidus-staging.azurewebsites.net/api/store_products",
+    storeProducts: "https://consolidus.azurewebsites.net/api/store_products",
     system: "https://consolidus.azurewebsites.net/api/system",
     flps: "https://consolidus.azurewebsites.net/api/flps",
     campaignMedia: "https://assets.consolidus.com/globalAssets/Campaigns",
