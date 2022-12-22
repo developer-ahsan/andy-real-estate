@@ -1536,7 +1536,7 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
             .pipe(takeUntil(this._unsubscribeAll))
             .subscribe((productDetails) => {
                 this.addItem();
-                if (productDetails["data"] == 'no data found.') {
+                if (!productDetails["data"].success) {
                     this._snackBar.open("No data found for this supplier and product number", '', {
                         horizontalPosition: 'center',
                         verticalPosition: 'bottom',

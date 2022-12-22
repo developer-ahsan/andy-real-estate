@@ -9,7 +9,7 @@
                     <div class="flex items-center cursor-pointer"
                         [routerLink]="['/apps/ecommerce/inventory/storeProduct',item.pk_storeProductID]">
                         <img class="w-20 rounded-lg object-cover" src="{{imgUrl}}/HiRes/{{item.pk_storeProductID}}.jpg"
-                            (error)="this.src='https://assets.consolidus.com/globalAssets/Products/coming_soon.jpg'"
+                            onError="this.src='https://assets.consolidus.com/globalAssets/Products/coming_soon.jpg'"
                             alt="Store Product Image">
                         <div class="flex flex-col ml-6">
                             <div class="text-lg font-semibold leading-tight">

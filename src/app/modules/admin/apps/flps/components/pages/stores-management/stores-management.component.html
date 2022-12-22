@@ -8,7 +8,92 @@
             (click)="calledScreen('Store Management Types')">Store Management Types</span>
     </div>
     <!-- Quick Reference -->
-    <div class="mt-5" *ngIf="mainScreen == 'Quick Reference'">
+    <div *ngIf="mainScreen == 'Quick Reference'">
+        <div class="p-5" *ngIf="ordersLoader">
+            <ngx-skeleton-loader count="8" appearance="line" animation="pulse" [theme]="{ 
+                'background-color': '#dedede'
+              }">
+            </ngx-skeleton-loader>
+        </div>
+        <div *ngIf="!ordersLoader" class="p-6">
+            <div class="bg-card rounded-2xl shadow p-6">
+                <div class="row">
+                    <div class="col-12">
+                        <mat-form-field class="w-full">
+                            <mat-label>Select an FLPS Store To Edit</mat-label>
+                            <mat-select matInput>
+                                <mat-option *ngFor="let item of ordersDataSource"
+                                    [value]="item.fk_orderID">{{item.storeName}}</mat-option>
+                            </mat-select>
+                        </mat-form-field>
+                    </div>
+                    <div class="col-12 text-right">
+                        <button mat-stroked-button class="min-w-40">Update</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div *ngIf="ordersDataSource.length > 0 && !ordersLoader;else other_content" class="w-full">
+            <table mat-table [dataSource]="ordersDataSource" class="w-full border-t">
+                <ng-container matColumnDef="store">
+                    <th mat-header-cell *matHeaderCellDef class="text-sm">
+                        Stores
+                    </th>
+                    <td mat-cell *matCellDef="let element" class="text-sm">
+                        {{element.storeName}}
+                    </td>
+                </ng-container>
+                <ng-container matColumnDef="user">
+                    <th mat-header-cell *matHeaderCellDef class="text-sm">
+                        Users
+                    </th>
+                    <td mat-cell *matCellDef="let element" class="text-sm">
+                        {{element.customerName}}
+                    </td>
+                </ng-container>
+                <ng-container matColumnDef="commission">
+                    <th mat-header-cell *matHeaderCellDef class="text-sm">
+                        Store Commission
+                    </th>
+                    <td mat-cell *matCellDef="let element" class="text-sm">
+                        10000%
+                    </td>
+                </ng-container>
+                <ng-container matColumnDef="d_commission">
+                    <th mat-header-cell *matHeaderCellDef class="text-sm">
+                        Default Commission
+                    </th>
+                    <td mat-cell *matCellDef="let element" class="text-sm">
+                        20000%
+                    </td>
+                </ng-container>
+                <ng-container matColumnDef="management">
+                    <th mat-header-cell *matHeaderCellDef class="text-sm">
+                        Management
+                    </th>
+                    <td mat-cell *matCellDef="let element" class="text-sm">
+                        Single
+                    </td>
+                </ng-container>
+                <tr mat-header-row *matHeaderRowDef="displayedStoresColumns;" class="h-18 bg-light"></tr>
+                <tr mat-row *matRowDef="let row; columns: displayedStoresColumns;"
+                    class="h-14 hover:bg-gray-100 dark:hover:bg-hover" style="cursor: pointer;">
+                </tr>
+            </table>
+            <mat-paginator #paginator class="border-b sm:border-t sm:border-b-0 z-10 bg-gray-50 dark:bg-transparent"
+                [ngClass]="{'pointer-events-none': ordersLoader}" [length]="totalOrders" [pageIndex]="0" [pageSize]="20"
+                (page)="getNextOrderdData($event)" [hidePageSize]="true">
+            </mat-paginator>
+        </div>
+        <!-- No color Found -->
+        <ng-template #other_content>
+            <div class="text-secondary font-semibold p-5 text-center">
+                There are no orders associated with this FLPS user.
+            </div>
+        </ng-template>
+    </div>
+    <!-- Store Management Types -->
+    <div class="mt-5" *ngIf="mainScreen == 'Store Management Types'">
         <div class="px-5" *ngIf="ordersLoader">
             <ngx-skeleton-loader count="8" appearance="line" animation="pulse" [theme]="{ 
                 'background-color': '#dedede'
@@ -17,75 +102,27 @@
         </div>
         <div *ngIf="ordersDataSource.length > 0 && !ordersLoader;else other_content" class="w-full">
             <table mat-table [dataSource]="ordersDataSource" class="w-full border-t">
-                <ng-container matColumnDef="id">
-                    <th mat-header-cell *matHeaderCellDef class="text-sm">
-                        Order ID
-                    </th>
-                    <td mat-cell *matCellDef="let element" class="text-sm">
-                        {{element.fk_orderID}}
-                    </td>
-                </ng-container>
-                <ng-container matColumnDef="date">
-                    <th mat-header-cell *matHeaderCellDef class="text-sm">
-                        Date
-                    </th>
-                    <td mat-cell *matCellDef="let element" class="text-sm">
-                        {{element.orderDate | date}}
-                    </td>
-                </ng-container>
                 <ng-container matColumnDef="store">
                     <th mat-header-cell *matHeaderCellDef class="text-sm">
-                        Store
+                        Stores
                     </th>
                     <td mat-cell *matCellDef="let element" class="text-sm">
                         {{element.storeName}}
                     </td>
                 </ng-container>
-                <ng-container matColumnDef="customer">
+                <ng-container matColumnDef="action">
                     <th mat-header-cell *matHeaderCellDef class="text-sm">
-                        Customer
+                        Action
                     </th>
-                    <td mat-cell *matCellDef="let element" class="text-sm">
-                        {{element.customerName}}
+                    <td mat-cell *matCellDef="let element" class="text-sm w-60">
+                        <select class="form-control text-sm">
+                            <option>Single</option>
+                            <option>Shared</option>
+                        </select>
                     </td>
                 </ng-container>
-                <ng-container matColumnDef="total">
-                    <th mat-header-cell *matHeaderCellDef class="text-sm">
-                        Total
-                    </th>
-                    <td mat-cell *matCellDef="let element" class="text-sm">
-                        {{element.Total | currency}}
-                    </td>
-                </ng-container>
-                <ng-container matColumnDef="paid">
-                    <th mat-header-cell *matHeaderCellDef class="text-sm">
-                        Paid
-                    </th>
-                    <td mat-cell *matCellDef="let element" class="text-sm">
-                        <span *ngIf="element.paymentDate" class="text-green-600">Paid</span>
-                        <span *ngIf="!element.paymentDate" class="text-red-500">Not Paid</span>
-                    </td>
-                </ng-container>
-                <ng-container matColumnDef="cancel">
-                    <th mat-header-cell *matHeaderCellDef class="text-sm">
-                        Cancel
-                    </th>
-                    <td mat-cell *matCellDef="let element" class="text-sm">
-                        <span *ngIf="element.blnCancelled" class="text-red-500">Cancelled</span>
-                        <span *ngIf="!element.blnCancelled" class="text-green-600">Active</span>
-                    </td>
-                </ng-container>
-                <ng-container matColumnDef="status">
-                    <th mat-header-cell *matHeaderCellDef class="text-sm">
-                        Status
-                    </th>
-                    <td mat-cell *matCellDef="let element" class="text-sm">
-                        <span *ngIf="element.fk_statusID != 0" class="text-red-500">Processing</span>
-                        <span *ngIf="element.fk_statusID == 0" class="text-green-600">Shipped</span>
-                    </td>
-                </ng-container>
-                <tr mat-header-row *matHeaderRowDef="displayedOrdersColumns;" class="h-18 bg-light"></tr>
-                <tr mat-row *matRowDef="let row; columns: displayedOrdersColumns;"
+                <tr mat-header-row *matHeaderRowDef="displayedTypesColumns;" class="h-18 bg-light"></tr>
+                <tr mat-row *matRowDef="let row; columns: displayedTypesColumns;"
                     class="h-14 hover:bg-gray-100 dark:hover:bg-hover" style="cursor: pointer;">
                 </tr>
             </table>

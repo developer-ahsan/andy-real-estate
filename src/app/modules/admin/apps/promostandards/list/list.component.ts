@@ -54,6 +54,7 @@ export class PromostandardsListComponent implements OnInit, OnDestroy {
     drawerTitle = '';
     drawerType = 'add';
     searchKeyword = '';
+
     constructor(
         private _activatedRoute: ActivatedRoute,
         private _changeDetectorRef: ChangeDetectorRef,
@@ -266,12 +267,16 @@ export class PromostandardsListComponent implements OnInit, OnDestroy {
     searchPromostandards(ev) {
         this.searchKeyword = ev.target.value;
         if (ev.target.value.length == 0) {
-            this.promostandardsCount = this.tempPromostandardsCount;
-            this.promostandards = this.tempPromostandards;
+            this.resetSearch();
         } else {
             this.isLoading = true;
             this._changeDetectorRef.markForCheck()
             this.getPromostandards(1, 'filter');
         }
+    }
+    resetSearch() {
+        this.searchKeyword = '';
+        this.promostandardsCount = this.tempPromostandardsCount;
+        this.promostandards = this.tempPromostandards;
     }
 }

@@ -15,7 +15,8 @@ export class FLPSStoresManagementComponent implements OnInit {
     ordersLoader: boolean = true;
     ordersDataSource = [];
     tempOrdersDataSource = [];
-    displayedOrdersColumns: string[] = ['id', 'date', 'store', 'customer', 'total', 'paid', 'cancel', 'status'];
+    displayedStoresColumns: string[] = ['store', 'user', 'commission', 'd_commission', 'management'];
+    displayedTypesColumns: string[] = ['store', 'action'];
     totalOrders = 0;
     tempTotalOrders = 0;
     ordersPage = 1;

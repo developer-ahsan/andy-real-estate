@@ -1,11 +1,8 @@
-import { ENTER, COMMA } from '@angular/cdk/keycodes';
-import { Component, Input, OnInit, Output, EventEmitter, ChangeDetectorRef, OnDestroy, ViewChild } from '@angular/core';
-import { FormControl, FormGroup, Validators } from '@angular/forms';
-import { MatChipInputEvent } from '@angular/material/chips';
+import { Component, Input, OnInit, ChangeDetectorRef, OnDestroy, ViewChild } from '@angular/core';
+import { FormControl, FormGroup } from '@angular/forms';
 import { MatPaginator } from '@angular/material/paginator';
 import { Subject } from 'rxjs';
 import { finalize, takeUntil } from 'rxjs/operators';
-import moment from 'moment';
 import { FLPSService } from '../../flps.service';
 import { applyBlanketCustomerPercentage, newFLPSUser, removeFLPSUser, updateFLPSUser } from '../../flps.types';
 @Component({
@@ -69,24 +66,8 @@ export class FLPSUserManagementComponent implements OnInit, OnDestroy {
   customersPage = 1;
 
   isSearching: boolean = false;
-
-  // Add Method
-  ngName: string = '';
-  ngDesc: string = '';
-  isAddPromoLoader: boolean = false;
-
-  // Update Color
-  isUpdatePromoLoader: boolean = false;
-  isUpdatePromo: boolean = false;
-  updatePromoData: any;
-  ngRGBUpdate = '';
-
-
-  addPromoForm: FormGroup;
-  updatePromoForm: FormGroup;
-
+  // Emplyees Dropdown
   employeeUser = [];
-  employeeLoader: boolean = false;
   constructor(
     private _changeDetectorRef: ChangeDetectorRef,
     private _flpsService: FLPSService
