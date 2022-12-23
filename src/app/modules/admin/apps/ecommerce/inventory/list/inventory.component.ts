@@ -887,10 +887,10 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
 
     searchLicensingTerm(event): void {
         const value = event.target.value;
-
         this.licensingTerms = this.dummyLicensingTerms.filter((item: any) => {
             return item.term.toLowerCase().includes(value.toLowerCase());
         });
+        this._changeDetectorRef.markForCheck();
     };
 
     createItem(): FormGroup {

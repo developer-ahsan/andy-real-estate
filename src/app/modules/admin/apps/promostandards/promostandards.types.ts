@@ -27,3 +27,7 @@ export interface Promostandard {
     bln_active: string;
     TotalRequests: number;
 }
+export interface DeletePromostandard {
+    id: string;
+    delete_promostandard: true;
+};

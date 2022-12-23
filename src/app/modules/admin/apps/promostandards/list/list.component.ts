@@ -5,7 +5,7 @@ import { MatDrawer } from '@angular/material/sidenav';
 import { fromEvent, Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { FuseMediaWatcherService } from '@fuse/services/media-watcher';
-import { Promostandard } from 'app/modules/admin/apps/promostandards/promostandards.types';
+import { DeletePromostandard, Promostandard } from 'app/modules/admin/apps/promostandards/promostandards.types';
 import { TasksService } from 'app/modules/admin/apps/promostandards/promostandards.service';
 import { IDropdownSettings } from 'ng-multiselect-dropdown';
 import { FormControl, FormGroup } from '@angular/forms';
@@ -31,7 +31,7 @@ export class PromostandardsListComponent implements OnInit, OnDestroy {
     promostandards: Promostandard[];
     tempPromostandards: Promostandard[];
     private _unsubscribeAll: Subject<any> = new Subject<any>();
-    promostandardsTableColumns: string[] = ['companyName', 'url', 'type'];
+    promostandardsTableColumns: string[] = ['companyName', 'url', 'type', 'action'];
     promostandardsCount: number = 0;
     tempPromostandardsCount: number = 0;
     page: number = 1;
@@ -242,8 +242,31 @@ export class PromostandardsListComponent implements OnInit, OnDestroy {
             }, err => {
                 this.isAddLoader = false;
                 this._changeDetectorRef.markForCheck();
-            })
+            });
         }
+    }
+    deletePromoStandard(element) {
+        element.delLoader = true;
+        let payload: DeletePromostandard = {
+            delete_promostandard: true,
+            id: element.pk_promostandards_credential_ID
+        }
+        this._promostandardsService.putPromoData(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+            this._snackBar.open('PromoStandard deleted successfully', '', {
+                horizontalPosition: 'center',
+                verticalPosition: 'bottom',
+                duration: 3500
+            });
+            this.promostandardsCount--;
+            this.tempPromostandardsCount--;
+
+            this.promostandards = this.promostandards.filter(item => item.pk_promostandards_credential_ID != element.pk_promostandards_credential_ID);
+            this.tempPromostandards = this.tempPromostandards.filter(item => item.pk_promostandards_credential_ID != element.pk_promostandards_credential_ID);
+            this._changeDetectorRef.markForCheck();
+        }, err => {
+            element.delLoader = false;
+            this._changeDetectorRef.markForCheck();
+        });
     }
     drawerTitleChange(type, obj) {
         this.sidenav.toggle();
