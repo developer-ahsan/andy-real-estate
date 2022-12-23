@@ -126,6 +126,10 @@ export class ProductsStatusComponent implements OnInit {
     });
     if (!this.isRapidBuild) {
       this.ngComment = null;
+    } else {
+      if (this.ngComment == '') {
+        this.ngComment = null;
+      }
     }
     this.selectedTermUpdateLoader = true;
     let payload: AddStoreProduct = {
