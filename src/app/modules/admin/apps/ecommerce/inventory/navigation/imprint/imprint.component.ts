@@ -258,6 +258,8 @@ export class ImprintComponent implements OnInit, OnDestroy {
     })
   }
   ngOnInit(): void {
+    this.locationSearchControl.setValue('');
+    this.methodSearchControl.setValue('');
     this.locationSearchControl.valueChanges
       .pipe(
         filter(res => {
@@ -1951,7 +1953,8 @@ export class ImprintComponent implements OnInit, OnDestroy {
 
         // this.selectedLocation = this.addImprintLocations.find(x => x.pk_locationID === pk_locationID) || this.addImprintLocations[0];
         this.locationControl.setValue(this.selectedLocation.locationName);
-        this.locationSearchControl.setValue(this.selectedLocation.locationName);
+        // this.locationSearchControl.setValue(this.selectedLocation.locationName);
+        this.locationSearchControl.setValue('');
       }
       // Mark for check
       this._changeDetectorRef.markForCheck();
@@ -1994,9 +1997,9 @@ export class ImprintComponent implements OnInit, OnDestroy {
       if (data) {
         const { fk_methodID, methodName } = data
         this.selectedMethod = { methodName: methodName, pk_methodID: fk_methodID };
-        this.methodSearchControl.setValue(this.selectedMethod.methodName);
-        // const { pk_methodID } = data
-        // this.selectedMethod = this.addImprintMethods.find(x => x.pk_methodID === pk_methodID) || this.addImprintMethods[0];
+        // this.methodSearchControl.setValue(this.selectedMethod.methodName);
+        this.methodSearchControl.setValue('');
+        // const { pk_methodID } = dataq`dID === pk_methodID) || this.addImprintMethods[0];
         // this.methodControl.setValue(this.selectedMethod.methodName);
       } else {
         this.selectedMethod = this.addImprintMethods.find(x => x.pk_methodID === 254) || this.addImprintMethods[0];
