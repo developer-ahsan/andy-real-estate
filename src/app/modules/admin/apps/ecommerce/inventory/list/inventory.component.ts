@@ -575,6 +575,7 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
         this.selectedMethod = obj;
         if (obj.methodName.includes('Embroidery') || obj.methodName.includes('Embroidering') || obj.methodName.includes('Embroidered')) {
             this.favoriteSeason = 'Per Stitch (embroidering)';
+            this.selectedDigitizer = this.addImprintDigitizers.find(x => x.pfk_digitizerID == this.selectedSupplier) || this.addImprintDigitizers[0];
         }
         this.methodSearchControl.setValue(obj.methodName)
         // if (obj.pk_methodID == 20) {
