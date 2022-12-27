@@ -31,3 +31,32 @@ export interface applyBlanketCustomerPercentage {
     percentage: number;
     apply_blanket_percentage: boolean;
 };
+
+export interface updateStoreManagementTypes {
+    stores: Stores[];
+    update_store_management: boolean;
+};
+
+interface Stores {
+    store_id: number;
+    management_type: string;
+};
+export interface UpdateFlpsUser {
+    blnPrimary: boolean;
+    commission: number;
+    store_id: number;
+    flps_user_id: number;
+    update_flps_user: boolean;
+};
+export interface DeleteFlpsUser {
+    store_id: number;
+    flps_user_id: number;
+    remove_flps_store_user: boolean;
+};
+export interface AddFLPSStoreUser {
+    store_id: number;
+    store_name: string;
+    flps_user_id: number;
+    bln_send_email: boolean;
+    add_flps_store_user: boolean;
+};

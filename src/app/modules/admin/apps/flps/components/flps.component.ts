@@ -56,7 +56,6 @@ export class FLPSComponent {
      */
 
     ngOnInit(): void {
-        this.loginCheck();
         this.routes = this._flpsService.navigationLabels;
         this.isLoading = false;
         this.panels = [
@@ -64,25 +63,25 @@ export class FLPSComponent {
                 id: 'account',
                 icon: 'heroicons_outline:document-report',
                 title: 'Generate Report',
-                description: 'Manage your public profile and private information'
+                description: 'Manage your reports'
             },
             {
                 id: 'security',
                 icon: 'heroicons_outline:users',
                 title: 'User Management',
-                description: 'Manage your password and 2-step verification preferences'
+                description: 'Manage your flps users information'
             },
             {
                 id: 'plan-billing',
                 icon: 'mat_outline:settings',
                 title: 'Store Management',
-                description: 'Manage your subscription plan, payment method and billing information'
+                description: 'Manage your stores information'
             },
             {
                 id: 'logout',
                 icon: 'heroicons_outline:logout',
                 title: 'Logout',
-                description: 'Manage when you\'ll be notified on which channels'
+                description: 'Logout to end your session'
             }
         ];
 
@@ -108,7 +107,7 @@ export class FLPSComponent {
     logout() {
         Swal.fire({
             title: 'Are you sure?',
-            text: "You won't be able to revert this!",
+            text: "You want to end your session!",
             icon: 'warning',
             showCancelButton: true,
             confirmButtonColor: '#3085d6',
@@ -116,7 +115,9 @@ export class FLPSComponent {
             confirmButtonText: 'Logout'
         }).then((result) => {
             if (result.isConfirmed) {
-                sessionStorage.removeItem('userLoggedIn');
+                sessionStorage.removeItem('flpsAccessToken');
+                this.flpsToken = null;
+                this._changeDetectorRef.markForCheck();
             }
         })
     }
@@ -126,20 +127,6 @@ export class FLPSComponent {
             this.isLoading = true;
         }
         this.topScroll.nativeElement.scrollIntoView({ behavior: 'smooth' });
-    }
-    loginCheck() {
-        this.user = this._authService.parseJwt(this._authService.accessToken);
-        console.log(this.user);
-        let payload = {
-            login_check: true,
-            user_name: this.user.name
-        }
-        this._flpsService.getFlpsData(payload).subscribe(res => {
-            if (res["success"]) {
-                sessionStorage.setItem('flpsAccessToken', 'userLoggedIn');
-                this.flpsToken = 'userLoggedIn';
-            }
-        })
     }
     loginFLPS() {
         if (this.ngEmail == '' || this.ngPassword == '') {
@@ -156,6 +143,7 @@ export class FLPSComponent {
             if (res["success"]) {
                 this.flpsToken = 'userLoggedIn';
                 sessionStorage.setItem('flpsAccessToken', 'userLoggedIn');
+                this._flpsService.snackBar(res["message"]);
             } else {
                 this._flpsService.snackBar(res["message"]);
             }

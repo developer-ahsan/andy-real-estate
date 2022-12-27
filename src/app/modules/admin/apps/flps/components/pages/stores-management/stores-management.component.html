@@ -1,40 +1,41 @@
 <div class="w-full">
-    <div class="shadow bg-card p-5 px-8 flex space-x-6">
-        <span class="font-medium cursor-pointer hover:text-gray-900 text-secondary"
+    <div class="shadow bg-card p-5 px-8 flex space-x-6" #topScroll>
+        <span *ngIf="!isUpdateStore" class="font-medium cursor-pointer hover:text-gray-900 text-secondary"
             [ngClass]="{'text-gray-900': mainScreen=='Quick Reference'}" (click)="calledScreen('Quick Reference')">Quick
             Reference</span>
-        <span class="font-medium cursor-pointer hover:text-gray-900 text-secondary"
+        <span *ngIf="!isUpdateStore" class="font-medium cursor-pointer hover:text-gray-900 text-secondary"
             [ngClass]="{'text-gray-900': mainScreen=='Store Management Types'}"
             (click)="calledScreen('Store Management Types')">Store Management Types</span>
+        <span *ngIf="isUpdateStore" class="font-medium cursor-pointer hover:text-gray-900 text-secondary"
+            (click)="backToStoreList()" matTooltip="Back to stores list">Stores List</span>
     </div>
     <!-- Quick Reference -->
-    <div *ngIf="mainScreen == 'Quick Reference'">
-        <div class="p-5" *ngIf="ordersLoader">
-            <ngx-skeleton-loader count="8" appearance="line" animation="pulse" [theme]="{ 
-                'background-color': '#dedede'
-              }">
-            </ngx-skeleton-loader>
-        </div>
-        <div *ngIf="!ordersLoader" class="p-6">
-            <div class="bg-card rounded-2xl shadow p-6">
+    <div *ngIf="mainScreen == 'Quick Reference' && !isUpdateStore" class="mt-5">
+        <div>
+            <div class="bg-card shadow p-5">
                 <div class="row">
                     <div class="col-12">
                         <mat-form-field class="w-full">
-                            <mat-label>Select an FLPS Store To Edit</mat-label>
-                            <mat-select matInput>
-                                <mat-option *ngFor="let item of ordersDataSource"
-                                    [value]="item.fk_orderID">{{item.storeName}}</mat-option>
-                            </mat-select>
+                            <input matInput placeholder="Search Keyword" [disabled]="isSearching" [(ngModel)]="keyword"
+                                (keyup.enter)="searchStore($event.target.value)">
                         </mat-form-field>
-                    </div>
-                    <div class="col-12 text-right">
-                        <button mat-stroked-button class="min-w-40">Update</button>
+                        <div class="text-right text-secondary cursor-pointer hover:text-gray-900"
+                            (click)="resetSearch()" *ngIf="!isSearching">Reset</div>
+                        <div class="text-right text-secondary cursor-pointer" *ngIf="isSearching">Searching...</div>
                     </div>
                 </div>
             </div>
         </div>
-        <div *ngIf="ordersDataSource.length > 0 && !ordersLoader;else other_content" class="w-full">
-            <table mat-table [dataSource]="ordersDataSource" class="w-full border-t">
+        <div *ngIf="quickStoresList.length > 0;else other_content" class="w-full">
+            <table mat-table [dataSource]="quickStoresList" class="w-full border-t">
+                <ng-container matColumnDef="id">
+                    <th mat-header-cell *matHeaderCellDef class="text-sm">
+                        Store ID
+                    </th>
+                    <td mat-cell *matCellDef="let element" class="text-sm">
+                        {{element.pk_storeID}}
+                    </td>
+                </ng-container>
                 <ng-container matColumnDef="store">
                     <th mat-header-cell *matHeaderCellDef class="text-sm">
                         Stores
@@ -43,36 +44,22 @@
                         {{element.storeName}}
                     </td>
                 </ng-container>
-                <ng-container matColumnDef="user">
-                    <th mat-header-cell *matHeaderCellDef class="text-sm">
-                        Users
-                    </th>
-                    <td mat-cell *matCellDef="let element" class="text-sm">
-                        {{element.customerName}}
-                    </td>
-                </ng-container>
-                <ng-container matColumnDef="commission">
-                    <th mat-header-cell *matHeaderCellDef class="text-sm">
-                        Store Commission
-                    </th>
-                    <td mat-cell *matCellDef="let element" class="text-sm">
-                        10000%
-                    </td>
-                </ng-container>
-                <ng-container matColumnDef="d_commission">
-                    <th mat-header-cell *matHeaderCellDef class="text-sm">
-                        Default Commission
-                    </th>
-                    <td mat-cell *matCellDef="let element" class="text-sm">
-                        20000%
-                    </td>
-                </ng-container>
+
                 <ng-container matColumnDef="management">
                     <th mat-header-cell *matHeaderCellDef class="text-sm">
                         Management
                     </th>
-                    <td mat-cell *matCellDef="let element" class="text-sm">
-                        Single
+                    <td mat-cell *matCellDef="let element" class="text-sm text-capitalize">
+                        {{element.flpsManagement}}
+                    </td>
+                </ng-container>
+                <ng-container matColumnDef="edit">
+                    <th mat-header-cell *matHeaderCellDef class="text-sm text-center">
+                        Update
+                    </th>
+                    <td mat-cell *matCellDef="let element" class="text-sm text-center">
+                        <mat-icon (click)="toggleUpdateStore(element)" matTooltip="View Details & Update Store"
+                            svgIcon="heroicons_outline:pencil-alt"></mat-icon>
                     </td>
                 </ng-container>
                 <tr mat-header-row *matHeaderRowDef="displayedStoresColumns;" class="h-18 bg-light"></tr>
@@ -81,27 +68,28 @@
                 </tr>
             </table>
             <mat-paginator #paginator class="border-b sm:border-t sm:border-b-0 z-10 bg-gray-50 dark:bg-transparent"
-                [ngClass]="{'pointer-events-none': ordersLoader}" [length]="totalOrders" [pageIndex]="0" [pageSize]="20"
-                (page)="getNextOrderdData($event)" [hidePageSize]="true">
+                [length]="totalStores" [pageIndex]="0" [pageSize]="20" (page)="getNextFLPSQuickStore($event)"
+                [hidePageSize]="true">
             </mat-paginator>
         </div>
         <!-- No color Found -->
         <ng-template #other_content>
             <div class="text-secondary font-semibold p-5 text-center" *ngIf="!ordersLoader">
-                There are no orders associated with this FLPS user.
+                There are no stores associated with this FLPS user.
             </div>
         </ng-template>
     </div>
     <!-- Store Management Types -->
-    <div class="mt-5" *ngIf="mainScreen == 'Store Management Types'">
-        <div class="px-5" *ngIf="ordersLoader">
-            <ngx-skeleton-loader count="8" appearance="line" animation="pulse" [theme]="{ 
-                'background-color': '#dedede'
-              }">
-            </ngx-skeleton-loader>
+    <div class="mt-5" *ngIf="mainScreen == 'Store Management Types' && !isUpdateStore">
+        <div class="px-5 text-right">
+            <button mat-stroked-button class="min-w-40" [disabled]="isUpdateStoresLoader" (click)="updateStoresTypes()">
+                <mat-progress-spinner *ngIf="isUpdateStoresLoader" [diameter]="24" [mode]="'indeterminate'">
+                </mat-progress-spinner>
+                <span *ngIf="!isUpdateStoresLoader">Update Stores</span>
+            </button>
         </div>
-        <div *ngIf="ordersDataSource.length > 0 && !ordersLoader;else other_content" class="w-full">
-            <table mat-table [dataSource]="ordersDataSource" class="w-full border-t">
+        <div *ngIf="manageStoresList.length > 0;else other_content" class="w-full mt-5">
+            <table mat-table [dataSource]="manageStoresList" class="w-full border-t">
                 <ng-container matColumnDef="store">
                     <th mat-header-cell *matHeaderCellDef class="text-sm">
                         Stores
@@ -114,10 +102,11 @@
                     <th mat-header-cell *matHeaderCellDef class="text-sm">
                         Action
                     </th>
-                    <td mat-cell *matCellDef="let element" class="text-sm w-60">
-                        <select class="form-control text-sm">
-                            <option>Single</option>
-                            <option>Shared</option>
+                    <td mat-cell *matCellDef="let element;" class="text-sm w-60">
+                        <select class="form-control text-sm" [(ngModel)]="element.flpsManagement"
+                            (change)="changeUpdatedList(element)">
+                            <option value="single">Single</option>
+                            <option value="shared">Shared</option>
                         </select>
                     </td>
                 </ng-container>
@@ -127,14 +116,125 @@
                 </tr>
             </table>
             <mat-paginator #paginator class="border-b sm:border-t sm:border-b-0 z-10 bg-gray-50 dark:bg-transparent"
-                [ngClass]="{'pointer-events-none': ordersLoader}" [length]="totalOrders" [pageIndex]="0" [pageSize]="20"
-                (page)="getNextOrderdData($event)" [hidePageSize]="true">
+                [length]="totalManageStores" [pageIndex]="0" [pageSize]="20" (page)="getNextFLPSStore($event)"
+                [hidePageSize]="true">
             </mat-paginator>
         </div>
         <!-- No color Found -->
         <ng-template #other_content>
             <div class="text-secondary font-semibold p-5 text-center">
-                There are no orders associated with this FLPS user.
+                There are no stores associated with this FLPS user.
+            </div>
+        </ng-template>
+    </div>
+    <!-- Update -->
+    <div class="mt-5 bg-card shadow pb-5" *ngIf="isUpdateStore">
+        <div class="p-5" *ngIf="isStoreDetailLoader">
+            <ngx-skeleton-loader count="8" appearance="line" animation="pulse" [theme]="{ 
+                    'background-color': '#dedede'
+                }">
+            </ngx-skeleton-loader>
+        </div>
+        <div class="p-5" *ngIf="!isStoreDetailLoader">
+            <mat-form-field class="w-full">
+                <mat-label>Select FLPS User <span *ngIf="isLoadingEmployee">(Fetching...)</span></mat-label>
+                <mat-select [(ngModel)]="ngUser" [disabled]="isLoadingEmployee">
+                    <mat-option *ngFor="let item of employeeUser" [value]="item.pk_userID">{{item.firstName +' '+
+                        item.lastName}}</mat-option>
+                </mat-select>
+            </mat-form-field>
+            <mat-checkbox [(ngModel)]="ngEmailCheck">Send congratulations email?</mat-checkbox>
+            <div class="text-right">
+                <button mat-stroked-button matTooltip="Add User" class="min-w-30" [disabled]="isAddNewUSerLoader"
+                    (click)="addStoreUser()">
+                    <span *ngIf="!isAddNewUSerLoader">Add</span>
+                    <mat-progress-spinner *ngIf="isAddNewUSerLoader" [diameter]="24" [mode]="'indeterminate'">
+                    </mat-progress-spinner>
+                </button>
+            </div>
+        </div>
+        <!-- Notes -->
+        <div class="px-5" *ngIf="!isStoreDetailLoader">
+            <fuse-alert [appearance]="'soft'" [type]="'warn'" [showIcon]="false">
+                Note: A store-level commission will override the user's default commission for all orders on this store.
+                <br>
+                Note: Assigning users to a store will associate all new orders with those users.
+            </fuse-alert>
+        </div>
+        <div *ngIf="detailedUsers.length > 0 && !isStoreDetailLoader;else other_content" class="w-full mt-5">
+            <table mat-table [dataSource]="detailedUsers" class="w-full border-t">
+                <ng-container matColumnDef="id">
+                    <th mat-header-cell *matHeaderCellDef class="text-sm">
+                        User ID
+                    </th>
+                    <td mat-cell *matCellDef="let element" class="text-sm min-w-10">
+                        {{element.pk_userID}}
+                    </td>
+                </ng-container>
+                <ng-container matColumnDef="name">
+                    <th mat-header-cell *matHeaderCellDef class="text-sm">
+                        User Name
+                    </th>
+                    <td mat-cell *matCellDef="let element" class="text-sm min-w-40">
+                        {{element.firstName + ' ' + element.lastName}}
+                    </td>
+                </ng-container>
+
+                <ng-container matColumnDef="primary">
+                    <th mat-header-cell *matHeaderCellDef class="text-sm">
+                        Primary
+                    </th>
+                    <td mat-cell *matCellDef="let element" class="text-sm min-w-30">
+                        <div class="pr-2">
+                            <select class="form-control text-sm" [(ngModel)]="element.blnPrimary">
+                                <option [value]="true">Yes</option>
+                                <option [value]="false">No</option>
+                            </select>
+                        </div>
+                    </td>
+                </ng-container>
+                <ng-container matColumnDef="commission">
+                    <th mat-header-cell *matHeaderCellDef class="text-sm">
+                        Commission %
+                    </th>
+                    <td mat-cell *matCellDef="let element" class="text-sm min-w-30">
+                        <input type="number" class="form-control text-sm" [(ngModel)]="element.commission">
+                    </td>
+                </ng-container>
+                <ng-container matColumnDef="action">
+                    <th mat-header-cell *matHeaderCellDef class="text-sm text-center">
+                        Action
+                    </th>
+                    <td mat-cell *matCellDef="let element" class="text-sm min-w-20">
+                        <div class="flex justify-center">
+                            <mat-icon class="mr-1" (click)="updateStoreUser(element)" matTooltip="Update User"
+                                svgIcon="heroicons_outline:check" *ngIf="!element.updateLoader"></mat-icon>
+                            <mat-progress-spinner class="mr-1" *ngIf="element.updateLoader" [diameter]="24"
+                                [mode]="'indeterminate'">
+                            </mat-progress-spinner>
+                            <mat-progress-spinner class="mr-1" *ngIf="element.delLoader" [diameter]="24"
+                                [mode]="'indeterminate'">
+                            </mat-progress-spinner>
+                            <mat-icon *ngIf="!element.delLoader" class="mr-1" (click)="removeStoreUser(element)"
+                                matTooltip="Remove User" svgIcon="heroicons_outline:trash"></mat-icon>
+                        </div>
+                    </td>
+                </ng-container>
+                <tr mat-header-row *matHeaderRowDef="detailedUsersColumns;" class="h-18 bg-light"></tr>
+                <tr mat-row *matRowDef="let row; columns: detailedUsersColumns;"
+                    class="h-14 hover:bg-gray-100 dark:hover:bg-hover" style="cursor: pointer;">
+                </tr>
+            </table>
+            <mat-paginator *ngIf="totalDetailedUsers > 20" #paginator
+                class="border-b sm:border-t sm:border-b-0 z-10 bg-gray-50 dark:bg-transparent"
+                [length]="totalDetailedUsers" [pageIndex]="0" [pageSize]="20" (page)="getNextPageStoreUsers($event)"
+                [hidePageSize]="true">
+            </mat-paginator>
+        </div>
+        <!-- No color Found -->
+        <ng-template #other_content>
+            <div class="text-secondary font-semibold p-5 text-center" *ngIf="!isStoreDetailLoader">
+                There are no users.
             </div>
         </ng-template>
     </div>

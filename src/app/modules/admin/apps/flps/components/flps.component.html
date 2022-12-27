@@ -90,8 +90,8 @@
     <mat-drawer-container class="flex-auto sm:h-full">
 
         <!-- Drawer -->
-        <mat-drawer class="sm:w-96 dark:bg-gray-900" [autoFocus]="false" [mode]="drawerMode" [opened]="drawerOpened"
-            #drawer>
+        <mat-drawer *ngIf="flpsToken" class="sm:w-96 dark:bg-gray-900" [autoFocus]="false" [mode]="drawerMode"
+            [opened]="drawerOpened" #drawer>
             <!-- Header -->
             <div class="flex items-center justify-between m-8 mr-6 sm:my-10">
                 <!-- Title -->
@@ -134,7 +134,7 @@
             <div class="flex-auto  pt-9 pb-12  md:pb-12" #topScrollAnchor>
 
                 <!-- Panel header -->
-                <div class="flex items-center px-6">
+                <div class="flex items-center px-6" *ngIf="flpsToken">
 
                     <!-- Drawer toggle -->
                     <button class="lg:hidden -ml-2" mat-icon-button (click)="drawer.toggle()">
@@ -146,9 +146,30 @@
                         {{getPanelInfo(selectedPanel).title}}
                     </div>
                 </div>
+                <div class="flex items-center justify-center px-6" *ngIf="!flpsToken" style="height: 100%;">
+                    <div class="w-full sm:w-auto py-8 px-4 sm:p-12 sm:rounded-2xl sm:shadow sm:bg-card">
+                        <div class="w-full max-w-80 sm:w-80 mx-auto sm:mx-0">
+                            <div class="mt-8 text-4xl font-extrabold tracking-tight leading-tight">Sign in</div>
+                            <mat-form-field class="w-full">
+                                <mat-label>Username</mat-label>
+                                <input matInput [(ngModel)]="ngEmail" type="email">
+                            </mat-form-field>
+                            <mat-form-field class="w-full">
+                                <mat-label>Password</mat-label>
+                                <input matInput [(ngModel)]="ngPassword" type="password">
+                            </mat-form-field>
+                            <button [disabled]="isLoginLoader" mat-flat-button class="w-full" [color]="'primary'"
+                                [matTooltip]="'Login'" (click)="loginFLPS()">
+                                <span *ngIf="!isLoginLoader"> Login </span>
+                                <mat-progress-spinner *ngIf="isLoginLoader" [diameter]="24" [mode]="'indeterminate'">
+                                </mat-progress-spinner>
+                            </button>
+                        </div>
+                    </div>
+                </div>
 
                 <!-- Load settings panel -->
-                <div class="mt-8">
+                <div class="mt-8" *ngIf="flpsToken">
                     <ng-container [ngSwitch]="selectedPanel">
                         <!-- Account -->
                         <ng-container *ngSwitchCase="'account'">

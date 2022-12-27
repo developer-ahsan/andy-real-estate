@@ -16,6 +16,7 @@ export class FLPSService {
     public navigationLabels = navigations;
 
     private _employeeAdmins: BehaviorSubject<any[] | null> = new BehaviorSubject<any[]>(null);
+    private _flpsStores: BehaviorSubject<any[] | null> = new BehaviorSubject<any[]>(null);
     /**
      * Constructor
      */
@@ -38,9 +39,24 @@ export class FLPSService {
     get employeeAdmins$(): Observable<any[]> {
         return this._employeeAdmins.asObservable();
     };
+    // Stores
+    get flpsStores$(): Observable<any[]> {
+        return this._flpsStores.asObservable();
+    };
 
 
-
+    // Check FLP Login
+    checkFLPSLogin(params): Observable<any[]> {
+        return this._httpClient.get<any[]>(environment.flps, {
+            params: params
+        }).pipe(
+            tap((response: any) => {
+                if (response["success"]) {
+                    sessionStorage.setItem('flpsAccessToken', 'userLoggedIn');
+                }
+            })
+        );
+    };
     // Common get Calls
     getFlpsData(params): Observable<any[]> {
         return this._httpClient.get<any[]>(environment.flps, {
@@ -70,6 +86,20 @@ export class FLPSService {
         }).pipe(
             tap((response: any) => {
                 this._employeeAdmins.next(response);
+            })
+        );
+    };
+    // FLPS Stores
+    getFLPSStores(): Observable<any[]> {
+        return this._httpClient.get<any[]>(environment.flps, {
+            params: {
+                view_stores: true,
+                bln_active: 1,
+                size: 20
+            }
+        }).pipe(
+            tap((response: any) => {
+                this._flpsStores.next(response);
             })
         );
     };

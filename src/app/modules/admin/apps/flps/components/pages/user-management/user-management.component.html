@@ -25,12 +25,13 @@
                 </mat-button-toggle>
             </mat-button-toggle-group>
         </div> -->
-        <div class="px-5 mt-5" *ngIf="mainScreen == 'Current Users' && isLoading">
-            <div class="rounded-2xl shadow bg-card p-5">
-                <ngx-skeleton-loader count="8" appearance="line" animation="pulse">
-                </ngx-skeleton-loader>
-            </div>
+        <div class="p-5" *ngIf="mainScreen == 'Current Users' && isLoading">
+            <ngx-skeleton-loader count="8" appearance="line" animation="pulse" [theme]="{ 
+                'background-color': '#dedede'
+              }">
+            </ngx-skeleton-loader>
         </div>
+
         <div class="mt-5" *ngIf="mainScreen == 'Current Users' && !isLoading && !isUpdateUser">
             <div *ngIf="dataSource.length > 0;else other_content" class="w-full">
                 <table mat-table [dataSource]="dataSource" class="w-full border-t">
@@ -104,81 +105,84 @@
                 </div>
             </ng-template>
         </div>
-        <div *ngIf="mainScreen == 'New FLPS User' && !isUpdateUser" class="p-6">
-            <div class="row rounded-2xl shadow bg-card p-6" [formGroup]="addNewUserForm">
-                <div class="col-12 col-md-6">
-                    <mat-form-field class="w-full">
-                        <mat-label>Employee* </mat-label>
-                        <mat-select matInput formControlName="admin_user_id">
-                            <mat-option [value]="0">Select an employee</mat-option>
-                            <mat-option *ngFor="let item of employeeUser" [value]="item.pk_userID">{{item.firstName + '
-                                ' + item.lastName}}</mat-option>
-                        </mat-select>
-                    </mat-form-field>
-                </div>
-                <div class="col-12 col-md-6">
-                    <mat-form-field class="w-full">
-                        <mat-label>First Name (30) </mat-label>
-                        <input matInput type="text" maxlength="30" formControlName="firstName">
-                    </mat-form-field>
-                </div>
-                <div class="col-12 col-md-6">
-                    <mat-form-field class="w-full">
-                        <mat-label>Last Name (50) </mat-label>
-                        <input matInput type="text" maxlength="50" formControlName="lastName">
-                    </mat-form-field>
-                </div>
-                <div class="col-12 col-md-6">
-                    <mat-form-field class="w-full">
-                        <mat-label>Email (50)* </mat-label>
-                        <input matInput type="text" maxlength="50" formControlName="email">
-                    </mat-form-field>
-                </div>
-                <div class="col-12 col-md-6">
-                    <mat-form-field class="w-full">
-                        <mat-label>UserName (15)* </mat-label>
-                        <input matInput type="text" maxlength="15" formControlName="userName">
-                    </mat-form-field>
-                </div>
-                <div class="col-12 col-md-6">
-                    <mat-form-field class="w-full">
-                        <mat-label>Password(15)* </mat-label>
-                        <input matInput type="text" maxlength="15" formControlName="password">
-                    </mat-form-field>
-                </div>
-                <div class="col-12 col-md-6">
-                    <mat-form-field class="w-full">
-                        <mat-label>Default Commission (%) </mat-label>
-                        <input matInput type="number" formControlName="defaultCommission">
-                    </mat-form-field>
-                </div>
-                <div class="col-12 col-md-6">
-                    <mat-form-field class="w-full">
-                        <mat-label>Admin User</mat-label>
-                        <mat-select matInput formControlName="blnAdmin">
-                            <mat-option [value]="false">No</mat-option>
-                            <mat-option [value]="true">Yes</mat-option>
-                        </mat-select>
-                    </mat-form-field>
-                </div>
+        <div *ngIf="mainScreen == 'New FLPS User' && !isUpdateUser" class="mt-5">
+            <div class="shadow bg-card p-6">
+                <div class="row" [formGroup]="addNewUserForm">
+                    <div class="col-12 col-md-6">
+                        <mat-form-field class="w-full">
+                            <mat-label>Employee* </mat-label>
+                            <mat-select matInput formControlName="admin_user_id">
+                                <mat-option [value]="0">Select an employee</mat-option>
+                                <mat-option *ngFor="let item of employeeUser" [value]="item.pk_userID">{{item.firstName
+                                    + '
+                                    ' + item.lastName}}</mat-option>
+                            </mat-select>
+                        </mat-form-field>
+                    </div>
+                    <div class="col-12 col-md-6">
+                        <mat-form-field class="w-full">
+                            <mat-label>First Name (30) </mat-label>
+                            <input matInput type="text" maxlength="30" formControlName="firstName">
+                        </mat-form-field>
+                    </div>
+                    <div class="col-12 col-md-6">
+                        <mat-form-field class="w-full">
+                            <mat-label>Last Name (50) </mat-label>
+                            <input matInput type="text" maxlength="50" formControlName="lastName">
+                        </mat-form-field>
+                    </div>
+                    <div class="col-12 col-md-6">
+                        <mat-form-field class="w-full">
+                            <mat-label>Email (50)* </mat-label>
+                            <input matInput type="text" maxlength="50" formControlName="email">
+                        </mat-form-field>
+                    </div>
+                    <div class="col-12 col-md-6">
+                        <mat-form-field class="w-full">
+                            <mat-label>UserName (15)* </mat-label>
+                            <input matInput type="text" maxlength="15" formControlName="userName">
+                        </mat-form-field>
+                    </div>
+                    <div class="col-12 col-md-6">
+                        <mat-form-field class="w-full">
+                            <mat-label>Password(15)* </mat-label>
+                            <input matInput type="text" maxlength="15" formControlName="password">
+                        </mat-form-field>
+                    </div>
+                    <div class="col-12 col-md-6">
+                        <mat-form-field class="w-full">
+                            <mat-label>Default Commission (%) </mat-label>
+                            <input matInput type="number" formControlName="defaultCommission">
+                        </mat-form-field>
+                    </div>
+                    <div class="col-12 col-md-6">
+                        <mat-form-field class="w-full">
+                            <mat-label>Admin User</mat-label>
+                            <mat-select matInput formControlName="blnAdmin">
+                                <mat-option [value]="false">No</mat-option>
+                                <mat-option [value]="true">Yes</mat-option>
+                            </mat-select>
+                        </mat-form-field>
+                    </div>
 
-                <div class="text-right col-12">
-                    <button [disabled]="isAddNewUserLoader || !addNewUserForm.valid" class="min-w-50" mat-stroked-button
-                        [matTooltip]="'Add New User'" (click)="addNewUser()">
-                        <mat-icon svgIcon="heroicons_solid:plus" *ngIf="!isAddNewUserLoader"></mat-icon>
-                        <span class="ml-2" *ngIf="!isAddNewUserLoader"> Add New User </span>
-                        <mat-progress-spinner *ngIf="isAddNewUserLoader" [diameter]="24" [mode]="'indeterminate'">
-                        </mat-progress-spinner>
-                    </button>
+                    <div class="text-right col-12">
+                        <button [disabled]="isAddNewUserLoader || !addNewUserForm.valid" class="min-w-50"
+                            mat-stroked-button [matTooltip]="'Add New User'" (click)="addNewUser()">
+                            <mat-icon svgIcon="heroicons_solid:plus" *ngIf="!isAddNewUserLoader"></mat-icon>
+                            <span class="ml-2" *ngIf="!isAddNewUserLoader"> Add New User </span>
+                            <mat-progress-spinner *ngIf="isAddNewUserLoader" [diameter]="24" [mode]="'indeterminate'">
+                            </mat-progress-spinner>
+                        </button>
+                    </div>
                 </div>
             </div>
         </div>
         <div class="mt-5" *ngIf="mainScreen == 'View Disabled Users' && !isUpdateUser">
             <div class="px-5" *ngIf="isDisabledLoading">
-                <div class="rounded-2xl shadow bg-card p-5">
-                    <ngx-skeleton-loader count="8" appearance="line" animation="pulse">
-                    </ngx-skeleton-loader>
-                </div>
+                <ngx-skeleton-loader count="8" appearance="line" animation="pulse" [theme]="{ 
+                    'background-color': '#dedede'
+                  }">
+                </ngx-skeleton-loader>
             </div>
             <div *ngIf="disabledDataSource.length > 0 && !isDisabledLoading;else other_content" class="w-full">
                 <table mat-table [dataSource]="disabledDataSource" class="w-full border-t">
@@ -274,153 +278,164 @@
             </div>
 
             <!-- Edit User -->
-            <div class="p-6" *ngIf="mainScreenUser == 'Edit User'">
-                <div class="row rounded-2xl shadow bg-card p-6" [formGroup]="updateUserForm">
-                    <div class="col-12 pb-5">
-                        <h2 class="text-lg font-semibold">Edit User</h2>
-                    </div>
-                    <div class="col-12 col-md-6">
-                        <mat-form-field class="w-full">
-                            <mat-label>Employee* </mat-label>
-                            <mat-select matInput formControlName="fk_adminUserID">
-                                <mat-option [value]="0">Select an employee</mat-option>
-                                <mat-option *ngFor="let item of employeeUser" [value]="item.pk_userID">{{item.firstName
-                                    + '
-                                    ' + item.lastName}}</mat-option>
-                            </mat-select>
-                        </mat-form-field>
-                    </div>
-                    <div class="col-12 col-md-6">
-                        <mat-form-field class="w-full">
-                            <mat-label>First Name (30) </mat-label>
-                            <input matInput type="text" maxlength="30" formControlName="firstName">
-                        </mat-form-field>
-                    </div>
-                    <div class="col-12 col-md-6">
-                        <mat-form-field class="w-full">
-                            <mat-label>Last Name (50) </mat-label>
-                            <input matInput type="text" maxlength="50" formControlName="lastName">
-                        </mat-form-field>
-                    </div>
-                    <div class="col-12 col-md-6">
-                        <mat-form-field class="w-full">
-                            <mat-label>Email (50)* </mat-label>
-                            <input matInput type="text" maxlength="50" formControlName="email">
-                        </mat-form-field>
-                    </div>
-                    <div class="col-12 col-md-6">
-                        <mat-form-field class="w-full">
-                            <mat-label>UserName (15)* </mat-label>
-                            <input matInput type="text" maxlength="15" formControlName="userName">
-                        </mat-form-field>
-                    </div>
-                    <div class="col-12 col-md-6">
-                        <mat-form-field class="w-full">
-                            <mat-label>Password(15)* </mat-label>
-                            <input matInput type="text" maxlength="15" formControlName="password">
-                        </mat-form-field>
-                    </div>
-                    <div class="col-12 col-md-6">
-                        <mat-form-field class="w-full">
-                            <mat-label>Default Commission (%) </mat-label>
-                            <input matInput type="number" formControlName="defaultCommission">
-                        </mat-form-field>
-                    </div>
-                    <div class="col-12 col-md-6">
-                        <mat-form-field class="w-full">
-                            <mat-label>Admin User</mat-label>
-                            <mat-select matInput formControlName="blnAdmin">
-                                <mat-option [value]="false">No</mat-option>
-                                <mat-option [value]="true">Yes</mat-option>
-                            </mat-select>
-                        </mat-form-field>
-                    </div>
-                    <div class="col-12 col-md-6">
-                        <mat-form-field class="w-full">
-                            <mat-label>Disabled</mat-label>
-                            <mat-select matInput formControlName="blnActive">
-                                <mat-option [value]="false">No</mat-option>
-                                <mat-option [value]="true">Yes</mat-option>
-                            </mat-select>
-                        </mat-form-field>
-                    </div>
+            <div class="mt-5" *ngIf="mainScreenUser == 'Edit User'">
+                <div class="shadow bg-card p-6">
+                    <div class="row" [formGroup]="updateUserForm">
+                        <div class="col-12 pb-5">
+                            <h2 class="text-lg font-semibold">Edit User</h2>
+                        </div>
+                        <div class="col-12 col-md-6">
+                            <mat-form-field class="w-full">
+                                <mat-label>Employee* </mat-label>
+                                <mat-select matInput formControlName="fk_adminUserID">
+                                    <mat-option [value]="0">Select an employee</mat-option>
+                                    <mat-option *ngFor="let item of employeeUser"
+                                        [value]="item.pk_userID">{{item.firstName
+                                        + '
+                                        ' + item.lastName}}</mat-option>
+                                </mat-select>
+                            </mat-form-field>
+                        </div>
+                        <div class="col-12 col-md-6">
+                            <mat-form-field class="w-full">
+                                <mat-label>First Name (30) </mat-label>
+                                <input matInput type="text" maxlength="30" formControlName="firstName">
+                            </mat-form-field>
+                        </div>
+                        <div class="col-12 col-md-6">
+                            <mat-form-field class="w-full">
+                                <mat-label>Last Name (50) </mat-label>
+                                <input matInput type="text" maxlength="50" formControlName="lastName">
+                            </mat-form-field>
+                        </div>
+                        <div class="col-12 col-md-6">
+                            <mat-form-field class="w-full">
+                                <mat-label>Email (50)* </mat-label>
+                                <input matInput type="text" maxlength="50" formControlName="email">
+                            </mat-form-field>
+                        </div>
+                        <div class="col-12 col-md-6">
+                            <mat-form-field class="w-full">
+                                <mat-label>UserName (15)* </mat-label>
+                                <input matInput type="text" maxlength="15" formControlName="userName">
+                            </mat-form-field>
+                        </div>
+                        <div class="col-12 col-md-6">
+                            <mat-form-field class="w-full">
+                                <mat-label>Password(15)* </mat-label>
+                                <input matInput type="text" maxlength="15" formControlName="password">
+                            </mat-form-field>
+                        </div>
+                        <div class="col-12 col-md-6">
+                            <mat-form-field class="w-full">
+                                <mat-label>Default Commission (%) </mat-label>
+                                <input matInput type="number" formControlName="defaultCommission">
+                            </mat-form-field>
+                        </div>
+                        <div class="col-12 col-md-6">
+                            <mat-form-field class="w-full">
+                                <mat-label>Admin User</mat-label>
+                                <mat-select matInput formControlName="blnAdmin">
+                                    <mat-option [value]="false">No</mat-option>
+                                    <mat-option [value]="true">Yes</mat-option>
+                                </mat-select>
+                            </mat-form-field>
+                        </div>
+                        <div class="col-12 col-md-6">
+                            <mat-form-field class="w-full">
+                                <mat-label>Disabled</mat-label>
+                                <mat-select matInput formControlName="blnActive">
+                                    <mat-option [value]="false">No</mat-option>
+                                    <mat-option [value]="true">Yes</mat-option>
+                                </mat-select>
+                            </mat-form-field>
+                        </div>
 
-                    <div class="justify-end flex col-12">
-                        <button [disabled]="isUpdateUserLoader" class="min-w-40" mat-stroked-button
-                            [matTooltip]="'Update User'" (click)="updateUser()">
-                            <mat-icon svgIcon="heroicons_solid:pencil" *ngIf="!isUpdateUserLoader"></mat-icon>
-                            <span class="ml-2" *ngIf="!isUpdateUserLoader"> Update User </span>
-                            <mat-progress-spinner *ngIf="isUpdateUserLoader" [diameter]="24" [mode]="'indeterminate'">
-                            </mat-progress-spinner>
-                        </button>
+                        <div class="justify-end flex col-12">
+                            <button [disabled]="isUpdateUserLoader" class="min-w-40" mat-stroked-button
+                                [matTooltip]="'Update User'" (click)="updateUser()">
+                                <mat-icon svgIcon="heroicons_solid:pencil" *ngIf="!isUpdateUserLoader"></mat-icon>
+                                <span class="ml-2" *ngIf="!isUpdateUserLoader"> Update User </span>
+                                <mat-progress-spinner *ngIf="isUpdateUserLoader" [diameter]="24"
+                                    [mode]="'indeterminate'">
+                                </mat-progress-spinner>
+                            </button>
+                        </div>
                     </div>
                 </div>
             </div>
             <!-- Remove User -->
-            <div class="p-6" *ngIf="mainScreenUser == 'Remove User'">
-                <div class="row rounded-2xl shadow bg-card p-6">
-                    <div class="col-12 pb-5">
-                        <h2 class="text-lg font-semibold">Remove User</h2>
-                    </div>
-                    <div class="col-12 mb-3">
-                        <fuse-alert [appearance]="'soft'" [type]="'warning'" [showIcon]="false">
-                            <p>
-                                NOTE: Removing an FLPS user will set all orders, stores, and store users associated with
-                                that user to the HOUSE USER. Click on "view orders" above to view all orders this FLPS
-                                user is associated with, and optionally reassign a new user.</p>
-                            <p class="mt-2">
+            <div class="mt-5" *ngIf="mainScreenUser == 'Remove User'">
+                <div class="shadow bg-card p-6">
+                    <div class="row">
+                        <div class="col-12 pb-5">
+                            <h2 class="text-lg font-semibold">Remove User</h2>
+                        </div>
+                        <div class="col-12 mb-3">
+                            <fuse-alert [appearance]="'soft'" [type]="'warning'" [showIcon]="false">
+                                <p>
+                                    NOTE: Removing an FLPS user will set all orders, stores, and store users associated
+                                    with
+                                    that user to the HOUSE USER. Click on "view orders" above to view all orders this
+                                    FLPS
+                                    user is associated with, and optionally reassign a new user.</p>
+                                <p class="mt-2">
 
-                                Click on "view customers" above to view all the customers this FLPS user is associatd
-                                with, and optionally reassign a new user.
-                            </p>
-                            <p class="mt-2">
-                                Click on "store management" on the left to view default users for stores.</p>
-                        </fuse-alert>
-                    </div>
-                    <div class="justify-end flex col-12">
-                        <button [disabled]="updateUserData.delLoader" class="min-w-40" mat-stroked-button
-                            [matTooltip]="'Remove User'" (click)="deleteUser(updateUserData, 'test')">
-                            <mat-icon svgIcon="heroicons_solid:trash" *ngIf="!updateUserData.delLoader"></mat-icon>
-                            <span class="ml-2" *ngIf="!updateUserData.delLoader"> Remove User </span>
-                            <mat-progress-spinner *ngIf="updateUserData.delLoader" [diameter]="24"
-                                [mode]="'indeterminate'">
-                            </mat-progress-spinner>
-                        </button>
+                                    Click on "view customers" above to view all the customers this FLPS user is
+                                    associatd
+                                    with, and optionally reassign a new user.
+                                </p>
+                                <p class="mt-2">
+                                    Click on "store management" on the left to view default users for stores.</p>
+                            </fuse-alert>
+                        </div>
+                        <div class="justify-end flex col-12">
+                            <button [disabled]="updateUserData.delLoader" class="min-w-40" mat-stroked-button
+                                [matTooltip]="'Remove User'" (click)="deleteUser(updateUserData, 'test')">
+                                <mat-icon svgIcon="heroicons_solid:trash" *ngIf="!updateUserData.delLoader"></mat-icon>
+                                <span class="ml-2" *ngIf="!updateUserData.delLoader"> Remove User </span>
+                                <mat-progress-spinner *ngIf="updateUserData.delLoader" [diameter]="24"
+                                    [mode]="'indeterminate'">
+                                </mat-progress-spinner>
+                            </button>
+                        </div>
                     </div>
                 </div>
             </div>
             <!-- Blanket Customer Percentage -->
-            <div class="p-6" *ngIf="mainScreenUser == 'Blanket Customer Percentage'">
-                <div class="row rounded-2xl shadow bg-card p-6">
-                    <div class="col-12 pb-5">
-                        <h2 class="text-lg font-semibold">Blanket Customer Percentage</h2>
-                    </div>
-                    <div class="col-12">
-                        <p>This tool will apply the percentage entered below to all customers for Adam Biats</p>
-                        <mat-form-field class="w-full">
-                            <mat-label>Enter Percentage* </mat-label>
-                            <input matInput type="number" [(ngModel)]="ngBlanketPercentage">
-                            <span matSuffix>&nbsp; %</span>
-                        </mat-form-field>
-                    </div>
-                    <div class="justify-end flex col-12">
-                        <button [disabled]="isBlanketLoader" class="min-w-40" mat-stroked-button [matTooltip]="'Apply'"
-                            (click)="addBlanketPercentage()">
-                            <mat-icon svgIcon="heroicons_solid:pencil" *ngIf="!isBlanketLoader"></mat-icon>
-                            <span class="ml-2" *ngIf="!isBlanketLoader"> Apply </span>
-                            <mat-progress-spinner *ngIf="isBlanketLoader" [diameter]="24" [mode]="'indeterminate'">
-                            </mat-progress-spinner>
-                        </button>
+            <div class="mt-5" *ngIf="mainScreenUser == 'Blanket Customer Percentage'">
+                <div class="shadow bg-card p-6">
+                    <div class="row">
+                        <div class="col-12 pb-5">
+                            <h2 class="text-lg font-semibold">Blanket Customer Percentage</h2>
+                        </div>
+                        <div class="col-12">
+                            <p>This tool will apply the percentage entered below to all customers for Adam Biats</p>
+                            <mat-form-field class="w-full">
+                                <mat-label>Enter Percentage* </mat-label>
+                                <input matInput type="number" [(ngModel)]="ngBlanketPercentage">
+                                <span matSuffix>&nbsp; %</span>
+                            </mat-form-field>
+                        </div>
+                        <div class="justify-end flex col-12">
+                            <button [disabled]="isBlanketLoader" class="min-w-40" mat-stroked-button
+                                [matTooltip]="'Apply'" (click)="addBlanketPercentage()">
+                                <mat-icon svgIcon="heroicons_solid:pencil" *ngIf="!isBlanketLoader"></mat-icon>
+                                <span class="ml-2" *ngIf="!isBlanketLoader"> Apply </span>
+                                <mat-progress-spinner *ngIf="isBlanketLoader" [diameter]="24" [mode]="'indeterminate'">
+                                </mat-progress-spinner>
+                            </button>
+                        </div>
                     </div>
                 </div>
             </div>
             <!-- View Orders -->
             <div class="mt-5" *ngIf="mainScreenUser == 'View Orders'">
                 <div class="px-5" *ngIf="ordersLoader">
-                    <div class="rounded-2xl shadow bg-card p-5">
-                        <ngx-skeleton-loader count="8" appearance="line" animation="pulse">
-                        </ngx-skeleton-loader>
-                    </div>
+                    <ngx-skeleton-loader count="8" appearance="line" animation="pulse" [theme]="{ 
+                        'background-color': '#dedede'
+                      }">
+                    </ngx-skeleton-loader>
                 </div>
                 <div *ngIf="ordersDataSource.length > 0 && !ordersLoader;else other_content" class="w-full">
                     <table mat-table [dataSource]="ordersDataSource" class="w-full border-t">
