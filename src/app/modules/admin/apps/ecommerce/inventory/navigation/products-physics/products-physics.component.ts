@@ -66,9 +66,7 @@ export class ProductsPhysicsComponent implements OnInit, OnDestroy {
   ) { }
 
   ngOnInit(): void {
-    if (!this.selectedProduct.blnApparel) {
-      this.getFOBLocations();
-    }
+    this.getFOBLocations();
     const { flatRateShipping } = this.selectedProduct;
     this.caseQtyTabLoader = true;
     this.caseDimensionTabLoader = true;
@@ -548,22 +546,28 @@ export class ProductsPhysicsComponent implements OnInit, OnDestroy {
       product_id: this.selectedProduct.pk_productID
     }
     this._inventoryService.getProductsData(params).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
-      let selected = res["fob_locations"];
-      let allLocations = res["data"];
-      selected.forEach(element => {
-        element.checked = true;
-        element.pk_FOBLocationID = element.fk_FOBLocationID;
-        this.FOBLocations.push(element);
-        this.checkedFOBLocations.push(element.fk_FOBLocationID);
-      });
-      allLocations.forEach(element => {
-        const index = this.FOBLocations.findIndex(item => item.fk_FOBLocationID == element.pk_FOBLocationID);
-        if (index < 0) {
-          element.checked = false;
+      if (this.selectedProduct.blnApparel) {
+        let allLocations = res["data"];
+        allLocations.forEach(element => {
+          this.checkedFOBLocations.push(element.pk_FOBLocationID);
+        });
+      } else {
+        let selected = res["fob_locations"];
+        let allLocations = res["data"];
+        selected.forEach(element => {
+          element.checked = true;
+          element.pk_FOBLocationID = element.fk_FOBLocationID;
           this.FOBLocations.push(element);
-        }
-      });
-      console.log(this.FOBLocations)
+          this.checkedFOBLocations.push(element.fk_FOBLocationID);
+        });
+        allLocations.forEach(element => {
+          const index = this.FOBLocations.findIndex(item => item.fk_FOBLocationID == element.pk_FOBLocationID);
+          if (index < 0) {
+            element.checked = false;
+            this.FOBLocations.push(element);
+          }
+        });
+      }
     });
   }
   changeFobLocations(item, ev) {
