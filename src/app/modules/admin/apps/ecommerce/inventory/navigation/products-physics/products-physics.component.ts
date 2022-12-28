@@ -57,6 +57,7 @@ export class ProductsPhysicsComponent implements OnInit, OnDestroy {
 
   FOBLocations = [];
   checkedFOBLocations = [];
+  fobLocationLoader: boolean = false;
 
   constructor(
     private _changeDetectorRef: ChangeDetectorRef,
@@ -545,7 +546,9 @@ export class ProductsPhysicsComponent implements OnInit, OnDestroy {
       supplier_id: this.selectedProduct.fk_supplierID,
       product_id: this.selectedProduct.pk_productID
     }
+    this.fobLocationLoader = true;
     this._inventoryService.getProductsData(params).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+      this.fobLocationLoader = false;
       if (this.selectedProduct.blnApparel) {
         let allLocations = res["data"];
         allLocations.forEach(element => {
@@ -568,6 +571,10 @@ export class ProductsPhysicsComponent implements OnInit, OnDestroy {
           }
         });
       }
+      this._changeDetectorRef.markForCheck();
+    }, err => {
+      this.fobLocationLoader = false;
+      this._changeDetectorRef.markForCheck();
     });
   }
   changeFobLocations(item, ev) {

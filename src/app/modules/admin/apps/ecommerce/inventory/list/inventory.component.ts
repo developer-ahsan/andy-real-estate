@@ -517,6 +517,7 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
 
     FOBLocations = [];
     checkedFOBLocations = [];
+    fobLocationLoader: boolean = false;
     // Open Modal
     openModal() {
         const dialogRef = this.dialog.open(ImprintRunComponent, {
@@ -1238,16 +1239,23 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
     };
 
     getFOBLocations() {
+        this.fobLocationLoader = true;
         let params = {
             company: true,
             fob_location: true,
             supplier_id: this.supplierId
         }
         this._inventoryService.getProductsData(params).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+            this.fobLocationLoader = false;
+
             this.FOBLocations = res["data"];
             this.FOBLocations.forEach(element => {
                 this.checkedFOBLocations.push(element.pk_FOBLocationID);
             });
+            this._changeDetectorRef.markForCheck();
+        }, err => {
+            this.fobLocationLoader = false;
+            this._changeDetectorRef.markForCheck();
         });
     }
     changeFobLocations(item, ev) {
