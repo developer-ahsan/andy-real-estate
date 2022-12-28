@@ -2,16 +2,16 @@ import { ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, OnDe
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { fuseAnimations } from '@fuse/animations';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { FuseMediaWatcherService } from '@fuse/services/media-watcher';
-import { FLPSService } from './flps.service';
+import { UsersService } from './users.service';
 import { UserService } from 'app/core/user/user.service';
 import { AuthService } from 'app/core/auth/auth.service';
 import { MatDrawer } from '@angular/material/sidenav';
 import Swal from 'sweetalert2'
 @Component({
     selector: 'flps',
-    templateUrl: './flps.component.html',
+    templateUrl: './users.component.html',
     encapsulation: ViewEncapsulation.None,
     changeDetection: ChangeDetectionStrategy.OnPush
 })
@@ -35,14 +35,15 @@ export class FLPSComponent {
     drawerMode: 'over' | 'side' = 'side';
     drawerOpened: boolean = true;
     panels: any[] = [];
-    selectedPanel: string = 'account';
+    selectedPanel: string = 'admin';
     /**
      * Constructor
      */
     constructor(
         private _changeDetectorRef: ChangeDetectorRef,
-        private _flpsService: FLPSService,
+        private _UsersService: UsersService,
         private _router: Router,
+        private route: ActivatedRoute,
         private _authService: AuthService,
         private _fuseMediaWatcherService: FuseMediaWatcherService,
     ) {
@@ -57,32 +58,50 @@ export class FLPSComponent {
      */
 
     ngOnInit(): void {
-        this.routes = this._flpsService.navigationLabels;
+        this.routes = this._UsersService.navigationLabels;
         this.isLoading = false;
         this.panels = [
             {
-                id: 'account',
-                icon: 'heroicons_outline:document-report',
-                title: 'Generate Report',
-                description: 'Manage your reports'
-            },
-            {
-                id: 'security',
+                id: 'admin',
                 icon: 'heroicons_outline:users',
-                title: 'User Management',
-                description: 'Manage your flps users information'
+                title: 'Admin Users',
+                description: 'Manage admin users',
+                route: 'admin-users'
             },
             {
-                id: 'plan-billing',
+                id: 'commentors',
+                icon: 'heroicons_outline:user-group',
+                title: 'Admin Commentors',
+                description: 'Manage admin commentors',
+                route: 'admin-commentors'
+            },
+            {
+                id: 'smart-art',
                 icon: 'mat_outline:settings',
-                title: 'Store Management',
-                description: 'Manage your stores information'
+                title: 'SmartArt Users',
+                description: 'Manage smartart users',
+                route: 'smartart-users'
             },
             {
-                id: 'logout',
-                icon: 'heroicons_outline:logout',
-                title: 'Logout',
-                description: 'Logout to end your session'
+                id: 'order',
+                icon: 'heroicons_outline:document-report',
+                title: 'OrderManage Users',
+                description: 'Manage order users',
+                route: 'order-users'
+            },
+            {
+                id: 'rapid',
+                icon: 'heroicons_outline:user-circle',
+                title: 'RapidBuild Users',
+                description: 'Manage rapidbuild users',
+                route: 'rapidbuild-users'
+            },
+            {
+                id: 'role',
+                icon: 'heroicons_outline:user',
+                title: 'Company Roles',
+                description: 'Manage company roles',
+                route: 'company-roles'
             }
         ];
 
@@ -131,7 +150,7 @@ export class FLPSComponent {
     }
     loginFLPS() {
         if (this.ngEmail == '' || this.ngPassword == '') {
-            this._flpsService.snackBar('Username and password is required');
+            this._UsersService.snackBar('Username and password is required');
             return;
         }
         this.isLoginLoader = true;
@@ -140,14 +159,14 @@ export class FLPSComponent {
             user_name: this.ngEmail,
             password: this.ngPassword
         }
-        this._flpsService.getFlpsData(payload).subscribe(res => {
+        this._UsersService.getFlpsData(payload).subscribe(res => {
             if (res["success"]) {
                 this.flpsToken = 'userLoggedIn';
                 sessionStorage.setItem('flpsAccessToken', 'userLoggedIn');
                 sessionStorage.setItem('FullName', res["data"][0].firstName + ' ' + res["data"][0].lastName);
-                this._flpsService.snackBar(res["message"]);
+                this._UsersService.snackBar(res["message"]);
             } else {
-                this._flpsService.snackBar(res["message"]);
+                this._UsersService.snackBar(res["message"]);
             }
             this.isLoginLoader = false;
             this._changeDetectorRef.markForCheck();
@@ -164,17 +183,15 @@ export class FLPSComponent {
         this._unsubscribeAll.next();
         this._unsubscribeAll.complete();
     }
-    goToPanel(panel: string): void {
-        this.selectedPanel = panel;
+    goToPanel(panel): void {
+        this.selectedPanel = panel.id;
 
         // Close the drawer on 'over' mode
         if (this.drawerMode === 'over') {
             this.drawer.close();
         }
-        if (this.selectedPanel == 'logout') {
-            this.selectedPanel = 'account';
-            this.logout();
-        }
+        this._router.navigate([panel.route], { relativeTo: this.route })
+        // this._router.navigateByUrl('admin-users');
         this.topScroll.nativeElement.scrollIntoView({ behavior: 'smooth' });
     }
 

@@ -128,7 +128,7 @@ export const defaultNavigation: FuseNavigationItem[] = [
         title: 'Users',
         icon: 'heroicons_outline:lock-open',
         type: 'basic',
-        link: '/apps/contacts',
+        link: '/apps/users',
     },
 ];
 export const compactNavigation: FuseNavigationItem[] = [

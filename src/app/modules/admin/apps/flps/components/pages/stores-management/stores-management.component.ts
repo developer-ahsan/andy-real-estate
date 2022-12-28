@@ -1,17 +1,18 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, OnInit, ViewChild, ViewEncapsulation } from '@angular/core';
+import { FormControl } from '@angular/forms';
 import { MatPaginator } from '@angular/material/paginator';
 import { Subject } from 'rxjs';
-import { takeUntil } from 'rxjs/operators';
+import { filter, takeUntil } from 'rxjs/operators';
 import { FLPSService } from '../../flps.service';
 import { AddFLPSStoreUser, DeleteFlpsUser, UpdateFlpsUser } from '../../flps.types';
 
 @Component({
-    selector: 'app-stores-management',
+    selector: 'app-storess-management',
     templateUrl: './stores-management.component.html',
     encapsulation: ViewEncapsulation.None,
     changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class FLPSStoresManagementComponent implements OnInit {
+export class FLPSsStoresManagementComponent implements OnInit {
     @ViewChild('paginator') paginator: MatPaginator;
     @ViewChild('topScroll') topScroll: ElementRef;
     private _unsubscribeAll: Subject<any> = new Subject<any>();
@@ -54,6 +55,12 @@ export class FLPSStoresManagementComponent implements OnInit {
     isLoadingEmployee: boolean = false;
 
 
+    searcEmployeeCtrl = new FormControl();
+    selectedEmployee: any;
+    isSearchingEmployee = false;
+    minLengthTerm = 3;
+    employeeAdmins: any[];
+
     constructor(
         private _changeDetectorRef: ChangeDetectorRef,
         private _flpsService: FLPSService
@@ -78,6 +85,37 @@ export class FLPSStoresManagementComponent implements OnInit {
             this.manageStoresList = res["data"];
             this.totalManageStores = res["totalRecords"];
         });
+    }
+    initialize() {
+        let params;
+        this.searcEmployeeCtrl.valueChanges.pipe(
+            filter(res => {
+                params = {
+                    view_store_all_admins: true,
+                    store_id: this.storeData.pk_storeID,
+                    keyword: res
+                }
+                return res !== null && res.length >= this.minLengthTerm
+            }),
+            distinctUntilChanged(),
+            debounceTime(500),
+            tap(() => {
+                this.employeeAdmins = [];
+                this.isSearching = true;
+                this._changeDetectorRef.markForCheck();
+            }),
+            switchMap(value => this._flpsService.getFlpsData(params)
+                .pipe(
+                    finalize(() => {
+                        this.isSearching = false
+                        this._changeDetectorRef.markForCheck();
+                    }),
+                )
+            )
+        )
+            .subscribe((data: any) => {
+                this.employeeAdmins = data['data'];
+            });
     }
     calledScreen(value) {
         this.mainScreen = value;
@@ -193,6 +231,8 @@ export class FLPSStoresManagementComponent implements OnInit {
         this.isStoreDetailLoader = true;
         this.getStoreUsers('get');
         this.getActiveUsers();
+        // this.initialize();
+
     }
     getActiveUsers() {
         let params = {
@@ -310,3 +350,23 @@ export class FLPSStoresManagementComponent implements OnInit {
         this.isUpdateStore = false;
     }
 }
+function distinctUntilChanged(): import("rxjs").OperatorFunction<any, unknown> {
+    throw new Error('Function not implemented.');
+}
+
+function debounceTime(arg0: number): import("rxjs").OperatorFunction<unknown, unknown> {
+    throw new Error('Function not implemented.');
+}
+
+function tap(arg0: () => void): import("rxjs").OperatorFunction<unknown, unknown> {
+    throw new Error('Function not implemented.');
+}
+
+function switchMap(arg0: (value: any) => import("rxjs").Observable<unknown>): import("rxjs").OperatorFunction<unknown, unknown> {
+    throw new Error('Function not implemented.');
+}
+
+function finalize(arg0: () => void): import("rxjs").OperatorFunction<any[], unknown> {
+    throw new Error('Function not implemented.');
+}
+

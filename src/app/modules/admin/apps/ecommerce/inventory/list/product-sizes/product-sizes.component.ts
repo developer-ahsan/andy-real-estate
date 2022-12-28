@@ -45,6 +45,7 @@ export class ProductSizesComponent implements OnInit, OnDestroy {
   tempDataCount = 0;
 
   isSearchLoading: boolean = false;
+  frequentSizes: any;
   constructor(
     private _changeDetectorRef: ChangeDetectorRef,
     private _inventoryService: InventoryService,
@@ -80,16 +81,23 @@ export class ProductSizesComponent implements OnInit, OnDestroy {
     this._changeDetectorRef.markForCheck();
     const pk_productID = this.selectedProduct;
 
-    this._inventoryService.getSizes(pk_productID, this.searchKeywordTerm, page)
+    this._inventoryService.getSizesWithoutID(pk_productID, this.searchKeywordTerm, page)
       .pipe(takeUntil(this._unsubscribeAll))
       .subscribe((sizes) => {
-        const { selected, unSelected } = sizes["data"];
+        const { selected, unSelected, frequentlyUsed } = sizes["data"];
+        let sizesArr;
+        if (page == 1 && this.searchKeywordTerm == '') {
+          this.frequentSizes = frequentlyUsed;
+          sizesArr = this.frequentSizes.concat(unSelected);
+        } else {
+          sizesArr = unSelected;
+        }
         for (const selectedObj of this.arrayToUpdate) {
           selectedObj["isSelected"] = true;
         }
 
         this.arrayToUpdate.forEach(elem => {
-          unSelected.filter(item => item.pk_sizeID != elem.pk_sizeID);
+          sizesArr.filter(item => item.pk_sizeID != elem.pk_sizeID);
           // this.dataSource.filter(item => {
           //   if (item.pk_sizeID == elem.pk_sizeID) {
           //     item["isSelected"] = true;
@@ -99,11 +107,11 @@ export class ProductSizesComponent implements OnInit, OnDestroy {
           //   }
           // });
         });
-        this.dataSource = this.arrayToUpdate.concat(unSelected);
+        this.dataSource = this.arrayToUpdate.concat(sizesArr);
         this.sizesLength = sizes["totalRecords"];
 
         if (this.searchKeywordTerm == '') {
-          this.tempDataSource = this.arrayToUpdate.concat(unSelected);
+          this.tempDataSource = this.arrayToUpdate.concat(sizesArr);
           this.tempDataCount = sizes["totalRecords"];
         }
         this.isSearchLoading = false;

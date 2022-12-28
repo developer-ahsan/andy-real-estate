@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { ActivatedRouteSnapshot, Resolve, Router, RouterStateSnapshot } from '@angular/router';
 import { AuthService } from 'app/core/auth/auth.service';
 import { Observable } from 'rxjs';
-import { FLPSService } from './flps.service';
+import { UsersService } from './users.service';
 
 @Injectable({
     providedIn: 'root'
@@ -13,7 +13,7 @@ export class EmployeesListsResolver implements Resolve<any>
      * Constructor
      */
     constructor(
-        private _flpsService: FLPSService
+        private _UsersService: UsersService
     ) {
     }
 
@@ -28,7 +28,7 @@ export class EmployeesListsResolver implements Resolve<any>
      * @param state
      */
     resolve(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<any[]> {
-        return this._flpsService.getAllEmployees();
+        return this._UsersService.getAllEmployees();
     }
 }
 @Injectable({
@@ -39,7 +39,7 @@ export class FlpsLoginResolver implements Resolve<any>
     /**
      * Constructor
      */
-    constructor(private _flpsService: FLPSService, private _authService: AuthService) {
+    constructor(private _UsersService: UsersService, private _authService: AuthService) {
     }
 
     // -----------------------------------------------------------------------------------------------------
@@ -58,7 +58,7 @@ export class FlpsLoginResolver implements Resolve<any>
             login_check: true,
             email: user.email
         }
-        return this._flpsService.checkFLPSLogin(params);
+        return this._UsersService.checkFLPSLogin(params);
     }
 }
 @Injectable({
@@ -69,7 +69,7 @@ export class FlpsStoresResolver implements Resolve<any>
     /**
      * Constructor
      */
-    constructor(private _flpsService: FLPSService, private _authService: AuthService) {
+    constructor(private _UsersService: UsersService, private _authService: AuthService) {
     }
 
     // -----------------------------------------------------------------------------------------------------
@@ -83,7 +83,7 @@ export class FlpsStoresResolver implements Resolve<any>
      * @param state
      */
     resolve(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<any[]> {
-        return this._flpsService.getFLPSStores();
+        return this._UsersService.getFLPSStores();
     }
 }
 @Injectable({
@@ -94,7 +94,7 @@ export class FlpsReportsUserResolver implements Resolve<any>
     /**
      * Constructor
      */
-    constructor(private _flpsService: FLPSService) {
+    constructor(private _UsersService: UsersService) {
     }
 
     // -----------------------------------------------------------------------------------------------------
@@ -108,7 +108,7 @@ export class FlpsReportsUserResolver implements Resolve<any>
      * @param state
      */
     resolve(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<any[]> {
-        return this._flpsService.getAllReportUsers();
+        return this._UsersService.getAllReportUsers();
     }
 }
 

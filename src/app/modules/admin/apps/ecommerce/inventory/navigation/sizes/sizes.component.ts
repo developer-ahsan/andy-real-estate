@@ -87,20 +87,26 @@ export class SizesComponent implements OnInit, OnDestroy {
             this.dataSourceCharts = charts["data"];
             this.chartsLength = charts["totalRecords"];
 
-            const { selected, unSelected } = sizes["data"];
+            const { selected, unSelected, frequentlyUsed } = sizes["data"];
+            let sizesArr;
+            if (page == 1 && this.searchKeywordTerm == '') {
+              sizesArr = frequentlyUsed.concat(unSelected);
+            } else {
+              sizesArr = unSelected;
+            }
             for (const selectedObj of selected) {
               selectedObj["isSelected"] = true;
-              const index = unSelected.findIndex(elem => elem.pk_sizeID == selectedObj.fk_sizeID);
-              unSelected.splice(index, 1);
+              const index = sizesArr.findIndex(elem => elem.pk_sizeID == selectedObj.fk_sizeID);
+              sizesArr.splice(index, 1);
             }
-            unSelected.forEach(element => {
+            sizesArr.forEach(element => {
               element.run = Number(0.00)
             });
             this.arrayToUpdate = selected;
-            this.dataSource = selected.concat(unSelected);
+            this.dataSource = selected.concat(sizesArr);
             this.sizesLength = sizes["totalRecords"];
             if (this.searchKeywordTerm == '') {
-              this.tempDataSource = selected.concat(unSelected);
+              this.tempDataSource = selected.concat(sizesArr);
               this.tempDataCount = sizes["totalRecords"];
             }
             this.getColors();

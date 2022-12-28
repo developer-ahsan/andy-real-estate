@@ -55,6 +55,9 @@ export class ProductsPhysicsComponent implements OnInit, OnDestroy {
 
   shipsFromCheck = true;
 
+  FOBLocations = [];
+  checkedFOBLocations = [];
+
   constructor(
     private _changeDetectorRef: ChangeDetectorRef,
     private _inventoryService: InventoryService,
@@ -63,6 +66,9 @@ export class ProductsPhysicsComponent implements OnInit, OnDestroy {
   ) { }
 
   ngOnInit(): void {
+    if (!this.selectedProduct.blnApparel) {
+      this.getFOBLocations();
+    }
     const { flatRateShipping } = this.selectedProduct;
     this.caseQtyTabLoader = true;
     this.caseDimensionTabLoader = true;
@@ -319,13 +325,19 @@ export class ProductsPhysicsComponent implements OnInit, OnDestroy {
     this.isQuantityUpdate = false;
 
     const { blnApparel, pk_productID } = this.selectedProduct;
-    const { weight, unitsInWeight, dimensions, overPackCharge, unitsInShippingPackage } = this.productPhysicsForm.getRawValue();
+    const { weight, unitsInWeight, dimensions, overPackCharge, unitsInShippingPackage, productWidth, productHeight, productLength } = this.productPhysicsForm.getRawValue();
+
+    const productDimensions = [
+      productWidth ? productWidth : 0,
+      productHeight ? productHeight : 0,
+      productLength ? productLength : 0
+    ];
 
     const payload = {
       product_id: pk_productID,
       weight: weight || 0,
       weight_in_units: unitsInWeight || 0,
-      dimensions: dimensions || "",
+      dimensions: productDimensions.toString(),
       over_pack_charge: overPackCharge,
       bln_apparel: blnApparel,
       shipping: {
@@ -333,9 +345,7 @@ export class ProductsPhysicsComponent implements OnInit, OnDestroy {
         prod_time_max: this.sliderMaxValue,
         units_in_shipping_package: unitsInShippingPackage,
         bln_include_shipping: this.blnShipingValue === 'YES' ? 1 : 0,
-        fob_location_list: this.fob?.length
-          ? this.fob.map(({ fk_FOBLocationID }) => fk_FOBLocationID)
-          : []
+        fob_location_list: this.checkedFOBLocations
       },
       physics: true
     };
@@ -353,7 +363,7 @@ export class ProductsPhysicsComponent implements OnInit, OnDestroy {
         return;
       };
 
-      if (!this.shipsFromCheck) {
+      if (this.checkedFOBLocations.length == 0) {
         this.physicsValidationMessage = "At least one shipment F.O.B. location is required. Please check Ships From check field"
         this.showFlashMessage('errorMessage');
         return;
@@ -530,6 +540,44 @@ export class ProductsPhysicsComponent implements OnInit, OnDestroy {
     }, 3000);
   };
 
+  getFOBLocations() {
+    let params = {
+      company: true,
+      fob_location: true,
+      supplier_id: this.selectedProduct.fk_supplierID,
+      product_id: this.selectedProduct.pk_productID
+    }
+    this._inventoryService.getProductsData(params).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+      let selected = res["fob_locations"];
+      let allLocations = res["data"];
+      selected.forEach(element => {
+        element.checked = true;
+        element.pk_FOBLocationID = element.fk_FOBLocationID;
+        this.FOBLocations.push(element);
+        this.checkedFOBLocations.push(element.fk_FOBLocationID);
+      });
+      allLocations.forEach(element => {
+        const index = this.FOBLocations.findIndex(item => item.fk_FOBLocationID == element.pk_FOBLocationID);
+        if (index < 0) {
+          element.checked = false;
+          this.FOBLocations.push(element);
+        }
+      });
+      console.log(this.FOBLocations)
+    });
+  }
+  changeFobLocations(item, ev) {
+    let checked = ev.checked;
+    if (checked) {
+      const index = this.checkedFOBLocations.findIndex(elem => elem == item.pk_FOBLocationID);
+      if (index < 0) {
+        this.checkedFOBLocations.push(item.pk_FOBLocationID);
+      }
+    } else {
+      const index = this.checkedFOBLocations.findIndex(elem => elem == item.pk_FOBLocationID);
+      this.checkedFOBLocations.splice(index, 1);
+    }
+  }
   /**
    * On destroy
    */

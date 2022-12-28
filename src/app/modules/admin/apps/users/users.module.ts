@@ -37,22 +37,28 @@ import { AutocompleteLibModule } from 'angular-ng-autocomplete';
 import { NgMultiSelectDropDownModule } from 'ng-multiselect-dropdown';
 import { FuseAlertModule } from '@fuse/components/alert';
 import { MatDialogModule } from '@angular/material/dialog';
-import { flpsRoutes } from './flps.routing';
-import { FLPSComponent } from './components/flps.component';
+import { usersRoutes } from './users.routing';
+import { FLPSComponent } from './components/users.component';
 import { MatDatepickerModule } from '@angular/material/datepicker';
-import { FLPSUserManagementComponent } from './components/pages/user-management/user-management.component';
-import { GenerateReportComponent } from './components/pages/generate-report/generate-report.component';
-import { FLPSsStoresManagementComponent } from './components/pages/stores-management/stores-management.component';
+import { AdminUsersComponent } from './components/pages/admin-users/admin-users.component';
+import { AdminCommentorsComponent } from './components/pages/admin-commentors/admin-commentors.component';
+import { SmartArtUsersComponent } from './components/pages/smartart-users/smartart-users.component';
+import { OrderManageUsersComponent } from './components/pages/ordermanage-users/ordermanage-users.component';
+import { RapidBuildUsersComponent } from './components/pages/rapidbuild-users/rapidbuild-users.component';
+import { CompanyRolesComponent } from './components/pages/company-roles/company-roles.component';
 
 @NgModule({
     declarations: [
         FLPSComponent,
-        FLPSsStoresManagementComponent,
-        FLPSUserManagementComponent,
-        GenerateReportComponent,
+        AdminUsersComponent,
+        AdminCommentorsComponent,
+        SmartArtUsersComponent,
+        OrderManageUsersComponent,
+        RapidBuildUsersComponent,
+        CompanyRolesComponent,
     ],
     imports: [
-        RouterModule.forChild(flpsRoutes),
+        RouterModule.forChild(usersRoutes),
         MatButtonModule,
         MatCheckboxModule,
         MatFormFieldModule,
@@ -94,5 +100,5 @@ import { FLPSsStoresManagementComponent } from './components/pages/stores-manage
         MatNativeDateModule
     ],
 })
-export class FlpsModule {
+export class UsersModule {
 }

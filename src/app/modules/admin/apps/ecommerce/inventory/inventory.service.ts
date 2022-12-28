@@ -927,6 +927,29 @@ export class InventoryService {
         }).pipe(retry(3));
     };
 
+    getSizesWithoutID(productId, keyword, page): Observable<any[]> {
+        let params;
+        if (keyword != '') {
+            params = {
+                // product_id: productId,
+                sizes: true,
+                keyword: keyword,
+                size: 40,
+                page: page
+            }
+        } else {
+            params = {
+                // product_id: productId,
+                sizes: true,
+                size: 40,
+                page: page
+            }
+        }
+        return this._httpClient.get<any[]>(environment.products, {
+            params: params
+        }).pipe(retry(3));
+    };
+
     getCharts(productId, page): Observable<any[]> {
         return this._httpClient.get<any[]>(environment.products, {
             params: {

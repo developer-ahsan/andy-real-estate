@@ -81,7 +81,6 @@ export const appRoutes: Route[] = [
                     { path: 'analytics', loadChildren: () => import('app/modules/admin/dashboards/analytics/analytics.module').then(m => m.AnalyticsModule) },
                 ]
             },
-
             // Apps
             {
                 path: 'apps', children: [
@@ -92,6 +91,7 @@ export const appRoutes: Route[] = [
                     { path: 'ecommerce', loadChildren: () => import('app/modules/admin/apps/ecommerce/ecommerce.module').then(m => m.ECommerceModule) },
                     { path: 'system', loadChildren: () => import('app/modules/admin/apps/system/system.module').then(m => m.SystemModule) },
                     { path: 'flps', loadChildren: () => import('app/modules/admin/apps/flps/flps.module').then(m => m.FlpsModule) },
+                    { path: 'users', loadChildren: () => import('app/modules/admin/apps/users/users.module').then(m => m.UsersModule) },
                     { path: 'promostandards', loadChildren: () => import('app/modules/admin/apps/promostandards/promostandards.module').then(m => m.PromoStandardsModule) },
                     { path: 'stores', loadChildren: () => import('app/modules/admin/apps/file-manager/stores.module').then(m => m.StoresModule) },
                     { path: 'help-center', loadChildren: () => import('app/modules/admin/apps/help-center/help-center.module').then(m => m.HelpCenterModule) },

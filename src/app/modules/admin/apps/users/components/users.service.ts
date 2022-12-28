@@ -12,7 +12,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 @Injectable({
     providedIn: 'root'
 })
-export class FLPSService {
+export class UsersService {
     public navigationLabels = navigations;
 
     private _employeeAdmins: BehaviorSubject<any[] | null> = new BehaviorSubject<any[]>(null);

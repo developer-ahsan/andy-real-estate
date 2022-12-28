@@ -568,6 +568,14 @@
                                         <mat-checkbox [formControlName]="'allowGroupRun'">Allow group run?
                                         </mat-checkbox>
                                     </div>
+                                    <div class="col-12" *ngIf="supplierType != 'Apparel Item'"
+                                        style="line-height: 2.3;">
+                                        <p class="font-semibold">Ships from</p>
+                                        <mat-progress-spinner [diameter]="24" [mode]="'indeterminate'"
+                                            *ngIf="FOBLocations.length == 0"></mat-progress-spinner>
+                                        <mat-checkbox *ngFor="let item of FOBLocations" class="mr-2" [checked]="true"
+                                            (change)="changeFobLocations(item,$event)">{{item.FOBLocationName}}</mat-checkbox>
+                                    </div>
                                     <div class="col-12 mb-2">
                                         <p class="text-secondary font-semibold">Ships within (Number of Days)</p>
                                     </div>

@@ -514,6 +514,9 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
     scrollStrategy: ScrollStrategy;
 
     getSizes: boolean = false;
+
+    FOBLocations = [];
+    checkedFOBLocations = [];
     // Open Modal
     openModal() {
         const dialogRef = this.dialog.open(ImprintRunComponent, {
@@ -1234,6 +1237,32 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
         return array.filter(x => x !== null)
     };
 
+    getFOBLocations() {
+        let params = {
+            company: true,
+            fob_location: true,
+            supplier_id: this.supplierId
+        }
+        this._inventoryService.getProductsData(params).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+            this.FOBLocations = res["data"];
+            this.FOBLocations.forEach(element => {
+                this.checkedFOBLocations.push(element.pk_FOBLocationID);
+            });
+        });
+    }
+    changeFobLocations(item, ev) {
+        let checked = ev.checked;
+        if (checked) {
+            const index = this.checkedFOBLocations.findIndex(elem => elem == item.pk_FOBLocationID);
+            if (index < 0) {
+                this.checkedFOBLocations.push(item.pk_FOBLocationID);
+            }
+        } else {
+            const index = this.checkedFOBLocations.findIndex(elem => elem == item.pk_FOBLocationID);
+            this.checkedFOBLocations.splice(index, 1);
+        }
+    }
+
     createProduct(): void {
         const firstFormGroup = this.firstFormGroup.getRawValue();
         const finalForm = this.reviewForm.getRawValue();
@@ -1263,7 +1292,7 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
 
         const shipping = {
             bln_include_shipping: doChargesApply == "Yes" ? 1 : 0,
-            fob_location_list: [],
+            fob_locations: this.checkedFOBLocations,
             prod_time_max: this.sliderMaxValue || 10,
             prod_time_min: this.sliderMinValue || 7,
             units_in_shipping_package: 1
@@ -1763,7 +1792,6 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
 
     goForward(stepper: MatStepper) {
         const { selectedIndex } = stepper;
-
         if (selectedIndex === 0) {
             if (!this.selectedItems) {
                 this._snackBar.open("Please select a supplier", '', {
@@ -1773,6 +1801,7 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
                 });
                 return;
             };
+
         };
 
         if (selectedIndex === 1) {
@@ -1802,6 +1831,7 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
             const { name } = radio;
             this.supplierType = name;
             if (this.supplierType === 'Normal Promotional Material') {
+                this.getFOBLocations();
                 this.secondFormGroup.controls['brandName'].disable();
                 this.reviewForm.controls['brandName'].disable();
             };
@@ -1960,10 +1990,12 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
 
         // Description screen
         if (selectedIndex === 1) {
+
             const { radio } = this.firstFormGroup.value;
             const { name } = radio;
             this.supplierType = name;
             if (this.supplierType === 'Normal Promotional Material') {
+                this.getFOBLocations();
                 this.secondFormGroup.controls['brandName'].disable();
                 this.reviewForm.controls['brandName'].disable();
             };
@@ -3031,7 +3063,7 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
 
         const shipping = {
             bln_include_shipping: doChargesApply == "Yes" ? 1 : 0,
-            fob_location_list: [],
+            fob_locations: this.checkedFOBLocations,
             prod_time_max: this.sliderMaxValue || 10,
             prod_time_min: this.sliderMinValue || 7,
             units_in_shipping_package: unitsInShippingPackage ? unitsInShippingPackage : 0
@@ -3177,7 +3209,7 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
                 prod_time_min: this.sliderMinValue || 7,
                 units_in_shipping_package: unitsInShippingPackage ? unitsInShippingPackage : 0,
                 bln_include_shipping: doChargesApply == "Yes" ? 1 : 0,
-                fob_location_list: [],
+                fob_locations: this.checkedFOBLocations,
                 dimensions: productDimensions.toString(),
                 weight: weight || null,
                 weight_in_units: Number(unitsInWeight) || null,
@@ -3974,7 +4006,7 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
             prod_time_min: this.sliderMinValue || 7,
             units_in_shipping_package: unitsInShippingPackage ? unitsInShippingPackage : 0,
             bln_include_shipping: doChargesApply == "Yes" ? 1 : 0,
-            fob_location_list: [],
+            fob_locations: this.checkedFOBLocations,
             dimensions: productDimensions.toString(),
             weight: weight || null,
             weight_in_units: Number(unitsInWeight) || null,

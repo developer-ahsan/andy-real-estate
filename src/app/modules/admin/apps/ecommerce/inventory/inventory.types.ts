@@ -323,7 +323,7 @@ export interface shippingObj {
     prod_time_max: number;
     units_in_shipping_package: number;
     bln_include_shipping: number;
-    fob_location_list: number[];
+    fob_locations: number[];
 }
 
 export interface flatRateShippingObj {
@@ -563,7 +563,7 @@ export interface shippingObj {
     prod_time_max: number;
     units_in_shipping_package: number;
     bln_include_shipping: number;
-    fob_location_list: number[];
+    fob_locations: number[];
 }
 export interface flatRateShippingObj {
     product_id: number;
@@ -643,7 +643,7 @@ export interface UpdateProductDescription {
     prod_time_max: number;
     units_in_shipping_package: number;
     bln_include_shipping: number;
-    fob_location_list: number[];
+    fob_locations: number[];
     dimensions: string;
     weight: number;
     weight_in_units: number;

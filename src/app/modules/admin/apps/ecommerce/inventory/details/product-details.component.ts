@@ -111,7 +111,6 @@ export class ProductDetailsComponent implements OnInit, OnDestroy {
               this.isProductFetched = false;
 
               this.selectedProduct = details["data"][0];
-
               const { fk_supplierID } = this.selectedProduct;
 
               this.routes = this._inventoryService.navigationLabels;

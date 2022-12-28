@@ -1,6 +1,6 @@
 import { Route } from '@angular/router';
 import { FLPSComponent } from './components/flps.component';
-import { EmployeesListsResolver, FlpsLoginResolver, FlpsStoresResolver } from './components/flps.resolvers';
+import { EmployeesListsResolver, FlpsLoginResolver, FlpsReportsUserResolver, FlpsStoresResolver } from './components/flps.resolvers';
 
 export const flpsRoutes: Route[] = [
 
@@ -10,7 +10,8 @@ export const flpsRoutes: Route[] = [
         resolve: {
             employees: EmployeesListsResolver,
             flpsLogin: FlpsLoginResolver,
-            stores: FlpsStoresResolver
+            stores: FlpsStoresResolver,
+            reportsUser: FlpsReportsUserResolver
         }
     }
 

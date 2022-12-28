@@ -95,7 +95,10 @@
             <!-- Header -->
             <div class="flex items-center justify-between m-8 mr-6 sm:my-10">
                 <!-- Title -->
-                <div class="text-4xl font-extrabold tracking-tight leading-none">FLPS</div>
+                <div class="text-4xl font-extrabold tracking-tight leading-none">FLPS
+                    <p class="text-sm font-medium text-secondary mt-1">Logged in <span
+                            class="text-md font-bold">{{flpsName}}</span></p>
+                </div>
                 <!-- Close button -->
                 <div class="lg:hidden">
                     <button mat-icon-button (click)="drawer.close()">
@@ -182,7 +185,7 @@
                         </ng-container>
                         <!-- Plan & Billing -->
                         <ng-container *ngSwitchCase="'plan-billing'">
-                            <app-stores-management></app-stores-management>
+                            <app-storess-management></app-storess-management>
                         </ng-container>
                         <!-- Notifications -->
                     </ng-container>

@@ -1,8 +1,8 @@
-import { ChangeDetectionStrategy, Component, Input, OnInit, ViewEncapsulation } from '@angular/core';
-import { FormBuilder, FormGroup } from '@angular/forms';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, Input, OnInit, ViewChild, ViewEncapsulation } from '@angular/core';
+import { FormBuilder, FormControl, FormGroup } from '@angular/forms';
 import moment from 'moment';
-import { Subject } from 'rxjs';
-import { takeUntil } from 'rxjs/operators';
+import { fromEvent, of, Subject } from 'rxjs';
+import { debounceTime, distinctUntilChanged, filter, finalize, map, switchMap, takeUntil, tap } from 'rxjs/operators';
 import { FLPSService } from '../../flps.service';
 
 @Component({
@@ -42,11 +42,29 @@ export class GenerateReportComponent implements OnInit {
         value: 4,
         text: '10-12'
     }];
+
+
+    searcEmployeeCtrl = new FormControl();
+    selectedEmployee: any;
+    isSearching = false;
+    minLengthTerm = 3;
+
+    // Report
+    WeekDate = new Date();
+    monthlyMonth = 1;
+    monthlyYear = new Date().getFullYear();
+    quarterMonth = 1;
+    quarterYear = new Date().getFullYear();
+    yearlyYear = new Date().getFullYear();
+    ngRangeStart = new Date();
+    ngRangeEnd = new Date();
+
     /**
      * Constructor
      */
     constructor(
         private _formBuilder: FormBuilder,
+        private _changeDetectorRef: ChangeDetectorRef,
         private _flpsService: FLPSService
     ) {
     }
@@ -107,11 +125,94 @@ export class GenerateReportComponent implements OnInit {
                 price: '40'
             }
         ];
+        let params;
+        this.searcEmployeeCtrl.valueChanges.pipe(
+            filter(res => {
+                params = {
+                    view_store_all_admins: true,
+                    keyword: res
+                }
+                return res !== null && res.length >= this.minLengthTerm
+            }),
+            distinctUntilChanged(),
+            debounceTime(500),
+            tap(() => {
+                this.employeeAdmins = [];
+                this.isSearching = true;
+                this._changeDetectorRef.markForCheck();
+            }),
+            switchMap(value => this._flpsService.getFlpsData(params)
+                .pipe(
+                    finalize(() => {
+                        this.isSearching = false
+                        this._changeDetectorRef.markForCheck();
+                    }),
+                )
+            )
+        )
+            .subscribe((data: any) => {
+                this.employeeAdmins = data['data'];
+            });
     }
+    onSelected(ev) {
+        this.selectedEmployee = ev.option.value;
+    }
+
+    displayWith(value: any) {
+        return value ? value?.firstName + ' ' + value?.lastName : '';
+    }
+
     getEmployees() {
-        this._flpsService.employeeAdmins$.pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+        this._flpsService.reportUsers$.pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
             this.employeeAdmins = res["data"];
         })
+    }
+    generateReport() {
+        let params;
+        if (this.ngPlan == 'weekly') {
+            params = {
+                start_date: moment(this.WeekDate).startOf('week').format('MM/DD/yyyy'),
+                end_date: moment(this.WeekDate).endOf('week').format('MM/DD/yyyy')
+            }
+        } else if (this.ngPlan == 'monthly') {
+            let d = new Date(this.monthlyYear, this.monthlyMonth - 1, 1);
+            params = {
+                start_date: moment(d).startOf('month').format('MM/DD/yyyy'),
+                end_date: moment(d).endOf('month').format('MM/DD/yyyy')
+            }
+        } else if (this.ngPlan == 'quarterly') {
+            let s;
+            let e;
+            if (this.quarterMonth == 1) {
+                s = new Date(this.quarterYear, 0, 1);
+                e = new Date(this.quarterYear, 2, 1);
+            } else if (this.quarterMonth == 2) {
+                s = new Date(this.quarterYear, 3, 1);
+                e = new Date(this.quarterYear, 5, 1);
+            } else if (this.quarterMonth == 3) {
+                s = new Date(this.quarterYear, 6, 1);
+                e = new Date(this.quarterYear, 8, 1);
+            } else if (this.quarterMonth == 4) {
+                s = new Date(this.quarterYear, 9, 1);
+                e = new Date(this.quarterYear, 11, 1);
+            }
+            params = {
+                start_date: moment(s).startOf('month').format('MM/DD/yyyy'),
+                end_date: moment(e).endOf('month').format('MM/DD/yyyy')
+            }
+        } else if (this.ngPlan == 'yearly') {
+            let d = new Date(this.yearlyYear, 0, 1);
+            params = {
+                start_date: moment(d).startOf('year').format('MM/DD/yyyy'),
+                end_date: moment(d).endOf('year').format('MM/DD/yyyy')
+            }
+        } else if (this.ngPlan == 'range') {
+            params = {
+                start_date: moment(this.ngRangeStart).format('MM/DD/yyyy'),
+                end_date: moment(this.ngRangeEnd).format('MM/DD/yyyy')
+            }
+        }
+        console.log(params)
     }
 
     // -----------------------------------------------------------------------------------------------------
@@ -125,6 +226,6 @@ export class GenerateReportComponent implements OnInit {
      * @param item
      */
     trackByFn(index: number, item: any): any {
-        return item.id || index;
+        return item.value || index;
     }
 }
