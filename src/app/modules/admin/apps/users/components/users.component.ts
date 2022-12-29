@@ -58,6 +58,19 @@ export class FLPSComponent {
      */
 
     ngOnInit(): void {
+        if (this._router.url.includes('commentors')) {
+            this.selectedPanel = 'commentors';
+        } else if (this._router.url.includes('admin')) {
+            this.selectedPanel = 'admin';
+        } else if (this._router.url.includes('smartart')) {
+            this.selectedPanel = 'smartart';
+        } else if (this._router.url.includes('order')) {
+            this.selectedPanel = 'order';
+        } else if (this._router.url.includes('rapid')) {
+            this.selectedPanel = 'rapid';
+        } else if (this._router.url.includes('role')) {
+            this.selectedPanel = 'role';
+        }
         this.routes = this._UsersService.navigationLabels;
         this.isLoading = false;
         this.panels = [
@@ -76,7 +89,7 @@ export class FLPSComponent {
                 route: 'admin-commentors'
             },
             {
-                id: 'smart-art',
+                id: 'smartart',
                 icon: 'mat_outline:settings',
                 title: 'SmartArt Users',
                 description: 'Manage smartart users',

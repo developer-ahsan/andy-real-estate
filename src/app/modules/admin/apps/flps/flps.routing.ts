@@ -9,7 +9,7 @@ export const flpsRoutes: Route[] = [
         component: FLPSComponent,
         resolve: {
             employees: EmployeesListsResolver,
-            flpsLogin: FlpsLoginResolver,
+            // flpsLogin: FlpsLoginResolver,
             stores: FlpsStoresResolver,
             reportsUser: FlpsReportsUserResolver
         }

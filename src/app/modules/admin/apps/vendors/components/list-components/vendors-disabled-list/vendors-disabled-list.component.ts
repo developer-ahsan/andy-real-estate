@@ -1,24 +1,26 @@
-import { Component, Input, OnInit, ChangeDetectorRef, OnDestroy, ViewChild } from '@angular/core';
+import { Component, Input, OnInit, ChangeDetectorRef, OnDestroy, ViewChild, EventEmitter, Output } from '@angular/core';
 import { FormControl, FormGroup } from '@angular/forms';
 import { MatPaginator } from '@angular/material/paginator';
+import { newFLPSUser, updateFLPSUser, removeFLPSUser, applyBlanketCustomerPercentage } from 'app/modules/admin/apps/flps/components/flps.types';
+import { UsersService } from 'app/modules/admin/apps/users/components/users.service';
 import { Subject } from 'rxjs';
 import { finalize, takeUntil } from 'rxjs/operators';
-import { UsersService } from '../../users.service';
-import { applyBlanketCustomerPercentage, newFLPSUser, removeFLPSUser, updateFLPSUser } from '../../users.types';
+import { SystemService } from '../../vendors.service';
 @Component({
-  selector: 'app-admin-users',
-  templateUrl: './admin-users.component.html',
+  selector: 'app-vendors-disabled-list',
+  templateUrl: './vendors-disabled-list.component.html',
   styles: [".mat-paginator {border-radius: 16px !important}"]
 })
-export class AdminUsersComponent implements OnInit, OnDestroy {
+export class VendorsDisabledListComponent implements OnInit, OnDestroy {
   @ViewChild('paginator') paginator: MatPaginator;
   @Input() isLoading: boolean;
+
   // @Output() isLoadingChange = new EventEmitter<boolean>();
   private _unsubscribeAll: Subject<any> = new Subject<any>();
 
   dataSource = [];
   tempDataSource = [];
-  displayedColumns: string[] = ['id', 'name', 'company', 'lastLogged', 'active', 'master', 'action'];
+  displayedColumns: string[] = ['order', 'email', 'action'];
   totalUsers = 0;
   tempRecords = 0;
   page = 1;
@@ -39,7 +41,7 @@ export class AdminUsersComponent implements OnInit, OnDestroy {
   isUpdateUser: boolean = false;
   updateUserData: any;
 
-  mainScreen: string = 'Admin Users';
+  mainScreen: string = 'Current Users';
   keyword = '';
   not_available = 'N/A';
 
@@ -68,9 +70,20 @@ export class AdminUsersComponent implements OnInit, OnDestroy {
   isSearching: boolean = false;
   // Emplyees Dropdown
   employeeUser = [];
+
+
+  // Suppliers
+  dataSourceSupplier = [];
+  tempDataSourceSupplier = [];
+  displayedColumnsSupplier: string[] = ['id', 'name', 'action'];
+  totalSupplier = 0;
+  temptotalSupplier = 0;
+  pageSupplier = 1;
+
   constructor(
     private _changeDetectorRef: ChangeDetectorRef,
-    private _UsersService: UsersService
+    private _UsersService: UsersService,
+    private _vendorService: SystemService
   ) { }
 
   initForm() {
@@ -100,10 +113,8 @@ export class AdminUsersComponent implements OnInit, OnDestroy {
     });
   }
   ngOnInit(): void {
-    this.initForm();
     this.isLoading = true;
-    this.getEmployeeUsers();
-    this.getFlpsUsers(1, 'get');
+    this.getSuppliers(1);
   };
   calledScreen(value) {
     this.initForm();
@@ -138,6 +149,48 @@ export class AdminUsersComponent implements OnInit, OnDestroy {
         this.getUserOrders(1);
       }
     }
+  }
+  getAllSuppliers() {
+    this._vendorService.Suppliers$.pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+      this.dataSourceSupplier = res["data"];
+      this.totalSupplier = res["totalRecords"];
+      this.tempDataSourceSupplier = res["data"];
+      this.temptotalSupplier = res["totalRecords"];
+    });
+  }
+  getNextSupplierData(event) {
+    const { previousPageIndex, pageIndex } = event;
+
+    if (pageIndex > previousPageIndex) {
+      this.pageSupplier++;
+    } else {
+      this.pageSupplier--;
+    };
+    this.getSuppliers(this.pageSupplier);
+  };
+  getSuppliers(page) {
+    let params = {
+      supplier: true,
+      bln_active: 0,
+      size: 20,
+      page: page
+    }
+    this._vendorService.getVendorsData(params).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+      this.dataSourceSupplier = res["data"];
+      this.totalSupplier = res["totalRecords"];
+      if (page == 1) {
+        this.tempDataSourceSupplier = res["data"];
+        this.temptotalSupplier = res["totalRecords"];
+      }
+      this.isLoading = false;
+      this._changeDetectorRef.markForCheck();
+    }, err => {
+      this.isLoading = false;
+      this._changeDetectorRef.markForCheck();
+    });
+  }
+  ViewDetails(item) {
+    console.log(item)
   }
   getFlpsUsers(page, type) {
     let params = {

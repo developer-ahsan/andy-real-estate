@@ -1,0 +1,65 @@
+<div class="w-full">
+    <div>
+        <div class="bg-card shadow p-8">
+            <div class="row" *ngIf="suppliers">
+                <div class="col-12 text-xl font-semibold pb-2">Select Suppliers</div>
+                <div class="col-12 flex pb-3 align-items-center">
+                    <button mat-stroked-button class="min-w-40 mr-2 text-sm" (click)="checkAll()">Check All</button>
+                    <button mat-stroked-button class="min-w-40 mr-2 text-sm" (click)="unCheckAll()">Uncheck All</button>
+                    <select class="form-control text-sm">
+                        <option>All Relations</option>
+                        <option>Preferred</option>
+                        <option>Partner</option>
+                        <option>Non Preferred/Non Partner</option>
+                    </select>
+                </div>
+                <div class="col-6 col-md-4 text-sm" *ngFor="let supplier of suppliers">
+                    <mat-checkbox [checked]="supplier.checked">{{supplier.companyName}}</mat-checkbox>
+                </div>
+                <div class="col-12 flex justify-end" *ngIf="totalSupplier != suppliers.length">
+                    <p class="cursor-pointer text-gray-500  hover:text-gray-900" *ngIf="!isLoadMore"
+                        (click)="getNextSuppliers()">
+                        Load More</p>
+                    <mat-progress-spinner [diameter]="24" [mode]="'indeterminate'"
+                        *ngIf="isLoadMore"></mat-progress-spinner>
+                </div>
+            </div>
+            <div class="row mt-5">
+                <div class="col-12 col-md-6">
+                    <mat-form-field class="w-full">
+                        <mat-label>From</mat-label>
+                        <input matInput placeholder="From">
+                    </mat-form-field>
+                </div>
+                <div class="col-12 col-md-6">
+                    <mat-form-field class="w-full">
+                        <mat-label>Subject</mat-label>
+                        <input matInput placeholder="Subject">
+                    </mat-form-field>
+                </div>
+                <div class="col-12">
+                    <mat-form-field class="w-full">
+                        <mat-label>Manual emails (sepearted by commas):</mat-label>
+                        <input matInput placeholder="Manual emails (sepearted by commas):">
+                    </mat-form-field>
+                </div>
+                <div class="col-12">
+                    <mat-form-field class="w-full">
+                        <mat-label>Your email will appear as follows:(
+                            <span class="text-sm text-red-900">Editing the first or second paragraph is optional</span>
+                            )
+                        </mat-label>
+
+                        <textarea matInput name="" id="" cols="30" rows="10"
+                            value="To ensure the accuracy of your product information in our program(s), please review your product(s) and make the appropriate updates."></textarea>
+                    </mat-form-field>
+                </div>
+                <div class="col-12 text-right">
+                    <button mat-flat-button class="min-w-50" [color]="'primary'">
+                        <span>Send Email</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

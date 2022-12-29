@@ -1,0 +1,55 @@
+<div class="w-full">
+    <div class="p-5" *ngIf="isLoading">
+        <ngx-skeleton-loader count="8" appearance="line" animation="pulse" [theme]="{ 
+            'background-color': '#dedede'
+          }">
+        </ngx-skeleton-loader>
+    </div>
+    <div *ngIf="!isLoading">
+        <div *ngIf="dataSourceSupplier.length > 0;else other_content" class="w-full">
+            <table mat-table [dataSource]="dataSourceSupplier" class="w-full border-t">
+                <ng-container matColumnDef="id">
+                    <th mat-header-cell *matHeaderCellDef class="w-10 min-w-10">
+                        ID
+                    </th>
+                    <td mat-cell *matCellDef="let element">
+                        {{element.pk_companyID}}
+                    </td>
+                </ng-container>
+                <ng-container matColumnDef="name">
+                    <th mat-header-cell *matHeaderCellDef class="w-30 min-w-30">
+                        Supplier Name
+                    </th>
+                    <td mat-cell *matCellDef="let element">
+                        {{element.companyName}}
+                    </td>
+                </ng-container>
+                <ng-container matColumnDef="action">
+                    <th mat-header-cell *matHeaderCellDef class="w-10 min-w-10 text-center">
+                        Action
+                    </th>
+                    <td mat-cell *matCellDef="let element" class="text-center">
+                        <div class="flex justify-center">
+                            <mat-icon svgIcon="heroicons_outline:eye" matTooltip="View Details"></mat-icon>
+                        </div>
+                    </td>
+                </ng-container>
+                <tr mat-header-row *matHeaderRowDef="displayedColumnsSupplier;" class="h-18 bg-light"></tr>
+                <tr mat-row *matRowDef="let row; columns: displayedColumnsSupplier;"
+                    class="h-14 hover:bg-gray-100 dark:hover:bg-hover" style="cursor: pointer;"
+                    (click)="ViewDetails(row)">
+                </tr>
+            </table>
+            <mat-paginator #paginator class="border-b sm:border-t sm:border-b-0 z-10 bg-gray-50 dark:bg-transparent"
+                [ngClass]="{'pointer-events-none': isLoading}" [length]="totalSupplier" [pageIndex]="0" [pageSize]="20"
+                (page)="getNextSupplierData($event)" [hidePageSize]="true">
+            </mat-paginator>
+        </div>
+        <!-- No color Found -->
+        <ng-template #other_content>
+            <div class="text-secondary font-semibold p-5 text-center">
+                There are currently no Vendors.
+            </div>
+        </ng-template>
+    </div>
+</div>

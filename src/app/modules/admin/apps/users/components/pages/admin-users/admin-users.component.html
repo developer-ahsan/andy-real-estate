@@ -2,8 +2,8 @@
     <div class="w-full">
         <div class="shadow bg-card p-5 px-8 flex space-x-6" *ngIf="!isUpdateUser">
             <span class="font-medium cursor-pointer hover:text-gray-900 text-secondary"
-                [ngClass]="{'text-gray-900': mainScreen=='Current Users'}"
-                (click)="calledScreen('Current Users')">Current Users</span>
+                [ngClass]="{'text-gray-900': mainScreen=='Admin Users'}" (click)="calledScreen('Admin Users')">Admin
+                Users</span>
             <span class="font-medium cursor-pointer hover:text-gray-900 text-secondary"
                 [ngClass]="{'text-gray-900': mainScreen=='New FLPS User'}" (click)="calledScreen('New FLPS User')">New
                 FLPS User</span>
@@ -14,8 +14,8 @@
         <!-- <div class="px-2 pb-2" *ngIf="!isUpdateUser">
             <mat-button-toggle-group #group="matButtonToggleGroup" [value]="mainScreen"
                 (change)="calledScreen(group.value)">
-                <mat-button-toggle value="Current Users">
-                    Current Users
+                <mat-button-toggle value="Admin Users">
+                    Admin Users
                 </mat-button-toggle>
                 <mat-button-toggle value="New FLPS User">
                     New FLPS User
@@ -25,14 +25,14 @@
                 </mat-button-toggle>
             </mat-button-toggle-group>
         </div> -->
-        <div class="p-5" *ngIf="mainScreen == 'Current Users' && isLoading">
+        <div class="p-5" *ngIf="mainScreen == 'Admin Users' && isLoading">
             <ngx-skeleton-loader count="8" appearance="line" animation="pulse" [theme]="{ 
                 'background-color': '#dedede'
               }">
             </ngx-skeleton-loader>
         </div>
 
-        <div class="mt-5" *ngIf="mainScreen == 'Current Users' && !isLoading && !isUpdateUser">
+        <div class="mt-5" *ngIf="mainScreen == 'Admin Users' && !isLoading && !isUpdateUser">
             <div *ngIf="dataSource.length > 0;else other_content" class="w-full">
                 <table mat-table [dataSource]="dataSource" class="w-full border-t">
                     <ng-container matColumnDef="id">
@@ -43,25 +43,46 @@
                             {{element.pk_userID || not_available}}
                         </td>
                     </ng-container>
-                    <ng-container matColumnDef="f_name">
+                    <ng-container matColumnDef="name">
                         <th mat-header-cell *matHeaderCellDef class="w-30 min-w-30">
-                            First Name
+                            Full Name
                         </th>
                         <td mat-cell *matCellDef="let element">
-                            {{element.firstName}}
+                            {{element.firstName + ' ' + element.lastName}}
                         </td>
                     </ng-container>
-                    <ng-container matColumnDef="l_name">
+                    <ng-container matColumnDef="company">
                         <th mat-header-cell *matHeaderCellDef class="w-30 min-w-30 ">
-                            Last Name
+                            Company
                         </th>
                         <td mat-cell *matCellDef="let element">
                             {{element.lastName}}
                         </td>
                     </ng-container>
-                    <ng-container matColumnDef="admin">
+                    <ng-container matColumnDef="lastLogged">
                         <th mat-header-cell *matHeaderCellDef class="w-15 min-w-15 text-center">
-                            Admin
+                            Last LoggedIn
+                        </th>
+                        <td mat-cell *matCellDef="let element" class="text-center">
+                            12/12/2022
+                        </td>
+                    </ng-container>
+                    <ng-container matColumnDef="active">
+                        <th mat-header-cell *matHeaderCellDef class="w-15 min-w-15 text-center">
+                            Active
+                        </th>
+                        <td mat-cell *matCellDef="let element" class="text-center">
+                            <div class="flex justify-center">
+                                <mat-icon class="text-green-900" svgIcon="heroicons_outline:check"
+                                    *ngIf="element.blnAdmin"></mat-icon>
+                                <mat-icon class="text-red-900" svgIcon="heroicons_outline:x"
+                                    *ngIf="!element.blnAdmin"></mat-icon>
+                            </div>
+                        </td>
+                    </ng-container>
+                    <ng-container matColumnDef="master">
+                        <th mat-header-cell *matHeaderCellDef class="w-15 min-w-15 text-center">
+                            Master
                         </th>
                         <td mat-cell *matCellDef="let element" class="text-center">
                             <div class="flex justify-center">

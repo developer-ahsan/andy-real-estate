@@ -1,0 +1,175 @@
+<div class="w-full">
+    <div class="w-full">
+        <div class="px-5" *ngIf="mainScreen == 'Current Imprint Methods' && isLoading">
+            <ngx-skeleton-loader count="8" appearance="line" animation="pulse">
+            </ngx-skeleton-loader>
+        </div>
+        <div *ngIf="!isLoading" class="px-6 row">
+            <div class="col-12 mb-3">
+                <fuse-alert [appearance]="'soft'" [name]="'alertBox1'" [type]="'warning'">
+                    IMPORTANT: The <b>TARGET STORE</b> must contain <b>NO PRODUCTS</b> before doing a migration.
+                </fuse-alert>
+            </div>
+            <div class="col-md-6 col-12">
+                <mat-form-field class="example-chip-list w-full" appearance="fill">
+                    <mat-label>Source Store</mat-label>
+                    <mat-select matInput [value]="142">
+                        <mat-option *ngFor="let item of stores" [value]="item.pk_storeID">{{item.storeName}}
+                        </mat-option>
+                    </mat-select>
+                </mat-form-field>
+            </div>
+            <div class="col-md-6 col-12">
+                <mat-form-field class="example-chip-list w-full" appearance="fill">
+                    <mat-label>Target Store</mat-label>
+                    <mat-select matInput [value]="142">
+                        <mat-option *ngFor="let item of stores" [value]="item.pk_storeID">{{item.storeName}}
+                        </mat-option>
+                    </mat-select>
+                </mat-form-field>
+            </div>
+            <div class="col-12 text-right">
+                <button class="min-w-40" mat-stroked-button [matTooltip]="'Check Stores For Migrations'">
+                    <span> Check Stores For Migrations </span>
+                    <!-- <mat-progress-spinner *ngIf="isUpdateMethodLoader" [diameter]="24" [mode]="'indeterminate'">
+                </mat-progress-spinner> -->
+                </button>
+            </div>
+            <div class="col-12">
+                <div class="p-6 sm:p-8 lg:p-10 w-full">
+                    <div class="row" *ngIf="!standardImprintLoader">
+                        <div class="col-lg-9 col-12">
+                            <div class="text-2xl font-bold">
+                                Store Population Options
+                            </div>
+                        </div>
+                        <div class="col-lg-3 col-12">
+                            <button class="w-full" mat-stroked-button [matTooltip]="'Clear all options'">
+                                Un/Select All
+                            </button>
+                        </div>
+                    </div>
+                    <div class="gap-y-4 mt-6">
+                        <div class="row border-b-2 py-5" *ngFor="let cat of categories">
+                            <div class="col-12 mb-3">
+                                <b class="my-5 text-secondary">
+                                    {{cat.name}}
+                                </b>
+                                <b class="text-secondary float-right cursor-pointer">
+                                    <u>Un/Select</u>
+                                </b>
+                            </div>
+                            <div class="col-lg-3 col-md-4 col-12" *ngFor="let c of cat.cats">
+                                <mat-checkbox>
+                                    <div class="font-medium text-sm">{{c}}</div>
+                                </mat-checkbox>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div *ngIf="!isLoading">
+            <div *ngIf="dataSource.length > 0 && !isUpdateMethod;else other_content" class="w-full">
+                <table mat-table [dataSource]="dataSource" class="w-full border-t">
+                    <ng-container matColumnDef="id">
+                        <th mat-header-cell *matHeaderCellDef class="w-15 min-w-15">
+                            Order ID
+                        </th>
+                        <td mat-cell *matCellDef="let element">
+                            {{element.methodName || not_available}}
+                        </td>
+                    </ng-container>
+                    <ng-container matColumnDef="store">
+                        <th mat-header-cell *matHeaderCellDef class="w-15 min-w-15">
+                            Store
+                        </th>
+                        <td mat-cell *matCellDef="let element">
+                            {{element.methodDescription || not_available}}
+                        </td>
+                    </ng-container>
+                    <ng-container matColumnDef="date">
+                        <th mat-header-cell *matHeaderCellDef class="w-15 min-w-15">
+                            Order Date
+                        </th>
+                        <td mat-cell *matCellDef="let element">
+                            {{element.methodDescription || not_available}}
+                        </td>
+                    </ng-container>
+                    <ng-container matColumnDef="supplier">
+                        <th mat-header-cell *matHeaderCellDef class="w-15 min-w-15">
+                            Supplier(s)
+                        </th>
+                        <td mat-cell *matCellDef="let element">
+                            {{element.methodDescription || not_available}}
+                        </td>
+                    </ng-container>
+                    <ng-container matColumnDef="customer">
+                        <th mat-header-cell *matHeaderCellDef class="w-15 min-w-15">
+                            Customer
+                        </th>
+                        <td mat-cell *matCellDef="let element">
+                            {{element.methodDescription || not_available}}
+                        </td>
+                    </ng-container>
+                    <ng-container matColumnDef="customer_company">
+                        <th mat-header-cell *matHeaderCellDef class="w-15 min-w-15">
+                            Company
+                        </th>
+                        <td mat-cell *matCellDef="let element">
+                            {{element.methodDescription || not_available}}
+                        </td>
+                    </ng-container>
+                    <ng-container matColumnDef="status">
+                        <th mat-header-cell *matHeaderCellDef class="w-15 min-w-15">
+                            Status
+                        </th>
+                        <td mat-cell *matCellDef="let element">
+                            {{element.methodDescription || not_available}}
+                        </td>
+                    </ng-container>
+                    <tr mat-header-row *matHeaderRowDef="displayedColumns;" class="h-18 bg-light"></tr>
+                    <tr mat-row *matRowDef="let row; columns: displayedColumns;"
+                        class="h-14 hover:bg-gray-100 dark:hover:bg-hover" style="cursor: pointer;">
+                    </tr>
+                </table>
+                <mat-paginator #paginator class="border-b sm:border-t sm:border-b-0 z-10 bg-gray-50 dark:bg-transparent"
+                    [ngClass]="{'pointer-events-none': isLoading}" [length]="totalUsers" [pageIndex]="0" [pageSize]="20"
+                    (page)="getNextData($event)" [hidePageSize]="true">
+                </mat-paginator>
+            </div>
+            <!-- Update Method -->
+            <div *ngIf="isUpdateMethod" class="p-6">
+                <mat-form-field class="w-full">
+                    <mat-label>Method Name (150)</mat-label>
+                    <input matInput [(ngModel)]="updateMethodData.methodName" maxlength="150">
+                </mat-form-field>
+                <mat-form-field class="w-full">
+                    <mat-label>Description (500 - optional)</mat-label>
+                    <textarea cols="30" rows="5" matInput [(ngModel)]="updateMethodData.methodDescription"
+                        maxlength="500"></textarea>
+                </mat-form-field>
+                <div class="justify-end flex">
+                    <button [disabled]="isUpdateMethodLoader" class="min-w-30 mr-2" mat-stroked-button
+                        [matTooltip]="'Back to list'" (click)="updateMethodToggle(null)">
+                        Cancel
+                    </button>
+                    <button [disabled]="isUpdateMethodLoader" class="min-w-40" mat-stroked-button
+                        [matTooltip]="'Update Method'" (click)="updateMethod()">
+                        <mat-icon svgIcon="heroicons_solid:pencil" *ngIf="!isUpdateMethodLoader"></mat-icon>
+                        <span class="ml-2" *ngIf="!isUpdateMethodLoader"> Update Method </span>
+                        <mat-progress-spinner *ngIf="isUpdateMethodLoader" [diameter]="24" [mode]="'indeterminate'">
+                        </mat-progress-spinner>
+                    </button>
+                </div>
+            </div>
+            <!-- No color Found -->
+            <ng-template #other_content>
+                <div class="text-secondary font-semibold p-5 text-center" *ngIf="!isUpdateMethod">
+                    YOUR QUERY RETURNED NO RESULTS
+                </div>
+            </ng-template>
+        </div>
+
+    </div>
+</div>

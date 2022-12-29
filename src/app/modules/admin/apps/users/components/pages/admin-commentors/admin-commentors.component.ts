@@ -18,7 +18,7 @@ export class AdminCommentorsComponent implements OnInit, OnDestroy {
 
   dataSource = [];
   tempDataSource = [];
-  displayedColumns: string[] = ['id', 'f_name', 'l_name', 'admin', 'action'];
+  displayedColumns: string[] = ['order', 'email', 'action'];
   totalUsers = 0;
   tempRecords = 0;
   page = 1;
