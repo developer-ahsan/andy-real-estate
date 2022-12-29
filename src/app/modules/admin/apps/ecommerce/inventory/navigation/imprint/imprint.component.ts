@@ -1289,10 +1289,10 @@ export class ImprintComponent implements OnInit, OnDestroy {
     }
 
     if (screenName === "Add Imprint") {
-      this.selectedDigitizer = null;
-      this.selectedMethod = null
-      this.selectedLocation = null;
-      this.selectedSupplier = null;
+      // this.selectedDigitizer = null;
+      // this.selectedMethod = null
+      // this.selectedLocation = null;
+      // this.selectedSupplier = null;
       this.getSuppliers();
       this.getAddImprintLocations();
       this.getAddImprintMethods();
@@ -1941,14 +1941,14 @@ export class ImprintComponent implements OnInit, OnDestroy {
         this.getAddImprintDigitizers()
         this.addImprintLocations.push({ locationName: 'New Location >>>', pk_locationID: null });
         this.addImprintLocations = [...this.addImprintLocations, ...location["data"]];
-        this.selectedLocation = this.addImprintLocations[0];
+        this.selectedLocation = this.addImprintLocations.find(x => x.pk_locationID === 254) || this.addImprintLocations[0];
         this.locationControl.setValue(this.selectedLocation.locationName);
-        // Mark for check
         this._changeDetectorRef.markForCheck();
       });
   }
   getAddImprintLocations(data?: any) {
     this._inventoryService.imprintLocations$.pipe(takeUntil(this._unsubscribeAll)).subscribe((methods) => {
+      this.addImprintLocations.push({ locationName: 'New Location >>>', pk_locationID: null });
       if (data) {
         const { fk_locationID, locationName } = data
         this.selectedLocation = { locationName: locationName, pk_locationID: fk_locationID };
