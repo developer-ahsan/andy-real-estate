@@ -1,18 +1,17 @@
 import { Component, Input, OnInit, ChangeDetectorRef, OnDestroy, ViewChild, EventEmitter, Output } from '@angular/core';
 import { FormControl, FormGroup } from '@angular/forms';
 import { MatPaginator } from '@angular/material/paginator';
-import { ActivatedRoute, Router } from '@angular/router';
 import { newFLPSUser, updateFLPSUser, removeFLPSUser, applyBlanketCustomerPercentage } from 'app/modules/admin/apps/flps/components/flps.types';
 import { UsersService } from 'app/modules/admin/apps/users/components/users.service';
 import { Subject } from 'rxjs';
 import { finalize, takeUntil } from 'rxjs/operators';
-import { SystemService } from '../../vendors.service';
+import { SystemService } from '../vendors.service';
 @Component({
-  selector: 'app-list-vendors',
-  templateUrl: './list.component.html',
+  selector: 'app-details-vendors',
+  templateUrl: './details-vendors.component.html',
   styles: [".mat-paginator {border-radius: 16px !important}"]
 })
-export class VendorsListComponent implements OnInit, OnDestroy {
+export class VendorsDetailsComponent implements OnInit, OnDestroy {
   @ViewChild('paginator') paginator: MatPaginator;
   @Input() isLoading: boolean;
 
@@ -84,9 +83,7 @@ export class VendorsListComponent implements OnInit, OnDestroy {
   constructor(
     private _changeDetectorRef: ChangeDetectorRef,
     private _UsersService: UsersService,
-    private _vendorService: SystemService,
-    private _router: Router,
-    private route: ActivatedRoute
+    private _vendorService: SystemService
   ) { }
 
   initForm() {
@@ -116,10 +113,8 @@ export class VendorsListComponent implements OnInit, OnDestroy {
     });
   }
   ngOnInit(): void {
-    this.getAllSuppliers();
-    this.initForm();
-    // this.getEmployeeUsers();
-    // this.getFlpsUsers(1, 'get');
+    this.isLoading = true;
+    this.getSuppliers(1);
   };
   calledScreen(value) {
     this.initForm();
@@ -176,20 +171,26 @@ export class VendorsListComponent implements OnInit, OnDestroy {
   getSuppliers(page) {
     let params = {
       supplier: true,
-      bln_active: 1,
+      bln_active: 0,
       size: 20,
       page: page
     }
     this._vendorService.getVendorsData(params).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
       this.dataSourceSupplier = res["data"];
+      this.totalSupplier = res["totalRecords"];
+      if (page == 1) {
+        this.tempDataSourceSupplier = res["data"];
+        this.temptotalSupplier = res["totalRecords"];
+      }
+      this.isLoading = false;
       this._changeDetectorRef.markForCheck();
     }, err => {
+      this.isLoading = false;
       this._changeDetectorRef.markForCheck();
     });
   }
   ViewDetails(item) {
-    console.log(item);
-    this._router.navigate([item.pk_companyID], { relativeTo: this.route });
+    console.log(item)
   }
   getFlpsUsers(page, type) {
     let params = {
