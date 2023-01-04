@@ -1,4 +1,3 @@
-
 // This file can be replaced during build by using the `fileReplacements` array.
 // `ng build --prod` replaces `environment.ts` with `environment.prod.ts`.
 // The list of file replacements can be found in `angular.json`.
@@ -19,6 +18,7 @@ export const environment = {
   storeProducts: "https://consolidus-staging.azurewebsites.net/api/store_products",
   system: "https://consolidus-staging.azurewebsites.net/api/system",
   flps: "https://consolidus-staging.azurewebsites.net/api/flps",
+  admins: "https://consolidus-staging.azurewebsites.net/api/consolidus/admin",
   campaignMedia: "https://assets.consolidus.com/globalAssets/Campaigns",
   productMedia: "https://assets.consolidus.com/globalAssets/Products",
   imprintMedia: "https://assets.consolidus.com/globalAssets/Imprints",
@@ -49,17 +49,3 @@ export const environment = {
 // import 'zone.js/plugins/zone-error';  // Included with Angular CLI.
 // https://consolidus-staging.azurewebsites.net/api/
 // http://localhost:7071/api/
-
-
-
-
-
-
-
-
-
-
-
-
-
-
