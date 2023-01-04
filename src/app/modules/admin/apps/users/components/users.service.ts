@@ -15,8 +15,9 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 export class UsersService {
     public navigationLabels = navigations;
 
+    private _companyAdmins: BehaviorSubject<any[] | null> = new BehaviorSubject<any[]>(null);
     private _employeeAdmins: BehaviorSubject<any[] | null> = new BehaviorSubject<any[]>(null);
-    private _flpsStores: BehaviorSubject<any[] | null> = new BehaviorSubject<any[]>(null);
+    private _adminStores: BehaviorSubject<any[] | null> = new BehaviorSubject<any[]>(null);
     private _reportUsers: BehaviorSubject<any[] | null> = new BehaviorSubject<any[]>(null);
     /**
      * Constructor
@@ -44,9 +45,13 @@ export class UsersService {
     get employeeAdmins$(): Observable<any[]> {
         return this._employeeAdmins.asObservable();
     };
+    // Companies
+    get companyAdmins$(): Observable<any[]> {
+        return this._companyAdmins.asObservable();
+    };
     // Stores
-    get flpsStores$(): Observable<any[]> {
-        return this._flpsStores.asObservable();
+    get adminStores$(): Observable<any[]> {
+        return this._adminStores.asObservable();
     };
 
 
@@ -62,23 +67,28 @@ export class UsersService {
             })
         );
     };
-    // Common get Calls
-    getFlpsData(params): Observable<any[]> {
+    getStoresData(params): Observable<any[]> {
         return this._httpClient.get<any[]>(environment.flps, {
             params: params
         }).pipe(retry(3));
     };
+    // Common get Calls
+    getAdminsData(params): Observable<any[]> {
+        return this._httpClient.get<any[]>(environment.admins, {
+            params: params
+        }).pipe(retry(3));
+    };
     // Common Post Call
-    AddFlpsData(payload) {
+    AddAdminsData(payload) {
         const headers = { 'Authorization': `Bearer ${this._authService.accessToken}` };
         return this._httpClient.post(
-            environment.flps, payload, { headers });
+            environment.admins, payload, { headers });
     };
     // Common put Call
-    UpdateFlpsData(payload) {
+    UpdateAdminsData(payload) {
         const headers = { 'Authorization': `Bearer ${this._authService.accessToken}` };
         return this._httpClient.put(
-            environment.flps, payload, { headers });
+            environment.admins, payload, { headers });
     };
 
     // Admin Employees
@@ -107,8 +117,21 @@ export class UsersService {
             })
         );
     };
+    // Get Companies
+    getAdminCompanies(): Observable<any[]> {
+        return this._httpClient.get<any[]>(environment.admins, {
+            params: {
+                companies: true,
+                size: 20
+            }
+        }).pipe(
+            tap((response: any) => {
+                this._companyAdmins.next(response);
+            })
+        );
+    };
     // FLPS Stores
-    getFLPSStores(): Observable<any[]> {
+    getAdminStores(): Observable<any[]> {
         return this._httpClient.get<any[]>(environment.flps, {
             params: {
                 view_stores: true,
@@ -117,7 +140,7 @@ export class UsersService {
             }
         }).pipe(
             tap((response: any) => {
-                this._flpsStores.next(response);
+                this._adminStores.next(response);
             })
         );
     };

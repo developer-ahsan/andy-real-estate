@@ -9,5 +9,5 @@ export class AppComponent {
   /**
    * Constructor
    */
-  constructor() {}
+  constructor() { }
 }

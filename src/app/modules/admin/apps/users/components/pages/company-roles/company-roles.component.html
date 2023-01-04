@@ -1,75 +1,38 @@
 <div class="w-full">
     <div class="w-full">
-        <div class="shadow bg-card p-5 px-8 flex space-x-6" *ngIf="!isUpdateUser">
-            <span class="font-medium cursor-pointer hover:text-gray-900 text-secondary"
-                [ngClass]="{'text-gray-900': mainScreen=='Current Users'}"
-                (click)="calledScreen('Current Users')">Current Users</span>
-            <span class="font-medium cursor-pointer hover:text-gray-900 text-secondary"
-                [ngClass]="{'text-gray-900': mainScreen=='New FLPS User'}" (click)="calledScreen('New FLPS User')">New
-                FLPS User</span>
-            <span class="font-medium cursor-pointer hover:text-gray-900 text-secondary"
-                [ngClass]="{'text-gray-900': mainScreen=='View Disabled Users'}"
-                (click)="calledScreen('View Disabled Users')">View Disabled Users</span>
-        </div>
-        <!-- <div class="px-2 pb-2" *ngIf="!isUpdateUser">
-            <mat-button-toggle-group #group="matButtonToggleGroup" [value]="mainScreen"
-                (change)="calledScreen(group.value)">
-                <mat-button-toggle value="Current Users">
-                    Current Users
-                </mat-button-toggle>
-                <mat-button-toggle value="New FLPS User">
-                    New FLPS User
-                </mat-button-toggle>
-                <mat-button-toggle value="View Disabled Users">
-                    View Disabled Users
-                </mat-button-toggle>
-            </mat-button-toggle-group>
-        </div> -->
-        <div class="p-5" *ngIf="mainScreen == 'Current Users' && isLoading">
-            <ngx-skeleton-loader count="8" appearance="line" animation="pulse" [theme]="{ 
-                'background-color': '#dedede'
-              }">
-            </ngx-skeleton-loader>
+        <div class="bg-card shadow p-5" *ngIf="!isUpdateUser">
+            <div class="row">
+                <div class="col-12">
+                    <mat-form-field class="w-full">
+                        <mat-label>Role *</mat-label>
+                        <input matInput placeholder="Add Employee Role" [(ngModel)]="ngRole">
+                    </mat-form-field>
+                    <div class="text-right">
+                        <button mat-stroked-button class="min-w-40" [disabled]="isAddNewrole" (click)="addNewUser()">
+                            <span *ngIf="!isAddNewrole">Add Role</span>
+                            <mat-progress-spinner *ngIf="isAddNewrole" [diameter]="24" [mode]="'indeterminate'">
+                            </mat-progress-spinner>
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <div class="p-5" *ngIf="isLoading && !isUpdateUser">
+                <ngx-skeleton-loader count="8" appearance="line" animation="pulse" [theme]="{ 
+                    'background-color': '#dedede'
+                  }">
+                </ngx-skeleton-loader>
+            </div>
         </div>
 
-        <div class="mt-5" *ngIf="mainScreen == 'Current Users' && !isLoading && !isUpdateUser">
+        <div *ngIf="!isLoading && !isUpdateUser">
             <div *ngIf="dataSource.length > 0;else other_content" class="w-full">
                 <table mat-table [dataSource]="dataSource" class="w-full border-t">
-                    <ng-container matColumnDef="id">
-                        <th mat-header-cell *matHeaderCellDef class="w-15 min-w-15">
-                            ID
+                    <ng-container matColumnDef="role">
+                        <th mat-header-cell *matHeaderCellDef>
+                            Role
                         </th>
-                        <td mat-cell *matCellDef="let element">
-                            {{element.pk_userID || not_available}}
-                        </td>
-                    </ng-container>
-                    <ng-container matColumnDef="f_name">
-                        <th mat-header-cell *matHeaderCellDef class="w-30 min-w-30">
-                            First Name
-                        </th>
-                        <td mat-cell *matCellDef="let element">
-                            {{element.firstName}}
-                        </td>
-                    </ng-container>
-                    <ng-container matColumnDef="l_name">
-                        <th mat-header-cell *matHeaderCellDef class="w-30 min-w-30 ">
-                            Last Name
-                        </th>
-                        <td mat-cell *matCellDef="let element">
-                            {{element.lastName}}
-                        </td>
-                    </ng-container>
-                    <ng-container matColumnDef="admin">
-                        <th mat-header-cell *matHeaderCellDef class="w-15 min-w-15 text-center">
-                            Admin
-                        </th>
-                        <td mat-cell *matCellDef="let element" class="text-center">
-                            <div class="flex justify-center">
-                                <mat-icon class="text-green-900" svgIcon="heroicons_outline:check"
-                                    *ngIf="element.blnAdmin"></mat-icon>
-                                <mat-icon class="text-red-900" svgIcon="heroicons_outline:x"
-                                    *ngIf="!element.blnAdmin"></mat-icon>
-                            </div>
+                        <td mat-cell *matCellDef="let element" class="w-60">
+                            <input class="form-control text-sm" [(ngModel)]="element.roleName">
                         </td>
                     </ng-container>
                     <ng-container matColumnDef="action">
@@ -78,10 +41,15 @@
                         </th>
                         <td mat-cell *matCellDef="let element" class="text-center">
                             <div class="flex justify-center">
-                                <mat-icon (click)="toggleUpdateUserData(element, true)"
-                                    svgIcon="heroicons_outline:pencil-alt"></mat-icon>
-                                <mat-icon (click)="deleteUser(element,1)" svgIcon="heroicons_outline:trash"
-                                    *ngIf="!element.delLoader"></mat-icon>
+                                <mat-icon *ngIf="!element.updateLoader" (click)="updateUser(element)"
+                                    svgIcon="heroicons_outline:check" matTooltip="Update Role"></mat-icon>
+                                <mat-progress-spinner *ngIf="element.updateLoader" [diameter]="24"
+                                    [mode]="'indeterminate'">
+                                </mat-progress-spinner>
+                                <mat-icon svgIcon="heroicons_outline:eye" matTooltip="View Details"
+                                    (click)="toggleUpdateUserData(element, true)"></mat-icon>
+                                <mat-icon (click)="deleteUser(element)" svgIcon="heroicons_outline:trash"
+                                    *ngIf="!element.delLoader" matTooltip="Delete    User"></mat-icon>
                                 <mat-progress-spinner *ngIf="element.delLoader" [diameter]="24"
                                     [mode]="'indeterminate'">
                                 </mat-progress-spinner>
@@ -98,160 +66,9 @@
                     (page)="getNextData($event)" [hidePageSize]="true">
                 </mat-paginator>
             </div>
-            <!-- No color Found -->
             <ng-template #other_content>
-                <div class="text-secondary font-semibold p-5 text-center">
-                    There are currently no FLPS users.
-                </div>
-            </ng-template>
-        </div>
-        <div *ngIf="mainScreen == 'New FLPS User' && !isUpdateUser" class="mt-5">
-            <div class="shadow bg-card p-6">
-                <div class="row" [formGroup]="addNewUserForm">
-                    <div class="col-12 col-md-6">
-                        <mat-form-field class="w-full">
-                            <mat-label>Employee* </mat-label>
-                            <mat-select matInput formControlName="admin_user_id">
-                                <mat-option [value]="0">Select an employee</mat-option>
-                                <mat-option *ngFor="let item of employeeUser" [value]="item.pk_userID">{{item.firstName
-                                    + '
-                                    ' + item.lastName}}</mat-option>
-                            </mat-select>
-                        </mat-form-field>
-                    </div>
-                    <div class="col-12 col-md-6">
-                        <mat-form-field class="w-full">
-                            <mat-label>First Name (30) </mat-label>
-                            <input matInput type="text" maxlength="30" formControlName="firstName">
-                        </mat-form-field>
-                    </div>
-                    <div class="col-12 col-md-6">
-                        <mat-form-field class="w-full">
-                            <mat-label>Last Name (50) </mat-label>
-                            <input matInput type="text" maxlength="50" formControlName="lastName">
-                        </mat-form-field>
-                    </div>
-                    <div class="col-12 col-md-6">
-                        <mat-form-field class="w-full">
-                            <mat-label>Email (50)* </mat-label>
-                            <input matInput type="text" maxlength="50" formControlName="email">
-                        </mat-form-field>
-                    </div>
-                    <div class="col-12 col-md-6">
-                        <mat-form-field class="w-full">
-                            <mat-label>UserName (15)* </mat-label>
-                            <input matInput type="text" maxlength="15" formControlName="userName">
-                        </mat-form-field>
-                    </div>
-                    <div class="col-12 col-md-6">
-                        <mat-form-field class="w-full">
-                            <mat-label>Password(15)* </mat-label>
-                            <input matInput type="text" maxlength="15" formControlName="password">
-                        </mat-form-field>
-                    </div>
-                    <div class="col-12 col-md-6">
-                        <mat-form-field class="w-full">
-                            <mat-label>Default Commission (%) </mat-label>
-                            <input matInput type="number" formControlName="defaultCommission">
-                        </mat-form-field>
-                    </div>
-                    <div class="col-12 col-md-6">
-                        <mat-form-field class="w-full">
-                            <mat-label>Admin User</mat-label>
-                            <mat-select matInput formControlName="blnAdmin">
-                                <mat-option [value]="false">No</mat-option>
-                                <mat-option [value]="true">Yes</mat-option>
-                            </mat-select>
-                        </mat-form-field>
-                    </div>
-
-                    <div class="text-right col-12">
-                        <button [disabled]="isAddNewUserLoader || !addNewUserForm.valid" class="min-w-50"
-                            mat-stroked-button [matTooltip]="'Add New User'" (click)="addNewUser()">
-                            <mat-icon svgIcon="heroicons_solid:plus" *ngIf="!isAddNewUserLoader"></mat-icon>
-                            <span class="ml-2" *ngIf="!isAddNewUserLoader"> Add New User </span>
-                            <mat-progress-spinner *ngIf="isAddNewUserLoader" [diameter]="24" [mode]="'indeterminate'">
-                            </mat-progress-spinner>
-                        </button>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="mt-5" *ngIf="mainScreen == 'View Disabled Users' && !isUpdateUser">
-            <div class="px-5" *ngIf="isDisabledLoading">
-                <ngx-skeleton-loader count="8" appearance="line" animation="pulse" [theme]="{ 
-                    'background-color': '#dedede'
-                  }">
-                </ngx-skeleton-loader>
-            </div>
-            <div *ngIf="disabledDataSource.length > 0 && !isDisabledLoading;else other_content" class="w-full">
-                <table mat-table [dataSource]="disabledDataSource" class="w-full border-t">
-                    <ng-container matColumnDef="id">
-                        <th mat-header-cell *matHeaderCellDef class="w-15 min-w-15">
-                            ID
-                        </th>
-                        <td mat-cell *matCellDef="let element">
-                            {{element.pk_userID || not_available}}
-                        </td>
-                    </ng-container>
-                    <ng-container matColumnDef="f_name">
-                        <th mat-header-cell *matHeaderCellDef class="w-30 min-w-30">
-                            First Name
-                        </th>
-                        <td mat-cell *matCellDef="let element">
-                            {{element.firstName}}
-                        </td>
-                    </ng-container>
-                    <ng-container matColumnDef="l_name">
-                        <th mat-header-cell *matHeaderCellDef class="w-30 min-w-30 ">
-                            Last Name
-                        </th>
-                        <td mat-cell *matCellDef="let element">
-                            {{element.lastName}}
-                        </td>
-                    </ng-container>
-                    <ng-container matColumnDef="admin">
-                        <th mat-header-cell *matHeaderCellDef class="w-15 min-w-15 text-center">
-                            Admin
-                        </th>
-                        <td mat-cell *matCellDef="let element" class="text-center">
-                            <div class="flex justify-center">
-                                <mat-icon class="text-green-900" svgIcon="heroicons_outline:check"
-                                    *ngIf="element.blnAdmin"></mat-icon>
-                                <mat-icon class="text-red-900" svgIcon="heroicons_outline:x"
-                                    *ngIf="!element.blnAdmin"></mat-icon>
-                            </div>
-                        </td>
-                    </ng-container>
-                    <ng-container matColumnDef="action">
-                        <th mat-header-cell *matHeaderCellDef class="w-15 min-w-15 text-center">
-                            Action
-                        </th>
-                        <td mat-cell *matCellDef="let element" class="text-center">
-                            <div class="flex justify-center">
-                                <mat-icon (click)="toggleUpdateUserData(element, true)"
-                                    svgIcon="heroicons_outline:pencil-alt"></mat-icon>
-                                <mat-icon (click)="deleteUser(element,0)" svgIcon="heroicons_outline:trash"
-                                    *ngIf="!element.delLoader"></mat-icon>
-                                <mat-progress-spinner *ngIf="element.delLoader" [diameter]="24"
-                                    [mode]="'indeterminate'">
-                                </mat-progress-spinner>
-                            </div>
-                        </td>
-                    </ng-container>
-                    <tr mat-header-row *matHeaderRowDef="displayedColumns;" class="h-18 bg-light"></tr>
-                    <tr mat-row *matRowDef="let row; columns: displayedColumns;"
-                        class="h-14 hover:bg-gray-100 dark:hover:bg-hover" style="cursor: pointer;">
-                    </tr>
-                </table>
-                <mat-paginator #paginator class="border-b sm:border-t sm:border-b-0 z-10 bg-gray-50 dark:bg-transparent"
-                    [ngClass]="{'pointer-events-none': isDisabledLoading}" [length]="distabledTotalUsers"
-                    [pageIndex]="0" [pageSize]="20" (page)="getNextDisabledData($event)" [hidePageSize]="true">
-                </mat-paginator>
-            </div>
-            <ng-template #other_content>
-                <div class="text-secondary font-semibold p-5 text-center" *ngIf="!isDisabledLoading">
-                    There are currently no FLPS users.
+                <div class="text-secondary font-semibold p-5 text-center bg-card">
+                    There are currently no Employee Roles.
                 </div>
             </ng-template>
         </div>
@@ -259,22 +76,13 @@
         <div *ngIf="isUpdateUser">
             <div class="shadow bg-card p-5 px-8 flex space-x-6 overflow-x-auto">
                 <span class="font-medium cursor-pointer hover:text-gray-900 text-primary"
-                    (click)="toggleUpdateUserData(null, false)" matTooltip="View Users List">Users</span>
+                    (click)="toggleUpdateUserData(null, false)" matTooltip="View Roles List">Employee Roles</span>
                 <span class="font-medium cursor-pointer hover:text-gray-900 text-secondary"
-                    [ngClass]="{'text-gray-900': mainScreenUser=='Edit User'}"
-                    (click)="calledUserScreen('Edit User')">Edit User</span>
+                    [ngClass]="{'text-gray-900': mainScreenUser=='Current Users'}"
+                    (click)="calledUserScreen('Current Users')">Current Users</span>
                 <span class="font-medium cursor-pointer hover:text-gray-900 text-secondary"
-                    [ngClass]="{'text-gray-900': mainScreenUser=='View Orders'}"
-                    (click)="calledUserScreen('View Orders')">View Orders</span>
-                <span class="font-medium cursor-pointer hover:text-gray-900 text-secondary"
-                    [ngClass]="{'text-gray-900': mainScreenUser=='View Customers'}"
-                    (click)="calledUserScreen('View Customers')">View Customers</span>
-                <span class="font-medium cursor-pointer hover:text-gray-900 text-secondary"
-                    [ngClass]="{'text-gray-900': mainScreenUser=='Blanket Customer Percentage'}"
-                    (click)="calledUserScreen('Blanket Customer Percentage')">Blanket Customer Percentage</span>
-                <span class="font-medium cursor-pointer hover:text-gray-900 text-secondary"
-                    [ngClass]="{'text-gray-900': mainScreenUser=='Remove User'}"
-                    (click)="calledUserScreen('Remove User')">Remove User</span>
+                    [ngClass]="{'text-gray-900': mainScreenUser=='Add Users'}"
+                    (click)="calledUserScreen('Add Users')">Add Users</span>
             </div>
 
             <!-- Edit User -->
@@ -429,98 +237,71 @@
                     </div>
                 </div>
             </div>
-            <!-- View Orders -->
-            <div class="mt-5" *ngIf="mainScreenUser == 'View Orders'">
-                <div class="px-5" *ngIf="ordersLoader">
+            <!-- View Users -->
+            <div class="mt-5" *ngIf="mainScreenUser == 'Current Users'">
+                <div class="px-5" *ngIf="employeeRoleLoader">
                     <ngx-skeleton-loader count="8" appearance="line" animation="pulse" [theme]="{ 
                         'background-color': '#dedede'
                       }">
                     </ngx-skeleton-loader>
                 </div>
-                <div *ngIf="ordersDataSource.length > 0 && !ordersLoader;else other_content" class="w-full">
-                    <table mat-table [dataSource]="ordersDataSource" class="w-full border-t">
-                        <ng-container matColumnDef="id">
+                <div *ngIf="employeeRoleDataSource.length > 0 && !employeeRoleLoader;else other_content" class="w-full">
+                    <table mat-table [dataSource]="employeeRoleDataSource" class="w-full border-t">
+                        <ng-container matColumnDef="name">
                             <th mat-header-cell *matHeaderCellDef class="text-sm">
-                                Order ID
+                                Name
                             </th>
                             <td mat-cell *matCellDef="let element" class="text-sm">
-                                {{element.fk_orderID}}
+                                {{element.firstName + ' ' + element.lastName}}
                             </td>
                         </ng-container>
-                        <ng-container matColumnDef="date">
+                        <ng-container matColumnDef="email">
                             <th mat-header-cell *matHeaderCellDef class="text-sm">
-                                Date
+                                Email
                             </th>
                             <td mat-cell *matCellDef="let element" class="text-sm">
-                                {{element.orderDate | date}}
+                                {{element.email}}
                             </td>
                         </ng-container>
-                        <ng-container matColumnDef="store">
+                        <ng-container matColumnDef="roleName">
                             <th mat-header-cell *matHeaderCellDef class="text-sm">
-                                Store
+                                Role
                             </th>
                             <td mat-cell *matCellDef="let element" class="text-sm">
-                                {{element.storeName}}
+                                {{element.roleName}}
                             </td>
                         </ng-container>
-                        <ng-container matColumnDef="customer">
-                            <th mat-header-cell *matHeaderCellDef class="text-sm">
-                                Customer
+                        <ng-container matColumnDef="action">
+                            <th mat-header-cell *matHeaderCellDef class="w-15 min-w-15 text-center">
+                                Action
                             </th>
-                            <td mat-cell *matCellDef="let element" class="text-sm">
-                                {{element.customerName}}
+                            <td mat-cell *matCellDef="let element" class="text-center">
+                                <div class="flex justify-center">
+                                    <mat-icon svgIcon="heroicons_outline:pencil-alt" matTooltip="View Details"
+                                        (click)="toggleUpdateUserData(element, true)"></mat-icon>
+                                    <mat-icon (click)="deleteEmployeeUser(element)" svgIcon="heroicons_outline:trash"
+                                        *ngIf="!element.delLoader" matTooltip="Delete    User"></mat-icon>
+                                    <mat-progress-spinner *ngIf="element.delLoader" [diameter]="24"
+                                        [mode]="'indeterminate'">
+                                    </mat-progress-spinner>
+                                </div>
                             </td>
                         </ng-container>
-                        <ng-container matColumnDef="total">
-                            <th mat-header-cell *matHeaderCellDef class="text-sm">
-                                Total
-                            </th>
-                            <td mat-cell *matCellDef="let element" class="text-sm">
-                                {{element.Total | currency}}
-                            </td>
-                        </ng-container>
-                        <ng-container matColumnDef="paid">
-                            <th mat-header-cell *matHeaderCellDef class="text-sm">
-                                Paid
-                            </th>
-                            <td mat-cell *matCellDef="let element" class="text-sm">
-                                <span *ngIf="element.paymentDate" class="text-green-600">Paid</span>
-                                <span *ngIf="!element.paymentDate" class="text-red-500">Not Paid</span>
-                            </td>
-                        </ng-container>
-                        <ng-container matColumnDef="cancel">
-                            <th mat-header-cell *matHeaderCellDef class="text-sm">
-                                Cancel
-                            </th>
-                            <td mat-cell *matCellDef="let element" class="text-sm">
-                                <span *ngIf="element.blnCancelled" class="text-red-500">Cancelled</span>
-                                <span *ngIf="!element.blnCancelled" class="text-green-600">Active</span>
-                            </td>
-                        </ng-container>
-                        <ng-container matColumnDef="status">
-                            <th mat-header-cell *matHeaderCellDef class="text-sm">
-                                Status
-                            </th>
-                            <td mat-cell *matCellDef="let element" class="text-sm">
-                                <span *ngIf="element.fk_statusID != 0" class="text-red-500">Processing</span>
-                                <span *ngIf="element.fk_statusID == 0" class="text-green-600">Shipped</span>
-                            </td>
-                        </ng-container>
-                        <tr mat-header-row *matHeaderRowDef="displayedOrdersColumns;" class="h-18 bg-light"></tr>
-                        <tr mat-row *matRowDef="let row; columns: displayedOrdersColumns;"
+                        <tr mat-header-row *matHeaderRowDef="displayedemployeeRoleColumns;" class="h-18 bg-light"></tr>
+                        <tr mat-row *matRowDef="let row; columns: displayedemployeeRoleColumns;"
                             class="h-14 hover:bg-gray-100 dark:hover:bg-hover" style="cursor: pointer;">
                         </tr>
                     </table>
                     <mat-paginator #paginator
                         class="border-b sm:border-t sm:border-b-0 z-10 bg-gray-50 dark:bg-transparent"
-                        [ngClass]="{'pointer-events-none': ordersLoader}" [length]="totalOrders" [pageIndex]="0"
-                        [pageSize]="20" (page)="getNextOrderdData($event)" [hidePageSize]="true">
+                        [ngClass]="{'pointer-events-none': employeeRoleLoader}" [length]="totalemployeeRole"
+                        [pageIndex]="0" [pageSize]="20" (page)="getNextEmployeeRoleData($event)" [hidePageSize]="true">
                     </mat-paginator>
                 </div>
                 <!-- No color Found -->
                 <ng-template #other_content>
-                    <div class="text-secondary font-semibold p-5 text-center" *ngIf="!ordersLoader">
-                        There are no orders associated with this FLPS user.
+                    <div class="text-secondary font-semibold p-5 text-center" *ngIf="!employeeRoleLoader">
+                        There are currently no users assigned to this role.
                     </div>
                 </ng-template>
             </div>

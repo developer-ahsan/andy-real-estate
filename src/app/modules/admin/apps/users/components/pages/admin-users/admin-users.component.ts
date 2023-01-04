@@ -2,7 +2,7 @@ import { Component, Input, OnInit, ChangeDetectorRef, OnDestroy, ViewChild } fro
 import { FormControl, FormGroup } from '@angular/forms';
 import { MatPaginator } from '@angular/material/paginator';
 import { Subject } from 'rxjs';
-import { finalize, takeUntil } from 'rxjs/operators';
+import { debounceTime, distinctUntilChanged, filter, finalize, switchMap, takeUntil, tap } from 'rxjs/operators';
 import { UsersService } from '../../users.service';
 import { applyBlanketCustomerPercentage, newFLPSUser, removeFLPSUser, updateFLPSUser } from '../../users.types';
 @Component({
@@ -67,7 +67,17 @@ export class AdminUsersComponent implements OnInit, OnDestroy {
 
   isSearching: boolean = false;
   // Emplyees Dropdown
-  employeeUser = [];
+  companies = [];
+  searchCompanyCtrl = new FormControl();
+  selectedCompany: any;
+  isSearchingCompany = false;
+  minLengthTerm = 3;
+
+  addCompanies = [];
+  addSearchCompanyCtrl = new FormControl();
+  addSelectedCompany: any;
+  addIsSearchingCompany = false;
+
   constructor(
     private _changeDetectorRef: ChangeDetectorRef,
     private _UsersService: UsersService
@@ -102,9 +112,90 @@ export class AdminUsersComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.initForm();
     this.isLoading = true;
-    this.getEmployeeUsers();
-    this.getFlpsUsers(1, 'get');
+    this.getAdminCompanies();
+    this.getAdminUsers(1, 'get');
+    let params;
+    this.searchCompanyCtrl.setValue({ companyName: 'All', pk_companyID: null });
+    this.searchCompanyCtrl.valueChanges.pipe(
+      filter((res: any) => {
+        params = {
+          companies: true,
+          keyword: res
+        }
+        return res !== null && res.length >= this.minLengthTerm
+      }),
+      distinctUntilChanged(),
+      debounceTime(500),
+      tap(() => {
+        this.companies = [];
+        this.isSearchingCompany = true;
+        this._changeDetectorRef.markForCheck();
+      }),
+      switchMap(value => this._UsersService.getAdminsData(params)
+        .pipe(
+          finalize(() => {
+            this.isSearchingCompany = false
+            this._changeDetectorRef.markForCheck();
+          }),
+        )
+      )
+    )
+      .subscribe((data: any) => {
+        this.companies.push({ companyName: 'All', pk_companyID: null });
+        this.companies = this.companies.concat(data['data']);
+      });
+
+    this.addSearchCompanyCtrl.valueChanges.pipe(
+      filter((res: any) => {
+        params = {
+          companies: true,
+          keyword: res
+        }
+        return res !== null && res.length >= this.minLengthTerm
+      }),
+      distinctUntilChanged(),
+      debounceTime(500),
+      tap(() => {
+        this.addCompanies = [];
+        this.addIsSearchingCompany = true;
+        this._changeDetectorRef.markForCheck();
+      }),
+      switchMap(value => this._UsersService.getAdminsData(params)
+        .pipe(
+          finalize(() => {
+            this.addIsSearchingCompany = false
+            this._changeDetectorRef.markForCheck();
+          }),
+        )
+      )
+    )
+      .subscribe((data: any) => {
+        this.addCompanies = data['data'];
+      });
   };
+  onSelected(ev) {
+    this.selectedCompany = ev.option.value;
+    if (this.selectedCompany.companyName == 'All') {
+      this.dataSource = this.tempDataSource;
+      this.page = 1;
+      this.totalUsers = this.tempRecords;
+      this._changeDetectorRef.markForCheck();
+    } else {
+      this.isLoading = true;
+      this.getAdminUsers(1, 'get');
+    }
+  }
+
+  displayWith(value: any) {
+    return value?.companyName;
+  }
+  addOnSelected(ev) {
+    this.addSelectedCompany = ev.option.value;
+  }
+
+  addDisplayWith(value: any) {
+    return value?.companyName;
+  }
   calledScreen(value) {
     this.initForm();
     this.mainScreen = value;
@@ -113,19 +204,16 @@ export class AdminUsersComponent implements OnInit, OnDestroy {
       this.page = 1;
       this._changeDetectorRef.markForCheck();
       if (this.dataSource.length == 0) {
-        this.getFlpsUsers(1, 'get');
+        this.getAdminUsers(1, 'get');
       }
     } else if (this.mainScreen == 'View Disabled Users') {
       this.disabledDataSource = this.temdisabledDataSource;
       this.disabledPage = 1;
       this._changeDetectorRef.markForCheck();
       if (this.disabledDataSource.length == 0) {
-        this.getDisabledFlpsUsers(1);
+        this.getDisabledAdminUsers(1);
       }
     } else {
-      if (this.employeeUser.length == 0) {
-        this.getEmployeeUsers();
-      }
     }
   }
   calledUserScreen(value) {
@@ -139,14 +227,15 @@ export class AdminUsersComponent implements OnInit, OnDestroy {
       }
     }
   }
-  getFlpsUsers(page, type) {
+  getAdminUsers(page, type) {
     let params = {
-      login_check: true,
-      bln_active: 1,
+      admin_users: true,
+      user_status: 1,
       page: page,
+      company_id: this.selectedCompany.pk_companyID,
       size: 20
     }
-    this._UsersService.getFlpsData(params).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+    this._UsersService.getAdminsData(params).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
       this.dataSource = res["data"];
       this.totalUsers = res["totalRecords"];
       if (this.tempDataSource.length == 0) {
@@ -168,14 +257,14 @@ export class AdminUsersComponent implements OnInit, OnDestroy {
       this._changeDetectorRef.markForCheck();
     });
   }
-  getDisabledFlpsUsers(page) {
+  getDisabledAdminUsers(page) {
     let params = {
-      login_check: true,
-      bln_active: 0,
+      admin_users: true,
+      user_status: 0,
       page: page,
       size: 20
     }
-    this._UsersService.getFlpsData(params).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+    this._UsersService.getAdminsData(params).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
       this.disabledDataSource = res["data"];
       this.distabledTotalUsers = res["totalRecords"];
       if (this.temdisabledDataSource.length == 0) {
@@ -191,9 +280,14 @@ export class AdminUsersComponent implements OnInit, OnDestroy {
       this._changeDetectorRef.markForCheck();
     });
   }
-  getEmployeeUsers() {
-    this._UsersService.employeeAdmins$.pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
-      this.employeeUser = res["data"];
+  getAdminCompanies() {
+    this._UsersService.companyAdmins$.pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+      this.companies.push({ companyName: 'All', pk_companyID: null });
+      this.companies = this.companies.concat(res['data']);
+      this.selectedCompany = this.companies[0];
+      this.addSelectedCompany = this.companies[0];
+      this.addCompanies = res['data'];
+      this.addSearchCompanyCtrl.setValue({ companyName: this.addCompanies[0].companyName, pk_companyID: this.addCompanies[0].pk_companyID });
     });
   }
   getNextData(event) {
@@ -204,7 +298,7 @@ export class AdminUsersComponent implements OnInit, OnDestroy {
     } else {
       this.page--;
     };
-    this.getFlpsUsers(this.page, 'get');
+    this.getAdminUsers(this.page, 'get');
   };
   getNextDisabledData(event) {
     const { previousPageIndex, pageIndex } = event;
@@ -214,7 +308,7 @@ export class AdminUsersComponent implements OnInit, OnDestroy {
     } else {
       this.disabledPage--;
     };
-    this.getDisabledFlpsUsers(this.disabledPage);
+    this.getDisabledAdminUsers(this.disabledPage);
   };
 
   toggleUpdateUserData(data, check) {
@@ -237,7 +331,7 @@ export class AdminUsersComponent implements OnInit, OnDestroy {
     this.keyword = value;
     this.isSearching = true;
     this._changeDetectorRef.markForCheck();
-    this.getFlpsUsers(1, 'get');
+    this.getAdminUsers(1, 'get');
   }
   resetSearch() {
     if (this.dataSource.length > 0) {
@@ -262,10 +356,10 @@ export class AdminUsersComponent implements OnInit, OnDestroy {
       userName, password, email, firstName, lastName, blnAdmin, defaultCommission: defaultCommission, admin_user_id: adminId, new_flps_user
     }
     this.isAddNewUserLoader = true;
-    this._UsersService.AddFlpsData(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+    this._UsersService.AddAdminsData(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
       if (res["success"]) {
         this.page = 1;
-        this.getFlpsUsers(1, 'add');
+        this.getAdminUsers(1, 'add');
       } else {
         this.isAddNewUserLoader = false;
         this._changeDetectorRef.markForCheck();
@@ -289,7 +383,7 @@ export class AdminUsersComponent implements OnInit, OnDestroy {
       userName, password, email, firstName, lastName, blnAdmin, defaultCommission: defaultCommission, admin_user_id: adminId, update_flps_user, blnActive, user_id: pk_userID
     }
     this.isUpdateUserLoader = true;
-    this._UsersService.UpdateFlpsData(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+    this._UsersService.UpdateAdminsData(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
       if (res["success"]) {
         // if (this.updateUserData.blnActive != blnActive) {
         //   if(blnActive == false) {
@@ -341,7 +435,7 @@ export class AdminUsersComponent implements OnInit, OnDestroy {
       user_id: item.pk_userID,
       remove_flps_user: true
     }
-    this._UsersService.UpdateFlpsData(payload).pipe(takeUntil(this._unsubscribeAll), finalize(() => {
+    this._UsersService.UpdateAdminsData(payload).pipe(takeUntil(this._unsubscribeAll), finalize(() => {
       item.delLoader = false
       this._changeDetectorRef.markForCheck();
     })).subscribe(res => {
@@ -376,7 +470,7 @@ export class AdminUsersComponent implements OnInit, OnDestroy {
       apply_blanket_percentage: true
     }
     this.isBlanketLoader = true;
-    this._UsersService.UpdateFlpsData(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+    this._UsersService.UpdateAdminsData(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
       this._UsersService.snackBar(res["message"]);
       this.isBlanketLoader = false;
       this._changeDetectorRef.markForCheck();
@@ -394,7 +488,7 @@ export class AdminUsersComponent implements OnInit, OnDestroy {
       size: 20
     };
     this.ordersLoader = true;
-    this._UsersService.getFlpsData(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+    this._UsersService.getAdminsData(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
       this.ordersDataSource = res["data"];
       this.totalOrders = res["totalRecords"];
       if (this.tempOrdersDataSource.length == 0) {

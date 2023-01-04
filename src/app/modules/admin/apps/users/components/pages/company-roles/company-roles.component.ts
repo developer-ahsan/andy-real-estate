@@ -4,7 +4,7 @@ import { MatPaginator } from '@angular/material/paginator';
 import { Subject } from 'rxjs';
 import { finalize, takeUntil } from 'rxjs/operators';
 import { UsersService } from '../../users.service';
-import { applyBlanketCustomerPercentage, newFLPSUser, removeFLPSUser, updateFLPSUser } from '../../users.types';
+import { AddRole, AddRoleEmployee, applyBlanketCustomerPercentage, newFLPSUser, RemoveEmployeeRole, removeFLPSUser, RemoveRole, updateFLPSUser, updateRole } from '../../users.types';
 @Component({
   selector: 'app-company-roles',
   templateUrl: './company-roles.component.html',
@@ -18,7 +18,7 @@ export class CompanyRolesComponent implements OnInit, OnDestroy {
 
   dataSource = [];
   tempDataSource = [];
-  displayedColumns: string[] = ['id', 'f_name', 'l_name', 'admin', 'action'];
+  displayedColumns: string[] = ['role', 'action'];
   totalUsers = 0;
   tempRecords = 0;
   page = 1;
@@ -39,23 +39,22 @@ export class CompanyRolesComponent implements OnInit, OnDestroy {
   isUpdateUser: boolean = false;
   updateUserData: any;
 
-  mainScreen: string = 'Current Users';
   keyword = '';
   not_available = 'N/A';
 
-  mainScreenUser: string = 'Edit User';
+  mainScreenUser: string = 'Current Users';
 
   ngBlanketPercentage = '';
   isBlanketLoader: boolean = false;
 
   // User Orders
-  ordersLoader: boolean = true;
-  ordersDataSource = [];
-  tempOrdersDataSource = [];
-  displayedOrdersColumns: string[] = ['id', 'date', 'store', 'customer', 'total', 'paid', 'cancel', 'status'];
-  totalOrders = 0;
-  tempTotalOrders = 0;
-  ordersPage = 1;
+  employeeRoleLoader: boolean = true;
+  employeeRoleDataSource = [];
+  tempemployeeRoleDataSource = [];
+  displayedemployeeRoleColumns: string[] = ['name', 'email', 'roleName', 'action'];
+  totalemployeeRole = 0;
+  tempEmployeeRecords = 0;
+  employeeRolePage = 1;
 
   // User Customers
   customersDataSource = [];
@@ -67,7 +66,9 @@ export class CompanyRolesComponent implements OnInit, OnDestroy {
 
   isSearching: boolean = false;
   // Emplyees Dropdown
-  employeeUser = [];
+  isAddNewrole: boolean = false;
+  ngRole = '';
+  isAddNewEmployeeRole: boolean = false;
   constructor(
     private _changeDetectorRef: ChangeDetectorRef,
     private _UsersService: UsersService
@@ -102,51 +103,27 @@ export class CompanyRolesComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.initForm();
     this.isLoading = true;
-    this.getEmployeeUsers();
-    this.getFlpsUsers(1, 'get');
+    this.getAdminRoles(1, 'get');
   };
-  calledScreen(value) {
-    this.initForm();
-    this.mainScreen = value;
-    if (this.mainScreen == 'Current Users') {
-      this.dataSource = this.tempDataSource;
-      this.page = 1;
-      this._changeDetectorRef.markForCheck();
-      if (this.dataSource.length == 0) {
-        this.getFlpsUsers(1, 'get');
-      }
-    } else if (this.mainScreen == 'View Disabled Users') {
-      this.disabledDataSource = this.temdisabledDataSource;
-      this.disabledPage = 1;
-      this._changeDetectorRef.markForCheck();
-      if (this.disabledDataSource.length == 0) {
-        this.getDisabledFlpsUsers(1);
-      }
-    } else {
-      if (this.employeeUser.length == 0) {
-        this.getEmployeeUsers();
-      }
-    }
-  }
   calledUserScreen(value) {
     this.mainScreenUser = value;
-    if (this.mainScreenUser == 'View Orders') {
-      this.ordersDataSource = this.tempOrdersDataSource;
-      this.ordersPage = 1;
+    if (value == 'Current Users') {
+      this.employeeRoleDataSource = this.tempemployeeRoleDataSource;
+      this.employeeRolePage = 1;
       this._changeDetectorRef.markForCheck();
-      if (this.ordersDataSource.length == 0) {
-        this.getUserOrders(1);
+      if (this.employeeRoleDataSource.length == 0) {
+        this.employeeRoleLoader = true;
+        this.getAdminEmployeeRoles(1, 'get');
       }
     }
   }
-  getFlpsUsers(page, type) {
+  getAdminRoles(page, type) {
     let params = {
-      login_check: true,
-      bln_active: 1,
+      roles: true,
       page: page,
       size: 20
     }
-    this._UsersService.getFlpsData(params).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+    this._UsersService.getAdminsData(params).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
       this.dataSource = res["data"];
       this.totalUsers = res["totalRecords"];
       if (this.tempDataSource.length == 0) {
@@ -154,10 +131,9 @@ export class CompanyRolesComponent implements OnInit, OnDestroy {
         this.tempRecords = res["totalRecords"];
       }
       if (type == 'add') {
-        this.isAddNewUserLoader = false;
-        this.initForm();
-        this._UsersService.snackBar('User Added Successfully');
-        this.mainScreen = 'Current Users';
+        this.ngRole = '';
+        this.isAddNewrole = false;
+        this._UsersService.snackBar('Role Added Successfully');
       }
       this.isLoading = false;
       // this.isLoadingChange.emit(false);
@@ -166,34 +142,6 @@ export class CompanyRolesComponent implements OnInit, OnDestroy {
       this.isLoading = false;
       // this.isLoadingChange.emit(false);
       this._changeDetectorRef.markForCheck();
-    });
-  }
-  getDisabledFlpsUsers(page) {
-    let params = {
-      login_check: true,
-      bln_active: 0,
-      page: page,
-      size: 20
-    }
-    this._UsersService.getFlpsData(params).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
-      this.disabledDataSource = res["data"];
-      this.distabledTotalUsers = res["totalRecords"];
-      if (this.temdisabledDataSource.length == 0) {
-        this.temdisabledDataSource = res["data"];
-        this.tempdistabledTotalUsers = res["totalRecords"];
-      }
-      this.isDisabledLoading = false;
-      // this.isLoadingChange.emit(false);
-      this._changeDetectorRef.markForCheck();
-    }, err => {
-      this.isDisabledLoading = false;
-      // this.isLoadingChange.emit(false);
-      this._changeDetectorRef.markForCheck();
-    });
-  }
-  getEmployeeUsers() {
-    this._UsersService.employeeAdmins$.pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
-      this.employeeUser = res["data"];
     });
   }
   getNextData(event) {
@@ -204,220 +152,170 @@ export class CompanyRolesComponent implements OnInit, OnDestroy {
     } else {
       this.page--;
     };
-    this.getFlpsUsers(this.page, 'get');
+    this.getAdminRoles(this.page, 'get');
   };
-  getNextDisabledData(event) {
-    const { previousPageIndex, pageIndex } = event;
-
-    if (pageIndex > previousPageIndex) {
-      this.disabledPage++;
-    } else {
-      this.disabledPage--;
-    };
-    this.getDisabledFlpsUsers(this.disabledPage);
-  };
-
-  toggleUpdateUserData(data, check) {
-    this.isUpdateUser = check;
-    if (check) {
-      this.ordersDataSource = [];
-      this.tempOrdersDataSource = [];
-      this.ordersPage = 1;
-      this.mainScreenUser = 'Edit User';
-      this.updateUserData = data;
-      this.updateUserForm.patchValue(data);
-    }
-
-  }
-  searchColor(value) {
-    if (this.dataSource.length > 0) {
-      this.paginator.firstPage();
-    }
-    this.page = 1;
-    this.keyword = value;
-    this.isSearching = true;
-    this._changeDetectorRef.markForCheck();
-    this.getFlpsUsers(1, 'get');
-  }
-  resetSearch() {
-    if (this.dataSource.length > 0) {
-      this.paginator.firstPage();
-    }
-    this.keyword = '';
-    this.dataSource = this.tempDataSource;
-    this.totalUsers = this.tempRecords;
-  }
 
   addNewUser() {
-    const { userName, password, email, firstName, lastName, blnAdmin, defaultCommission, admin_user_id, new_flps_user } = this.addNewUserForm.getRawValue();
-    let adminId = admin_user_id;
-    if (admin_user_id == 0) {
-      adminId = null;
-    }
-    if (userName == '' || password == '' || email == '') {
-      this._UsersService.snackBar('Please fill out the required fields');
+    if (!this.ngRole) {
+      this._UsersService.snackBar('Role field is required');
       return;
     }
-    let payload: newFLPSUser = {
-      userName, password, email, firstName, lastName, blnAdmin, defaultCommission: defaultCommission, admin_user_id: adminId, new_flps_user
+    let payload: AddRole = {
+      roleName: this.ngRole,
+      create_role: true
     }
-    this.isAddNewUserLoader = true;
-    this._UsersService.AddFlpsData(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+    this.isAddNewrole = true;
+    this._UsersService.AddAdminsData(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
       if (res["success"]) {
         this.page = 1;
-        this.getFlpsUsers(1, 'add');
+        this.getAdminRoles(1, 'add');
       } else {
-        this.isAddNewUserLoader = false;
+        this._UsersService.snackBar(res["message"]);
+        this.isAddNewrole = false;
         this._changeDetectorRef.markForCheck();
       }
     }, err => {
-      this.isAddNewUserLoader = false;
+      this.isAddNewrole = false;
       this._changeDetectorRef.markForCheck();
     });
   }
-  updateUser() {
-    const { userName, password, email, firstName, lastName, blnAdmin, defaultCommission, fk_adminUserID, blnActive, pk_userID, update_flps_user } = this.updateUserForm.getRawValue();
-    let adminId = fk_adminUserID;
-    if (fk_adminUserID == 0) {
-      adminId = null;
-    }
-    if (userName == '' || password == '' || email == '') {
-      this._UsersService.snackBar('Please fill out the required fields');
+  updateUser(item) {
+    if (!item.roleName) {
+      this._UsersService.snackBar('Role field is required');
       return;
     }
-    let payload: updateFLPSUser = {
-      userName, password, email, firstName, lastName, blnAdmin, defaultCommission: defaultCommission, admin_user_id: adminId, update_flps_user, blnActive, user_id: pk_userID
+    item.updateLoader = true;
+    // return
+    let payload: updateRole = {
+      role_name: item.roleName,
+      role_id: item.pk_roleID,
+      update_role: true
     }
-    this.isUpdateUserLoader = true;
-    this._UsersService.UpdateFlpsData(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+    this._UsersService.UpdateAdminsData(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
       if (res["success"]) {
-        // if (this.updateUserData.blnActive != blnActive) {
-        //   if(blnActive == false) {
-
-        //   } else {
-
-        //   }
-        // }
-        if (this.updateUserData.defaultCommission != defaultCommission) {
-          this.updateUserForm.patchValue({
-            defaultCommission: defaultCommission / 100
-          });
-          this.updateUserData.defaultCommission = defaultCommission / 100;
-        }
-
-        this.updateUserData.firstName = firstName;
-        this.updateUserData.lastName = lastName;
-        this.updateUserData.blnAdmin = blnAdmin;
-        this.updateUserData.blnActive = blnActive;
-        this.updateUserData.fk_adminUserID = adminId;
-        this.updateUserData.pk_userID = pk_userID;
-        this.updateUserData.userName = userName;
-        this.updateUserData.password = password;
-        this.updateUserData.email = email;
-
-        this.isUpdateUserLoader = false;
-        this._UsersService.snackBar('User Updated Successfully');
-        this._changeDetectorRef.markForCheck();
-      } else {
-        this.isUpdateUserLoader = false;
+        this._UsersService.snackBar('Role Updated Successfully');
+        item.updateLoader = false;
         this._changeDetectorRef.markForCheck();
       }
     }, err => {
-      this.isUpdateUserLoader = false;
+      item.updateLoader = false;
       this._changeDetectorRef.markForCheck();
     });
   }
-  deleteUser(item, type) {
-    if (this.isUpdateUser) {
-      if (item.blnActive) {
-        type = 1;
-      } else {
-        type = 0;
-      }
-    }
+  deleteUser(item) {
     item.delLoader = true;
     this._changeDetectorRef.markForCheck();
-    let payload: removeFLPSUser = {
-      user_id: item.pk_userID,
-      remove_flps_user: true
+    let payload: RemoveRole = {
+      role_id: item.pk_roleID,
+      remove_role: true
     }
-    this._UsersService.UpdateFlpsData(payload).pipe(takeUntil(this._unsubscribeAll), finalize(() => {
+    this._UsersService.UpdateAdminsData(payload).pipe(takeUntil(this._unsubscribeAll), finalize(() => {
       item.delLoader = false
       this._changeDetectorRef.markForCheck();
     })).subscribe(res => {
-      if (type == 1) {
-        this.dataSource = this.dataSource.filter(elem => elem.pk_userID != item.pk_userID);
-        this.totalUsers--;
-        this.tempDataSource = this.tempDataSource.filter(elem => elem.pk_userID != item.pk_userID);
-        this.tempRecords--;
-      } else {
-        this.disabledDataSource = this.disabledDataSource.filter(elem => elem.pk_userID != item.pk_userID);
-        this.distabledTotalUsers--;
-        this.temdisabledDataSource = this.temdisabledDataSource.filter(elem => elem.pk_userID != item.pk_userID);
-        this.tempdistabledTotalUsers--;
-      }
-      if (this.isUpdateUser) {
-        this.isUpdateUser = false;
-      }
-      this._UsersService.snackBar('FLPS User Deleted Successfully');
+      this.dataSource = this.dataSource.filter(elem => elem.pk_roleID != item.pk_roleID);
+      this.totalUsers--;
+      this.tempDataSource = this.tempDataSource.filter(elem => elem.pk_roleID != item.pk_roleID);
+      this.tempRecords--;
+      this._UsersService.snackBar('Employee Role Deleted Successfully');
       this._changeDetectorRef.markForCheck();
     }, err => {
       this._UsersService.snackBar('Something went wrong');
     });
   }
-  addBlanketPercentage() {
-    if (this.ngBlanketPercentage == '') {
-      this._UsersService.snackBar('Please enter percentage value.');
-      return;
+
+  toggleUpdateUserData(data, check) {
+    this.isUpdateUser = check;
+    if (check) {
+      this.employeeRoleDataSource = [];
+      this.tempemployeeRoleDataSource = [];
+      this.employeeRolePage = 1;
+      this.updateUserData = data;
+      this.calledUserScreen('Current Users')
     }
-    let payload: applyBlanketCustomerPercentage = {
-      user_id: this.updateUserData.pk_userID,
-      percentage: Number(this.ngBlanketPercentage),
-      apply_blanket_percentage: true
+  }
+  getAdminEmployeeRoles(page, type) {
+    let params = {
+      role_employees: true,
+      role_id: this.updateUserData.pk_roleID,
+      page: page,
+      size: 20
     }
-    this.isBlanketLoader = true;
-    this._UsersService.UpdateFlpsData(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
-      this._UsersService.snackBar(res["message"]);
-      this.isBlanketLoader = false;
+    this._UsersService.getAdminsData(params).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+      this.employeeRoleDataSource = res["data"];
+      this.totalemployeeRole = res["totalRecords"];
+      if (this.tempemployeeRoleDataSource.length == 0) {
+        this.tempemployeeRoleDataSource = res["data"];
+        this.tempEmployeeRecords = res["totalRecords"];
+      }
+      if (type == 'add') {
+        this.isAddNewEmployeeRole = false;
+        this._UsersService.snackBar('Employee Added Successfully');
+      }
+      this.employeeRoleLoader = false;
+      // this.isLoadingChange.emit(false);
       this._changeDetectorRef.markForCheck();
     }, err => {
-      this.isBlanketLoader = false;
+      this.employeeRoleLoader = false;
+      // this.isLoadingChange.emit(false);
       this._changeDetectorRef.markForCheck();
     });
   }
-  // Get Orders Associated
-  getUserOrders(page) {
-    let payload = {
-      view_user_orders: true,
-      user_id: this.updateUserData.pk_userID,
-      page: page,
-      size: 20
+  getNextEmployeeRoleData(event) {
+    const { previousPageIndex, pageIndex } = event;
+
+    if (pageIndex > previousPageIndex) {
+      this.employeeRolePage++;
+    } else {
+      this.employeeRolePage--;
     };
-    this.ordersLoader = true;
-    this._UsersService.getFlpsData(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
-      this.ordersDataSource = res["data"];
-      this.totalOrders = res["totalRecords"];
-      if (this.tempOrdersDataSource.length == 0) {
-        this.tempOrdersDataSource = res["data"];
-        this.tempTotalOrders = res["totalRecords"];
-      }
-      this.ordersLoader = false;
+    this.getAdminEmployeeRoles(this.employeeRolePage, 'get');
+  };
+  deleteEmployeeUser(item) {
+    item.delLoader = true;
+    this._changeDetectorRef.markForCheck();
+    let payload: RemoveEmployeeRole = {
+      admin_user_id: item.pk_userID,
+      role_id: this.updateUserData.pk_roleID,
+      remove_employee_role: true
+    }
+    this._UsersService.UpdateAdminsData(payload).pipe(takeUntil(this._unsubscribeAll), finalize(() => {
+      item.delLoader = false
+      this._changeDetectorRef.markForCheck();
+    })).subscribe(res => {
+      this.employeeRoleDataSource = this.employeeRoleDataSource.filter(elem => elem.pk_roleID != item.pk_roleID);
+      this.totalemployeeRole--;
+      this.tempemployeeRoleDataSource = this.tempemployeeRoleDataSource.filter(elem => elem.pk_roleID != item.pk_roleID);
+      this.tempRecords--;
+      this._UsersService.snackBar('Employee Deleted Successfully');
       this._changeDetectorRef.markForCheck();
     }, err => {
-      this.ordersLoader = false;
-      this._changeDetectorRef.markForCheck();
-    })
+      this._UsersService.snackBar('Something went wrong');
+    });
   }
-  getNextOrderdData(event) {
-    const { previousPageIndex, pageIndex } = event;
-    if (pageIndex > previousPageIndex) {
-      this.ordersPage++;
-    } else {
-      this.ordersPage--;
-    };
-    this.getUserOrders(this.ordersPage);
-  };
-
+  addNewRoleEmployee() {
+    let payload: AddRoleEmployee = {
+      admin_user_id: 1,
+      role_id: this.updateUserData.pk_roleID,
+      create_role_employee: true
+    }
+    this.isAddNewEmployeeRole = true;
+    this._UsersService.AddAdminsData(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+      if (res["success"]) {
+        this.tempemployeeRoleDataSource = [];
+        this.employeeRoleDataSource = [];
+        this.employeeRolePage = 1;
+        this.getAdminEmployeeRoles(1, 'add');
+      } else {
+        this._UsersService.snackBar(res["message"]);
+        this.isAddNewEmployeeRole = false;
+        this._changeDetectorRef.markForCheck();
+      }
+    }, err => {
+      this.isAddNewEmployeeRole = false;
+      this._changeDetectorRef.markForCheck();
+    });
+  }
   /**
      * On destroy
      */
