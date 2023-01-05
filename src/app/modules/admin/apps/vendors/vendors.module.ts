@@ -67,10 +67,11 @@ import { VendorsListComponent } from './components/list-components/vendors-list/
 import { VendorsDisabledListComponent } from './components/list-components/vendors-disabled-list/vendors-disabled-list.component';
 import { NewVendorsComponent } from './components/list-components/vendors-new/new-vendors.component';
 import { VendorsEmailComponent } from './components/list-components/vendors-email/vendors-email.component';
+import { VendorsDetailsComponent } from './components/details/details-vendors.component';
 
 @NgModule({
     declarations: [
-        VendorsComponent, VendorsListComponent, NewVendorsComponent, VendorsDisabledListComponent, VendorsEmailComponent, ColorsComponent, SizesComponent, PackAndAccessoriesComponent, ImprintColorsComponent, ImprintMethodsComponent, ImprintLocationsComponent, PromoCodesComponent, DefaultBlurbsComponent, CountrySalesComponent, ActiveStoresComponent, SupportTeamComponent, UploadImagesComponent, POArchivesComponent, ProductMigrationsComponent, CoreProductsComponent, SystemImprintRunComponent, ImprintChargesComponent, StandardImprintsComponent, AddEditImprintsComponent,
+        VendorsComponent, VendorsListComponent, NewVendorsComponent, VendorsDisabledListComponent, VendorsEmailComponent, VendorsDetailsComponent, ColorsComponent, SizesComponent, PackAndAccessoriesComponent, ImprintColorsComponent, ImprintMethodsComponent, ImprintLocationsComponent, PromoCodesComponent, DefaultBlurbsComponent, CountrySalesComponent, ActiveStoresComponent, SupportTeamComponent, UploadImagesComponent, POArchivesComponent, ProductMigrationsComponent, CoreProductsComponent, SystemImprintRunComponent, ImprintChargesComponent, StandardImprintsComponent, AddEditImprintsComponent,
         SimulatorComponent, AdminToolsComponent, DiagonosticsComponent, AdminStructureComponent
     ],
     imports: [

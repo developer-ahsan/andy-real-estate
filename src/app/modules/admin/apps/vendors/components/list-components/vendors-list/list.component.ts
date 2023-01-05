@@ -198,7 +198,7 @@ export class VendorsListComponent implements OnInit, OnDestroy {
       page: page,
       size: 20
     }
-    this._UsersService.getFlpsData(params).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+    this._UsersService.getAdminsData(params).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
       this.dataSource = res["data"];
       this.totalUsers = res["totalRecords"];
       if (this.tempDataSource.length == 0) {
@@ -227,7 +227,7 @@ export class VendorsListComponent implements OnInit, OnDestroy {
       page: page,
       size: 20
     }
-    this._UsersService.getFlpsData(params).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+    this._UsersService.getAdminsData(params).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
       this.disabledDataSource = res["data"];
       this.distabledTotalUsers = res["totalRecords"];
       if (this.temdisabledDataSource.length == 0) {
@@ -314,7 +314,7 @@ export class VendorsListComponent implements OnInit, OnDestroy {
       userName, password, email, firstName, lastName, blnAdmin, defaultCommission: defaultCommission, admin_user_id: adminId, new_flps_user
     }
     this.isAddNewUserLoader = true;
-    this._UsersService.AddFlpsData(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+    this._UsersService.AddAdminsData(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
       if (res["success"]) {
         this.page = 1;
         this.getFlpsUsers(1, 'add');
@@ -341,7 +341,7 @@ export class VendorsListComponent implements OnInit, OnDestroy {
       userName, password, email, firstName, lastName, blnAdmin, defaultCommission: defaultCommission, admin_user_id: adminId, update_flps_user, blnActive, user_id: pk_userID
     }
     this.isUpdateUserLoader = true;
-    this._UsersService.UpdateFlpsData(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+    this._UsersService.UpdateAdminsData(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
       if (res["success"]) {
         // if (this.updateUserData.blnActive != blnActive) {
         //   if(blnActive == false) {
@@ -393,7 +393,7 @@ export class VendorsListComponent implements OnInit, OnDestroy {
       user_id: item.pk_userID,
       remove_flps_user: true
     }
-    this._UsersService.UpdateFlpsData(payload).pipe(takeUntil(this._unsubscribeAll), finalize(() => {
+    this._UsersService.UpdateAdminsData(payload).pipe(takeUntil(this._unsubscribeAll), finalize(() => {
       item.delLoader = false
       this._changeDetectorRef.markForCheck();
     })).subscribe(res => {
@@ -428,7 +428,7 @@ export class VendorsListComponent implements OnInit, OnDestroy {
       apply_blanket_percentage: true
     }
     this.isBlanketLoader = true;
-    this._UsersService.UpdateFlpsData(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+    this._UsersService.UpdateAdminsData(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
       this._UsersService.snackBar(res["message"]);
       this.isBlanketLoader = false;
       this._changeDetectorRef.markForCheck();
@@ -446,7 +446,7 @@ export class VendorsListComponent implements OnInit, OnDestroy {
       size: 20
     };
     this.ordersLoader = true;
-    this._UsersService.getFlpsData(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+    this._UsersService.getAdminsData(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
       this.ordersDataSource = res["data"];
       this.totalOrders = res["totalRecords"];
       if (this.tempOrdersDataSource.length == 0) {

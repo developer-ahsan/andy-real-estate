@@ -4,7 +4,7 @@ import { MatPaginator } from '@angular/material/paginator';
 import { Subject } from 'rxjs';
 import { finalize, takeUntil } from 'rxjs/operators';
 import { UsersService } from '../../users.service';
-import { applyBlanketCustomerPercentage, newFLPSUser, removeFLPSUser, updateFLPSUser } from '../../users.types';
+import { applyBlanketCustomerPercentage, newFLPSUser, newRapidbuildUser, removeFLPSUser, RemoveRapidUser, updateFLPSUser, updateRapidbuildUser } from '../../users.types';
 @Component({
   selector: 'app-rapidbuild-users',
   templateUrl: './rapidbuild-users.component.html',
@@ -18,18 +18,11 @@ export class RapidBuildUsersComponent implements OnInit, OnDestroy {
 
   dataSource = [];
   tempDataSource = [];
-  displayedColumns: string[] = ['id', 'f_name', 'l_name', 'admin', 'action'];
+  displayedColumns: string[] = ['id', 'f_name', 'l_name', 'admin', 'last', 'action'];
   totalUsers = 0;
   tempRecords = 0;
   page = 1;
 
-  disabledDataSource = [];
-  temdisabledDataSource = [];
-  disabledDisplayedColumns: string[] = ['id', 'f_name', 'l_name', 'admin', 'action'];
-  distabledTotalUsers = 0;
-  tempdistabledTotalUsers = 0;
-  disabledPage = 1;
-  isDisabledLoading: boolean = true;
 
   addNewUserForm: FormGroup;
   isAddNewUserLoader: boolean = false;
@@ -45,18 +38,6 @@ export class RapidBuildUsersComponent implements OnInit, OnDestroy {
 
   mainScreenUser: string = 'Edit User';
 
-  ngBlanketPercentage = '';
-  isBlanketLoader: boolean = false;
-
-  // User Orders
-  ordersLoader: boolean = true;
-  ordersDataSource = [];
-  tempOrdersDataSource = [];
-  displayedOrdersColumns: string[] = ['id', 'date', 'store', 'customer', 'total', 'paid', 'cancel', 'status'];
-  totalOrders = 0;
-  tempTotalOrders = 0;
-  ordersPage = 1;
-
   // User Customers
   customersDataSource = [];
   tempCustomersDataSource = [];
@@ -66,8 +47,12 @@ export class RapidBuildUsersComponent implements OnInit, OnDestroy {
   customersPage = 1;
 
   isSearching: boolean = false;
-  // Emplyees Dropdown
-  employeeUser = [];
+
+  // Active Stores
+  allStores = [];
+  storePage = 1;
+  storeLoader: boolean = false;
+  totalStores = 0;
   constructor(
     private _changeDetectorRef: ChangeDetectorRef,
     private _UsersService: UsersService
@@ -80,30 +65,26 @@ export class RapidBuildUsersComponent implements OnInit, OnDestroy {
       email: new FormControl(''),
       firstName: new FormControl(''),
       lastName: new FormControl(''),
-      blnAdmin: new FormControl(false),
-      defaultCommission: new FormControl(''),
-      admin_user_id: new FormControl(0),
-      new_flps_user: new FormControl(true)
+      blnFullColor: new FormControl(false),
+      blnMaster: new FormControl(false),
+      create_rapidbuild_user: new FormControl(true)
     });
     this.updateUserForm = new FormGroup({
       userName: new FormControl(''),
       password: new FormControl(''),
       firstName: new FormControl(''),
       lastName: new FormControl(''),
-      blnAdmin: new FormControl(false),
-      blnActive: new FormControl(false),
-      defaultCommission: new FormControl(''),
+      blnFullColor: new FormControl(false),
+      blnMaster: new FormControl(false),
       email: new FormControl(''),
-      fk_adminUserID: new FormControl(0),
       pk_userID: new FormControl(0),
-      update_flps_user: new FormControl(true)
+      update_rapidbuild_user: new FormControl(true)
     });
   }
   ngOnInit(): void {
     this.initForm();
     this.isLoading = true;
-    this.getEmployeeUsers();
-    this.getFlpsUsers(1, 'get');
+    this.getAdminRapidUsers(1, 'get');
   };
   calledScreen(value) {
     this.initForm();
@@ -113,40 +94,21 @@ export class RapidBuildUsersComponent implements OnInit, OnDestroy {
       this.page = 1;
       this._changeDetectorRef.markForCheck();
       if (this.dataSource.length == 0) {
-        this.getFlpsUsers(1, 'get');
-      }
-    } else if (this.mainScreen == 'View Disabled Users') {
-      this.disabledDataSource = this.temdisabledDataSource;
-      this.disabledPage = 1;
-      this._changeDetectorRef.markForCheck();
-      if (this.disabledDataSource.length == 0) {
-        this.getDisabledFlpsUsers(1);
+        this.getAdminRapidUsers(1, 'get');
       }
     } else {
-      if (this.employeeUser.length == 0) {
-        this.getEmployeeUsers();
-      }
     }
   }
   calledUserScreen(value) {
     this.mainScreenUser = value;
-    if (this.mainScreenUser == 'View Orders') {
-      this.ordersDataSource = this.tempOrdersDataSource;
-      this.ordersPage = 1;
-      this._changeDetectorRef.markForCheck();
-      if (this.ordersDataSource.length == 0) {
-        this.getUserOrders(1);
-      }
-    }
   }
-  getFlpsUsers(page, type) {
+  getAdminRapidUsers(page, type) {
     let params = {
-      login_check: true,
-      bln_active: 1,
+      rapid_build_users: true,
       page: page,
       size: 20
     }
-    this._UsersService.getFlpsData(params).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+    this._UsersService.getAdminsData(params).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
       this.dataSource = res["data"];
       this.totalUsers = res["totalRecords"];
       if (this.tempDataSource.length == 0) {
@@ -168,34 +130,6 @@ export class RapidBuildUsersComponent implements OnInit, OnDestroy {
       this._changeDetectorRef.markForCheck();
     });
   }
-  getDisabledFlpsUsers(page) {
-    let params = {
-      login_check: true,
-      bln_active: 0,
-      page: page,
-      size: 20
-    }
-    this._UsersService.getFlpsData(params).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
-      this.disabledDataSource = res["data"];
-      this.distabledTotalUsers = res["totalRecords"];
-      if (this.temdisabledDataSource.length == 0) {
-        this.temdisabledDataSource = res["data"];
-        this.tempdistabledTotalUsers = res["totalRecords"];
-      }
-      this.isDisabledLoading = false;
-      // this.isLoadingChange.emit(false);
-      this._changeDetectorRef.markForCheck();
-    }, err => {
-      this.isDisabledLoading = false;
-      // this.isLoadingChange.emit(false);
-      this._changeDetectorRef.markForCheck();
-    });
-  }
-  getEmployeeUsers() {
-    this._UsersService.employeeAdmins$.pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
-      this.employeeUser = res["data"];
-    });
-  }
   getNextData(event) {
     const { previousPageIndex, pageIndex } = event;
 
@@ -204,121 +138,74 @@ export class RapidBuildUsersComponent implements OnInit, OnDestroy {
     } else {
       this.page--;
     };
-    this.getFlpsUsers(this.page, 'get');
-  };
-  getNextDisabledData(event) {
-    const { previousPageIndex, pageIndex } = event;
-
-    if (pageIndex > previousPageIndex) {
-      this.disabledPage++;
-    } else {
-      this.disabledPage--;
-    };
-    this.getDisabledFlpsUsers(this.disabledPage);
+    this.getAdminRapidUsers(this.page, 'get');
   };
 
   toggleUpdateUserData(data, check) {
     this.isUpdateUser = check;
     if (check) {
-      this.ordersDataSource = [];
-      this.tempOrdersDataSource = [];
-      this.ordersPage = 1;
+      this.allStores = [];
+      this.storePage = 1;
       this.mainScreenUser = 'Edit User';
       this.updateUserData = data;
       this.updateUserForm.patchValue(data);
+      this.getAllStores();
     }
 
   }
-  searchColor(value) {
-    if (this.dataSource.length > 0) {
-      this.paginator.firstPage();
-    }
-    this.page = 1;
-    this.keyword = value;
-    this.isSearching = true;
-    this._changeDetectorRef.markForCheck();
-    this.getFlpsUsers(1, 'get');
-  }
-  resetSearch() {
-    if (this.dataSource.length > 0) {
-      this.paginator.firstPage();
-    }
-    this.keyword = '';
-    this.dataSource = this.tempDataSource;
-    this.totalUsers = this.tempRecords;
-  }
+
 
   addNewUser() {
-    const { userName, password, email, firstName, lastName, blnAdmin, defaultCommission, admin_user_id, new_flps_user } = this.addNewUserForm.getRawValue();
-    let adminId = admin_user_id;
-    if (admin_user_id == 0) {
-      adminId = null;
-    }
+    const { userName, password, email, firstName, lastName, blnFullColor, blnMaster, create_rapidbuild_user } = this.addNewUserForm.getRawValue();
     if (userName == '' || password == '' || email == '') {
       this._UsersService.snackBar('Please fill out the required fields');
       return;
     }
-    let payload: newFLPSUser = {
-      userName, password, email, firstName, lastName, blnAdmin, defaultCommission: defaultCommission, admin_user_id: adminId, new_flps_user
+    let payload: newRapidbuildUser = {
+      userName, password, email, firstName, lastName, blnFullColor, blnMaster, create_rapidbuild_user
     }
     this.isAddNewUserLoader = true;
-    this._UsersService.AddFlpsData(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+    this._UsersService.AddAdminsData(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
       if (res["success"]) {
         this.page = 1;
-        this.getFlpsUsers(1, 'add');
+        this.tempDataSource = [];
+        this.getAdminRapidUsers(1, 'add');
       } else {
+        this._UsersService.snackBar(res["message"]);
         this.isAddNewUserLoader = false;
         this._changeDetectorRef.markForCheck();
       }
     }, err => {
+      this._UsersService.snackBar('Something went wrong');
       this.isAddNewUserLoader = false;
       this._changeDetectorRef.markForCheck();
     });
   }
   updateUser() {
-    const { userName, password, email, firstName, lastName, blnAdmin, defaultCommission, fk_adminUserID, blnActive, pk_userID, update_flps_user } = this.updateUserForm.getRawValue();
-    let adminId = fk_adminUserID;
-    if (fk_adminUserID == 0) {
-      adminId = null;
-    }
+    const { userName, password, email, firstName, lastName, pk_userID, blnFullColor, blnMaster, update_rapidbuild_user } = this.updateUserForm.getRawValue();
     if (userName == '' || password == '' || email == '') {
       this._UsersService.snackBar('Please fill out the required fields');
       return;
     }
-    let payload: updateFLPSUser = {
-      userName, password, email, firstName, lastName, blnAdmin, defaultCommission: defaultCommission, admin_user_id: adminId, update_flps_user, blnActive, user_id: pk_userID
+    let payload: updateRapidbuildUser = {
+      userName, password, email, firstName, lastName, blnFullColor, blnMaster, update_rapidbuild_user, pk_userID
     }
     this.isUpdateUserLoader = true;
-    this._UsersService.UpdateFlpsData(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+    this._UsersService.UpdateAdminsData(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
       if (res["success"]) {
-        // if (this.updateUserData.blnActive != blnActive) {
-        //   if(blnActive == false) {
-
-        //   } else {
-
-        //   }
-        // }
-        if (this.updateUserData.defaultCommission != defaultCommission) {
-          this.updateUserForm.patchValue({
-            defaultCommission: defaultCommission / 100
-          });
-          this.updateUserData.defaultCommission = defaultCommission / 100;
-        }
-
         this.updateUserData.firstName = firstName;
         this.updateUserData.lastName = lastName;
-        this.updateUserData.blnAdmin = blnAdmin;
-        this.updateUserData.blnActive = blnActive;
-        this.updateUserData.fk_adminUserID = adminId;
+        this.updateUserData.blnMaster = blnMaster;
+        this.updateUserData.blnFullColor = blnFullColor;
         this.updateUserData.pk_userID = pk_userID;
         this.updateUserData.userName = userName;
         this.updateUserData.password = password;
         this.updateUserData.email = email;
-
         this.isUpdateUserLoader = false;
         this._UsersService.snackBar('User Updated Successfully');
         this._changeDetectorRef.markForCheck();
       } else {
+        this._UsersService.snackBar(res["message"]);
         this.isUpdateUserLoader = false;
         this._changeDetectorRef.markForCheck();
       }
@@ -327,97 +214,69 @@ export class RapidBuildUsersComponent implements OnInit, OnDestroy {
       this._changeDetectorRef.markForCheck();
     });
   }
-  deleteUser(item, type) {
-    if (this.isUpdateUser) {
-      if (item.blnActive) {
-        type = 1;
-      } else {
-        type = 0;
-      }
-    }
+  deleteUser(item) {
     item.delLoader = true;
     this._changeDetectorRef.markForCheck();
-    let payload: removeFLPSUser = {
+    let payload: RemoveRapidUser = {
       user_id: item.pk_userID,
-      remove_flps_user: true
+      remove_rapidbuild_user: true
     }
-    this._UsersService.UpdateFlpsData(payload).pipe(takeUntil(this._unsubscribeAll), finalize(() => {
+    this._UsersService.UpdateAdminsData(payload).pipe(takeUntil(this._unsubscribeAll), finalize(() => {
       item.delLoader = false
       this._changeDetectorRef.markForCheck();
     })).subscribe(res => {
-      if (type == 1) {
-        this.dataSource = this.dataSource.filter(elem => elem.pk_userID != item.pk_userID);
-        this.totalUsers--;
-        this.tempDataSource = this.tempDataSource.filter(elem => elem.pk_userID != item.pk_userID);
-        this.tempRecords--;
-      } else {
-        this.disabledDataSource = this.disabledDataSource.filter(elem => elem.pk_userID != item.pk_userID);
-        this.distabledTotalUsers--;
-        this.temdisabledDataSource = this.temdisabledDataSource.filter(elem => elem.pk_userID != item.pk_userID);
-        this.tempdistabledTotalUsers--;
-      }
-      if (this.isUpdateUser) {
-        this.isUpdateUser = false;
-      }
-      this._UsersService.snackBar('FLPS User Deleted Successfully');
+      this.dataSource = this.dataSource.filter(elem => elem.pk_userID != item.pk_userID);
+      this.totalUsers--;
+      this.tempDataSource = this.tempDataSource.filter(elem => elem.pk_userID != item.pk_userID);
+      this.tempRecords--;
+      this._UsersService.snackBar('User Deleted Successfully');
       this._changeDetectorRef.markForCheck();
     }, err => {
       this._UsersService.snackBar('Something went wrong');
     });
   }
-  addBlanketPercentage() {
-    if (this.ngBlanketPercentage == '') {
-      this._UsersService.snackBar('Please enter percentage value.');
-      return;
+
+  getAllStores() {
+    this._UsersService.adminStores$.pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+      res["data"].forEach(element => {
+        if (this.updateUserData.storeList) {
+          if (this.updateUserData.storeList.includes(element.pk_storeID)) {
+            element.checked = true;
+          }
+        }
+        this.allStores.push(element);
+      });
+      this.totalStores = res["totalRecords"];
+    });
+  }
+  getAdminStores(page) {
+    let params = {
+      view_stores: true,
+      bln_active: 1,
+      page: page,
+      size: 20
     }
-    let payload: applyBlanketCustomerPercentage = {
-      user_id: this.updateUserData.pk_userID,
-      percentage: Number(this.ngBlanketPercentage),
-      apply_blanket_percentage: true
-    }
-    this.isBlanketLoader = true;
-    this._UsersService.UpdateFlpsData(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
-      this._UsersService.snackBar(res["message"]);
-      this.isBlanketLoader = false;
+    this._UsersService.getStoresData(params).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+      res["data"].forEach(element => {
+        if (this.updateUserData.storeList.includes(element.pk_storeID)) {
+          element.checked = true;
+        }
+        this.allStores.push(element);
+      });
+      this.storeLoader = false;
+      // this.isLoadingChange.emit(false);
       this._changeDetectorRef.markForCheck();
     }, err => {
-      this.isBlanketLoader = false;
+      this.storeLoader = false;
+      // this.isLoadingChange.emit(false);
       this._changeDetectorRef.markForCheck();
     });
   }
-  // Get Orders Associated
-  getUserOrders(page) {
-    let payload = {
-      view_user_orders: true,
-      user_id: this.updateUserData.pk_userID,
-      page: page,
-      size: 20
-    };
-    this.ordersLoader = true;
-    this._UsersService.getFlpsData(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
-      this.ordersDataSource = res["data"];
-      this.totalOrders = res["totalRecords"];
-      if (this.tempOrdersDataSource.length == 0) {
-        this.tempOrdersDataSource = res["data"];
-        this.tempTotalOrders = res["totalRecords"];
-      }
-      this.ordersLoader = false;
-      this._changeDetectorRef.markForCheck();
-    }, err => {
-      this.ordersLoader = false;
-      this._changeDetectorRef.markForCheck();
-    })
-  }
-  getNextOrderdData(event) {
-    const { previousPageIndex, pageIndex } = event;
-    if (pageIndex > previousPageIndex) {
-      this.ordersPage++;
-    } else {
-      this.ordersPage--;
-    };
-    this.getUserOrders(this.ordersPage);
+  getNextStoresData() {
+    this.storePage++;
+    this.storeLoader = true;
+    this.getAdminStores(this.storePage);
   };
-
   /**
      * On destroy
      */

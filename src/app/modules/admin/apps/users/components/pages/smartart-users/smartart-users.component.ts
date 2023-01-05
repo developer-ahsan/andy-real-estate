@@ -4,7 +4,7 @@ import { MatPaginator } from '@angular/material/paginator';
 import { Subject } from 'rxjs';
 import { finalize, takeUntil } from 'rxjs/operators';
 import { UsersService } from '../../users.service';
-import { applyBlanketCustomerPercentage, newFLPSUser, removeFLPSUser, updateFLPSUser } from '../../users.types';
+import { AddSmartArtUser, applyBlanketCustomerPercentage, newFLPSUser, removeFLPSUser, RemoveSmartArtUser, updateFLPSUser, UpdateSmartUser } from '../../users.types';
 @Component({
   selector: 'app-smartart-users',
   templateUrl: './smartart-users.component.html',
@@ -18,14 +18,14 @@ export class SmartArtUsersComponent implements OnInit, OnDestroy {
 
   dataSource = [];
   tempDataSource = [];
-  displayedColumns: string[] = ['id', 'f_name', 'l_name', 'admin', 'action'];
+  displayedColumns: string[] = ['id', 'f_name', 'l_name', 'action'];
   totalUsers = 0;
   tempRecords = 0;
   page = 1;
 
   disabledDataSource = [];
   temdisabledDataSource = [];
-  disabledDisplayedColumns: string[] = ['id', 'f_name', 'l_name', 'admin', 'action'];
+  disabledDisplayedColumns: string[] = ['id', 'f_name', 'l_name', 'action'];
   distabledTotalUsers = 0;
   tempdistabledTotalUsers = 0;
   disabledPage = 1;
@@ -45,29 +45,18 @@ export class SmartArtUsersComponent implements OnInit, OnDestroy {
 
   mainScreenUser: string = 'Edit User';
 
-  ngBlanketPercentage = '';
-  isBlanketLoader: boolean = false;
 
-  // User Orders
-  ordersLoader: boolean = true;
-  ordersDataSource = [];
-  tempOrdersDataSource = [];
-  displayedOrdersColumns: string[] = ['id', 'date', 'store', 'customer', 'total', 'paid', 'cancel', 'status'];
-  totalOrders = 0;
-  tempTotalOrders = 0;
-  ordersPage = 1;
-
-  // User Customers
-  customersDataSource = [];
-  tempCustomersDataSource = [];
-  displayedCustomersColumns: string[] = ['id', 'name', 'company', 'email', 'last', 'commission'];
-  totalCustomers = 0;
-  tempTotalCustomers = 0;
-  customersPage = 1;
 
   isSearching: boolean = false;
   // Emplyees Dropdown
   employeeUser = [];
+  isActive: boolean = false;
+
+  // Active Stores
+  allStores = [];
+  storePage = 1;
+  storeLoader: boolean = false;
+  totalStores = 0;
   constructor(
     private _changeDetectorRef: ChangeDetectorRef,
     private _UsersService: UsersService
@@ -75,35 +64,30 @@ export class SmartArtUsersComponent implements OnInit, OnDestroy {
 
   initForm() {
     this.addNewUserForm = new FormGroup({
-      userName: new FormControl(''),
+      username: new FormControl(''),
       password: new FormControl(''),
       email: new FormControl(''),
       firstName: new FormControl(''),
       lastName: new FormControl(''),
-      blnAdmin: new FormControl(false),
-      defaultCommission: new FormControl(''),
-      admin_user_id: new FormControl(0),
-      new_flps_user: new FormControl(true)
+      bln_master: new FormControl(false),
+      add_smartuser: new FormControl(true)
     });
     this.updateUserForm = new FormGroup({
       userName: new FormControl(''),
       password: new FormControl(''),
       firstName: new FormControl(''),
       lastName: new FormControl(''),
-      blnAdmin: new FormControl(false),
+      blnMaster: new FormControl(false),
       blnActive: new FormControl(false),
-      defaultCommission: new FormControl(''),
       email: new FormControl(''),
-      fk_adminUserID: new FormControl(0),
       pk_userID: new FormControl(0),
-      update_flps_user: new FormControl(true)
+      update_smartuser: new FormControl(true)
     });
   }
   ngOnInit(): void {
     this.initForm();
     this.isLoading = true;
-    this.getEmployeeUsers();
-    this.getFlpsUsers(1, 'get');
+    this.getAdminSmartArts(1, 'get');
   };
   calledScreen(value) {
     this.initForm();
@@ -113,40 +97,30 @@ export class SmartArtUsersComponent implements OnInit, OnDestroy {
       this.page = 1;
       this._changeDetectorRef.markForCheck();
       if (this.dataSource.length == 0) {
-        this.getFlpsUsers(1, 'get');
+        this.getAdminSmartArts(1, 'get');
       }
     } else if (this.mainScreen == 'View Disabled Users') {
       this.disabledDataSource = this.temdisabledDataSource;
       this.disabledPage = 1;
       this._changeDetectorRef.markForCheck();
       if (this.disabledDataSource.length == 0) {
-        this.getDisabledFlpsUsers(1);
+        this.getDisabledAdminSmartArts(1);
       }
     } else {
-      if (this.employeeUser.length == 0) {
-        this.getEmployeeUsers();
-      }
+      this.isAddNewUserLoader = false;
     }
   }
   calledUserScreen(value) {
     this.mainScreenUser = value;
-    if (this.mainScreenUser == 'View Orders') {
-      this.ordersDataSource = this.tempOrdersDataSource;
-      this.ordersPage = 1;
-      this._changeDetectorRef.markForCheck();
-      if (this.ordersDataSource.length == 0) {
-        this.getUserOrders(1);
-      }
-    }
   }
-  getFlpsUsers(page, type) {
+  getAdminSmartArts(page, type) {
     let params = {
-      login_check: true,
+      smart_art_users: true,
       bln_active: 1,
       page: page,
       size: 20
     }
-    this._UsersService.getFlpsData(params).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+    this._UsersService.getAdminsData(params).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
       this.dataSource = res["data"];
       this.totalUsers = res["totalRecords"];
       if (this.tempDataSource.length == 0) {
@@ -168,14 +142,14 @@ export class SmartArtUsersComponent implements OnInit, OnDestroy {
       this._changeDetectorRef.markForCheck();
     });
   }
-  getDisabledFlpsUsers(page) {
+  getDisabledAdminSmartArts(page) {
     let params = {
-      login_check: true,
       bln_active: 0,
+      smart_art_users: true,
       page: page,
       size: 20
     }
-    this._UsersService.getFlpsData(params).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+    this._UsersService.getAdminsData(params).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
       this.disabledDataSource = res["data"];
       this.distabledTotalUsers = res["totalRecords"];
       if (this.temdisabledDataSource.length == 0) {
@@ -204,7 +178,7 @@ export class SmartArtUsersComponent implements OnInit, OnDestroy {
     } else {
       this.page--;
     };
-    this.getFlpsUsers(this.page, 'get');
+    this.getAdminSmartArts(this.page, 'get');
   };
   getNextDisabledData(event) {
     const { previousPageIndex, pageIndex } = event;
@@ -214,18 +188,18 @@ export class SmartArtUsersComponent implements OnInit, OnDestroy {
     } else {
       this.disabledPage--;
     };
-    this.getDisabledFlpsUsers(this.disabledPage);
+    this.getDisabledAdminSmartArts(this.disabledPage);
   };
 
   toggleUpdateUserData(data, check) {
     this.isUpdateUser = check;
     if (check) {
-      this.ordersDataSource = [];
-      this.tempOrdersDataSource = [];
-      this.ordersPage = 1;
+      this.allStores = [];
+      this.storePage = 1;
       this.mainScreenUser = 'Edit User';
       this.updateUserData = data;
       this.updateUserForm.patchValue(data);
+      this.getAllStores();
     }
 
   }
@@ -237,7 +211,7 @@ export class SmartArtUsersComponent implements OnInit, OnDestroy {
     this.keyword = value;
     this.isSearching = true;
     this._changeDetectorRef.markForCheck();
-    this.getFlpsUsers(1, 'get');
+    this.getAdminSmartArts(1, 'get');
   }
   resetSearch() {
     if (this.dataSource.length > 0) {
@@ -249,23 +223,20 @@ export class SmartArtUsersComponent implements OnInit, OnDestroy {
   }
 
   addNewUser() {
-    const { userName, password, email, firstName, lastName, blnAdmin, defaultCommission, admin_user_id, new_flps_user } = this.addNewUserForm.getRawValue();
-    let adminId = admin_user_id;
-    if (admin_user_id == 0) {
-      adminId = null;
-    }
-    if (userName == '' || password == '' || email == '') {
+    const { username, password, email, firstName, lastName, bln_master, add_smartuser } = this.addNewUserForm.getRawValue();
+    if (username == '' || password == '' || email == '') {
       this._UsersService.snackBar('Please fill out the required fields');
       return;
     }
-    let payload: newFLPSUser = {
-      userName, password, email, firstName, lastName, blnAdmin, defaultCommission: defaultCommission, admin_user_id: adminId, new_flps_user
+    let payload: AddSmartArtUser = {
+      username, password, email, firstName, lastName, bln_master, add_smartuser
     }
     this.isAddNewUserLoader = true;
-    this._UsersService.AddFlpsData(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+    this._UsersService.AddAdminsData(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
       if (res["success"]) {
         this.page = 1;
-        this.getFlpsUsers(1, 'add');
+        this.tempDataSource = [];
+        this.getAdminSmartArts(1, 'add');
       } else {
         this.isAddNewUserLoader = false;
         this._changeDetectorRef.markForCheck();
@@ -276,49 +247,69 @@ export class SmartArtUsersComponent implements OnInit, OnDestroy {
     });
   }
   updateUser() {
-    const { userName, password, email, firstName, lastName, blnAdmin, defaultCommission, fk_adminUserID, blnActive, pk_userID, update_flps_user } = this.updateUserForm.getRawValue();
-    let adminId = fk_adminUserID;
-    if (fk_adminUserID == 0) {
-      adminId = null;
-    }
+    const { userName, password, email, firstName, lastName, blnActive, pk_userID, blnMaster, update_smartuser } = this.updateUserForm.getRawValue();
     if (userName == '' || password == '' || email == '') {
       this._UsersService.snackBar('Please fill out the required fields');
       return;
     }
-    let payload: updateFLPSUser = {
-      userName, password, email, firstName, lastName, blnAdmin, defaultCommission: defaultCommission, admin_user_id: adminId, update_flps_user, blnActive, user_id: pk_userID
+    let payload: UpdateSmartUser = {
+      userName, password, email, firstName, lastName, update_smartuser, blnActive, pk_userID, blnMaster
     }
     this.isUpdateUserLoader = true;
-    this._UsersService.UpdateFlpsData(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+    this._UsersService.UpdateAdminsData(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
       if (res["success"]) {
-        // if (this.updateUserData.blnActive != blnActive) {
-        //   if(blnActive == false) {
+        if (this.updateUserData.blnActive == blnActive) {
+          this.updateUserData.firstName = firstName;
+          this.updateUserData.lastName = lastName;
+          this.updateUserData.blnMaster = blnMaster;
+          this.updateUserData.blnActive = blnActive;
+          this.updateUserData.pk_userID = pk_userID;
+          this.updateUserData.userName = userName;
+          this.updateUserData.password = password;
+          this.updateUserData.email = email;
+        } else {
+          if (this.updateUserData.blnActive) {
+            this.updateUserData.firstName = firstName;
+            this.updateUserData.lastName = lastName;
+            this.updateUserData.blnMaster = blnMaster;
+            this.updateUserData.blnActive = blnActive;
+            this.updateUserData.pk_userID = pk_userID;
+            this.updateUserData.userName = userName;
+            this.updateUserData.password = password;
+            this.updateUserData.email = email;
+            this.dataSource = this.dataSource.filter(elem => elem.pk_userID != pk_userID);
+            this.totalUsers--;
+            this.tempDataSource = this.tempDataSource.filter(elem => elem.pk_userID != pk_userID);
+            this.tempRecords--;
+            this.disabledDataSource.push(this.updateUserData);
+            this.distabledTotalUsers++;
+            this.temdisabledDataSource.push(this.updateUserData);
+            this.tempdistabledTotalUsers++;
+          } else {
+            this.updateUserData.firstName = firstName;
+            this.updateUserData.lastName = lastName;
+            this.updateUserData.blnMaster = blnMaster;
+            this.updateUserData.blnActive = blnActive;
+            this.updateUserData.pk_userID = pk_userID;
+            this.updateUserData.userName = userName;
+            this.updateUserData.password = password;
+            this.updateUserData.email = email;
 
-        //   } else {
-
-        //   }
-        // }
-        if (this.updateUserData.defaultCommission != defaultCommission) {
-          this.updateUserForm.patchValue({
-            defaultCommission: defaultCommission / 100
-          });
-          this.updateUserData.defaultCommission = defaultCommission / 100;
+            this.disabledDataSource = this.disabledDataSource.filter(elem => elem.pk_userID != pk_userID);
+            this.distabledTotalUsers--;
+            this.temdisabledDataSource = this.temdisabledDataSource.filter(elem => elem.pk_userID != pk_userID);
+            this.tempdistabledTotalUsers--;
+            this.dataSource.push(this.updateUserData);
+            this.totalUsers++;
+            this.tempDataSource.push(this.updateUserData);
+            this.tempRecords++;
+          }
         }
-
-        this.updateUserData.firstName = firstName;
-        this.updateUserData.lastName = lastName;
-        this.updateUserData.blnAdmin = blnAdmin;
-        this.updateUserData.blnActive = blnActive;
-        this.updateUserData.fk_adminUserID = adminId;
-        this.updateUserData.pk_userID = pk_userID;
-        this.updateUserData.userName = userName;
-        this.updateUserData.password = password;
-        this.updateUserData.email = email;
-
         this.isUpdateUserLoader = false;
         this._UsersService.snackBar('User Updated Successfully');
         this._changeDetectorRef.markForCheck();
       } else {
+        this._UsersService.snackBar(res["message"]);
         this.isUpdateUserLoader = false;
         this._changeDetectorRef.markForCheck();
       }
@@ -328,20 +319,13 @@ export class SmartArtUsersComponent implements OnInit, OnDestroy {
     });
   }
   deleteUser(item, type) {
-    if (this.isUpdateUser) {
-      if (item.blnActive) {
-        type = 1;
-      } else {
-        type = 0;
-      }
-    }
     item.delLoader = true;
     this._changeDetectorRef.markForCheck();
-    let payload: removeFLPSUser = {
+    let payload: RemoveSmartArtUser = {
       user_id: item.pk_userID,
-      remove_flps_user: true
+      remove_smartuser: true
     }
-    this._UsersService.UpdateFlpsData(payload).pipe(takeUntil(this._unsubscribeAll), finalize(() => {
+    this._UsersService.UpdateAdminsData(payload).pipe(takeUntil(this._unsubscribeAll), finalize(() => {
       item.delLoader = false
       this._changeDetectorRef.markForCheck();
     })).subscribe(res => {
@@ -359,65 +343,54 @@ export class SmartArtUsersComponent implements OnInit, OnDestroy {
       if (this.isUpdateUser) {
         this.isUpdateUser = false;
       }
-      this._UsersService.snackBar('FLPS User Deleted Successfully');
+      this._UsersService.snackBar('User Deleted Successfully');
       this._changeDetectorRef.markForCheck();
     }, err => {
       this._UsersService.snackBar('Something went wrong');
     });
   }
-  addBlanketPercentage() {
-    if (this.ngBlanketPercentage == '') {
-      this._UsersService.snackBar('Please enter percentage value.');
-      return;
+
+  getAllStores() {
+    this._UsersService.adminStores$.pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+      res["data"].forEach(element => {
+        if (this.updateUserData.storeList) {
+          if (this.updateUserData.storeList.includes(element.pk_storeID)) {
+            element.checked = true;
+          }
+        }
+        this.allStores.push(element);
+      });
+      this.totalStores = res["totalRecords"];
+    });
+  }
+  getAdminStores(page) {
+    let params = {
+      view_stores: true,
+      bln_active: 1,
+      page: page,
+      size: 20
     }
-    let payload: applyBlanketCustomerPercentage = {
-      user_id: this.updateUserData.pk_userID,
-      percentage: Number(this.ngBlanketPercentage),
-      apply_blanket_percentage: true
-    }
-    this.isBlanketLoader = true;
-    this._UsersService.UpdateFlpsData(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
-      this._UsersService.snackBar(res["message"]);
-      this.isBlanketLoader = false;
+    this._UsersService.getStoresData(params).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+      res["data"].forEach(element => {
+        if (this.updateUserData.storeList.includes(element.pk_storeID)) {
+          element.checked = true;
+        }
+        this.allStores.push(element);
+      });
+      this.storeLoader = false;
+      // this.isLoadingChange.emit(false);
       this._changeDetectorRef.markForCheck();
     }, err => {
-      this.isBlanketLoader = false;
+      this.storeLoader = false;
+      // this.isLoadingChange.emit(false);
       this._changeDetectorRef.markForCheck();
     });
   }
-  // Get Orders Associated
-  getUserOrders(page) {
-    let payload = {
-      view_user_orders: true,
-      user_id: this.updateUserData.pk_userID,
-      page: page,
-      size: 20
-    };
-    this.ordersLoader = true;
-    this._UsersService.getFlpsData(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
-      this.ordersDataSource = res["data"];
-      this.totalOrders = res["totalRecords"];
-      if (this.tempOrdersDataSource.length == 0) {
-        this.tempOrdersDataSource = res["data"];
-        this.tempTotalOrders = res["totalRecords"];
-      }
-      this.ordersLoader = false;
-      this._changeDetectorRef.markForCheck();
-    }, err => {
-      this.ordersLoader = false;
-      this._changeDetectorRef.markForCheck();
-    })
-  }
-  getNextOrderdData(event) {
-    const { previousPageIndex, pageIndex } = event;
-    if (pageIndex > previousPageIndex) {
-      this.ordersPage++;
-    } else {
-      this.ordersPage--;
-    };
-    this.getUserOrders(this.ordersPage);
+  getNextStoresData() {
+    this.storePage++;
+    this.storeLoader = true;
+    this.getAdminStores(this.storePage);
   };
-
   /**
      * On destroy
      */

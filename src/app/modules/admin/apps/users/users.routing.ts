@@ -6,7 +6,7 @@ import { OrderManageUsersComponent } from './components/pages/ordermanage-users/
 import { RapidBuildUsersComponent } from './components/pages/rapidbuild-users/rapidbuild-users.component';
 import { SmartArtUsersComponent } from './components/pages/smartart-users/smartart-users.component';
 import { FLPSComponent } from './components/users.component';
-import { EmployeesListsResolver, FlpsLoginResolver, FlpsReportsUserResolver, FlpsStoresResolver } from './components/users.resolvers';
+import { EmployeesListsResolver, FlpsLoginResolver, AdminCompaniesResolver, AdminStoresResolver } from './components/users.resolvers';
 
 export const usersRoutes: Route[] = [
 
@@ -14,10 +14,10 @@ export const usersRoutes: Route[] = [
         path: '',
         component: FLPSComponent,
         resolve: {
-            employees: EmployeesListsResolver,
-            flpsLogin: FlpsLoginResolver,
-            stores: FlpsStoresResolver,
-            reportsUser: FlpsReportsUserResolver
+            // employees: EmployeesListsResolver,
+            // flpsLogin: FlpsLoginResolver,
+            stores: AdminStoresResolver,
+            companies: AdminCompaniesResolver
         },
         children: [
             {

@@ -59,6 +59,16 @@ export class GenerateReportComponent implements OnInit {
     ngRangeStart = new Date();
     ngRangeEnd = new Date();
 
+    generateReportLoader: boolean = false;
+    isGenerateReport: boolean = false;
+
+    // Orders Data
+    dataSource = [];
+    displayedColumns: string[] = ['date', 'id', 'store_name', 'payment', 'action'];
+    totalUsers = 0;
+    page = 1;
+    reportParams: any;
+    report_type = '';
     /**
      * Constructor
      */
@@ -168,18 +178,27 @@ export class GenerateReportComponent implements OnInit {
         })
     }
     generateReport() {
-        let params;
+        if (!this.selectedEmployee) {
+            this._flpsService.snackBar('Please select any flps user');
+            return;
+        }
+        this.generateReportLoader = true;
+        this.reportParams = {
+            page: this.page,
+            start_date: '',
+            end_date: '',
+            flps_user_id: this.selectedEmployee.pk_userID,
+            options_report: true
+        };
         if (this.ngPlan == 'weekly') {
-            params = {
-                start_date: moment(this.WeekDate).startOf('week').format('MM/DD/yyyy'),
-                end_date: moment(this.WeekDate).endOf('week').format('MM/DD/yyyy')
-            }
+            this.reportParams.start_date = moment(this.WeekDate).startOf('week').format('yyyy-MM-DD');
+            this.reportParams.end_date = moment(this.WeekDate).endOf('week').format('yyyy-MM-DD');
+            this.report_type = 'Weekly Sales';
         } else if (this.ngPlan == 'monthly') {
             let d = new Date(this.monthlyYear, this.monthlyMonth - 1, 1);
-            params = {
-                start_date: moment(d).startOf('month').format('MM/DD/yyyy'),
-                end_date: moment(d).endOf('month').format('MM/DD/yyyy')
-            }
+            this.reportParams.start_date = moment(d).startOf('month').format('yyyy-MM-DD');
+            this.reportParams.end_date = moment(d).endOf('month').format('yyyy-MM-DD');
+            this.report_type = 'Monthly Sales';
         } else if (this.ngPlan == 'quarterly') {
             let s;
             let e;
@@ -196,23 +215,46 @@ export class GenerateReportComponent implements OnInit {
                 s = new Date(this.quarterYear, 9, 1);
                 e = new Date(this.quarterYear, 11, 1);
             }
-            params = {
-                start_date: moment(s).startOf('month').format('MM/DD/yyyy'),
-                end_date: moment(e).endOf('month').format('MM/DD/yyyy')
-            }
+            this.reportParams.start_date = moment(s).startOf('month').format('yyyy-MM-DD');
+            this.reportParams.end_date = moment(e).endOf('month').format('yyyy-MM-DD');
+            this.report_type = 'Quarterly Sales';
         } else if (this.ngPlan == 'yearly') {
             let d = new Date(this.yearlyYear, 0, 1);
-            params = {
-                start_date: moment(d).startOf('year').format('MM/DD/yyyy'),
-                end_date: moment(d).endOf('year').format('MM/DD/yyyy')
-            }
+            this.reportParams.start_date = moment(d).startOf('year').format('yyyy-MM-DD');
+            this.reportParams.end_date = moment(d).endOf('year').format('yyyy-MM-DD');
         } else if (this.ngPlan == 'range') {
-            params = {
-                start_date: moment(this.ngRangeStart).format('MM/DD/yyyy'),
-                end_date: moment(this.ngRangeEnd).format('MM/DD/yyyy')
-            }
+            this.reportParams.start_date = moment(this.ngRangeStart).format('yyyy-MM-DD');
+            this.reportParams.end_date = moment(this.ngRangeEnd).format('yyyy-MM-DD');
+            this.report_type = 'Range Sales';
         }
-        console.log(params)
+        this._flpsService.getFlpsData(this.reportParams).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+            console.log(res);
+            if (res["data"].length == 0) {
+                this._flpsService.snackBar('No orders have been found in the specified range that match your criteria.');
+            }
+            this.isGenerateReport = true;
+            this.dataSource = res["data"];
+            this.totalUsers = res["totalRecords"];
+            this.generateReportLoader = false;
+            this._changeDetectorRef.markForCheck();
+        }, err => {
+            this.generateReportLoader = false;
+            this._changeDetectorRef.markForCheck();
+        })
+    }
+    getNextData(event) {
+        const { previousPageIndex, pageIndex } = event;
+
+        if (pageIndex > previousPageIndex) {
+            this.page++;
+        } else {
+            this.page--;
+        };
+        this.generateReport();
+    };
+    backToFilters() {
+        this.isGenerateReport = false;
+        this._changeDetectorRef.markForCheck();
     }
 
     // -----------------------------------------------------------------------------------------------------

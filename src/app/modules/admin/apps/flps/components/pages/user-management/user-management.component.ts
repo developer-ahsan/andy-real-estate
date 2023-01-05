@@ -2,9 +2,12 @@ import { Component, Input, OnInit, ChangeDetectorRef, OnDestroy, ViewChild } fro
 import { FormControl, FormGroup } from '@angular/forms';
 import { MatPaginator } from '@angular/material/paginator';
 import { Subject } from 'rxjs';
-import { finalize, takeUntil } from 'rxjs/operators';
+import { debounceTime, distinctUntilChanged, filter, finalize, switchMap, takeUntil, tap } from 'rxjs/operators';
 import { FLPSService } from '../../flps.service';
 import { applyBlanketCustomerPercentage, newFLPSUser, removeFLPSUser, updateFLPSUser } from '../../flps.types';
+import * as Excel from 'exceljs/dist/exceljs.min.js';
+import moment from 'moment';
+
 @Component({
   selector: 'app-user-flps-management',
   templateUrl: './user-management.component.html',
@@ -60,12 +63,23 @@ export class FLPSUserManagementComponent implements OnInit, OnDestroy {
   // User Customers
   customersDataSource = [];
   tempCustomersDataSource = [];
-  displayedCustomersColumns: string[] = ['id', 'name', 'company', 'email', 'last', 'commission'];
+  displayedCustomersColumns: string[] = ['id', 'name', 'company', 'email', 'commission'];
   totalCustomers = 0;
   tempTotalCustomers = 0;
   customersPage = 1;
+  customersLoader: boolean = true;
+
+  fileDownloadLoader: boolean = false;
 
   isSearching: boolean = false;
+
+  activeStores = [];
+  storeCtrl = new FormControl();
+  selectedStore: any;
+  isSearchingCustomer = false;
+  minLengthTerm = 3;
+  searchKeyword = '';
+  isFilterCustomerLoader: boolean = false;
   // Emplyees Dropdown
   employeeUser = [];
   constructor(
@@ -104,6 +118,47 @@ export class FLPSUserManagementComponent implements OnInit, OnDestroy {
     this.isLoading = true;
     this.getEmployeeUsers();
     this.getFlpsUsers(1, 'get');
+    this._flpsService.flpsStores$.pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+      this.activeStores.push({ storeName: 'All Stores', pk_storeID: null });
+      this.selectedStore = this.activeStores[0];
+      this.displayWith(this.selectedStore);
+      res["data"].forEach(element => {
+        this.activeStores.push(element);
+      });
+    })
+    let params;
+    this.storeCtrl.valueChanges.pipe(
+      filter(res => {
+        params = {
+          view_stores: true,
+          bln_active: 1,
+          size: 20,
+          keyword: res
+        }
+        return res !== null && res.length >= this.minLengthTerm
+      }),
+      distinctUntilChanged(),
+      debounceTime(500),
+      tap(() => {
+        this.activeStores = [];
+        this.isSearchingCustomer = true;
+        this._changeDetectorRef.markForCheck();
+      }),
+      switchMap(value => this._flpsService.getFlpsData(params)
+        .pipe(
+          finalize(() => {
+            this.isSearchingCustomer = false
+            this._changeDetectorRef.markForCheck();
+          }),
+        )
+      )
+    )
+      .subscribe((data: any) => {
+        this.activeStores.push({ storeName: 'All Stores', pk_storeID: null });
+        data["data"].forEach(element => {
+          this.activeStores.push(element);
+        });
+      });
   };
   calledScreen(value) {
     this.initForm();
@@ -136,6 +191,13 @@ export class FLPSUserManagementComponent implements OnInit, OnDestroy {
       this._changeDetectorRef.markForCheck();
       if (this.ordersDataSource.length == 0) {
         this.getUserOrders(1);
+      }
+    } else if (this.mainScreenUser == 'View Customers') {
+      this.customersDataSource = this.tempCustomersDataSource;
+      this.customersPage = 1;
+      this._changeDetectorRef.markForCheck();
+      if (this.customersDataSource.length == 0) {
+        this.getUserCustomers(1);
       }
     }
   }
@@ -223,6 +285,9 @@ export class FLPSUserManagementComponent implements OnInit, OnDestroy {
       this.ordersDataSource = [];
       this.tempOrdersDataSource = [];
       this.ordersPage = 1;
+      this.customersDataSource = [];
+      this.tempCustomersDataSource = [];
+      this.customersPage = 1;
       this.mainScreenUser = 'Edit User';
       this.updateUserData = data;
       this.updateUserForm.patchValue(data);
@@ -417,6 +482,109 @@ export class FLPSUserManagementComponent implements OnInit, OnDestroy {
     };
     this.getUserOrders(this.ordersPage);
   };
+  // Get Customers Associated
+  getUserCustomers(page) {
+    let payload = {
+      user_customers: true,
+      flps_user_id: this.updateUserData.pk_userID,
+      page: page,
+      size: 20,
+      store_id: null,
+      keyword: ''
+    };
+    if (this.isFilterCustomerLoader) {
+      payload.store_id = this.selectedStore.pk_storeID;
+      payload.keyword = this.searchKeyword;
+    } else {
+      if (page == 1) {
+        this.customersLoader = true;
+      }
+    }
+    this._flpsService.getFlpsData(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+      this.customersDataSource = res["data"];
+      this.totalCustomers = res["totalRecords"];
+      if (this.tempOrdersDataSource.length == 0 && !this.isFilterCustomerLoader) {
+        this.tempCustomersDataSource = res["data"];
+        this.tempTotalCustomers = res["totalRecords"];
+      }
+      this.isFilterCustomerLoader = false;
+      this.customersLoader = false;
+      this._changeDetectorRef.markForCheck();
+    }, err => {
+      this.isFilterCustomerLoader = false;
+      this.customersLoader = false;
+      this._changeDetectorRef.markForCheck();
+    })
+  }
+  getNextCustomersData(event) {
+    const { previousPageIndex, pageIndex } = event;
+    if (pageIndex > previousPageIndex) {
+      this.customersPage++;
+    } else {
+      this.customersPage--;
+    };
+    this.getUserCustomers(this.customersPage);
+  };
+  downloadExcelWorkSheet() {
+    let payload = {
+      user_customers: true,
+      flps_user_id: this.updateUserData.pk_userID,
+      size: this.totalCustomers
+    };
+    this.fileDownloadLoader = true;
+    this._flpsService.getFlpsData(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+      const fileName = `FLPSUser-${moment(new Date()).format('MM-DD-yy-hh-mm-ss')}`;
+      const workbook = new Excel.Workbook();
+      const worksheet = workbook.addWorksheet("Customers");
+      // Columns
+      worksheet.columns = [
+        { header: "ID", key: "fk_FLPSUserID", width: 30 },
+        { header: "First Name", key: "firstName", width: 30 },
+        { header: "last Name", key: "lastName", width: 30 },
+        { header: "Company", key: "companyName", width: 30 },
+        { header: "Email", key: "email", width: 30 },
+        { header: "Commission", key: "commission", width: 10 }
+      ];
+      for (const obj of res["data"]) {
+        worksheet.addRow(obj);
+      }
+      this.fileDownloadLoader = false;
+      workbook.xlsx.writeBuffer().then((data: any) => {
+        const blob = new Blob([data], {
+          type:
+            "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+        });
+        let url = window.URL.createObjectURL(blob);
+        let a = document.createElement("a");
+        document.body.appendChild(a);
+        a.setAttribute("style", "display: none");
+        a.href = url;
+        a.download = `${fileName}.xlsx`;
+        a.click();
+        window.URL.revokeObjectURL(url);
+        a.remove();
+      });
+
+      // Mark for check
+      this._changeDetectorRef.markForCheck();
+
+    }, err => {
+      this._flpsService.snackBar('Something went wrong');
+      this.fileDownloadLoader = false;
+      this._changeDetectorRef.markForCheck();
+    });
+  }
+  onSelected(ev) {
+    this.selectedStore = ev.option.value;
+  }
+
+  displayWith(value: any) {
+    return value ? value?.storeName : '';
+  }
+  filterCustomers() {
+    this.isFilterCustomerLoader = true;
+    this.getUserCustomers(1);
+  }
 
   /**
      * On destroy

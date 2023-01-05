@@ -172,7 +172,7 @@ export class FLPSComponent {
             user_name: this.ngEmail,
             password: this.ngPassword
         }
-        this._UsersService.getFlpsData(payload).subscribe(res => {
+        this._UsersService.getAdminsData(payload).subscribe(res => {
             if (res["success"]) {
                 this.flpsToken = 'userLoggedIn';
                 sessionStorage.setItem('flpsAccessToken', 'userLoggedIn');
