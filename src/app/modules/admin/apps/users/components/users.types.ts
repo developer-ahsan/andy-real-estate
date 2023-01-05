@@ -186,3 +186,9 @@ export interface RemoveEmployeeRole {
     admin_user_id: number;
     remove_employee_role: boolean;
 };
+
+export interface updateRapidBuildUserStores {
+    rapidbuild_user_id: number;
+    stores: number[];
+    update_rapidbuild_user_stores: boolean;
+};

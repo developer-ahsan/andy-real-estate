@@ -4,7 +4,7 @@ import { MatPaginator } from '@angular/material/paginator';
 import { Subject } from 'rxjs';
 import { finalize, takeUntil } from 'rxjs/operators';
 import { UsersService } from '../../users.service';
-import { applyBlanketCustomerPercentage, newFLPSUser, newRapidbuildUser, removeFLPSUser, RemoveRapidUser, updateFLPSUser, updateRapidbuildUser } from '../../users.types';
+import { applyBlanketCustomerPercentage, newFLPSUser, newRapidbuildUser, removeFLPSUser, RemoveRapidUser, updateFLPSUser, updateRapidbuildUser, updateRapidBuildUserStores } from '../../users.types';
 @Component({
   selector: 'app-rapidbuild-users',
   templateUrl: './rapidbuild-users.component.html',
@@ -41,10 +41,11 @@ export class RapidBuildUsersComponent implements OnInit, OnDestroy {
   // User Customers
   customersDataSource = [];
   tempCustomersDataSource = [];
-  displayedCustomersColumns: string[] = ['id', 'name', 'company', 'email', 'last', 'commission'];
+  displayedCustomersColumns: string[] = ['id', 'name', 'history', 'time', 'type'];
   totalCustomers = 0;
   tempTotalCustomers = 0;
   customersPage = 1;
+  customerLoader: boolean = false;
 
   isSearching: boolean = false;
 
@@ -53,6 +54,8 @@ export class RapidBuildUsersComponent implements OnInit, OnDestroy {
   storePage = 1;
   storeLoader: boolean = false;
   totalStores = 0;
+  updateStoreLoader: boolean = false;
+
   constructor(
     private _changeDetectorRef: ChangeDetectorRef,
     private _UsersService: UsersService
@@ -101,6 +104,14 @@ export class RapidBuildUsersComponent implements OnInit, OnDestroy {
   }
   calledUserScreen(value) {
     this.mainScreenUser = value;
+    if (value == 'User History') {
+      this.customersDataSource = this.tempCustomersDataSource;
+      this.customersPage = 1;
+      if (this.customersDataSource.length == 0) {
+        this.customerLoader = true;
+        this.getAdminCustomers(1);
+      }
+    }
   }
   getAdminRapidUsers(page, type) {
     let params = {
@@ -146,6 +157,9 @@ export class RapidBuildUsersComponent implements OnInit, OnDestroy {
     if (check) {
       this.allStores = [];
       this.storePage = 1;
+      this.customersDataSource = [];
+      this.tempCustomersDataSource = [];
+      this.customersPage = 1;
       this.mainScreenUser = 'Edit User';
       this.updateUserData = data;
       this.updateUserForm.patchValue(data);
@@ -239,9 +253,12 @@ export class RapidBuildUsersComponent implements OnInit, OnDestroy {
   getAllStores() {
     this._UsersService.adminStores$.pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
       res["data"].forEach(element => {
-        if (this.updateUserData.storeList) {
-          if (this.updateUserData.storeList.includes(element.pk_storeID)) {
+        if (this.updateUserData.storeID) {
+          let StoreList = ',' + this.updateUserData.storeID;
+          if (StoreList.includes(',' + element.pk_storeID)) {
             element.checked = true;
+          } else {
+            element.checked = false;
           }
         }
         this.allStores.push(element);
@@ -251,15 +268,20 @@ export class RapidBuildUsersComponent implements OnInit, OnDestroy {
   }
   getAdminStores(page) {
     let params = {
-      view_stores: true,
+      stores: true,
       bln_active: 1,
       page: page,
       size: 20
     }
     this._UsersService.getStoresData(params).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
       res["data"].forEach(element => {
-        if (this.updateUserData.storeList.includes(element.pk_storeID)) {
-          element.checked = true;
+        if (this.updateUserData.storeID) {
+          let StoreList = ',' + this.updateUserData.storeID;
+          if (StoreList.includes(',' + element.pk_storeID)) {
+            element.checked = true;
+          } else {
+            element.checked = false;
+          }
         }
         this.allStores.push(element);
       });
@@ -277,6 +299,75 @@ export class RapidBuildUsersComponent implements OnInit, OnDestroy {
     this.storeLoader = true;
     this.getAdminStores(this.storePage);
   };
+
+  getAdminCustomers(page) {
+    let params = {
+      rapidbuild_history: true,
+      page: page,
+      user_id: this.updateUserData.pk_userID,
+      size: 20
+    }
+    this._UsersService.getStoresData(params).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+      this.customersDataSource = res["data"];
+      this.totalCustomers = res["totalRecords"];
+      if (this.tempCustomersDataSource.length == 0) {
+        this.tempCustomersDataSource = res["data"];
+        this.tempTotalCustomers = res["totalRecords"];
+      }
+      this.customerLoader = false;
+      // this.isLoadingChange.emit(false);
+      this._changeDetectorRef.markForCheck();
+    }, err => {
+      this.customerLoader = false;
+      // this.isLoadingChange.emit(false);
+      this._changeDetectorRef.markForCheck();
+    });
+  }
+  getNextCustomersData(event) {
+    const { previousPageIndex, pageIndex } = event;
+    if (pageIndex > previousPageIndex) {
+      this.customersPage++;
+    } else {
+      this.customersPage--;
+    };
+    this.getAdminCustomers(this.customersPage);
+  };
+  updateStoresList() {
+    let storesList = this.updateUserData.storeID.split(',').map(function (item) {
+      return parseInt(item);
+    });
+    this.allStores.forEach(element => {
+      if (element.checked) {
+        const index = storesList.findIndex(item => Number(item) == element.pk_storeID);
+        if (index < 0) {
+          storesList.push(element.pk_storeID);
+        }
+      } else if (!element.checked) {
+        const index = storesList.findIndex(item => Number(item) == element.pk_storeID);
+        if (index > -1) {
+          storesList.splice(index, 1);
+        }
+      }
+    });
+    let params: updateRapidBuildUserStores = {
+      rapidbuild_user_id: this.updateUserData.pk_userID,
+      stores: storesList,
+      update_rapidbuild_user_stores: true
+    };
+    this.updateStoreLoader = true;
+    this._UsersService.UpdateAdminsData(params).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+      if (res["success"]) {
+        this.updateUserData.storeID = storesList.toString();
+      }
+      this._UsersService.snackBar(res["message"]);
+      this.updateStoreLoader = false;
+      this._changeDetectorRef.markForCheck();
+    }, err => {
+      this._UsersService.snackBar('Something went wrong');
+      this.updateStoreLoader = false;
+      this._changeDetectorRef.markForCheck();
+    });
+  }
   /**
      * On destroy
      */

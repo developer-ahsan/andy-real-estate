@@ -239,7 +239,7 @@ export class OrderManageUsersComponent implements OnInit, OnDestroy {
   }
   getAdminStores(page) {
     let params = {
-      view_stores: true,
+      stores: true,
       bln_active: 1,
       page: page,
       size: 20

@@ -354,8 +354,11 @@ export class SmartArtUsersComponent implements OnInit, OnDestroy {
     this._UsersService.adminStores$.pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
       res["data"].forEach(element => {
         if (this.updateUserData.storeList) {
-          if (this.updateUserData.storeList.includes(element.pk_storeID)) {
+          let StoreList = ',' + this.updateUserData.storeList;
+          if (StoreList.includes(',' + element.pk_storeID)) {
             element.checked = true;
+          } else {
+            element.checked = false;
           }
         }
         this.allStores.push(element);
@@ -365,15 +368,20 @@ export class SmartArtUsersComponent implements OnInit, OnDestroy {
   }
   getAdminStores(page) {
     let params = {
-      view_stores: true,
+      stores: true,
       bln_active: 1,
       page: page,
       size: 20
     }
     this._UsersService.getStoresData(params).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
       res["data"].forEach(element => {
-        if (this.updateUserData.storeList.includes(element.pk_storeID)) {
-          element.checked = true;
+        if (this.updateUserData.storeList) {
+          let StoreList = ',' + this.updateUserData.storeList;
+          if (StoreList.includes(',' + element.pk_storeID)) {
+            element.checked = true;
+          } else {
+            element.checked = false;
+          }
         }
         this.allStores.push(element);
       });

@@ -114,6 +114,10 @@ export class AdminCommentorsComponent implements OnInit, OnDestroy {
         this._UsersService.snackBar('User Updated Successfully');
         item.updateLoader = false;
         this._changeDetectorRef.markForCheck();
+      } else {
+        this._UsersService.snackBar(res["message"]);
+        item.updateLoader = false;
+        this._changeDetectorRef.markForCheck();
       }
     }, err => {
       item.updateLoader = false;

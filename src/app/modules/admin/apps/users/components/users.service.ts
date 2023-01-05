@@ -68,7 +68,7 @@ export class UsersService {
         );
     };
     getStoresData(params): Observable<any[]> {
-        return this._httpClient.get<any[]>(environment.flps, {
+        return this._httpClient.get<any[]>(environment.admins, {
             params: params
         }).pipe(retry(3));
     };
@@ -132,9 +132,9 @@ export class UsersService {
     };
     // FLPS Stores
     getAdminStores(): Observable<any[]> {
-        return this._httpClient.get<any[]>(environment.flps, {
+        return this._httpClient.get<any[]>(environment.admins, {
             params: {
-                view_stores: true,
+                stores: true,
                 bln_active: 1,
                 size: 20
             }
