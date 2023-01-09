@@ -130,7 +130,7 @@ export class UsersService {
             })
         );
     };
-    // FLPS Stores
+    // Admin Stores
     getAdminStores(): Observable<any[]> {
         return this._httpClient.get<any[]>(environment.admins, {
             params: {
@@ -144,4 +144,7 @@ export class UsersService {
             })
         );
     };
+    getIPAddress() {
+        return this._httpClient.get("http://api.ipify.org/?format=json");
+    }
 }

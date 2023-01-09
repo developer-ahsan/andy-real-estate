@@ -4,7 +4,7 @@ import { MatPaginator } from '@angular/material/paginator';
 import { Subject } from 'rxjs';
 import { finalize, takeUntil } from 'rxjs/operators';
 import { UsersService } from '../../users.service';
-import { AddSmartArtUser, applyBlanketCustomerPercentage, newFLPSUser, removeFLPSUser, RemoveSmartArtUser, updateFLPSUser, UpdateSmartUser } from '../../users.types';
+import { AddSmartArtUser, applyBlanketCustomerPercentage, newFLPSUser, removeFLPSUser, RemoveSmartArtUser, updateFLPSUser, updateSmartArtUsers, UpdateSmartUser } from '../../users.types';
 @Component({
   selector: 'app-smartart-users',
   templateUrl: './smartart-users.component.html',
@@ -57,6 +57,7 @@ export class SmartArtUsersComponent implements OnInit, OnDestroy {
   storePage = 1;
   storeLoader: boolean = false;
   totalStores = 0;
+  updateStoreLoader: boolean;
   constructor(
     private _changeDetectorRef: ChangeDetectorRef,
     private _UsersService: UsersService
@@ -257,6 +258,7 @@ export class SmartArtUsersComponent implements OnInit, OnDestroy {
     }
     this.isUpdateUserLoader = true;
     this._UsersService.UpdateAdminsData(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+      let arr = [];
       if (res["success"]) {
         if (this.updateUserData.blnActive == blnActive) {
           this.updateUserData.firstName = firstName;
@@ -277,14 +279,19 @@ export class SmartArtUsersComponent implements OnInit, OnDestroy {
             this.updateUserData.userName = userName;
             this.updateUserData.password = password;
             this.updateUserData.email = email;
-            this.dataSource = this.dataSource.filter(elem => elem.pk_userID != pk_userID);
-            this.totalUsers--;
-            this.tempDataSource = this.tempDataSource.filter(elem => elem.pk_userID != pk_userID);
-            this.tempRecords--;
-            this.disabledDataSource.push(this.updateUserData);
-            this.distabledTotalUsers++;
-            this.temdisabledDataSource.push(this.updateUserData);
-            this.tempdistabledTotalUsers++;
+            arr = this.disabledDataSource;
+            if (this.disabledDataSource.length > 0) {
+              this.dataSource = this.dataSource.filter(elem => elem.pk_userID != pk_userID);
+              this.totalUsers--;
+              this.tempDataSource = this.tempDataSource.filter(elem => elem.pk_userID != pk_userID);
+              this.tempRecords--;
+              arr.push(this.updateUserData);
+              this.disabledDataSource = arr;
+              this.distabledTotalUsers++;
+              this.temdisabledDataSource = arr;
+              this.tempdistabledTotalUsers++;
+            }
+
           } else {
             this.updateUserData.firstName = firstName;
             this.updateUserData.lastName = lastName;
@@ -294,15 +301,19 @@ export class SmartArtUsersComponent implements OnInit, OnDestroy {
             this.updateUserData.userName = userName;
             this.updateUserData.password = password;
             this.updateUserData.email = email;
+            arr = this.dataSource;
+            if (this.dataSource.length > 0) {
+              this.disabledDataSource = this.disabledDataSource.filter(elem => elem.pk_userID != pk_userID);
+              this.distabledTotalUsers--;
+              this.temdisabledDataSource = this.temdisabledDataSource.filter(elem => elem.pk_userID != pk_userID);
+              this.tempdistabledTotalUsers--;
+              arr.push(this.updateUserData);
+              this.dataSource = arr;
+              this.totalUsers++;
+              this.tempDataSource = arr;
+              this.tempRecords++;
+            }
 
-            this.disabledDataSource = this.disabledDataSource.filter(elem => elem.pk_userID != pk_userID);
-            this.distabledTotalUsers--;
-            this.temdisabledDataSource = this.temdisabledDataSource.filter(elem => elem.pk_userID != pk_userID);
-            this.tempdistabledTotalUsers--;
-            this.dataSource.push(this.updateUserData);
-            this.totalUsers++;
-            this.tempDataSource.push(this.updateUserData);
-            this.tempRecords++;
           }
         }
         this.isUpdateUserLoader = false;
@@ -399,6 +410,43 @@ export class SmartArtUsersComponent implements OnInit, OnDestroy {
     this.storeLoader = true;
     this.getAdminStores(this.storePage);
   };
+
+  updateStoresList() {
+    let storesList = this.updateUserData.storeList.split(',').map(function (item) {
+      return parseInt(item);
+    });
+    this.allStores.forEach(element => {
+      if (element.checked) {
+        const index = storesList.findIndex(item => Number(item) == element.pk_storeID);
+        if (index < 0) {
+          storesList.push(element.pk_storeID);
+        }
+      } else if (!element.checked) {
+        const index = storesList.findIndex(item => Number(item) == element.pk_storeID);
+        if (index > -1) {
+          storesList.splice(index, 1);
+        }
+      }
+    });
+    let params: updateSmartArtUsers = {
+      user_id: this.updateUserData.pk_userID,
+      stores: storesList,
+      update_smartart_user_stores: true
+    };
+    this.updateStoreLoader = true;
+    this._UsersService.UpdateAdminsData(params).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+      if (res["success"]) {
+        this.updateUserData.storeID = storesList.toString();
+      }
+      this._UsersService.snackBar(res["message"]);
+      this.updateStoreLoader = false;
+      this._changeDetectorRef.markForCheck();
+    }, err => {
+      this._UsersService.snackBar('Something went wrong');
+      this.updateStoreLoader = false;
+      this._changeDetectorRef.markForCheck();
+    });
+  }
   /**
      * On destroy
      */

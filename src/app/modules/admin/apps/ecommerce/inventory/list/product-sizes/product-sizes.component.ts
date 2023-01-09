@@ -107,6 +107,9 @@ export class ProductSizesComponent implements OnInit, OnDestroy {
           //   }
           // });
         });
+        sizesArr.forEach(element => {
+          element.run = Number(0.00)
+        });
         this.dataSource = this.arrayToUpdate.concat(sizesArr);
         this.sizesLength = sizes["totalRecords"];
 

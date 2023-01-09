@@ -989,7 +989,9 @@
                                             <div class="col-12 mt-4">
                                                 <mat-form-field class="w-full">
                                                     <mat-label>MSRP</mat-label>
-                                                    <input matInput type="number" [formControlName]="'msrp'">
+                                                    <input matInput type="text" type="text"
+                                                        oninput="this.value = this.value.replace(/[^0-9.]/g, '').replace(/(\..*?)\..*/g, '$1');"
+                                                        [formControlName]="'msrp'">
                                                 </mat-form-field>
                                             </div>
                                             <div class="col-12">

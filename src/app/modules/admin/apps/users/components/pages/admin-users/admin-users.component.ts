@@ -4,7 +4,7 @@ import { MatPaginator } from '@angular/material/paginator';
 import { Subject } from 'rxjs';
 import { debounceTime, distinctUntilChanged, filter, finalize, switchMap, takeUntil, tap } from 'rxjs/operators';
 import { UsersService } from '../../users.service';
-import { applyBlanketCustomerPercentage, newFLPSUser, removeFLPSUser, updateFLPSUser } from '../../users.types';
+import { AddAdminUser, applyBlanketCustomerPercentage, newFLPSUser, removeFLPSUser, UpdateAdminUser, updateFLPSUser } from '../../users.types';
 @Component({
   selector: 'app-admin-users',
   templateUrl: './admin-users.component.html',
@@ -45,25 +45,6 @@ export class AdminUsersComponent implements OnInit, OnDestroy {
 
   mainScreenUser: string = 'Edit User';
 
-  ngBlanketPercentage = '';
-  isBlanketLoader: boolean = false;
-
-  // User Orders
-  ordersLoader: boolean = true;
-  ordersDataSource = [];
-  tempOrdersDataSource = [];
-  displayedOrdersColumns: string[] = ['id', 'date', 'store', 'customer', 'total', 'paid', 'cancel', 'status'];
-  totalOrders = 0;
-  tempTotalOrders = 0;
-  ordersPage = 1;
-
-  // User Customers
-  customersDataSource = [];
-  tempCustomersDataSource = [];
-  displayedCustomersColumns: string[] = ['id', 'name', 'company', 'email', 'last', 'commission'];
-  totalCustomers = 0;
-  tempTotalCustomers = 0;
-  customersPage = 1;
 
   isSearching: boolean = false;
   // Emplyees Dropdown
@@ -78,6 +59,26 @@ export class AdminUsersComponent implements OnInit, OnDestroy {
   addSelectedCompany: any;
   addIsSearchingCompany = false;
 
+  permissionGroup = [];
+  permissionGrpCtrl = new FormControl();
+  selectedPermission: any;
+  permissionLoader = false;
+
+  ipAddress = '';
+
+  // Parent Permission
+  parentTotalPermissions = 0;
+  parentPermissionData: any = [];
+  parentPermissionPage = 1;
+  parentPermissionLoader: boolean = false;
+  isLoadingPermission: boolean = false;
+
+  childTotalPermissions = 0;
+  childPermissionData: any = [];
+  childPermissionPage = 1;
+  childPermissionLoader: boolean = false;
+  isLoadingChildPermission: boolean = false;
+
   constructor(
     private _changeDetectorRef: ChangeDetectorRef,
     private _UsersService: UsersService
@@ -90,27 +91,37 @@ export class AdminUsersComponent implements OnInit, OnDestroy {
       email: new FormControl(''),
       firstName: new FormControl(''),
       lastName: new FormControl(''),
-      blnAdmin: new FormControl(false),
-      defaultCommission: new FormControl(''),
-      admin_user_id: new FormControl(0),
-      new_flps_user: new FormControl(true)
+      ip_address: new FormControl(''),
+      supplier_id: new FormControl(''),
+      blnMasterAccount: new FormControl(false),
+      blnSupplier: new FormControl(true),
+      blnManager: new FormControl(false),
+      add_admin_user: new FormControl(true)
     });
     this.updateUserForm = new FormGroup({
       userName: new FormControl(''),
       password: new FormControl(''),
+      email: new FormControl(''),
       firstName: new FormControl(''),
       lastName: new FormControl(''),
-      blnAdmin: new FormControl(false),
       blnActive: new FormControl(false),
-      defaultCommission: new FormControl(''),
-      email: new FormControl(''),
-      fk_adminUserID: new FormControl(0),
+      blnMaster: new FormControl(false),
+      blnManager: new FormControl(false),
       pk_userID: new FormControl(0),
-      update_flps_user: new FormControl(true)
+      update_admin_user: new FormControl(true)
     });
+    if (this.ipAddress) {
+      this.addNewUserForm.patchValue({ ip_address: this.ipAddress });
+    }
+    if (this.addCompanies.length > 0) {
+      this.addNewUserForm.patchValue({ supplier_id: this.addCompanies[0].pk_companyID });
+    }
   }
   ngOnInit(): void {
     this.initForm();
+    this._UsersService.getIPAddress().subscribe(res => {
+      this.ipAddress = res["ip"];
+    });
     this.isLoading = true;
     this.getAdminCompanies();
     this.getAdminUsers(1, 'get');
@@ -139,11 +150,10 @@ export class AdminUsersComponent implements OnInit, OnDestroy {
           }),
         )
       )
-    )
-      .subscribe((data: any) => {
-        this.companies.push({ companyName: 'All', pk_companyID: null });
-        this.companies = this.companies.concat(data['data']);
-      });
+    ).subscribe((data: any) => {
+      this.companies.push({ companyName: 'All', pk_companyID: null });
+      this.companies = this.companies.concat(data['data']);
+    });
 
     this.addSearchCompanyCtrl.valueChanges.pipe(
       filter((res: any) => {
@@ -191,6 +201,7 @@ export class AdminUsersComponent implements OnInit, OnDestroy {
   }
   addOnSelected(ev) {
     this.addSelectedCompany = ev.option.value;
+    this.addNewUserForm.setValue({ supplier_id: this.addCompanies[0].pk_companyID });
   }
 
   addDisplayWith(value: any) {
@@ -218,12 +229,39 @@ export class AdminUsersComponent implements OnInit, OnDestroy {
   }
   calledUserScreen(value) {
     this.mainScreenUser = value;
-    if (this.mainScreenUser == 'View Orders') {
-      this.ordersDataSource = this.tempOrdersDataSource;
-      this.ordersPage = 1;
-      this._changeDetectorRef.markForCheck();
-      if (this.ordersDataSource.length == 0) {
-        this.getUserOrders(1);
+    if (this.mainScreenUser == 'Permissions') {
+      let params;
+      this.permissionGrpCtrl.setValue({ groupName: 'None', pk_companyID: null });
+      this.permissionGrpCtrl.valueChanges.pipe(
+        filter((res: any) => {
+          params = {
+            permission_groups: true,
+            keyword: res
+          }
+          return res !== null && res.length >= this.minLengthTerm
+        }),
+        distinctUntilChanged(),
+        debounceTime(500),
+        tap(() => {
+          this.permissionGroup = [];
+          this.permissionLoader = true;
+          this._changeDetectorRef.markForCheck();
+        }),
+        switchMap(value => this._UsersService.getAdminsData(params)
+          .pipe(
+            finalize(() => {
+              this.permissionLoader = false
+              this._changeDetectorRef.markForCheck();
+            }),
+          )
+        )
+      ).subscribe((data: any) => {
+        this.permissionGroup.push({ groupName: 'None', pk_groupID: null });
+        this.permissionGroup = this.permissionGroup.concat(data['data']);
+      });
+      if (this.parentPermissionData.length == 0) {
+        this.permissionLoader = true;
+        this.getParentPermissions(1);
       }
     }
   }
@@ -245,8 +283,8 @@ export class AdminUsersComponent implements OnInit, OnDestroy {
       if (type == 'add') {
         this.isAddNewUserLoader = false;
         this.initForm();
+        this.mainScreen = 'Admin Users';
         this._UsersService.snackBar('User Added Successfully');
-        this.mainScreen = 'Current Users';
       }
       this.isLoading = false;
       // this.isLoadingChange.emit(false);
@@ -314,9 +352,6 @@ export class AdminUsersComponent implements OnInit, OnDestroy {
   toggleUpdateUserData(data, check) {
     this.isUpdateUser = check;
     if (check) {
-      this.ordersDataSource = [];
-      this.tempOrdersDataSource = [];
-      this.ordersPage = 1;
       this.mainScreenUser = 'Edit User';
       this.updateUserData = data;
       this.updateUserForm.patchValue(data);
@@ -343,17 +378,13 @@ export class AdminUsersComponent implements OnInit, OnDestroy {
   }
 
   addNewUser() {
-    const { userName, password, email, firstName, lastName, blnAdmin, defaultCommission, admin_user_id, new_flps_user } = this.addNewUserForm.getRawValue();
-    let adminId = admin_user_id;
-    if (admin_user_id == 0) {
-      adminId = null;
-    }
+    const { userName, password, email, firstName, lastName, blnManager, blnSupplier, blnMasterAccount, supplier_id, ip_address, add_admin_user } = this.addNewUserForm.getRawValue();
     if (userName == '' || password == '' || email == '') {
       this._UsersService.snackBar('Please fill out the required fields');
       return;
     }
-    let payload: newFLPSUser = {
-      userName, password, email, firstName, lastName, blnAdmin, defaultCommission: defaultCommission, admin_user_id: adminId, new_flps_user
+    let payload: AddAdminUser = {
+      userName, password, email, firstName, lastName, blnManager, blnSupplier, blnMasterAccount, supplier_id, ip_address, add_admin_user
     }
     this.isAddNewUserLoader = true;
     this._UsersService.AddAdminsData(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
@@ -361,6 +392,7 @@ export class AdminUsersComponent implements OnInit, OnDestroy {
         this.page = 1;
         this.getAdminUsers(1, 'add');
       } else {
+        this._UsersService.snackBar(res["message"]);
         this.isAddNewUserLoader = false;
         this._changeDetectorRef.markForCheck();
       }
@@ -370,53 +402,70 @@ export class AdminUsersComponent implements OnInit, OnDestroy {
     });
   }
   updateUser() {
-    const { userName, password, email, firstName, lastName, blnAdmin, defaultCommission, fk_adminUserID, blnActive, pk_userID, update_flps_user } = this.updateUserForm.getRawValue();
-    let adminId = fk_adminUserID;
-    if (fk_adminUserID == 0) {
-      adminId = null;
-    }
+    const { userName, password, email, firstName, lastName, blnManager, blnMaster, blnActive, pk_userID, update_admin_user } = this.updateUserForm.getRawValue();
     if (userName == '' || password == '' || email == '') {
       this._UsersService.snackBar('Please fill out the required fields');
       return;
     }
-    let payload: updateFLPSUser = {
-      userName, password, email, firstName, lastName, blnAdmin, defaultCommission: defaultCommission, admin_user_id: adminId, update_flps_user, blnActive, user_id: pk_userID
+    let payload: UpdateAdminUser = {
+      userName, password, email, firstName, lastName, blnActive, blnMaster, blnManager, update_admin_user, user_id: pk_userID
     }
     this.isUpdateUserLoader = true;
     this._UsersService.UpdateAdminsData(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
       if (res["success"]) {
-        // if (this.updateUserData.blnActive != blnActive) {
-        //   if(blnActive == false) {
-
-        //   } else {
-
-        //   }
-        // }
-        if (this.updateUserData.defaultCommission != defaultCommission) {
-          this.updateUserForm.patchValue({
-            defaultCommission: defaultCommission / 100
-          });
-          this.updateUserData.defaultCommission = defaultCommission / 100;
-        }
-
+        let arr = [];
         this.updateUserData.firstName = firstName;
         this.updateUserData.lastName = lastName;
-        this.updateUserData.blnAdmin = blnAdmin;
-        this.updateUserData.blnActive = blnActive;
-        this.updateUserData.fk_adminUserID = adminId;
+        this.updateUserData.blnMaster = blnMaster;
+        this.updateUserData.blnManager = blnManager;
         this.updateUserData.pk_userID = pk_userID;
         this.updateUserData.userName = userName;
         this.updateUserData.password = password;
         this.updateUserData.email = email;
+        if (this.updateUserData.blnActive == blnActive) {
+          this.updateUserData.blnActive = blnActive;
+        } else {
+          if (this.updateUserData.blnActive) {
+            this.updateUserData.blnActive = blnActive;
+            arr = this.disabledDataSource;
+            if (this.disabledDataSource.length > 0) {
+              this.dataSource = this.dataSource.filter(elem => elem.pk_userID != pk_userID);
+              this.totalUsers--;
+              this.tempDataSource = this.tempDataSource.filter(elem => elem.pk_userID != pk_userID);
+              this.tempRecords--;
+              arr.push(this.updateUserData);
+              this.disabledDataSource = arr;
+              this.distabledTotalUsers++;
+              this.temdisabledDataSource = arr;
+              this.tempdistabledTotalUsers++;
+            }
+          } else {
+            this.updateUserData.blnActive = blnActive;
+            arr = this.dataSource;
+            if (this.dataSource.length > 0) {
+              this.disabledDataSource = this.disabledDataSource.filter(elem => elem.pk_userID != pk_userID);
+              this.distabledTotalUsers--;
+              this.temdisabledDataSource = this.temdisabledDataSource.filter(elem => elem.pk_userID != pk_userID);
+              this.tempdistabledTotalUsers--;
+              arr.push(this.updateUserData);
+              this.dataSource = arr;
+              this.totalUsers++;
+              this.tempDataSource = arr;
+              this.tempRecords++;
+            }
 
+          }
+        }
         this.isUpdateUserLoader = false;
         this._UsersService.snackBar('User Updated Successfully');
         this._changeDetectorRef.markForCheck();
       } else {
+        this._UsersService.snackBar(res["message"]);
         this.isUpdateUserLoader = false;
         this._changeDetectorRef.markForCheck();
       }
     }, err => {
+      this._UsersService.snackBar('Something went wrong');
       this.isUpdateUserLoader = false;
       this._changeDetectorRef.markForCheck();
     });
@@ -453,65 +502,71 @@ export class AdminUsersComponent implements OnInit, OnDestroy {
       if (this.isUpdateUser) {
         this.isUpdateUser = false;
       }
-      this._UsersService.snackBar('FLPS User Deleted Successfully');
+      this._UsersService.snackBar('Admin User Deleted Successfully');
       this._changeDetectorRef.markForCheck();
     }, err => {
       this._UsersService.snackBar('Something went wrong');
     });
   }
-  addBlanketPercentage() {
-    if (this.ngBlanketPercentage == '') {
-      this._UsersService.snackBar('Please enter percentage value.');
-      return;
+  getParentPermissions(page) {
+    let params = {
+      parent_permission_groups: true,
+      page: page,
+      size: 20
     }
-    let payload: applyBlanketCustomerPercentage = {
-      user_id: this.updateUserData.pk_userID,
-      percentage: Number(this.ngBlanketPercentage),
-      apply_blanket_percentage: true
+    let permission = [];
+    if (this.parentPermissionData) {
+      permission = this.parentPermissionData;
     }
-    this.isBlanketLoader = true;
-    this._UsersService.UpdateAdminsData(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
-      this._UsersService.snackBar(res["message"]);
-      this.isBlanketLoader = false;
+    this._UsersService.getAdminsData(params).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+      this.parentPermissionData = permission.concat(res["data"]);
+      this.parentTotalPermissions = res["totalRecords"];
+      this.isLoadingPermission = false;
+      this.permissionLoader = false;
       this._changeDetectorRef.markForCheck();
     }, err => {
-      this.isBlanketLoader = false;
+      this.isLoadingPermission = false;
+      this.permissionLoader = false;
       this._changeDetectorRef.markForCheck();
     });
   }
-  // Get Orders Associated
-  getUserOrders(page) {
-    let payload = {
-      view_user_orders: true,
-      user_id: this.updateUserData.pk_userID,
-      page: page,
-      size: 20
-    };
-    this.ordersLoader = true;
-    this._UsersService.getAdminsData(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
-      this.ordersDataSource = res["data"];
-      this.totalOrders = res["totalRecords"];
-      if (this.tempOrdersDataSource.length == 0) {
-        this.tempOrdersDataSource = res["data"];
-        this.tempTotalOrders = res["totalRecords"];
-      }
-      this.ordersLoader = false;
-      this._changeDetectorRef.markForCheck();
-    }, err => {
-      this.ordersLoader = false;
-      this._changeDetectorRef.markForCheck();
-    })
-  }
-  getNextOrderdData(event) {
-    const { previousPageIndex, pageIndex } = event;
-    if (pageIndex > previousPageIndex) {
-      this.ordersPage++;
-    } else {
-      this.ordersPage--;
-    };
-    this.getUserOrders(this.ordersPage);
+  getNextPermissionParentData() {
+    this.isLoadingPermission = true;
+    this.parentPermissionPage++;
+    this.getParentPermissions(this.parentPermissionPage);
   };
 
+  getChildPermissions(item) {
+    let params = {
+      child_permission_groups: true,
+      parent_id: item.pk_sectionID,
+      page: item.childPage,
+      size: 20
+    }
+    let permission = item.childPermission;
+    this._UsersService.getAdminsData(params).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+      item.childPermission = permission.concat(res["data"]);
+      item.childTotal = res["totalRecords"];
+      item.childLoader = false;
+      this._changeDetectorRef.markForCheck();
+    }, err => {
+      item.childLoader = false;
+      this._changeDetectorRef.markForCheck();
+    });
+  }
+  loadMoreChildPermissions(item) {
+    if (!item.childPermission) {
+      item.childPermission = [];
+      item.childPage = 1;
+      item.childTotal = 0;
+      item.childLoader = true;
+    } else {
+      item.childPage++;
+      item.childLoader = true;
+    }
+    this.getChildPermissions(item);
+    console.log(item.pk_sectionID);
+  }
   /**
      * On destroy
      */

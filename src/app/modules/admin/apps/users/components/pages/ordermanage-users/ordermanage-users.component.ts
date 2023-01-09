@@ -4,7 +4,7 @@ import { MatPaginator } from '@angular/material/paginator';
 import { Subject } from 'rxjs';
 import { finalize, takeUntil } from 'rxjs/operators';
 import { UsersService } from '../../users.service';
-import { applyBlanketCustomerPercentage, newFLPSUser, newOrderManageUser, removeFLPSUser, RemoveUser, updateFLPSUser, updateOrderManageUser } from '../../users.types';
+import { applyBlanketCustomerPercentage, newFLPSUser, newOrderManageUser, removeFLPSUser, RemoveUser, updateFLPSUser, updateOrderManageUser, updateOrderManageUserStores } from '../../users.types';
 @Component({
   selector: 'app-ordermanage-users',
   templateUrl: './ordermanage-users.component.html',
@@ -42,6 +42,7 @@ export class OrderManageUsersComponent implements OnInit, OnDestroy {
   storePage = 1;
   storeLoader: boolean = false;
   totalStores = 0;
+  updateStoreLoader: boolean;
   constructor(
     private _changeDetectorRef: ChangeDetectorRef,
     private _UsersService: UsersService
@@ -246,11 +247,13 @@ export class OrderManageUsersComponent implements OnInit, OnDestroy {
     }
     this._UsersService.getStoresData(params).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
       res["data"].forEach(element => {
-        let StoreList = ',' + this.updateUserData.storeList;
-        if (StoreList.includes(',' + element.pk_storeID)) {
-          element.checked = true;
-        } else {
-          element.checked = false;
+        if (this.updateUserData.storeList) {
+          let StoreList = ',' + this.updateUserData.storeList;
+          if (StoreList.includes(',' + element.pk_storeID)) {
+            element.checked = true;
+          } else {
+            element.checked = false;
+          }
         }
         this.allStores.push(element);
       });
@@ -266,6 +269,42 @@ export class OrderManageUsersComponent implements OnInit, OnDestroy {
     this.storeLoader = true;
     this.getAdminStores(this.storePage);
   };
+  updateStoresList() {
+    let storesList = this.updateUserData.storeList.split(',').map(function (item) {
+      return parseInt(item);
+    });
+    this.allStores.forEach(element => {
+      if (element.checked) {
+        const index = storesList.findIndex(item => Number(item) == element.pk_storeID);
+        if (index < 0) {
+          storesList.push(element.pk_storeID);
+        }
+      } else if (!element.checked) {
+        const index = storesList.findIndex(item => Number(item) == element.pk_storeID);
+        if (index > -1) {
+          storesList.splice(index, 1);
+        }
+      }
+    });
+    let params: updateOrderManageUserStores = {
+      user_id: this.updateUserData.pk_userID,
+      stores: storesList,
+      update_ordermanage_user_stores: true
+    };
+    this.updateStoreLoader = true;
+    this._UsersService.UpdateAdminsData(params).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+      if (res["success"]) {
+        this.updateUserData.storeID = storesList.toString();
+      }
+      this._UsersService.snackBar(res["message"]);
+      this.updateStoreLoader = false;
+      this._changeDetectorRef.markForCheck();
+    }, err => {
+      this._UsersService.snackBar('Something went wrong');
+      this.updateStoreLoader = false;
+      this._changeDetectorRef.markForCheck();
+    });
+  }
   /**
      * On destroy
      */

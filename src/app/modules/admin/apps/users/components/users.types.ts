@@ -192,3 +192,43 @@ export interface updateRapidBuildUserStores {
     stores: number[];
     update_rapidbuild_user_stores: boolean;
 };
+
+export interface updateSmartArtUsers {
+    user_id: number;
+    stores: number[];
+    update_smartart_user_stores: boolean;
+};
+
+// Add Admin User
+export interface AddAdminUser {
+    userName: string;
+    password: string;
+    firstName: string;
+    lastName: string;
+    email: string;
+    ip_address: string;
+    supplier_id: number;
+    blnMasterAccount: boolean;
+    blnSupplier: boolean;
+    blnManager: boolean;
+    add_admin_user: boolean;
+};
+export interface UpdateAdminUser {
+    userName: string;
+    password: string;
+    firstName: string;
+    lastName: string;
+    email: string;
+    blnActive: boolean;
+    blnMaster: boolean;
+    blnManager: boolean;
+    user_id: number;
+    update_admin_user: boolean;
+};
+
+// Update Stores Order
+export interface updateOrderManageUserStores {
+    user_id: number;
+    stores: number[];
+    update_ordermanage_user_stores: boolean;
+};

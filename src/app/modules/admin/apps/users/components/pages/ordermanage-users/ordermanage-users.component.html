@@ -208,11 +208,11 @@
                 <div class="shadow bg-card p-6">
                     <div class="flex justify-between align-items-center">
                         <h2 class="text-lg font-semibold">Active Stores</h2>
-                        <button [disabled]="isUpdateUserLoader" class="min-w-40" mat-stroked-button
-                            [matTooltip]="'Update Stores'" (click)="updateUser()">
-                            <mat-icon svgIcon="heroicons_solid:pencil" *ngIf="!isUpdateUserLoader"></mat-icon>
-                            <span class="ml-2" *ngIf="!isUpdateUserLoader"> Update Stores </span>
-                            <mat-progress-spinner *ngIf="isUpdateUserLoader" [diameter]="24" [mode]="'indeterminate'">
+                        <button [disabled]="updateStoreLoader" class="min-w-40" mat-stroked-button
+                            [matTooltip]="'Update Stores'" (click)="updateStoresList()">
+                            <mat-icon svgIcon="heroicons_solid:pencil" *ngIf="!updateStoreLoader"></mat-icon>
+                            <span class="ml-2" *ngIf="!updateStoreLoader"> Update Stores </span>
+                            <mat-progress-spinner *ngIf="updateStoreLoader" [diameter]="24" [mode]="'indeterminate'">
                             </mat-progress-spinner>
                         </button>
                     </div>
