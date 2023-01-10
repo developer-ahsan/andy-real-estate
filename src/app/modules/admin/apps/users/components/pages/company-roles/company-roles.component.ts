@@ -5,7 +5,7 @@ import { items } from 'app/mock-api/apps/file-manager/data';
 import { Subject } from 'rxjs';
 import { finalize, takeUntil } from 'rxjs/operators';
 import { UsersService } from '../../users.service';
-import { AddRole, AddRoleEmployee, applyBlanketCustomerPercentage, newFLPSUser, RemoveEmployeeRole, removeFLPSUser, RemoveRole, updateFLPSUser, updateRole } from '../../users.types';
+import { AddRole, AddRoleEmployee, addUserRoleProgram, applyBlanketCustomerPercentage, deleteUserRoleProgram, newFLPSUser, RemoveEmployeeRole, removeFLPSUser, RemoveRole, updateFLPSUser, updateRole } from '../../users.types';
 @Component({
   selector: 'app-company-roles',
   templateUrl: './company-roles.component.html',
@@ -90,6 +90,11 @@ export class CompanyRolesComponent implements OnInit, OnDestroy {
   isShowPrograms: boolean = false;
   programsLoader: boolean = false;
 
+  allProgramUsers: any;
+  totalProgramUser = 0;
+  programUserPage = 1;
+  isProgramUserLoader: boolean = false;
+
   mainScreenProgram: string = 'Current Programs';
 
   constructor(
@@ -139,7 +144,6 @@ export class CompanyRolesComponent implements OnInit, OnDestroy {
         this.getAdminEmployeeRoles(1, 'get');
       }
     } else if (value == 'Add Users') {
-      this.roleUserPage = 1;
       if (!this.allRoleUsers) {
         this.isRoleUserLoader = true;
         this.getRoleUsers(1);
@@ -261,6 +265,7 @@ export class CompanyRolesComponent implements OnInit, OnDestroy {
       this.employeeRoleDataSource = [];
       this.tempemployeeRoleDataSource = [];
       this.employeeRolePage = 1;
+      this.roleUserPage = 1;
       this.updateUserData = data;
       this.calledUserScreen('Current Users')
     }
@@ -376,19 +381,26 @@ export class CompanyRolesComponent implements OnInit, OnDestroy {
     if (value == 'Current Programs') {
       this.currentPrograms = this.tempCurrentPrograms;
       this.programsPage = 1;
-      if (!this.currentPrograms) {
+      if (this.currentPrograms.length == 0) {
         this.programsLoader = true;
         this.getEmployeePrograms(1, 'get');
+      }
+    } else if (value == 'Add Programs') {
+      if (!this.allProgramUsers) {
+        this.isProgramUserLoader = true;
+        this.getUsersPrograms(1);
       }
     }
   }
   showPrograms(item) {
     this.employeeData = item;
-    this.tempCurrentPrograms = null;
-    this.currentPrograms = null;
+    this.tempCurrentPrograms = [];
+    this.currentPrograms = [];
     this.isShowPrograms = true;
     this.programsPage = 1;
+    this.programUserPage = 1;
     this.programsLoader = true;
+    this.allProgramUsers = null;
     this._changeDetectorRef.markForCheck();
     this.getEmployeePrograms(1, 'get');
   }
@@ -434,7 +446,82 @@ export class CompanyRolesComponent implements OnInit, OnDestroy {
     };
     this.getEmployeePrograms(this.programsPage, 'get');
   };
+  deleteEmployeeProgram(item) {
+    item.delLoader = true;
+    this._changeDetectorRef.markForCheck();
+    let payload: deleteUserRoleProgram = {
+      admin_user_id: this.employeeData.pk_userID,
+      role_id: this.updateUserData.pk_roleID,
+      store_id: item.pk_storeID,
+      delete_user_role_program: true
+    }
+    this._UsersService.UpdateAdminsData(payload).pipe(takeUntil(this._unsubscribeAll), finalize(() => {
+      item.delLoader = false
+      this._changeDetectorRef.markForCheck();
+    })).subscribe(res => {
+      this.currentPrograms = this.currentPrograms.filter(elem => elem.pk_storeID != item.pk_storeID);
+      this.totalPrograms--;
+      this.tempCurrentPrograms = this.tempCurrentPrograms.filter(elem => elem.pk_storeID != item.pk_storeID);
+      this.tempTotalPrograms--;
+      this.allProgramUsers = null;
+      this._UsersService.snackBar('Program Deleted Successfully');
+      this._changeDetectorRef.markForCheck();
+    }, err => {
+      this._UsersService.snackBar('Something went wrong');
+    });
+  }
 
+  getUsersPrograms(page) {
+    let params = {
+      all_programs: true,
+      role_id: this.updateUserData.pk_roleID,
+      user_id: this.employeeData.pk_userID,
+      page: page,
+      size: 10
+    }
+    let users = [];
+    if (this.allProgramUsers) {
+      users = this.allProgramUsers;
+    }
+    this._UsersService.getAdminsData(params).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+      this.allProgramUsers = users.concat(res["data"]);
+      this.totalProgramUser = res["totalRecords"];
+      this.isProgramUserLoader = false;
+      this._changeDetectorRef.markForCheck();
+    }, err => {
+      this.isProgramUserLoader = false;
+      this._changeDetectorRef.markForCheck();
+    });
+  }
+  getNextUserProgramData() {
+    this.isProgramUserLoader = true;
+    this.programUserPage++;
+    this.getUsersPrograms(this.programUserPage);
+  };
+
+  addNewProgramEmployee(item) {
+    let payload: addUserRoleProgram = {
+      admin_user_id: this.employeeData.pk_userID,
+      role_id: this.updateUserData.pk_roleID,
+      store_id: item.pk_storeID,
+      add_user_role_program: true
+    }
+    item.isAddLoader = true;
+    this._UsersService.AddAdminsData(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+      if (res["success"]) {
+        this.allProgramUsers = this.allProgramUsers.filter(elem => elem.pk_storeID != item.pk_storeID);
+        this.programsPage = 1;
+        this.getEmployeePrograms(1, 'add');
+      } else {
+        this._UsersService.snackBar(res["message"]);
+        item.isAddLoader = false;
+        this._changeDetectorRef.markForCheck();
+      }
+    }, err => {
+      item.isAddLoader = false;
+      this._changeDetectorRef.markForCheck();
+    });
+  }
   /**
      * On destroy
      */

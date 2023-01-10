@@ -232,3 +232,17 @@ export interface updateOrderManageUserStores {
     stores: number[];
     update_ordermanage_user_stores: boolean;
 };
+
+export interface addUserRoleProgram {
+    admin_user_id: number;
+    role_id: number;
+    store_id: number;
+    add_user_role_program: boolean;
+};
+
+export interface deleteUserRoleProgram {
+    role_id: number;
+    admin_user_id: number;
+    store_id: number;
+    delete_user_role_program: boolean;
+};

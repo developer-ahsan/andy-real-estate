@@ -395,7 +395,7 @@
                 [ngClass]="{'text-gray-900': mainScreenProgram=='Add Programs'}"
                 (click)="calledProgramScreen('Add Programs')">Add Programs</span>
         </div>
-        <div class="mt-5">
+        <div class="mt-5" *ngIf="mainScreenProgram == 'Current Programs'">
             <div class="px-5" *ngIf="programsLoader">
                 <ngx-skeleton-loader count="8" appearance="line" animation="pulse" [theme]="{ 
                         'background-color': '#dedede'
@@ -418,7 +418,7 @@
                         </th>
                         <td mat-cell *matCellDef="let element" class="text-center">
                             <div class="flex justify-center">
-                                <mat-icon (click)="deleteEmployeeUser(element)" svgIcon="heroicons_outline:trash"
+                                <mat-icon (click)="deleteEmployeeProgram(element)" svgIcon="heroicons_outline:trash"
                                     *ngIf="!element.delLoader" matTooltip="Delete    User"></mat-icon>
                                 <mat-progress-spinner *ngIf="element.delLoader" [diameter]="24"
                                     [mode]="'indeterminate'">
@@ -442,6 +442,38 @@
                     There are currently no programs assigned to this user.
                 </div>
             </ng-template>
+        </div>
+        <div class="mt-5" *ngIf="mainScreenProgram == 'Add Programs'">
+            <div class="shadow bg-card p-6">
+                <div class="row">
+                    <div class="col-12 text-lg font-semibold mb-3">Add Programs</div>
+                    <div class="col-6 flex justify-between align-items-center" *ngFor="let item of allProgramUsers">
+                        <span class="text-md">{{item.storeName}}</span>
+                        <span class="flex align-items-center cursor-pointer hover:text-gray-900 text-md"
+                            mat-stroked-button (click)="addNewProgramEmployee(item)" [disabled]="item.isAddLoader"
+                            matTooltip="Add User">
+                            <mat-icon class="cursor-pointer" svgIcon="heroicons_outline:plus"
+                                *ngIf="!item.isAddLoader"></mat-icon>
+                            <span *ngIf="!item.isAddLoader">Add</span>
+                            <mat-progress-spinner *ngIf="item.isAddLoader" [diameter]="24" [mode]="'indeterminate'">
+                            </mat-progress-spinner>
+                        </span>
+                    </div>
+                    <div class="col-12" *ngIf="isProgramUserLoader && !allProgramUsers">
+                        <ngx-skeleton-loader count="4" appearance="line" animation="pulse" [theme]="{ 
+                            'background-color': '#dedede'
+                          }">
+                        </ngx-skeleton-loader>
+                    </div>
+                    <div class="col-12 flex justify-end" *ngIf="allProgramUsers">
+                        <span class="text-gray-600 hover:text-gray-900 cursor-pointer"
+                            *ngIf="totalProgramUser > allProgramUsers.length && !isProgramUserLoader"
+                            (click)="getNextUserProgramData()">Load More</span>
+                        <mat-progress-spinner *ngIf="isProgramUserLoader" [diameter]="24" [mode]="'indeterminate'">
+                        </mat-progress-spinner>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 </div>
