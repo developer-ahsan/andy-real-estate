@@ -541,7 +541,7 @@ export class AdminUsersComponent implements OnInit, OnDestroy {
       child_permission_groups: true,
       parent_id: item.pk_sectionID,
       page: item.childPage,
-      size: 20
+      size: 10
     }
     let permission = item.childPermission;
     this._UsersService.getAdminsData(params).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
@@ -565,7 +565,6 @@ export class AdminUsersComponent implements OnInit, OnDestroy {
       item.childLoader = true;
     }
     this.getChildPermissions(item);
-    console.log(item.pk_sectionID);
   }
   /**
      * On destroy

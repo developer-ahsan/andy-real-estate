@@ -3548,6 +3548,16 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
         }
         return true;
     }
+    isArraySortedDesc(arr) {
+        for (let i = 0; i < arr.length; i++) {
+            if (arr[i + 1] && (arr[i + 1] < arr[i])) {
+                continue;
+            } else if (arr[i + 1] && (arr[i + 1] > arr[i])) {
+                return false;
+            }
+        }
+        return true;
+    }
 
     checkIfArrayIsUnique(myArray) {
         return (new Set(myArray)).size !== myArray.length;
@@ -3567,7 +3577,7 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
 
 
         const quantity_sort = this.isArraySorted(realQuantityList);
-        const cost_sort = this.isArraySorted(realStandardCostList);
+        const cost_sort = this.isArraySortedDesc(realStandardCostList);
         const quantity_unique = this.checkIfArrayIsUnique(realQuantityList);
         if (!quantity_sort) {
             this._snackBar.open("Quantity values must be entered in ascending order", '', {
@@ -3586,7 +3596,7 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
             return;
         }
         if (!cost_sort) {
-            this._snackBar.open("Costs values must be entered in ascending order", '', {
+            this._snackBar.open("Costs values must be entered in descending order", '', {
                 horizontalPosition: 'center',
                 verticalPosition: 'bottom',
                 duration: 3500

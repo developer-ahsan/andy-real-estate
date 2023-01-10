@@ -152,7 +152,7 @@ export class SizesComponent implements OnInit, OnDestroy {
   getColors(): void {
     const { pk_productID } = this.selectedProduct;
 
-    this._inventoryService.getColors(pk_productID)
+    this._inventoryService.getColors(pk_productID, 1)
       .pipe(takeUntil(this._unsubscribeAll))
       .subscribe((colors) => {
         if (colors["data"].length > 0 && this.arrayToUpdate.length > 0) {

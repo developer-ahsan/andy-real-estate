@@ -39,6 +39,8 @@ export class ColorComponent implements OnInit, OnDestroy {
   colors: Colors[] = [];
   displayedColumns: string[] = ['select', 'color', 'run', 'hex', 'upload'];
   dataSource: any = [];
+  totalColors = 0;
+  colorsPage = 1;
   selection = new SelectionModel<any>(true, []);
 
   selectedColor: any = {};
@@ -153,7 +155,7 @@ export class ColorComponent implements OnInit, OnDestroy {
       limitSelection: 1
     };
 
-    this.getColors();
+    this.getColors(1);
 
     // Color select autocomplete field
 
@@ -233,20 +235,19 @@ export class ColorComponent implements OnInit, OnDestroy {
     }
   };
 
-  getColors(): void {
+  getColors(page): void {
     const { pk_productID } = this.selectedProduct;
 
-    this._inventoryService.getColors(pk_productID)
+    this._inventoryService.getColors(pk_productID, page)
       .pipe(takeUntil(this._unsubscribeAll))
       .subscribe((colors) => {
         for (const color of colors["data"]) {
           const { fk_colorID } = color;
           color.media = `${environment.productMedia}/Colors/${pk_productID}/${fk_colorID}.jpg?${Math.random()}`;
-          // let image = `${environment.productMedia}/Colors/${pk_productID}/${fk_colorID}.jpg`;
-          // this.checkIfImageExists(image, color);
         };
 
         this.dataSource = colors["data"];
+        this.totalColors = colors['totalRecords'];
 
         setTimeout(() => {
           this.isLoadingChange.emit(false);
@@ -255,11 +256,20 @@ export class ColorComponent implements OnInit, OnDestroy {
         // Mark for check
         this._changeDetectorRef.markForCheck();
       }, err => {
-        this.getColors();
+        this.getColors(1);
 
         // Mark for check
         this._changeDetectorRef.markForCheck();
       });
+  };
+  getNextColors(event) {
+    const { previousPageIndex, pageIndex } = event;
+    if (pageIndex > previousPageIndex) {
+      this.colorsPage++;
+    } else {
+      this.colorsPage--;
+    };
+    this.getColors(this.colorsPage);
   };
 
   uploadImage(event): void {
@@ -493,9 +503,6 @@ export class ColorComponent implements OnInit, OnDestroy {
 
     const { pk_colorID } = this.selectedColor;
 
-
-
-
     if (!pk_colorID && this.customColorsList.length == 0) {
       return this._snackBar.open("Please select color", '', {
         horizontalPosition: 'center',
@@ -550,7 +557,7 @@ export class ColorComponent implements OnInit, OnDestroy {
         // let val: any = document.getElementById('image')
         // val.value = null;
         // this.imageValue = null;
-        this._inventoryService.getColors(pk_productID)
+        this._inventoryService.getColors(pk_productID, 1)
           .pipe(takeUntil(this._unsubscribeAll))
           .subscribe((colors) => {
             this.colorName.setValue(null);
@@ -563,6 +570,8 @@ export class ColorComponent implements OnInit, OnDestroy {
             };
 
             this.dataSource = colors["data"];
+            this.totalColors = colors['totalRecords'];
+
             this.colorForm.patchValue({
               colors: [''],
               run: ['0.00'],

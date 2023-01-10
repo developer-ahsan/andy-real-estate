@@ -266,6 +266,10 @@
                         (click)="selection.select(row)">
                     </tr>
                 </table>
+                <mat-paginator #paginator class="border-b sm:border-t sm:border-b-0 z-10 bg-gray-50 dark:bg-transparent"
+                    [length]="totalColors" [pageIndex]="0" [pageSize]="10" (page)="getNextColors($event)"
+                    [hidePageSize]="true">
+                </mat-paginator>
             </div>
             <ng-template #other_content>
                 <div class="text-secondary font-semibold p-5">

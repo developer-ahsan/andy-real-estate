@@ -1,57 +1,67 @@
 export const navigations = [
     {
-        title: 'Products',
-        icon: 'mat_outline:edit_note',
+        title: 'Information',
+        icon: 'mat_outline:info',
         children: [
             {
-                title: 'Product Colors',
-                icon: 'mat_outline:color_lens',
+                title: 'Vendor Information',
+                icon: 'mat_outline:info',
+                route: 'information'
             },
             {
-                title: 'Product Sizes',
-                icon: 'heroicons_outline:academic-cap',
+                title: 'Top Order Products',
+                icon: 'mat_outline:bar_chart',
+                route: 'top-order-products'
             },
             {
-                title: 'Pack/Accessories',
-                icon: 'feather:package',
-            },
-            {
-                title: 'Core Products',
-                icon: 'mat_outline:production_quantity_limits',
-            },
-            {
-                title: 'Product Migration',
-                icon: 'heroicons_outline:duplicate',
-            },
-            {
-                title: 'Promo Codes',
-                icon: 'mat_outline:code',
+                title: 'Vendor Settings',
+                icon: 'mat_outline:settings',
+                route: 'vendor-settings'
             }
         ]
     },
     {
-        title: 'Imprints',
-        icon: 'mat_outline:checklist',
+        title: 'Products',
+        icon: 'heroicons_outline:cube',
         children: [
             {
-                title: 'Imprint Colors',
-                icon: 'mat_outline:color_lens',
+                title: 'Products',
+                icon: 'mat_outline:production_quantity_limits',
+                route: 'vendor-products'
             },
             {
-                title: 'Imprint Methods',
+                title: 'Export Product List',
+                icon: 'mat_outline:import_export',
+            },
+            {
+                title: 'Products/Store',
+                icon: 'mat_outline:store'
+            },
+            {
+                title: 'Core Products',
                 icon: 'heroicons_outline:document-report',
+                route: 'vendor-core-products'
             },
             {
-                title: 'Imprint Locations',
-                icon: 'mat_outline:edit_location'
+                title: 'Products/Updates',
+                icon: 'mat_outline:system_update_alt',
+                route: 'vendor-products-summary'
             },
             {
-                title: 'Imprint Charges',
-                icon: 'mat_outline:attach_money',
+                title: 'F.O.B Locations',
+                icon: 'mat_outline:edit_location_alt',
             },
             {
-                title: 'Standard Imprints',
-                icon: 'mat_outline:check',
+                title: 'Blanket F.O.B',
+                icon: 'mat_outline:location_on',
+            },
+            {
+                title: 'Sizing charts',
+                icon: 'mat_outline:format_size',
+            },
+            {
+                title: 'Product Videos',
+                icon: 'mat_outline:ondemand_video',
             }
         ]
     },
@@ -60,62 +70,66 @@ export const navigations = [
         icon: 'heroicons_outline:cube',
         children: [
             {
-                title: 'P.O. Archives',
+                title: 'Co-Ops',
                 icon: 'heroicons_outline:archive',
             },
             {
-                title: 'OH County Sales Tax',
+                title: 'Blanket Coop',
                 icon: 'heroicons_outline:receipt-tax',
+            },
+            {
+                title: 'Vendor Comments',
+                icon: 'mat_outline:comment',
+            },
+            {
+                title: 'Vendor Orders',
+                icon: 'mat_outline:reorder',
+            },
+            {
+                title: 'Supplier Application',
+                icon: 'mat_outline:settings_applications',
             }
         ]
     },
     {
-        title: 'Stores',
+        title: 'Imprints',
         icon: 'mat_outline:store',
         children: [
             {
-                title: 'Active Stores',
-                icon: 'mat_outline:online_prediction',
+                title: 'Imprint Colors',
+                icon: 'mat_outline:color_lens',
             },
             {
-                title: 'Default Blurbs',
-                icon: 'mat_outline:reviews',
+                title: 'Blanket Collections',
+                icon: 'heroicons_outline:collection',
             },
             {
-                title: 'Default Support Team',
-                icon: 'mat_outline:group',
+                title: 'Blanket Run Charges',
+                icon: 'mat_outline:money',
+            },
+            {
+                title: 'Blanket Setup Charges',
+                icon: 'heroicons_outline:currency-dollar',
             }
         ]
     },
     {
-        title: 'Settings',
+        title: 'Vendors',
         icon: 'mat_outline:settings',
         children: [
             {
-                title: 'Diagnostics',
-                icon: 'mat_outline:flag',
+                title: 'Vendor Users',
+                icon: 'heroicons_outline:user-group',
             },
             {
-                title: 'Admin Tools',
-                icon: 'mat_outline:admin_panel_settings',
-            },
-            {
-                title: 'Admin Structure',
-                icon: 'mat_outline:construction',
-            },
-            {
-                title: 'Permission Groups',
-                icon: 'mat_outline:group',
-            },
-            {
-                title: 'Upload Images',
-                icon: 'mat_outline:image',
+                title: 'Vendor Website',
+                icon: 'mat_outline:web',
             }
         ]
     },
     {
-        title: 'Simulator',
-        icon: 'heroicons_outline:link',
+        title: 'Vendor Status',
+        icon: 'mat_outline:online_prediction',
         children: []
     }
 ];

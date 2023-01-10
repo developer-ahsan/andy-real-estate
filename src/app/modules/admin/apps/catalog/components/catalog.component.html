@@ -1,0 +1,32 @@
+<div class="absolute inset-0 flex flex-col min-w-0 overflow-y-auto bg-light dark:bg-transparent">
+    <!-- Header -->
+    <div class="bg-white relative bg-light  sm:items-center sm:justify-between py-2 px-6 md:px-8 border-b">
+        <!-- Loader -->
+        <div class="absolute inset-x-0 bottom-1" *ngIf="isLoading">
+            <mat-progress-bar [mode]="'indeterminate'"></mat-progress-bar>
+        </div>
+
+        <div class="mt-2 py-3 flex justify-between align-items-center">
+            <h2 class="text-3xl md:text-4xl font-extrabold tracking-tight leading-7 sm:leading-10 truncate">
+                Product Catalog
+            </h2>
+            <mat-icon svgIcon="heroicons_outline:filter" matTooltip="Advanced Filter" class="cursor-pointer"
+                (click)="toggleDrawer()"></mat-icon>
+        </div>
+
+    </div>
+    <mat-drawer-container class="example-container w-full bg-white" [hasBackdrop]="false">
+        <mat-drawer #drawer [mode]="'over'" position="end" style="width: 500px !important; ">
+
+        </mat-drawer>
+        <mat-drawer-content style="height: 100vh;">
+            <div class="flex flex-col flex-auto">
+                <!-- Main -->
+                <div class="flex flex-auto">
+
+
+                </div>
+            </div>
+        </mat-drawer-content>
+    </mat-drawer-container>
+</div>

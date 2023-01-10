@@ -1,0 +1,23 @@
+<div class="w-full">
+    <div class="px-5" *ngIf="isLoading">
+        <ngx-skeleton-loader count="8" appearance="line" animation="pulse">
+        </ngx-skeleton-loader>
+    </div>
+    <div class="px-8 pb-5">
+        <mat-label><b>Free shipping:</b><button [matTooltip]="'Determines whether this vendor offers free shipping.'">
+                <i class="fa fa-info-circle"></i>
+            </button></mat-label>
+        <mat-form-field class="w-full">
+            <mat-select matInput>
+                <mat-option [value]="true">Yes</mat-option>
+                <mat-option [value]="false">No</mat-option>
+            </mat-select>
+        </mat-form-field>
+        <div class="text-right">
+            <button class="min-w-40" mat-stroked-button>
+                <mat-icon svgIcon="heroicons_outline:pencil-alt"></mat-icon>
+                <span class="ml-2">Update</span>
+            </button>
+        </div>
+    </div>
+</div>

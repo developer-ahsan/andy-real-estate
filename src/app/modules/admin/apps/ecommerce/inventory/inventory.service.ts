@@ -243,11 +243,13 @@ export class InventoryService {
         });
     };
 
-    getColors(productId): Observable<any[]> {
+    getColors(productId, page): Observable<any[]> {
         return this._httpClient.get<any[]>(environment.products, {
             params: {
                 color: true,
-                product_id: productId
+                product_id: productId,
+                page: page,
+                size: 10
             }
         });
     };

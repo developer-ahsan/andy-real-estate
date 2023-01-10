@@ -1,12 +1,13 @@
 import { Component, Input, OnInit, ChangeDetectorRef, OnDestroy, ViewChild, EventEmitter, Output, ElementRef, ChangeDetectionStrategy, ViewEncapsulation } from '@angular/core';
 import { FormControl, FormGroup } from '@angular/forms';
 import { MatPaginator } from '@angular/material/paginator';
-import { Router } from '@angular/router';
+import { Title } from '@angular/platform-browser';
+import { ActivatedRoute, NavigationEnd, NavigationStart, Router, RoutesRecognized } from '@angular/router';
 import { FuseMediaWatcherService } from '@fuse/services/media-watcher';
 import { newFLPSUser, updateFLPSUser, removeFLPSUser, applyBlanketCustomerPercentage } from 'app/modules/admin/apps/flps/components/flps.types';
 import { UsersService } from 'app/modules/admin/apps/users/components/users.service';
 import { Subject } from 'rxjs';
-import { finalize, takeUntil } from 'rxjs/operators';
+import { filter, finalize, map, takeUntil } from 'rxjs/operators';
 import { SystemService } from '../vendors.service';
 @Component({
   selector: 'app-details-vendors',
@@ -19,7 +20,8 @@ export class VendorsDetailsComponent implements OnInit, OnDestroy {
   isLoading: boolean = false;
   private _unsubscribeAll: Subject<any> = new Subject<any>();
   routes = [];
-  selectedScreeen = 'Product Colors';
+  selectedScreeen = '';
+  selectedRoute = '';
 
   // Sidebar stuff
   drawerMode: 'over' | 'side' = 'side';
@@ -34,6 +36,8 @@ export class VendorsDetailsComponent implements OnInit, OnDestroy {
     private _changeDetectorRef: ChangeDetectorRef,
     private _systemService: SystemService,
     private _router: Router,
+    private route: ActivatedRoute,
+    private readonly titleService: Title,
     private _fuseMediaWatcherService: FuseMediaWatcherService,
   ) {
   }
@@ -47,6 +51,8 @@ export class VendorsDetailsComponent implements OnInit, OnDestroy {
    */
 
   ngOnInit(): void {
+    this.selectedScreeen = this.route.children[0].snapshot.data.title;
+    this.selectedRoute = this.route.children[0].snapshot.data.url;
     this.routes = this._systemService.navigationLabels;
     this.isLoading = false;
     this.sideDrawer();
@@ -77,11 +83,11 @@ export class VendorsDetailsComponent implements OnInit, OnDestroy {
   // -----------------------------------------------------------------------------------------------------
   // @ Public methods
   // -----------------------------------------------------------------------------------------------------
-  clicked(title) {
-    if (title != this.selectedScreeen) {
-      this.selectedScreeen = title;
-      this.isLoading = true;
+  clicked(item) {
+    if (item.route != this.selectedRoute) {
+      this.selectedScreeen = item.title;
     }
+    this._router.navigate([item.route], { relativeTo: this.route })
     this.topScroll.nativeElement.scrollIntoView({ behavior: 'smooth' });
   }
   // Drawer Open Close

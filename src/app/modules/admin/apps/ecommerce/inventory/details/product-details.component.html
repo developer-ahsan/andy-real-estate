@@ -48,7 +48,8 @@
             <ng-template #myCard>
                 <div class="bg-card shadow p-4">
                     <div class="flex mr-7" style="justify-content: space-between;">
-                        <div class="text-2xl font-bold">{{selectedProduct.productName}}</div>
+                        <div class="text-2xl font-bold">{{selectedProduct.productNumber}}:
+                            {{selectedProduct.productName}}</div>
                         <div class="text-2xl font-bold cursor-pointer" (click)="changeProductStatus()"
                             [ngStyle]="selectedProduct?.blnActive ? {'color':'#0ecd0e'} : {'color': '#ff0000'}">
                             {{selectedProduct?.blnActive ? 'Active' : 'Inactive' }}
@@ -88,7 +89,8 @@
                         </div>
                         <div class="col-lg-4 col-md-6 col-12">
                             <b class="text-secondary text-sm">Last Updated</b>
-                            <p class="float-right text-sm">{{last_updated}}</p>
+                            <p class="float-right text-sm">{{(selectedProduct.lastUpdatedDate | date: 'MM/dd/yyyy') ||
+                                not_available }}</p>
                         </div>
                         <div class="col-lg-4 col-md-6 col-12">
                             <b class="text-secondary text-sm">Last Ordered By</b>

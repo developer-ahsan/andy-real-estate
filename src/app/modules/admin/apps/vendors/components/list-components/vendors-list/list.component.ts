@@ -189,7 +189,7 @@ export class VendorsListComponent implements OnInit, OnDestroy {
   }
   ViewDetails(item) {
     console.log(item);
-    this._router.navigate([item.pk_companyID], { relativeTo: this.route });
+    this._router.navigate([item.pk_companyID + '/information'], { relativeTo: this.route });
   }
   getFlpsUsers(page, type) {
     let params = {
