@@ -46,6 +46,7 @@ import { SmartArtUsersComponent } from './components/pages/smartart-users/smarta
 import { OrderManageUsersComponent } from './components/pages/ordermanage-users/ordermanage-users.component';
 import { RapidBuildUsersComponent } from './components/pages/rapidbuild-users/rapidbuild-users.component';
 import { CompanyRolesComponent } from './components/pages/company-roles/company-roles.component';
+import { MatTreeModule } from '@angular/material/tree';
 
 @NgModule({
     declarations: [
@@ -97,7 +98,8 @@ import { CompanyRolesComponent } from './components/pages/company-roles/company-
         FuseAlertModule,
         MatDialogModule,
         MatDatepickerModule,
-        MatNativeDateModule
+        MatNativeDateModule,
+        MatTreeModule
     ],
 })
 export class UsersModule {
