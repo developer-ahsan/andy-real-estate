@@ -62,7 +62,9 @@ export class AdminUsersComponent implements OnInit, OnDestroy {
   permissionGroup = [];
   permissionGrpCtrl = new FormControl();
   selectedPermission: any;
+  permissionGroupLoader = false;
   permissionLoader = false;
+  ngSelectedGroup = 0;
 
   ipAddress = '';
 
@@ -230,35 +232,35 @@ export class AdminUsersComponent implements OnInit, OnDestroy {
   calledUserScreen(value) {
     this.mainScreenUser = value;
     if (this.mainScreenUser == 'Permissions') {
-      let params;
-      this.permissionGrpCtrl.setValue({ groupName: 'None', pk_companyID: null });
-      this.permissionGrpCtrl.valueChanges.pipe(
-        filter((res: any) => {
-          params = {
-            permission_groups: true,
-            keyword: res
-          }
-          return res !== null && res.length >= this.minLengthTerm
-        }),
-        distinctUntilChanged(),
-        debounceTime(500),
-        tap(() => {
-          this.permissionGroup = [];
-          this.permissionLoader = true;
-          this._changeDetectorRef.markForCheck();
-        }),
-        switchMap(value => this._UsersService.getAdminsData(params)
-          .pipe(
-            finalize(() => {
-              this.permissionLoader = false
-              this._changeDetectorRef.markForCheck();
-            }),
-          )
-        )
-      ).subscribe((data: any) => {
-        this.permissionGroup.push({ groupName: 'None', pk_groupID: null });
-        this.permissionGroup = this.permissionGroup.concat(data['data']);
-      });
+      // let params;
+      // this.permissionGrpCtrl.setValue({ groupName: 'None', pk_companyID: null });
+      // this.permissionGrpCtrl.valueChanges.pipe(
+      //   filter((res: any) => {
+      //     params = {
+      //       permission_groups: true,
+      //       keyword: res
+      //     }
+      //     return res !== null && res.length >= this.minLengthTerm
+      //   }),
+      //   distinctUntilChanged(),
+      //   debounceTime(500),
+      //   tap(() => {
+      //     this.permissionGroup = [];
+      //     this.permissionLoader = true;
+      //     this._changeDetectorRef.markForCheck();
+      //   }),
+      //   switchMap(value => this._UsersService.getAdminsData(params)
+      //     .pipe(
+      //       finalize(() => {
+      //         this.permissionLoader = false
+      //         this._changeDetectorRef.markForCheck();
+      //       }),
+      //     )
+      //   )
+      // ).subscribe((data: any) => {
+      //   this.permissionGroup.push({ groupName: 'None', pk_groupID: null });
+      //   this.permissionGroup = this.permissionGroup.concat(data['data']);
+      // });
       if (this.parentPermissionData.length == 0) {
         this.permissionLoader = true;
         this.getParentPermissions(1);
@@ -355,6 +357,10 @@ export class AdminUsersComponent implements OnInit, OnDestroy {
       this.mainScreenUser = 'Edit User';
       this.updateUserData = data;
       this.updateUserForm.patchValue(data);
+      if (this.permissionGroup.length == 0) {
+        this.permissionGroupLoader = true;
+        this.getPermissionGroups();
+      }
     }
 
   }
@@ -508,10 +514,25 @@ export class AdminUsersComponent implements OnInit, OnDestroy {
       this._UsersService.snackBar('Something went wrong');
     });
   }
+  getPermissionGroups() {
+    let params = {
+      permission_groups: true
+    }
+    this._UsersService.getAdminsData(params).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+      this.permissionGroup.push({ groupName: 'None', pk_groupID: 0 });
+      this.permissionGroup = this.permissionGroup.concat(res['data']);
+      this.permissionGroupLoader = false;
+      this._changeDetectorRef.markForCheck();
+    }, err => {
+      this.permissionGroupLoader = false;
+      this._changeDetectorRef.markForCheck();
+    });
+  }
   getParentPermissions(page) {
     let params = {
-      parent_permission_groups: true,
+      employee_permissions: true,
       page: page,
+      user_id: this.updateUserData.pk_userID,
       size: 20
     }
     let permission = [];
@@ -519,7 +540,10 @@ export class AdminUsersComponent implements OnInit, OnDestroy {
       permission = this.parentPermissionData;
     }
     this._UsersService.getAdminsData(params).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
-      this.parentPermissionData = permission.concat(res["data"]);
+      res["data"].forEach(element => {
+        element.Child = JSON.parse(element.Child);
+        this.parentPermissionData.push(element);
+      });
       this.parentTotalPermissions = res["totalRecords"];
       this.isLoadingPermission = false;
       this.permissionLoader = false;
@@ -535,7 +559,20 @@ export class AdminUsersComponent implements OnInit, OnDestroy {
     this.parentPermissionPage++;
     this.getParentPermissions(this.parentPermissionPage);
   };
-
+  changeCheckbox(item, checked) {
+    if (item.fk_parentID == 0) {
+      if (checked) {
+        item["Child"].forEach(element => {
+          element.isPermitted = 1;
+        });
+      } else {
+        item["Child"].forEach(element => {
+          element.isPermitted = 0;
+        });
+      }
+    }
+    console.log(item);
+  }
   getChildPermissions(item) {
     let params = {
       child_permission_groups: true,

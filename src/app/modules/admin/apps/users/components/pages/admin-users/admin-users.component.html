@@ -446,8 +446,9 @@
                         </div>
                         <div class="col-12 col-md-6">
                             <mat-form-field class="w-full">
-                                <mat-label>Apply permission group</mat-label>
-                                <input matInput placeholder="Search Group" [matAutocomplete]="auto"
+                                <mat-label>Apply permission group <span *ngIf="permissionGroupLoader">
+                                        (Fetching...)</span></mat-label>
+                                <!-- <input matInput placeholder="Search Group" [matAutocomplete]="auto"
                                     [formControl]="permissionGrpCtrl">
                                 <mat-autocomplete class="w-full" #auto="matAutocomplete"
                                     (optionSelected)="addOnSelected($event)" [displayWith]="addDisplayWith">
@@ -457,8 +458,19 @@
                                             <span>{{item.groupName}}</span>
                                         </mat-option>
                                     </ng-container>
-                                </mat-autocomplete>
+                                </mat-autocomplete> -->
+                                <mat-select matInput [disabled]="permissionGroupLoader" [(ngModel)]="ngSelectedGroup">
+                                    <mat-option *ngFor="let item of permissionGroup" [value]="item.pk_groupID">
+                                        <span>{{item.groupName}}</span>
+                                    </mat-option>
+                                </mat-select>
                             </mat-form-field>
+                        </div>
+                        <div class="col-12 text-right col-md-6">
+                            <button mat-flat-button class="mt-5 min-w-40" [color]="'primary'">
+                                <mat-icon svgIcon="heroicons_solid:pencil-alt"></mat-icon>
+                                <span>Update Permissions</span>
+                            </button>
                         </div>
                         <div class="col-12"></div>
                         <div class="col-12" *ngIf="permissionLoader">
@@ -471,26 +483,28 @@
                             <mat-expansion-panel (opened)="loadMoreChildPermissions(item)">
                                 <mat-expansion-panel-header>
                                     <mat-panel-title>
-                                        <mat-checkbox>
+                                        <mat-checkbox (click)="$event.stopPropagation();"
+                                            [(ngModel)]="item.isParentAdmitted"
+                                            (change)="changeCheckbox(item,$event.checked)">
                                             {{item.name}}
                                         </mat-checkbox>
                                     </mat-panel-title>
                                 </mat-expansion-panel-header>
-                                <div class="row" *ngIf="item.childPermission">
-                                    <mat-checkbox class="col-6 text-sm"
-                                        *ngFor="let child of item.childPermission">{{child.name}}</mat-checkbox>
-                                    <div class="col-12 flex justify-end"
+                                <div class="row">
+                                    <mat-checkbox class="col-6 text-sm" *ngFor="let child of item.Child"
+                                        [(ngModel)]="child.isPermitted">{{child.name}}</mat-checkbox>
+                                    <!-- <div class="col-12 flex justify-end"
                                         *ngIf="item.childTotal > item.childPermission.length">
                                         <span class="text-gray-500 hover:text-gray-900 cursor-pointer"
                                             *ngIf="!item.childLoader" (click)="loadMoreChildPermissions(item)"> Load
                                             More </span>
-                                    </div>
-                                    <div class="col-12" *ngIf="item.childLoader">
+                                    </div> -->
+                                    <!-- <div class="col-12" *ngIf="item.childLoader">
                                         <ngx-skeleton-loader count="4" appearance="line" animation="pulse" [theme]="{ 
                                                 'background-color': '#dedede'
                                               }">
                                         </ngx-skeleton-loader>
-                                    </div>
+                                    </div> -->
                                 </div>
                             </mat-expansion-panel>
                         </div>

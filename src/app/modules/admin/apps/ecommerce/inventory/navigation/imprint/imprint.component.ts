@@ -826,7 +826,7 @@ export class ImprintComponent implements OnInit, OnDestroy {
           this.dataSource2 = imprint["data"];
           this.dataSource2Length = imprint["totalRecords"];
         };
-
+        this.isEditImprintScreen = false;
         this.isLoadingChange.emit(false);
 
         // Mark for check
@@ -1677,7 +1677,7 @@ export class ImprintComponent implements OnInit, OnDestroy {
     const setupRunForm = this.runSetup.getRawValue();
     const { pk_imprintID } = this.editImprintObj;
     const { run, setup } = setupRunForm;
-
+    console.log(this.editImprintObj)
     if (!this.selectedLocation) {
       this._snackBar.open("New LOCATION was not specified correctly", '', {
         horizontalPosition: 'center',
