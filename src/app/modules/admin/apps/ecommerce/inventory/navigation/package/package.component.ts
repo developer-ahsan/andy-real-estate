@@ -444,6 +444,7 @@ export class PackageComponent implements OnInit, OnDestroy {
             'success' :
             'error'
         );
+        this.fruits = [];
         this.packageAddLoader = false;
       }, err => {
         this._snackBar.open("Some error occured", '', {

@@ -197,7 +197,7 @@ export class ImprintComponent implements OnInit, OnDestroy {
 
   isImprintDetails: boolean = false;
 
-
+  blnStatus: boolean = false;
 
   public locationSearchControl = new FormControl();
   isLoadings: boolean = false;
@@ -1760,7 +1760,7 @@ export class ImprintComponent implements OnInit, OnDestroy {
       bln_process_mode: processMode,
       min_product_qty: this.minQuantity || 1,
       imprint_comments: this.addImprintComment || "",
-      bln_active: 1,
+      bln_active: this.blnStatus ? 1 : 0,
       bln_singleton: this.imprintItselfSelected.value === 'Yes' ? true : false,
       bln_color_selection: this.defaultImprintColorSpecification === 'Yes' ? true : false,
       imprint_id: pk_imprintID,
@@ -1771,7 +1771,7 @@ export class ImprintComponent implements OnInit, OnDestroy {
       method_name: this.method_name ? this.method_name : null,
       location_name: this.location_name ? this.location_name : null
     };
-
+    this.editImprintObj = this.blnStatus;
     if (payload.bln_process_mode === 0) {
       this._inventoryService.getMultiColorValue(second, third, fourth, fifth)
         .pipe(takeUntil(this._unsubscribeAll))
@@ -1842,6 +1842,7 @@ export class ImprintComponent implements OnInit, OnDestroy {
   editImprint(imprint) {
     // console.log(imprint);
     this.editImprintObj = imprint;
+    this.blnStatus = imprint.blnActive;
     this.isEditImprintScreen = true;
     this.selectedDigitizer = null;
     this.selectedMethod = null;
