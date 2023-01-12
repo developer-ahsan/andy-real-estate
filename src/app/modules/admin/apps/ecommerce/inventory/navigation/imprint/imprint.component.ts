@@ -205,6 +205,9 @@ export class ImprintComponent implements OnInit, OnDestroy {
   isMethodLoading: boolean = false;
 
 
+  isContentLoading: boolean = false;
+
+
 
   private _filter(value: string): string[] {
     const filterValue = value.toLowerCase();
@@ -260,6 +263,8 @@ export class ImprintComponent implements OnInit, OnDestroy {
     })
   }
   ngOnInit(): void {
+    this.isContentLoading = true;
+
     this.locationSearchControl.setValue('');
     this.methodSearchControl.setValue('');
     this.locationSearchControl.valueChanges
@@ -1959,6 +1964,7 @@ export class ImprintComponent implements OnInit, OnDestroy {
         this.addImprintLocations = [...this.addImprintLocations, ...location["data"]];
         this.selectedLocation = this.addImprintLocations.find(x => x.pk_locationID === 254) || this.addImprintLocations[0];
         this.locationControl.setValue(this.selectedLocation.locationName);
+        this.isContentLoading = false;
         this._changeDetectorRef.markForCheck();
       });
   }

@@ -1,7 +1,6 @@
 <!-- <app-imprint-run></app-imprint-run> -->
 
-<ngx-skeleton-loader count="8" appearance="line" animation="pulse" *ngIf="isLoading">
-</ngx-skeleton-loader>
+
 <div class="row my-2 py-5 mx-5 overflow-auto" *ngIf="!isLoading">
     <div class="col-12">
         <mat-button-toggle-group #group="matButtonToggleGroup" [value]="showImprintScreen"
@@ -30,7 +29,8 @@
         </mat-button-toggle-group>
     </div>
 </div>
-
+<ngx-skeleton-loader count="8" appearance="line" animation="pulse" *ngIf="isLoading || isContentLoading">
+</ngx-skeleton-loader>
 <!-- Standard Imprints -->
 <div *ngIf="!isLoading && showImprintScreen == 'Standard Imprints'">
     <fuse-card class="rounded-2xl mb-2 shadow bg-card flex flex-col lg:flex-row w-full">
@@ -1687,7 +1687,7 @@
     </fuse-card>
 
 
-    <div class="row my-2 mx-4" *ngIf="!isEditImprintScreen && !isImprintDetails">
+    <div class="row my-2 mx-4" *ngIf="!isEditImprintScreen && !isImprintDetails && !isContentLoading">
         <div class="col-lg-5 col-12">
             <mat-slide-toggle (change)="onToggleAllow($event)" [(ngModel)]="allowRunBoolean">
                 Run in group?
@@ -1704,7 +1704,7 @@
             </button>
         </div>
     </div>
-    <div class="row" *ngIf="!isEditImprintScreen && !isImprintDetails">
+    <div class="row" *ngIf="!isEditImprintScreen && !isImprintDetails && !isContentLoading">
         <div class="col-12">
             <mat-card class="w-full mb-10 p-0 h-full rounded-2xl shadow">
                 <div class="row">
