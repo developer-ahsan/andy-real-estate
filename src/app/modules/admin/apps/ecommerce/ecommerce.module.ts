@@ -112,6 +112,7 @@ import { ProductStatusComponent } from './inventory/navigation/product-status/pr
 import { ImprintDetailsComponent } from './inventory/navigation/imprint/imprint-details/imprint-details.component';
 import { ProductColorSizesComponent } from './inventory/navigation/sizes/color-sizes/color-sizes.component';
 import { MatDatepickerModule } from '@angular/material/datepicker';
+import { CategoriesComponent } from './product-store/navigation/categories/categories.component';
 
 @NgModule({
     declarations: [
@@ -190,7 +191,8 @@ import { MatDatepickerModule } from '@angular/material/datepicker';
         ImprintRunComponent,
         ProductStatusComponent,
         ImprintDetailsComponent,
-        ProductColorSizesComponent
+        ProductColorSizesComponent,
+        CategoriesComponent
     ],
     imports: [
         RouterModule.forChild(ecommerceRoutes),

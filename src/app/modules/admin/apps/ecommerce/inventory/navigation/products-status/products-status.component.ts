@@ -36,6 +36,10 @@ export class ProductsStatusComponent implements OnInit {
 
   checkedStores = [];
   isRapidBuilImageLoader: boolean = false;
+
+  loadAssignedStores: boolean = false;
+  totalAssignedStores = 0;
+  assignedStorePage = 1;
   constructor(
     private _changeDetectorRef: ChangeDetectorRef,
     private _inventoryService: InventoryService,
@@ -45,14 +49,19 @@ export class ProductsStatusComponent implements OnInit {
   ngOnInit(): void {
     this.isRapidBuild = true;
     this.isLoading = true;
-    this.getAssignedStores('get');
+    this.getAssignedStores('get', 1);
   }
-  getAssignedStores(type) {
+  getAssignedStores(type, page) {
     let params = {
+      page: page,
       store_version: true,
+      bln_active: 1,
       product_id: this.selectedProduct.pk_productID,
-      size: 40
+      size: 100
     }
+    // if (page == 1) {
+    //   this.assignedStores = [];
+    // } 
     this._inventoryService.getProductsData(params).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
       this.assignedStores = res["data"];
       if (type == 'add') {
@@ -76,6 +85,11 @@ export class ProductsStatusComponent implements OnInit {
       this._changeDetectorRef.markForCheck();
     });
   }
+  // getNextAssignedStores() {
+  //   this.assignedStorePage++;
+  //   this.getAssignedStores(1)
+
+  // }
   getAllActiveStores(page) {
     if (page > 0) {
       this.isViewMoreLoader = true;
@@ -142,7 +156,7 @@ export class ProductsStatusComponent implements OnInit {
     this._inventoryService.AddStoreProduct(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
       this.ngComment = null;
 
-      this.getAssignedStores('add');
+      this.getAssignedStores('add', 1);
       // this.getAllActiveStores(0);
 
       this._changeDetectorRef.markForCheck();

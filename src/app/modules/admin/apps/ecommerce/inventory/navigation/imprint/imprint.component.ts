@@ -829,7 +829,12 @@ export class ImprintComponent implements OnInit, OnDestroy {
         };
         this.isEditImprintScreen = false;
         this.isLoadingChange.emit(false);
-
+        this._inventoryService.run = null;
+        this._inventoryService.setup = null;
+        this.runSetup.patchValue({
+          run: null,
+          setup: null
+        })
         // Mark for check
         this._changeDetectorRef.markForCheck();
       });
@@ -1290,6 +1295,10 @@ export class ImprintComponent implements OnInit, OnDestroy {
     }
 
     if (screenName === "Add Imprint") {
+      this.runSetup.patchValue({
+        run: null,
+        setup: null
+      })
       // this.selectedDigitizer = null;
       // this.selectedMethod = null
       // this.selectedLocation = null;
@@ -1611,6 +1620,8 @@ export class ImprintComponent implements OnInit, OnDestroy {
               this.selectedMethod = this.addImprintMethods.find(x => x.pk_methodID === 254) || this.addImprintMethods[0];
 
               this.addImprintLoader = false;
+              this._inventoryService.run = null;
+              this._inventoryService.setup = null;
               if (this.imageValue) {
                 this.uploadMediaImage(response["imprint_id"]);
               }
@@ -1635,6 +1646,8 @@ export class ImprintComponent implements OnInit, OnDestroy {
             'error'
         );
         this.addImprintLoader = false;
+        this._inventoryService.run = null;
+        this._inventoryService.setup = null;
         if (this.imageValue) {
           this.uploadMediaImage(response["imprint_id"]);
         }
@@ -1841,6 +1854,8 @@ export class ImprintComponent implements OnInit, OnDestroy {
   }
   editImprint(imprint) {
     // console.log(imprint);
+    this._inventoryService.run = null;
+    this._inventoryService.setup = null;
     this.editImprintObj = imprint;
     this.blnStatus = imprint.blnActive;
     this.isEditImprintScreen = true;
