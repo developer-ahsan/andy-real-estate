@@ -195,6 +195,7 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
     isColorLoading: boolean = false;
 
     selectedColorsListArray = [];
+    blnPromoStandard: boolean = false;
 
     selectEvent(item) {
         // do something with selected item
@@ -1599,6 +1600,7 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
                     // Map Product Data
                     const { success } = productDetails["data"];
                     if (success) {
+                        this.blnPromoStandard = true;
                         const details = productDetails["data"].result.Product;
                         let detailsDescription = "";
                         if (Array.isArray(details.description)) {
@@ -3144,6 +3146,7 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
             case_quantities: caseQuantities,
             shipping: shipping,
             technologo_sku: null,
+            blnPromoStandard: this.blnPromoStandard,
             bln_group_run: allowGroupRun,
             create_product: true
         }

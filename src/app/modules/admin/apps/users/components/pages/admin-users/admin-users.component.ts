@@ -4,7 +4,7 @@ import { MatPaginator } from '@angular/material/paginator';
 import { Subject } from 'rxjs';
 import { debounceTime, distinctUntilChanged, filter, finalize, switchMap, takeUntil, tap } from 'rxjs/operators';
 import { UsersService } from '../../users.service';
-import { AddAdminUser, applyBlanketCustomerPercentage, newFLPSUser, removeFLPSUser, UpdateAdminUser, updateFLPSUser } from '../../users.types';
+import { AddAdminUser, applyBlanketCustomerPercentage, newFLPSUser, removeFLPSUser, RootPermissions, UpdateAdminUser, updateFLPSUser } from '../../users.types';
 @Component({
   selector: 'app-admin-users',
   templateUrl: './admin-users.component.html',
@@ -80,6 +80,13 @@ export class AdminUsersComponent implements OnInit, OnDestroy {
   childPermissionPage = 1;
   childPermissionLoader: boolean = false;
   isLoadingChildPermission: boolean = false;
+
+
+  selectedPermissions = [];
+  removedPermissions = [];
+
+
+  isUpdateAdminPermissions: boolean = false;
 
   constructor(
     private _changeDetectorRef: ChangeDetectorRef,
@@ -354,6 +361,9 @@ export class AdminUsersComponent implements OnInit, OnDestroy {
   toggleUpdateUserData(data, check) {
     this.isUpdateUser = check;
     if (check) {
+      this.parentPermissionData = [];
+      this.selectedPermissions = [];
+      this.removedPermissions = [];
       this.mainScreenUser = 'Edit User';
       this.updateUserData = data;
       this.updateUserForm.patchValue(data);
@@ -542,6 +552,14 @@ export class AdminUsersComponent implements OnInit, OnDestroy {
     this._UsersService.getAdminsData(params).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
       res["data"].forEach(element => {
         element.Child = JSON.parse(element.Child);
+        if (element.isParentAdmitted) {
+          this.selectedPermissions.push(element.pk_sectionID);
+          element.Child.forEach(item => {
+            if (item.isPermitted) {
+              this.selectedPermissions.push(item.pk_sectionID);
+            }
+          });
+        }
         this.parentPermissionData.push(element);
       });
       this.parentTotalPermissions = res["totalRecords"];
@@ -562,16 +580,69 @@ export class AdminUsersComponent implements OnInit, OnDestroy {
   changeCheckbox(item, checked) {
     if (item.fk_parentID == 0) {
       if (checked) {
+        const remove_index = this.removedPermissions.findIndex(val => val == item.pk_sectionID);
+        if (remove_index > -1) {
+          this.removedPermissions.splice(remove_index, 1);
+        }
+        const index = this.selectedPermissions.findIndex(val => val == item.pk_sectionID);
+        if (index < 0) {
+          this.selectedPermissions.push(item.pk_sectionID);
+        }
         item["Child"].forEach(element => {
           element.isPermitted = 1;
+          const remove_index = this.removedPermissions.findIndex(val => val == element.pk_sectionID);
+          if (remove_index > -1) {
+            this.removedPermissions.splice(remove_index, 1);
+          }
+          const index = this.selectedPermissions.findIndex(val => val == element.pk_sectionID);
+          if (index < 0) {
+            this.selectedPermissions.push(element.pk_sectionID);
+          }
         });
       } else {
+        const remove_index = this.selectedPermissions.findIndex(val => val == item.pk_sectionID);
+        if (remove_index > -1) {
+          this.selectedPermissions.splice(remove_index, 1);
+        }
+        const index = this.removedPermissions.findIndex(val => val == item.pk_sectionID);
+        if (index < 0) {
+          this.removedPermissions.push(item.pk_sectionID);
+        }
         item["Child"].forEach(element => {
+          if (element.isPermitted == 1) {
+            const remove_index = this.selectedPermissions.findIndex(val => val == element.pk_sectionID);
+            if (remove_index > -1) {
+              this.selectedPermissions.splice(remove_index, 1);
+            }
+            const index = this.removedPermissions.findIndex(val => val == element.pk_sectionID);
+            if (index < 0) {
+              this.removedPermissions.push(element.pk_sectionID);
+            }
+          }
           element.isPermitted = 0;
         });
       }
+    } else {
+      if (checked) {
+        const remove_index = this.removedPermissions.findIndex(val => val == item.pk_sectionID);
+        if (remove_index > -1) {
+          this.removedPermissions.splice(remove_index, 1);
+        }
+        const index = this.selectedPermissions.findIndex(val => val == item.pk_sectionID);
+        if (index < 0) {
+          this.selectedPermissions.push(item.pk_sectionID);
+        }
+      } else {
+        const remove_index = this.selectedPermissions.findIndex(val => val == item.pk_sectionID);
+        if (remove_index > -1) {
+          this.selectedPermissions.splice(remove_index, 1);
+        }
+        const index = this.removedPermissions.findIndex(val => val == item.pk_sectionID);
+        if (index < 0) {
+          this.removedPermissions.push(item.pk_sectionID);
+        }
+      }
     }
-    console.log(item);
   }
   getChildPermissions(item) {
     let params = {
@@ -602,6 +673,31 @@ export class AdminUsersComponent implements OnInit, OnDestroy {
       item.childLoader = true;
     }
     this.getChildPermissions(item);
+  }
+  updatePermissions() {
+    let payload: RootPermissions = {
+      user_id: this.updateUserData.pk_userID,
+      add_permissions: this.selectedPermissions,
+      remove_permissions: this.removedPermissions,
+      update_permissions_group: true
+    }
+    console.log(payload);
+    this.isUpdateAdminPermissions = true;
+    this._UsersService.UpdateAdminsData(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+      if (res["success"]) {
+        this.isUpdateAdminPermissions = false;
+        this._UsersService.snackBar('User Permissions Updated Successfully');
+        this._changeDetectorRef.markForCheck();
+      } else {
+        this._UsersService.snackBar(res["message"]);
+        this.isUpdateAdminPermissions = false;
+        this._changeDetectorRef.markForCheck();
+      }
+    }, err => {
+      this._UsersService.snackBar('Something went wrong');
+      this.isUpdateAdminPermissions = false;
+      this._changeDetectorRef.markForCheck();
+    });
   }
   /**
      * On destroy

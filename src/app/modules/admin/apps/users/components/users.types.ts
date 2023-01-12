@@ -246,3 +246,10 @@ export interface deleteUserRoleProgram {
     store_id: number;
     delete_user_role_program: boolean;
 };
+
+export interface RootPermissions {
+    user_id: number;
+    add_permissions: number[];
+    remove_permissions: number[];
+    update_permissions_group: boolean;
+}

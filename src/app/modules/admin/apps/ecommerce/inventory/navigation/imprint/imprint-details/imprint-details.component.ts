@@ -1,6 +1,6 @@
 import { Component, Input, OnInit, Output, EventEmitter, ChangeDetectorRef, OnDestroy } from '@angular/core';
 import { Observable, Subject } from 'rxjs';
-import { map, startWith, takeUntil } from 'rxjs/operators';
+import { debounceTime, distinctUntilChanged, filter, finalize, map, startWith, switchMap, takeUntil, tap } from 'rxjs/operators';
 import { InventoryService } from 'app/modules/admin/apps/ecommerce/inventory/inventory.service';
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { UserService } from 'app/core/user/user.service';
@@ -49,9 +49,7 @@ export class ImprintDetailsComponent implements OnInit, OnDestroy {
   addImprintMethods = [];
   selectedMethod: any;
   methodControl = new FormControl('');
-  methodFilteredOptions: Observable<any>;
   locationControl = new FormControl('');
-  locationFilteredOptions: Observable<any>;
 
   location_name = '';
   method_name = '';
@@ -59,42 +57,89 @@ export class ImprintDetailsComponent implements OnInit, OnDestroy {
   selectedLocation: any;
   isAddDuplicateLoader: boolean = false;
 
+  methodSearchControl = new FormControl();
+  isSearchingImprints = false;
+  locationSearchControl = new FormControl();
+  isSearchingLocation = false;
+  minLengthTerm = 3;
+
   not_available = 'N/A';
   constructor(
     private _changeDetectorRef: ChangeDetectorRef,
     private _inventoryService: InventoryService,
     private _snackBar: MatSnackBar,
   ) { }
-  private _filter(value: string): string[] {
-    const filterValue = value.toLowerCase();
-    return this.addImprintMethods.filter(option => option.methodName.toLowerCase().includes(filterValue));
-  }
-  private _filterLocation(value: string): string[] {
-    const filterValue = value.toLowerCase();
-    return this.addImprintLocations.filter(option => option.locationName.toLowerCase().includes(filterValue));
-  }
   methodSelected(obj) {
-    this.selectedMethod = obj;
+    this.selectedMethod = obj.option.value;
+    this._changeDetectorRef.markForCheck();
   }
   locationSelected(obj) {
-    this.selectedLocation = obj;
+    this.selectedLocation = obj.option.value;
+    this._changeDetectorRef.markForCheck();
   }
   ngOnInit(): void {
+    this.methodSearchControl.setValue({ methodName: 'New Method >>>', pk_methodID: null });
+    this.methodSearchControl.valueChanges.pipe(
+      filter((res: any) => {
+        return res !== null && res.length >= this.minLengthTerm
+      }),
+      distinctUntilChanged(),
+      debounceTime(500),
+      tap(() => {
+        this.addImprintMethods = [];
+        this.isSearchingImprints = true;
+        this._changeDetectorRef.markForCheck();
+      }),
+      switchMap(value => this._inventoryService.getAllImprintMethods(value)
+        .pipe(
+          finalize(() => {
+            this.isSearchingImprints = false
+            this._changeDetectorRef.markForCheck();
+          }),
+        )
+      )
+    ).subscribe((data: any) => {
+      this.addImprintMethods.push({ methodName: 'New Method >>>', pk_methodID: null });
+      this.addImprintMethods = this.addImprintMethods.concat(data["data"]);
+    });
+
+    this.locationSearchControl.setValue({ locationName: 'New Location >>>', pk_locationID: null });
+    this.locationSearchControl.valueChanges.pipe(
+      filter(res => {
+        return res !== null && res.length >= this.minLengthTerm
+      }),
+      distinctUntilChanged(),
+      debounceTime(500),
+      tap(() => {
+        this.addImprintLocations = [];
+        this.isSearchingLocation = true;
+        this._changeDetectorRef.markForCheck();
+      }),
+      switchMap(value => this._inventoryService.getAllImprintLocations(value)
+        .pipe(
+          finalize(() => {
+            this.isSearchingLocation = false
+            this._changeDetectorRef.markForCheck();
+          }),
+        )
+      )
+    ).subscribe((data: any) => {
+      this.addImprintLocations.push({ locationName: 'New Location >>>', pk_locationID: null });
+      this.addImprintLocations = this.addImprintLocations.concat(data["data"]);
+    });
+
     this.isLoading = true;
     this.getAddImprintLocations();
     this.getAddImprintMethods();
     this.getMultiColorRestricton();
     this.getCharges();
-    this.methodFilteredOptions = this.methodControl.valueChanges.pipe(
-      startWith(''),
-      map(value => this._filter(value || '')),
-    );
-
-    this.locationFilteredOptions = this.locationControl.valueChanges.pipe(
-      startWith(''),
-      map(value => this._filterLocation(value || '')),
-    );
   };
+  displayWith(value: any) {
+    return value?.methodName;
+  }
+  displayWithLocation(value: any) {
+    return value?.locationName;
+  }
   getMultiColorRestricton() {
     this.colorDataLoader = true;
     let params = {

@@ -228,7 +228,7 @@ export class ProductDetailsComponent implements OnInit, OnDestroy {
       .updatePromoStandard(payload)
       .subscribe((response) => {
         this.isLoading = false;
-        this._snackBar.open("Promostandards updated successfully", "", {
+        this._snackBar.open(response["message"], "", {
           horizontalPosition: "center",
           verticalPosition: "bottom",
           duration: 3500,

@@ -31,8 +31,8 @@ export const navigations = [
     },
     {
         id: 24,
-        title: 'Promostandard colors',
-        icon: 'mat_outline:color_lens',
+        title: 'Inventory',
+        icon: 'heroicons_outline:archive',
     },
     {
         id: 7,

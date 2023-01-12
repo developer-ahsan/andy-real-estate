@@ -537,6 +537,7 @@ export interface Product {
     shipping: shippingObj;
     technologo_sku: string;
     bln_group_run: boolean;
+    blnPromoStandard: boolean;
     create_product: boolean;
 };
 export interface caseDimensionsObj {

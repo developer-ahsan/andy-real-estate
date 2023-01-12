@@ -225,6 +225,7 @@ export class ImprintComponent implements OnInit, OnDestroy {
     // }
     this._changeDetectorRef.markForCheck();
   }
+
   locationSelected(obj) {
     this.selectedLocation = obj;
     this.locationSearchControl.setValue(obj.locationName)
@@ -1677,7 +1678,6 @@ export class ImprintComponent implements OnInit, OnDestroy {
     const setupRunForm = this.runSetup.getRawValue();
     const { pk_imprintID } = this.editImprintObj;
     const { run, setup } = setupRunForm;
-    console.log(this.editImprintObj)
     if (!this.selectedLocation) {
       this._snackBar.open("New LOCATION was not specified correctly", '', {
         horizontalPosition: 'center',
