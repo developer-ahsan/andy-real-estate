@@ -6,7 +6,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { FormBuilder, FormControl, FormGroup } from '@angular/forms';
 import { MatSlideToggleChange } from '@angular/material/slide-toggle';
 import { IDropdownSettings } from 'ng-multiselect-dropdown';
-import { I } from '@angular/cdk/keycodes';
+import { E, I } from '@angular/cdk/keycodes';
 import { environment } from 'environments/environment';
 import { MatDialog } from '@angular/material/dialog';
 import { ImprintRunComponent } from './imprint-run/imprint-run.component';
@@ -842,6 +842,10 @@ export class ImprintComponent implements OnInit, OnDestroy {
         })
         // Mark for check
         this._changeDetectorRef.markForCheck();
+      }, err => {
+        this.addImprintLoader = false;
+        this._changeDetectorRef.markForCheck();
+
       });
   }
 
@@ -1635,7 +1639,9 @@ export class ImprintComponent implements OnInit, OnDestroy {
               // Mark for check
               this._changeDetectorRef.markForCheck();
             });
-        }, err => { });
+        }, err => {
+          this.addImprintLoader = false;
+        });
       this.addImprintLoader = false;
 
       // Mark for check
@@ -2055,20 +2061,29 @@ export class ImprintComponent implements OnInit, OnDestroy {
   };
 
   getAddImprintDigitizers(data?: any) {
-    this._inventoryService.getAllDigitizers()
-      .pipe(takeUntil(this._unsubscribeAll))
-      .subscribe((digitizers) => {
-        this.addImprintDigitizers = digitizers["data"];
-        this.selectedDigitizer = this.addImprintDigitizers[0];
+    if (this.addImprintDigitizers.length == 0) {
+      this._inventoryService.getAllDigitizers()
+        .pipe(takeUntil(this._unsubscribeAll))
+        .subscribe((digitizers) => {
+          this.addImprintDigitizers = digitizers["data"];
+          this.selectedDigitizer = this.addImprintDigitizers[0];
 
-        if (data) {
-          const { fk_digitizerID } = data
-          this.selectedDigitizer = this.addImprintDigitizers.find(x => x.pfk_digitizerID === fk_digitizerID) || this.addImprintDigitizers[0];
-        }
+          if (data) {
+            const { fk_digitizerID } = data
+            this.selectedDigitizer = this.addImprintDigitizers.find(x => x.pfk_digitizerID === fk_digitizerID) || this.addImprintDigitizers[0];
+          }
 
-        // Mark for check
-        this._changeDetectorRef.markForCheck();
-      });
+          // Mark for check
+          this._changeDetectorRef.markForCheck();
+        });
+    } else {
+      this.selectedDigitizer = this.addImprintDigitizers[0];
+      if (data) {
+        const { fk_digitizerID } = data
+        this.selectedDigitizer = this.addImprintDigitizers.find(x => x.pfk_digitizerID === fk_digitizerID) || this.addImprintDigitizers[0];
+      }
+    }
+
   };
 
   getNextData(event) {
