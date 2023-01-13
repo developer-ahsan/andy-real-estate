@@ -249,7 +249,7 @@ export class InventoryService {
                 color: true,
                 product_id: productId,
                 page: page,
-                size: 10
+                size: 20
             }
         });
     };
