@@ -4051,6 +4051,9 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
             this._changeDetectorRef.markForCheck();
         })
     }
+    goToProductDeatailsPage() {
+        this._router.navigate([`/apps/ecommerce/inventory/${this.productId}`]);
+    }
     saveStandardImprints(): void {
         this.updateProductImprintLoader = true;
         this._changeDetectorRef.markForCheck();

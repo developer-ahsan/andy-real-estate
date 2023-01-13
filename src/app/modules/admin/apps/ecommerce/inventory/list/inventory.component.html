@@ -2342,6 +2342,10 @@
                                 <mat-divider></mat-divider>
                                 <div class="col-12">
                                     <div class="flex items-center justify-end w-full">
+                                        <button class="min-w-40 mr-2" mat-stroked-button
+                                            (click)="goToProductDeatailsPage()" [matTooltip]="'Go To Product Details'">
+                                            <span>Go To Details</span>
+                                        </button>
                                         <button class="min-w-60" mat-stroked-button (click)="goToProductDetails()"
                                             [matTooltip]="'Save & Go To Product Details'"
                                             [disabled]="reviewProductDetailLoader">
