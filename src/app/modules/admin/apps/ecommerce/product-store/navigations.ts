@@ -79,16 +79,16 @@ export const navigations = [
         title: 'Product Reviews',
         icon: 'mat_outline:info',
     },
-    {
-        id: 17,
-        title: 'Profit Calculator',
-        icon: 'mat_outline:calculate',
-    },
-    {
-        id: 18,
-        title: 'Simulator',
-        icon: 'mat_outline:house_siding',
-    },
+    // {
+    //     id: 17,
+    //     title: 'Profit Calculator',
+    //     icon: 'mat_outline:calculate',
+    // },
+    // {
+    //     id: 18,
+    //     title: 'Simulator',
+    //     icon: 'mat_outline:house_siding',
+    // },
     {
         id: 1,
         title: 'Update History',

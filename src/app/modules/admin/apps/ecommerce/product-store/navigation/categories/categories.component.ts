@@ -2,10 +2,12 @@ import { Component, Input, OnInit, Output, EventEmitter, ChangeDetectorRef, OnDe
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { StoreProductService } from '../../store.service';
+import { AddSubCategory, update_subcategories } from '../../store.types';
 
 @Component({
   selector: 'app-categories',
-  templateUrl: './categories.component.html'
+  templateUrl: './categories.component.html',
+  styles: ['.form-control:focus {border-color: #475569;box-shadow: 0 0 0 0;}']
 })
 export class CategoriesComponent implements OnInit, OnDestroy {
   @Input() selectedProduct: any;
@@ -17,39 +19,131 @@ export class CategoriesComponent implements OnInit, OnDestroy {
   extrinsicCat: string = '';
   isUpdateLoading: boolean = false;
 
+  allCategories = [];
+  totalCategories = 0;
+  categorypage = 1;
+  isCategoryLoader: boolean = false;
+
+  selectedCategories = [];
+  removedCategories = [];
+
+  isUpdateCategories: boolean = false;
   constructor(
     private _changeDetectorRef: ChangeDetectorRef,
     private _storeService: StoreProductService
   ) { }
 
   ngOnInit(): void {
-    this.extrinsicCat = this.selectedProduct.extrinsicCategory;
-    this._changeDetectorRef.markForCheck();
-    setTimeout(() => {
-      this.isLoadingChange.emit(false);
-      this.isLoading = false;
-    }, 300);
+    this.isLoading = true;
+    this.getCategories(1);
   }
-
-  UpdateExtrinsicCategory() {
-    this.isUpdateLoading = true;
-    let payload = {
-      extrinsicCategory: this.extrinsicCat,
-      storeProductID: Number(this.selectedProduct.pk_storeProductID),
-      update_extrinsic_category: true
+  getCategories(page) {
+    let params = {
+      store_product_categories: true,
+      page: page,
+      product_id: this.selectedProduct.pk_storeProductID,
+      store_id: this.selectedProduct.fk_storeID,
+      size: 20
     }
-    this._storeService.UpdateExtrinsicCategory(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
-      this.isUpdateLoading = false;
-      this._storeService.snackBar('Extrinsic Category Updated Successfully');
-      this.selectedProduct.extrinsicCategory = this.extrinsicCat;
-      this._storeService._storeProduct.next(this.selectedProduct);
+    this._storeService.commonGetCalls(params).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+      res["data"].forEach(element => {
+        if (element.Child) {
+          element.Child = JSON.parse(element.Child);
+          element.Child.forEach(item => {
+            if (item.isChecked) {
+              this.selectedCategories.push({ subcategory_id: item.pk_subCategoryID, isChecked: true });
+            }
+          });
+        } else {
+          element.Child = [];
+        }
+        this.allCategories.push(element);
+      });
+      this.totalCategories = res["totalRecords"];
+      this.isCategoryLoader = false;
+      this.isLoading = false;
+      this.isLoadingChange.emit(false);
       this._changeDetectorRef.markForCheck();
     }, err => {
-      this.isUpdateLoading = false;
+      this.isCategoryLoader = false;
+      this.isLoading = false;
+      this.isLoadingChange.emit(false);
+      this._changeDetectorRef.markForCheck();
+    });
+  }
+  getNextCategoryData() {
+    this.isCategoryLoader = true;
+    this.categorypage++;
+    this.getCategories(this.categorypage);
+  };
+  changeCheckbox(item, checked) {
+    if (checked) {
+      const index = this.selectedCategories.findIndex(val => val.subcategory_id == item.pk_subCategoryID);
+      if (index < 0) {
+        this.selectedCategories.push({ subcategory_id: item.pk_subCategoryID, isChecked: true });
+      } else {
+        this.selectedCategories[index].isChecked = true;
+      }
+    } else {
+      const index = this.selectedCategories.findIndex(val => val.subcategory_id == item.pk_subCategoryID);
+      if (index > -1) {
+        this.selectedCategories[index].isChecked = false;
+      } else {
+        this.selectedCategories.push({ subcategory_id: item.pk_subCategoryID, isChecked: false });
+      }
+    }
+  }
+
+  addNewCategory(item) {
+    let payload: AddSubCategory = {
+      category_id: item.pk_categoryID,
+      subCategory_name: item.newChild,
+      perma_link: this.convertToSlug(item.newChild),
+      add_subcategory: true
+    }
+    item.addLoader = true;
+    this._storeService.postStoresProductsData(payload).subscribe(res => {
+      if (res["success"]) {
+        item.Child.push({ subCategoryName: payload.subCategory_name, pk_subCategoryID: res["newID"], isChecked: 0 });
+      }
+      item.addLoader = false;
+      item.newChild = '';
+      this._storeService.snackBar(res["message"]);
+      this._changeDetectorRef.markForCheck();
+    }, err => {
+      item.addLoader = false;
+      this._storeService.snackBar('Something went wrong');
       this._changeDetectorRef.markForCheck();
     })
   }
-
+  convertToSlug(Text) {
+    return Text.toLowerCase()
+      .replace(/[^\w ]+/g, '')
+      .replace(/ +/g, '-');
+  }
+  updateCategories() {
+    let payload: update_subcategories = {
+      store_product_id: this.selectedProduct.pk_storeProductID,
+      subcategories: this.selectedCategories,
+      update_subcategories: true
+    }
+    this.isUpdateCategories = true;
+    this._storeService.putStoresProductData(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+      if (res["success"]) {
+        this.isUpdateCategories = false;
+        this._storeService.snackBar(res["message"]);
+        this._changeDetectorRef.markForCheck();
+      } else {
+        this._storeService.snackBar(res["message"]);
+        this.isUpdateCategories = false;
+        this._changeDetectorRef.markForCheck();
+      }
+    }, err => {
+      this._storeService.snackBar('Something went wrong');
+      this.isUpdateCategories = false;
+      this._changeDetectorRef.markForCheck();
+    });
+  }
   /**
      * On destroy
      */

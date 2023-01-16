@@ -681,7 +681,6 @@ export class AdminUsersComponent implements OnInit, OnDestroy {
       remove_permissions: this.removedPermissions,
       update_permissions_group: true
     }
-    console.log(payload);
     this.isUpdateAdminPermissions = true;
     this._UsersService.UpdateAdminsData(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
       if (res["success"]) {

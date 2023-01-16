@@ -113,3 +113,20 @@ export interface DeleteReview {
     pk_reviewID: number;
     delete_review: boolean;
 };
+
+export interface AddSubCategory {
+    category_id: number;
+    subCategory_name: string;
+    perma_link: string;
+    add_subcategory: boolean;
+};
+
+export interface update_subcategories {
+    store_product_id: number;
+    subcategories: Subcategory[];
+    update_subcategories: boolean;
+};
+interface Subcategory {
+    subcategory_id: number;
+    isChecked: boolean;
+}

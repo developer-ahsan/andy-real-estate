@@ -98,7 +98,7 @@ export class ProductsStatusComponent implements OnInit {
     this.page = page + 1;
     let exlcude_list_product = [];
     this.assignedStores.forEach(element => {
-      exlcude_list_product.push(element.pk_storeID);
+      exlcude_list_product.push(element.fk_storeID);
     });
     let params = {
       stores_list: true,

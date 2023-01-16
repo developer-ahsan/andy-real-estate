@@ -7,6 +7,9 @@ import { AuthUtils } from 'app/core/auth/auth.utils';
 import { UserService } from 'app/core/user/user.service';
 import { environment } from 'environments/environment';
 import { ActivatedRoute, Router } from '@angular/router';
+import * as auth from 'firebase/auth';
+
+
 @Injectable()
 export class AuthService {
     private _authenticated: boolean = false;
@@ -222,6 +225,14 @@ export class AuthService {
      * Check the authentication status
      */
     check(): Observable<boolean> {
+        // console.log(this.afAuth)
+        // this.afAuth.authState.subscribe(res => {
+        //     if (res) {
+        //         res.getIdToken().then(res => {
+        //             console.log(res)
+        //         })
+        //     }
+        // })
         // Check if the user is logged in
         if (this._authenticated) {
             return of(true);

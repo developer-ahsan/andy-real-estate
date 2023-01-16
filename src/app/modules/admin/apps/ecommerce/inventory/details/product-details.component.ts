@@ -95,7 +95,10 @@ export class ProductDetailsComponent implements OnInit, OnDestroy {
         this.getStoreProductDetail(res.id);
       } else {
         this.StoreProduct = false;
-        if (this._inventoryService.selectedIndex) {
+        if (this._inventoryService.selectedIndex == 'Store Versions') {
+          this.selectedIndex = "Store Versions";
+          console.log(this.selectedIndex)
+        } else if (this._inventoryService.selectedIndex == 'Warehouse Options') {
           this.selectedIndex = "Warehouse Options";
         } else {
           this.selectedIndex = "Name & Description";
@@ -205,6 +208,10 @@ export class ProductDetailsComponent implements OnInit, OnDestroy {
     }
     if (title == 'Master Product') {
       this._router.navigate(['apps/ecommerce/inventory/' + this.selectedProduct["fk_productID"]]);
+    }
+    if (title == 'Store Versions' && this.StoreProduct) {
+      this._router.navigate(['apps/ecommerce/inventory/' + this.selectedProduct["fk_productID"]]);
+      this._inventoryService.selectedIndex = title;
     }
     this.isLoading = true;
     this.selectedIndex = title;

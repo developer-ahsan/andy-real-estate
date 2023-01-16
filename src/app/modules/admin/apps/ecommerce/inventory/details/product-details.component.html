@@ -274,7 +274,7 @@
             </div>
         </mat-drawer>
 
-        <div class="sub-sidenav-content bg-light p-2">
+        <div class="sub-sidenav-content bg-light p-2" #topScrollAnchor>
             <!-- <div class="flex justify-content-between">
                 <mat-icon class="subnav-menu-icon ml-1" svgIcon="heroicons_outline:menu" (click)="toggleDrawer()">
                 </mat-icon>
@@ -450,11 +450,11 @@
                         <app-duplicate [(isLoading)]="isLoading" [selectedProduct]="selectedProduct"></app-duplicate>
                     </ng-template>
                 </div> -->
-                <div class="col-12">
+                <!-- <div class="col-12">
                     <ng-template [ngIf]="selectedIndex === 'Store Versions'">
                         <app-imprint [(isLoading)]="isLoading" [selectedProduct]="selectedProduct"></app-imprint>
                     </ng-template>
-                </div>
+                </div> -->
             </div>
 
         </div>
