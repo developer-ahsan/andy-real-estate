@@ -20,6 +20,7 @@ export const environment = {
   system: "http://localhost:7071/api/system",
   flps: "http://localhost:7071/api/flps",
   admins: "http://localhost:7071/api/consolidus/admin",
+  vendors: "http://localhost:7071/api/vendors",
   campaignMedia: "https://assets.consolidus.com/globalAssets/Campaigns",
   productMedia: "https://assets.consolidus.com/globalAssets/Products",
   imprintMedia: "https://assets.consolidus.com/globalAssets/Imprints",
