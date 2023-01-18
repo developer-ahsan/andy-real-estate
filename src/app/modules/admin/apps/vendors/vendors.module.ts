@@ -73,10 +73,12 @@ import { VendorSettingsComponent } from './components/pages/vendor-settings/vend
 import { VendorProductsComponent } from './components/pages/vendor-products/vendor-products.component';
 import { VendorCoreProductsComponent } from './components/pages/vendor-core-products/vendor-core-products.component';
 import { VendorProductsSummaryComponent } from './components/pages/vendor-products-summary/vendor-products-summary.component';
+import { VendorsDownloadComponent } from './components/list-components/vendors-download/vendors-download.component';
+import { VendorsInfoComponent } from './components/pages/vendors-info/vendors-info.component';
 
 @NgModule({
     declarations: [
-        VendorsComponent, VendorsListComponent, NewVendorsComponent, VendorsDisabledListComponent, VendorsEmailComponent, VendorsDetailsComponent, ColorsComponent, SizesComponent, PackAndAccessoriesComponent, ImprintColorsComponent, ImprintMethodsComponent, ImprintLocationsComponent, PromoCodesComponent, DefaultBlurbsComponent, CountrySalesComponent, ActiveStoresComponent, SupportTeamComponent, UploadImagesComponent, POArchivesComponent, ProductMigrationsComponent, CoreProductsComponent, SystemImprintRunComponent, ImprintChargesComponent, StandardImprintsComponent, AddEditImprintsComponent,
+        VendorsComponent, VendorsListComponent, NewVendorsComponent, VendorsDisabledListComponent, VendorsDownloadComponent, VendorsEmailComponent, VendorsDetailsComponent, VendorsInfoComponent, ColorsComponent, SizesComponent, PackAndAccessoriesComponent, ImprintColorsComponent, ImprintMethodsComponent, ImprintLocationsComponent, PromoCodesComponent, DefaultBlurbsComponent, CountrySalesComponent, ActiveStoresComponent, SupportTeamComponent, UploadImagesComponent, POArchivesComponent, ProductMigrationsComponent, CoreProductsComponent, SystemImprintRunComponent, ImprintChargesComponent, StandardImprintsComponent, AddEditImprintsComponent,
         SimulatorComponent, AdminToolsComponent, DiagonosticsComponent, AdminStructureComponent
         , VendorTopOrderComponent, VendorSettingsComponent, VendorProductsComponent, VendorCoreProductsComponent, VendorProductsSummaryComponent
     ],

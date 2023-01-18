@@ -65,41 +65,47 @@
         <div class="mb-3 bg-light p-2" #topScrollAnchor>
             <mat-icon class="subnav-menu-icon ml-1" svgIcon="heroicons_outline:menu" (click)="toggleDrawer()">
             </mat-icon>
-            <div class="bg-card shadow mb-5 p-5">
+            <div class="bg-card shadow mb-5 p-5" *ngIf="supplierData">
                 <div class="flex mr-7">
                     <!-- <mat-icon svgIcon="heroicons_outline:briefcase" class="icon-size-8"></mat-icon> -->
                     <div class="text-2xl font-bold">
-                        Keg Basics<span class="text-secondary text-lg"> / {{selectedScreeen}}</span>
+                        {{supplierData.companyName}}<span class="text-secondary text-lg"> / {{selectedScreeen}}</span>
                     </div>
                 </div>
                 <div class="row w-full ">
                     <div class="col-md-6 col-12 flex align-items-center justify-between">
                         <b class="text-secondary text-sm">Vendor ID</b>
-                        <p class="float-right text-sm">123</p>
+                        <p class="float-right text-sm">{{supplierData.pk_companyID}}</p>
                     </div>
                     <div class="col-md-6 col-12 flex align-items-center justify-between">
                         <b class="text-secondary text-sm">Website</b>
-                        <p class="float-right text-sm">Click here</p>
+                        <a class="float-right text-sm decoration-none cursor-pointer" href="{{supplierData.websiteURL}}"
+                            target="_blank">Click here</a>
                     </div>
                     <div class="col-md-6 col-12 flex align-items-center justify-between">
                         <b class="text-secondary text-sm">ASI</b>
-                        <p class="float-right text-sm">N/A</p>
+                        <p class="float-right text-sm">{{supplierData.ASI || 'N/A'}}</p>
                     </div>
                     <div class="col-md-6 col-12 flex align-items-center justify-between">
                         <b class="text-secondary text-sm">Phone</b>
-                        <p class="float-right text-sm">888-462-1937</p>
+                        <p class="float-right text-sm">{{supplierData.phone || 'N/A'}}</p>
                     </div>
                     <div class="col-md-6 col-12 flex align-items-center justify-between">
                         <b class="text-secondary text-sm">PPAI</b>
-                        <p class="float-right text-sm">N/A</p>
+                        <p class="float-right text-sm">{{supplierData.PPAI || 'N/A'}}</p>
                     </div>
                     <div class="col-md-6 col-12 flex align-items-center justify-between">
                         <b class="text-secondary text-sm">Fax</b>
-                        <p class="float-right text-sm">888-462-1937</p>
+                        <p class="float-right text-sm">{{supplierData.fax || 'N/A'}}</p>
                     </div>
                     <div class="col-md-6 col-12 flex align-items-center justify-between">
                         <b class="text-secondary text-sm">Status</b>
-                        <p class="float-right text-sm text-green-500">ACTIVE</p>
+                        <p class="float-right text-sm text-green-700 font-medium" *ngIf="supplierData.blnActiveVendor">
+                            <b>ACTIVE</b>
+                        </p>
+                        <p class="float-right text-sm text-red-700 font-medium" *ngIf="!supplierData.blnActiveVendor">
+                            <b>DISABLED</b>
+                        </p>
                     </div>
                 </div>
             </div>

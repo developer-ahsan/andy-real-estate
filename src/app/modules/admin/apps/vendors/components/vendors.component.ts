@@ -4,7 +4,7 @@ import { takeUntil } from 'rxjs/operators';
 import { fuseAnimations } from '@fuse/animations';
 import { Router } from '@angular/router';
 import { FuseMediaWatcherService } from '@fuse/services/media-watcher';
-import { SystemService } from './vendors.service';
+import { VendorsService } from './vendors.service';
 import { MatDrawer } from '@angular/material/sidenav';
 
 @Component({
@@ -35,7 +35,7 @@ export class VendorsComponent {
     constructor(
         private _changeDetectorRef: ChangeDetectorRef,
         private _router: Router,
-        private _vendorService: SystemService,
+        private _vendorService: VendorsService,
         private _fuseMediaWatcherService: FuseMediaWatcherService,
     ) {
     }

@@ -3,6 +3,7 @@ import { AuthGuard } from 'app/core/auth/guards/auth.guard';
 import { NoAuthGuard } from 'app/core/auth/guards/noAuth.guard';
 import { LayoutComponent } from 'app/layout/layout.component';
 import { InitialDataResolver } from 'app/app.resolvers';
+import { StatesResolver } from './modules/admin/apps/vendors/components/vendors.resolvers';
 
 // @formatter:off
 /* eslint-disable max-len */
@@ -89,7 +90,7 @@ export const appRoutes: Route[] = [
                     { path: 'chat', loadChildren: () => import('app/modules/admin/apps/chat/chat.module').then(m => m.ChatModule) },
                     { path: 'contacts', loadChildren: () => import('app/modules/admin/apps/contacts/contacts.module').then(m => m.ContactsModule) },
                     { path: 'ecommerce', loadChildren: () => import('app/modules/admin/apps/ecommerce/ecommerce.module').then(m => m.ECommerceModule) },
-                    { path: 'vendors', loadChildren: () => import('app/modules/admin/apps/vendors/vendors.module').then(m => m.VendorsModule) },
+                    { path: 'vendors', loadChildren: () => import('app/modules/admin/apps/vendors/vendors.module').then(m => m.VendorsModule), resolve: { states: StatesResolver } },
                     { path: 'system', loadChildren: () => import('app/modules/admin/apps/system/system.module').then(m => m.SystemModule) },
                     { path: 'flps', loadChildren: () => import('app/modules/admin/apps/flps/flps.module').then(m => m.FlpsModule) },
                     { path: 'users', loadChildren: () => import('app/modules/admin/apps/users/users.module').then(m => m.UsersModule) },

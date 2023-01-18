@@ -1,0 +1,14 @@
+<div class="w-full">
+    <div>
+        <div class="bg-card shadow">
+            <div class=" p-5">
+                <fuse-alert [type]="'success'" [appearance]="'soft'" [showIcon]="!isLoading">
+                    <span *ngIf="isLoading" class="text-secondary font-medium">Fetching Suppliers....</span>
+                    <span *ngIf="!isLoading" class="cursor-pointer text-secondary font-medium"
+                        (click)="downloadExcelWorkSheet()">Click here to download
+                        the vendor data file</span>
+                </fuse-alert>
+            </div>
+        </div>
+    </div>
+</div>

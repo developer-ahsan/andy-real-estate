@@ -2,7 +2,7 @@ import { Component, Input, OnInit, Output, EventEmitter, ChangeDetectorRef, OnDe
 import { Subject } from 'rxjs';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { add_setup_charge } from '../../vendors.types';
-import { SystemService } from '../../vendors.service';
+import { VendorsService } from '../../vendors.service';
 
 @Component({
   selector: 'app-imprint-run',
@@ -32,7 +32,7 @@ export class SystemImprintRunComponent implements OnInit, OnDestroy {
   errMsg = '';
   constructor(
     private _changeDetectorRef: ChangeDetectorRef,
-    private _systemService: SystemService,
+    private _VendorsService: VendorsService,
     private _snackBar: MatSnackBar,
   ) { }
 
@@ -89,7 +89,7 @@ export class SystemImprintRunComponent implements OnInit, OnDestroy {
       add_charge_setup: true
     }
     this.createNewChargeLoader = true;
-    this._systemService.AddSystemData(payload).subscribe(res => {
+    this._VendorsService.AddSystemData(payload).subscribe(res => {
       this.createNewChargeLoader = false;
       this.currentChargeValue = res["new_charge"];
       this.isNewCharge = false;
@@ -114,7 +114,7 @@ export class SystemImprintRunComponent implements OnInit, OnDestroy {
     let chargeValue = intCharge * (1 - roundedDiscount);
     chargeValue = Math.round(chargeValue * 10000) / 10000;
     this.getChargesLoader = true;
-    this._systemService.getChargeValue(chargeValue)
+    this._VendorsService.getChargeValue(chargeValue)
       .subscribe((charges) => {
         if (!charges["data"]?.length) {
           const errorLog = `No charges containing ${intCharge} x (1-${roundedDiscount}) = ${chargeValue} were found. Check your inputs or add a new charge.`;
@@ -138,7 +138,7 @@ export class SystemImprintRunComponent implements OnInit, OnDestroy {
           chargeArray.push(fk_chargeID)
         };
 
-        this._systemService.getChargeValuesData(chargeArray.toString())
+        this._VendorsService.getChargeValuesData(chargeArray.toString())
           .subscribe((chargeValues) => {
             this.getChargesLoader = false;
 
@@ -214,7 +214,7 @@ export class SystemImprintRunComponent implements OnInit, OnDestroy {
   }
   setRun(e, value) {
     e.preventDefault();
-    this._systemService.run = value;
+    this._VendorsService.run = value;
     this._snackBar.open('Run assigned successfully', '', {
       horizontalPosition: 'center',
       verticalPosition: 'bottom',
@@ -225,7 +225,7 @@ export class SystemImprintRunComponent implements OnInit, OnDestroy {
 
   setSetup(e, value) {
     e.preventDefault();
-    this._systemService.setup = value;
+    this._VendorsService.setup = value;
     this._snackBar.open('Setup assigned successfully', '', {
       horizontalPosition: 'center',
       verticalPosition: 'bottom',
@@ -235,7 +235,7 @@ export class SystemImprintRunComponent implements OnInit, OnDestroy {
   };
   getRunSetup() {
     this.runSetupLoaderFetching = true;
-    this._systemService.distributionCodes$
+    this._VendorsService.distributionCodes$
       .subscribe((response) => {
         this.runSetupLoaderFetching = false;
         this.runSetupDistributorCodes = response["data"];
@@ -247,7 +247,7 @@ export class SystemImprintRunComponent implements OnInit, OnDestroy {
       });
   };
   setCurrentRun() {
-    this._systemService.run = this.currentChargeValue;
+    this._VendorsService.run = this.currentChargeValue;
     this._snackBar.open('Run assigned successfully', '', {
       horizontalPosition: 'center',
       verticalPosition: 'bottom',
@@ -257,7 +257,7 @@ export class SystemImprintRunComponent implements OnInit, OnDestroy {
   };
 
   setCurrentSetup() {
-    this._systemService.setup = this.currentChargeValue;
+    this._VendorsService.setup = this.currentChargeValue;
     this._snackBar.open('Setup assigned successfully', '', {
       horizontalPosition: 'center',
       verticalPosition: 'bottom',

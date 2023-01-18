@@ -12,7 +12,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 @Injectable({
     providedIn: 'root'
 })
-export class SystemService {
+export class VendorsService {
     public navigationLabels = navigations;
 
     // Imprints
@@ -37,6 +37,8 @@ export class SystemService {
     private _tags: BehaviorSubject<InventoryTag[] | null> = new BehaviorSubject(null);
     private _vendors: BehaviorSubject<InventoryVendor[] | null> = new BehaviorSubject(null);
     private _suppliers: BehaviorSubject<any[] | null> = new BehaviorSubject<any[]>(null);
+    private _single_suppliers: BehaviorSubject<any[] | null> = new BehaviorSubject<any[]>(null);
+    private _states: BehaviorSubject<any[] | null> = new BehaviorSubject<any[]>(null);
     private _productLicensingTerms: BehaviorSubject<any[] | null> = new BehaviorSubject<any[]>(null);
     private _stores: BehaviorSubject<any[] | null> = new BehaviorSubject<any[]>(null);
     private _imprintMethods: BehaviorSubject<any[] | null> = new BehaviorSubject<any[]>(null);
@@ -119,6 +121,12 @@ export class SystemService {
 
     get Suppliers$(): Observable<any[]> {
         return this._suppliers.asObservable();
+    };
+    get Single_Suppliers$(): Observable<any[]> {
+        return this._single_suppliers.asObservable();
+    };
+    get States$(): Observable<any[]> {
+        return this._states.asObservable();
     };
 
     get stores$(): Observable<any[]> {
@@ -1397,8 +1405,59 @@ export class SystemService {
 
     // Get calls
     getVendorsData(params): Observable<any[]> {
-        return this._httpClient.get<any[]>(environment.products, {
+        return this._httpClient.get<any[]>(environment.vendors, {
             params: params
         });
+    };
+    // Post Calls
+    postVendorsData(payload) {
+        const headers = { 'Authorization': `Bearer ${this._authService.accessToken}` };
+        return this._httpClient.post(
+            environment.vendors, payload, { headers });
+    };
+    // Put Calls
+    putVendorsData(payload) {
+        const headers = { 'Authorization': `Bearer ${this._authService.accessToken}` };
+        return this._httpClient.put(
+            environment.vendors, payload, { headers });
+    };
+    // All Vendors Suppliers
+    getAllvendorsSuppliers(): Observable<any[]> {
+        return this._httpClient.get<any[]>(environment.vendors, {
+            params: {
+                supplier: true,
+                bln_active: 1,
+                size: 20
+            }
+        }).pipe(
+            tap((response: any) => {
+                this._suppliers.next(response);
+            })
+        );
+    };
+    // Vendors data by id
+    getVendorsSupplierById(id): Observable<any[]> {
+        return this._httpClient.get<any[]>(environment.vendors, {
+            params: {
+                company_id: id,
+                single_supplier: true
+            }
+        }).pipe(
+            tap((response: any) => {
+                this._single_suppliers.next(response);
+            })
+        );
+    };
+    // GEt States
+    getVendorsStates(): Observable<any[]> {
+        return this._httpClient.get<any[]>(environment.vendors, {
+            params: {
+                states: true
+            }
+        }).pipe(
+            tap((response: any) => {
+                this._states.next(response);
+            })
+        );
     };
 }

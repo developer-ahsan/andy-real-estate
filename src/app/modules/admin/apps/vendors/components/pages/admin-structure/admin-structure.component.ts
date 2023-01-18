@@ -5,7 +5,7 @@ import { MatChipInputEvent } from '@angular/material/chips';
 import { MatPaginator } from '@angular/material/paginator';
 import { Subject } from 'rxjs';
 import { debounceTime, distinctUntilChanged, filter, finalize, switchMap, takeUntil, tap } from 'rxjs/operators';
-import { SystemService } from '../../vendors.service';
+import { VendorsService } from '../../vendors.service';
 import { AddNewNode, AddPromoCode, ClearStoreRapidbuild, DeleteImprintColor, DeleteNode, DeletePromoCode, UpdateImprintMethod, UpdateNode, UpdatePromoCode } from '../../vendors.types';
 import moment from 'moment';
 @Component({
@@ -48,7 +48,7 @@ export class AdminStructureComponent implements OnInit, OnDestroy {
   isAddLoader: boolean = false;
   constructor(
     private _changeDetectorRef: ChangeDetectorRef,
-    private _systemService: SystemService
+    private _VendorsService: VendorsService
   ) { }
 
 
@@ -75,7 +75,7 @@ export class AdminStructureComponent implements OnInit, OnDestroy {
           this.isLoadings = true;
           this._changeDetectorRef.markForCheck();
         }),
-        switchMap(value => this._systemService.getSystemsData(this.searchPayload)
+        switchMap(value => this._VendorsService.getSystemsData(this.searchPayload)
           .pipe(
             finalize(() => {
               this.isLoadings = false
@@ -109,7 +109,7 @@ export class AdminStructureComponent implements OnInit, OnDestroy {
       page: page,
       size: 20
     }
-    this._systemService.getSystemsData(params).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+    this._VendorsService.getSystemsData(params).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
       if (this.keyword == '') {
         res["data"].forEach(element => {
           this.dataSource.push(element)
@@ -118,7 +118,7 @@ export class AdminStructureComponent implements OnInit, OnDestroy {
       }
 
       if (type == 'add') {
-        this._systemService.snackBar('Section added successfully');
+        this._VendorsService.snackBar('Section added successfully');
         this.isAddLoader = false;
       } else {
         this.isViewMoreLoader = false;
@@ -160,7 +160,7 @@ export class AdminStructureComponent implements OnInit, OnDestroy {
       }
       this.isViewMoreCatData = true;
     }
-    this._systemService.getSystemsData(params).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+    this._VendorsService.getSystemsData(params).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
       res["data"].forEach(element => {
         this.subCatData.child.push(element);
       });
@@ -184,13 +184,13 @@ export class AdminStructureComponent implements OnInit, OnDestroy {
       section_id: item.pk_sectionID,
       delete_node: true
     }
-    this._systemService.UpdateSystemData(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+    this._VendorsService.UpdateSystemData(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
       if (item.fk_parentID == 0) {
         this.dataSource = this.dataSource.filter(elem => elem.pk_sectionID != item.pk_sectionID);
       } else {
         this.subCatData.child = this.subCatData.child.filter(elem => elem.pk_sectionID != item.pk_sectionID);
       }
-      this._systemService.snackBar('Section delete successfully');
+      this._VendorsService.snackBar('Section delete successfully');
       this._changeDetectorRef.markForCheck();
     });
   }
@@ -202,8 +202,8 @@ export class AdminStructureComponent implements OnInit, OnDestroy {
       parent_id: item.fk_parentID,
       update_node: true
     }
-    this._systemService.UpdateSystemData(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
-      this._systemService.snackBar('Section updated successfully');
+    this._VendorsService.UpdateSystemData(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+      this._VendorsService.snackBar('Section updated successfully');
       item.updateLoader = false;
       this._changeDetectorRef.markForCheck();
     }, err => {
@@ -213,7 +213,7 @@ export class AdminStructureComponent implements OnInit, OnDestroy {
   }
   addNode() {
     if (this.ngName == '') {
-      this._systemService.snackBar('Name is required');
+      this._VendorsService.snackBar('Name is required');
       return;
     }
     this.isAddLoader = true;
@@ -223,7 +223,7 @@ export class AdminStructureComponent implements OnInit, OnDestroy {
       add_node: true
     }
 
-    this._systemService.UpdateSystemData(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+    this._VendorsService.UpdateSystemData(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
       this.page = 1;
       this.getAdminStructure(1, 'add');
       this._changeDetectorRef.markForCheck();

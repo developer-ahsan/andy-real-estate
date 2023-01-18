@@ -277,29 +277,29 @@
                                     <div class="col-2">
                                         <mat-form-field appearance="fill" class="w-full">
                                             <mat-label>Two</mat-label>
-                                            <input matInput type="number" min="1" value="1"
-                                                [formControlName]="'twoColorQ'">
+                                            <input matInput type="number" (onmousewheel)="$event.preventDefault()"
+                                                min="1" value="1" [formControlName]="'twoColorQ'">
                                         </mat-form-field>
                                     </div>
                                     <div class="col-2">
                                         <mat-form-field appearance="fill" class="w-full">
                                             <mat-label>Three</mat-label>
-                                            <input matInput type="number" min="1" value="1"
-                                                [formControlName]="'threeColorQ'">
+                                            <input matInput type="number" (onmousewheel)="$event.preventDefault()"
+                                                min="1" value="1" [formControlName]="'threeColorQ'">
                                         </mat-form-field>
                                     </div>
                                     <div class="col-2">
                                         <mat-form-field appearance="fill" class="w-full">
                                             <mat-label>Four</mat-label>
-                                            <input matInput type="number" min="1" value="1"
-                                                [formControlName]="'fourColorQ'">
+                                            <input matInput type="number" (onmousewheel)="$event.preventDefault()"
+                                                min="1" value="1" [formControlName]="'fourColorQ'">
                                         </mat-form-field>
                                     </div>
                                     <div class="col-2">
                                         <mat-form-field appearance="fill" class="w-full">
                                             <mat-label>Five</mat-label>
-                                            <input matInput type="number" min="1" value="1"
-                                                [formControlName]="'fiveColorQ'">
+                                            <input matInput type="number" (onmousewheel)="$event.preventDefault()"
+                                                min="1" value="1" [formControlName]="'fiveColorQ'">
                                         </mat-form-field>
                                     </div>
                                 </div>
@@ -452,7 +452,8 @@
                         <form [formGroup]="chargeDistribution">
                             <mat-form-field appearance="fill" class="w-full">
                                 <mat-label>Charge</mat-label>
-                                <input matInput [formControlName]="'charge'" type="number" value="0">
+                                <input matInput [formControlName]="'charge'" type="number"
+                                    (onmousewheel)="$event.preventDefault()" value="0">
                             </mat-form-field>
                         </form>
                     </div>
@@ -482,13 +483,15 @@
                             <div class="col-lg-6 col-12 my-2">
                                 <mat-form-field appearance="fill" class="w-full">
                                     <mat-label>Setup</mat-label>
-                                    <input matInput [formControlName]="'setup'" type="number">
+                                    <input matInput [formControlName]="'setup'" type="number"
+                                        (onmousewheel)="$event.preventDefault()">
                                 </mat-form-field>
                             </div>
                             <div class="col-lg-6 col-12 my-2">
                                 <mat-form-field appearance="fill" class="w-full">
                                     <mat-label>Run</mat-label>
-                                    <input matInput [formControlName]="'run'" type="number">
+                                    <input matInput [formControlName]="'run'" type="number"
+                                        (onmousewheel)="$event.preventDefault()">
                                 </mat-form-field>
                             </div>
                         </div>
@@ -548,7 +551,7 @@
                     </div>
                     <div class="col-12">
                         <mat-form-field appearance="fill" class="w-full">
-                            <input matInput value="{{minValue}}" type="number"
+                            <input matInput value="{{minValue}}" type="number" (onmousewheel)="$event.preventDefault()"
                                 (input)="addMinQuantity($event.target.value)">
                         </mat-form-field>
                     </div>
@@ -598,7 +601,8 @@
                     </div>
                     <div class="col-12">
                         <mat-form-field appearance="fill" class="w-full">
-                            <input matInput value="{{displayOrder}}" type="number" min="1"
+                            <input matInput value="{{displayOrder}}" type="number"
+                                (onmousewheel)="$event.preventDefault()" min="1"
                                 (input)="addImprintDisplayOrder($event.target.value)">
                         </mat-form-field>
                     </div>
@@ -1094,8 +1098,9 @@
                                 class="w-10 min-w-10 bg-gray-50 dark:bg-black dark:bg-opacity-5"> Order </th>
                             <td mat-cell *matCellDef="let element">
                                 <mat-form-field class="w-2/3 mt-2" appearance="fill">
-                                    <input matInput type="number" placeholder="Order#"
-                                        (change)="onChangeEvent($event, element)" value="{{element.displayOrder}}">
+                                    <input matInput type="number" (onmousewheel)="$event.preventDefault()"
+                                        placeholder="Order#" (change)="onChangeEvent($event, element)"
+                                        value="{{element.displayOrder}}">
                                 </mat-form-field>
                             </td>
                         </ng-container>
@@ -1314,29 +1319,29 @@
                                     <div class="col-2">
                                         <mat-form-field appearance="fill" class="w-full">
                                             <mat-label>Two</mat-label>
-                                            <input matInput type="number" min="1" value="1"
-                                                [formControlName]="'twoColorQ'">
+                                            <input matInput type="number" (onmousewheel)="$event.preventDefault()"
+                                                min="1" value="1" [formControlName]="'twoColorQ'">
                                         </mat-form-field>
                                     </div>
                                     <div class="col-2">
                                         <mat-form-field appearance="fill" class="w-full">
                                             <mat-label>Three</mat-label>
-                                            <input matInput type="number" min="1" value="1"
-                                                [formControlName]="'threeColorQ'">
+                                            <input matInput type="number" (onmousewheel)="$event.preventDefault()"
+                                                min="1" value="1" [formControlName]="'threeColorQ'">
                                         </mat-form-field>
                                     </div>
                                     <div class="col-2">
                                         <mat-form-field appearance="fill" class="w-full">
                                             <mat-label>Four</mat-label>
-                                            <input matInput type="number" min="1" value="1"
-                                                [formControlName]="'fourColorQ'">
+                                            <input matInput type="number" (onmousewheel)="$event.preventDefault()"
+                                                min="1" value="1" [formControlName]="'fourColorQ'">
                                         </mat-form-field>
                                     </div>
                                     <div class="col-2">
                                         <mat-form-field appearance="fill" class="w-full">
                                             <mat-label>Five</mat-label>
-                                            <input matInput type="number" min="1" value="1"
-                                                [formControlName]="'fiveColorQ'">
+                                            <input matInput type="number" (onmousewheel)="$event.preventDefault()"
+                                                min="1" value="1" [formControlName]="'fiveColorQ'">
                                         </mat-form-field>
                                     </div>
                                 </div>
@@ -1489,7 +1494,8 @@
                         <form [formGroup]="chargeDistribution">
                             <mat-form-field appearance="fill" class="w-full">
                                 <mat-label>Charge</mat-label>
-                                <input matInput [formControlName]="'charge'" type="number" value="0">
+                                <input matInput [formControlName]="'charge'" type="number"
+                                    (onmousewheel)="$event.preventDefault()" value="0">
                             </mat-form-field>
                         </form>
                     </div>
@@ -1519,13 +1525,15 @@
                             <div class="col-lg-6 col-12 my-2">
                                 <mat-form-field appearance="fill" class="w-full">
                                     <mat-label>Setup</mat-label>
-                                    <input matInput [formControlName]="'setup'" type="number">
+                                    <input matInput [formControlName]="'setup'" type="number"
+                                        (onmousewheel)="$event.preventDefault()">
                                 </mat-form-field>
                             </div>
                             <div class="col-lg-6 col-12 my-2">
                                 <mat-form-field appearance="fill" class="w-full">
                                     <mat-label>Run</mat-label>
-                                    <input matInput [formControlName]="'run'" type="number">
+                                    <input matInput [formControlName]="'run'" type="number"
+                                        (onmousewheel)="$event.preventDefault()">
                                 </mat-form-field>
                             </div>
                         </div>
@@ -1585,7 +1593,7 @@
                     </div>
                     <div class="col-12">
                         <mat-form-field appearance="fill" class="w-full">
-                            <input matInput value="{{minValue}}" type="number"
+                            <input matInput value="{{minValue}}" type="number" (onmousewheel)="$event.preventDefault()"
                                 (input)="addMinQuantity($event.target.value)">
                         </mat-form-field>
                     </div>
@@ -1654,7 +1662,8 @@
                     </div>
                     <div class="col-12">
                         <mat-form-field appearance="fill" class="w-full">
-                            <input matInput value="{{displayOrder}}" type="number" min="1"
+                            <input matInput value="{{displayOrder}}" type="number"
+                                (onmousewheel)="$event.preventDefault()" min="1"
                                 (input)="addImprintDisplayOrder($event.target.value)">
                         </mat-form-field>
                     </div>

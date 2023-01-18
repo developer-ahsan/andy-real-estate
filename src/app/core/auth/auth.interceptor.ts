@@ -1,16 +1,19 @@
 import { Injectable } from '@angular/core';
 import { HttpErrorResponse, HttpEvent, HttpHandler, HttpInterceptor, HttpRequest } from '@angular/common/http';
 import { Observable, throwError } from 'rxjs';
-import { catchError } from 'rxjs/operators';
+import { catchError, map, switchMap, take } from 'rxjs/operators';
 import { AuthService } from 'app/core/auth/auth.service';
 import { AuthUtils } from 'app/core/auth/auth.utils';
+import { AngularFireAuth } from '@angular/fire/compat/auth';
+import moment from 'moment';
 
 @Injectable()
 export class AuthInterceptor implements HttpInterceptor {
     /**
      * Constructor
      */
-    constructor(private _authService: AuthService) {
+    constructor(private _authService: AuthService,
+        private _afAuth: AngularFireAuth) {
     }
 
     /**
@@ -32,6 +35,19 @@ export class AuthInterceptor implements HttpInterceptor {
         // catch and delete the access token from the local storage while logging
         // the user out from the app.
         if (this._authService.accessToken && !AuthUtils.isTokenExpired(this._authService.accessToken)) {
+            this._afAuth.authState.subscribe(user => {
+                this._afAuth.idTokenResult.subscribe(token => {
+                    const now = moment().unix()
+                    const lastFetched = token.claims.exp;
+                    const duration = moment.duration(moment.unix(lastFetched).diff(moment.unix(now)));
+                    const getMinutes = duration.asMinutes();
+                    if (getMinutes <= 30) {
+                        user.getIdToken(true).then(res => {
+                            this._authService.accessToken = res;
+                        });
+                    }
+                });
+            });
             newReq = req.clone({
                 headers: req.headers.set('Authorization', 'Bearer ' + this._authService.accessToken)
             });

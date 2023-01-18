@@ -4,7 +4,7 @@ import { MatChipInputEvent } from '@angular/material/chips';
 import { MatPaginator } from '@angular/material/paginator';
 import { Subject } from 'rxjs';
 import { finalize, takeUntil } from 'rxjs/operators';
-import { SystemService } from '../../vendors.service';
+import { VendorsService } from '../../vendors.service';
 
 @Component({
   selector: 'app-vendor-settings',
@@ -19,7 +19,7 @@ export class VendorSettingsComponent implements OnInit, OnDestroy {
 
   constructor(
     private _changeDetectorRef: ChangeDetectorRef,
-    private _systemService: SystemService
+    private _VendorsService: VendorsService
   ) { }
 
   ngOnInit(): void {

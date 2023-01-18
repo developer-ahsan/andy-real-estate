@@ -5,8 +5,9 @@ import { VendorCoreProductsComponent } from './components/pages/vendor-core-prod
 import { VendorProductsSummaryComponent } from './components/pages/vendor-products-summary/vendor-products-summary.component';
 import { VendorProductsComponent } from './components/pages/vendor-products/vendor-products.component';
 import { VendorSettingsComponent } from './components/pages/vendor-settings/vendor-settings.component';
+import { VendorsInfoComponent } from './components/pages/vendors-info/vendors-info.component';
 import { VendorsComponent } from './components/vendors.component';
-import { StoresListsResolver, SuppliersListsResolver } from './components/vendors.resolvers';
+import { SuppliersByIdResolver, SuppliersListsResolver } from './components/vendors.resolvers';
 
 export const vendorsRoutes: Route[] = [
 
@@ -14,17 +15,19 @@ export const vendorsRoutes: Route[] = [
         path: '',
         component: VendorsComponent,
         resolve: {
-            stores: StoresListsResolver,
             suppliers: SuppliersListsResolver
         }
     },
     {
         path: ':id',
         component: VendorsDetailsComponent,
+        resolve: {
+            suplier: SuppliersByIdResolver
+        },
         children: [
             {
                 path: 'information',
-                component: VendorTopOrderComponent,
+                component: VendorsInfoComponent,
                 data: {
                     title: 'Vendor Information',
                     url: 'information'

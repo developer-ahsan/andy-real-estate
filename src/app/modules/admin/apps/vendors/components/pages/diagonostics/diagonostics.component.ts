@@ -5,7 +5,7 @@ import { MatChipInputEvent } from '@angular/material/chips';
 import { MatPaginator } from '@angular/material/paginator';
 import { Subject } from 'rxjs';
 import { finalize, takeUntil } from 'rxjs/operators';
-import { SystemService } from '../../vendors.service';
+import { VendorsService } from '../../vendors.service';
 import { AddPromoCode, ClearStoreRapidbuild, DeleteImprintColor, DeletePromoCode, UpdateImprintMethod, UpdatePromoCode } from '../../vendors.types';
 import moment from 'moment';
 @Component({
@@ -67,7 +67,7 @@ export class DiagonosticsComponent implements OnInit, OnDestroy {
   isCartClearLoader: boolean = false;
   constructor(
     private _changeDetectorRef: ChangeDetectorRef,
-    private _systemService: SystemService
+    private _VendorsService: VendorsService
   ) { }
 
   initForm() {
@@ -83,7 +83,7 @@ export class DiagonosticsComponent implements OnInit, OnDestroy {
     let payload;
     if (type == 'Clear_Store') {
       if (!this.ngStoreBuildID) {
-        this._systemService.snackBar('Store Id is required');
+        this._VendorsService.snackBar('Store Id is required');
         return
       }
       payload = {
@@ -94,7 +94,7 @@ export class DiagonosticsComponent implements OnInit, OnDestroy {
       this.updateApiCall(payload, type);
     } else if (type == 'Remove_User') {
       if (!this.ngRemoveUserID) {
-        this._systemService.snackBar('User Id is required');
+        this._VendorsService.snackBar('User Id is required');
         return
       }
       payload = {
@@ -105,7 +105,7 @@ export class DiagonosticsComponent implements OnInit, OnDestroy {
       this.updateApiCall(payload, type);
     } else if (type == 'Remove_Order') {
       if (!this.ngRemoveOrderID) {
-        this._systemService.snackBar('Order Id is required');
+        this._VendorsService.snackBar('Order Id is required');
         return
       }
       payload = {
@@ -116,7 +116,7 @@ export class DiagonosticsComponent implements OnInit, OnDestroy {
       this.updateApiCall(payload, type);
     } else if (type == 'Merge_Users') {
       if (!this.ngMergeUserID || !this.ngMergeSlaveID) {
-        this._systemService.snackBar('IDs are required');
+        this._VendorsService.snackBar('IDs are required');
         return
       }
       payload = {
@@ -128,7 +128,7 @@ export class DiagonosticsComponent implements OnInit, OnDestroy {
       this.updateApiCall(payload, type);
     } else if (type == 'Clear_Cart') {
       if (!this.ngCartUserID) {
-        this._systemService.snackBar('User ID is required');
+        this._VendorsService.snackBar('User ID is required');
         return
       }
       payload = {
@@ -142,7 +142,7 @@ export class DiagonosticsComponent implements OnInit, OnDestroy {
 
   }
   updateApiCall(payload, type) {
-    this._systemService.UpdateSystemData(payload).pipe(takeUntil(this._unsubscribeAll), finalize(() => {
+    this._VendorsService.UpdateSystemData(payload).pipe(takeUntil(this._unsubscribeAll), finalize(() => {
       this.isRemoveStoreBuildLoader = false;
       this.isCartClearLoader = false;
       this.isMergeUserLoader = false;
@@ -151,7 +151,7 @@ export class DiagonosticsComponent implements OnInit, OnDestroy {
       this._changeDetectorRef.markForCheck();
     })).subscribe(res => {
       if (res["success"]) {
-        this._systemService.snackBar(res["message"]);
+        this._VendorsService.snackBar(res["message"]);
         if (type == 'Clear_Store') {
           this.ngStoreBuildID = '';
         } else if (type == 'Remove_User') {
@@ -166,11 +166,11 @@ export class DiagonosticsComponent implements OnInit, OnDestroy {
           this.ngCartDate = new Date();
         }
       } else {
-        this._systemService.snackBar(res["message"]);
+        this._VendorsService.snackBar(res["message"]);
       }
       this._changeDetectorRef.markForCheck();
     }, err => {
-      this._systemService.snackBar('Something went wrong');
+      this._VendorsService.snackBar('Something went wrong');
     })
   }
   /**

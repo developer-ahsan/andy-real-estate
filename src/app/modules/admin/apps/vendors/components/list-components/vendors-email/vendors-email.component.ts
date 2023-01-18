@@ -2,7 +2,7 @@ import { Component, Input, OnInit, ChangeDetectorRef, OnDestroy, ViewChild } fro
 import { MatPaginator } from '@angular/material/paginator';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
-import { SystemService } from '../../vendors.service';
+import { VendorsService } from '../../vendors.service';
 @Component({
   selector: 'app-vendors-email',
   templateUrl: './vendors-email.component.html',
@@ -20,7 +20,7 @@ export class VendorsEmailComponent implements OnInit, OnDestroy {
   totalSupplier = 0;
   constructor(
     private _changeDetectorRef: ChangeDetectorRef,
-    private _vendorService: SystemService
+    private _vendorService: VendorsService
   ) { }
 
   initForm() {

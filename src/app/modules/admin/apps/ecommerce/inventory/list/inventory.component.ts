@@ -243,6 +243,7 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
         caseHeight: [''],
         caseWidth: [''],
         caseLength: [''],
+        productDimensions: [''],
         productHeight: [''],
         productWidth: [''],
         productLength: [''],
@@ -296,6 +297,7 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
         caseHeight: [''],
         caseWidth: [''],
         caseLength: [''],
+        productDimensions: [''],
         productHeight: [''],
         productWidth: [''],
         productLength: [''],
@@ -1280,7 +1282,7 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
         const { supplierLink, mainDescription, miniDescription, flatRate, weight, doChargesApply, unitsInWeight, caseWidth, caseLength, caseHeight, overPackageCharge, keywords, productNumber, productName, msrp, internalComments } = finalForm;
 
         const { firstQuantity, secondQuantity, thirdQuantity, fourthQuantity, fifthQuantity, sixthQuantity, standardCostOne, standardCostTwo, standardCostThree, standardCostFour, standardCostFive, standardCostSix } = finalForm;
-        const { quantityOne, quantityTwo, quantityThree, quantityFour, quantityFive, quantitySix, productWidth, productHeight, productLength, allowGroupRun } = finalForm;
+        const { quantityOne, quantityTwo, quantityThree, quantityFour, quantityFive, quantitySix, productDimensions, productWidth, productHeight, productLength, allowGroupRun } = finalForm;
 
         let quantityList = [parseInt(firstQuantity) || null, parseInt(secondQuantity) || null, parseInt(thirdQuantity) || null, parseInt(fourthQuantity) || null, parseInt(fifthQuantity) || null, parseInt(sixthQuantity) || null];
         quantityList = this.removeNull(quantityList);
@@ -1293,11 +1295,11 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
 
         const productId = null;
 
-        const productDimensions = [
-            productWidth ? productWidth : 0,
-            productHeight ? productHeight : 0,
-            productLength ? productLength : 0
-        ];
+        // const productDimensions = [
+        //     productWidth ? productWidth : 0,
+        //     productHeight ? productHeight : 0,
+        //     productLength ? productLength : 0
+        // ];
 
         const shipping = {
             bln_include_shipping: doChargesApply == "Yes" ? 1 : 0,
@@ -1309,7 +1311,7 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
 
         const physics = {
             bln_apparel: radio.name === "Apparel Item" ? true : false,
-            dimensions: productDimensions.toString(),
+            dimensions: productDimensions,
             over_pack_charge: overPackageCharge || null,
             product_id: productId,
             shipping: shipping,
@@ -3006,7 +3008,7 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
         const { supplierLink, mainDescription, miniDescription, flatRate, weight, doChargesApply, unitsInWeight, caseWidth, caseLength, caseHeight, overPackageCharge, keywords, productNumber, productName, msrp, internalComments, unitsInShippingPackage } = finalForm;
 
         const { firstQuantity, secondQuantity, thirdQuantity, fourthQuantity, fifthQuantity, sixthQuantity, standardCostOne, standardCostTwo, standardCostThree, standardCostFour, standardCostFive, standardCostSix } = finalForm;
-        const { quantityOne, quantityTwo, quantityThree, quantityFour, quantityFive, quantitySix, productWidth, productHeight, productLength, allowGroupRun } = finalForm;
+        const { quantityOne, quantityTwo, quantityThree, quantityFour, quantityFive, quantitySix, productDimensions, productWidth, productHeight, productLength, allowGroupRun } = finalForm;
 
         if (!productName) {
             this._snackBar.open("Product Name is required", '', {
@@ -3065,11 +3067,11 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
             productId = null;
             this.productId = null;
         }
-        const productDimensions = [
-            productWidth ? productWidth : 0,
-            productHeight ? productHeight : 0,
-            productLength ? productLength : 0
-        ];
+        // const productDimensions = [
+        //     productWidth ? productWidth : 0,
+        //     productHeight ? productHeight : 0,
+        //     productLength ? productLength : 0
+        // ];
 
         const shipping = {
             bln_include_shipping: doChargesApply == "Yes" ? 1 : 0,
@@ -3081,7 +3083,7 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
 
         const physics = {
             bln_apparel: radio.name === "Apparel Item" ? true : false,
-            dimensions: productDimensions.toString(),
+            dimensions: productDimensions,
             over_pack_charge: overPackageCharge || null,
             product_id: productId,
             shipping: shipping,

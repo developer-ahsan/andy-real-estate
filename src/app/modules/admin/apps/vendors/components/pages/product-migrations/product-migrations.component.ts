@@ -4,7 +4,7 @@ import { MatChipInputEvent } from '@angular/material/chips';
 import { MatPaginator } from '@angular/material/paginator';
 import { Subject } from 'rxjs';
 import { finalize, takeUntil } from 'rxjs/operators';
-import { SystemService } from '../../vendors.service';
+import { VendorsService } from '../../vendors.service';
 import { AddColor, AddImprintColor, AddImprintMethod, DeleteColor, DeleteImprintColor, UpdateColor, UpdateImprintColor, UpdateImprintMethod } from '../../vendors.types';
 
 @Component({
@@ -55,11 +55,11 @@ export class ProductMigrationsComponent implements OnInit, OnDestroy {
   ]
   constructor(
     private _changeDetectorRef: ChangeDetectorRef,
-    private _systemService: SystemService
+    private _VendorsService: VendorsService
   ) { }
 
   ngOnInit(): void {
-    this._systemService.stores$.pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+    this._VendorsService.stores$.pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
       this.stores = res["data"];
     });
     setTimeout(() => {
@@ -81,7 +81,7 @@ export class ProductMigrationsComponent implements OnInit, OnDestroy {
       page: page,
       size: 20
     }
-    this._systemService.getSystemsData(params).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+    this._VendorsService.getSystemsData(params).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
       this.dataSource = res["data"];
       this.totalUsers = res["totalRecords"];
       if (this.keyword == '') {
@@ -92,7 +92,7 @@ export class ProductMigrationsComponent implements OnInit, OnDestroy {
         this.isAddMethodLoader = false;
         this.ngName = '';
         this.ngDesc = '';
-        this._systemService.snackBar('Method Added Successfully');
+        this._VendorsService.snackBar('Method Added Successfully');
         this.mainScreen = 'Current Imprint Methods';
       }
       this.isLoading = false;
@@ -133,7 +133,7 @@ export class ProductMigrationsComponent implements OnInit, OnDestroy {
 
   addNewMethod() {
     if (this.ngName == '') {
-      this._systemService.snackBar('Imprint Method name is required');
+      this._VendorsService.snackBar('Imprint Method name is required');
       return;
     }
     let payload: AddImprintMethod = {
@@ -142,19 +142,19 @@ export class ProductMigrationsComponent implements OnInit, OnDestroy {
       add_imprint_method: true
     }
     this.isAddMethodLoader = true;
-    this._systemService.AddSystemData(payload).pipe(takeUntil(this._unsubscribeAll), finalize(() => {
+    this._VendorsService.AddSystemData(payload).pipe(takeUntil(this._unsubscribeAll), finalize(() => {
       this._changeDetectorRef.markForCheck();
     })).subscribe(res => {
       if (res["success"]) {
         this.getImprintMethods(1, 'add')
       } else {
         this.isAddMethodLoader = false;
-        this._systemService.snackBar(res["message"]);
+        this._VendorsService.snackBar(res["message"]);
       }
       this._changeDetectorRef.markForCheck();
     }, err => {
       this.isAddMethodLoader = false;
-      this._systemService.snackBar('Something went wrong');
+      this._VendorsService.snackBar('Something went wrong');
     })
   }
   // Delete Color
@@ -164,16 +164,16 @@ export class ProductMigrationsComponent implements OnInit, OnDestroy {
       imprint_color_id: item.pk_imprintColorID,
       delete_imprint_color: true
     }
-    this._systemService.UpdateSystemData(payload).pipe(takeUntil(this._unsubscribeAll), finalize(() => {
+    this._VendorsService.UpdateSystemData(payload).pipe(takeUntil(this._unsubscribeAll), finalize(() => {
       item.delLoader = false
       this._changeDetectorRef.markForCheck();
     })).subscribe(res => {
       this.dataSource = this.dataSource.filter(color => color.pk_imprintColorID != item.pk_imprintColorID);
       this.totalUsers--;
-      this._systemService.snackBar('Color Deleted Successfully');
+      this._VendorsService.snackBar('Color Deleted Successfully');
       this._changeDetectorRef.markForCheck();
     }, err => {
-      this._systemService.snackBar('Something went wrong');
+      this._VendorsService.snackBar('Something went wrong');
     });
   }
   // Update Method
@@ -184,7 +184,7 @@ export class ProductMigrationsComponent implements OnInit, OnDestroy {
   }
   updateMethod() {
     if (this.updateMethodData.imprintColorName == '') {
-      this._systemService.snackBar('Color name is required');
+      this._VendorsService.snackBar('Color name is required');
       return;
     }
     const rgb = this.ngRGBUpdate.replace('#', '');
@@ -195,7 +195,7 @@ export class ProductMigrationsComponent implements OnInit, OnDestroy {
       update_imprint_method: true
     }
     this.isUpdateMethodLoader = true;
-    this._systemService.UpdateSystemData(payload).pipe(takeUntil(this._unsubscribeAll), finalize(() => {
+    this._VendorsService.UpdateSystemData(payload).pipe(takeUntil(this._unsubscribeAll), finalize(() => {
       this.isUpdateMethodLoader = false
       this._changeDetectorRef.markForCheck();
     })).subscribe(res => {
@@ -205,10 +205,10 @@ export class ProductMigrationsComponent implements OnInit, OnDestroy {
           elem.methodDescription = this.updateMethodData.methodDescription;
         }
       });
-      this._systemService.snackBar('Method Updated Successfully');
+      this._VendorsService.snackBar('Method Updated Successfully');
       this._changeDetectorRef.markForCheck();
     }, err => {
-      this._systemService.snackBar('Something went wrong');
+      this._VendorsService.snackBar('Something went wrong');
     })
   }
 

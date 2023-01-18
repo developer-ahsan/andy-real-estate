@@ -5,7 +5,7 @@ import { MatChipInputEvent } from '@angular/material/chips';
 import { MatPaginator } from '@angular/material/paginator';
 import { Subject } from 'rxjs';
 import { finalize, takeUntil } from 'rxjs/operators';
-import { SystemService } from '../../vendors.service';
+import { VendorsService } from '../../vendors.service';
 import { AddPromoCode, DeleteImprintColor, DeletePromoCode, UpdateImprintMethod, UpdatePromoCode } from '../../vendors.types';
 import moment from 'moment';
 @Component({
@@ -48,7 +48,7 @@ export class PromoCodesComponent implements OnInit, OnDestroy {
   updatePromoForm: FormGroup;
   constructor(
     private _changeDetectorRef: ChangeDetectorRef,
-    private _systemService: SystemService
+    private _VendorsService: VendorsService
   ) { }
 
   initForm() {
@@ -100,7 +100,7 @@ export class PromoCodesComponent implements OnInit, OnDestroy {
       page: page,
       size: 20
     }
-    this._systemService.getSystemsData(params).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+    this._VendorsService.getSystemsData(params).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
       this.dataSource = res["data"];
       this.totalUsers = res["totalRecords"];
       if (this.keyword == '') {
@@ -110,7 +110,7 @@ export class PromoCodesComponent implements OnInit, OnDestroy {
       if (type == 'add') {
         this.isAddPromoLoader = false;
         this.initForm();
-        this._systemService.snackBar('PromoCode Added Successfully');
+        this._VendorsService.snackBar('PromoCode Added Successfully');
         this.mainScreen = 'Current Promo Codes';
       }
       this.isLoading = false;
@@ -156,7 +156,7 @@ export class PromoCodesComponent implements OnInit, OnDestroy {
   addNewPromoCode() {
     const { promocode, amount, threshold, description, blnActive, expDate, blnShipping, blnRemoveShippingCost, blnRemoveShippingPrice, blnRemoveCost, blnRemovePrice, blnPercent } = this.addPromoForm.getRawValue();
     if (promocode == '' || description == '') {
-      this._systemService.snackBar('Please fill out the required fields');
+      this._VendorsService.snackBar('Please fill out the required fields');
       return;
     }
     let date;
@@ -169,19 +169,19 @@ export class PromoCodesComponent implements OnInit, OnDestroy {
       promocode, amount, threshold, description, blnActive, expDate: date, blnShipping, blnRemoveShippingCost, blnRemoveShippingPrice, blnRemoveCost, blnRemovePrice, blnPercent, add_promo_code: true
     }
     this.isAddPromoLoader = true;
-    this._systemService.AddSystemData(payload).pipe(takeUntil(this._unsubscribeAll), finalize(() => {
+    this._VendorsService.AddSystemData(payload).pipe(takeUntil(this._unsubscribeAll), finalize(() => {
       this._changeDetectorRef.markForCheck();
     })).subscribe(res => {
       if (res["success"]) {
         this.getPromoCodes(1, 'add')
       } else {
         this.isAddPromoLoader = false;
-        this._systemService.snackBar(res["message"]);
+        this._VendorsService.snackBar(res["message"]);
       }
       this._changeDetectorRef.markForCheck();
     }, err => {
       this.isAddPromoLoader = false;
-      this._systemService.snackBar('Something went wrong');
+      this._VendorsService.snackBar('Something went wrong');
     })
   }
   // Delete Promo
@@ -191,7 +191,7 @@ export class PromoCodesComponent implements OnInit, OnDestroy {
       promocode: item.promocode,
       delete_promo_code: true
     }
-    this._systemService.UpdateSystemData(payload).pipe(takeUntil(this._unsubscribeAll), finalize(() => {
+    this._VendorsService.UpdateSystemData(payload).pipe(takeUntil(this._unsubscribeAll), finalize(() => {
       item.delLoader = false
       this._changeDetectorRef.markForCheck();
     })).subscribe(res => {
@@ -199,10 +199,10 @@ export class PromoCodesComponent implements OnInit, OnDestroy {
       this.totalUsers--;
       this.tempDataSource = this.tempDataSource.filter(elem => elem.promocode != item.promocode);
       this.tempRecords--;
-      this._systemService.snackBar('PromoCode Deleted Successfully');
+      this._VendorsService.snackBar('PromoCode Deleted Successfully');
       this._changeDetectorRef.markForCheck();
     }, err => {
-      this._systemService.snackBar('Something went wrong');
+      this._VendorsService.snackBar('Something went wrong');
     });
   }
   // Update Promo
@@ -221,7 +221,7 @@ export class PromoCodesComponent implements OnInit, OnDestroy {
   updatePromoCode() {
     const { promocode, amount, threshold, description, blnActive, expDate, blnShipping, blnRemoveShippingCost, blnRemoveShippingPrice, blnRemoveCost, blnRemovePrice, blnPercent } = this.updatePromoForm.getRawValue();
     if (promocode == '' || description == '') {
-      this._systemService.snackBar('Please fill out the required fields');
+      this._VendorsService.snackBar('Please fill out the required fields');
       return;
     }
     let date;
@@ -234,7 +234,7 @@ export class PromoCodesComponent implements OnInit, OnDestroy {
       amount, threshold, description, blnActive, expDate: date, blnShipping, blnRemoveShippingCost, blnRemoveShippingPrice, blnRemoveCost, blnRemovePrice, blnPercent, promocode, update_promo_code: true
     }
     this.isUpdatePromoLoader = true;
-    this._systemService.UpdateSystemData(payload).pipe(takeUntil(this._unsubscribeAll), finalize(() => {
+    this._VendorsService.UpdateSystemData(payload).pipe(takeUntil(this._unsubscribeAll), finalize(() => {
       this.isUpdatePromoLoader = false
       this._changeDetectorRef.markForCheck();
     })).subscribe(res => {
@@ -254,11 +254,11 @@ export class PromoCodesComponent implements OnInit, OnDestroy {
           elem.blnRemovePrice = blnRemovePrice;
         }
       });
-      this._systemService.snackBar('Promo Code Updated Successfully');
+      this._VendorsService.snackBar('Promo Code Updated Successfully');
       this.isUpdatePromo = false;
       this._changeDetectorRef.markForCheck();
     }, err => {
-      this._systemService.snackBar('Something went wrong');
+      this._VendorsService.snackBar('Something went wrong');
     })
   }
 

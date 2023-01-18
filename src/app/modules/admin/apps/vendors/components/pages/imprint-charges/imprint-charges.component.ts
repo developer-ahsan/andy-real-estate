@@ -5,7 +5,7 @@ import { InventoryService } from 'app/modules/admin/apps/ecommerce/inventory/inv
 import { ImprintRunComponent } from 'app/modules/admin/apps/ecommerce/inventory/navigation/imprint/imprint-run/imprint-run.component';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
-import { SystemService } from '../../vendors.service';
+import { VendorsService } from '../../vendors.service';
 import { UpdateCharge } from '../../vendors.types';
 
 @Component({
@@ -37,7 +37,7 @@ export class ImprintChargesComponent implements OnInit, OnDestroy {
     private _changeDetectorRef: ChangeDetectorRef,
     public dialog: MatDialog,
     private readonly sso: ScrollStrategyOptions,
-    private _systemService: SystemService,
+    private _VendorsService: VendorsService,
     private _inventoryService: InventoryService
   ) {
     this.scrollStrategy = this.sso.noop();
@@ -100,7 +100,7 @@ export class ImprintChargesComponent implements OnInit, OnDestroy {
   }
   getChargeData() {
     if (this.ngChargeID == '') {
-      this._systemService.snackBar('Please Enter Charge ID');
+      this._VendorsService.snackBar('Please Enter Charge ID');
       return;
     }
     this.isSearching = true;
@@ -113,7 +113,7 @@ export class ImprintChargesComponent implements OnInit, OnDestroy {
     }
     let run = [];
 
-    this._systemService.getSystemsData(params).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+    this._VendorsService.getSystemsData(params).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
       this.chargeData = res["data"];
       if (this.chargeData.length > 0) {
         res["data"].forEach((element, index) => {
@@ -141,7 +141,7 @@ export class ImprintChargesComponent implements OnInit, OnDestroy {
         }
       } else {
         this.backToList();
-        this._systemService.snackBar('No charges are found for this id');
+        this._VendorsService.snackBar('No charges are found for this id');
       }
 
       this.isSearching = false;
@@ -172,7 +172,7 @@ export class ImprintChargesComponent implements OnInit, OnDestroy {
       charge_id: this.ngChargeID,
       page: this.page
     }
-    this._systemService.getSystemsData(params).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+    this._VendorsService.getSystemsData(params).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
       if (!this.chargeUsedData) {
         this.chargeUsedData = res;
       } else {
@@ -212,9 +212,9 @@ export class ImprintChargesComponent implements OnInit, OnDestroy {
       update_imprint_charges: true
     }
     this.isUpdateChargeLoader = true;
-    this._systemService.UpdateSystemData(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+    this._VendorsService.UpdateSystemData(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
       if (res["success"]) {
-        this._systemService.snackBar('Charge distribution updated successfully');
+        this._VendorsService.snackBar('Charge distribution updated successfully');
       }
       this.isUpdateChargeLoader = false;
       this._changeDetectorRef.markForCheck();

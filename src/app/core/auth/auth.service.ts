@@ -1,14 +1,15 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { from, Observable, of, throwError } from 'rxjs';
-import { catchError, switchMap } from 'rxjs/operators';
+import { catchError, map, switchMap } from 'rxjs/operators';
 import { AngularFireAuth } from '@angular/fire/compat/auth';
 import { AuthUtils } from 'app/core/auth/auth.utils';
 import { UserService } from 'app/core/user/user.service';
 import { environment } from 'environments/environment';
 import { ActivatedRoute, Router } from '@angular/router';
 import * as auth from 'firebase/auth';
-
+import firebase from 'firebase/app';
+import 'firebase/auth'
 
 @Injectable()
 export class AuthService {
@@ -224,15 +225,23 @@ export class AuthService {
     /**
      * Check the authentication status
      */
+    public getToken$(): Observable<any> {
+        return from(this.afAuth.currentUser).pipe(switchMap(user => {
+            return from(user.getIdTokenResult(true)).pipe(map(token => {
+                return token;
+            }));
+        }));
+    }
     check(): Observable<boolean> {
-        // console.log(this.afAuth)
+
         // this.afAuth.authState.subscribe(res => {
         //     if (res) {
-        //         res.getIdToken().then(res => {
-        //             console.log(res)
+        //         res.getIdToken(true).then(res => {
+        //             this.accessToken = res;
         //         })
         //     }
-        // })
+        // });
+
         // Check if the user is logged in
         if (this._authenticated) {
             return of(true);

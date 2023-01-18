@@ -4,7 +4,7 @@ import { MatChipInputEvent } from '@angular/material/chips';
 import { MatPaginator } from '@angular/material/paginator';
 import { Subject } from 'rxjs';
 import { finalize, takeUntil } from 'rxjs/operators';
-import { SystemService } from '../../vendors.service';
+import { VendorsService } from '../../vendors.service';
 import { AddBlurb, AddColor, AddImprintColor, AddImprintMethod, DeleteBlurb, DeleteColor, DeleteImprintColor, UpdateColor, UpdateImprintColor, UpdateImprintMethod } from '../../vendors.types';
 
 @Component({
@@ -43,7 +43,7 @@ export class DefaultBlurbsComponent implements OnInit, OnDestroy {
   ngRGBUpdate = '';
   constructor(
     private _changeDetectorRef: ChangeDetectorRef,
-    private _systemService: SystemService
+    private _VendorsService: VendorsService
   ) { }
 
   ngOnInit(): void {
@@ -56,7 +56,7 @@ export class DefaultBlurbsComponent implements OnInit, OnDestroy {
       page: page,
       size: 20
     }
-    this._systemService.getSystemsData(params).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+    this._VendorsService.getSystemsData(params).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
       this.dataSource = res["data"];
       this.totalUsers = res["totalRecords"];
       if (this.keyword == '') {
@@ -66,7 +66,7 @@ export class DefaultBlurbsComponent implements OnInit, OnDestroy {
       if (type == 'add') {
         this.isAddLoader = false;
         this.ngName = '';
-        this._systemService.snackBar('Blurb Added Successfully');
+        this._VendorsService.snackBar('Blurb Added Successfully');
       }
       this.isLoading = false;
       this.isLoadingChange.emit(false);
@@ -90,7 +90,7 @@ export class DefaultBlurbsComponent implements OnInit, OnDestroy {
 
   addNewBlurb() {
     if (this.ngName == '') {
-      this._systemService.snackBar('Blurb name is required');
+      this._VendorsService.snackBar('Blurb name is required');
       return;
     }
     let payload: AddBlurb = {
@@ -98,19 +98,19 @@ export class DefaultBlurbsComponent implements OnInit, OnDestroy {
       add_blurb: true
     }
     this.isAddLoader = true;
-    this._systemService.AddSystemData(payload).pipe(takeUntil(this._unsubscribeAll), finalize(() => {
+    this._VendorsService.AddSystemData(payload).pipe(takeUntil(this._unsubscribeAll), finalize(() => {
       this._changeDetectorRef.markForCheck();
     })).subscribe(res => {
       if (res["success"]) {
         this.getBlurbs(1, 'add')
       } else {
         this.isAddLoader = false;
-        this._systemService.snackBar(res["message"]);
+        this._VendorsService.snackBar(res["message"]);
       }
       this._changeDetectorRef.markForCheck();
     }, err => {
       this.isAddLoader = false;
-      this._systemService.snackBar('Something went wrong');
+      this._VendorsService.snackBar('Something went wrong');
     })
   }
   // Delete Burb
@@ -120,16 +120,16 @@ export class DefaultBlurbsComponent implements OnInit, OnDestroy {
       blurb_id: item.pk_blurbID,
       delete_blurb: true
     }
-    this._systemService.UpdateSystemData(payload).pipe(takeUntil(this._unsubscribeAll), finalize(() => {
+    this._VendorsService.UpdateSystemData(payload).pipe(takeUntil(this._unsubscribeAll), finalize(() => {
       item.delLoader = false
       this._changeDetectorRef.markForCheck();
     })).subscribe(res => {
       this.dataSource = this.dataSource.filter(elem => elem.pk_blurbID != item.pk_blurbID);
       this.totalUsers--;
-      this._systemService.snackBar('Blurb Deleted Successfully');
+      this._VendorsService.snackBar('Blurb Deleted Successfully');
       this._changeDetectorRef.markForCheck();
     }, err => {
-      this._systemService.snackBar('Something went wrong');
+      this._VendorsService.snackBar('Something went wrong');
     });
   }
   // Update Method
@@ -140,7 +140,7 @@ export class DefaultBlurbsComponent implements OnInit, OnDestroy {
   }
   updateMethod() {
     if (this.updateMethodData.imprintColorName == '') {
-      this._systemService.snackBar('Color name is required');
+      this._VendorsService.snackBar('Color name is required');
       return;
     }
     const rgb = this.ngRGBUpdate.replace('#', '');
@@ -151,7 +151,7 @@ export class DefaultBlurbsComponent implements OnInit, OnDestroy {
       update_imprint_method: true
     }
     this.isUpdateMethodLoader = true;
-    this._systemService.UpdateSystemData(payload).pipe(takeUntil(this._unsubscribeAll), finalize(() => {
+    this._VendorsService.UpdateSystemData(payload).pipe(takeUntil(this._unsubscribeAll), finalize(() => {
       this.isUpdateMethodLoader = false
       this._changeDetectorRef.markForCheck();
     })).subscribe(res => {
@@ -161,10 +161,10 @@ export class DefaultBlurbsComponent implements OnInit, OnDestroy {
           elem.methodDescription = this.updateMethodData.methodDescription;
         }
       });
-      this._systemService.snackBar('Method Updated Successfully');
+      this._VendorsService.snackBar('Method Updated Successfully');
       this._changeDetectorRef.markForCheck();
     }, err => {
-      this._systemService.snackBar('Something went wrong');
+      this._VendorsService.snackBar('Something went wrong');
     })
   }
 

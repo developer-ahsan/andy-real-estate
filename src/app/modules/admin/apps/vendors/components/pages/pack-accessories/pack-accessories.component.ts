@@ -4,7 +4,7 @@ import { MatChipInputEvent } from '@angular/material/chips';
 import { MatPaginator } from '@angular/material/paginator';
 import { Subject } from 'rxjs';
 import { finalize, take, takeUntil } from 'rxjs/operators';
-import { SystemService } from '../../vendors.service';
+import { VendorsService } from '../../vendors.service';
 import { AddColor, AddPackage, AddSize, DeleteColor, DeletePackage, DeleteSize, UpdateColor, UpdatePackage, UpdateSize } from '../../vendors.types';
 import { NgxImageCompressService } from "ngx-image-compress";
 
@@ -41,7 +41,7 @@ export class PackAndAccessoriesComponent implements OnInit, OnDestroy {
   updateImage = '';
   constructor(
     private _changeDetectorRef: ChangeDetectorRef,
-    private _systemService: SystemService,
+    private _VendorsService: VendorsService,
   ) { }
 
   ngOnInit(): void {
@@ -58,7 +58,7 @@ export class PackAndAccessoriesComponent implements OnInit, OnDestroy {
       page: page,
       size: 20
     }
-    this._systemService.getSystemsData(params).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+    this._VendorsService.getSystemsData(params).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
       this.dataSource = res["data"];
       this.totalUsers = res["totalRecords"];
       setTimeout(() => {
@@ -71,7 +71,7 @@ export class PackAndAccessoriesComponent implements OnInit, OnDestroy {
       } else if (type == 'update') {
         this.updateImage = this.imgUrl + 'Thumbnails/' + this.updatePackageData.pk_packagingID + '.jpg?' + Math.random();
         this.imageValue = null;
-        this._systemService.snackBar('Package updated successfully');
+        this._VendorsService.snackBar('Package updated successfully');
         this.isUpdatePackageLoader = false;
       }
       this.isLoading = false;
@@ -101,16 +101,16 @@ export class PackAndAccessoriesComponent implements OnInit, OnDestroy {
       package_id: item.pk_packagingID,
       delete_package: true
     }
-    this._systemService.UpdateSystemData(payload).pipe(takeUntil(this._unsubscribeAll), finalize(() => {
+    this._VendorsService.UpdateSystemData(payload).pipe(takeUntil(this._unsubscribeAll), finalize(() => {
       item.delLoader = false
       this._changeDetectorRef.markForCheck();
     })).subscribe(res => {
       this.dataSource = this.dataSource.filter(elem => elem.pk_packagingID != item.pk_packagingID);
       this.totalUsers--;
-      this._systemService.snackBar('Package Deleted Successfully');
+      this._VendorsService.snackBar('Package Deleted Successfully');
       this._changeDetectorRef.markForCheck();
     }, err => {
-      this._systemService.snackBar('Something went wrong');
+      this._VendorsService.snackBar('Something went wrong');
     });
   }
   // Update Package
@@ -139,14 +139,14 @@ export class PackAndAccessoriesComponent implements OnInit, OnDestroy {
       image.src = reader.result;
       image.onload = () => {
         if (image.width != 600 || image.height != 600) {
-          this._systemService.snackBar('Dimensions allowed are 600px x 600px');
+          this._VendorsService.snackBar('Dimensions allowed are 600px x 600px');
           this.imageValue = null;
           this._changeDetectorRef.markForCheck();
           return;
         };
 
         if (type != "image/jpeg") {
-          this._systemService.snackBar('Image extensions are allowed in JPG');
+          this._VendorsService.snackBar('Image extensions are allowed in JPG');
           this.imageValue = null;
           this._changeDetectorRef.markForCheck();
           return;
@@ -163,7 +163,7 @@ export class PackAndAccessoriesComponent implements OnInit, OnDestroy {
   // Add Package
   addNewPackage() {
     if (this.ngPackageName == '') {
-      this._systemService.snackBar('Package name is required');
+      this._VendorsService.snackBar('Package name is required');
       return;
     }
     let payload: AddPackage = {
@@ -171,7 +171,7 @@ export class PackAndAccessoriesComponent implements OnInit, OnDestroy {
       add_package: true
     }
     this.isAddPackageLoader = true;
-    this._systemService.AddSystemData(payload).pipe(takeUntil(this._unsubscribeAll), finalize(() => {
+    this._VendorsService.AddSystemData(payload).pipe(takeUntil(this._unsubscribeAll), finalize(() => {
       this._changeDetectorRef.markForCheck();
     })).subscribe(res => {
       if (res["success"]) {
@@ -182,18 +182,18 @@ export class PackAndAccessoriesComponent implements OnInit, OnDestroy {
         }
       } else {
         this.isAddPackageLoader = false;
-        this._systemService.snackBar(res["message"]);
+        this._VendorsService.snackBar(res["message"]);
       }
       this._changeDetectorRef.markForCheck();
     }, err => {
       this.isAddPackageLoader = false;
-      this._systemService.snackBar('Something went wrong');
+      this._VendorsService.snackBar('Something went wrong');
     })
   }
   // Update
   UpdatePackage() {
     if (this.updatePackageData.packagingName == '') {
-      this._systemService.snackBar('Package name is required');
+      this._VendorsService.snackBar('Package name is required');
       return;
     }
     let payload: UpdatePackage = {
@@ -202,7 +202,7 @@ export class PackAndAccessoriesComponent implements OnInit, OnDestroy {
       update_package: true
     }
     this.isUpdatePackageLoader = true;
-    this._systemService.UpdateSystemData(payload).pipe(takeUntil(this._unsubscribeAll), finalize(() => {
+    this._VendorsService.UpdateSystemData(payload).pipe(takeUntil(this._unsubscribeAll), finalize(() => {
       this._changeDetectorRef.markForCheck();
     })).subscribe(res => {
       if (res["success"]) {
@@ -215,18 +215,18 @@ export class PackAndAccessoriesComponent implements OnInit, OnDestroy {
           this.updateImage = null;
           this.uploadPackegeMedia(this.updatePackageData.pk_packagingID, 'update');
         } else {
-          this._systemService.snackBar('Package updated successfully');
+          this._VendorsService.snackBar('Package updated successfully');
           this.isUpdatePackageLoader = false;
           this._changeDetectorRef.markForCheck();
         }
       } else {
         this.isUpdatePackageLoader = false;
-        this._systemService.snackBar(res["message"]);
+        this._VendorsService.snackBar(res["message"]);
       }
       this._changeDetectorRef.markForCheck();
     }, err => {
       this.isUpdatePackageLoader = false;
-      this._systemService.snackBar('Something went wrong');
+      this._VendorsService.snackBar('Something went wrong');
     })
   }
   uploadPackegeMedia(id, type) {
@@ -235,7 +235,7 @@ export class PackAndAccessoriesComponent implements OnInit, OnDestroy {
       image_file: this.imageValueCommpressed.imageUpload.split(",")[1],
       image_path: `/globalAssets/Packagings/Thumbnails/${id}.jpg`
     };
-    this._systemService.AddSystemData(payload1).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+    this._VendorsService.AddSystemData(payload1).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
       if (type == 'add') {
         this.getPackAccessories(1, 'add');
       } else {
@@ -253,7 +253,7 @@ export class PackAndAccessoriesComponent implements OnInit, OnDestroy {
       image_file: this.imageValue.imageUpload.split(",")[1],
       image_path: `/globalAssets/Packagings/Images/${id}.jpg`
     };
-    this._systemService.AddSystemData(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+    this._VendorsService.AddSystemData(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
       this._changeDetectorRef.markForCheck();
     });
     const base64 = this.imageValue.imageUpload.split(",")[1];

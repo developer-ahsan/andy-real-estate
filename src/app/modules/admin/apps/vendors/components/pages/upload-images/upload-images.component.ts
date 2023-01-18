@@ -1,7 +1,7 @@
 import { Component, Input, OnInit, Output, EventEmitter, ChangeDetectorRef, OnDestroy, ViewChild } from '@angular/core';
 import { MatPaginator } from '@angular/material/paginator';
 import { Subject } from 'rxjs';
-import { SystemService } from '../../vendors.service';
+import { VendorsService } from '../../vendors.service';
 
 @Component({
   selector: 'app-upload-images',
@@ -18,7 +18,7 @@ export class UploadImagesComponent implements OnInit, OnDestroy {
   isAddLoader: boolean = false;
   constructor(
     private _changeDetectorRef: ChangeDetectorRef,
-    private _systemService: SystemService
+    private _VendorsService: VendorsService
   ) { }
 
   ngOnInit(): void {

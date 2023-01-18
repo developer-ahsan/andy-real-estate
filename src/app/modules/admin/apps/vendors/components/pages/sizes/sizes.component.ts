@@ -4,7 +4,7 @@ import { MatChipInputEvent } from '@angular/material/chips';
 import { MatPaginator } from '@angular/material/paginator';
 import { Subject } from 'rxjs';
 import { finalize, takeUntil } from 'rxjs/operators';
-import { SystemService } from '../../vendors.service';
+import { VendorsService } from '../../vendors.service';
 import { AddColor, AddSize, DeleteColor, DeleteSize, UpdateColor, UpdateSize } from '../../vendors.types';
 
 @Component({
@@ -53,7 +53,7 @@ export class SizesComponent implements OnInit, OnDestroy {
   isProductSizes: boolean = false;
   constructor(
     private _changeDetectorRef: ChangeDetectorRef,
-    private _systemService: SystemService
+    private _VendorsService: VendorsService
   ) { }
 
   ngOnInit(): void {
@@ -70,7 +70,7 @@ export class SizesComponent implements OnInit, OnDestroy {
       page: page,
       size: 20
     }
-    this._systemService.getSystemsData(params).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+    this._VendorsService.getSystemsData(params).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
       this.dataSource = res["data"];
       this.totalUsers = res["totalRecords"];
       if (this.keyword == '') {
@@ -81,7 +81,7 @@ export class SizesComponent implements OnInit, OnDestroy {
       this.isSearching = false;
       if (type == 'delete') {
         this.isDeleteLoader = false;
-        this._systemService.snackBar('Sizes Deleted Successfully');
+        this._VendorsService.snackBar('Sizes Deleted Successfully');
       }
       this.isLoadingChange.emit(false);
       this._changeDetectorRef.markForCheck();
@@ -134,7 +134,7 @@ export class SizesComponent implements OnInit, OnDestroy {
       page: page,
       size: 20
     }
-    this._systemService.getSystemsData(params).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+    this._VendorsService.getSystemsData(params).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
       this.productData = res["data"];
       this.productDataRecords = res["totalRecords"];
       this.isProductLoader = false;
@@ -158,7 +158,7 @@ export class SizesComponent implements OnInit, OnDestroy {
   // Add new Size
   addNewSize() {
     if (this.ngSizeName == '') {
-      this._systemService.snackBar('Size is required');
+      this._VendorsService.snackBar('Size is required');
       return;
     }
     let payload: AddSize = {
@@ -167,7 +167,7 @@ export class SizesComponent implements OnInit, OnDestroy {
       add_size: true
     }
     this.isAddSizeLoader = true;
-    this._systemService.AddSystemData(payload).pipe(takeUntil(this._unsubscribeAll), finalize(() => {
+    this._VendorsService.AddSystemData(payload).pipe(takeUntil(this._unsubscribeAll), finalize(() => {
       this.isAddSizeLoader = false
       this._changeDetectorRef.markForCheck();
     })).subscribe(res => {
@@ -175,19 +175,19 @@ export class SizesComponent implements OnInit, OnDestroy {
         this.getSizes(1, 'get');
         this.ngSizeName = '';
         this.ngSizeOrder = 0;
-        this._systemService.snackBar('Size Added Successfully');
+        this._VendorsService.snackBar('Size Added Successfully');
       } else {
-        this._systemService.snackBar(res["message"]);
+        this._VendorsService.snackBar(res["message"]);
       }
       this._changeDetectorRef.markForCheck();
     }, err => {
-      this._systemService.snackBar('Something went wrong');
+      this._VendorsService.snackBar('Something went wrong');
     });
   }
   // Delete Color
   deleteSizes() {
     if (this.checkBoxesList.length == 0) {
-      this._systemService.snackBar('Please select minimum one size');
+      this._VendorsService.snackBar('Please select minimum one size');
       return;
     }
     let payload: DeleteSize = {
@@ -195,7 +195,7 @@ export class SizesComponent implements OnInit, OnDestroy {
       delete_size: true
     }
     this.isDeleteLoader = true;
-    this._systemService.UpdateSystemData(payload).pipe(takeUntil(this._unsubscribeAll), finalize(() => {
+    this._VendorsService.UpdateSystemData(payload).pipe(takeUntil(this._unsubscribeAll), finalize(() => {
       this._changeDetectorRef.markForCheck();
     })).subscribe(res => {
       this.keyword = '';
@@ -203,7 +203,7 @@ export class SizesComponent implements OnInit, OnDestroy {
       this.getSizes(1, 'delete');
       this._changeDetectorRef.markForCheck();
     }, err => {
-      this._systemService.snackBar('Something went wrong');
+      this._VendorsService.snackBar('Something went wrong');
     });
   }
   // Update Color
@@ -233,14 +233,14 @@ export class SizesComponent implements OnInit, OnDestroy {
       update_size: true
     }
     this.isUpdateSizeLoader = true;
-    this._systemService.UpdateSystemData(payload).pipe(takeUntil(this._unsubscribeAll), finalize(() => {
+    this._VendorsService.UpdateSystemData(payload).pipe(takeUntil(this._unsubscribeAll), finalize(() => {
       this.isUpdateSizeLoader = false
       this._changeDetectorRef.markForCheck();
     })).subscribe(res => {
-      this._systemService.snackBar('Sizes Updated Successfully');
+      this._VendorsService.snackBar('Sizes Updated Successfully');
       this._changeDetectorRef.markForCheck();
     }, err => {
-      this._systemService.snackBar('Something went wrong');
+      this._VendorsService.snackBar('Something went wrong');
     })
   }
 

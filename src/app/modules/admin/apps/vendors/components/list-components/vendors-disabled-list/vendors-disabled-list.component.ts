@@ -1,11 +1,12 @@
 import { Component, Input, OnInit, ChangeDetectorRef, OnDestroy, ViewChild, EventEmitter, Output } from '@angular/core';
 import { FormControl, FormGroup } from '@angular/forms';
 import { MatPaginator } from '@angular/material/paginator';
+import { ActivatedRoute, Router } from '@angular/router';
 import { newFLPSUser, updateFLPSUser, removeFLPSUser, applyBlanketCustomerPercentage } from 'app/modules/admin/apps/flps/components/flps.types';
 import { UsersService } from 'app/modules/admin/apps/users/components/users.service';
 import { Subject } from 'rxjs';
 import { finalize, takeUntil } from 'rxjs/operators';
-import { SystemService } from '../../vendors.service';
+import { VendorsService } from '../../vendors.service';
 @Component({
   selector: 'app-vendors-disabled-list',
   templateUrl: './vendors-disabled-list.component.html',
@@ -83,7 +84,9 @@ export class VendorsDisabledListComponent implements OnInit, OnDestroy {
   constructor(
     private _changeDetectorRef: ChangeDetectorRef,
     private _UsersService: UsersService,
-    private _vendorService: SystemService
+    private _vendorService: VendorsService,
+    private _router: Router,
+    private route: ActivatedRoute
   ) { }
 
   initForm() {
@@ -190,7 +193,7 @@ export class VendorsDisabledListComponent implements OnInit, OnDestroy {
     });
   }
   ViewDetails(item) {
-    console.log(item)
+    this._router.navigate([item.pk_companyID + '/information'], { relativeTo: this.route });
   }
   getFlpsUsers(page, type) {
     let params = {

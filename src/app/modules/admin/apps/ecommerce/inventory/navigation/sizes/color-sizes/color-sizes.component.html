@@ -29,7 +29,8 @@
                         <tr *ngFor="let item of colorsList">
                             <th>{{item.colorName}}</th>
                             <td *ngFor="let elem of sizesList">
-                                <input class="form-control input text-sm" type="number" value="0.00">
+                                <input class="form-control input text-sm" type="number"
+                                    (onmousewheel)="$event.preventDefault()" value="0.00">
                             </td>
                         </tr>
                     </table>

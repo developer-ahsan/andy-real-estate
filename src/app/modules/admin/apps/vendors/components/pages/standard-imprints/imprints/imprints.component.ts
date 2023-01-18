@@ -6,7 +6,7 @@ import { Observable, Subject } from 'rxjs';
 import { debounceTime, distinctUntilChanged, filter, finalize, map, startWith, switchMap, takeUntil, tap } from 'rxjs/operators';
 import { AddColor, AddImprintColor, AddImprintMethod, AddStandardImprint, DeleteColor, DeleteImprintColor, UpdateColor, UpdateImprintColor, UpdateImprintMethod, UpdateStandardImprint } from '../../../vendors.types';
 import { fuseAnimations } from '@fuse/animations';
-import { SystemService } from '../../../vendors.service';
+import { VendorsService } from '../../../vendors.service';
 import { FormBuilder, FormControl, FormGroup } from '@angular/forms';
 import { IDropdownSettings } from 'ng-multiselect-dropdown';
 import { ImprintRunComponent } from 'app/modules/admin/apps/ecommerce/inventory/navigation/imprint/imprint-run/imprint-run.component';
@@ -117,7 +117,7 @@ export class AddEditImprintsComponent implements OnInit, OnDestroy {
   isMethodLoading: boolean = false;
   constructor(
     private _changeDetectorRef: ChangeDetectorRef,
-    private _systemService: SystemService,
+    private _VendorsService: VendorsService,
     private _inventoryServcie: InventoryService,
     private _formBuilder: FormBuilder,
     public dialog: MatDialog,
@@ -176,7 +176,7 @@ export class AddEditImprintsComponent implements OnInit, OnDestroy {
           this.isLoadings = true;
           this._changeDetectorRef.markForCheck();
         }),
-        switchMap(value => this._systemService.getAllImprintLocations(value)
+        switchMap(value => this._VendorsService.getAllImprintLocations(value)
           .pipe(
             finalize(() => {
               this.isLoadings = false
@@ -208,7 +208,7 @@ export class AddEditImprintsComponent implements OnInit, OnDestroy {
           this.addImprintMethods = [];
           this._changeDetectorRef.markForCheck();
         }),
-        switchMap(value => this._systemService.getAllImprintMethods(value)
+        switchMap(value => this._VendorsService.getAllImprintMethods(value)
           .pipe(
             finalize(() => {
               this.isMethodLoading = false
@@ -294,7 +294,7 @@ export class AddEditImprintsComponent implements OnInit, OnDestroy {
     this.locationSearchControl.setValue(obj.locationName)
   }
   getAllSuppliers(data?: any) {
-    this._systemService.Suppliers$
+    this._VendorsService.Suppliers$
       .pipe(takeUntil(this._unsubscribeAll))
       .subscribe((supplier) => {
         this.suppliers = supplier["data"];
@@ -309,7 +309,7 @@ export class AddEditImprintsComponent implements OnInit, OnDestroy {
       });
   }
   getAddImprintDigitizers(data?: any) {
-    this._systemService.imprintDigitizer$
+    this._VendorsService.imprintDigitizer$
       .pipe(takeUntil(this._unsubscribeAll))
       .subscribe((digitizers) => {
         if (digitizers) {
@@ -329,7 +329,7 @@ export class AddEditImprintsComponent implements OnInit, OnDestroy {
   };
   getAddImprintMethods(data?: any) {
     this.addImprintMethods = [];
-    this._systemService.imprintMethods$.pipe(takeUntil(this._unsubscribeAll)).subscribe((methods) => {
+    this._VendorsService.imprintMethods$.pipe(takeUntil(this._unsubscribeAll)).subscribe((methods) => {
       if (methods) {
         this.addImprintMethods.push({ methodName: 'New Method >>>', pk_methodID: null });
         this.addImprintMethods = [...this.addImprintMethods, ...methods["data"]];
@@ -352,7 +352,7 @@ export class AddEditImprintsComponent implements OnInit, OnDestroy {
   getAddImprintLocations(data?: any) {
     this.addImprintLocations = [];
 
-    this._systemService.imprintLocations$.pipe(takeUntil(this._unsubscribeAll)).subscribe((location) => {
+    this._VendorsService.imprintLocations$.pipe(takeUntil(this._unsubscribeAll)).subscribe((location) => {
       if (location) {
         this.addImprintLocations.push({ locationName: 'New Location >>>', pk_locationID: null });
         this.addImprintLocations = [...this.addImprintLocations, ...location["data"]];
@@ -375,7 +375,7 @@ export class AddEditImprintsComponent implements OnInit, OnDestroy {
     this.getSupplierColorCollections();
     this.getImprintColorCollectionLoader = true;
     const { pk_companyID } = this.selectedSupplier;
-    this._systemService.getCollectionIds(pk_companyID)
+    this._VendorsService.getCollectionIds(pk_companyID)
       .pipe(takeUntil(this._unsubscribeAll))
       .subscribe((collection_ids) => {
         this.collectionIdsArray = collection_ids["data"];
@@ -386,7 +386,7 @@ export class AddEditImprintsComponent implements OnInit, OnDestroy {
         )
 
         if (!this.collectionIdsArray.length) {
-          this._systemService.snackBar("No collections have been specified for this supplier.");
+          this._VendorsService.snackBar("No collections have been specified for this supplier.");
           this.getImprintColorCollectionLoader = false;
           this._changeDetectorRef.markForCheck();
           return;
@@ -400,7 +400,7 @@ export class AddEditImprintsComponent implements OnInit, OnDestroy {
         // Mark for check
         this._changeDetectorRef.markForCheck();
       }, err => {
-        this._systemService.snackBar("Unable to fetch imprint colors right now. Try again");
+        this._VendorsService.snackBar("Unable to fetch imprint colors right now. Try again");
         this.getImprintColorCollectionLoader = false;
 
         // Mark for check
@@ -414,13 +414,13 @@ export class AddEditImprintsComponent implements OnInit, OnDestroy {
       supplier_available_colors: true,
       supplier_id: pk_companyID
     }
-    this._systemService.getProductsData(params)
+    this._VendorsService.getProductsData(params)
       .pipe(takeUntil(this._unsubscribeAll))
       .subscribe((colors) => {
         this.colorsCollectionIdsArray = colors["data"];
         this._changeDetectorRef.markForCheck();
       }, err => {
-        this._systemService.snackBar("Unable to fetch imprint colors right now. Try again");
+        this._VendorsService.snackBar("Unable to fetch imprint colors right now. Try again");
 
         // Mark for check
         this._changeDetectorRef.markForCheck();
@@ -449,9 +449,9 @@ export class AddEditImprintsComponent implements OnInit, OnDestroy {
 
   GetAllImprintMethods() {
     this.methodsFetch = 'Fetching Methods...';
-    this._systemService.imprintMethods$.pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+    this._VendorsService.imprintMethods$.pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
       if (!res) {
-        this._systemService.getAllImprintMethodsObs('').pipe(takeUntil(this._unsubscribeAll)).subscribe(methods => {
+        this._VendorsService.getAllImprintMethodsObs('').pipe(takeUntil(this._unsubscribeAll)).subscribe(methods => {
         });
       }
     });
@@ -459,9 +459,9 @@ export class AddEditImprintsComponent implements OnInit, OnDestroy {
   GetAllImprintLocation() {
     this.locationsFetch = 'Fetching Locations...';
 
-    this._systemService.imprintLocations$.pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+    this._VendorsService.imprintLocations$.pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
       if (!res) {
-        this._systemService.getAllImprintLocationsObs('').pipe(takeUntil(this._unsubscribeAll)).subscribe(locations => {
+        this._VendorsService.getAllImprintLocationsObs('').pipe(takeUntil(this._unsubscribeAll)).subscribe(locations => {
         });
       } else {
       }
@@ -469,9 +469,9 @@ export class AddEditImprintsComponent implements OnInit, OnDestroy {
   }
 
   getAllImprintDigitizer() {
-    this._systemService.imprintDigitizer$.pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+    this._VendorsService.imprintDigitizer$.pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
       if (!res) {
-        this._systemService.getAllDigitizers().pipe(takeUntil(this._unsubscribeAll)).subscribe(digitizers => {
+        this._VendorsService.getAllDigitizers().pipe(takeUntil(this._unsubscribeAll)).subscribe(digitizers => {
           this.getAllDistributionCodes();
         });
       }
@@ -481,28 +481,28 @@ export class AddEditImprintsComponent implements OnInit, OnDestroy {
   // Add New Imprint Method
   addNewStandardImprint() {
     if (!this.selectedMethod.pk_methodID && !this.method_name) {
-      this._systemService.snackBar("New Method was not specified correctly");
+      this._VendorsService.snackBar("New Method was not specified correctly");
       return;
     }
     if (!this.selectedLocation.pk_locationID && !this.location_name) {
-      this._systemService.snackBar("New Location was not specified correctly");
+      this._VendorsService.snackBar("New Location was not specified correctly");
       return;
     }
     const { run, setup } = this.runSetup.getRawValue();
     if (this.areaValue === "") {
-      this._systemService.snackBar("Imprint AREA has not been defined correctly.");
+      this._VendorsService.snackBar("Imprint AREA has not been defined correctly.");
       return;
     };
 
     if (this.defaultImprintColorSpecification) {
       if (!this.collectionIdsArray.length && !this.customColorId) {
-        this._systemService.snackBar("Select a color collection");
+        this._VendorsService.snackBar("Select a color collection");
         return;
       };
     };
 
     if (run === "" || setup === "") {
-      this._systemService.snackBar("Select a SETUP or RUN charge");
+      this._VendorsService.snackBar("Select a SETUP or RUN charge");
       return;
     };
     let colorProcess = false;
@@ -560,7 +560,7 @@ export class AddEditImprintsComponent implements OnInit, OnDestroy {
     }
     this.addImprintLoader = true;
     if (processMode == 0) {
-      this._systemService.getMultiColorValue(second, third, fourth, fifth).pipe(takeUntil(this._unsubscribeAll))
+      this._VendorsService.getMultiColorValue(second, third, fourth, fifth).pipe(takeUntil(this._unsubscribeAll))
         .subscribe((multi_color) => {
           multiValue = multi_color["data"];
           payload.fk_multiColorMinQID = multiValue?.length ? multiValue[0].pk_multiColorMinQID : 1;
@@ -574,7 +574,7 @@ export class AddEditImprintsComponent implements OnInit, OnDestroy {
     }
   }
   addStandardImprintOBJ(payload) {
-    this._systemService.AddSystemData(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe((response) => {
+    this._VendorsService.AddSystemData(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe((response) => {
       if (response["success"]) {
         this.location_name = '';
         this.method_name = '';
@@ -594,28 +594,28 @@ export class AddEditImprintsComponent implements OnInit, OnDestroy {
   // Update Imprint
   updateNewStandardImprint() {
     if (!this.selectedMethod.pk_methodID && !this.method_name) {
-      this._systemService.snackBar("New Method was not specified correctly");
+      this._VendorsService.snackBar("New Method was not specified correctly");
       return;
     }
     if (!this.selectedLocation.pk_locationID && !this.location_name) {
-      this._systemService.snackBar("New Location was not specified correctly");
+      this._VendorsService.snackBar("New Location was not specified correctly");
       return;
     }
     const { run, setup } = this.runSetup.getRawValue();
     if (this.areaValue === "") {
-      this._systemService.snackBar("Imprint AREA has not been defined correctly.");
+      this._VendorsService.snackBar("Imprint AREA has not been defined correctly.");
       return;
     };
 
     if (this.defaultImprintColorSpecification) {
       if (!this.collectionIdsArray.length && !this.customColorId) {
-        this._systemService.snackBar("Select a color collection");
+        this._VendorsService.snackBar("Select a color collection");
         return;
       };
     };
 
     if (run === "" || setup === "") {
-      this._systemService.snackBar("Select a SETUP or RUN charge");
+      this._VendorsService.snackBar("Select a SETUP or RUN charge");
       return;
     };
     let colorProcess = false;
@@ -674,7 +674,7 @@ export class AddEditImprintsComponent implements OnInit, OnDestroy {
     }
     this.addImprintLoader = true;
     if (processMode == 0) {
-      this._systemService.getMultiColorValue(second, third, fourth, fifth).pipe(takeUntil(this._unsubscribeAll))
+      this._VendorsService.getMultiColorValue(second, third, fourth, fifth).pipe(takeUntil(this._unsubscribeAll))
         .subscribe((multi_color) => {
           multiValue = multi_color["data"];
           payload.fk_multiColorMinQID = multiValue?.length ? multiValue[0].pk_multiColorMinQID : 1;
@@ -688,9 +688,9 @@ export class AddEditImprintsComponent implements OnInit, OnDestroy {
     }
   }
   updateStandardImprintOBJ(payload) {
-    this._systemService.UpdateSystemData(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe((response) => {
+    this._VendorsService.UpdateSystemData(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe((response) => {
       if (response["success"]) {
-        this._systemService.snackBar('Standard Imprint Updated Successfully');
+        this._VendorsService.snackBar('Standard Imprint Updated Successfully');
         this.imprintData.imprintData.decoratorName = this.selectedSupplier.companyName;
         this.imprintData.imprintData.locationName = this.selectedLocation.locationName;
         this.imprintData.imprintData.methodName = this.selectedMethod.methodName;
@@ -736,10 +736,10 @@ export class AddEditImprintsComponent implements OnInit, OnDestroy {
       page: 1,
       size: 10
     }
-    this._systemService.getSystemsData(params).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+    this._VendorsService.getSystemsData(params).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
       this.imprintData.sub_imprints = res["data"];
       this.imprintData.sub_imprints_total = res["totalRecords"];
-      this._systemService.snackBar('Imprint Added Successfully');
+      this._VendorsService.snackBar('Imprint Added Successfully');
       this.addImprintLoader = false;
       this.imprintData.subLoader = false;
       this._changeDetectorRef.markForCheck();

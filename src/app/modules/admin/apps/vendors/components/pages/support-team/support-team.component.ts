@@ -5,7 +5,7 @@ import { MatChipInputEvent } from '@angular/material/chips';
 import { MatPaginator } from '@angular/material/paginator';
 import { Subject } from 'rxjs';
 import { finalize, takeUntil } from 'rxjs/operators';
-import { SystemService } from '../../vendors.service';
+import { VendorsService } from '../../vendors.service';
 import { AddColor, AddDefaultSupportTeam, AddImprintColor, AddImprintMethod, AddMemberFeature, DeleteColor, DeleteImprintColor, DeleteMemberFeature, DeleteTeamMember, UpdateColor, UpdateDefaultSupportTeam, UpdateImprintColor, UpdateImprintMethod, UpdateMemberFeature } from '../../vendors.types';
 
 @Component({
@@ -53,7 +53,7 @@ export class SupportTeamComponent implements OnInit, OnDestroy {
   isAddFeatureLoader: boolean = false;
   constructor(
     private _changeDetectorRef: ChangeDetectorRef,
-    private _systemService: SystemService
+    private _VendorsService: VendorsService
   ) { }
 
   ngOnInit(): void {
@@ -87,7 +87,7 @@ export class SupportTeamComponent implements OnInit, OnDestroy {
       page: page,
       size: 20
     }
-    this._systemService.getSystemsData(params).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+    this._VendorsService.getSystemsData(params).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
       this.dataSource = res["data"];
       this.totalUsers = res["totalRecords"];
       if (this.keyword == '') {
@@ -98,7 +98,7 @@ export class SupportTeamComponent implements OnInit, OnDestroy {
         this.isAddTeamLoader = false;
         this.ngName = '';
         this.ngDesc = '';
-        this._systemService.snackBar('Team Member Added Successfully');
+        this._VendorsService.snackBar('Team Member Added Successfully');
         this.mainScreen = 'Current Support Team';
       }
       this.isLoading = false;
@@ -144,26 +144,26 @@ export class SupportTeamComponent implements OnInit, OnDestroy {
   addNewTeam() {
     const { role_name, name, email, role_type, description, phone } = this.addNewMemberForm.getRawValue();
     if (description == '' || name == '' || email == '' || phone == '') {
-      this._systemService.snackBar('Please fill out the required fields');
+      this._VendorsService.snackBar('Please fill out the required fields');
       return;
     }
     let payload: AddDefaultSupportTeam = {
       role_name, name, description: description.replace(/'/g, "''"), email, phone, role_type, add_default_support_team: true
     }
     this.isAddTeamLoader = true;
-    this._systemService.AddSystemData(payload).pipe(takeUntil(this._unsubscribeAll), finalize(() => {
+    this._VendorsService.AddSystemData(payload).pipe(takeUntil(this._unsubscribeAll), finalize(() => {
       this._changeDetectorRef.markForCheck();
     })).subscribe(res => {
       if (res["success"]) {
         this.getSupportTeam(1, 'add')
       } else {
         this.isAddTeamLoader = false;
-        this._systemService.snackBar(res["message"]);
+        this._VendorsService.snackBar(res["message"]);
       }
       this._changeDetectorRef.markForCheck();
     }, err => {
       this.isAddTeamLoader = false;
-      this._systemService.snackBar('Something went wrong');
+      this._VendorsService.snackBar('Something went wrong');
     })
   }
   // Delete Memeber
@@ -173,16 +173,16 @@ export class SupportTeamComponent implements OnInit, OnDestroy {
       member_id: item.pk_ID,
       delete_team_member: true
     }
-    this._systemService.UpdateSystemData(payload).pipe(takeUntil(this._unsubscribeAll), finalize(() => {
+    this._VendorsService.UpdateSystemData(payload).pipe(takeUntil(this._unsubscribeAll), finalize(() => {
       item.delLoader = false
       this._changeDetectorRef.markForCheck();
     })).subscribe(res => {
       this.dataSource = this.dataSource.filter(elem => elem.pk_ID != item.pk_ID);
       this.totalUsers--;
-      this._systemService.snackBar('Team Member Deleted Successfully');
+      this._VendorsService.snackBar('Team Member Deleted Successfully');
       this._changeDetectorRef.markForCheck();
     }, err => {
-      this._systemService.snackBar('Something went wrong');
+      this._VendorsService.snackBar('Something went wrong');
     });
   }
   // Update Member
@@ -200,7 +200,7 @@ export class SupportTeamComponent implements OnInit, OnDestroy {
   updateMember() {
     const { roleName, name, email, roleType, description, phone, pk_ID } = this.updateMemberForm.getRawValue();
     if (description == '' || name == '' || email == '' || phone == '') {
-      this._systemService.snackBar('Please fill out the required fields');
+      this._VendorsService.snackBar('Please fill out the required fields');
       return;
     }
     let payload: UpdateDefaultSupportTeam = {
@@ -214,7 +214,7 @@ export class SupportTeamComponent implements OnInit, OnDestroy {
       update_default_support_team: true
     }
     this.isUpdateMemberLoader = true;
-    this._systemService.UpdateSystemData(payload).pipe(takeUntil(this._unsubscribeAll), finalize(() => {
+    this._VendorsService.UpdateSystemData(payload).pipe(takeUntil(this._unsubscribeAll), finalize(() => {
       this.isUpdateMemberLoader = false
       this._changeDetectorRef.markForCheck();
     })).subscribe(res => {
@@ -225,10 +225,10 @@ export class SupportTeamComponent implements OnInit, OnDestroy {
           elem.roleName = roleName;
         }
       });
-      this._systemService.snackBar('Method Updated Successfully');
+      this._VendorsService.snackBar('Method Updated Successfully');
       this._changeDetectorRef.markForCheck();
     }, err => {
-      this._systemService.snackBar('Something went wrong');
+      this._VendorsService.snackBar('Something went wrong');
     })
   }
   // Memeber Feature
@@ -240,7 +240,7 @@ export class SupportTeamComponent implements OnInit, OnDestroy {
       support_team_feature: true,
       member_id: id
     }
-    this._systemService.getSystemsData(params).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+    this._VendorsService.getSystemsData(params).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
       this.isAddFeatureLoader = false;
       this.memberFeatureName = '';
       this.featureList = res["data"];
@@ -251,7 +251,7 @@ export class SupportTeamComponent implements OnInit, OnDestroy {
   }
   addNewFeature() {
     if (this.memberFeatureName == '') {
-      this._systemService.snackBar('Please fill out the required fields');
+      this._VendorsService.snackBar('Please fill out the required fields');
       return;
     }
     let payload: AddMemberFeature = {
@@ -260,19 +260,19 @@ export class SupportTeamComponent implements OnInit, OnDestroy {
       add_member_feature: true
     }
     this.isAddFeatureLoader = true;
-    this._systemService.AddSystemData(payload).pipe(takeUntil(this._unsubscribeAll), finalize(() => {
+    this._VendorsService.AddSystemData(payload).pipe(takeUntil(this._unsubscribeAll), finalize(() => {
       this._changeDetectorRef.markForCheck();
     })).subscribe(res => {
       if (res["success"]) {
         this.getMemberFeatures(this.updateTeamData.pk_ID);
       } else {
         this.isAddFeatureLoader = false;
-        this._systemService.snackBar(res["message"]);
+        this._VendorsService.snackBar(res["message"]);
       }
       this._changeDetectorRef.markForCheck();
     }, err => {
       this.isAddFeatureLoader = false;
-      this._systemService.snackBar('Something went wrong');
+      this._VendorsService.snackBar('Something went wrong');
     })
   }
   deleteFeature(item) {
@@ -282,20 +282,20 @@ export class SupportTeamComponent implements OnInit, OnDestroy {
       feature_id: item.pk_featureID,
       delete_member_feature: true
     }
-    this._systemService.UpdateSystemData(payload).pipe(takeUntil(this._unsubscribeAll), finalize(() => {
+    this._VendorsService.UpdateSystemData(payload).pipe(takeUntil(this._unsubscribeAll), finalize(() => {
       item.delLoader = false
       this._changeDetectorRef.markForCheck();
     })).subscribe(res => {
       this.featureList = this.featureList.filter(elem => elem.pk_featureID != item.pk_featureID);
-      this._systemService.snackBar('Feature Deleted Successfully');
+      this._VendorsService.snackBar('Feature Deleted Successfully');
       this._changeDetectorRef.markForCheck();
     }, err => {
-      this._systemService.snackBar('Something went wrong');
+      this._VendorsService.snackBar('Something went wrong');
     });
   }
   updateFeature(item) {
     if (item.feature == '') {
-      this._systemService.snackBar('Please fill out the required fields');
+      this._VendorsService.snackBar('Please fill out the required fields');
       return;
     }
     item.updateLoader = true;
@@ -305,14 +305,14 @@ export class SupportTeamComponent implements OnInit, OnDestroy {
       feature_id: item.pk_featureID,
       update_member_feature: true
     }
-    this._systemService.UpdateSystemData(payload).pipe(takeUntil(this._unsubscribeAll), finalize(() => {
+    this._VendorsService.UpdateSystemData(payload).pipe(takeUntil(this._unsubscribeAll), finalize(() => {
       item.updateLoader = false
       this._changeDetectorRef.markForCheck();
     })).subscribe(res => {
-      this._systemService.snackBar('Feature Updated Successfully');
+      this._VendorsService.snackBar('Feature Updated Successfully');
       this._changeDetectorRef.markForCheck();
     }, err => {
-      this._systemService.snackBar('Something went wrong');
+      this._VendorsService.snackBar('Something went wrong');
     })
   }
   /**

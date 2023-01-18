@@ -1,16 +1,18 @@
+import { ENTER, COMMA } from '@angular/cdk/keycodes';
 import { Component, Input, OnInit, ChangeDetectorRef, OnDestroy, ViewChild } from '@angular/core';
 import { FormControl, FormGroup } from '@angular/forms';
+import { MatChipInputEvent } from '@angular/material/chips';
 import { MatPaginator } from '@angular/material/paginator';
 import { Subject } from 'rxjs';
 import { debounceTime, distinctUntilChanged, filter, finalize, switchMap, takeUntil, tap } from 'rxjs/operators';
 import { VendorsService } from '../../vendors.service';
-import { AddCompany } from '../../vendors.types';
+import { AddCompany, UpdateCompany } from '../../vendors.types';
 @Component({
-  selector: 'app-new-vendors',
-  templateUrl: './new-vendors.component.html',
+  selector: 'app-vendors-info',
+  templateUrl: './vendors-info.component.html',
   styles: [".mat-paginator {border-radius: 16px !important}"]
 })
-export class NewVendorsComponent implements OnInit, OnDestroy {
+export class VendorsInfoComponent implements OnInit, OnDestroy {
   @ViewChild('paginator') paginator: MatPaginator;
   @Input() isLoading: boolean;
   // @Output() isLoadingChange = new EventEmitter<boolean>();
@@ -24,19 +26,28 @@ export class NewVendorsComponent implements OnInit, OnDestroy {
   selectedState: any;
   isSearchingState = false;
 
-  addCompanyForm: FormGroup;
-  isAddLoader: boolean = false;
+  updateCompnayForm: FormGroup;
+  isUpdateLoader: boolean = false;
+
+  supplierData: any;
+  readonly separatorKeysCodes = [ENTER, COMMA] as const;
+  addOnBlur = true;
+
+  additionalOrderEmails = [];
   constructor(
     private _changeDetectorRef: ChangeDetectorRef,
     private _vendorService: VendorsService
   ) { }
 
   initForm() {
-    this.addCompanyForm = new FormGroup({
+    this.updateCompnayForm = new FormGroup({
+      pk_companyID: new FormControl(''),
       companyName: new FormControl(''),
       address: new FormControl(''),
       city: new FormControl(''),
+      state: new FormControl(''),
       zipCode: new FormControl(''),
+      country: new FormControl(''),
       phone: new FormControl(''),
       fax: new FormControl(''),
       ASI: new FormControl(''),
@@ -51,12 +62,22 @@ export class NewVendorsComponent implements OnInit, OnDestroy {
       insideRepPhone: new FormControl(''),
       insideRepEmail: new FormControl(''),
       samplesContactEmail: new FormControl(''),
-      companyType: new FormControl('')
+      additionalOrderEmails: new FormControl(''),
+      vendorRelation: new FormControl(''),
+      screenprintEmail: new FormControl(''),
+      embroideryEmail: new FormControl(''),
+      coopPricing: new FormControl(''),
+      netSetup: new FormControl(''),
+      ltm: new FormControl(''),
+      freeRandomSamples: new FormControl(''),
+      specSamples: new FormControl(''),
+      production: new FormControl('')
     });
   }
   ngOnInit(): void {
     this.initForm();
     this.getStatesObservable();
+    this.getVendorsData();
     let params;
     this.searchStateCtrl.valueChanges.pipe(
       filter((res: any) => {
@@ -85,13 +106,36 @@ export class NewVendorsComponent implements OnInit, OnDestroy {
       this.allStates = data['data'];
     });
   };
-
+  additionalEmails(event: MatChipInputEvent): void {
+    const value = (event.value || '').trim();
+    if (value != '') {
+      const index = this.additionalOrderEmails.findIndex(elem => elem == event.value);
+      if (index >= 0) {
+        this._vendorService.snackBar('Email already listed');
+      } else {
+        this.additionalOrderEmails.push(event.value);
+      }
+    }
+    event.chipInput!.clear();
+  }
+  removeAdditionalEmails(email): void {
+    const index = this.additionalOrderEmails.findIndex(elem => elem == email);
+    if (index >= 0) {
+      this.additionalOrderEmails.splice(index, 1);
+    }
+  }
+  getVendorsData() {
+    this._vendorService.Single_Suppliers$.pipe(takeUntil(this._unsubscribeAll)).subscribe(supplier => {
+      this.supplierData = supplier["data"][0];
+      this.selectedState = this.supplierData.state;
+      this.searchStateCtrl.setValue(this.selectedState);
+      this.updateCompnayForm.patchValue(this.supplierData);
+    })
+  }
   getStatesObservable() {
     this._vendorService.States$.pipe(takeUntil(this._unsubscribeAll)).subscribe(states => {
       this.allStates = states["data"];
       this.totalStates = states["totalRecords"];
-      this.searchStateCtrl.setValue({ state: this.allStates[0].state });
-      this.selectedState = this.allStates[0];
     });
   }
   onSelected(ev) {
@@ -99,29 +143,29 @@ export class NewVendorsComponent implements OnInit, OnDestroy {
   }
 
   displayWith(value: any) {
-    return value?.state;
+    return value;
   }
   onBlur() {
-    this.searchStateCtrl.setValue({ state: this.selectedState.state });
+    this.searchStateCtrl.setValue(this.selectedState);
   }
-  // Create New Company
-  addNewCompany() {
-    const { companyName, address, city, zipCode, phone, fax, ASI, PPAI, artworkEmail, ordersEmail, websiteURL, outsideRep, insideRep, outsideRepPhone, outsideRepEmail, insideRepPhone, insideRepEmail, samplesContactEmail, companyType } = this.addCompanyForm.getRawValue();
+  // Update New Company
+  updateCompany() {
+    const { pk_companyID, companyName, address, city, state, zipCode, phone, fax, ASI, PPAI, artworkEmail, ordersEmail, websiteURL, outsideRep, insideRep, outsideRepPhone, outsideRepEmail, insideRepPhone, insideRepEmail, samplesContactEmail, additionalOrderEmails, vendorRelation, screenprintEmail, embroideryEmail, coopPricing, netSetup, ltm, freeRandomSamples, specSamples, production } = this.updateCompnayForm.getRawValue();
     if (companyName == '' || address == '' || city == '' || phone == '' || zipCode == '') {
       this._vendorService.snackBar('Please fill out the required fields');
       return;
     }
-    let payload: AddCompany = {
-      companyName, address, city, zipCode, phone, fax, ASI, PPAI, artworkEmail, ordersEmail, websiteURL, outsideRep, insideRep, outsideRepPhone, outsideRepEmail, insideRepPhone, insideRepEmail, samplesContactEmail, companyType, state: this.selectedState.state, create_company: true
+    let payload: UpdateCompany = {
+      company_id: pk_companyID, companyName, address, city, state, zipCode, phone, fax, ASI, PPAI, artworkEmail, ordersEmail, websiteURL, outsideRep, insideRep, outsideRepPhone, outsideRepEmail, insideRepPhone, insideRepEmail, samplesContactEmail, additionalOrderEmails, vendorRelation, screenprintEmail, embroideryEmail, coopPricing, netSetup, ltm, freeRandomSamples, specSamples, production, update_company: true
     }
-    this.isAddLoader = true;
-    this._vendorService.postVendorsData(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+    this.isUpdateLoader = true;
+    this._vendorService.putVendorsData(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
       this._vendorService.snackBar(res["message"]);
-      this.isAddLoader = false;
+      this.isUpdateLoader = false;
       this._changeDetectorRef.markForCheck();
     }, err => {
       this._vendorService.snackBar('Something went wrong');
-      this.isAddLoader = false;
+      this.isUpdateLoader = false;
       this._changeDetectorRef.markForCheck();
     })
   }

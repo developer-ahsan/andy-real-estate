@@ -4,7 +4,7 @@ import { MatChipInputEvent } from '@angular/material/chips';
 import { MatPaginator } from '@angular/material/paginator';
 import { forkJoin, Subject } from 'rxjs';
 import { finalize, takeUntil } from 'rxjs/operators';
-import { SystemService } from '../../vendors.service';
+import { VendorsService } from '../../vendors.service';
 import { AddColor, AddImprintColor, AddImprintMethod, AddStandardImprintGroup, DeleteColor, DeleteImprintColor, DeleteStandardImprint, DeleteStandardImprintGroup, UpdateColor, UpdateImprintColor, UpdateImprintMethod, UpdateStandardImprintGroup } from '../../vendors.types';
 import { fuseAnimations } from '@fuse/animations';
 import { InventoryService } from 'app/modules/admin/apps/ecommerce/inventory/inventory.service';
@@ -57,7 +57,7 @@ export class StandardImprintsComponent implements OnInit, OnDestroy {
 
   constructor(
     private _changeDetectorRef: ChangeDetectorRef,
-    private _systemService: SystemService,
+    private _VendorsService: VendorsService,
     private _inventoryService: InventoryService,
   ) { }
 
@@ -85,7 +85,7 @@ export class StandardImprintsComponent implements OnInit, OnDestroy {
       page: page,
       size: 20
     }
-    this._systemService.getSystemsData(params).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+    this._VendorsService.getSystemsData(params).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
       this.dataSource = res["data"];
       this.totalUsers = res["totalRecords"];
       if (this.keyword == '') {
@@ -96,7 +96,7 @@ export class StandardImprintsComponent implements OnInit, OnDestroy {
         this.isAddGroupLoader = false;
         this.ngName = '';
         this.ngDesc = '';
-        this._systemService.snackBar('Method Added Successfully');
+        this._VendorsService.snackBar('Method Added Successfully');
         this.mainScreen = 'Current Imprint Methods';
       }
       this.isLoading = false;
@@ -160,7 +160,7 @@ export class StandardImprintsComponent implements OnInit, OnDestroy {
       page: page,
       size: 10
     }
-    this._systemService.getSystemsData(params).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+    this._VendorsService.getSystemsData(params).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
       if (!this.groupImprintData.sub_imprints) {
         this.groupImprintData.sub_imprints = res["data"];
         this.groupImprintData.sub_imprints_total = res["totalRecords"];
@@ -200,9 +200,9 @@ export class StandardImprintsComponent implements OnInit, OnDestroy {
 
 
   getAllImprintMethods() {
-    this._systemService.imprintMethods$.pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+    this._VendorsService.imprintMethods$.pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
       if (!res) {
-        this._systemService.getAllImprintMethodsObs('').pipe(takeUntil(this._unsubscribeAll)).subscribe(methods => {
+        this._VendorsService.getAllImprintMethodsObs('').pipe(takeUntil(this._unsubscribeAll)).subscribe(methods => {
         });
       } else {
         this.getAllImprintLocation();
@@ -210,9 +210,9 @@ export class StandardImprintsComponent implements OnInit, OnDestroy {
     });
   }
   getAllImprintLocation() {
-    this._systemService.imprintLocations$.pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+    this._VendorsService.imprintLocations$.pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
       if (!res) {
-        this._systemService.getAllImprintLocationsObs('').pipe(takeUntil(this._unsubscribeAll)).subscribe(locations => {
+        this._VendorsService.getAllImprintLocationsObs('').pipe(takeUntil(this._unsubscribeAll)).subscribe(locations => {
         });
       } else {
         this.getAllImprintDigitizer();
@@ -221,9 +221,9 @@ export class StandardImprintsComponent implements OnInit, OnDestroy {
   }
 
   getAllImprintDigitizer() {
-    this._systemService.imprintDigitizer$.pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+    this._VendorsService.imprintDigitizer$.pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
       if (!res) {
-        this._systemService.getAllDigitizers().pipe(takeUntil(this._unsubscribeAll)).subscribe(digitizers => {
+        this._VendorsService.getAllDigitizers().pipe(takeUntil(this._unsubscribeAll)).subscribe(digitizers => {
         });
       } else {
         this.getAllDistributionCodes();
@@ -241,7 +241,7 @@ export class StandardImprintsComponent implements OnInit, OnDestroy {
   }
   addNewGroup() {
     if (this.ngName == '') {
-      this._systemService.snackBar('Imprint group name is required');
+      this._VendorsService.snackBar('Imprint group name is required');
       return;
     }
     let payload: AddStandardImprintGroup = {
@@ -249,19 +249,19 @@ export class StandardImprintsComponent implements OnInit, OnDestroy {
       add_standard_imprint_group: true
     }
     this.isAddGroupLoader = true;
-    this._systemService.AddSystemData(payload).pipe(takeUntil(this._unsubscribeAll), finalize(() => {
+    this._VendorsService.AddSystemData(payload).pipe(takeUntil(this._unsubscribeAll), finalize(() => {
       this._changeDetectorRef.markForCheck();
     })).subscribe(res => {
       if (res["success"]) {
         this.getStandardGroup(1, 'add')
       } else {
         this.isAddGroupLoader = false;
-        this._systemService.snackBar(res["message"]);
+        this._VendorsService.snackBar(res["message"]);
       }
       this._changeDetectorRef.markForCheck();
     }, err => {
       this.isAddGroupLoader = false;
-      this._systemService.snackBar('Something went wrong');
+      this._VendorsService.snackBar('Something went wrong');
     })
   }
   // Delete Color
@@ -271,7 +271,7 @@ export class StandardImprintsComponent implements OnInit, OnDestroy {
       standardImprintGroupID: item.pk_standardImprintGroupID,
       delete_standard_imprint_group: true
     }
-    this._systemService.UpdateSystemData(payload).pipe(takeUntil(this._unsubscribeAll), finalize(() => {
+    this._VendorsService.UpdateSystemData(payload).pipe(takeUntil(this._unsubscribeAll), finalize(() => {
       item.delLoader = false
       this._changeDetectorRef.markForCheck();
     })).subscribe(res => {
@@ -279,10 +279,10 @@ export class StandardImprintsComponent implements OnInit, OnDestroy {
       this.tempDataSource = this.tempDataSource.filter(elem => elem.pk_standardImprintGroupID != item.pk_standardImprintGroupID);
       this.totalUsers--;
       this.tempRecords--;
-      this._systemService.snackBar('Group Deleted Successfully');
+      this._VendorsService.snackBar('Group Deleted Successfully');
       this._changeDetectorRef.markForCheck();
     }, err => {
-      this._systemService.snackBar('Something went wrong');
+      this._VendorsService.snackBar('Something went wrong');
     });
   }
   // Update Method
@@ -293,7 +293,7 @@ export class StandardImprintsComponent implements OnInit, OnDestroy {
   }
   updateGroup(element) {
     if (element.name == '') {
-      this._systemService.snackBar('Imprint group name is required');
+      this._VendorsService.snackBar('Imprint group name is required');
       return;
     }
     let payload: UpdateStandardImprintGroup = {
@@ -302,16 +302,16 @@ export class StandardImprintsComponent implements OnInit, OnDestroy {
       update_standard_imprint_group: true
     }
     element.updateLoader = true;
-    this._systemService.UpdateSystemData(payload).pipe(takeUntil(this._unsubscribeAll), finalize(() => {
+    this._VendorsService.UpdateSystemData(payload).pipe(takeUntil(this._unsubscribeAll), finalize(() => {
       element.updateLoader = false
       this._changeDetectorRef.markForCheck();
     })).subscribe(res => {
       element.updateLoader = false;
-      this._systemService.snackBar('Group Name Updated Successfully');
+      this._VendorsService.snackBar('Group Name Updated Successfully');
       this._changeDetectorRef.markForCheck();
     }, err => {
       element.updateLoader = false;
-      this._systemService.snackBar('Something went wrong');
+      this._VendorsService.snackBar('Something went wrong');
       this._changeDetectorRef.markForCheck();
     });
   }
@@ -321,16 +321,16 @@ export class StandardImprintsComponent implements OnInit, OnDestroy {
       pk_standardImprintID: item.pk_standardImprintID,
       delete_standard_imprint: true
     }
-    this._systemService.UpdateSystemData(payload).pipe(takeUntil(this._unsubscribeAll), finalize(() => {
+    this._VendorsService.UpdateSystemData(payload).pipe(takeUntil(this._unsubscribeAll), finalize(() => {
       item.delLoader = false
       this._changeDetectorRef.markForCheck();
     })).subscribe(res => {
       element.sub_imprints = element.sub_imprints.filter(elem => elem.pk_standardImprintID != item.pk_standardImprintID);
       element.sub_imprints_total--;
-      this._systemService.snackBar('Imprint Deleted Successfully');
+      this._VendorsService.snackBar('Imprint Deleted Successfully');
       this._changeDetectorRef.markForCheck();
     }, err => {
-      this._systemService.snackBar('Something went wrong');
+      this._VendorsService.snackBar('Something went wrong');
     });
   }
   /**

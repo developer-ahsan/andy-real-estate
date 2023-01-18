@@ -350,3 +350,63 @@ export interface DeleteNode {
     section_id: number;
     delete_node: boolean;
 };
+
+
+
+// Vendors
+export interface AddCompany {
+    companyName: string;
+    address: string;
+    city: string;
+    state: string;
+    zipCode: string;
+    phone: string;
+    fax: string;
+    ASI: string;
+    PPAI: string;
+    artworkEmail: string;
+    ordersEmail: string;
+    websiteURL: string;
+    outsideRep: string;
+    insideRep: string;
+    outsideRepPhone: string;
+    outsideRepEmail: string;
+    insideRepPhone: string;
+    insideRepEmail: string;
+    samplesContactEmail: string;
+    companyType: number;
+    create_company: boolean;
+};
+export interface UpdateCompany {
+    company_id: number;
+    companyName: string;
+    address: string;
+    city: string;
+    state: string;
+    zipCode: string;
+    phone: string;
+    fax: string;
+    ASI: string;
+    PPAI: string;
+    artworkEmail: string;
+    ordersEmail: string;
+    websiteURL: string;
+    outsideRep: string;
+    insideRep: string;
+    outsideRepPhone: string;
+    outsideRepEmail: string;
+    insideRepPhone: string;
+    insideRepEmail: string;
+    samplesContactEmail: string;
+    additionalOrderEmails: string;
+    vendorRelation: number;
+    screenprintEmail: string;
+    embroideryEmail: string;
+    coopPricing: string;
+    netSetup: string;
+    ltm: string;
+    freeRandomSamples: string;
+    specSamples: string;
+    production: string;
+    update_company: boolean;
+};

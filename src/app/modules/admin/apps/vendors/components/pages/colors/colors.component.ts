@@ -4,7 +4,7 @@ import { MatChipInputEvent } from '@angular/material/chips';
 import { MatPaginator } from '@angular/material/paginator';
 import { Subject } from 'rxjs';
 import { finalize, takeUntil } from 'rxjs/operators';
-import { SystemService } from '../../vendors.service';
+import { VendorsService } from '../../vendors.service';
 import { AddColor, DeleteColor, UpdateColor } from '../../vendors.types';
 
 @Component({
@@ -41,7 +41,7 @@ export class ColorsComponent implements OnInit, OnDestroy {
   isAddMsg = '';
   constructor(
     private _changeDetectorRef: ChangeDetectorRef,
-    private _systemService: SystemService
+    private _VendorsService: VendorsService
   ) { }
 
   ngOnInit(): void {
@@ -58,7 +58,7 @@ export class ColorsComponent implements OnInit, OnDestroy {
       page: page,
       size: 20
     }
-    this._systemService.getSystemsData(params).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+    this._VendorsService.getSystemsData(params).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
       this.dataSource = res["data"];
       this.totalUsers = res["totalRecords"];
       if (this.keyword == '') {
@@ -66,7 +66,7 @@ export class ColorsComponent implements OnInit, OnDestroy {
         this.tempRecords = res["totalRecords"];
       }
       if (type == 'add') {
-        this._systemService.snackBar('Color added successfully');
+        this._VendorsService.snackBar('Color added successfully');
         this.isAddColorLoader = false;
         this.colorList = [];
       }
@@ -114,7 +114,7 @@ export class ColorsComponent implements OnInit, OnDestroy {
     if (value != '') {
       const index = this.colorList.findIndex(color => color == value);
       if (index >= 0) {
-        this._systemService.snackBar('Color is already listed');
+        this._VendorsService.snackBar('Color is already listed');
       } else {
         this.colorList.push(value);
       }
@@ -133,7 +133,7 @@ export class ColorsComponent implements OnInit, OnDestroy {
   addNewColor() {
     this.isAddMsg = '';
     if (this.colorList.length == 0) {
-      this._systemService.snackBar('Atleast 1 color name is required');
+      this._VendorsService.snackBar('Atleast 1 color name is required');
       return;
     }
     this.isAddColorLoader = true;
@@ -141,7 +141,7 @@ export class ColorsComponent implements OnInit, OnDestroy {
       colors: this.colorList,
       add_color: true
     }
-    this._systemService.AddSystemData(payload).pipe(takeUntil(this._unsubscribeAll), finalize(() => {
+    this._VendorsService.AddSystemData(payload).pipe(takeUntil(this._unsubscribeAll), finalize(() => {
       this._changeDetectorRef.markForCheck();
     })).subscribe(res => {
       if (res["success"]) {
@@ -168,7 +168,7 @@ export class ColorsComponent implements OnInit, OnDestroy {
     }, err => {
       this.isAddColorLoader = false;
       this._changeDetectorRef.markForCheck();
-      this._systemService.snackBar('Something went wrong');
+      this._VendorsService.snackBar('Something went wrong');
     });
   }
   // Delete Color
@@ -178,16 +178,16 @@ export class ColorsComponent implements OnInit, OnDestroy {
       color_id: item.pk_colorID,
       delete_color: true
     }
-    this._systemService.UpdateSystemData(payload).pipe(takeUntil(this._unsubscribeAll), finalize(() => {
+    this._VendorsService.UpdateSystemData(payload).pipe(takeUntil(this._unsubscribeAll), finalize(() => {
       item.delLoader = false
       this._changeDetectorRef.markForCheck();
     })).subscribe(res => {
       this.dataSource = this.dataSource.filter(color => color.pk_colorID != item.pk_colorID);
       this.totalUsers--;
-      this._systemService.snackBar('Color Deleted Successfully');
+      this._VendorsService.snackBar('Color Deleted Successfully');
       this._changeDetectorRef.markForCheck();
     }, err => {
-      this._systemService.snackBar('Something went wrong');
+      this._VendorsService.snackBar('Something went wrong');
     });
   }
   // Update Color
@@ -200,7 +200,7 @@ export class ColorsComponent implements OnInit, OnDestroy {
   }
   updateColor() {
     if (this.ngUpdateColorName == '') {
-      this._systemService.snackBar('Color name is required');
+      this._VendorsService.snackBar('Color name is required');
       return;
     }
     let payload: UpdateColor = {
@@ -209,7 +209,7 @@ export class ColorsComponent implements OnInit, OnDestroy {
       update_color: true
     }
     this.isUpdateColorLoader = true;
-    this._systemService.UpdateSystemData(payload).pipe(takeUntil(this._unsubscribeAll), finalize(() => {
+    this._VendorsService.UpdateSystemData(payload).pipe(takeUntil(this._unsubscribeAll), finalize(() => {
       this.isUpdateColorLoader = false
       this._changeDetectorRef.markForCheck();
     })).subscribe(res => {
@@ -219,10 +219,10 @@ export class ColorsComponent implements OnInit, OnDestroy {
       //     color.colorName = this.updateColorData.colorName;
       //   }
       // });
-      this._systemService.snackBar('Color Updated Successfully');
+      this._VendorsService.snackBar('Color Updated Successfully');
       this._changeDetectorRef.markForCheck();
     }, err => {
-      this._systemService.snackBar('Something went wrong');
+      this._VendorsService.snackBar('Something went wrong');
     })
   }
 

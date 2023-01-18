@@ -28,7 +28,8 @@
                                     <br />
                                 </p>
                                 <mat-form-field class="w-full">
-                                    <input matInput [formControlName]="'quantityOne'" type="number"><small
+                                    <input matInput [formControlName]="'quantityOne'" type="number"
+                                        (onmousewheel)="$event.preventDefault()"><small
                                         class="text-secondary font-semibold"> 1 </small>
                                 </mat-form-field>
                             </div>
@@ -38,7 +39,8 @@
                                         (click)="updateQuantityQuickLinks('quantityTwo')">x2</span>
                                 </p>
                                 <mat-form-field class="w-full">
-                                    <input matInput [formControlName]="'quantityTwo'" type="number"><small
+                                    <input matInput [formControlName]="'quantityTwo'" type="number"
+                                        (onmousewheel)="$event.preventDefault()"><small
                                         class="text-secondary font-semibold"> 2 </small>
                                 </mat-form-field>
                             </div>
@@ -48,7 +50,8 @@
                                         (click)="updateQuantityQuickLinks('quantityThree')">x2</span>
                                 </p>
                                 <mat-form-field class="w-full">
-                                    <input matInput [formControlName]="'quantityThree'" type="number"><small
+                                    <input matInput [formControlName]="'quantityThree'" type="number"
+                                        (onmousewheel)="$event.preventDefault()"><small
                                         class="text-secondary font-semibold"> 3 </small>
                                 </mat-form-field>
                             </div>
@@ -58,7 +61,8 @@
                                         (click)="updateQuantityQuickLinks('quantityFour')">x2</span>
                                 </p>
                                 <mat-form-field class="w-full">
-                                    <input matInput [formControlName]="'quantityFour'" type="number"><small
+                                    <input matInput [formControlName]="'quantityFour'" type="number"
+                                        (onmousewheel)="$event.preventDefault()"><small
                                         class="text-secondary font-semibold"> 4 </small>
                                 </mat-form-field>
                             </div>
@@ -68,7 +72,8 @@
                                         (click)="updateQuantityQuickLinks('quantityFive')">x2</span>
                                 </p>
                                 <mat-form-field class="w-full">
-                                    <input matInput [formControlName]="'quantityFive'" type="number"><small
+                                    <input matInput [formControlName]="'quantityFive'" type="number"
+                                        (onmousewheel)="$event.preventDefault()"><small
                                         class="text-secondary font-semibold"> 5 </small>
                                 </mat-form-field>
                             </div>
@@ -78,7 +83,8 @@
                                         (click)="updateQuantityQuickLinks('quantitySix')">x2</span>
                                 </p>
                                 <mat-form-field class="w-full">
-                                    <input matInput [formControlName]="'quantitySix'" type="number"><small
+                                    <input matInput [formControlName]="'quantitySix'" type="number"
+                                        (onmousewheel)="$event.preventDefault()"><small
                                         class="text-secondary font-semibold"> 6 </small>
                                 </mat-form-field>
                             </div>
@@ -102,37 +108,43 @@
                             </div>
                             <div class="col-lg-2 col-4">
                                 <mat-form-field class="w-full">
-                                    <input matInput [formControlName]="'standardCostOne'" type="number"><small
+                                    <input matInput [formControlName]="'standardCostOne'" type="number"
+                                        (onmousewheel)="$event.preventDefault()"><small
                                         class="text-secondary font-semibold"> 1 </small>
                                 </mat-form-field>
                             </div>
                             <div class="col-lg-2 col-4">
                                 <mat-form-field class="w-full">
-                                    <input matInput [formControlName]="'standardCostTwo'" type="number"><small
+                                    <input matInput [formControlName]="'standardCostTwo'" type="number"
+                                        (onmousewheel)="$event.preventDefault()"><small
                                         class="text-secondary font-semibold"> 2 </small>
                                 </mat-form-field>
                             </div>
                             <div class="col-lg-2 col-4">
                                 <mat-form-field class="w-full">
-                                    <input matInput [formControlName]="'standardCostThree'" type="number"><small
+                                    <input matInput [formControlName]="'standardCostThree'" type="number"
+                                        (onmousewheel)="$event.preventDefault()"><small
                                         class="text-secondary font-semibold"> 3 </small>
                                 </mat-form-field>
                             </div>
                             <div class="col-lg-2 col-4">
                                 <mat-form-field class="w-full">
-                                    <input matInput [formControlName]="'standardCostFour'" type="number"><small
+                                    <input matInput [formControlName]="'standardCostFour'" type="number"
+                                        (onmousewheel)="$event.preventDefault()"><small
                                         class="text-secondary font-semibold"> 4 </small>
                                 </mat-form-field>
                             </div>
                             <div class="col-lg-2 col-4">
                                 <mat-form-field class="w-full">
-                                    <input matInput [formControlName]="'standardCostFive'" type="number"><small
+                                    <input matInput [formControlName]="'standardCostFive'" type="number"
+                                        (onmousewheel)="$event.preventDefault()"><small
                                         class="text-secondary font-semibold"> 5 </small>
                                 </mat-form-field>
                             </div>
                             <div class="col-lg-2 col-4">
                                 <mat-form-field class="w-full">
-                                    <input matInput [formControlName]="'standardCostSix'" type="number"><small
+                                    <input matInput [formControlName]="'standardCostSix'" type="number"
+                                        (onmousewheel)="$event.preventDefault()"><small
                                         class="text-secondary font-semibold"> 6 </small>
                                 </mat-form-field>
                             </div>
@@ -218,7 +230,8 @@
                             <div class="col-12 mt-4">
                                 <mat-form-field class="w-full">
                                     <mat-label>MSRP</mat-label>
-                                    <input type="number" matInput [formControlName]="'msrp'">
+                                    <input type="number" (onmousewheel)="$event.preventDefault()" matInput
+                                        [formControlName]="'msrp'">
                                 </mat-form-field>
                             </div>
                             <div class="col-12">

@@ -48,7 +48,8 @@
                 <mat-label>Search by Product ID</mat-label>
                 <input class="h-6" [(ngModel)]="_inventoryService.productSearchFilter.product_id" matInput
                     [matTooltip]="'Press enter key after typing'" (keyup.enter)="searchByPID($event.target.value)"
-                    type="number" [autocomplete]="'off'" [placeholder]="'Search by Product ID'">
+                    type="number" (onmousewheel)="$event.preventDefault()" [autocomplete]="'off'"
+                    [placeholder]="'Search by Product ID'">
                 <mat-icon matPrefix [svgIcon]="'heroicons_outline:search'"></mat-icon>
             </mat-form-field>
         </div>
@@ -232,12 +233,14 @@
                                                         <div class="flex">
                                                             <mat-form-field class="w-1/3 pr-2">
                                                                 <mat-label>Stock</mat-label>
-                                                                <input type="number" matInput
+                                                                <input type="number"
+                                                                    (onmousewheel)="$event.preventDefault()" matInput
                                                                     [formControlName]="'stock'">
                                                             </mat-form-field>
                                                             <mat-form-field class="w-1/3 pl-2">
                                                                 <mat-label>Reserved</mat-label>
-                                                                <input type="number" matInput
+                                                                <input type="number"
+                                                                    (onmousewheel)="$event.preventDefault()" matInput
                                                                     [formControlName]="'reserved'">
                                                             </mat-form-field>
                                                         </div>
@@ -258,7 +261,8 @@
                                                         <mat-form-field class="w-full">
                                                             <mat-label>Tax</mat-label>
                                                             <span matSuffix>%</span>
-                                                            <input type="number" matInput
+                                                            <input type="number"
+                                                                (onmousewheel)="$event.preventDefault()" matInput
                                                                 [formControlName]="'taxPercent'">
                                                         </mat-form-field>
                                                         <mat-form-field class="w-full">
@@ -538,30 +542,36 @@
                                             <mat-error>Mini description is required</mat-error>
                                         </mat-form-field>
                                     </div>
-                                    <div class="col-12 mb-2" *ngIf="supplierType != 'Apparel Item'">
+                                    <!-- <div class="col-12 mb-2" *ngIf="supplierType != 'Apparel Item'">
                                         <div class="flex items-center">
                                             <div class="font-medium text-secondary">PRODUCT DIMENSIONS</div>
                                             <div class="flex-auto ml-2 border-b-2"></div>
                                         </div>
+                                    </div> -->
+                                    <div class="col-12" *ngIf="supplierType != 'Apparel Item'">
+                                        <mat-form-field appearance="fill" class="w-full">
+                                            <mat-label>Product Dimensions</mat-label>
+                                            <input matInput type="text" formControlName="productDimensions">
+                                        </mat-form-field>
                                     </div>
-                                    <div class="col-lg-4 col-12" *ngIf="supplierType != 'Apparel Item'">
+                                    <!-- <div class="col-lg-4 col-12" *ngIf="supplierType != 'Apparel Item'">
                                         <mat-form-field appearance="fill" class="w-full">
                                             <mat-label>Product Width</mat-label>
-                                            <input matInput type="number" formControlName="productWidth">
+                                            <input matInput type="number" (onmousewheel)="$event.preventDefault()" formControlName="productWidth">
                                         </mat-form-field>
                                     </div>
                                     <div class="col-lg-4 col-12" *ngIf="supplierType != 'Apparel Item'">
                                         <mat-form-field appearance="fill" class="w-full">
                                             <mat-label>Product Height</mat-label>
-                                            <input matInput type="number" formControlName="productHeight">
+                                            <input matInput type="number" (onmousewheel)="$event.preventDefault()" formControlName="productHeight">
                                         </mat-form-field>
                                     </div>
                                     <div class="col-lg-4 col-12" *ngIf="supplierType != 'Apparel Item'">
                                         <mat-form-field appearance="fill" class="w-full">
                                             <mat-label>Product Length</mat-label>
-                                            <input matInput type="number" formControlName="productLength">
+                                            <input matInput type="number" (onmousewheel)="$event.preventDefault()" formControlName="productLength">
                                         </mat-form-field>
-                                    </div>
+                                    </div> -->
                                     <div class="col-lg-6 col-12" style="line-height: 2.3;"
                                         *ngIf="supplierType != 'Apparel Item'">
                                         <p class="font-semibold">Group run</p>
@@ -592,7 +602,8 @@
                                     </div>
                                     <div class="col-4" *ngIf="supplierType != 'Apparel Item'">
                                         <mat-form-field class="w-full">
-                                            <input matInput type="number" min="1" [formControlName]="'weight'"><small
+                                            <input matInput type="number" (onmousewheel)="$event.preventDefault()"
+                                                min="1" [formControlName]="'weight'"><small
                                                 class="text-secondary font-semibold">
                                                 lbs </small>
                                         </mat-form-field>
@@ -602,8 +613,8 @@
                                     </div>
                                     <div class="col-4" *ngIf="supplierType != 'Apparel Item'">
                                         <mat-form-field class="w-full">
-                                            <input matInput type="number" min="1"
-                                                [formControlName]="'unitsInWeight'"><small
+                                            <input matInput type="number" (onmousewheel)="$event.preventDefault()"
+                                                min="1" [formControlName]="'unitsInWeight'"><small
                                                 class="text-secondary font-semibold">
                                                 unit(s) </small>
                                         </mat-form-field>
@@ -623,8 +634,8 @@
                                     <div class="col-12">
                                         <mat-form-field class="w-full">
                                             <mat-label>Units per Shipping Package</mat-label>
-                                            <input matInput type="number" min="1"
-                                                [formControlName]="'unitsInShippingPackage'"><small
+                                            <input matInput type="number" (onmousewheel)="$event.preventDefault()"
+                                                min="1" [formControlName]="'unitsInShippingPackage'"><small
                                                 class="text-secondary font-semibold">
                                                 unit(s) </small>
                                         </mat-form-field>
@@ -632,7 +643,8 @@
                                     <div class="col-12">
                                         <mat-form-field class="w-full">
                                             <mat-label>Flat Rate</mat-label>
-                                            <input matInput type="number" [formControlName]="'flatRate'">
+                                            <input matInput type="number" (onmousewheel)="$event.preventDefault()"
+                                                [formControlName]="'flatRate'">
                                         </mat-form-field>
                                     </div>
                                     <div class="col-12">
@@ -650,21 +662,24 @@
                                     <div class="col-lg-4 col-12" *ngIf="supplierType != 'Apparel Item'">
                                         <mat-form-field appearance="fill" class="w-full">
                                             <mat-label>Case Height</mat-label>
-                                            <input matInput type="number" formControlName="caseHeight">
+                                            <input matInput type="number" (onmousewheel)="$event.preventDefault()"
+                                                formControlName="caseHeight">
                                             <small class="text-secondary font-semibold"> inch </small>
                                         </mat-form-field>
                                     </div>
                                     <div class="col-lg-4 col-12" *ngIf="supplierType != 'Apparel Item'">
                                         <mat-form-field appearance="fill" class="w-full">
                                             <mat-label>Case Width</mat-label>
-                                            <input matInput type="number" formControlName="caseWidth">
+                                            <input matInput type="number" (onmousewheel)="$event.preventDefault()"
+                                                formControlName="caseWidth">
                                             <small class="text-secondary font-semibold"> inch </small>
                                         </mat-form-field>
                                     </div>
                                     <div class="col-lg-4 col-12" *ngIf="supplierType != 'Apparel Item'">
                                         <mat-form-field appearance="fill" class="w-full">
                                             <mat-label>Case Length</mat-label>
-                                            <input matInput type="number" formControlName="caseLength">
+                                            <input matInput type="number" (onmousewheel)="$event.preventDefault()"
+                                                formControlName="caseLength">
                                             <small class="text-secondary font-semibold"> inch </small>
                                         </mat-form-field>
                                     </div>
@@ -674,37 +689,43 @@
                                     </div>
                                     <div class="col-4">
                                         <mat-form-field class="w-full">
-                                            <input matInput type="number" [formControlName]="'quantityOne'"><small
+                                            <input matInput type="number" (onmousewheel)="$event.preventDefault()"
+                                                [formControlName]="'quantityOne'"><small
                                                 class="text-secondary font-semibold"> 1 </small>
                                         </mat-form-field>
                                     </div>
                                     <div class="col-4">
                                         <mat-form-field class="w-full">
-                                            <input matInput type="number" [formControlName]="'quantityTwo'"><small
+                                            <input matInput type="number" (onmousewheel)="$event.preventDefault()"
+                                                [formControlName]="'quantityTwo'"><small
                                                 class="text-secondary font-semibold"> 2 </small>
                                         </mat-form-field>
                                     </div>
                                     <div class="col-4">
                                         <mat-form-field class="w-full">
-                                            <input matInput type="number" [formControlName]="'quantityThree'"><small
+                                            <input matInput type="number" (onmousewheel)="$event.preventDefault()"
+                                                [formControlName]="'quantityThree'"><small
                                                 class="text-secondary font-semibold"> 3 </small>
                                         </mat-form-field>
                                     </div>
                                     <div class="col-4">
                                         <mat-form-field class="w-full">
-                                            <input matInput type="number" [formControlName]="'quantityFour'"><small
+                                            <input matInput type="number" (onmousewheel)="$event.preventDefault()"
+                                                [formControlName]="'quantityFour'"><small
                                                 class="text-secondary font-semibold"> 4 </small>
                                         </mat-form-field>
                                     </div>
                                     <div class="col-4">
                                         <mat-form-field class="w-full">
-                                            <input matInput type="number" [formControlName]="'quantityFive'"><small
+                                            <input matInput type="number" (onmousewheel)="$event.preventDefault()"
+                                                [formControlName]="'quantityFive'"><small
                                                 class="text-secondary font-semibold"> 5 </small>
                                         </mat-form-field>
                                     </div>
                                     <div class="col-4">
                                         <mat-form-field class="w-full">
-                                            <input matInput type="number" [formControlName]="'quantitySix'"><small
+                                            <input matInput type="number" (onmousewheel)="$event.preventDefault()"
+                                                [formControlName]="'quantitySix'"><small
                                                 class="text-secondary font-semibold"> 6 </small>
                                         </mat-form-field>
                                     </div>
@@ -713,7 +734,8 @@
                                     <div class="col-lg-6 col-12">
                                         <mat-form-field appearance="fill" class="w-full">
                                             <mat-label>Over Pack Charge (optional)</mat-label>
-                                            <input matInput type="number" formControlName="overPackageCharge">
+                                            <input matInput type="number" (onmousewheel)="$event.preventDefault()"
+                                                formControlName="overPackageCharge">
                                         </mat-form-field>
                                     </div>
                                     <div class="col-lg-6 col-12" style="line-height: 2.3;">
@@ -787,6 +809,7 @@
                                                 </p>
                                                 <mat-form-field class="w-full">
                                                     <input matInput type="number"
+                                                        (onmousewheel)="$event.preventDefault()"
                                                         [formControlName]="'firstQuantity'"><small
                                                         class="text-secondary font-semibold"> 1
                                                     </small>
@@ -799,6 +822,7 @@
                                                 </p>
                                                 <mat-form-field class="w-full">
                                                     <input matInput type="number"
+                                                        (onmousewheel)="$event.preventDefault()"
                                                         [formControlName]="'secondQuantity'"><small
                                                         class="text-secondary font-semibold"> 2
                                                     </small>
@@ -811,6 +835,7 @@
                                                 </p>
                                                 <mat-form-field class="w-full">
                                                     <input matInput type="number"
+                                                        (onmousewheel)="$event.preventDefault()"
                                                         [formControlName]="'thirdQuantity'"><small
                                                         class="text-secondary font-semibold"> 3
                                                     </small>
@@ -823,6 +848,7 @@
                                                 </p>
                                                 <mat-form-field class="w-full">
                                                     <input matInput type="number"
+                                                        (onmousewheel)="$event.preventDefault()"
                                                         [formControlName]="'fourthQuantity'"><small
                                                         class="text-secondary font-semibold"> 4
                                                     </small>
@@ -835,6 +861,7 @@
                                                 </p>
                                                 <mat-form-field class="w-full">
                                                     <input matInput type="number"
+                                                        (onmousewheel)="$event.preventDefault()"
                                                         [formControlName]="'fifthQuantity'"><small
                                                         class="text-secondary font-semibold"> 5
                                                     </small>
@@ -847,6 +874,7 @@
                                                 </p>
                                                 <mat-form-field class="w-full">
                                                     <input matInput type="number"
+                                                        (onmousewheel)="$event.preventDefault()"
                                                         [formControlName]="'sixthQuantity'"><small
                                                         class="text-secondary font-semibold"> 6
                                                     </small>
@@ -871,6 +899,7 @@
                                             <div class="col-lg-2 col-4">
                                                 <mat-form-field class="w-full">
                                                     <input matInput type="number"
+                                                        (onmousewheel)="$event.preventDefault()"
                                                         [formControlName]="'standardCostOne'"><small
                                                         class="text-secondary font-semibold"> 1
                                                     </small>
@@ -879,6 +908,7 @@
                                             <div class="col-lg-2 col-4">
                                                 <mat-form-field class="w-full">
                                                     <input matInput type="number"
+                                                        (onmousewheel)="$event.preventDefault()"
                                                         [formControlName]="'standardCostTwo'"><small
                                                         class="text-secondary font-semibold"> 2
                                                     </small>
@@ -887,6 +917,7 @@
                                             <div class="col-lg-2 col-4">
                                                 <mat-form-field class="w-full">
                                                     <input matInput type="number"
+                                                        (onmousewheel)="$event.preventDefault()"
                                                         [formControlName]="'standardCostThree'"><small
                                                         class="text-secondary font-semibold"> 3
                                                     </small>
@@ -895,6 +926,7 @@
                                             <div class="col-lg-2 col-4">
                                                 <mat-form-field class="w-full">
                                                     <input matInput type="number"
+                                                        (onmousewheel)="$event.preventDefault()"
                                                         [formControlName]="'standardCostFour'"><small
                                                         class="text-secondary font-semibold"> 4
                                                     </small>
@@ -903,6 +935,7 @@
                                             <div class="col-lg-2 col-4">
                                                 <mat-form-field class="w-full">
                                                     <input matInput type="number"
+                                                        (onmousewheel)="$event.preventDefault()"
                                                         [formControlName]="'standardCostFive'"><small
                                                         class="text-secondary font-semibold"> 5
                                                     </small>
@@ -911,6 +944,7 @@
                                             <div class="col-lg-2 col-4">
                                                 <mat-form-field class="w-full">
                                                     <input matInput type="number"
+                                                        (onmousewheel)="$event.preventDefault()"
                                                         [formControlName]="'standardCostSix'"><small
                                                         class="text-secondary font-semibold"> 6
                                                     </small>
@@ -989,7 +1023,7 @@
                                             <div class="col-12 mt-4">
                                                 <mat-form-field class="w-full">
                                                     <mat-label>MSRP</mat-label>
-                                                    <input matInput type="text" type="text"
+                                                    <input matInput type="text"
                                                         oninput="this.value = this.value.replace(/[^0-9.]/g, '').replace(/(\..*?)\..*/g, '$1');"
                                                         [formControlName]="'msrp'">
                                                 </mat-form-field>
@@ -1151,8 +1185,8 @@
                                                     </button>
                                                     <span class="ml-1">Order</span>
                                                 </mat-label>
-                                                <input matInput type="number" [formControlName]="'order'"
-                                                    placeholder="New Feature">
+                                                <input matInput type="number" (onmousewheel)="$event.preventDefault()"
+                                                    [formControlName]="'order'" placeholder="New Feature">
                                             </mat-form-field>
                                         </div>
                                         <div class="col-lg-9 col-12">
@@ -1304,7 +1338,8 @@
                                         <div class="col-6">{{item.colorId +'-'+ item.colorName}}</div>
                                         <div class="col-2">
                                             <mat-form-field class="w-full">
-                                                <input matInput [(ngModel)]="item.run" type="number" value="0.00"
+                                                <input matInput [(ngModel)]="item.run" type="number"
+                                                    (onmousewheel)="$event.preventDefault()" value="0.00"
                                                     placeholder="Run">
                                             </mat-form-field>
                                         </div>
@@ -1351,7 +1386,8 @@
                                         </div>
                                         <div class="col-2">
                                             <mat-form-field class="w-full">
-                                                <input matInput [(ngModel)]="item.run" type="number" value="0.00"
+                                                <input matInput [(ngModel)]="item.run" type="number"
+                                                    (onmousewheel)="$event.preventDefault()" value="0.00"
                                                     placeholder="Run">
                                             </mat-form-field>
                                         </div>
@@ -1565,6 +1601,7 @@
                                                                                     class="w-full">
                                                                                     <mat-label>Two</mat-label>
                                                                                     <input matInput type="number"
+                                                                                        (onmousewheel)="$event.preventDefault()"
                                                                                         min="1" value="1"
                                                                                         [formControlName]="'twoColorQ'">
                                                                                 </mat-form-field>
@@ -1574,6 +1611,7 @@
                                                                                     class="w-full">
                                                                                     <mat-label>Three</mat-label>
                                                                                     <input matInput type="number"
+                                                                                        (onmousewheel)="$event.preventDefault()"
                                                                                         min="1" value="1"
                                                                                         [formControlName]="'threeColorQ'">
                                                                                 </mat-form-field>
@@ -1583,6 +1621,7 @@
                                                                                     class="w-full">
                                                                                     <mat-label>Four</mat-label>
                                                                                     <input matInput type="number"
+                                                                                        (onmousewheel)="$event.preventDefault()"
                                                                                         min="1" value="1"
                                                                                         [formControlName]="'fourColorQ'">
                                                                                 </mat-form-field>
@@ -1592,6 +1631,7 @@
                                                                                     class="w-full">
                                                                                     <mat-label>Five</mat-label>
                                                                                     <input matInput type="number"
+                                                                                        (onmousewheel)="$event.preventDefault()"
                                                                                         min="1" value="1"
                                                                                         [formControlName]="'fiveColorQ'">
                                                                                 </mat-form-field>
@@ -1807,7 +1847,9 @@
                                                                     <mat-form-field appearance="fill" class="w-full">
                                                                         <mat-label>Charge</mat-label>
                                                                         <input matInput [formControlName]="'charge'"
-                                                                            type="number" value="0">
+                                                                            type="number"
+                                                                            (onmousewheel)="$event.preventDefault()"
+                                                                            value="0">
                                                                     </mat-form-field>
                                                                 </form>
                                                             </div>
@@ -1847,7 +1889,8 @@
                                                                             class="w-full">
                                                                             <mat-label>Setup</mat-label>
                                                                             <input matInput [formControlName]="'setup'"
-                                                                                type="number">
+                                                                                type="number"
+                                                                                (onmousewheel)="$event.preventDefault()">
                                                                         </mat-form-field>
                                                                     </div>
                                                                     <div class="col-lg-6 col-12 my-2">
@@ -1855,7 +1898,8 @@
                                                                             class="w-full">
                                                                             <mat-label>Run</mat-label>
                                                                             <input matInput [formControlName]="'run'"
-                                                                                type="number">
+                                                                                type="number"
+                                                                                (onmousewheel)="$event.preventDefault()">
                                                                         </mat-form-field>
                                                                     </div>
                                                                 </div>
@@ -1926,6 +1970,7 @@
                                                                 </b>
                                                                 <mat-form-field appearance="fill" class="w-full">
                                                                     <input matInput value="{{minValue}}" type="number"
+                                                                        (onmousewheel)="$event.preventDefault()"
                                                                         (input)="addMinQuantity($event.target.value)">
                                                                 </mat-form-field>
                                                             </div>
@@ -1935,7 +1980,8 @@
                                                                 <b>Display Order</b>
                                                                 <mat-form-field appearance="fill" class="w-full">
                                                                     <input matInput value="{{displayOrder}}"
-                                                                        type="number" min="1"
+                                                                        type="number"
+                                                                        (onmousewheel)="$event.preventDefault()" min="1"
                                                                         (input)="addImprintDisplayOrder($event.target.value)">
                                                                 </mat-form-field>
                                                             </div>
@@ -2183,19 +2229,25 @@
                                             <div class="col-lg-4 col-12" *ngIf="supplierType != 'Apparel Item'">
                                                 <mat-form-field appearance="fill" class="w-full">
                                                     <mat-label>Product Width</mat-label>
-                                                    <input matInput type="number" formControlName="productWidth">
+                                                    <input matInput type="number"
+                                                        (onmousewheel)="$event.preventDefault()"
+                                                        formControlName="productWidth">
                                                 </mat-form-field>
                                             </div>
                                             <div class="col-lg-4 col-12" *ngIf="supplierType != 'Apparel Item'">
                                                 <mat-form-field appearance="fill" class="w-full">
                                                     <mat-label>Product Height</mat-label>
-                                                    <input matInput type="number" formControlName="productHeight">
+                                                    <input matInput type="number"
+                                                        (onmousewheel)="$event.preventDefault()"
+                                                        formControlName="productHeight">
                                                 </mat-form-field>
                                             </div>
                                             <div class="col-lg-4 col-12" *ngIf="supplierType != 'Apparel Item'">
                                                 <mat-form-field appearance="fill" class="w-full">
                                                     <mat-label>Product Length</mat-label>
-                                                    <input matInput type="number" formControlName="productLength">
+                                                    <input matInput type="number"
+                                                        (onmousewheel)="$event.preventDefault()"
+                                                        formControlName="productLength">
                                                 </mat-form-field>
                                             </div>
 
@@ -2236,21 +2288,27 @@
                                             <div class="col-lg-4 col-12" *ngIf="supplierType != 'Apparel Item'">
                                                 <mat-form-field appearance="fill" class="w-full">
                                                     <mat-label>Case Height</mat-label>
-                                                    <input matInput type="number" formControlName="caseHeight">
+                                                    <input matInput type="number"
+                                                        (onmousewheel)="$event.preventDefault()"
+                                                        formControlName="caseHeight">
                                                     <small class="text-secondary font-semibold"> inch </small>
                                                 </mat-form-field>
                                             </div>
                                             <div class="col-lg-4 col-12" *ngIf="supplierType != 'Apparel Item'">
                                                 <mat-form-field appearance="fill" class="w-full">
                                                     <mat-label>Case Width</mat-label>
-                                                    <input matInput type="number" formControlName="caseWidth">
+                                                    <input matInput type="number"
+                                                        (onmousewheel)="$event.preventDefault()"
+                                                        formControlName="caseWidth">
                                                     <small class="text-secondary font-semibold"> inch </small>
                                                 </mat-form-field>
                                             </div>
                                             <div class="col-lg-4 col-12" *ngIf="supplierType != 'Apparel Item'">
                                                 <mat-form-field appearance="fill" class="w-full">
                                                     <mat-label>Case Length</mat-label>
-                                                    <input matInput type="number" formControlName="caseLength">
+                                                    <input matInput type="number"
+                                                        (onmousewheel)="$event.preventDefault()"
+                                                        formControlName="caseLength">
                                                     <small class="text-secondary font-semibold"> inch </small>
                                                 </mat-form-field>
                                             </div>
@@ -2262,7 +2320,8 @@
                                             </div>
                                             <div class="col-4" *ngIf="supplierType != 'Apparel Item'">
                                                 <mat-form-field class="w-full">
-                                                    <input matInput type="number" min="1"
+                                                    <input matInput type="number"
+                                                        (onmousewheel)="$event.preventDefault()" min="1"
                                                         [formControlName]="'weight'"><small
                                                         class="text-secondary font-semibold">
                                                         lbs </small>
@@ -2273,7 +2332,8 @@
                                             </div>
                                             <div class="col-4" *ngIf="supplierType != 'Apparel Item'">
                                                 <mat-form-field class="w-full">
-                                                    <input matInput type="number" min="1"
+                                                    <input matInput type="number"
+                                                        (onmousewheel)="$event.preventDefault()" min="1"
                                                         [formControlName]="'unitsInWeight'"><small
                                                         class="text-secondary font-semibold">
                                                         unit(s) </small>
@@ -2283,7 +2343,8 @@
                                             <div class="col-12">
                                                 <mat-form-field class="w-full">
                                                     <mat-label>Units per Shipping Package</mat-label>
-                                                    <input matInput type="number" min="1"
+                                                    <input matInput type="number"
+                                                        (onmousewheel)="$event.preventDefault()" min="1"
                                                         [formControlName]="'unitsInShippingPackage'"><small
                                                         class="text-secondary font-semibold">
                                                         unit(s) </small>
@@ -2292,7 +2353,9 @@
                                             <div class="col-12">
                                                 <mat-form-field class="w-full">
                                                     <mat-label>Flat Rate</mat-label>
-                                                    <input matInput type="number" [formControlName]="'flatRate'">
+                                                    <input matInput type="number"
+                                                        (onmousewheel)="$event.preventDefault()"
+                                                        [formControlName]="'flatRate'">
                                                 </mat-form-field>
                                             </div>
                                             <div class="col-lg-6 col-12" style="line-height: 2.3;">
@@ -2306,7 +2369,9 @@
                                             <div class="col-lg-6 col-12">
                                                 <mat-form-field appearance="fill" class="w-full">
                                                     <mat-label>Over Pack Charge (optional)</mat-label>
-                                                    <input matInput type="number" formControlName="overPackageCharge">
+                                                    <input matInput type="number"
+                                                        (onmousewheel)="$event.preventDefault()"
+                                                        formControlName="overPackageCharge">
                                                 </mat-form-field>
                                             </div>
                                             <div class="col-lg-6 col-12">

@@ -125,6 +125,7 @@ export class ProductsPhysicsComponent implements OnInit, OnDestroy {
         let physics = {
           weight: Number(weight).toFixed(2),
           unitsInWeight: unitsInWeight,
+          dimensions: dimensions,
           productWidth: dimensionsSplit[0],
           productHeight: dimensionsSplit[1],
           productLength: dimensionsSplit[2],
@@ -326,17 +327,17 @@ export class ProductsPhysicsComponent implements OnInit, OnDestroy {
     const { blnApparel, pk_productID } = this.selectedProduct;
     const { weight, unitsInWeight, dimensions, overPackCharge, unitsInShippingPackage, productWidth, productHeight, productLength } = this.productPhysicsForm.getRawValue();
 
-    const productDimensions = [
-      productWidth ? productWidth : 0,
-      productHeight ? productHeight : 0,
-      productLength ? productLength : 0
-    ];
+    // const productDimensions = [
+    //   productWidth ? productWidth : 0,
+    //   productHeight ? productHeight : 0,
+    //   productLength ? productLength : 0
+    // ];
 
     const payload = {
       product_id: pk_productID,
       weight: weight || 0,
       weight_in_units: unitsInWeight || 0,
-      dimensions: productDimensions.toString(),
+      dimensions: dimensions,
       over_pack_charge: overPackCharge,
       bln_apparel: blnApparel,
       shipping: {
