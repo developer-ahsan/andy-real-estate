@@ -3,6 +3,53 @@
         <ngx-skeleton-loader count="8" appearance="line" animation="pulse">
         </ngx-skeleton-loader>
     </div>
+    <div class="px-5">
+        <div class="row">
+            <div class="col-12 mb-2">
+                <fuse-alert [type]="'success'" [appearance]="'soft'" [showIcon]="!isFileDownloadLoader">
+                    <span *ngIf="isFileDownloadLoader" class="text-secondary font-medium">Fetching Products....</span>
+                    <span *ngIf="!isFileDownloadLoader" class="cursor-pointer text-secondary font-medium"
+                        (click)="downloadExcelWorkSheet()">Click here to download an Excel file of this list.</span>
+                </fuse-alert>
+            </div>
+            <div class="col-12 col-md-4">
+                <mat-form-field class="w-full">
+                    <input matInput placeholder="Search by Id or keyword" [(ngModel)]="keyword">
+                </mat-form-field>
+            </div>
+            <div class="col-12 col-md-4">
+                <mat-form-field class="w-full">
+                    <mat-select matInput [(ngModel)]="blnActive">
+                        <mat-option [value]="3">All Products</mat-option>
+                        <mat-option [value]="1">Only Active Products</mat-option>
+                        <mat-option [value]="0">Only Disabled Products</mat-option>
+                    </mat-select>
+                </mat-form-field>
+            </div>
+            <div class="col-12 col-md-4">
+                <mat-form-field class="w-full">
+                    <mat-select matInput [(ngModel)]="blnVideo">
+                        <mat-option [value]="3">With/without video</mat-option>
+                        <mat-option [value]="1">With video only</mat-option>
+                        <mat-option [value]="0">Without video only</mat-option>
+                    </mat-select>
+                </mat-form-field>
+            </div>
+            <div class="col-12 flex justify-end">
+                <button mat-stroked-button class="min-w-30 mr-2 mb-2" [disabled]="isSearchingLoader"
+                    (click)="resetFilter()">
+                    <span>Reset</span>
+                </button>
+                <button [disabled]="isSearchingLoader" mat-stroked-button class="min-w-30 mr-2 mb-2"
+                    (click)="searchProduct()">
+                    <span *ngIf="!isSearchingLoader">Filter</span>
+                    <mat-progress-spinner *ngIf="isSearchingLoader" [diameter]="24" [mode]="'indeterminate'">
+                    </mat-progress-spinner>
+                </button>
+
+            </div>
+        </div>
+    </div>
     <div *ngIf="!isLoading">
         <div *ngIf="dataSource.length;else other_content" class="w-full">
             <table mat-table [dataSource]="dataSource" class="w-full border-t">
@@ -10,48 +57,57 @@
                     <th mat-header-cell *matHeaderCellDef class="w-15 min-w-15">
                         PID
                     </th>
-                    <td mat-cell *matCellDef="let element">
-                        {{element.pk_locationID}}
+                    <td mat-cell *matCellDef="let element" class="text-sm">
+                        {{element.pk_productID}}
                     </td>
                 </ng-container>
                 <ng-container matColumnDef="number">
-                    <th mat-header-cell *matHeaderCellDef>
+                    <th mat-header-cell *matHeaderCellDef class="w-15 min-w-15">
                         Number
                     </th>
-                    <td mat-cell *matCellDef="let element">
-                        {{element.locationName || not_available}}
+                    <td mat-cell *matCellDef="let element" class="text-sm w-15 min-w-15">
+                        {{element.productNumber || not_available}}
                     </td>
                 </ng-container>
                 <ng-container matColumnDef="name">
-                    <th mat-header-cell *matHeaderCellDef>
+                    <th mat-header-cell *matHeaderCellDef class="w-30 min-w-30">
                         Name
                     </th>
-                    <td mat-cell *matCellDef="let element">
-                        {{element.locationName || not_available}}
+                    <td mat-cell *matCellDef="let element" class="text-sm">
+                        {{element.productName || not_available}}
                     </td>
                 </ng-container>
                 <ng-container matColumnDef="active">
-                    <th mat-header-cell *matHeaderCellDef>
+                    <th mat-header-cell *matHeaderCellDef class="w-10 min-w-10 text-center">
                         Active
                     </th>
-                    <td mat-cell *matCellDef="let element">
-                        {{element.locationName || not_available}}
+                    <td mat-cell *matCellDef="let element" class="text-sm text-center">
+                        <mat-icon svgIcon="heroicons_outline:check" class="text-green-700 icon-size-4"
+                            *ngIf="element.blnActive"></mat-icon>
+                        <mat-icon svgIcon="heroicons_outline:x" class="text-red-700 icon-size-4"
+                            *ngIf="!element.blnActive"></mat-icon>
                     </td>
                 </ng-container>
                 <ng-container matColumnDef="ordered">
-                    <th mat-header-cell *matHeaderCellDef>
+                    <th mat-header-cell *matHeaderCellDef class="w-10 min-w-10 text-center">
                         Ordered
                     </th>
-                    <td mat-cell *matCellDef="let element">
-                        {{element.locationName || not_available}}
+                    <td mat-cell *matCellDef="let element" class="text-sm text-center">
+                        <mat-icon svgIcon="heroicons_outline:check" class="text-green-700 icon-size-4"
+                            *ngIf="element.OrdersCount > 0"></mat-icon>
+                        <mat-icon svgIcon="heroicons_outline:x" class="text-red-700 icon-size-4"
+                            *ngIf="element.OrdersCount == 0"></mat-icon>
                     </td>
                 </ng-container>
                 <ng-container matColumnDef="video">
-                    <th mat-header-cell *matHeaderCellDef>
+                    <th mat-header-cell *matHeaderCellDef class="w-10 min-w-10 text-center">
                         Video
                     </th>
-                    <td mat-cell *matCellDef="let element">
-                        {{element.locationName || not_available}}
+                    <td mat-cell *matCellDef="let element" class="text-sm text-center">
+                        <mat-icon svgIcon="heroicons_outline:check" class="text-green-700 icon-size-4"
+                            *ngIf="element.productVideoID"></mat-icon>
+                        <mat-icon svgIcon="heroicons_outline:x" class="text-red-700 icon-size-4"
+                            *ngIf="!element.productVideoID"></mat-icon>
                     </td>
                 </ng-container>
                 <tr mat-header-row *matHeaderRowDef="displayedColumns;" class="h-18 bg-light"></tr>

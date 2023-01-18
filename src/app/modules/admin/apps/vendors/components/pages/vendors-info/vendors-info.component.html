@@ -1,5 +1,5 @@
 <div class="w-full">
-    <div class="bg-card shadow px-8 pb-8">
+    <div class="px-8 pb-4">
         <div class="row" [formGroup]="updateCompnayForm">
             <div class="col-12 col-md-6">
                 <mat-form-field class="w-full">
@@ -214,6 +214,36 @@
 
                     <span *ngIf="!isUpdateLoader">Update Vendor</span>
                     <mat-progress-spinner *ngIf="isUpdateLoader" [diameter]="24" [mode]="'indeterminate'">
+                    </mat-progress-spinner>
+                </button>
+            </div>
+        </div>
+    </div>
+    <div class="px-8 pb-4">
+        <div class="text-2xl font-bold pb-4 sm:pb-4 lg:pb-8">Vendor Website Login</div>
+        <ngx-skeleton-loader *ngIf="isWebsiteDataLoad" count="2" appearance="line" animation="pulse" [theme]="{ 
+            'background-color': '#dedede'
+          }">
+        </ngx-skeleton-loader>
+        <div class="row" *ngIf="!isWebsiteDataLoad">
+            <div class="col-12 col-md-6">
+                <mat-form-field class="w-full">
+                    <mat-label>Username</mat-label>
+                    <input matInput placeholder="Username" [(ngModel)]="websiteData.userName">
+                </mat-form-field>
+            </div>
+            <div class="col-12 col-md-6">
+                <mat-form-field class="w-full">
+                    <mat-label>Password</mat-label>
+                    <input matInput type="text" placeholder="Password" [(ngModel)]="websiteData.password">
+                </mat-form-field>
+            </div>
+            <div class="col-12 text-right">
+                <button mat-stroked-button class="min-w-40" (click)="updateWebsiteData()"
+                    [disabled]="isUpdateWebsiteLoader">
+                    <mat-icon *ngIf="!isUpdateWebsiteLoader" svgIcon="heroicons_outline:pencil-alt"></mat-icon>
+                    <span *ngIf="!isUpdateWebsiteLoader">Update</span>
+                    <mat-progress-spinner *ngIf="isUpdateWebsiteLoader" [diameter]="24" [mode]="'indeterminate'">
                     </mat-progress-spinner>
                 </button>
             </div>

@@ -2,6 +2,7 @@ import { Route } from '@angular/router';
 import { VendorsDetailsComponent } from './components/details/details-vendors.component';
 import { VendorTopOrderComponent } from './components/pages/top-order-products/top-order-products.component';
 import { VendorCoreProductsComponent } from './components/pages/vendor-core-products/vendor-core-products.component';
+import { VendorProductsStoreComponent } from './components/pages/vendor-product-store/vendor-product-store.component';
 import { VendorProductsSummaryComponent } from './components/pages/vendor-products-summary/vendor-products-summary.component';
 import { VendorProductsComponent } from './components/pages/vendor-products/vendor-products.component';
 import { VendorSettingsComponent } from './components/pages/vendor-settings/vendor-settings.component';
@@ -71,6 +72,14 @@ export const vendorsRoutes: Route[] = [
                 data: {
                     title: 'Products/Updates',
                     url: 'vendor-products-summary'
+                }
+            },
+            {
+                path: 'vendor-products-store',
+                component: VendorProductsStoreComponent,
+                data: {
+                    title: 'Products/Store',
+                    url: 'vendor-products-store'
                 }
             }
         ]

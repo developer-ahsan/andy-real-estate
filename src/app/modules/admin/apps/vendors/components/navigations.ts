@@ -35,7 +35,8 @@ export const navigations = [
             },
             {
                 title: 'Products/Store',
-                icon: 'mat_outline:store'
+                icon: 'mat_outline:store',
+                route: 'vendor-products-store'
             },
             {
                 title: 'Core Products',

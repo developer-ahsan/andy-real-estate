@@ -1,29 +1,29 @@
+import { ENTER, COMMA } from '@angular/cdk/keycodes';
 import { Component, Input, OnInit, Output, EventEmitter, ChangeDetectorRef, OnDestroy, ViewChild } from '@angular/core';
+import { MatChipInputEvent } from '@angular/material/chips';
 import { MatPaginator } from '@angular/material/paginator';
 import { Subject } from 'rxjs';
-import { takeUntil } from 'rxjs/operators';
+import { finalize, takeUntil } from 'rxjs/operators';
 import { VendorsService } from '../../vendors.service';
-import * as Excel from 'exceljs/dist/exceljs.min.js';
+import { AddColor, AddImprintColor, AddImprintMethod, DeleteColor, DeleteImprintColor, UpdateColor, UpdateImprintColor, UpdateImprintMethod, UpdateLocation } from '../../vendors.types';
 
 @Component({
-  selector: 'app-top-order-products',
-  templateUrl: './top-order-products.component.html',
+  selector: 'app-vendor-product-store',
+  templateUrl: './vendor-product-store.component.html',
   styles: [".mat-paginator {border-radius: 16px !important}"]
 })
-export class VendorTopOrderComponent implements OnInit, OnDestroy {
+export class VendorProductsStoreComponent implements OnInit, OnDestroy {
   @ViewChild('paginator') paginator: MatPaginator;
   @Input() isLoading: boolean;
   @Output() isLoadingChange = new EventEmitter<boolean>();
   private _unsubscribeAll: Subject<any> = new Subject<any>();
 
   dataSource = [];
-  displayedColumns: string[] = ['id', 'number', 'name', 'times', 'core'];
+  displayedColumns: string[] = ['id', 'number', 'name', 'active', 'ordered', 'video'];
   totalUsers = 0;
   page = 1;
   not_available = 'N/A';
-
   supplierData: any;
-  fileDownloadLoader: boolean;
 
   constructor(
     private _changeDetectorRef: ChangeDetectorRef,
@@ -68,55 +68,6 @@ export class VendorTopOrderComponent implements OnInit, OnDestroy {
     };
     this.getTopOrderProducts(this.page);
   };
-
-  // Download Excel File
-  downloadExcelWorkSheet() {
-    let payload = {
-      top_products: true,
-      size: this.totalUsers,
-      supplier_id: this.supplierData.pk_companyID
-    };
-    this.fileDownloadLoader = true;
-    this._vendorService.getVendorsData(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
-      const fileName = `${this.supplierData.pk_companyID}_topProdcuts`;
-      const workbook = new Excel.Workbook();
-      const worksheet = workbook.addWorksheet("Products");
-      // Columns
-      worksheet.columns = [
-        { header: "Count", key: "CoreCount", width: 10 },
-        { header: "ID", key: "pk_productID", width: 10 },
-        { header: "Name", key: "productName", width: 40 },
-        { header: "Number", key: "productNumber", width: 20 }
-      ];
-      for (const obj of res["data"]) {
-        worksheet.addRow(obj);
-      }
-      this.fileDownloadLoader = false;
-      workbook.xlsx.writeBuffer().then((data: any) => {
-        const blob = new Blob([data], {
-          type:
-            "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-        });
-        let url = window.URL.createObjectURL(blob);
-        let a = document.createElement("a");
-        document.body.appendChild(a);
-        a.setAttribute("style", "display: none");
-        a.href = url;
-        a.download = `${fileName}.xlsx`;
-        a.click();
-        window.URL.revokeObjectURL(url);
-        a.remove();
-      });
-
-      // Mark for check
-      this._changeDetectorRef.markForCheck();
-
-    }, err => {
-      this._vendorService.snackBar('Something went wrong');
-      this.fileDownloadLoader = false;
-      this._changeDetectorRef.markForCheck();
-    });
-  }
   /**
      * On destroy
      */

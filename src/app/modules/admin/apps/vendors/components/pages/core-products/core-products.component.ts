@@ -24,63 +24,38 @@ export class CoreProductsComponent implements OnInit, OnDestroy {
   totalUsers = 0;
   tempRecords = 0;
   page = 1;
-
-  mainScreen: string = 'Current Core Product Lists';
-  keyword = '';
   not_available = 'N/A';
+  supplierData: any;
 
-
-  isSearching: boolean = false;
-
-  // Add Method
-  ngName: string = '';
-  ngDesc: string = '';
-  isAddMethodLoader: boolean = false;
-
-  // Update Color
-  isUpdateMethodLoader: boolean = false;
-  isUpdateMethod: boolean = false;
-  updateMethodData: any;
-  ngRGBUpdate = '';
   constructor(
     private _changeDetectorRef: ChangeDetectorRef,
-    private _VendorsService: VendorsService
+    private _vendorService: VendorsService
   ) { }
 
   ngOnInit(): void {
     this.isLoading = true;
-    this.getImprintMethods(1, 'get');
+    this.getVendorsData();
   };
-  calledScreen(value) {
-    this.mainScreen = value;
+  getVendorsData() {
+    this._vendorService.Single_Suppliers$.pipe(takeUntil(this._unsubscribeAll)).subscribe(supplier => {
+      this.supplierData = supplier["data"][0];
+      this.getProducts(1);
+    })
   }
-  getImprintMethods(page, type) {
+  getProducts(page) {
     let params = {
-      imprint_methods: true,
-      keyword: this.keyword,
+      company_cores: true,
+      company_id: this.supplierData.pk_companyID,
       page: page,
       size: 20
     }
-    this._VendorsService.getSystemsData(params).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+    this._vendorService.getVendorsData(params).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
       this.dataSource = res["data"];
       this.totalUsers = res["totalRecords"];
-      if (this.keyword == '') {
-        this.tempDataSource = res["data"];
-        this.tempRecords = res["totalRecords"];
-      }
-      if (type == 'add') {
-        this.isAddMethodLoader = false;
-        this.ngName = '';
-        this.ngDesc = '';
-        this._VendorsService.snackBar('Method Added Successfully');
-        this.mainScreen = 'Current Imprint Methods';
-      }
       this.isLoading = false;
-      this.isSearching = false;
       this.isLoadingChange.emit(false);
       this._changeDetectorRef.markForCheck();
     }, err => {
-      this.isSearching = false;
       this.isLoading = false;
       this.isLoadingChange.emit(false);
       this._changeDetectorRef.markForCheck();
@@ -88,113 +63,13 @@ export class CoreProductsComponent implements OnInit, OnDestroy {
   }
   getNextData(event) {
     const { previousPageIndex, pageIndex } = event;
-
     if (pageIndex > previousPageIndex) {
       this.page++;
     } else {
       this.page--;
     };
-    this.getImprintMethods(this.page, 'get');
+    this.getProducts(this.page);
   };
-  searchColor(value) {
-    if (this.dataSource.length > 0) {
-      this.paginator.firstPage();
-    }
-    this.page = 1;
-    this.keyword = value;
-    this.isSearching = true;
-    this._changeDetectorRef.markForCheck();
-    this.getImprintMethods(1, 'get');
-  }
-  resetSearch() {
-    if (this.dataSource.length > 0) {
-      this.paginator.firstPage();
-    }
-    this.keyword = '';
-    this.dataSource = this.tempDataSource;
-    this.totalUsers = this.tempRecords;
-  }
-
-  addNewMethod() {
-    if (this.ngName == '') {
-      this._VendorsService.snackBar('Imprint Method name is required');
-      return;
-    }
-    let payload: AddImprintMethod = {
-      method_name: this.ngName,
-      method_description: this.ngDesc,
-      add_imprint_method: true
-    }
-    this.isAddMethodLoader = true;
-    this._VendorsService.AddSystemData(payload).pipe(takeUntil(this._unsubscribeAll), finalize(() => {
-      this._changeDetectorRef.markForCheck();
-    })).subscribe(res => {
-      if (res["success"]) {
-        this.getImprintMethods(1, 'add')
-      } else {
-        this.isAddMethodLoader = false;
-        this._VendorsService.snackBar(res["message"]);
-      }
-      this._changeDetectorRef.markForCheck();
-    }, err => {
-      this.isAddMethodLoader = false;
-      this._VendorsService.snackBar('Something went wrong');
-    })
-  }
-  // Delete Color
-  deleteColor(item) {
-    item.delLoader = true;
-    let payload: DeleteImprintColor = {
-      imprint_color_id: item.pk_imprintColorID,
-      delete_imprint_color: true
-    }
-    this._VendorsService.UpdateSystemData(payload).pipe(takeUntil(this._unsubscribeAll), finalize(() => {
-      item.delLoader = false
-      this._changeDetectorRef.markForCheck();
-    })).subscribe(res => {
-      this.dataSource = this.dataSource.filter(color => color.pk_imprintColorID != item.pk_imprintColorID);
-      this.totalUsers--;
-      this._VendorsService.snackBar('Color Deleted Successfully');
-      this._changeDetectorRef.markForCheck();
-    }, err => {
-      this._VendorsService.snackBar('Something went wrong');
-    });
-  }
-  // Update Method
-  updateMethodToggle(item) {
-    console.log(item)
-    this.updateMethodData = item;
-    this.isUpdateMethod = !this.isUpdateMethod;
-  }
-  updateMethod() {
-    if (this.updateMethodData.imprintColorName == '') {
-      this._VendorsService.snackBar('Color name is required');
-      return;
-    }
-    const rgb = this.ngRGBUpdate.replace('#', '');
-    let payload: UpdateImprintMethod = {
-      method_id: this.updateMethodData.pk_methodID,
-      method_name: this.updateMethodData.methodName,
-      description: this.updateMethodData.methodDescription,
-      update_imprint_method: true
-    }
-    this.isUpdateMethodLoader = true;
-    this._VendorsService.UpdateSystemData(payload).pipe(takeUntil(this._unsubscribeAll), finalize(() => {
-      this.isUpdateMethodLoader = false
-      this._changeDetectorRef.markForCheck();
-    })).subscribe(res => {
-      this.dataSource.filter(elem => {
-        if (elem.pk_methodID == this.updateMethodData.pk_methodID) {
-          elem.methodName = this.updateMethodData.methodName;
-          elem.methodDescription = this.updateMethodData.methodDescription;
-        }
-      });
-      this._VendorsService.snackBar('Method Updated Successfully');
-      this._changeDetectorRef.markForCheck();
-    }, err => {
-      this._VendorsService.snackBar('Something went wrong');
-    })
-  }
 
   /**
      * On destroy

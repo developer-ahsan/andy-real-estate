@@ -8,15 +8,17 @@
                 <i class="fa fa-info-circle"></i>
             </button></mat-label>
         <mat-form-field class="w-full">
-            <mat-select matInput>
+            <mat-select matInput [(ngModel)]="blnSettings">
                 <mat-option [value]="true">Yes</mat-option>
                 <mat-option [value]="false">No</mat-option>
             </mat-select>
         </mat-form-field>
         <div class="text-right">
-            <button class="min-w-40" mat-stroked-button>
-                <mat-icon svgIcon="heroicons_outline:pencil-alt"></mat-icon>
-                <span class="ml-2">Update</span>
+            <button mat-stroked-button class="min-w-40" (click)="updateSettings()" [disabled]="isUpdateLoader">
+                <mat-icon *ngIf="!isUpdateLoader" svgIcon="heroicons_outline:pencil-alt"></mat-icon>
+                <span *ngIf="!isUpdateLoader">Update Settings</span>
+                <mat-progress-spinner *ngIf="isUpdateLoader" [diameter]="24" [mode]="'indeterminate'">
+                </mat-progress-spinner>
             </button>
         </div>
     </div>

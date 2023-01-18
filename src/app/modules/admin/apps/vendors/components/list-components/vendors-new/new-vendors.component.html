@@ -133,9 +133,9 @@
                     <mat-form-field class="w-full">
                         <mat-label>Type</mat-label>
                         <mat-select multiple matInput formControlName="companyType">
-                            <mat-option>Supplier</mat-option>
-                            <mat-option>Decorator (zip = FOB)</mat-option>
-                            <mat-option>Digitizer</mat-option>
+                            <mat-option [value]="1">Supplier</mat-option>
+                            <mat-option [value]="2">Decorator (zip = FOB)</mat-option>
+                            <mat-option [value]="3">Digitizer</mat-option>
                         </mat-select>
                     </mat-form-field>
                 </div>

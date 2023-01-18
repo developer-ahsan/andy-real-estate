@@ -75,12 +75,14 @@ import { VendorCoreProductsComponent } from './components/pages/vendor-core-prod
 import { VendorProductsSummaryComponent } from './components/pages/vendor-products-summary/vendor-products-summary.component';
 import { VendorsDownloadComponent } from './components/list-components/vendors-download/vendors-download.component';
 import { VendorsInfoComponent } from './components/pages/vendors-info/vendors-info.component';
+import { VendorProductsStoreComponent } from './components/pages/vendor-product-store/vendor-product-store.component';
 
 @NgModule({
     declarations: [
         VendorsComponent, VendorsListComponent, NewVendorsComponent, VendorsDisabledListComponent, VendorsDownloadComponent, VendorsEmailComponent, VendorsDetailsComponent, VendorsInfoComponent, ColorsComponent, SizesComponent, PackAndAccessoriesComponent, ImprintColorsComponent, ImprintMethodsComponent, ImprintLocationsComponent, PromoCodesComponent, DefaultBlurbsComponent, CountrySalesComponent, ActiveStoresComponent, SupportTeamComponent, UploadImagesComponent, POArchivesComponent, ProductMigrationsComponent, CoreProductsComponent, SystemImprintRunComponent, ImprintChargesComponent, StandardImprintsComponent, AddEditImprintsComponent,
         SimulatorComponent, AdminToolsComponent, DiagonosticsComponent, AdminStructureComponent
-        , VendorTopOrderComponent, VendorSettingsComponent, VendorProductsComponent, VendorCoreProductsComponent, VendorProductsSummaryComponent
+        , VendorTopOrderComponent, VendorSettingsComponent, VendorProductsComponent, VendorCoreProductsComponent, VendorProductsSummaryComponent,
+        VendorProductsStoreComponent
     ],
     imports: [
         RouterModule.forChild(vendorsRoutes),

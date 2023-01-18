@@ -374,7 +374,7 @@ export interface AddCompany {
     insideRepPhone: string;
     insideRepEmail: string;
     samplesContactEmail: string;
-    companyType: number;
+    companyType: number[];
     create_company: boolean;
 };
 export interface UpdateCompany {
@@ -409,4 +409,16 @@ export interface UpdateCompany {
     specSamples: string;
     production: string;
     update_company: boolean;
+};
+export interface UpdateWebsiteLoginInfo {
+    company_id: number;
+    user_name: string;
+    password: string;
+    update_website_login: boolean;
+};
+
+export interface updateCompanySettings {
+    company_id: number;
+    blnFreeShipping: boolean;
+    update_company_settings: boolean;
 };

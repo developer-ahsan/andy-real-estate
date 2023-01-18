@@ -51,7 +51,7 @@ export class NewVendorsComponent implements OnInit, OnDestroy {
       insideRepPhone: new FormControl(''),
       insideRepEmail: new FormControl(''),
       samplesContactEmail: new FormControl(''),
-      companyType: new FormControl('')
+      companyType: new FormControl([1])
     });
   }
   ngOnInit(): void {
@@ -116,8 +116,17 @@ export class NewVendorsComponent implements OnInit, OnDestroy {
     }
     this.isAddLoader = true;
     this._vendorService.postVendorsData(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
-      this._vendorService.snackBar(res["message"]);
-      this.isAddLoader = false;
+      if (res["success"]) {
+        this._vendorService.getAllvendorsSuppliers().pipe(finalize(() => {
+          this._vendorService.snackBar(res["message"]);
+          this.isAddLoader = false;
+          this.initForm();
+          this._changeDetectorRef.markForCheck();
+        })).subscribe();
+      } else {
+        this.isAddLoader = false;
+        this._vendorService.snackBar(res["message"]);
+      }
       this._changeDetectorRef.markForCheck();
     }, err => {
       this._vendorService.snackBar('Something went wrong');

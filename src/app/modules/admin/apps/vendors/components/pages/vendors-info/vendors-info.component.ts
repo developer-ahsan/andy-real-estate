@@ -6,7 +6,7 @@ import { MatPaginator } from '@angular/material/paginator';
 import { Subject } from 'rxjs';
 import { debounceTime, distinctUntilChanged, filter, finalize, switchMap, takeUntil, tap } from 'rxjs/operators';
 import { VendorsService } from '../../vendors.service';
-import { AddCompany, UpdateCompany } from '../../vendors.types';
+import { AddCompany, UpdateCompany, UpdateWebsiteLoginInfo } from '../../vendors.types';
 @Component({
   selector: 'app-vendors-info',
   templateUrl: './vendors-info.component.html',
@@ -34,6 +34,10 @@ export class VendorsInfoComponent implements OnInit, OnDestroy {
   addOnBlur = true;
 
   additionalOrderEmails = [];
+
+  websiteData: any = { userName: '', password: '' };
+  isWebsiteDataLoad: boolean = false;
+  isUpdateWebsiteLoader: boolean = false;
   constructor(
     private _changeDetectorRef: ChangeDetectorRef,
     private _vendorService: VendorsService
@@ -78,6 +82,7 @@ export class VendorsInfoComponent implements OnInit, OnDestroy {
     this.initForm();
     this.getStatesObservable();
     this.getVendorsData();
+    this.getWebsiteLogin();
     let params;
     this.searchStateCtrl.valueChanges.pipe(
       filter((res: any) => {
@@ -106,6 +111,24 @@ export class VendorsInfoComponent implements OnInit, OnDestroy {
       this.allStates = data['data'];
     });
   };
+  getWebsiteLogin() {
+    this.isWebsiteDataLoad = true;
+    let params = {
+      website_login: true,
+      company_id: this.supplierData.pk_companyID
+    }
+    this._vendorService.getVendorsData(params).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+      if (res["data"].length > 0) {
+        this.websiteData.userName = res["data"][0].userName;
+        this.websiteData.password = res["data"][0].password;
+      }
+      this.isWebsiteDataLoad = false;
+      this._changeDetectorRef.markForCheck();
+    }, err => {
+      this.isWebsiteDataLoad = false;
+      this._changeDetectorRef.markForCheck();
+    })
+  }
   additionalEmails(event: MatChipInputEvent): void {
     const value = (event.value || '').trim();
     if (value != '') {
@@ -130,6 +153,9 @@ export class VendorsInfoComponent implements OnInit, OnDestroy {
       this.selectedState = this.supplierData.state;
       this.searchStateCtrl.setValue(this.selectedState);
       this.updateCompnayForm.patchValue(this.supplierData);
+      if (this.supplierData.additionalOrderEmails) {
+        this.additionalOrderEmails = this.supplierData.additionalOrderEmails.split(',');
+      }
     })
   }
   getStatesObservable() {
@@ -155,8 +181,9 @@ export class VendorsInfoComponent implements OnInit, OnDestroy {
       this._vendorService.snackBar('Please fill out the required fields');
       return;
     }
+
     let payload: UpdateCompany = {
-      company_id: pk_companyID, companyName, address, city, state, zipCode, phone, fax, ASI, PPAI, artworkEmail, ordersEmail, websiteURL, outsideRep, insideRep, outsideRepPhone, outsideRepEmail, insideRepPhone, insideRepEmail, samplesContactEmail, additionalOrderEmails, vendorRelation, screenprintEmail, embroideryEmail, coopPricing, netSetup, ltm, freeRandomSamples, specSamples, production, update_company: true
+      company_id: pk_companyID, companyName, address, city, state, zipCode, phone, fax, ASI, PPAI, artworkEmail, ordersEmail, websiteURL, outsideRep, insideRep, outsideRepPhone, outsideRepEmail, insideRepPhone, insideRepEmail, samplesContactEmail, vendorRelation, screenprintEmail, embroideryEmail, coopPricing, netSetup, ltm, freeRandomSamples, specSamples, production, update_company: true, additionalOrderEmails: this.additionalOrderEmails.toString()
     }
     this.isUpdateLoader = true;
     this._vendorService.putVendorsData(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
@@ -166,6 +193,28 @@ export class VendorsInfoComponent implements OnInit, OnDestroy {
     }, err => {
       this._vendorService.snackBar('Something went wrong');
       this.isUpdateLoader = false;
+      this._changeDetectorRef.markForCheck();
+    })
+  }
+  // Update Website Login
+  updateWebsiteData() {
+    const { userName, password } = this.websiteData;
+    if (userName == '' || password == '') {
+      this._vendorService.snackBar('Please fill out the required fields');
+      return;
+    }
+
+    let payload: UpdateWebsiteLoginInfo = {
+      company_id: this.supplierData.pk_companyID, user_name: userName, password, update_website_login: true
+    }
+    this.isUpdateWebsiteLoader = true;
+    this._vendorService.putVendorsData(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+      this._vendorService.snackBar(res["message"]);
+      this.isUpdateWebsiteLoader = false;
+      this._changeDetectorRef.markForCheck();
+    }, err => {
+      this._vendorService.snackBar('Something went wrong');
+      this.isUpdateWebsiteLoader = false;
       this._changeDetectorRef.markForCheck();
     })
   }

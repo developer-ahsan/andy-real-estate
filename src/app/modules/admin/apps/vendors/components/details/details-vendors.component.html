@@ -22,7 +22,17 @@
                 <p class="text-seconday"></p>
             </h2>
             <mat-form-field class="w-100">
-                <input matInput placeholder="Search Vendors">
+                <input matInput placeholder="Search Vendors Name" [matAutocomplete]="auto"
+                    [formControl]="searchSupplierCtrl">
+                <mat-autocomplete class="w-full" #auto="matAutocomplete" (optionSelected)="onSelected($event)"
+                    [displayWith]="displayWith">
+                    <mat-option *ngIf="isSearchingSupplier" class="is-loading">Loading...</mat-option>
+                    <ng-container *ngIf="!isSearchingSupplier">
+                        <mat-option *ngFor="let item of allSuppliers" [value]="item">
+                            <span>{{item.companyName}}</span>
+                        </mat-option>
+                    </ng-container>
+                </mat-autocomplete>
             </mat-form-field>
         </div>
 
@@ -107,9 +117,26 @@
                             <b>DISABLED</b>
                         </p>
                     </div>
+                    <div class="col-md-6 col-12 flex align-items-center justify-between">
+                        <b class="text-secondary text-sm">Relationship</b>
+                        <p class="float-right text-sm text-gray-700 font-medium"
+                            *ngIf="supplierData.vendorRelation == 1">
+                            <b>Normal</b>
+                        </p>
+                        <p class="float-right text-sm text-warn-600 font-medium flex align-items-center"
+                            *ngIf="supplierData.vendorRelation == 2">
+                            <mat-icon svgIcon="heroicons_solid:badge-check" class="icon-size-4" color="warn"></mat-icon>
+                            <b>Preffered</b>
+                        </p>
+                        <p class="float-right text-sm text-green-700 font-medium flex align-items-center"
+                            *ngIf="supplierData.vendorRelation == 3">
+                            <mat-icon svgIcon="heroicons_solid:star" class="icon-size-4 text-green-700"></mat-icon>
+                            <b>Partner</b>
+                        </p>
+                    </div>
                 </div>
             </div>
-            <div class="rounded-2xl shadow bg-card flex flex-col lg:flex-row w-full">
+            <div class=" rounded-2xl shadow bg-card flex flex-col lg:flex-row w-full">
                 <div class="w-full">
                     <div class="p-4 sm:p-4 lg:p-8">
                         <div class="text-2xl font-bold">

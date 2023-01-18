@@ -1,8 +1,9 @@
 import { Component, OnInit, ChangeDetectorRef, OnDestroy, ViewChild, ElementRef, ChangeDetectionStrategy, ViewEncapsulation } from '@angular/core';
+import { FormControl } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { FuseMediaWatcherService } from '@fuse/services/media-watcher';
 import { Subject } from 'rxjs';
-import { takeUntil } from 'rxjs/operators';
+import { debounceTime, distinctUntilChanged, filter, finalize, switchMap, takeUntil, tap } from 'rxjs/operators';
 import { VendorsService } from '../vendors.service';
 @Component({
   selector: 'app-details-vendors',
@@ -26,6 +27,11 @@ export class VendorsDetailsComponent implements OnInit, OnDestroy {
 
 
   supplierData: any;
+
+  allSuppliers = [];
+  searchSupplierCtrl = new FormControl();
+  selectedSupplier: any;
+  isSearchingSupplier = false;
   /**
    * Constructor
    */
@@ -47,12 +53,53 @@ export class VendorsDetailsComponent implements OnInit, OnDestroy {
    */
 
   ngOnInit(): void {
+    let params;
+    this.searchSupplierCtrl.valueChanges.pipe(
+      filter((res: any) => {
+        params = {
+          supplier: true,
+          bln_active: 1,
+          keyword: res
+        }
+        return res !== null && res.length >= 3
+      }),
+      distinctUntilChanged(),
+      debounceTime(300),
+      tap(() => {
+        this.allSuppliers = [];
+        this.isSearchingSupplier = true;
+        this._changeDetectorRef.markForCheck();
+      }),
+      switchMap(value => this._vendorsService.getVendorsData(params)
+        .pipe(
+          finalize(() => {
+            this.isSearchingSupplier = false
+            this._changeDetectorRef.markForCheck();
+          }),
+        )
+      )
+    ).subscribe((data: any) => {
+      this.allSuppliers = data['data'];
+    });
     this.selectedScreeen = this.route.children[0].snapshot.data.title;
     this.selectedRoute = this.route.children[0].snapshot.data.url;
     this.routes = this._vendorsService.navigationLabels;
     this.isLoading = false;
     this.sideDrawer();
     this.getSupplierData();
+  }
+  onSelected(ev) {
+    this.selectedSupplier = ev.option.value;
+    this.selectedRoute = 'information';
+    setTimeout(() => {
+      this.topScroll.nativeElement.scrollIntoView({ behavior: 'smooth' });
+    }, 300);
+    this._router.navigate([`apps/vendors/${this.selectedSupplier.pk_companyID}/information`]);
+    this.selectedScreeen = 'Vendor Information';
+  }
+
+  displayWith(value: any) {
+    return value?.companyName;
   }
   getSupplierData() {
     this._vendorsService.Single_Suppliers$.pipe(takeUntil(this._unsubscribeAll)).subscribe(supplier => {
@@ -88,9 +135,12 @@ export class VendorsDetailsComponent implements OnInit, OnDestroy {
   clicked(item) {
     if (item.route != this.selectedRoute) {
       this.selectedScreeen = item.title;
+      this.selectedRoute = item.route;
+      setTimeout(() => {
+        this.topScroll.nativeElement.scrollIntoView({ behavior: 'smooth' });
+      }, 100);
+      this._router.navigate([item.route], { relativeTo: this.route });
     }
-    this._router.navigate([item.route], { relativeTo: this.route })
-    this.topScroll.nativeElement.scrollIntoView({ behavior: 'smooth' });
   }
   // Drawer Open Close
   toggleDrawer() {
