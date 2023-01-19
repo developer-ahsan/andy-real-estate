@@ -94,7 +94,7 @@ export const appRoutes: Route[] = [
                     { path: 'system', loadChildren: () => import('app/modules/admin/apps/system/system.module').then(m => m.SystemModule) },
                     { path: 'flps', loadChildren: () => import('app/modules/admin/apps/flps/flps.module').then(m => m.FlpsModule) },
                     { path: 'users', loadChildren: () => import('app/modules/admin/apps/users/users.module').then(m => m.UsersModule) },
-                    { path: 'catalog', loadChildren: () => import('app/modules/admin/apps/catalog/catalog.module').then(m => m.CatalogModule) },
+                    { path: 'catalogs', loadChildren: () => import('app/modules/admin/apps/catalog/catalog.module').then(m => m.CatalogModule) },
                     { path: 'promostandards', loadChildren: () => import('app/modules/admin/apps/promostandards/promostandards.module').then(m => m.PromoStandardsModule) },
                     { path: 'stores', loadChildren: () => import('app/modules/admin/apps/file-manager/stores.module').then(m => m.StoresModule) },
                     { path: 'help-center', loadChildren: () => import('app/modules/admin/apps/help-center/help-center.module').then(m => m.HelpCenterModule) },

@@ -19,30 +19,37 @@ export class VendorProductsSummaryComponent implements OnInit, OnDestroy {
   private _unsubscribeAll: Subject<any> = new Subject<any>();
 
   dataSource = [];
-  displayedColumns: string[] = ['id', 'number', 'name', 'active', 'ordered', 'video'];
+  displayedColumns: string[] = ['id', 'number', 'name', 'pricing', 'active'];
   totalUsers = 0;
   page = 1;
   not_available = 'N/A';
+  supplierData: any;
 
   constructor(
     private _changeDetectorRef: ChangeDetectorRef,
-    private _VendorsService: VendorsService
+    private _vendorService: VendorsService
   ) { }
 
   ngOnInit(): void {
     this.isLoading = true;
-    this.getImprintLocations(1);
+    this.getVendorsData();
   };
-  getImprintLocations(page) {
+  getVendorsData() {
+    this._vendorService.Single_Suppliers$.pipe(takeUntil(this._unsubscribeAll)).subscribe(supplier => {
+      this.supplierData = supplier["data"][0];
+      this.getTopOrderProducts(1);
+    })
+  }
+  getTopOrderProducts(page) {
     let params = {
-      imprint_locations: true,
+      product_updates: true,
       page: page,
-      size: 20
+      size: 20,
+      company_id: this.supplierData.pk_companyID
     }
-    this._VendorsService.getSystemsData(params).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+    this._vendorService.getVendorsData(params).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
       this.dataSource = res["data"];
       this.totalUsers = res["totalRecords"];
-
       this.isLoading = false;
       this.isLoadingChange.emit(false);
       this._changeDetectorRef.markForCheck();
@@ -54,13 +61,12 @@ export class VendorProductsSummaryComponent implements OnInit, OnDestroy {
   }
   getNextData(event) {
     const { previousPageIndex, pageIndex } = event;
-
     if (pageIndex > previousPageIndex) {
       this.page++;
     } else {
       this.page--;
     };
-    this.getImprintLocations(this.page);
+    this.getTopOrderProducts(this.page);
   };
   /**
      * On destroy

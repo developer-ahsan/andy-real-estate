@@ -29,10 +29,10 @@ export const navigations = [
                 icon: 'mat_outline:production_quantity_limits',
                 route: 'vendor-products'
             },
-            {
-                title: 'Export Product List',
-                icon: 'mat_outline:import_export',
-            },
+            // {
+            //     title: 'Export Product List',
+            //     icon: 'mat_outline:import_export',
+            // },
             {
                 title: 'Products/Store',
                 icon: 'mat_outline:store',
@@ -51,18 +51,22 @@ export const navigations = [
             {
                 title: 'F.O.B Locations',
                 icon: 'mat_outline:edit_location_alt',
+                route: 'vendor-fob-locations'
             },
             {
                 title: 'Blanket F.O.B',
                 icon: 'mat_outline:location_on',
+                route: 'vendor-blnaket-fob'
             },
             {
-                title: 'Sizing charts',
+                title: 'Sizing Charts',
                 icon: 'mat_outline:format_size',
+                route: 'vendor-sizing-charts'
             },
             {
                 title: 'Product Videos',
                 icon: 'mat_outline:ondemand_video',
+                route: 'vendor-videos'
             }
         ]
     },

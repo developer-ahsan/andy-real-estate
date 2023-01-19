@@ -422,3 +422,43 @@ export interface updateCompanySettings {
     blnFreeShipping: boolean;
     update_company_settings: boolean;
 };
+
+export interface AddFOBLocation {
+    location_name: string;
+    supplier_id: number;
+    address: string;
+    city: string;
+    state: string;
+    zip: string;
+    add_fob_location: boolean;
+};
+
+export interface RemoveFOBLocation {
+    location_id: number;
+    remove_fob_location: boolean;
+};
+
+export interface ApplyBlanketFOBlocation {
+    supplier_id: number;
+    location_id: number;
+    supplier_name: string;
+    apply_fob_location: boolean;
+};
+// Sizing chart
+export interface AddSizeChart {
+    company_id: number;
+    name: string;
+    description: string;
+    add_size: boolean;
+};
+export interface UpdateSizeChart {
+    company_id: number;
+    name: string;
+    description: string;
+    chart_id: number;
+    update_size: boolean;
+};
+export interface RemoveSizeChart {
+    chart_id: number;
+    remove_size_chart: boolean;
+};

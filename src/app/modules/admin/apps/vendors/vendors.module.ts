@@ -76,13 +76,17 @@ import { VendorProductsSummaryComponent } from './components/pages/vendor-produc
 import { VendorsDownloadComponent } from './components/list-components/vendors-download/vendors-download.component';
 import { VendorsInfoComponent } from './components/pages/vendors-info/vendors-info.component';
 import { VendorProductsStoreComponent } from './components/pages/vendor-product-store/vendor-product-store.component';
+import { VendorFOBLocationComponent } from './components/pages/vendor-fob-locations/vendor-fob-locations.component';
+import { VendorBlanketComponent } from './components/pages/vendor-blanket-location/vendor-blanket-location.component';
+import { VendorSizingChartComponent } from './components/pages/vendor-sizing-chart/vendor-sizing-chart.component';
+import { VendorVideosComponent } from './components/pages/vendor-videos/vendor-videos.component';
 
 @NgModule({
     declarations: [
         VendorsComponent, VendorsListComponent, NewVendorsComponent, VendorsDisabledListComponent, VendorsDownloadComponent, VendorsEmailComponent, VendorsDetailsComponent, VendorsInfoComponent, ColorsComponent, SizesComponent, PackAndAccessoriesComponent, ImprintColorsComponent, ImprintMethodsComponent, ImprintLocationsComponent, PromoCodesComponent, DefaultBlurbsComponent, CountrySalesComponent, ActiveStoresComponent, SupportTeamComponent, UploadImagesComponent, POArchivesComponent, ProductMigrationsComponent, CoreProductsComponent, SystemImprintRunComponent, ImprintChargesComponent, StandardImprintsComponent, AddEditImprintsComponent,
         SimulatorComponent, AdminToolsComponent, DiagonosticsComponent, AdminStructureComponent
-        , VendorTopOrderComponent, VendorSettingsComponent, VendorProductsComponent, VendorCoreProductsComponent, VendorProductsSummaryComponent,
-        VendorProductsStoreComponent
+        , VendorTopOrderComponent, VendorSettingsComponent, VendorProductsComponent, VendorCoreProductsComponent, VendorProductsSummaryComponent, VendorFOBLocationComponent,
+        VendorProductsStoreComponent, VendorBlanketComponent, VendorSizingChartComponent, VendorVideosComponent
     ],
     imports: [
         RouterModule.forChild(vendorsRoutes),
