@@ -1,0 +1,27 @@
+<div class="w-full">
+    <div class="px-5" *ngIf="isLoading">
+        <ngx-skeleton-loader count="8" appearance="line" animation="pulse">
+        </ngx-skeleton-loader>
+    </div>
+
+    <div class="px-8 pb-5">
+        <fuse-alert [appearance]="'soft'" [type]="'warning'" [showIcon]="false">NOTE: Disabling a vendor will take all
+            of their products offline for all stores, and disable all of their products in the system.</fuse-alert>
+
+        <mat-form-field class="w-full">
+            <mat-label>Vendor Status</mat-label>
+            <mat-select matInput [(ngModel)]="blnSettings">
+                <mat-option [value]="true">Yes</mat-option>
+                <mat-option [value]="false">No</mat-option>
+            </mat-select>
+        </mat-form-field>
+        <div class="text-right">
+            <button mat-stroked-button class="min-w-40" (click)="updateSettings()" [disabled]="isUpdateLoader">
+                <mat-icon *ngIf="!isUpdateLoader" svgIcon="heroicons_outline:pencil-alt"></mat-icon>
+                <span *ngIf="!isUpdateLoader">Update Status</span>
+                <mat-progress-spinner *ngIf="isUpdateLoader" [diameter]="24" [mode]="'indeterminate'">
+                </mat-progress-spinner>
+            </button>
+        </div>
+    </div>
+</div>

@@ -9,11 +9,11 @@ import { VendorsService } from '../../vendors.service';
 import { ApplyBlanketFOBlocation, updateCompanySettings } from '../../vendors.types';
 
 @Component({
-  selector: 'app-vendor-blanket-location',
-  templateUrl: './vendor-blanket-location.component.html',
+  selector: 'app-vendor-run-charges',
+  templateUrl: './vendor-run-charges.component.html',
   styles: [".mat-paginator {border-radius: 16px !important}"]
 })
-export class VendorBlanketComponent implements OnInit, OnDestroy {
+export class VendorRunChargesComponent implements OnInit, OnDestroy {
   @Input() isLoading: boolean;
   @Output() isLoadingChange = new EventEmitter<boolean>();
   private _unsubscribeAll: Subject<any> = new Subject<any>();

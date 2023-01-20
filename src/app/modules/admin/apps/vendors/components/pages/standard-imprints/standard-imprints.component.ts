@@ -156,7 +156,7 @@ export class StandardImprintsComponent implements OnInit, OnDestroy {
       imprint: true,
       standard_group_id: this.groupImprintData.pk_standardImprintGroupID,
       standard_imprint: true,
-      keyword: this.keyword,
+      // keyword: this.keyword,
       page: page,
       size: 10
     }

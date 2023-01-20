@@ -77,22 +77,27 @@ export const navigations = [
             {
                 title: 'Co-Ops',
                 icon: 'heroicons_outline:archive',
+                route: 'vendor-coops'
             },
             {
                 title: 'Blanket Coop',
                 icon: 'heroicons_outline:receipt-tax',
+                route: 'vendor-blanket-coops'
             },
             {
                 title: 'Vendor Comments',
                 icon: 'mat_outline:comment',
+                route: 'vendor-comments'
             },
             {
                 title: 'Vendor Orders',
                 icon: 'mat_outline:reorder',
+                route: 'vendor-orders'
             },
             {
                 title: 'Supplier Application',
                 icon: 'mat_outline:settings_applications',
+                route: 'vendor-application'
             }
         ]
     },
@@ -101,20 +106,29 @@ export const navigations = [
         icon: 'mat_outline:store',
         children: [
             {
+                title: 'Standard Imprints',
+                icon: 'mat_outline:color_lens',
+                route: 'vendor-standard-imprints'
+            },
+            {
                 title: 'Imprint Colors',
                 icon: 'mat_outline:color_lens',
+                route: 'vendor-imprint-colors'
             },
             {
                 title: 'Blanket Collections',
                 icon: 'heroicons_outline:collection',
+                route: 'vendor-blanket-collections'
             },
             {
                 title: 'Blanket Run Charges',
                 icon: 'mat_outline:money',
+                route: 'vendor-run-charges'
             },
             {
                 title: 'Blanket Setup Charges',
                 icon: 'heroicons_outline:currency-dollar',
+                route: 'vendor-setup-charges'
             }
         ]
     },
@@ -125,16 +139,19 @@ export const navigations = [
             {
                 title: 'Vendor Users',
                 icon: 'heroicons_outline:user-group',
+                route: 'vendor-users'
             },
             {
                 title: 'Vendor Website',
                 icon: 'mat_outline:web',
+                route: 'vendor-website'
             }
         ]
     },
     {
         title: 'Vendor Status',
         icon: 'mat_outline:online_prediction',
+        route: 'vendor-status',
         children: []
     }
 ];

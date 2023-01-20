@@ -184,7 +184,7 @@ export class VendorProductsComponent implements OnInit, OnDestroy {
   downloadExcelWorkSheetReport() {
     let params = {
       products: true,
-      size: this.totalUsers,
+      size: this.tempTotalUsers,
       supplier_id: this.supplierData.pk_companyID
     }
     this.fileDownloadLoader = true;

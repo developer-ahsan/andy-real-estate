@@ -1,19 +1,30 @@
 import { Route } from '@angular/router';
 import { VendorsDetailsComponent } from './components/details/details-vendors.component';
+import { StandardImprintsComponent } from './components/pages/standard-imprints/standard-imprints.component';
 import { VendorTopOrderComponent } from './components/pages/top-order-products/top-order-products.component';
+import { VendorApplicationComponent } from './components/pages/vendor-application/vendor-application.component';
+import { VendorBlanketCoopComponent } from './components/pages/vendor-blanket-coop/vendor-blanket-coop.component';
+import { VendorBlanketColorsComponent } from './components/pages/vendor-blanket-imprint-colors/vendor-blanket-imprint-colors.component';
 import { VendorBlanketComponent } from './components/pages/vendor-blanket-location/vendor-blanket-location.component';
+import { VendorCommentsComponent } from './components/pages/vendor-comments/vendor-comments.component';
+import { VendorCoopComponent } from './components/pages/vendor-coop/vendor-coop.component';
 import { VendorCoreProductsComponent } from './components/pages/vendor-core-products/vendor-core-products.component';
 import { VendorFOBLocationComponent } from './components/pages/vendor-fob-locations/vendor-fob-locations.component';
+import { VendorImprintColorsComponent } from './components/pages/vendor-imprint-colors/imprint-colors.component';
+import { VendorOrdersComponent } from './components/pages/vendor-orders/vendor-orders.component';
 import { VendorProductsStoreComponent } from './components/pages/vendor-product-store/vendor-product-store.component';
 import { VendorProductsSummaryComponent } from './components/pages/vendor-products-summary/vendor-products-summary.component';
 import { VendorProductsComponent } from './components/pages/vendor-products/vendor-products.component';
+import { VendorRunChargesComponent } from './components/pages/vendor-run-charges/vendor-run-charges.component';
 import { VendorSettingsComponent } from './components/pages/vendor-settings/vendor-settings.component';
+import { VendorSetupChargesComponent } from './components/pages/vendor-setup-charges/vendor-setup-charges.component';
 import { VendorSizingChartComponent } from './components/pages/vendor-sizing-chart/vendor-sizing-chart.component';
+import { VendorStatusComponent } from './components/pages/vendor-status/vendor-status.component';
+import { VendorUsersComponent } from './components/pages/vendor-users/vendor-users.component';
 import { VendorVideosComponent } from './components/pages/vendor-videos/vendor-videos.component';
 import { VendorsInfoComponent } from './components/pages/vendors-info/vendors-info.component';
 import { VendorsComponent } from './components/vendors.component';
 import { SuppliersByIdResolver, SuppliersListsResolver } from './components/vendors.resolvers';
-
 export const vendorsRoutes: Route[] = [
 
     {
@@ -116,6 +127,102 @@ export const vendorsRoutes: Route[] = [
                 data: {
                     title: 'Product Videos',
                     url: 'vendor-videos'
+                }
+            },
+            {
+                path: 'vendor-coops',
+                component: VendorCoopComponent,
+                data: {
+                    title: 'Co-Ops',
+                    url: 'vendor-coops'
+                }
+            },
+            {
+                path: 'vendor-blanket-coops',
+                component: VendorBlanketCoopComponent,
+                data: {
+                    title: 'Blanket Coop',
+                    url: 'vendor-blanket-coops'
+                }
+            },
+            {
+                path: 'vendor-comments',
+                component: VendorCommentsComponent,
+                data: {
+                    title: 'Vendor Comments',
+                    url: 'vendor-comments'
+                }
+            },
+            {
+                path: 'vendor-orders',
+                component: VendorOrdersComponent,
+                data: {
+                    title: 'Vendor Orders',
+                    url: 'vendor-orders'
+                }
+            },
+            {
+                path: 'vendor-application',
+                component: VendorApplicationComponent,
+                data: {
+                    title: 'Supplier Application',
+                    url: 'vendor-application'
+                }
+            },
+            {
+                path: 'vendor-standard-imprints',
+                component: StandardImprintsComponent,
+                data: {
+                    title: 'Standard Imprints',
+                    url: 'vendor-standard-imprints'
+                }
+            },
+            {
+                path: 'vendor-imprint-colors',
+                component: VendorImprintColorsComponent,
+                data: {
+                    title: 'Imprint Colors',
+                    url: 'vendor-imprint-colors'
+                }
+            },
+            {
+                path: 'vendor-blanket-collections',
+                component: VendorBlanketColorsComponent,
+                data: {
+                    title: 'Blanket Collections',
+                    url: 'vendor-blanket-collections'
+                }
+            },
+            {
+                path: 'vendor-run-charges',
+                component: VendorRunChargesComponent,
+                data: {
+                    title: 'Blanket Run Charges',
+                    url: 'vendor-run-charges'
+                }
+            },
+            {
+                path: 'vendor-setup-charges',
+                component: VendorSetupChargesComponent,
+                data: {
+                    title: 'Blanket Setup Charges',
+                    url: 'vendor-setup-charges'
+                }
+            },
+            {
+                path: 'vendor-users',
+                component: VendorUsersComponent,
+                data: {
+                    title: 'Vendor Users',
+                    url: 'vendor-users'
+                }
+            },
+            {
+                path: 'vendor-status',
+                component: VendorStatusComponent,
+                data: {
+                    title: 'Vendor Status',
+                    url: 'vendor-status'
                 }
             }
         ]

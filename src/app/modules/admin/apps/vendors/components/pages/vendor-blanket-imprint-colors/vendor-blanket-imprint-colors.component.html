@@ -1,0 +1,34 @@
+<div class="w-full">
+    <div class="px-5" *ngIf="isLoading">
+        <ngx-skeleton-loader count="8" appearance="line" animation="pulse">
+        </ngx-skeleton-loader>
+    </div>
+    <div class="px-8 pb-5" *ngIf="!isLoading">
+        <fuse-alert [appearance]="'soft'" [type]="'warning'" [showIcon]="false">This tool will apply a blanket F.O.B.
+            location of your choice to all {{supplierData.companyName}} products. This action will replace all current
+            F.O.B.
+            locations associated with a product and cannot be undone. Please make sure the F.O.B. location you want is
+            added to the system first.</fuse-alert>
+        <mat-form-field class="w-full mt-2">
+            <mat-label>Select F.O.B Location</mat-label>
+            <input matInput [matAutocomplete]="auto" [formControl]="searchLocationCtrl" placeholder="Search By Location"
+                (blur)="onBlur()">
+            <mat-autocomplete class="w-full" #auto="matAutocomplete" (optionSelected)="onSelected($event)"
+                [displayWith]="displayWith">
+                <mat-option *ngIf="isSearchingLocation" class="is-loading">Loading...</mat-option>
+                <ng-container *ngIf="!isSearchingLocation">
+                    <mat-option *ngFor="let item of allLocations" [value]="item">
+                        <span>{{item.FOBLocationName}}</span>
+                    </mat-option>
+                </ng-container>
+            </mat-autocomplete>
+        </mat-form-field>
+        <div class="text-right">
+            <button mat-stroked-button class="min-w-30" (click)="updateLocations()" [disabled]="isUpdateLoader">
+                <span *ngIf="!isUpdateLoader">Apply</span>
+                <mat-progress-spinner *ngIf="isUpdateLoader" [diameter]="24" [mode]="'indeterminate'">
+                </mat-progress-spinner>
+            </button>
+        </div>
+    </div>
+</div>

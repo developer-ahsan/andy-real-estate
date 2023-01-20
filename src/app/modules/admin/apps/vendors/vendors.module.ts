@@ -39,30 +39,12 @@ import { FuseAlertModule } from '@fuse/components/alert';
 import { MatDialogModule } from '@angular/material/dialog';
 import { vendorsRoutes } from './vendors.routing';
 import { VendorsComponent } from './components/vendors.component';
-import { ColorsComponent } from './components/pages/colors/colors.component';
-import { SizesComponent } from './components/pages/sizes/sizes.component';
-import { PackAndAccessoriesComponent } from './components/pages/pack-accessories/pack-accessories.component';
-import { ImprintColorsComponent } from './components/pages/imprint-colors/imprint-colors.component';
-import { ImprintMethodsComponent } from './components/pages/imprint-methods/imprint-methods.component';
-import { ImprintLocationsComponent } from './components/pages/imprint-locations/imprint-locations.component';
-import { PromoCodesComponent } from './components/pages/promo-codes/promo-codes.component';
+import { VendorImprintColorsComponent } from './components/pages/vendor-imprint-colors/imprint-colors.component';
 import { MatDatepickerModule } from '@angular/material/datepicker';
-import { DefaultBlurbsComponent } from './components/pages/default-blurbs/default-blurbs.component';
-import { CountrySalesComponent } from './components/pages/country-sales/country-sales.component';
-import { ActiveStoresComponent } from './components/pages/active-stores/active-stores.component';
-import { SupportTeamComponent } from './components/pages/support-team/support-team.component';
-import { UploadImagesComponent } from './components/pages/upload-images/upload-images.component';
-import { POArchivesComponent } from './components/pages/po-archives/po-archives.component';
-import { ProductMigrationsComponent } from './components/pages/product-migrations/product-migrations.component';
-import { CoreProductsComponent } from './components/pages/core-products/core-products.component';
 import { SystemImprintRunComponent } from './components/pages/imprint-run/imprint-run.component';
 import { ImprintChargesComponent } from './components/pages/imprint-charges/imprint-charges.component';
 import { StandardImprintsComponent } from './components/pages/standard-imprints/standard-imprints.component';
 import { AddEditImprintsComponent } from './components/pages/standard-imprints/imprints/imprints.component';
-import { SimulatorComponent } from './components/pages/simulator/simulator.component';
-import { AdminToolsComponent } from './components/pages/admin-tools/admin-tools.component';
-import { DiagonosticsComponent } from './components/pages/diagonostics/diagonostics.component';
-import { AdminStructureComponent } from './components/pages/admin-structure/admin-structure.component';
 import { VendorsListComponent } from './components/list-components/vendors-list/list.component';
 import { VendorsDisabledListComponent } from './components/list-components/vendors-disabled-list/vendors-disabled-list.component';
 import { NewVendorsComponent } from './components/list-components/vendors-new/new-vendors.component';
@@ -80,13 +62,22 @@ import { VendorFOBLocationComponent } from './components/pages/vendor-fob-locati
 import { VendorBlanketComponent } from './components/pages/vendor-blanket-location/vendor-blanket-location.component';
 import { VendorSizingChartComponent } from './components/pages/vendor-sizing-chart/vendor-sizing-chart.component';
 import { VendorVideosComponent } from './components/pages/vendor-videos/vendor-videos.component';
+import { VendorCoopComponent } from './components/pages/vendor-coop/vendor-coop.component';
+import { VendorBlanketCoopComponent } from './components/pages/vendor-blanket-coop/vendor-blanket-coop.component';
+import { VendorCommentsComponent } from './components/pages/vendor-comments/vendor-comments.component';
+import { VendorOrdersComponent } from './components/pages/vendor-orders/vendor-orders.component';
+import { VendorApplicationComponent } from './components/pages/vendor-application/vendor-application.component';
+import { VendorBlanketColorsComponent } from './components/pages/vendor-blanket-imprint-colors/vendor-blanket-imprint-colors.component';
+import { VendorRunChargesComponent } from './components/pages/vendor-run-charges/vendor-run-charges.component';
+import { VendorSetupChargesComponent } from './components/pages/vendor-setup-charges/vendor-setup-charges.component';
+import { VendorUsersComponent } from './components/pages/vendor-users/vendor-users.component';
+import { VendorStatusComponent } from './components/pages/vendor-status/vendor-status.component';
+import { VendorStatusGuard } from './vendor-status.guard';
 
 @NgModule({
     declarations: [
-        VendorsComponent, VendorsListComponent, NewVendorsComponent, VendorsDisabledListComponent, VendorsDownloadComponent, VendorsEmailComponent, VendorsDetailsComponent, VendorsInfoComponent, ColorsComponent, SizesComponent, PackAndAccessoriesComponent, ImprintColorsComponent, ImprintMethodsComponent, ImprintLocationsComponent, PromoCodesComponent, DefaultBlurbsComponent, CountrySalesComponent, ActiveStoresComponent, SupportTeamComponent, UploadImagesComponent, POArchivesComponent, ProductMigrationsComponent, CoreProductsComponent, SystemImprintRunComponent, ImprintChargesComponent, StandardImprintsComponent, AddEditImprintsComponent,
-        SimulatorComponent, AdminToolsComponent, DiagonosticsComponent, AdminStructureComponent
-        , VendorTopOrderComponent, VendorSettingsComponent, VendorProductsComponent, VendorCoreProductsComponent, VendorProductsSummaryComponent, VendorFOBLocationComponent,
-        VendorProductsStoreComponent, VendorBlanketComponent, VendorSizingChartComponent, VendorVideosComponent
+        VendorsComponent, VendorsListComponent, NewVendorsComponent, VendorsDisabledListComponent, VendorsDownloadComponent, VendorsEmailComponent, VendorsDetailsComponent, VendorsInfoComponent, SystemImprintRunComponent, ImprintChargesComponent, StandardImprintsComponent, AddEditImprintsComponent, VendorTopOrderComponent, VendorSettingsComponent, VendorProductsComponent, VendorCoreProductsComponent, VendorProductsSummaryComponent, VendorFOBLocationComponent,
+        VendorProductsStoreComponent, VendorBlanketComponent, VendorSizingChartComponent, VendorVideosComponent, VendorCoopComponent, VendorBlanketCoopComponent, VendorCommentsComponent, VendorOrdersComponent, VendorApplicationComponent, VendorImprintColorsComponent, VendorBlanketColorsComponent, VendorRunChargesComponent, VendorSetupChargesComponent, VendorUsersComponent, VendorStatusComponent
     ],
     imports: [
         RouterModule.forChild(vendorsRoutes),
@@ -130,7 +121,8 @@ import { VendorVideosComponent } from './components/pages/vendor-videos/vendor-v
         MatDatepickerModule,
         MatNativeDateModule
     ],
-    entryComponents: []
+    entryComponents: [],
+    providers: [VendorStatusGuard]
 })
 export class VendorsModule {
 }
