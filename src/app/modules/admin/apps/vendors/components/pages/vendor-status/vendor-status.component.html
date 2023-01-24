@@ -5,12 +5,13 @@
     </div>
 
     <div class="px-8 pb-5">
-        <fuse-alert [appearance]="'soft'" [type]="'warning'" [showIcon]="false">NOTE: Disabling a vendor will take all
+        <fuse-alert class="mb-2" [appearance]="'soft'" [type]="'warning'" [showIcon]="false">NOTE: Disabling a vendor
+            will take all
             of their products offline for all stores, and disable all of their products in the system.</fuse-alert>
 
         <mat-form-field class="w-full">
             <mat-label>Vendor Status</mat-label>
-            <mat-select matInput [(ngModel)]="blnSettings">
+            <mat-select matInput [(ngModel)]="blnActive">
                 <mat-option [value]="true">Yes</mat-option>
                 <mat-option [value]="false">No</mat-option>
             </mat-select>

@@ -462,3 +462,9 @@ export interface RemoveSizeChart {
     chart_id: number;
     remove_size_chart: boolean;
 };
+export interface vendorComment {
+    admin_comment: string;
+    company_id: number;
+    emails: string[];
+    add_comment: boolean;
+};

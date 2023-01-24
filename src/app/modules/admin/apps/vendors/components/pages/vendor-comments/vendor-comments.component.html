@@ -2,11 +2,11 @@
     <div class="px-5 pb-5">
         <mat-button-toggle-group #group="matButtonToggleGroup" [value]="mainScreen"
             (change)="calledScreen(group.value)">
-            <mat-button-toggle value="Current">
-                Current F.O.B Locations
+            <mat-button-toggle value="Current Comments">
+                Current Comments
             </mat-button-toggle>
-            <mat-button-toggle value="Add New Location">
-                Add New Location
+            <mat-button-toggle value="Add New Comment">
+                Add New Comment
             </mat-button-toggle>
         </mat-button-toggle-group>
     </div>
@@ -15,195 +15,75 @@
         </ngx-skeleton-loader>
     </div>
 
-    <div *ngIf="!isLoading && mainScreen == 'Current'">
-        <div class="px-5 text-right" *ngIf="dataSource.length > 0 && !isUpdate">
-            <mat-form-field class="w-100">
-                <input matInput placeholder="Search By Location Name" matTooltip="Enter to Search"
-                    [disabled]="isSearching" [(ngModel)]="keyword" (keyup.enter)="searchLocations()">
-            </mat-form-field>
-            <p class="text-secondary text-right font-medium cursor-pointer mb-2" *ngIf="!isSearching"
-                (click)="resetSearch()">Reset</p>
-            <p class="text-secondary text-right font-medium mb-2" *ngIf="isSearching">Searching...</p>
-        </div>
-        <div *ngIf="dataSource.length && !isUpdate;else other_content" class="w-full">
-            <table mat-table [dataSource]="dataSource" class="w-full border-t">
-                <ng-container matColumnDef="location">
-                    <th mat-header-cell *matHeaderCellDef class="w-15 min-w-15">
-                        Location Name
-                    </th>
-                    <td mat-cell *matCellDef="let element" class="text-sm">
-                        {{element.FOBLocationName}}
-                    </td>
-                </ng-container>
-                <ng-container matColumnDef="address">
-                    <th mat-header-cell *matHeaderCellDef class="w-15 min-w-15">
-                        Address
-                    </th>
-                    <td mat-cell *matCellDef="let element" class="text-sm">
-                        {{element.address || not_available}}
-                    </td>
-                </ng-container>
-                <ng-container matColumnDef="city">
-                    <th mat-header-cell *matHeaderCellDef class="w-15 min-w-15">
-                        City
-                    </th>
-                    <td mat-cell *matCellDef="let element" class="text-sm">
-                        {{element.city || not_available}}
-                    </td>
-                </ng-container>
-                <ng-container matColumnDef="state">
-                    <th mat-header-cell *matHeaderCellDef class="w-10 min-w-10 text-center">
-                        State
-                    </th>
-                    <td mat-cell *matCellDef="let element" class="text-center text-sm">
-                        {{element.state}}
-                    </td>
-                </ng-container>
-                <ng-container matColumnDef="zip">
-                    <th mat-header-cell *matHeaderCellDef class="w-10 min-w-10 text-center">
-                        Zipcode
-                    </th>
-                    <td mat-cell *matCellDef="let element" class="text-center text-sm">
-                        {{element.zipCode}}
-                    </td>
-                </ng-container>
-                <ng-container matColumnDef="action">
-                    <th mat-header-cell *matHeaderCellDef class="w-15 min-w-15 text-center">
-                        Action
-                    </th>
-                    <td mat-cell *matCellDef="let element" class="text-sm">
-                        <div class="flex justify-center">
-                            <mat-icon svgIcon="heroicons_outline:pencil-alt" matTooltip="Edit F.O.B Location"
-                                class="mr-1 cursor-pointer " (click)="toggleUpdate(element)"></mat-icon>
-                            <mat-icon (click)="deleteLocation(element)" *ngIf="!element.delLoader"
-                                matTooltip="Delete F.O.B Location" svgIcon="heroicons_outline:trash"
-                                class="cursor-pointer "></mat-icon>
-                            <mat-progress-spinner *ngIf="element.delLoader" [diameter]="24" [mode]="'indeterminate'">
-                            </mat-progress-spinner>
-                        </div>
-                    </td>
-                </ng-container>
-                <tr mat-header-row *matHeaderRowDef="displayedColumns;" class="h-18 bg-light"></tr>
-                <tr mat-row *matRowDef="let row; columns: displayedColumns;"
-                    class="h-14 hover:bg-gray-100 dark:hover:bg-hover" style="cursor: pointer;">
-                </tr>
-            </table>
-            <mat-paginator #paginator class="border-b sm:border-t sm:border-b-0 z-10 bg-gray-50 dark:bg-transparent"
-                [ngClass]="{'pointer-events-none': isLoading}" [length]="totalUsers" [pageIndex]="0" [pageSize]="20"
-                (page)="getNextData($event)" [hidePageSize]="true">
-            </mat-paginator>
-        </div>
-        <div *ngIf="isUpdate" class="px-8 pb-5">
-            <div class="row">
-                <div class="col-12 text-right">
-                    <button mat-flat-button [color]="'primary'" class="min-w-30 text-sm mr-2 mb-2"
-                        (click)="backTolist()">
-                        <mat-icon class="icon-size-4 mr-1" svgIcon="heroicons_outline:arrow-left"></mat-icon>
-                        <span>Back to list</span>
-                    </button>
-                </div>
-                <div class="col-12 col-md-6">
-                    <mat-form-field class="w-full">
-                        <mat-label>Location Name</mat-label>
-                        <input matInput placeholder="Location Name" [(ngModel)]="locationData.FOBLocationName">
-                    </mat-form-field>
-                </div>
-                <div class="col-12 col-md-6">
-                    <mat-form-field class="w-full">
-                        <mat-label>Address</mat-label>
-                        <input matInput placeholder="Address" [(ngModel)]="locationData.address">
-                    </mat-form-field>
-                </div>
-                <div class="col-12 col-md-6">
-                    <mat-form-field class="w-full">
-                        <mat-label>City</mat-label>
-                        <input matInput placeholder="City" [(ngModel)]="locationData.city">
-                    </mat-form-field>
-                </div>
-                <div class="col-12 col-md-6">
-                    <mat-form-field class="w-full">
-                        <mat-label>State</mat-label>
-                        <input matInput placeholder="Search State" [matAutocomplete]="auto"
-                            [formControl]="searchStateCtrl" placeholder="Search By State" (blur)="onBlur()">
-                        <mat-autocomplete class="w-full" #auto="matAutocomplete" (optionSelected)="onSelected($event)"
-                            [displayWith]="displayWith">
-                            <mat-option *ngIf="isSearchingState" class="is-loading">Loading...</mat-option>
-                            <ng-container *ngIf="!isSearchingState">
-                                <mat-option *ngFor="let item of allStates" [value]="item.state">
-                                    <span>{{item.state}}</span>
-                                </mat-option>
-                            </ng-container>
-                        </mat-autocomplete>
-                    </mat-form-field>
-                </div>
-                <div class="col-12 col-md-6">
-                    <mat-form-field class="w-full">
-                        <mat-label>ZipCode</mat-label>
-                        <input matInput placeholder="ZipCode" [(ngModel)]="locationData.zipCode">
-                    </mat-form-field>
-                </div>
-            </div>
+    <div *ngIf="!isLoading && mainScreen == 'Current Comments'" class="pb-5">
+        <div class="px-8" *ngIf="allComments.adminComments">
+            <div [innerHtml]="allComments.adminComments"></div>
         </div>
         <!-- No data Found -->
-        <ng-template #other_content>
-            <div *ngIf="!isUpdate" class="px-5 pb-5">
-                <fuse-alert [appearance]="'soft'" [type]="'warning'" [showIcon]="false">This supplier
-                    does
-                    not currently
-                    have
-                    any F.O.B Locations.</fuse-alert>
-            </div>
-        </ng-template>
+        <div *ngIf="!allComments.adminComments" class="px-5 pb-5">
+            <fuse-alert [appearance]="'soft'" [type]="'warning'" [showIcon]="false">NO COMMENTS HAVE BEEN ENTERED
+                FOR THIS VENDOR.
+            </fuse-alert>
+        </div>
     </div>
-    <div class="px-8 pb-5" *ngIf="mainScreen == 'Add New Location'">
-        <div class="row" [formGroup]="addLocationForm">
-            <div class="col-12 col-md-6">
-                <mat-form-field class="w-full">
-                    <mat-label>Location Name</mat-label>
-                    <input matInput placeholder="Location Name" formControlName="location_name">
-                </mat-form-field>
-            </div>
-            <div class="col-12 col-md-6">
-                <mat-form-field class="w-full">
-                    <mat-label>City</mat-label>
-                    <input matInput placeholder="City" formControlName="city">
-                </mat-form-field>
-            </div>
-            <div class="col-12">
-                <mat-form-field class="w-full">
-                    <mat-label>Address</mat-label>
-                    <input matInput placeholder="Address" formControlName="address">
-                </mat-form-field>
-            </div>
-            <div class="col-12 col-md-6">
-                <mat-form-field class="w-full">
-                    <mat-label>State</mat-label>
-                    <input matInput placeholder="Search State" [matAutocomplete]="auto" [formControl]="searchStateCtrl"
-                        placeholder="Search By State" (blur)="onBlur()">
-                    <mat-autocomplete class="w-full" #auto="matAutocomplete" (optionSelected)="onSelected($event)"
-                        [displayWith]="displayWith">
-                        <mat-option *ngIf="isSearchingState" class="is-loading">Loading...</mat-option>
-                        <ng-container *ngIf="!isSearchingState">
-                            <mat-option *ngFor="let item of allStates" [value]="item.state">
-                                <span>{{item.state}}</span>
-                            </mat-option>
-                        </ng-container>
-                    </mat-autocomplete>
-                </mat-form-field>
-            </div>
-            <div class="col-12 col-md-6">
-                <mat-form-field class="w-full">
-                    <mat-label>ZipCode</mat-label>
-                    <input matInput placeholder="ZipCode" formControlName="zip" maxlength="5">
-                </mat-form-field>
-            </div>
-            <div class="col-12 text-right">
-                <button [disabled]="isAddLoader" mat-stroked-button class="min-w-40 mr-2 mb-2"
-                    (click)="addNewLocation()">
-                    <mat-icon *ngIf="!isAddLoader" class="mr-1" svgIcon="heroicons_outline:plus"></mat-icon>
-                    <span *ngIf="!isAddLoader">Add New Location</span>
-                    <mat-progress-spinner *ngIf="isAddLoader" [diameter]="24" [mode]="'indeterminate'">
-                    </mat-progress-spinner>
+    <div *ngIf="mainScreen == 'Add New Comment'" class="px-8">
+        <div class="w-full">
+            <note class="text-md text-secondary">Comments cannot be updated or deleted. <br><span
+                    class="text-red-500">{{user?.name}} will
+                    be the
+                    author.</span></note>
+            <br>
+            <note class="tex-md text-secondary">All comments, including the new one will be emailed to the
+                checked addresses, if any.
+            </note>
+            <mat-form-field class="w-full">
+                <textarea [(ngModel)]="ngComment" rows="6" matInput></textarea>
+            </mat-form-field>
+            <mat-form-field class="w-full">
+                <mat-label>
+                    <span class="ml-1">Search Emails</span>
+                </mat-label>
+                <input type="text" placeholder="Search Emails" matInput [formControl]="emailControl"
+                    [matAutocomplete]="auto">
+                <mat-hint class="mb-1"><span *ngFor="let item of emailSelected; let last=last;let i=index">{{item}}<span
+                            class="font-bold ml-1 cursor-pointer text-black-500" (click)="removeSelectedEmail(i)"
+                            [matTooltip]="'Remove this email'">
+                            (x)
+                        </span><span *ngIf="!last">, </span></span>
+                </mat-hint>
+                <mat-autocomplete #auto="matAutocomplete">
+                    <mat-option *ngIf="isEmailLoader" class="is-loading">Loading...
+                    </mat-option>
+                    <ng-container *ngIf="!isEmailLoader">
+                        <mat-option *ngFor="let result of resultEmails" [value]="result.email"
+                            (click)="selectedEmails(result)">
+                            {{ result.email }}
+                        </mat-option>
+                    </ng-container>
+                </mat-autocomplete>
+            </mat-form-field>
+            <mat-form-field class="example-chip-list w-full" appearance="fill">
+                <mat-label>Additional Emails (Comma-seperated)</mat-label>
+                <mat-chip-list class="pt-1" #chipList1>
+                    <mat-chip [removable]="true" [selectable]="true" *ngFor="let email of emails"
+                        (removed)="remove(email)">
+                        {{email}}
+                        <mat-icon class="icon-size-5" matChipRemove
+                            [svgIcon]="'heroicons_solid:minus-circle'"></mat-icon>
+                    </mat-chip>
+                    <input [matChipInputFor]="chipList1" placeholder="New Email"
+                        [matChipInputSeparatorKeyCodes]="separatorKeysCodes" [matChipInputAddOnBlur]="addOnBlur"
+                        (matChipInputTokenEnd)="add($event)">
+                </mat-chip-list>
+            </mat-form-field>
+            <div class="text-right">
+                <button class="min-w-40" mat-stroked-button [disabled]="isAddCommentLoader" [matTooltip]="'Add Comment'"
+                    (click)="addComment()">
+                    <mat-progress-spinner *ngIf="isAddCommentLoader" [diameter]="24"
+                        [mode]="'indeterminate'"></mat-progress-spinner>
+                    <mat-icon *ngIf="!isAddCommentLoader" [svgIcon]="'heroicons_outline:plus'">
+                    </mat-icon>
+                    <span *ngIf="!isAddCommentLoader" class="ml-1 mr-1">Add Comment</span>
                 </button>
             </div>
         </div>

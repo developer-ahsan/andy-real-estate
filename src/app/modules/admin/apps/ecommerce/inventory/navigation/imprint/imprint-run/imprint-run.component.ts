@@ -75,7 +75,7 @@ export class ImprintRunComponent implements OnInit, OnDestroy {
               {
                 process_quantity: element.value,
                 product_quantity: this.productQuantities[j].value,
-                charge: item.value
+                charge: item.value * (1 - this.newChargeValue)
               }
             )
           }

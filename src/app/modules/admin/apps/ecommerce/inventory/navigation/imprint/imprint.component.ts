@@ -247,6 +247,9 @@ export class ImprintComponent implements OnInit, OnDestroy {
   }
 
   openModal() {
+    const { run, setup } = this.runSetup.getRawValue();
+    this._inventoryService.run = run;
+    this._inventoryService.setup = setup;
     const dialogRef = this.dialog.open(ImprintRunComponent, {
       // data: dialogData,
       minWidth: "300px",

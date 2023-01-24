@@ -1,11 +1,13 @@
 import { Component, Input, OnInit, Output, EventEmitter, ChangeDetectorRef, OnDestroy, ViewChild } from '@angular/core';
 import { MatPaginator } from '@angular/material/paginator';
 import { Subject } from 'rxjs';
-import { debounceTime, distinctUntilChanged, filter, finalize, switchMap, takeUntil, tap } from 'rxjs/operators';
+import { debounceTime, filter, finalize, switchMap, takeUntil, tap } from 'rxjs/operators';
 import { VendorsService } from '../../vendors.service';
-import * as Excel from 'exceljs/dist/exceljs.min.js';
-import { FormControl, FormGroup } from '@angular/forms';
-import { AddFOBLocation, RemoveFOBLocation } from '../../vendors.types';
+import { FormControl } from '@angular/forms';
+import { AuthService } from 'app/core/auth/auth.service';
+import { MatChipInputEvent } from '@angular/material/chips';
+import { ENTER, COMMA } from '@angular/cdk/keycodes';
+import { vendorComment } from '../../vendors.types';
 
 @Component({
   selector: 'app-vendor-comments',
@@ -18,135 +20,86 @@ export class VendorCommentsComponent implements OnInit, OnDestroy {
   @Output() isLoadingChange = new EventEmitter<boolean>();
   private _unsubscribeAll: Subject<any> = new Subject<any>();
 
-  dataSource = [];
-  tempDataSource = [];
-  displayedColumns: string[] = ['location', 'address', 'city', 'state', 'zip', 'action'];
-  totalUsers = 0;
-  tempTotalUsers = 0;
-  page = 1;
-  not_available = 'N/A';
-
   supplierData: any;
 
-  mainScreen = 'Current'
+  mainScreen = 'Current Comments'
+  allComments: any;
+  user: any;
 
-  // States
-  allStates = [];
-  tempStates = [];
-  totalStates = 0;
+  emails = [];
+  resultEmails = [];
+  public emailControl = new FormControl;
+  isEmailLoader: boolean = false;
+  emailSelected = [];
 
-  searchStateCtrl = new FormControl();
-  selectedState: any;
-  isSearchingState = false;
+  isAddCommentLoader: boolean = false;
+  ngComment: string = '';
+  readonly separatorKeysCodes = [ENTER, COMMA] as const;
 
-  // Location Data for Update
-  locationData: any;
-  isUpdate: boolean = false;
-
-  // Add FOB Location
-  addLocationForm: FormGroup;
-  isAddLoader: boolean = false;
-
-  // Search By Keyword
-  isSearching: boolean = false;
-  keyword = '';
   constructor(
     private _changeDetectorRef: ChangeDetectorRef,
-    private _vendorService: VendorsService
+    private _vendorService: VendorsService,
+    private _authService: AuthService
   ) { }
 
   initForm() {
-    this.addLocationForm = new FormGroup({
-      location_name: new FormControl(''),
-      address: new FormControl(''),
-      city: new FormControl(''),
-      zip: new FormControl(''),
-      add_fob_location: new FormControl(true)
-    })
   }
   ngOnInit(): void {
-    this.initForm();
-    this.getStatesObservable();
+    this.user = this._authService.parseJwt(this._authService.accessToken);
     let params;
-    this.searchStateCtrl.valueChanges.pipe(
-      filter((res: any) => {
-        params = {
-          states: true,
-          keyword: res
-        }
-        return res != null && res != '' && res != undefined
-      }),
-      distinctUntilChanged(),
-      debounceTime(300),
-      tap(() => {
-        this.allStates = [];
-        this.isSearchingState = true;
-        this._changeDetectorRef.markForCheck();
-      }),
+    this.emailControl.valueChanges.pipe(filter((res: any) => {
+      params = {
+        commentors: true,
+        keyword: res
+      }
+      return res != null && res.length >= 3
+    }), debounceTime(500), tap(() => {
+      this.resultEmails = [];
+      this.isEmailLoader = true;
+      this._changeDetectorRef.markForCheck();
+    }),
       switchMap(value => this._vendorService.getVendorsData(params)
         .pipe(
           finalize(() => {
-            this.isSearchingState = false
+            this.isEmailLoader = false;
             this._changeDetectorRef.markForCheck();
           }),
-        )
-      )
-    ).subscribe((data: any) => {
-      this.allStates = data['data'];
-    });
+        ))).subscribe(data => {
+          this.resultEmails = data["data"] as any[];
+          this._changeDetectorRef.markForCheck();
+        });
+    this.initForm();
     this.isLoading = true;
     this.getVendorsData();
   };
-  getStatesObservable() {
-    this._vendorService.States$.pipe(takeUntil(this._unsubscribeAll)).subscribe(states => {
-      this.allStates = states["data"];
-      this.tempStates = states["data"];
-      this.totalStates = states["totalRecords"];
-      this.searchStateCtrl.setValue(this.allStates[0].state);
-      this.selectedState = this.allStates[0].state;
-    });
-  }
   calledScreen(screen) {
     this.mainScreen = screen;
-    if (screen == 'Add New Location') {
-      this.allStates = this.tempStates;
-      this.searchStateCtrl.setValue(this.allStates[0].state, { emitEvent: false });
-      this.selectedState = this.allStates[0].state;
-    } else {
-      this.page = 1;
-      this.dataSource = this.tempDataSource;
-      this.totalUsers = this.tempTotalUsers;
-      this._changeDetectorRef.markForCheck();
+    if (screen == 'Add New Comment') {
+
     }
   }
   getVendorsData() {
     this._vendorService.Single_Suppliers$.pipe(takeUntil(this._unsubscribeAll)).subscribe(supplier => {
       this.supplierData = supplier["data"][0];
-      this.getFOBLocations(1, 'get');
+      this.getVendorsComments('get');
     })
   }
-  getFOBLocations(page, type) {
+  getVendorsComments(type) {
     let params = {
-      fob_locations: true,
-      page: page,
-      keyword: this.keyword,
+      vendor_comments: true,
       size: 20,
       company_id: this.supplierData.pk_companyID
     }
     this._vendorService.getVendorsData(params).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
-      this.dataSource = res["data"];
-      this.totalUsers = res["totalRecords"];
-      if (this.tempDataSource.length == 0) {
-        this.tempDataSource = res["data"];
-        this.tempTotalUsers = res["totalRecords"];
-      }
+      this.allComments = res["data"][0];
       if (type == 'add') {
-        this.isAddLoader = false;
-        this.initForm();
-        this.mainScreen = 'Current';
-        this._vendorService.snackBar('F.O.B Location added successfully');
+        this.ngComment = '';
+        this.emails = [];
+        this.emailSelected = [];
+        this.isAddCommentLoader = false;
+        this._vendorService.snackBar('Comment Added Successfylly');
+        this.mainScreen = 'Current Comments';
       }
-      this.isSearching = false;
       this.isLoading = false;
       this.isLoadingChange.emit(false);
       this._changeDetectorRef.markForCheck();
@@ -156,103 +109,58 @@ export class VendorCommentsComponent implements OnInit, OnDestroy {
       this._changeDetectorRef.markForCheck();
     });
   }
-  getNextData(event) {
-    const { previousPageIndex, pageIndex } = event;
-    if (pageIndex > previousPageIndex) {
-      this.page++;
-    } else {
-      this.page--;
-    };
-    this.getFOBLocations(this.page, 'get');
-  };
-  // Search By Keyword
-  searchLocations() {
-    if (this.dataSource.length > 0) {
-      this.paginator.firstPage();
-    }
-    this.isSearching = true;
-    this._changeDetectorRef.markForCheck();
-    this.getFOBLocations(1, 'get');
+  selectedEmails(res) {
+    this.emailSelected.push(res.email);
+    this.emailControl.reset();
   }
-  resetSearch() {
-    this.keyword = '';
-    this.dataSource = this.tempDataSource;
-    this.totalUsers = this.tempTotalUsers;
-    if (this.dataSource.length > 0) {
-      this.paginator.firstPage();
-    }
-    this._changeDetectorRef.markForCheck();
+  removeSelectedEmail(index) {
+    this.emailSelected.splice(index, 1);
   }
-  // Add New Location
-  addNewLocation() {
-    const { location_name, address, city, zip, add_fob_location } = this.addLocationForm.getRawValue();
-    if (location_name == '' || address == '' || city == '' || zip == '') {
-      this._vendorService.snackBar('Please fill out the required fields');
+
+  add(event: MatChipInputEvent): void {
+    const value = (event.value || '').trim();
+    if (value) {
+      this.emails.push(value);
+    }
+    event.chipInput!.clear();
+  }
+
+  remove(email): void {
+    const index = this.emails.indexOf(email);
+    if (index >= 0) {
+      this.emails.splice(index, 1);
+    }
+  }
+  addComment() {
+    let emailArr = this.emails.concat(this.emailSelected);
+    if (this.ngComment! == '') {
+      this._vendorService.snackBar('Comment is required');
       return;
     }
-    let payload: AddFOBLocation = { location_name, supplier_id: this.supplierData.pk_companyID, address, city, state: this.selectedState, zip, add_fob_location }
-    this.isAddLoader = true;
+    if (emailArr.length == 0) {
+      this._vendorService.snackBar('Email is required');
+      return;
+    }
+    this.isAddCommentLoader = true;
+    let payload: vendorComment = {
+      company_id: Number(this.supplierData.pk_companyID),
+      admin_comment: this.ngComment,
+      emails: emailArr,
+      add_comment: true
+    }
     this._vendorService.postVendorsData(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
       if (res["success"]) {
-        this.getFOBLocations(1, 'add');
+        this.getVendorsComments('add');
       } else {
-        this.isAddLoader = false;
-        this._vendorService.snackBar(res["message"]);
+        this.isAddCommentLoader = false;
+        this._changeDetectorRef.markForCheck();
       }
-      this._changeDetectorRef.markForCheck();
     }, err => {
-      this._vendorService.snackBar('Something went wrong');
-      this.isAddLoader = false;
+      this.isAddCommentLoader = false;
       this._changeDetectorRef.markForCheck();
     })
   }
-  // RemoveLocation
-  deleteLocation(location) {
-    location.delLoader = true;
-    let payload: RemoveFOBLocation = {
-      remove_fob_location: true,
-      location_id: location.pk_FOBLocationID
-    }
-    this._vendorService.putVendorsData(payload).pipe(takeUntil(this._unsubscribeAll), finalize(() => {
-      location.delLoader = false;
-      this._changeDetectorRef.markForCheck();
-    })).subscribe(res => {
-      if (res["success"]) {
-        this.dataSource = this.dataSource.filter(item => item.pk_FOBLocationID != location.pk_FOBLocationID);
-        this.totalUsers--;
-        this.tempDataSource = this.tempDataSource.filter(item => item.pk_FOBLocationID != location.pk_FOBLocationID);
-        this.tempTotalUsers--;
-      }
-      this._vendorService.snackBar(res["message"]);
-      this._changeDetectorRef.markForCheck();
-    }, err => {
-      location.delLoader = false;
-      this._vendorService.snackBar('Something went wrong');
-      this._changeDetectorRef.markForCheck();
-    });
-  }
-  toggleUpdate(data) {
-    this.isUpdate = true;
-    this.locationData = data;
-    this.searchStateCtrl.setValue(data.state, { emitEvent: false });
-    this.selectedState = data.state;
-  }
-  backTolist() {
-    this.isUpdate = false;
-    this._changeDetectorRef.markForCheck();
-  }
 
-  onSelected(ev) {
-    this.selectedState = ev.option.value;
-    console.log(this.selectedState)
-  }
-
-  displayWith(value: any) {
-    return value;
-  }
-  onBlur() {
-    this.searchStateCtrl.setValue(this.selectedState, { emitEvent: false });
-  }
   /**
      * On destroy
      */

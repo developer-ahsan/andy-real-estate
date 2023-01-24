@@ -6,31 +6,6 @@ import { VendorsService } from './vendors.service';
 @Injectable({
     providedIn: 'root'
 })
-export class StoresListsResolver implements Resolve<any>
-{
-    /**
-     * Constructor
-     */
-    constructor(private _vendorService: VendorsService) {
-    }
-
-    // -----------------------------------------------------------------------------------------------------
-    // @ Public methods
-    // -----------------------------------------------------------------------------------------------------
-
-    /**
-     * Resolver
-     *
-     * @param route
-     * @param state
-     */
-    resolve(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<any[]> {
-        return this._vendorService.getAllStores();
-    }
-}
-@Injectable({
-    providedIn: 'root'
-})
 export class SuppliersListsResolver implements Resolve<any>
 {
     /**

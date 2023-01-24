@@ -17,7 +17,7 @@ export class VendorStatusComponent implements OnInit, OnDestroy {
   @Output() isLoadingChange = new EventEmitter<boolean>();
   private _unsubscribeAll: Subject<any> = new Subject<any>();
 
-  blnSettings: boolean = true;
+  blnActive: boolean = false;
   isUpdateLoader: boolean = false;
   supplierData: any;
   constructor(
@@ -31,27 +31,29 @@ export class VendorStatusComponent implements OnInit, OnDestroy {
   getVendorsData() {
     this._vendorService.Single_Suppliers$.pipe(takeUntil(this._unsubscribeAll)).subscribe(supplier => {
       this.supplierData = supplier["data"][0];
-      this.blnSettings = this.supplierData.blnFreeShipping;
+      this.blnActive = this.supplierData.blnActiveVendor;
       this._changeDetectorRef.markForCheck();
     });
   }
   updateSettings() {
-    let payload: updateCompanySettings = {
-      company_id: this.supplierData.pk_companyID,
-      blnFreeShipping: this.blnSettings,
-      update_company_settings: true
-    }
-    this.isUpdateLoader = true;
-    this._vendorService.putVendorsData(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
-      this.supplierData.blnFreeShipping = this.blnSettings;
-      this._vendorService.snackBar(res["message"]);
-      this.isUpdateLoader = false;
-      this._changeDetectorRef.markForCheck();
-    }, err => {
-      this._vendorService.snackBar('Something went wrong');
-      this.isUpdateLoader = false;
-      this._changeDetectorRef.markForCheck();
-    });
+    this.supplierData.blnActiveVendor = this.blnActive;
+
+    // let payload: updateCompanySettings = {
+    //   company_id: this.supplierData.pk_companyID,
+    //   blnFreeShipping: this.blnActive,
+    //   update_company_settings: true
+    // }
+    // this.isUpdateLoader = true;
+    // this._vendorService.putVendorsData(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+    //   this.supplierData.blnActiveVendor = this.blnActive;
+    //   this._vendorService.snackBar(res["message"]);
+    //   this.isUpdateLoader = false;
+    //   this._changeDetectorRef.markForCheck();
+    // }, err => {
+    //   this._vendorService.snackBar('Something went wrong');
+    //   this.isUpdateLoader = false;
+    //   this._changeDetectorRef.markForCheck();
+    // });
   }
   /**
      * On destroy
