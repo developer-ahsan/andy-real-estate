@@ -17,7 +17,7 @@ export class VendorOrdersComponent implements OnInit, OnDestroy {
   private _unsubscribeAll: Subject<any> = new Subject<any>();
 
   dataSource = [];
-  displayedColumns: string[] = ['id', 'number', 'name', 'times', 'core'];
+  displayedColumns: string[] = ['order', 'date', 'store', 'customer', 'total'];
   totalUsers = 0;
   page = 1;
   not_available = 'N/A';
@@ -37,15 +37,15 @@ export class VendorOrdersComponent implements OnInit, OnDestroy {
   getVendorsData() {
     this._vendorService.Single_Suppliers$.pipe(takeUntil(this._unsubscribeAll)).subscribe(supplier => {
       this.supplierData = supplier["data"][0];
-      this.getTopOrderProducts(1);
+      this.getVendorOrders(1);
     })
   }
-  getTopOrderProducts(page) {
+  getVendorOrders(page) {
     let params = {
-      top_products: true,
+      vendor_orders: true,
       page: page,
       size: 20,
-      supplier_id: this.supplierData.pk_companyID
+      company_id: this.supplierData.pk_companyID
     }
     this._vendorService.getVendorsData(params).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
       this.dataSource = res["data"];
@@ -66,7 +66,7 @@ export class VendorOrdersComponent implements OnInit, OnDestroy {
     } else {
       this.page--;
     };
-    this.getTopOrderProducts(this.page);
+    this.getVendorOrders(this.page);
   };
 
   // Download Excel File

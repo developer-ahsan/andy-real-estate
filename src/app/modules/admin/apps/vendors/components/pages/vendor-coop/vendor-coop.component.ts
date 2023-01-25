@@ -5,7 +5,8 @@ import { debounceTime, distinctUntilChanged, filter, finalize, switchMap, takeUn
 import { VendorsService } from '../../vendors.service';
 import * as Excel from 'exceljs/dist/exceljs.min.js';
 import { FormControl, FormGroup } from '@angular/forms';
-import { AddFOBLocation, RemoveFOBLocation } from '../../vendors.types';
+import { AddCoops, AddFOBLocation, DeleteCoops, RemoveFOBLocation, UpdateCoops } from '../../vendors.types';
+import moment from 'moment';
 
 @Component({
   selector: 'app-vendor-coop',
@@ -20,7 +21,7 @@ export class VendorCoopComponent implements OnInit, OnDestroy {
 
   dataSource = [];
   tempDataSource = [];
-  displayedColumns: string[] = ['location', 'address', 'city', 'state', 'zip', 'action'];
+  displayedColumns: string[] = ['name', 'expired', 'action'];
   totalUsers = 0;
   tempTotalUsers = 0;
   page = 1;
@@ -40,31 +41,48 @@ export class VendorCoopComponent implements OnInit, OnDestroy {
   isSearchingState = false;
 
   // Location Data for Update
-  locationData: any;
+  coopData: any;
   isUpdate: boolean = false;
 
   // Add FOB Location
-  addLocationForm: FormGroup;
+  addCoopForm: FormGroup;
   isAddLoader: boolean = false;
 
   // Search By Keyword
   isSearching: boolean = false;
   keyword = '';
+
+  minDate: any;
+  updateDate: any;
+  isUpdateLoader: boolean = false;
+  updateData = {
+    coOp_id: '',
+    coopName: '',
+    coopExpDay: null,
+    pricing: '',
+    ltm: '',
+    setups: '',
+    productionTime: '',
+    update_coop: true
+  }
   constructor(
     private _changeDetectorRef: ChangeDetectorRef,
     private _vendorService: VendorsService
   ) { }
 
   initForm() {
-    this.addLocationForm = new FormGroup({
-      location_name: new FormControl(''),
-      address: new FormControl(''),
-      city: new FormControl(''),
-      zip: new FormControl(''),
-      add_fob_location: new FormControl(true)
-    })
+    this.addCoopForm = new FormGroup({
+      coopName: new FormControl(''),
+      coopExpDay: new FormControl(new Date()),
+      pricing: new FormControl(''),
+      ltm: new FormControl(''),
+      setups: new FormControl(''),
+      productionTime: new FormControl(''),
+      add_coop: new FormControl(true)
+    });
   }
   ngOnInit(): void {
+    this.minDate = new Date(moment().subtract(1, 'year').startOf('month').format('MM/DD/yyyy'));
     this.initForm();
     this.getStatesObservable();
     let params;
@@ -108,7 +126,7 @@ export class VendorCoopComponent implements OnInit, OnDestroy {
   }
   calledScreen(screen) {
     this.mainScreen = screen;
-    if (screen == 'Add New Location') {
+    if (screen == 'Add New Co-Ops') {
       this.allStates = this.tempStates;
       this.searchStateCtrl.setValue(this.allStates[0].state, { emitEvent: false });
       this.selectedState = this.allStates[0].state;
@@ -122,12 +140,12 @@ export class VendorCoopComponent implements OnInit, OnDestroy {
   getVendorsData() {
     this._vendorService.Single_Suppliers$.pipe(takeUntil(this._unsubscribeAll)).subscribe(supplier => {
       this.supplierData = supplier["data"][0];
-      this.getFOBLocations(1, 'get');
+      this.getCoopData(1, 'get');
     })
   }
-  getFOBLocations(page, type) {
+  getCoopData(page, type) {
     let params = {
-      fob_locations: true,
+      coOps: true,
       page: page,
       keyword: this.keyword,
       size: 20,
@@ -144,7 +162,7 @@ export class VendorCoopComponent implements OnInit, OnDestroy {
         this.isAddLoader = false;
         this.initForm();
         this.mainScreen = 'Current';
-        this._vendorService.snackBar('F.O.B Location added successfully');
+        this._vendorService.snackBar('Coop added successfully');
       }
       this.isSearching = false;
       this.isLoading = false;
@@ -163,7 +181,7 @@ export class VendorCoopComponent implements OnInit, OnDestroy {
     } else {
       this.page--;
     };
-    this.getFOBLocations(this.page, 'get');
+    this.getCoopData(this.page, 'get');
   };
   // Search By Keyword
   searchLocations() {
@@ -172,7 +190,7 @@ export class VendorCoopComponent implements OnInit, OnDestroy {
     }
     this.isSearching = true;
     this._changeDetectorRef.markForCheck();
-    this.getFOBLocations(1, 'get');
+    this.getCoopData(1, 'get');
   }
   resetSearch() {
     this.keyword = '';
@@ -183,18 +201,18 @@ export class VendorCoopComponent implements OnInit, OnDestroy {
     }
     this._changeDetectorRef.markForCheck();
   }
-  // Add New Location
-  addNewLocation() {
-    const { location_name, address, city, zip, add_fob_location } = this.addLocationForm.getRawValue();
-    if (location_name == '' || address == '' || city == '' || zip == '') {
+  // Add New Coop
+  addNewCoop() {
+    const { coopName, coopExpDay, pricing, ltm, setups, productionTime, add_coop } = this.addCoopForm.getRawValue();
+    if (coopName == '') {
       this._vendorService.snackBar('Please fill out the required fields');
       return;
     }
-    let payload: AddFOBLocation = { location_name, supplier_id: this.supplierData.pk_companyID, address, city, state: this.selectedState, zip, add_fob_location }
+    let payload: AddCoops = { coopName, company_id: this.supplierData.pk_companyID, coopExpDay, pricing, ltm, setups, productionTime, add_coop }
     this.isAddLoader = true;
     this._vendorService.postVendorsData(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
       if (res["success"]) {
-        this.getFOBLocations(1, 'add');
+        this.getCoopData(1, 'add');
       } else {
         this.isAddLoader = false;
         this._vendorService.snackBar(res["message"]);
@@ -207,33 +225,48 @@ export class VendorCoopComponent implements OnInit, OnDestroy {
     })
   }
   // RemoveLocation
-  deleteLocation(location) {
-    location.delLoader = true;
-    let payload: RemoveFOBLocation = {
-      remove_fob_location: true,
-      location_id: location.pk_FOBLocationID
+  deleteCoop(coop) {
+    coop.delLoader = true;
+    let payload: DeleteCoops = {
+      remove_coops: true,
+      coOp_id: coop.pk_coopID
     }
     this._vendorService.putVendorsData(payload).pipe(takeUntil(this._unsubscribeAll), finalize(() => {
-      location.delLoader = false;
+      coop.delLoader = false;
       this._changeDetectorRef.markForCheck();
     })).subscribe(res => {
       if (res["success"]) {
-        this.dataSource = this.dataSource.filter(item => item.pk_FOBLocationID != location.pk_FOBLocationID);
+        this.dataSource = this.dataSource.filter(item => item.pk_coopID != coop.pk_coopID);
         this.totalUsers--;
-        this.tempDataSource = this.tempDataSource.filter(item => item.pk_FOBLocationID != location.pk_FOBLocationID);
+        this.tempDataSource = this.tempDataSource.filter(item => item.pk_coopID != coop.pk_coopID);
         this.tempTotalUsers--;
       }
       this._vendorService.snackBar(res["message"]);
       this._changeDetectorRef.markForCheck();
     }, err => {
-      location.delLoader = false;
+      coop.delLoader = false;
       this._vendorService.snackBar('Something went wrong');
       this._changeDetectorRef.markForCheck();
     });
   }
   toggleUpdate(data) {
     this.isUpdate = true;
-    this.locationData = data;
+    this.coopData = data;
+    this.updateData = {
+      coOp_id: data.pk_coopID,
+      coopName: data.name,
+      coopExpDay: new Date(),
+      pricing: data.pricing,
+      ltm: data.ltm,
+      setups: data.setups,
+      productionTime: data.productionTime,
+      update_coop: true
+    }
+    if (new Date(data.expirationDate) > new Date(this.minDate)) {
+      this.updateData.coopExpDay = new Date(moment(data.expirationDate).format('MM/DD/yyyy'));
+    } else {
+      this.updateData.coopExpDay = new Date(moment(this.minDate).endOf('year').endOf('month').format('MM/DD/yyyy'));
+    }
     this.searchStateCtrl.setValue(data.state, { emitEvent: false });
     this.selectedState = data.state;
   }
@@ -242,6 +275,32 @@ export class VendorCoopComponent implements OnInit, OnDestroy {
     this._changeDetectorRef.markForCheck();
   }
 
+  updateCoop() {
+    const { coOp_id, coopName, coopExpDay, pricing, ltm, setups, productionTime, update_coop } = this.updateData;
+    if (this.coopData.name == '') {
+      this._vendorService.snackBar('Please fill out the required fields');
+      return;
+    }
+    let payload: UpdateCoops = { coOp_id: Number(coOp_id), coopName, coopExpDay, pricing, ltm, setups, productionTime, update_coop };
+    this.isUpdateLoader = true;
+    this._vendorService.putVendorsData(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+      if (res["success"]) {
+        this.coopData.name = coopName;
+        this.coopData.expirationDate = coopExpDay;
+        this.coopData.pricing = pricing;
+        this.coopData.ltm = ltm;
+        this.coopData.setups = setups;
+        this.coopData.productionTime = productionTime;
+      }
+      this.isUpdateLoader = false;
+      this._vendorService.snackBar(res["message"]);
+      this._changeDetectorRef.markForCheck();
+    }, err => {
+      this._vendorService.snackBar('Something went wrong');
+      this.isUpdateLoader = false;
+      this._changeDetectorRef.markForCheck();
+    })
+  }
   onSelected(ev) {
     this.selectedState = ev.option.value;
     console.log(this.selectedState)

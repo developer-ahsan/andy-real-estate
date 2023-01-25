@@ -1,34 +1,50 @@
 <div class="w-full">
-    <div class="px-5" *ngIf="isLoading">
-        <ngx-skeleton-loader count="8" appearance="line" animation="pulse">
-        </ngx-skeleton-loader>
-    </div>
-    <div class="px-8 pb-5" *ngIf="!isLoading">
-        <fuse-alert [appearance]="'soft'" [type]="'warning'" [showIcon]="false">This tool will apply a blanket F.O.B.
-            location of your choice to all {{supplierData.companyName}} products. This action will replace all current
-            F.O.B.
-            locations associated with a product and cannot be undone. Please make sure the F.O.B. location you want is
-            added to the system first.</fuse-alert>
+
+    <div class="px-8 pb-5">
+        <fuse-alert [appearance]="'soft'" [type]="'warning'" [showIcon]="false">WARNING: Applying a blanket setup charge
+            will set this setup charge for all imprints on all products for this vendor.
+        </fuse-alert>
         <mat-form-field class="w-full mt-2">
-            <mat-label>Select F.O.B Location</mat-label>
-            <input matInput [matAutocomplete]="auto" [formControl]="searchLocationCtrl" placeholder="Search By Location"
-                (blur)="onBlur()">
-            <mat-autocomplete class="w-full" #auto="matAutocomplete" (optionSelected)="onSelected($event)"
-                [displayWith]="displayWith">
-                <mat-option *ngIf="isSearchingLocation" class="is-loading">Loading...</mat-option>
-                <ng-container *ngIf="!isSearchingLocation">
-                    <mat-option *ngFor="let item of allLocations" [value]="item">
-                        <span>{{item.FOBLocationName}}</span>
-                    </mat-option>
-                </ng-container>
-            </mat-autocomplete>
+            <mat-label>Enter a charge ID</mat-label>
+            <input matInput type="number" [(ngModel)]="runChargeID">
         </mat-form-field>
         <div class="text-right">
-            <button mat-stroked-button class="min-w-30" (click)="updateLocations()" [disabled]="isUpdateLoader">
+            <button mat-stroked-button class="min-w-30" (click)="updateSetupBlanket()" [disabled]="isUpdateLoader">
                 <span *ngIf="!isUpdateLoader">Apply</span>
                 <mat-progress-spinner *ngIf="isUpdateLoader" [diameter]="24" [mode]="'indeterminate'">
                 </mat-progress-spinner>
             </button>
+        </div>
+        <mat-form-field class="w-full mt-2">
+            <mat-label>Search for charge:</mat-label>
+            <input matInput type="number" (onmousewheel)="$event.preventDefault()" [disabled]="isLoading"
+                [(ngModel)]="runCharge" matTooltip="Enter To Search" (keyup.enter)="getCharges()">
+        </mat-form-field>
+        <div class="col-12 overflow-x-auto pb-5" *ngIf="setupQuantity.length>0 && !isLoading">
+            <b>Setup</b>
+            <table class="table table-striped table-responsive text-sm">
+                <thead>
+                    <tr>
+                        <th style="width: 10%;"></th>
+                        <th style="width: 10%;" *ngFor="let item of setupQuantity">
+                            {{item.productQuantity}}</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr *ngFor="let item of setupProcesses">
+                        <td style="width: 10%;" class="font-bold">{{item.process}}</td>
+                        <td style="width: 10%;" *ngFor="let elem of item.data">{{elem.charge}}</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <div *ngIf="setupProcesses && !isLoading && runCharge != '' && setupQuantity.length ==0" class="mt-2 pb-5">
+            <fuse-alert [appearance]="'soft'" [type]="'warning'" [showIcon]="false">The charge ID you entered is not in
+                our system.</fuse-alert>
+        </div>
+        <div class="px-5" *ngIf="isLoading">
+            <ngx-skeleton-loader count="8" appearance="line" animation="pulse">
+            </ngx-skeleton-loader>
         </div>
     </div>
 </div>

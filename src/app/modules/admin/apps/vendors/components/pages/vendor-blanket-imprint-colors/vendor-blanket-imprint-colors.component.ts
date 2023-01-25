@@ -6,7 +6,7 @@ import { MatPaginator } from '@angular/material/paginator';
 import { Subject } from 'rxjs';
 import { debounceTime, distinctUntilChanged, filter, finalize, switchMap, takeUntil, tap } from 'rxjs/operators';
 import { VendorsService } from '../../vendors.service';
-import { ApplyBlanketFOBlocation, updateCompanySettings } from '../../vendors.types';
+import { ApplyBlanketCollection, ApplyBlanketFOBlocation, updateCompanySettings } from '../../vendors.types';
 
 @Component({
   selector: 'app-vendor-blanket-imprint-colors',
@@ -22,11 +22,11 @@ export class VendorBlanketColorsComponent implements OnInit, OnDestroy {
   isUpdateLoader: boolean = false;
   supplierData: any;
 
-  searchLocationCtrl = new FormControl();
-  selectedLocation: any;
-  isSearchingLocation = false;
+  searchColorCtrl = new FormControl();
+  seletedCollection: any;
+  isSearchingColor = false;
 
-  allLocations = [];
+  allCollections = [];
 
   constructor(
     private _changeDetectorRef: ChangeDetectorRef,
@@ -37,10 +37,10 @@ export class VendorBlanketColorsComponent implements OnInit, OnDestroy {
     this.isLoading = true;
     this.getVendorsData();
     let params;
-    this.searchLocationCtrl.valueChanges.pipe(
+    this.searchColorCtrl.valueChanges.pipe(
       filter((res: any) => {
         params = {
-          fob_locations: true,
+          blanket_collections: true,
           keyword: res,
           company_id: this.supplierData.pk_companyID
         }
@@ -49,39 +49,39 @@ export class VendorBlanketColorsComponent implements OnInit, OnDestroy {
       distinctUntilChanged(),
       debounceTime(300),
       tap(() => {
-        this.allLocations = [];
-        this.isSearchingLocation = true;
+        this.allCollections = [];
+        this.isSearchingColor = true;
         this._changeDetectorRef.markForCheck();
       }),
       switchMap(value => this._vendorService.getVendorsData(params)
         .pipe(
           finalize(() => {
-            this.isSearchingLocation = false
+            this.isSearchingColor = false
             this._changeDetectorRef.markForCheck();
           }),
         )
       )
     ).subscribe((data: any) => {
-      this.allLocations = data['data'];
+      this.allCollections = data['data'];
     });
   };
   getVendorsData() {
     this._vendorService.Single_Suppliers$.pipe(takeUntil(this._unsubscribeAll)).subscribe(supplier => {
       this.supplierData = supplier["data"][0];
-      this.getFOBLocations();
+      this.getColorCollections();
       this._changeDetectorRef.markForCheck();
     });
   }
-  getFOBLocations() {
+  getColorCollections() {
     let params = {
-      fob_locations: true,
+      blanket_collections: true,
       size: 20,
       company_id: this.supplierData.pk_companyID
     }
     this._vendorService.getVendorsData(params).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
-      this.allLocations = res["data"];
-      this.selectedLocation = this.allLocations[0];
-      this.searchLocationCtrl.setValue({ FOBLocationName: this.selectedLocation.FOBLocationName }, { emitEvent: false });
+      this.allCollections = res["data"];
+      this.seletedCollection = this.allCollections[0];
+      this.searchColorCtrl.setValue({ collectionName: this.seletedCollection.collectionName }, { emitEvent: false });
       this.isLoading = false;
       this._changeDetectorRef.markForCheck();
     }, err => {
@@ -90,21 +90,20 @@ export class VendorBlanketColorsComponent implements OnInit, OnDestroy {
     });
   }
   onSelected(ev) {
-    this.selectedLocation = ev.option.value;
+    this.seletedCollection = ev.option.value;
   }
 
   displayWith(value: any) {
-    return value?.FOBLocationName;
+    return value?.collectionName;
   }
   onBlur() {
-    this.searchLocationCtrl.setValue({ FOBLocationName: this.selectedLocation.FOBLocationName }, { emitEvent: false });
+    this.searchColorCtrl.setValue({ collectionName: this.seletedCollection.collectionName }, { emitEvent: false });
   }
-  updateLocations() {
-    let payload: ApplyBlanketFOBlocation = {
+  updateCollection() {
+    let payload: ApplyBlanketCollection = {
       supplier_id: this.supplierData.pk_companyID,
-      location_id: this.selectedLocation.pk_FOBLocationID,
-      supplier_name: this.supplierData.companyName,
-      apply_fob_location: true
+      collection_id: this.seletedCollection.pk_collectionID,
+      apply_blanket_collection: true
     }
     this.isUpdateLoader = true;
     this._vendorService.putVendorsData(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {

@@ -5,7 +5,7 @@ import { debounceTime, distinctUntilChanged, filter, finalize, switchMap, takeUn
 import { VendorsService } from '../../vendors.service';
 import * as Excel from 'exceljs/dist/exceljs.min.js';
 import { FormControl, FormGroup } from '@angular/forms';
-import { AddFOBLocation, RemoveFOBLocation } from '../../vendors.types';
+import { AddAdminUser, AddFOBLocation, DeleteAdminUser, RemoveFOBLocation, updateAdminUser } from '../../vendors.types';
 
 @Component({
   selector: 'app-vendor-users',
@@ -20,7 +20,7 @@ export class VendorUsersComponent implements OnInit, OnDestroy {
 
   dataSource = [];
   tempDataSource = [];
-  displayedColumns: string[] = ['location', 'address', 'city', 'state', 'zip', 'action'];
+  displayedColumns: string[] = ['id', 'first', 'last', 'company', 'logged', 'master', 'action'];
   totalUsers = 0;
   tempTotalUsers = 0;
   page = 1;
@@ -40,78 +40,56 @@ export class VendorUsersComponent implements OnInit, OnDestroy {
   isSearchingState = false;
 
   // Location Data for Update
-  locationData: any;
+  usersData: any;
   isUpdate: boolean = false;
+  userPayload = {
+    userName: '',
+    userID: 0,
+    firstName: '',
+    lastName: '',
+    email: '',
+    password: '',
+    blnActive: true,
+    blnManager: true,
+    blnMasterAccount: true,
+    update_vendor_user: true
+  }
 
   // Add FOB Location
-  addLocationForm: FormGroup;
+  addUserForm: FormGroup;
   isAddLoader: boolean = false;
 
   // Search By Keyword
   isSearching: boolean = false;
   keyword = '';
+  isUpdateLoader: boolean;
+  ipAddress: any;
   constructor(
     private _changeDetectorRef: ChangeDetectorRef,
     private _vendorService: VendorsService
   ) { }
 
   initForm() {
-    this.addLocationForm = new FormGroup({
-      location_name: new FormControl(''),
-      address: new FormControl(''),
-      city: new FormControl(''),
-      zip: new FormControl(''),
-      add_fob_location: new FormControl(true)
-    })
+    this.addUserForm = new FormGroup({
+      firstName: new FormControl(''),
+      lastName: new FormControl(''),
+      userName: new FormControl(''),
+      password: new FormControl(''),
+      email: new FormControl('')
+    });
   }
   ngOnInit(): void {
     this.initForm();
-    this.getStatesObservable();
-    let params;
-    this.searchStateCtrl.valueChanges.pipe(
-      filter((res: any) => {
-        params = {
-          states: true,
-          keyword: res
-        }
-        return res != null && res != '' && res != undefined
-      }),
-      distinctUntilChanged(),
-      debounceTime(300),
-      tap(() => {
-        this.allStates = [];
-        this.isSearchingState = true;
-        this._changeDetectorRef.markForCheck();
-      }),
-      switchMap(value => this._vendorService.getVendorsData(params)
-        .pipe(
-          finalize(() => {
-            this.isSearchingState = false
-            this._changeDetectorRef.markForCheck();
-          }),
-        )
-      )
-    ).subscribe((data: any) => {
-      this.allStates = data['data'];
+    this._vendorService.getIPAddress().subscribe(res => {
+      this.ipAddress = res["ip"];
     });
     this.isLoading = true;
     this.getVendorsData();
   };
-  getStatesObservable() {
-    this._vendorService.States$.pipe(takeUntil(this._unsubscribeAll)).subscribe(states => {
-      this.allStates = states["data"];
-      this.tempStates = states["data"];
-      this.totalStates = states["totalRecords"];
-      this.searchStateCtrl.setValue(this.allStates[0].state);
-      this.selectedState = this.allStates[0].state;
-    });
-  }
   calledScreen(screen) {
     this.mainScreen = screen;
-    if (screen == 'Add New Location') {
-      this.allStates = this.tempStates;
-      this.searchStateCtrl.setValue(this.allStates[0].state, { emitEvent: false });
-      this.selectedState = this.allStates[0].state;
+    if (screen == 'Add New User') {
+      this.initForm();
     } else {
       this.page = 1;
       this.dataSource = this.tempDataSource;
@@ -122,12 +100,12 @@ export class VendorUsersComponent implements OnInit, OnDestroy {
   getVendorsData() {
     this._vendorService.Single_Suppliers$.pipe(takeUntil(this._unsubscribeAll)).subscribe(supplier => {
       this.supplierData = supplier["data"][0];
-      this.getFOBLocations(1, 'get');
+      this.getVendorsUsers(1, 'get');
     })
   }
-  getFOBLocations(page, type) {
+  getVendorsUsers(page, type) {
     let params = {
-      fob_locations: true,
+      vendor_users: true,
       page: page,
       keyword: this.keyword,
       size: 20,
@@ -144,7 +122,7 @@ export class VendorUsersComponent implements OnInit, OnDestroy {
         this.isAddLoader = false;
         this.initForm();
         this.mainScreen = 'Current';
-        this._vendorService.snackBar('F.O.B Location added successfully');
+        this._vendorService.snackBar('Vendor user added successfully');
       }
       this.isSearching = false;
       this.isLoading = false;
@@ -163,38 +141,48 @@ export class VendorUsersComponent implements OnInit, OnDestroy {
     } else {
       this.page--;
     };
-    this.getFOBLocations(this.page, 'get');
+    this.getVendorsUsers(this.page, 'get');
   };
   // Search By Keyword
-  searchLocations() {
+  searchUsers() {
     if (this.dataSource.length > 0) {
       this.paginator.firstPage();
     }
     this.isSearching = true;
     this._changeDetectorRef.markForCheck();
-    this.getFOBLocations(1, 'get');
+    this.getVendorsUsers(1, 'get');
   }
   resetSearch() {
     this.keyword = '';
     this.dataSource = this.tempDataSource;
     this.totalUsers = this.tempTotalUsers;
     if (this.dataSource.length > 0) {
-      this.paginator.firstPage();
+      if (this.page > 1) {
+        this.paginator.firstPage();
+      }
     }
+    this.page = 1;
     this._changeDetectorRef.markForCheck();
   }
-  // Add New Location
-  addNewLocation() {
-    const { location_name, address, city, zip, add_fob_location } = this.addLocationForm.getRawValue();
-    if (location_name == '' || address == '' || city == '' || zip == '') {
+  // Add New User
+  addNewUser() {
+    const { firstName, lastName, userName, password, email } = this.addUserForm.getRawValue();
+    if (firstName == '' || lastName == '' || userName == '' || password == '' || email == '') {
       this._vendorService.snackBar('Please fill out the required fields');
       return;
     }
-    let payload: AddFOBLocation = { location_name, supplier_id: this.supplierData.pk_companyID, address, city, state: this.selectedState, zip, add_fob_location }
+    let payload: AddAdminUser = {
+      firstName, lastName, userName, password, email,
+      registerIP: this.ipAddress,
+      supplier_id: this.supplierData.pk_companyID,
+      blnMasterAccount: false,
+      blnManager: false,
+      create_vendor_user: true
+    }
     this.isAddLoader = true;
     this._vendorService.postVendorsData(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
       if (res["success"]) {
-        this.getFOBLocations(1, 'add');
+        this.getVendorsUsers(1, 'add');
       } else {
         this.isAddLoader = false;
         this._vendorService.snackBar(res["message"]);
@@ -206,36 +194,73 @@ export class VendorUsersComponent implements OnInit, OnDestroy {
       this._changeDetectorRef.markForCheck();
     })
   }
-  // RemoveLocation
-  deleteLocation(location) {
-    location.delLoader = true;
-    let payload: RemoveFOBLocation = {
-      remove_fob_location: true,
-      location_id: location.pk_FOBLocationID
+  // RemoveUser
+  deleteUser(user) {
+    user.delLoader = true;
+    let payload: DeleteAdminUser = {
+      delete_vendor_admin: true,
+      user_id: user.pk_userID
     }
     this._vendorService.putVendorsData(payload).pipe(takeUntil(this._unsubscribeAll), finalize(() => {
-      location.delLoader = false;
+      user.delLoader = false;
       this._changeDetectorRef.markForCheck();
     })).subscribe(res => {
       if (res["success"]) {
-        this.dataSource = this.dataSource.filter(item => item.pk_FOBLocationID != location.pk_FOBLocationID);
+        this.dataSource = this.dataSource.filter(item => item.pk_userID != user.pk_userID);
         this.totalUsers--;
-        this.tempDataSource = this.tempDataSource.filter(item => item.pk_FOBLocationID != location.pk_FOBLocationID);
+        this.tempDataSource = this.tempDataSource.filter(item => item.pk_userID != user.pk_userID);
         this.tempTotalUsers--;
       }
       this._vendorService.snackBar(res["message"]);
       this._changeDetectorRef.markForCheck();
     }, err => {
-      location.delLoader = false;
+      user.delLoader = false;
       this._vendorService.snackBar('Something went wrong');
       this._changeDetectorRef.markForCheck();
     });
   }
   toggleUpdate(data) {
     this.isUpdate = true;
-    this.locationData = data;
+    this.usersData = data;
+    this.userPayload = {
+      userName: data.userName,
+      userID: data.pk_userID,
+      firstName: data.firstName,
+      lastName: data.lastName,
+      email: data.email,
+      password: data.password,
+      blnActive: data.blnActive,
+      blnManager: data.blnManager,
+      blnMasterAccount: data.blnMasterAccount,
+      update_vendor_user: true
+    }
     this.searchStateCtrl.setValue(data.state, { emitEvent: false });
     this.selectedState = data.state;
+  }
+  updateUsers() {
+    const { userID, userName, firstName, lastName, email, password, blnActive, blnManager, blnMasterAccount, update_vendor_user } = this.userPayload;
+    if (userName == '' || firstName == '' || email == '' || password == '') {
+      this._vendorService.snackBar('Please fill out the required fields');
+      return;
+    }
+    let payload: updateAdminUser = { userID, userName, firstName, lastName, email, password, blnActive, blnManager, blnMasterAccount, update_vendor_user };
+    this.isUpdateLoader = true;
+    this._vendorService.putVendorsData(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+      if (res["success"]) {
+        this.usersData.firstName = firstName;
+        this.usersData.lastName = lastName;
+        this.usersData.userName = userName;
+        this.usersData.password = password;
+        this.usersData.email = email;
+      }
+      this.isUpdateLoader = false;
+      this._vendorService.snackBar(res["message"]);
+      this._changeDetectorRef.markForCheck();
+    }, err => {
+      this._vendorService.snackBar('Something went wrong');
+      this.isUpdateLoader = false;
+      this._changeDetectorRef.markForCheck();
+    })
   }
   backTolist() {
     this.isUpdate = false;

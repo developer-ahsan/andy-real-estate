@@ -298,14 +298,14 @@ export class VendorsDetailsComponent implements OnInit, OnDestroy {
   // -----------------------------------------------------------------------------------------------------
   clicked(item) {
     if (item.route != this.selectedRoute) {
-      this.selectedScreeen = item.title;
-      this.selectedRoute = item.route;
-      setTimeout(() => {
-        this.topScroll.nativeElement.scrollIntoView({ behavior: 'smooth' });
-      }, 100);
       if (item.route == 'vendor-website') {
         window.open(this.supplierData.websiteURL);
       } else {
+        this.selectedScreeen = item.title;
+        this.selectedRoute = item.route;
+        setTimeout(() => {
+          this.topScroll.nativeElement.scrollIntoView({ behavior: 'smooth' });
+        }, 100);
         this._router.navigate([item.route], { relativeTo: this.route });
       }
     }

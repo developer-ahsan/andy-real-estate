@@ -3,10 +3,10 @@
         <mat-button-toggle-group #group="matButtonToggleGroup" [value]="mainScreen"
             (change)="calledScreen(group.value)">
             <mat-button-toggle value="Current">
-                Current F.O.B Locations
+                Current Co-Ops
             </mat-button-toggle>
-            <mat-button-toggle value="Add New Location">
-                Add New Location
+            <mat-button-toggle value="Add New Co-Ops">
+                Add New Co-Ops
             </mat-button-toggle>
         </mat-button-toggle-group>
     </div>
@@ -16,55 +16,26 @@
     </div>
 
     <div *ngIf="!isLoading && mainScreen == 'Current'">
-        <div class="px-5 text-right" *ngIf="dataSource.length > 0 && !isUpdate">
-            <mat-form-field class="w-100">
-                <input matInput placeholder="Search By Location Name" matTooltip="Enter to Search"
-                    [disabled]="isSearching" [(ngModel)]="keyword" (keyup.enter)="searchLocations()">
-            </mat-form-field>
-            <p class="text-secondary text-right font-medium cursor-pointer mb-2" *ngIf="!isSearching"
-                (click)="resetSearch()">Reset</p>
-            <p class="text-secondary text-right font-medium mb-2" *ngIf="isSearching">Searching...</p>
-        </div>
         <div *ngIf="dataSource.length && !isUpdate;else other_content" class="w-full">
             <table mat-table [dataSource]="dataSource" class="w-full border-t">
-                <ng-container matColumnDef="location">
-                    <th mat-header-cell *matHeaderCellDef class="w-15 min-w-15">
-                        Location Name
+                <ng-container matColumnDef="name">
+                    <th mat-header-cell *matHeaderCellDef class="w-50 min-w-50">
+                        Name
                     </th>
                     <td mat-cell *matCellDef="let element" class="text-sm">
-                        {{element.FOBLocationName}}
+                        {{element.name}}
                     </td>
                 </ng-container>
-                <ng-container matColumnDef="address">
-                    <th mat-header-cell *matHeaderCellDef class="w-15 min-w-15">
-                        Address
+                <ng-container matColumnDef="expired">
+                    <th mat-header-cell *matHeaderCellDef class="w-15 min-w-15 text-center">
+                        Expired
                     </th>
-                    <td mat-cell *matCellDef="let element" class="text-sm">
-                        {{element.address || not_available}}
-                    </td>
-                </ng-container>
-                <ng-container matColumnDef="city">
-                    <th mat-header-cell *matHeaderCellDef class="w-15 min-w-15">
-                        City
-                    </th>
-                    <td mat-cell *matCellDef="let element" class="text-sm">
-                        {{element.city || not_available}}
-                    </td>
-                </ng-container>
-                <ng-container matColumnDef="state">
-                    <th mat-header-cell *matHeaderCellDef class="w-10 min-w-10 text-center">
-                        State
-                    </th>
-                    <td mat-cell *matCellDef="let element" class="text-center text-sm">
-                        {{element.state}}
-                    </td>
-                </ng-container>
-                <ng-container matColumnDef="zip">
-                    <th mat-header-cell *matHeaderCellDef class="w-10 min-w-10 text-center">
-                        Zipcode
-                    </th>
-                    <td mat-cell *matCellDef="let element" class="text-center text-sm">
-                        {{element.zipCode}}
+                    <td mat-cell *matCellDef="let element" class="text-red-500">
+                        <div class="flex align-items-center text-sm justify-center">
+                            <span>{{element.expirationDate | date: 'MM/dd/yyyy'}}</span>
+                            <mat-icon svgIcon="heroicons_outline:information-circle"
+                                class="ml-1 text-red-500 icon-size-4"></mat-icon>
+                        </div>
                     </td>
                 </ng-container>
                 <ng-container matColumnDef="action">
@@ -73,11 +44,10 @@
                     </th>
                     <td mat-cell *matCellDef="let element" class="text-sm">
                         <div class="flex justify-center">
-                            <mat-icon svgIcon="heroicons_outline:pencil-alt" matTooltip="Edit F.O.B Location"
+                            <mat-icon svgIcon="heroicons_outline:pencil-alt" matTooltip="Edit Coop"
                                 class="mr-1 cursor-pointer " (click)="toggleUpdate(element)"></mat-icon>
-                            <mat-icon (click)="deleteLocation(element)" *ngIf="!element.delLoader"
-                                matTooltip="Delete F.O.B Location" svgIcon="heroicons_outline:trash"
-                                class="cursor-pointer "></mat-icon>
+                            <mat-icon (click)="deleteCoop(element)" *ngIf="!element.delLoader" matTooltip="Delete Coop"
+                                svgIcon="heroicons_outline:trash" class="cursor-pointer "></mat-icon>
                             <mat-progress-spinner *ngIf="element.delLoader" [diameter]="24" [mode]="'indeterminate'">
                             </mat-progress-spinner>
                         </div>
@@ -102,106 +72,112 @@
                         <span>Back to list</span>
                     </button>
                 </div>
-                <div class="col-12 col-md-6">
+                <div class="col-12">
                     <mat-form-field class="w-full">
-                        <mat-label>Location Name</mat-label>
-                        <input matInput placeholder="Location Name" [(ngModel)]="locationData.FOBLocationName">
+                        <mat-label>Name</mat-label>
+                        <input matInput placeholder="Name" [(ngModel)]="updateData.coopName">
                     </mat-form-field>
                 </div>
-                <div class="col-12 col-md-6">
-                    <mat-form-field class="w-full">
-                        <mat-label>Address</mat-label>
-                        <input matInput placeholder="Address" [(ngModel)]="locationData.address">
+                <div class="col-12">
+                    <mat-form-field appearance="fill" class="w-full">
+                        <mat-label>Expiration Date</mat-label>
+                        <input matInput [matDatepicker]="picker" [(ngModel)]="updateData.coopExpDay"
+                            (click)="picker.open()" readonly [min]="minDate">
+                        <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
+                        <mat-datepicker #picker></mat-datepicker>
                     </mat-form-field>
                 </div>
-                <div class="col-12 col-md-6">
+                <div class="col-12">
                     <mat-form-field class="w-full">
-                        <mat-label>City</mat-label>
-                        <input matInput placeholder="City" [(ngModel)]="locationData.city">
+                        <mat-label>Proposed Pricing</mat-label>
+                        <textarea matInput placeholder="Proposed Pricing" [(ngModel)]="updateData.pricing"></textarea>
                     </mat-form-field>
                 </div>
-                <div class="col-12 col-md-6">
+                <div class="col-12">
                     <mat-form-field class="w-full">
-                        <mat-label>State</mat-label>
-                        <input matInput placeholder="Search State" [matAutocomplete]="auto"
-                            [formControl]="searchStateCtrl" placeholder="Search By State" (blur)="onBlur()">
-                        <mat-autocomplete class="w-full" #auto="matAutocomplete" (optionSelected)="onSelected($event)"
-                            [displayWith]="displayWith">
-                            <mat-option *ngIf="isSearchingState" class="is-loading">Loading...</mat-option>
-                            <ng-container *ngIf="!isSearchingState">
-                                <mat-option *ngFor="let item of allStates" [value]="item.state">
-                                    <span>{{item.state}}</span>
-                                </mat-option>
-                            </ng-container>
-                        </mat-autocomplete>
+                        <mat-label>Less-Than-Minimums</mat-label>
+                        <textarea matInput placeholder="Less-Than-Minimums" [(ngModel)]="updateData.ltm"></textarea>
                     </mat-form-field>
                 </div>
-                <div class="col-12 col-md-6">
+                <div class="col-12">
                     <mat-form-field class="w-full">
-                        <mat-label>ZipCode</mat-label>
-                        <input matInput placeholder="ZipCode" [(ngModel)]="locationData.zipCode">
+                        <mat-label>Setups</mat-label>
+                        <textarea matInput placeholder="Setups" [(ngModel)]="updateData.setups"></textarea>
                     </mat-form-field>
+                </div>
+                <div class="col-12">
+                    <mat-form-field class="w-full">
+                        <mat-label>Production Time</mat-label>
+                        <textarea matInput placeholder="Production Time"
+                            [(ngModel)]="updateData.productionTime"></textarea>
+                    </mat-form-field>
+                </div>
+                <div class="col-12 text-right">
+                    <button [disabled]="isUpdateLoader" mat-stroked-button class="min-w-40 mr-2 mb-2"
+                        (click)="updateCoop()">
+                        <mat-icon *ngIf="!isUpdateLoader" class="mr-1"
+                            svgIcon="heroicons_outline:pencil-alt"></mat-icon>
+                        <span *ngIf="!isUpdateLoader">Update Coop</span>
+                        <mat-progress-spinner *ngIf="isUpdateLoader" [diameter]="24" [mode]="'indeterminate'">
+                        </mat-progress-spinner>
+                    </button>
                 </div>
             </div>
         </div>
         <!-- No data Found -->
         <ng-template #other_content>
             <div *ngIf="!isUpdate" class="px-5 pb-5">
-                <fuse-alert [appearance]="'soft'" [type]="'warning'" [showIcon]="false">This supplier
-                    does
-                    not currently
-                    have
-                    any F.O.B Locations.</fuse-alert>
+                <fuse-alert [appearance]="'soft'" [type]="'warning'" [showIcon]="false">There are no co-ops defined for
+                    this vendor.
+                </fuse-alert>
             </div>
         </ng-template>
     </div>
-    <div class="px-8 pb-5" *ngIf="mainScreen == 'Add New Location'">
-        <div class="row" [formGroup]="addLocationForm">
-            <div class="col-12 col-md-6">
+    <div class="px-8 pb-5" *ngIf="mainScreen == 'Add New Co-Ops'">
+        <div class="row" [formGroup]="addCoopForm">
+            <div class="col-12">
                 <mat-form-field class="w-full">
-                    <mat-label>Location Name</mat-label>
-                    <input matInput placeholder="Location Name" formControlName="location_name">
+                    <mat-label>Name</mat-label>
+                    <input matInput placeholder="Name" formControlName="coopName">
                 </mat-form-field>
             </div>
-            <div class="col-12 col-md-6">
-                <mat-form-field class="w-full">
-                    <mat-label>City</mat-label>
-                    <input matInput placeholder="City" formControlName="city">
+            <div class="col-12">
+                <mat-form-field appearance="fill" class="w-full">
+                    <mat-label>Expiration Date</mat-label>
+                    <input matInput [matDatepicker]="picker1" formControlName="coopExpDay" (click)="picker1.open()"
+                        readonly [min]="minDate">
+                    <mat-datepicker-toggle matIconSuffix [for]="picker1"></mat-datepicker-toggle>
+                    <mat-datepicker #picker1></mat-datepicker>
                 </mat-form-field>
             </div>
             <div class="col-12">
                 <mat-form-field class="w-full">
-                    <mat-label>Address</mat-label>
-                    <input matInput placeholder="Address" formControlName="address">
+                    <mat-label>Proposed Pricing</mat-label>
+                    <textarea matInput placeholder="Proposed Pricing" formControlName="pricing"></textarea>
                 </mat-form-field>
             </div>
-            <div class="col-12 col-md-6">
+            <div class="col-12">
                 <mat-form-field class="w-full">
-                    <mat-label>State</mat-label>
-                    <input matInput placeholder="Search State" [matAutocomplete]="auto" [formControl]="searchStateCtrl"
-                        placeholder="Search By State" (blur)="onBlur()">
-                    <mat-autocomplete class="w-full" #auto="matAutocomplete" (optionSelected)="onSelected($event)"
-                        [displayWith]="displayWith">
-                        <mat-option *ngIf="isSearchingState" class="is-loading">Loading...</mat-option>
-                        <ng-container *ngIf="!isSearchingState">
-                            <mat-option *ngFor="let item of allStates" [value]="item.state">
-                                <span>{{item.state}}</span>
-                            </mat-option>
-                        </ng-container>
-                    </mat-autocomplete>
+                    <mat-label>Less-Than-Minimums</mat-label>
+                    <textarea matInput placeholder="Less-Than-Minimums" formControlName="ltm"></textarea>
                 </mat-form-field>
             </div>
-            <div class="col-12 col-md-6">
+            <div class="col-12">
                 <mat-form-field class="w-full">
-                    <mat-label>ZipCode</mat-label>
-                    <input matInput placeholder="ZipCode" formControlName="zip" maxlength="5">
+                    <mat-label>Setups</mat-label>
+                    <textarea matInput placeholder="Setups" formControlName="setups"></textarea>
+                </mat-form-field>
+            </div>
+            <div class="col-12">
+                <mat-form-field class="w-full">
+                    <mat-label>Production Time</mat-label>
+                    <textarea matInput placeholder="Production Time" formControlName="productionTime"></textarea>
                 </mat-form-field>
             </div>
             <div class="col-12 text-right">
-                <button [disabled]="isAddLoader" mat-stroked-button class="min-w-40 mr-2 mb-2"
-                    (click)="addNewLocation()">
+                <button [disabled]="isAddLoader" mat-stroked-button class="min-w-40 mr-2 mb-2" (click)="addNewCoop()">
                     <mat-icon *ngIf="!isAddLoader" class="mr-1" svgIcon="heroicons_outline:plus"></mat-icon>
-                    <span *ngIf="!isAddLoader">Add New Location</span>
+                    <span *ngIf="!isAddLoader">Add New Coop</span>
                     <mat-progress-spinner *ngIf="isAddLoader" [diameter]="24" [mode]="'indeterminate'">
                     </mat-progress-spinner>
                 </button>

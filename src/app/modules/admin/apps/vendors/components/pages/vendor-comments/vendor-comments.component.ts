@@ -81,6 +81,7 @@ export class VendorCommentsComponent implements OnInit, OnDestroy {
   getVendorsData() {
     this._vendorService.Single_Suppliers$.pipe(takeUntil(this._unsubscribeAll)).subscribe(supplier => {
       this.supplierData = supplier["data"][0];
+      this.allComments = this.supplierData.allComments;
       this.getVendorsComments('get');
     })
   }

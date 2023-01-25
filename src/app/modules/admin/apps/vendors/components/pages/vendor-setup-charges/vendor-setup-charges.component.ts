@@ -3,10 +3,11 @@ import { Component, Input, OnInit, Output, EventEmitter, ChangeDetectorRef, OnDe
 import { FormControl } from '@angular/forms';
 import { MatChipInputEvent } from '@angular/material/chips';
 import { MatPaginator } from '@angular/material/paginator';
+import { InventoryService } from 'app/modules/admin/apps/ecommerce/inventory/inventory.service';
 import { Subject } from 'rxjs';
 import { debounceTime, distinctUntilChanged, filter, finalize, switchMap, takeUntil, tap } from 'rxjs/operators';
 import { VendorsService } from '../../vendors.service';
-import { ApplyBlanketFOBlocation, updateCompanySettings } from '../../vendors.types';
+import { ApplyBlanketFOBlocation, ApplyBlanketSetup, updateCompanySettings } from '../../vendors.types';
 
 @Component({
   selector: 'app-vendor-setup-charges',
@@ -18,70 +19,55 @@ export class VendorSetupChargesComponent implements OnInit, OnDestroy {
   @Output() isLoadingChange = new EventEmitter<boolean>();
   private _unsubscribeAll: Subject<any> = new Subject<any>();
 
-  blnSettings: boolean = true;
   isUpdateLoader: boolean = false;
   supplierData: any;
 
-  searchLocationCtrl = new FormControl();
-  selectedLocation: any;
-  isSearchingLocation = false;
 
-  allLocations = [];
-
+  runCharge = '';
+  setupProcesses: any;
+  setupQuantity: any[] = [];
+  runChargeID: string;
   constructor(
     private _changeDetectorRef: ChangeDetectorRef,
-    private _vendorService: VendorsService
+    private _vendorService: VendorsService,
+    private _inventoryService: InventoryService
   ) { }
 
   ngOnInit(): void {
-    this.isLoading = true;
     this.getVendorsData();
-    let params;
-    this.searchLocationCtrl.valueChanges.pipe(
-      filter((res: any) => {
-        params = {
-          fob_locations: true,
-          keyword: res,
-          company_id: this.supplierData.pk_companyID
-        }
-        return res != null && res.length >= 3
-      }),
-      distinctUntilChanged(),
-      debounceTime(300),
-      tap(() => {
-        this.allLocations = [];
-        this.isSearchingLocation = true;
-        this._changeDetectorRef.markForCheck();
-      }),
-      switchMap(value => this._vendorService.getVendorsData(params)
-        .pipe(
-          finalize(() => {
-            this.isSearchingLocation = false
-            this._changeDetectorRef.markForCheck();
-          }),
-        )
-      )
-    ).subscribe((data: any) => {
-      this.allLocations = data['data'];
-    });
   };
   getVendorsData() {
     this._vendorService.Single_Suppliers$.pipe(takeUntil(this._unsubscribeAll)).subscribe(supplier => {
       this.supplierData = supplier["data"][0];
-      this.getFOBLocations();
       this._changeDetectorRef.markForCheck();
     });
   }
-  getFOBLocations() {
+  getCharges() {
+    this.isLoading = true;
     let params = {
-      fob_locations: true,
-      size: 20,
-      company_id: this.supplierData.pk_companyID
-    }
-    this._vendorService.getVendorsData(params).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
-      this.allLocations = res["data"];
-      this.selectedLocation = this.allLocations[0];
-      this.searchLocationCtrl.setValue({ FOBLocationName: this.selectedLocation.FOBLocationName }, { emitEvent: false });
+      imprint: true,
+      decoration: true,
+      charge_distribution: true,
+      charge_id: Number(this.runCharge)
+    };
+    let run = [];
+    this._inventoryService.getProductsData(params).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+      res["data"].forEach(element => {
+        if (run.length == 0) {
+          run.push({ process: element.processQuantity, data: [element] });
+        } else {
+          const index = run.findIndex(item => item.process == element.processQuantity);
+          if (index > -1) {
+            run[index].data.push(element);
+          } else {
+            run.push({ process: element.processQuantity, data: [element] });
+          }
+        }
+      });
+      this.setupProcesses = run;
+      if (run.length) {
+        this.setupQuantity = run[0].data;
+      }
       this.isLoading = false;
       this._changeDetectorRef.markForCheck();
     }, err => {
@@ -89,26 +75,20 @@ export class VendorSetupChargesComponent implements OnInit, OnDestroy {
       this._changeDetectorRef.markForCheck();
     });
   }
-  onSelected(ev) {
-    this.selectedLocation = ev.option.value;
-  }
-
-  displayWith(value: any) {
-    return value?.FOBLocationName;
-  }
-  onBlur() {
-    this.searchLocationCtrl.setValue({ FOBLocationName: this.selectedLocation.FOBLocationName }, { emitEvent: false });
-  }
-  updateLocations() {
-    let payload: ApplyBlanketFOBlocation = {
+  updateSetupBlanket() {
+    if (this.runChargeID == '') {
+      this._vendorService.snackBar('Please provide charge id');
+      return;
+    }
+    let payload: ApplyBlanketSetup = {
       supplier_id: this.supplierData.pk_companyID,
-      location_id: this.selectedLocation.pk_FOBLocationID,
-      supplier_name: this.supplierData.companyName,
-      apply_fob_location: true
+      charge_id: Number(this.runChargeID),
+      apply_blanket_setup: true
     }
     this.isUpdateLoader = true;
     this._vendorService.putVendorsData(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
       this._vendorService.snackBar(res["message"]);
+      this.runChargeID = '';
       this.isUpdateLoader = false;
       this._changeDetectorRef.markForCheck();
     }, err => {

@@ -220,7 +220,9 @@ export class VendorsService {
         return this._httpClient.put(
             environment.system, payload, { headers });
     };
-
+    getIPAddress() {
+        return this._httpClient.get("http://api.ipify.org/?format=json");
+    }
     // Get calls
     getVendorsData(params): Observable<any[]> {
         return this._httpClient.get<any[]>(environment.vendors, {

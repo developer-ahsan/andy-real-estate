@@ -468,3 +468,74 @@ export interface vendorComment {
     emails: string[];
     add_comment: boolean;
 };
+export interface AddCoops {
+    company_id: number;
+    coopName: string;
+    coopExpDay: string;
+    pricing: string;
+    ltm: string;
+    setups: string;
+    productionTime: string;
+    add_coop: boolean;
+};
+export interface UpdateCoops {
+    coOp_id: number;
+    coopName: string;
+    coopExpDay: string;
+    pricing: string;
+    ltm: string;
+    setups: string;
+    productionTime: string;
+    update_coop: boolean;
+};
+export interface DeleteCoops {
+    coOp_id: number;
+    remove_coops: boolean;
+};
+export interface applyCompanyWideCoop {
+    coopID: number;
+    companyID: number;
+    companyName: string;
+    apply_blanket_Coop: boolean;
+};
+export interface updateAdminUser {
+    userID: number;
+    userName: string;
+    firstName: string;
+    lastName: string;
+    email: string;
+    password: string;
+    blnActive: boolean;
+    blnManager: boolean;
+    blnMasterAccount: boolean;
+    update_vendor_user: boolean;
+};
+
+export interface DeleteAdminUser {
+    user_id: number;
+    delete_vendor_admin: boolean;
+};
+
+export interface AddAdminUser {
+    firstName: string;
+    lastName: string;
+    userName: string;
+    password: string;
+    email: string;
+    registerIP: string;
+    supplier_id: number;
+    blnMasterAccount: boolean;
+    blnManager: boolean;
+    create_vendor_user: boolean;
+};
+export interface ApplyBlanketRun {
+    charge_id: number;
+    supplier_id: number;
+    apply_blanket_run: boolean;
+};
+export interface ApplyBlanketSetup {
+    charge_id: number;
+    supplier_id: number;
+    apply_blanket_setup: boolean;
+};
+export interface ApplyBlanketCollection { collection_id: number; supplier_id: number; apply_blanket_collection: boolean; };

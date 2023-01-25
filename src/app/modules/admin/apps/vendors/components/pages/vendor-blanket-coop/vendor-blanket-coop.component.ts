@@ -6,7 +6,7 @@ import { MatPaginator } from '@angular/material/paginator';
 import { Subject } from 'rxjs';
 import { debounceTime, distinctUntilChanged, filter, finalize, switchMap, takeUntil, tap } from 'rxjs/operators';
 import { VendorsService } from '../../vendors.service';
-import { ApplyBlanketFOBlocation, updateCompanySettings } from '../../vendors.types';
+import { ApplyBlanketFOBlocation, applyCompanyWideCoop, updateCompanySettings } from '../../vendors.types';
 
 @Component({
   selector: 'app-vendor-blanket-coop',
@@ -22,11 +22,11 @@ export class VendorBlanketCoopComponent implements OnInit, OnDestroy {
   isUpdateLoader: boolean = false;
   supplierData: any;
 
-  searchLocationCtrl = new FormControl();
-  selectedLocation: any;
-  isSearchingLocation = false;
+  searchCoopCtrl = new FormControl();
+  selectedCoop: any;
+  isSearchingCoop = false;
 
-  allLocations = [];
+  allCoops = [];
 
   constructor(
     private _changeDetectorRef: ChangeDetectorRef,
@@ -37,10 +37,10 @@ export class VendorBlanketCoopComponent implements OnInit, OnDestroy {
     this.isLoading = true;
     this.getVendorsData();
     let params;
-    this.searchLocationCtrl.valueChanges.pipe(
+    this.searchCoopCtrl.valueChanges.pipe(
       filter((res: any) => {
         params = {
-          fob_locations: true,
+          coOps: true,
           keyword: res,
           company_id: this.supplierData.pk_companyID
         }
@@ -49,39 +49,39 @@ export class VendorBlanketCoopComponent implements OnInit, OnDestroy {
       distinctUntilChanged(),
       debounceTime(300),
       tap(() => {
-        this.allLocations = [];
-        this.isSearchingLocation = true;
+        this.allCoops = [];
+        this.isSearchingCoop = true;
         this._changeDetectorRef.markForCheck();
       }),
       switchMap(value => this._vendorService.getVendorsData(params)
         .pipe(
           finalize(() => {
-            this.isSearchingLocation = false
+            this.isSearchingCoop = false
             this._changeDetectorRef.markForCheck();
           }),
         )
       )
     ).subscribe((data: any) => {
-      this.allLocations = data['data'];
+      this.allCoops = data['data'];
     });
   };
   getVendorsData() {
     this._vendorService.Single_Suppliers$.pipe(takeUntil(this._unsubscribeAll)).subscribe(supplier => {
       this.supplierData = supplier["data"][0];
-      this.getFOBLocations();
+      this.getCoops();
       this._changeDetectorRef.markForCheck();
     });
   }
-  getFOBLocations() {
+  getCoops() {
     let params = {
-      fob_locations: true,
+      coOps: true,
       size: 20,
       company_id: this.supplierData.pk_companyID
     }
     this._vendorService.getVendorsData(params).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
-      this.allLocations = res["data"];
-      this.selectedLocation = this.allLocations[0];
-      this.searchLocationCtrl.setValue({ FOBLocationName: this.selectedLocation.FOBLocationName }, { emitEvent: false });
+      this.allCoops = res["data"];
+      this.selectedCoop = this.allCoops[0];
+      this.searchCoopCtrl.setValue({ name: this.selectedCoop.name }, { emitEvent: false });
       this.isLoading = false;
       this._changeDetectorRef.markForCheck();
     }, err => {
@@ -90,21 +90,21 @@ export class VendorBlanketCoopComponent implements OnInit, OnDestroy {
     });
   }
   onSelected(ev) {
-    this.selectedLocation = ev.option.value;
+    this.selectedCoop = ev.option.value;
   }
 
   displayWith(value: any) {
-    return value?.FOBLocationName;
+    return value?.name;
   }
   onBlur() {
-    this.searchLocationCtrl.setValue({ FOBLocationName: this.selectedLocation.FOBLocationName }, { emitEvent: false });
+    this.searchCoopCtrl.setValue({ name: this.selectedCoop.name }, { emitEvent: false });
   }
-  updateLocations() {
-    let payload: ApplyBlanketFOBlocation = {
-      supplier_id: this.supplierData.pk_companyID,
-      location_id: this.selectedLocation.pk_FOBLocationID,
-      supplier_name: this.supplierData.companyName,
-      apply_fob_location: true
+  updateCoops() {
+    let payload: applyCompanyWideCoop = {
+      companyID: this.supplierData.pk_companyID,
+      coopID: this.selectedCoop.pk_coopID,
+      companyName: this.supplierData.companyName,
+      apply_blanket_Coop: true
     }
     this.isUpdateLoader = true;
     this._vendorService.putVendorsData(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {

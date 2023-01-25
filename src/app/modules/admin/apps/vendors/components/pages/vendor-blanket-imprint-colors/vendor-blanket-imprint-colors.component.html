@@ -4,27 +4,28 @@
         </ngx-skeleton-loader>
     </div>
     <div class="px-8 pb-5" *ngIf="!isLoading">
-        <fuse-alert [appearance]="'soft'" [type]="'warning'" [showIcon]="false">This tool will apply a blanket F.O.B.
-            location of your choice to all {{supplierData.companyName}} products. This action will replace all current
-            F.O.B.
-            locations associated with a product and cannot be undone. Please make sure the F.O.B. location you want is
-            added to the system first.</fuse-alert>
+        <fuse-alert [appearance]="'soft'" [type]="'warning'" [showIcon]="false">
+            This tool allows you to apply a blanket color collection to all {{supplierData.companyName}} product
+            imprints. This tool does not differentiate between the decorator, location, imprint method, etc...Any
+            product that is currently associated with {{supplierData.companyName}} will have its imprint color
+            collection changed to the option you select below.
+            <br>
+            <span class="text-red-500 mt-1">WARNING: THIS ACTION CANNOT BE UNDONE</span></fuse-alert>
         <mat-form-field class="w-full mt-2">
-            <mat-label>Select F.O.B Location</mat-label>
-            <input matInput [matAutocomplete]="auto" [formControl]="searchLocationCtrl" placeholder="Search By Location"
+            <input matInput [matAutocomplete]="auto" [formControl]="searchColorCtrl" placeholder="Search By Collection"
                 (blur)="onBlur()">
             <mat-autocomplete class="w-full" #auto="matAutocomplete" (optionSelected)="onSelected($event)"
                 [displayWith]="displayWith">
-                <mat-option *ngIf="isSearchingLocation" class="is-loading">Loading...</mat-option>
-                <ng-container *ngIf="!isSearchingLocation">
-                    <mat-option *ngFor="let item of allLocations" [value]="item">
-                        <span>{{item.FOBLocationName}}</span>
+                <mat-option *ngIf="isSearchingColor" class="is-loading">Loading...</mat-option>
+                <ng-container *ngIf="!isSearchingColor">
+                    <mat-option *ngFor="let item of allCollections" [value]="item">
+                        <span>{{item.collectionName}}</span>
                     </mat-option>
                 </ng-container>
             </mat-autocomplete>
         </mat-form-field>
         <div class="text-right">
-            <button mat-stroked-button class="min-w-30" (click)="updateLocations()" [disabled]="isUpdateLoader">
+            <button mat-stroked-button class="min-w-30" (click)="updateCollection()" [disabled]="isUpdateLoader">
                 <span *ngIf="!isUpdateLoader">Apply</span>
                 <mat-progress-spinner *ngIf="isUpdateLoader" [diameter]="24" [mode]="'indeterminate'">
                 </mat-progress-spinner>
