@@ -30,7 +30,7 @@ export class SearchHistoryComponent implements OnInit, OnDestroy {
   isKeywordSearch: boolean = false;
 
   // Advanced Search
-  isAdvancedSearch: boolean = false;
+  isAdvancedSearch: boolean = true;
   filterForm: FormGroup;
   filterSearch: boolean = false;
   firstDataTemp = {

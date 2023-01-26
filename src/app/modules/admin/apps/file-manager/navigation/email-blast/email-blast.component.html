@@ -136,7 +136,7 @@
         </button>
       </div>
       <div [innerHtml]="previewData"></div>
-      <div class="text-right w-full py-5" *ngIf="!previewData">
+      <div class="text-right w-full py-5" *ngIf="previewData">
         <button class="ml-4 min-w-40" mat-flat-button [color]="'primary'" [disabled]="sendEmailLoader"
           [matTooltip]="'Send an Email'" (click)="sendEmail()">
           <mat-progress-spinner *ngIf="sendEmailLoader" [diameter]="24" [mode]="'indeterminate'">
