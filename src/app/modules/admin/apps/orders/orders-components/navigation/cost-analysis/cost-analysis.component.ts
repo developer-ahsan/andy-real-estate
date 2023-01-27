@@ -10,11 +10,12 @@ import { Subject } from 'rxjs';
   templateUrl: './cost-analysis.component.html'
 })
 export class CostAnalysisComponent implements OnInit {
-  @Input() isLoading: boolean;
   @Output() isLoadingChange = new EventEmitter<boolean>();
-  @Input() selectedOrder: any;
   private _unsubscribeAll: Subject<any> = new Subject<any>();
 
+
+  isLoading: boolean = false;
+  selectedOrder: any;
 
   orderParticipants = [];
   orderDetail: any;
@@ -24,7 +25,6 @@ export class CostAnalysisComponent implements OnInit {
   grandTotalPrice = 0;
   not_available = 'N/A';
 
-
   orderTotal: any;
   constructor(
     private _orderService: OrdersService,
@@ -32,16 +32,19 @@ export class CostAnalysisComponent implements OnInit {
   ) { }
 
   ngOnInit(): void {
-    let params = {
-      order_total: true,
-      order_id: this.selectedOrder.pk_orderID
-    }
-    this._orderService.getOrderCommonCall(params).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
-      this.orderTotal = res["data"][0];
-    })
+    this.isLoading = true;
+
+
     this._orderService.orderDetail$.pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
       if (res) {
         this.orderDetail = res["data"][0];
+        let params = {
+          order_total: true,
+          order_id: this.orderDetail.pk_orderID
+        }
+        this._orderService.getOrder(params).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+          this.orderTotal = res["data"][0];
+        })
       }
     })
 

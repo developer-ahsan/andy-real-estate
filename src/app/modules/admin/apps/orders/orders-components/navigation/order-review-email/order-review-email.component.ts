@@ -11,7 +11,7 @@ import { OrdersService } from '../../orders.service';
   styles: ['::-webkit-scrollbar {width: 2px !important}']
 })
 export class OrderReviewEmailComponent implements OnInit, OnDestroy {
-  @Input() isLoading: boolean;
+  isLoading: boolean = false;
   @Input() selectedOrder: any;
   @Output() isLoadingChange = new EventEmitter<boolean>();
   private _unsubscribeAll: Subject<any> = new Subject<any>();
@@ -39,10 +39,10 @@ export class OrderReviewEmailComponent implements OnInit, OnDestroy {
   getReorderEmail() {
     let params = {
       opt_in: true,
-      store_id: this.selectedOrder.pk_storeID,
+      store_id: this.orderDetail.fk_storeID,
       email: this.orderDetail.managerEmail
     }
-    this._orderService.getOrderCommonCall(params).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+    this._orderService.getOrder(params).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
       this.emailData = res["data"];
       if (this.emailData.length == 0 || (this.emailData.length != 0 && this.emailData.blnActive)) {
         this.optedEmail = false;

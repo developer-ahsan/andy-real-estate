@@ -56,13 +56,13 @@
                                                 </div>
                                                 <div class="pl-6 border-l text-md">
                                                     <div><b class="text-secondary">User:
-                                                        </b>{{selectedOrder?.firstName + '
+                                                        </b>{{orderDetail?.userFirstName + '
                                                         ' +
-                                                        selectedOrder?.lastName}}</div>
+                                                        orderDetail?.userLastName}}</div>
                                                     <div><b class="text-secondary">Clinet:
-                                                        </b>{{selectedOrder?.billingCompanyName}}</div>
+                                                        </b>{{orderDetail?.billingCompanyName}}</div>
                                                     <div><b class="text-secondary">Store:
-                                                        </b>{{selectedOrder?.storeName}}</div>
+                                                        </b>{{orderDetail?.storeName}}</div>
                                                     <div><b class="text-secondary">Shipping:
                                                         </b>{{orderDetail?.shippingCarrierName + ', '
                                                         +orderDetail?.shippingServiceName}}</div>
@@ -78,27 +78,27 @@
                                                 Order
                                             </div>
                                             <div class="justify-self-start text-3xl font-semibold">
-                                                #{{selectedOrder.pk_orderID}}</div>
+                                                #{{orderDetail.pk_orderID}}</div>
                                             <div class="justify-self-start font-medium tracking-tight text-secondary">
                                                 ORDER DATE
                                             </div>
-                                            <div class="font-medium">{{selectedOrder?.orderDate ||
+                                            <div class="font-medium">{{(orderDetail?.orderDate | date:'medium') ||
                                                 not_available}}</div>
                                             <div class="justify-self-start font-medium tracking-tight text-secondary">
                                                 Payment Date</div>
-                                            <div class="font-medium">{{(selectedOrder?.paymentDate | date:'medium') ||
+                                            <div class="font-medium">{{(orderDetail?.paymentDate | date:'medium') ||
                                                 not_available}}
                                             </div>
                                             <div class="justify-self-start font-medium tracking-tight text-secondary">
                                                 In-Hands Date
                                             </div>
-                                            <div class="font-medium">{{(selectedOrder?.inHandsDate | date:'medium') ||
+                                            <div class="font-medium">{{(orderDetail?.inHandsDate | date:'medium') ||
                                                 not_available}}
                                             </div>
                                             <div class="justify-self-start font-medium tracking-tight text-secondary">
                                                 Purchase Order
                                             </div>
-                                            <div class="font-medium">{{selectedOrder?.purchaseOrderNum ||
+                                            <div class="font-medium">{{orderDetail?.purchaseOrderNum ||
                                                 not_available}}</div>
                                         </div>
                                     </div>
@@ -121,7 +121,7 @@
                                                         {{item.products[0]?.productName}}
                                                     </p>
                                                     <p class="font-bold text-medium">PO:
-                                                        {{selectedOrder?.pk_orderID +
+                                                        {{orderDetail?.pk_orderID +
                                                         '-' + item.products[0]?.fk_orderLineID}}</p>
                                                     <p class="text-secondary">Supplier:
                                                         {{item.products[0]?.supplier_name}}

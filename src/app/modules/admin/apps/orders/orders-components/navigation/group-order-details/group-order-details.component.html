@@ -1,0 +1,206 @@
+<div class="my-3 w-full">
+    <ngx-skeleton-loader count="8" appearance="line" animation="pulse" *ngIf="isLoading">
+    </ngx-skeleton-loader>
+    <div *ngIf="!isLoading">
+        <div class="grid grid-cols-1 xl:grid-cols-3 gap-4 w-full mt-2">
+            <div class="flex flex-col flex-auto p-6 bg-card rounded-2xl shadow-md">
+                <div class="flex items-center">
+                    <div class="flex flex-col">
+                        <div class="mr-4 text-lg font-medium tracking-tight leading-6 truncate">Group Order Details
+                        </div>
+                    </div>
+                </div>
+                <div class="my-8 space-y-8">
+                    <div class="flex flex-col">
+                        <div class="flex items-center">
+                            <div
+                                class="flex items-center justify-center w-14 h-14 rounded bg-red-100 text-red-800 dark:bg-red-600 dark:text-red-50">
+                                <mat-icon class="text-current" [svgIcon]="'heroicons_outline:cash'"></mat-icon>
+                            </div>
+                            <div class="flex-auto ml-4 leading-none">
+                                <div class="text-sm font-medium text-secondary flex align-items-center">
+                                    <span class="font-semibold">Participating</span>
+                                    <mat-icon matTooltip="The number of people currently participating in
+                                    this group order, excluding the initiator" svgIcon="mat_outline:info"
+                                        class="icon-size-4 cursor-pointer ml-1"></mat-icon>
+                                </div>
+                                <div class="mt-2 font-medium text-2xl">12</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="flex flex-col">
+                        <div class="flex items-center">
+                            <div
+                                class="flex items-center justify-center w-14 h-14 rounded bg-indigo-100 text-indigo-800 dark:bg-indigo-600 dark:text-indigo-50">
+                                <mat-icon class="text-current" [svgIcon]="'heroicons_outline:cash'"></mat-icon>
+                            </div>
+                            <div class="flex-auto ml-4 leading-none">
+                                <div class="text-sm font-medium text-secondary flex align-items-center">
+                                    <span class="font-semibold">Invited</span>
+                                    <mat-icon
+                                        matTooltip="The number of people invited to this group order, excluding the initiator"
+                                        svgIcon="mat_outline:info" class="icon-size-4 cursor-pointer ml-1"></mat-icon>
+                                </div>
+                                <div class="mt-2 font-medium text-2xl">12</div>
+                            </div>
+                        </div>
+                    </div>
+                    <hr>
+                    <div class="flex flex-col">
+                        <div class="flex items-center">
+                            <div class="flex-auto leading-none">
+                                <span class="bg-default rounded px-3 py-1 text-secondary font-bold"
+                                    matTooltip="Each participant pays for their portion of the group order, including the initiator.">Who's
+                                    paying</span>
+                            </div>
+                        </div>
+                        <div class="mt-3 text-md text-secondary">Each participant pays their portion, including
+                            initiator.
+                        </div>
+                    </div>
+                    <hr>
+                    <div class="flex flex-col">
+                        <div class="flex items-center">
+                            <div class="flex-auto leading-none">
+                                <span class="bg-default rounded px-3 py-1 text-secondary font-bold"
+                                    matTooltip="The time left before this group order closes.">Time left on group
+                                    order</span>
+                            </div>
+                        </div>
+                        <div class="mt-3 text-md text-secondary">This group order has been closed
+                        </div>
+                    </div>
+                    <hr>
+                    <div class="flex flex-col">
+                        <div class="flex items-center">
+                            <div class="flex-auto leading-none">
+                                <span class="bg-default rounded px-3 py-1 text-secondary font-bold"
+                                    matTooltip="Each participant will receive their own shipment.">Shipping</span>
+                            </div>
+                        </div>
+                        <div class="mt-3 text-md text-secondary">Each participant will receive their own shipment.
+                        </div>
+                    </div>
+                    <hr>
+                    <div class="flex flex-col">
+                        <div class="flex items-center">
+                            <div class="flex-auto leading-none">
+                                <span class="bg-default rounded px-3 py-1 text-secondary font-bold"
+                                    matTooltip="This group order closes at this time.">Closes</span>
+                            </div>
+                        </div>
+                        <div class="mt-3 text-md text-secondary">Feb 19, 2021 @ 11:59 PM</div>
+                        <mat-form-field appearance="fill">
+                            <input matInput [matDatepicker]="picker" readonly (click)="picker.open()"
+                                placeholder="Click to select new expiry">
+                            <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
+                            <mat-datepicker #picker></mat-datepicker>
+                        </mat-form-field>
+                    </div>
+                </div>
+            </div>
+            <!-- Group order details -->
+            <div class="xl:col-span-2 flex flex-col flex-auto bg-card rounded-2xl shadow-md overflow-hidden">
+                <div class="p-6">
+                    <div class="mr-4 text-lg font-medium tracking-tight leading-6 truncate">Participants
+                    </div>
+                    <div class="text-secondary font-medium">{{totalRecords}}</div>
+                </div>
+                <div class="px-6">
+                    <mat-form-field class="w-full">
+                        <mat-select matInput [(ngModel)]="ngFilter">
+                            <mat-option [value]="-1">All invitees</mat-option>
+                            <mat-option [value]="1">Participating invitees</mat-option>
+                            <mat-option [value]="0">Non-participating invitees</mat-option>
+                        </mat-select>
+                    </mat-form-field>
+                </div>
+                <div class="overflow-x-auto">
+                    <table class="w-full bg-transparent" mat-table [dataSource]="dataSource">
+
+                        <!-- Transaction ID -->
+                        <ng-container matColumnDef="name">
+                            <th mat-header-cell *matHeaderCellDef>
+                                Name
+                            </th>
+                            <td mat-cell *matCellDef="let element" class="text-sm">
+                                <span *ngIf="element.shippingFirstName">{{element.shippingFirstName + ' '
+                                    +element.shippingLastName}}</span>
+                                <span *ngIf="!element.shippingFirstName">---</span>
+
+                            </td>
+                        </ng-container>
+
+                        <!-- Date -->
+                        <ng-container matColumnDef="email">
+                            <th mat-header-cell *matHeaderCellDef>
+                                Email
+                            </th>
+                            <td mat-cell *matCellDef="let element" class="text-sm">
+                                {{element.email}}
+                            </td>
+                        </ng-container>
+
+                        <!-- Name -->
+                        <ng-container matColumnDef="participating">
+                            <th mat-header-cell *matHeaderCellDef class="">
+                                Participating
+                            </th>
+                            <td mat-cell *matCellDef="let element" class="text-sm ">
+                                <mat-icon *ngIf="element.blnPaid" svgIcon="heroicons_outline:check"
+                                    class="icon-size-4 text-green-500"></mat-icon>
+                                <mat-icon *ngIf="!element.blnPaid" svgIcon="heroicons_outline:x"
+                                    class="icon-size-4 text-red-500"></mat-icon>
+                            </td>
+                        </ng-container>
+
+                        <!-- Amount -->
+                        <ng-container matColumnDef="paid">
+                            <th mat-header-cell *matHeaderCellDef class="min-w-15">
+                                Paid
+                            </th>
+                            <td mat-cell *matCellDef="let element" class="text-sm">
+                                <span *ngIf="element.blnPaid" class="text-green-500">Paid</span>
+                                <span *ngIf="!element.blnPaid" class="text-red-500">Not Paid</span>
+                            </td>
+                        </ng-container>
+                        <!-- Invoice -->
+                        <ng-container matColumnDef="invoice">
+                            <th mat-header-cell *matHeaderCellDef class="min-w-15">
+                                Invoice
+                            </th>
+                            <td mat-cell *matCellDef="let element" class="text-sm">
+                                {{element.blnPaid}}
+                            </td>
+                        </ng-container>
+
+                        <!-- Status -->
+                        <ng-container matColumnDef="action">
+                            <th mat-header-cell *matHeaderCellDef class="text-center min-w-15">
+                                Action
+                            </th>
+                            <td mat-cell *matCellDef="let element" class="text-sm text-center">
+                                <mat-icon svgIcon="mat_outline:attach_money" matTooltip="Mark this participant paid"
+                                    class="mr-1 cursor-pointer icon-size-4"></mat-icon>
+                                <mat-icon *ngIf="!element.delLoader" matTooltip="Remove Participant"
+                                    svgIcon="heroicons_outline:trash" class="cursor-pointer icon-size-4 "></mat-icon>
+                                <mat-progress-spinner *ngIf="element.delLoader" [diameter]="24"
+                                    [mode]="'indeterminate'">
+                                </mat-progress-spinner>
+                            </td>
+                        </ng-container>
+
+                        <tr mat-header-row *matHeaderRowDef="dataColumns"></tr>
+                        <tr class="order-row h-16" mat-row *matRowDef="let row; columns: dataColumns;"></tr>
+                    </table>
+                    <mat-paginator #paginator
+                        class="border-b sm:border-t sm:border-b-0 z-10 bg-gray-50 dark:bg-transparent"
+                        [ngClass]="{'pointer-events-none': isLoading}" [length]="totalRecords" [pageIndex]="0"
+                        [pageSize]="20" (page)="getNextData($event)" [hidePageSize]="true">
+                    </mat-paginator>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>

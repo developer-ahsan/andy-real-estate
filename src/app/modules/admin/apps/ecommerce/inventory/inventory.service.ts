@@ -1314,7 +1314,7 @@ export class InventoryService {
     getProductsData(params): Observable<any[]> {
         return this._httpClient.get<any[]>(environment.products, {
             params: params
-        });
+        }).pipe(retry(3));
     };
     // Create Product Details
     createProductDetail(payload: Product) {

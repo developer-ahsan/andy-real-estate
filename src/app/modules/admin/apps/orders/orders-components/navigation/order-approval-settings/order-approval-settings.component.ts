@@ -13,8 +13,8 @@ import { AddAdjustment, DeleteAdjustment, UpdateArtApprovalSettings } from '../.
   styles: ['']
 })
 export class OrderApprovalSettingsComponent implements OnInit, OnDestroy {
-  @Input() isLoading: boolean;
-  @Input() selectedOrder: any;
+  isLoading: boolean;
+  selectedOrder: any;
   @Output() isLoadingChange = new EventEmitter<boolean>();
   private _unsubscribeAll: Subject<any> = new Subject<any>();
 
@@ -29,19 +29,19 @@ export class OrderApprovalSettingsComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.isLoading = true;
     this.getOrderDetail();
-    this.getApprovals('get');
   };
   getOrderDetail() {
     this._orderService.orderDetail$.pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
       this.orderDetail = res["data"][0];
+      this.getApprovals('get');
     });
   }
   getApprovals(type) {
     let params = {
       art_approval_settings_list: true,
-      store_id: this.selectedOrder.pk_storeID
+      store_id: this.orderDetail.fk_storeID
     }
-    this._orderService.getOrderCommonCall(params).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+    this._orderService.getOrder(params).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
       this.currentApprovals = res["data"];
       this.isLoading = false;
       this.isLoadingChange.emit(false);
@@ -56,7 +56,7 @@ export class OrderApprovalSettingsComponent implements OnInit, OnDestroy {
     this._changeDetectorRef.markForCheck();
     let params: UpdateArtApprovalSettings = {
       blnAdditionalApprovalOverride: this.orderDetail.blnAdditionalApprovalOverride,
-      order_id: this.selectedOrder.pk_orderID,
+      order_id: this.orderDetail.pk_orderID,
       update_art_approval: true
     }
     this._orderService.updateOrderCalls(params).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {

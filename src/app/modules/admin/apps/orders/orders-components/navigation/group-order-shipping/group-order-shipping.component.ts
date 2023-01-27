@@ -5,10 +5,10 @@ import { Subject } from 'rxjs';
 import { OrdersList } from 'app/modules/admin/apps/orders/orders-components/orders.types';
 
 @Component({
-  selector: 'app-orders-summary',
-  templateUrl: './orders-summary.component.html'
+  selector: 'app-group-order-shipping',
+  templateUrl: './group-order-shipping.component.html'
 })
-export class OrdersSummaryComponent implements OnInit {
+export class GroupOrdersShippingComponent implements OnInit {
   private _unsubscribeAll: Subject<any> = new Subject<any>();
 
   isLoading: boolean = false;

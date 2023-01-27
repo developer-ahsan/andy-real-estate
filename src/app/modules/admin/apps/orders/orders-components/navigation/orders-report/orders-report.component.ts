@@ -18,11 +18,11 @@ interface Transaction {
   encapsulation: ViewEncapsulation.None,
 })
 export class OrdersReportComponent implements OnInit {
-  @Input() isLoading: boolean;
   @Input() selectedOrder: any;
   @Output() isLoadingChange = new EventEmitter<boolean>();
   private _unsubscribeAll: Subject<any> = new Subject<any>();
 
+  isLoading: boolean = false;
   // selectedOrder: OrdersList = null;
   selectedOrderDetails = [];
   selectedOrderTotals: Object = null;
@@ -52,22 +52,16 @@ export class OrdersReportComponent implements OnInit {
   ) { }
 
   ngOnInit(): void {
-    let params = {
-      order_total: true,
-      order_id: this.selectedOrder.pk_orderID
-    }
-    this._orderService.getOrderCommonCall(params).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
-      this.orderTotal = res["data"][0];
-    })
+
     // this._orderService.orders$
     //   .pipe(takeUntil(this._unsubscribeAll))
     //   .subscribe((orders: OrdersList[]) => {
-    //     this.selectedOrder = orders["data"].find(x => x.pk_orderID == location.pathname.split('/')[3]);
-    //     this.htmlComment = this.selectedOrder["internalComments"];
+    //     this.orderDetail = orders["data"].find(x => x.pk_orderID == location.pathname.split('/')[3]);
+    //     this.htmlComment = this.orderDetail["internalComments"];
 
-    //     if (this.selectedOrder["fk_groupOrderID"]) {
+    //     if (this.orderDetail["fk_groupOrderID"]) {
     //       this.showReport = true;
-    //       this._orderService.getOrderParticipants(this.selectedOrder.pk_orderID)
+    //       this._orderService.getOrderParticipants(this.orderDetail.pk_orderID)
     //         .pipe(takeUntil(this._unsubscribeAll))
     //         .subscribe((orderParticipants) => {
     //           const firstOption = {
@@ -82,23 +76,30 @@ export class OrdersReportComponent implements OnInit {
     //         });
     //     }
 
-    //     this._orderService.getOrderDetails(this.selectedOrder.pk_orderID)
+    //     this._orderService.getOrderDetails(this.orderDetail.pk_orderID)
     //       .pipe(takeUntil(this._unsubscribeAll))
     //       .subscribe((orderDetails) => {
-    //         this.selectedOrderDetails = orderDetails["data"];
+    //         this.orderDetailDetails = orderDetails["data"];
     //         this._changeDetectorRef.markForCheck();
     //       });
     //   });
 
-    // this._orderService.getOrderTotals(this.selectedOrder.pk_orderID)
+    // this._orderService.getOrderTotals(this.orderDetail.pk_orderID)
     //   .pipe(takeUntil(this._unsubscribeAll))
     //   .subscribe((orderTotals) => {
-    //     this.selectedOrderTotals = orderTotals["data"][0];
+    //     this.orderDetailTotals = orderTotals["data"][0];
     //     this._changeDetectorRef.markForCheck();
     //   });
     this._orderService.orderDetail$.pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
-      if (res) {
+      if (res["data"].length) {
         this.orderDetail = res["data"][0];
+        let params = {
+          order_total: true,
+          order_id: this.orderDetail.pk_orderID
+        }
+        this._orderService.getOrder(params).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+          this.orderTotal = res["data"][0];
+        })
       }
     })
     // this._orderService.orderProducts$.pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
@@ -194,7 +195,6 @@ export class OrdersReportComponent implements OnInit {
 
 
       this.orderProducts = data;
-      console.log(this.orderProducts)
       this.getProductTotal();
       this.isLoading = false;
       this.isLoadingChange.emit(false);
@@ -260,7 +260,7 @@ export class OrdersReportComponent implements OnInit {
   }
 
   public exportHtmlToPDF() {
-    const { pk_orderID } = this.selectedOrder;
+    const { pk_orderID } = this.orderDetail;
     let data = document.getElementById('htmltable');
     const file_name = `OrderReport_${pk_orderID}.pdf`;
     html2canvas(data).then(canvas => {

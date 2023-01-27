@@ -1,56 +1,62 @@
-<ngx-skeleton-loader count="8" appearance="line" animation="pulse" *ngIf="isLoading || !orderDetail">
-</ngx-skeleton-loader>
-<div class="row my-3" *ngIf="!isLoading && orderDetail">
-    <div class="col-12">
-        <fuse-card class="rounded-2xl shadow bg-card flex flex-col lg:flex-row w-full">
-            <div class="p-6 sm:p-8 lg:p-10 w-full">
-                <div class="text-2xl font-bold">
-                    Send A Reorder Noticiation Email To Customer
+<div class="w-full">
+    <ngx-skeleton-loader count="8" appearance="line" animation="pulse" *ngIf="isLoading || !orderDetail">
+    </ngx-skeleton-loader>
+    <div class="row my-3" *ngIf="!isLoading && orderDetail">
+        <div class="col-12">
+            <fuse-card class="rounded-2xl shadow bg-card flex flex-col lg:flex-row w-full">
+                <div class="p-6 sm:p-8 lg:p-10 w-full">
+                    <div class="text-2xl font-bold">
+                        Send A Reorder Noticiation Email To Customer
+                    </div>
+                    <div class="row mt-5">
+                        <div class="col-12 text-secondary">
+                            The reorder email system runs automatically every night and sends reorder notification
+                            e-mails
+                            to customers who placed orders 3 months prior to today's date. You can manually send the
+                            reorder
+                            email using this tool.
+                        </div>
+                        <div class="col-12 py-2">
+                            <fuse-alert [appearance]="'soft'" [name]="'alertBox1'" [type]="'success'"
+                                *ngIf="orderDetail.paymentDate">
+                                This order was paid on {{orderDetail.paymentDate | date}}.
+                            </fuse-alert>
+                            <fuse-alert [appearance]="'soft'" [name]="'alertBox1'" [type]="'warning'"
+                                *ngIf="!orderDetail.paymentDate">
+                                This order has not yet been paid for.
+                            </fuse-alert>
+                        </div>
+                        <div class="col-12 py-2" *ngIf="emailData">
+                            <fuse-alert [appearance]="'soft'" [name]="'alertBox1'" [type]="'success'"
+                                *ngIf="!optedEmail">
+                                This user has not opted out of receiving email on this store.
+                            </fuse-alert>
+                            <fuse-alert [appearance]="'soft'" [name]="'alertBox1'" [type]="'success'"
+                                *ngIf="optedEmail">
+                                This user has opted out of receiving email on this store.
+                            </fuse-alert>
+                        </div>
+                        <div class="col-12 py-2" *ngIf="orderDetail.blnCancelled">
+                            <fuse-alert [appearance]="'soft'" [name]="'alertBox1'" [type]="'warning'">
+                                This order has been cancelled.
+                            </fuse-alert>
+                        </div>
+                        <div class="col-12 py-2" *ngIf="orderDetail.blnReorderIgnore">
+                            <fuse-alert [appearance]="'soft'" [name]="'alertBox1'" [type]="'warning'">
+                                This order has been flagged to be ignored by the reorder system.
+                            </fuse-alert>
+                        </div>
+                        <div class="col-12 text-right">
+                            <button [matTooltip]="'Send Reorder Email'" class="min-w-40" mat-stroked-button>
+                                <!-- <mat-progress-spinner *ngIf="createProductDetailLoader" [diameter]="24"
+                                                [mode]="'indeterminate'">
+                                            </mat-progress-spinner> -->
+                                <span>Send Email</span>
+                            </button>
+                        </div>
+                    </div>
                 </div>
-                <div class="row mt-5">
-                    <div class="col-12 text-secondary">
-                        The reorder email system runs automatically every night and sends reorder notification e-mails
-                        to customers who placed orders 3 months prior to today's date. You can manually send the reorder
-                        email using this tool.
-                    </div>
-                    <div class="col-12 py-2">
-                        <fuse-alert [appearance]="'soft'" [name]="'alertBox1'" [type]="'success'"
-                            *ngIf="orderDetail.paymentDate">
-                            This order was paid on {{orderDetail.paymentDate | date}}.
-                        </fuse-alert>
-                        <fuse-alert [appearance]="'soft'" [name]="'alertBox1'" [type]="'warning'"
-                            *ngIf="!orderDetail.paymentDate">
-                            This order has not yet been paid for.
-                        </fuse-alert>
-                    </div>
-                    <div class="col-12 py-2" *ngIf="emailData">
-                        <fuse-alert [appearance]="'soft'" [name]="'alertBox1'" [type]="'success'" *ngIf="!optedEmail">
-                            This user has not opted out of receiving email on this store.
-                        </fuse-alert>
-                        <fuse-alert [appearance]="'soft'" [name]="'alertBox1'" [type]="'success'" *ngIf="optedEmail">
-                            This user has opted out of receiving email on this store.
-                        </fuse-alert>
-                    </div>
-                    <div class="col-12 py-2" *ngIf="orderDetail.blnCancelled">
-                        <fuse-alert [appearance]="'soft'" [name]="'alertBox1'" [type]="'warning'">
-                            This order has been cancelled.
-                        </fuse-alert>
-                    </div>
-                    <div class="col-12 py-2" *ngIf="orderDetail.blnReorderIgnore">
-                        <fuse-alert [appearance]="'soft'" [name]="'alertBox1'" [type]="'warning'">
-                            This order has been flagged to be ignored by the reorder system.
-                        </fuse-alert>
-                    </div>
-                    <div class="col-12 text-right">
-                        <button [matTooltip]="'Send Reorder Email'" class="min-w-40" mat-stroked-button>
-                            <!-- <mat-progress-spinner *ngIf="createProductDetailLoader" [diameter]="24"
-                                            [mode]="'indeterminate'">
-                                        </mat-progress-spinner> -->
-                            <span>Send Email</span>
-                        </button>
-                    </div>
-                </div>
-            </div>
-        </fuse-card>
+            </fuse-card>
+        </div>
     </div>
 </div>

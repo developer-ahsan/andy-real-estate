@@ -37,7 +37,6 @@ export class OrderFlagsComponent implements OnInit, OnDestroy {
     })
     this._orderService.orderDetail$.pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
       this.isLoading = false;
-      this.isLoadingChange.emit(false);
       this.orderDetail = res["data"][0];
       this.flagForm.patchValue(this.orderDetail);
       this._changeDetectorRef.markForCheck();

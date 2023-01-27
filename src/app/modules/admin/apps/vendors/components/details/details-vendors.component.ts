@@ -1,6 +1,6 @@
 import { Component, OnInit, ChangeDetectorRef, OnDestroy, ViewChild, ElementRef, ChangeDetectionStrategy, ViewEncapsulation } from '@angular/core';
 import { FormControl } from '@angular/forms';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute, NavigationEnd, Router } from '@angular/router';
 import { FuseMediaWatcherService } from '@fuse/services/media-watcher';
 import { Subject } from 'rxjs';
 import { debounceTime, distinctUntilChanged, filter, finalize, switchMap, takeUntil, tap } from 'rxjs/operators';
@@ -82,8 +82,15 @@ export class VendorsDetailsComponent implements OnInit, OnDestroy {
     ).subscribe((data: any) => {
       this.allSuppliers = data['data'];
     });
+    this._router.events.subscribe((event) => {
+      if (event instanceof NavigationEnd) {
+        this.selectedScreeen = this.route.children[0].snapshot.data.title;
+        this.selectedRoute = this.route.children[0].snapshot.data.url;
+      }
+    })
     this.selectedScreeen = this.route.children[0].snapshot.data.title;
     this.selectedRoute = this.route.children[0].snapshot.data.url;
+
     this.isLoading = false;
     this.sideDrawer();
   }

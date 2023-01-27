@@ -1,22 +1,24 @@
-<ngx-skeleton-loader count="8" appearance="line" animation="pulse" *ngIf="isLoading">
-</ngx-skeleton-loader>
-<div class="row my-3" *ngIf="!isLoading">
-    <div class="col-12">
-        <fuse-card class="rounded-2xl shadow bg-card flex flex-col lg:flex-row w-full">
-            <div class="p-4 w-full">
-                <div class="text-2xl font-bold">
-                    Order Original Report
+<div class="w-full">
+    <ngx-skeleton-loader count="8" appearance="line" animation="pulse" *ngIf="isLoading">
+    </ngx-skeleton-loader>
+    <div class="row my-3" *ngIf="!isLoading">
+        <div class="col-12">
+            <fuse-card class="rounded-2xl shadow bg-card flex flex-col lg:flex-row w-full">
+                <div class="p-4 w-full">
+                    <div class="text-2xl font-bold">
+                        Order Original Report
+                    </div>
+                    <div *ngIf="url">
+                        <!-- <note class="font-bold text-secondary">An original order report does not exist for this order.
+                        </note> -->
+                        <!-- <object type="text/html" class="w-full"
+                            data="https://assets.consolidus.com/globalAssets/Orders/originalOrderReport/{{url}}.html"
+                            style="min-height: 955px;">
+                        </object> -->
+                    </div>
+                    <iframe class="w-full " style="height: 100vh" frameborder="0" [src]="urlSafe"></iframe>
                 </div>
-                <div *ngIf="url">
-                    <!-- <note class="font-bold text-secondary">An original order report does not exist for this order.
-                    </note> -->
-                    <!-- <object type="text/html" class="w-full"
-                        data="https://assets.consolidus.com/globalAssets/Orders/originalOrderReport/{{url}}.html"
-                        style="min-height: 955px;">
-                    </object> -->
-                </div>
-                <iframe class="w-full " style="height: 100vh" frameborder="0" [src]="urlSafe"></iframe>
-            </div>
-        </fuse-card>
+            </fuse-card>
+        </div>
     </div>
 </div>

@@ -325,6 +325,7 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
         productNumber: ['', Validators.required],
         caseHeight: [''],
         caseWidth: [''],
+        productDimensions: [''],
         caseLength: [''],
         productHeight: [''],
         productWidth: [''],
@@ -2266,7 +2267,7 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
         // Review Screen
         if (selectedIndex === 7 || selectedIndex == 8) {
             const finalForm = this.secondFormGroup.getRawValue();
-            const { supplierLink, mainDescription, miniDescription, flatRate, weight, doChargesApply, unitsInWeight, caseWidth, caseLength, caseHeight, overPackageCharge, keywords, productNumber, productName, msrp, internalComments } = finalForm;
+            const { supplierLink, mainDescription, miniDescription, flatRate, weight, doChargesApply, unitsInWeight, caseWidth, caseLength, caseHeight, overPackageCharge, keywords, productNumber, productName, msrp, internalComments, productDimensions } = finalForm;
 
             const { firstQuantity, secondQuantity, thirdQuantity, fourthQuantity, fifthQuantity, sixthQuantity, standardCostOne, standardCostTwo, standardCostThree, standardCostFour, standardCostFive, standardCostSix } = finalForm;
             const { quantityOne, quantityTwo, quantityThree, quantityFour, quantityFive, quantitySix, productWidth, productHeight, productLength, allowGroupRun } = finalForm;
@@ -3944,7 +3945,7 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
 
         const { radio } = firstFormGroup;
 
-        const { supplierLink, mainDescription, miniDescription, flatRate, weight, doChargesApply, unitsInWeight, caseWidth, caseLength, caseHeight, overPackageCharge, keywords, productNumber, productName, msrp, internalComments, unitsInShippingPackage } = finalForm;
+        const { supplierLink, mainDescription, miniDescription, flatRate, weight, doChargesApply, unitsInWeight, caseWidth, caseLength, caseHeight, overPackageCharge, keywords, productNumber, productName, msrp, internalComments, unitsInShippingPackage, productDimensions } = finalForm;
 
         const { firstQuantity, secondQuantity, thirdQuantity, fourthQuantity, fifthQuantity, sixthQuantity, standardCostOne, standardCostTwo, standardCostThree, standardCostFour, standardCostFive, standardCostSix } = finalForm;
         const { quantityOne, quantityTwo, quantityThree, quantityFour, quantityFive, quantitySix, productWidth, productHeight, productLength, allowGroupRun } = finalForm;
@@ -3987,11 +3988,6 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
         if (this.productId) {
             productId = this.productId;
         }
-        const productDimensions = [
-            productWidth ? productWidth : 0,
-            productHeight ? productHeight : 0,
-            productLength ? productLength : 0
-        ];
 
 
         let keywordsString = null;
@@ -4030,7 +4026,7 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
             units_in_shipping_package: unitsInShippingPackage ? unitsInShippingPackage : 0,
             bln_include_shipping: doChargesApply == "Yes" ? 1 : 0,
             fob_locations: this.checkedFOBLocations,
-            dimensions: productDimensions.toString(),
+            dimensions: productDimensions,
             weight: weight || null,
             weight_in_units: Number(unitsInWeight) || null,
             over_pack_charge: overPackageCharge || null,

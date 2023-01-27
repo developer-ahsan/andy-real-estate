@@ -2220,34 +2220,10 @@
                                                     <mat-error>Mini description is required</mat-error>
                                                 </mat-form-field>
                                             </div>
-                                            <div class="col-12 mb-2" *ngIf="supplierType != 'Apparel Item'">
-                                                <div class="flex items-center">
-                                                    <div class="font-medium text-secondary">PRODUCT DIMENSIONS</div>
-                                                    <div class="flex-auto ml-2 border-b-2"></div>
-                                                </div>
-                                            </div>
-                                            <div class="col-lg-4 col-12" *ngIf="supplierType != 'Apparel Item'">
+                                            <div class="col-12">
                                                 <mat-form-field appearance="fill" class="w-full">
-                                                    <mat-label>Product Width</mat-label>
-                                                    <input matInput type="number"
-                                                        (onmousewheel)="$event.preventDefault()"
-                                                        formControlName="productWidth">
-                                                </mat-form-field>
-                                            </div>
-                                            <div class="col-lg-4 col-12" *ngIf="supplierType != 'Apparel Item'">
-                                                <mat-form-field appearance="fill" class="w-full">
-                                                    <mat-label>Product Height</mat-label>
-                                                    <input matInput type="number"
-                                                        (onmousewheel)="$event.preventDefault()"
-                                                        formControlName="productHeight">
-                                                </mat-form-field>
-                                            </div>
-                                            <div class="col-lg-4 col-12" *ngIf="supplierType != 'Apparel Item'">
-                                                <mat-form-field appearance="fill" class="w-full">
-                                                    <mat-label>Product Length</mat-label>
-                                                    <input matInput type="number"
-                                                        (onmousewheel)="$event.preventDefault()"
-                                                        formControlName="productLength">
+                                                    <mat-label>Product Dimensions</mat-label>
+                                                    <input matInput type="text" formControlName="productDimensions">
                                                 </mat-form-field>
                                             </div>
 

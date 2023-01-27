@@ -25,7 +25,6 @@ import { MatListModule } from '@angular/material/list';
 import { NgxSkeletonLoaderModule } from 'ngx-skeleton-loader';
 import { SharedModule } from 'app/shared/shared.module';
 import { OrdersComponent } from 'app/modules/admin/apps/orders/orders-components/orders.component';
-import { OrdersListComponent } from 'app/modules/admin/apps/orders/orders-components/list/orders.component';
 import { ordersRoutes } from 'app/modules/admin/apps/orders/orders.routing';
 import { OrdersDetailsComponent } from 'app/modules/admin/apps/orders/orders-components/details/details.orders.component';
 import { OrdersSummaryComponent } from 'app/modules/admin/apps/orders/orders-components/navigation/orders-summary/orders-summary.component';
@@ -63,11 +62,12 @@ import { FuseCardModule } from '@fuse/components/card';
 import { OrderModifyComponent } from './orders-components/navigation/order-modify/order-modify.component';
 import { OrderApprovalSettingsComponent } from './orders-components/navigation/order-approval-settings/order-approval-settings.component';
 import { OrderProccurementComponent } from './orders-components/navigation/order-procurement-data/order-procurement-data.component';
+import { GroupOrdersDetailsComponent } from './orders-components/navigation/group-order-details/group-order-details.component';
+import { GroupOrdersShippingComponent } from './orders-components/navigation/group-order-shipping/group-order-shipping.component';
 
 @NgModule({
     declarations: [
         OrdersComponent,
-        OrdersListComponent,
         OrdersDetailsComponent,
         OrdersSummaryComponent,
         OrdersEntitiesListComponent,
@@ -94,6 +94,8 @@ import { OrderProccurementComponent } from './orders-components/navigation/order
         OrderModifyComponent,
         OrderApprovalSettingsComponent,
         OrderProccurementComponent,
+        GroupOrdersDetailsComponent,
+        GroupOrdersShippingComponent,
         SafePipe
     ],
     imports: [

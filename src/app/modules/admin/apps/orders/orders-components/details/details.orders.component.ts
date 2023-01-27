@@ -1,10 +1,9 @@
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnInit, ViewChild, ViewEncapsulation } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, OnDestroy, OnInit, ViewChild, ViewEncapsulation } from '@angular/core';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { fuseAnimations } from '@fuse/animations';
-import { OrdersList, OrdersPagination } from 'app/modules/admin/apps/orders/orders-components/orders.types';
 import { OrdersService } from 'app/modules/admin/apps/orders/orders-components/orders.service';
-import { Router } from '@angular/router';
+import { ActivatedRoute, NavigationEnd, Router } from '@angular/router';
 import { FuseMediaWatcherService } from '@fuse/services/media-watcher';
 
 @Component({
@@ -15,16 +14,15 @@ import { FuseMediaWatcherService } from '@fuse/services/media-watcher';
     animations: fuseAnimations
 })
 export class OrdersDetailsComponent implements OnInit, OnDestroy {
+    @ViewChild('topScrollAnchor') topScroll: ElementRef;
 
     isLoading: boolean = false;
-    pagination: OrdersPagination;
-    ordersCount: number = 0;
-    selectedOrder: OrdersList = null;
     selectedOrderDetail: any = null;
     private _unsubscribeAll: Subject<any> = new Subject<any>();
     routes = [];
-    selectedIndex: number = 0;
-    selectedScreeen = 'Summary';
+    selectedScreeen = '';
+    selectedRoute = '';
+
     not_available: string = 'N/A';
 
     // Sidebar stuff
@@ -38,6 +36,7 @@ export class OrdersDetailsComponent implements OnInit, OnDestroy {
     constructor(
         private _changeDetectorRef: ChangeDetectorRef,
         private _orderService: OrdersService,
+        private route: ActivatedRoute,
         private _router: Router,
         private _fuseMediaWatcherService: FuseMediaWatcherService,
     ) {
@@ -51,77 +50,22 @@ export class OrdersDetailsComponent implements OnInit, OnDestroy {
      * On init
      */
     doSomething() {
-        //do stuff
         this.panel.close();
     }
-    getOrderDetail(orderId) {
-        let params = {
-            main: true,
-            order_id: orderId
-        }
-        this._orderService.getOrderMainDetail(params).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
-            this.selectedOrderDetail = res["data"][0];
-            const { blnAdditionalArtApproval, blnProcurement, paymentDate } = this.selectedOrderDetail;
-            if (blnAdditionalArtApproval) {
-                this._orderService.navigationLabels[2].children.push({ id: 10, title: 'Art Approval Settings', icon: 'mat_outline:settings' });
-            }
-            if (blnProcurement) {
-                this._orderService.navigationLabels[2].children.push({ id: 10, title: 'Procurement Data', icon: 'heroicons_outline:database' });
-            }
-            if (paymentDate) {
-                this._orderService.navigationLabels[3].children.push({
-                    id: 10, title: 'Send Receipt Email', icon: 'mat_outline:email'
-                });
-            }
-            this.routes = this._orderService.navigationLabels;
 
-            this.isLoading = false;
-            this._changeDetectorRef.markForCheck();
-        }, err => {
-            this.isLoading = false;
-            this._changeDetectorRef.markForCheck();
-        })
-    }
-    getOrderStatus(orderId) {
-        let params = {
-            order_status: true,
-            order_id: orderId
-        }
-        this._orderService.getOrderStatus(params).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
-            this.selectedOrder['OrderStatus'] = res.resultStatus;
-            this.isLoading = false;
-            this._changeDetectorRef.markForCheck();
-        }, err => {
-            this.isLoading = false;
-            this._changeDetectorRef.markForCheck();
-        })
-    }
     ngOnInit(): void {
-        this.isLoading = true;
+        // Initialize Screen
+        this._router.events.subscribe((event) => {
+            if (event instanceof NavigationEnd) {
+                this.selectedScreeen = this.route.children[0].snapshot.data.title;
+                this.selectedRoute = this.route.children[0].snapshot.data.url;
+            }
+        })
+        this.selectedScreeen = this.route.children[0].snapshot.data.title;
+        this.selectedRoute = this.route.children[0].snapshot.data.url;
 
-        const orderId = location.pathname.split('/')[3];
-
-        this._orderService.getOrderDetails(orderId)
-            .pipe(takeUntil(this._unsubscribeAll))
-            .subscribe((orders) => {
-                this.selectedOrder = orders["data"][0];
-                if (!this.selectedOrder.blnCancelled) {
-                    this.getOrderStatus(orderId);
-                } else {
-                    this.selectedOrder['OrderStatus'] = false;
-                    this._orderService.OrderCancelled = true;
-                }
-                this.getOrderDetail(orderId);
-
-                // Mark for check
-                this._changeDetectorRef.markForCheck();
-            }, err => {
-                this.isLoading = false;
-                this._changeDetectorRef.markForCheck();
-            });
-
-
-        // this.drawerMode = "side";
+        // get Order Details
+        this.getOrderDetails();
 
         // Subscribe to media changes
         this._fuseMediaWatcherService.onMediaChange$
@@ -142,7 +86,46 @@ export class OrdersDetailsComponent implements OnInit, OnDestroy {
                 this._changeDetectorRef.markForCheck();
             });
     }
-
+    getOrderDetails() {
+        this._orderService.orderDetail$.pipe(takeUntil(this._unsubscribeAll)).subscribe(order => {
+            if (order["data"].length) {
+                this.selectedOrderDetail = order["data"][0];
+                if (this.selectedOrderDetail.blnCancelled) {
+                    this._orderService.OrderCancelled = true;
+                } else {
+                    this.getOrderStatus();
+                }
+                const { blnAdditionalArtApproval, blnProcurement, paymentDate, fk_groupOrderID } = this.selectedOrderDetail;
+                if (blnAdditionalArtApproval) {
+                    this._orderService.navigationLabels[2].children.push({ id: 10, title: 'Art Approval Settings', icon: 'mat_outline:settings', route: 'art-approval-settings' });
+                }
+                if (blnProcurement) {
+                    this._orderService.navigationLabels[2].children.push({ id: 10, title: 'Procurement Data', icon: 'heroicons_outline:database', route: 'procurement-data' });
+                }
+                if (paymentDate) {
+                    this._orderService.navigationLabels[3].children.push({
+                        id: 10, title: 'Send Receipt Email', icon: 'mat_outline:email', route: 'reciept-email'
+                    });
+                }
+                if (fk_groupOrderID) {
+                    this._orderService.navigationLabels[2].children.push(
+                        { id: 10, title: 'Group Order Details', icon: 'heroicons_outline:document-report', route: 'group-order-details' },
+                        { id: 10, title: 'Group Order Shipping', icon: 'heroicons_outline:document-report', route: 'group-order-shipping' }
+                    );
+                }
+                this.routes = this._orderService.navigationLabels;
+            } else {
+                this._orderService.snackBar('Please check order number');
+            }
+        })
+    }
+    getOrderStatus() {
+        this._orderService.orderProducts$.pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+            this.selectedOrderDetail['OrderStatus'] = res["resultStatus"];
+            this.isLoading = false;
+            this._changeDetectorRef.markForCheck();
+        });
+    }
     /**
      * On destroy
      */
@@ -155,14 +138,19 @@ export class OrdersDetailsComponent implements OnInit, OnDestroy {
     // -----------------------------------------------------------------------------------------------------
     // @ Public methods
     // -----------------------------------------------------------------------------------------------------
-    clicked(title) {
-        this.selectedScreeen = title;
-        if (this.selectedScreeen !== 'Entities List') {
-            this.isLoading = true;
-        }
-        if (this.selectedScreeen == 'Customer Info') {
-            let route = '/apps/ecommerce/customers/' + this.selectedOrderDetail.fk_storeUserID;
-            this._router.navigate([route]);
+    clicked(item) {
+        if (item.route != this.selectedRoute) {
+            if (item.title == 'Customer Info') {
+                let route = '/apps/ecommerce/customers/' + this.selectedOrderDetail.fk_storeUserID;
+                this._router.navigate([route]);
+            } else {
+                this.selectedScreeen = item.title;
+                this.selectedRoute = item.route;
+                setTimeout(() => {
+                    this.topScroll.nativeElement.scrollIntoView({ behavior: 'smooth' });
+                }, 100);
+                this._router.navigate([item.route], { relativeTo: this.route });
+            }
         }
     }
 

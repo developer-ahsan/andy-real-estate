@@ -9,8 +9,8 @@ import { OrdersService } from '../../orders.service';
   styles: ['::-webkit-scrollbar {width: 2px !important}']
 })
 export class OrderSurveyComponent implements OnInit, OnDestroy {
-  @Input() isLoading: boolean;
-  @Input() selectedOrder: any;
+  isLoading: boolean = true;
+  selectedOrder: any;
   @Output() isLoadingChange = new EventEmitter<boolean>();
   private _unsubscribeAll: Subject<any> = new Subject<any>();
 
@@ -28,15 +28,15 @@ export class OrderSurveyComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     this._orderService.orderDetail$.pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
       this.orderDetail = res["data"][0];
+      this.getSurveys();
     })
     this.isLoading = true;
-    this.getSurveys();
   };
   getSurveys() {
     let params = {
       order_surveys: true,
-      order_id: this.selectedOrder.pk_orderID,
-      store_id: this.selectedOrder.pk_storeID
+      order_id: this.orderDetail.pk_orderID,
+      store_id: this.orderDetail.fk_storeID
     }
     this._orderService.getOrderCommonCall(params).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
       this.surveys = res["data"];
@@ -55,7 +55,7 @@ export class OrderSurveyComponent implements OnInit, OnDestroy {
   getSurveysDetail(surveId) {
     let params = {
       surveys_qa: true,
-      order_id: this.selectedOrder.pk_orderID,
+      order_id: this.orderDetail.pk_orderID,
       survey_id: surveId
     }
     this.isSurveyLoader = true;

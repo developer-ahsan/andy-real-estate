@@ -11,7 +11,7 @@ import { OrdersService } from '../../orders.service';
   styles: ['::-webkit-scrollbar {width: 2px !important}']
 })
 export class OrderPaymentEmailComponent implements OnInit, OnDestroy {
-  @Input() isLoading: boolean;
+  isLoading: boolean;
   @Input() selectedOrder: boolean;
   @Output() isLoadingChange = new EventEmitter<boolean>();
   private _unsubscribeAll: Subject<any> = new Subject<any>();
@@ -27,9 +27,9 @@ export class OrderPaymentEmailComponent implements OnInit, OnDestroy {
   ) { }
 
   ngOnInit(): void {
+    this.isLoading = true;
     this._orderService.orderDetail$.pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
       this.orderDetail = res["data"][0];
-      console.log(res["data"])
     })
     setTimeout(() => {
       this.isLoading = true;

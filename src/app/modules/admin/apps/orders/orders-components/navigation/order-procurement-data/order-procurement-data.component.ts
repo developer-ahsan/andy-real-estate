@@ -11,8 +11,8 @@ import { UpdateProcurementData } from '../../orders.types';
   styles: ['::-webkit-scrollbar {width: 2px !important}']
 })
 export class OrderProccurementComponent implements OnInit, OnDestroy {
-  @Input() isLoading: boolean;
-  @Input() selectedOrder: any;
+  isLoading: boolean = false;
+  selectedOrder: any;
   @Output() isLoadingChange = new EventEmitter<boolean>();
   private _unsubscribeAll: Subject<any> = new Subject<any>();
 
@@ -25,15 +25,16 @@ export class OrderProccurementComponent implements OnInit, OnDestroy {
   ) { }
 
   ngOnInit(): void {
-    this.initialize();
+    this.isLoading = true;
     this._orderService.orderDetail$.pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
       this.orderDetail = res["data"][0];
+      this.initialize();
+      this.getProcurement();
     })
-    this.getProcurement();
   };
   initialize() {
     this.updateProcurementForm = new FormGroup({
-      order_id: new FormControl(this.selectedOrder.pk_orderID),
+      order_id: new FormControl(this.orderDetail.pk_orderID),
       unit: new FormControl(''),
       division: new FormControl(''),
       organization: new FormControl(''),
@@ -58,7 +59,7 @@ export class OrderProccurementComponent implements OnInit, OnDestroy {
   getProcurement() {
     let params = {
       procurement_data_list: true,
-      order_id: this.selectedOrder.pk_orderID
+      order_id: this.orderDetail.pk_orderID
     }
     this._orderService.getOrderCommonCall(params).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
       if (res["data"].length > 0) {

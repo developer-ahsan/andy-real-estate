@@ -10,11 +10,11 @@ import { OrdersService } from '../../orders.service';
   styles: ['::-webkit-scrollbar {width: 2px !important}']
 })
 export class OriginalOrderComponent implements OnInit, OnDestroy {
-  @Input() isLoading: boolean;
-  @Input() selectedOrder: any;
   @Output() isLoadingChange = new EventEmitter<boolean>();
   private _unsubscribeAll: Subject<any> = new Subject<any>();
 
+  isLoading: boolean = false;
+  selectedOrder: any;
   // url: any = null;
   url: string = '';
   urlSafe: SafeResourceUrl;
@@ -25,13 +25,23 @@ export class OriginalOrderComponent implements OnInit, OnDestroy {
   ) { }
 
   ngOnInit(): void {
-    this.url = `https://assets.consolidus.com/globalAssets/Orders/originalOrderReport/${this.selectedOrder.pk_orderID}.html`;
-    this.urlSafe = this.sanitizer.bypassSecurityTrustResourceUrl(this.url);
-    setTimeout(() => {
-      this.isLoading = true;
-      this.isLoadingChange.emit(false);
-    }, 100);
+    this.getOrderDetail();
   };
+  getOrderDetail() {
+    this._orderService.orderDetail$.pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+      if (res) {
+        if (res["data"].length) {
+          this.selectedOrder = res["data"][0];
+          this.url = `https://assets.consolidus.com/globalAssets/Orders/originalOrderReport/${this.selectedOrder.pk_orderID}.html`;
+          this.urlSafe = this.sanitizer.bypassSecurityTrustResourceUrl(this.url);
+          setTimeout(() => {
+            this.isLoading = true;
+            this.isLoadingChange.emit(false);
+          }, 100);
+        }
+      }
+    })
+  }
   /**
      * On destroy
      */

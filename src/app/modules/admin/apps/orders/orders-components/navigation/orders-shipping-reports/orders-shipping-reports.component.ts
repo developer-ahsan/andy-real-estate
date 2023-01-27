@@ -10,11 +10,11 @@ import { takeUntil } from 'rxjs/operators';
   templateUrl: './orders-shipping-reports.component.html'
 })
 export class OrdersShippingReportsComponent implements OnInit {
-  @Input() isLoading: boolean;
-  @Input() selectedOrder: any;
   @Output() isLoadingChange = new EventEmitter<boolean>();
   private _unsubscribeAll: Subject<any> = new Subject<any>();
 
+  isLoading: boolean = false;
+  selectedOrder: any;
   orderParticipants = [];
   orderDetail: any;
   orderProducts = [];
@@ -28,12 +28,13 @@ export class OrdersShippingReportsComponent implements OnInit {
   ) { }
 
   ngOnInit(): void {
+    this.isLoading = true;
     this._orderService.orderDetail$.pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
       if (res) {
         this.orderDetail = res["data"][0];
+        this.getOrderProducts();
       }
     })
-    this.getOrderProducts();
   }
   getOrderProducts() {
     this._orderService.orderProducts$.pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {

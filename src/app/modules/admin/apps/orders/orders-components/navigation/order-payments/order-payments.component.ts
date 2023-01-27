@@ -14,8 +14,8 @@ interface Transaction {
   templateUrl: './order-payments.component.html'
 })
 export class OrderPaymentComponent implements OnInit {
-  @Input() isLoading: boolean;
-  @Input() selectedOrder: any;
+  isLoading: boolean = false;
+  selectedOrder: any;
   @Output() isLoadingChange = new EventEmitter<boolean>();
   private _unsubscribeAll: Subject<any> = new Subject<any>();
   orderDetail: any;
@@ -28,14 +28,11 @@ export class OrderPaymentComponent implements OnInit {
 
   ngOnInit(): void {
     this.getOrderDetail();
-    setTimeout(() => {
-      this.isLoading = false;
-      this.isLoadingChange.emit(false)
-    }, 10);
   }
   getOrderDetail() {
     this._orderService.orderDetail$.pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
       this.orderDetail = res["data"][0];
+      this.isLoading = false;
     });
   }
 }

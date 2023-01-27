@@ -12,10 +12,11 @@ import { OrdersService } from '../../orders.service';
   styles: ['::-webkit-scrollbar {width: 2px !important}']
 })
 export class OrderArtWorkComponent implements OnInit, OnDestroy {
-  @Input() isLoading: boolean;
-  @Input() selectedOrder: any;
   @Output() isLoadingChange = new EventEmitter<boolean>();
   private _unsubscribeAll: Subject<any> = new Subject<any>();
+
+  isLoading: boolean = false;
+  selectedOrder: any;
 
   orderParticipants = [];
   orderDetail: any;
@@ -31,12 +32,14 @@ export class OrderArtWorkComponent implements OnInit, OnDestroy {
   ) { }
 
   ngOnInit(): void {
+    this.isLoading = true;
+    this._changeDetectorRef.markForCheck();
     this._orderService.orderDetail$.pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
-      if (res) {
+      if (res["data"].length) {
         this.orderDetail = res["data"][0];
+        this.getOrderProducts();
       }
     })
-    this.getOrderProducts();
   }
   getOrderProducts() {
     this._orderService.orderProducts$.pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
@@ -47,7 +50,7 @@ export class OrderArtWorkComponent implements OnInit, OnDestroy {
           this.getLineProducts(value.toString());
         }
       });
-      // this.orderProducts = res["data"];
+      this.orderProducts = res["data"];
     })
   }
   getLineProducts(value) {
@@ -132,7 +135,7 @@ export class OrderArtWorkComponent implements OnInit, OnDestroy {
       order_line_id: orders,
       imprint_id: value
     }
-    this._orderService.getOrderCommonCall(params).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+    this._orderService.getOrder(params).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
       res["data"].forEach(element => {
         data.forEach(item => {
           const index = item.imprints.findIndex(imprint => element.fk_imprintID == imprint.pk_imprintID);

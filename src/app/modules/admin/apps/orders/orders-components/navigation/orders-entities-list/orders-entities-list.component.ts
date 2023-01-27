@@ -9,11 +9,11 @@ import { OrdersList } from 'app/modules/admin/apps/orders/orders-components/orde
   templateUrl: './orders-entities-list.component.html'
 })
 export class OrdersEntitiesListComponent implements OnInit {
-  @Input() isLoading: boolean;
-  @Input() selectedOrder: boolean;
   @Output() isLoadingChange = new EventEmitter<boolean>();
   private _unsubscribeAll: Subject<any> = new Subject<any>();
 
+  selectedOrder: any;
+  isLoading: boolean = false;
   not_available: string = 'N/A';
   productsList = [];
   supplierList = [];
@@ -24,6 +24,20 @@ export class OrdersEntitiesListComponent implements OnInit {
 
   ngOnInit(): void {
     this.isLoading = true;
+    this.getOrderDetail();
+    // Get the order
+  }
+  getOrderDetail() {
+    this._orderService.orderDetail$.pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+      if (res) {
+        if (res["data"].length) {
+          this.selectedOrder = res["data"][0];
+          this.getOrderProducts();
+        }
+      }
+    })
+  }
+  getOrderProducts() {
     this._orderService.orderLineProducts$.pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
       if (!res) {
         this._orderService.orderProducts$.pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
@@ -51,7 +65,6 @@ export class OrdersEntitiesListComponent implements OnInit {
         this._changeDetectorRef.markForCheck();
       }
     })
-    // Get the order
   }
   getLineProducts(value) {
     let params = {
@@ -59,14 +72,6 @@ export class OrdersEntitiesListComponent implements OnInit {
       order_line_id: value
     }
     this._orderService.getOrderLineProducts(params).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
-
-      // res["data"].forEach(element => {
-      //   this.productsList.push({ name: element.productName, id: element.pk_productID });
-      //   const index = this.supplierList.findIndex(item => item.id == element.supplier_id);
-      //   if (index < 0) {
-      //     this.supplierList.push({ name: element.supplier_name, id: element.supplier_id, link: element.supplierLink });
-      //   }
-      // });
       this.isLoading = false;
       this.isLoadingChange.emit(false);
       this._changeDetectorRef.markForCheck();

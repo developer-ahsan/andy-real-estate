@@ -9,14 +9,15 @@ import { OrdersService } from '../../orders.service';
   styles: [".mat-paginator {border-radius: 16px !important}"]
 })
 export class FlpsComponent implements OnInit, OnDestroy {
-  @Input() isLoading: boolean;
   @Output() isLoadingChange = new EventEmitter<boolean>();
   private _unsubscribeAll: Subject<any> = new Subject<any>();
 
+  isLoading: boolean = false;
   dataSource = [];
   displayedColumns: string[] = ['id', 'name', 'status'];
   totalUsers = 0;
   page = 0;
+  orderDetail: any;
   constructor(
     private _changeDetectorRef: ChangeDetectorRef,
     private _orderService: OrdersService
@@ -24,23 +25,31 @@ export class FlpsComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.isLoading = true;
-    this.getFLPS(1);
+    this.getOrderDetail();
   };
+  getOrderDetail() {
+    this._orderService.orderDetail$.pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+      if (res) {
+        if (res["data"].length) {
+          this.orderDetail = res["data"][0];
+          this.getFLPS(1);
+        }
+      }
+    })
+  }
   getFLPS(page) {
     let params = {
       flps_user: true,
-      order_id: 56159,
+      order_id: this.orderDetail.pk_orderID,
       page: page
     }
-    this._orderService.getOrderCommonCall(params).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+    this._orderService.getOrder(params).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
       this.dataSource = res["data"];
       this.totalUsers = res["totalRecords"];
       this.isLoading = false;
-      this.isLoadingChange.emit(false);
       this._changeDetectorRef.markForCheck();
     }, err => {
       this.isLoading = false;
-      this.isLoadingChange.emit(false);
       this._changeDetectorRef.markForCheck();
     });
   }

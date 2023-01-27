@@ -11,13 +11,13 @@ import { Subject } from 'rxjs';
   templateUrl: './invoices.component.html'
 })
 export class InvoicesComponent implements OnInit {
-  @Input() isLoading: boolean;
   @Input() selectedOrder: any;
   @Output() isLoadingChange = new EventEmitter<boolean>();
   private _unsubscribeAll: Subject<any> = new Subject<any>();
 
+  isLoading: boolean = false;
   // selectedOrder: OrdersList = null;
-  selectedOrderDetails = [];
+  selectedOrderDetails: any;
   showReport = false;
   showForm = false;
   orderParticipants = [];
@@ -29,38 +29,33 @@ export class InvoicesComponent implements OnInit {
   ) { }
 
   ngOnInit(): void {
-    this._orderService.orders$
-      .pipe(takeUntil(this._unsubscribeAll))
-      .subscribe((orders: OrdersList[]) => {
-        // this.selectedOrder = orders["data"].find(x => x.pk_orderID == location.pathname.split('/')[3]);
-
-        if (this.selectedOrder["fk_groupOrderID"]) {
-          this.showReport = true;
-          this._orderService.getOrderParticipants(this.selectedOrder.pk_orderID)
+    this.isLoading = true;
+    this.getOrderDetail();
+  }
+  getOrderDetail() {
+    this._orderService.orderDetail$.pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+      if (res) {
+        if (res["data"].length) {
+          this.selectedOrderDetails = res["data"][0];
+          if (this.selectedOrderDetails["fk_groupOrderID"]) {
+            this.showReport = true;
+            this._orderService.getOrderParticipants(this.selectedOrderDetails.pk_orderID)
+              .pipe(takeUntil(this._unsubscribeAll))
+              .subscribe((orderParticipants) => {
+                this.orderParticipants = orderParticipants["data"];
+                this._changeDetectorRef.markForCheck();
+              });
+          }
+          this._orderService.getOrderTotals(this.selectedOrderDetails.pk_orderID)
             .pipe(takeUntil(this._unsubscribeAll))
-            .subscribe((orderParticipants) => {
-              this.orderParticipants = orderParticipants["data"];
-
+            .subscribe((orderTotals) => {
+              this.isLoading = false;
+              this.selectedOrderTotals = orderTotals["data"][0];
               this._changeDetectorRef.markForCheck();
             });
         }
-
-        this._orderService.getOrderDetails(this.selectedOrder.pk_orderID)
-          .pipe(takeUntil(this._unsubscribeAll))
-          .subscribe((orderDetails) => {
-            this.selectedOrderDetails = orderDetails["data"];
-            this._changeDetectorRef.markForCheck();
-          });
-      });
-
-    this._orderService.getOrderTotals(this.selectedOrder.pk_orderID)
-      .pipe(takeUntil(this._unsubscribeAll))
-      .subscribe((orderTotals) => {
-        this.selectedOrderTotals = orderTotals["data"][0];
-        this._changeDetectorRef.markForCheck();
-      });
-
-    this.isLoadingChange.emit(false);
+      }
+    })
   }
 
   orderSelection(order) {

@@ -1,4 +1,4 @@
-<div>
+<div class="w-full">
     <ngx-skeleton-loader count="8" appearance="line" animation="pulse" *ngIf="isLoading">
     </ngx-skeleton-loader>
     <div class="row" *ngIf="!isLoading">
@@ -15,7 +15,7 @@
                             <div class="col-12 col-md-6">Store</div>
                             <div class="col-12 col-md-6">
                                 <p style="text-decoration: underline; color: #959595; cursor: pointer; line-height: 2;">
-                                    <a target="_blank" routerLink="/apps/stores/{{selectedOrder.pk_storeID}}">
+                                    <a target="_blank" routerLink="/apps/stores/{{selectedOrder.fk_storeID}}">
                                         {{selectedOrder?.storeName ||
                                         not_available}}</a>
                                 </p>
@@ -25,7 +25,7 @@
                                 <p style="text-decoration: underline; color: #959595; cursor: pointer; line-height: 2;">
                                     <a target="_blank"
                                         routerLink="/apps/ecommerce/customers/{{selectedOrder?.fk_storeUserID}}">
-                                        {{selectedOrder?.firstName + ' ' + selectedOrder?.lastName}}</a>
+                                        {{selectedOrder?.userFirstName + ' ' + selectedOrder?.userLastName}}</a>
                                 </p>
                             </div>
                             <div class="col-12 col-md-6">Vendors</div>

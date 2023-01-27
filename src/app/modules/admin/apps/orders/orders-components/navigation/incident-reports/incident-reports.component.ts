@@ -23,12 +23,12 @@ interface IncidentReports {
   templateUrl: './incident-reports.component.html'
 })
 export class IncidentReportsComponent implements OnInit {
-  @Input() isLoading: boolean;
-  @Input() selectedOrder: any;
   @Output() isLoadingChange = new EventEmitter<boolean>();
   private _unsubscribeAll: Subject<any> = new Subject<any>();
   orderDetail: any;
   todayDate = moment().format('MM/DD/YYYY');
+  isLoading: boolean = false;
+  selectedOrder: any;
 
   displayedColumns: string[] = ['id', 'created', 'created_by', 'store', 'source_entities', 'action'];
   dataSource = [];
@@ -142,13 +142,12 @@ export class IncidentReportsComponent implements OnInit {
         });
       }
     });
-    this.getIncidentReports();
-    this.getReports('get');
+
   }
   getReports(type) {
     let params = {
       incident_report: true,
-      order_id: this.selectedOrder.pk_orderID
+      order_id: this.orderDetail.pk_orderID
     }
     this._orderService.getOrderCommonCall(params).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
       this.dataSource = res["data"];
@@ -173,7 +172,8 @@ export class IncidentReportsComponent implements OnInit {
   getOrderDetail() {
     this._orderService.orderDetail$.pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
       this.orderDetail = res["data"][0];
-      console.log(this.orderDetail)
+      this.getIncidentReports();
+      this.getReports('get');
       this._changeDetectorRef.markForCheck();
     }, err => {
       this.isLoading = false;
@@ -303,8 +303,8 @@ export class IncidentReportsComponent implements OnInit {
       reports_sources.push(element.pk_sourceID);
     });
     let payload: CreateIncidentReport = {
-      store_id: this.selectedOrder.pk_storeID,
-      order_id: this.selectedOrder.pk_orderID,
+      store_id: this.orderDetail.fk_storeID,
+      order_id: this.orderDetail.pk_orderID,
       store_user_id: this.orderDetail.fk_storeUserID,
       priority1: this.formModal.priority1,
       priority2: 'TBD',

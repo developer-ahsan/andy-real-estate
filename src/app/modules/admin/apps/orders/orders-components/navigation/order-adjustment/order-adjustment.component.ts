@@ -13,11 +13,10 @@ import { AddAdjustment, DeleteAdjustment } from '../../orders.types';
   styles: ['']
 })
 export class OrderAdjustmentComponent implements OnInit, OnDestroy {
-  @Input() isLoading: boolean;
-  @Input() selectedOrder: any;
   @Output() isLoadingChange = new EventEmitter<boolean>();
   private _unsubscribeAll: Subject<any> = new Subject<any>();
 
+  isLoading: boolean = false;
   mainScreen: string = 'Current Adjustments';
   currentAdjustments: any;
   totalAdjustmentCost = 0;
@@ -47,15 +46,16 @@ export class OrderAdjustmentComponent implements OnInit, OnDestroy {
   getOrderDetail() {
     this._orderService.orderDetail$.pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
       this.orderDetail = res["data"][0];
-      console.log(this.orderDetail)
     });
   }
   getAdjustments(type) {
     let params = {
       order_adjustments: true,
-      order_id: this.selectedOrder.pk_orderID
+      order_id: this.orderDetail.pk_orderID
     }
-    this._orderService.getOrderCommonCall(params).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+    this.totalAdjustmentCost = 0;
+    this.totalAdjustmentPrice = 0;
+    this._orderService.getOrder(params).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
       this.currentAdjustments = res["data"];
       this.currentAdjustments.forEach(element => {
         this.totalAdjustmentCost += element.cost;
@@ -86,7 +86,7 @@ export class OrderAdjustmentComponent implements OnInit, OnDestroy {
     this._changeDetectorRef.markForCheck();
     let params: DeleteAdjustment = {
       adjustment_id: item.pk_adjustmentID,
-      order_id: this.selectedOrder.pk_orderID,
+      order_id: this.orderDetail.pk_orderID,
       delete_adjustment: true
     }
     this._orderService.updateOrderCalls(params).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
@@ -115,7 +115,7 @@ export class OrderAdjustmentComponent implements OnInit, OnDestroy {
       prices = price + (this.orderDetail.salesTaxRate * price);
     }
     let payload: AddAdjustment = {
-      order_id: this.selectedOrder.pk_orderID,
+      order_id: this.orderDetail.pk_orderID,
       cost: this.addAdjsutmentForm.cost,
       price: prices,
       description: this.addAdjsutmentForm.description,

@@ -14,10 +14,11 @@ interface Transaction {
   templateUrl: './timeline.component.html'
 })
 export class TimelineComponent implements OnInit {
-  @Input() isLoading: boolean;
-  @Input() selectedOrder: boolean;
   @Output() isLoadingChange = new EventEmitter<boolean>();
   private _unsubscribeAll: Subject<any> = new Subject<any>();
+
+  isLoading: boolean = false;
+  selectedOrder: any;
 
   displayedColumns: string[] = ['item', 'min', 'max'];
   transactions: Transaction[] = [
@@ -37,6 +38,7 @@ export class TimelineComponent implements OnInit {
   ) { }
 
   ngOnInit(): void {
+    this.isLoading = true;
     this._orderService.orderProducts$.pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
       let value = [];
       res["data"].forEach((element, index) => {
@@ -79,7 +81,7 @@ export class TimelineComponent implements OnInit {
       imprint_report: true,
       order_line_id: value
     }
-    this._orderService.getOrderCommonCall(params).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+    this._orderService.getOrder(params).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
       let tempArr = [];
       data.forEach(element => {
         let item = [];
