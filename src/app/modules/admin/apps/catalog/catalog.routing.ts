@@ -7,17 +7,6 @@ export const catalogRoutes: Route[] = [
     {
         path: '',
         component: CatalogComponent,
-        resolve: {
-            stores: AdminStoresResolver,
-            companies: AdminCompaniesResolver
-        },
-        children: [
-            {
-                path: '',
-                redirectTo: 'admin-users',
-                pathMatch: 'full'
-            }
-        ]
     },
 
 ];

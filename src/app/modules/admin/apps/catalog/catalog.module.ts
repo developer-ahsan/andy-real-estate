@@ -40,7 +40,7 @@ import { MatDialogModule } from '@angular/material/dialog';
 import { CatalogComponent } from './components/catalog.component';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { catalogRoutes } from './catalog.routing';
-
+import { NgxPaginationModule } from 'ngx-pagination';
 @NgModule({
     declarations: [
         CatalogComponent,
@@ -53,6 +53,7 @@ import { catalogRoutes } from './catalog.routing';
         MatIconModule,
         MatInputModule,
         MatMenuModule,
+        NgxPaginationModule,
         MatPaginatorModule,
         MatProgressBarModule,
         MatRippleModule,

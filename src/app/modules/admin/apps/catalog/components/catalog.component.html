@@ -1,32 +1,87 @@
-<div class="absolute inset-0 flex flex-col min-w-0 overflow-y-auto bg-light dark:bg-transparent">
+<div class="flex flex-col flex-auto min-w-0">
+
     <!-- Header -->
-    <div class="bg-white relative bg-light  sm:items-center sm:justify-between py-2 px-6 md:px-8 border-b">
-        <!-- Loader -->
-        <div class="absolute inset-x-0 bottom-1" *ngIf="isLoading">
-            <mat-progress-bar [mode]="'indeterminate'"></mat-progress-bar>
-        </div>
+    <div
+        class="flex flex-col sm:flex-row flex-0 sm:items-center sm:justify-between p-6 sm:py-8 sm:px-10 border-b bg-card dark:bg-transparent">
+        <div class="flex-1 min-w-0">
+            <!-- Breadcrumbs -->
 
-        <div class="mt-2 py-3 flex justify-between align-items-center">
-            <h2 class="text-3xl md:text-4xl font-extrabold tracking-tight leading-7 sm:leading-10 truncate">
-                Product Catalog
-            </h2>
-            <mat-icon svgIcon="heroicons_outline:filter" matTooltip="Advanced Filter" class="cursor-pointer"
-                (click)="toggleDrawer()"></mat-icon>
-        </div>
-
-    </div>
-    <mat-drawer-container class="example-container w-full bg-white" [hasBackdrop]="false">
-        <mat-drawer #drawer [mode]="'over'" position="end" style="width: 500px !important; ">
-
-        </mat-drawer>
-        <mat-drawer-content style="height: 100vh;">
-            <div class="flex flex-col flex-auto">
-                <!-- Main -->
-                <div class="flex flex-auto">
-
-
-                </div>
+            <!-- Title -->
+            <div class="mt-2">
+                <h2 class="text-3xl md:text-4xl font-extrabold tracking-tight leading-7 sm:leading-10 truncate">
+                    Product Catalog
+                </h2>
             </div>
-        </mat-drawer-content>
-    </mat-drawer-container>
+            <div class="flex flex-wrap items-center font-medium">
+                <a class="whitespace-nowrap text-primary-500" *ngIf="!isLoading">Total Products {{total}}</a>
+            </div>
+        </div>
+    </div>
+    <div class="w-full p-6" *ngIf="isLoading">
+        <ngx-skeleton-loader count="15" appearance="line" animation="pulse">
+        </ngx-skeleton-loader>
+    </div>
+    <div class="flex-auto p-6 sm:p-10" *ngIf="!isLoading">
+        <div class="text-center">
+            <pagination-controls previousLabel="Prev" nextLabel="Next" (pageChange)="getNextCatalogData($event)">
+            </pagination-controls>
+        </div>
+        <div class="w-full p-6" *ngIf="isPageLoading">
+            <ngx-skeleton-loader count="15" appearance="line" animation="pulse">
+            </ngx-skeleton-loader>
+        </div>
+        <div class="prose prose-sm max-w-5xl" *ngIf="!isPageLoading">
+            <ng-container *ngFor="let item of dataSource |  paginate : {
+                itemsPerPage: 20,
+                currentPage: page,
+                totalItems: total
+              };">
+                <div class="mb-12 p-8 rounded-2xl shadow bg-card">
+                    <div class="flex justify-between">
+                        <div>
+                            <h2 class="my-0">{{item.productName}} - ({{item.pk_productID}})</h2>
+                            <div class="font-semibold text-md text-secondary">{{item.companyName}}</div>
+                        </div>
+                        <img class="w-20 h-20 m-0"
+                            src="https://assets.consolidus.com/globalAssets/Products/coming_soon.jpg">
+                    </div>
+                    <hr class="mt-2">
+                    <div class="row">
+                        <div *ngIf="item.Cost" class="col-12 col-md-6 m-0">
+                            <span class="inline-flex bg-default rounded px-3 py-1 text-secondary font-bold">Cost</span>
+                            <table class="table table-striped">
+                                <thead>
+                                    <tr>
+                                        <th *ngFor="let cost of item.Cost">{{cost.quantity}}</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td *ngFor="let cost of item.Cost">{{cost.cost | currency}}</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="col-12 col-md-6">
+                            <span
+                                class="inline-flex bg-default rounded px-3 py-1 text-secondary font-bold">Description</span>
+                            <div [innerHTML]="item.description" class="text-justify"></div>
+                        </div>
+
+                    </div>
+                    <hr class="mt-2">
+                    <span *ngIf="item.Imprint"
+                        class="inline-flex bg-default rounded px-3 py-1 text-secondary font-bold">Imprints</span>
+                    <div *ngFor="let imprint of item.Imprint" class="pt-1">
+                        <li>{{imprint.locationName+'/'+imprint.IM[0].methodName }}</li>
+                    </div>
+                </div>
+            </ng-container>
+        </div>
+        <div class="text-center" *ngIf="!isPageLoading">
+            <pagination-controls previousLabel="Prev" nextLabel="Next" (pageChange)="getNextCatalogData($event)">
+            </pagination-controls>
+        </div>
+    </div>
+
 </div>

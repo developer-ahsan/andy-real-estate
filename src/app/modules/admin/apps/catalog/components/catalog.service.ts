@@ -71,22 +71,22 @@ export class CatalogService {
         }).pipe(retry(3));
     };
     // Common get Calls
-    getAdminsData(params): Observable<any[]> {
-        return this._httpClient.get<any[]>(environment.admins, {
+    getCatalogData(params): Observable<any[]> {
+        return this._httpClient.get<any[]>(environment.catalog, {
             params: params
         }).pipe(retry(3));
     };
     // Common Post Call
-    AddAdminsData(payload) {
+    PostCatalogData(payload) {
         const headers = { 'Authorization': `Bearer ${this._authService.accessToken}` };
         return this._httpClient.post(
-            environment.admins, payload, { headers });
+            environment.catalog, payload, { headers });
     };
     // Common put Call
-    UpdateAdminsData(payload) {
+    PutCatalogData(payload) {
         const headers = { 'Authorization': `Bearer ${this._authService.accessToken}` };
         return this._httpClient.put(
-            environment.admins, payload, { headers });
+            environment.catalog, payload, { headers });
     };
 
     // Admin Employees
