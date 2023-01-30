@@ -7,7 +7,7 @@
             <!-- Breadcrumbs -->
 
             <!-- Title -->
-            <div class="mt-2">
+            <div class="mt-2" #topScrollAnchor>
                 <h2 class="text-3xl md:text-4xl font-extrabold tracking-tight leading-7 sm:leading-10 truncate">
                     Product Catalog
                 </h2>
@@ -32,7 +32,7 @@
         </div>
         <div class="prose prose-sm max-w-5xl" *ngIf="!isPageLoading">
             <ng-container *ngFor="let item of dataSource |  paginate : {
-                itemsPerPage: 20,
+                itemsPerPage: itemsPerPage,
                 currentPage: page,
                 totalItems: total
               };">
@@ -79,6 +79,10 @@
             </ng-container>
         </div>
         <div class="text-center" *ngIf="!isPageLoading">
+            <ng-container *ngIf="total == 0">
+                <div class="p-8 sm:p-16 border-t text-4xl font-semibold tracking-tight text-center">There are no records
+                    found!</div>
+            </ng-container>
             <pagination-controls previousLabel="Prev" nextLabel="Next" (pageChange)="getNextCatalogData($event)">
             </pagination-controls>
         </div>

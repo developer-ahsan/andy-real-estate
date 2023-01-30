@@ -45,7 +45,7 @@ export class CatalogComponent {
   displayedColumns: string[] = ['image', 'id', 'name', 'company', 'desc', 'action'];
   total = 0;
   temptotal = 0;
-  itemsPerPage = 20;
+  itemsPerPage = 10;
   page = 1;
   isPageLoading: boolean = false;
   /**
@@ -96,6 +96,8 @@ export class CatalogComponent {
   getNextCatalogData(event) {
     this.page = event;
     this.isPageLoading = true;
+    this.topScroll.nativeElement.scrollIntoView({ behavior: 'smooth' });
+
     // const { previousPageIndex, pageIndex } = event;
     // if (pageIndex > previousPageIndex) {
     //   this.page++;
@@ -107,8 +109,7 @@ export class CatalogComponent {
   getCatalogs(page) {
     let params = {
       catalog_products: true,
-      page: page,
-      size: this.itemsPerPage
+      page: page
     }
     this._catalogService.getCatalogData(params).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
       this.total = res["totalRecords"];
