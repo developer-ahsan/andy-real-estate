@@ -15,8 +15,8 @@ interface Transaction {
   templateUrl: './order-history.component.html'
 })
 export class OrderHistoryComponent implements OnInit, OnDestroy {
-  @Input() selectedProduct: any;
-  @Input() isLoading: boolean;
+  selectedProduct: any;
+  isLoading: boolean;
   @Output() isLoadingChange = new EventEmitter<boolean>();
   private _unsubscribeAll: Subject<any> = new Subject<any>();
 
@@ -39,6 +39,18 @@ export class OrderHistoryComponent implements OnInit, OnDestroy {
   ) { }
 
   ngOnInit(): void {
+    this.getProductDetail();
+  };
+  getProductDetail() {
+    this.isLoading = true;
+    this._inventoryService.product$.pipe(takeUntil(this._unsubscribeAll)).subscribe((details) => {
+      if (details) {
+        this.selectedProduct = details["data"][0];
+        this.getOrderHistory();
+      }
+    });
+  }
+  getOrderHistory() {
     const { pk_productID } = this.selectedProduct;
     this._inventoryService.getOrderHistoryByProductId(pk_productID)
       .pipe(takeUntil(this._unsubscribeAll))
@@ -46,7 +58,7 @@ export class OrderHistoryComponent implements OnInit, OnDestroy {
 
         this.order_history = history["data"];
         this.orderHistoryLength = history["totalRecords"];
-        this.isLoadingChange.emit(false);
+        this.isLoading = false;
         // Mark for check
         this._changeDetectorRef.markForCheck();
       }, err => {
@@ -55,13 +67,12 @@ export class OrderHistoryComponent implements OnInit, OnDestroy {
           verticalPosition: 'bottom',
           duration: 3500
         });
-        this.isLoadingChange.emit(false);
+        this.isLoading = false;
 
         // Mark for check
         this._changeDetectorRef.markForCheck();
       });
-  };
-
+  }
   /** Gets the total cost of all transactions. */
   getTotalCost() {
     return this.transactions.map(t => t.cost).reduce((acc, value) => acc + value, 0);

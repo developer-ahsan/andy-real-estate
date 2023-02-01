@@ -14,8 +14,8 @@ import { AuthService } from 'app/core/auth/auth.service';
   templateUrl: './internal-notes.component.html'
 })
 export class InternalNotesComponent implements OnInit, OnDestroy {
-  @Input() selectedProduct: any;
-  @Input() isLoading: boolean;
+  selectedProduct: any;
+  isLoading: boolean;
   @Output() isLoadingChange = new EventEmitter<boolean>();
   private _unsubscribeAll: Subject<any> = new Subject<any>();
   flashMessage: 'success' | 'error' | null = null;
@@ -43,7 +43,6 @@ export class InternalNotesComponent implements OnInit, OnDestroy {
   ) { }
 
   ngOnInit(): void {
-    const { pk_productID } = this.selectedProduct;
     // Create the selected product form
     this.internalNote = this._formBuilder.group({
       comment: [''],
@@ -59,7 +58,20 @@ export class InternalNotesComponent implements OnInit, OnDestroy {
     //     // Mark for check
     //     this._changeDetectorRef.markForCheck();
     //   });
+    this.getProductDetail();
 
+  };
+  getProductDetail() {
+    this.isLoading = true;
+    this._inventoryService.product$.pipe(takeUntil(this._unsubscribeAll)).subscribe((details) => {
+      if (details) {
+        this.selectedProduct = details["data"][0];
+        this.getIntenalNotes();
+      }
+    });
+  }
+  getIntenalNotes() {
+    const { pk_productID } = this.selectedProduct;
     this._inventoryService.getCommentByProductId(pk_productID)
       .pipe(takeUntil(this._unsubscribeAll))
       .subscribe((comment) => {
@@ -70,8 +82,7 @@ export class InternalNotesComponent implements OnInit, OnDestroy {
           const { theTimestamp } = comment;
           comment["dateFormatted"] = moment.utc(theTimestamp).format("lll");
         }
-
-        this.isLoadingChange.emit(false);
+        this.isLoading = false;
         this._changeDetectorRef.markForCheck();
       }, err => {
         this._snackBar.open("Some error occured", '', {
@@ -79,7 +90,7 @@ export class InternalNotesComponent implements OnInit, OnDestroy {
           verticalPosition: 'bottom',
           duration: 3500
         });
-        this.isLoadingChange.emit(false);
+        this.isLoading = false;
         this._changeDetectorRef.markForCheck();
       });
 
@@ -97,8 +108,7 @@ export class InternalNotesComponent implements OnInit, OnDestroy {
         this.commentatoLoader = false;
         this._changeDetectorRef.markForCheck();
       });
-  };
-
+  }
   selectOption(list) {
     this.commentator_emails = list.selectedOptions.selected.map(item => item.value)
   };

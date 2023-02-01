@@ -20,9 +20,8 @@ import { Router } from "@angular/router";
   templateUrl: "./duplicate.component.html",
 })
 export class DuplicateComponent implements OnInit, OnDestroy {
-  @Input() selectedProduct: any;
-  @Input() isLoading: boolean;
-  @Output() isLoadingChange = new EventEmitter<boolean>();
+  selectedProduct: any;
+  isLoading: boolean;
   private _unsubscribeAll: Subject<any> = new Subject<any>();
 
   flashMessage: "success" | "error" | null = null;
@@ -44,14 +43,18 @@ export class DuplicateComponent implements OnInit, OnDestroy {
   ) { }
 
   ngOnInit(): void {
-
-    // Loader setting to false
-    this.isLoadingChange.emit(false);
-
-    // Mark for check
-    this._changeDetectorRef.markForCheck();
+    this.getProductDetail();
   }
-
+  getProductDetail() {
+    this.isLoading = true;
+    this._inventoryService.product$.pipe(takeUntil(this._unsubscribeAll)).subscribe((details) => {
+      if (details) {
+        this.selectedProduct = details["data"][0];
+        this.isLoading = false;
+        this._changeDetectorRef.markForCheck();
+      }
+    });
+  }
   addDuplicate(): void {
     const formValues = this.firstFormGroup.getRawValue();
     const { pk_productID } = this.selectedProduct;

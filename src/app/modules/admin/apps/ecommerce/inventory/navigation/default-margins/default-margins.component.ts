@@ -11,9 +11,8 @@ import { takeUntil } from 'rxjs/operators';
   templateUrl: './default-margins.component.html'
 })
 export class DefaultMarginsComponent implements OnInit, OnDestroy {
-  @Input() selectedProduct: any;
-  @Input() isLoading: boolean;
-  @Output() isLoadingChange = new EventEmitter<boolean>();
+  selectedProduct: any;
+  isLoading: boolean;
   private _unsubscribeAll: Subject<any> = new Subject<any>();
 
   defaultMargins = [];
@@ -37,7 +36,18 @@ export class DefaultMarginsComponent implements OnInit, OnDestroy {
       5: [''],
       6: ['']
     });
-
+    this.getProductDetail();
+  }
+  getProductDetail() {
+    this.isLoading = true;
+    this._inventoryService.product$.pipe(takeUntil(this._unsubscribeAll)).subscribe((details) => {
+      if (details) {
+        this.selectedProduct = details["data"][0];
+        this.getDefaultMargin();
+      }
+    });
+  }
+  getDefaultMargin() {
     const { pk_productID } = this.selectedProduct;
     this._inventoryService.getMarginsByProductId(pk_productID)
       .pipe(takeUntil(this._unsubscribeAll))
@@ -50,7 +60,7 @@ export class DefaultMarginsComponent implements OnInit, OnDestroy {
           }
         }
         this.defaultMarginForm.patchValue(margin);
-        this.isLoadingChange.emit(false);
+        this.isLoading = false;
 
         // Mark for check
         this._changeDetectorRef.markForCheck();
@@ -60,13 +70,12 @@ export class DefaultMarginsComponent implements OnInit, OnDestroy {
           verticalPosition: 'bottom',
           duration: 3500
         });
-        this.isLoadingChange.emit(false);
+        this.isLoading = false;
 
         // Mark for check
         this._changeDetectorRef.markForCheck();
       });
   }
-
   removeNull(array) {
     return array.filter(x => x !== null)
   };

@@ -1,65 +1,68 @@
-<ngx-skeleton-loader count="8" appearance="line" animation="pulse" *ngIf="isLoading">
-</ngx-skeleton-loader>
+<div class="w-full">
+    <ngx-skeleton-loader count="8" appearance="line" animation="pulse" *ngIf="isLoading">
+    </ngx-skeleton-loader>
 
-<div class="row" *ngIf="!isLoading">
-    <div class="col-12 my-2">
-        <fuse-card class="rounded-2xl shadow bg-card flex flex-col lg:flex-row w-full">
-            <div class="p-6 sm:p-8 lg:p-10 w-full">
-                <div class="text-2xl font-bold">
-                    <button [matTooltip]="'JPG only!'">
-                        <i class="fa fa-info-circle"></i>
-                    </button>
-                    Add a new Swatch Image
-                </div>
-                <!-- Add Swatch -->
-                <div class="gap-y-4 mt-6">
-                    <form [formGroup]="imageUploadForm">
-                        <div class="row">
-                            <div class="col-12">
-                                <input type="file" accept=".jpg" [formControlName]="'image'" (change)="upload($event)"
-                                    style="line-height: 2.5;" />
-                            </div>
-                            <div class="col-12 flex justify-end">
-                                <button (click)="uploadImage()" class="min-w-40" mat-stroked-button
-                                    [matTooltip]="'(JPG only!)'" [disabled]="imageUploadLoader">
-                                    <mat-progress-spinner *ngIf="imageUploadLoader" [diameter]="24"
-                                        [mode]="'indeterminate'"></mat-progress-spinner>
-                                    <mat-icon *ngIf="!imageUploadLoader" [svgIcon]="'heroicons_outline:upload'">
-                                    </mat-icon>
-                                    <span *ngIf="!imageUploadLoader" class="ml-1 mr-1">Upload</span>
-                                </button>
-                            </div>
-                        </div>
-                    </form>
-                </div>
-            </div>
-        </fuse-card>
-    </div>
-</div>
-
-<div class="row my-3" *ngIf="!isLoading">
-    <div class="col-12">
-        <div class="p-2">
-            <div class="text-info font-size-medium">Current Color/Swatch Images</div>
-        </div>
-        <div class="p-2" *ngIf="!imagesArray.length">
-            <div class="font-semibold text-danger">
-                No swatch/color image for this product.
-            </div>
-        </div>
-        <div class="row p-2" *ngIf="imagesArray.length">
-            <div class="col-lg-4 col-12" *ngFor="let image of imagesArray">
-                <fuse-card class="flex flex-col shadow rounded-2xl my-1 w-full filter-shopping hover: cursor-pointer">
-                    <div class="relative">
-                        <div class="absolute flex flex-col top-0 right-0 p-3">
-                            <!-- <button mat-icon-button>
-                                <mat-icon class="icon-size-5 text-gray-50 text-opacity-50"
-                                    [svgIcon]="'heroicons_solid:trash'"></mat-icon>
-                            </button> -->
-                        </div>
-                        <img class="object-cover rounded-2xl shadow-sm" src="{{image}}">
+    <div class="row" *ngIf="!isLoading">
+        <div class="col-12 my-2">
+            <fuse-card class="rounded-2xl shadow bg-card flex flex-col lg:flex-row w-full">
+                <div class="p-6 sm:p-8 lg:p-10 w-full">
+                    <div class="text-2xl font-bold">
+                        <button [matTooltip]="'JPG only!'">
+                            <i class="fa fa-info-circle"></i>
+                        </button>
+                        Add a new Swatch Image
                     </div>
-                </fuse-card>
+                    <!-- Add Swatch -->
+                    <div class="gap-y-4 mt-6">
+                        <form [formGroup]="imageUploadForm">
+                            <div class="row">
+                                <div class="col-12">
+                                    <input type="file" accept=".jpg" [formControlName]="'image'"
+                                        (change)="upload($event)" style="line-height: 2.5;" />
+                                </div>
+                                <div class="col-12 flex justify-end">
+                                    <button (click)="uploadImage()" class="min-w-40" mat-stroked-button
+                                        [matTooltip]="'(JPG only!)'" [disabled]="imageUploadLoader">
+                                        <mat-progress-spinner *ngIf="imageUploadLoader" [diameter]="24"
+                                            [mode]="'indeterminate'"></mat-progress-spinner>
+                                        <mat-icon *ngIf="!imageUploadLoader" [svgIcon]="'heroicons_outline:upload'">
+                                        </mat-icon>
+                                        <span *ngIf="!imageUploadLoader" class="ml-1 mr-1">Upload</span>
+                                    </button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </fuse-card>
+        </div>
+    </div>
+
+    <div class="row my-3" *ngIf="!isLoading">
+        <div class="col-12">
+            <div class="p-2">
+                <div class="text-info font-size-medium">Current Color/Swatch Images</div>
+            </div>
+            <div class="p-2" *ngIf="!imagesArray.length">
+                <div class="font-semibold text-danger">
+                    No swatch/color image for this product.
+                </div>
+            </div>
+            <div class="row p-2" *ngIf="imagesArray.length">
+                <div class="col-lg-4 col-12" *ngFor="let image of imagesArray">
+                    <fuse-card
+                        class="flex flex-col shadow rounded-2xl my-1 w-full filter-shopping hover: cursor-pointer">
+                        <div class="relative">
+                            <div class="absolute flex flex-col top-0 right-0 p-3">
+                                <!-- <button mat-icon-button>
+                                    <mat-icon class="icon-size-5 text-gray-50 text-opacity-50"
+                                        [svgIcon]="'heroicons_solid:trash'"></mat-icon>
+                                </button> -->
+                            </div>
+                            <img class="object-cover rounded-2xl shadow-sm" src="{{image}}">
+                        </div>
+                    </fuse-card>
+                </div>
             </div>
         </div>
     </div>

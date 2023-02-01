@@ -9,8 +9,8 @@ import moment from 'moment';
   templateUrl: './update-history.component.html'
 })
 export class UpdateHistoryComponent implements OnInit, OnDestroy {
-  @Input() selectedProduct: any;
-  @Input() isLoading: boolean;
+  selectedProduct: any;
+  isLoading: boolean;
   @Output() isLoadingChange = new EventEmitter<boolean>();
   private _unsubscribeAll: Subject<any> = new Subject<any>();
   htmlHistory: string = '';
@@ -30,22 +30,30 @@ export class UpdateHistoryComponent implements OnInit, OnDestroy {
   ) { }
 
   ngOnInit(): void {
-    const { pk_productID } = this.selectedProduct;
-
-    this.getHistoryByProductId(1);
-
-    this._inventoryService.getUpdateHistoryByProductId(pk_productID)
-      .pipe(takeUntil(this._unsubscribeAll))
-      .subscribe((history) => {
-        this.htmlHistory = history["data"][0]?.updateHistory;
-
-        this.legacyHistoryLoader = false;
-
-        // Mark for check
-        this._changeDetectorRef.markForCheck();
-      });
+    this.getProductDetail();
   }
+  getProductDetail() {
+    this.isLoading = true;
+    this._inventoryService.product$.pipe(takeUntil(this._unsubscribeAll)).subscribe((details) => {
+      if (details) {
+        this.selectedProduct = details["data"][0];
+        const { pk_productID } = this.selectedProduct;
 
+        this.getHistoryByProductId(1);
+
+        this._inventoryService.getUpdateHistoryByProductId(pk_productID)
+          .pipe(takeUntil(this._unsubscribeAll))
+          .subscribe((history) => {
+            this.htmlHistory = history["data"][0]?.updateHistory;
+
+            this.legacyHistoryLoader = false;
+
+            // Mark for check
+            this._changeDetectorRef.markForCheck();
+          });
+      }
+    });
+  }
   getNextData(event) {
     this.isLoading = true;
     const { previousPageIndex, pageIndex } = event;
@@ -72,7 +80,7 @@ export class UpdateHistoryComponent implements OnInit, OnDestroy {
           }
         };
 
-        this.isLoadingChange.emit(false);
+        this.isLoading = false;
 
         // Mark for check
         this._changeDetectorRef.markForCheck();

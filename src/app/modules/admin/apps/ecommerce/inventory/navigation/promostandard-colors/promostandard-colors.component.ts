@@ -8,8 +8,8 @@ import { takeUntil } from 'rxjs/operators';
   templateUrl: './promostandard-colors.component.html'
 })
 export class PromostandardColorsComponent implements OnInit, OnDestroy {
-  @Input() selectedProduct: any;
-  @Input() isLoading: boolean;
+  selectedProduct: any;
+  isLoading: boolean;
   @Output() isLoadingChange = new EventEmitter<boolean>();
   private _unsubscribeAll: Subject<any> = new Subject<any>();
 
@@ -28,6 +28,18 @@ export class PromostandardColorsComponent implements OnInit, OnDestroy {
   ) { }
 
   ngOnInit(): void {
+    this.getProductDetail();
+  };
+  getProductDetail() {
+    this.isLoading = true;
+    this._inventoryService.product$.pipe(takeUntil(this._unsubscribeAll)).subscribe((details) => {
+      if (details) {
+        this.selectedProduct = details["data"][0];
+        this.getPromoStandards();
+      }
+    });
+  }
+  getPromoStandards() {
     const { pk_productID, productNumber, fk_supplierID } = this.selectedProduct;
 
     const prodNumber = productNumber ? productNumber.substr(0, productNumber.indexOf('_')) : "L455";
@@ -69,12 +81,12 @@ export class PromostandardColorsComponent implements OnInit, OnDestroy {
               // Total matched quantites sum
               this.quantitiesSum = this.dataSource.length ? this.dataSource.map((item: any) => item["quantityAvailable"]).reduce((prev, next) => prev + next) : 0;
 
-              this.isLoadingChange.emit(false);
+              this.isLoading = false;
 
               // Mark for check
               this._changeDetectorRef.markForCheck();
             }, err => {
-              this.isLoadingChange.emit(false);
+              this.isLoading = false;
 
               // Mark for check
               this._changeDetectorRef.markForCheck();
@@ -83,20 +95,19 @@ export class PromostandardColorsComponent implements OnInit, OnDestroy {
           this.dataSource = [];
           this.dummyDataSource = [];
 
-          this.isLoadingChange.emit(false);
+          this.isLoading = false;
 
           // Mark for check
           this._changeDetectorRef.markForCheck();
         };
 
       }, err => {
-        this.isLoadingChange.emit(false);
+        this.isLoading = false;
 
         // Mark for check
         this._changeDetectorRef.markForCheck();
       });
-  };
-
+  }
   searchKeyword(event): void {
     const value = event.target.value;
 

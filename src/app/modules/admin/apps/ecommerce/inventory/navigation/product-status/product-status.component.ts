@@ -12,8 +12,8 @@ import { UpdateProductStatus } from '../../inventory.types';
   templateUrl: './product-status.component.html'
 })
 export class ProductStatusComponent implements OnInit, OnDestroy {
-  @Input() selectedProduct: any;
-  @Input() isLoading: boolean;
+  selectedProduct: any;
+  isLoading: boolean;
   @Output() isLoadingChange = new EventEmitter<boolean>();
   private _unsubscribeAll: Subject<any> = new Subject<any>();
 
@@ -28,10 +28,17 @@ export class ProductStatusComponent implements OnInit, OnDestroy {
   ) { }
 
   ngOnInit(): void {
-    this.isLoading = false;
-    this.isLoadingChange.emit(false);
+    this.getProductDetail();
   }
-
+  getProductDetail() {
+    this.isLoading = true;
+    this._inventoryService.product$.pipe(takeUntil(this._unsubscribeAll)).subscribe((details) => {
+      if (details) {
+        this.selectedProduct = details["data"][0];
+        this.isLoading = false;
+      }
+    });
+  }
   disableProduct() {
     this.isDisableProductLoader = true;
     let params: UpdateProductStatus = {

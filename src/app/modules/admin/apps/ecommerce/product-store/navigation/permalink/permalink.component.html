@@ -1,31 +1,33 @@
-<ngx-skeleton-loader count="8" appearance="line" animation="pulse" *ngIf="isLoading">
-</ngx-skeleton-loader>
-<div class="row my-3" *ngIf="!isLoading">
-    <div class="col-12">
-        <fuse-card class="rounded-2xl shadow bg-card flex flex-col lg:flex-row w-full">
-            <div class="p-6 sm:p-8 lg:p-10 w-full">
-                <div class="text-2xl font-bold">
-                    Permalink
-                </div>
-                <div class="row mt-5">
-                    <div class="col-12">
-                        <mat-form-field class="w-full">
-                            <mat-label>Permalink</mat-label>
-                            <input [(ngModel)]="permalink" matInput placeholder="Extrinsic category">
-                        </mat-form-field>
+<div class="w-full">
+    <ngx-skeleton-loader count="8" appearance="line" animation="pulse" *ngIf="isLoading">
+    </ngx-skeleton-loader>
+    <div class="row my-3" *ngIf="!isLoading">
+        <div class="col-12">
+            <fuse-card class="rounded-2xl shadow bg-card flex flex-col lg:flex-row w-full">
+                <div class="p-6 sm:p-8 lg:p-10 w-full">
+                    <div class="text-2xl font-bold">
+                        Permalink
                     </div>
-                    <div class="col-12 text-right">
-                        <button [matTooltip]="'Update'" mat-stroked-button class="min-w-40" (click)="UpdatePermaLink()"
-                            [disabled]="isUpdateLoading">
-                            <mat-progress-spinner *ngIf="isUpdateLoading" [diameter]="24" [mode]="'indeterminate'">
-                            </mat-progress-spinner>
-                            <span *ngIf="!isUpdateLoading" class="ml-1 mr-1">
-                                Update
-                            </span>
-                        </button>
+                    <div class="row mt-5">
+                        <div class="col-12">
+                            <mat-form-field class="w-full">
+                                <mat-label>Permalink</mat-label>
+                                <input [(ngModel)]="permalink" matInput placeholder="Extrinsic category">
+                            </mat-form-field>
+                        </div>
+                        <div class="col-12 text-right">
+                            <button [matTooltip]="'Update'" mat-stroked-button class="min-w-40"
+                                (click)="UpdatePermaLink()" [disabled]="isUpdateLoading">
+                                <mat-progress-spinner *ngIf="isUpdateLoading" [diameter]="24" [mode]="'indeterminate'">
+                                </mat-progress-spinner>
+                                <span *ngIf="!isUpdateLoading" class="ml-1 mr-1">
+                                    Update
+                                </span>
+                            </button>
+                        </div>
                     </div>
                 </div>
-            </div>
-        </fuse-card>
+            </fuse-card>
+        </div>
     </div>
 </div>

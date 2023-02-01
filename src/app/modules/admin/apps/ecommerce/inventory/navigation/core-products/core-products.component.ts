@@ -10,9 +10,8 @@ import { MatSnackBar } from '@angular/material/snack-bar';
   templateUrl: './core-products.component.html'
 })
 export class CoreProductsComponent implements OnInit, OnDestroy {
-  @Input() selectedProduct: any;
-  @Input() isLoading: boolean;
-  @Output() isLoadingChange = new EventEmitter<boolean>();
+  selectedProduct: any;
+  isLoading: boolean;
   private _unsubscribeAll: Subject<any> = new Subject<any>();
 
   displayedColumns: string[] = ['core', 'category', 'sub_category'];
@@ -44,6 +43,18 @@ export class CoreProductsComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
 
+    this.getProductDetail();
+  }
+  getProductDetail() {
+    this.isLoading = true;
+    this._inventoryService.product$.pipe(takeUntil(this._unsubscribeAll)).subscribe((details) => {
+      if (details) {
+        this.selectedProduct = details["data"][0];
+        this.getCoreProducts();
+      }
+    });
+  }
+  getCoreProducts() {
     const { pk_productID } = this.selectedProduct;
     this._inventoryService.getCoresByProductId(pk_productID)
       .pipe(takeUntil(this._unsubscribeAll))
@@ -53,7 +64,7 @@ export class CoreProductsComponent implements OnInit, OnDestroy {
           .subscribe((available_core) => {
             this.available_cores = available_core["data"];
             this.dataSource = cores["data"];
-            this.isLoadingChange.emit(false);
+            this.isLoading = false;
 
             // Mark for check
             this._changeDetectorRef.markForCheck();
@@ -63,7 +74,7 @@ export class CoreProductsComponent implements OnInit, OnDestroy {
               verticalPosition: 'bottom',
               duration: 3500
             });
-            this.isLoadingChange.emit(false);
+            this.isLoading = false;
             // Mark for check
             this._changeDetectorRef.markForCheck();
           });
@@ -74,12 +85,11 @@ export class CoreProductsComponent implements OnInit, OnDestroy {
           verticalPosition: 'bottom',
           duration: 3500
         });
-        this.isLoadingChange.emit(false);
+        this.isLoading = false;
         // Mark for check
         this._changeDetectorRef.markForCheck();
       });
   }
-
   uploadImage(): void {
   }
 

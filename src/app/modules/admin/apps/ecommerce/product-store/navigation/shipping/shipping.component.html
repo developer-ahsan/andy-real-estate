@@ -1,34 +1,36 @@
-<ngx-skeleton-loader count="8" appearance="line" animation="pulse" *ngIf="isLoading">
-</ngx-skeleton-loader>
-<div class="row my-3" *ngIf="!isLoading">
-    <div class="col-12">
-        <fuse-card class="rounded-2xl shadow bg-card flex flex-col lg:flex-row w-full">
-            <div class="p-6 sm:p-8 lg:p-10 w-full">
-                <div class="text-2xl font-bold">
-                    Shipping Options
+<div class="w-full">
+    <ngx-skeleton-loader count="8" appearance="line" animation="pulse" *ngIf="isLoading">
+    </ngx-skeleton-loader>
+    <div class="row my-3" *ngIf="!isLoading">
+        <div class="col-12">
+            <fuse-card class="rounded-2xl shadow bg-card flex flex-col lg:flex-row w-full">
+                <div class="p-6 sm:p-8 lg:p-10 w-full">
+                    <div class="text-2xl font-bold">
+                        Shipping Options
+                    </div>
+                    <div class="mt-5">
+                        <mat-checkbox [(ngModel)]="blnOverride" class="example-margin">Override master product shipping
+                            option?</mat-checkbox>
+                        <br>
+                        <mat-form-field class="min-w-90" *ngIf="blnOverride">
+                            <mat-label>Do shipping charges apply?</mat-label>
+                            <mat-select [(ngModel)]="blnIncludeShipping">
+                                <mat-option [value]="true">Yes</mat-option>
+                                <mat-option [value]="false">No</mat-option>
+                            </mat-select>
+                        </mat-form-field>
+                        <br>
+                        <button [matTooltip]="'Update'" mat-stroked-button class="min-w-40" (click)="updateShipping()"
+                            [disabled]="isUpdateLoading">
+                            <mat-progress-spinner *ngIf="isUpdateLoading" [diameter]="24" [mode]="'indeterminate'">
+                            </mat-progress-spinner>
+                            <span *ngIf="!isUpdateLoading" class="ml-1 mr-1">
+                                Update
+                            </span>
+                        </button>
+                    </div>
                 </div>
-                <div class="mt-5">
-                    <mat-checkbox [(ngModel)]="blnOverride" class="example-margin">Override master product shipping
-                        option?</mat-checkbox>
-                    <br>
-                    <mat-form-field class="min-w-90" *ngIf="blnOverride">
-                        <mat-label>Do shipping charges apply?</mat-label>
-                        <mat-select [(ngModel)]="blnIncludeShipping">
-                            <mat-option [value]="true">Yes</mat-option>
-                            <mat-option [value]="false">No</mat-option>
-                        </mat-select>
-                    </mat-form-field>
-                    <br>
-                    <button [matTooltip]="'Update'" mat-stroked-button class="min-w-40" (click)="updateShipping()"
-                        [disabled]="isUpdateLoading">
-                        <mat-progress-spinner *ngIf="isUpdateLoading" [diameter]="24" [mode]="'indeterminate'">
-                        </mat-progress-spinner>
-                        <span *ngIf="!isUpdateLoading" class="ml-1 mr-1">
-                            Update
-                        </span>
-                    </button>
-                </div>
-            </div>
-        </fuse-card>
+            </fuse-card>
+        </div>
     </div>
 </div>

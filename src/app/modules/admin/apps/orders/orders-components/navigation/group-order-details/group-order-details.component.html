@@ -1,8 +1,20 @@
 <div class="my-3 w-full">
-    <ngx-skeleton-loader count="8" appearance="line" animation="pulse" *ngIf="isLoading">
+    <ngx-skeleton-loader count="8" appearance="line" animation="pulse"
+        *ngIf="(isLoading || isParticipantLaoder) && mainScreen =='Participants'">
     </ngx-skeleton-loader>
-    <div *ngIf="!isLoading">
-        <div class="grid grid-cols-1 xl:grid-cols-3 gap-4 w-full mt-2">
+    <div *ngIf="!isLoading && !isParticipantLaoder">
+        <div>
+            <mat-button-toggle-group #group="matButtonToggleGroup" [value]="mainScreen"
+                (change)="calledScreen(group.value)">
+                <mat-button-toggle value="Participants">
+                    Participants
+                </mat-button-toggle>
+                <mat-button-toggle value="Current Items">
+                    Group Items
+                </mat-button-toggle>
+            </mat-button-toggle-group>
+        </div>
+        <div class="grid grid-cols-1 xl:grid-cols-3 gap-4 w-full mt-2" *ngIf="mainScreen == 'Participants'">
             <div class="flex flex-col flex-auto p-6 bg-card rounded-2xl shadow-md">
                 <div class="flex items-center">
                     <div class="flex flex-col">
@@ -24,7 +36,7 @@
                                     this group order, excluding the initiator" svgIcon="mat_outline:info"
                                         class="icon-size-4 cursor-pointer ml-1"></mat-icon>
                                 </div>
-                                <div class="mt-2 font-medium text-2xl">12</div>
+                                <div class="mt-2 font-medium text-2xl">{{totalParticipants}}</div>
                             </div>
                         </div>
                     </div>
@@ -41,7 +53,7 @@
                                         matTooltip="The number of people invited to this group order, excluding the initiator"
                                         svgIcon="mat_outline:info" class="icon-size-4 cursor-pointer ml-1"></mat-icon>
                                 </div>
-                                <div class="mt-2 font-medium text-2xl">12</div>
+                                <div class="mt-2 font-medium text-2xl">{{tempTotalRecords + totalParticipants}}</div>
                             </div>
                         </div>
                     </div>
@@ -101,14 +113,19 @@
             </div>
             <!-- Group order details -->
             <div class="xl:col-span-2 flex flex-col flex-auto bg-card rounded-2xl shadow-md overflow-hidden">
-                <div class="p-6">
-                    <div class="mr-4 text-lg font-medium tracking-tight leading-6 truncate">Participants
+                <div class="p-6 flex justify-between">
+                    <div>
+                        <div class="mr-4 text-lg font-medium tracking-tight leading-6 truncate">Participants
+                        </div>
+                        <div class="text-secondary font-medium">{{totalRecords}}</div>
                     </div>
-                    <div class="text-secondary font-medium">{{totalRecords}}</div>
+                    <mat-progress-spinner *ngIf="isFilterLoader" [diameter]="24" [mode]="'indeterminate'"
+                        class="ml-2"></mat-progress-spinner>
                 </div>
                 <div class="px-6">
                     <mat-form-field class="w-full">
-                        <mat-select matInput [(ngModel)]="ngFilter">
+                        <mat-select matInput [(ngModel)]="ngFilter"
+                            (selectionChange)="filterAllParticipants($event.value)">
                             <mat-option [value]="-1">All invitees</mat-option>
                             <mat-option [value]="1">Participating invitees</mat-option>
                             <mat-option [value]="0">Non-participating invitees</mat-option>
@@ -201,6 +218,36 @@
                 </div>
             </div>
 
+        </div>
+        <ngx-skeleton-loader class="mt-2" count="8" appearance="line" animation="pulse"
+            *ngIf="isItemsLoader && mainScreen =='Current Items'">
+        </ngx-skeleton-loader>
+        <div *ngIf="mainScreen == 'Current Items' && !isItemsLoader" class="mt-2">
+            <div class="p-6 bg-card rounded-2xl shadow-md" *ngFor="let item of orderItems">
+                <div class="row">
+                    <div class="col-12 col-md-2">
+                        <img class="w-30 h-30 m-0"
+                            src="https://assets.consolidus.com/globalAssets/Products/coming_soon.jpg">
+                    </div>
+                    <div class="col-12 col-md-10">
+                        <p class="text-secondary font-bold">{{item.productName}}</p>
+                        <hr class="my-2">
+                        <div class="row">
+                            <div class="col-12 col-md-12">
+                                <li class="text-secondary font-medium">SPID: {{item.pk_storeProductID}}</li>
+                                <li class="text-secondary font-medium">Minimum Quantity Allowed: {{item.unitsInWeight}}
+                                </li>
+                                <li class="text-secondary font-medium">Minimum Threshold Per Initiator: N/A</li>
+                                <li class="text-secondary font-medium">Ordered so far: {{item.quantity}}</li>
+                            </div>
+                            <!-- <div class="col-12 col-md-7">
+                                <p>Artwork</p>
+                                <hr class="mt-2">
+                            </div> -->
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 </div>

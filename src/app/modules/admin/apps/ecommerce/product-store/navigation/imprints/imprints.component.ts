@@ -11,8 +11,8 @@ import { StoreProductService } from '../../store.service';
   encapsulation: ViewEncapsulation.None,
 })
 export class StoreImprintsComponent implements OnInit, OnDestroy {
-  @Input() selectedProduct: any;
-  @Input() isLoading: boolean;
+  selectedProduct: any;
+  isLoading: boolean;
   @Output() isLoadingChange = new EventEmitter<boolean>();
   private _unsubscribeAll: Subject<any> = new Subject<any>();
 
@@ -21,7 +21,6 @@ export class StoreImprintsComponent implements OnInit, OnDestroy {
 
   isUpdateLoading: boolean = false;
   isEditImprint: boolean = false;
-  storeData: any;
 
   suppliers = [];
 
@@ -37,14 +36,16 @@ export class StoreImprintsComponent implements OnInit, OnDestroy {
     this._productService.Suppliers$.pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
       this.suppliers = res["data"];
     })
-    this._storeService.store$.pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
-      this.storeData = res["data"][0];
-    });
     // Create the selected product form
     this.isLoading = true;
-    this.getImprints();
+    this.getStoreProductDetail();
   }
-
+  getStoreProductDetail() {
+    this._storeService.product$.pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+      this.selectedProduct = res["data"][0];
+      this.getImprints();
+    });
+  }
   getImprints() {
     let params = {
       store_product_imprints: true,

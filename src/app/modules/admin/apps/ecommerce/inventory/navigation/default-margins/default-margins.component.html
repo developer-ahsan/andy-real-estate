@@ -1,89 +1,97 @@
-<ngx-skeleton-loader count="8" appearance="line" animation="pulse" *ngIf="isLoading">
-</ngx-skeleton-loader>
-<div class="row mb-3" *ngIf="!isLoading">
-    <div class="col-12 my-2">
-        <fuse-card class="rounded-2xl shadow bg-card flex flex-col lg:flex-row w-full">
-            <form [formGroup]="defaultMarginForm">
-                <div class="p-6 sm:p-8 lg:p-10 w-full">
-                    <div class="text-2xl font-bold">
-                        <button
-                            [matTooltip]="'These margins will override the margins set when populating a store from the core products list.To remove margins, leave all fields below blank.Enter percentages below.'">
-                            <i class="fa fa-info-circle"></i>
-                        </button>
-                        Default Product Margins (%)
-                    </div>
-                    <!-- Default Margins -->
-                    <div class="gap-y-4 mt-6">
-                        <div class="row">
-                            <div class="col-lg-2 col-6">
-                                <mat-form-field class="w-full">
-                                    <input matInput [formControlName]="'1'"><small class="text-secondary font-semibold">
-                                        1
-                                    </small>
-                                </mat-form-field>
-                            </div>
-                            <div class="col-lg-2 col-6">
-                                <mat-form-field class="w-full">
-                                    <input matInput [formControlName]="'2'"><small class="text-secondary font-semibold">
-                                        2
-                                    </small>
-                                </mat-form-field>
-                            </div>
-                            <div class="col-lg-2 col-6">
-                                <mat-form-field class="w-full">
-                                    <input matInput [formControlName]="'3'"><small class="text-secondary font-semibold">
-                                        3
-                                    </small>
-                                </mat-form-field>
-                            </div>
-                            <div class="col-lg-2 col-6">
-                                <mat-form-field class="w-full">
-                                    <input matInput [formControlName]="'4'"><small class="text-secondary font-semibold">
-                                        4
-                                    </small>
-                                </mat-form-field>
-                            </div>
-                            <div class="col-lg-2 col-6">
-                                <mat-form-field class="w-full">
-                                    <input matInput [formControlName]="'5'"><small class="text-secondary font-semibold">
-                                        5
-                                    </small>
-                                </mat-form-field>
-                            </div>
-                            <div class="col-lg-2 col-6">
-                                <mat-form-field class="w-full">
-                                    <input matInput [formControlName]="'6'"><small class="text-secondary font-semibold">
-                                        6
-                                    </small>
-                                </mat-form-field>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="flex items-center justify-end w-full">
-                        <div class="flex items-center my-2">
-                            <div class="flex items-center mr-4" *ngIf="flashMessage">
-                                <ng-container *ngIf="flashMessage === 'success'">
-                                    <mat-icon class="text-green-500" [svgIcon]="'heroicons_outline:check'">
-                                    </mat-icon>
-                                    <span class="ml-2">Product Margins Updated successfully</span>
-                                </ng-container>
-                                <ng-container *ngIf="flashMessage === 'error'">
-                                    <mat-icon class="text-red-500" [svgIcon]="'heroicons_outline:x'"></mat-icon>
-                                    <span class="ml-2">An error occurred, try again!</span>
-                                </ng-container>
-                            </div>
-                            <button class="min-w-40" mat-stroked-button [matTooltip]="'Update product margins'"
-                                (click)="updateMargins()" [disabled]="defaultMarginUpdate">
-                                <mat-progress-spinner *ngIf="defaultMarginUpdate" [diameter]="24"
-                                    [mode]="'indeterminate'">
-                                </mat-progress-spinner>
-                                <mat-icon *ngIf="!defaultMarginUpdate" [svgIcon]="'mat_outline:edit'"></mat-icon>
-                                <span *ngIf="!defaultMarginUpdate" class="ml-1 mr-1">Update Margins</span>
+<div class="w-full">
+    <ngx-skeleton-loader count="8" appearance="line" animation="pulse" *ngIf="isLoading">
+    </ngx-skeleton-loader>
+    <div class="row mb-3" *ngIf="!isLoading">
+        <div class="col-12 my-2">
+            <fuse-card class="rounded-2xl shadow bg-card flex flex-col lg:flex-row w-full">
+                <form [formGroup]="defaultMarginForm">
+                    <div class="p-6 sm:p-8 lg:p-10 w-full">
+                        <div class="text-2xl font-bold">
+                            <button
+                                [matTooltip]="'These margins will override the margins set when populating a store from the core products list.To remove margins, leave all fields below blank.Enter percentages below.'">
+                                <i class="fa fa-info-circle"></i>
                             </button>
+                            Default Product Margins (%)
+                        </div>
+                        <!-- Default Margins -->
+                        <div class="gap-y-4 mt-6">
+                            <div class="row">
+                                <div class="col-lg-2 col-6">
+                                    <mat-form-field class="w-full">
+                                        <input matInput [formControlName]="'1'"><small
+                                            class="text-secondary font-semibold">
+                                            1
+                                        </small>
+                                    </mat-form-field>
+                                </div>
+                                <div class="col-lg-2 col-6">
+                                    <mat-form-field class="w-full">
+                                        <input matInput [formControlName]="'2'"><small
+                                            class="text-secondary font-semibold">
+                                            2
+                                        </small>
+                                    </mat-form-field>
+                                </div>
+                                <div class="col-lg-2 col-6">
+                                    <mat-form-field class="w-full">
+                                        <input matInput [formControlName]="'3'"><small
+                                            class="text-secondary font-semibold">
+                                            3
+                                        </small>
+                                    </mat-form-field>
+                                </div>
+                                <div class="col-lg-2 col-6">
+                                    <mat-form-field class="w-full">
+                                        <input matInput [formControlName]="'4'"><small
+                                            class="text-secondary font-semibold">
+                                            4
+                                        </small>
+                                    </mat-form-field>
+                                </div>
+                                <div class="col-lg-2 col-6">
+                                    <mat-form-field class="w-full">
+                                        <input matInput [formControlName]="'5'"><small
+                                            class="text-secondary font-semibold">
+                                            5
+                                        </small>
+                                    </mat-form-field>
+                                </div>
+                                <div class="col-lg-2 col-6">
+                                    <mat-form-field class="w-full">
+                                        <input matInput [formControlName]="'6'"><small
+                                            class="text-secondary font-semibold">
+                                            6
+                                        </small>
+                                    </mat-form-field>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="flex items-center justify-end w-full">
+                            <div class="flex items-center my-2">
+                                <div class="flex items-center mr-4" *ngIf="flashMessage">
+                                    <ng-container *ngIf="flashMessage === 'success'">
+                                        <mat-icon class="text-green-500" [svgIcon]="'heroicons_outline:check'">
+                                        </mat-icon>
+                                        <span class="ml-2">Product Margins Updated successfully</span>
+                                    </ng-container>
+                                    <ng-container *ngIf="flashMessage === 'error'">
+                                        <mat-icon class="text-red-500" [svgIcon]="'heroicons_outline:x'"></mat-icon>
+                                        <span class="ml-2">An error occurred, try again!</span>
+                                    </ng-container>
+                                </div>
+                                <button class="min-w-40" mat-stroked-button [matTooltip]="'Update product margins'"
+                                    (click)="updateMargins()" [disabled]="defaultMarginUpdate">
+                                    <mat-progress-spinner *ngIf="defaultMarginUpdate" [diameter]="24"
+                                        [mode]="'indeterminate'">
+                                    </mat-progress-spinner>
+                                    <mat-icon *ngIf="!defaultMarginUpdate" [svgIcon]="'mat_outline:edit'"></mat-icon>
+                                    <span *ngIf="!defaultMarginUpdate" class="ml-1 mr-1">Update Margins</span>
+                                </button>
+                            </div>
                         </div>
                     </div>
-                </div>
-            </form>
-        </fuse-card>
+                </form>
+            </fuse-card>
+        </div>
     </div>
 </div>

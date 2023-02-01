@@ -12,8 +12,8 @@ import { MatSnackBar } from '@angular/material/snack-bar';
   templateUrl: './video.component.html'
 })
 export class VideoComponent implements OnInit, OnDestroy {
-  @Input() selectedProduct: any;
-  @Input() isLoading: boolean;
+  selectedProduct: any;
+  isLoading: boolean;
   @Output() isLoadingChange = new EventEmitter<boolean>();
   private _unsubscribeAll: Subject<any> = new Subject<any>();
 
@@ -42,42 +42,50 @@ export class VideoComponent implements OnInit, OnDestroy {
     this.videoUploadForm = this._formBuilder.group({
       video: ['', Validators.required]
     });
+    this.getProductDetail();
 
-    const { pk_productID } = this.selectedProduct;
-
-    this._inventoryService.getVideoByProductId(pk_productID)
-      .pipe(takeUntil(this._unsubscribeAll))
-      .subscribe((video) => {
-        if (video["data"]?.length) {
-          this.videoLink = video["data"][0].video;
-          this.embeddedLink = `//www.youtube.com/embed/${this.getId(this.videoLink)}`;
-          this.url = this.sanitizer.bypassSecurityTrustResourceUrl(this.embeddedLink);
-        };
-        this.videoLength = video["totalRecords"];
-        this.videoUploadForm.patchValue(video["data"][0]);
-        this.isLoadingChange.emit(false);
-
-        this._changeDetectorRef.markForCheck();
-      });
-
-    this._inventoryService.getVideos()
-      .pipe(takeUntil(this._unsubscribeAll))
-      .subscribe((videos) => {
-
-        this.videosLength = videos["totalRecords"];
-        this._changeDetectorRef.markForCheck();
-      }, err => {
-        this._snackBar.open("Some error occured", '', {
-          horizontalPosition: 'center',
-          verticalPosition: 'bottom',
-          duration: 3500
-        });
-
-        // Mark for check
-        this._changeDetectorRef.markForCheck();
-      });
   }
+  getProductDetail() {
+    this.isLoading = true;
+    this._inventoryService.product$.pipe(takeUntil(this._unsubscribeAll)).subscribe((details) => {
+      if (details) {
+        this.selectedProduct = details["data"][0];
+        const { pk_productID } = this.selectedProduct;
 
+        this._inventoryService.getVideoByProductId(pk_productID)
+          .pipe(takeUntil(this._unsubscribeAll))
+          .subscribe((video) => {
+            if (video["data"]?.length) {
+              this.videoLink = video["data"][0].video;
+              this.embeddedLink = `//www.youtube.com/embed/${this.getId(this.videoLink)}`;
+              this.url = this.sanitizer.bypassSecurityTrustResourceUrl(this.embeddedLink);
+            };
+            this.videoLength = video["totalRecords"];
+            this.videoUploadForm.patchValue(video["data"][0]);
+            this.isLoading = false;
+
+            this._changeDetectorRef.markForCheck();
+          });
+
+        this._inventoryService.getVideos()
+          .pipe(takeUntil(this._unsubscribeAll))
+          .subscribe((videos) => {
+
+            this.videosLength = videos["totalRecords"];
+            this._changeDetectorRef.markForCheck();
+          }, err => {
+            this._snackBar.open("Some error occured", '', {
+              horizontalPosition: 'center',
+              verticalPosition: 'bottom',
+              duration: 3500
+            });
+
+            // Mark for check
+            this._changeDetectorRef.markForCheck();
+          });
+      }
+    });
+  }
   getId(url) {
     const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=)([^#&?]*).*/;
     const match = url.match(regExp);

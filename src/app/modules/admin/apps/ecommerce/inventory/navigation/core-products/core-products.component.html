@@ -1,125 +1,127 @@
-<ngx-skeleton-loader count="8" appearance="line" animation="pulse" *ngIf="isLoading">
-</ngx-skeleton-loader>
-<div class="row" *ngIf="!isLoading">
-    <div class="col-12 my-2">
-        <fuse-card class="rounded-2xl shadow bg-card flex flex-col lg:flex-row w-full">
-            <div class="p-6 sm:p-8 lg:p-10 w-full">
-                <div class="text-2xl font-bold">
-                    <button
-                        [matTooltip]="'A product can only be in a subcategory once. Sub categories that already have this product in them will not be available in the list below.'">
-                        <i class="fa fa-info-circle"></i>
-                    </button>
-                    Add To Core
-                </div>
-                <!-- Core product -->
-                <div class="gap-y-4 mt-6">
-                    <div class="row">
-                        <div class="col-lg-4 col-12">
-                            <mat-form-field class="w-full">
-                                <mat-label>Select a core</mat-label>
-                                <mat-select [(ngModel)]="selectedCore" name="order">
-                                    <mat-option (click)="coreSelection(available_core)"
-                                        *ngFor="let available_core of available_cores" [value]="available_core">
-                                        {{available_core.coreName}}
-                                    </mat-option>
-                                </mat-select>
-                            </mat-form-field>
-                        </div>
-                        <div class="col-lg-4 col-12">
-                            <mat-form-field class="w-full">
-                                <mat-label>Select a category</mat-label>
-                                <mat-select [(ngModel)]="selectedCategory" [disabled]="categories.length ? false : true"
-                                    name="order">
-                                    <mat-option (click)="categorySelection(category)"
-                                        *ngFor="let category of categories" [value]="category">
-                                        {{category.categoryName}}
-                                    </mat-option>
-                                </mat-select>
-                            </mat-form-field>
-                        </div>
-                        <div class="col-lg-4 col-12">
-                            <mat-form-field class="w-full">
-                                <mat-label>Select a subcategory</mat-label>
-                                <mat-select [(ngModel)]="selectedSubCategory"
-                                    [disabled]="subCategory.length ? false : true" name="order">
-                                    <mat-option (click)="subCategorySelection(category)"
-                                        *ngFor="let category of subCategory" [value]="category">
-                                        {{category.subCategoryName}}
-                                    </mat-option>
-                                </mat-select>
-                            </mat-form-field>
-                        </div>
-                    </div>
-                </div>
-                <div class="flex items-center justify-end w-full">
-                    <div class="flex items-center my-2">
-                        <div class="flex items-center mr-4" *ngIf="flashMessage">
-                            <ng-container *ngIf="flashMessage === 'success'">
-                                <mat-icon class="text-green-500" [svgIcon]="'heroicons_outline:check'">
-                                </mat-icon>
-                                <span class="ml-2">Core added successfully</span>
-                            </ng-container>
-                            <ng-container *ngIf="flashMessage === 'error'">
-                                <mat-icon class="text-red-500" [svgIcon]="'heroicons_outline:x'"></mat-icon>
-                                <span class="ml-2">
-                                    An error occurred, try again!
-                                </span>
-                            </ng-container>
-                        </div>
-                        <button class="min-w-40" mat-stroked-button
-                            [matTooltip]="'A product can only be in a subcategory once. Sub categories that already have this product in them will not be available in the list below.'"
-                            (click)="addCore()" [disabled]="coreAddLoader">
-                            <mat-progress-spinner *ngIf="coreAddLoader" [diameter]="24" [mode]="'indeterminate'">
-                            </mat-progress-spinner>
-                            <mat-icon *ngIf="!coreAddLoader" [svgIcon]="'heroicons_outline:plus'"></mat-icon>
-                            <span *ngIf="!coreAddLoader" class="ml-1 mr-1">Add Core</span>
+<div class="w-full">
+    <ngx-skeleton-loader count="8" appearance="line" animation="pulse" *ngIf="isLoading">
+    </ngx-skeleton-loader>
+    <div class="row" *ngIf="!isLoading">
+        <div class="col-12 my-2">
+            <fuse-card class="rounded-2xl shadow bg-card flex flex-col lg:flex-row w-full">
+                <div class="p-6 sm:p-8 lg:p-10 w-full">
+                    <div class="text-2xl font-bold">
+                        <button
+                            [matTooltip]="'A product can only be in a subcategory once. Sub categories that already have this product in them will not be available in the list below.'">
+                            <i class="fa fa-info-circle"></i>
                         </button>
+                        Add To Core
+                    </div>
+                    <!-- Core product -->
+                    <div class="gap-y-4 mt-6">
+                        <div class="row">
+                            <div class="col-lg-4 col-12">
+                                <mat-form-field class="w-full">
+                                    <mat-label>Select a core</mat-label>
+                                    <mat-select [(ngModel)]="selectedCore" name="order">
+                                        <mat-option (click)="coreSelection(available_core)"
+                                            *ngFor="let available_core of available_cores" [value]="available_core">
+                                            {{available_core.coreName}}
+                                        </mat-option>
+                                    </mat-select>
+                                </mat-form-field>
+                            </div>
+                            <div class="col-lg-4 col-12">
+                                <mat-form-field class="w-full">
+                                    <mat-label>Select a category</mat-label>
+                                    <mat-select [(ngModel)]="selectedCategory"
+                                        [disabled]="categories.length ? false : true" name="order">
+                                        <mat-option (click)="categorySelection(category)"
+                                            *ngFor="let category of categories" [value]="category">
+                                            {{category.categoryName}}
+                                        </mat-option>
+                                    </mat-select>
+                                </mat-form-field>
+                            </div>
+                            <div class="col-lg-4 col-12">
+                                <mat-form-field class="w-full">
+                                    <mat-label>Select a subcategory</mat-label>
+                                    <mat-select [(ngModel)]="selectedSubCategory"
+                                        [disabled]="subCategory.length ? false : true" name="order">
+                                        <mat-option (click)="subCategorySelection(category)"
+                                            *ngFor="let category of subCategory" [value]="category">
+                                            {{category.subCategoryName}}
+                                        </mat-option>
+                                    </mat-select>
+                                </mat-form-field>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="flex items-center justify-end w-full">
+                        <div class="flex items-center my-2">
+                            <div class="flex items-center mr-4" *ngIf="flashMessage">
+                                <ng-container *ngIf="flashMessage === 'success'">
+                                    <mat-icon class="text-green-500" [svgIcon]="'heroicons_outline:check'">
+                                    </mat-icon>
+                                    <span class="ml-2">Core added successfully</span>
+                                </ng-container>
+                                <ng-container *ngIf="flashMessage === 'error'">
+                                    <mat-icon class="text-red-500" [svgIcon]="'heroicons_outline:x'"></mat-icon>
+                                    <span class="ml-2">
+                                        An error occurred, try again!
+                                    </span>
+                                </ng-container>
+                            </div>
+                            <button class="min-w-40" mat-stroked-button
+                                [matTooltip]="'A product can only be in a subcategory once. Sub categories that already have this product in them will not be available in the list below.'"
+                                (click)="addCore()" [disabled]="coreAddLoader">
+                                <mat-progress-spinner *ngIf="coreAddLoader" [diameter]="24" [mode]="'indeterminate'">
+                                </mat-progress-spinner>
+                                <mat-icon *ngIf="!coreAddLoader" [svgIcon]="'heroicons_outline:plus'"></mat-icon>
+                                <span *ngIf="!coreAddLoader" class="ml-1 mr-1">Add Core</span>
+                            </button>
+                        </div>
                     </div>
                 </div>
-            </div>
-        </fuse-card>
+            </fuse-card>
+        </div>
     </div>
-</div>
-<div class="row" *ngIf="!isLoading">
-    <div class="col-12 mb-2">
-        <mat-card class="w-full p-0 mb-10 h-full rounded-2xl shadow">
-            <div class="text-2xl font-bold p-5">
-                Current Core Product Options
-            </div>
-            <div *ngIf="dataSource.length > 0;else other_content">
-                <table mat-table [dataSource]="dataSource" class="w-full border-t">
-
-                    <!-- Core Column -->
-                    <ng-container matColumnDef="core">
-                        <th mat-header-cell *matHeaderCellDef class="w-24 min-w-24"> Core </th>
-                        <td mat-cell *matCellDef="let element"> {{element.coreName}} </td>
-                    </ng-container>
-
-                    <!-- Cateogory Column -->
-                    <ng-container matColumnDef="category">
-                        <th mat-header-cell *matHeaderCellDef class="w-24 min-w-24"> Cateogory </th>
-                        <td mat-cell *matCellDef="let element"> {{element.categoryName}} </td>
-                    </ng-container>
-
-                    <!-- SUBCATEGORY Column -->
-                    <ng-container matColumnDef="sub_category">
-                        <th mat-header-cell *matHeaderCellDef class="w-24 min-w-24"> SUBCATEGORY </th>
-                        <td mat-cell *matCellDef="let element"> {{element.subCategoryName}} </td>
-                    </ng-container>
-
-                    <tr mat-header-row *matHeaderRowDef="displayedColumns;" class="h-18 bg-light"></tr>
-                    <tr mat-row *matRowDef="let row; columns: displayedColumns;"
-                        class="h-14 hover:bg-gray-100 dark:hover:bg-hover" style="cursor: pointer;"
-                        (click)="selection.toggle(row)">
-                    </tr>
-                </table>
-            </div>
-
-            <ng-template #other_content>
-                <div class="text-secondary font-semibold p-3">
-                    *This product is not currently in any core product list.
+    <div class="row" *ngIf="!isLoading">
+        <div class="col-12 mb-2">
+            <mat-card class="w-full p-0 mb-10 h-full rounded-2xl shadow">
+                <div class="text-2xl font-bold p-5">
+                    Current Core Product Options
                 </div>
-            </ng-template>
-        </mat-card>
+                <div *ngIf="dataSource.length > 0;else other_content">
+                    <table mat-table [dataSource]="dataSource" class="w-full border-t">
+
+                        <!-- Core Column -->
+                        <ng-container matColumnDef="core">
+                            <th mat-header-cell *matHeaderCellDef class="w-24 min-w-24"> Core </th>
+                            <td mat-cell *matCellDef="let element"> {{element.coreName}} </td>
+                        </ng-container>
+
+                        <!-- Cateogory Column -->
+                        <ng-container matColumnDef="category">
+                            <th mat-header-cell *matHeaderCellDef class="w-24 min-w-24"> Cateogory </th>
+                            <td mat-cell *matCellDef="let element"> {{element.categoryName}} </td>
+                        </ng-container>
+
+                        <!-- SUBCATEGORY Column -->
+                        <ng-container matColumnDef="sub_category">
+                            <th mat-header-cell *matHeaderCellDef class="w-24 min-w-24"> SUBCATEGORY </th>
+                            <td mat-cell *matCellDef="let element"> {{element.subCategoryName}} </td>
+                        </ng-container>
+
+                        <tr mat-header-row *matHeaderRowDef="displayedColumns;" class="h-18 bg-light"></tr>
+                        <tr mat-row *matRowDef="let row; columns: displayedColumns;"
+                            class="h-14 hover:bg-gray-100 dark:hover:bg-hover" style="cursor: pointer;"
+                            (click)="selection.toggle(row)">
+                        </tr>
+                    </table>
+                </div>
+
+                <ng-template #other_content>
+                    <div class="text-secondary font-semibold p-3">
+                        *This product is not currently in any core product list.
+                    </div>
+                </ng-template>
+            </mat-card>
+        </div>
     </div>
 </div>

@@ -11,8 +11,8 @@ import { takeUntil } from 'rxjs/operators';
   templateUrl: './sizes.component.html'
 })
 export class SizesComponent implements OnInit, OnDestroy {
-  @Input() selectedProduct: any;
-  @Input() isLoading: boolean;
+  selectedProduct: any;
+  isLoading: boolean;
   @Output() isLoadingChange = new EventEmitter<boolean>();
   private _unsubscribeAll: Subject<any> = new Subject<any>();
 
@@ -60,9 +60,17 @@ export class SizesComponent implements OnInit, OnDestroy {
       order: ['1'],
       feature: ['', Validators.required]
     });
-
-    this.getSizes(this.page);
+    this.getProductDetail();
   };
+  getProductDetail() {
+    this.isLoading = true;
+    this._inventoryService.product$.pipe(takeUntil(this._unsubscribeAll)).subscribe((details) => {
+      if (details) {
+        this.selectedProduct = details["data"][0];
+        this.getSizes(this.page);
+      }
+    });
+  }
   searchKeyword(ev) {
     const keyword = ev.target.value;
     this.searchKeywordTerm = keyword;
@@ -114,14 +122,14 @@ export class SizesComponent implements OnInit, OnDestroy {
             this.isSearchLoading = false;
             this.isLoading = false;
 
-            this.isLoadingChange.emit(false);
+
             // Mark for check
             this._changeDetectorRef.markForCheck();
           }, err => {
             this.isSearchLoading = false;
             this.isLoading = false;
 
-            this.isLoadingChange.emit(false);
+
             // Mark for check
             this._changeDetectorRef.markForCheck();
           });

@@ -11,8 +11,8 @@ import { takeUntil } from 'rxjs/operators';
   templateUrl: './products-status.component.html'
 })
 export class ProductsStatusComponent implements OnInit {
-  @Input() selectedProduct: any;
-  @Input() isLoading: boolean;
+  selectedProduct: any;
+  isLoading: boolean;
   @Output() isLoadingChange = new EventEmitter<boolean>();
   private _unsubscribeAll: Subject<any> = new Subject<any>();
   @ViewChild('topScrollAnchor') topScroll: ElementRef;
@@ -49,7 +49,16 @@ export class ProductsStatusComponent implements OnInit {
   ngOnInit(): void {
     this.isRapidBuild = true;
     this.isLoading = true;
-    this.getAssignedStores('get', 1);
+    this.getProductDetail();
+  }
+  getProductDetail() {
+    this.isLoading = true;
+    this._inventoryService.product$.pipe(takeUntil(this._unsubscribeAll)).subscribe((details) => {
+      if (details) {
+        this.selectedProduct = details["data"][0];
+        this.getAssignedStores('get', 1);
+      }
+    });
   }
   getAssignedStores(type, page) {
     let params = {
@@ -77,11 +86,9 @@ export class ProductsStatusComponent implements OnInit {
       }
       this.getAllActiveStores(0);
       this.isLoading = false;
-      this.isLoadingChange.emit(false);
       this._changeDetectorRef.markForCheck();
     }, err => {
       this.isLoading = false;
-      this.isLoadingChange.emit(false);
       this._changeDetectorRef.markForCheck();
     });
   }
@@ -116,12 +123,12 @@ export class ProductsStatusComponent implements OnInit {
         this.storesData = this.storesData.concat(stores["data"]);
         this.totalStoresData = stores["totalRecords"];
         this._changeDetectorRef.markForCheck();
-        this.isLoadingChange.emit(false);
+        this.isLoading = false;
       }, err => {
         this.isStoreLoader = true;
         this.isViewMoreLoader = false;
         this._changeDetectorRef.markForCheck();
-        this.isLoadingChange.emit(false);
+        this.isLoading = false;
       });
   }
 

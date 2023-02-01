@@ -12,8 +12,8 @@ import { StoreProductService } from '../../store.service';
   templateUrl: './pricing.component.html'
 })
 export class PricingComponent implements OnInit, OnDestroy {
-  @Input() selectedProduct: any;
-  @Input() isLoading: boolean;
+  selectedProduct: any;
+  isLoading: boolean = true;
   @Output() isLoadingChange = new EventEmitter<boolean>();
   private _unsubscribeAll: Subject<any> = new Subject<any>();
 
@@ -26,7 +26,6 @@ export class PricingComponent implements OnInit, OnDestroy {
   netCostForm: FormGroup;
   isUpdateLoading: boolean = false;
 
-  storeData: any;
 
   constructor(
     private _changeDetectorRef: ChangeDetectorRef,
@@ -35,11 +34,15 @@ export class PricingComponent implements OnInit, OnDestroy {
   ) { }
 
   ngOnInit(): void {
+    this.isLoading = true
     this.initialize();
-    this._storeService.store$.pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
-      this.storeData = res["data"][0];
+    this.getStoreProductDetail();
+  }
+  getStoreProductDetail() {
+    this._storeService.product$.pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+      this.selectedProduct = res["data"][0];
+      this.getPricing();
     });
-    this.getPricing();
   }
   initialize() {
     this.netCostForm = this._formBuilder.group({
@@ -59,6 +62,8 @@ export class PricingComponent implements OnInit, OnDestroy {
   }
 
   getPricing() {
+    this.isLoading = true;
+    this.isLoadingChange.emit(true);
     let params = {
       pricing: true,
       store_product_id: this.selectedProduct.pk_storeProductID
@@ -188,7 +193,7 @@ export class PricingComponent implements OnInit, OnDestroy {
       storeProductID: Number(this.selectedProduct.pk_storeProductID),
       update_pricing: true,
       product_id: Number(this.selectedProduct.fk_productID),
-      storeName: this.storeData.storeName,
+      storeName: this.selectedProduct.storeName,
       list: Quantities
     }
     this._storeService.UpdatePricing(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {

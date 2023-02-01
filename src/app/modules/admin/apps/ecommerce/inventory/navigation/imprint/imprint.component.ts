@@ -17,8 +17,8 @@ import { ScrollStrategy, ScrollStrategyOptions } from '@angular/cdk/overlay';
   templateUrl: './imprint.component.html'
 })
 export class ImprintComponent implements OnInit, OnDestroy {
-  @Input() selectedProduct: any;
-  @Input() isLoading: boolean;
+  selectedProduct: any;
+  isLoading: boolean;
   @Output() isLoadingChange = new EventEmitter<boolean>();
   private _unsubscribeAll: Subject<any> = new Subject<any>();
   chargeDistribution: FormGroup;
@@ -266,6 +266,7 @@ export class ImprintComponent implements OnInit, OnDestroy {
     })
   }
   ngOnInit(): void {
+    this.showImprintScreen = 'Imprints';
     this.isContentLoading = true;
 
     this.locationSearchControl.setValue('');
@@ -335,59 +336,66 @@ export class ImprintComponent implements OnInit, OnDestroy {
       map(value => this._filterLocation(value || '')),
     );
 
-    const { blnGroupRun } = this.selectedProduct;
-    this.allowRunBoolean = blnGroupRun;
-    this.chargeDistribution = this._formBuilder.group({
-      charge: [0]
-    })
-
-    this.runSetup = this._formBuilder.group({
-      run: [''],
-      setup: ['']
-    })
-
-    // Defalut selected button toggle
-    this.showImprintScreen = 'Imprints';
-    this.getImprints(this.page);
-    this.getSuppliers();
-    this.getAllImprintsMethods();
-    // this.getAllImprints();
-
-    this.priceInclusionForm = this._formBuilder.group({
-      checkBox: ['']
-    });
-
-    this.values = this._formBuilder.group({
-      twoColorQ: [1],
-      threeColorQ: [1],
-      fourColorQ: [1],
-      fiveColorQ: [1]
-    });
-
-    this.testPricingForm = this._formBuilder.group({
-      optionOneFirst: [''],
-      optionOneSecond: [''],
-      optionTwoFirst: [''],
-      optionTwoSecond: [''],
-      optionThreeFirst: [''],
-      optionThreeSecond: [''],
-      optionFourFirst: [''],
-      optionFourSecond: ['']
-    });
-
-    this.dropdownSettings = {
-      singleSelection: false,
-      idField: 'fk_collectionID',
-      textField: 'collectionName',
-      selectAllText: 'Select All',
-      unSelectAllText: 'UnSelect All',
-      itemsShowLimit: 1,
-      allowSearchFilter: true,
-      limitSelection: 1
-    };
+    this.getProductDetail();
 
   };
+  getProductDetail() {
+    this.isLoading = true;
+    this._inventoryService.product$.pipe(takeUntil(this._unsubscribeAll)).subscribe((details) => {
+      if (details) {
+        this.selectedProduct = details["data"][0];
+        const { blnGroupRun } = this.selectedProduct;
+        this.allowRunBoolean = blnGroupRun;
+        this.chargeDistribution = this._formBuilder.group({
+          charge: [0]
+        })
 
+        this.runSetup = this._formBuilder.group({
+          run: [''],
+          setup: ['']
+        })
+
+        // Defalut selected button toggle
+        this.getImprints(this.page);
+        this.getSuppliers();
+        this.getAllImprintsMethods();
+        // this.getAllImprints();
+
+        this.priceInclusionForm = this._formBuilder.group({
+          checkBox: ['']
+        });
+
+        this.values = this._formBuilder.group({
+          twoColorQ: [1],
+          threeColorQ: [1],
+          fourColorQ: [1],
+          fiveColorQ: [1]
+        });
+
+        this.testPricingForm = this._formBuilder.group({
+          optionOneFirst: [''],
+          optionOneSecond: [''],
+          optionTwoFirst: [''],
+          optionTwoSecond: [''],
+          optionThreeFirst: [''],
+          optionThreeSecond: [''],
+          optionFourFirst: [''],
+          optionFourSecond: ['']
+        });
+
+        this.dropdownSettings = {
+          singleSelection: false,
+          idField: 'fk_collectionID',
+          textField: 'collectionName',
+          selectAllText: 'Select All',
+          unSelectAllText: 'UnSelect All',
+          itemsShowLimit: 1,
+          allowSearchFilter: true,
+          limitSelection: 1
+        };
+      }
+    });
+  }
   getStandardImprints(): void {
     this._inventoryService.getStandardImprints()
       .pipe(takeUntil(this._unsubscribeAll))
@@ -836,7 +844,7 @@ export class ImprintComponent implements OnInit, OnDestroy {
           this.dataSource2Length = imprint["totalRecords"];
         };
         this.isEditImprintScreen = false;
-        this.isLoadingChange.emit(false);
+        this.isLoading = false;
         this._inventoryService.run = null;
         this._inventoryService.setup = null;
         this.runSetup.patchValue({
@@ -846,6 +854,7 @@ export class ImprintComponent implements OnInit, OnDestroy {
         // Mark for check
         this._changeDetectorRef.markForCheck();
       }, err => {
+        this.isLoading = false;
         this.addImprintLoader = false;
         this._changeDetectorRef.markForCheck();
 

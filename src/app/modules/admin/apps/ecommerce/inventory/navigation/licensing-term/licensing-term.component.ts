@@ -11,8 +11,8 @@ import { MatSnackBar } from '@angular/material/snack-bar';
   templateUrl: './licensing-term.component.html'
 })
 export class LicensingTermComponent implements OnInit, OnDestroy {
-  @Input() selectedProduct: any;
-  @Input() isLoading: boolean;
+  selectedProduct: any;
+  isLoading: boolean;
   @Output() isLoadingChange = new EventEmitter<boolean>();
   private _unsubscribeAll: Subject<any> = new Subject<any>();
 
@@ -50,6 +50,18 @@ export class LicensingTermComponent implements OnInit, OnDestroy {
       radio: ['']
     });
 
+    this.getProductDetail();
+  }
+  getProductDetail() {
+    this.isLoading = true;
+    this._inventoryService.product$.pipe(takeUntil(this._unsubscribeAll)).subscribe((details) => {
+      if (details) {
+        this.selectedProduct = details["data"][0];
+        this.getLicencingTerms();
+      }
+    });
+  }
+  getLicencingTerms() {
     const { pk_productID } = this.selectedProduct;
 
     this._inventoryService.getLicensingCompanyByProductId(pk_productID)
@@ -89,7 +101,7 @@ export class LicensingTermComponent implements OnInit, OnDestroy {
                     verticalPosition: 'bottom',
                     duration: 3500
                   });
-                  this.isLoadingChange.emit(false);
+                  this.isLoading = false;
 
                   // Mark for check
                   this._changeDetectorRef.markForCheck();
@@ -101,7 +113,7 @@ export class LicensingTermComponent implements OnInit, OnDestroy {
               .subscribe((subCategories) => {
                 this.selectedSubCategItems = subCategories["data"];
 
-                this.isLoadingChange.emit(false);
+                this.isLoading = false;
 
 
                 // Mark for check
@@ -112,7 +124,7 @@ export class LicensingTermComponent implements OnInit, OnDestroy {
                   verticalPosition: 'bottom',
                   duration: 3500
                 });
-                this.isLoadingChange.emit(false);
+                this.isLoading = false;
 
                 // Mark for check
                 this._changeDetectorRef.markForCheck();
@@ -128,13 +140,12 @@ export class LicensingTermComponent implements OnInit, OnDestroy {
           verticalPosition: 'bottom',
           duration: 3500
         });
-        this.isLoadingChange.emit(false);
+        this.isLoading = false;
 
         // Mark for check
         this._changeDetectorRef.markForCheck();
       })
   }
-
   selectedRadio(item: MatRadioChange) {
     this.selectedRadioOption = item.value;
   }

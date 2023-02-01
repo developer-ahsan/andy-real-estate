@@ -1,140 +1,145 @@
-<ngx-skeleton-loader count="8" appearance="line" animation="pulse" *ngIf="isLoading">
-</ngx-skeleton-loader>
-<div class="row my-3" *ngIf="!isLoading">
-    <div class="col-12">
-        <fuse-card class="rounded-2xl shadow bg-card flex flex-col lg:flex-row w-full">
-            <div class="w-full">
-                <div class="p-6 sm:p-8 lg:p-10 lg:pb-3 w-full">
-                    <div class="text-2xl font-bold">
-                        Imprints
-                    </div>
-                    <fuse-alert [appearance]="'soft'" [name]="'alertBox4'" [type]="'info'">
-                        Imprints for this product are defined at the master product level, available here. You can
-                        specify which imprint options appear on the site by clicking the "Update imprint status" button
-                        above. Imprints not shown below will not show up as a product imprint option, and cannot be
-                        ordered.
-                    </fuse-alert>
-                    <div *ngIf="isEditImprint && editImprintData">
-                        <div class="mt-4">
-                            <note>The settings below allow you to override some of the imprint settings at the
-                                master
-                                product level. Leaving these fields blank or clearing all fields will adhere this
-                                store
-                                product to the imprint settings defined at the master product level.</note>
+<div class="w-full">
+    <ngx-skeleton-loader count="8" appearance="line" animation="pulse" *ngIf="isLoading">
+    </ngx-skeleton-loader>
+    <div class="row my-3" *ngIf="!isLoading">
+        <div class="col-12">
+            <fuse-card class="rounded-2xl shadow bg-card flex flex-col lg:flex-row w-full">
+                <div class="w-full">
+                    <div class="p-6 sm:p-8 lg:p-10 lg:pb-3 w-full">
+                        <div class="text-2xl font-bold">
+                            Imprints
                         </div>
-                        <div class="row mt-2">
-                            <div class="col-md-6 col-12">
-                                <mat-form-field class="w-full">
-                                    <mat-label>Decorator</mat-label>
-                                    <mat-select matInput [(ngModel)]="editImprintData.fk_decoratorID">
-                                        <mat-option *ngFor="let item of suppliers" [value]="item.pk_companyID">
-                                            {{item.companyName}}</mat-option>
-                                    </mat-select>
-                                </mat-form-field>
+                        <fuse-alert [appearance]="'soft'" [name]="'alertBox4'" [type]="'info'">
+                            Imprints for this product are defined at the master product level, available here. You can
+                            specify which imprint options appear on the site by clicking the "Update imprint status"
+                            button
+                            above. Imprints not shown below will not show up as a product imprint option, and cannot be
+                            ordered.
+                        </fuse-alert>
+                        <div *ngIf="isEditImprint && editImprintData">
+                            <div class="mt-4">
+                                <note>The settings below allow you to override some of the imprint settings at the
+                                    master
+                                    product level. Leaving these fields blank or clearing all fields will adhere this
+                                    store
+                                    product to the imprint settings defined at the master product level.</note>
                             </div>
-                            <div class="col-md-6 col-12">
-                                <mat-form-field class="w-full">
-                                    <mat-label>Imprint Color Collection</mat-label>
-                                    <input matInput [(ngModel)]="editImprintData.fk_collectionID">
-                                </mat-form-field>
+                            <div class="row mt-2">
+                                <div class="col-md-6 col-12">
+                                    <mat-form-field class="w-full">
+                                        <mat-label>Decorator</mat-label>
+                                        <mat-select matInput [(ngModel)]="editImprintData.fk_decoratorID">
+                                            <mat-option *ngFor="let item of suppliers" [value]="item.pk_companyID">
+                                                {{item.companyName}}</mat-option>
+                                        </mat-select>
+                                    </mat-form-field>
+                                </div>
+                                <div class="col-md-6 col-12">
+                                    <mat-form-field class="w-full">
+                                        <mat-label>Imprint Color Collection</mat-label>
+                                        <input matInput [(ngModel)]="editImprintData.fk_collectionID">
+                                    </mat-form-field>
+                                </div>
+                                <div class="col-md-6 col-12">
+                                    <mat-form-field class="w-full">
+                                        <mat-label>Setup</mat-label>
+                                        <input matInput [(ngModel)]="editImprintData.fk_setupChargeID">
+                                    </mat-form-field>
+                                </div>
+                                <div class="col-md-6 col-12">
+                                    <mat-form-field class="w-full">
+                                        <mat-label>Run</mat-label>
+                                        <input matInput [(ngModel)]="editImprintData.fk_runChargeID">
+                                    </mat-form-field>
+                                </div>
+                                <div class="col-12 text-right">
+                                    <button [matTooltip]="'Cancel'" mat-stroked-button class="min-w-40 mr-2"
+                                        (click)="cancelEditImprint()">
+                                        <span *ngIf="!isUpdateLoading" class="ml-1 mr-1">
+                                            Cancel
+                                        </span>
+                                    </button>
+                                    <button [matTooltip]="'Update'" mat-stroked-button class="min-w-40"
+                                        (click)="UpdateImprint()" [disabled]="editImprintLoader">
+                                        <mat-progress-spinner *ngIf="editImprintLoader" [diameter]="24"
+                                            [mode]="'indeterminate'">
+                                        </mat-progress-spinner>
+                                        <span *ngIf="!editImprintLoader" class="ml-1 mr-1">
+                                            Update
+                                        </span>
+                                    </button>
+                                </div>
                             </div>
-                            <div class="col-md-6 col-12">
-                                <mat-form-field class="w-full">
-                                    <mat-label>Setup</mat-label>
-                                    <input matInput [(ngModel)]="editImprintData.fk_setupChargeID">
-                                </mat-form-field>
-                            </div>
-                            <div class="col-md-6 col-12">
-                                <mat-form-field class="w-full">
-                                    <mat-label>Run</mat-label>
-                                    <input matInput [(ngModel)]="editImprintData.fk_runChargeID">
-                                </mat-form-field>
-                            </div>
-                            <div class="col-12 text-right">
-                                <button [matTooltip]="'Cancel'" mat-stroked-button class="min-w-40 mr-2"
-                                    (click)="cancelEditImprint()">
-                                    <span *ngIf="!isUpdateLoading" class="ml-1 mr-1">
-                                        Cancel
-                                    </span>
-                                </button>
+                        </div>
+                    </div>
+                    <div *ngIf="!isEditImprint">
+                        <div *ngIf="imprintsData.length > 0 ; else other_content">
+                            <div class="text-right m-2">
                                 <button [matTooltip]="'Update'" mat-stroked-button class="min-w-40"
-                                    (click)="UpdateImprint()" [disabled]="editImprintLoader">
-                                    <mat-progress-spinner *ngIf="editImprintLoader" [diameter]="24"
+                                    (click)="UpdateImprintStatus()" [disabled]="isUpdateLoading">
+                                    <mat-progress-spinner *ngIf="isUpdateLoading" [diameter]="24"
                                         [mode]="'indeterminate'">
                                     </mat-progress-spinner>
-                                    <span *ngIf="!editImprintLoader" class="ml-1 mr-1">
+                                    <span *ngIf="!isUpdateLoading" class="ml-1 mr-1">
                                         Update
                                     </span>
                                 </button>
                             </div>
+                            <table mat-table *ngIf="imprintsData.length > 0" [dataSource]="imprintsData"
+                                class="w-full border-t mb-4">
+                                <ng-container matColumnDef="id">
+                                    <th mat-header-cell *matHeaderCellDef class="w-10">
+                                        #
+                                    </th>
+                                    <td mat-cell *matCellDef="let element; let i=index">
+                                        {{i+1}}
+                                    </td>
+                                </ng-container>
+                                <ng-container matColumnDef="location">
+                                    <th mat-header-cell *matHeaderCellDef class="w-10"> Location </th>
+                                    <td mat-cell *matCellDef="let element"> {{element.locationName}} </td>
+                                </ng-container>
+                                <ng-container matColumnDef="method">
+                                    <th mat-header-cell *matHeaderCellDef class="w-20"> Method </th>
+                                    <td mat-cell *matCellDef="let element"> {{element.methodName}} </td>
+                                </ng-container>
+                                <ng-container matColumnDef="setup">
+                                    <th mat-header-cell *matHeaderCellDef class="w-10"> Setup </th>
+                                    <td mat-cell *matCellDef="let element"> {{element.fk_setupChargeID}} </td>
+                                </ng-container>
+                                <ng-container matColumnDef="run">
+                                    <th mat-header-cell *matHeaderCellDef class="w-10"> Run </th>
+                                    <td mat-cell *matCellDef="let element"> {{element.fk_runChargeID}} </td>
+                                </ng-container>
+                                <ng-container matColumnDef="decorator">
+                                    <th mat-header-cell *matHeaderCellDef class="w-40"> Decorator </th>
+                                    <td mat-cell *matCellDef="let element"> {{checkSupplier(element.fk_decoratorID)}}
+                                    </td>
+                                </ng-container>
+                                <ng-container matColumnDef="action">
+                                    <th mat-header-cell *matHeaderCellDef class="w-20 text-center"> Action </th>
+                                    <td mat-cell *matCellDef="let element" class="text-center">
+                                        <mat-checkbox [(ngModel)]="element.blnStoreProductImprintActive"></mat-checkbox>
+                                        <mat-icon (click)="editImprint(element)" [matTooltip]="'Edit'" class="ml-2"
+                                            [svgIcon]="'heroicons_outline:pencil-alt'">
+                                        </mat-icon>
+                                    </td>
+                                </ng-container>
+                                <tr mat-header-row *matHeaderRowDef="imprintsColumns;" class="h-18 bg-light"></tr>
+                                <tr mat-row *matRowDef="let row; columns: imprintsColumns;"
+                                    class="h-14 hover:bg-gray-100 dark:hover:bg-hover" style="cursor: pointer;">
+                                </tr>
+                            </table>
                         </div>
+                        <ng-template #other_content>
+                            <div class="text-secondary font-semibold p-5">
+                                No imprints found.
+                            </div>
+                        </ng-template>
                     </div>
-                </div>
-                <div *ngIf="!isEditImprint">
-                    <div *ngIf="imprintsData.length > 0 ; else other_content">
-                        <div class="text-right m-2">
-                            <button [matTooltip]="'Update'" mat-stroked-button class="min-w-40"
-                                (click)="UpdateImprintStatus()" [disabled]="isUpdateLoading">
-                                <mat-progress-spinner *ngIf="isUpdateLoading" [diameter]="24" [mode]="'indeterminate'">
-                                </mat-progress-spinner>
-                                <span *ngIf="!isUpdateLoading" class="ml-1 mr-1">
-                                    Update
-                                </span>
-                            </button>
-                        </div>
-                        <table mat-table *ngIf="imprintsData.length > 0" [dataSource]="imprintsData"
-                            class="w-full border-t mb-4">
-                            <ng-container matColumnDef="id">
-                                <th mat-header-cell *matHeaderCellDef class="w-10">
-                                    #
-                                </th>
-                                <td mat-cell *matCellDef="let element; let i=index">
-                                    {{i+1}}
-                                </td>
-                            </ng-container>
-                            <ng-container matColumnDef="location">
-                                <th mat-header-cell *matHeaderCellDef class="w-10"> Location </th>
-                                <td mat-cell *matCellDef="let element"> {{element.locationName}} </td>
-                            </ng-container>
-                            <ng-container matColumnDef="method">
-                                <th mat-header-cell *matHeaderCellDef class="w-20"> Method </th>
-                                <td mat-cell *matCellDef="let element"> {{element.methodName}} </td>
-                            </ng-container>
-                            <ng-container matColumnDef="setup">
-                                <th mat-header-cell *matHeaderCellDef class="w-10"> Setup </th>
-                                <td mat-cell *matCellDef="let element"> {{element.fk_setupChargeID}} </td>
-                            </ng-container>
-                            <ng-container matColumnDef="run">
-                                <th mat-header-cell *matHeaderCellDef class="w-10"> Run </th>
-                                <td mat-cell *matCellDef="let element"> {{element.fk_runChargeID}} </td>
-                            </ng-container>
-                            <ng-container matColumnDef="decorator">
-                                <th mat-header-cell *matHeaderCellDef class="w-40"> Decorator </th>
-                                <td mat-cell *matCellDef="let element"> {{checkSupplier(element.fk_decoratorID)}} </td>
-                            </ng-container>
-                            <ng-container matColumnDef="action">
-                                <th mat-header-cell *matHeaderCellDef class="w-20 text-center"> Action </th>
-                                <td mat-cell *matCellDef="let element" class="text-center">
-                                    <mat-checkbox [(ngModel)]="element.blnStoreProductImprintActive"></mat-checkbox>
-                                    <mat-icon (click)="editImprint(element)" [matTooltip]="'Edit'" class="ml-2"
-                                        [svgIcon]="'heroicons_outline:pencil-alt'">
-                                    </mat-icon>
-                                </td>
-                            </ng-container>
-                            <tr mat-header-row *matHeaderRowDef="imprintsColumns;" class="h-18 bg-light"></tr>
-                            <tr mat-row *matRowDef="let row; columns: imprintsColumns;"
-                                class="h-14 hover:bg-gray-100 dark:hover:bg-hover" style="cursor: pointer;">
-                            </tr>
-                        </table>
-                    </div>
-                    <ng-template #other_content>
-                        <div class="text-secondary font-semibold p-5">
-                            No imprints found.
-                        </div>
-                    </ng-template>
-                </div>
 
-            </div>
-        </fuse-card>
+                </div>
+            </fuse-card>
+        </div>
     </div>
 </div>

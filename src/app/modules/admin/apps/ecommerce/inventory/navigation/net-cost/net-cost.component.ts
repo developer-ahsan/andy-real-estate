@@ -12,8 +12,8 @@ import _ from 'lodash';
   templateUrl: './net-cost.component.html'
 })
 export class NetCostComponent implements OnInit, OnDestroy {
-  @Input() selectedProduct: any;
-  @Input() isLoading: boolean;
+  selectedProduct: any;
+  isLoading: boolean;
   @Output() isLoadingChange = new EventEmitter<boolean>();
   private _unsubscribeAll: Subject<any> = new Subject<any>();
 
@@ -114,9 +114,6 @@ export class NetCostComponent implements OnInit, OnDestroy {
       limitSelection: 1,
       noDataAvailablePlaceholderText: "No Co-op programs found"
     };
-
-    this.getCoOps();
-
     this._inventoryService.distributionCodes$
       .subscribe((response) => {
         this.distributionCodes = response["data"];
@@ -133,11 +130,14 @@ export class NetCostComponent implements OnInit, OnDestroy {
         // Mark for check
         this._changeDetectorRef.markForCheck();
       });
-
-    this._inventoryService.product$
-      .pipe(takeUntil(this._unsubscribeAll))
-      .subscribe((details) => {
+    this.getProductDetail();
+  };
+  getProductDetail() {
+    this.isLoading = true;
+    this._inventoryService.product$.pipe(takeUntil(this._unsubscribeAll)).subscribe((details) => {
+      if (details) {
         this.selectedProduct = details["data"][0];
+        this.getCoOps();
         const { liveCostComment } = this.selectedProduct;
         if (liveCostComment) {
           if (this.redPriceList.some(e => e.item_text == liveCostComment)) {
@@ -151,24 +151,9 @@ export class NetCostComponent implements OnInit, OnDestroy {
           };
         };
         this.getNetCost();
-
-        // Mark for check
-        this._changeDetectorRef.markForCheck();
-      }, err => {
-        this._snackBar.open("Some error occured", '', {
-          horizontalPosition: 'center',
-          verticalPosition: 'bottom',
-          duration: 3500
-        });
-
-        // Main component loader setting to false
-        this.isLoadingChange.emit(false);
-
-        // Mark for check
-        this._changeDetectorRef.markForCheck();
-      });
-  };
-
+      }
+    });
+  }
   getNetCost(): void {
     const { msrp, costComment, pk_productID } = this.selectedProduct;
     this._inventoryService.getNetCost(pk_productID)
@@ -208,7 +193,7 @@ export class NetCostComponent implements OnInit, OnDestroy {
         this.netCostForm.patchValue(_.mapValues(formValues, v => v == "null" ? '' : v));
 
         // Main component loader setting to false
-        this.isLoadingChange.emit(false);
+        this.isLoading = false;
 
         // Mark for check
         this._changeDetectorRef.markForCheck();
@@ -220,7 +205,7 @@ export class NetCostComponent implements OnInit, OnDestroy {
         });
 
         // Main component loader setting to false
-        this.isLoadingChange.emit(false);
+        this.isLoading = false;
 
         // Mark for check
         this._changeDetectorRef.markForCheck();

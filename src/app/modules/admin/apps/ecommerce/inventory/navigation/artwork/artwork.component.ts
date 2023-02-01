@@ -11,11 +11,10 @@ import { environment } from 'environments/environment';
   templateUrl: './artwork.component.html'
 })
 export class ArtworkComponent implements OnInit, OnDestroy {
-  @Input() selectedProduct: any;
-  @Input() isLoading: boolean;
-  @Output() isLoadingChange = new EventEmitter<boolean>();
   private _unsubscribeAll: Subject<any> = new Subject<any>();
 
+  isLoading: boolean = false;
+  selectedProduct: any;
   imageUploadForm: FormGroup;
   images = null;
   artwork_name: string = "";
@@ -36,16 +35,29 @@ export class ArtworkComponent implements OnInit, OnDestroy {
     this.imageUploadForm = this._formBuilder.group({
       image: ['', Validators.required]
     });
+    this.isLoading = true;
+    this._changeDetectorRef.markForCheck();
+    this.getProductDetail();
 
-    const { pk_productID } = this.selectedProduct;
-    this._inventoryService.getArtworkTemplateByProductId(pk_productID)
-      .pipe(takeUntil(this._unsubscribeAll))
-      .subscribe((artwork) => {
-        this.artWorkData = artwork["data"];
+  }
+  getProductDetail() {
+    this._inventoryService.product$.pipe(takeUntil(this._unsubscribeAll)).subscribe((details) => {
+      if (details) {
+        this.selectedProduct = details["data"][0];
+        const { pk_productID } = this.selectedProduct;
+        this._inventoryService.getArtworkTemplateByProductId(pk_productID)
+          .pipe(takeUntil(this._unsubscribeAll))
+          .subscribe((artwork) => {
+            this.artWorkData = artwork["data"];
+            this.isLoading = false;
+            this._changeDetectorRef.markForCheck();
+          }, err => {
+            this.isLoading = false;
+            this._changeDetectorRef.markForCheck();
+          });
 
-        this.isLoadingChange.emit(false);
-        this._changeDetectorRef.markForCheck();
-      });
+      }
+    });
   }
 
   upload(event) {

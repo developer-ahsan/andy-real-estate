@@ -47,6 +47,11 @@ export const ordersRoutes: Route[] = [
         },
         children: [
             {
+                path: '',
+                redirectTo: 'summary',
+                pathMatch: 'full'
+            },
+            {
                 path: 'summary',
                 component: OrdersSummaryComponent,
                 data: {

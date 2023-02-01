@@ -3,6 +3,7 @@ import { Subject } from 'rxjs';
 import { FileManagerService } from 'app/modules/admin/apps/file-manager/store-manager.service';
 import { takeUntil } from 'rxjs/operators';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { Router } from '@angular/router';
 
 /**
  * @title Basic use of `<table mat-table>`
@@ -30,7 +31,8 @@ export class StoreProductsComponent implements OnInit, OnDestroy {
   constructor(
     private _fileManagerService: FileManagerService,
     private _changeDetectorRef: ChangeDetectorRef,
-    private _snackBar: MatSnackBar
+    private _snackBar: MatSnackBar,
+    private router: Router
   ) { }
 
   ngOnInit(): void {
@@ -142,6 +144,10 @@ export class StoreProductsComponent implements OnInit, OnDestroy {
     };
     this.getMainStoreCall(this.page);
   };
+  goToStoreProduct(item) {
+    const url = this.router.serializeUrl(this.router.createUrlTree(['/apps/ecommerce/inventory/storeProduct', item.pk_storeProductID]));
+    window.open(url, '_blank');
+  }
   ngOnDestroy(): void {
     // Unsubscribe from all subscriptions
     this._unsubscribeAll.next();

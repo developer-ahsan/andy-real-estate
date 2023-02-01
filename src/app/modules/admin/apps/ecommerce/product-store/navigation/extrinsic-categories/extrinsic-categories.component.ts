@@ -8,8 +8,8 @@ import { StoreProductService } from '../../store.service';
   templateUrl: './extrinsic-categories.component.html'
 })
 export class ExtrinsicComponent implements OnInit, OnDestroy {
-  @Input() selectedProduct: any;
-  @Input() isLoading: boolean;
+  selectedProduct: any;
+  isLoading: boolean;
   @Output() isLoadingChange = new EventEmitter<boolean>();
   private _unsubscribeAll: Subject<any> = new Subject<any>();
 
@@ -23,12 +23,17 @@ export class ExtrinsicComponent implements OnInit, OnDestroy {
   ) { }
 
   ngOnInit(): void {
-    this.extrinsicCat = this.selectedProduct.extrinsicCategory;
-    this.isLoadingChange.emit(false);
-    this.isLoading = false;
-    this._changeDetectorRef.markForCheck();
+    this.getStoreProductDetail();
   }
-
+  getStoreProductDetail() {
+    this._storeService.product$.pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+      this.selectedProduct = res["data"][0];
+      this.extrinsicCat = this.selectedProduct.extrinsicCategory;
+      this.isLoadingChange.emit(false);
+      this.isLoading = false;
+      this._changeDetectorRef.markForCheck();
+    });
+  }
   UpdateExtrinsicCategory() {
     this.isUpdateLoading = true;
     let payload = {

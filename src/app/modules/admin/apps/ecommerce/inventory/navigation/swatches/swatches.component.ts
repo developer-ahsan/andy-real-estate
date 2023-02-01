@@ -12,8 +12,8 @@ import { MatSnackBar } from '@angular/material/snack-bar';
   templateUrl: './swatches.component.html'
 })
 export class SwatchesComponent implements OnInit, OnDestroy {
-  @Input() selectedProduct: any;
-  @Input() isLoading: boolean;
+  selectedProduct: any;
+  isLoading: boolean;
   @Output() isLoadingChange = new EventEmitter<boolean>();
   private _unsubscribeAll: Subject<any> = new Subject<any>();
 
@@ -41,18 +41,27 @@ export class SwatchesComponent implements OnInit, OnDestroy {
       image: ['', Validators.required]
     });
 
-    const { pk_productID } = this.selectedProduct;
-
-    for (let i = 1; i <= 5; i++) {
-      let url = `${environment.productMedia}/Swatch/${pk_productID}/${pk_productID}-${i}.jpg`;
-      this.checkIfImageExists(url);
-    };
-
-    setTimeout(() => {
-      this.isLoadingChange.emit(false);
-    }, 2500)
+    this.getProductDetail();
   };
+  getProductDetail() {
+    this.isLoading = true;
+    this._inventoryService.product$.pipe(takeUntil(this._unsubscribeAll)).subscribe((details) => {
+      if (details) {
+        this.selectedProduct = details["data"][0];
+        const { pk_productID } = this.selectedProduct;
 
+        for (let i = 1; i <= 5; i++) {
+          let url = `${environment.productMedia}/Swatch/${pk_productID}/${pk_productID}-${i}.jpg`;
+          this.checkIfImageExists(url);
+        };
+
+        setTimeout(() => {
+          this.isLoading = false
+        }, 2500)
+
+      }
+    });
+  }
   checkIfImageExists(url) {
     const img = new Image();
     img.src = url;

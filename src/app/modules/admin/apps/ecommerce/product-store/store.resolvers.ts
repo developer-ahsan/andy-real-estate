@@ -3,6 +3,7 @@ import { ActivatedRouteSnapshot, Resolve, Router, RouterStateSnapshot } from '@a
 import { Observable, throwError } from 'rxjs';
 import { InventoryService } from 'app/modules/admin/apps/ecommerce/inventory/inventory.service';
 import { InventoryPagination, ProductsList } from 'app/modules/admin/apps/ecommerce/inventory/inventory.types';
+import { StoreProductService } from './store.service';
 
 @Injectable({
     providedIn: 'root'
@@ -83,3 +84,29 @@ export class ProductDescriptionResolver implements Resolve<any>
     }
 }
 
+@Injectable({
+    providedIn: 'root'
+})
+export class StoreProductDescriptionResolver implements Resolve<any>
+{
+    /**
+     * Constructor
+     */
+    constructor(private _storeProductService: StoreProductService) {
+    }
+
+    // -----------------------------------------------------------------------------------------------------
+    // @ Public methods
+    // -----------------------------------------------------------------------------------------------------
+
+    /**
+     * Resolver
+     *
+     * @param route
+     * @param state
+     */
+    resolve(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<ProductsList[]> {
+        const id = route.params['id'];
+        return this._storeProductService.getStoreProductsDetail(id);
+    }
+}

@@ -12,8 +12,8 @@ import { MatSnackBar } from '@angular/material/snack-bar';
   templateUrl: './package.component.html'
 })
 export class PackageComponent implements OnInit, OnDestroy {
-  @Input() selectedProduct: any;
-  @Input() isLoading: boolean;
+  selectedProduct: any;
+  isLoading: boolean;
   @Output() isLoadingChange = new EventEmitter<boolean>();
   private _unsubscribeAll: Subject<any> = new Subject<any>();
 
@@ -75,9 +75,17 @@ export class PackageComponent implements OnInit, OnDestroy {
   ) { }
 
   ngOnInit(): void {
-    this.getPackAndAccessories();
+    this.getProductDetail();
   };
-
+  getProductDetail() {
+    this.isLoading = true;
+    this._inventoryService.product$.pipe(takeUntil(this._unsubscribeAll)).subscribe((details) => {
+      if (details) {
+        this.selectedProduct = details["data"][0];
+        this.getPackAndAccessories();
+      }
+    });
+  }
   updatePackage() {
     const { pk_productID } = this.selectedProduct;
     if (!this.arrayToUpdate.length) {
@@ -343,7 +351,7 @@ export class PackageComponent implements OnInit, OnDestroy {
         };
 
         this.dataSourceLength = packages["totalRecords"];
-        this.isLoadingChange.emit(false);
+        this.isLoading = false;
 
         // Mark for check
         this._changeDetectorRef.markForCheck();

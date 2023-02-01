@@ -5,14 +5,15 @@ import { InventoryService } from 'app/modules/admin/apps/ecommerce/inventory/inv
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { MatRadioChange } from '@angular/material/radio';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { StoreProductService } from '../../store.service';
 
 @Component({
   selector: 'app-virtual-proof-images',
   templateUrl: './virtual-proof-images.component.html'
 })
 export class VirtualProofImagesComponent implements OnInit, OnDestroy {
-  @Input() selectedProduct: any;
-  @Input() isLoading: boolean;
+  selectedProduct: any;
+  isLoading: boolean;
   @Output() isLoadingChange = new EventEmitter<boolean>();
   private _unsubscribeAll: Subject<any> = new Subject<any>();
 
@@ -20,7 +21,7 @@ export class VirtualProofImagesComponent implements OnInit, OnDestroy {
 
   constructor(
     private _changeDetectorRef: ChangeDetectorRef,
-    private _inventoryService: InventoryService,
+    private _storeService: StoreProductService,
     private _formBuilder: FormBuilder,
     private _snackBar: MatSnackBar
   ) { }
@@ -28,10 +29,14 @@ export class VirtualProofImagesComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     // Create the selected product form
     this.isLoading = false;
-
+    this.getStoreProductDetail();
   }
 
-
+  getStoreProductDetail() {
+    this._storeService.product$.pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+      this.selectedProduct = res["data"][0];
+    });
+  }
 
   /**
      * On destroy

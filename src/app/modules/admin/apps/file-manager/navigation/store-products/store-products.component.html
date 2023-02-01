@@ -144,8 +144,7 @@
                             </div>
                             <tr mat-header-row class="h-20" *matHeaderRowDef="displayedColumns"></tr>
                             <tr mat-row class="h:16 hover:bg-gray-100 dark:hover:bg-hover" style="cursor: pointer;"
-                                *matRowDef="let row; columns: displayedColumns"
-                                [routerLink]="['/apps/ecommerce/inventory/storeProduct',row.pk_storeProductID]"
+                                *matRowDef="let row; columns: displayedColumns" (click)="goToStoreProduct(row)"
                                 target="_blank"></tr>
                         </table>
                     </ng-container>

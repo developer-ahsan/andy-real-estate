@@ -10,8 +10,8 @@ import { AddSubCategory, update_subcategories } from '../../store.types';
   styles: ['.form-control:focus {border-color: #475569;box-shadow: 0 0 0 0;}']
 })
 export class CategoriesComponent implements OnInit, OnDestroy {
-  @Input() selectedProduct: any;
-  @Input() isLoading: boolean;
+  selectedProduct: any;
+  isLoading: boolean;
   @Output() isLoadingChange = new EventEmitter<boolean>();
   private _unsubscribeAll: Subject<any> = new Subject<any>();
 
@@ -35,7 +35,13 @@ export class CategoriesComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.isLoading = true;
-    this.getCategories(1);
+    this.getStoreProductDetail();
+  }
+  getStoreProductDetail() {
+    this._storeService.product$.pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+      this.selectedProduct = res["data"][0];
+      this.getCategories(1);
+    });
   }
   getCategories(page) {
     let params = {

@@ -8,8 +8,8 @@ import { StoreProductService } from '../../store.service';
   templateUrl: './related-products.component.html'
 })
 export class RelatedProdcutsComponent implements OnInit, OnDestroy {
-  @Input() selectedProduct: any;
-  @Input() isLoading: boolean;
+  selectedProduct: any;
+  isLoading: boolean;
   @Output() isLoadingChange = new EventEmitter<boolean>();
   private _unsubscribeAll: Subject<any> = new Subject<any>();
 
@@ -17,7 +17,6 @@ export class RelatedProdcutsComponent implements OnInit, OnDestroy {
 
   relationTypes = [];
   isUpdateLoading: boolean = false;
-  storeData: any;
   mainScreen: string = 'Related Products';
 
   currentRelatedProduct = [];
@@ -35,11 +34,14 @@ export class RelatedProdcutsComponent implements OnInit, OnDestroy {
   ) { }
 
   ngOnInit(): void {
-    this._storeService.store$.pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
-      this.storeData = res["data"][0];
-    });
     this.isLoading = true;
-    this.getRelatedProducts(1);
+    this.getStoreProductDetail();
+  }
+  getStoreProductDetail() {
+    this._storeService.product$.pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+      this.selectedProduct = res["data"][0];
+      this.getRelatedProducts(1);
+    });
   }
   calledScreen(value) {
     this.mainScreen = value;
@@ -69,7 +71,7 @@ export class RelatedProdcutsComponent implements OnInit, OnDestroy {
   getRelatedProducts(page) {
     let params = {
       related_product: true,
-      store_id: this.storeData.pk_storeID,
+      store_id: this.selectedProduct.fk_storeID,
       page: Number(page)
     }
     this._storeService.commonGetCalls(params).subscribe(res => {
@@ -91,7 +93,7 @@ export class RelatedProdcutsComponent implements OnInit, OnDestroy {
   getCurrentRelatedProducts(page) {
     let params = {
       current_related_product: true,
-      store_id: this.storeData.pk_storeID,
+      store_id: this.selectedProduct.fk_storeID,
       page: Number(page)
     }
     this._storeService.commonGetCalls(params).subscribe(res => {

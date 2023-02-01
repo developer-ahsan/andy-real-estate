@@ -4,15 +4,15 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { environment } from 'environments/environment';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { InventoryService } from 'app/modules/admin/apps/ecommerce/inventory/inventory.service';
+import { takeUntil } from 'rxjs/operators';
 
 @Component({
   selector: 'app-dietary-info',
   templateUrl: './dietary-info.component.html'
 })
 export class DietaryInfoComponent implements OnInit, OnDestroy {
-  @Input() selectedProduct: any;
-  @Input() isLoading: boolean;
-  @Output() isLoadingChange = new EventEmitter<boolean>();
+  selectedProduct: any;
+  isLoading: boolean;
   private _unsubscribeAll: Subject<any> = new Subject<any>();
 
   imageUploadForm: FormGroup;
@@ -28,22 +28,29 @@ export class DietaryInfoComponent implements OnInit, OnDestroy {
   ) { }
 
   ngOnInit(): void {
-
-    const { pk_productID } = this.selectedProduct;
-
-    // Create the selected product form
-    this.imageUploadForm = this._formBuilder.group({
-      image: ['', Validators.required]
-    });
-
-    this.pdf = null;
-
-    this.isLoadingChange.emit(false);
-
-    // Mark for check
-    this._changeDetectorRef.markForCheck();
+    this.getProductDetail();
   }
+  getProductDetail() {
+    this.isLoading = true;
+    this._inventoryService.product$.pipe(takeUntil(this._unsubscribeAll)).subscribe((details) => {
+      if (details) {
+        this.selectedProduct = details["data"][0];
+        const { pk_productID } = this.selectedProduct;
 
+        // Create the selected product form
+        this.imageUploadForm = this._formBuilder.group({
+          image: ['', Validators.required]
+        });
+
+        this.pdf = null;
+
+        this.isLoading = false;
+
+        // Mark for check
+        this._changeDetectorRef.markForCheck();
+      }
+    });
+  }
   upload(event) {
     const file = event.target.files[0];
     if (file) {

@@ -11,9 +11,8 @@ import { takeUntil } from 'rxjs/operators';
   templateUrl: './feature.component.html'
 })
 export class FeatureComponent implements OnInit, OnDestroy {
-  @Input() selectedProduct: any;
-  @Input() isLoading: boolean;
-  @Output() isLoadingChange = new EventEmitter<boolean>();
+  selectedProduct: any;
+  isLoading: boolean;
   private _unsubscribeAll: Subject<any> = new Subject<any>();
 
   displayedColumns: string[] = ['select', 'order', 'feature'];
@@ -45,40 +44,48 @@ export class FeatureComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
 
-    const { pk_productID } = this.selectedProduct;
 
     this.featureForm = this._formBuilder.group({
       order: ['1'],
       feature: ['', Validators.required]
     });
 
-    this._inventoryService.getFeatures(pk_productID, 1)
-      .pipe(takeUntil(this._unsubscribeAll))
-      .subscribe((features) => {
-        this._inventoryService.getFeaturesSupplierAndType(pk_productID)
-          .pipe(takeUntil(this._unsubscribeAll))
-          .subscribe((type) => {
-            this.featureType = type["data"][0];
-            this.dataSource = features["data"];
-            this.featuresLength = features["totalRecords"];
-            this.isLoadingChange.emit(false);
-
-            // Mark for check
-            this._changeDetectorRef.markForCheck();
-          }, err => {
-            this._snackBar.open("Some error occured", '', {
-              horizontalPosition: 'center',
-              verticalPosition: 'bottom',
-              duration: 3500
-            });
-            this.isLoadingChange.emit(false);
-
-            // Mark for check
-            this._changeDetectorRef.markForCheck();
-          });
-      });
+    this.getProductDetail();
   };
+  getProductDetail() {
+    this.isLoading = true;
+    this._inventoryService.product$.pipe(takeUntil(this._unsubscribeAll)).subscribe((details) => {
+      if (details) {
+        this.selectedProduct = details["data"][0];
+        const { pk_productID } = this.selectedProduct;
+        this._inventoryService.getFeatures(pk_productID, 1)
+          .pipe(takeUntil(this._unsubscribeAll))
+          .subscribe((features) => {
+            this._inventoryService.getFeaturesSupplierAndType(pk_productID)
+              .pipe(takeUntil(this._unsubscribeAll))
+              .subscribe((type) => {
+                this.featureType = type["data"][0];
+                this.dataSource = features["data"];
+                this.featuresLength = features["totalRecords"];
+                this.isLoading = false;
 
+                // Mark for check
+                this._changeDetectorRef.markForCheck();
+              }, err => {
+                this._snackBar.open("Some error occured", '', {
+                  horizontalPosition: 'center',
+                  verticalPosition: 'bottom',
+                  duration: 3500
+                });
+                this.isLoading = false;
+
+                // Mark for check
+                this._changeDetectorRef.markForCheck();
+              });
+          });
+      }
+    });
+  }
   rowUpdate(featureObj, title, event) {
     const { value } = event.target;
     const { fk_attributeID } = featureObj;
@@ -240,6 +247,8 @@ export class FeatureComponent implements OnInit, OnDestroy {
         this.dataSource = features["data"];
         this.featuresLength = features["totalRecords"];
 
+
+        this.isLoading = false;
         // Mark for check
         this._changeDetectorRef.markForCheck();
       }, err => {
@@ -249,6 +258,7 @@ export class FeatureComponent implements OnInit, OnDestroy {
           duration: 3500
         });
         this.featureUpdateLoader = false;
+        this.isLoading = false;
 
         // Mark for check
         this._changeDetectorRef.markForCheck();

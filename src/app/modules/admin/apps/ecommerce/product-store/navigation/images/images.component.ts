@@ -11,8 +11,8 @@ import { MatSnackBar } from '@angular/material/snack-bar';
   templateUrl: './images.component.html'
 })
 export class StoreImagesComponent implements OnInit, OnDestroy {
-  @Input() selectedProduct: any;
-  @Input() isLoading: boolean;
+  selectedProduct: any;
+  isLoading: boolean;
   @Output() isLoadingChange = new EventEmitter<boolean>();
   private _unsubscribeAll: Subject<any> = new Subject<any>();
 

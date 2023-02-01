@@ -12,8 +12,8 @@ import _ from 'lodash';
   templateUrl: './products-physics.component.html'
 })
 export class ProductsPhysicsComponent implements OnInit, OnDestroy {
-  @Input() selectedProduct: any;
-  @Input() isLoading: boolean;
+  selectedProduct: any;
+  isLoading: boolean;
   @Output() isLoadingChange = new EventEmitter<boolean>();
   private _unsubscribeAll: Subject<any> = new Subject<any>();
 
@@ -67,8 +67,6 @@ export class ProductsPhysicsComponent implements OnInit, OnDestroy {
   ) { }
 
   ngOnInit(): void {
-    this.getFOBLocations();
-    const { flatRateShipping } = this.selectedProduct;
     this.caseQtyTabLoader = true;
     this.caseDimensionTabLoader = true;
 
@@ -104,18 +102,21 @@ export class ProductsPhysicsComponent implements OnInit, OnDestroy {
     });
 
 
-    const flatRateObj = {
-      flatRateShipping: Number(flatRateShipping).toFixed(2)
-    };
 
-    // Fill flat rate form
-    this.flatRateShippingForm.patchValue(flatRateObj);
 
 
     this._inventoryService.product$
       .pipe(takeUntil(this._unsubscribeAll))
       .subscribe((productDetails) => {
         this.selectedProduct = productDetails["data"][0];
+        this.getFOBLocations();
+        const { flatRateShipping } = this.selectedProduct;
+        const flatRateObj = {
+          flatRateShipping: Number(flatRateShipping).toFixed(2)
+        };
+
+        // Fill flat rate form
+        this.flatRateShippingForm.patchValue(flatRateObj);
         const { blnIncludeShipping, prodTimeMax, prodTimeMin, weight, unitsInWeight, dimensions, unitsInShippingPackage, overPackCharge, blnApparel } = this.selectedProduct;
         this.sliderMaxValue = prodTimeMax;
         this.sliderMinValue = prodTimeMin;
@@ -136,7 +137,7 @@ export class ProductsPhysicsComponent implements OnInit, OnDestroy {
 
         // Fill the form
         this.productPhysicsForm.patchValue(physics);
-        this.isLoadingChange.emit(false);
+        this.isLoading = false;
 
         // Mark for check
         this._changeDetectorRef.markForCheck();
@@ -146,7 +147,7 @@ export class ProductsPhysicsComponent implements OnInit, OnDestroy {
           verticalPosition: 'bottom',
           duration: 3500
         });
-        this.isLoadingChange.emit(false);
+        this.isLoading = false;
 
         // Mark for check
         this._changeDetectorRef.markForCheck();

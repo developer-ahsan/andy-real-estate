@@ -91,7 +91,7 @@ export class CampaignsComponent implements OnInit, OnDestroy {
     store_product_list_id.forEach(element => {
       products.push(element.pk_storeProductID);
     });
-    if (title == '' || objective == '' || strategy == '' || results == '' || shortDesc == '') {
+    if (title == '' || shortDesc == '') {
       this._snackBar.open("Please fill out the required fields", '', {
         horizontalPosition: 'center',
         verticalPosition: 'bottom',

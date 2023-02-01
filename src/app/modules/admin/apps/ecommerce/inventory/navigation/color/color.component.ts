@@ -30,9 +30,8 @@ interface Color {
   styles: ['.img_wrp { display: inline - block; position: relative;} .close {position: absolute;top: 10px;right: 150px;}']
 })
 export class ColorComponent implements OnInit, OnDestroy {
-  @Input() selectedProduct: any;
-  @Input() isLoading: boolean;
-  @Output() isLoadingChange = new EventEmitter<boolean>();
+  selectedProduct: any;
+  isLoading: boolean;
   private _unsubscribeAll: Subject<any> = new Subject<any>();
 
   isColorsFetching: boolean = false;
@@ -155,8 +154,7 @@ export class ColorComponent implements OnInit, OnDestroy {
       limitSelection: 1
     };
 
-    this.getColors(1);
-
+    this.getProductDetail();
     // Color select autocomplete field
 
     this.colorName.valueChanges.pipe(debounceTime(500), tap(() => {
@@ -176,9 +174,16 @@ export class ColorComponent implements OnInit, OnDestroy {
         this.results = data["data"] as any[];
         this._changeDetectorRef.markForCheck();
       });
-
   };
-
+  getProductDetail() {
+    this.isLoading = true;
+    this._inventoryService.product$.pipe(takeUntil(this._unsubscribeAll)).subscribe((details) => {
+      if (details) {
+        this.selectedProduct = details["data"][0];
+        this.getColors(1);
+      }
+    });
+  }
   colorSelected(result: any): void {
     const index = this.dataSource.findIndex(color => color.colorName == result.colorName);
     if (index >= 0) {
@@ -248,10 +253,7 @@ export class ColorComponent implements OnInit, OnDestroy {
 
         this.dataSource = colors["data"];
         this.totalColors = colors['totalRecords'];
-
-        setTimeout(() => {
-          this.isLoadingChange.emit(false);
-        }, 2000);
+        this.isLoading = false;
 
         // Mark for check
         this._changeDetectorRef.markForCheck();

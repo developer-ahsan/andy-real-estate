@@ -12,8 +12,8 @@ import { StoreProductService } from '../../store.service';
   templateUrl: './update-history.component.html'
 })
 export class StoreUpdateHistoryComponent implements OnInit, OnDestroy {
-  @Input() selectedProduct: any;
-  @Input() isLoading: boolean;
+  selectedProduct: any;
+  isLoading: boolean;
   @Output() isLoadingChange = new EventEmitter<boolean>();
   private _unsubscribeAll: Subject<any> = new Subject<any>();
 
@@ -28,8 +28,14 @@ export class StoreUpdateHistoryComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     // Create the selected product form
     this.isLoading = true;
-    this.getUpdateHistory();
+    this.getStoreProductDetail();
 
+  }
+  getStoreProductDetail() {
+    this._storeService.product$.pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+      this.selectedProduct = res["data"][0];
+      this.getUpdateHistory();
+    });
   }
   getUpdateHistory() {
     let params = {

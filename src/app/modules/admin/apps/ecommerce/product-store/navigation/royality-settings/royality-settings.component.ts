@@ -8,15 +8,14 @@ import { StoreProductService } from '../../store.service';
   templateUrl: './royality-settings.component.html'
 })
 export class RoyalitySettingsComponent implements OnInit, OnDestroy {
-  @Input() selectedProduct: any;
-  @Input() isLoading: boolean;
+  selectedProduct: any;
+  isLoading: boolean;
   @Output() isLoadingChange = new EventEmitter<boolean>();
   private _unsubscribeAll: Subject<any> = new Subject<any>();
 
 
   royaltySetting: number;
   isUpdateLoading: boolean = false;
-  storeData: any;
 
   constructor(
     private _changeDetectorRef: ChangeDetectorRef,
@@ -24,20 +23,22 @@ export class RoyalitySettingsComponent implements OnInit, OnDestroy {
   ) { }
 
   ngOnInit(): void {
-    this._storeService.store$.pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
-      this.storeData = res["data"][0];
-    });
-    this.royaltySetting = this.selectedProduct.royaltySetting;
-    this.isLoadingChange.emit(false);
-    this.isLoading = false;
-    this._changeDetectorRef.markForCheck();
+    this.getStoreProductDetail();
   }
-
+  getStoreProductDetail() {
+    this._storeService.product$.pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+      this.selectedProduct = res["data"][0];
+      this.royaltySetting = this.selectedProduct.royaltySetting;
+      this.isLoadingChange.emit(false);
+      this.isLoading = false;
+      this._changeDetectorRef.markForCheck();
+    });
+  }
   UpdateRoyalty() {
     this.isUpdateLoading = true;
     let payload = {
       royaltySetting: this.royaltySetting,
-      storeName: this.storeData.storeName,
+      storeName: this.selectedProduct.storeName,
       store_product_id: Number(this.selectedProduct.pk_storeProductID),
       product_id: Number(this.selectedProduct.pk_productID),
       update_royalty: true

@@ -1,68 +1,74 @@
-<ngx-skeleton-loader count="8" appearance="line" animation="pulse" *ngIf="isLoading">
-</ngx-skeleton-loader>
-<div class="row my-3" *ngIf="!isLoading">
-    <div class="col-12">
-        <fuse-card class="rounded-2xl shadow bg-card flex flex-col lg:flex-row w-full">
-            <div class="p-6 sm:p-8 lg:p-10 w-full">
-                <div class="text-2xl font-bold">
-                    Video
-                </div>
-                <note>Enter the embed URL for the video below. Entering a video here will override a video at the master
-                    product level.
-                </note>
-                <br>
-                <note class="text-red-500">
-                    There are a total of {{videoData.length}} vidoes on this store.
-                </note>
-                <br>
-                <note>
-                    When the video service, such as Vimeo or Youtube, gives you the embed code, you will only want to
-                    enter the part of the code that is after the "src=" part that is in quotes. Entering the entire code
-                    below will not work.
-                </note>
-                <br>
-                <note class="text-red-500">
-                    DO NOT include any "http://" or "https://" in the URL. Remove these before adding.
-                </note>
-                <br>
-                <note class="text-red-500">
-                    Try to remove any "autorun" variables in the URL. Usually they look like "&autorun=1"
-                </note>
-                <br>
-                <note>
-                    Usually the video service will give you options for embedding a video. Make sure that you select any
-                    sort of "autorun" settting.
-                </note>
-                <br>
-                <note>NOTE: videos must be free from any vendor branding.</note>
+<div class="w-full">
+    <ngx-skeleton-loader count="8" appearance="line" animation="pulse" *ngIf="isLoading">
+    </ngx-skeleton-loader>
+    <div class="row my-3" *ngIf="!isLoading">
+        <div class="col-12">
+            <fuse-card class="rounded-2xl shadow bg-card flex flex-col lg:flex-row w-full">
+                <div class="p-6 sm:p-8 lg:p-10 w-full">
+                    <div class="text-2xl font-bold">
+                        Video
+                    </div>
+                    <note>Enter the embed URL for the video below. Entering a video here will override a video at the
+                        master
+                        product level.
+                    </note>
+                    <br>
+                    <note class="text-red-500">
+                        There are a total of {{videoData.length}} vidoes on this store.
+                    </note>
+                    <br>
+                    <note>
+                        When the video service, such as Vimeo or Youtube, gives you the embed code, you will only want
+                        to
+                        enter the part of the code that is after the "src=" part that is in quotes. Entering the entire
+                        code
+                        below will not work.
+                    </note>
+                    <br>
+                    <note class="text-red-500">
+                        DO NOT include any "http://" or "https://" in the URL. Remove these before adding.
+                    </note>
+                    <br>
+                    <note class="text-red-500">
+                        Try to remove any "autorun" variables in the URL. Usually they look like "&autorun=1"
+                    </note>
+                    <br>
+                    <note>
+                        Usually the video service will give you options for embedding a video. Make sure that you select
+                        any
+                        sort of "autorun" settting.
+                    </note>
+                    <br>
+                    <note>NOTE: videos must be free from any vendor branding.</note>
 
-                <mat-form-field class="w-full mt-3">
-                    <mat-label>Video Url</mat-label>
-                    <input matInput [(ngModel)]="videoUrl" name="videoUrl">
-                </mat-form-field>
-                <note class="text-red-500">Play button image: (355px W by 209px H, JPG ONLY)
-                </note>
-                <br>
-                <input type="file" accept=".jpg" (change)="upload($event)">
-                <div class="text-right">
-                    <button [matTooltip]="'Remove Video'" mat-stroked-button class="min-w-40 mr-2"
-                        (click)="RemoveVideo()" [disabled]="isRemoveLoading">
-                        <mat-progress-spinner *ngIf="isRemoveLoading" [diameter]="24" [mode]="'indeterminate'">
-                        </mat-progress-spinner>
-                        <span *ngIf="!isRemoveLoading" class="ml-1 mr-1">
-                            Remove Video
-                        </span>
-                    </button>
-                    <button [matTooltip]="'Update'" mat-stroked-button class="min-w-40" (click)="UpdateVideo()"
-                        [disabled]="isUpdateLoading">
-                        <mat-progress-spinner *ngIf="isUpdateLoading" [diameter]="24" [mode]="'indeterminate'">
-                        </mat-progress-spinner>
-                        <span *ngIf="!isUpdateLoading" class="ml-1 mr-1">
-                            Update
-                        </span>
-                    </button>
+                    <mat-form-field class="w-full mt-3">
+                        <mat-label>Video Url</mat-label>
+                        <input matInput [(ngModel)]="videoUrl" name="videoUrl">
+                    </mat-form-field>
+                    <note class="text-red-500">Play button image: (355px W by 209px H, JPG ONLY)
+                    </note>
+                    <br>
+                    <input type="file" accept=".jpg" (change)="upload($event)">
+                    <div class="text-right">
+                        <button [matTooltip]="'Remove Video'" mat-stroked-button class="min-w-40 mr-2"
+                            (click)="RemoveVideo()" [disabled]="isRemoveLoading">
+                            <mat-progress-spinner *ngIf="isRemoveLoading" [diameter]="24" [mode]="'indeterminate'">
+                            </mat-progress-spinner>
+                            <span *ngIf="!isRemoveLoading" class="ml-1 mr-1">
+                                Remove Video
+                            </span>
+                        </button>
+                        <button [matTooltip]="'Update'" mat-stroked-button class="min-w-40" (click)="UpdateVideo()"
+                            [disabled]="isUpdateLoading">
+                            <mat-progress-spinner *ngIf="isUpdateLoading" [diameter]="24" [mode]="'indeterminate'">
+                            </mat-progress-spinner>
+                            <span *ngIf="!isUpdateLoading" class="ml-1 mr-1">
+                                Update
+                            </span>
+                        </button>
+                    </div>
                 </div>
-            </div>
-        </fuse-card>
+            </fuse-card>
+        </div>
     </div>
 </div>

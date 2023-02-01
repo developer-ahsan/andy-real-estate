@@ -11,7 +11,7 @@ import {
 import { Subject } from "rxjs";
 import { takeUntil } from "rxjs/operators";
 import { fuseAnimations } from "@fuse/animations";
-import { ActivatedRoute, Router } from "@angular/router";
+import { ActivatedRoute, NavigationEnd, Router } from "@angular/router";
 import { FuseMediaWatcherService } from "@fuse/services/media-watcher";
 import { InventoryService } from "app/modules/admin/apps/ecommerce/inventory/inventory.service";
 import { ProductsDetails } from "app/modules/admin/apps/ecommerce/inventory/inventory.types";
@@ -48,6 +48,9 @@ export class ProductDetailsComponent implements OnInit, OnDestroy {
 
   StoreProduct: boolean = false;
   @ViewChild('topScrollAnchor') topScroll: ElementRef;
+
+  selectedScreeen = '';
+  selectedRoute = '';
 
   /**
    * Constructor
@@ -86,6 +89,16 @@ export class ProductDetailsComponent implements OnInit, OnDestroy {
     })
   }
   ngOnInit(): void {
+    // Initialize Screen
+    this._router.events.subscribe((event) => {
+      if (event instanceof NavigationEnd) {
+        this.selectedScreeen = this.route.children[0].snapshot.data.title;
+        this.selectedRoute = this.route.children[0].snapshot.data.url;
+      }
+    })
+    this.selectedScreeen = this.route.children[0].snapshot.data.title;
+    this.selectedRoute = this.route.children[0].snapshot.data.url;
+
     this.route.params.subscribe((res) => {
       if (this._router.url.includes('storeProduct')) {
         this.StoreProduct = true;
@@ -201,21 +214,38 @@ export class ProductDetailsComponent implements OnInit, OnDestroy {
   // -----------------------------------------------------------------------------------------------------
   // @ Public methods
   // -----------------------------------------------------------------------------------------------------
-  clicked(index) {
-    const { title } = index;
-    if (title === this.selectedIndex) {
-      return;
+  clicked(item) {
+    if (item.route != this.selectedRoute) {
+      if (item.title == 'Master Product') {
+        this._router.navigate(['apps/ecommerce/inventory/' + this.selectedProduct["fk_productID"]]);
+      }
+      if (item.title == 'Store Versions' && this.StoreProduct) {
+        this._router.navigate(['apps/ecommerce/inventory/' + this.selectedProduct["fk_productID"]]);
+        this._inventoryService.selectedIndex = item.title;
+      } else {
+        this.selectedScreeen = item.title;
+        this.selectedRoute = item.route;
+        setTimeout(() => {
+          this.topScroll.nativeElement.scrollIntoView({ behavior: 'smooth' });
+        }, 100);
+        this._router.navigate([item.route], { relativeTo: this.route });
+      }
     }
-    if (title == 'Master Product') {
-      this._router.navigate(['apps/ecommerce/inventory/' + this.selectedProduct["fk_productID"]]);
-    }
-    if (title == 'Store Versions' && this.StoreProduct) {
-      this._router.navigate(['apps/ecommerce/inventory/' + this.selectedProduct["fk_productID"]]);
-      this._inventoryService.selectedIndex = title;
-    }
-    this.isLoading = true;
-    this.selectedIndex = title;
-    this.topScroll.nativeElement.scrollIntoView({ behavior: 'smooth' });
+
+    // const { title } = index;
+    // if (title === this.selectedIndex) {
+    //   return;
+    // }
+    // if (title == 'Master Product') {
+    //   this._router.navigate(['apps/ecommerce/inventory/' + this.selectedProduct["fk_productID"]]);
+    // }
+    // if (title == 'Store Versions' && this.StoreProduct) {
+    //   this._router.navigate(['apps/ecommerce/inventory/' + this.selectedProduct["fk_productID"]]);
+    //   this._inventoryService.selectedIndex = title;
+    // }
+    // this.isLoading = true;
+    // this.selectedIndex = title;
+    // this.topScroll.nativeElement.scrollIntoView({ behavior: 'smooth' });
   }
   changeProductStatus() {
     this.selectedIndex = 'Product Status';

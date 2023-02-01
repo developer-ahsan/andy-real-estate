@@ -11,8 +11,8 @@ import moment from 'moment';
   templateUrl: './reviews.component.html'
 })
 export class ReviewsComponent implements OnInit, OnDestroy {
-  @Input() selectedProduct: any;
-  @Input() isLoading: boolean;
+  selectedProduct: any;
+  isLoading: boolean;
   @Output() isLoadingChange = new EventEmitter<boolean>();
   private _unsubscribeAll: Subject<any> = new Subject<any>();
 
@@ -37,6 +37,18 @@ export class ReviewsComponent implements OnInit, OnDestroy {
       image: ['', Validators.required]
     });
 
+    this.getProductDetail();
+  }
+  getProductDetail() {
+    this.isLoading = true;
+    this._inventoryService.product$.pipe(takeUntil(this._unsubscribeAll)).subscribe((details) => {
+      if (details) {
+        this.selectedProduct = details["data"][0];
+        this.getReviews();
+      }
+    });
+  }
+  getReviews() {
     const { pk_productID } = this.selectedProduct;
     this._inventoryService.getReviewByProductId(pk_productID)
       .pipe(takeUntil(this._unsubscribeAll))
@@ -63,13 +75,12 @@ export class ReviewsComponent implements OnInit, OnDestroy {
               return container;
             });
 
-            this.isLoadingChange.emit(false);
+            this.isLoading = false;
             // Mark for check
             this._changeDetectorRef.markForCheck();
           });
       });
   }
-
   upload(event: Event) {
     const target = event.target as HTMLInputElement;
     const files = target.files as FileList;

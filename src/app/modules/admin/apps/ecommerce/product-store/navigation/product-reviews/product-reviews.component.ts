@@ -12,8 +12,8 @@ import { AddReview, DeleteReview, UpdateReview } from '../../store.types';
   styles: [".mat-paginator {border-radius: 16px !important}"]
 })
 export class ProductReviewsComponent implements OnInit, OnDestroy {
-  @Input() selectedProduct: any;
-  @Input() isLoading: boolean;
+  selectedProduct: any;
+  isLoading: boolean;
   @Output() isLoadingChange = new EventEmitter<boolean>();
   private _unsubscribeAll: Subject<any> = new Subject<any>();
 
@@ -55,11 +55,15 @@ export class ProductReviewsComponent implements OnInit, OnDestroy {
       response: new FormControl('')
     })
     // Create the selected product form
-    this.getReviews(1);
-
+    this.getStoreProductDetail();
+  }
+  getStoreProductDetail() {
+    this._storeService.product$.pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+      this.selectedProduct = res["data"][0];
+      this.getReviews(1);
+    });
   }
   editToggle(data) {
-    console.log(data);
     this.editData = data;
     this.updateProductReviewForm.patchValue(data);
     this.isEditReview = !this.isEditReview;

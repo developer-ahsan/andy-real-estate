@@ -8,8 +8,8 @@ import { StoreProductService } from '../../store.service';
   templateUrl: './store-level-coop.component.html'
 })
 export class StoreLevelCoopComponent implements OnInit, OnDestroy {
-  @Input() selectedProduct: any;
-  @Input() isLoading: boolean;
+  selectedProduct: any;
+  isLoading: boolean;
   @Output() isLoadingChange = new EventEmitter<boolean>();
   private _unsubscribeAll: Subject<any> = new Subject<any>();
 
@@ -23,15 +23,21 @@ export class StoreLevelCoopComponent implements OnInit, OnDestroy {
   ) { }
 
   ngOnInit(): void {
-    if (this.selectedProduct.fk_coopID) {
-      this.coOpId = this.selectedProduct.fk_coopID;
-    } else {
-      this.coOpId = 0;
-    }
-    this.isLoading = true;
-    this.getStoreCoop();
-  }
 
+    this.isLoading = true;
+    this.getStoreProductDetail();
+  }
+  getStoreProductDetail() {
+    this._storeService.product$.pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+      this.selectedProduct = res["data"][0];
+      if (this.selectedProduct.fk_coopID) {
+        this.coOpId = this.selectedProduct.fk_coopID;
+      } else {
+        this.coOpId = 0;
+      }
+      this.getStoreCoop();
+    });
+  }
   getStoreCoop() {
     let params = {
       store_level_coop: true,
@@ -50,9 +56,6 @@ export class StoreLevelCoopComponent implements OnInit, OnDestroy {
   }
 
   UpdateStoreLevelCoop() {
-    if (this.coOpId == 0) {
-      this.coOpId = null;
-    }
     this.isUpdateLoading = true;
     let payload = {
       storeName: this.selectedProduct?.storeName,

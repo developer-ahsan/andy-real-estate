@@ -23,12 +23,17 @@ export class PermalinkComponent implements OnInit, OnDestroy {
   ) { }
 
   ngOnInit(): void {
-    this.permalink = this.selectedProduct.permalink;
-    this.isLoadingChange.emit(false);
-    this.isLoading = false;
-    this._changeDetectorRef.markForCheck();
+    this.getStoreProductDetail();
   }
-
+  getStoreProductDetail() {
+    this._storeService.product$.pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+      this.selectedProduct = res["data"][0];
+      this.permalink = this.selectedProduct.permalink;
+      this.isLoadingChange.emit(false);
+      this.isLoading = false;
+      this._changeDetectorRef.markForCheck();
+    });
+  }
   UpdatePermaLink() {
     this.isUpdateLoading = true;
     let payload = {

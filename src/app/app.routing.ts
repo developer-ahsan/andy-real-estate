@@ -105,6 +105,8 @@ export const appRoutes: Route[] = [
                     { path: 'orders', loadChildren: () => import('app/modules/admin/apps/orders/orders.module').then(m => m.OrdersModule) }
                 ]
             },
+            // smartart
+            { path: 'smartart', loadChildren: () => import('app/modules/admin/smartart/smartart.module').then(m => m.SmartArtModule) },
 
             // Pages
             {

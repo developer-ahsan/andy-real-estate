@@ -247,6 +247,7 @@ export class OrdersService {
         return this._httpClient.get<any[]>(environment.orders, {
             params: {
                 stores_list: true,
+                bln_active: 1,
                 size: 1000
             }
         }).pipe(

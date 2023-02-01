@@ -19,8 +19,8 @@ import _ from "lodash";
   templateUrl: "./products-description.component.html",
 })
 export class ProductsDescriptionComponent implements OnInit, OnDestroy {
-  @Input() selectedProduct: any;
-  @Input() isLoading: boolean;
+  selectedProduct: any;
+  isLoading: boolean;
   @Output() isLoadingChange = new EventEmitter<boolean>();
   private _unsubscribeAll: Subject<any> = new Subject<any>();
 
@@ -78,12 +78,12 @@ export class ProductsDescriptionComponent implements OnInit, OnDestroy {
       purchaseOrderNotes: [""],
     });
 
-    const { pk_productID } = this.selectedProduct;
 
     // Get the suppliers
     this._inventoryService.product$
       .pipe(takeUntil(this._unsubscribeAll))
       .subscribe((details) => {
+        this.selectedProduct = details["data"][0];
         // Get the suppliers
         this._inventoryService.Suppliers$.pipe(
           takeUntil(this._unsubscribeAll)
@@ -94,12 +94,16 @@ export class ProductsDescriptionComponent implements OnInit, OnDestroy {
             (x) => x.pk_companyID == fk_supplierID
           );
           this.isSupplierNotReceived = false;
-
+          this.getProductDescription();
           // Mark for check
           this._changeDetectorRef.markForCheck();
         });
       });
 
+
+  }
+  getProductDescription() {
+    const { pk_productID } = this.selectedProduct;
     this._inventoryService
       .getProductDescription(pk_productID)
       .pipe(takeUntil(this._unsubscribeAll))
@@ -132,7 +136,7 @@ export class ProductsDescriptionComponent implements OnInit, OnDestroy {
               this.selectedSex = "Unisex";
             }
 
-            this.isLoadingChange.emit(false);
+            this.isLoading = false;
 
             // Mark for check
             this._changeDetectorRef.markForCheck();
@@ -146,7 +150,7 @@ export class ProductsDescriptionComponent implements OnInit, OnDestroy {
                 duration: 3500,
               }
             );
-            this.isLoadingChange.emit(false);
+            this.isLoading = false;
 
             // Mark for check
             this._changeDetectorRef.markForCheck();
@@ -169,7 +173,6 @@ export class ProductsDescriptionComponent implements OnInit, OnDestroy {
         }
       );
   }
-
   getAllSuppliers(supplierId) {
     this._inventoryService
       .getAllSuppliers()

@@ -5,14 +5,15 @@ import { InventoryService } from 'app/modules/admin/apps/ecommerce/inventory/inv
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { MatRadioChange } from '@angular/material/radio';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { StoreProductService } from '../../store.service';
 
 @Component({
   selector: 'app-special-description',
   templateUrl: './special-description.component.html'
 })
 export class SpecialDescComponent implements OnInit, OnDestroy {
-  @Input() selectedProduct: any;
-  @Input() isLoading: boolean;
+  selectedProduct: any;
+  isLoading: boolean;
   @Output() isLoadingChange = new EventEmitter<boolean>();
   private _unsubscribeAll: Subject<any> = new Subject<any>();
 
@@ -25,12 +26,19 @@ export class SpecialDescComponent implements OnInit, OnDestroy {
   constructor(
     private _changeDetectorRef: ChangeDetectorRef,
     private _inventoryService: InventoryService,
+    private _storeService: StoreProductService,
   ) { }
 
   ngOnInit(): void {
     // Create the selected product form
     this.isLoading = true;
-    this.getDescription();
+    this.getStoreProductDetail();
+  }
+  getStoreProductDetail() {
+    this._storeService.product$.pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+      this.selectedProduct = res["data"][0];
+      this.getDescription();
+    });
   }
   getDescription() {
     this._inventoryService

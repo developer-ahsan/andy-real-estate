@@ -1,200 +1,203 @@
-<ngx-skeleton-loader count="8" appearance="line" animation="pulse" *ngIf="isLoading">
-</ngx-skeleton-loader>
-<div class="row my-3" *ngIf="!isLoading">
-    <div class="col-12">
-        <fuse-card class="rounded-2xl shadow bg-card flex flex-col lg:flex-row w-full">
-            <div class="p-6 sm:p-8 lg:p-10 w-full">
-                <div class="text-2xl font-bold">
-                    Store Margins
-                </div>
-                <div class="row">
-                    <div class="col-2"></div>
-                    <div class="col-10">
-                        <div class="row">
-                            <div class="col-2 text-center">1</div>
-                            <div class="col-2 text-center">2</div>
-                            <div class="col-2 text-center">3</div>
-                            <div class="col-2 text-center">4</div>
-                            <div class="col-2 text-center">5</div>
-                            <div class="col-2 text-center">6</div>
+<div class="w-full">
+    <ngx-skeleton-loader count="8" appearance="line" animation="pulse" *ngIf="isLoading">
+    </ngx-skeleton-loader>
+    <div class="row my-3" *ngIf="!isLoading">
+        <div class="col-12">
+            <fuse-card class="rounded-2xl shadow bg-card flex flex-col lg:flex-row w-full">
+                <div class="p-6 sm:p-8 lg:p-10 w-full">
+                    <div class="text-2xl font-bold">
+                        Store Margins
+                    </div>
+                    <div class="row">
+                        <div class="col-2"></div>
+                        <div class="col-10">
+                            <div class="row">
+                                <div class="col-2 text-center">1</div>
+                                <div class="col-2 text-center">2</div>
+                                <div class="col-2 text-center">3</div>
+                                <div class="col-2 text-center">4</div>
+                                <div class="col-2 text-center">5</div>
+                                <div class="col-2 text-center">6</div>
+                            </div>
+                        </div>
+                        <div class="col-12 text-center font-bold bg-light p-2">CURRENT PRICING</div>
+                    </div>
+                    <div class="row mb-2 mt-2">
+                        <div class="col-2">Quantity</div>
+                        <div class="col-10">
+                            <div class="row ">
+                                <div class="col-2 text-center" *ngFor="let item of quantityData">{{item}}</div>
+                            </div>
                         </div>
                     </div>
-                    <div class="col-12 text-center font-bold bg-light p-2">CURRENT PRICING</div>
-                </div>
-                <div class="row mb-2 mt-2">
-                    <div class="col-2">Quantity</div>
-                    <div class="col-10">
-                        <div class="row ">
-                            <div class="col-2 text-center" *ngFor="let item of quantityData">{{item}}</div>
+                    <div class="row">
+                        <div class="col-2">Standard Price</div>
+                        <div class="col-10">
+                            <div class="row mb-2">
+                                <div class="col-2 text-center" *ngFor="let item of priceData">{{item | currency}}</div>
+                            </div>
                         </div>
                     </div>
-                </div>
-                <div class="row">
-                    <div class="col-2">Standard Price</div>
-                    <div class="col-10">
-                        <div class="row mb-2">
-                            <div class="col-2 text-center" *ngFor="let item of priceData">{{item | currency}}</div>
+                    <div class="row">
+                        <div class="col-2">Standard Cost</div>
+                        <div class="col-10">
+                            <div class="row mb-2">
+                                <div class="col-2 text-center" *ngFor="let item of costData">{{item | currency}}</div>
+                            </div>
                         </div>
                     </div>
-                </div>
-                <div class="row">
-                    <div class="col-2">Standard Cost</div>
-                    <div class="col-10">
-                        <div class="row mb-2">
-                            <div class="col-2 text-center" *ngFor="let item of costData">{{item | currency}}</div>
+                    <div class="row">
+                        <div class="col-2">Blank Price</div>
+                        <div class="col-10">
+                            <div class="row mb-2">
+                                <div class="col-2 text-center" *ngFor="let item of blankData">{{item | currency}}</div>
+                            </div>
                         </div>
                     </div>
-                </div>
-                <div class="row">
-                    <div class="col-2">Blank Price</div>
-                    <div class="col-10">
-                        <div class="row mb-2">
-                            <div class="col-2 text-center" *ngFor="let item of blankData">{{item | currency}}</div>
+                    <div class="row">
+                        <div class="col-2">Blank Cost</div>
+                        <div class="col-10">
+                            <div class="row mb-2">
+                                <div class="col-2 text-center" *ngFor="let item of blankCostData">{{item | currency}}
+                                </div>
+                            </div>
                         </div>
                     </div>
-                </div>
-                <div class="row">
-                    <div class="col-2">Blank Cost</div>
-                    <div class="col-10">
-                        <div class="row mb-2">
-                            <div class="col-2 text-center" *ngFor="let item of blankCostData">{{item | currency}}</div>
-                        </div>
-                    </div>
-                </div>
 
-                <div class="row">
-                    <div class="col-12 text-center font-bold bg-light p-2">Update Margin</div>
+                    <div class="row">
+                        <div class="col-12 text-center font-bold bg-light p-2">Update Margin</div>
+                    </div>
+                    <div>
+                        <form [formGroup]="netCostForm">
+                            <div class="row">
+                                <div class="col-12 mt-5">
+                                    <b>Quantity</b>
+                                </div>
+                                <div class="col-lg-2 col-4">
+                                    <p>
+                                        <br />
+                                    </p>
+                                    <mat-form-field class="w-full">
+                                        <input matInput [formControlName]="'quantityOne'"><small
+                                            class="text-secondary font-semibold"> 1 </small>
+                                    </mat-form-field>
+                                </div>
+                                <div class="col-lg-2 col-4">
+                                    <p class="flex justify-between">
+                                        <span class="underline ml-1 font-semibold cursor-pointer"
+                                            (click)="updateQuantity('quantityTwo')">x2</span>
+                                    </p>
+                                    <mat-form-field class="w-full">
+                                        <input matInput [formControlName]="'quantityTwo'"><small
+                                            class="text-secondary font-semibold"> 2 </small>
+                                    </mat-form-field>
+                                </div>
+                                <div class="col-lg-2 col-4">
+                                    <p class="flex justify-between">
+                                        <span class="underline ml-1 font-semibold cursor-pointer"
+                                            (click)="updateQuantity('quantityThree')">x2</span>
+                                    </p>
+                                    <mat-form-field class="w-full">
+                                        <input matInput [formControlName]="'quantityThree'"><small
+                                            class="text-secondary font-semibold"> 3 </small>
+                                    </mat-form-field>
+                                </div>
+                                <div class="col-lg-2 col-4">
+                                    <p class="flex justify-between">
+                                        <span class="underline ml-1 font-semibold cursor-pointer"
+                                            (click)="updateQuantity('quantityFour')">x2</span>
+                                    </p>
+                                    <mat-form-field class="w-full">
+                                        <input matInput [formControlName]="'quantityFour'"><small
+                                            class="text-secondary font-semibold"> 4 </small>
+                                    </mat-form-field>
+                                </div>
+                                <div class="col-lg-2 col-4">
+                                    <p class="flex justify-between">
+                                        <span class="underline ml-1 font-semibold cursor-pointer"
+                                            (click)="updateQuantity('quantityFive')">x2</span>
+                                    </p>
+                                    <mat-form-field class="w-full">
+                                        <input matInput [formControlName]="'quantityFive'"><small
+                                            class="text-secondary font-semibold"> 5 </small>
+                                    </mat-form-field>
+                                </div>
+                                <div class="col-lg-2 col-4">
+                                    <p class="flex justify-between">
+                                        <span class="underline ml-1 font-semibold cursor-pointer"
+                                            (click)="updateQuantity('quantitySix')">x2</span>
+                                    </p>
+                                    <mat-form-field class="w-full">
+                                        <input matInput [formControlName]="'quantitySix'"><small
+                                            class="text-secondary font-semibold"> 6 </small>
+                                    </mat-form-field>
+                                </div>
+                                <div class="col-12 mt-2">
+                                    <mat-divider></mat-divider>
+                                </div>
+                                <!-- Margins -->
+                                <div class="col-12 mt-5 flex justify-between">
+                                    <b>Margin (%)</b>
+                                    <p>
+                                        <span class="underline font-semibold cursor-pointer mr-2"
+                                            (click)="clearMargins()">Clear</span>
+                                        |
+                                        <span class="underline font-semibold cursor-pointer"
+                                            (click)="setMarginValues()">Store</span>
+                                    </p>
+                                </div>
+                                <div class="col-lg-2 col-4">
+                                    <mat-form-field class="w-full">
+                                        <input matInput [formControlName]="'marginOne'"><small
+                                            class="text-secondary font-semibold"> 1 </small>
+                                    </mat-form-field>
+                                </div>
+                                <div class="col-lg-2 col-4">
+                                    <mat-form-field class="w-full">
+                                        <input matInput [formControlName]="'marginTwo'"><small
+                                            class="text-secondary font-semibold"> 2 </small>
+                                    </mat-form-field>
+                                </div>
+                                <div class="col-lg-2 col-4">
+                                    <mat-form-field class="w-full">
+                                        <input matInput [formControlName]="'marginThree'"><small
+                                            class="text-secondary font-semibold"> 3 </small>
+                                    </mat-form-field>
+                                </div>
+                                <div class="col-lg-2 col-4">
+                                    <mat-form-field class="w-full">
+                                        <input matInput [formControlName]="'marginFour'"><small
+                                            class="text-secondary font-semibold"> 4 </small>
+                                    </mat-form-field>
+                                </div>
+                                <div class="col-lg-2 col-4">
+                                    <mat-form-field class="w-full">
+                                        <input matInput [formControlName]="'marginFive'"><small
+                                            class="text-secondary font-semibold"> 5 </small>
+                                    </mat-form-field>
+                                </div>
+                                <div class="col-lg-2 col-4">
+                                    <mat-form-field class="w-full">
+                                        <input matInput [formControlName]="'marginSix'"><small
+                                            class="text-secondary font-semibold"> 6 </small>
+                                    </mat-form-field>
+                                </div>
+                                <div class="col-12 text-right">
+                                    <button [matTooltip]="'Update'" mat-stroked-button class="min-w-40"
+                                        (click)="UpdatePricing()" [disabled]="isUpdateLoading">
+                                        <mat-progress-spinner *ngIf="isUpdateLoading" [diameter]="24"
+                                            [mode]="'indeterminate'">
+                                        </mat-progress-spinner>
+                                        <span *ngIf="!isUpdateLoading" class="ml-1 mr-1">
+                                            Update
+                                        </span>
+                                    </button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
                 </div>
-                <div>
-                    <form [formGroup]="netCostForm">
-                        <div class="row">
-                            <div class="col-12 mt-5">
-                                <b>Quantity</b>
-                            </div>
-                            <div class="col-lg-2 col-4">
-                                <p>
-                                    <br />
-                                </p>
-                                <mat-form-field class="w-full">
-                                    <input matInput [formControlName]="'quantityOne'"><small
-                                        class="text-secondary font-semibold"> 1 </small>
-                                </mat-form-field>
-                            </div>
-                            <div class="col-lg-2 col-4">
-                                <p class="flex justify-between">
-                                    <span class="underline ml-1 font-semibold cursor-pointer"
-                                        (click)="updateQuantity('quantityTwo')">x2</span>
-                                </p>
-                                <mat-form-field class="w-full">
-                                    <input matInput [formControlName]="'quantityTwo'"><small
-                                        class="text-secondary font-semibold"> 2 </small>
-                                </mat-form-field>
-                            </div>
-                            <div class="col-lg-2 col-4">
-                                <p class="flex justify-between">
-                                    <span class="underline ml-1 font-semibold cursor-pointer"
-                                        (click)="updateQuantity('quantityThree')">x2</span>
-                                </p>
-                                <mat-form-field class="w-full">
-                                    <input matInput [formControlName]="'quantityThree'"><small
-                                        class="text-secondary font-semibold"> 3 </small>
-                                </mat-form-field>
-                            </div>
-                            <div class="col-lg-2 col-4">
-                                <p class="flex justify-between">
-                                    <span class="underline ml-1 font-semibold cursor-pointer"
-                                        (click)="updateQuantity('quantityFour')">x2</span>
-                                </p>
-                                <mat-form-field class="w-full">
-                                    <input matInput [formControlName]="'quantityFour'"><small
-                                        class="text-secondary font-semibold"> 4 </small>
-                                </mat-form-field>
-                            </div>
-                            <div class="col-lg-2 col-4">
-                                <p class="flex justify-between">
-                                    <span class="underline ml-1 font-semibold cursor-pointer"
-                                        (click)="updateQuantity('quantityFive')">x2</span>
-                                </p>
-                                <mat-form-field class="w-full">
-                                    <input matInput [formControlName]="'quantityFive'"><small
-                                        class="text-secondary font-semibold"> 5 </small>
-                                </mat-form-field>
-                            </div>
-                            <div class="col-lg-2 col-4">
-                                <p class="flex justify-between">
-                                    <span class="underline ml-1 font-semibold cursor-pointer"
-                                        (click)="updateQuantity('quantitySix')">x2</span>
-                                </p>
-                                <mat-form-field class="w-full">
-                                    <input matInput [formControlName]="'quantitySix'"><small
-                                        class="text-secondary font-semibold"> 6 </small>
-                                </mat-form-field>
-                            </div>
-                            <div class="col-12 mt-2">
-                                <mat-divider></mat-divider>
-                            </div>
-                            <!-- Margins -->
-                            <div class="col-12 mt-5 flex justify-between">
-                                <b>Margin (%)</b>
-                                <p>
-                                    <span class="underline font-semibold cursor-pointer mr-2"
-                                        (click)="clearMargins()">Clear</span>
-                                    |
-                                    <span class="underline font-semibold cursor-pointer"
-                                        (click)="setMarginValues()">Store</span>
-                                </p>
-                            </div>
-                            <div class="col-lg-2 col-4">
-                                <mat-form-field class="w-full">
-                                    <input matInput [formControlName]="'marginOne'"><small
-                                        class="text-secondary font-semibold"> 1 </small>
-                                </mat-form-field>
-                            </div>
-                            <div class="col-lg-2 col-4">
-                                <mat-form-field class="w-full">
-                                    <input matInput [formControlName]="'marginTwo'"><small
-                                        class="text-secondary font-semibold"> 2 </small>
-                                </mat-form-field>
-                            </div>
-                            <div class="col-lg-2 col-4">
-                                <mat-form-field class="w-full">
-                                    <input matInput [formControlName]="'marginThree'"><small
-                                        class="text-secondary font-semibold"> 3 </small>
-                                </mat-form-field>
-                            </div>
-                            <div class="col-lg-2 col-4">
-                                <mat-form-field class="w-full">
-                                    <input matInput [formControlName]="'marginFour'"><small
-                                        class="text-secondary font-semibold"> 4 </small>
-                                </mat-form-field>
-                            </div>
-                            <div class="col-lg-2 col-4">
-                                <mat-form-field class="w-full">
-                                    <input matInput [formControlName]="'marginFive'"><small
-                                        class="text-secondary font-semibold"> 5 </small>
-                                </mat-form-field>
-                            </div>
-                            <div class="col-lg-2 col-4">
-                                <mat-form-field class="w-full">
-                                    <input matInput [formControlName]="'marginSix'"><small
-                                        class="text-secondary font-semibold"> 6 </small>
-                                </mat-form-field>
-                            </div>
-                            <div class="col-12 text-right">
-                                <button [matTooltip]="'Update'" mat-stroked-button class="min-w-40"
-                                    (click)="UpdatePricing()" [disabled]="isUpdateLoading">
-                                    <mat-progress-spinner *ngIf="isUpdateLoading" [diameter]="24"
-                                        [mode]="'indeterminate'">
-                                    </mat-progress-spinner>
-                                    <span *ngIf="!isUpdateLoading" class="ml-1 mr-1">
-                                        Update
-                                    </span>
-                                </button>
-                            </div>
-                        </div>
-                    </form>
-                </div>
-            </div>
-        </fuse-card>
+            </fuse-card>
+        </div>
     </div>
 </div>

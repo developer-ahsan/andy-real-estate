@@ -12,8 +12,8 @@ import { MatSnackBar } from '@angular/material/snack-bar';
   templateUrl: './default-image.component.html'
 })
 export class DefaultImageComponent implements OnInit, OnDestroy {
-  @Input() selectedProduct: any;
-  @Input() isLoading: boolean;
+  selectedProduct: any;
+  isLoading: boolean;
   @Output() isLoadingChange = new EventEmitter<boolean>();
   private _unsubscribeAll: Subject<any> = new Subject<any>();
 
@@ -40,20 +40,27 @@ export class DefaultImageComponent implements OnInit, OnDestroy {
     this.imageUploadForm = this._formBuilder.group({
       image: ['', Validators.required]
     });
-
-    const { pk_productID } = this.selectedProduct;
-
-    // 11718
-    for (let i = 1; i <= 5; i++) {
-      let url = `${environment.productMedia}/defaultImage/${pk_productID}/${pk_productID}-${i}.jpg`;
-      this.checkIfImageExists(url);
-    };
-
-    setTimeout(() => {
-      this.isLoadingChange.emit(false);
-    }, 2500)
+    this.getProductDetail();
   }
+  getProductDetail() {
+    this.isLoading = true;
+    this._inventoryService.product$.pipe(takeUntil(this._unsubscribeAll)).subscribe((details) => {
+      if (details) {
+        this.selectedProduct = details["data"][0];
+        const { pk_productID } = this.selectedProduct;
 
+        // 11718
+        for (let i = 1; i <= 5; i++) {
+          let url = `${environment.productMedia}/defaultImage/${pk_productID}/${pk_productID}-${i}.jpg`;
+          this.checkIfImageExists(url);
+        };
+        setTimeout(() => {
+          this.isLoading = false;
+          this._changeDetectorRef.markForCheck();
+        }, 2000);
+      }
+    });
+  }
   checkIfImageExists(url) {
     const img = new Image();
     img.src = url;

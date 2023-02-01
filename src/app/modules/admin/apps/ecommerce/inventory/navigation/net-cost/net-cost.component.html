@@ -1,307 +1,311 @@
-<ngx-skeleton-loader count="8" appearance="line" animation="pulse" *ngIf="isLoading">
-</ngx-skeleton-loader>
-<div class="row" *ngIf="!isLoading">
-    <div class="col-12 my-2">
-        <fuse-card class="rounded-2xl shadow bg-card flex flex-col lg:flex-row w-full">
-            <div class="p-6 sm:p-8 lg:p-10 w-full">
-                <div class="flex justify-between">
-                    <div class="text-2xl font-bold">
-                        Net Cost
-                    </div>
-                    <button class="min-w-40" mat-stroked-button [matTooltip]="'Fetch Net Cost Data'"
-                        (click)="fetchNetCost()" [disabled]="netCostFetchLoader">
-                        <mat-progress-spinner *ngIf="netCostFetchLoader" [diameter]="24" [mode]="'indeterminate'">
-                        </mat-progress-spinner>
-                        <span *ngIf="!netCostFetchLoader" class="ml-1 mr-1">Fetch Net Cost</span>
-                    </button>
-                </div>
-
-                <!-- Net Cost Form -->
-                <div class="gap-y-4">
-                    <form [formGroup]="netCostForm">
-                        <div class="row">
-                            <div class="col-12 mt-5">
-                                <b>Quantity</b>
-                            </div>
-                            <div class="col-lg-2 col-4">
-                                <p>
-                                    <br />
-                                </p>
-                                <mat-form-field class="w-full">
-                                    <input matInput [formControlName]="'quantityOne'" type="number"
-                                        (onmousewheel)="$event.preventDefault()"><small
-                                        class="text-secondary font-semibold"> 1 </small>
-                                </mat-form-field>
-                            </div>
-                            <div class="col-lg-2 col-4">
-                                <p class="flex justify-between">
-                                    <span class="underline ml-1 font-semibold cursor-pointer"
-                                        (click)="updateQuantityQuickLinks('quantityTwo')">x2</span>
-                                </p>
-                                <mat-form-field class="w-full">
-                                    <input matInput [formControlName]="'quantityTwo'" type="number"
-                                        (onmousewheel)="$event.preventDefault()"><small
-                                        class="text-secondary font-semibold"> 2 </small>
-                                </mat-form-field>
-                            </div>
-                            <div class="col-lg-2 col-4">
-                                <p class="flex justify-between">
-                                    <span class="underline ml-1 font-semibold cursor-pointer"
-                                        (click)="updateQuantityQuickLinks('quantityThree')">x2</span>
-                                </p>
-                                <mat-form-field class="w-full">
-                                    <input matInput [formControlName]="'quantityThree'" type="number"
-                                        (onmousewheel)="$event.preventDefault()"><small
-                                        class="text-secondary font-semibold"> 3 </small>
-                                </mat-form-field>
-                            </div>
-                            <div class="col-lg-2 col-4">
-                                <p class="flex justify-between">
-                                    <span class="underline ml-1 font-semibold cursor-pointer"
-                                        (click)="updateQuantityQuickLinks('quantityFour')">x2</span>
-                                </p>
-                                <mat-form-field class="w-full">
-                                    <input matInput [formControlName]="'quantityFour'" type="number"
-                                        (onmousewheel)="$event.preventDefault()"><small
-                                        class="text-secondary font-semibold"> 4 </small>
-                                </mat-form-field>
-                            </div>
-                            <div class="col-lg-2 col-4">
-                                <p class="flex justify-between">
-                                    <span class="underline ml-1 font-semibold cursor-pointer"
-                                        (click)="updateQuantityQuickLinks('quantityFive')">x2</span>
-                                </p>
-                                <mat-form-field class="w-full">
-                                    <input matInput [formControlName]="'quantityFive'" type="number"
-                                        (onmousewheel)="$event.preventDefault()"><small
-                                        class="text-secondary font-semibold"> 5 </small>
-                                </mat-form-field>
-                            </div>
-                            <div class="col-lg-2 col-4">
-                                <p class="flex justify-between">
-                                    <span class="underline ml-1 font-semibold cursor-pointer"
-                                        (click)="updateQuantityQuickLinks('quantitySix')">x2</span>
-                                </p>
-                                <mat-form-field class="w-full">
-                                    <input matInput [formControlName]="'quantitySix'" type="number"
-                                        (onmousewheel)="$event.preventDefault()"><small
-                                        class="text-secondary font-semibold"> 6 </small>
-                                </mat-form-field>
-                            </div>
-                            <div class="col-12 mt-2">
-                                <mat-divider></mat-divider>
-                            </div>
-                            <!-- Standard COST -->
-                            <div class="col-12 mt-5 flex justify-between">
-                                <b>Standard Cost</b>
-                                <p>
-                                    <span class="underline font-semibold cursor-pointer mr-2"
-                                        (click)="clearFields()">Clear</span>
-
-                                    <span class="underline font-semibold cursor-pointer"
-                                        (click)="setDropdownValue('C')">C</span>
-
-                                    |
-                                    <span class="underline font-semibold cursor-pointer"
-                                        (click)="setDropdownValue('A')">A</span>
-                                </p>
-                            </div>
-                            <div class="col-lg-2 col-4">
-                                <mat-form-field class="w-full">
-                                    <input matInput [formControlName]="'standardCostOne'" type="number"
-                                        (onmousewheel)="$event.preventDefault()"><small
-                                        class="text-secondary font-semibold"> 1 </small>
-                                </mat-form-field>
-                            </div>
-                            <div class="col-lg-2 col-4">
-                                <mat-form-field class="w-full">
-                                    <input matInput [formControlName]="'standardCostTwo'" type="number"
-                                        (onmousewheel)="$event.preventDefault()"><small
-                                        class="text-secondary font-semibold"> 2 </small>
-                                </mat-form-field>
-                            </div>
-                            <div class="col-lg-2 col-4">
-                                <mat-form-field class="w-full">
-                                    <input matInput [formControlName]="'standardCostThree'" type="number"
-                                        (onmousewheel)="$event.preventDefault()"><small
-                                        class="text-secondary font-semibold"> 3 </small>
-                                </mat-form-field>
-                            </div>
-                            <div class="col-lg-2 col-4">
-                                <mat-form-field class="w-full">
-                                    <input matInput [formControlName]="'standardCostFour'" type="number"
-                                        (onmousewheel)="$event.preventDefault()"><small
-                                        class="text-secondary font-semibold"> 4 </small>
-                                </mat-form-field>
-                            </div>
-                            <div class="col-lg-2 col-4">
-                                <mat-form-field class="w-full">
-                                    <input matInput [formControlName]="'standardCostFive'" type="number"
-                                        (onmousewheel)="$event.preventDefault()"><small
-                                        class="text-secondary font-semibold"> 5 </small>
-                                </mat-form-field>
-                            </div>
-                            <div class="col-lg-2 col-4">
-                                <mat-form-field class="w-full">
-                                    <input matInput [formControlName]="'standardCostSix'" type="number"
-                                        (onmousewheel)="$event.preventDefault()"><small
-                                        class="text-secondary font-semibold"> 6 </small>
-                                </mat-form-field>
-                            </div>
-                            <div class="col-lg-2 col-4">
-                                <mat-form-field class="w-full">
-                                    <mat-select name="order" [formControlName]="'standardCostDropOne'"
-                                        (selectionChange)="updateCost($event, 'standardCostOne')">
-                                        <mat-option *ngFor="let option of distributionCodes" [value]="option">
-                                            {{option.distrDiscountCode}}
-                                        </mat-option>
-                                    </mat-select>
-                                </mat-form-field>
-                            </div>
-                            <div class="col-lg-2 col-4">
-                                <mat-form-field class="w-full">
-                                    <mat-select name="order" [formControlName]="'standardCostDropTwo'"
-                                        (selectionChange)="updateCost($event, 'standardCostTwo')">
-                                        <mat-option value="select_order" disabled>
-                                            COST
-                                        </mat-option>
-                                        <mat-option *ngFor="let option of distributionCodes" [value]="option">
-                                            {{option.distrDiscountCode}}
-                                        </mat-option>
-                                    </mat-select>
-                                </mat-form-field>
-                            </div>
-                            <div class="col-lg-2 col-4">
-                                <mat-form-field class="w-full">
-                                    <mat-select name="order" [formControlName]="'standardCostDropThree'"
-                                        (selectionChange)="updateCost($event, 'standardCostThree')">
-                                        <mat-option value="select_order" disabled>
-                                            COST
-                                        </mat-option>
-                                        <mat-option *ngFor="let option of distributionCodes" [value]="option">
-                                            {{option.distrDiscountCode}}
-                                        </mat-option>
-                                    </mat-select>
-                                </mat-form-field>
-                            </div>
-                            <div class="col-lg-2 col-4">
-                                <mat-form-field class="w-full">
-                                    <mat-select name="order" [formControlName]="'standardCostDropFour'"
-                                        (selectionChange)="updateCost($event, 'standardCostFour')">
-                                        <mat-option value="select_order" disabled>
-                                            COST
-                                        </mat-option>
-                                        <mat-option *ngFor="let option of distributionCodes" [value]="option">
-                                            {{option.distrDiscountCode}}
-                                        </mat-option>
-                                    </mat-select>
-                                </mat-form-field>
-                            </div>
-                            <div class="col-lg-2 col-4">
-                                <mat-form-field class="w-full">
-                                    <mat-select name="order" [formControlName]="'standardCostDropFive'"
-                                        (selectionChange)="updateCost($event, 'standardCostFive')">
-                                        <mat-option value="select_order" disabled>
-                                            COST
-                                        </mat-option>
-                                        <mat-option *ngFor="let option of distributionCodes" [value]="option">
-                                            {{option.distrDiscountCode}}
-                                        </mat-option>
-                                    </mat-select>
-                                </mat-form-field>
-                            </div>
-                            <div class="col-lg-2 col-4">
-                                <mat-form-field class="w-full">
-                                    <mat-select name="order" [formControlName]="'standardCostDropSix'"
-                                        (selectionChange)="updateCost($event, 'standardCostSix')">
-                                        <mat-option value="select_order" disabled>
-                                            COST
-                                        </mat-option>
-                                        <mat-option *ngFor="let option of distributionCodes" [value]="option">
-                                            {{option.distrDiscountCode}}
-                                        </mat-option>
-                                    </mat-select>
-                                </mat-form-field>
-                            </div>
-                            <div class="col-12 mt-2">
-                                <mat-divider></mat-divider>
-                            </div>
-
-                            <div class="col-12 mt-4">
-                                <mat-form-field class="w-full">
-                                    <mat-label>MSRP</mat-label>
-                                    <input type="number" (onmousewheel)="$event.preventDefault()" matInput
-                                        [formControlName]="'msrp'">
-                                </mat-form-field>
-                            </div>
-                            <div class="col-12">
-                                <mat-form-field class="w-full">
-                                    <mat-label>Internal Comments</mat-label>
-                                    <input matInput [formControlName]="'internalComments'">
-                                </mat-form-field>
-                            </div>
+<div class="w-full">
+    <ngx-skeleton-loader count="8" appearance="line" animation="pulse" *ngIf="isLoading">
+    </ngx-skeleton-loader>
+    <div class="row" *ngIf="!isLoading">
+        <div class="col-12 my-2">
+            <fuse-card class="rounded-2xl shadow bg-card flex flex-col lg:flex-row w-full">
+                <div class="p-6 sm:p-8 lg:p-10 w-full">
+                    <div class="flex justify-between">
+                        <div class="text-2xl font-bold">
+                            Net Cost
                         </div>
-                    </form>
-                    <div class="row">
-                        <div class="col-12 mt-2">
-                            <mat-divider></mat-divider>
-                        </div>
-                        <div class="col-12 mt-2 flex justify-between">
-                            <p class="font-semibold">Red Price Comment</p>
-                            <p class="text-secondary cursor-pointer underline">
-                                <span *ngIf="isCustomRedPrice" (click)="changeIsCustom()">
-                                    Default Options
-                                </span>
-                                <span *ngIf="!isCustomRedPrice" (click)="changeIsCustom()">
-                                    Custom Red price
-                                </span>
-                            </p>
-                        </div>
-                        <div class="col-12" *ngIf="!isCustomRedPrice">
-                            <ng-multiselect-dropdown [placeholder]="'Select Red Price Comment'"
-                                [settings]="redPriceDropdownSettings" [data]="redPriceList"
-                                [(ngModel)]="selectedRedPriceItems" (onSelect)="onRedPriceItemSelect($event)">
-                            </ng-multiselect-dropdown>
-                        </div>
-                        <div class="col-12" *ngIf="isCustomRedPrice">
-                            <mat-form-field class="w-full">
-                                <input matInput [(ngModel)]="redPriceCommentText">
-                            </mat-form-field>
-                        </div>
-                        <div class="col-12 mt-5">
-                            <p class="font-semibold" style="color: #384253;">Co-op Program</p>
-                        </div>
-                        <div class="col-12 mt-2">
-                            <ng-multiselect-dropdown [disabled]="isDropdownDisabled" [placeholder]="'Co-op Program'"
-                                [settings]="coOpProgramSettings" [data]="coops" [(ngModel)]="selectedCoOpProgram"
-                                (onSelect)="onCoOpProgramSelect($event)">
-                            </ng-multiselect-dropdown>
-                        </div>
-                    </div>
-                </div>
-                <div class="flex items-center justify-end w-full">
-                    <div class="flex items-center my-2">
-                        <div class="flex items-center mr-4" *ngIf="flashMessage">
-                            <ng-container *ngIf="flashMessage === 'success'">
-                                <mat-icon class="text-green-500" [svgIcon]="'heroicons_outline:check'"></mat-icon>
-                                <span class="ml-2">Net cost updated successfully</span>
-                            </ng-container>
-                            <ng-container *ngIf="flashMessage === 'error'">
-                                <mat-icon class="text-red-500" [svgIcon]="'heroicons_outline:x'"></mat-icon>
-                                <span class="ml-2" *ngIf="validationCheckMessage"> {{validationCheckMessage}} </span>
-                                <span class="ml-2" *ngIf="!validationCheckMessage">An error occurred, try again!</span>
-                            </ng-container>
-                        </div>
-                        <button class="min-w-40" mat-stroked-button [matTooltip]="'Update Net Cost'"
-                            (click)="updateNetCost()" [disabled]="netCostLoader">
-                            <mat-progress-spinner *ngIf="netCostLoader" [diameter]="24" [mode]="'indeterminate'">
+                        <button class="min-w-40" mat-stroked-button [matTooltip]="'Fetch Net Cost Data'"
+                            (click)="fetchNetCost()" [disabled]="netCostFetchLoader">
+                            <mat-progress-spinner *ngIf="netCostFetchLoader" [diameter]="24" [mode]="'indeterminate'">
                             </mat-progress-spinner>
-                            <mat-icon *ngIf="!netCostLoader" svgIcon="mode_edit_outline"></mat-icon>
-                            <span *ngIf="!netCostLoader" class="ml-1 mr-1">Update</span>
+                            <span *ngIf="!netCostFetchLoader" class="ml-1 mr-1">Fetch Net Cost</span>
                         </button>
                     </div>
+
+                    <!-- Net Cost Form -->
+                    <div class="gap-y-4">
+                        <form [formGroup]="netCostForm">
+                            <div class="row">
+                                <div class="col-12 mt-5">
+                                    <b>Quantity</b>
+                                </div>
+                                <div class="col-lg-2 col-4">
+                                    <p>
+                                        <br />
+                                    </p>
+                                    <mat-form-field class="w-full">
+                                        <input matInput [formControlName]="'quantityOne'" type="number"
+                                            (onmousewheel)="$event.preventDefault()"><small
+                                            class="text-secondary font-semibold"> 1 </small>
+                                    </mat-form-field>
+                                </div>
+                                <div class="col-lg-2 col-4">
+                                    <p class="flex justify-between">
+                                        <span class="underline ml-1 font-semibold cursor-pointer"
+                                            (click)="updateQuantityQuickLinks('quantityTwo')">x2</span>
+                                    </p>
+                                    <mat-form-field class="w-full">
+                                        <input matInput [formControlName]="'quantityTwo'" type="number"
+                                            (onmousewheel)="$event.preventDefault()"><small
+                                            class="text-secondary font-semibold"> 2 </small>
+                                    </mat-form-field>
+                                </div>
+                                <div class="col-lg-2 col-4">
+                                    <p class="flex justify-between">
+                                        <span class="underline ml-1 font-semibold cursor-pointer"
+                                            (click)="updateQuantityQuickLinks('quantityThree')">x2</span>
+                                    </p>
+                                    <mat-form-field class="w-full">
+                                        <input matInput [formControlName]="'quantityThree'" type="number"
+                                            (onmousewheel)="$event.preventDefault()"><small
+                                            class="text-secondary font-semibold"> 3 </small>
+                                    </mat-form-field>
+                                </div>
+                                <div class="col-lg-2 col-4">
+                                    <p class="flex justify-between">
+                                        <span class="underline ml-1 font-semibold cursor-pointer"
+                                            (click)="updateQuantityQuickLinks('quantityFour')">x2</span>
+                                    </p>
+                                    <mat-form-field class="w-full">
+                                        <input matInput [formControlName]="'quantityFour'" type="number"
+                                            (onmousewheel)="$event.preventDefault()"><small
+                                            class="text-secondary font-semibold"> 4 </small>
+                                    </mat-form-field>
+                                </div>
+                                <div class="col-lg-2 col-4">
+                                    <p class="flex justify-between">
+                                        <span class="underline ml-1 font-semibold cursor-pointer"
+                                            (click)="updateQuantityQuickLinks('quantityFive')">x2</span>
+                                    </p>
+                                    <mat-form-field class="w-full">
+                                        <input matInput [formControlName]="'quantityFive'" type="number"
+                                            (onmousewheel)="$event.preventDefault()"><small
+                                            class="text-secondary font-semibold"> 5 </small>
+                                    </mat-form-field>
+                                </div>
+                                <div class="col-lg-2 col-4">
+                                    <p class="flex justify-between">
+                                        <span class="underline ml-1 font-semibold cursor-pointer"
+                                            (click)="updateQuantityQuickLinks('quantitySix')">x2</span>
+                                    </p>
+                                    <mat-form-field class="w-full">
+                                        <input matInput [formControlName]="'quantitySix'" type="number"
+                                            (onmousewheel)="$event.preventDefault()"><small
+                                            class="text-secondary font-semibold"> 6 </small>
+                                    </mat-form-field>
+                                </div>
+                                <div class="col-12 mt-2">
+                                    <mat-divider></mat-divider>
+                                </div>
+                                <!-- Standard COST -->
+                                <div class="col-12 mt-5 flex justify-between">
+                                    <b>Standard Cost</b>
+                                    <p>
+                                        <span class="underline font-semibold cursor-pointer mr-2"
+                                            (click)="clearFields()">Clear</span>
+
+                                        <span class="underline font-semibold cursor-pointer"
+                                            (click)="setDropdownValue('C')">C</span>
+
+                                        |
+                                        <span class="underline font-semibold cursor-pointer"
+                                            (click)="setDropdownValue('A')">A</span>
+                                    </p>
+                                </div>
+                                <div class="col-lg-2 col-4">
+                                    <mat-form-field class="w-full">
+                                        <input matInput [formControlName]="'standardCostOne'" type="number"
+                                            (onmousewheel)="$event.preventDefault()"><small
+                                            class="text-secondary font-semibold"> 1 </small>
+                                    </mat-form-field>
+                                </div>
+                                <div class="col-lg-2 col-4">
+                                    <mat-form-field class="w-full">
+                                        <input matInput [formControlName]="'standardCostTwo'" type="number"
+                                            (onmousewheel)="$event.preventDefault()"><small
+                                            class="text-secondary font-semibold"> 2 </small>
+                                    </mat-form-field>
+                                </div>
+                                <div class="col-lg-2 col-4">
+                                    <mat-form-field class="w-full">
+                                        <input matInput [formControlName]="'standardCostThree'" type="number"
+                                            (onmousewheel)="$event.preventDefault()"><small
+                                            class="text-secondary font-semibold"> 3 </small>
+                                    </mat-form-field>
+                                </div>
+                                <div class="col-lg-2 col-4">
+                                    <mat-form-field class="w-full">
+                                        <input matInput [formControlName]="'standardCostFour'" type="number"
+                                            (onmousewheel)="$event.preventDefault()"><small
+                                            class="text-secondary font-semibold"> 4 </small>
+                                    </mat-form-field>
+                                </div>
+                                <div class="col-lg-2 col-4">
+                                    <mat-form-field class="w-full">
+                                        <input matInput [formControlName]="'standardCostFive'" type="number"
+                                            (onmousewheel)="$event.preventDefault()"><small
+                                            class="text-secondary font-semibold"> 5 </small>
+                                    </mat-form-field>
+                                </div>
+                                <div class="col-lg-2 col-4">
+                                    <mat-form-field class="w-full">
+                                        <input matInput [formControlName]="'standardCostSix'" type="number"
+                                            (onmousewheel)="$event.preventDefault()"><small
+                                            class="text-secondary font-semibold"> 6 </small>
+                                    </mat-form-field>
+                                </div>
+                                <div class="col-lg-2 col-4">
+                                    <mat-form-field class="w-full">
+                                        <mat-select name="order" [formControlName]="'standardCostDropOne'"
+                                            (selectionChange)="updateCost($event, 'standardCostOne')">
+                                            <mat-option *ngFor="let option of distributionCodes" [value]="option">
+                                                {{option.distrDiscountCode}}
+                                            </mat-option>
+                                        </mat-select>
+                                    </mat-form-field>
+                                </div>
+                                <div class="col-lg-2 col-4">
+                                    <mat-form-field class="w-full">
+                                        <mat-select name="order" [formControlName]="'standardCostDropTwo'"
+                                            (selectionChange)="updateCost($event, 'standardCostTwo')">
+                                            <mat-option value="select_order" disabled>
+                                                COST
+                                            </mat-option>
+                                            <mat-option *ngFor="let option of distributionCodes" [value]="option">
+                                                {{option.distrDiscountCode}}
+                                            </mat-option>
+                                        </mat-select>
+                                    </mat-form-field>
+                                </div>
+                                <div class="col-lg-2 col-4">
+                                    <mat-form-field class="w-full">
+                                        <mat-select name="order" [formControlName]="'standardCostDropThree'"
+                                            (selectionChange)="updateCost($event, 'standardCostThree')">
+                                            <mat-option value="select_order" disabled>
+                                                COST
+                                            </mat-option>
+                                            <mat-option *ngFor="let option of distributionCodes" [value]="option">
+                                                {{option.distrDiscountCode}}
+                                            </mat-option>
+                                        </mat-select>
+                                    </mat-form-field>
+                                </div>
+                                <div class="col-lg-2 col-4">
+                                    <mat-form-field class="w-full">
+                                        <mat-select name="order" [formControlName]="'standardCostDropFour'"
+                                            (selectionChange)="updateCost($event, 'standardCostFour')">
+                                            <mat-option value="select_order" disabled>
+                                                COST
+                                            </mat-option>
+                                            <mat-option *ngFor="let option of distributionCodes" [value]="option">
+                                                {{option.distrDiscountCode}}
+                                            </mat-option>
+                                        </mat-select>
+                                    </mat-form-field>
+                                </div>
+                                <div class="col-lg-2 col-4">
+                                    <mat-form-field class="w-full">
+                                        <mat-select name="order" [formControlName]="'standardCostDropFive'"
+                                            (selectionChange)="updateCost($event, 'standardCostFive')">
+                                            <mat-option value="select_order" disabled>
+                                                COST
+                                            </mat-option>
+                                            <mat-option *ngFor="let option of distributionCodes" [value]="option">
+                                                {{option.distrDiscountCode}}
+                                            </mat-option>
+                                        </mat-select>
+                                    </mat-form-field>
+                                </div>
+                                <div class="col-lg-2 col-4">
+                                    <mat-form-field class="w-full">
+                                        <mat-select name="order" [formControlName]="'standardCostDropSix'"
+                                            (selectionChange)="updateCost($event, 'standardCostSix')">
+                                            <mat-option value="select_order" disabled>
+                                                COST
+                                            </mat-option>
+                                            <mat-option *ngFor="let option of distributionCodes" [value]="option">
+                                                {{option.distrDiscountCode}}
+                                            </mat-option>
+                                        </mat-select>
+                                    </mat-form-field>
+                                </div>
+                                <div class="col-12 mt-2">
+                                    <mat-divider></mat-divider>
+                                </div>
+
+                                <div class="col-12 mt-4">
+                                    <mat-form-field class="w-full">
+                                        <mat-label>MSRP</mat-label>
+                                        <input type="number" (onmousewheel)="$event.preventDefault()" matInput
+                                            [formControlName]="'msrp'">
+                                    </mat-form-field>
+                                </div>
+                                <div class="col-12">
+                                    <mat-form-field class="w-full">
+                                        <mat-label>Internal Comments</mat-label>
+                                        <input matInput [formControlName]="'internalComments'">
+                                    </mat-form-field>
+                                </div>
+                            </div>
+                        </form>
+                        <div class="row">
+                            <div class="col-12 mt-2">
+                                <mat-divider></mat-divider>
+                            </div>
+                            <div class="col-12 mt-2 flex justify-between">
+                                <p class="font-semibold">Red Price Comment</p>
+                                <p class="text-secondary cursor-pointer underline">
+                                    <span *ngIf="isCustomRedPrice" (click)="changeIsCustom()">
+                                        Default Options
+                                    </span>
+                                    <span *ngIf="!isCustomRedPrice" (click)="changeIsCustom()">
+                                        Custom Red price
+                                    </span>
+                                </p>
+                            </div>
+                            <div class="col-12" *ngIf="!isCustomRedPrice">
+                                <ng-multiselect-dropdown [placeholder]="'Select Red Price Comment'"
+                                    [settings]="redPriceDropdownSettings" [data]="redPriceList"
+                                    [(ngModel)]="selectedRedPriceItems" (onSelect)="onRedPriceItemSelect($event)">
+                                </ng-multiselect-dropdown>
+                            </div>
+                            <div class="col-12" *ngIf="isCustomRedPrice">
+                                <mat-form-field class="w-full">
+                                    <input matInput [(ngModel)]="redPriceCommentText">
+                                </mat-form-field>
+                            </div>
+                            <div class="col-12 mt-5">
+                                <p class="font-semibold" style="color: #384253;">Co-op Program</p>
+                            </div>
+                            <div class="col-12 mt-2">
+                                <ng-multiselect-dropdown [disabled]="isDropdownDisabled" [placeholder]="'Co-op Program'"
+                                    [settings]="coOpProgramSettings" [data]="coops" [(ngModel)]="selectedCoOpProgram"
+                                    (onSelect)="onCoOpProgramSelect($event)">
+                                </ng-multiselect-dropdown>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="flex items-center justify-end w-full">
+                        <div class="flex items-center my-2">
+                            <div class="flex items-center mr-4" *ngIf="flashMessage">
+                                <ng-container *ngIf="flashMessage === 'success'">
+                                    <mat-icon class="text-green-500" [svgIcon]="'heroicons_outline:check'"></mat-icon>
+                                    <span class="ml-2">Net cost updated successfully</span>
+                                </ng-container>
+                                <ng-container *ngIf="flashMessage === 'error'">
+                                    <mat-icon class="text-red-500" [svgIcon]="'heroicons_outline:x'"></mat-icon>
+                                    <span class="ml-2" *ngIf="validationCheckMessage"> {{validationCheckMessage}}
+                                    </span>
+                                    <span class="ml-2" *ngIf="!validationCheckMessage">An error occurred, try
+                                        again!</span>
+                                </ng-container>
+                            </div>
+                            <button class="min-w-40" mat-stroked-button [matTooltip]="'Update Net Cost'"
+                                (click)="updateNetCost()" [disabled]="netCostLoader">
+                                <mat-progress-spinner *ngIf="netCostLoader" [diameter]="24" [mode]="'indeterminate'">
+                                </mat-progress-spinner>
+                                <mat-icon *ngIf="!netCostLoader" svgIcon="mode_edit_outline"></mat-icon>
+                                <span *ngIf="!netCostLoader" class="ml-1 mr-1">Update</span>
+                            </button>
+                        </div>
+                    </div>
                 </div>
-            </div>
-        </fuse-card>
+            </fuse-card>
+        </div>
     </div>
 </div>

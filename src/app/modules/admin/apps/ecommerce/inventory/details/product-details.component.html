@@ -3,9 +3,9 @@
     <div
         class="relative bg-light flex flex-col sm:flex-row flex-0 sm:items-center sm:justify-between py-2 px-6 md:px-8 border-b">
         <!-- Loader -->
-        <div class="absolute inset-x-0 bottom-1" *ngIf="isLoading">
+        <!-- <div class="absolute inset-x-0 bottom-1" *ngIf="!isLoading">
             <mat-progress-bar [mode]="'indeterminate'"></mat-progress-bar>
-        </div>
+        </div> -->
         <!-- Title -->
         <div class="text-3xl font-extrabold tracking-tight">Product Details</div>
         <!-- Actions -->
@@ -26,8 +26,8 @@
         <mat-drawer #drawer class="sub-sidenav bg-light" [mode]="drawerMode" [opened]="drawerOpened">
             <div *ngFor="let route of routes;let i = index">
                 <button style="padding: 15px;"
-                    [style.background-color]="route.title === selectedIndex ? '#d4d7dd' : 'transparent'"
-                    [ngClass]="route.title === selectedIndex ? 'opacity-100' : 'opacity-80'" mat-button
+                    [style.background-color]="route.title === selectedScreeen ? '#d4d7dd' : 'transparent'"
+                    [ngClass]="route.title === selectedScreeen ? 'opacity-100' : 'opacity-80'" mat-button
                     class="w-full my-1 mr-2 justify-content-start" (click)="clicked(route)">
                     <mat-icon svgIcon="{{route.icon}}" class="icon-size-5 text-primary"></mat-icon>
                     <span style="font-size: 13px; font-weight: bold; margin-left: 10px;"> {{route.title}} </span>
@@ -115,8 +115,10 @@
                 <div class="col-12 my-3">
                     <ng-container *ngTemplateOutlet="myCard"></ng-container>
                 </div>
-                <!-- Product Status -->
                 <div class="col-12">
+                    <router-outlet [(isLoading)]="isLoading"></router-outlet>
+                </div>
+                <!-- <div class="col-12">
                     <ng-template [ngIf]="selectedIndex === 'Product Status'">
                         <app-product-status [(isLoading)]="isLoading" [selectedProduct]="selectedProduct">
                         </app-product-status>
@@ -156,7 +158,7 @@
                     </ng-template>
                 </div>
                 <div class="col-12">
-                    <ng-template [ngIf]="selectedIndex === 'Promostandard colors'">
+                    <ng-template [ngIf]="selectedIndex === 'Inventory'">
                         <app-promostandard-colors [(isLoading)]="isLoading" [selectedProduct]="selectedProduct">
                         </app-promostandard-colors>
                     </ng-template>
@@ -254,7 +256,7 @@
                     <ng-template [ngIf]="selectedIndex === 'Swatches'">
                         <app-swatches [(isLoading)]="isLoading" [selectedProduct]="selectedProduct"></app-swatches>
                     </ng-template>
-                </div>
+                </div> -->
             </div>
         </div>
 

@@ -8,12 +8,11 @@ import { StoreProductService } from '../../store.service';
   templateUrl: './product-options.component.html'
 })
 export class ProductOptionsComponent implements OnInit, OnDestroy {
-  @Input() selectedProduct: any;
-  @Input() isLoading: boolean;
+  selectedProduct: any;
+  isLoading: boolean;
   @Output() isLoadingChange = new EventEmitter<boolean>();
   private _unsubscribeAll: Subject<any> = new Subject<any>();
 
-  storeData: any;
   searchTerm: string = '';
 
   productOptionList = [];
@@ -38,11 +37,14 @@ export class ProductOptionsComponent implements OnInit, OnDestroy {
   ) { }
 
   ngOnInit(): void {
-    this._storeService.store$.pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
-      this.storeData = res["data"][0];
+    this.isLoading = true;
+    this.getStoreProductDetail();
+  }
+  getStoreProductDetail() {
+    this._storeService.product$.pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+      this.selectedProduct = res["data"][0];
       this.getProductList(1);
     });
-    this.isLoading = true;
   }
   searchKeyword(ev) {
     const keyword = ev.target.value;
@@ -88,7 +90,7 @@ export class ProductOptionsComponent implements OnInit, OnDestroy {
       product_options_supplier_products: true,
       page: page,
       keyword: this.searchTerm,
-      store_id: Number(this.storeData.pk_storeID)
+      store_id: Number(this.selectedProduct.fk_storeID)
     }
     this._storeService.commonGetCalls(params).subscribe(res => {
       this.productListTotal = res["totalRecords"];
@@ -135,7 +137,7 @@ export class ProductOptionsComponent implements OnInit, OnDestroy {
     let payload = {
       optionalGuidelines: '',
       product_id: Number(this.selectedProduct.fk_productID),
-      storeName: this.storeData.storeName,
+      storeName: this.selectedProduct.storeName,
       productIDs: productIDs,
       storeProductID: Number(this.selectedProduct.pk_storeProductID),
       update_product_options: true

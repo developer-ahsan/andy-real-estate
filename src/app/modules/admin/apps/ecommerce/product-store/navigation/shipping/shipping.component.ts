@@ -8,8 +8,8 @@ import { StoreProductService } from '../../store.service';
   templateUrl: './shipping.component.html'
 })
 export class ShippingComponent implements OnInit, OnDestroy {
-  @Input() selectedProduct: any;
-  @Input() isLoading: boolean;
+  selectedProduct: any;
+  isLoading: boolean;
   @Output() isLoadingChange = new EventEmitter<boolean>();
   private _unsubscribeAll: Subject<any> = new Subject<any>();
 
@@ -24,9 +24,14 @@ export class ShippingComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.isLoading = true;
-    this.getShipping();
+    this.getStoreProductDetail();
   }
-
+  getStoreProductDetail() {
+    this._storeService.product$.pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+      this.selectedProduct = res["data"][0];
+      this.getShipping();
+    });
+  }
   getShipping() {
     let params = {
       shipping: true,

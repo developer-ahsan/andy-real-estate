@@ -10,8 +10,8 @@ import { MatSnackBar } from '@angular/material/snack-bar';
   templateUrl: './warehouse.component.html'
 })
 export class WarehouseComponent implements OnInit, OnDestroy {
-  @Input() selectedProduct: any;
-  @Input() isLoading: boolean;
+  selectedProduct: any;
+  isLoading: boolean;
   @Output() isLoadingChange = new EventEmitter<boolean>();
   private _unsubscribeAll: Subject<any> = new Subject<any>();
 
@@ -55,34 +55,42 @@ export class WarehouseComponent implements OnInit, OnDestroy {
       checkBox3: ['Pick-Up'],
       checkBox4: ['Delivery']
     });
+    this.getProductDetail();
 
-    const { pk_productID } = this.selectedProduct;
-
-    this._inventoryService.getWarehouseByProductId(pk_productID)
-      .pipe(takeUntil(this._unsubscribeAll))
-      .subscribe((warehouse) => {
-        this.wareHouseLength = warehouse["totalRecords"];
-        if (this.wareHouseLength > 0) {
-          this.selected = 'Yes';
-        }
-        this.wareHouseForm.patchValue(warehouse["data"][0]);
-        this.isLoadingChange.emit(false);
-
-        // Mark for check
-        this._changeDetectorRef.markForCheck();
-      }, err => {
-        this._snackBar.open("Some error occured fetchinf warehouse data", '', {
-          horizontalPosition: 'center',
-          verticalPosition: 'bottom',
-          duration: 3500
-        });
-        this.isLoadingChange.emit(false);
-
-        // Mark for check
-        this._changeDetectorRef.markForCheck();
-      });
   }
+  getProductDetail() {
+    this.isLoading = true;
+    this._inventoryService.product$.pipe(takeUntil(this._unsubscribeAll)).subscribe((details) => {
+      if (details) {
+        this.selectedProduct = details["data"][0];
+        const { pk_productID } = this.selectedProduct;
 
+        this._inventoryService.getWarehouseByProductId(pk_productID)
+          .pipe(takeUntil(this._unsubscribeAll))
+          .subscribe((warehouse) => {
+            this.wareHouseLength = warehouse["totalRecords"];
+            if (this.wareHouseLength > 0) {
+              this.selected = 'Yes';
+            }
+            this.wareHouseForm.patchValue(warehouse["data"][0]);
+            this.isLoadingChange.emit(false);
+
+            // Mark for check
+            this._changeDetectorRef.markForCheck();
+          }, err => {
+            this._snackBar.open("Some error occured fetchinf warehouse data", '', {
+              horizontalPosition: 'center',
+              verticalPosition: 'bottom',
+              duration: 3500
+            });
+            this.isLoadingChange.emit(false);
+
+            // Mark for check
+            this._changeDetectorRef.markForCheck();
+          });
+      }
+    });
+  }
   radioChange(event) {
   }
 
