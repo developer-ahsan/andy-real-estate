@@ -64,7 +64,6 @@ export class ProductsStatusComponent implements OnInit {
     let params = {
       page: page,
       store_version: true,
-      bln_active: 1,
       product_id: this.selectedProduct.pk_productID,
       size: 100
     }

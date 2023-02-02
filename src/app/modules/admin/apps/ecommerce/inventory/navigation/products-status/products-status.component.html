@@ -18,12 +18,16 @@
                                     <p>{{item.storeName}}</p>
                                 </div>
                                 <div class="text-secondary font-medium text-md">{{item.pk_storeProductID}}</div>
+                                <div class="text-secondary text-red-500 font-medium text-md"
+                                    *ngIf="!item.blnStoreActive">Offline</div>
+                                <div class="text-secondary text-green-500 font-medium text-md"
+                                    *ngIf="item.blnStoreActive">Online</div>
                             </div>
                         </div>
                         <!-- <div class="mt-6">From rocky mountains to crystal clear lakes, these are the places you must see and
                             enjoy.
                         </div> -->
-                        <div class="mt-3 -mx-3 text-center">
+                        <div class="mt-4 -mx-3 text-center">
                             <mat-checkbox (change)="storeCheckToggle(item)" [(ngModel)]="item.checked">Add to
                                 rapidBuild</mat-checkbox>
                         </div>

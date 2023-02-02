@@ -62,11 +62,17 @@
                         </div>
                         <div class="col-lg-4 col-md-6 col-12">
                             <b class="text-secondary text-sm">Supplier</b>
-                            <a class="float-right text-sm"
-                                style="color: #959595; text-decoration: underline; cursor: pointer;"
-                                href="{{selectedProduct?.websiteURL}}" target="_blank">
-                                {{selectedProduct?.companyName || not_available}}
-                            </a>
+                            <span class="float-right">
+                                <a class="text-sm " style="color: #959595; text-decoration: underline; cursor: pointer;"
+                                    [routerLink]="['/apps/vendors',selectedProduct.fk_supplierID]" target="_blank">
+                                    {{selectedProduct?.companyName || not_available}}
+                                </a>
+                                <a class="text-sm ml-1"
+                                    style="color: #959595; text-decoration: underline; cursor: pointer;"
+                                    href="{{selectedProduct?.websiteURL}}" target="_blank">
+                                    (Go to Site)
+                                </a>
+                            </span>
                         </div>
                         <div class="col-lg-4 col-md-6 col-12" *ngIf="selectedProduct?.supplierLink">
                             <b class="text-secondary text-sm">Product Link</b>

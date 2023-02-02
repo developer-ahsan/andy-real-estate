@@ -42,6 +42,11 @@ export const vendorsRoutes: Route[] = [
         },
         children: [
             {
+                path: '',
+                redirectTo: 'information',
+                pathMatch: 'full'
+            },
+            {
                 path: 'information',
                 component: VendorsInfoComponent,
                 data: {
