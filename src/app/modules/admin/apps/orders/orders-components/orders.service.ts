@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { BehaviorSubject, Observable } from 'rxjs';
-import { tap } from 'rxjs/operators';
+import { retry, tap } from 'rxjs/operators';
 import { addComment, CreateIncidentReport, OrdersList, OrdersProduct } from 'app/modules/admin/apps/orders/orders-components/orders.types';
 import { environment } from 'environments/environment';
 import { AuthService } from 'app/core/auth/auth.service';
@@ -18,6 +18,7 @@ export class OrdersService {
     private _order_products: BehaviorSubject<OrdersList[] | null> = new BehaviorSubject(null);
     private _orderLineProducts: BehaviorSubject<OrdersList[] | null> = new BehaviorSubject(null);
     private _stores: BehaviorSubject<OrdersList[] | null> = new BehaviorSubject(null);
+    private _group_order_detail: BehaviorSubject<OrdersList[] | null> = new BehaviorSubject(null);
     public OrderCancelled: boolean = false;
 
     public navigationLabels = [
@@ -223,6 +224,10 @@ export class OrdersService {
     get orderStatus$(): Observable<any> {
         return this._orderStatus.asObservable();
     }
+    // Group Order Detail
+    get groupOrderDetail$(): Observable<any> {
+        return this._group_order_detail.asObservable();
+    }
 
     // Orders List
     getOrders(params): Observable<OrdersList[]> {
@@ -241,7 +246,13 @@ export class OrdersService {
             })
         )
     }
-
+    getGroupOrderDetails(id): Observable<any> {
+        return this._httpClient.get(`${environment.orders}?group_order=true&order_id=${id}`).pipe(
+            tap((order) => {
+                this._group_order_detail.next(order);
+            }, retry(3))
+        );
+    }
 
     getAllStores(): Observable<any[]> {
         return this._httpClient.get<any[]>(environment.orders, {
@@ -306,7 +317,7 @@ export class OrdersService {
     // Common Calls
     // @Get Calls
     getOrder(params): Observable<any> {
-        return this._httpClient.get(`${environment.orders}`, { params: params });
+        return this._httpClient.get(`${environment.orders}`, { params: params }).pipe(retry(3));
     }
 
 

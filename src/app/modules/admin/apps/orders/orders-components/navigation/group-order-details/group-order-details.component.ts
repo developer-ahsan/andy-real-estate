@@ -7,6 +7,7 @@ import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
 import { ApexOptions } from 'ng-apexcharts';
 import { MatPaginator } from '@angular/material/paginator';
+import moment from 'moment';
 
 @Component({
   selector: 'app-group-order-details',
@@ -48,6 +49,12 @@ export class GroupOrdersDetailsComponent implements OnInit {
   mainScreen = 'Participants';
   orderItems: any;
   isItemsLoader: boolean = false;
+  groupOrder: any;
+  daysLeft = 0;
+  minDate = new Date();
+  ngDate: any;
+  updateCloseLoader: boolean = false;
+  totalQuantity = 0;
   constructor(
     private _changeDetectorRef: ChangeDetectorRef,
     private _orderService: OrdersService
@@ -103,16 +110,20 @@ export class GroupOrdersDetailsComponent implements OnInit {
 
   }
   getOrderDetail() {
+    this._orderService.orderProducts$.pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+      res["data"].forEach((element, index) => {
+        this.totalQuantity += element.quantity;
+      });
+    })
     this._orderService.orderDetail$.pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
       this.orderDetail = res["data"][0];
-      this.getAllInvited();
-      this.getAllParticipants();
+      this.getGroupOrderDetails();
     });
   }
   getAllInvited() {
     let params = {
       group_order: true,
-      participant: true,
+      participants: true,
       order_id: this.orderDetail.pk_orderID,
       group_order_id: this.orderDetail.fk_groupOrderID,
       page: this.page,
@@ -120,12 +131,35 @@ export class GroupOrdersDetailsComponent implements OnInit {
       size: 10
     }
     this._orderService.getOrder(params).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
-      this.dataSource = res["data"];
-      this.totalRecords = res["totalRecords"];
-      if (this.tempTotalRecords == 0) {
-        this.tempDataSource = res["data"];
-        this.tempTotalRecords = res["totalRecords"];
+      if (res["data"].length) {
+        res["data"].forEach((element, index) => {
+          element.participating = false;
+          element.inovice = false;
+          if (this.groupOrder.blnInitiatorPays) {
+            element.invoice = 'Initiator pays';
+          }
+          if (this.participants.length > 0) {
+            this.participants.filter(item => {
+              if (item.email == element.email) {
+                element.participating = true;
+                element.inovice = 'INVOICE';
+              }
+            });
+          }
+          if (index == res["data"].length - 1) {
+            this.dataSource = res["data"];
+            this.totalRecords = res["totalRecords"];
+            if (this.tempTotalRecords == 0) {
+              this.tempDataSource = res["data"];
+              this.tempTotalRecords = res["totalRecords"];
+            }
+          }
+        });
+      } else {
+        this.dataSource = res["data"];
+        this.totalRecords = res["totalRecords"];
       }
+
       this.isFilterLoader = false;
       this.isLoading = false;
       this._changeDetectorRef.markForCheck();
@@ -147,34 +181,53 @@ export class GroupOrdersDetailsComponent implements OnInit {
   getAllParticipants() {
     let params = {
       group_order: true,
-      participants: true,
-      order_id: this.orderDetail.pk_orderID,
-      size: 20
+      participating: true,
+      group_order_id: this.orderDetail.fk_groupOrderID
     }
     this._orderService.getOrder(params).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
       this.participants = res["data"];
       this.totalParticipants = res["totalRecords"];
+      if (this.totalQuantity > 0) {
+        this.totalParticipants += 1;
+      }
       this.isParticipantLaoder = false;
+      this.getAllInvited();
       this._changeDetectorRef.markForCheck();
     }, err => {
       this.isParticipantLaoder = false;
       this._changeDetectorRef.markForCheck();
     });
   }
+  getGroupOrderDetails() {
+    this._orderService.groupOrderDetail$.pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+      if (res) {
+        this.groupOrder = res["data"];
+        this.getAllParticipants();
+      }
+    });
+  }
 
   filterAllParticipants(value) {
-    this.page = 1;
     if (this.dataSource.length > 0) {
-      this.paginator.firstPage();
+      // this.paginator.firstPage();
+      this.paginator.pageIndex = 0;
     }
     if (value == -1) {
+      this.page = 1;
       this.dataSource = this.tempDataSource;
       this.totalRecords = this.tempTotalRecords;
     } else {
+      this.page = 1;
       this.isParticipant = value;
       this.isFilterLoader = true;
       this.getAllInvited();
     }
+  }
+
+  daysCount(d) {
+    let days = moment(d).diff(moment.now(), 'days');
+    this.daysLeft = days;
+    return days;
   }
 
 }

@@ -2,7 +2,7 @@
     <ngx-skeleton-loader count="8" appearance="line" animation="pulse"
         *ngIf="(isLoading || isParticipantLaoder) && mainScreen =='Participants'">
     </ngx-skeleton-loader>
-    <div *ngIf="!isLoading && !isParticipantLaoder">
+    <div *ngIf="!isLoading && !isParticipantLaoder && groupOrder">
         <div>
             <mat-button-toggle-group #group="matButtonToggleGroup" [value]="mainScreen"
                 (change)="calledScreen(group.value)">
@@ -66,8 +66,14 @@
                                     paying</span>
                             </div>
                         </div>
-                        <div class="mt-3 text-md text-secondary">Each participant pays their portion, including
-                            initiator.
+                        <div class="mt-3 text-md text-secondary">
+                            <span *ngIf="!groupOrder[0].blnInitiatorPays">
+                                Each participant pays their portion, including
+                                initiator.
+                            </span>
+                            <span *ngIf="groupOrder[0].blnInitiatorPays">
+                                Initiator pays for the entire order
+                            </span>
                         </div>
                     </div>
                     <hr>
@@ -79,18 +85,38 @@
                                     order</span>
                             </div>
                         </div>
-                        <div class="mt-3 text-md text-secondary">This group order has been closed
+                        <div class="mt-3 text-md text-secondary" *ngIf="groupOrder">
+                            <span class="text-red-500" *ngIf="daysCount(groupOrder[0].expires) < 0">This group order has
+                                been
+                                closed</span>
+                            <span class="text-red-500" *ngIf="daysCount(groupOrder[0].expires) >= 0">{{daysLeft}}
+                                days</span>
                         </div>
                     </div>
                     <hr>
                     <div class="flex flex-col">
                         <div class="flex items-center">
                             <div class="flex-auto leading-none">
-                                <span class="bg-default rounded px-3 py-1 text-secondary font-bold"
+                                <span *ngIf="groupOrder[0].blnShipToOneLocation"
+                                    class="bg-default rounded px-3 py-1 text-secondary font-bold"
+                                    matTooltip="This entie group order will be shipped to this location.">Shipping</span>
+                                <span *ngIf="!groupOrder[0].blnShipToOneLocation"
+                                    class="bg-default rounded px-3 py-1 text-secondary font-bold"
                                     matTooltip="Each participant will receive their own shipment.">Shipping</span>
                             </div>
                         </div>
-                        <div class="mt-3 text-md text-secondary">Each participant will receive their own shipment.
+                        <div class="mt-3 text-md text-secondary">
+                            <span *ngIf="!groupOrder[0].blnShipToOneLocation">Each participant will receive their own
+                                shipment.</span>
+                            <div *ngIf="groupOrder[0].blnShipToOneLocation" class="font-medium">
+                                <p>{{groupOrder[0].groupOrderShippingName}}</p>
+                                <p>{{groupOrder[0].groupOrderShippingCompanyName}}</p>
+                                <p>{{groupOrder[0].groupOrderShippingAddress}}</p>
+                                <p>{{groupOrder[0].groupOrderShippingAddress2}}</p>
+                                <p>{{groupOrder[0].groupOrderShippingCity}}</p>
+                                <p>{{groupOrder[0].groupOrderShippingState}}</p>
+                                <p>{{groupOrder[0].groupOrderShippingZip}}</p>
+                            </div>
                         </div>
                     </div>
                     <hr>
@@ -101,13 +127,23 @@
                                     matTooltip="This group order closes at this time.">Closes</span>
                             </div>
                         </div>
-                        <div class="mt-3 text-md text-secondary">Feb 19, 2021 @ 11:59 PM</div>
+                        <div class="mt-3 text-md text-secondary">{{groupOrder[0].expires | date:'MMM d, y'}} @ 11:59
+                            PM
+                        </div>
                         <mat-form-field appearance="fill">
-                            <input matInput [matDatepicker]="picker" readonly (click)="picker.open()"
-                                placeholder="Click to select new expiry">
+                            <input [(ngModel)]="ngDate" matInput [matDatepicker]="picker" [min]="minDate" readonly
+                                (click)="picker.open()" placeholder="Click to select new expiry">
                             <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
                             <mat-datepicker #picker></mat-datepicker>
                         </mat-form-field>
+                        <div class="text-right">
+                            <button mat-stroked-button matTooltip="Update" class="text-sm">
+                                <mat-progress-spinner *ngIf="updateCloseLoader" [diameter]="24"
+                                    [mode]="'indeterminate'">
+                                </mat-progress-spinner>
+                                <span *ngIf="!updateCloseLoader">Update</span>
+                            </button>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -164,9 +200,9 @@
                                 Participating
                             </th>
                             <td mat-cell *matCellDef="let element" class="text-sm ">
-                                <mat-icon *ngIf="element.blnPaid" svgIcon="heroicons_outline:check"
+                                <mat-icon *ngIf="element.participating" svgIcon="heroicons_outline:check"
                                     class="icon-size-4 text-green-500"></mat-icon>
-                                <mat-icon *ngIf="!element.blnPaid" svgIcon="heroicons_outline:x"
+                                <mat-icon *ngIf="!element.participating" svgIcon="heroicons_outline:x"
                                     class="icon-size-4 text-red-500"></mat-icon>
                             </td>
                         </ng-container>
@@ -187,7 +223,8 @@
                                 Invoice
                             </th>
                             <td mat-cell *matCellDef="let element" class="text-sm">
-                                {{element.blnPaid}}
+                                <span *ngIf="!element.invoice">---</span>
+                                <span *ngIf="element.invoice">{{element.invoice}}</span>
                             </td>
                         </ng-container>
 

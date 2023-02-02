@@ -95,7 +95,7 @@ export class OrdersDetailsComponent implements OnInit, OnDestroy {
                 } else {
                     this.getOrderStatus();
                 }
-                const { blnAdditionalArtApproval, blnProcurement, paymentDate, fk_groupOrderID } = this.selectedOrderDetail;
+                const { blnAdditionalArtApproval, blnProcurement, paymentDate, fk_groupOrderID, pk_orderID } = this.selectedOrderDetail;
                 if (blnAdditionalArtApproval) {
                     this._orderService.navigationLabels[2].children.push({ id: 10, title: 'Art Approval Settings', icon: 'mat_outline:settings', route: 'art-approval-settings' });
                 }
@@ -108,6 +108,7 @@ export class OrdersDetailsComponent implements OnInit, OnDestroy {
                     });
                 }
                 if (fk_groupOrderID) {
+                    this.getGroupOrderDetails(pk_orderID);
                     this._orderService.navigationLabels[2].children.push(
                         { id: 10, title: 'Group Order Details', icon: 'heroicons_outline:document-report', route: 'group-order-details' },
                         { id: 10, title: 'Group Order Shipping', icon: 'heroicons_outline:document-report', route: 'group-order-shipping' }
@@ -123,6 +124,11 @@ export class OrdersDetailsComponent implements OnInit, OnDestroy {
         this._orderService.orderProducts$.pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
             this.selectedOrderDetail['OrderStatus'] = res["resultStatus"];
             this.isLoading = false;
+            this._changeDetectorRef.markForCheck();
+        });
+    }
+    getGroupOrderDetails(pk_orderID) {
+        this._orderService.getGroupOrderDetails(pk_orderID).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
             this._changeDetectorRef.markForCheck();
         });
     }
