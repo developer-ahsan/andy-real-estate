@@ -52,7 +52,7 @@ export class OrdersReportComponent implements OnInit {
   ) { }
 
   ngOnInit(): void {
-
+    this.isLoading = true;
     // this._orderService.orders$
     //   .pipe(takeUntil(this._unsubscribeAll))
     //   .subscribe((orders: OrdersList[]) => {
