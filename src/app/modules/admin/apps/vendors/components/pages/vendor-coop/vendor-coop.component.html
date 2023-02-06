@@ -30,10 +30,10 @@
                     <th mat-header-cell *matHeaderCellDef class="w-15 min-w-15 text-center">
                         Expired
                     </th>
-                    <td mat-cell *matCellDef="let element" class="text-red-500">
+                    <td mat-cell *matCellDef="let element" [ngClass]="{'text-red-500': element.expired}">
                         <div class="flex align-items-center text-sm justify-center">
                             <span>{{element.expirationDate | date: 'MM/dd/yyyy'}}</span>
-                            <mat-icon svgIcon="heroicons_outline:information-circle"
+                            <mat-icon *ngIf="element.expired" svgIcon="heroicons_outline:information-circle"
                                 class="ml-1 text-red-500 icon-size-4"></mat-icon>
                         </div>
                     </td>

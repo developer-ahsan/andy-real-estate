@@ -6,10 +6,28 @@
 
     <div class="absolute inset-0 flex items-center flex-shrink-0 z-99 bg-card" *ngIf="opened" @slideInTop @slideOutTop>
         <div class="row w-full m-0">
-            <div class="col-3">
+            <div class="col-md-2 col-5">
                 <mat-form-field class="fuse-mat-no-subscript w-full">
                     <input class="" matInput [placeholder]="'Search Product'" (keyup.enter)="searchProduct($event)"
                         (keydown)="onKeydown($event)" #barSearchInput>
+                </mat-form-field>
+            </div>
+            <div class="col-md-2 col-5">
+                <mat-form-field class="fuse-mat-no-subscript w-full">
+                    <input class="" matInput [placeholder]="'Search Vendor'" (keyup.enter)="searchVendor($event)"
+                        (keydown)="onKeydown($event)" #barSearchInput1>
+                </mat-form-field>
+            </div>
+            <div class="col-md-2 col-5">
+                <mat-form-field class="fuse-mat-no-subscript w-full">
+                    <input class="" matInput [placeholder]="'Search Store'" (keyup.enter)="searchStore($event)"
+                        (keydown)="onKeydown($event)" #barSearchInput2>
+                </mat-form-field>
+            </div>
+            <div class="col-md-2 col-5">
+                <mat-form-field class="fuse-mat-no-subscript w-full">
+                    <input class="" matInput [placeholder]="'Search Customer'" (keyup.enter)="searchCustomer($event)"
+                        (keydown)="onKeydown($event)" #barSearchInput2>
                 </mat-form-field>
             </div>
             <!-- <div class="col-3">

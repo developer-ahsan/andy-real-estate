@@ -2,6 +2,7 @@ import { SelectionModel } from '@angular/cdk/collections';
 import { Component, Input, OnInit, Output, EventEmitter, ChangeDetectorRef, OnDestroy } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { Router } from '@angular/router';
 import { InventoryService } from 'app/modules/admin/apps/ecommerce/inventory/inventory.service';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
@@ -50,6 +51,7 @@ export class ProductSizesComponent implements OnInit, OnDestroy {
     private _changeDetectorRef: ChangeDetectorRef,
     private _inventoryService: InventoryService,
     private _formBuilder: FormBuilder,
+    private _router: Router,
     private _snackBar: MatSnackBar
   ) { }
 
@@ -264,7 +266,8 @@ export class ProductSizesComponent implements OnInit, OnDestroy {
           verticalPosition: 'bottom',
           duration: 3500
         });
-        this.myStepper.next();
+        this.goToProductDeatailsPage();
+        // this.myStepper.next();
         // Mark for check
         this._changeDetectorRef.markForCheck();
       }, err => {
@@ -351,5 +354,8 @@ export class ProductSizesComponent implements OnInit, OnDestroy {
     this._unsubscribeAll.next();
     this._unsubscribeAll.complete();
   };
-
+  goToProductDeatailsPage() {
+    const pk_productID = this.selectedProduct
+    this._router.navigate([`/apps/ecommerce/inventory/${pk_productID}`]);
+  }
 }

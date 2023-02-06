@@ -41,7 +41,13 @@ export class VendorsListComponent implements OnInit, OnDestroy {
   ) { }
 
   ngOnInit(): void {
-    this.getAllSuppliers();
+    if (this._vendorService.vendorsSearchKeyword == '') {
+      this.getAllSuppliers();
+    } else {
+      this.isLoading = true;
+      this.keyword = this._vendorService.vendorsSearchKeyword;
+      this.getSuppliers(1);
+    }
   };
   getAllSuppliers() {
     this._vendorService.Suppliers$.pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
@@ -69,16 +75,15 @@ export class VendorsListComponent implements OnInit, OnDestroy {
       keyword: this.keyword
     }
     this._vendorService.getVendorsData(params).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
-      if (this.keyword) {
-        this.isSearching = false;
-      }
+      this.isSearching = false;
+      this.isLoading = false;
       this.dataSourceSupplier = res["data"];
       this.totalSupplier = res["totalRecords"];
+      this._vendorService.vendorsSearchKeyword = '';
       this._changeDetectorRef.markForCheck();
     }, err => {
-      if (this.keyword) {
-        this.isSearching = false;
-      }
+      this.isLoading = false;
+      this.isSearching = false;
       this._changeDetectorRef.markForCheck();
     });
   }
@@ -86,16 +91,16 @@ export class VendorsListComponent implements OnInit, OnDestroy {
     this._router.navigate([item.pk_companyID + '/information'], { relativeTo: this.route });
   }
   searchSuppliersByKeyword() {
-    if (!this.keyword) {
-      this._vendorService.snackBar('Keyword is required');
-    } else {
-      this.isSearching = true;
-      this.blnActive = this.blnNotDisable;
-      if (this.blnNotDisable == 0) {
-        this.blnActive = null;
-      }
-      this.getSuppliers(1);
+    // if (!this.keyword) {
+    //   this._vendorService.snackBar('Keyword is required');
+    // } else {
+    this.isSearching = true;
+    this.blnActive = this.blnNotDisable;
+    if (this.blnNotDisable == 0) {
+      this.blnActive = null;
     }
+    this.getSuppliers(1);
+    // }
   }
   resetSearch() {
     if (this.dataSourceSupplier.length > 0) {

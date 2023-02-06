@@ -41,6 +41,8 @@ import { AddNewsFeed, AddScroller, AddTestimonial, colorHeaderUpdate, colorsUpda
   providedIn: "root",
 })
 export class FileManagerService {
+
+  public _storeSearchKeyword = '';
   // Private
   private _selectedStore: BehaviorSubject<StoreList | null> =
     new BehaviorSubject(null);

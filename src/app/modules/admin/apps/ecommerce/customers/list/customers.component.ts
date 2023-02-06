@@ -74,8 +74,7 @@ export class CustomersListComponent implements OnInit, OnDestroy {
             website: [''],
             department: ['']
         });
-
-        // Get the customers
+        // 
         this.customers$ = this._customerService.customers$;
         this._customerService.customers$
             .pipe(takeUntil(this._unsubscribeAll))
@@ -83,10 +82,13 @@ export class CustomersListComponent implements OnInit, OnDestroy {
 
                 this.customers$ = customers["data"];
                 this.customersCount = customers["totalRecords"];
-
+                this._customerService._searchKeyword = '';
                 // Mark for check
                 this._changeDetectorRef.markForCheck();
             });
+        // Get the customers
+
+
 
     };
 
@@ -145,6 +147,7 @@ export class CustomersListComponent implements OnInit, OnDestroy {
             .subscribe((customers) => {
                 this.customers$ = customers["data"];
                 this.isLoading = false;
+                this._customerService._searchKeyword = '';
                 // Mark for check
                 this._changeDetectorRef.markForCheck();
             });

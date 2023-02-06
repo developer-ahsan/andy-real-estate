@@ -3848,8 +3848,13 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
         }, 100);
     }
     addProductImprints() {
+        const { radio } = this.firstFormGroup.getRawValue();
         if (this.imprintsLocalList.length == 0) {
-            this.myStepper.next();
+            if (radio.name != 'Apparel Item') {
+                this.goToProductDeatailsPage();
+            } else {
+                this.myStepper.next();
+            }
         } else {
             this.updateProductImprintLoader = true;
             let imprints = [];
@@ -3895,7 +3900,11 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
                     verticalPosition: 'bottom',
                     duration: 3500
                 });
-                this.myStepper.next();
+                if (radio.name != 'Apparel Item') {
+                    this.goToProductDeatailsPage();
+                } else {
+                    this.myStepper.next();
+                }
                 this._changeDetectorRef.markForCheck();
             }, err => {
                 this.updateProductImprintLoader = false;
@@ -4053,6 +4062,8 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
         this._router.navigate([`/apps/ecommerce/inventory/${this.productId}`]);
     }
     saveStandardImprints(): void {
+        const { radio } = this.firstFormGroup.getRawValue();
+
         this.updateProductImprintLoader = true;
         this._changeDetectorRef.markForCheck();
         let count = 0;
@@ -4137,12 +4148,17 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
             this._inventoryService.addStandardImprints(payload)
                 .subscribe((response) => {
                     this.updateProductImprintLoader = false;
-                    this.myStepper.next();
                     this._snackBar.open("Standard Imprints saved successfully", '', {
                         horizontalPosition: 'center',
                         verticalPosition: 'bottom',
                         duration: 3000
                     });
+                    if (radio.name != 'Apparel Item') {
+                        this.goToProductDeatailsPage();
+                    } else {
+                        this.myStepper.next();
+
+                    }
                     this._changeDetectorRef.markForCheck();
                 }, err => {
                     this.updateProductImprintLoader = false;

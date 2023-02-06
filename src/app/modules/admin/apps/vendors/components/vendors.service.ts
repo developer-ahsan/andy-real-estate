@@ -13,6 +13,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
     providedIn: 'root'
 })
 export class VendorsService {
+    public vendorsSearchKeyword = '';
     public navigationLabels = navigations;
 
     // Imprints

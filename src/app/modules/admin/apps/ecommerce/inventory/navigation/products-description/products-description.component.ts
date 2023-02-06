@@ -20,7 +20,7 @@ import _ from "lodash";
 })
 export class ProductsDescriptionComponent implements OnInit, OnDestroy {
   selectedProduct: any;
-  isLoading: boolean;
+  isLoading: boolean = true;
   @Output() isLoadingChange = new EventEmitter<boolean>();
   private _unsubscribeAll: Subject<any> = new Subject<any>();
 

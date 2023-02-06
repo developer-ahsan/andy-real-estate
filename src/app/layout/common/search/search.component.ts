@@ -6,6 +6,9 @@ import { debounceTime, filter, map, takeUntil } from 'rxjs/operators';
 import { fuseAnimations } from '@fuse/animations/public-api';
 import { InventoryService } from 'app/modules/admin/apps/ecommerce/inventory/inventory.service';
 import { Router } from '@angular/router';
+import { VendorsService } from 'app/modules/admin/apps/vendors/components/vendors.service';
+import { FileManagerService } from 'app/modules/admin/apps/file-manager/store-manager.service';
+import { CustomersService } from 'app/modules/admin/apps/ecommerce/customers/customers.service';
 
 @Component({
     selector: 'search',
@@ -34,6 +37,9 @@ export class SearchComponent implements OnChanges, OnInit, OnDestroy {
         private _httpClient: HttpClient,
         private _renderer2: Renderer2,
         private _productService: InventoryService,
+        private _customerService: CustomersService,
+        private _storeService: FileManagerService,
+        private _vendorService: VendorsService,
         private router: Router
     ) {
     }
@@ -135,6 +141,36 @@ export class SearchComponent implements OnChanges, OnInit, OnDestroy {
             //     this.router.navigate(['/apps/ecommerce/inventory'])
             // });
             this.router.navigateByUrl('/apps/ecommerce/inventory', { skipLocationChange: true });
+        }
+        this.close();
+    }
+    searchStore(event) {
+        const val = event.target.value;
+        if (val != '') {
+            this._storeService._storeSearchKeyword = val;
+            // this.router.navigateByUrl('/', { skipLocationChange: true }).then(() => {
+            //     this.router.navigate(['/apps/ecommerce/inventory'])
+            // });
+            this.router.navigateByUrl('/apps/stores');
+        }
+        this.close();
+    }
+    searchVendor(event) {
+        const val = event.target.value;
+        if (val != '') {
+            this._vendorService.vendorsSearchKeyword = val;
+            this.router.navigateByUrl('/apps/vendors');
+        }
+        this.close();
+    }
+    searchCustomer(event) {
+        const val = event.target.value;
+        if (val != '') {
+            this._customerService._searchKeyword = val;
+            // this.router.navigateByUrl('/', { skipLocationChange: true }).then(() => {
+            //     this.router.navigate(['/apps/ecommerce/inventory'])
+            // });
+            this.router.navigateByUrl('/apps/ecommerce/customers');
         }
         this.close();
     }

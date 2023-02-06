@@ -47,7 +47,7 @@
       <mat-form-field class="fuse-mat-dense fuse-mat-no-subscript w-full mt-3">
         <mat-label>Search Store</mat-label>
         <mat-icon matPrefix [svgIcon]="'heroicons_outline:search'"></mat-icon>
-        <input class="h-6" matInput (input)="searchKeyword($event)" [autocomplete]="'off'"
+        <input class="h-6" matInput (input)="searchKeyword()" [(ngModel)]="ngSearch" [autocomplete]="'off'"
           [placeholder]="'Search Store'" />
       </mat-form-field>
     </div>

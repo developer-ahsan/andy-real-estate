@@ -56,6 +56,6 @@ export class GetCustomersList implements Resolve<any>
      * @param state
      */
     resolve(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<CustomersProduct[]> {
-        return this._customerService.getCustomersList();
+        return this._customerService.getCustomersList(this._customerService._searchKeyword);
     }
 };

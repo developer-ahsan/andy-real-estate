@@ -2158,8 +2158,9 @@
                                 </div>
                                 <div class="col-lg-10 col-12"></div>
                                 <div class="col-lg-2 col-12">
-                                    <button class="w-full" (click)="skipStep(stepper)" mat-stroked-button>
-                                        Skip
+                                    <button class="w-full" (click)="goToProductDeatailsPage(stepper)"
+                                        mat-stroked-button>
+                                        Go To Details
                                     </button>
                                 </div>
                             </div>
@@ -2174,7 +2175,7 @@
                             </div>
                         </mat-step>
                         <!-- Product Detail -->
-                        <mat-step label="Review">
+                        <!-- <mat-step label="Review">
                             <div class="row">
                                 <div class="col-12">
                                     <div class="mt-8 text-2xl font-extrabold tracking-tight leading-tight">
@@ -2399,7 +2400,7 @@
                                     </div>
                                 </div>
                             </div>
-                        </mat-step>
+                        </mat-step> -->
 
                     </mat-stepper>
                 </mat-card-content>

@@ -62,7 +62,7 @@ export class StoresListComponent implements OnInit, OnDestroy {
     createStoreLoader: boolean = false;
     settingStoreLoader: boolean = false;
     @ViewChild('stepper') private myStepper: MatStepper;
-
+    ngSearch = '';
     constructor(
         private _activatedRoute: ActivatedRoute,
         private _changeDetectorRef: ChangeDetectorRef,
@@ -161,7 +161,8 @@ export class StoresListComponent implements OnInit, OnDestroy {
                 this.duplicateStores = this.stores;
                 this.isStoreNotReceived = false;
                 this.isLoading = false;
-
+                this.ngSearch = this._fileManagerService._storeSearchKeyword;
+                this.searchKeyword();
                 // Mark for check
                 this._changeDetectorRef.markForCheck();
             });
@@ -216,9 +217,11 @@ export class StoresListComponent implements OnInit, OnDestroy {
         this._changeDetectorRef.markForCheck();
     };
 
-    searchKeyword(event): void {
-        const value = event.target.value;
-
+    searchKeyword(): void {
+        const value = this.ngSearch;
+        setTimeout(() => {
+            this._fileManagerService._storeSearchKeyword = '';
+        }, 300);
         this.stores = this.duplicateStores.filter((item: any) => {
             return item.storeName.toLowerCase().includes(value.toLowerCase()) || item.pk_storeID.toString().toLowerCase().includes(value.toLowerCase());
         });

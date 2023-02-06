@@ -11,6 +11,7 @@ import { navigations } from 'app/modules/admin/apps/ecommerce/customers/customer
     providedIn: 'root'
 })
 export class CustomersService {
+    public _searchKeyword = '';
     // Private
     private _customer: BehaviorSubject<CustomersProduct | null> = new BehaviorSubject(null);
     private _customers: BehaviorSubject<CustomersProduct[] | null> = new BehaviorSubject(null);
