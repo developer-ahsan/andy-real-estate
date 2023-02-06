@@ -30,6 +30,12 @@
                         (keydown)="onKeydown($event)" #barSearchInput2>
                 </mat-form-field>
             </div>
+            <div class="col-md-2 col-5">
+                <mat-form-field class="fuse-mat-no-subscript w-full">
+                    <input class="" matInput [placeholder]="'Search Order'" (keyup.enter)="searchOrder($event)"
+                        (keydown)="onKeydown($event)" #barSearchInput2>
+                </mat-form-field>
+            </div>
             <!-- <div class="col-3">
                 <mat-form-field class="fuse-mat-no-subscript w-full">
                     <input class="" matInput [placeholder]="'Search Product'" (keyup.enter)="searchProduct($event)"

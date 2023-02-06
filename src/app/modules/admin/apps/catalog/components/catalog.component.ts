@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, OnDestroy, OnInit, ViewChild, ViewEncapsulation } from '@angular/core';
 import { Subject } from 'rxjs';
-import { takeUntil } from 'rxjs/operators';
+import { debounceTime, distinctUntilChanged, filter, finalize, switchMap, takeUntil, tap } from 'rxjs/operators';
 import { fuseAnimations } from '@fuse/animations';
 import { ActivatedRoute, Router } from '@angular/router';
 import { FuseMediaWatcherService } from '@fuse/services/media-watcher';
@@ -9,6 +9,7 @@ import { AuthService } from 'app/core/auth/auth.service';
 import { MatDrawer } from '@angular/material/sidenav';
 import Swal from 'sweetalert2'
 import { CatalogService } from './catalog.service';
+import { FormControl } from '@angular/forms';
 @Component({
   selector: 'catalog',
   templateUrl: './catalog.component.html',
@@ -51,9 +52,33 @@ export class CatalogComponent {
 
   // fiters
   catalogFilter = {
-    perPage: 25
+    perPage: 25,
+    sortBy: 4,
+    relation: 0,
+    active: 0
   }
   isFilterLoader: boolean = false;
+
+  // Vendors Searchable
+  allSuppliers = [];
+  searchSupplierCtrl = new FormControl();
+  selectedSupplier: any;
+  isSearchingSupplier = false;
+  // Colors Searchable
+  allColors = [];
+  searchColorCtrl = new FormControl();
+  selectedColor: any;
+  isSearchingColor = false;
+  // Sizes Searchable
+  allSizes = [];
+  searchSizeCtrl = new FormControl();
+  selectedSize: any;
+  isSearchingSize = false;
+  // Methods Searchable
+  allMethods = [];
+  searchMethodCtrl = new FormControl();
+  selectedMethod: any;
+  isSearchingMethod = false;
   /**
    * Constructor
    */
@@ -78,26 +103,148 @@ export class CatalogComponent {
     this.sidenav.toggle();
   }
   ngOnInit(): void {
-    this.isLoading = true;
-    this.getCatalogs(1);
-    // Subscribe to media changes
-    this._fuseMediaWatcherService.onMediaChange$
-      .pipe(takeUntil(this._unsubscribeAll))
-      .subscribe(({ matchingAliases }) => {
-
-        // Set the drawerMode and drawerOpened
-        if (matchingAliases.includes('lg')) {
-          this.drawerMode = 'side';
-          this.drawerOpened = true;
+    let params;
+    this.searchSupplierCtrl.valueChanges.pipe(
+      filter((res: any) => {
+        params = {
+          supplier: true,
+          bln_active: 1,
+          keyword: res
         }
-        else {
-          this.drawerMode = 'over';
-          this.drawerOpened = false;
-        }
-
-        // Mark for check
+        return res !== null
+      }),
+      distinctUntilChanged(),
+      debounceTime(300),
+      tap(() => {
+        this.allSuppliers = [];
+        this.isSearchingSupplier = true;
         this._changeDetectorRef.markForCheck();
-      });
+      }),
+      switchMap(value => this._catalogService.getCatalogData(params)
+        .pipe(
+          finalize(() => {
+            this.isSearchingSupplier = false
+            this._changeDetectorRef.markForCheck();
+          }),
+        )
+      )
+    ).subscribe((data: any) => {
+      this.allSuppliers = data['data'];
+    });
+    // Colors
+    let paramsColor;
+    this.searchColorCtrl.valueChanges.pipe(
+      filter((res: any) => {
+        paramsColor = {
+          colors: true,
+          keyword: res
+        }
+        return res !== null
+      }),
+      distinctUntilChanged(),
+      debounceTime(300),
+      tap(() => {
+        this.allColors = [];
+        this.isSearchingColor = true;
+        this._changeDetectorRef.markForCheck();
+      }),
+      switchMap(value => this._catalogService.getCatalogData(paramsColor)
+        .pipe(
+          finalize(() => {
+            this.isSearchingColor = false
+            this._changeDetectorRef.markForCheck();
+          }),
+        )
+      )
+    ).subscribe((data: any) => {
+      this.allColors = data['data'];
+    });
+    // Sizes
+    let paramsSizes;
+    this.searchSizeCtrl.valueChanges.pipe(
+      filter((res: any) => {
+        paramsSizes = {
+          apparel_sizes: true,
+          keyword: res
+        }
+        return res !== null
+      }),
+      distinctUntilChanged(),
+      debounceTime(300),
+      tap(() => {
+        this.allSizes = [];
+        this.isSearchingSize = true;
+        this._changeDetectorRef.markForCheck();
+      }),
+      switchMap(value => this._catalogService.getCatalogData(paramsSizes)
+        .pipe(
+          finalize(() => {
+            this.isSearchingSize = false
+            this._changeDetectorRef.markForCheck();
+          }),
+        )
+      )
+    ).subscribe((data: any) => {
+      this.allSizes = data['data'];
+    });
+    // Methods
+    let paramsMethod;
+    this.searchMethodCtrl.valueChanges.pipe(
+      filter((res: any) => {
+        paramsMethod = {
+          imprint_methods: true,
+          keyword: res
+        }
+        return res !== null
+      }),
+      distinctUntilChanged(),
+      debounceTime(300),
+      tap(() => {
+        this.allMethods = [];
+        this.isSearchingMethod = true;
+        this._changeDetectorRef.markForCheck();
+      }),
+      switchMap(value => this._catalogService.getCatalogData(paramsMethod)
+        .pipe(
+          finalize(() => {
+            this.isSearchingMethod = false
+            this._changeDetectorRef.markForCheck();
+          }),
+        )
+      )
+    ).subscribe((data: any) => {
+      this.allMethods = data['data'];
+    });
+    // this.isLoading = true;
+    // this.getCatalogs(1);
+  }
+  // Vendors
+  onSelected(ev) {
+    this.selectedSupplier = ev.option.value;
+  }
+  displayWith(value: any) {
+    return value?.companyName;
+  }
+  // Colors
+  onSelectedColor(ev) {
+    this.selectedColor = ev.option.value;
+  }
+  displayWithColor(value: any) {
+    return value?.colorName;
+  }
+  // Methods
+  onSelectedMethod(ev) {
+    this.selectedMethod = ev.option.value;
+  }
+  displayWithMethod(value: any) {
+    return value?.methodName;
+  }
+  // Sizes
+  onSelectedSize(ev) {
+    this.selectedSize = ev.option.value;
+  }
+  displayWithSize(value: any) {
+    return value?.sizeName;
   }
   getNextCatalogData(event) {
     this.page = event;

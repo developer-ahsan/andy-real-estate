@@ -72,23 +72,27 @@ export class OrdersComponent {
 
         this.pageSize = 20;
         this.pageNo = 1;
+        if (this._orderService._searchKeyword == '') {
+            this._orderService.orders$
+                .pipe(takeUntil(this._unsubscribeAll))
+                .subscribe((orders: OrdersList[]) => {
+                    this.orders = orders["data"];
+                    this.ordersLength = orders["totalRecords"];
+                    if (this.tempOrdersArray.length == 0) {
+                        this.tempOrdersArray = orders["data"];
+                        this.tempTotalCount = orders["totalRecords"];
+                    }
+                    this.isLoading = false;
+                    this.isLoadingChange.emit(false);
 
+                    // Mark for check
+                    this._changeDetectorRef.markForCheck();
+                });
+        } else {
+            this.getOrders(20, 1);
+        }
         // Get the brands
-        this._orderService.orders$
-            .pipe(takeUntil(this._unsubscribeAll))
-            .subscribe((orders: OrdersList[]) => {
-                this.orders = orders["data"];
-                this.ordersLength = orders["totalRecords"];
-                if (this.tempOrdersArray.length == 0) {
-                    this.tempOrdersArray = orders["data"];
-                    this.tempTotalCount = orders["totalRecords"];
-                }
-                this.isLoading = false;
-                this.isLoadingChange.emit(false);
 
-                // Mark for check
-                this._changeDetectorRef.markForCheck();
-            });
 
         this.getStoresList();
     }
@@ -107,6 +111,7 @@ export class OrdersComponent {
     // -----------------------------------------------------------------------------------------------------
 
     getOrders(sizes, pageNo) {
+        this.keyword = this._orderService._searchKeyword;
         let { store_id, range_end, range_start, search_order_id, size, order_type } = this.advancedSearchForm;
         if (!range_end) {
             range_end = '';
@@ -121,6 +126,7 @@ export class OrdersComponent {
         let params = {
             list: true,
             size: sizes,
+            keyword: this.keyword,
             page: pageNo,
             store_id,
             range_end,
@@ -135,7 +141,7 @@ export class OrdersComponent {
                 this.ordersLength = orders["totalRecords"];
                 this.isLoading = false;
                 this.isLoadingChange.emit(false);
-
+                this._orderService._searchKeyword = '';
                 this.advancedSearchForm = {
                     store_id: 0,
                     range_end: '',

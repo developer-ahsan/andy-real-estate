@@ -47,12 +47,12 @@
                             <div class="col-12 col-md-6">
                                 <mat-form-field class="w-full">
                                     <mat-label>Sort by:</mat-label>
-                                    <mat-select matInput>
-                                        <mat-option [value]="25">Product ID</mat-option>
-                                        <mat-option [value]="50">Price low to high</mat-option>
-                                        <mat-option [value]="100">Price high to low</mat-option>
-                                        <mat-option [value]="100">Name, A to Z</mat-option>
-                                        <mat-option [value]="100">Name, Z to A</mat-option>
+                                    <mat-select matInput [(ngModel)]="catalogFilter.sortBy">
+                                        <mat-option [value]="1">Product ID</mat-option>
+                                        <mat-option [value]="2">Price low to high</mat-option>
+                                        <mat-option [value]="3">Price high to low</mat-option>
+                                        <mat-option [value]="4">Name, A to Z</mat-option>
+                                        <mat-option [value]="5">Name, Z to A</mat-option>
                                     </mat-select>
                                 </mat-form-field>
                             </div>
@@ -65,83 +65,111 @@
                             <div class="col-12">
                                 <mat-form-field class="w-full">
                                     <mat-label>Vendor:</mat-label>
-                                    <mat-select matInput>
-                                        <mat-option [value]="25">Product ID</mat-option>
-                                        <mat-option [value]="50">Price low to high</mat-option>
-                                        <mat-option [value]="100">Price high to low</mat-option>
-                                        <mat-option [value]="100">Name, A to Z</mat-option>
-                                        <mat-option [value]="100">Name, Z to A</mat-option>
+                                    <input matInput placeholder="Search Vendors" matTooltip="Search Vendors by name"
+                                        [matAutocomplete]="auto" [formControl]="searchSupplierCtrl">
+                                    <mat-autocomplete class="w-full" #auto="matAutocomplete"
+                                        (optionSelected)="onSelected($event)" [displayWith]="displayWith">
+                                        <mat-option *ngIf="isSearchingSupplier"
+                                            class="is-loading">Loading...</mat-option>
+                                        <ng-container *ngIf="!isSearchingSupplier">
+                                            <mat-option *ngFor="let supplier of allSuppliers" [value]="supplier">
+                                                <span>{{supplier.companyName}}</span>
+                                            </mat-option>
+                                        </ng-container>
+                                    </mat-autocomplete>
+                                </mat-form-field>
+                            </div>
+                            <div class="col-12">
+                                <mat-form-field class="w-full">
+                                    <mat-label>Vendor Relation:</mat-label>
+                                    <mat-select matInput [(ngModel)]="catalogFilter.relation">
+                                        <mat-option [value]="0">Any Relation</mat-option>
+                                        <mat-option [value]="2">Normal</mat-option>
+                                        <mat-option [value]="3">Preffered</mat-option>
+                                        <mat-option [value]="4">Partner</mat-option>
+                                        <mat-option [value]="5">Preffered & Partner</mat-option>
                                     </mat-select>
                                 </mat-form-field>
                             </div>
                             <div class="col-12">
                                 <mat-form-field class="w-full">
                                     <mat-label>Min. quantity:</mat-label>
-                                    <input matInput>
+                                    <input matInput type="number" (mousewheel)="$event.preventDefault()">
                                 </mat-form-field>
                             </div>
                             <div class="col-12 col-md-6">
                                 <mat-form-field class="w-full">
                                     <mat-label>Min. price:</mat-label>
-                                    <input matInput>
+                                    <input matInput type="number" (mousewheel)="$event.preventDefault()">
                                 </mat-form-field>
                             </div>
                             <div class="col-12 col-md-6">
                                 <mat-form-field class="w-full">
                                     <mat-label>Max. price:</mat-label>
-                                    <input matInput>
+                                    <input matInput type="number" (mousewheel)="$event.preventDefault()">
                                 </mat-form-field>
                             </div>
                             <div class="col-12">
                                 <mat-form-field class="w-full">
                                     <mat-label>Colors:</mat-label>
-                                    <mat-select matInput>
-                                        <mat-option [value]="25">Product ID</mat-option>
-                                        <mat-option [value]="50">Price low to high</mat-option>
-                                        <mat-option [value]="100">Price high to low</mat-option>
-                                        <mat-option [value]="100">Name, A to Z</mat-option>
-                                        <mat-option [value]="100">Name, Z to A</mat-option>
-                                    </mat-select>
+                                    <input matInput placeholder="Search Colors" matTooltip="Search Colors by name"
+                                        [matAutocomplete]="auto1" [formControl]="searchColorCtrl">
+                                    <mat-autocomplete class="w-full" #auto1="matAutocomplete"
+                                        (optionSelected)="onSelectedColor($event)" [displayWith]="displayWithColor">
+                                        <mat-option *ngIf="isSearchingColor" class="is-loading">Loading...</mat-option>
+                                        <ng-container *ngIf="!isSearchingColor">
+                                            <mat-option *ngFor="let item of allColors" [value]="item">
+                                                <span>{{item.colorName}}</span>
+                                            </mat-option>
+                                        </ng-container>
+                                    </mat-autocomplete>
                                 </mat-form-field>
                             </div>
                             <div class="col-12">
                                 <mat-form-field class="w-full">
                                     <mat-label>Decoration:</mat-label>
-                                    <mat-select matInput>
-                                        <mat-option [value]="25">Product ID</mat-option>
-                                        <mat-option [value]="50">Price low to high</mat-option>
-                                        <mat-option [value]="100">Price high to low</mat-option>
-                                        <mat-option [value]="100">Name, A to Z</mat-option>
-                                        <mat-option [value]="100">Name, Z to A</mat-option>
-                                    </mat-select>
+                                    <input matInput placeholder="Search Decoration"
+                                        matTooltip="Search Decoration by name" [matAutocomplete]="auto2"
+                                        [formControl]="searchMethodCtrl">
+                                    <mat-autocomplete class="w-full" #auto2="matAutocomplete"
+                                        (optionSelected)="onSelectedMethod($event)" [displayWith]="displayWithMethod">
+                                        <mat-option *ngIf="isSearchingMethod" class="is-loading">Loading...</mat-option>
+                                        <ng-container *ngIf="!isSearchingMethod">
+                                            <mat-option *ngFor="let item of allMethods" [value]="item">
+                                                <span>{{item.methodName}}</span>
+                                            </mat-option>
+                                        </ng-container>
+                                    </mat-autocomplete>
                                 </mat-form-field>
                             </div>
                             <div class="col-12">
                                 <mat-form-field class="w-full">
                                     <mat-label>Size:</mat-label>
-                                    <mat-select matInput>
-                                        <mat-option [value]="25">Product ID</mat-option>
-                                        <mat-option [value]="50">Price low to high</mat-option>
-                                        <mat-option [value]="100">Price high to low</mat-option>
-                                        <mat-option [value]="100">Name, A to Z</mat-option>
-                                        <mat-option [value]="100">Name, Z to A</mat-option>
-                                    </mat-select>
+                                    <input matInput placeholder="Search Size" matTooltip="Search Size by name"
+                                        [matAutocomplete]="auto3" [formControl]="searchSizeCtrl">
+                                    <mat-autocomplete class="w-full" #auto3="matAutocomplete"
+                                        (optionSelected)="onSelectedSize($event)" [displayWith]="displayWithSize">
+                                        <mat-option *ngIf="isSearchingSize" class="is-loading">Loading...</mat-option>
+                                        <ng-container *ngIf="!isSearchingSize">
+                                            <mat-option *ngFor="let size of allSizes" [value]="size">
+                                                <span>{{size.sizeName}}</span>
+                                            </mat-option>
+                                        </ng-container>
+                                    </mat-autocomplete>
                                 </mat-form-field>
                             </div>
                             <div class="col-12">
                                 <mat-form-field class="w-full">
                                     <mat-label>Active Products:</mat-label>
-                                    <mat-select matInput>
-                                        <mat-option [value]="25">Product ID</mat-option>
-                                        <mat-option [value]="50">Price low to high</mat-option>
-                                        <mat-option [value]="100">Price high to low</mat-option>
-                                        <mat-option [value]="100">Name, A to Z</mat-option>
-                                        <mat-option [value]="100">Name, Z to A</mat-option>
+                                    <mat-select matInput [(ngModel)]="catalogFilter.active">
+                                        <mat-option [value]="1">Active Only</mat-option>
+                                        <mat-option [value]="2">Disabled Only</mat-option>
+                                        <mat-option [value]="0">Active & Disabled</mat-option>
                                     </mat-select>
                                 </mat-form-field>
                             </div>
                             <div class="col-12">
-                                <button mat-button mat-stroked-button>Reset Filter</button>
+                                <button class="w-full" mat-button mat-stroked-button>Filter</button>
                             </div>
                         </div>
                     </div>
@@ -157,7 +185,8 @@
                         Please select filter choices to see product results.
                     </fuse-alert>
                 </div>
-                <pagination-controls previousLabel="Prev" nextLabel="Next" (pageChange)="getNextCatalogData($event)">
+                <pagination-controls *ngIf="dataSource.length > 0" previousLabel="Prev" nextLabel="Next"
+                    (pageChange)="getNextCatalogData($event)">
                 </pagination-controls>
                 <div class="prose prose-sm max-w-5xl" *ngIf="!isPageLoading">
                     <ng-container *ngFor="let item of dataSource |  paginate : {
@@ -208,12 +237,7 @@
                         </div>
                     </ng-container>
                 </div>
-                <div *ngIf="!isPageLoading">
-                    <ng-container *ngIf="total == 0">
-                        <div class="p-8 sm:p-16 border-t text-4xl font-semibold tracking-tight text-center">There are no
-                            records
-                            found!</div>
-                    </ng-container>
+                <div *ngIf="!isPageLoading && dataSource.length > 0">
                     <pagination-controls previousLabel="Prev" nextLabel="Next"
                         (pageChange)="getNextCatalogData($event)">
                     </pagination-controls>

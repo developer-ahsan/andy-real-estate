@@ -144,6 +144,14 @@ export class PackageComponent implements OnInit, OnDestroy {
       });
   };
 
+  onRowChange(ev, item) {
+    if (ev.checked) {
+      this.arrayToPost.push(item);
+    } else {
+      const index = this.arrayToPost.findIndex(elem => elem.pk_packagingID == item.pk_packagingID)
+      this.arrayToPost.splice(index, 1);
+    }
+  }
   rowUpdate(packageObj, title, event) {
     const { value } = title !== 'blnDecoratorPO' ? event.target : event;
 
@@ -209,7 +217,6 @@ export class PackageComponent implements OnInit, OnDestroy {
       };
       tempPackageArray.push(obj);
     };
-
     const payload = {
       product_id: pk_productID,
       packaging: true,
@@ -327,6 +334,9 @@ export class PackageComponent implements OnInit, OnDestroy {
         this.dataSource = list.filter(item => !letIdsToRemoveWhichAreSelected.includes(item.pk_packagingID));
         this.dataSource1 = selected;
         for (const packages of this.dataSource) {
+          packages.run = 0.0;
+          packages.setup = 0.0;
+          packages.unitsPerPackage = 0.0;
           tempArray.push(packages)
           const { blnDecoratorPO } = packages;
           if (blnDecoratorPO) {

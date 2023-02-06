@@ -11,6 +11,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
     providedIn: 'root'
 })
 export class OrdersService {
+    public _searchKeyword = '';
     public _orderDetail: BehaviorSubject<OrdersProduct | null> = new BehaviorSubject(null);
     private _orders: BehaviorSubject<OrdersList[] | null> = new BehaviorSubject(null);
     private _order: BehaviorSubject<OrdersList[] | null> = new BehaviorSubject(null);

@@ -9,6 +9,7 @@ import { Router } from '@angular/router';
 import { VendorsService } from 'app/modules/admin/apps/vendors/components/vendors.service';
 import { FileManagerService } from 'app/modules/admin/apps/file-manager/store-manager.service';
 import { CustomersService } from 'app/modules/admin/apps/ecommerce/customers/customers.service';
+import { OrdersService } from 'app/modules/admin/apps/orders/orders-components/orders.service';
 
 @Component({
     selector: 'search',
@@ -38,6 +39,7 @@ export class SearchComponent implements OnChanges, OnInit, OnDestroy {
         private _renderer2: Renderer2,
         private _productService: InventoryService,
         private _customerService: CustomersService,
+        private _orderService: OrdersService,
         private _storeService: FileManagerService,
         private _vendorService: VendorsService,
         private router: Router
@@ -171,6 +173,17 @@ export class SearchComponent implements OnChanges, OnInit, OnDestroy {
             //     this.router.navigate(['/apps/ecommerce/inventory'])
             // });
             this.router.navigateByUrl('/apps/ecommerce/customers');
+        }
+        this.close();
+    }
+    searchOrder(event) {
+        const val = event.target.value;
+        if (val != '') {
+            this._orderService._searchKeyword = val;
+            // this.router.navigateByUrl('/', { skipLocationChange: true }).then(() => {
+            //     this.router.navigate(['/apps/ecommerce/inventory'])
+            // });
+            this.router.navigateByUrl('/apps/orders');
         }
         this.close();
     }
