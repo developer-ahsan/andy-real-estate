@@ -48,6 +48,12 @@ export class CatalogComponent {
   itemsPerPage = 10;
   page = 1;
   isPageLoading: boolean = false;
+
+  // fiters
+  catalogFilter = {
+    perPage: 25
+  }
+  isFilterLoader: boolean = false;
   /**
    * Constructor
    */
@@ -107,9 +113,11 @@ export class CatalogComponent {
     this.getCatalogs(this.page);
   };
   getCatalogs(page) {
+    this.isFilterLoader = true;
     let params = {
       catalog_products: true,
-      page: page
+      page: page,
+      size: this.catalogFilter.perPage
     }
     this._catalogService.getCatalogData(params).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
       this.total = res["totalRecords"];
@@ -119,13 +127,19 @@ export class CatalogComponent {
       });
       this.dataSource = res["data"];
       this.isLoading = false;
+      this.isFilterLoader = false;
       this.isPageLoading = false;
       this._changeDetectorRef.markForCheck();
     }, err => {
+      this.isFilterLoader = false;
       this.isLoading = false;
       this.isPageLoading = false;
       this._changeDetectorRef.markForCheck();
     });
+  }
+  onPageChange(ev) {
+    this.catalogFilter.perPage = ev.value;
+    this.getCatalogs(1);
   }
   /**
    * On destroy

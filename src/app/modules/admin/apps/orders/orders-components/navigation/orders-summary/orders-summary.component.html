@@ -52,7 +52,7 @@
                     </div>
                 </div>
             </div> -->
-            <div class="col-lg-3 col-md-4 col-6 my-2 ">
+            <!-- <div class="col-lg-3 col-md-4 col-6 my-2 ">
                 <div class="rounded-2xl shadow bg-card flex items-center max-w-80 w-full p-6 filter-info">
                     <mat-icon role="img" class="icon-size-10 mr-6" svgIcon="heroicons_outline:calendar"></mat-icon>
                     <div class="flex flex-col ">
@@ -61,29 +61,42 @@
                             not_available}}</div>
                     </div>
                 </div>
-            </div>
-            <div class="col-lg-3 col-md-4 col-6 my-2">
-                <div class="rounded-2xl shadow bg-card flex items-center max-w-80 w-full p-6 filter-info">
+            </div> -->
+            <div class="col-lg-4 col-md-6 col-12 my-2">
+                <div class="rounded-2xl shadow bg-card flex items-center max-w-80 w-full p-6 filter-info"
+                    style="height: 8rem;">
                     <mat-icon role="img" class="icon-size-10 mr-6" svgIcon="mat_outline:date_range"></mat-icon>
                     <div class="flex flex-col ">
                         <div class="text-xl font-semibold leading-tight">In-Hands Date</div>
-                        <div class="text-md text-secondary">{{(orderDetail?.inHandsDate | date: 'mm-DD-yyyy') ||
-                            not_available}}</div>
+                        <div class="text-md text-secondary">
+                            <p>{{(orderDetail?.inHandsDate | date: 'mm-DD-yyyy') ||
+                                not_available}}</p>
+                            <span class="font-bold">Rush Flexibility: </span>
+                            <span *ngIf="!orderDetail.blnRushFlexibility" class="text-red-500">NO</span>
+                            <span *ngIf="orderDetail.blnRushFlexibility" class="text-green-500">YES</span>
+                            <br>
+                            <span class="font-bold">Comment:</span><span>{{orderDetail.rushFlexibilityComment}}</span>
+                        </div>
                     </div>
                 </div>
             </div>
-            <div class="col-lg-3 col-md-4 col-6 my-2">
-                <div class="rounded-2xl shadow bg-card flex items-center max-w-80 w-full p-6 filter-info">
+            <div class="col-lg-4 col-md-6 col-12 my-2">
+                <div class="rounded-2xl shadow bg-card flex items-center max-w-80 w-full p-6 filter-info  "
+                    style="height: 8rem;">
                     <mat-icon role="img" class="icon-size-10 mr-6" svgIcon="mat_outline:money"></mat-icon>
                     <div class="flex flex-col ">
                         <div class="text-xl font-semibold leading-tight">Total Payments</div>
-                        <div class="text-md text-secondary">{{(orderDetail?.total | currency) ||
-                            not_available_price}}</div>
+                        <div class="text-md text-secondary">
+                            <p>{{(orderDetail?.total | currency) ||
+                                not_available_price}}</p>
+                            <span></span>
+                        </div>
                     </div>
                 </div>
             </div>
-            <div class="col-lg-3 col-md-4 col-6 my-2">
-                <div class="rounded-2xl shadow bg-card flex items-center max-w-80 w-full p-6 filter-info">
+            <div class="col-lg-4 col-md-6 col-12 my-2">
+                <div class="rounded-2xl shadow bg-card flex items-center max-w-80 w-full p-6 filter-info"
+                    style="height: 8rem;">
                     <mat-icon role="img" class="icon-size-10 mr-6" svgIcon="mat_outline:monetization_on"></mat-icon>
                     <div class="flex flex-col ">
                         <div class="text-xl font-semibold leading-tight">Balance Due</div>

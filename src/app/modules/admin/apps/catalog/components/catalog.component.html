@@ -22,70 +22,205 @@
         </ngx-skeleton-loader>
     </div>
     <div class="flex-auto p-6 sm:p-10" *ngIf="!isLoading">
-        <div class="text-center">
-            <pagination-controls previousLabel="Prev" nextLabel="Next" (pageChange)="getNextCatalogData($event)">
-            </pagination-controls>
-        </div>
-        <div class="w-full p-6" *ngIf="isPageLoading">
+        <!-- <div class="w-full p-6" *ngIf="isPageLoading || isFilterLoader">
             <ngx-skeleton-loader count="15" appearance="line" animation="pulse">
             </ngx-skeleton-loader>
-        </div>
-        <div class="prose prose-sm max-w-5xl" *ngIf="!isPageLoading">
-            <ng-container *ngFor="let item of dataSource |  paginate : {
-                itemsPerPage: itemsPerPage,
-                currentPage: page,
-                totalItems: total
-              };">
-                <div class="mb-12 p-8 rounded-2xl shadow bg-card">
-                    <div class="flex justify-between">
-                        <div>
-                            <h2 class="my-0">{{item.productName}} - ({{item.pk_productID}})</h2>
-                            <div class="font-semibold text-md text-secondary">{{item.companyName}}</div>
+        </div> -->
+        <div class="row">
+            <div class="col-12 col-md-4 ">
+                <div class="bg-card rounded-2xl shadow p-8">
+                    <div class="text-secondary">
+                        <h2>Filters</h2>
+                        <hr class="my-2">
+                        <div class="row">
+                            <div class="col-12 col-md-6 ">
+                                <mat-form-field class="w-full">
+                                    <mat-label>Per Page:</mat-label>
+                                    <mat-select matInput [(ngModel)]="catalogFilter.perPage"
+                                        (selectionChange)="onPageChange($event)">
+                                        <mat-option [value]="25">25</mat-option>
+                                        <mat-option [value]="50">50</mat-option>
+                                        <mat-option [value]="100">100</mat-option>
+                                    </mat-select>
+                                </mat-form-field>
+                            </div>
+                            <div class="col-12 col-md-6">
+                                <mat-form-field class="w-full">
+                                    <mat-label>Sort by:</mat-label>
+                                    <mat-select matInput>
+                                        <mat-option [value]="25">Product ID</mat-option>
+                                        <mat-option [value]="50">Price low to high</mat-option>
+                                        <mat-option [value]="100">Price high to low</mat-option>
+                                        <mat-option [value]="100">Name, A to Z</mat-option>
+                                        <mat-option [value]="100">Name, Z to A</mat-option>
+                                    </mat-select>
+                                </mat-form-field>
+                            </div>
+                            <div class="col-12">
+                                <mat-form-field class="w-full">
+                                    <mat-label>Keyword (PID, SPID, product name):</mat-label>
+                                    <input matInput>
+                                </mat-form-field>
+                            </div>
+                            <div class="col-12">
+                                <mat-form-field class="w-full">
+                                    <mat-label>Vendor:</mat-label>
+                                    <mat-select matInput>
+                                        <mat-option [value]="25">Product ID</mat-option>
+                                        <mat-option [value]="50">Price low to high</mat-option>
+                                        <mat-option [value]="100">Price high to low</mat-option>
+                                        <mat-option [value]="100">Name, A to Z</mat-option>
+                                        <mat-option [value]="100">Name, Z to A</mat-option>
+                                    </mat-select>
+                                </mat-form-field>
+                            </div>
+                            <div class="col-12">
+                                <mat-form-field class="w-full">
+                                    <mat-label>Min. quantity:</mat-label>
+                                    <input matInput>
+                                </mat-form-field>
+                            </div>
+                            <div class="col-12 col-md-6">
+                                <mat-form-field class="w-full">
+                                    <mat-label>Min. price:</mat-label>
+                                    <input matInput>
+                                </mat-form-field>
+                            </div>
+                            <div class="col-12 col-md-6">
+                                <mat-form-field class="w-full">
+                                    <mat-label>Max. price:</mat-label>
+                                    <input matInput>
+                                </mat-form-field>
+                            </div>
+                            <div class="col-12">
+                                <mat-form-field class="w-full">
+                                    <mat-label>Colors:</mat-label>
+                                    <mat-select matInput>
+                                        <mat-option [value]="25">Product ID</mat-option>
+                                        <mat-option [value]="50">Price low to high</mat-option>
+                                        <mat-option [value]="100">Price high to low</mat-option>
+                                        <mat-option [value]="100">Name, A to Z</mat-option>
+                                        <mat-option [value]="100">Name, Z to A</mat-option>
+                                    </mat-select>
+                                </mat-form-field>
+                            </div>
+                            <div class="col-12">
+                                <mat-form-field class="w-full">
+                                    <mat-label>Decoration:</mat-label>
+                                    <mat-select matInput>
+                                        <mat-option [value]="25">Product ID</mat-option>
+                                        <mat-option [value]="50">Price low to high</mat-option>
+                                        <mat-option [value]="100">Price high to low</mat-option>
+                                        <mat-option [value]="100">Name, A to Z</mat-option>
+                                        <mat-option [value]="100">Name, Z to A</mat-option>
+                                    </mat-select>
+                                </mat-form-field>
+                            </div>
+                            <div class="col-12">
+                                <mat-form-field class="w-full">
+                                    <mat-label>Size:</mat-label>
+                                    <mat-select matInput>
+                                        <mat-option [value]="25">Product ID</mat-option>
+                                        <mat-option [value]="50">Price low to high</mat-option>
+                                        <mat-option [value]="100">Price high to low</mat-option>
+                                        <mat-option [value]="100">Name, A to Z</mat-option>
+                                        <mat-option [value]="100">Name, Z to A</mat-option>
+                                    </mat-select>
+                                </mat-form-field>
+                            </div>
+                            <div class="col-12">
+                                <mat-form-field class="w-full">
+                                    <mat-label>Active Products:</mat-label>
+                                    <mat-select matInput>
+                                        <mat-option [value]="25">Product ID</mat-option>
+                                        <mat-option [value]="50">Price low to high</mat-option>
+                                        <mat-option [value]="100">Price high to low</mat-option>
+                                        <mat-option [value]="100">Name, A to Z</mat-option>
+                                        <mat-option [value]="100">Name, Z to A</mat-option>
+                                    </mat-select>
+                                </mat-form-field>
+                            </div>
+                            <div class="col-12">
+                                <button mat-button mat-stroked-button>Reset Filter</button>
+                            </div>
                         </div>
-                        <img class="w-20 h-20 m-0"
-                            src="https://assets.consolidus.com/globalAssets/Products/coming_soon.jpg">
-                    </div>
-                    <hr class="mt-2">
-                    <div class="row">
-                        <div *ngIf="item.Cost" class="col-12 col-md-6 m-0">
-                            <span class="inline-flex bg-default rounded px-3 py-1 text-secondary font-bold">Cost</span>
-                            <table class="table table-striped">
-                                <thead>
-                                    <tr>
-                                        <th *ngFor="let cost of item.Cost">{{cost.quantity}}</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr>
-                                        <td *ngFor="let cost of item.Cost">{{cost.cost | currency}}</td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                        </div>
-                        <div class="col-12 col-md-6">
-                            <span
-                                class="inline-flex bg-default rounded px-3 py-1 text-secondary font-bold">Description</span>
-                            <div [innerHTML]="item.description" class="text-justify"></div>
-                        </div>
-
-                    </div>
-                    <hr class="mt-2">
-                    <span *ngIf="item.Imprint"
-                        class="inline-flex bg-default rounded px-3 py-1 text-secondary font-bold">Imprints</span>
-                    <div *ngFor="let imprint of item.Imprint" class="pt-1">
-                        <li>{{imprint.locationName+'/'+imprint.IM[0].methodName }}</li>
                     </div>
                 </div>
-            </ng-container>
+            </div>
+            <div class="col-12 col-md-8" *ngIf="isPageLoading || isFilterLoader">
+                <ngx-skeleton-loader count="15" appearance="line" animation="pulse">
+                </ngx-skeleton-loader>
+            </div>
+            <div class="col-12 col-md-8" *ngIf="!isPageLoading && !isFilterLoader">
+                <div class="bg-card shadow rounded-2xl p-5" *ngIf="dataSource.length == 0">
+                    <fuse-alert [type]="'warning'" [appearance]="'outline'">
+                        Please select filter choices to see product results.
+                    </fuse-alert>
+                </div>
+                <pagination-controls previousLabel="Prev" nextLabel="Next" (pageChange)="getNextCatalogData($event)">
+                </pagination-controls>
+                <div class="prose prose-sm max-w-5xl" *ngIf="!isPageLoading">
+                    <ng-container *ngFor="let item of dataSource |  paginate : {
+                        itemsPerPage: itemsPerPage,
+                        currentPage: page,
+                        totalItems: total
+                      };">
+                        <div class="mb-12 p-8 rounded-2xl shadow bg-card">
+                            <div class="flex justify-between">
+                                <div>
+                                    <h2 class="my-0">{{item.productName}} - ({{item.pk_productID}})</h2>
+                                    <div class="font-semibold text-md text-secondary">{{item.companyName}}</div>
+                                </div>
+                                <img class="w-20 h-20 m-0"
+                                    src="https://assets.consolidus.com/globalAssets/Products/coming_soon.jpg">
+                            </div>
+                            <hr class="mt-2">
+                            <div class="row">
+                                <div *ngIf="item.Cost" class="col-12 col-md-6 m-0">
+                                    <span
+                                        class="inline-flex bg-default rounded px-3 py-1 text-secondary font-bold">Cost</span>
+                                    <table class="table table-striped">
+                                        <thead>
+                                            <tr>
+                                                <th *ngFor="let cost of item.Cost">{{cost.quantity}}</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr>
+                                                <td *ngFor="let cost of item.Cost">{{cost.cost | currency}}</td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                                <div class="col-12 col-md-6">
+                                    <span
+                                        class="inline-flex bg-default rounded px-3 py-1 text-secondary font-bold">Description</span>
+                                    <div [innerHTML]="item.description" class="text-justify"></div>
+                                </div>
+
+                            </div>
+                            <hr class="mt-2">
+                            <span *ngIf="item.Imprint"
+                                class="inline-flex bg-default rounded px-3 py-1 text-secondary font-bold">Imprints</span>
+                            <div *ngFor="let imprint of item.Imprint" class="pt-1">
+                                <li>{{imprint.locationName+'/'+imprint.IM[0].methodName }}</li>
+                            </div>
+                        </div>
+                    </ng-container>
+                </div>
+                <div *ngIf="!isPageLoading">
+                    <ng-container *ngIf="total == 0">
+                        <div class="p-8 sm:p-16 border-t text-4xl font-semibold tracking-tight text-center">There are no
+                            records
+                            found!</div>
+                    </ng-container>
+                    <pagination-controls previousLabel="Prev" nextLabel="Next"
+                        (pageChange)="getNextCatalogData($event)">
+                    </pagination-controls>
+                </div>
+            </div>
         </div>
-        <div class="text-center" *ngIf="!isPageLoading">
-            <ng-container *ngIf="total == 0">
-                <div class="p-8 sm:p-16 border-t text-4xl font-semibold tracking-tight text-center">There are no records
-                    found!</div>
-            </ng-container>
-            <pagination-controls previousLabel="Prev" nextLabel="Next" (pageChange)="getNextCatalogData($event)">
-            </pagination-controls>
-        </div>
+
     </div>
 
 </div>
