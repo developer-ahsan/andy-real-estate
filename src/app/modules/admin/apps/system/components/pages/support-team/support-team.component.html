@@ -33,7 +33,8 @@
                         </th>
                         <td mat-cell *matCellDef="let element">
                             <img onError="this.src='https://assets.consolidus.com/globalAssets/Support/anonymous.png'"
-                                src="" class="w-10">
+                                src="https://assets.consolidus.com/globalAssets/System/Defaults/SupportTeam/{{element.pk_ID}}.jpg"
+                                class="w-10">
                         </td>
                     </ng-container>
                     <ng-container matColumnDef="name">
@@ -146,7 +147,7 @@
                                 <fuse-alert class="mb-3" [appearance]="'soft'" [type]="'warning'" [showIcon]="false">
                                     Image 147px W X 201px H JPG only!
                                 </fuse-alert>
-                                <input type="file" accept=".jpg" id="image">
+                                <input type="file" accept=".jpg" id="image" (change)="uploadFile($event)">
                             </div>
                             <div class="justify-end flex col-12">
                                 <button [disabled]="isUpdateMemberLoader" class="min-w-30 mr-2" mat-stroked-button

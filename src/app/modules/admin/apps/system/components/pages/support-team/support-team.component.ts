@@ -51,6 +51,7 @@ export class SupportTeamComponent implements OnInit, OnDestroy {
   teamMemberFeature: boolean = false;
   memberFeatureName = '';
   isAddFeatureLoader: boolean = false;
+  imageValue: any;
   constructor(
     private _changeDetectorRef: ChangeDetectorRef,
     private _systemService: SystemService
@@ -225,7 +226,10 @@ export class SupportTeamComponent implements OnInit, OnDestroy {
           elem.roleName = roleName;
         }
       });
-      this._systemService.snackBar('Method Updated Successfully');
+      if (this.imageValue) {
+        this.uploadMedia(pk_ID);
+      }
+      this._systemService.snackBar('Member Updated Successfully');
       this._changeDetectorRef.markForCheck();
     }, err => {
       this._systemService.snackBar('Something went wrong');
@@ -314,6 +318,57 @@ export class SupportTeamComponent implements OnInit, OnDestroy {
     }, err => {
       this._systemService.snackBar('Something went wrong');
     })
+  }
+
+  uploadFile(event): void {
+    if (event.target.files[0]) {
+      const file = event.target.files[0];
+      const reader = new FileReader();
+      if (file)
+        reader.readAsDataURL(file);
+      reader.onload = () => {
+        let image: any = new Image;
+        image.src = reader.result;
+        image.onload = () => {
+          if (image.width != 147 || image.height != 201) {
+            this._systemService.snackBar("Dimensions allowed are 147px x 201px");
+            this.imageValue = null;
+            this._changeDetectorRef.markForCheck();
+            return;
+          } else if (file["type"] != 'image/jpeg' && file["type"] != 'image/jpg') {
+            this._systemService.snackBar("Image should be jpg format only");
+            this.imageValue = null;
+            this._changeDetectorRef.markForCheck();
+            return;
+          }
+          this.imageValue = {
+            imageUpload: reader.result,
+            type: file["type"]
+          };
+        }
+      }
+    }
+  };
+  uploadMedia(pk_ID) {
+    let base64;
+    const { imageUpload } = this.imageValue;
+    base64 = imageUpload.split(",")[1];
+    const img_path = `/globalAssets/System/Defaults/SupportTeam/${pk_ID}.jpg`;
+
+    const payload = {
+      file_upload: true,
+      image_file: base64,
+      image_path: img_path
+    };
+    this._systemService.AddSystemData(payload).subscribe(res => {
+      this.imageValue = null;
+      this._changeDetectorRef.markForCheck();
+    }, err => {
+      this._changeDetectorRef.markForCheck();
+    });
+  }
+  handleImageError(element) {
+    element.src = 'https://assets.consolidus.com/globalAssets/Support/anonymous.png';
   }
   /**
      * On destroy
