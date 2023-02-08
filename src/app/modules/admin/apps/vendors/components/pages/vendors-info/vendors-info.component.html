@@ -172,41 +172,36 @@
                     <!-- <input matInput placeholder="Additional Order Emails" formControlName="additionalOrderEmails"> -->
                 </mat-form-field>
             </div>
-            <div class="col-12 col-md-6">
-                <mat-form-field class="w-full">
-                    <mat-label>Co-op Pricing</mat-label>
-                    <input matInput placeholder="Co-op Pricing" formControlName="coopPricing">
-                </mat-form-field>
+            <div class="col-12 mb-2">
+                <mat-label>Co-op Pricing</mat-label>
+                <quill-editor [formControlName]="'coopPricing'" placeholder="Co-op Pricing" [modules]="quillModules">
+                </quill-editor>
             </div>
-            <div class="col-12 col-md-6">
-                <mat-form-field class="w-full">
-                    <mat-label>Net Setup</mat-label>
-                    <input matInput placeholder="Net Setup" formControlName="netSetup">
-                </mat-form-field>
+            <div class="col-12 mb-2">
+                <mat-label>Net Setup</mat-label>
+                <quill-editor [formControlName]="'netSetup'" placeholder="Net Setup" [modules]="quillModules">
+                </quill-editor>
             </div>
-            <div class="col-12 col-md-6">
-                <mat-form-field class="w-full">
-                    <mat-label>LTM</mat-label>
-                    <textarea matInput placeholder="Production" formControlName="ltm"></textarea>
-                </mat-form-field>
+            <div class="col-12 mb-2">
+                <mat-label>LTM</mat-label>
+                <quill-editor [formControlName]="'ltm'" placeholder="LTM" [modules]="quillModules">
+                </quill-editor>
             </div>
-            <div class="col-12 col-md-6">
-                <mat-form-field class="w-full">
-                    <mat-label>Free Random Samples</mat-label>
-                    <textarea matInput placeholder="Production" formControlName="freeRandomSamples"></textarea>
-                </mat-form-field>
+            <div class="col-12 mb-2">
+                <mat-label>Free Random Samples</mat-label>
+                <quill-editor [formControlName]="'freeRandomSamples'" placeholder="Free Random Samples"
+                    [modules]="quillModules">
+                </quill-editor>
             </div>
-            <div class="col-12 col-md-6">
-                <mat-form-field class="w-full">
-                    <mat-label>Spec Samples</mat-label>
-                    <textarea matInput placeholder="Production" formControlName="specSamples"></textarea>
-                </mat-form-field>
+            <div class="col-12 mb-2">
+                <mat-label>Spec Samples</mat-label>
+                <quill-editor [formControlName]="'specSamples'" placeholder="Spec Samples" [modules]="quillModules">
+                </quill-editor>
             </div>
-            <div class="col-12 col-md-6">
-                <mat-form-field class="w-full">
-                    <mat-label>Production</mat-label>
-                    <textarea matInput placeholder="Production" formControlName="production"></textarea>
-                </mat-form-field>
+            <div class="col-12 mb-2">
+                <mat-label>Production</mat-label>
+                <quill-editor [formControlName]="'production'" placeholder="Production" [modules]="quillModules">
+                </quill-editor>
             </div>
             <div class="col-12 text-right">
                 <button mat-stroked-button class="min-w-40" (click)="updateCompany()" [disabled]="isUpdateLoader">

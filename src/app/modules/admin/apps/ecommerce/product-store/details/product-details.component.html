@@ -42,6 +42,16 @@
                     <div class="flex mr-7" style="justify-content: space-between;">
                         <div class="text-2xl font-bold">{{selectedProduct?.productNumber}}:
                             {{selectedProduct?.productName}}</div>
+                        <div>
+                            <span *ngIf="!selectedProduct?.blnActive"
+                                class="text-xs px-2.5 py-0.5 rounded-full tracking-wide bg-red-200 text-red-800 dark:bg-red-600 dark:text-red-50">
+                                <span class="leading-relaxed whitespace-nowrap">Inactive</span>
+                            </span>
+                            <span *ngIf="selectedProduct?.blnActive"
+                                class="text-xs px-2.5 py-1 rounded-full tracking-wide bg-green-200 text-green-800 dark:bg-green-600 dark:text-green-50">
+                                <span class="leading-relaxed whitespace-nowrap font-medium">Active</span>
+                            </span>
+                        </div>
                     </div>
                     <div class="row w-full">
                         <div class="col-12 col-lg-6">
@@ -65,13 +75,19 @@
                             </div>
                         </div>
                         <div class="col-12 col-lg-6">
-                            <div class="text-2xl font-bold"
-                                [ngStyle]="selectedProduct?.blnActive ? {'color':'#0ecd0e'} : {'color': '#ff0000'}">
-                                {{selectedProduct?.blnActive ? 'Active' : 'Inactive' }}
+                            <div class="flex">
+                                <b class="text-secondary text-sm">Store Name:</b>
+                                <p class="ml-3 text-sm">{{selectedProduct?.storeName || not_available}}</p>
                             </div>
-                            <div class="text-2xl font-bold"
-                                [ngStyle]="selectedProduct?.blnStoreActive ? {'color':'#0ecd0e'} : {'color': '#ff0000'}">
-                                {{selectedProduct?.blnStoreActive ? 'Online' : 'Offline' }}
+                            <div class="flex">
+                                <b class="text-secondary text-sm">Supplier:</b>
+                                <p class="ml-3 text-sm">{{selectedProduct?.companyName || not_available}}</p>
+                            </div>
+                            <div class="flex">
+                                <b class="text-secondary text-sm">Status:</b>
+                                <p class="ml-3 text-sm font-bold"
+                                    [ngStyle]="selectedProduct?.blnStoreActive ? {'color':'#0ecd0e'} : {'color': '#ff0000'}">
+                                    {{selectedProduct?.blnStoreActive ? 'Online' : 'Offline' }}</p>
                             </div>
                         </div>
                     </div>
@@ -81,7 +97,8 @@
                 <div class="col-12 my-3">
                     <ng-container *ngTemplateOutlet="myCard"></ng-container>
                 </div>
-                <div class="col-12 my-3">
+                <div class="col-12 my-3"
+                    *ngIf="selectedScreeen != 'Master Product' || selectedScreeen!='Store Versions'">
                     <router-outlet></router-outlet>
                 </div>
                 <!-- 

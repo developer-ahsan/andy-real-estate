@@ -109,7 +109,7 @@ export class PricingComponent implements OnInit, OnDestroy {
           quantity.marginFive = String(element.margin * 100);
         } else if (index == 5) {
           quantity.quantitySix = element.quantity;
-          quantity.marginSix = element.margin;
+          quantity.marginSix = String(element.margin * 100);
         }
       });
       this.netCostForm.patchValue(quantity)

@@ -20,6 +20,7 @@ export class StoreProductVideosComponent implements OnInit, OnDestroy {
 
   videoData = [];
   images: FileList;
+  imageValue: any;
   constructor(
     private _changeDetectorRef: ChangeDetectorRef,
     private _storeService: StoreProductService
@@ -58,24 +59,52 @@ export class StoreProductVideosComponent implements OnInit, OnDestroy {
       this._changeDetectorRef.markForCheck();
     })
   }
-  upload(event: Event) {
-    const target = event.target as HTMLInputElement;
-    const files = target.files as FileList;
-    this.images = files;
-  }
+  uploadFile(event): void {
+    if (event.target.files[0]) {
+      const file = event.target.files[0];
+      const reader = new FileReader();
+      if (file)
+        reader.readAsDataURL(file);
+      reader.onload = () => {
+        let image: any = new Image;
+        image.src = reader.result;
+        image.onload = () => {
+          if (image.width != 355 || image.height != 209) {
+            this._storeService.snackBar("Dimensions should be 355px X 209px.");
+            this.imageValue = null;
+            this._changeDetectorRef.markForCheck();
+            return;
+          } else if (file["type"] != 'image/jpeg' && file["type"] != 'image/jpg') {
+            this._storeService.snackBar("Image should be jpg format only");
+            this.imageValue = null;
+            this._changeDetectorRef.markForCheck();
+            return;
+          }
+          this.videoButton = file.name;
+          this.imageValue = {
+            imageUpload: reader.result,
+            type: file["type"]
+          };
+        }
+      }
+    }
+  };
 
   UpdateVideo() {
     if (this.videoUrl != '') {
       this.isUpdateLoading = true;
       let payload = {
         video: this.videoUrl ? this.removeHttp(this.videoUrl) : '',
-        button: this.images?.length ? this.images[0].name : '',
+        button: this.imageValue ? this.videoButton : '',
         store_product_id: Number(this.selectedProduct.pk_storeProductID),
         video_update: true
       }
       this._storeService.UpdateVideo(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
         this.isUpdateLoading = false;
         this.getVideos();
+        if (this.imageValue) {
+          this.uploadMedia();
+        }
         this._storeService.snackBar('Store product video updated successfully');
         this._changeDetectorRef.markForCheck();
       }, err => {
@@ -85,6 +114,24 @@ export class StoreProductVideosComponent implements OnInit, OnDestroy {
     } else {
       this._storeService.snackBar('Please fill required fields');
     }
+  }
+  uploadMedia() {
+    let base64;
+    const { imageUpload } = this.imageValue;
+    base64 = imageUpload.split(",")[1];
+    const img_path = `/globalAssets/StoreProducts/Videos/${this.selectedProduct.pk_storeProductID}/${this.selectedProduct.pk_storeProductID}.jpg`;
+
+    const payload = {
+      file_upload: true,
+      image_file: base64,
+      image_path: img_path
+    };
+    this._storeService.postStoresProductsData(payload).subscribe(res => {
+      this.imageValue = null;
+      this._changeDetectorRef.markForCheck();
+    }, err => {
+      this._changeDetectorRef.markForCheck();
+    });
   }
   removeHttp(url) {
     return url.replace(/^https?:\/\//, '');

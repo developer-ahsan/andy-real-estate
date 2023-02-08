@@ -63,11 +63,12 @@ import { SimulatorComponent } from './components/pages/simulator/simulator.compo
 import { AdminToolsComponent } from './components/pages/admin-tools/admin-tools.component';
 import { DiagonosticsComponent } from './components/pages/diagonostics/diagonostics.component';
 import { AdminStructureComponent } from './components/pages/admin-structure/admin-structure.component';
+import { PermissionGroupsComponent } from './components/pages/permissions-groups/permissions-groups.component';
 
 @NgModule({
     declarations: [
         SystemComponent, ColorsComponent, SizesComponent, PackAndAccessoriesComponent, ImprintColorsComponent, ImprintMethodsComponent, ImprintLocationsComponent, PromoCodesComponent, DefaultBlurbsComponent, CountrySalesComponent, ActiveStoresComponent, SupportTeamComponent, UploadImagesComponent, POArchivesComponent, ProductMigrationsComponent, CoreProductsComponent, SystemImprintRunComponent, ImprintChargesComponent, StandardImprintsComponent, AddEditImprintsComponent,
-        SimulatorComponent, AdminToolsComponent, DiagonosticsComponent, AdminStructureComponent
+        SimulatorComponent, AdminToolsComponent, DiagonosticsComponent, AdminStructureComponent, PermissionGroupsComponent
     ],
     imports: [
         RouterModule.forChild(systemRoutes),

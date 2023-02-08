@@ -80,6 +80,7 @@ export class ColorComponent implements OnInit, OnDestroy {
   addOnBlur = true;
   readonly separatorKeysCodes = [ENTER, COMMA] as const;
   colorTempImage: any;
+  txtColorParts = '';
   constructor(
     private _changeDetectorRef: ChangeDetectorRef,
     private _inventoryService: InventoryService,
@@ -180,6 +181,7 @@ export class ColorComponent implements OnInit, OnDestroy {
     this._inventoryService.product$.pipe(takeUntil(this._unsubscribeAll)).subscribe((details) => {
       if (details) {
         this.selectedProduct = details["data"][0];
+        this.txtColorParts = this.selectedProduct.txtColorParts;
         this.getColors(1);
       }
     });
@@ -433,12 +435,14 @@ export class ColorComponent implements OnInit, OnDestroy {
       the_run: tempColorArray.map(a => `${a.run}`),
       rgb: tempColorArray.map(a => a.rgb),
       color: true,
+      comment: this.txtColorParts,
       call_type: "update"
     };
 
     this.colorUpdateLoader = true;
     this._inventoryService.updateColors(payload)
       .subscribe((response) => {
+        this.selectedProduct.txtColorParts = this.txtColorParts;
         // this._inventoryService.getColors(pk_productID)
         //   .pipe(takeUntil(this._unsubscribeAll))
         //   .subscribe((colors) => {

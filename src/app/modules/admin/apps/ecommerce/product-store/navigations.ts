@@ -95,11 +95,12 @@ export const navigations = [
         icon: 'mat_outline:info',
         route: 'product-reviews',
     },
-    // {
-    //     id: 17,
-    //     title: 'Profit Calculator',
-    //     icon: 'mat_outline:calculate',
-    // },
+    {
+        id: 17,
+        title: 'Profit Calculator',
+        icon: 'mat_outline:calculate',
+        route: 'profit-calculator',
+    },
     // {
     //     id: 18,
     //     title: 'Simulator',

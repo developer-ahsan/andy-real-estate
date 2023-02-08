@@ -435,7 +435,7 @@ export class SystemService {
             params: {
                 supplier: true,
                 bln_active: 1,
-                size: 2000
+                size: 20
             }
         }).pipe(
             tap((response: any) => {
@@ -1374,6 +1374,12 @@ export class SystemService {
         const headers = { 'Authorization': `Bearer ${this._authService.accessToken}` };
         return this._httpClient.post(
             environment.products, payload, { headers });
+    };
+
+    getPermissionsGroups(params): Observable<any[]> {
+        return this._httpClient.get<any[]>(environment.admins, {
+            params: params
+        });
     };
 
     // Common get Calls

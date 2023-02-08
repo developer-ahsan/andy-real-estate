@@ -1,13 +1,96 @@
-<ngx-skeleton-loader count="8" appearance="line" animation="pulse" *ngIf="isLoading">
-</ngx-skeleton-loader>
-<div class="row my-3" *ngIf="!isLoading">
-    <div class="col-12">
-        <fuse-card class="rounded-2xl shadow bg-card flex flex-col lg:flex-row w-full">
-            <div class="p-6 sm:p-8 lg:p-10 w-full">
-                <div class="text-2xl font-bold">
-                    Shipping Options
+<div class="w-full">
+    <ngx-skeleton-loader count="8" appearance="line" animation="pulse" *ngIf="isLoading">
+    </ngx-skeleton-loader>
+    <div class="row my-3" *ngIf="!isLoading">
+        <div class="col-12">
+            <fuse-card class="rounded-2xl shadow bg-card flex flex-col lg:flex-row w-full">
+                <div class="p-6 sm:p-8 lg:p-10 w-full">
+                    <div class="text-2xl font-bold">
+                        Profit Calculator
+                    </div>
+                    <div class="row">
+                        <div class="col-12 col-md-8 text-sm">
+                            <div class="row mb-2 mt-2 ">
+                                <div class="col-4 font-bold">Quantity</div>
+                                <div class="col-8">
+                                    <div class="row ">
+                                        <div class="col-2 text-center font-bold" *ngFor="let item of quantityData">
+                                            {{item}}</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-4">Standard Price</div>
+                                <div class="col-8">
+                                    <div class="row mb-2">
+                                        <div class="col-2 text-center" *ngFor="let item of priceData">{{item |
+                                            currency}}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-4">Cost</div>
+                                <div class="col-8">
+                                    <div class="row mb-2">
+                                        <div class="col-2 text-center" *ngFor="let item of costData">{{item | currency}}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-4">Margin %</div>
+                                <div class="col-8">
+                                    <div class="row mb-2">
+                                        <div class="col-2 text-center" *ngFor="let item of pricingData;let i=index">
+                                            {{(((priceData[i] - costData[i])/priceData[i]) * 100).toFixed(2)}}%
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-4">Per Unit Gross Profit</div>
+                                <div class="col-8">
+                                    <div class="row mb-2">
+                                        <div class="col-2 text-center" *ngFor="let item of pricingData;let i=index">
+                                            {{(priceData[i] - costData[i]) | currency}}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-4">Gross Profit</div>
+                                <div class="col-8">
+                                    <div class="row mb-2">
+                                        <div class="col-2 text-center text-green-500"
+                                            *ngFor="let item of pricingData;let i=index">
+                                            {{((priceData[i] - costData[i]) * quantityData[i]) | currency}}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-12 col-md-4 text-md text-right ">
+                            <div class="flex justify-center ">
+                                <input class="form-control w-30 text-center text-md" [(ngModel)]="ngAverageQty">
+                            </div>
+                            <div class="text-center font-bold">
+                                <p>{{ngAveragePrice | currency}}</p>
+                                <p>{{ngAverageCost | currency}}</p>
+                            </div>
+                            <div class="flex justify-center ">
+                                <input class="form-control w-30 text-center text-md" [(ngModel)]="ngAverageMargin">
+                            </div>
+                            <div class="text-center font-bold">
+                                <p>{{ngUnitGross | currency}}/item</p>
+                                <p class="text-green-500">{{ngGrossProfit | currency}}</p>
+                                <button mat-button mat-stroked-button class="w-30"
+                                    (click)="calculateProfit()">Calculate</button>
+                            </div>
+                        </div>
+                    </div>
                 </div>
-            </div>
-        </fuse-card>
+            </fuse-card>
+        </div>
     </div>
 </div>

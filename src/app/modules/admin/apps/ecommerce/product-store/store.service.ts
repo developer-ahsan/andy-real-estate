@@ -53,6 +53,7 @@ export class StoreProductService {
         return this._httpClient.get(environment.storeProducts, { params: params })
             .pipe(retry(3));
     }
+    // 
     getStoreDetail(id): Observable<any[]> {
         return this._httpClient.get<any[]>(environment.stores, {
             params: {

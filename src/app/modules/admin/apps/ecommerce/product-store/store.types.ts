@@ -130,3 +130,5 @@ interface Subcategory {
     subcategory_id: number;
     isChecked: boolean;
 }
+export interface DeleteVirtualProofImage { virtual_proof_id: number; remove_virtual_art: boolean; };
+export interface AddVirtualProofImage { store_product_id: number; blnStore: boolean; add_virtual_art: boolean; };

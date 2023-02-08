@@ -45,10 +45,12 @@
                         <mat-label>Video Url</mat-label>
                         <input matInput [(ngModel)]="videoUrl" name="videoUrl">
                     </mat-form-field>
+                    <br>
+                    <!-- <p>Current Button Image: <span *ngIf="expression"></span></p> -->
                     <note class="text-red-500">Play button image: (355px W by 209px H, JPG ONLY)
                     </note>
                     <br>
-                    <input type="file" accept=".jpg" (change)="upload($event)">
+                    <input type="file" accept=".jpg" (change)="uploadFile($event)">
                     <div class="text-right">
                         <button [matTooltip]="'Remove Video'" mat-stroked-button class="min-w-40 mr-2"
                             (click)="RemoveVideo()" [disabled]="isRemoveLoading">

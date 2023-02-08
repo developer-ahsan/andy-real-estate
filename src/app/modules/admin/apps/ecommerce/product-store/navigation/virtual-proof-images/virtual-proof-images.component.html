@@ -8,6 +8,45 @@
                     <div class="text-2xl font-bold">
                         Virtual Proof Images
                     </div>
+                    <fuse-alert [type]="'warning'">
+                        Virtual proof images must be at least 600px by 600px, but no larger than 1500px by 1500px. The
+                        larger the better. JPG format only. Uploading a virtual proof here only associates the virtual
+                        proof with this store product, and not any particular order, item on an order, or customer. To
+                        associated with a customer/order/item, upload the virtual proof via SmartArt.
+                    </fuse-alert>
+                    <div class="mt-2 flex justify-between">
+                        <div>
+                            <input type="file" class="file-input mb-2" (change)="uploadFile($event)"
+                                accept="image/jpeg">
+                            <br>
+                            <mat-checkbox [(ngModel)]="ngStoreCheck">Include image on this store</mat-checkbox>
+                        </div>
+                        <button [disabled]="isUpload" mat-stroked-button mat-button class="min-w-40"
+                            (click)="addVirtualImages()">
+                            <span *ngIf="!isUpload">Upload</span>
+                            <mat-progress-spinner *ngIf="isUpload" [diameter]="24" [mode]="'indeterminate'">
+                            </mat-progress-spinner>
+                        </button>
+                    </div>
+                    <div class="flex flex-wrap -m-2 mt-2">
+                        <div class="flex flex-col w-45 h-45 m-2 p-4 shadow rounded-2xl bg-card"
+                            *ngFor="let item of virtualImages">
+                            <div class="">
+                                <img class="w-40 h-40"
+                                    src="https://assets.consolidus.com/globalAssets/StoreProducts/VirtualProofs/60646/{{item.pk_virtualProofID}}.jpg">
+
+                            </div>
+                            <div
+                                class=" mt-2 flex flex-col flex-auto justify-center text-center text-sm font-medium cursor-pointer">
+                                <div class="flex mat-mdc-tooltip-trigger truncate justify-center">
+                                    <mat-progress-spinner *ngIf="item?.delLoader" [diameter]="24"
+                                        [mode]="'indeterminate'">
+                                    </mat-progress-spinner>
+                                    <span *ngIf="!item?.delLoader" (click)="deleteVirtualImages(item)">Remove</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </fuse-card>
         </div>

@@ -10,14 +10,23 @@ import { AddCompany, UpdateCompany, UpdateWebsiteLoginInfo } from '../../vendors
 @Component({
   selector: 'app-vendors-info',
   templateUrl: './vendors-info.component.html',
-  styles: [".mat-paginator {border-radius: 16px !important}"]
+  styles: ["::ng-deep {.ql-container {height: auto}} .mat-paginator {border-radius: 16px !important}"]
 })
 export class VendorsInfoComponent implements OnInit, OnDestroy {
   @ViewChild('paginator') paginator: MatPaginator;
   @Input() isLoading: boolean;
   // @Output() isLoadingChange = new EventEmitter<boolean>();
   private _unsubscribeAll: Subject<any> = new Subject<any>();
-
+  quillModules: any = {
+    toolbar: [
+      ['bold', 'italic', 'underline', 'strike'],
+      ['blockquote', 'code-block'],
+      [{ 'color': [] }, { 'background': [] }],
+      [{ 'font': [] }],
+      [{ 'align': [] }],
+      ['clean']
+    ]
+  };
 
   allStates = [];
   totalStates = 0;

@@ -16,7 +16,7 @@
         </div>
         <mat-form-field class="w-full mt-2">
             <mat-label>Search for charge:</mat-label>
-            <input matInput type="number" (onmousewheel)="$event.preventDefault()" [disabled]="isLoading"
+            <input matInput type="number" (mousewheel)="$event.preventDefault()" [disabled]="isLoading"
                 [(ngModel)]="runCharge" matTooltip="Enter To Search" (keyup.enter)="getCharges()">
         </mat-form-field>
         <div class="col-12 overflow-x-auto pb-5" *ngIf="runQuantity.length>0 && !isLoading">

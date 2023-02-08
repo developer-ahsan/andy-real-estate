@@ -153,6 +153,10 @@
                         <app-admin-structure [(isLoading)]="isLoading">
                         </app-admin-structure>
                     </ng-template>
+                    <ng-template [ngIf]="selectedScreeen == 'Permission Groups'">
+                        <app-permissions-groups [(isLoading)]="isLoading">
+                        </app-permissions-groups>
+                    </ng-template>
                 </div>
             </div>
         </div>

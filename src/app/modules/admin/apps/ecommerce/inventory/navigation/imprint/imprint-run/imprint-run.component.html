@@ -14,7 +14,7 @@
         <div class="row">
             <div class="col-12 col-md-4">
                 <mat-form-field class="w-full">
-                    <input type="number" (onmousewheel)="$event.preventDefault()" matInput [(ngModel)]="ngChargeCode">
+                    <input type="number" (mousewheel)="$event.preventDefault()" matInput [(ngModel)]="ngChargeCode">
                 </mat-form-field>
             </div>
             <div class="col-12 col-md-4">
@@ -124,7 +124,7 @@
             </div>
             <div class="data-width mr-1" *ngFor="let item of productQuantities;let i=index">
                 <mat-form-field class="w-full">
-                    <input matInput type="number" (onmousewheel)="$event.preventDefault()" [(ngModel)]="item.value"
+                    <input matInput type="number" (mousewheel)="$event.preventDefault()" [(ngModel)]="item.value"
                         [readonly]="i==0" />
                 </mat-form-field>
             </div>
@@ -133,7 +133,7 @@
             <div class="col col-width"></div>
             <div class="col col-width" *ngFor="let item of productQuantities;let i=index">
                 <mat-form-field class="w-full">
-                    <input matInput type="number" (onmousewheel)="$event.preventDefault()"  [(ngModel)]="item.value" [readonly]="i==0" />
+                    <input matInput type="number" (mousewheel)="$event.preventDefault()"  [(ngModel)]="item.value" [readonly]="i==0" />
                 </mat-form-field>
             </div>
         </div> -->
@@ -147,14 +147,13 @@
                         svgIcon="heroicons_outline:plus">
                     </mat-icon>
                     <mat-form-field class="w-full  mr-1">
-                        <input type="number" (onmousewheel)="$event.preventDefault()" matInput [readonly]="$i==0"
+                        <input type="number" (mousewheel)="$event.preventDefault()" matInput [readonly]="$i==0"
                             [(ngModel)]="element.value" />
                     </mat-form-field>
                 </div>
                 <div class="flex data-width mr-1" *ngFor="let item of element.quantitiesVal;let i=index">
                     <mat-form-field class="w-full">
-                        <input type="number" (onmousewheel)="$event.preventDefault()" matInput
-                            [(ngModel)]="item.value" />
+                        <input type="number" (mousewheel)="$event.preventDefault()" matInput [(ngModel)]="item.value" />
                     </mat-form-field>
                 </div>
             </div>
@@ -169,14 +168,14 @@
                         svgIcon="heroicons_outline:plus">
                     </mat-icon>
                     <mat-form-field class="w-full">
-                        <input type="number" (onmousewheel)="$event.preventDefault()"  matInput [readonly]="$i==0" [(ngModel)]="element.value" />
+                        <input type="number" (mousewheel)="$event.preventDefault()"  matInput [readonly]="$i==0" [(ngModel)]="element.value" />
                     </mat-form-field>
                 </div>
 
             </div>
             <div class="col col-width" *ngFor="let item of element.quantitiesVal;let i=index">
                 <mat-form-field class="w-full">
-                    <input type="number" (onmousewheel)="$event.preventDefault()"  matInput [(ngModel)]="item.value" />
+                    <input type="number" (mousewheel)="$event.preventDefault()"  matInput [(ngModel)]="item.value" />
                 </mat-form-field>
             </div>
         </div> -->

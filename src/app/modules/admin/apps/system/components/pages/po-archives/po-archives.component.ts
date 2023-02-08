@@ -1,9 +1,10 @@
 import { ENTER, COMMA } from '@angular/cdk/keycodes';
 import { Component, Input, OnInit, Output, EventEmitter, ChangeDetectorRef, OnDestroy, ViewChild } from '@angular/core';
+import { FormControl } from '@angular/forms';
 import { MatChipInputEvent } from '@angular/material/chips';
 import { MatPaginator } from '@angular/material/paginator';
 import { Subject } from 'rxjs';
-import { finalize, takeUntil } from 'rxjs/operators';
+import { debounceTime, distinctUntilChanged, filter, finalize, switchMap, takeUntil, tap } from 'rxjs/operators';
 import { SystemService } from '../../system.service';
 import { AddColor, AddImprintColor, AddImprintMethod, DeleteColor, DeleteImprintColor, UpdateColor, UpdateImprintColor, UpdateImprintMethod } from '../../system.types';
 
@@ -44,6 +45,19 @@ export class POArchivesComponent implements OnInit, OnDestroy {
   ngRGBUpdate = '';
   stores: any;
   suppliers: any;
+
+
+  allSuppliers = [];
+  searchSupplierCtrl = new FormControl();
+  selectedSupplier: any;
+  isSearchingSupplier = false;
+
+  allStores = [];
+  searchStoreCtrl = new FormControl();
+  selectedStore: any;
+  isSearchingStore = false;
+
+
   constructor(
     private _changeDetectorRef: ChangeDetectorRef,
     private _systemService: SystemService
@@ -51,11 +65,69 @@ export class POArchivesComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this._systemService.stores$.pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+      this.allStores = res["data"];
       this.stores = res["data"];
     });
     this._systemService.Suppliers$.pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
       this.suppliers = res["data"];
+      this.allSuppliers = res["data"];
     });
+    let params;
+    this.searchSupplierCtrl.valueChanges.pipe(
+      filter((res: any) => {
+        params = {
+          supplier: true,
+          bln_active: 1,
+          keyword: res
+        }
+        return res !== null && res.length >= 3
+      }),
+      distinctUntilChanged(),
+      debounceTime(300),
+      tap(() => {
+        this.allSuppliers = [];
+        this.isSearchingSupplier = true;
+        this._changeDetectorRef.markForCheck();
+      }),
+      switchMap(value => this._systemService.getSystemsData(params)
+        .pipe(
+          finalize(() => {
+            this.isSearchingSupplier = false
+            this._changeDetectorRef.markForCheck();
+          }),
+        )
+      )
+    ).subscribe((data: any) => {
+      this.allSuppliers = data['data'];
+    });
+    // Stores
+    // let paramsStore;
+    // this.searchStoreCtrl.valueChanges.pipe(
+    //   filter((res: any) => {
+    //     params = {
+    //       stores_list: true,
+    //       keyword: res
+    //     }
+    //     return res !== null && res.length >= 3
+    //   }),
+    //   distinctUntilChanged(),
+    //   debounceTime(300),
+    //   tap(() => {
+    //     this.allStores = [];
+    //     this.isSearchingStore = true;
+    //     this._changeDetectorRef.markForCheck();
+    //   }),
+    //   switchMap(value => this._systemService.getSystemsData(paramsStore)
+    //     .pipe(
+    //       finalize(() => {
+    //         this.isSearchingStore = false
+    //         this._changeDetectorRef.markForCheck();
+    //       }),
+    //     )
+    //   )
+    // ).subscribe((data: any) => {
+    //   this.allStores = data['data'];
+    // });
     setTimeout(() => {
       this.isLoading = false;
       this.isLoadingChange.emit(false);
@@ -65,6 +137,19 @@ export class POArchivesComponent implements OnInit, OnDestroy {
     // this.isLoading = true;
     // this.getImprintMethods(1, 'get');
   };
+  onSelected(ev) {
+    this.selectedSupplier = ev.option.value;
+  }
+  displayWith(value: any) {
+    return value?.companyName;
+  }
+  // Stores
+  onSelectedStore(ev) {
+    this.selectedStore = ev.option.value;
+  }
+  displayWithStore(value: any) {
+    return value?.storeName;
+  }
   calledScreen(value) {
     this.mainScreen = value;
   }

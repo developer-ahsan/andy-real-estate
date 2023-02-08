@@ -88,7 +88,6 @@ export class StoreProductDetailsComponent implements OnInit, OnDestroy {
     this._router.events.subscribe((event) => {
       if (event instanceof NavigationEnd) {
         this.selectedScreeen = this.route.children[0].snapshot.data.title;
-        console.log(this.selectedScreeen)
         this.selectedRoute = this.route.children[0].snapshot.data.url;
       }
     })
@@ -123,10 +122,9 @@ export class StoreProductDetailsComponent implements OnInit, OnDestroy {
     if (item.route != this.selectedRoute) {
       if (item.title == 'Master Product') {
         this._router.navigate(['apps/ecommerce/inventory/' + this.selectedProduct["fk_productID"]]);
-      }
-      if (item.title == 'Store Versions') {
+      } else if (item.title == 'Store Versions') {
         this._router.navigate(['apps/ecommerce/inventory/' + this.selectedProduct["fk_productID"] + '/store-versions']);
-      } if (item.title == 'Remove From Store') {
+      } else if (item.title == 'Remove From Store') {
       } else {
         this.selectedScreeen = item.title;
         this.selectedRoute = item.route;

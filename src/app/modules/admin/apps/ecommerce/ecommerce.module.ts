@@ -236,7 +236,7 @@ import { StoreProductDetailsComponent } from './product-store/details/product-de
         FuseAlertModule,
         MatDialogModule,
         MatDatepickerModule,
-        MatNativeDateModule
+        MatNativeDateModule,
     ],
     entryComponents: [ImprintRunComponent]
 })
