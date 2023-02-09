@@ -2,6 +2,7 @@ import { Component, Input, OnInit, Output, EventEmitter, ChangeDetectorRef, OnDe
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { StoreProductService } from '../../store.service';
+import { AddRelatedProduct } from '../../store.types';
 
 @Component({
   selector: 'app-related-products',
@@ -28,6 +29,8 @@ export class RelatedProdcutsComponent implements OnInit, OnDestroy {
   relatedProductColumns: string[] = ['id', 'number', 'name', 'type', 'action'];
   relatedProductTotal = 0;
   relatedProductPage = 1;
+
+  isAddLoader: boolean = false;
   constructor(
     private _changeDetectorRef: ChangeDetectorRef,
     private _storeService: StoreProductService
@@ -127,7 +130,26 @@ export class RelatedProdcutsComponent implements OnInit, OnDestroy {
     //   this._changeDetectorRef.markForCheck();
     // })
   }
-
+  addRelatedProducts(item) {
+    item.addLoader = true;
+    let payload: AddRelatedProduct = {
+      store_product_id: this.selectedProduct.pk_storeProductID,
+      product_id: item.fk_productID,
+      product_number: item.productNumber,
+      product_name: item.productName,
+      relation_type_id: item.prod_type,
+      storeName: item.storeName,
+      add_related_product: true
+    }
+    this._storeService.postStoresProductsData(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+      item.addLoader = false;
+      this._storeService.snackBar(res["message"]);
+      this._changeDetectorRef.markForCheck();
+    }, err => {
+      item.addLoader = false;
+      this._changeDetectorRef.markForCheck();
+    })
+  }
   getNextData(event) {
     const { previousPageIndex, pageIndex } = event;
 

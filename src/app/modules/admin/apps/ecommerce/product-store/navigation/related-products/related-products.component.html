@@ -56,7 +56,7 @@
                                     <mat-form-field class="w-full">
                                         <mat-select matInput [(ngModel)]="element.prod_type">
                                             <mat-option *ngFor="let item of relationTypes"
-                                                [value]="item.relationTypeName">
+                                                [value]="item.pk_relationTypeID">
                                                 {{item.relationTypeName}}</mat-option>
                                         </mat-select>
                                     </mat-form-field>
@@ -67,7 +67,13 @@
                             <ng-container matColumnDef="action">
                                 <th mat-header-cell *matHeaderCellDef class="w-40 min-w-40 text-center"> Action </th>
                                 <td mat-cell *matCellDef="let element" class="text-center">
-                                    <button [matTooltip]="'Add Relation'" mat-stroked-button>Add Relation</button>
+                                    <button [disabled]="element?.addLoader" [matTooltip]="'Add Relation'"
+                                        mat-stroked-button (click)="addRelatedProducts(element)">
+                                        <span *ngIf="!element?.addLoader">Add Relation</span>
+                                        <mat-progress-spinner *ngIf="element?.addLoader" [diameter]="24"
+                                            [mode]="'indeterminate'">
+                                        </mat-progress-spinner>
+                                    </button>
                                 </td>
                             </ng-container>
 

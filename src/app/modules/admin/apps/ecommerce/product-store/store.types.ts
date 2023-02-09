@@ -132,3 +132,13 @@ interface Subcategory {
 }
 export interface DeleteVirtualProofImage { virtual_proof_id: number; remove_virtual_art: boolean; };
 export interface AddVirtualProofImage { store_product_id: number; blnStore: boolean; add_virtual_art: boolean; };
+
+export interface AddRelatedProduct {
+    store_product_id: number;
+    product_id: number;
+    product_number: string;
+    product_name: string;
+    relation_type_id: string;
+    storeName: string;
+    add_related_product: boolean;
+};

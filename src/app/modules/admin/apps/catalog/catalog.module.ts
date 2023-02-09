@@ -41,6 +41,7 @@ import { CatalogComponent } from './components/catalog.component';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { catalogRoutes } from './catalog.routing';
 import { NgxPaginationModule } from 'ngx-pagination';
+
 @NgModule({
     declarations: [
         CatalogComponent,

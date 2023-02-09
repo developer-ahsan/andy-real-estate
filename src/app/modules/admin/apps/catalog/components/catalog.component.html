@@ -47,7 +47,7 @@
                             <div class="col-12 col-md-6">
                                 <mat-form-field class="w-full">
                                     <mat-label>Sort by:</mat-label>
-                                    <mat-select matInput [(ngModel)]="catalogFilter.sortBy">
+                                    <mat-select matInput [(ngModel)]="sortBy" (selectionChange)="sortByFilter($event)">
                                         <mat-option [value]="1">Product ID</mat-option>
                                         <mat-option [value]="2">Price low to high</mat-option>
                                         <mat-option [value]="3">Price high to low</mat-option>
@@ -59,12 +59,12 @@
                             <div class="col-12">
                                 <mat-form-field class="w-full">
                                     <mat-label>Keyword (PID, SPID, product name):</mat-label>
-                                    <input matInput>
+                                    <input matInput matTooltip="Enter to search"
+                                        (keyup.enter)="searchByKeyword($event)">
                                 </mat-form-field>
                             </div>
                             <div class="col-12">
                                 <mat-form-field class="w-full">
-                                    <mat-label>Vendor:</mat-label>
                                     <input matInput placeholder="Search Vendors" matTooltip="Search Vendors by name"
                                         [matAutocomplete]="auto" [formControl]="searchSupplierCtrl">
                                     <mat-autocomplete class="w-full" #auto="matAutocomplete"
@@ -72,8 +72,8 @@
                                         <mat-option *ngIf="isSearchingSupplier"
                                             class="is-loading">Loading...</mat-option>
                                         <ng-container *ngIf="!isSearchingSupplier">
-                                            <mat-option *ngFor="let supplier of allSuppliers" [value]="supplier">
-                                                <span>{{supplier.companyName}}</span>
+                                            <mat-option *ngFor="let item of allSuppliers" [value]="item">
+                                                <span>{{item.companyName}}</span>
                                             </mat-option>
                                         </ng-container>
                                     </mat-autocomplete>
@@ -82,12 +82,13 @@
                             <div class="col-12">
                                 <mat-form-field class="w-full">
                                     <mat-label>Vendor Relation:</mat-label>
-                                    <mat-select matInput [(ngModel)]="catalogFilter.relation">
+                                    <mat-select matInput [(ngModel)]="catalogFilter.vendor_relation"
+                                        (selectionChange)="vendorFilter($event)">
                                         <mat-option [value]="0">Any Relation</mat-option>
-                                        <mat-option [value]="2">Normal</mat-option>
-                                        <mat-option [value]="3">Preffered</mat-option>
-                                        <mat-option [value]="4">Partner</mat-option>
-                                        <mat-option [value]="5">Preffered & Partner</mat-option>
+                                        <mat-option [value]="1">Normal</mat-option>
+                                        <mat-option [value]="2">Preffered</mat-option>
+                                        <mat-option [value]="3">Partner</mat-option>
+                                        <mat-option [value]="4">Preffered & Partner</mat-option>
                                     </mat-select>
                                 </mat-form-field>
                             </div>
@@ -161,15 +162,16 @@
                             <div class="col-12">
                                 <mat-form-field class="w-full">
                                     <mat-label>Active Products:</mat-label>
-                                    <mat-select matInput [(ngModel)]="catalogFilter.active">
+                                    <mat-select matInput [(ngModel)]="catalogFilter.bln_active">
                                         <mat-option [value]="1">Active Only</mat-option>
                                         <mat-option [value]="2">Disabled Only</mat-option>
-                                        <mat-option [value]="0">Active & Disabled</mat-option>
+                                        <mat-option [value]="''">Active & Disabled</mat-option>
                                     </mat-select>
                                 </mat-form-field>
                             </div>
                             <div class="col-12">
-                                <button class="w-full" mat-button mat-stroked-button>Filter</button>
+                                <button class="w-full" mat-button mat-stroked-button [disabled]="isFilterLoader"
+                                    (click)="getCatalogs(1)">Filter</button>
                             </div>
                         </div>
                     </div>
@@ -180,6 +182,28 @@
                 </ngx-skeleton-loader>
             </div>
             <div class="col-12 col-md-8" *ngIf="!isPageLoading && !isFilterLoader">
+                <div class="flex mb-2 overflow-x-auto">
+                    <button *ngIf="selectedSupplier" mat-button mat-stroked-button class="mr-1">
+                        <span class="text-md">{{selectedSupplier.companyName}}</span>
+                        <mat-icon svgIcon="heroicons_outline:x" class="icon-size-4 cursor-pointer"
+                            (click)="clearFilter(1)"></mat-icon>
+                    </button>
+                    <button *ngIf="selectedColor" mat-button mat-stroked-button class="mr-1">
+                        <span class="text-md">{{selectedColor.colorName}}</span>
+                        <mat-icon svgIcon="heroicons_outline:x" (click)="clearFilter(2)"
+                            class="icon-size-4 cursor-pointer"></mat-icon>
+                    </button>
+                    <button *ngIf="selectedSize" mat-button mat-stroked-button class="mr-1">
+                        <span class="text-md">{{selectedSize.sizeName}}</span>
+                        <mat-icon svgIcon="heroicons_outline:x" (click)="clearFilter(3)"
+                            class="icon-size-4 cursor-pointer"></mat-icon>
+                    </button>
+                    <button *ngIf="selectedMethod" mat-button mat-stroked-button class="mr-1">
+                        <span class="text-md">{{selectedMethod.methodName}}</span>
+                        <mat-icon svgIcon="heroicons_outline:x" (click)="clearFilter(4)"
+                            class="icon-size-4 cursor-pointer"></mat-icon>
+                    </button>
+                </div>
                 <div class="bg-card shadow rounded-2xl p-5" *ngIf="dataSource.length == 0">
                     <fuse-alert [type]="'warning'" [appearance]="'outline'">
                         Please select filter choices to see product results.
