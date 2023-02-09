@@ -143,7 +143,7 @@ export const defaultNavigation: FuseNavigationItem[] = [
         id: 'smartart',
         title: 'Smartart',
         type: 'group',
-        subtitle: 'Unique dashboard designs',
+        subtitle: 'Smartart Dashboards',
         icon: 'heroicons_outline:home',
         children: [
             {

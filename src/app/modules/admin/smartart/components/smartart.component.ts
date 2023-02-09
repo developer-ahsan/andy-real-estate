@@ -2,7 +2,7 @@ import { ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, OnDe
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { fuseAnimations } from '@fuse/animations';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute, NavigationEnd, Router } from '@angular/router';
 import { FuseMediaWatcherService } from '@fuse/services/media-watcher';
 import { UsersService } from './users.service';
 import { UserService } from 'app/core/user/user.service';
@@ -19,7 +19,7 @@ export class SmartArtComponent {
     isLoading: boolean = false;
     private _unsubscribeAll: Subject<any> = new Subject<any>();
     routes = [];
-    selectedScreeen = 'Generate Report';
+    selectedScreeen = 'Order Dashboard';
 
     flpsToken = sessionStorage.getItem('flpsAccessToken');
     flpsName = sessionStorage.getItem('FullName');
@@ -58,6 +58,13 @@ export class SmartArtComponent {
      */
 
     ngOnInit(): void {
+        this._router.events.subscribe((event) => {
+            if (event instanceof NavigationEnd) {
+                this.selectedScreeen = this.route.children[0].snapshot.data.title;
+                console.log(this.selectedScreeen)
+                //   this.selectedRoute = this.route.children[0].snapshot.data.url;
+            }
+        })
         if (this._router.url.includes('commentors')) {
             this.selectedPanel = 'commentors';
         } else if (this._router.url.includes('admin')) {
