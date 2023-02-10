@@ -349,3 +349,21 @@ export interface UpdateHeaderImage {
     link: string;
     update_header_image: boolean;
 };
+export interface deleteCampaign {
+    campaign_id: number;
+    delete_campaign_list: boolean;
+};
+export interface updateCampaign {
+    objective: string;
+    strategy: string;
+    results: string;
+    title: string;
+    shortDesc: string;
+    blnActive: boolean;
+    permalink: string;
+    blnFeature: boolean;
+    videoURL: string;
+    pk_campaignID: number;
+    store_product_ids: number[];
+    update_campaign_list: boolean;
+};

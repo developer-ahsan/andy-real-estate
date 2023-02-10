@@ -111,6 +111,10 @@ export class OrdersComponent {
     // -----------------------------------------------------------------------------------------------------
 
     getOrders(sizes, pageNo) {
+        7
+        if (this._orderService._searchKeyword) {
+            this.isLoading = true;
+        }
         this.keyword = this._orderService._searchKeyword;
         let { store_id, range_end, range_start, search_order_id, size, order_type } = this.advancedSearchForm;
         if (!range_end) {

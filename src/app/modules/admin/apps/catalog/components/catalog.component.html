@@ -1,274 +1,281 @@
-<div class="flex flex-col flex-auto min-w-0">
-
-    <!-- Header -->
-    <div
-        class="flex flex-col sm:flex-row flex-0 sm:items-center sm:justify-between p-6 sm:py-8 sm:px-10 border-b bg-card dark:bg-transparent">
-        <div class="flex-1 min-w-0">
-            <!-- Breadcrumbs -->
-
-            <!-- Title -->
-            <div class="mt-2" #topScrollAnchor>
-                <h2 class="text-3xl md:text-4xl font-extrabold tracking-tight leading-7 sm:leading-10 truncate">
-                    Product Catalog
-                </h2>
-            </div>
-            <div class="flex flex-wrap items-center font-medium">
-                <a class="whitespace-nowrap text-primary-500" *ngIf="!isLoading">Total Products {{total}}</a>
-            </div>
+<div class="absolute inset-0 flex flex-col min-w-0 overflow-auto bg-card">
+    <div class="relative flex flex-col sm:flex-row flex-0 sm:items-center sm:justify-between pb-1 border-b"
+        *ngIf="isLoading">
+        <div class="absolute inset-x-0 bottom-1">
+            <mat-progress-bar [mode]="'indeterminate'"></mat-progress-bar>
         </div>
     </div>
-    <div class="w-full p-6" *ngIf="isLoading">
-        <ngx-skeleton-loader count="15" appearance="line" animation="pulse">
-        </ngx-skeleton-loader>
-    </div>
-    <div class="flex-auto p-6 sm:p-10" *ngIf="!isLoading">
-        <!-- <div class="w-full p-6" *ngIf="isPageLoading || isFilterLoader">
-            <ngx-skeleton-loader count="15" appearance="line" animation="pulse">
-            </ngx-skeleton-loader>
-        </div> -->
-        <div class="row">
-            <div class="col-12 col-md-4 ">
-                <div class="bg-card rounded-2xl shadow p-8">
-                    <div class="text-secondary">
-                        <h2>Filters</h2>
-                        <hr class="my-2">
-                        <div class="row">
-                            <div class="col-12 col-md-6 ">
-                                <mat-form-field class="w-full">
-                                    <mat-label>Per Page:</mat-label>
-                                    <mat-select matInput [(ngModel)]="catalogFilter.perPage"
-                                        (selectionChange)="onPageChange($event)">
-                                        <mat-option [value]="25">25</mat-option>
-                                        <mat-option [value]="50">50</mat-option>
-                                        <mat-option [value]="100">100</mat-option>
-                                    </mat-select>
-                                </mat-form-field>
-                            </div>
-                            <div class="col-12 col-md-6">
-                                <mat-form-field class="w-full">
-                                    <mat-label>Sort by:</mat-label>
-                                    <mat-select matInput [(ngModel)]="sortBy" (selectionChange)="sortByFilter($event)">
-                                        <mat-option [value]="1">Product ID</mat-option>
-                                        <mat-option [value]="2">Price low to high</mat-option>
-                                        <mat-option [value]="3">Price high to low</mat-option>
-                                        <mat-option [value]="4">Name, A to Z</mat-option>
-                                        <mat-option [value]="5">Name, Z to A</mat-option>
-                                    </mat-select>
-                                </mat-form-field>
-                            </div>
-                            <div class="col-12">
-                                <mat-form-field class="w-full">
-                                    <mat-label>Keyword (PID, SPID, product name):</mat-label>
-                                    <input matInput matTooltip="Enter to search"
-                                        (keyup.enter)="searchByKeyword($event)">
-                                </mat-form-field>
-                            </div>
-                            <div class="col-12">
-                                <mat-form-field class="w-full">
-                                    <input matInput placeholder="Search Vendors" matTooltip="Search Vendors by name"
-                                        [matAutocomplete]="auto" [formControl]="searchSupplierCtrl">
-                                    <mat-autocomplete class="w-full" #auto="matAutocomplete"
-                                        (optionSelected)="onSelected($event)" [displayWith]="displayWith">
-                                        <mat-option *ngIf="isSearchingSupplier"
-                                            class="is-loading">Loading...</mat-option>
-                                        <ng-container *ngIf="!isSearchingSupplier">
-                                            <mat-option *ngFor="let item of allSuppliers" [value]="item">
-                                                <span>{{item.companyName}}</span>
-                                            </mat-option>
-                                        </ng-container>
-                                    </mat-autocomplete>
-                                </mat-form-field>
-                            </div>
-                            <div class="col-12">
-                                <mat-form-field class="w-full">
-                                    <mat-label>Vendor Relation:</mat-label>
-                                    <mat-select matInput [(ngModel)]="catalogFilter.vendor_relation"
-                                        (selectionChange)="vendorFilter($event)">
-                                        <mat-option [value]="0">Any Relation</mat-option>
-                                        <mat-option [value]="1">Normal</mat-option>
-                                        <mat-option [value]="2">Preffered</mat-option>
-                                        <mat-option [value]="3">Partner</mat-option>
-                                        <mat-option [value]="4">Preffered & Partner</mat-option>
-                                    </mat-select>
-                                </mat-form-field>
-                            </div>
-                            <div class="col-12">
-                                <mat-form-field class="w-full">
-                                    <mat-label>Min. quantity:</mat-label>
-                                    <input matInput type="number" (mousewheel)="$event.preventDefault()">
-                                </mat-form-field>
-                            </div>
-                            <div class="col-12 col-md-6">
-                                <mat-form-field class="w-full">
-                                    <mat-label>Min. price:</mat-label>
-                                    <input matInput type="number" (mousewheel)="$event.preventDefault()">
-                                </mat-form-field>
-                            </div>
-                            <div class="col-12 col-md-6">
-                                <mat-form-field class="w-full">
-                                    <mat-label>Max. price:</mat-label>
-                                    <input matInput type="number" (mousewheel)="$event.preventDefault()">
-                                </mat-form-field>
-                            </div>
-                            <div class="col-12">
-                                <mat-form-field class="w-full">
-                                    <mat-label>Colors:</mat-label>
-                                    <input matInput placeholder="Search Colors" matTooltip="Search Colors by name"
-                                        [matAutocomplete]="auto1" [formControl]="searchColorCtrl">
-                                    <mat-autocomplete class="w-full" #auto1="matAutocomplete"
-                                        (optionSelected)="onSelectedColor($event)" [displayWith]="displayWithColor">
-                                        <mat-option *ngIf="isSearchingColor" class="is-loading">Loading...</mat-option>
-                                        <ng-container *ngIf="!isSearchingColor">
-                                            <mat-option *ngFor="let item of allColors" [value]="item">
-                                                <span>{{item.colorName}}</span>
-                                            </mat-option>
-                                        </ng-container>
-                                    </mat-autocomplete>
-                                </mat-form-field>
-                            </div>
-                            <div class="col-12">
-                                <mat-form-field class="w-full">
-                                    <mat-label>Decoration:</mat-label>
-                                    <input matInput placeholder="Search Decoration"
-                                        matTooltip="Search Decoration by name" [matAutocomplete]="auto2"
-                                        [formControl]="searchMethodCtrl">
-                                    <mat-autocomplete class="w-full" #auto2="matAutocomplete"
-                                        (optionSelected)="onSelectedMethod($event)" [displayWith]="displayWithMethod">
-                                        <mat-option *ngIf="isSearchingMethod" class="is-loading">Loading...</mat-option>
-                                        <ng-container *ngIf="!isSearchingMethod">
-                                            <mat-option *ngFor="let item of allMethods" [value]="item">
-                                                <span>{{item.methodName}}</span>
-                                            </mat-option>
-                                        </ng-container>
-                                    </mat-autocomplete>
-                                </mat-form-field>
-                            </div>
-                            <div class="col-12">
-                                <mat-form-field class="w-full">
-                                    <mat-label>Size:</mat-label>
-                                    <input matInput placeholder="Search Size" matTooltip="Search Size by name"
-                                        [matAutocomplete]="auto3" [formControl]="searchSizeCtrl">
-                                    <mat-autocomplete class="w-full" #auto3="matAutocomplete"
-                                        (optionSelected)="onSelectedSize($event)" [displayWith]="displayWithSize">
-                                        <mat-option *ngIf="isSearchingSize" class="is-loading">Loading...</mat-option>
-                                        <ng-container *ngIf="!isSearchingSize">
-                                            <mat-option *ngFor="let size of allSizes" [value]="size">
-                                                <span>{{size.sizeName}}</span>
-                                            </mat-option>
-                                        </ng-container>
-                                    </mat-autocomplete>
-                                </mat-form-field>
-                            </div>
-                            <div class="col-12">
-                                <mat-form-field class="w-full">
-                                    <mat-label>Active Products:</mat-label>
-                                    <mat-select matInput [(ngModel)]="catalogFilter.bln_active">
-                                        <mat-option [value]="1">Active Only</mat-option>
-                                        <mat-option [value]="2">Disabled Only</mat-option>
-                                        <mat-option [value]="''">Active & Disabled</mat-option>
-                                    </mat-select>
-                                </mat-form-field>
-                            </div>
-                            <div class="col-12">
-                                <button class="w-full" mat-button mat-stroked-button [disabled]="isFilterLoader"
-                                    (click)="getCatalogs(1)">Filter</button>
-                            </div>
+    <mat-drawer-container class="example-container w-full bg-white" [hasBackdrop]="false">
+        <mat-drawer #drawer [mode]="'over'" position="end" style="width: 400px !important; ">
+            <div class="row w-full p-5 m-0">
+                <div class="col-9">
+                    <div class="text-2xl font-extrabold tracking-tight leading-none"> Advanced Search
+                    </div>
+                </div>
+                <div class="col-3 text-right">
+                    <mat-icon (click)="toggleDrawer()" class="mr-2 cursor-pointer" [svgIcon]="'mat_outline:close'">
+                    </mat-icon>
+                </div>
+                <div class="col-12 col-md-6 ">
+                    <mat-form-field class="w-full">
+                        <mat-label>Per Page:</mat-label>
+                        <mat-select matInput [(ngModel)]="catalogFilter.perPage"
+                            (selectionChange)="onPageChange($event)">
+                            <mat-option [value]="25">25</mat-option>
+                            <mat-option [value]="50">50</mat-option>
+                            <mat-option [value]="100">100</mat-option>
+                        </mat-select>
+                    </mat-form-field>
+                </div>
+                <div class="col-12 col-md-6">
+                    <mat-form-field class="w-full">
+                        <mat-label>Sort by:</mat-label>
+                        <mat-select matInput [(ngModel)]="sortBy" (selectionChange)="sortByFilter($event)">
+                            <mat-option [value]="1">Product ID</mat-option>
+                            <mat-option [value]="2">Price low to high</mat-option>
+                            <mat-option [value]="3">Price high to low</mat-option>
+                            <mat-option [value]="4">Name, A to Z</mat-option>
+                            <mat-option [value]="5">Name, Z to A</mat-option>
+                        </mat-select>
+                    </mat-form-field>
+                </div>
+                <div class="col-12">
+                    <mat-form-field class="w-full">
+                        <mat-label>Keyword (PID, SPID, product name):</mat-label>
+                        <input matInput matTooltip="Enter to search" (keyup.enter)="searchByKeyword($event)">
+                    </mat-form-field>
+                </div>
+                <div class="col-12">
+                    <mat-form-field class="w-full">
+                        <input matInput placeholder="Search Vendors" matTooltip="Search Vendors by name"
+                            [matAutocomplete]="auto" [formControl]="searchSupplierCtrl">
+                        <mat-autocomplete class="w-full" #auto="matAutocomplete" (optionSelected)="onSelected($event)"
+                            [displayWith]="displayWith">
+                            <mat-option *ngIf="isSearchingSupplier" class="is-loading">Loading...</mat-option>
+                            <ng-container *ngIf="!isSearchingSupplier">
+                                <mat-option *ngFor="let item of allSuppliers" [value]="item">
+                                    <span>{{item.companyName}}</span>
+                                </mat-option>
+                            </ng-container>
+                        </mat-autocomplete>
+                    </mat-form-field>
+                </div>
+                <div class="col-12">
+                    <mat-form-field class="w-full">
+                        <mat-label>Vendor Relation:</mat-label>
+                        <mat-select matInput [(ngModel)]="catalogFilter.vendor_relation"
+                            (selectionChange)="vendorFilter($event)">
+                            <mat-option [value]="0">Any Relation</mat-option>
+                            <mat-option [value]="1">Normal</mat-option>
+                            <mat-option [value]="2">Preffered</mat-option>
+                            <mat-option [value]="3">Partner</mat-option>
+                            <mat-option [value]="4">Preffered & Partner</mat-option>
+                        </mat-select>
+                    </mat-form-field>
+                </div>
+                <div class="col-12">
+                    <mat-form-field class="w-full">
+                        <mat-label>Min. quantity:</mat-label>
+                        <input matInput type="number" (mousewheel)="$event.preventDefault()">
+                    </mat-form-field>
+                </div>
+                <div class="col-12 col-md-6">
+                    <mat-form-field class="w-full">
+                        <mat-label>Min. price:</mat-label>
+                        <input matInput type="number" (mousewheel)="$event.preventDefault()">
+                    </mat-form-field>
+                </div>
+                <div class="col-12 col-md-6">
+                    <mat-form-field class="w-full">
+                        <mat-label>Max. price:</mat-label>
+                        <input matInput type="number" (mousewheel)="$event.preventDefault()">
+                    </mat-form-field>
+                </div>
+                <div class="col-12">
+                    <mat-form-field class="w-full">
+                        <mat-label>Colors:</mat-label>
+                        <input matInput placeholder="Search Colors" matTooltip="Search Colors by name"
+                            [matAutocomplete]="auto1" [formControl]="searchColorCtrl">
+                        <mat-autocomplete class="w-full" #auto1="matAutocomplete"
+                            (optionSelected)="onSelectedColor($event)" [displayWith]="displayWithColor">
+                            <mat-option *ngIf="isSearchingColor" class="is-loading">Loading...</mat-option>
+                            <ng-container *ngIf="!isSearchingColor">
+                                <mat-option *ngFor="let item of allColors" [value]="item">
+                                    <span>{{item.colorName}}</span>
+                                </mat-option>
+                            </ng-container>
+                        </mat-autocomplete>
+                    </mat-form-field>
+                </div>
+                <div class="col-12">
+                    <mat-form-field class="w-full">
+                        <mat-label>Decoration:</mat-label>
+                        <input matInput placeholder="Search Decoration" matTooltip="Search Decoration by name"
+                            [matAutocomplete]="auto2" [formControl]="searchMethodCtrl">
+                        <mat-autocomplete class="w-full" #auto2="matAutocomplete"
+                            (optionSelected)="onSelectedMethod($event)" [displayWith]="displayWithMethod">
+                            <mat-option *ngIf="isSearchingMethod" class="is-loading">Loading...</mat-option>
+                            <ng-container *ngIf="!isSearchingMethod">
+                                <mat-option *ngFor="let item of allMethods" [value]="item">
+                                    <span>{{item.methodName}}</span>
+                                </mat-option>
+                            </ng-container>
+                        </mat-autocomplete>
+                    </mat-form-field>
+                </div>
+                <div class="col-12">
+                    <mat-form-field class="w-full">
+                        <mat-label>Size:</mat-label>
+                        <input matInput placeholder="Search Size" matTooltip="Search Size by name"
+                            [matAutocomplete]="auto3" [formControl]="searchSizeCtrl">
+                        <mat-autocomplete class="w-full" #auto3="matAutocomplete"
+                            (optionSelected)="onSelectedSize($event)" [displayWith]="displayWithSize">
+                            <mat-option *ngIf="isSearchingSize" class="is-loading">Loading...</mat-option>
+                            <ng-container *ngIf="!isSearchingSize">
+                                <mat-option *ngFor="let size of allSizes" [value]="size">
+                                    <span>{{size.sizeName}}</span>
+                                </mat-option>
+                            </ng-container>
+                        </mat-autocomplete>
+                    </mat-form-field>
+                </div>
+                <div class="col-12">
+                    <mat-form-field class="w-full">
+                        <mat-label>Active Products:</mat-label>
+                        <mat-select matInput [(ngModel)]="catalogFilter.bln_active">
+                            <mat-option [value]="1">Active Only</mat-option>
+                            <mat-option [value]="2">Disabled Only</mat-option>
+                            <mat-option [value]="''">Active & Disabled</mat-option>
+                        </mat-select>
+                    </mat-form-field>
+                </div>
+                <div class="col-12">
+                    <button [color]="'primary'" class="w-full" mat-button mat-stroked-button [disabled]="isFilterLoader"
+                        (click)="getCatalogs(1)">Filter</button>
+                </div>
+            </div>
+        </mat-drawer>
+        <mat-drawer-content style="height: 100vh;">
+            <div
+                class="flex flex-col sm:flex-row flex-0 sm:items-center sm:justify-between p-6 sm:py-8 sm:px-10 border-b bg-card dark:bg-transparent">
+                <div class="flex-1 min-w-0">
+                    <!-- Breadcrumbs -->
+
+                    <!-- Title -->
+                    <div class="mt-2" #topScrollAnchor>
+                        <div class="flex align-items-center justify-between">
+                            <h2
+                                class="text-3xl md:text-4xl font-extrabold tracking-tight leading-7 sm:leading-10 truncate">
+                                Product Catalog
+                            </h2>
+                            <button class="min-w-40" mat-button (click)="toggleDrawer()">Filter</button>
+                        </div>
+                    </div>
+                    <div class="flex flex-wrap items-center font-medium">
+                        <a class="whitespace-nowrap text-primary-500" *ngIf="!isLoading">Total Products {{total}}</a>
+                    </div>
+                </div>
+            </div>
+            <div class="w-full p-6" *ngIf="isLoading">
+                <ngx-skeleton-loader count="15" appearance="line" animation="pulse">
+                </ngx-skeleton-loader>
+            </div>
+            <div class="flex-auto p-6 sm:p-10" *ngIf="!isLoading">
+                <div class="row">
+                    <div class="col-12" *ngIf="isPageLoading || isFilterLoader">
+                        <ngx-skeleton-loader count="15" appearance="line" animation="pulse">
+                        </ngx-skeleton-loader>
+                    </div>
+                    <div class="col-12" *ngIf="!isPageLoading && !isFilterLoader">
+                        <div class="flex mb-2 overflow-x-auto">
+                            <button *ngIf="selectedSupplier" mat-button mat-stroked-button class="mr-1">
+                                <span class="text-md">{{selectedSupplier.companyName}}</span>
+                                <mat-icon svgIcon="heroicons_outline:x" class="icon-size-4 cursor-pointer"
+                                    (click)="clearFilter(1)"></mat-icon>
+                            </button>
+                            <button *ngIf="selectedColor" mat-button mat-stroked-button class="mr-1">
+                                <span class="text-md">{{selectedColor.colorName}}</span>
+                                <mat-icon svgIcon="heroicons_outline:x" (click)="clearFilter(2)"
+                                    class="icon-size-4 cursor-pointer"></mat-icon>
+                            </button>
+                            <button *ngIf="selectedSize" mat-button mat-stroked-button class="mr-1">
+                                <span class="text-md">{{selectedSize.sizeName}}</span>
+                                <mat-icon svgIcon="heroicons_outline:x" (click)="clearFilter(3)"
+                                    class="icon-size-4 cursor-pointer"></mat-icon>
+                            </button>
+                            <button *ngIf="selectedMethod" mat-button mat-stroked-button class="mr-1">
+                                <span class="text-md">{{selectedMethod.methodName}}</span>
+                                <mat-icon svgIcon="heroicons_outline:x" (click)="clearFilter(4)"
+                                    class="icon-size-4 cursor-pointer"></mat-icon>
+                            </button>
+                        </div>
+                        <div class="bg-card shadow rounded-2xl p-5" *ngIf="dataSource.length == 0">
+                            <fuse-alert [type]="'warning'" [appearance]="'outline'">
+                                Please select filter choices to see product results.
+                            </fuse-alert>
+                        </div>
+                    </div>
+                    <div class="col-12 col-md-10" *ngIf="!isPageLoading && !isFilterLoader">
+                        <pagination-controls *ngIf="dataSource.length > 0" previousLabel="Prev" nextLabel="Next"
+                            (pageChange)="getNextCatalogData($event)">
+                        </pagination-controls>
+                        <div class="prose prose-sm max-w-5xl" *ngIf="!isPageLoading">
+                            <ng-container *ngFor="let item of dataSource |  paginate : {
+                                itemsPerPage: itemsPerPage,
+                                currentPage: page,
+                                totalItems: total
+                              };">
+                                <div class="mb-12 p-8 rounded-2xl shadow bg-card">
+                                    <div class="flex justify-between">
+                                        <div>
+                                            <h2 class="my-0">{{item.productName}} - ({{item.pk_productID}})</h2>
+                                            <div class="font-semibold text-md text-secondary">{{item.companyName}}</div>
+                                        </div>
+                                        <img class="w-20 h-20 m-0"
+                                            src="https://assets.consolidus.com/globalAssets/Products/coming_soon.jpg">
+                                    </div>
+                                    <hr class="mt-2">
+                                    <div class="row">
+                                        <div *ngIf="item.Cost" class="col-12 col-md-6 m-0">
+                                            <span
+                                                class="inline-flex bg-default rounded px-3 py-1 text-secondary font-bold">Cost</span>
+                                            <table class="table table-striped">
+                                                <thead>
+                                                    <tr>
+                                                        <th *ngFor="let cost of item.Cost">{{cost.quantity}}</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    <tr>
+                                                        <td *ngFor="let cost of item.Cost">{{cost.cost | currency}}</td>
+                                                    </tr>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                        <div class="col-12 col-md-6">
+                                            <span
+                                                class="inline-flex bg-default rounded px-3 py-1 text-secondary font-bold">Description</span>
+                                            <div [innerHTML]="item.description" class="text-justify"></div>
+                                        </div>
+
+                                    </div>
+                                    <hr class="mt-2">
+                                    <span *ngIf="item.Imprint"
+                                        class="inline-flex bg-default rounded px-3 py-1 text-secondary font-bold">Imprints</span>
+                                    <div *ngFor="let imprint of item.Imprint" class="pt-1">
+                                        <li>{{imprint.locationName+'/'+imprint.IM[0].methodName }}</li>
+                                    </div>
+                                </div>
+                            </ng-container>
+                        </div>
+                        <div *ngIf="!isPageLoading && dataSource.length > 0">
+                            <pagination-controls previousLabel="Prev" nextLabel="Next"
+                                (pageChange)="getNextCatalogData($event)">
+                            </pagination-controls>
                         </div>
                     </div>
                 </div>
             </div>
-            <div class="col-12 col-md-8" *ngIf="isPageLoading || isFilterLoader">
-                <ngx-skeleton-loader count="15" appearance="line" animation="pulse">
-                </ngx-skeleton-loader>
-            </div>
-            <div class="col-12 col-md-8" *ngIf="!isPageLoading && !isFilterLoader">
-                <div class="flex mb-2 overflow-x-auto">
-                    <button *ngIf="selectedSupplier" mat-button mat-stroked-button class="mr-1">
-                        <span class="text-md">{{selectedSupplier.companyName}}</span>
-                        <mat-icon svgIcon="heroicons_outline:x" class="icon-size-4 cursor-pointer"
-                            (click)="clearFilter(1)"></mat-icon>
-                    </button>
-                    <button *ngIf="selectedColor" mat-button mat-stroked-button class="mr-1">
-                        <span class="text-md">{{selectedColor.colorName}}</span>
-                        <mat-icon svgIcon="heroicons_outline:x" (click)="clearFilter(2)"
-                            class="icon-size-4 cursor-pointer"></mat-icon>
-                    </button>
-                    <button *ngIf="selectedSize" mat-button mat-stroked-button class="mr-1">
-                        <span class="text-md">{{selectedSize.sizeName}}</span>
-                        <mat-icon svgIcon="heroicons_outline:x" (click)="clearFilter(3)"
-                            class="icon-size-4 cursor-pointer"></mat-icon>
-                    </button>
-                    <button *ngIf="selectedMethod" mat-button mat-stroked-button class="mr-1">
-                        <span class="text-md">{{selectedMethod.methodName}}</span>
-                        <mat-icon svgIcon="heroicons_outline:x" (click)="clearFilter(4)"
-                            class="icon-size-4 cursor-pointer"></mat-icon>
-                    </button>
-                </div>
-                <div class="bg-card shadow rounded-2xl p-5" *ngIf="dataSource.length == 0">
-                    <fuse-alert [type]="'warning'" [appearance]="'outline'">
-                        Please select filter choices to see product results.
-                    </fuse-alert>
-                </div>
-                <pagination-controls *ngIf="dataSource.length > 0" previousLabel="Prev" nextLabel="Next"
-                    (pageChange)="getNextCatalogData($event)">
-                </pagination-controls>
-                <div class="prose prose-sm max-w-5xl" *ngIf="!isPageLoading">
-                    <ng-container *ngFor="let item of dataSource |  paginate : {
-                        itemsPerPage: itemsPerPage,
-                        currentPage: page,
-                        totalItems: total
-                      };">
-                        <div class="mb-12 p-8 rounded-2xl shadow bg-card">
-                            <div class="flex justify-between">
-                                <div>
-                                    <h2 class="my-0">{{item.productName}} - ({{item.pk_productID}})</h2>
-                                    <div class="font-semibold text-md text-secondary">{{item.companyName}}</div>
-                                </div>
-                                <img class="w-20 h-20 m-0"
-                                    src="https://assets.consolidus.com/globalAssets/Products/coming_soon.jpg">
-                            </div>
-                            <hr class="mt-2">
-                            <div class="row">
-                                <div *ngIf="item.Cost" class="col-12 col-md-6 m-0">
-                                    <span
-                                        class="inline-flex bg-default rounded px-3 py-1 text-secondary font-bold">Cost</span>
-                                    <table class="table table-striped">
-                                        <thead>
-                                            <tr>
-                                                <th *ngFor="let cost of item.Cost">{{cost.quantity}}</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            <tr>
-                                                <td *ngFor="let cost of item.Cost">{{cost.cost | currency}}</td>
-                                            </tr>
-                                        </tbody>
-                                    </table>
-                                </div>
-                                <div class="col-12 col-md-6">
-                                    <span
-                                        class="inline-flex bg-default rounded px-3 py-1 text-secondary font-bold">Description</span>
-                                    <div [innerHTML]="item.description" class="text-justify"></div>
-                                </div>
-
-                            </div>
-                            <hr class="mt-2">
-                            <span *ngIf="item.Imprint"
-                                class="inline-flex bg-default rounded px-3 py-1 text-secondary font-bold">Imprints</span>
-                            <div *ngFor="let imprint of item.Imprint" class="pt-1">
-                                <li>{{imprint.locationName+'/'+imprint.IM[0].methodName }}</li>
-                            </div>
-                        </div>
-                    </ng-container>
-                </div>
-                <div *ngIf="!isPageLoading && dataSource.length > 0">
-                    <pagination-controls previousLabel="Prev" nextLabel="Next"
-                        (pageChange)="getNextCatalogData($event)">
-                    </pagination-controls>
-                </div>
-            </div>
-        </div>
-
-    </div>
-
+        </mat-drawer-content>
+    </mat-drawer-container>
 </div>

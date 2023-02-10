@@ -36,6 +36,7 @@ import { environment } from "environments/environment";
 import { navigations } from "./navigation-data";
 import { AuthService } from "app/core/auth/auth.service";
 import { AddNewsFeed, AddScroller, AddTestimonial, colorHeaderUpdate, colorsUpdate, DefaultEmailUpdate, DeleteNewsFeed, DeleteScroller, DeleteTestimonial, UpdateDefaultScroller, UpdateFeatureCampaign, UpdateNewsFeed, UpdateScroller, UpdateScrollerOrder, UpdateSpecialOffer, UpdateTestimonials, UpdateTestimonialStatus, UpdateTypeKit } from "./navigation/presentation/presentation.types";
+import { MatSnackBar } from "@angular/material/snack-bar";
 
 @Injectable({
   providedIn: "root",
@@ -65,9 +66,16 @@ export class FileManagerService {
    */
   constructor(
     private _httpClient: HttpClient,
-    private _authService: AuthService
+    private _authService: AuthService,
+    private _snackBar: MatSnackBar,
   ) { }
-
+  snackBar(msg) {
+    this._snackBar.open(msg, '', {
+      horizontalPosition: 'center',
+      verticalPosition: 'bottom',
+      duration: 3500
+    });
+  }
   // -----------------------------------------------------------------------------------------------------
   // @ Accessors
   // -----------------------------------------------------------------------------------------------------
@@ -483,7 +491,7 @@ export class FileManagerService {
 
   getDashboardData(params) {
     return this._httpClient
-      .get<any[]>(environment.stores, { params: params })
+      .get<any[]>(environment.storeNewUrl, { params: params })
       .pipe(retry(3));
   }
 

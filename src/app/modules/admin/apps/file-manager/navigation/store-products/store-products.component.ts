@@ -28,6 +28,8 @@ export class StoreProductsComponent implements OnInit, OnDestroy {
   isKeywordSearch: boolean = false;
   keywordSearch: string = "";
 
+  isFilterLoader: boolean = false;
+  isToggleFilter: boolean = false;
   constructor(
     private _fileManagerService: FileManagerService,
     private _changeDetectorRef: ChangeDetectorRef,
@@ -40,7 +42,9 @@ export class StoreProductsComponent implements OnInit, OnDestroy {
     this.getFirstCall(this.page);
     this.isLoadingChange.emit(false);
   }
-
+  toggleFilter() {
+    this.isToggleFilter = !this.isToggleFilter;
+  }
   getFirstCall(page) {
     const { pk_storeID } = this.selectedStore;
 

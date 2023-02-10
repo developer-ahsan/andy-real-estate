@@ -1,5 +1,5 @@
 <div class="absolute inset-0 flex flex-col min-w-0 overflow-auto bg-card">
-    <div class="relative flex flex-col sm:flex-row flex-0 sm:items-center sm:justify-between py-1 border-b"
+    <div class="relative flex flex-col sm:flex-row flex-0 sm:items-center sm:justify-between pb-1 border-b"
         *ngIf="isLoading">
         <div class="absolute inset-x-0 bottom-1">
             <mat-progress-bar [mode]="'indeterminate'"></mat-progress-bar>
@@ -102,7 +102,8 @@
                 <div class="flex flex-auto overflow-hidden">
                     <!-- Products list -->
                     <div class="flex flex-col flex-auto sm:mb-18 overflow-hidden">
-
+                        <ngx-skeleton-loader count="8" appearance="line" animation="pulse" *ngIf="isLoading">
+                        </ngx-skeleton-loader>
                         <ng-container *ngIf="ordersLength > 0; else noOrders">
 
                             <!-- Table wrapper -->
@@ -200,7 +201,8 @@
                         </ng-container>
 
                         <ng-template #noOrders>
-                            <div class="p-8 sm:p-16 border-t text-4xl font-semibold tracking-tight text-center">
+                            <div class="p-8 sm:p-16 border-t text-4xl font-semibold tracking-tight text-center"
+                                *ngIf="!isLoading">
                                 There are no orders!
                             </div>
                         </ng-template>

@@ -7,12 +7,17 @@
                 <div class="col-12">
                     <div class="p-6 pb-2 sm:p-8 dm:pb-2 lg:p-10 lg:pb-2 w-full">
                         <div class="row">
-                            <div class="col-lg-6 col-12">
+                            <div class="col-12 flex justify-between">
                                 <div class="text-2xl font-bold">
                                     Store Products
                                 </div>
+                                <div (click)="toggleFilter()"
+                                    class="cursor-pointer text-md  font-medium text-primary-500">
+                                    <span *ngIf="!isToggleFilter">Filter</span>
+                                    <span *ngIf="isToggleFilter">Close Filter</span>
+                                </div>
                             </div>
-                            <div class="col-lg-6 col-12">
+                            <!-- <div class="col-lg-6 col-12">
                                 <mat-form-field class="fuse-mat-dense fuse-mat-no-subscript w-full">
                                     <input class="h-6" matInput [matTooltip]="'Press enter key after typing'"
                                         (keyup.enter)="searchStoreProduct($event)" [value]="keywordSearch" type="text"
@@ -26,6 +31,72 @@
                                     (click)="resetSearch()">
                                     Reset Search
                                 </p>
+                            </div> -->
+                            <div class="col-6 col-md-4">
+                                <mat-form-field class="w-full">
+                                    <input matInput placeholder="Search SPID number or keyword">
+                                </mat-form-field>
+                            </div>
+                            <div class="col-6 col-md-4">
+                                <mat-form-field class="w-full">
+                                    <mat-select matInput>
+                                        <mat-option value="all">All</mat-option>
+                                        <mat-option value="active">Active/Online</mat-option>
+                                        <mat-option value="disabled">Disble/Offline</mat-option>
+                                    </mat-select>
+                                </mat-form-field>
+                            </div>
+                            <div class="col-6 col-md-4">
+                                <mat-form-field class="w-full">
+                                    <mat-select matInput>
+                                        <mat-option>All Categories</mat-option>
+                                    </mat-select>
+                                </mat-form-field>
+                            </div>
+                            <div class="col-6 col-md-4">
+                                <mat-form-field class="w-full">
+                                    <mat-select matInput>
+                                        <mat-option value="all">All descriptions</mat-option>
+                                        <mat-option value="yes">Has descriptions</mat-option>
+                                        <mat-option value="no">Does not have descriptions</mat-option>
+                                    </mat-select>
+                                </mat-form-field>
+                            </div>
+                            <div class="col-6 col-md-4">
+                                <mat-form-field class="w-full">
+                                    <mat-select matInput>
+                                        <mat-option [value]="-1">Products ordered & not ordered</mat-option>
+                                        <mat-option [value]="1">Products ordered</mat-option>
+                                        <mat-option [value]="0">Products not ordered</mat-option>
+                                    </mat-select>
+                                </mat-form-field>
+                            </div>
+                            <div class="col-6 col-md-4">
+                                <mat-form-field class="w-full">
+                                    <mat-select matInput>
+                                        <mat-option [value]="0">All vendors</mat-option>
+                                        <mat-option [value]="1">Normal vendors</mat-option>
+                                        <mat-option [value]="2">Preferred vendors</mat-option>
+                                        <mat-option [value]="3">Partner vendors</mat-option>
+                                    </mat-select>
+                                </mat-form-field>
+                            </div>
+                            <div class="col-6 col-md-4">
+                                <mat-form-field class="w-full">
+                                    <mat-select matInput>
+                                        <mat-option value="all">All videos</mat-option>
+                                        <mat-option value="yes">Has video</mat-option>
+                                        <mat-option value="no">Does not have video</mat-option>
+                                    </mat-select>
+                                </mat-form-field>
+                            </div>
+                            <div class="col-6 col-md-4">
+                                <button mat-button mat-stroked-button class="min-w-40">
+                                    <mat-progress-spinner *ngIf="isFilterLoader" class="mr-2" [diameter]="24"
+                                        [mode]="'indeterminate'">
+                                    </mat-progress-spinner>
+                                    <span *ngIf="!isFilterLoader">Filter</span>
+                                </button>
                             </div>
                         </div>
                     </div>

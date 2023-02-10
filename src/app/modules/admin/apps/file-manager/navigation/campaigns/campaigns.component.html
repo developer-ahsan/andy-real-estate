@@ -126,7 +126,19 @@
                           class="leading-relaxed whitespace-nowrap">Inactive</span></span>
                     </td>
                   </ng-container>
-
+                  <ng-container matColumnDef="action">
+                    <th class="w-10 bg-gray-50 text-center" mat-header-cell *matHeaderCellDef>
+                      Action
+                    </th>
+                    <td mat-cell *matCellDef="let element" class="text-center">
+                      <div class="flex justify-center">
+                        <mat-icon (click)="deleteCampaign(element)" svgIcon="heroicons_outline:trash"
+                          *ngIf="!element.delLoader" matTooltip="Delete Campaign"></mat-icon>
+                        <mat-progress-spinner *ngIf="element.delLoader" [diameter]="24" [mode]="'indeterminate'">
+                        </mat-progress-spinner>
+                      </div>
+                    </td>
+                  </ng-container>
                 </div>
                 <tr mat-header-row class="h-16 shadow bg-card" *matHeaderRowDef="displayedColumns"></tr>
                 <tr mat-row class="hover:bg-gray-100 dark:hover:bg-hover" style="cursor: pointer;"
@@ -286,9 +298,31 @@
                     Select Products
                     <span style="color: red">(4 products max) *</span>
                   </mat-label>
-                  <ng-multiselect-dropdown [placeholder]="'Select Products'" [settings]="dropdownSettings"
+                  <mat-form-field class="w-full">
+                    <input matInput placeholder="Search Products" matTooltip="Search product by name"
+                      [matAutocomplete]="auto" [formControl]="searchProductCtrl">
+                    <mat-autocomplete class="w-full" #auto="matAutocomplete" (optionSelected)="onSelected($event)">
+                      <mat-option *ngIf="isSearchingProduct" class="is-loading">Loading...</mat-option>
+                      <ng-container *ngIf="!isSearchingProduct">
+                        <mat-option *ngFor="let item of allProducts" [value]="item">
+                          <span>{{item.productName}}</span>
+                        </mat-option>
+                      </ng-container>
+                    </mat-autocomplete>
+                    <mat-hint class="flex align-items-center">
+                      <span *ngFor="let item of selectedProducts;let last=last; let i=index;">
+                        <span class="cursor-pointer" matTooltip="Click to remove from list"
+                          (click)="removeSelected(i)">{{item.productName}}</span>
+                        <!-- <mat-icon svgIcon="heroicons_outline:x" class="cursor-pointer icon-size-4"
+                          (click)="removeSelected(i)"></mat-icon> -->
+                        <span *ngIf="!last">,</span>
+                      </span>
+                    </mat-hint>
+                  </mat-form-field>
+
+                  <!-- <ng-multiselect-dropdown [placeholder]="'Select Products'" [settings]="dropdownSettings"
                     [data]="dropdownList" formControlName="store_product_list_id">
-                  </ng-multiselect-dropdown>
+                  </ng-multiselect-dropdown> -->
                   <!-- </mat-form-field> -->
                 </div>
                 <div class="col-12">
@@ -337,6 +371,7 @@
     </div>
     <!-- Edit -->
     <div *ngIf="isEditCampaign">
+
       <div class="row mb-2">
         <div class="col-12 text-right">
           <button class="ml-4" mat-flat-button mat-stroked-button [matTooltip]="'Go to campaigns'"
@@ -346,7 +381,11 @@
           </button>
         </div>
       </div>
-      <fuse-card class="rounded-2xl shadow bg-card flex mt-5">
+      <div>
+        <ngx-skeleton-loader count="8" appearance="line" animation="pulse" *ngIf="isCampaignProdLoader">
+        </ngx-skeleton-loader>
+      </div>
+      <fuse-card class="rounded-2xl shadow bg-card flex mt-5" *ngIf="!isCampaignProdLoader">
         <div class="row" style="width: -webkit-fill-available;">
           <div class="col-12 ">
             <div class="p-6 sm:p-8 lg:p-10 w-full">
@@ -386,15 +425,30 @@
                     <quill-editor formControlName="results" [modules]="quillModules"> </quill-editor>
                   </div>
                   <div class="col-12 mt-5">
-                    <mat-form-field appearance="fill" class="w-full">
-                      <mat-label>
-                        Select Products
-                        <span style="color: red">(4 products max)</span>
-                      </mat-label>
-                      <mat-select [(value)]="selected">
-                        <mat-option value="option1">Yes</mat-option>
-                        <mat-option value="option2">No</mat-option>
-                      </mat-select>
+                    <mat-label class="font-semibold">
+                      Select Products
+                      <span style="color: red">(4 products max) *</span>
+                    </mat-label>
+                    <mat-form-field class="w-full">
+                      <input matInput placeholder="Search Products" matTooltip="Search product by name"
+                        [matAutocomplete]="auto1" [formControl]="searchProductCtrl">
+                      <mat-autocomplete class="w-full" #auto1="matAutocomplete" (optionSelected)="onSelected($event)">
+                        <mat-option *ngIf="isSearchingProduct" class="is-loading">Loading...</mat-option>
+                        <ng-container *ngIf="!isSearchingProduct">
+                          <mat-option *ngFor="let item of allProducts" [value]="item">
+                            <span>{{item.productName}}</span>
+                          </mat-option>
+                        </ng-container>
+                      </mat-autocomplete>
+                      <mat-hint class="flex align-items-center">
+                        <span *ngFor="let item of selectedProducts;let last=last; let i=index;">
+                          <span class="cursor-pointer" matTooltip="Click to remove from list"
+                            (click)="removeSelected(i)">{{item.productName}}</span>
+                          <!-- <mat-icon svgIcon="heroicons_outline:x" class="cursor-pointer icon-size-4"
+                            (click)="removeSelected(i)"></mat-icon> -->
+                          <span *ngIf="!last">,</span>
+                        </span>
+                      </mat-hint>
                     </mat-form-field>
                   </div>
                   <div class="col-12">
@@ -428,8 +482,11 @@
                     </mat-form-field>
                   </div>
                   <div class="col-12 text-right">
-                    <button class="my-5" mat-flat-button mat-stroked-button [matTooltip]="'Update'">
-                      <span class="px-2">Update</span>
+                    <button (click)="updateCampaign()" class="my-5 min-w-40" mat-flat-button mat-stroked-button
+                      [matTooltip]="'Update'">
+                      <span class="px-2" *ngIf="!isCampaignUpdateLoader">Update</span>
+                      <mat-progress-spinner *ngIf="isCampaignUpdateLoader" [diameter]="24" [mode]="'indeterminate'">
+                      </mat-progress-spinner>
                     </button>
                   </div>
                 </div>

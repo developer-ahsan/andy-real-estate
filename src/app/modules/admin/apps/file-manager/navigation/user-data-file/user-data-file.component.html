@@ -25,33 +25,33 @@
                 Include users registered between
               </div>
             </div>
+            <div class="col-md-4 col-12">
+              <mat-form-field appearance="fill" class="w-full">
+                <mat-label>Enter a date range</mat-label>
+                <mat-date-range-input [rangePicker]="picker" [max]="maxDate">
+                  <input readonly matStartDate [(ngModel)]="ngStartDate" placeholder="Start date"
+                    [ngModelOptions]="{standalone: true}">
+                  <input readonly matEndDate placeholder="End date" [(ngModel)]="ngEndDate"
+                    [ngModelOptions]="{standalone: true}">
+                </mat-date-range-input>
+                <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+                <mat-date-range-picker #picker></mat-date-range-picker>
+              </mat-form-field>
+            </div>
             <!-- <div class="col-md-4 col-12">
-                    <mat-form-field appearance="fill" class="w-full">
-                      <mat-label>Enter a date range</mat-label>
-                      <mat-date-range-input [rangePicker]="picker">
-                        <input readonly matStartDate [(ngModel)]="ngStartDate" placeholder="Start date"
-                          [ngModelOptions]="{standalone: true}">
-                        <input readonly matEndDate placeholder="End date" [(ngModel)]="ngEndDate"
-                          [ngModelOptions]="{standalone: true}">
-                      </mat-date-range-input>
-                      <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
-                      <mat-date-range-picker #picker></mat-date-range-picker>
-                    </mat-form-field>
+              <mat-form-field class="w-full">
+                <mat-label>Include</mat-label>
+                <mat-select #select multiple>
+                  <div class="select-all">
+                    <mat-checkbox [(ngModel)]="allSelected" [ngModelOptions]="{standalone: true}"
+                      (change)="toggleAllSelection()">Select All</mat-checkbox>
                   </div>
-                  <div class="col-md-4 col-12">
-                    <mat-form-field class="w-full">
-                      <mat-label>Include</mat-label>
-                      <mat-select #select multiple>
-                        <div class="select-all">
-                          <mat-checkbox [(ngModel)]="allSelected" [ngModelOptions]="{standalone: true}"
-                            (change)="toggleAllSelection()">Select All</mat-checkbox>
-                        </div>
-                        <mat-option (click)="optionClick()" *ngFor="let item of includeCheckArray" [value]="item.value">
-                          {{item.viewValue}}
-                        </mat-option>
-                      </mat-select>
-                    </mat-form-field>
-                  </div> -->
+                  <mat-option (click)="optionClick()" *ngFor="let item of includeCheckArray" [value]="item.value">
+                    {{item.viewValue}}
+                  </mat-option>
+                </mat-select>
+              </mat-form-field>
+            </div> -->
             <div class="col-12">
               <mat-form-field class="w-full">
                 <mat-label>File Type</mat-label>

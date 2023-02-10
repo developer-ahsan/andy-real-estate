@@ -19,28 +19,12 @@ import { FormControl } from '@angular/forms';
 })
 export class CatalogComponent {
   @ViewChild('drawer', { static: true }) sidenav: MatDrawer;
-
-
   isLoading: boolean = false;
   private _unsubscribeAll: Subject<any> = new Subject<any>();
-  routes = [];
-  selectedScreeen = 'Generate Report';
-
-  flpsToken = sessionStorage.getItem('flpsAccessToken');
-  flpsName = sessionStorage.getItem('FullName');
-  ngEmail = '';
-  ngPassword = '';
-  isLoginLoader: boolean = false;
-  user: any;
   // Sidebar stuff
   @ViewChild('topScrollAnchor') topScroll: ElementRef;
-
-
   @ViewChild('drawer') drawer: MatDrawer;
   drawerMode: 'over' | 'side' = 'over';
-  drawerOpened: boolean = false;
-  panels: any[] = [];
-  selectedPanel: string = 'admin';
 
   dataSource = [];
   tempDataSource = [];
@@ -325,8 +309,10 @@ export class CatalogComponent {
     this.getCatalogs(1);
   }
   clearFilter(type) {
+    this.page = 1;
     if (type == 1) {
       this.selectedSupplier = null;
+      this.page = 1;
       this.searchSupplierCtrl.setValue(null);
     } else if (type == 2) {
       this.selectedColor = null;
@@ -377,35 +363,5 @@ export class CatalogComponent {
     // Unsubscribe from all subscriptions
     this._unsubscribeAll.next();
     this._unsubscribeAll.complete();
-  }
-  goToPanel(panel): void {
-    this.selectedPanel = panel.id;
-
-    // Close the drawer on 'over' mode
-    if (this.drawerMode === 'over') {
-      this.drawer.close();
-    }
-    this._router.navigate([panel.route], { relativeTo: this.route })
-    // this._router.navigateByUrl('admin-users');
-    this.topScroll.nativeElement.scrollIntoView({ behavior: 'smooth' });
-  }
-
-  /**
-   * Get the details of the panel
-   *
-   * @param id
-   */
-  getPanelInfo(id: string): any {
-    return this.panels.find(panel => panel.id === id);
-  }
-
-  /**
-   * Track by function for ngFor loops
-   *
-   * @param index
-   * @param item
-   */
-  trackByFn(index: number, item: any): any {
-    return item.id || index;
   }
 }

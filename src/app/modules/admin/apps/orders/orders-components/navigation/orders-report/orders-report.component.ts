@@ -5,7 +5,7 @@ import { takeUntil } from 'rxjs/operators';
 import { OrdersList } from 'app/modules/admin/apps/orders/orders-components/orders.types';
 import { jsPDF } from "jspdf";
 import html2canvas from 'html2canvas';
-
+declare var $;
 interface Transaction {
   item: string;
   cost: number;
@@ -260,20 +260,32 @@ export class OrdersReportComponent implements OnInit {
   }
 
   public exportHtmlToPDF() {
+    let element = document.getElementById('htmltable');
+    var positionInfo = element.getBoundingClientRect();
+    var height = positionInfo.height;
+    var width = positionInfo.width;
+    var top_left_margin = 15;
+    let PDF_Width = width + (top_left_margin * 2);
+    var PDF_Height = (PDF_Width * 1.5) + (top_left_margin * 2);
+    var canvas_image_width = width;
+    var canvas_image_height = height;
+
+    var totalPDFPages = Math.ceil(height / PDF_Height) - 1;
     const { pk_orderID } = this.orderDetail;
     let data = document.getElementById('htmltable');
     const file_name = `OrderReport_${pk_orderID}.pdf`;
-    html2canvas(data).then(canvas => {
+    html2canvas(data, { useCORS: true }).then(canvas => {
+      canvas.getContext('2d');
+      var imgData = canvas.toDataURL("image/jpeg", 1.0);
+      var pdf = new jsPDF('p', 'pt', [PDF_Width, PDF_Height]);
+      pdf.addImage(imgData, 'jpeg', top_left_margin, top_left_margin, canvas_image_width, canvas_image_height);
 
-      let docWidth = 208;
-      let docHeight = canvas.height * docWidth / canvas.width;
 
-      const contentDataURL = canvas.toDataURL('image/png')
-      let doc = new jsPDF('p', 'mm', 'a4');
-      let position = 0;
-      doc.addImage(contentDataURL, 'PNG', 0, position, docWidth, docHeight)
-
-      doc.save(file_name);
+      for (var i = 1; i <= totalPDFPages; i++) {
+        pdf.addPage([PDF_Width, PDF_Height]);
+        pdf.addImage(imgData, 'jpeg', top_left_margin, -(PDF_Height * i) + (top_left_margin * 4), canvas_image_width, canvas_image_height);
+      }
+      pdf.save(file_name);
     });
   }
 

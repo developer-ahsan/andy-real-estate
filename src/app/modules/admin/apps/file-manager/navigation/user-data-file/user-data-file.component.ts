@@ -44,6 +44,8 @@ export class UserDataFileComponent implements OnInit, OnDestroy {
 
   ngStartDate: any;
   ngEndDate: any;
+
+  maxDate = new Date();
   constructor(
     private _fileManagerService: FileManagerService,
     private _changeDetectorRef: ChangeDetectorRef,
@@ -60,6 +62,8 @@ export class UserDataFileComponent implements OnInit, OnDestroy {
     this.isPageLoading = true;
     let params = {
       store_id: this.selectedStore.pk_storeID,
+      start_date: moment(this.ngStartDate).format('yyyy-MM-DD'),
+      end_date: moment(this.ngEndDate).format('yyyy-MM-DD'),
       user_data: true
     }
     this._fileManagerService.getUserData(params)
