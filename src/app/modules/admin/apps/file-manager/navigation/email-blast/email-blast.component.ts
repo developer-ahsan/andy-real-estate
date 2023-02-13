@@ -86,6 +86,10 @@ export class EmailBlastComponent implements OnInit, OnDestroy {
   readonly separatorKeysCodes = [ENTER, COMMA] as const;
   fruits = [];
 
+  mainScreen = 'blast';
+  emailActivity: any = [];
+  isActivityLoader: boolean = false;
+  displayedActivityColumns: string[] = ['status', 'subject', 'from_email', 'to_email', 'opens', 'clicks'];
   @ViewChild('chipList', { static: false }) chipList: ElementRef<HTMLInputElement>;
   incomingfile(event) {
     const target: DataTransfer = <DataTransfer>(event.target);
@@ -186,7 +190,27 @@ export class EmailBlastComponent implements OnInit, OnDestroy {
         });
     }
   }
-
+  calledScreens(screenName) {
+    this.mainScreen = screenName;
+    if (screenName == 'actvity') {
+      this.getActivitydata();
+    }
+  }
+  getActivitydata() {
+    let params = {
+      email_recipient_stats: true,
+      email: "info@" + this.selectedStore.storeName
+    }
+    this.isActivityLoader = true;
+    this._fileManagerService.getStoresData(params).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+      this.emailActivity = res["data"]["messages"];
+      this.isActivityLoader = false;
+      this._changeDetectorRef.markForCheck();
+    }, err => {
+      this.isActivityLoader = false;
+      this._changeDetectorRef.markForCheck();
+    })
+  }
   calledScreen(screenName): void {
     this.drawerOpened = false;
     this.presentationScreen = screenName;

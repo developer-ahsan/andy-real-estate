@@ -16,6 +16,7 @@ export const environment = {
   storeNewUrl: "http://localhost:7100/api/stores",
   storeNewUrlRapidBuild: "https://stores-staging.azurewebsites.net/api/rapid_build",
   products: "http://localhost:7071/api/products",
+  royalties: "http://localhost:7071/api/royalties",
   storeProducts: "http://localhost:7100/api/store_products",
   system: "http://localhost:7071/api/system",
   flps: "http://localhost:7071/api/flps",
