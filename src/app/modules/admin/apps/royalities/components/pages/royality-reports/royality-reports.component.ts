@@ -2,7 +2,7 @@ import { Component, Input, OnInit, ChangeDetectorRef, OnDestroy, ViewChild } fro
 import { FormControl, FormGroup } from '@angular/forms';
 import { MatPaginator } from '@angular/material/paginator';
 import { Subject } from 'rxjs';
-import { finalize, takeUntil } from 'rxjs/operators';
+import { debounceTime, distinctUntilChanged, filter, finalize, switchMap, takeUntil, tap } from 'rxjs/operators';
 import { RoyaltyService } from '../../royalities.service';
 import { applyBlanketCustomerPercentage, newFLPSUser, newOrderManageUser, removeFLPSUser, RemoveUser, updateFLPSUser, updateOrderManageUser, updateOrderManageUserStores } from '../../royalities.types';
 @Component({
@@ -43,12 +43,121 @@ export class RoyaltyReportsComponent implements OnInit, OnDestroy {
   storeLoader: boolean = false;
   totalStores = 0;
   updateStoreLoader: boolean;
+
+  ngReportType = 'c';
+  planBillingForm: FormGroup;
+  plans: any[];
+  storesList = [];
+  ngEmployee = 12885;
+  ngPlan = 'weekly';
+  maxDate = new Date();
+  months = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12];
+  month = 1;
+  currentYear = new Date().getFullYear();
+  years = [];
+
+  quarter = 1;
+  quarterly = [{
+    value: 1,
+    text: '1-3'
+  },
+  {
+    value: 2,
+    text: '4-6'
+  },
+  {
+    value: 3,
+    text: '7-9'
+  },
+  {
+    value: 4,
+    text: '10-12'
+  }];
+
+
+  searchStoreCtrl = new FormControl();
+  selectedStore: any;
+  isSearching = false;
+  minLengthTerm = 3;
+
+  // Report
+  WeekDate = new Date();
+  monthlyMonth = 1;
+  monthlyYear = new Date().getFullYear();
+  quarterMonth = 1;
+  quarterYear = new Date().getFullYear();
+  yearlyYear = new Date().getFullYear();
+  ngRangeStart = new Date();
+  ngRangeEnd = new Date();
+
+  generateReportLoader: boolean = false;
+  isGenerateReport: boolean = false;
+
   constructor(
     private _changeDetectorRef: ChangeDetectorRef,
     private _RoyaltyService: RoyaltyService
   ) { }
 
   initForm() {
+    this.plans = [
+      {
+        value: 'weekly',
+        label: 'Weekly',
+        details: 'Choose a date.',
+        price: '10'
+      },
+      {
+        value: 'monthly',
+        label: 'Monthly',
+        details: 'Choose month and year.',
+        price: '20'
+      },
+      {
+        value: 'quarterly',
+        label: 'Quarterly',
+        details: 'Generate quarterly report.',
+        price: '40'
+      },
+      {
+        value: 'yearly',
+        label: 'Yearly',
+        details: 'Choose a year.',
+        price: '40'
+      },
+      {
+        value: 'range',
+        label: 'Range',
+        details: 'Generate range report.',
+        price: '40'
+      }
+    ];
+    let params;
+    this.searchStoreCtrl.valueChanges.pipe(
+      filter(res => {
+        params = {
+          stores_list: true,
+          keyword: res
+        }
+        return res !== null && res.length >= this.minLengthTerm
+      }),
+      distinctUntilChanged(),
+      debounceTime(500),
+      tap(() => {
+        this.storesList = [];
+        this.isSearching = true;
+        this._changeDetectorRef.markForCheck();
+      }),
+      switchMap(value => this._RoyaltyService.getCallsData(params)
+        .pipe(
+          finalize(() => {
+            this.isSearching = false
+            this._changeDetectorRef.markForCheck();
+          }),
+        )
+      )
+    ).subscribe((data: any) => {
+      this.storesList = data['data'];
+    });
     this.addNewUserForm = new FormGroup({
       userName: new FormControl(''),
       password: new FormControl(''),
@@ -74,6 +183,12 @@ export class RoyaltyReportsComponent implements OnInit, OnDestroy {
     this.isLoading = true;
     this.getAdminOrderUsers(1, 'get');
   };
+  onSelected(ev) {
+    this.selectedStore = ev.option.value;
+  }
+  displayWith(value: any) {
+    return value ? value?.storeName : '';
+  }
   calledScreen(value) {
     this.initForm();
     this.mainScreen = value;
