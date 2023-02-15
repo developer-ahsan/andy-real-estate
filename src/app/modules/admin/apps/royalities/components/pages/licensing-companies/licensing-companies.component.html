@@ -67,7 +67,7 @@
             <!-- No color Found -->
             <ng-template #other_content>
                 <div class="text-secondary font-semibold p-5 text-center bg-card shadow">
-                    There are currently no SmartArt users.
+                    There are currently no licensing companies.
                 </div>
             </ng-template>
         </div>
@@ -92,17 +92,122 @@
                     </ngx-skeleton-loader>
                     <div class="w-full" *ngIf="!isCompanyTermLoader">
                         <div class="text-2xl font-bold"> Licensing Terms </div>
-                        <mat-accordion class="example-headers-align" multi>
+                        <mat-form-field class="w-full">
+                            <mat-label>Add new licencing term</mat-label>
+                            <input matInput [(ngModel)]="ngAddTermName" placeholder="Term Name">
+                        </mat-form-field>
+                        <div class="w-full text-right">
+                            <button mat-button [disabled]="isAddNewTermLoader" matTooltip="Add New Licensing Term"
+                                mat-stroked-button class="min-w-30" (click)="addNewLicenseTerm()">
+                                <span *ngIf="!isAddNewTermLoader">Add</span>
+                                <mat-progress-spinner *ngIf="isAddNewTermLoader" [diameter]="24"
+                                    [mode]="'indeterminate'">
+                                </mat-progress-spinner>
+                            </button>
+                        </div>
+                        <mat-accordion class="example-headers-align">
                             <div class="row">
-                                <div class="col-12" *ngFor="let item of companytermData">
+                                <div class="col-12" *ngFor="let item of companytermData;let i=index">
                                     <mat-expansion-panel class="my-2">
                                         <mat-expansion-panel-header>
                                             <mat-panel-title>
                                                 {{item.term}}
                                             </mat-panel-title>
                                         </mat-expansion-panel-header>
-                                        <div></div>
+                                        <div class="mt-2">
+                                            <div class="flex">
+                                                <div class="w-full mr-1">
+                                                    <label for="code{{i}}" class="text-sm">Code</label>
+                                                    <input id="code{{i}}" class="form-control text-sm"
+                                                        [(ngModel)]="item.code">
+                                                </div>
+                                                <div class="w-full ml-1">
+                                                    <label for="name{{i}}" class="text-sm">Name</label>
+                                                    <input id="name{{i}}" class="form-control text-sm"
+                                                        [(ngModel)]="item.term">
+                                                </div>
+                                                <div class="ml-1 mt-2 ">
+                                                    <br>
+                                                    <div class="flex">
+                                                        <mat-icon class="cursor-pointer"
+                                                            svgIcon="heroicons_outline:check" *ngIf="!item.updateLoader"
+                                                            matTooltip="Update Term"
+                                                            (click)="updateTerm(item)"></mat-icon>
+                                                        <mat-progress-spinner *ngIf="item.updateLoader" [diameter]="24"
+                                                            [mode]="'indeterminate'">
+                                                        </mat-progress-spinner>
+                                                        <mat-icon class="cursor-pointer"
+                                                            svgIcon="heroicons_outline:trash" *ngIf="!item.delLoader"
+                                                            matTooltip="Delete Term"
+                                                            (click)="deleteTerm(item)"></mat-icon>
+                                                        <mat-progress-spinner *ngIf="item.delLoader" [diameter]="24"
+                                                            [mode]="'indeterminate'">
+                                                        </mat-progress-spinner>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="my-3">
+                                                <h5 class="font-medium">Add new subcategory</h5>
+                                            </div>
+                                            <div class="flex">
+                                                <input id="new_cat{{i}}" [(ngModel)]="ngAddTermCatName"
+                                                    placeholder="Add New Subcategory" class="form-control text-sm mr-1">
+                                                <mat-icon *ngIf="!item.addCatLoader" class="cursor-pointer"
+                                                    (click)="addNewTermCat(item)" svgIcon="heroicons_outline:plus"
+                                                    matTooltip="Add Subcategory"></mat-icon>
+                                                <mat-progress-spinner *ngIf="item.addCatLoader" [diameter]="24"
+                                                    [mode]="'indeterminate'">
+                                                </mat-progress-spinner>
+                                            </div>
+                                            <div class="flex mt-2" *ngIf="item.subCategories">
+                                                <div class="w-full mr-1 ml-2">
+                                                    <label class="text-sm">Code</label>
+                                                </div>
+                                                <div class="w-full ml-2">
+                                                    <label class="text-sm">Name</label>
+                                                </div>
+                                                <div class="ml-2">
+                                                    <label class="text-sm">Action</label>
+                                                </div>
+                                            </div>
+                                            <div class="flex mb-2" *ngFor="let sub of item.subCategories;let j=index">
+                                                <div class="w-full mr-1">
+                                                    <input id="sub_code{{j}}" class="form-control text-sm"
+                                                        [(ngModel)]="sub.code">
+                                                </div>
+                                                <div class="w-full ml-1">
+                                                    <input id="sub_name{{j}}" class="form-control text-sm"
+                                                        [(ngModel)]="sub.name">
+                                                </div>
+                                                <div class="ml-1">
+                                                    <mat-icon class="cursor-pointer" svgIcon="heroicons_outline:trash"
+                                                        *ngIf="!sub.delLoader" matTooltip="Delete Subcategory"
+                                                        (click)="deleteTermCat(sub, item)"></mat-icon>
+                                                    <mat-progress-spinner *ngIf="sub.delLoader" [diameter]="24"
+                                                        [mode]="'indeterminate'">
+                                                    </mat-progress-spinner>
+                                                </div>
+                                            </div>
+                                            <div class="text-right" *ngIf="item.subCategories">
+                                                <button (click)="updateSubcategories(item)"
+                                                    [disabled]="item.updateCatLoader" class="min-w-30"
+                                                    [color]="'primary'" mat-flat-button mat-button
+                                                    matTooltip="Update Subcategory">
+                                                    <span *ngIf="!item.updateCatLoader">Update</span>
+                                                    <mat-progress-spinner *ngIf="item.updateCatLoader" [diameter]="24"
+                                                        [mode]="'indeterminate'">
+                                                    </mat-progress-spinner>
+                                                </button>
+                                            </div>
+                                        </div>
                                     </mat-expansion-panel>
+                                </div>
+                                <div class="col-12 flex justify-center">
+                                    <span class="cursor-pointer"
+                                        *ngIf="!isLoadMore && companytermData.length < totalterms"
+                                        (click)="nextCompanyterms()">Load More</span>
+                                    <mat-progress-spinner *ngIf="isLoadMore" [diameter]="24" [mode]="'indeterminate'">
+                                    </mat-progress-spinner>
                                 </div>
                             </div>
                         </mat-accordion>

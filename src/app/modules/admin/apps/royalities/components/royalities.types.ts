@@ -258,5 +258,10 @@ export interface deleteLicensingCompany { licensing_id: number; delete_licensing
 export interface updateLicensingCompany { name: string; licensing_id: number; update_licensing_company: boolean; };
 
 export interface CreateLicensingTerm { term: string; company_id: number; create_term: boolean; };
-export interface UpdateLicensingTerm { term_id: number; term: string; update_term: boolean; };
+export interface UpdateLicensingTerm { term_id: number; code: string; term: string; update_term: boolean; };
 export interface RemoveLicensingTerm { term_id: number; remove_term: boolean; };
+
+export interface UpdateSubCategories { sub_categories: SubCategories[]; licensing_term_id: number; update_subCategories: boolean; };
+interface SubCategories { sub_category_id: number; name: string; code: string; };
+export interface DeleteSubCategories { subCategory_id: number; delete_subcategories: boolean; };
+export interface AddSubCategory { licensing_term_id: number; name: string; add_subCategory: boolean; };

@@ -1,6 +1,7 @@
 import { Component, Input, OnInit, ChangeDetectorRef, OnDestroy, ViewChild } from '@angular/core';
 import { FormControl, FormGroup } from '@angular/forms';
 import { MatPaginator } from '@angular/material/paginator';
+import moment from 'moment';
 import { Subject } from 'rxjs';
 import { debounceTime, distinctUntilChanged, filter, finalize, switchMap, takeUntil, tap } from 'rxjs/operators';
 import { RoyaltyService } from '../../royalities.service';
@@ -92,6 +93,8 @@ export class RoyaltyReportsComponent implements OnInit, OnDestroy {
 
   generateReportLoader: boolean = false;
   isGenerateReport: boolean = false;
+  reportParams: any;
+  report_type = '';
 
   constructor(
     private _changeDetectorRef: ChangeDetectorRef,
@@ -99,6 +102,9 @@ export class RoyaltyReportsComponent implements OnInit, OnDestroy {
   ) { }
 
   initForm() {
+    for (let index = 0; index < 17; index++) {
+      this.years.push(this.currentYear - index);
+    }
     this.plans = [
       {
         value: 'weekly',
@@ -188,6 +194,71 @@ export class RoyaltyReportsComponent implements OnInit, OnDestroy {
   }
   displayWith(value: any) {
     return value ? value?.storeName : '';
+  }
+  generateReport() {
+    if (!this.selectedStore) {
+      this._RoyaltyService.snackBar('Please select any flps user');
+      return;
+    }
+    this.generateReportLoader = true;
+    this.reportParams = {
+      page: this.page,
+      start_date: '',
+      end_date: '',
+      store_id: this.selectedStore.pk_storeID,
+      options_report: true
+    };
+    if (this.ngPlan == 'weekly') {
+      this.reportParams.start_date = moment(this.WeekDate).startOf('week').format('yyyy-MM-DD');
+      this.reportParams.end_date = moment(this.WeekDate).endOf('week').format('yyyy-MM-DD');
+      this.report_type = 'Weekly Sales';
+    } else if (this.ngPlan == 'monthly') {
+      let d = new Date(this.monthlyYear, this.monthlyMonth - 1, 1);
+      this.reportParams.start_date = moment(d).startOf('month').format('yyyy-MM-DD');
+      this.reportParams.end_date = moment(d).endOf('month').format('yyyy-MM-DD');
+      this.report_type = 'Monthly Sales';
+    } else if (this.ngPlan == 'quarterly') {
+      let s;
+      let e;
+      if (this.quarterMonth == 1) {
+        s = new Date(this.quarterYear, 0, 1);
+        e = new Date(this.quarterYear, 2, 1);
+      } else if (this.quarterMonth == 2) {
+        s = new Date(this.quarterYear, 3, 1);
+        e = new Date(this.quarterYear, 5, 1);
+      } else if (this.quarterMonth == 3) {
+        s = new Date(this.quarterYear, 6, 1);
+        e = new Date(this.quarterYear, 8, 1);
+      } else if (this.quarterMonth == 4) {
+        s = new Date(this.quarterYear, 9, 1);
+        e = new Date(this.quarterYear, 11, 1);
+      }
+      this.reportParams.start_date = moment(s).startOf('month').format('yyyy-MM-DD');
+      this.reportParams.end_date = moment(e).endOf('month').format('yyyy-MM-DD');
+      this.report_type = 'Quarterly Sales';
+    } else if (this.ngPlan == 'yearly') {
+      let d = new Date(this.yearlyYear, 0, 1);
+      this.reportParams.start_date = moment(d).startOf('year').format('yyyy-MM-DD');
+      this.reportParams.end_date = moment(d).endOf('year').format('yyyy-MM-DD');
+    } else if (this.ngPlan == 'range') {
+      this.reportParams.start_date = moment(this.ngRangeStart).format('yyyy-MM-DD');
+      this.reportParams.end_date = moment(this.ngRangeEnd).format('yyyy-MM-DD');
+      this.report_type = 'Range Sales';
+    }
+    this._RoyaltyService.getCallsData(this.reportParams).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+      console.log(res);
+      if (res["data"].length == 0) {
+        this._RoyaltyService.snackBar('No data have been found in the specified range that match your criteria.');
+      }
+      this.isGenerateReport = true;
+      this.dataSource = res["data"];
+      this.totalUsers = res["totalRecords"];
+      this.generateReportLoader = false;
+      this._changeDetectorRef.markForCheck();
+    }, err => {
+      this.generateReportLoader = false;
+      this._changeDetectorRef.markForCheck();
+    })
   }
   calledScreen(value) {
     this.initForm();
