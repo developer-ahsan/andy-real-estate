@@ -1,6 +1,5 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, OnDestroy, OnInit, ViewChild, ViewEncapsulation } from '@angular/core';
-import { Subject } from 'rxjs';
-import { takeUntil } from 'rxjs/operators';
+import { debounceTime, distinctUntilChanged, filter, finalize, switchMap, takeUntil, tap } from 'rxjs/operators';
 import { fuseAnimations } from '@fuse/animations';
 import { ActivatedRoute, NavigationEnd, Router } from '@angular/router';
 import { FuseMediaWatcherService } from '@fuse/services/media-watcher';
@@ -9,6 +8,13 @@ import { UserService } from 'app/core/user/user.service';
 import { AuthService } from 'app/core/auth/auth.service';
 import { MatDrawer } from '@angular/material/sidenav';
 import Swal from 'sweetalert2'
+import { FormControl } from '@angular/forms';
+import { VendorsService } from '../../apps/vendors/components/vendors.service';
+import { LocationStrategy, PathLocationStrategy, Location } from '@angular/common';
+import { PreventNavigation } from 'app/can-deactivate.guard';
+import { fromEvent, Subject } from 'rxjs';
+
+
 @Component({
     selector: 'app-smartart',
     templateUrl: './smartart.component.html',
@@ -19,35 +25,27 @@ export class SmartArtComponent {
     isLoading: boolean = false;
     private _unsubscribeAll: Subject<any> = new Subject<any>();
     routes = [];
-    selectedScreeen = 'Order Dashboard';
-
-    flpsToken = sessionStorage.getItem('flpsAccessToken');
-    flpsName = sessionStorage.getItem('FullName');
-    ngEmail = '';
-    ngPassword = '';
-    isLoginLoader: boolean = false;
-    user: any;
+    selectedScreeen = '';
+    selectedRoute = '';
     // Sidebar stuff
-    @ViewChild('topScrollAnchor') topScroll: ElementRef;
-
-
-    @ViewChild('drawer') drawer: MatDrawer;
     drawerMode: 'over' | 'side' = 'side';
     drawerOpened: boolean = true;
-    panels: any[] = [];
-    selectedPanel: string = 'admin';
+    @ViewChild("panel") panel;
+    @ViewChild('topScrollAnchor') topScroll: ElementRef;
     /**
      * Constructor
      */
     constructor(
         private _changeDetectorRef: ChangeDetectorRef,
-        private _UsersService: UsersService,
+        private _vendorsService: VendorsService,
         private _router: Router,
         private route: ActivatedRoute,
-        private _authService: AuthService,
         private _fuseMediaWatcherService: FuseMediaWatcherService,
+        private locationStrategy: LocationStrategy,
+        private location: Location
     ) {
     }
+
 
     // -----------------------------------------------------------------------------------------------------
     // @ Lifecycle hooks
@@ -61,76 +59,27 @@ export class SmartArtComponent {
         this._router.events.subscribe((event) => {
             if (event instanceof NavigationEnd) {
                 this.selectedScreeen = this.route.children[0].snapshot.data.title;
-                console.log(this.selectedScreeen)
-                //   this.selectedRoute = this.route.children[0].snapshot.data.url;
+                this.selectedRoute = this.route.children[0].snapshot.data.url;
             }
         })
-        if (this._router.url.includes('commentors')) {
-            this.selectedPanel = 'commentors';
-        } else if (this._router.url.includes('admin')) {
-            this.selectedPanel = 'admin';
-        } else if (this._router.url.includes('smartart')) {
-            this.selectedPanel = 'smartart';
-        } else if (this._router.url.includes('order')) {
-            this.selectedPanel = 'order';
-        } else if (this._router.url.includes('rapid')) {
-            this.selectedPanel = 'rapid';
-        } else if (this._router.url.includes('role')) {
-            this.selectedPanel = 'role';
-        }
-        this.routes = this._UsersService.navigationLabels;
-        this.isLoading = false;
-        this.panels = [
-            {
-                id: 'admin',
-                icon: 'heroicons_outline:users',
-                title: 'Admin Users',
-                description: 'Manage admin users',
-                route: 'admin-users'
-            },
-            {
-                id: 'commentors',
-                icon: 'heroicons_outline:user-group',
-                title: 'Admin Commentors',
-                description: 'Manage admin commentors',
-                route: 'admin-commentors'
-            },
-            {
-                id: 'smartart',
-                icon: 'mat_outline:settings',
-                title: 'SmartArt Users',
-                description: 'Manage smartart users',
-                route: 'smartart-users'
-            },
-            {
-                id: 'order',
-                icon: 'heroicons_outline:document-report',
-                title: 'OrderManage Users',
-                description: 'Manage order users',
-                route: 'order-users'
-            },
-            {
-                id: 'rapid',
-                icon: 'heroicons_outline:user-circle',
-                title: 'RapidBuild Users',
-                description: 'Manage rapidbuild users',
-                route: 'rapidbuild-users'
-            },
-            {
-                id: 'role',
-                icon: 'heroicons_outline:user',
-                title: 'Company Roles',
-                description: 'Manage company roles',
-                route: 'company-roles'
-            }
-        ];
+        this.selectedScreeen = this.route.children[0].snapshot.data.title;
+        this.selectedRoute = this.route.children[0].snapshot.data.url;
 
-        // Subscribe to media changes
+        this.isLoading = false;
+        this.sideDrawer();
+    }
+    displayWith(value: any) {
+        return value?.companyName;
+    }
+    // Close Drawer
+    doSomething() {
+        this.panel.close();
+    }
+    // Side Drawer 
+    sideDrawer() {
         this._fuseMediaWatcherService.onMediaChange$
             .pipe(takeUntil(this._unsubscribeAll))
             .subscribe(({ matchingAliases }) => {
-
-                // Set the drawerMode and drawerOpened
                 if (matchingAliases.includes('lg')) {
                     this.drawerMode = 'side';
                     this.drawerOpened = true;
@@ -139,61 +88,28 @@ export class SmartArtComponent {
                     this.drawerMode = 'over';
                     this.drawerOpened = false;
                 }
-
                 // Mark for check
                 this._changeDetectorRef.markForCheck();
             });
     }
-    logout() {
-        Swal.fire({
-            title: 'Are you sure?',
-            text: "You want to end your session!",
-            icon: 'warning',
-            showCancelButton: true,
-            confirmButtonColor: '#3085d6',
-            cancelButtonColor: '#d33',
-            confirmButtonText: 'Logout'
-        }).then((result) => {
-            if (result.isConfirmed) {
-                sessionStorage.removeItem('flpsAccessToken');
-                this.flpsToken = null;
-                this._changeDetectorRef.markForCheck();
-            }
-        })
+
+
+    // -----------------------------------------------------------------------------------------------------
+    // @ Public methods
+    // -----------------------------------------------------------------------------------------------------
+    clicked(item) {
+        if (item.route != this.selectedRoute) {
+            this.selectedScreeen = item.title;
+            this.selectedRoute = item.route;
+            setTimeout(() => {
+                this.topScroll.nativeElement.scrollIntoView({ behavior: 'smooth' });
+            }, 100);
+            this._router.navigate([item.route], { relativeTo: this.route });
+        }
     }
-    calledScreen(title) {
-        if (title != this.selectedScreeen) {
-            this.selectedScreeen = title;
-            this.isLoading = true;
-        }
-        this.topScroll.nativeElement.scrollIntoView({ behavior: 'smooth' });
-    }
-    loginFLPS() {
-        if (this.ngEmail == '' || this.ngPassword == '') {
-            this._UsersService.snackBar('Username and password is required');
-            return;
-        }
-        this.isLoginLoader = true;
-        let payload = {
-            login_check: true,
-            user_name: this.ngEmail,
-            password: this.ngPassword
-        }
-        this._UsersService.getAdminsData(payload).subscribe(res => {
-            if (res["success"]) {
-                this.flpsToken = 'userLoggedIn';
-                sessionStorage.setItem('flpsAccessToken', 'userLoggedIn');
-                sessionStorage.setItem('FullName', res["data"][0].firstName + ' ' + res["data"][0].lastName);
-                this._UsersService.snackBar(res["message"]);
-            } else {
-                this._UsersService.snackBar(res["message"]);
-            }
-            this.isLoginLoader = false;
-            this._changeDetectorRef.markForCheck();
-        }, err => {
-            this.isLoginLoader = false;
-            this._changeDetectorRef.markForCheck();
-        })
+    // Drawer Open Close
+    toggleDrawer() {
+        this.drawerOpened = !this.drawerOpened;
     }
     /**
      * On destroy
@@ -203,34 +119,5 @@ export class SmartArtComponent {
         this._unsubscribeAll.next();
         this._unsubscribeAll.complete();
     }
-    goToPanel(panel): void {
-        this.selectedPanel = panel.id;
-
-        // Close the drawer on 'over' mode
-        if (this.drawerMode === 'over') {
-            this.drawer.close();
-        }
-        this._router.navigate([panel.route], { relativeTo: this.route })
-        // this._router.navigateByUrl('admin-users');
-        this.topScroll.nativeElement.scrollIntoView({ behavior: 'smooth' });
-    }
-
-    /**
-     * Get the details of the panel
-     *
-     * @param id
-     */
-    getPanelInfo(id: string): any {
-        return this.panels.find(panel => panel.id === id);
-    }
-
-    /**
-     * Track by function for ngFor loops
-     *
-     * @param index
-     * @param item
-     */
-    trackByFn(index: number, item: any): any {
-        return item.id || index;
-    }
 }
+

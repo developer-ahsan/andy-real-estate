@@ -124,15 +124,15 @@ export class ProductsDescriptionComponent implements OnInit, OnDestroy {
             });
 
             let sexVal = this.productDescription["sex"];
-            if (sexVal == 1) {
+            if (sexVal == 0) {
               this.selectedSex = "N/A";
-            } else if (sexVal == 2) {
+            } else if (sexVal == 1) {
               this.selectedSex = "Men's";
-            } else if (sexVal == 3) {
+            } else if (sexVal == 2) {
               this.selectedSex = "Women's";
-            } else if (sexVal == 4) {
+            } else if (sexVal == 3) {
               this.selectedSex = "Men's/Women's";
-            } else if (sexVal == 5) {
+            } else if (sexVal == 4) {
               this.selectedSex = "Unisex";
             }
 

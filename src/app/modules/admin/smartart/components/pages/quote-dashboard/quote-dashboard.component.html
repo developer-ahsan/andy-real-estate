@@ -1,0 +1,216 @@
+<div class="w-full">
+    <div class="px-8">
+        <div class="row">
+            <div class="col-12">
+                <mat-form-field class="w-full">
+                    <mat-select matInput value="1">
+                        <mat-option value="1">All Quotes</mat-option>
+                        <mat-option value="2">New Pending</mat-option>
+                        <mat-option value="3">Awaiting Approval</mat-option>
+                        <mat-option value="4">On Hold</mat-option>
+                        <mat-option value="5">Follow up for approval</mat-option>
+                        <mat-option value="6">Artwork Revision</mat-option>
+                        <mat-option value="7">Devorator Notified</mat-option>
+                        <mat-option value="8">No Proof Needed</mat-option>
+                        <mat-option value="9">Artwork Approved</mat-option>
+                        <mat-option value="10">PO Sent</mat-option>
+                        <mat-option value="11">In Production</mat-option>
+                        <mat-option value="12">Hidden</mat-option>
+                        <mat-option value="13">Waiting for GroupBuy</mat-option>
+                        <mat-option value="14">In-Hands Date</mat-option>
+                    </mat-select>
+                </mat-form-field>
+            </div>
+            <div class="col-6 col-md-3">
+                <mat-form-field class="w-full">
+                    <input matInput placeholder="Search Quote">
+                </mat-form-field>
+            </div>
+            <div class="col-6 col-md-3">
+                <mat-form-field class="w-full">
+                    <input matInput placeholder="Search Customer">
+                </mat-form-field>
+            </div>
+            <div class="col-6 col-md-3">
+                <mat-form-field class="w-full">
+                    <input matInput placeholder="Search Product">
+                </mat-form-field>
+            </div>
+            <div class="col-6 col-md-3">
+                <mat-form-field class="w-full">
+                    <mat-select matInput value="1">
+                        <mat-option value="1">All Stores</mat-option>
+                    </mat-select>
+                </mat-form-field>
+            </div>
+            <div class="col-6 col-md-3">
+                <mat-form-field class="w-full">
+                    <mat-select matInput value="1">
+                        <mat-option value="1">All Designers</mat-option>
+                    </mat-select>
+                </mat-form-field>
+            </div>
+            <div class="col-6 col-md-3 ">
+                <button class="min-w-40" [color]="'primary'" mat-button mat-flat-button>
+                    <span>Filter</span>
+                </button>
+            </div>
+        </div>
+    </div>
+    <div class="px-8 flex space-x-2 overflow-x-auto">
+        <div>
+            <p>Rush Orders (not flexible)</p>
+            <hr class="m-0 h-2" style="background: #ffcaca;">
+        </div>
+        <div>
+            <p>Rush Orders (flexible)</p>
+            <hr class="m-0 h-2" style="background: #F2D1A0;">
+        </div>
+        <div>
+            <p>Group Run</p>
+            <hr class="m-0 h-2" style="background: #DBD7FF;">
+        </div>
+        <div>
+            <p>Reorder</p>
+            <hr class="m-0 h-2" style="background: #feee84;">
+        </div>
+        <div>
+            <p>Awaiting info</p>
+            <hr class="m-0 h-2" style="background: #75bbf5;">
+        </div>
+        <div>
+            <p>Group Quotes</p>
+            <hr class="m-0 h-2" style="background: #fca769;">
+        </div>
+    </div>
+    <div *ngIf="isLoading" class="my-2 px-5">
+        <ngx-skeleton-loader count="8" appearance="line" animation="pulse" [theme]="{ 
+            'background-color': '#dedede'
+          }">
+        </ngx-skeleton-loader>
+    </div>
+    <div *ngIf="!isLoading" class="mt-2">
+        <div *ngIf="dataSource.length > 0;else other_content" class="w-full">
+            <table mat-table [dataSource]="dataSource" class="w-full border-t"
+                style="width: 100%;overflow-x: auto;display: block;">
+                <ng-container matColumnDef="check">
+                    <th mat-header-cell *matHeaderCellDef class="w-15 min-w-15">
+                        Check
+                    </th>
+                    <td mat-cell *matCellDef="let element" class="text-sm">
+                        <mat-checkbox></mat-checkbox>
+                    </td>
+                </ng-container>
+                <ng-container matColumnDef="date">
+                    <th mat-header-cell *matHeaderCellDef class="w-10 min-w-10 text-center">
+                        Order
+                    </th>
+                    <td mat-cell *matCellDef="let element" class="text-sm text-center">
+                        {{element.listOrder}}
+                    </td>
+                </ng-container>
+                <ng-container matColumnDef="inhands">
+                    <th mat-header-cell *matHeaderCellDef class="w-20 min-w-20 px-2">
+                        In-Hands
+                    </th>
+                    <td mat-cell *matCellDef="let element" class="text-sm pr-1">{{element.email}}
+                    </td>
+                </ng-container>
+                <ng-container matColumnDef="cart">
+                    <th mat-header-cell *matHeaderCellDef class="w-30 min-w-30 px-2">
+                        Cart
+                    </th>
+                    <td mat-cell *matCellDef="let element" class="text-sm pr-1">{{element.email}}
+                    </td>
+                </ng-container>
+                <ng-container matColumnDef="line">
+                    <th mat-header-cell *matHeaderCellDef class="w-30 min-w-30 px-2">
+                        Line
+                    </th>
+                    <td mat-cell *matCellDef="let element" class="text-sm pr-1">{{element.email}}
+                    </td>
+                </ng-container>
+                <ng-container matColumnDef="customer">
+                    <th mat-header-cell *matHeaderCellDef class="w-30 min-w-30 px-2">
+                        Customer
+                    </th>
+                    <td mat-cell *matCellDef="let element" class="text-sm pr-1">{{element.email}}
+                    </td>
+                </ng-container>
+                <ng-container matColumnDef="product">
+                    <th mat-header-cell *matHeaderCellDef class="w-30 min-w-30 px-2">
+                        Product
+                    </th>
+                    <td mat-cell *matCellDef="let element" class="text-sm pr-1">{{element.email}}
+                    </td>
+                </ng-container>
+                <ng-container matColumnDef="supplier">
+                    <th mat-header-cell *matHeaderCellDef class="w-30 min-w-30 px-2">
+                        Supplier
+                    </th>
+                    <td mat-cell *matCellDef="let element" class="text-sm pr-1">{{element.email}}
+                    </td>
+                </ng-container>
+                <ng-container matColumnDef="status">
+                    <th mat-header-cell *matHeaderCellDef class="w-30 min-w-30 px-2">
+                        Status
+                    </th>
+                    <td mat-cell *matCellDef="let element" class="text-sm pr-1">{{element.email}}
+                    </td>
+                </ng-container>
+                <ng-container matColumnDef="age">
+                    <th mat-header-cell *matHeaderCellDef class="w-10 min-w-10 text-center px-2">
+                        Age
+                    </th>
+                    <td mat-cell *matCellDef="let element" class="text-sm pr-1 text-center">10
+                    </td>
+                </ng-container>
+                <ng-container matColumnDef="store">
+                    <th mat-header-cell *matHeaderCellDef class="w-30 min-w-30 px-2">
+                        Store
+                    </th>
+                    <td mat-cell *matCellDef="let element" class="text-sm pr-1">{{element.email}}
+                    </td>
+                </ng-container>
+                <ng-container matColumnDef="proof">
+                    <th mat-header-cell *matHeaderCellDef class="w-30 min-w-30 px-2">
+                        Proof
+                    </th>
+                    <td mat-cell *matCellDef="let element" class="text-sm pr-1">{{element.email}}
+                    </td>
+                </ng-container>
+                <ng-container matColumnDef="action">
+                    <th mat-header-cell *matHeaderCellDef class="w-15 min-w-15 text-center">
+                        Action
+                    </th>
+                    <td mat-cell *matCellDef="let element" class="text-center">
+                        <div class="flex justify-center">
+                            <mat-icon svgIcon="heroicons_outline:mail" class="mr-1 icon-size-4"
+                                matTooltip="Email"></mat-icon>
+                            <mat-icon svgIcon="heroicons_outline:eye-off" class="mr-1 icon-size-4"
+                                matTooltip="Hide"></mat-icon>
+                            <mat-icon svgIcon="heroicons_outline:flag" class="mr-1 icon-size-4"
+                                matTooltip="Flag"></mat-icon>
+                            <mat-icon svgIcon="heroicons_outline:exclamation" class="mr-1 icon-size-4"
+                                matTooltip="Claim"></mat-icon>
+                        </div>
+                    </td>
+                </ng-container>
+                <tr mat-header-row *matHeaderRowDef="displayedColumns;" class="h-18 bg-light"></tr>
+                <tr mat-row *matRowDef="let row; columns: displayedColumns;"
+                    class="h-14 hover:bg-gray-100 dark:hover:bg-hover" style="cursor: pointer;">
+                </tr>
+            </table>
+            <mat-paginator #paginator class="border-b sm:border-t sm:border-b-0 z-10 bg-gray-50 dark:bg-transparent"
+                [ngClass]="{'pointer-events-none': isLoading}" [length]="totalUsers" [pageIndex]="0" [pageSize]="20"
+                (page)="getNextData($event)" [hidePageSize]="true">
+            </mat-paginator>
+        </div>
+        <!-- No color Found -->
+        <ng-template #other_content>
+            <div class="text-secondary font-semibold p-5 text-center bg-card">
+                There are currently no Commentors.
+            </div>
+        </ng-template>
+    </div>
+</div>

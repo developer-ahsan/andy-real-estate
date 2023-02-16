@@ -1,16 +1,31 @@
 import { Component, Input, OnInit, ChangeDetectorRef, OnDestroy, ViewChild } from '@angular/core';
 import { FormControl, FormGroup } from '@angular/forms';
 import { MatPaginator } from '@angular/material/paginator';
+import { PreventNavigation } from 'app/can-deactivate.guard';
 import { Subject } from 'rxjs';
 import { finalize, takeUntil } from 'rxjs/operators';
 import { UsersService } from '../../users.service';
 import { AddAdminCommentator, applyBlanketCustomerPercentage, newFLPSUser, RemoveCommentator, removeFLPSUser, UpdateAdminCommentator, updateFLPSUser } from '../../users.types';
 @Component({
-  selector: 'app-admin-commentors',
-  templateUrl: './admin-commentors.component.html',
+  selector: 'app-quote-dashboard',
+  templateUrl: './quote-dashboard.component.html',
   styles: [".mat-paginator {border-radius: 16px !important}"]
 })
-export class AdminCommentorsComponent implements OnInit, OnDestroy {
+export class QuoteDashboardComponent implements OnInit, OnDestroy {
+  // canDeactivate() {
+  //   if (this.ngEmail == '') {
+  //     return true;
+  //   } else {
+  //     if (confirm('Are you sure you want to save this thing into the database?')) {
+  //       // Save it!
+  //       return true;
+  //     } else {
+  //       // Do nothing!
+  //       return false;
+  //     }
+  //   }
+
+  // }
   @ViewChild('paginator') paginator: MatPaginator;
   @Input() isLoading: boolean;
   // @Output() isLoadingChange = new EventEmitter<boolean>();
@@ -18,14 +33,14 @@ export class AdminCommentorsComponent implements OnInit, OnDestroy {
 
   dataSource = [];
   tempDataSource = [];
-  displayedColumns: string[] = ['order', 'email', 'action'];
+  displayedColumns: string[] = ['check', 'date', 'inhands', 'cart', 'line', 'customer', 'product', 'supplier', 'status', 'age', 'store', 'proof', 'action'];
   totalUsers = 0;
   tempRecords = 0;
   page = 1;
 
   ngEmail = '';
   isAddNewCommentors: boolean = false;
-
+  check: boolean = false;
   constructor(
     private _changeDetectorRef: ChangeDetectorRef,
     private _UsersService: UsersService

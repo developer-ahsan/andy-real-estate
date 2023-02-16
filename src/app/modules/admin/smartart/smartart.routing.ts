@@ -1,4 +1,8 @@
 import { Route } from '@angular/router';
+import { CanDeactivateGuard } from 'app/can-deactivate.guard';
+import { OrderDashboardComponent } from './components/pages/order-dashboard/order-dashboard.component';
+import { OrderSchedulerComponent } from './components/pages/order-scheduler/order-scheduler.component';
+import { QuoteDashboardComponent } from './components/pages/quote-dashboard/quote-dashboard.component';
 import { SmartArtComponent } from './components/smartart.component';
 
 export const smartartRoutes: Route[] = [
@@ -16,7 +20,8 @@ export const smartartRoutes: Route[] = [
             },
             {
                 path: 'orders-dashboard',
-                component: SmartArtComponent,
+                // canDeactivate: [CanDeactivateGuard],
+                component: OrderDashboardComponent,
                 data: {
                     title: 'Orders Dashboard',
                     url: 'orders-dashboard'
@@ -24,7 +29,7 @@ export const smartartRoutes: Route[] = [
             },
             {
                 path: 'quotes-dashboard',
-                component: SmartArtComponent,
+                component: QuoteDashboardComponent,
                 data: {
                     title: 'Quotes Dashboard',
                     url: 'quotes-dashboard'
@@ -32,7 +37,7 @@ export const smartartRoutes: Route[] = [
             },
             {
                 path: 'order-scheduler',
-                component: SmartArtComponent,
+                component: OrderSchedulerComponent,
                 data: {
                     title: 'Order Scheduler',
                     url: 'order-scheduler'
@@ -40,7 +45,7 @@ export const smartartRoutes: Route[] = [
             },
             {
                 path: 'quote-scheduler',
-                component: SmartArtComponent,
+                component: QuoteDashboardComponent,
                 data: {
                     title: 'Quote Scheduler',
                     url: 'quote-scheduler'

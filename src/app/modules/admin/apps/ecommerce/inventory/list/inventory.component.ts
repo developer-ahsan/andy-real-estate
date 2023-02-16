@@ -111,7 +111,7 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
         floor: 1,
         ceil: 120
     };
-    selectedSex: string = "1";
+    selectedSex = 0;
 
     productsOnClearFilter = [];
     productsOnClearFilterCount: number;
@@ -1370,7 +1370,7 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
             purchase_order_notes: null,
             supplier_link: supplierLink || null,
             meta_desc: miniDescription?.replace(/'/g, "''") || null,
-            sex: this.supplierType == "Apparel Item" ? parseInt(this.selectedSex) : null,
+            sex: this.supplierType == "Apparel Item" ? Number(this.selectedSex) : 0,
             search_keywords: keywords || null,
             last_update_by: null,
             last_update_date: null,
@@ -3130,7 +3130,7 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
             purchase_order_notes: null,
             supplier_link: String(supplierLink) || null,
             meta_desc: String(miniDescription?.replace(/'/g, "''")) || null,
-            sex: this.supplierType == "Apparel Item" ? parseInt(this.selectedSex) : null,
+            sex: this.supplierType == "Apparel Item" ? Number(this.selectedSex) : 0,
             search_keywords: String(keywords) || null,
             last_update_by: null,
             last_update_date: null,
@@ -3209,7 +3209,7 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
                 notes: null,
                 supplier_link: String(supplierLink) || null,
                 meta_desc: String(miniDescription?.replace(/'/g, "''")) || null,
-                sex: this.supplierType == "Apparel Item" ? parseInt(this.selectedSex) : 0,
+                sex: this.supplierType == "Apparel Item" ? Number(this.selectedSex) : 0,
                 search_keywords: String(keywords) || null,
                 purchase_order_notes: null,
                 last_update_by: null,
@@ -4020,7 +4020,7 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
             notes: null,
             supplier_link: String(supplierLink) || null,
             meta_desc: String(miniDescription?.replace(/'/g, "''")) || null,
-            sex: this.supplierType == "Apparel Item" ? parseInt(this.selectedSex) : 0,
+            sex: this.supplierType == "Apparel Item" ? Number(this.selectedSex) : 0,
             search_keywords: String(keywords) || null,
             purchase_order_notes: null,
             last_update_by: null,

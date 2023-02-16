@@ -41,10 +41,15 @@ import { smartartRoutes } from './smartart.routing';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatTreeModule } from '@angular/material/tree';
 import { SmartArtComponent } from './components/smartart.component';
+import { OrderDashboardComponent } from './components/pages/order-dashboard/order-dashboard.component';
+import { QuoteDashboardComponent } from './components/pages/quote-dashboard/quote-dashboard.component';
+import { OrderSchedulerComponent } from './components/pages/order-scheduler/order-scheduler.component';
 
 @NgModule({
     declarations: [
-        SmartArtComponent
+        SmartArtComponent,
+        OrderDashboardComponent,
+        QuoteDashboardComponent, OrderSchedulerComponent
     ],
     imports: [
         RouterModule.forChild(smartartRoutes),

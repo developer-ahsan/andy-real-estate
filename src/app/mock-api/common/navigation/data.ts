@@ -13,8 +13,30 @@ export const defaultNavigation: FuseNavigationItem[] = [
                 id: 'dashboards.analytics',
                 title: 'Dashboard',
                 icon: 'heroicons_outline:chart-pie',
-                type: 'basic',
-                link: '/dashboards/analytics',
+                type: 'collapsable',
+                children: [
+                    {
+                        id: 'apps.reports.store-sales',
+                        title: 'Analytics',
+                        type: 'basic',
+                        icon: 'mat_outline:analytics',
+                        link: '/dashboards/analytics',
+                    },
+                    {
+                        id: 'apps.reports.store-sales',
+                        title: 'Overview',
+                        type: 'basic',
+                        icon: 'heroicons_outline:view-boards',
+                        link: '/dashboards/overview',
+                    },
+                    {
+                        id: 'apps.reports.store-sales',
+                        title: 'Reports',
+                        type: 'basic',
+                        icon: 'heroicons_outline:document-report',
+                        link: '/dashboards/reports',
+                    }
+                ]
             },
             {
                 id: 'products',
