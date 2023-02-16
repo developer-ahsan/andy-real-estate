@@ -75,14 +75,14 @@ export class RoyaltyComponent {
                 title: 'Licensing Companies',
                 description: 'Manage Licensing Companies',
                 route: 'licensing-companies'
-            },
-            {
-                id: 'setting',
-                icon: 'mat_outline:settings',
-                title: 'Store Royalty Settings',
-                description: 'Manage Royalty Settings',
-                route: 'settings'
             }
+            // {
+            //     id: 'setting',
+            //     icon: 'mat_outline:settings',
+            //     title: 'Store Royalty Settings',
+            //     description: 'Manage Royalty Settings',
+            //     route: 'settings'
+            // }
         ];
 
         // Subscribe to media changes
