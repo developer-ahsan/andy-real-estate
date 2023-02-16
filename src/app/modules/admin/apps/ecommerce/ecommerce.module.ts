@@ -114,6 +114,7 @@ import { ProductColorSizesComponent } from './inventory/navigation/sizes/color-s
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { CategoriesComponent } from './product-store/navigation/categories/categories.component';
 import { StoreProductDetailsComponent } from './product-store/details/product-details.component';
+import { RemoveFromStoreComponent } from './product-store/navigation/remove-from-store/remove-from-store.component';
 
 @NgModule({
     declarations: [
@@ -194,7 +195,8 @@ import { StoreProductDetailsComponent } from './product-store/details/product-de
         ImprintDetailsComponent,
         ProductColorSizesComponent,
         CategoriesComponent,
-        StoreProductDetailsComponent
+        StoreProductDetailsComponent,
+        RemoveFromStoreComponent
     ],
     imports: [
         RouterModule.forChild(ecommerceRoutes),

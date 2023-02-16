@@ -303,7 +303,7 @@ export class ProductsDescriptionComponent implements OnInit, OnDestroy {
     }
 
     const payload = {
-      name: formValues.productName,
+      name: formValues.productName?.replace(/'/g, "''") || "",
       product_number: formValues.productNumber,
       product_desc: formValues.productDesc?.replace(/'/g, "''") || "",
       mini_desc: formValues.miniDesc?.replace(/'/g, "''") || "",
@@ -313,7 +313,7 @@ export class ProductsDescriptionComponent implements OnInit, OnDestroy {
       meta_desc: formValues.metaDesc?.replace(/'/g, "''") || "",
       sex: this.selectedProduct?.blnApparel ? sexVal : 0,
       search_keywords: formValues.internalKeywords || "",
-      purchase_order_notes: formValues.purchaseOrderNotes || "",
+      purchase_order_notes: formValues.purchaseOrderNotes?.replace(/'/g, "''") || "" || "",
       last_update_by: "" || "",
       last_update_date: "" || "",
       update_history: "" || "",

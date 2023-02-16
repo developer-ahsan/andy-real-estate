@@ -56,6 +56,7 @@ import { VirtualProofImagesComponent } from './product-store/navigation/virtual-
 import { ProductReviewsComponent } from './product-store/navigation/product-reviews/product-reviews.component';
 import { StoreUpdateHistoryComponent } from './product-store/navigation/update-history/update-history.component';
 import { ProfitCalculatorComponent } from './product-store/navigation/profit-calculator/profit-calculator.component';
+import { RemoveFromStoreComponent } from './product-store/navigation/remove-from-store/remove-from-store.component';
 
 export const ecommerceRoutes: Route[] = [
     {
@@ -459,19 +460,20 @@ export const ecommerceRoutes: Route[] = [
                         }
                     },
                     {
-                        path: 'remove-from-store',
-                        component: UpdateHistoryComponent,
-                        data: {
-                            title: 'Remove From Store',
-                            url: 'remove-from-store'
-                        }
-                    },
-                    {
                         path: 'profit-calculator',
                         component: ProfitCalculatorComponent,
                         data: {
                             title: 'Profit Calculator',
                             url: 'profit-calculator'
+                        }
+                    }
+                    ,
+                    {
+                        path: 'remove-from-store',
+                        component: RemoveFromStoreComponent,
+                        data: {
+                            title: 'Remove From Store',
+                            url: 'remove-from-store'
                         }
                     }
                 ]

@@ -1,0 +1,66 @@
+<div class="w-full">
+    <ngx-skeleton-loader count="8" appearance="line" animation="pulse" *ngIf="isLoading">
+    </ngx-skeleton-loader>
+    <div class="row my-3" *ngIf="!isLoading">
+        <div class="col-12">
+            <fuse-card class="rounded-2xl shadow bg-card flex flex-col lg:flex-row w-full">
+                <div class="p-6 sm:p-8 lg:p-10 w-full">
+                    <div class="text-2xl font-bold">
+                        Remove From Store
+                    </div>
+                    <div class="mt-5 row">
+                        <div class="col-12">
+                            <div *ngIf="removeProductData.recommCheck == 0" class="text-green-600">
+                                Product is not featured/most popular/primary recommendation in any category.
+                            </div>
+                            <div *ngIf="removeProductData.recommCheck != 0">
+                                ERROR: Product is featured/most popular/primary recommendation in at least one category.
+                            </div>
+                            <div *ngIf="removeProductData.ordersCheck  == 0" class="text-green-600">
+                                Product is not connected to an order.
+                            </div>
+                            <div *ngIf="removeProductData.ordersCheck  != 0">
+                                ERROR: Product is connected to an order.
+                            </div>
+                            <div *ngIf="removeProductData.campaignCheck  == 0" class="text-green-600">
+                                Product is not featured in any campaign.
+                            </div>
+                            <div *ngIf="removeProductData.campaignCheck  != 0">
+                                ERROR: The product is featured in at least one campaign.
+                            </div>
+                            <div *ngIf="removeProductData.bundlesCheck == 0" class="text-green-600">
+                                Product is not included in any bundle.
+                            </div>
+                            <div *ngIf="removeProductData.bundlesCheck != 0">
+                                ERROR: The product is included in at least one bundle.
+                            </div>
+                        </div>
+                        <!-- <div class="col-12" *ngIf="coOpId == 0">
+                            <mat-error>Current Co-op: None</mat-error>
+                        </div>
+                        <div class="col-12">
+                            <mat-form-field class="w-full">
+                                <mat-label>Select a coop:</mat-label>
+                                <mat-select matInput [(ngModel)]="coOpId">
+                                    <mat-option [value]="0">None</mat-option>
+                                    <mat-option [value]="item.pk_coopID" *ngFor="let item of cooplist">{{item.name}}
+                                    </mat-option>
+                                </mat-select>
+                            </mat-form-field>
+                        </div>
+                        <div class="col-12 text-right">
+                            <button [matTooltip]="'Apply'" mat-stroked-button class="min-w-40"
+                                (click)="UpdateStoreLevelCoop()" [disabled]="isUpdateLoading">
+                                <mat-progress-spinner *ngIf="isUpdateLoading" [diameter]="24" [mode]="'indeterminate'">
+                                </mat-progress-spinner>
+                                <span *ngIf="!isUpdateLoading" class="ml-1 mr-1">
+                                    Apply
+                                </span>
+                            </button>
+                        </div> -->
+                    </div>
+                </div>
+            </fuse-card>
+        </div>
+    </div>
+</div>

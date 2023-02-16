@@ -124,7 +124,6 @@ export class StoreProductDetailsComponent implements OnInit, OnDestroy {
         this._router.navigate(['apps/ecommerce/inventory/' + this.selectedProduct["fk_productID"]]);
       } else if (item.title == 'Store Versions') {
         this._router.navigate(['apps/ecommerce/inventory/' + this.selectedProduct["fk_productID"] + '/store-versions']);
-      } else if (item.title == 'Remove From Store') {
       } else {
         this.selectedScreeen = item.title;
         this.selectedRoute = item.route;

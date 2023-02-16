@@ -79,6 +79,10 @@ export class StoreProductService {
         );
     };
 
+    removeStoreProducts(params) {
+        return this._httpClient.get(environment.products, { params: params })
+            .pipe(retry(3));
+    };
     getStoreProducts(params) {
         return this._httpClient.get(environment.storeProducts, { params: params })
             .pipe(retry(3));
