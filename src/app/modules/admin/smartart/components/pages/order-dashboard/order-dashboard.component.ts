@@ -9,7 +9,7 @@ import { AddAdminCommentator, applyBlanketCustomerPercentage, newFLPSUser, Remov
 @Component({
   selector: 'app-order-dashboard',
   templateUrl: './order-dashboard.component.html',
-  styles: [".mat-paginator {border-radius: 16px !important}"]
+  styles: [".mat-paginator {border-radius: 16px !important} ::-webkit-scrollbar {height: 3px !important}"]
 })
 export class OrderDashboardComponent implements OnInit, OnDestroy {
   // canDeactivate() {

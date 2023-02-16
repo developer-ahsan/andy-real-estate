@@ -202,3 +202,4 @@ export interface UpdateProcurementData {
     contractNumber: string;
     update_procurement_data: boolean;
 };
+export interface OrderProcess { bln_cancelled: boolean; order_lines: string; bln_Eprocurement: boolean; get_order_process: boolean; };

@@ -14,22 +14,14 @@
         </div>
     </div>
     <div class="mb-3 bg-light p-2">
-        <div class="bg-card shadow mb-5 p-5">
-            <div class="flex mr-7">
-                <!-- <mat-icon svgIcon="heroicons_outline:briefcase" class="icon-size-8"></mat-icon> -->
-                <div class="text-2xl font-bold">
-                    <span class="text-secondary text-lg">{{selectedScreeen}}</span>
-                </div>
-            </div>
-        </div>
         <div class=" rounded-2xl shadow bg-card flex flex-col lg:flex-row w-full">
             <div class="w-full">
-                <div class="p-4 sm:p-4 lg:p-8" *ngIf="selectedScreeen != 'Products'">
+                <div class="p-4 sm:p-4 lg:p-8">
                     <div class="text-2xl font-bold">
                         {{selectedScreeen}}
                     </div>
                 </div>
-                <router-outlet *ngIf="selectedScreeen != 'Website'"></router-outlet>
+                <router-outlet></router-outlet>
             </div>
         </div>
     </div>

@@ -13,8 +13,7 @@ export class InitialDataResolver implements Resolve<any>
     /**
      * Constructor
      */
-    constructor(private _httpClient: HttpClient)
-    {
+    constructor(private _httpClient: HttpClient) {
     }
 
     // -----------------------------------------------------------------------------------------------------
@@ -27,8 +26,7 @@ export class InitialDataResolver implements Resolve<any>
      * @param route
      * @param state
      */
-    resolve(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<InitialData>
-    {
+    resolve(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<InitialData> {
         // Fork join multiple API endpoint calls to wait all of them to finish
         return forkJoin([
             this._httpClient.get<any>('api/common/messages'),
@@ -38,17 +36,17 @@ export class InitialDataResolver implements Resolve<any>
             this._httpClient.get<any>('api/common/user')
         ]).pipe(
             map(([messages, navigation, notifications, shortcuts, user]) => ({
-                    messages,
-                    navigation: {
-                        compact   : navigation.compact,
-                        default   : navigation.default,
-                        futuristic: navigation.futuristic,
-                        horizontal: navigation.horizontal
-                    },
-                    notifications,
-                    shortcuts,
-                    user
-                })
+                messages,
+                navigation: {
+                    compact: navigation.compact,
+                    default: navigation.default,
+                    futuristic: navigation.futuristic,
+                    horizontal: navigation.horizontal
+                },
+                notifications,
+                shortcuts,
+                user
+            })
             )
         );
     }
