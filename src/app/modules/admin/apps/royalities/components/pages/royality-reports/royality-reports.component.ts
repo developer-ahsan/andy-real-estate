@@ -5,6 +5,8 @@ import moment from 'moment';
 import { Subject } from 'rxjs';
 import { debounceTime, distinctUntilChanged, filter, finalize, switchMap, takeUntil, tap } from 'rxjs/operators';
 import { RoyaltyService } from '../../royalities.service';
+import * as Excel from 'exceljs/dist/exceljs.min.js';
+
 import { applyBlanketCustomerPercentage, newFLPSUser, newOrderManageUser, removeFLPSUser, RemoveUser, updateFLPSUser, updateOrderManageUser, updateOrderManageUserStores } from '../../royalities.types';
 @Component({
   selector: 'app-royality-reports',
@@ -95,6 +97,7 @@ export class RoyaltyReportsComponent implements OnInit, OnDestroy {
   isGenerateReport: boolean = false;
   reportParams: any;
   report_type = '';
+  fileDownloadLoader: boolean;
 
   constructor(
     private _changeDetectorRef: ChangeDetectorRef,
@@ -164,30 +167,10 @@ export class RoyaltyReportsComponent implements OnInit, OnDestroy {
     ).subscribe((data: any) => {
       this.storesList = data['data'];
     });
-    this.addNewUserForm = new FormGroup({
-      userName: new FormControl(''),
-      password: new FormControl(''),
-      email: new FormControl(''),
-      firstName: new FormControl(''),
-      lastName: new FormControl(''),
-      blnFulfillment: new FormControl(false),
-      create_order_manage_user: new FormControl(true)
-    });
-    this.updateUserForm = new FormGroup({
-      userName: new FormControl(''),
-      password: new FormControl(''),
-      firstName: new FormControl(''),
-      lastName: new FormControl(''),
-      blnFulfillment: new FormControl(false),
-      email: new FormControl(''),
-      pk_userID: new FormControl(0),
-      update_order_manage_user: new FormControl(true)
-    });
   }
   ngOnInit(): void {
     this.initForm();
     this.isLoading = true;
-    this.getAdminOrderUsers(1, 'get');
   };
   onSelected(ev) {
     this.selectedStore = ev.option.value;
@@ -209,13 +192,13 @@ export class RoyaltyReportsComponent implements OnInit, OnDestroy {
       options_report: true
     };
     if (this.ngPlan == 'weekly') {
-      this.reportParams.start_date = moment(this.WeekDate).startOf('week').format('yyyy-MM-DD');
-      this.reportParams.end_date = moment(this.WeekDate).endOf('week').format('yyyy-MM-DD');
+      this.reportParams.start_date = moment(this.WeekDate).startOf('week').format('MM/DD/yyyy');
+      this.reportParams.end_date = moment(this.WeekDate).endOf('week').format('MM/DD/yyyy');
       this.report_type = 'Weekly Sales';
     } else if (this.ngPlan == 'monthly') {
       let d = new Date(this.monthlyYear, this.monthlyMonth - 1, 1);
-      this.reportParams.start_date = moment(d).startOf('month').format('yyyy-MM-DD');
-      this.reportParams.end_date = moment(d).endOf('month').format('yyyy-MM-DD');
+      this.reportParams.start_date = moment(d).startOf('month').format('MM/DD/yyyy');
+      this.reportParams.end_date = moment(d).endOf('month').format('MM/DD/yyyy');
       this.report_type = 'Monthly Sales';
     } else if (this.ngPlan == 'quarterly') {
       let s;
@@ -233,263 +216,83 @@ export class RoyaltyReportsComponent implements OnInit, OnDestroy {
         s = new Date(this.quarterYear, 9, 1);
         e = new Date(this.quarterYear, 11, 1);
       }
-      this.reportParams.start_date = moment(s).startOf('month').format('yyyy-MM-DD');
-      this.reportParams.end_date = moment(e).endOf('month').format('yyyy-MM-DD');
+      this.reportParams.start_date = moment(s).startOf('month').format('MM/DD/yyyy');
+      this.reportParams.end_date = moment(e).endOf('month').format('MM/DD/yyyy');
       this.report_type = 'Quarterly Sales';
     } else if (this.ngPlan == 'yearly') {
       let d = new Date(this.yearlyYear, 0, 1);
-      this.reportParams.start_date = moment(d).startOf('year').format('yyyy-MM-DD');
-      this.reportParams.end_date = moment(d).endOf('year').format('yyyy-MM-DD');
+      this.reportParams.start_date = moment(d).startOf('year').format('MM/DD/yyyy');
+      this.reportParams.end_date = moment(d).endOf('year').format('MM/DD/yyyy');
     } else if (this.ngPlan == 'range') {
-      this.reportParams.start_date = moment(this.ngRangeStart).format('yyyy-MM-DD');
-      this.reportParams.end_date = moment(this.ngRangeEnd).format('yyyy-MM-DD');
+      this.reportParams.start_date = moment(this.ngRangeStart).format('MM/DD/yyyy');
+      this.reportParams.end_date = moment(this.ngRangeEnd).format('MM/DD/yyyy');
       this.report_type = 'Range Sales';
     }
     this._RoyaltyService.getCallsData(this.reportParams).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
-      console.log(res);
       if (res["data"].length == 0) {
+        this.generateReportLoader = false;
         this._RoyaltyService.snackBar('No data have been found in the specified range that match your criteria.');
+      } else {
+        this.downloadExcelWorkSheet(res["data"]);
       }
       this.isGenerateReport = true;
       this.dataSource = res["data"];
       this.totalUsers = res["totalRecords"];
-      this.generateReportLoader = false;
       this._changeDetectorRef.markForCheck();
     }, err => {
       this.generateReportLoader = false;
       this._changeDetectorRef.markForCheck();
     })
   }
-  calledScreen(value) {
-    this.initForm();
-    this.mainScreen = value;
-    if (this.mainScreen == 'Current Users') {
-      this.dataSource = this.tempDataSource;
-      this.page = 1;
-      this._changeDetectorRef.markForCheck();
-      if (this.dataSource.length == 0) {
-        this.getAdminOrderUsers(1, 'get');
-      }
-    } else {
-    }
-  }
-  calledUserScreen(value) {
-    this.mainScreenUser = value;
-  }
-  getAdminOrderUsers(page, type) {
-    let params = {
-      order_manage_users: true,
-      page: page,
-      size: 20
-    }
-    this._RoyaltyService.getAdminsData(params).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
-      this.dataSource = res["data"];
-      this.totalUsers = res["totalRecords"];
-      if (this.tempDataSource.length == 0) {
-        this.tempDataSource = res["data"];
-        this.tempRecords = res["totalRecords"];
-      }
-      if (type == 'add') {
-        this.isAddNewUserLoader = false;
-        this.initForm();
-        this._RoyaltyService.snackBar('User Added Successfully');
-        this.mainScreen = 'Current Users';
-      }
-      this.isLoading = false;
-      // this.isLoadingChange.emit(false);
-      this._changeDetectorRef.markForCheck();
-    }, err => {
-      this.isLoading = false;
-      // this.isLoadingChange.emit(false);
-      this._changeDetectorRef.markForCheck();
-    });
-  }
-  getNextData(event) {
-    const { previousPageIndex, pageIndex } = event;
+  downloadExcelWorkSheet(data) {
+    const fileName = `${this.selectedStore.storeName}-${moment(new Date()).format('MM-DD-yy-hh-mm-ss')}`;
+    const workbook = new Excel.Workbook();
+    const worksheet = workbook.addWorksheet("Customers");
 
-    if (pageIndex > previousPageIndex) {
-      this.page++;
-    } else {
-      this.page--;
-    };
-    this.getAdminOrderUsers(this.page, 'get');
-  };
-
-  toggleUpdateUserData(data, check) {
-    this.isUpdateUser = check;
-    if (check) {
-      this.storePage = 1;
-      this.allStores = [];
-      this.mainScreenUser = 'Edit User';
-      this.updateUserData = data;
-      this.updateUserForm.patchValue(data);
-      this.getAllStores();
+    // Columns
+    worksheet.columns = [
+      { header: "License_Code", key: "License_Code", width: 30 },
+      { header: "Institution_Short_Code", key: "Institution_Short_Code", width: 30 },
+      { header: "Category_SubCategory_Code", key: "Category_SubCategory_Code", width: 30 },
+      { header: "Prod_Description", key: "Prod_Description", width: 30 },
+      { header: "Gross_Sales", key: "Gross_Sales", width: 30 },
+      { header: "Total_Units", key: "Gross_Sales", width: 10 },
+      { header: "Royalty_Sales", key: "Royalty_Sales", width: 10 },
+      { header: "MRU_Units", key: "MRU_Units", width: 10 },
+      { header: "Associated_Inst", key: "Associated_Inst", width: 10 },
+      { header: "Retailer_Name", key: "Retailer_Name", width: 10 },
+      { header: "IMGCL_Retailer_Code", key: "IMGCL_Retailer_Code", width: 10 },
+      { header: "Address", key: "Address", width: 10 },
+      { header: "City", key: "City", width: 10 },
+      { header: "State", key: "State", width: 10 },
+      { header: "Zip", key: "Zip", width: 10 },
+      { header: "Invoice_Date", key: "Invoice_Date", width: 10 },
+      { header: "Invoice_Number", key: "Invoice_Number", width: 10 },
+      { header: "UPI", key: "UPI", width: 10 },
+    ];
+    for (const obj of data) {
+      worksheet.addRow(obj);
     }
-
-  }
-
-  addNewUser() {
-    const { userName, password, email, firstName, lastName, blnFulfillment, create_order_manage_user } = this.addNewUserForm.getRawValue();
-    if (userName == '' || password == '' || email == '') {
-      this._RoyaltyService.snackBar('Please fill out the required fields');
-      return;
-    }
-    let payload: newOrderManageUser = {
-      userName, password, email, firstName, lastName, blnFulfillment, create_order_manage_user
-    }
-    this.isAddNewUserLoader = true;
-    this._RoyaltyService.AddAdminsData(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
-      if (res["success"]) {
-        this.page = 1;
-        this.tempDataSource = [];
-        this.getAdminOrderUsers(1, 'add');
-      } else {
-        this._RoyaltyService.snackBar(res["message"]);
-        this.isAddNewUserLoader = false;
+    setTimeout(() => {
+      workbook.xlsx.writeBuffer().then((data: any) => {
+        const blob = new Blob([data], {
+          type:
+            "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+        });
+        let url = window.URL.createObjectURL(blob);
+        let a = document.createElement("a");
+        document.body.appendChild(a);
+        a.setAttribute("style", "display: none");
+        a.href = url;
+        a.download = `${fileName}.xlsx`;
+        a.click();
+        window.URL.revokeObjectURL(url);
+        a.remove();
+        this.generateReportLoader = false;
         this._changeDetectorRef.markForCheck();
-      }
-    }, err => {
-      this._RoyaltyService.snackBar('Something went wrong');
-      this.isAddNewUserLoader = false;
-      this._changeDetectorRef.markForCheck();
-    });
-  }
-  updateUser() {
-    const { userName, password, email, firstName, lastName, pk_userID, blnFulfillment, update_order_manage_user } = this.updateUserForm.getRawValue();
-    if (userName == '' || password == '' || email == '') {
-      this._RoyaltyService.snackBar('Please fill out the required fields');
-      return;
-    }
-    let payload: updateOrderManageUser = {
-      userName, password, email, firstName, lastName, blnFulfillment, update_order_manage_user, pk_userID
-    }
-    this.isUpdateUserLoader = true;
-    this._RoyaltyService.UpdateAdminsData(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
-      if (res["success"]) {
-        this.updateUserData.firstName = firstName;
-        this.updateUserData.lastName = lastName;
-        this.updateUserData.blnFulfillment = blnFulfillment;
-        this.updateUserData.pk_userID = pk_userID;
-        this.updateUserData.userName = userName;
-        this.updateUserData.password = password;
-        this.updateUserData.email = email;
-        this.isUpdateUserLoader = false;
-        this._RoyaltyService.snackBar('User Updated Successfully');
-        this._changeDetectorRef.markForCheck();
-      } else {
-        this._RoyaltyService.snackBar(res["message"]);
-        this.isUpdateUserLoader = false;
-        this._changeDetectorRef.markForCheck();
-      }
-    }, err => {
-      this.isUpdateUserLoader = false;
-      this._changeDetectorRef.markForCheck();
-    });
-  }
-  deleteUser(item) {
-    item.delLoader = true;
-    this._changeDetectorRef.markForCheck();
-    let payload: RemoveUser = {
-      user_id: item.pk_userID,
-      remove_order_user: true
-    }
-    this._RoyaltyService.UpdateAdminsData(payload).pipe(takeUntil(this._unsubscribeAll), finalize(() => {
-      item.delLoader = false
-      this._changeDetectorRef.markForCheck();
-    })).subscribe(res => {
-      this.dataSource = this.dataSource.filter(elem => elem.pk_userID != item.pk_userID);
-      this.totalUsers--;
-      this.tempDataSource = this.tempDataSource.filter(elem => elem.pk_userID != item.pk_userID);
-      this.tempRecords--;
-      this._RoyaltyService.snackBar('User Deleted Successfully');
-      this._changeDetectorRef.markForCheck();
-    }, err => {
-      this._RoyaltyService.snackBar('Something went wrong');
-    });
-  }
-
-  getAllStores() {
-    this._RoyaltyService.adminStores$.pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
-      res["data"].forEach(element => {
-        if (this.updateUserData.storeList) {
-          let StoreList = ',' + this.updateUserData.storeList;
-          if (StoreList.includes(',' + element.pk_storeID)) {
-            element.checked = true;
-          } else {
-            element.checked = false;
-          }
-        }
-        this.allStores.push(element);
       });
-      this.totalStores = res["totalRecords"];
-    });
-  }
-  getAdminStores(page) {
-    let params = {
-      stores: true,
-      bln_active: 1,
-      page: page,
-      size: 20
-    }
-    this._RoyaltyService.getStoresData(params).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
-      res["data"].forEach(element => {
-        if (this.updateUserData.storeList) {
-          let StoreList = ',' + this.updateUserData.storeList;
-          if (StoreList.includes(',' + element.pk_storeID)) {
-            element.checked = true;
-          } else {
-            element.checked = false;
-          }
-        }
-        this.allStores.push(element);
-      });
-      this.storeLoader = false;
-      this._changeDetectorRef.markForCheck();
-    }, err => {
-      this.storeLoader = false;
-      this._changeDetectorRef.markForCheck();
-    });
-  }
-  getNextStoresData() {
-    this.storePage++;
-    this.storeLoader = true;
-    this.getAdminStores(this.storePage);
-  };
-  updateStoresList() {
-    let storesList = this.updateUserData.storeList.split(',').map(function (item) {
-      return parseInt(item);
-    });
-    this.allStores.forEach(element => {
-      if (element.checked) {
-        const index = storesList.findIndex(item => Number(item) == element.pk_storeID);
-        if (index < 0) {
-          storesList.push(element.pk_storeID);
-        }
-      } else if (!element.checked) {
-        const index = storesList.findIndex(item => Number(item) == element.pk_storeID);
-        if (index > -1) {
-          storesList.splice(index, 1);
-        }
-      }
-    });
-    let params: updateOrderManageUserStores = {
-      user_id: this.updateUserData.pk_userID,
-      stores: storesList,
-      update_ordermanage_user_stores: true
-    };
-    this.updateStoreLoader = true;
-    this._RoyaltyService.UpdateAdminsData(params).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
-      if (res["success"]) {
-        this.updateUserData.storeID = storesList.toString();
-      }
-      this._RoyaltyService.snackBar(res["message"]);
-      this.updateStoreLoader = false;
-      this._changeDetectorRef.markForCheck();
-    }, err => {
-      this._RoyaltyService.snackBar('Something went wrong');
-      this.updateStoreLoader = false;
-      this._changeDetectorRef.markForCheck();
-    });
+    }, 500);
+
   }
   /**
      * On destroy
