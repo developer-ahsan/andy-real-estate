@@ -180,7 +180,7 @@ export class RoyaltyReportsComponent implements OnInit, OnDestroy {
   }
   generateReport() {
     if (!this.selectedStore) {
-      this._RoyaltyService.snackBar('Please select any flps user');
+      this._RoyaltyService.snackBar('Please select any store');
       return;
     }
     this.generateReportLoader = true;
