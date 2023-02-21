@@ -85,7 +85,7 @@ export const ecommerceRoutes: Route[] = [
                 component: ProductDetailsComponent,
                 resolve: {
                     product: ProductDescriptionResolver,
-                    licensingTerms: LicensingTermResolver
+                    // licensingTerms: LicensingTermResolver
                 },
                 children: [
                     {
