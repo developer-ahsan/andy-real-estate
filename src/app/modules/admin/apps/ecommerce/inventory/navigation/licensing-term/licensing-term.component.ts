@@ -256,6 +256,7 @@ export class LicensingTermComponent implements OnInit, OnDestroy {
     this.keyword = event.target.value;
     this.licensingTerms = [];
     this.isSearchingLoader = true;
+    this._changeDetectorRef.markForCheck();
     this.getLicencingTerms(this.selectedCompanies.pk_licensingCompanyID, 1);
   }
 

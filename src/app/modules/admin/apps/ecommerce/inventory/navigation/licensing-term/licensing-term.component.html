@@ -76,12 +76,12 @@
                         </div>
                         <div *ngIf="licensingTerms.length == 0 && !isSearchingLoader" class="mt-2">No Licensing Terms
                             Found</div>
+                        <div *ngIf="isSearchingLoader" class="mt-2">
+                            <ngx-skeleton-loader count="8" appearance="line" animation="pulse">
+                            </ngx-skeleton-loader>
+                        </div>
                         <mat-accordion *ngIf="licensingTerms.length > 0">
                             <div class="row mt-2">
-                                <div class="col-12 " *ngIf="isSearchingLoader">
-                                    <ngx-skeleton-loader count="8" appearance="line" animation="pulse">
-                                    </ngx-skeleton-loader>
-                                </div>
                                 <div class="col-lg-6 col-12" *ngFor="let license of licensingTerms;">
                                     <mat-expansion-panel class="my-2">
                                         <mat-expansion-panel-header>
