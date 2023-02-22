@@ -543,7 +543,7 @@ export class ColorComponent implements OnInit, OnDestroy {
     this.customColorsList.forEach(element => {
       if (element.colorName != "") {
         custom_colors.push({
-          color_name: element.colorName,
+          color_name: element.colorName.replace(/'/g, "''"),
           the_run: run,
           rgb: hex
         })

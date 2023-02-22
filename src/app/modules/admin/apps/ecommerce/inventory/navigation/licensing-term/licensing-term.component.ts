@@ -72,6 +72,7 @@ export class LicensingTermComponent implements OnInit, OnDestroy {
     ).subscribe((data: any) => {
       this.allCompaniess = data['data'];
     });
+    this.getLicensigTermsList(1);
   }
   onSelected(ev) {
     if (!this.selectedCompanies) {
@@ -117,7 +118,6 @@ export class LicensingTermComponent implements OnInit, OnDestroy {
     this._inventoryService.product$.pipe(takeUntil(this._unsubscribeAll)).subscribe((details) => {
       if (details) {
         this.selectedProduct = details["data"][0];
-        this.getLicensigTermsList(1);
       }
     });
   }
@@ -213,6 +213,33 @@ export class LicensingTermComponent implements OnInit, OnDestroy {
         });
         this.selectedLicensingTerms = this.tempUpdatedTerm;
         this._changeDetectorRef.markForCheck();
+        // this._inventoryService.getLicensingTerms(pk_productID)
+        //   .pipe(takeUntil(this._unsubscribeAll))
+        //   .subscribe((licensingTerms) => {
+        //     this.licensingTerms = licensingTerms["data"];
+        //     this.dummyLicensingTerms = licensingTerms["data"];
+        //     for (const term of this.licensingTerms) {
+        //       if (term.Selected === "true") {
+        //         this.selectedTerm = term;
+        //         this.selectedTermObject = term;
+        //       }
+        //     };
+
+        //     this._inventoryService.getLicensingSubCategory(this.selectedTerm?.pk_licensingTermID, pk_productID)
+        //       .pipe(takeUntil(this._unsubscribeAll))
+        //       .subscribe((subCategories) => {
+        //         this.selectedSubCategItems = subCategories["data"];
+        //         this.termUpdateLoader = false;
+        //         this.showFlashMessage(
+        //           response["success"] === true ?
+        //             'success' :
+        //             'error'
+        //         );
+
+        //         // Mark for check
+        //         this._changeDetectorRef.markForCheck();
+        //       });
+        //   });
       }, err => {
         this._snackBar.open("Something went wrong", '', {
           horizontalPosition: 'center',

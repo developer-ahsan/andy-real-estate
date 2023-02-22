@@ -276,7 +276,6 @@ export class ProductsDescriptionComponent implements OnInit, OnDestroy {
       supplyId = pk_companyID;
     }
 
-    console.log(this.selectedSex)
     const payload = {
       name: formValues.productName?.replace(/'/g, "''") || "",
       product_number: formValues.productNumber,

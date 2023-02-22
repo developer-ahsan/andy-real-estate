@@ -6,7 +6,7 @@
             <div class="text-right" *ngIf="isColorSize">
                 <button mat-flat-button [color]="'primary'" (click)="colorsToggle()">Back to List</button>
             </div>
-            <button *ngIf="!isColorSize" [disabled]="!isSizeOrColoCorrrection" class="my-2" mat-stroked-button
+            <button *ngIf="!isColorSize" [disabled]="" class="my-2" mat-stroked-button
                 (click)="colorsToggle()">Sizes/Colors Price
                 Correction</button>
             <div *ngIf="isColorSize">
