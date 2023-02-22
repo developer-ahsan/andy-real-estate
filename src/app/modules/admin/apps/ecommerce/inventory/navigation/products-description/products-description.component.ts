@@ -66,7 +66,7 @@ export class ProductsDescriptionComponent implements OnInit, OnDestroy {
       internalKeywords: [""],
       metaDesc: [""],
       supplierLink: [""],
-      sex: [""],
+      sex: [0],
       searchKeywords: [""],
       productDesc: [""],
       ProductPermalink: [""],
@@ -122,8 +122,6 @@ export class ProductsDescriptionComponent implements OnInit, OnDestroy {
               internalKeywords:
                 this.productDescription["ProductSearchKeywords"],
             });
-
-            this.selectedSex = this.productDescription["sex"];
 
             this.isLoading = false;
 
@@ -278,7 +276,7 @@ export class ProductsDescriptionComponent implements OnInit, OnDestroy {
       supplyId = pk_companyID;
     }
 
-
+    console.log(this.selectedSex)
     const payload = {
       name: formValues.productName?.replace(/'/g, "''") || "",
       product_number: formValues.productNumber,
@@ -288,7 +286,7 @@ export class ProductsDescriptionComponent implements OnInit, OnDestroy {
       notes: formValues.notes?.replace(/'/g, "''") || "",
       supplier_link: formValues.supplierLink || "",
       meta_desc: formValues.metaDesc?.replace(/'/g, "''") || "",
-      sex: this.selectedProduct?.blnApparel ? this.selectedSex : 0,
+      sex: this.selectedProduct?.blnApparel ? formValues.sex : 0,
       search_keywords: formValues.internalKeywords || "",
       purchase_order_notes: formValues.purchaseOrderNotes?.replace(/'/g, "''") || "" || "",
       last_update_by: "" || "",

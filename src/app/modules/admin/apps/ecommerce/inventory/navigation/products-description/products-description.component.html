@@ -69,7 +69,7 @@
                                 <div class="col-lg-4 col-12" *ngIf="selectedProduct?.blnApparel">
                                     <mat-form-field class="w-full">
                                         <mat-label>Sex</mat-label>
-                                        <mat-select [(value)]="selectedSex" placeholder="Select Sex">
+                                        <mat-select [formControlName]="'sex'" placeholder="Select Sex">
                                             <mat-option [value]="0">N/A</mat-option>
                                             <mat-option [value]="1">Men's</mat-option>
                                             <mat-option [value]="2">Women's</mat-option>
