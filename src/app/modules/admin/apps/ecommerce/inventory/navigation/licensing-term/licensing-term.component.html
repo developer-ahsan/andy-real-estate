@@ -1,162 +1,122 @@
 <div class="w-full">
     <ngx-skeleton-loader count="8" appearance="line" animation="pulse" *ngIf="isLoading">
     </ngx-skeleton-loader>
-    <div class="row my-3" *ngIf="!isLoading && selectedTerm && radioButtonForm">
-        <div class="col-12">
-            <fuse-card class="rounded-2xl shadow bg-card flex flex-col lg:flex-row w-full">
-                <div class="p-6 sm:p-8 lg:p-10 w-full">
+    <div *ngIf="!isLoading">
+        <div class="rounded-2xl shadow bg-card w-full">
+            <div class="p-6 sm:p-8 lg:p-10 w-full">
+                <div class="text-2xl font-bold ">
+                    Licensing Terms
+                </div>
+                <mat-form-field class="w-full">
+                    <mat-label>Search for licensing company</mat-label>
+                    <input matInput placeholder="Search Licensing Company" matTooltip="Search licensing company by name"
+                        [matAutocomplete]="auto" [formControl]="searchCompaniesCtrl">
+                    <mat-autocomplete class="w-full" #auto="matAutocomplete" (optionSelected)="onSelected($event)"
+                        [displayWith]="displayWith">
+                        <mat-option *ngIf="isSearchingCompanies" class="is-loading">Loading...</mat-option>
+                        <ng-container *ngIf="!isSearchingCompanies">
+                            <mat-option *ngFor="let item of allCompaniess" [value]="item">
+                                <span>{{item.name}}</span>
+                            </mat-option>
+                        </ng-container>
+                    </mat-autocomplete>
+                </mat-form-field>
+                <!-- Selected -->
+                <div class="w-full" *ngIf="selectedLicensingTerms">
                     <div class="text-2xl font-bold">
                         Selected Licensing Term
                     </div>
                     <div class="flex items-center mt-6">
-                        <div class="font-medium text-secondary">{{selectedTerm.term}}</div>
+                        <div class="font-medium text-secondary">{{selectedLicensingTerms.term}}</div>
                         <div class="flex-auto ml-2 border-b-2"></div>
                     </div>
                     <!-- Features -->
                     <div class="grid grid-cols-2 lg:grid-cols-3 gap-y-4 mt-6">
-                        <div class="flex items-center" *ngFor="let item of selectedSubCategItems">
+                        <div class="flex items-center" *ngFor="let item of selectedLicensingTerms.SubCategories">
                             <mat-radio-group name="opList">
-                                <mat-radio-button style="min-width: -webkit-fill-available;" [checked]="item.Selected"
-                                    [value]="item" name="opList" (change)="selectedRadio($event)">
+                                <mat-radio-button style="min-width: -webkit-fill-available;"
+                                    [checked]="item.IsSelected == 1" [value]="item" name="opList"
+                                    (change)="selectedRadio(item, selectedLicensingTerms)">
                                     <span class="text-sm">{{item.name}}</span>
                                 </mat-radio-button>
                             </mat-radio-group>
                         </div>
                     </div>
-                    <div class="flex items-center justify-end w-full">
-                        <div class="flex items-center my-2">
-                            <div class="flex items-center mr-4" *ngIf="flashMessage && isSelectedUpdating">
-                                <ng-container *ngIf="flashMessage === 'success'">
-                                    <mat-icon class="text-green-500" [svgIcon]="'heroicons_outline:check'">
-                                    </mat-icon>
-                                    <span class="ml-2">Licensing term Updated successfully</span>
-                                </ng-container>
-                                <ng-container *ngIf="flashMessage === 'error'">
-                                    <mat-icon class="text-red-500" [svgIcon]="'heroicons_outline:x'"></mat-icon>
-                                    <span class="ml-2">An error occurred, try again!</span>
-                                </ng-container>
+                </div>
+                <!-- Unselected -->
+                <div class="w-full mt-3" *ngIf="selectedCompanies">
+                    <ngx-skeleton-loader count="8" appearance="line" animation="pulse" *ngIf="licensingTermsLoader">
+                    </ngx-skeleton-loader>
+                    <div *ngIf="!licensingTermsLoader">
+                        <div class="row">
+                            <div class="col-12 col-md-6">
+                                <mat-form-field class="fuse-mat-dense fuse-mat-no-subscript w-full mt-3">
+                                    <mat-icon matPrefix [svgIcon]="'heroicons_outline:search'"></mat-icon>
+                                    <input class="h-6" matTooltip="Enter for search" matInput
+                                        (keyup.enter)="searchKeyword($event)" [autocomplete]="'off'"
+                                        [placeholder]="'Search Licensing Term...'">
+                                </mat-form-field>
                             </div>
-                            <button class="min-w-40" mat-stroked-button [matTooltip]="'Update Licensing Term'"
-                                (click)="updateSelectedTerm()" [disabled]="selectedTermUpdateLoader">
-                                <mat-progress-spinner *ngIf="selectedTermUpdateLoader" [diameter]="24"
-                                    [mode]="'indeterminate'">
-                                </mat-progress-spinner>
-                                <mat-icon *ngIf="!selectedTermUpdateLoader" [svgIcon]="'mat_outline:edit'"></mat-icon>
-                                <span *ngIf="!selectedTermUpdateLoader" class="ml-1 mr-1">Update</span>
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            </fuse-card>
-        </div>
-    </div>
-    <div class="row my-3" *ngIf="!isLoading">
-        <div class="col-12">
-            <mat-card class="w-full p-2 h-full rounded-2xl shadow">
-                <div class="row">
-                    <div class="col-lg-7 col-12">
-                        <div class="text-2xl font-bold p-6 sm:p-8 lg:p-6 w-full">
-                            Licensing Terms
-                        </div>
-                    </div>
-                    <div class="col-lg-5 col-12" *ngIf="radioButtonForm">
-                        <mat-form-field class="fuse-mat-dense fuse-mat-no-subscript w-full mt-3">
-                            <mat-icon matPrefix [svgIcon]="'heroicons_outline:search'"></mat-icon>
-                            <input class="h-6" matInput (input)="searchKeyword($event)" [autocomplete]="'off'"
-                                [placeholder]="'Search Licensing Term...'">
-                        </mat-form-field>
-                    </div>
-                </div>
-                <form [formGroup]="licensingForm">
-                    <div class="row p-6 pt-0 sm:p-8 sm:pt-0 lg:p-6 lg:pt-0 w-full"
-                        *ngIf="!radioButtonForm && showCompanyDropdown">
-                        <div class="col-12 my-3">
-                            <mat-form-field class="w-full" appearance="fill">
-                                <mat-label>Select licensing company</mat-label>
-                                <mat-select [formControlName]="'select'">
-                                    <mat-option *ngFor="let food of licensingCompanies" [value]="food">
-                                        {{food.name}}
-                                    </mat-option>
-                                </mat-select>
-                            </mat-form-field>
-                        </div>
-                        <div class="col-12 my-1 text-right">
-                            <button class="min-w-40 w-40" mat-stroked-button (click)="continue()">
-                                <span *ngIf="!radioButtonForm" class="mr-2">Continue</span>
-                                <mat-icon *ngIf="!radioButtonForm"
-                                    svgIcon="heroicons_outline:arrow-sm-right"></mat-icon>
-                                <mat-progress-spinner *ngIf="radioButtonForm" [diameter]="24" [mode]="'indeterminate'">
-                                </mat-progress-spinner>
-                            </button>
-                        </div>
-                    </div>
-                    <div class="row" *ngIf="radioButtonForm">
-                        <div class="col-12 my-3" *ngIf="licensingTerms.length">
-                            <mat-accordion multi>
-                                <div class="row">
-                                    <div class="col-lg-6 col-12" *ngFor="let license of licensingTerms;">
-                                        <mat-expansion-panel class="my-2"
-                                            [expanded]="license.pk_licensingTermID === selectedTermObject.pk_licensingTermID ? true : false"
-                                            (opened)="expansionOpened(license)"
-                                            [ngStyle]="license.Selected ? {'background-color':'#0F172A'} : {'background-color': 'transparent'}">
-                                            <mat-expansion-panel-header>
-                                                <mat-panel-title
-                                                    [ngStyle]="license.Selected ? {'color':'white'} : {'color': 'black'}">
-                                                    {{license.term}}
-                                                </mat-panel-title>
-                                            </mat-expansion-panel-header>
-                                            <ng-container *ngTemplateOutlet="myCard"></ng-container>
-                                        </mat-expansion-panel>
+                            <div class="col-12 col-md-6" *ngIf="licensingTerms.length > 0">
+                                <div class="flex items-center justify-end w-full">
+                                    <div class="flex items-center my-2">
+                                        <button class="min-w-40" mat-stroked-button
+                                            [matTooltip]="'Update Licensing Term'" (click)="updateTerm()"
+                                            [disabled]="termUpdateLoader">
+                                            <mat-progress-spinner *ngIf="termUpdateLoader" [diameter]="24"
+                                                [mode]="'indeterminate'">
+                                            </mat-progress-spinner>
+                                            <mat-icon *ngIf="!termUpdateLoader"
+                                                [svgIcon]="'mat_outline:edit'"></mat-icon>
+                                            <span *ngIf="!termUpdateLoader" class="ml-1 mr-1">Update</span>
+                                        </button>
                                     </div>
-                                </div>
-                            </mat-accordion>
-                        </div>
-                        <div class="col-12" *ngIf="licensingTerms.length">
-                            <div class="flex items-center justify-end w-full">
-                                <div class="flex items-center my-2">
-                                    <div class="flex items-center mr-4" *ngIf="flashMessage && !isSelectedUpdating">
-                                        <ng-container *ngIf="flashMessage === 'success'">
-                                            <mat-icon class="text-green-500" [svgIcon]="'heroicons_outline:check'">
-                                            </mat-icon>
-                                            <span class="ml-2">Licensing term Updated successfully</span>
-                                        </ng-container>
-                                        <ng-container *ngIf="flashMessage === 'error'">
-                                            <mat-icon class="text-red-500" [svgIcon]="'heroicons_outline:x'"></mat-icon>
-                                            <span class="ml-2">An error occurred, try again!</span>
-                                        </ng-container>
-                                    </div>
-                                    <button class="min-w-40" mat-stroked-button [matTooltip]="'Update Licensing Term'"
-                                        (click)="updateTerm()" [disabled]="termUpdateLoader">
-                                        <mat-progress-spinner *ngIf="termUpdateLoader" [diameter]="24"
-                                            [mode]="'indeterminate'">
-                                        </mat-progress-spinner>
-                                        <mat-icon *ngIf="!termUpdateLoader" [svgIcon]="'mat_outline:edit'"></mat-icon>
-                                        <span *ngIf="!termUpdateLoader" class="ml-1 mr-1">Update</span>
-                                    </button>
                                 </div>
                             </div>
                         </div>
-                        <div class="col-12 p-6 sm:p-8 lg:p-6 text-gray-500" *ngIf="!licensingTerms.length">
-                            Licensing terms not found
+                        <div *ngIf="licensingTerms.length == 0 && !isSearchingLoader" class="mt-2">No Licensing Terms
+                            Found</div>
+                        <mat-accordion *ngIf="licensingTerms.length > 0">
+                            <div class="row mt-2">
+                                <div class="col-12 " *ngIf="isSearchingLoader">
+                                    <ngx-skeleton-loader count="8" appearance="line" animation="pulse">
+                                    </ngx-skeleton-loader>
+                                </div>
+                                <div class="col-lg-6 col-12" *ngFor="let license of licensingTerms;">
+                                    <mat-expansion-panel class="my-2">
+                                        <mat-expansion-panel-header>
+                                            <mat-panel-title>
+                                                {{license.term}}
+                                            </mat-panel-title>
+                                        </mat-expansion-panel-header>
+                                        <div class="row">
+                                            <div class="col-lg-6 col-12" *ngFor="let item of license.SubCategories">
+                                                <mat-radio-group name="internalList">
+                                                    <mat-radio-button style="min-width: -webkit-fill-available;"
+                                                        [value]="item" name="internalList"
+                                                        (change)="selectedRadio(item, license)">
+                                                        <span class="text-sm text-wrap">{{item.name}}</span>
+                                                    </mat-radio-button>
+                                                </mat-radio-group>
+                                            </div>
+                                        </div>
+                                    </mat-expansion-panel>
+                                </div>
+                            </div>
+                        </mat-accordion>
+                        <div class="flex justify-end mr-3" *ngIf="totalRecords > licensingTerms.length">
+                            <span *ngIf="!isLoadMore" class="cursor-pointer text-gray-600 hover:text-gray-900"
+                                (click)="getNextLicensingTerms()">Load
+                                More</span>
+                            <mat-progress-spinner *ngIf="isLoadMore" [diameter]="24" [mode]="'indeterminate'">
+                            </mat-progress-spinner>
                         </div>
                     </div>
-                </form>
-            </mat-card>
+                </div>
+            </div>
+
+
         </div>
     </div>
 
-    <ng-template #myCard>
-        <ngx-skeleton-loader count="4" appearance="line" animation="pulse" *ngIf="expansionLoader">
-        </ngx-skeleton-loader>
-        <div class="row mt-4" *ngIf="!expansionLoader">
-            <div class="col-lg-6 col-12" *ngFor="let item of subCategoryItems">
-                <mat-radio-group name="internalList">
-                    <mat-radio-button style="min-width: -webkit-fill-available;" [checked]="item.Selected"
-                        [value]="item" name="internalList" (change)="selectedRadio($event)">
-                        <span class="text-sm text-wrap">{{item.name}}</span>
-                    </mat-radio-button>
-                </mat-radio-group>
-            </div>
-        </div>
-    </ng-template>
 </div>

@@ -1,18 +1,20 @@
+import { SelectionModel } from '@angular/cdk/collections';
 import { Component, Input, OnInit, Output, EventEmitter, ChangeDetectorRef, OnDestroy } from '@angular/core';
+import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
+import { MatSnackBar } from '@angular/material/snack-bar';
+import { Router } from '@angular/router';
+import { InventoryService } from 'app/modules/admin/apps/ecommerce/inventory/inventory.service';
 import { Subject } from 'rxjs';
 import { debounceTime, distinctUntilChanged, filter, finalize, switchMap, takeUntil, tap } from 'rxjs/operators';
-import { InventoryService } from 'app/modules/admin/apps/ecommerce/inventory/inventory.service';
-import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
-import { MatRadioChange } from '@angular/material/radio';
-import { MatSnackBar } from '@angular/material/snack-bar';
 
 @Component({
-  selector: 'app-licensing-term',
-  templateUrl: './licensing-term.component.html'
+  selector: 'app-licensing-terms',
+  templateUrl: './licensing-terms.component.html'
 })
-export class LicensingTermComponent implements OnInit, OnDestroy {
-  selectedProduct: any;
-  isLoading: boolean;
+export class ProductLicensingTermsComponent implements OnInit, OnDestroy {
+  @Input() selectedProduct: any;
+  @Input() myStepper: any;
+  @Input() isLoading: boolean;
   @Output() isLoadingChange = new EventEmitter<boolean>();
   private _unsubscribeAll: Subject<any> = new Subject<any>();
 
@@ -33,6 +35,7 @@ export class LicensingTermComponent implements OnInit, OnDestroy {
   selectedLicensingTerms: any;
   tempUpdatedTerm: any;
   isSearchingLoader: boolean = false;
+
   constructor(
     private _changeDetectorRef: ChangeDetectorRef,
     private _inventoryService: InventoryService,
@@ -42,7 +45,6 @@ export class LicensingTermComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.getLicensingTermController();
-    this.getProductDetail();
   }
   getLicensingTermController() {
     let params;
@@ -113,14 +115,6 @@ export class LicensingTermComponent implements OnInit, OnDestroy {
       this._changeDetectorRef.markForCheck();
     });
   }
-  getProductDetail() {
-    this.isLoading = true;
-    this._inventoryService.product$.pipe(takeUntil(this._unsubscribeAll)).subscribe((details) => {
-      if (details) {
-        this.selectedProduct = details["data"][0];
-      }
-    });
-  }
   getNextLicensingTerms() {
     this.page++;
     this.isLoadMore = true;
@@ -128,11 +122,10 @@ export class LicensingTermComponent implements OnInit, OnDestroy {
     this.getLicencingTerms(this.selectedCompanies.pk_licensingCompanyID, this.page);
   }
   getLicencingTerms(id, page) {
-    const { pk_productID } = this.selectedProduct;
     let params = {
       licensing_term: true,
       licensing_company_id: id,
-      product_id: pk_productID,
+      product_id: this.selectedProduct,
       page: page,
       keyword: this.keyword
     }
@@ -183,6 +176,7 @@ export class LicensingTermComponent implements OnInit, OnDestroy {
     this.tempUpdatedTerm = term;
   }
 
+
   updateTerm(): void {
     if (!this.selectedRadioOption) {
       this._snackBar.open("Please choose any licensing term", '', {
@@ -192,10 +186,9 @@ export class LicensingTermComponent implements OnInit, OnDestroy {
       });
       return;
     }
-    const { pk_productID } = this.selectedProduct;
     const { fk_licensingTermID, pk_licensingTermSubCategoryID } = this.selectedRadioOption;
     const payload = {
-      product_id: pk_productID,
+      product_id: this.selectedProduct,
       licensing_term_id: fk_licensingTermID,
       sub_category_id: pk_licensingTermSubCategoryID,
       call_type: "update",
@@ -206,40 +199,14 @@ export class LicensingTermComponent implements OnInit, OnDestroy {
     this._inventoryService.updateLicensingTerms(payload)
       .subscribe((response) => {
         this.termUpdateLoader = false;
-        this._snackBar.open("Updated Successfull", '', {
+        this._snackBar.open("Licensing Term Added Successfully", '', {
           horizontalPosition: 'center',
           verticalPosition: 'bottom',
           duration: 3500
         });
         this.selectedLicensingTerms = this.tempUpdatedTerm;
+        this.myStepper.next();
         this._changeDetectorRef.markForCheck();
-        // this._inventoryService.getLicensingTerms(pk_productID)
-        //   .pipe(takeUntil(this._unsubscribeAll))
-        //   .subscribe((licensingTerms) => {
-        //     this.licensingTerms = licensingTerms["data"];
-        //     this.dummyLicensingTerms = licensingTerms["data"];
-        //     for (const term of this.licensingTerms) {
-        //       if (term.Selected === "true") {
-        //         this.selectedTerm = term;
-        //         this.selectedTermObject = term;
-        //       }
-        //     };
-
-        //     this._inventoryService.getLicensingSubCategory(this.selectedTerm?.pk_licensingTermID, pk_productID)
-        //       .pipe(takeUntil(this._unsubscribeAll))
-        //       .subscribe((subCategories) => {
-        //         this.selectedSubCategItems = subCategories["data"];
-        //         this.termUpdateLoader = false;
-        //         this.showFlashMessage(
-        //           response["success"] === true ?
-        //             'success' :
-        //             'error'
-        //         );
-
-        //         // Mark for check
-        //         this._changeDetectorRef.markForCheck();
-        //       });
-        //   });
       }, err => {
         this._snackBar.open("Something went wrong", '', {
           horizontalPosition: 'center',
@@ -259,7 +226,9 @@ export class LicensingTermComponent implements OnInit, OnDestroy {
     this.getLicencingTerms(this.selectedCompanies.pk_licensingCompanyID, 1);
   }
 
-
+  goBack() {
+    this.myStepper.previous();
+  }
   /**
      * On destroy
      */

@@ -1091,7 +1091,11 @@
                                     </button>
                                 </div>
                             </div>
-                            <ngx-skeleton-loader count="8" appearance="line" animation="pulse"
+                            <app-licensing-terms [myStepper]="myStepper" [selectedProduct]="productId">
+                            </app-licensing-terms>
+
+
+                            <!-- <ngx-skeleton-loader count="8" appearance="line" animation="pulse"
                                 *ngIf="licensingTermLoader">
                             </ngx-skeleton-loader>
                             <div class="row" *ngIf="!licensingTermLoader">
@@ -1148,7 +1152,7 @@
                                         <span *ngIf="!updateProductLicensingLoader">Save & Continue</span>
                                     </button>
                                 </div>
-                            </div>
+                            </div> -->
                         </mat-step>
 
                         <mat-step [stepControl]="featureForm" label="Features" [editable]="true">

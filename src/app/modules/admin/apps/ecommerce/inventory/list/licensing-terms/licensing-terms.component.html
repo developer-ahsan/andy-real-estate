@@ -1,0 +1,135 @@
+<div class="w-full">
+    <ngx-skeleton-loader count="8" appearance="line" animation="pulse" *ngIf="isLoading">
+    </ngx-skeleton-loader>
+    <div *ngIf="!isLoading">
+        <div class="w-full">
+            <div class="text-2xl font-bold ">
+                Licensing Terms
+            </div>
+            <mat-form-field class="w-full">
+                <mat-label>Search for licensing company</mat-label>
+                <input matInput placeholder="Search Licensing Company" matTooltip="Search licensing company by name"
+                    [matAutocomplete]="auto" [formControl]="searchCompaniesCtrl">
+                <mat-autocomplete class="w-full" #auto="matAutocomplete" (optionSelected)="onSelected($event)"
+                    [displayWith]="displayWith">
+                    <mat-option *ngIf="isSearchingCompanies" class="is-loading">Loading...</mat-option>
+                    <ng-container *ngIf="!isSearchingCompanies">
+                        <mat-option *ngFor="let item of allCompaniess" [value]="item">
+                            <span>{{item.name}}</span>
+                        </mat-option>
+                    </ng-container>
+                </mat-autocomplete>
+            </mat-form-field>
+            <!-- Selected -->
+            <div class="w-full" *ngIf="selectedLicensingTerms">
+                <div class="text-2xl font-bold">
+                    Selected Licensing Term
+                </div>
+                <div class="flex items-center mt-6">
+                    <div class="font-medium text-secondary">{{selectedLicensingTerms.term}}</div>
+                    <div class="flex-auto ml-2 border-b-2"></div>
+                </div>
+                <!-- Features -->
+                <div class="grid grid-cols-2 lg:grid-cols-3 gap-y-4 mt-6">
+                    <div class="flex items-center" *ngFor="let item of selectedLicensingTerms.SubCategories">
+                        <mat-radio-group name="opList">
+                            <mat-radio-button style="min-width: -webkit-fill-available;"
+                                [checked]="item.IsSelected == 1" [value]="item" name="opList"
+                                (change)="selectedRadio(item, selectedLicensingTerms)">
+                                <span class="text-sm">{{item.name}}</span>
+                            </mat-radio-button>
+                        </mat-radio-group>
+                    </div>
+                </div>
+            </div>
+            <!-- Unselected -->
+            <div class="w-full mt-3" *ngIf="selectedCompanies">
+                <ngx-skeleton-loader count="8" appearance="line" animation="pulse" *ngIf="licensingTermsLoader">
+                </ngx-skeleton-loader>
+                <div *ngIf="!licensingTermsLoader">
+                    <div class="row">
+                        <div class="col-12 col-md-6">
+                            <mat-form-field class="fuse-mat-dense fuse-mat-no-subscript w-full mt-3">
+                                <mat-icon matPrefix [svgIcon]="'heroicons_outline:search'"></mat-icon>
+                                <input class="h-6" matTooltip="Enter for search" matInput
+                                    (keyup.enter)="searchKeyword($event)" [autocomplete]="'off'"
+                                    [placeholder]="'Search Licensing Term...'">
+                            </mat-form-field>
+                        </div>
+                        <div class="col-12 col-md-6" *ngIf="licensingTerms.length > 0">
+                            <div class="flex items-center justify-end w-full">
+                                <div class="flex items-center my-2">
+                                    <button class="min-w-40" mat-stroked-button [matTooltip]="'Update Licensing Term'"
+                                        (click)="updateTerm()" [disabled]="termUpdateLoader">
+                                        <mat-progress-spinner *ngIf="termUpdateLoader" [diameter]="24"
+                                            [mode]="'indeterminate'">
+                                        </mat-progress-spinner>
+                                        <mat-icon *ngIf="!termUpdateLoader" [svgIcon]="'mat_outline:edit'"></mat-icon>
+                                        <span *ngIf="!termUpdateLoader" class="ml-1 mr-1">Update</span>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div *ngIf="licensingTerms.length == 0 && !isSearchingLoader" class="mt-2">No Licensing Terms
+                        Found</div>
+                    <mat-accordion *ngIf="licensingTerms.length > 0">
+                        <div class="row mt-2">
+                            <div class="col-12 " *ngIf="isSearchingLoader">
+                                <ngx-skeleton-loader count="8" appearance="line" animation="pulse">
+                                </ngx-skeleton-loader>
+                            </div>
+                            <div class="col-lg-6 col-12" *ngFor="let license of licensingTerms;">
+                                <mat-expansion-panel class="my-2">
+                                    <mat-expansion-panel-header>
+                                        <mat-panel-title>
+                                            {{license.term}}
+                                        </mat-panel-title>
+                                    </mat-expansion-panel-header>
+                                    <div class="row">
+                                        <div class="col-lg-6 col-12" *ngFor="let item of license.SubCategories">
+                                            <mat-radio-group name="internalList">
+                                                <mat-radio-button style="min-width: -webkit-fill-available;"
+                                                    [value]="item" name="internalList"
+                                                    (change)="selectedRadio(item, license)">
+                                                    <span class="text-sm text-wrap">{{item.name}}</span>
+                                                </mat-radio-button>
+                                            </mat-radio-group>
+                                        </div>
+                                    </div>
+                                </mat-expansion-panel>
+                            </div>
+                        </div>
+                    </mat-accordion>
+                    <div class="flex justify-end mr-3" *ngIf="totalRecords > licensingTerms.length">
+                        <span *ngIf="!isLoadMore" class="cursor-pointer text-gray-600 hover:text-gray-900"
+                            (click)="getNextLicensingTerms()">Load
+                            More</span>
+                        <mat-progress-spinner *ngIf="isLoadMore" [diameter]="24" [mode]="'indeterminate'">
+                        </mat-progress-spinner>
+                    </div>
+                </div>
+            </div>
+            <div class="w-full mt-2">
+                <div class="flex justify-end">
+                    <div class="mr-3">
+                        <button class="w-full min-w-30 " (click)="goBack()" mat-stroked-button>
+                            Back
+                        </button>
+                    </div>
+                    <div>
+                        <button class="min-w-40" mat-stroked-button [matTooltip]="'Update Licensing Term'"
+                            (click)="updateTerm()" [disabled]="termUpdateLoader">
+                            <mat-progress-spinner *ngIf="termUpdateLoader" [diameter]="24" [mode]="'indeterminate'">
+                            </mat-progress-spinner>
+                            <mat-icon *ngIf="!termUpdateLoader" [svgIcon]="'mat_outline:edit'"></mat-icon>
+                            <span *ngIf="!termUpdateLoader" class="ml-1 mr-1">Save & Continue</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+</div>

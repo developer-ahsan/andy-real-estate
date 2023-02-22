@@ -2248,7 +2248,7 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
         // Licensing term screen
         if (selectedIndex === 3) {
             if (!this.licensingTerms.length) {
-                this.getLicenceTerms();
+                // this.getLicenceTerms();
                 // Get licensing company
 
             };

@@ -115,6 +115,7 @@ import { MatDatepickerModule } from '@angular/material/datepicker';
 import { CategoriesComponent } from './product-store/navigation/categories/categories.component';
 import { StoreProductDetailsComponent } from './product-store/details/product-details.component';
 import { RemoveFromStoreComponent } from './product-store/navigation/remove-from-store/remove-from-store.component';
+import { ProductLicensingTermsComponent } from './inventory/list/licensing-terms/licensing-terms.component';
 
 @NgModule({
     declarations: [
@@ -196,7 +197,8 @@ import { RemoveFromStoreComponent } from './product-store/navigation/remove-from
         ProductColorSizesComponent,
         CategoriesComponent,
         StoreProductDetailsComponent,
-        RemoveFromStoreComponent
+        RemoveFromStoreComponent,
+        ProductLicensingTermsComponent
     ],
     imports: [
         RouterModule.forChild(ecommerceRoutes),
