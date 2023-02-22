@@ -46,7 +46,7 @@ export class ProductsDescriptionComponent implements OnInit, OnDestroy {
   descriptionLoader = false;
   isSupplierNotReceived = true;
   isSupplierFetchingFailed = false;
-  selectedSex = "N/A";
+  selectedSex = 0;
   isRefetchLoader: boolean = false;
 
   constructor(
@@ -123,18 +123,7 @@ export class ProductsDescriptionComponent implements OnInit, OnDestroy {
                 this.productDescription["ProductSearchKeywords"],
             });
 
-            let sexVal = this.productDescription["sex"];
-            if (sexVal == 0) {
-              this.selectedSex = "N/A";
-            } else if (sexVal == 1) {
-              this.selectedSex = "Men's";
-            } else if (sexVal == 2) {
-              this.selectedSex = "Women's";
-            } else if (sexVal == 3) {
-              this.selectedSex = "Men's/Women's";
-            } else if (sexVal == 4) {
-              this.selectedSex = "Unisex";
-            }
+            this.selectedSex = this.productDescription["sex"];
 
             this.isLoading = false;
 
@@ -289,18 +278,6 @@ export class ProductsDescriptionComponent implements OnInit, OnDestroy {
       supplyId = pk_companyID;
     }
 
-    let sexVal: number;
-    if (this.selectedSex == "N/A") {
-      sexVal = 1;
-    } else if (this.selectedSex == "Men's") {
-      sexVal = 2;
-    } else if (this.selectedSex == "Women's") {
-      sexVal = 3;
-    } else if (this.selectedSex == "Men's/Women's") {
-      sexVal = 4;
-    } else if (this.selectedSex == "Unisex") {
-      sexVal = 5;
-    }
 
     const payload = {
       name: formValues.productName?.replace(/'/g, "''") || "",
@@ -311,7 +288,7 @@ export class ProductsDescriptionComponent implements OnInit, OnDestroy {
       notes: formValues.notes?.replace(/'/g, "''") || "",
       supplier_link: formValues.supplierLink || "",
       meta_desc: formValues.metaDesc?.replace(/'/g, "''") || "",
-      sex: this.selectedProduct?.blnApparel ? sexVal : 0,
+      sex: this.selectedProduct?.blnApparel ? this.selectedSex : 0,
       search_keywords: formValues.internalKeywords || "",
       purchase_order_notes: formValues.purchaseOrderNotes?.replace(/'/g, "''") || "" || "",
       last_update_by: "" || "",

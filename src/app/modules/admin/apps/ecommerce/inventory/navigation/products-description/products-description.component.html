@@ -70,11 +70,11 @@
                                     <mat-form-field class="w-full">
                                         <mat-label>Sex</mat-label>
                                         <mat-select [(value)]="selectedSex" placeholder="Select Sex">
-                                            <mat-option value="N/A">N/A</mat-option>
-                                            <mat-option value="Men's">Men's</mat-option>
-                                            <mat-option value="Women's">Women's</mat-option>
-                                            <mat-option value="Men's/Women's">Men's/Women's</mat-option>
-                                            <mat-option value="Unisex">Unisex</mat-option>
+                                            <mat-option [value]="0">N/A</mat-option>
+                                            <mat-option [value]="1">Men's</mat-option>
+                                            <mat-option [value]="2">Women's</mat-option>
+                                            <mat-option [value]="3">Men's/Women's</mat-option>
+                                            <mat-option [value]="4">Unisex</mat-option>
                                         </mat-select>
                                     </mat-form-field>
                                 </div>
