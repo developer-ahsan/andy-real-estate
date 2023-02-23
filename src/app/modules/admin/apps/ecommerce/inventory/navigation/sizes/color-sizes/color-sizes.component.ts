@@ -29,8 +29,9 @@ export class ProductColorSizesComponent implements OnInit, OnDestroy {
   correctionsSumList: any;
   finalCostList: any;
   newCorrectionsList: any;
+  auxiliaryList: any;
 
-  mainScreen: string = 'Current Correction';
+  mainScreen: string = 'New Correction';
   colorUpdateLoader: boolean = false;
 
   productCost: any;
@@ -67,6 +68,10 @@ export class ProductColorSizesComponent implements OnInit, OnDestroy {
     this._inventoryService.getProductsData(params).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
       this.colorsList = res["color"];
       this.sizesList = res["size"];
+      this.auxiliaryList = [];
+      for (let i = 0; i < this.sizesList.length; i++) {
+        this.auxiliaryList[i] = { value: 0 };
+      }
       let corrections = res["correctiom"];
       const result = corrections.reduce((acc, curr) => {
         const index = this.colorsList.findIndex(color => color.fk_colorID == curr.fk_colorID);
@@ -136,10 +141,13 @@ export class ProductColorSizesComponent implements OnInit, OnDestroy {
         size.amount = null;
       });
     });
+    for (let i = 0; i < this.sizesList.length; i++) {
+      this.auxiliaryList[i] = { value: 0 };
+    }
   }
   addCorrectionValues(correction) {
-    correction.forEach(element => {
-      element.amount = 0;
+    correction.forEach((element, index) => {
+      element.amount = this.auxiliaryList[index].value;
     });
   }
   updateCorrectionValues() {
