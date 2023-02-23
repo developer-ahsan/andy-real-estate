@@ -1447,7 +1447,7 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
 
                 if (isDataExist) {
                     this.createProductLoader = false;
-                    this._snackBar.open("Product already exists", '', {
+                    this._snackBar.open("This product already exists under this Supplier", '', {
                         horizontalPosition: 'center',
                         verticalPosition: 'bottom',
                         duration: 3500
@@ -2977,7 +2977,7 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
                 const isDataExist = response["data_exists"];
                 this.checkProductExistOrNotLoader = false;
                 if (isDataExist) {
-                    this._snackBar.open("Product already exists", '', {
+                    this._snackBar.open("This product already exists under this Supplier", '', {
                         horizontalPosition: 'center',
                         verticalPosition: 'bottom',
                         duration: 3500
@@ -3162,7 +3162,7 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
                     const isDataExist = response["data_exists"];
                     if (isDataExist) {
                         this.createProductDetailLoader = false;
-                        this._snackBar.open("Product already exists", '', {
+                        this._snackBar.open("This product already exists under this Supplier", '', {
                             horizontalPosition: 'center',
                             verticalPosition: 'bottom',
                             duration: 3500

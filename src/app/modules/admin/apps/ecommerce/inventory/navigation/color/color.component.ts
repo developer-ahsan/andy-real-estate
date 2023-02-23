@@ -494,12 +494,12 @@ export class ColorComponent implements OnInit, OnDestroy {
       });
   }
   copyColorToHex() {
-    this.hexColor = this.colorValue
-    this.colorForm.patchValue({ hex: this.colorValue });
+    this.hexColor = this.colorValue.replace('#', '')
+    this.colorForm.patchValue({ hex: this.colorValue.replace('#', '') });
   };
   copyColorToHexx(index) {
-    this.dataSource[index].rgb = this.colorValue;
-    let event = { target: { value: this.colorValue } };
+    this.dataSource[index].rgb = this.colorValue.replace('#', '');
+    let event = { target: { value: this.colorValue.replace('#', '') } };
     this.rowUpdate(this.dataSource[index], 'rgb', event)
   };
 

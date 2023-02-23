@@ -778,3 +778,13 @@ export interface addRapidBuildStoreProduct {
     store_product_ids: number[];
     addRapidBuildStoreProduct: boolean;
 };
+export interface UpdatePriceCorrection {
+    product_id: number;
+    color_sizes: ColorSize[];
+    update_price_correction: boolean;
+};
+interface ColorSize {
+    size_id: number;
+    color_id: number;
+    amount: number;
+};

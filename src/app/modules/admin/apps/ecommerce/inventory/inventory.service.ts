@@ -1316,6 +1316,11 @@ export class InventoryService {
             params: params
         }).pipe(retry(3));
     };
+    updateProductsData(payload) {
+        const headers = { 'Authorization': `Bearer ${this._authService.accessToken}` };
+        return this._httpClient.put(
+            environment.products, payload, { headers });
+    };
     // Create Product Details
     createProductDetail(payload: Product) {
         const headers = { 'Authorization': `Bearer ${this._authService.accessToken}` };
