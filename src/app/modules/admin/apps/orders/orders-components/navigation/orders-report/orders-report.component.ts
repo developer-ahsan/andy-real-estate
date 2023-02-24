@@ -183,16 +183,16 @@ export class OrdersReportComponent implements OnInit {
       order_line_id: value
     }
     this._orderService.getOrderCommonCall(params).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
-      console.log(this.orderProducts);
       let tempArr = [];
       res["data"].forEach(element => {
         let cost = (element.runCost * element.quantity) + element.setupCost;
         let price = (element.runPrice * element.quantity) + element.setupPrice;
         const index = data.findIndex(item => item.order_line_id == element.fk_orderLineID);
-        console.log(index);
-        data[index].imprints.push(element);
-        data[index].totalMercandiseCost = data[index].totalMercandiseCost + cost;
-        data[index].totalMerchendisePrice = data[index].totalMerchendisePrice + price;
+        if (index > -1) {
+          data[index].imprints.push(element);
+          data[index].totalMercandiseCost = data[index].totalMercandiseCost + cost;
+          data[index].totalMerchendisePrice = data[index].totalMerchendisePrice + price;
+        }
       });
 
       console.log(this.orderProducts);
