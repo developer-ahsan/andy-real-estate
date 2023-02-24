@@ -3,6 +3,7 @@ import { OrdersService } from 'app/modules/admin/apps/orders/orders-components/o
 import { takeUntil } from 'rxjs/operators';
 import { Subject } from 'rxjs';
 import { OrderProcess, OrdersList } from 'app/modules/admin/apps/orders/orders-components/orders.types';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-orders-summary',
@@ -29,7 +30,8 @@ export class OrdersSummaryComponent implements OnInit {
 
   constructor(
     private _changeDetectorRef: ChangeDetectorRef,
-    private _orderService: OrdersService
+    private _orderService: OrdersService,
+    private router: Router
   ) { }
 
   ngOnInit(): void {
@@ -106,5 +108,8 @@ export class OrdersSummaryComponent implements OnInit {
       this.statusText = res["statusDescription"];
       this._changeDetectorRef.markForCheck();
     })
+  }
+  goToComments() {
+    this.router.navigateByUrl(`/apps/orders/${this.orderDetail.pk_orderID}/comments`);
   }
 }

@@ -18,7 +18,7 @@ import { addComment } from '../../orders.types';
 })
 export class OrderCommentsComponent implements OnInit, OnDestroy {
   @Input() isLoading: boolean;
-  @Input() selectedOrder: any;
+  selectedOrder: any;
   @Output() isLoadingChange = new EventEmitter<boolean>();
   private _unsubscribeAll: Subject<any> = new Subject<any>();
 
@@ -31,14 +31,16 @@ export class OrderCommentsComponent implements OnInit, OnDestroy {
   readonly separatorKeysCodes = [ENTER, COMMA] as const;
 
   emails = [];
-  resultEmails = [];
-  public emailControl = new FormControl;
-  isEmailLoader: boolean = false;
-  emailSelected = [];
   user: any;
 
   isAddCommentLoader: boolean = false;
   ngComment: string = '';
+
+  commentators = [];
+  isCommentatorLoader: boolean = false;
+  totalCommentator = 0;
+  commentatorPage = 1;
+  isLoadMore: boolean = false;
   constructor(
     private _changeDetectorRef: ChangeDetectorRef,
     private _orderService: OrdersService,
@@ -48,40 +50,14 @@ export class OrderCommentsComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.user = this._authService.parseJwt(this._authService.accessToken);
-
-    this.emailControl.valueChanges.pipe(debounceTime(500), tap(() => {
-      this.resultEmails = [];
-      this.isEmailLoader = true;
-      this._changeDetectorRef.markForCheck();
-    }),
-      switchMap(value => this._orderService.getCommentatorEmails(value)
-        .pipe(
-          finalize(() => {
-            this.isEmailLoader = false;
-            this._changeDetectorRef.markForCheck();
-          }),
-        ))).subscribe(data => {
-          this.resultEmails = data["data"] as any[];
-          this._changeDetectorRef.markForCheck();
-        });
-
     this.isLoading = true;
     this.getOrderComments();
-    setTimeout(() => {
-      this.isLoadingChange.emit(false);
-    }, 100);
-    this.dropdownSettings = {
-      singleSelection: false,
-      idField: 'id',
-      textField: 'name',
-      selectAllText: 'Select All',
-      unSelectAllText: 'UnSelect All',
-      itemsShowLimit: 3,
-      allowSearchFilter: true
-    };
+    this.isCommentatorLoader = true;
+    this.getCommentators();
   };
   getOrderComments() {
     this._orderService.orderDetail$.pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+      this.selectedOrder = res["data"][0];
       this.currentComments = res["data"][0].internalComments;
       this.isLoading = false;
       this._changeDetectorRef.markForCheck();
@@ -97,14 +73,6 @@ export class OrderCommentsComponent implements OnInit, OnDestroy {
         // this.getCurrentRelatedProducts(1);
       }
     }
-  }
-
-  selectedEmails(res) {
-    this.emailSelected.push(res.email);
-    this.emailControl.reset();
-  }
-  removeSelectedEmail(index) {
-    this.emailSelected.splice(index, 1);
   }
 
   add(event: MatChipInputEvent): void {
@@ -123,7 +91,7 @@ export class OrderCommentsComponent implements OnInit, OnDestroy {
   }
 
   addComment() {
-    let emailArr = this.emails.concat(this.emailSelected);
+    let emailArr = this.emails;
     if (this.ngComment! == '') {
       this._snackBar.open("Comment is required", '', {
         horizontalPosition: 'center',
@@ -132,14 +100,11 @@ export class OrderCommentsComponent implements OnInit, OnDestroy {
       });
       return;
     }
-    if (emailArr.length == 0) {
-      this._snackBar.open("Email is required", '', {
-        horizontalPosition: 'center',
-        verticalPosition: 'bottom',
-        duration: 3500
-      });
-      return;
-    }
+    this.commentators.forEach(element => {
+      if (element.checked) {
+        emailArr.push(element.email);
+      }
+    });
     this.isAddCommentLoader = true;
     let payload: addComment = {
       order_id: Number(this.selectedOrder.pk_orderID),
@@ -167,7 +132,7 @@ export class OrderCommentsComponent implements OnInit, OnDestroy {
       });
       this.ngComment = '';
       this.emails = [];
-      this.emailSelected = [];
+      this.commentators.forEach(element => { element.checked = false });
       this.mainScreen = 'Current Comments';
       this.isAddCommentLoader = false;
       this._changeDetectorRef.markForCheck();
@@ -175,6 +140,35 @@ export class OrderCommentsComponent implements OnInit, OnDestroy {
       this.isAddCommentLoader = false;
       this._changeDetectorRef.markForCheck();
     })
+  }
+  // Get Commentators
+  getCommentators() {
+    let params = {
+      get_commentators_emails: true,
+      page: this.commentatorPage
+    }
+    this._orderService.getOrderCommonCall(params).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+      this.commentators = this.commentators.concat(res["data"]);
+      this.totalCommentator = res["totalRecords"];
+      this.isCommentatorLoader = false;
+      this.isLoadMore = false;
+      this._changeDetectorRef.markForCheck();
+    }, err => {
+      this.isCommentatorLoader = false;
+      this.isLoadMore = false;
+      this._changeDetectorRef.markForCheck();
+    })
+  }
+  getNexCommentator() {
+    this.commentatorPage++;
+    this.isLoadMore = true;
+    this._changeDetectorRef.markForCheck();
+    this.getCommentators();
+  }
+  checkAllCommentators() {
+    this.commentators.forEach(element => {
+      element.checked = true;
+    });
   }
   /**
      * On destroy
