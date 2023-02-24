@@ -52,7 +52,7 @@
                                         <input matInput [(ngModel)]="editImprintData.fk_runChargeID">
                                     </mat-form-field>
                                 </div>
-                                <div class="col-12 text-right">
+                                <div class="col-12 flex justify-end">
                                     <button [matTooltip]="'Cancel'" mat-stroked-button class="min-w-40 mr-2"
                                         (click)="cancelEditImprint()">
                                         <span *ngIf="!isUpdateLoading" class="ml-1 mr-1">
@@ -130,6 +130,11 @@
                                     class="h-14 hover:bg-gray-100 dark:hover:bg-hover" style="cursor: pointer;">
                                 </tr>
                             </table>
+                            <mat-paginator #paginator
+                                class="border-b sm:border-t sm:border-b-0 z-10 bg-gray-50 dark:bg-transparent"
+                                [length]="totalImprints" [pageIndex]="0" [pageSize]="20"
+                                (page)="getNextImprints($event)" [hidePageSize]="true">
+                            </mat-paginator>
                         </div>
                         <ng-template #other_content>
                             <div class="text-secondary font-semibold p-5">

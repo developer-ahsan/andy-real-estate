@@ -18,6 +18,8 @@ export class StoreImprintsComponent implements OnInit, OnDestroy {
 
   imprintsColumns: string[] = ['id', 'location', 'method', 'setup', 'run', 'decorator', 'action'];
   imprintsData = [];
+  totalImprints = 0;
+  page = 1;
 
   isUpdateLoading: boolean = false;
   isEditImprint: boolean = false;
@@ -48,11 +50,13 @@ export class StoreImprintsComponent implements OnInit, OnDestroy {
   }
   getImprints() {
     let params = {
+      page: this.page,
       store_product_imprints: true,
       store_product_id: this.selectedProduct.pk_storeProductID
     }
     this._storeService.getStoreProducts(params).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
       this.imprintsData = res["data"];
+      this.totalImprints = res["totalRecords"];
       this.isLoading = false;
       this.isLoadingChange.emit(false);
       this._changeDetectorRef.markForCheck();
@@ -62,6 +66,15 @@ export class StoreImprintsComponent implements OnInit, OnDestroy {
       this._changeDetectorRef.markForCheck();
     })
   }
+  getNextColors(event) {
+    const { previousPageIndex, pageIndex } = event;
+    if (pageIndex > previousPageIndex) {
+      this.page++;
+    } else {
+      this.page--;
+    };
+    this.getImprints();
+  };
   checkSupplier(id) {
     let index: any = this.suppliers.findIndex(element => element.pk_companyID == id);
     return this.suppliers[index].companyName;
