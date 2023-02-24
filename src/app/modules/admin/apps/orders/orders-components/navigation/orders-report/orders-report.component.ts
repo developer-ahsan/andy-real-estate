@@ -178,7 +178,6 @@ export class OrdersReportComponent implements OnInit {
     })
   }
   getProductImprints(value, data) {
-    console.log(data)
     let params = {
       imprint_report: true,
       order_line_id: value
