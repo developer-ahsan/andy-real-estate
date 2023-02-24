@@ -188,6 +188,8 @@ export class OrdersReportComponent implements OnInit {
         let cost = (element.runCost * element.quantity) + element.setupCost;
         let price = (element.runPrice * element.quantity) + element.setupPrice;
         const index = data.findIndex(item => item.order_line_id == element.fk_orderLineID);
+        console.log(index)
+        console.log(element);
         if (index > -1) {
           data[index].imprints.push(element);
           data[index].totalMercandiseCost = data[index].totalMercandiseCost + cost;
