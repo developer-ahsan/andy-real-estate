@@ -39,6 +39,15 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
     @ViewChild('stepper') public myStepper: MatStepper;
     @ViewChild('prodStandardImprints') prodStandardImprints: ProductImprintsComponent;
 
+
+    // Imprints List
+    displayedColumns: string[] = ['location', 'method', 'decorator', 'active'];
+    dataSource = [];
+    totalImprints = 0;
+    imprintPage = 1;
+    imprintGetLoader: boolean = false;
+
+
     products$: Observable<InventoryProduct[]>;
 
     products: any;
@@ -1969,7 +1978,9 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
         const { radio } = this.firstFormGroup.value;
         const { name } = radio;
         const { selectedIndex, previouslySelectedIndex } = event;
-
+        if (selectedIndex == 6) {
+            this.getImprintsList(1);
+        }
         if (previouslySelectedIndex > selectedIndex) {
             if (selectedIndex == 2) {
                 this.netCostPayloadBoolean = true;
@@ -1990,6 +2001,7 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
             };
 
             if (selectedIndex == 6) {
+
                 this.imprintPayloadBoolean = true;
             };
             return;
@@ -3435,7 +3447,7 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
                 colors.push({
                     color_id: element.colorId,
                     the_run: element.run,
-                    rgb: element.hex
+                    rgb: element.hex.replace('#', '')
                 })
             });
             let custom_colors = [];
@@ -3444,7 +3456,7 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
                 custom_colors.push({
                     color_name: element.colorName,
                     the_run: element.run,
-                    rgb: hex
+                    rgb: hex.replace('#', '')
                 })
             });
             const payload = {
@@ -3905,6 +3917,7 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
                 } else {
                     this.myStepper.next();
                 }
+                this.imprintsLocalList = [];
                 this._changeDetectorRef.markForCheck();
             }, err => {
                 this.updateProductImprintLoader = false;
@@ -4170,13 +4183,12 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
     // Colors
     copyColorToHex(index, check) {
         if (check == 'default') {
-            this.selectedColorsListArray[index]['hex'] = this.colorValue;
+            this.selectedColorsListArray[index]['hex'] = this.colorValue.replace('#', '');
         } else {
-            this.customColorsList[index]['hex'] = this.colorValue;
+            this.customColorsList[index]['hex'] = this.colorValue.replace('#', '');
         }
     }
     addColorToArrayList() {
-
         const { run, hex, colorId, colorName, image } = this.colorsForm.getRawValue();
         if (colorId == '') {
             this._snackBar.open("Please select any color", '', {
@@ -4229,5 +4241,29 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
             this._changeDetectorRef.markForCheck();
         }
     }
+    getImprintsList(page?: number) {
+        this.imprintGetLoader = true;
+        this._changeDetectorRef.markForCheck();
+        this._inventoryService.getImprints(this.productId, page)
+            .pipe(takeUntil(this._unsubscribeAll))
+            .subscribe((imprint) => {
+                this.dataSource = imprint["data"];
+                this.totalImprints = imprint["totalRecords"];
 
+                this.imprintGetLoader = false;
+                this._changeDetectorRef.markForCheck();
+            }, err => {
+                this.imprintGetLoader = false;
+                this._changeDetectorRef.markForCheck();
+            });
+    }
+    getNextImprintsData(event) {
+        const { previousPageIndex, pageIndex } = event;
+        if (pageIndex > previousPageIndex) {
+            this.imprintPage++;
+        } else {
+            this.imprintPage--;
+        };
+        this.getImprintsList(this.imprintPage);
+    }
 }
