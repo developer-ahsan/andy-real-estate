@@ -17,6 +17,8 @@ export class StoreColorsComponent implements OnInit, OnDestroy {
 
   colorColumns: string[] = ['id', 'name', 'select'];
   colorData = [];
+  totalColors = 0;
+  page = 1;
 
   isUpdateLoading: boolean = false;
 
@@ -39,11 +41,13 @@ export class StoreColorsComponent implements OnInit, OnDestroy {
   }
   getColors() {
     let params = {
+      page: this.page,
       color: true,
       store_product_id: this.selectedProduct.pk_storeProductID
     }
     this._storeService.getStoreProducts(params).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
       this.colorData = res["data"];
+      this.totalColors = res["totalRecords"];
       this.isLoading = false;
       this.isLoadingChange.emit(false);
       this._changeDetectorRef.markForCheck();
@@ -53,7 +57,15 @@ export class StoreColorsComponent implements OnInit, OnDestroy {
       this._changeDetectorRef.markForCheck();
     })
   }
-
+  getNextColors(event) {
+    const { previousPageIndex, pageIndex } = event;
+    if (pageIndex > previousPageIndex) {
+      this.page++;
+    } else {
+      this.page--;
+    };
+    this.getColors();
+  };
   updateColors() {
     this.isUpdateLoading = true;
     let colors: number[] = [];
