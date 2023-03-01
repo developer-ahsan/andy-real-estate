@@ -13,6 +13,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
     providedIn: 'root'
 })
 export class SmartArtService {
+    public routeData: any;
     public navigationLabels = navigations;
 
     private _smartArtUsers: BehaviorSubject<any[] | null> = new BehaviorSubject<any[]>(null);

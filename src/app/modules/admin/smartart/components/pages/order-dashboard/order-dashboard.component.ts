@@ -2,6 +2,7 @@ import { Component, Input, OnInit, ChangeDetectorRef, OnDestroy, ViewChild } fro
 import { FormControl } from '@angular/forms';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatDrawer } from '@angular/material/sidenav';
+import { Router } from '@angular/router';
 import { Subject } from 'rxjs';
 import { debounceTime, distinctUntilChanged, filter, finalize, switchMap, takeUntil, tap } from 'rxjs/operators';
 import { SmartArtService } from '../../smartart.service';
@@ -35,6 +36,8 @@ export class OrderDashboardComponent implements OnInit, OnDestroy {
   selectedDesigner: any;
   isSearchingDesigner = false;
   // Search Filters
+  ngSearchField = '';
+  ngCustomerField = '';
   ngSearchStore = '';
   ngSearchDesigner = '';
   ngFilterField = '2';
@@ -42,7 +45,8 @@ export class OrderDashboardComponent implements OnInit, OnDestroy {
   isFilterLoader: boolean = false;
   constructor(
     private _changeDetectorRef: ChangeDetectorRef,
-    private _smartartService: SmartArtService
+    private _smartartService: SmartArtService,
+    private router: Router
   ) { }
 
   ngOnInit(): void {
@@ -143,6 +147,8 @@ export class OrderDashboardComponent implements OnInit, OnDestroy {
       store_id: this.ngSearchStore,
       designerID: this.ngSearchDesigner,
       filter_field: this.ngFilterField,
+      search_field: this.ngSearchField,
+      user_search_field: this.ngCustomerField,
       product_search: this.ngFilterProduct
     }
     this._smartartService.getSmartArtData(params).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
@@ -201,6 +207,8 @@ export class OrderDashboardComponent implements OnInit, OnDestroy {
     if (this.dataSource.length) {
       this.paginator.pageIndex = 0;
     }
+    this.ngSearchField = '';
+    this.ngCustomerField = '';
     this.ngSearchStore = '';
     this.ngSearchDesigner = '';
     this.ngFilterProduct = '';
@@ -232,6 +240,11 @@ export class OrderDashboardComponent implements OnInit, OnDestroy {
     }
     this._changeDetectorRef.markForCheck();
     this.getSmartArtList(1, 'get');
+  }
+  // Order Details
+  orderDetails(item) {
+    this._smartartService.routeData = item;
+    this.router.navigate(['/smartart/order-details']);
   }
   /**
      * On destroy

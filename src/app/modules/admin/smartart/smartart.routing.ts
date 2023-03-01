@@ -1,6 +1,7 @@
 import { Route } from '@angular/router';
 import { CanDeactivateGuard } from 'app/can-deactivate.guard';
 import { OrderDashboardComponent } from './components/pages/order-dashboard/order-dashboard.component';
+import { OrderDashboardDetailsComponent } from './components/pages/order-details/order-details.component';
 import { OrderSchedulerComponent } from './components/pages/order-scheduler/order-scheduler.component';
 import { QuoteDashboardComponent } from './components/pages/quote-dashboard/quote-dashboard.component';
 import { QuoteSchedulerComponent } from './components/pages/quote-scheduler/quote-scheduler.component';
@@ -52,6 +53,14 @@ export const smartartRoutes: Route[] = [
                 data: {
                     title: 'Quote Scheduler',
                     url: 'quote-scheduler'
+                }
+            },
+            {
+                path: 'order-details',
+                component: OrderDashboardDetailsComponent,
+                data: {
+                    title: 'Order Details',
+                    url: 'order-details'
                 }
             },
         ]

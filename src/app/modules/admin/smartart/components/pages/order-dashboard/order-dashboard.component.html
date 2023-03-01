@@ -22,13 +22,13 @@
                     <div>
                         <mat-form-field class="w-full">
                             <mat-label>Search Order</mat-label>
-                            <input matInput placeholder="Search Order">
+                            <input matInput placeholder="Search Order" [(ngModel)]="ngSearchField">
                         </mat-form-field>
                     </div>
                     <div>
                         <mat-form-field class="w-full">
                             <mat-label>Search Customer</mat-label>
-                            <input matInput placeholder="Search Customer">
+                            <input matInput placeholder="Search Customer" [(ngModel)]="ngCustomerField">
                         </mat-form-field>
                     </div>
                     <div>
@@ -271,7 +271,8 @@
                                 </ng-container>
                                 <tr mat-header-row *matHeaderRowDef="displayedColumns;" class="h-18 bg-light"></tr>
                                 <tr mat-row *matRowDef="let row; columns: displayedColumns;"
-                                    class="h-14 hover:bg-gray-100 dark:hover:bg-hover" style="cursor: pointer;">
+                                    class="h-14 hover:bg-gray-100 dark:hover:bg-hover" style="cursor: pointer;"
+                                    (click)="orderDetails(row)">
                                 </tr>
                             </table>
                             <mat-paginator #paginator

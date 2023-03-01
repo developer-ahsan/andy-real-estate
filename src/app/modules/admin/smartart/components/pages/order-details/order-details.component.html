@@ -1,0 +1,221 @@
+<div class=" rounded-2xl shadow bg-card flex flex-col lg:flex-row w-full">
+    <div class="w-full">
+        <div class="px-4 sm:px-4 lg:px-8 py-4">
+            <div class="flex justify-between">
+                <div class="text-2xl font-bold">
+                    Imprint Details
+                </div>
+                <button class="min-w-40 mb-2" mat-button mat-stroked-button (click)="backToList()">Back to List</button>
+            </div>
+            <div class="row">
+                <div class="col-12 col-md-4">
+                    <mat-accordion multi>
+                        <mat-expansion-panel [expanded]="true">
+                            <mat-expansion-panel-header>
+                                <mat-panel-title>
+                                    Last Proof
+                                </mat-panel-title>
+                            </mat-expansion-panel-header>
+                            <div>N/A</div>
+                        </mat-expansion-panel>
+                        <mat-expansion-panel [expanded]="true">
+                            <mat-expansion-panel-header>
+                                <mat-panel-title>
+                                    Company Information
+                                </mat-panel-title>
+                            </mat-expansion-panel-header>
+                            <div>
+                                <div><b>Company name:</b> National Student Speech Language Hearing Association</div>
+                                <div><b>Name:</b> Callie Terrell</div>
+                                <div><b>Company:</b> National Student Speech Language Hearing Association</div>
+                                <div><b>Address:</b> 80 E Exchange Street apt 413B Akron, OH 44308</div>
+                                <div><b>Phone:</b> 330-461-3637</div>
+                                <div><b>Email:</b> ct102@uakron.edu</div>
+                                <div><b>Designer notes:</b> None</div>
+                            </div>
+                        </mat-expansion-panel>
+                        <mat-expansion-panel [expanded]="true">
+                            <mat-expansion-panel-header>
+                                <mat-panel-title>
+                                    Order Information
+                                </mat-panel-title>
+                            </mat-expansion-panel-header>
+                            <div>
+                                <div><b>Order:</b> 73960</div>
+                                <div><b>Quote ID:</b> 487228-365203</div>
+                                <div><b>PO:</b> 73960-132976</div>
+                                <div><b>Order Placed:</b> 02/28/2023</div>
+                                <div><b>Store:</b> theUAshop.com</div>
+                                <div><b>Brand Guide:</b> Click here</div>
+                                <div><b>Rush:</b> NO</div>
+                            </div>
+                        </mat-expansion-panel>
+                        <mat-expansion-panel [expanded]="true">
+                            <mat-expansion-panel-header>
+                                <mat-panel-title>
+                                    Supplier Information
+                                </mat-panel-title>
+                            </mat-expansion-panel-header>
+                            <div>
+                                <div><b>SKU:</b>
+                                    <p>CustomUA-GroupOrder_BM</p>
+                                    <p>S & S Active Wear</p>
+                                    <p>630-679-9940</p>
+                                </div>
+                                <div><b>ASI:</b>84358</div>
+                                <div><b>PPAI:</b> 256121</div>
+                                <div><b>Order Placed:</b> 02/28/2023</div>
+                                <div>http://www.ssactivewear.com</div>
+                                <div>art@bluemoonscreenprint.com</div>
+                                <div><b>Product Link:</b> Click here</div>
+                            </div>
+                        </mat-expansion-panel>
+                        <mat-expansion-panel [expanded]="true">
+                            <mat-expansion-panel-header>
+                                <mat-panel-title>
+                                    Decorator Information
+                                </mat-panel-title>
+                            </mat-expansion-panel-header>
+                            <div>
+                                <p>Blue Moon Screenprinting, Inc.</p>
+                                <p>440.942.6055</p>
+                                <p>art@bluemoonscreenprint.com</p>
+                                <p>http://bmpromotional.com/</p>
+                            </div>
+                        </mat-expansion-panel>
+                        <mat-expansion-panel [expanded]="true">
+                            <mat-expansion-panel-header>
+                                <mat-panel-title>
+                                    Order comments
+                                </mat-panel-title>
+                            </mat-expansion-panel-header>
+                            <div>
+                                <fuse-alert class="my-2" [appearance]="'soft'" [type]="'warning'" [showIcon]="false">
+                                    There are no comments on this order.
+                                </fuse-alert>
+
+                                <mat-form-field class="w-full">
+                                    <mat-label>Leave a comment</mat-label>
+                                    <textarea matInput></textarea>
+                                </mat-form-field>
+                            </div>
+                        </mat-expansion-panel>
+                        <mat-expansion-panel>
+                            <mat-expansion-panel-header>
+                                <mat-panel-title>
+                                    Purchase Order Comments
+                                </mat-panel-title>
+                            </mat-expansion-panel-header>
+                        </mat-expansion-panel>
+                        <mat-expansion-panel>
+                            <mat-expansion-panel-header>
+                                <mat-panel-title>
+                                    Manually Update Proof
+                                </mat-panel-title>
+                            </mat-expansion-panel-header>
+                        </mat-expansion-panel>
+                        <mat-expansion-panel>
+                            <mat-expansion-panel-header>
+                                <mat-panel-title>
+                                    Artwork tags for CLC report
+                                </mat-panel-title>
+                            </mat-expansion-panel-header>
+                        </mat-expansion-panel>
+                        <mat-expansion-panel>
+                            <mat-expansion-panel-header>
+                                <mat-panel-title>
+                                    Upload Virtual Proof
+                                </mat-panel-title>
+                            </mat-expansion-panel-header>
+                        </mat-expansion-panel>
+                        <mat-expansion-panel>
+                            <mat-expansion-panel-header>
+                                <mat-panel-title>
+                                    Update imprint colors
+                                </mat-panel-title>
+                            </mat-expansion-panel-header>
+                        </mat-expansion-panel>
+                        <mat-expansion-panel>
+                            <mat-expansion-panel-header>
+                                <mat-panel-title>
+                                    Approval History
+                                </mat-panel-title>
+                            </mat-expansion-panel-header>
+                        </mat-expansion-panel>
+                        <mat-expansion-panel>
+                            <mat-expansion-panel-header>
+                                <mat-panel-title>
+                                    Timer
+                                </mat-panel-title>
+                            </mat-expansion-panel-header>
+                        </mat-expansion-panel>
+                    </mat-accordion>
+                </div>
+                <div class="col-12 col-md-8">
+                    <mat-accordion multi>
+                        <mat-expansion-panel [expanded]="true">
+                            <mat-expansion-panel-header>
+                                <mat-panel-title>
+                                    Imprint 1 of 1 for Gildan Heavy Cotton T-Shirt - (Full Front/Direct to Garment)
+                                </mat-panel-title>
+                            </mat-expansion-panel-header>
+                            <div>
+                                <div class="w-full font-medium text-md">PO: 73960-132976</div>
+                                <div class="row w-full">
+                                    <div class="col-12 col-md-6">
+                                        <mat-form-field class="w-full">
+                                            <mat-label>Reorder</mat-label>
+                                            <input matInput>
+                                        </mat-form-field>
+                                        <button class="min-w-30" mat-button mat-stroked-button>Apply</button>
+                                    </div>
+                                    <div class="col-12 col-md-6">
+                                        <mat-form-field class="w-full">
+                                            <mat-label>Proof Contact</mat-label>
+                                            <mat-select matInput>
+                                                <mat-option value="12">Callie Terr</mat-option>
+                                            </mat-select>
+                                        </mat-form-field>
+                                        <button class="min-w-30" mat-button mat-stroked-button>Update</button>
+                                    </div>
+                                    <div class="col-8  mt-3">
+                                        <div class="row">
+                                            <div class="col-6 font-bold">Quantity:</div>
+                                            <div class="col-6">1</div>
+                                            <div class="col-6 font-bold">Imprint Colors:</div>
+                                            <div class="col-6"></div>
+                                            <div class="col-6 font-bold">Imprint Location:</div>
+                                            <div class="col-6"></div>
+                                            <div class="col-6 font-bold">Item Colors:</div>
+                                            <div class="col-6">
+                                                <div class="h-30 border overflow-y-auto"></div>
+                                            </div>
+                                            <div class="col-6 font-bold">Imprint Size:</div>
+                                            <div class="col-6">12" W x 16" H</div>
+                                            <div class="col-6 font-bold">Item Dimensions:</div>
+                                            <div class="col-6"></div>
+                                            <div class="col-6 font-bold">Imprint Method:</div>
+                                            <div class="col-6">Direct to Garment</div>
+                                            <div class="col-6 font-bold">Artwork File Types:</div>
+                                            <div class="col-6">NONE</div>
+                                            <div class="col-6 font-bold">Digitizer:</div>
+                                            <div class="col-6">NONE</div>
+                                        </div>
+                                    </div>
+                                    <div class="col-4 ">
+                                        <div class="text-right" style="text-align: -webkit-center">
+                                            <img class=""
+                                                src="https://assets.consolidus.com/globalAssets/Products/HiRes/147820.jpg">
+                                            <button class="min-w-30 mt-2" mat-button mat-stroked-button>Customer
+                                                Comments</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </mat-expansion-panel>
+                    </mat-accordion>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
