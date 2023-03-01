@@ -12,12 +12,12 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 @Injectable({
     providedIn: 'root'
 })
-export class UsersService {
+export class SmartArtService {
     public navigationLabels = navigations;
 
-    private _companyAdmins: BehaviorSubject<any[] | null> = new BehaviorSubject<any[]>(null);
+    private _smartArtUsers: BehaviorSubject<any[] | null> = new BehaviorSubject<any[]>(null);
     private _employeeAdmins: BehaviorSubject<any[] | null> = new BehaviorSubject<any[]>(null);
-    private _adminStores: BehaviorSubject<any[] | null> = new BehaviorSubject<any[]>(null);
+    private _smartArtStores: BehaviorSubject<any[] | null> = new BehaviorSubject<any[]>(null);
     private _reportUsers: BehaviorSubject<any[] | null> = new BehaviorSubject<any[]>(null);
     /**
      * Constructor
@@ -46,12 +46,12 @@ export class UsersService {
         return this._employeeAdmins.asObservable();
     };
     // Companies
-    get companyAdmins$(): Observable<any[]> {
-        return this._companyAdmins.asObservable();
+    get smartArtUsers$(): Observable<any[]> {
+        return this._smartArtUsers.asObservable();
     };
     // Stores
     get adminStores$(): Observable<any[]> {
-        return this._adminStores.asObservable();
+        return this._smartArtStores.asObservable();
     };
 
 
@@ -73,22 +73,22 @@ export class UsersService {
         }).pipe(retry(3));
     };
     // Common get Calls
-    getAdminsData(params): Observable<any[]> {
-        return this._httpClient.get<any[]>(environment.admins, {
+    getSmartArtData(params): Observable<any[]> {
+        return this._httpClient.get<any[]>(environment.smartart, {
             params: params
         }).pipe(retry(3));
     };
     // Common Post Call
-    AddAdminsData(payload) {
+    AddSmartArtData(payload) {
         const headers = { 'Authorization': `Bearer ${this._authService.accessToken}` };
         return this._httpClient.post(
-            environment.admins, payload, { headers });
+            environment.smartart, payload, { headers });
     };
     // Common put Call
-    UpdateAdminsData(payload) {
+    UpdateSmartArtData(payload) {
         const headers = { 'Authorization': `Bearer ${this._authService.accessToken}` };
         return this._httpClient.put(
-            environment.admins, payload, { headers });
+            environment.smartart, payload, { headers });
     };
 
     // Admin Employees
@@ -117,30 +117,30 @@ export class UsersService {
             })
         );
     };
-    // Get Companies
-    getAdminCompanies(): Observable<any[]> {
-        return this._httpClient.get<any[]>(environment.admins, {
+    // Get getSmartArtUsers
+    getSmartArtUsers(): Observable<any[]> {
+        return this._httpClient.get<any[]>(environment.smartart, {
             params: {
-                companies: true,
+                smart_art_users: true,
                 size: 20
             }
         }).pipe(
             tap((response: any) => {
-                this._companyAdmins.next(response);
+                this._smartArtUsers.next(response);
             })
         );
     };
     // Admin Stores
-    getAdminStores(): Observable<any[]> {
-        return this._httpClient.get<any[]>(environment.admins, {
+    getSmartArtStores(): Observable<any[]> {
+        return this._httpClient.get<any[]>(environment.smartart, {
             params: {
                 stores: true,
                 bln_active: 1,
-                size: 20
+                size: 10
             }
         }).pipe(
             tap((response: any) => {
-                this._adminStores.next(response);
+                this._smartArtStores.next(response);
             })
         );
     };

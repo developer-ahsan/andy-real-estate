@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { ActivatedRouteSnapshot, Resolve, Router, RouterStateSnapshot } from '@angular/router';
 import { AuthService } from 'app/core/auth/auth.service';
 import { Observable } from 'rxjs';
-import { UsersService } from '../apps/users/components/users.service';
+import { SmartArtService } from './smartart.service';
 
 @Injectable({
     providedIn: 'root'
@@ -13,7 +13,7 @@ export class EmployeesListsResolver implements Resolve<any>
      * Constructor
      */
     constructor(
-        private _UsersService: UsersService
+        private _SmartArtService: SmartArtService
     ) {
     }
 
@@ -28,7 +28,7 @@ export class EmployeesListsResolver implements Resolve<any>
      * @param state
      */
     resolve(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<any[]> {
-        return this._UsersService.getAllEmployees();
+        return this._SmartArtService.getAllEmployees();
     }
 }
 @Injectable({
@@ -39,7 +39,7 @@ export class FlpsLoginResolver implements Resolve<any>
     /**
      * Constructor
      */
-    constructor(private _UsersService: UsersService, private _authService: AuthService) {
+    constructor(private _SmartArtService: SmartArtService, private _authService: AuthService) {
     }
 
     // -----------------------------------------------------------------------------------------------------
@@ -58,18 +58,18 @@ export class FlpsLoginResolver implements Resolve<any>
             login_check: true,
             email: user.email
         }
-        return this._UsersService.checkFLPSLogin(params);
+        return this._SmartArtService.checkFLPSLogin(params);
     }
 }
 @Injectable({
     providedIn: 'root'
 })
-export class AdminStoresResolver implements Resolve<any>
+export class SmartArtStoresResolver implements Resolve<any>
 {
     /**
      * Constructor
      */
-    constructor(private _UsersService: UsersService, private _authService: AuthService) {
+    constructor(private _SmartArtService: SmartArtService, private _authService: AuthService) {
     }
 
     // -----------------------------------------------------------------------------------------------------
@@ -83,18 +83,18 @@ export class AdminStoresResolver implements Resolve<any>
      * @param state
      */
     resolve(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<any[]> {
-        return this._UsersService.getAdminStores();
+        return this._SmartArtService.getSmartArtStores();
     }
 }
 @Injectable({
     providedIn: 'root'
 })
-export class AdminCompaniesResolver implements Resolve<any>
+export class SmartArtUsersResolver implements Resolve<any>
 {
     /**
      * Constructor
      */
-    constructor(private _UsersService: UsersService) {
+    constructor(private _SmartArtService: SmartArtService) {
     }
 
     // -----------------------------------------------------------------------------------------------------
@@ -108,7 +108,7 @@ export class AdminCompaniesResolver implements Resolve<any>
      * @param state
      */
     resolve(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<any[]> {
-        return this._UsersService.getAdminCompanies();
+        return this._SmartArtService.getSmartArtUsers();
     }
 }
 

@@ -16,6 +16,7 @@ export const environment = {
     flps: "https://consolidus.azurewebsites.net/api/flps",
     catalog: "https://consolidus.azurewebsites.net/api/catalog",
     admins: "https://consolidus.azurewebsites.net/api/consolidus/admin",
+    smartart: "https://consolidus.azurewebsites.net/api/smartart",
     vendors: "https://consolidus.azurewebsites.net/api/vendors",
     campaignMedia: "https://assets.consolidus.com/globalAssets/Campaigns",
     productMedia: "https://assets.consolidus.com/globalAssets/Products",

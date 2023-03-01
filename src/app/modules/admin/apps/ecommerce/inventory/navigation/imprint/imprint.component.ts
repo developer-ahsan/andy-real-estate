@@ -441,7 +441,6 @@ export class ImprintComponent implements OnInit, OnDestroy {
           });
       });
   };
-
   overlapingData(source, destination) {
     const { pk_locationID } = source;
     const overlapObj = {
@@ -764,6 +763,8 @@ export class ImprintComponent implements OnInit, OnDestroy {
         fk_multiColorMinQID,
         fk_collectionID,
         blnSingleProcess,
+        blnColorProcess,
+        blnStitchProcess,
         minProductQty,
         imprintComments,
         fk_digitizerID,
@@ -772,6 +773,14 @@ export class ImprintComponent implements OnInit, OnDestroy {
         pk_standardImprintID,
         displayOrder
       } = imprint;
+      let processMode;
+      if (blnColorProcess) {
+        processMode = 0;
+      } else if (blnStitchProcess) {
+        processMode = 1;
+      } else if (blnSingleProcess) {
+        processMode = 2;
+      };
       const imprintObj = {
         product_id: pk_productID,
         decorator_id: fk_decoratorID,
@@ -785,7 +794,7 @@ export class ImprintComponent implements OnInit, OnDestroy {
         max_colors: maxColors,
         multi_color_min_id: fk_multiColorMinQID,
         collection_id: fk_collectionID,
-        bln_process_mode: blnSingleProcess,
+        bln_process_mode: processMode,
         min_product_qty: minProductQty,
         imprint_comments: imprintComments,
         digitizer_id: fk_digitizerID,
@@ -803,7 +812,6 @@ export class ImprintComponent implements OnInit, OnDestroy {
       standard_imprint: true,
       imprint_obj: finalImprintPayload
     };
-
     this.standardImprintAddLoader = true;
     this._inventoryService.addStandardImprints(payload)
       .subscribe((response) => {
@@ -1602,7 +1610,7 @@ export class ImprintComponent implements OnInit, OnDestroy {
       setup_charge_id: setup || 17,
       run_charge_id: run || 17,
       bln_includable: this.priceInclusionSelected.value === 'Yes' ? 1 : 0,
-      area: this.areaValue,
+      area: this.areaValue.replace(/'/g, '"'),
       multi_color_min_id: 1,
       bln_user_color_selection: this.defaultImprintColorSpecification === 'Yes' ? 1 : 0,
       max_colors: this.defaultImprintColorSpecification === 'Yes' ? this.maxColorSelected : null,
@@ -1788,7 +1796,7 @@ export class ImprintComponent implements OnInit, OnDestroy {
       setup_charge_id: setup || 17,
       run_charge_id: run || 17,
       bln_includable: this.priceInclusionSelected.value === 'Yes' ? 1 : 0,
-      area: this.areaValue,
+      area: this.areaValue.replace(/'/g, '"'),
       multi_color_min_id: 1,
       bln_user_color_selection: this.defaultImprintColorSpecification === 'Yes' ? 1 : 0,
       max_colors: this.defaultImprintColorSpecification === 'Yes' ? this.maxColorSelected : null,
@@ -1876,7 +1884,6 @@ export class ImprintComponent implements OnInit, OnDestroy {
     }
   }
   editImprint(imprint) {
-    // console.log(imprint);
     this._inventoryService.run = null;
     this._inventoryService.setup = null;
     this.editImprintObj = imprint;

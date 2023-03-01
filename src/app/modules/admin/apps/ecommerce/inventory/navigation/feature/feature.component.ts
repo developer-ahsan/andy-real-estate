@@ -196,7 +196,7 @@ export class FeatureComponent implements OnInit, OnDestroy {
       }
       let obj = {
         attribute_type_id: fk_attributeTypeID,
-        attribute_text: attributeText,
+        attribute_text: attributeText.replace(/'/g, '"'),
         attribute_id: fk_attributeID,
         order: listOrder
       };
@@ -325,7 +325,7 @@ export class FeatureComponent implements OnInit, OnDestroy {
     }
     const payload = {
       attribute_type_id: Number(pk_attributeTypeID),
-      attribute_text: feature,
+      attribute_text: feature.replace(/'/g, '"'),
       supplier_id: Number(fk_supplierID),
       product_id: Number(pk_productID),
       order: Number(order),

@@ -74,14 +74,15 @@ export const appRoutes: Route[] = [
             initialData: InitialDataResolver,
         },
         children: [
+            { path: 'dashboards', loadChildren: () => import('app/modules/admin/dashboards/dashboards.module').then(m => m.DashboardsModule) },
 
             // Dashboards
-            {
-                path: 'dashboards', children: [
-                    { path: 'overview', loadChildren: () => import('app/modules/admin/dashboards/project/project.module').then(m => m.ProjectModule) },
-                    { path: 'analytics', loadChildren: () => import('app/modules/admin/dashboards/analytics/analytics.module').then(m => m.AnalyticsModule) },
-                ]
-            },
+            // {
+            //     path: 'dashboards', children: [
+            //         { path: 'overview', loadChildren: () => import('app/modules/admin/dashboards/project/project.module').then(m => m.ProjectModule) },
+            //         { path: 'analytics', loadChildren: () => import('app/modules/admin/dashboards/analytics/analytics.module').then(m => m.AnalyticsModule) },
+            //     ]
+            // },
             // Apps
             {
                 path: 'apps', children: [

@@ -1,91 +1,225 @@
-<div class="w-full">
-    <div *ngIf="isLoading" class="my-2 px-5">
-        <ngx-skeleton-loader count="8" appearance="line" animation="pulse" [theme]="{ 
-            'background-color': '#dedede'
-          }">
-        </ngx-skeleton-loader>
-    </div>
-    <div *ngIf="!isLoading">
-        <div *ngIf="dataSource.length > 0;else other_content" class="w-full">
-            <table mat-table [dataSource]="dataSource" class="w-full border-t" style="overflow-x: auto;">
-                <ng-container matColumnDef="date">
-                    <th mat-header-cell *matHeaderCellDef class="w-10 min-w-10 text-center">
-                        Order
-                    </th>
-                    <td mat-cell *matCellDef="let element" class="text-sm text-center">
-                        {{element.listOrder}}
-                    </td>
-                </ng-container>
-                <ng-container matColumnDef="inhands">
-                    <th mat-header-cell *matHeaderCellDef class="w-20 min-w-20 px-2">
-                        In-Hands
-                    </th>
-                    <td mat-cell *matCellDef="let element" class="text-sm pr-1">02-10-2020
-                    </td>
-                </ng-container>
-                <ng-container matColumnDef="quote">
-                    <th mat-header-cell *matHeaderCellDef class="w-30 min-w-30 px-2">
-                        Quote
-                    </th>
-                    <td mat-cell *matCellDef="let element" class="text-sm pr-1">{{element.email}}
-                    </td>
-                </ng-container>
-                <ng-container matColumnDef="customer">
-                    <th mat-header-cell *matHeaderCellDef class="w-30 min-w-30 px-2">
-                        Customer
-                    </th>
-                    <td mat-cell *matCellDef="let element" class="text-sm pr-1">{{element.email}}
-                    </td>
-                </ng-container>
-                <ng-container matColumnDef="product">
-                    <th mat-header-cell *matHeaderCellDef class="w-30 min-w-30 px-2">
-                        Product
-                    </th>
-                    <td mat-cell *matCellDef="let element" class="text-sm pr-1">{{element.email}}
-                    </td>
-                </ng-container>
-                <ng-container matColumnDef="status">
-                    <th mat-header-cell *matHeaderCellDef class="w-30 min-w-30 px-2">
-                        Status
-                    </th>
-                    <td mat-cell *matCellDef="let element" class="text-sm pr-1">test
-                    </td>
-                </ng-container>
-                <ng-container matColumnDef="age">
-                    <th mat-header-cell *matHeaderCellDef class="w-10 min-w-10 text-center px-2">
-                        Age
-                    </th>
-                    <td mat-cell *matCellDef="let element" class="text-sm pr-1 text-center">10
-                    </td>
-                </ng-container>
-                <ng-container matColumnDef="action">
-                    <th mat-header-cell *matHeaderCellDef class="w-15 min-w-15 text-center">
-                        Action
-                    </th>
-                    <td mat-cell *matCellDef="let element" class="text-center">
-                        <div class="flex justify-center">
-                            <mat-icon svgIcon="heroicons_outline:mail" class="mr-1 icon-size-6"
-                                matTooltip="Email"></mat-icon>
-                            <mat-icon svgIcon="heroicons_outline:eye" class="mr-1 icon-size-6"
-                                matTooltip="View"></mat-icon>
+<div class=" rounded-2xl shadow bg-card flex flex-col lg:flex-row w-full" style="min-height: 80vh;">
+    <div class="w-full">
+        <div class="w-full">
+            <mat-drawer-container class="example-container bg-white" [hasBackdrop]="true" style="min-height: 80vh;">
+                <mat-drawer #drawer [mode]="'over'" position="end" class="px-8 min-w-80 ">
+                    <div class="flex justify-between my-5 align-items-center">
+                        <div>
+                            <div class="text-xl font-semibold tracking-tight leading-8">
+                                Advanced Filters
+                            </div>
+                            <div class="font-medium tracking-tight text-secondary">
+                                <!-- PDF, EPS, AI, PSD, and JPG file formats only! -->
+                            </div>
                         </div>
-                    </td>
-                </ng-container>
-                <tr mat-header-row *matHeaderRowDef="displayedColumns;" class="h-18 bg-light"></tr>
-                <tr mat-row *matRowDef="let row; columns: displayedColumns;"
-                    class="h-14 hover:bg-gray-100 dark:hover:bg-hover" style="cursor: pointer;">
-                </tr>
-            </table>
-            <mat-paginator #paginator class="border-b sm:border-t sm:border-b-0 z-10 bg-gray-50 dark:bg-transparent"
-                [ngClass]="{'pointer-events-none': isLoading}" [length]="totalUsers" [pageIndex]="0" [pageSize]="20"
-                (page)="getNextData($event)" [hidePageSize]="true">
-            </mat-paginator>
+                        <svg (click)="drawer.toggle()" [matTooltip]="'Close'" xmlns="http://www.w3.org/2000/svg"
+                            width="16" height="16" fill="currentColor" class="bi bi-x-lg cursor-pointer"
+                            viewBox="0 0 16 16">
+                            <path
+                                d="M2.146 2.854a.5.5 0 1 1 .708-.708L8 7.293l5.146-5.147a.5.5 0 0 1 .708.708L8.707 8l5.147 5.146a.5.5 0 0 1-.708.708L8 8.707l-5.146 5.147a.5.5 0 0 1-.708-.708L7.293 8 2.146 2.854Z" />
+                        </svg>
+                    </div>
+                    <div>
+                        <mat-form-field class="w-full">
+                            <mat-label>Search Quote</mat-label>
+                            <input matInput placeholder="Search Quote">
+                        </mat-form-field>
+                    </div>
+                    <div>
+                        <mat-form-field class="w-full">
+                            <mat-label>Search Customer</mat-label>
+                            <input matInput placeholder="Search Customer">
+                        </mat-form-field>
+                    </div>
+                    <div>
+                        <mat-form-field class="w-full">
+                            <mat-label>Search Product</mat-label>
+                            <input matInput placeholder="Search Product">
+                        </mat-form-field>
+                    </div>
+                    <div>
+                        <mat-form-field class="w-full">
+                            <mat-label>Search Stores</mat-label>
+                            <input matInput placeholder="Search Stores" matTooltip="Search stores by name"
+                                [matAutocomplete]="auto" [formControl]="searchStoreCtrl">
+                            <mat-autocomplete class="w-full" #auto="matAutocomplete"
+                                (optionSelected)="onSelected($event)" [displayWith]="displayWith">
+                                <mat-option *ngIf="isSearchingStore" class="is-loading">Loading...</mat-option>
+                                <ng-container *ngIf="!isSearchingStore">
+                                    <mat-option *ngFor="let item of allStores" [value]="item">
+                                        <span>{{item.storeName}}</span>
+                                    </mat-option>
+                                </ng-container>
+                            </mat-autocomplete>
+                        </mat-form-field>
+                    </div>
+                    <div>
+                        <mat-form-field class="w-full">
+                            <mat-label>Search Designer</mat-label>
+                            <input matInput placeholder="Search Designer" matTooltip="Search designer by name"
+                                [matAutocomplete]="designer" [formControl]="searchDesignerCtrl">
+                            <mat-autocomplete class="w-full" #designer="matAutocomplete"
+                                (optionSelected)="onSelectedDesigner($event)" [displayWith]="displayWithDesigner">
+                                <mat-option *ngIf="isSearchingDesigner" class="is-loading">Loading...</mat-option>
+                                <ng-container *ngIf="!isSearchingDesigner">
+                                    <mat-option *ngFor="let item of allDesigners" [value]="item">
+                                        <span>{{item.firstName + ' ' + item.lastName}}</span>
+                                    </mat-option>
+                                </ng-container>
+                            </mat-autocomplete>
+                        </mat-form-field>
+                    </div>
+                    <div>
+                        <button [disabled]="isFilterLoader" (click)="filterSmartArtList()" class="w-full"
+                            [color]="'primary'" mat-button mat-flat-button>
+                            <span *ngIf="!isFilterLoader">Filter</span>
+                            <mat-progress-spinner *ngIf="isFilterLoader" [diameter]="24" [mode]="'indeterminate'">
+                            </mat-progress-spinner>
+                        </button>
+                    </div>
+                </mat-drawer>
+                <mat-drawer-content class="bg-white">
+                    <div class="p-4 sm:p-4 lg:p-8 flex justify-between">
+                        <div class="text-2xl font-bold">
+                            Quote Scheduler
+                        </div>
+                        <div class="cursor-pointer" (click)="drawer.toggle()">
+                            <button mat-flat-button mat-button class="min-w-40">Filter</button>
+                        </div>
+                    </div>
+                    <div class="px-8">
+                        <fuse-alert class="mb-2" [appearance]="'soft'" [type]="'warning'" [showIcon]="false">
+                            NOTE: Viewing this scheduler does not actually run the scheduler. This is just for
+                            reference.
+                        </fuse-alert>
+                        <mat-button-toggle-group #group="matButtonToggleGroup" [value]="mainScreen"
+                            (change)="calledScreen(group.value)">
+                            <mat-button-toggle value="Awaiting Artwork Approval">
+                                Awaiting Artwork Approval
+                            </mat-button-toggle>
+                            <mat-button-toggle value="On-Hold">
+                                On-Hold
+                            </mat-button-toggle>
+                            <mat-button-toggle value="Follow up for approval">
+                                Follow up for approval
+                            </mat-button-toggle>
+                        </mat-button-toggle-group>
+                    </div>
+                    <div *ngIf="isLoading" class="my-2 px-5">
+                        <ngx-skeleton-loader count="8" appearance="line" animation="pulse" [theme]="{ 
+                            'background-color': '#dedede'
+                          }">
+                        </ngx-skeleton-loader>
+                    </div>
+                    <div class="mt-2" *ngIf="mainScreen == 'Awaiting Artwork Approval'">
+                        <div class="px-8">
+                            <fuse-alert class="mb-2" [appearance]="'outline'" [type]="'warning'" [showIcon]="false">
+                                There are currently no pending orders awaiting artwork approval for the scheduler.
+                            </fuse-alert>
+                        </div>
+                    </div>
+                    <div class="mt-2" *ngIf="mainScreen == 'On-Hold'">
+                        <div class="px-8">
+                            <fuse-alert class="mb-2" [appearance]="'outline'" [type]="'warning'" [showIcon]="false">
+                                There are currently no pending orders on hold for the scheduler.
+                            </fuse-alert>
+                        </div>
+                    </div>
+                    <div class="mt-2" *ngIf="mainScreen == 'Follow up for approval'">
+                        <div class="px-8">
+                            <fuse-alert class="mb-2" [appearance]="'outline'" [type]="'warning'" [showIcon]="false">
+                                There are currently no pending orders follow up for approval for the scheduler.
+                            </fuse-alert>
+                        </div>
+                    </div>
+                    <div *ngIf="!isLoading" class="mt-2 overflow-hidden">
+                        <div *ngIf="dataSource.length > 0;else other_content" class="w-full overflow-x-auto">
+                            <table mat-table [dataSource]="dataSource" class="w-full border-t">
+                                <ng-container matColumnDef="date">
+                                    <th mat-header-cell *matHeaderCellDef class="w-20 min-w-20 px-2">
+                                        Date
+                                    </th>
+                                    <td mat-cell *matCellDef="let element" class="text-xs px-2">
+                                        {{element.dateCreated | date: 'MM/dd/yy'}}
+                                    </td>
+                                </ng-container>
+                                <ng-container matColumnDef="inhands">
+                                    <th mat-header-cell *matHeaderCellDef class="w-20 min-w-20 px-2">
+                                        In-Hands
+                                    </th>
+                                    <td mat-cell *matCellDef="let element" class="text-xs px-2">
+                                        {{(element.inHandsDate |
+                                        date: 'MM/dd/yy') || 'N/A'}}
+                                    </td>
+                                </ng-container>
+                                <ng-container matColumnDef="order">
+                                    <th mat-header-cell *matHeaderCellDef class="w-20 min-w-20 px-2">
+                                        Order
+                                    </th>
+                                    <td mat-cell *matCellDef="let element" class="text-xs px-2">{{element.fk_cartID}}
+                                    </td>
+                                </ng-container>
+                                <ng-container matColumnDef="customer">
+                                    <th mat-header-cell *matHeaderCellDef class="w-30 min-w-30">
+                                        Customer
+                                    </th>
+                                    <td mat-cell *matCellDef="let element" class="text-xs pr-1">{{element.firstName + '
+                                        ' +element.lastName}}
+                                    </td>
+                                </ng-container>
+                                <ng-container matColumnDef="product">
+                                    <th mat-header-cell *matHeaderCellDef class="w-50 min-w-50">
+                                        Product
+                                    </th>
+                                    <td mat-cell *matCellDef="let element" class="text-xs pr-1">{{element.productName}}
+                                    </td>
+                                </ng-container>
+                                <ng-container matColumnDef="status">
+                                    <th mat-header-cell *matHeaderCellDef class="w-30 min-w-30">
+                                        Status
+                                    </th>
+                                    <td mat-cell *matCellDef="let element" class="text-xs pr-1">{{element.statusName}}
+                                    </td>
+                                </ng-container>
+                                <ng-container matColumnDef="age">
+                                    <th mat-header-cell *matHeaderCellDef class="w-10 min-w-10 text-center">
+                                        Age
+                                    </th>
+                                    <td mat-cell *matCellDef="let element" class="text-xs pr-1 text-center">10
+                                    </td>
+                                </ng-container>
+                                <ng-container matColumnDef="action">
+                                    <th mat-header-cell *matHeaderCellDef class="w-15 min-w-15 text-center">
+                                        Action
+                                    </th>
+                                    <td mat-cell *matCellDef="let element" class="text-center">
+                                        <div class="flex justify-center">
+                                            <mat-icon svgIcon="heroicons_outline:mail" class="mr-1 icon-size-4"
+                                                matTooltip="Email"></mat-icon>
+                                            <mat-icon svgIcon="heroicons_outline:eye" class="mr-1 icon-size-4"
+                                                matTooltip="View"></mat-icon>
+                                        </div>
+                                    </td>
+                                </ng-container>
+                                <tr mat-header-row *matHeaderRowDef="displayedColumns;" class="h-18 bg-light"></tr>
+                                <tr mat-row *matRowDef="let row; columns: displayedColumns;"
+                                    class="h-14 hover:bg-gray-100 dark:hover:bg-hover" style="cursor: pointer;">
+                                </tr>
+                            </table>
+                            <mat-paginator #paginator
+                                class="border-b sm:border-t sm:border-b-0 z-10 bg-gray-50 dark:bg-transparent"
+                                [ngClass]="{'pointer-events-none': isLoading}" [length]="totalRecords" [pageIndex]="0"
+                                [pageSize]="20" (page)="getNextData($event)" [hidePageSize]="true">
+                            </mat-paginator>
+                        </div>
+                        <ng-template #other_content>
+                            <div class="text-secondary font-semibold p-5 text-center bg-card">
+                                There are currently no order entries, please check your filters.
+                            </div>
+                        </ng-template>
+                    </div>
+                </mat-drawer-content>
+            </mat-drawer-container>
         </div>
-        <!-- No color Found -->
-        <ng-template #other_content>
-            <div class="text-secondary font-semibold p-5 text-center bg-card">
-                There are currently no Commentors.
-            </div>
-        </ng-template>
     </div>
 </div>

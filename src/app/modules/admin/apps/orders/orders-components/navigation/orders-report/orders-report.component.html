@@ -122,7 +122,8 @@
                                                 <div class="row">
                                                     <div class="col-9">
                                                         <p class="font-bold text-medium">
-                                                            ({{item.products[0]?.pk_productID}})
+                                                            <a
+                                                                routerLink="/apps/ecommerce/inventory/{{item.products[0]?.pk_productID}}">({{item.products[0]?.pk_productID}})</a>
                                                             {{item.products[0]?.productNumber}}:
                                                             {{item.products[0]?.productName}}
                                                         </p>

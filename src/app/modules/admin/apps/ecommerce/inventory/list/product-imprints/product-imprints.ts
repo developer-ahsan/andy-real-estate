@@ -136,6 +136,8 @@ export class ProductImprintsComponent implements OnInit, OnDestroy {
           fk_multiColorMinQID,
           fk_collectionID,
           blnSingleProcess,
+          blnColorProcess,
+          blnStitchProcess,
           minProductQty,
           imprintComments,
           fk_digitizerID,
@@ -144,6 +146,14 @@ export class ProductImprintsComponent implements OnInit, OnDestroy {
           pk_standardImprintID,
           displayOrder
         } = imprint;
+        let processMode;
+        if (blnColorProcess) {
+          processMode = 0;
+        } else if (blnStitchProcess) {
+          processMode = 1;
+        } else if (blnSingleProcess) {
+          processMode = 2;
+        };
         const imprintObj = {
           product_id: pk_productID,
           decorator_id: fk_decoratorID,
@@ -157,7 +167,7 @@ export class ProductImprintsComponent implements OnInit, OnDestroy {
           max_colors: maxColors,
           multi_color_min_id: fk_multiColorMinQID,
           collection_id: fk_collectionID,
-          bln_process_mode: blnSingleProcess,
+          bln_process_mode: processMode,
           min_product_qty: minProductQty,
           imprint_comments: imprintComments,
           digitizer_id: fk_digitizerID,

@@ -44,12 +44,13 @@ import { SmartArtComponent } from './components/smartart.component';
 import { OrderDashboardComponent } from './components/pages/order-dashboard/order-dashboard.component';
 import { QuoteDashboardComponent } from './components/pages/quote-dashboard/quote-dashboard.component';
 import { OrderSchedulerComponent } from './components/pages/order-scheduler/order-scheduler.component';
+import { QuoteSchedulerComponent } from './components/pages/quote-scheduler/quote-scheduler.component';
 
 @NgModule({
     declarations: [
         SmartArtComponent,
         OrderDashboardComponent,
-        QuoteDashboardComponent, OrderSchedulerComponent
+        QuoteDashboardComponent, OrderSchedulerComponent, QuoteSchedulerComponent
     ],
     imports: [
         RouterModule.forChild(smartartRoutes),

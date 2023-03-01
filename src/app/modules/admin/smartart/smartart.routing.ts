@@ -3,7 +3,9 @@ import { CanDeactivateGuard } from 'app/can-deactivate.guard';
 import { OrderDashboardComponent } from './components/pages/order-dashboard/order-dashboard.component';
 import { OrderSchedulerComponent } from './components/pages/order-scheduler/order-scheduler.component';
 import { QuoteDashboardComponent } from './components/pages/quote-dashboard/quote-dashboard.component';
+import { QuoteSchedulerComponent } from './components/pages/quote-scheduler/quote-scheduler.component';
 import { SmartArtComponent } from './components/smartart.component';
+import { SmartArtStoresResolver, SmartArtUsersResolver } from './components/smartart.resolvers';
 
 export const smartartRoutes: Route[] = [
 
@@ -11,6 +13,7 @@ export const smartartRoutes: Route[] = [
         path: '',
         component: SmartArtComponent,
         resolve: {
+            SmartArtStoresResolver, SmartArtUsersResolver
         },
         children: [
             {
@@ -45,7 +48,7 @@ export const smartartRoutes: Route[] = [
             },
             {
                 path: 'quote-scheduler',
-                component: QuoteDashboardComponent,
+                component: QuoteSchedulerComponent,
                 data: {
                     title: 'Quote Scheduler',
                     url: 'quote-scheduler'
