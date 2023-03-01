@@ -17,159 +17,83 @@ export class QuoteSchedulerComponent implements OnInit, OnDestroy {
   private _unsubscribeAll: Subject<any> = new Subject<any>();
 
 
-  mainScreen = 'Awaiting Artwork Approval';
-  dataSource = [];
+  mainScreen = 'Artwork Approved';
+  dataSourceAwaiting = [];
+  dataSourceOver48 = [];
+  dataSourceOnHold = [];
+  dataSourceFollow = [];
   tempDataSource = [];
-  displayedColumns: string[] = ['date', 'inhands', 'order', 'customer', 'product', 'status', 'age', 'action'];
-  totalRecords = 0;
+  displayedColumns: string[] = ['date', 'inhands', 'order', 'customer', 'product', 'status', 'action'];
+  totalRecordsAwaiting = 0;
+  totalRecordsOver48 = 0;
+  totalRecordsOnHold = 0;
+  totalRecordsFollow = 0;
   tempRecords = 0;
   page = 1;
 
+  isLoading48: boolean = false;
+  onHoldLoader: boolean = false;
+  followLoader: boolean = false;
 
-  // Search Stores
-  allStores = [];
-  searchStoreCtrl = new FormControl();
-  selectedStore: any;
-  isSearchingStore = false;
-  // Search Designers
-  allDesigners = [];
-  searchDesignerCtrl = new FormControl();
-  selectedDesigner: any;
-  isSearchingDesigner = false;
-  // Search Filters
-  ngSearchStore = '';
-  ngSearchDesigner = '';
-  ngFilterField = '';
-  isFilterLoader: boolean = false;
   constructor(
     private _changeDetectorRef: ChangeDetectorRef,
     private _smartartService: SmartArtService
   ) { }
 
-  calledScreen(screen) {
-    this.mainScreen = screen;
-  }
   ngOnInit(): void {
     this.isLoading = true;
-    this.searchableFields();
-    this.getSmartArtList(1, 'get');
+    this.getSmartArtAwaitingList(1);
   };
-  searchableFields() {
-    this._smartartService.adminStores$.pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
-      this.allStores.push({ storeName: 'All Stores', pk_storeID: null });
-      this.allStores = this.allStores.concat(res['data']);
-    });
-    this._smartartService.smartArtUsers$.pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
-      this.allDesigners.push({ firstName: 'All', lastName: " Designers", pk_userID: null });
-      this.allDesigners = this.allDesigners.concat(res['data']);
-    });
-    let params;
-    this.searchStoreCtrl.valueChanges.pipe(
-      filter((res: any) => {
-        params = {
-          stores: true,
-          bln_active: 1,
-          keyword: res
-        }
-        return res !== null && res.length >= 3
-      }),
-      distinctUntilChanged(),
-      debounceTime(300),
-      tap(() => {
-        this.allStores = [];
-        this.isSearchingStore = true;
-        this._changeDetectorRef.markForCheck();
-      }),
-      switchMap(value => this._smartartService.getSmartArtData(params)
-        .pipe(
-          finalize(() => {
-            this.isSearchingStore = false
-            this._changeDetectorRef.markForCheck();
-          }),
-        )
-      )
-    ).subscribe((data: any) => {
-      this.allStores.push({ storeName: 'All Stores', pk_storeID: null });
-      this.allStores = this.allStores.concat(data['data']);
-    });
-    let params1;
-    this.searchDesignerCtrl.valueChanges.pipe(
-      filter((res: any) => {
-        params1 = {
-          smart_art_users: true,
-          keyword: res
-        }
-        return res !== null && res.length >= 3
-      }),
-      distinctUntilChanged(),
-      debounceTime(300),
-      tap(() => {
-        this.allDesigners = [];
-        this.isSearchingDesigner = true;
-        this._changeDetectorRef.markForCheck();
-      }),
-      switchMap(value => this._smartartService.getSmartArtData(params1)
-        .pipe(
-          finalize(() => {
-            this.isSearchingDesigner = false
-            this._changeDetectorRef.markForCheck();
-          }),
-        )
-      )
-    ).subscribe((data: any) => {
-      this.allDesigners.push({ firstName: 'All', lastName: " Designers", pk_userID: null });
-      this.allDesigners = this.allDesigners.concat(data['data']);
-    });
-
-  }
-  onSelected(ev) {
-    this.selectedStore = ev.option.value;
-  }
-  displayWith(value: any) {
-    return value?.storeName;
-  }
-  onSelectedDesigner(ev) {
-    this.selectedDesigner = ev.option.value;
-  }
-  displayWithDesigner(value: any) {
-    let name = '';
-    if (value) {
-      name = value?.firstName + ' ' + value.lastName;
+  calledScreen(screen) {
+    this.mainScreen = screen;
+    if (screen == 'Artwork Approved') {
+      if (this.totalRecordsAwaiting == 0) {
+        this.getSmartArtAwaitingList(1);
+      }
+    } else if (screen == 'On-Hold') {
+      if (this.totalRecordsOver48 == 0) {
+        this.isLoading48 = true;
+        this.getSmartArtover48List(1);
+      }
+    } else if (screen == 'Follow up') {
+      if (this.totalRecordsOnHold == 0) {
+        this.onHoldLoader = true;
+        this.getSmartArtOnHoldList(1);
+      }
+    } else if (screen == 'PM') {
+      if (this.totalRecordsFollow == 0) {
+        this.followLoader = true;
+        this.getSmartArtFollowList(1);
+      }
     }
-    return name;
   }
-  getSmartArtList(page, type) {
+  // ArtworkApproval
+  getSmartArtAwaitingList(page) {
     let params = {
-      smart_art_userID: 7,
-      smartart_list: true,
+      sort_direction: 'DESC',
+      sortField: 'fk_cartID',
+      data_type: 1,
+      quote_scheduler: true,
       page: page,
       size: 20,
-      store_id: this.ngSearchStore,
-      designerID: this.ngSearchDesigner,
-      filter_field: this.ngFilterField
     }
     this._smartartService.getSmartArtData(params).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
-      if (this.isFilterLoader) {
-        this.drawer.toggle();
-      }
-      this.dataSource = res["data"];
-      this.totalRecords = res["totalRecords"];
+      this.dataSourceAwaiting = res["data"];
+      this.totalRecordsAwaiting = res["totalRecords"];
       if (this.tempDataSource.length == 0) {
         this.tempDataSource = res["data"];
         this.tempRecords = res["totalRecords"];
       }
       this.isLoading = false;
-      this.isFilterLoader = false;
       // this.isLoadingChange.emit(false);
       this._changeDetectorRef.markForCheck();
     }, err => {
-      this.isFilterLoader = false;
       this.isLoading = false;
       // this.isLoadingChange.emit(false);
       this._changeDetectorRef.markForCheck();
     });
   }
-  getNextData(event) {
+  getNextDataAwaiting(event) {
     const { previousPageIndex, pageIndex } = event;
 
     if (pageIndex > previousPageIndex) {
@@ -177,44 +101,100 @@ export class QuoteSchedulerComponent implements OnInit, OnDestroy {
     } else {
       this.page--;
     };
-    this.getSmartArtList(this.page, 'get');
+    this.getSmartArtAwaitingList(this.page);
   };
-  onOrderStatusChange(ev) {
-    this.isLoading = true;
-    if (this.dataSource.length) {
-      this.paginator.pageIndex = 0;
+  // On Hold Over 48
+  getSmartArtover48List(page) {
+    let params = {
+      sort_direction: 'DESC',
+      sortField: 'fk_cartID',
+      data_type: 2,
+      quote_scheduler: true,
+      page: page,
+      size: 20,
     }
-    this.ngSearchStore = '';
-    this.ngSearchDesigner = '';
-    if (ev == 1) {
-      this.ngFilterField = null;
+    this._smartartService.getSmartArtData(params).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+      this.dataSourceOver48 = res["data"];
+      this.totalRecordsOver48 = res["totalRecords"];
+      this.isLoading48 = false;
+      // this.isLoadingChange.emit(false);
+      this._changeDetectorRef.markForCheck();
+    }, err => {
+      this.isLoading48 = false;
+      // this.isLoadingChange.emit(false);
+      this._changeDetectorRef.markForCheck();
+    });
+  }
+  getNextDataover48(event) {
+    const { previousPageIndex, pageIndex } = event;
+
+    if (pageIndex > previousPageIndex) {
+      this.page++;
     } else {
-      this.ngFilterField = ev;
+      this.page--;
+    };
+    this.getSmartArtover48List(this.page);
+  };
+  // On-Hold
+  getSmartArtOnHoldList(page) {
+    let params = {
+      sort_direction: 'DESC',
+      sortField: 'fk_cartID',
+      data_type: 3,
+      quote_scheduler: true,
+      page: page,
+      size: 20,
     }
-    this.getSmartArtList(1, 'get');
+    this._smartartService.getSmartArtData(params).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+      this.dataSourceOnHold = res["data"];
+      this.totalRecordsOnHold = res["totalRecords"];
+      this.onHoldLoader = false;
+      this._changeDetectorRef.markForCheck();
+    }, err => {
+      this.onHoldLoader = false;
+      this._changeDetectorRef.markForCheck();
+    });
   }
-  filterSmartArtList() {
-    this.isFilterLoader = true;
-    if (this.dataSource.length) {
-      this.paginator.pageIndex = 0;
+  getNextDataOnHold(event) {
+    const { previousPageIndex, pageIndex } = event;
+
+    if (pageIndex > previousPageIndex) {
+      this.page++;
+    } else {
+      this.page--;
+    };
+    this.getSmartArtOnHoldList(this.page);
+  };
+  // Follow Ups
+  getSmartArtFollowList(page) {
+    let params = {
+      sort_direction: 'DESC',
+      sortField: 'fk_cartID',
+      data_type: 4,
+      quote_scheduler: true,
+      page: page,
+      size: 20,
     }
-    if (this.selectedStore) {
-      if (this.selectedStore.pk_storeID) {
-        this.ngSearchStore = this.selectedStore.pk_storeID
-      } else {
-        this.ngSearchStore = null
-      }
-    }
-    if (this.selectedDesigner) {
-      if (this.selectedDesigner.pk_userID) {
-        this.ngSearchDesigner = this.selectedDesigner.pk_userID
-      } else {
-        this.ngSearchDesigner = null
-      }
-    }
-    this._changeDetectorRef.markForCheck();
-    this.getSmartArtList(1, 'get');
+    this._smartartService.getSmartArtData(params).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+      this.dataSourceFollow = res["data"];
+      this.totalRecordsFollow = res["totalRecords"];
+      this.followLoader = false;
+      this._changeDetectorRef.markForCheck();
+    }, err => {
+      this.followLoader = false;
+      this._changeDetectorRef.markForCheck();
+    });
   }
+  getNextDataFollow(event) {
+    const { previousPageIndex, pageIndex } = event;
+
+    if (pageIndex > previousPageIndex) {
+      this.page++;
+    } else {
+      this.page--;
+    };
+    this.getSmartArtFollowList(this.page);
+  };
   /**
      * On destroy
      */

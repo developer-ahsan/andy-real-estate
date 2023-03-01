@@ -37,6 +37,8 @@ export class QuoteDashboardComponent implements OnInit, OnDestroy {
   // Search Filters
   ngSearchStore = '';
   ngSearchDesigner = '';
+  ngSearchField = '';
+  ngUserField = '';
   ngFilterField = '2';
   isFilterLoader: boolean = false;
   constructor(
@@ -135,13 +137,15 @@ export class QuoteDashboardComponent implements OnInit, OnDestroy {
   }
   getSmartArtList(page, type) {
     let params = {
-      smart_art_userID: 7,
       quote_dashboard: true,
+      userName: 'bill',
       page: page,
       size: 20,
-      // store_id: this.ngSearchStore,
-      // designerID: this.ngSearchDesigner,
-      filter_field: this.ngFilterField
+      store_id: this.ngSearchStore,
+      designerID: this.ngSearchDesigner,
+      filter_field: this.ngFilterField,
+      search_field: this.ngSearchField,
+      user_search_field: this.ngUserField,
     }
     this._smartartService.getSmartArtData(params).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
       if (this.isFilterLoader) {
@@ -201,6 +205,8 @@ export class QuoteDashboardComponent implements OnInit, OnDestroy {
     }
     this.ngSearchStore = '';
     this.ngSearchDesigner = '';
+    this.ngUserField = '';
+    this.ngSearchField = '';
     this.ngFilterField = ev;
     this.getSmartArtList(1, 'get');
   }
