@@ -11,12 +11,34 @@
                 SmartArt
                 <p class="text-seconday"></p>
             </h2>
+            <button *ngIf="loginCheck" (click)="logout()" class="min-w-30" mat-stroked-button mat-button>Logout</button>
         </div>
     </div>
     <div class="mb-3 bg-light p-2">
-        <router-outlet></router-outlet>
-
-
+        <div *ngIf="loginCheck">
+            <router-outlet></router-outlet>
+        </div>
+        <div class="flex items-center justify-center px-6" *ngIf="!loginCheck" style="height: 100%;">
+            <div class="w-full sm:w-auto py-8 px-4 sm:p-12 sm:rounded-2xl sm:shadow sm:bg-card">
+                <div class="w-full max-w-80 sm:w-80 mx-auto sm:mx-0">
+                    <div class="mt-8 text-4xl font-extrabold tracking-tight leading-tight">SmartArt Login</div>
+                    <mat-form-field class="w-full">
+                        <mat-label>Username</mat-label>
+                        <input matInput [(ngModel)]="ngEmail" type="email">
+                    </mat-form-field>
+                    <mat-form-field class="w-full">
+                        <mat-label>Password</mat-label>
+                        <input matInput [(ngModel)]="ngPassword" type="password">
+                    </mat-form-field>
+                    <button [disabled]="isLoginLoader" mat-flat-button class="w-full" [color]="'primary'"
+                        [matTooltip]="'Login'" (click)="loginSmartArt()">
+                        <span *ngIf="!isLoginLoader"> Login </span>
+                        <mat-progress-spinner *ngIf="isLoginLoader" [diameter]="24" [mode]="'indeterminate'">
+                        </mat-progress-spinner>
+                    </button>
+                </div>
+            </div>
+        </div>
     </div>
 
 </div>

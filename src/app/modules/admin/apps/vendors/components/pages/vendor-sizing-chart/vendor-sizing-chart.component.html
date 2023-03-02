@@ -134,7 +134,18 @@
                         formControlName="description"></textarea>
                 </mat-form-field>
             </div>
-            <div class="col-12 text-right">
+            <div class="col-6">
+                <mat-label>Image (JPG,GIF,PNG,PDF): </mat-label>
+                <!-- <input type="file" accept="image/jpeg,image/jpg,image/png,image/gif,image/pdf" > -->
+                <ngx-dropzone [multiple]="false" accept="image/jpeg,image/jpg,image/png,image/gif,application/pdf"
+                    (change)="onSelect($event)">
+                    <ngx-dropzone-label>Choose Image</ngx-dropzone-label>
+                    <ngx-dropzone-preview *ngIf="file" [removable]="true" (removed)="onRemove()">
+                        <ngx-dropzone-label>{{ file.name }} ({{ file.type }})</ngx-dropzone-label>
+                    </ngx-dropzone-preview>
+                </ngx-dropzone>
+            </div>
+            <div class="col-12 text-right mt-2">
                 <button [disabled]="isAddLoader" mat-stroked-button class="min-w-40 mr-2 mb-2" (click)="addNewSize()">
                     <mat-icon *ngIf="!isAddLoader" class="mr-1" svgIcon="heroicons_outline:plus"></mat-icon>
                     <span *ngIf="!isAddLoader">Add New Chart</span>

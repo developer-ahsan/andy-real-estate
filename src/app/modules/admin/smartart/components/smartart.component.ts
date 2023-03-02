@@ -13,6 +13,7 @@ import { VendorsService } from '../../apps/vendors/components/vendors.service';
 import { LocationStrategy, PathLocationStrategy, Location } from '@angular/common';
 import { PreventNavigation } from 'app/can-deactivate.guard';
 import { fromEvent, Subject } from 'rxjs';
+import { HttpClient } from '@angular/common/http';
 
 
 @Component({
@@ -32,11 +33,16 @@ export class SmartArtComponent {
     drawerOpened: boolean = true;
     @ViewChild("panel") panel;
     @ViewChild('topScrollAnchor') topScroll: ElementRef;
+
+
+    loginCheck: boolean = false;
+    isLoginLoader: boolean = false;
     /**
      * Constructor
      */
     constructor(
         private _changeDetectorRef: ChangeDetectorRef,
+        private _httpClient: HttpClient,
         private _vendorsService: VendorsService,
         private _router: Router,
         private route: ActivatedRoute,
@@ -44,6 +50,11 @@ export class SmartArtComponent {
         private locationStrategy: LocationStrategy,
         private location: Location
     ) {
+        if (sessionStorage.getItem('smartArt')) {
+            this.loginCheck = true;
+        } else {
+            this.loginCheck = false;
+        }
     }
 
 
@@ -56,14 +67,18 @@ export class SmartArtComponent {
      */
 
     ngOnInit(): void {
-        this._router.events.subscribe((event) => {
-            if (event instanceof NavigationEnd) {
-                this.selectedScreeen = this.route.children[0].snapshot.data.title;
-                this.selectedRoute = this.route.children[0].snapshot.data.url;
-            }
-        })
-        this.selectedScreeen = this.route.children[0].snapshot.data.title;
-        this.selectedRoute = this.route.children[0].snapshot.data.url;
+        console.log(this._router.url)
+        if (this.loginCheck) {
+            this._router.events.subscribe((event) => {
+                if (event instanceof NavigationEnd) {
+                    this.selectedScreeen = this.route.children[0].snapshot.data.title;
+                    this.selectedRoute = this.route.children[0].snapshot.data.url;
+                }
+            })
+            this.selectedScreeen = this.route.children[0].snapshot.data.title;
+            this.selectedRoute = this.route.children[0].snapshot.data.url;
+        }
+
 
         this.isLoading = false;
         this.sideDrawer();
@@ -110,6 +125,22 @@ export class SmartArtComponent {
     // Drawer Open Close
     toggleDrawer() {
         this.drawerOpened = !this.drawerOpened;
+    }
+    loginSmartArt() {
+        this.isLoginLoader = true;
+        setTimeout(() => {
+            sessionStorage.setItem('smartArt', 'test');
+            this.loginCheck = true;
+            this._router.navigateByUrl(this._router.url);
+            this.isLoginLoader = false;
+            this._changeDetectorRef.markForCheck();
+        }, 2000);
+
+    }
+    logout() {
+        this._router.navigateByUrl('/smartart');
+        this.loginCheck = false;
+        sessionStorage.removeItem('smartArt');
     }
     /**
      * On destroy

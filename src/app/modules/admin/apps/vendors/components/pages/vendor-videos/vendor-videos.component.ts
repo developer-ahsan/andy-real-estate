@@ -1,5 +1,6 @@
 import { Component, Input, OnInit, Output, EventEmitter, ChangeDetectorRef, OnDestroy, ViewChild } from '@angular/core';
 import { MatPaginator } from '@angular/material/paginator';
+import { Router } from '@angular/router';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { VendorsService } from '../../vendors.service';
@@ -26,7 +27,8 @@ export class VendorVideosComponent implements OnInit, OnDestroy {
   isModal: boolean = false;
   constructor(
     private _changeDetectorRef: ChangeDetectorRef,
-    private _vendorService: VendorsService
+    private _vendorService: VendorsService,
+    private _router: Router
   ) { }
 
   ngOnInit(): void {
@@ -72,6 +74,9 @@ export class VendorVideosComponent implements OnInit, OnDestroy {
   }
   closeModal() {
     this.isModal = false;
+  }
+  goToProductVideos(row) {
+    this._router.navigate([`/apps/ecommerce/inventory/${row.pk_productID}/video`]);
   }
 
   /**

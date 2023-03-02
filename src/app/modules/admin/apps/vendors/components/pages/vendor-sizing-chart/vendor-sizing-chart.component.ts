@@ -45,6 +45,10 @@ export class VendorSizingChartComponent implements OnInit, OnDestroy {
   // Search By Keyword
   isSearching: boolean = false;
   keyword = '';
+
+  // Image
+  file: File;
+  imageValue: any;
   constructor(
     private _changeDetectorRef: ChangeDetectorRef,
     private _vendorService: VendorsService
@@ -238,6 +242,38 @@ export class VendorSizingChartComponent implements OnInit, OnDestroy {
   backTolist() {
     this.isUpdate = false;
     this._changeDetectorRef.markForCheck();
+  }
+  onSelect(event) {
+    this.file = event.addedFiles[0];
+    const reader = new FileReader();
+    reader.readAsDataURL(this.file);
+    reader.onload = () => {
+      let image: any = new Image;
+      image.src = reader.result;
+      image.onload = () => {
+        // if (image.width != 600 || image.height != 600) {
+        //   this._storeService.snackBar("Dimensions should be 600px by 600px.");
+        //   this.imageValue = null;
+        //   this.file = null;
+        //   this._changeDetectorRef.markForCheck();
+        //   return;
+        // } else if (this.file["type"] != 'image/jpeg' && this.file["type"] != 'image/jpg') {
+        //   this._storeService.snackBar("Image should be jpg format only");
+        //   this.file = null;
+        //   this.imageValue = null;
+        //   this._changeDetectorRef.markForCheck();
+        //   return;
+        // }
+        this.imageValue = {
+          imageUpload: reader.result,
+          type: this.file["type"]
+        };
+      }
+    }
+  }
+  onRemove() {
+    this.file = null;
+    this.imageValue = null;
   }
 
   /**

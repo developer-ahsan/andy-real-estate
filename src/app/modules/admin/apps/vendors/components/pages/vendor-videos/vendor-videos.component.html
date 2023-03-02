@@ -93,8 +93,8 @@
                     </td>
                 </ng-container>
                 <tr mat-header-row *matHeaderRowDef="displayedColumns;" class="h-18 bg-light"></tr>
-                <tr mat-row *matRowDef="let row; columns: displayedColumns;" target="_blank"
-                    class="h-14 hover:bg-gray-100 dark:hover:bg-hover" style="cursor: pointer;">
+                <tr mat-row *matRowDef="let row; columns: displayedColumns;" (click)="goToProductVideos(row)"
+                    target="_blank" class="h-14 hover:bg-gray-100 dark:hover:bg-hover" style="cursor: pointer;">
                 </tr>
             </table>
             <mat-paginator #paginator class="border-b sm:border-t sm:border-b-0 z-10 bg-gray-50 dark:bg-transparent"

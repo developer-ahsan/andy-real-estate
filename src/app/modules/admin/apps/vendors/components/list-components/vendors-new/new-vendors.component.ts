@@ -26,6 +26,10 @@ export class NewVendorsComponent implements OnInit, OnDestroy {
 
   addCompanyForm: FormGroup;
   isAddLoader: boolean = false;
+
+  ngSupplier = true;
+  ngDecorator = false;
+  ngDigitizer = false;
   constructor(
     private _changeDetectorRef: ChangeDetectorRef,
     private _vendorService: VendorsService
@@ -106,10 +110,20 @@ export class NewVendorsComponent implements OnInit, OnDestroy {
   }
   // Create New Company
   addNewCompany() {
-    const { companyName, address, city, zipCode, phone, fax, ASI, PPAI, artworkEmail, ordersEmail, websiteURL, outsideRep, insideRep, outsideRepPhone, outsideRepEmail, insideRepPhone, insideRepEmail, samplesContactEmail, companyType } = this.addCompanyForm.getRawValue();
+    const { companyName, address, city, zipCode, phone, fax, ASI, PPAI, artworkEmail, ordersEmail, websiteURL, outsideRep, insideRep, outsideRepPhone, outsideRepEmail, insideRepPhone, insideRepEmail, samplesContactEmail } = this.addCompanyForm.getRawValue();
     if (companyName == '' || address == '' || city == '' || phone == '' || zipCode == '') {
       this._vendorService.snackBar('Please fill out the required fields');
       return;
+    }
+    let companyType = [];
+    if (this.ngSupplier) {
+      companyType.push(1);
+    }
+    if (this.ngDecorator) {
+      companyType.push(2);
+    }
+    if (this.ngDigitizer) {
+      companyType.push(3);
     }
     let payload: AddCompany = {
       companyName, address, city, zipCode, phone, fax, ASI, PPAI, artworkEmail, ordersEmail, websiteURL, outsideRep, insideRep, outsideRepPhone, outsideRepEmail, insideRepPhone, insideRepEmail, samplesContactEmail, companyType, state: this.selectedState.state, create_company: true

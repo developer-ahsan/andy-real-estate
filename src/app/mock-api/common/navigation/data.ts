@@ -164,9 +164,9 @@ export const defaultNavigation: FuseNavigationItem[] = [
     {
         id: 'smartart',
         title: 'Smartart',
-        type: 'group',
-        subtitle: 'Smartart Dashboards',
-        icon: 'heroicons_outline:home',
+        type: 'collapsable',
+        // subtitle: 'Smartart Dashboards',
+        icon: 'heroicons_outline:desktop-computer',
         children: [
             {
                 id: 'smartart.orders',

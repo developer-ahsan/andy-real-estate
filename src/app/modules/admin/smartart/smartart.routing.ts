@@ -9,7 +9,6 @@ import { SmartArtComponent } from './components/smartart.component';
 import { SmartArtStoresResolver, SmartArtUsersResolver } from './components/smartart.resolvers';
 
 export const smartartRoutes: Route[] = [
-
     {
         path: '',
         component: SmartArtComponent,
