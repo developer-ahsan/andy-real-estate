@@ -94,7 +94,7 @@ import { OrderDashboardDetailsComponent } from './components/pages/order-details
         MatDialogModule,
         MatDatepickerModule,
         MatNativeDateModule,
-        MatTreeModule
+        MatTreeModule,
     ],
 })
 export class SmartArtModule {

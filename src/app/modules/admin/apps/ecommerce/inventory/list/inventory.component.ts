@@ -707,10 +707,11 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
             { item_id: 5, item_text: 'Price includes a laser etched/one location imprint. Setups and any other additional fees may apply and will be disclosed prior to checkout' },
             { item_id: 6, item_text: 'Price does not include imprint and is based on the white color option. You may add desired imprint(s) during the checkout process for an additional cost' },
             { item_id: 7, item_text: 'Price includes a full color/one location imprint. Setups and any other additional fees may apply and will be disclosed prior to checkout' },
-            { item_id: 8, item_text: 'Price includes imprint, setup, and run fees' },
-            { item_id: 9, item_text: 'Setups and any other additional fees may apply and will be disclosed prior to checkout' },
-            { item_id: 10, item_text: 'Item is sold blank' }
-        ];
+            { item_id: 8, item_text: 'Price includes a deboss/one location imprint. Setups and any other additional fees may apply and will be disclosed prior to checkout' },
+            { item_id: 9, item_text: 'Price includes imprint, setup, and run fees' },
+            { item_id: 10, item_text: 'Setups and any other additional fees may apply and will be disclosed prior to checkout' },
+            { item_id: 11, item_text: 'Item is sold blank' }
+        ];;
 
         this.selectedRedPriceItems = [];
 
