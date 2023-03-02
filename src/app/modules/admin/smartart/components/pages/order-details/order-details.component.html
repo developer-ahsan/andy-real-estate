@@ -8,7 +8,7 @@
                 <button class="min-w-40 mb-2" mat-button mat-stroked-button (click)="backToList()">Back to List</button>
             </div>
             <div class="row">
-                <div class="col-12 col-md-4">
+                <div class="col-12 col-md-4 mt-3">
                     <mat-accordion multi>
                         <mat-expansion-panel [expanded]="true">
                             <mat-expansion-panel-header>
@@ -151,7 +151,7 @@
                         </mat-expansion-panel>
                     </mat-accordion>
                 </div>
-                <div class="col-12 col-md-8">
+                <div class="col-12 col-md-8 mt-3">
                     <mat-accordion multi>
                         <mat-expansion-panel [expanded]="true">
                             <mat-expansion-panel-header>
@@ -167,7 +167,8 @@
                                             <mat-label>Reorder</mat-label>
                                             <input matInput>
                                         </mat-form-field>
-                                        <button class="min-w-30" mat-button mat-stroked-button>Apply</button>
+                                        <button class="min-w-30 btn buttonComment hover:bg-gray-200">Apply</button>
+                                        <!-- <button class="min-w-30" mat-button mat-stroked-button>Apply</button> -->
                                     </div>
                                     <div class="col-12 col-md-6">
                                         <mat-form-field class="w-full">
@@ -176,9 +177,10 @@
                                                 <mat-option value="12">Callie Terr</mat-option>
                                             </mat-select>
                                         </mat-form-field>
-                                        <button class="min-w-30" mat-button mat-stroked-button>Update</button>
+                                        <button class="min-w-30 btn buttonComment hover:bg-gray-200">Update</button>
+                                        <!-- <button class="min-w-30" mat-button mat-stroked-button>Update</button> -->
                                     </div>
-                                    <div class="col-8  mt-3">
+                                    <div class="col-md-8 col-12 mt-3">
                                         <div class="row">
                                             <div class="col-6 font-bold">Quantity:</div>
                                             <div class="col-6">1</div>
@@ -202,13 +204,96 @@
                                             <div class="col-6">NONE</div>
                                         </div>
                                     </div>
-                                    <div class="col-4 ">
-                                        <div class="text-right" style="text-align: -webkit-center">
-                                            <img class=""
-                                                src="https://assets.consolidus.com/globalAssets/Products/HiRes/147820.jpg">
-                                            <button class="min-w-30 mt-2" mat-button mat-stroked-button>Customer
+                                    <div class="col-md-4 col-12">
+                                        <div class="text-right">
+                                            <div class="flex justify-end">
+                                                <img class="w-40"
+                                                    src="https://assets.consolidus.com/globalAssets/Products/HiRes/147820.jpg">
+                                            </div>
+                                            <button class="min-w-30 mt-2 btn buttonComment hover:bg-gray-200">Customer
                                                 Comments</button>
                                         </div>
+                                    </div>
+                                    <div class="col-12 mt-2">
+                                        <fuse-alert class="mb-2" [appearance]="'outline'" [type]="'warning'"
+                                            [showIcon]="false">
+                                            As of 03/01/2023 the status of this item is New - Pending Review.
+                                        </fuse-alert>
+                                        <div class="rounded-2xl shadow bg-card p-4 ">
+                                            <p class="text-lg font-bold">Make Manual Updates to this Imprint Status</p>
+                                            <div class="row">
+                                                <div class="col-md-8 col-12">
+                                                    <div class="text-md font-bold">Upload Artwork Proof</div>
+                                                    <mat-form-field class="w-full">
+                                                        <mat-label>Email recipients (comma-separated)</mat-label>
+                                                        <input matInput>
+                                                    </mat-form-field>
+                                                    <mat-form-field class="w-full">
+                                                        <mat-label>Please enter any comments relating to this artwork:
+                                                        </mat-label>
+                                                        <textarea matInput></textarea>
+                                                    </mat-form-field>
+                                                    <div class="flex justify-between">
+                                                        <input type="file">
+                                                        <mat-checkbox>Respond to designer</mat-checkbox>
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-4 col-12">
+                                                    <div class="text-right">
+                                                        <button
+                                                            class="min-w-50 mt-2 btn buttonComment hover:bg-gray-200">New
+                                                            pending</button>
+                                                        <button
+                                                            class="min-w-50 mt-2 btn buttonComment hover:bg-gray-200">Awaiting
+                                                            artwork
+                                                            approval</button>
+                                                        <button class="min-w-50 mt-2 btn buttonDanger buttonComment">No
+                                                            proof
+                                                            needed</button>
+                                                        <button
+                                                            class="min-w-50 mt-2 btn buttonDanger buttonComment">Flag as
+                                                            awaiting
+                                                            info</button>
+                                                    </div>
+                                                    <div class="mt-3">
+                                                        <p class="text-md font-bold">Designer Notes:</p>
+                                                        <div class="h-40 border overflow-y-auto p-2">
+                                                            Screen printed orders should be sent as eps files.<br>
+                                                            Embroidered orders should be sent as high resolution PDF
+                                                            files
+                                                        </div>
+                                                    </div>
+
+                                                </div>
+                                            </div>
+                                            <p class="text-lg font-bold">Make Manual Updates to this Imprint Status</p>
+                                            <div class="row">
+                                                <div class="col-md-6 col-12">
+                                                    <p class="text-md font-bold">Approved per customer comments:</p>
+                                                    <mat-radio-group class="example-radio-group">
+                                                        <mat-radio-button class="example-radio-button">Customer Approved
+                                                            Artwork with comments</mat-radio-button>
+                                                        <mat-radio-button class="example-radio-button">Customer
+                                                            Requested Artwork Change</mat-radio-button>
+                                                    </mat-radio-group>
+                                                    <mat-checkbox>Respond to designer</mat-checkbox>
+                                                </div>
+                                                <div class="col-md-6 col-12">
+                                                    <mat-form-field class="w-full">
+                                                        <mat-label>Please enter comments regarding this
+                                                            communication:</mat-label>
+                                                        <textarea matInput></textarea>
+                                                    </mat-form-field>
+                                                    <div class="tex-right">
+                                                        <button
+                                                            class="min-w-30 mt-2 btn buttonComment hover:bg-gray-200">Apply
+                                                            Status
+                                                            Change</button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+
                                     </div>
                                 </div>
                             </div>
