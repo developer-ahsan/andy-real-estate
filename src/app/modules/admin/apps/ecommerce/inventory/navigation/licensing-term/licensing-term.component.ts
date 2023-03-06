@@ -79,7 +79,7 @@ export class LicensingTermComponent implements OnInit, OnDestroy {
       this.selectedCompanies = ev.option.value;
       this.page = 1;
       this.licensingTerms = [];
-      this.selectedLicensingTerms = null;
+      // this.selectedLicensingTerms = null;
       this.tempUpdatedTerm = null;
       this.licensingTermsLoader = true;
       this.getLicencingTerms(this.selectedCompanies.pk_licensingCompanyID, 1);
@@ -89,7 +89,7 @@ export class LicensingTermComponent implements OnInit, OnDestroy {
       this.page = 1;
       this.getLicencingTerms(this.selectedCompanies.pk_licensingCompanyID, 1);
       this.licensingTerms = [];
-      this.selectedLicensingTerms = null;
+      // this.selectedLicensingTerms = null;
       this.tempUpdatedTerm = null;
       this.licensingTermsLoader = true;
       this._changeDetectorRef.markForCheck();
@@ -97,6 +97,52 @@ export class LicensingTermComponent implements OnInit, OnDestroy {
   }
   displayWith(value: any) {
     return value?.name;
+  }
+  getSelectedTerms() {
+    let params = {
+      selected_licensing_term: true,
+      product_id: this.selectedProduct.pk_productID
+    }
+    this._inventoryService.getProductsData(params).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+      let selected: any;
+      if (res["selected_term"].length > 0) {
+        selected = res["selected_term"][0];
+      }
+      let subCategories = null;
+      if (res["sub_categories"].length > 0) {
+        subCategories = res["sub_categories"];
+      }
+      let data: any
+      if (subCategories) {
+        data = {
+          pk_licensingTermID: null,
+          SubCategories: [],
+          term: '',
+          IsSelected: false
+        };
+        subCategories.forEach(element => {
+          let is_selected = 0;
+          if (selected.fk_licensingTermSubCategoryID == element.pk_licensingTermSubCategoryID) {
+            is_selected = 1;
+          }
+          data.pk_licensingTermID = element.fk_licensingTermID;
+          data.term = element.term;
+          data.SubCategories.push({
+            IsSelected: is_selected,
+            fk_licensingTermID: selected.fk_licensingTermID,
+            name: element.name,
+            pk_licensingTermSubCategoryID: element.pk_licensingTermSubCategoryID
+          })
+        });
+      }
+      this.selectedLicensingTerms = data;
+
+      this.isLoading = false;
+      this._changeDetectorRef.markForCheck();
+    }, err => {
+      this.isLoading = false;
+      this
+    });
   }
   getLicensigTermsList(page) {
     let params = {
@@ -118,6 +164,7 @@ export class LicensingTermComponent implements OnInit, OnDestroy {
     this._inventoryService.product$.pipe(takeUntil(this._unsubscribeAll)).subscribe((details) => {
       if (details) {
         this.selectedProduct = details["data"][0];
+        this.getSelectedTerms();
       }
     });
   }
@@ -130,27 +177,32 @@ export class LicensingTermComponent implements OnInit, OnDestroy {
   getLicencingTerms(id, page) {
     const { pk_productID } = this.selectedProduct;
     let params = {
-      licensing_term: true,
-      licensing_company_id: id,
+      all_licensing_terms: true,
+      company_id: id,
       product_id: pk_productID,
       page: page,
+      size: 20,
       keyword: this.keyword
     }
     this._inventoryService.getProductsData(params)
       .pipe(takeUntil(this._unsubscribeAll))
       .subscribe((companyTerms) => {
-        this.totalRecords = companyTerms["totalRecords"];
-        const unselected = companyTerms["data"][0];
-        const selected = companyTerms["data"][1];
-        if (selected.length && !this.selectedLicensingTerms) {
-          selected[0].SubCategories = JSON.parse(selected[0].SubCategories);
-          this.selectedLicensingTerms = selected[0];
-        }
+        this.totalRecords = companyTerms["queryCount"];
+        const unselected = companyTerms["data"];
+        // const selected = companyTerms["data"][1];
+        // if (selected.length && !this.selectedLicensingTerms) {
+        //   selected[0].SubCategories = JSON.parse(selected[0].SubCategories);
+        //   this.selectedLicensingTerms = selected[0];
+        // }
         unselected.forEach(element => {
-          if (element.SubCategories) {
-            element.SubCategories = JSON.parse(element.SubCategories);
-          } else {
-            element.SubCategories = [];
+          element.SubCategories = [];
+          if (element.subCategoryList) {
+            // element.SubCategories = JSON.parse(element.SubCategories);
+            let subCat = element.subCategoryList.split(',');
+            subCat.forEach(sub => {
+              let sub_cat = sub.split(':');
+              element.SubCategories.push({ pk_licensingTermSubCategoryID: Number(sub_cat[0]), name: sub_cat[1], fk_licensingTermID: element.pk_licensingTermID });
+            });
           }
           this.licensingTerms.push(element);
         });
@@ -197,7 +249,7 @@ export class LicensingTermComponent implements OnInit, OnDestroy {
     const payload = {
       product_id: pk_productID,
       licensing_term_id: fk_licensingTermID,
-      sub_category_id: pk_licensingTermSubCategoryID,
+      sub_category_id: Number(pk_licensingTermSubCategoryID),
       call_type: "update",
       licensing_term: true
     };
