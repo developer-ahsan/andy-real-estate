@@ -3814,13 +3814,29 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
                         multiValue = multi_color["data"];
                         payload.multi_color_min_id = multiValue?.length ? multiValue[0].pk_multiColorMinQID : 1;
                         imprints.push(payload)
+
+                        // Clear Imprint Objects 
                         setTimeout(() => {
                             this.imprintsLocalList = imprints;
                             this.location_name = '';
                             this.method_name = '';
                             this.selectedLocation = { locationName: 'New Location >>>', pk_locationID: null };
                             this.selectedMethod = this.addImprintMethods.find(x => x.pk_methodID === 254) || this.addImprintMethods[0];
-
+                            this.runSetup.reset();
+                            this.priceInclusionSelected = this.priceInclusionArray[0];
+                            this.areaValue = "";
+                            this.defaultImprintColorSpecification = 'Yes';
+                            this.defaultImprintColorSpecification = 'Yes';
+                            this.maxColorSelected = 1;
+                            this.addImprintComment = "";
+                            this.selectedDigitizer = null;
+                            this.imprintItselfSelected.value = 'Yes';
+                            this.addImprintDisplayOrderValue = 1;
+                            this.locationSearchControl.setValue('');
+                            this.methodSearchControl.setValue('');
+                            this.favoriteSeason = 'Per color (i.e. silk screening, pad printing, etc.)';
+                            this.selectedCollectionId = null;
+                            this.customColorId = null;
                             this._changeDetectorRef.markForCheck();
                         }, 100);
                         this._snackBar.open("Imprint listed successfully", '', {
@@ -3828,6 +3844,7 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
                             verticalPosition: 'bottom',
                             duration: 3500
                         });
+
                         this.imprintsLocalListLoader = false;
                         this._changeDetectorRef.markForCheck();
                     }, err => {
@@ -3838,6 +3855,26 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
                 imprints.push(payload)
                 setTimeout(() => {
                     this.imprintsLocalList = imprints;
+                    this.imprintsLocalList = imprints;
+                    this.location_name = '';
+                    this.method_name = '';
+                    this.selectedLocation = { locationName: 'New Location >>>', pk_locationID: null };
+                    this.selectedMethod = this.addImprintMethods.find(x => x.pk_methodID === 254) || this.addImprintMethods[0];
+                    this.runSetup.reset();
+                    this.priceInclusionSelected = this.priceInclusionArray[0];
+                    this.areaValue = "";
+                    this.defaultImprintColorSpecification = 'Yes';
+                    this.defaultImprintColorSpecification = 'Yes';
+                    this.maxColorSelected = 1;
+                    this.addImprintComment = "";
+                    this.selectedDigitizer = null;
+                    this.imprintItselfSelected.value = 'Yes';
+                    this.addImprintDisplayOrderValue = 1;
+                    this.locationSearchControl.setValue('');
+                    this.methodSearchControl.setValue('');
+                    this.favoriteSeason = 'Per color (i.e. silk screening, pad printing, etc.)';
+                    this.selectedCollectionId = null;
+                    this.customColorId = null;
                     this._changeDetectorRef.markForCheck();
                 }, 100);
                 this._changeDetectorRef.markForCheck();
