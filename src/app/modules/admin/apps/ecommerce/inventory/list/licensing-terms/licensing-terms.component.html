@@ -49,12 +49,12 @@
                 <div *ngIf="!licensingTermsLoader">
                     <div class="row">
                         <div class="col-12 col-md-6">
-                            <!-- <mat-form-field class="fuse-mat-dense fuse-mat-no-subscript w-full mt-3">
+                            <mat-form-field class="fuse-mat-dense fuse-mat-no-subscript w-full mt-3">
                                 <mat-icon matPrefix [svgIcon]="'heroicons_outline:search'"></mat-icon>
                                 <input class="h-6" matTooltip="Enter for search" matInput
                                     (keyup.enter)="searchKeyword($event)" [autocomplete]="'off'"
                                     [placeholder]="'Search Licensing Term...'">
-                            </mat-form-field> -->
+                            </mat-form-field>
                         </div>
                         <div class="col-12 col-md-6" *ngIf="licensingTerms.length > 0">
                             <div class="flex items-center justify-end w-full">

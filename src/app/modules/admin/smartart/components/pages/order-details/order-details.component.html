@@ -210,8 +210,15 @@
                                                 <img class="w-40"
                                                     src="https://assets.consolidus.com/globalAssets/Products/HiRes/147820.jpg">
                                             </div>
-                                            <button class="min-w-30 mt-2 btn buttonComment hover:bg-gray-200">Customer
+                                            <button (click)="isCommentToggle = !isCommentToggle"
+                                                class="min-w-30 mt-2 btn buttonComment hover:bg-gray-200">Customer
                                                 Comments</button>
+                                        </div>
+                                    </div>
+                                    <div class="col-12" *ngIf="isCommentToggle">
+                                        <div class="font-bold">Customer Comments</div>
+                                        <div class="h-40 border overflow-y-auto p-2">
+                                            Customer Comments
                                         </div>
                                     </div>
                                     <div class="col-12 mt-2">

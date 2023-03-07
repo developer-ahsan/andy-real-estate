@@ -42,6 +42,10 @@ export class OrderDashboardDetailsComponent implements OnInit, OnDestroy {
   ngFilterField = '2';
   ngFilterProduct = '';
   isFilterLoader: boolean = false;
+
+
+  // Comment Toggle
+  isCommentToggle: boolean = false;
   constructor(
     private _changeDetectorRef: ChangeDetectorRef,
     private _smartartService: SmartArtService,
