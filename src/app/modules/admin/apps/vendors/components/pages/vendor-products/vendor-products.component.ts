@@ -5,6 +5,7 @@ import { takeUntil } from 'rxjs/operators';
 import { VendorsService } from '../../vendors.service';
 import * as Excel from 'exceljs/dist/exceljs.min.js';
 import moment from 'moment';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-vendor-products',
@@ -36,7 +37,8 @@ export class VendorProductsComponent implements OnInit, OnDestroy {
   fileDownloadLoader: boolean = false;
   constructor(
     private _changeDetectorRef: ChangeDetectorRef,
-    private _vendorService: VendorsService
+    private _vendorService: VendorsService,
+    private _router: Router
   ) { }
 
   ngOnInit(): void {
@@ -239,6 +241,9 @@ export class VendorProductsComponent implements OnInit, OnDestroy {
       this.fileDownloadLoader = false;
       this._changeDetectorRef.markForCheck();
     });
+  }
+  goToProductPage(ev) {
+    this._router.navigateByUrl(`/apps/ecommerce/inventory/${ev.pk_productID}`);
   }
 
   /**

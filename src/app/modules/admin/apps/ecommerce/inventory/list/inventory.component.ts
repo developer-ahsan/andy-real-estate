@@ -860,11 +860,17 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
         };
 
         // Color select autocomplete field
-        this.colorName.valueChanges.pipe(debounceTime(500), tap(() => {
-            //   this.errorMsg = "";
-            this.results = [];
-            this.isColorLoading = true;
-        }),
+        this.colorName.valueChanges.pipe(
+            filter((res: any) => {
+                return res != null && res.length >= 3;
+            }),
+            distinctUntilChanged(),
+            debounceTime(300),
+            tap(() => {
+                //   this.errorMsg = "";
+                this.results = [];
+                this.isColorLoading = true;
+            }),
             switchMap(value => this._httpClient.get(environment.products + "?color=true&size=20&color_name=" + value)
                 .pipe(
                     finalize(() => {
