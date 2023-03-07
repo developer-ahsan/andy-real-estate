@@ -123,27 +123,26 @@ export class ProductLicensingTermsComponent implements OnInit, OnDestroy {
   }
   getLicencingTerms(id, page) {
     let params = {
-      licensing_term: true,
-      licensing_company_id: id,
+      all_licensing_terms: true,
+      company_id: id,
       product_id: this.selectedProduct,
+      size: 20,
       page: page,
       keyword: this.keyword
     }
     this._inventoryService.getProductsData(params)
       .pipe(takeUntil(this._unsubscribeAll))
       .subscribe((companyTerms) => {
-        this.totalRecords = companyTerms["totalRecords"];
-        const unselected = companyTerms["data"][0];
-        const selected = companyTerms["data"][1];
-        if (selected.length && !this.selectedLicensingTerms) {
-          selected[0].SubCategories = JSON.parse(selected[0].SubCategories);
-          this.selectedLicensingTerms = selected[0];
-        }
+        this.totalRecords = companyTerms["queryCount"];
+        const unselected = companyTerms["data"];
         unselected.forEach(element => {
-          if (element.SubCategories) {
-            element.SubCategories = JSON.parse(element.SubCategories);
-          } else {
-            element.SubCategories = [];
+          element.SubCategories = [];
+          if (element.subCategoryList) {
+            let subCat = element.subCategoryList.split(',');
+            subCat.forEach(sub => {
+              let sub_cat = sub.split(':');
+              element.SubCategories.push({ pk_licensingTermSubCategoryID: Number(sub_cat[0]), name: sub_cat[1], fk_licensingTermID: element.pk_licensingTermID });
+            });
           }
           this.licensingTerms.push(element);
         });

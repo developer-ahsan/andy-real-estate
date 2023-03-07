@@ -1643,11 +1643,7 @@ export class ImprintComponent implements OnInit, OnDestroy {
                   'success' :
                   'error'
               );
-              this.location_name = '';
-              this.method_name = '';
-              this.selectedLocation = { locationName: 'New Location >>>', pk_locationID: null };
-              this.selectedMethod = this.addImprintMethods.find(x => x.pk_methodID === 254) || this.addImprintMethods[0];
-
+              this.resetImprints();
               this.addImprintLoader = false;
               this._inventoryService.run = null;
               this._inventoryService.setup = null;
@@ -1676,6 +1672,7 @@ export class ImprintComponent implements OnInit, OnDestroy {
             'success' :
             'error'
         );
+        this.resetImprints();
         this.addImprintLoader = false;
         this._inventoryService.run = null;
         this._inventoryService.setup = null;
@@ -1688,12 +1685,36 @@ export class ImprintComponent implements OnInit, OnDestroy {
         this._changeDetectorRef.markForCheck();
       }, err => {
         this.addImprintLoader = false;
-
         // Mark for check
         this._changeDetectorRef.markForCheck();
       });
 
   };
+  resetImprints() {
+    const { fk_supplierID } = this.selectedProduct;
+    this.selectedSupplier = this.suppliers.find(x => x.pk_companyID === fk_supplierID) || this.suppliers[2]
+    this.location_name = '';
+    this.method_name = '';
+    this.selectedLocation = { locationName: 'New Location >>>', pk_locationID: null };
+    this.selectedMethod = this.addImprintMethods.find(x => x.pk_methodID === 254) || this.addImprintMethods[0];
+    this.runSetup.reset();
+    this.priceInclusionSelected = this.priceInclusionArray[0];
+    this.areaValue = "";
+    this.defaultImprintColorSpecification = 'Yes';
+    this.defaultImprintColorSpecification = 'Yes';
+    this.maxColorSelected = 1;
+    this.addImprintComment = "";
+    this.selectedDigitizer = null;
+    this.imprintItselfSelected.value = 'Yes';
+    this.addImprintDisplayOrderValue = 1;
+    this.locationSearchControl.setValue('');
+    this.methodSearchControl.setValue('');
+    this.favoriteSeason = 'Per color (i.e. silk screening, pad printing, etc.)';
+    this.selectedCollectionId = null;
+    this.customColorId = null;
+    this.minQuantity = 1;
+    this._changeDetectorRef.markForCheck();
+  }
   uploadMediaImage(id) {
     const { pk_productID } = this.selectedProduct;
     const { imageUpload, type } = this.imageValue;

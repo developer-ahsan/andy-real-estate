@@ -236,7 +236,7 @@
                         </div>
                         <div class="col-12">
                             <mat-form-field appearance="fill" class="w-full">
-                                <input matInput (input)="addArea($event.target.value)">
+                                <input matInput [(ngModel)]="areaValue">
                             </mat-form-field>
                         </div>
 
@@ -560,9 +560,8 @@
                         </div>
                         <div class="col-12">
                             <mat-form-field appearance="fill" class="w-full">
-                                <input matInput value="{{minValue}}" type="number"
-                                    (mousewheel)="$event.preventDefault()"
-                                    (input)="addMinQuantity($event.target.value)">
+                                <input matInput type="number" (mousewheel)="$event.preventDefault()"
+                                    [(ngModel)]="minQuantity">
                             </mat-form-field>
                         </div>
 
@@ -574,8 +573,8 @@
                         </div>
                         <div class="col-12">
                             <mat-form-field appearance="fill" class="w-full">
-                                <textarea value="{{commentText}}" maxlength="250"
-                                    (input)="addImprintComments($event.target.value)" matInput rows="5"></textarea>
+                                <textarea value="{{commentText}}" maxlength="250" [(ngModel)]="addImprintComment"
+                                    matInput rows="5"></textarea>
                             </mat-form-field>
                         </div>
 
@@ -612,9 +611,8 @@
                         </div>
                         <div class="col-12">
                             <mat-form-field appearance="fill" class="w-full">
-                                <input matInput value="{{displayOrder}}" type="number"
-                                    (mousewheel)="$event.preventDefault()" min="1"
-                                    (input)="addImprintDisplayOrder($event.target.value)">
+                                <input matInput type="number" (mousewheel)="$event.preventDefault()" min="1"
+                                    [(ngModel)]="addImprintDisplayOrderValue">
                             </mat-form-field>
                         </div>
                     </div>
