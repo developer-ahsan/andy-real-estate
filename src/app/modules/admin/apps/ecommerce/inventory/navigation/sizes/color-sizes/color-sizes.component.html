@@ -34,10 +34,20 @@
                                     (mousewheel)="$event.preventDefault()" [(ngModel)]="elem.amount">
                             </td>
                         </tr>
+                        <tr class="border-b-2"></tr>
+                        <tr>
+                            <th class="mt-3 cursor-pointer">AUXILLIARY</th>
+                            <th *ngFor="let item of auxiliaryList;let i=index">
+                                <input class="form-control input text-sm" type="number"
+                                    (mousewheel)="$event.preventDefault()" [(ngModel)]="item.value">
+                            </th>
+                        </tr>
                     </table>
                 </div>
                 <div class="flex justify-end my-3">
-
+                    <button class="min-w-40 mr-2" mat-stroked-button [matTooltip]="'Clear All Fields'">
+                        <span class="ml-1 mr-1" (click)="clearAll()">Clear All</span>
+                    </button>
                     <button class="min-w-40" mat-stroked-button [matTooltip]="'Update Selected Sizes'"
                         [disabled]="sizeUpdateLoader" (click)="updateCorrectionValues()">
                         <mat-progress-spinner *ngIf="sizeUpdateLoader" [diameter]="24" [mode]="'indeterminate'">
@@ -46,10 +56,10 @@
                         <span *ngIf="!sizeUpdateLoader" class="ml-1 mr-1">Update</span>
                     </button>
                 </div>
-                <div class="overflow-x-auto">
+                <!-- <div class="overflow-x-auto">
                     <table class="table text-sm border-0">
                         <tr>
-                            <th class="mt-3">AUXILLIARY</th>
+                            <th class="mt-3 cursor-pointer">AUXILLIARY</th>
                             <th *ngFor="let item of auxiliaryList;let i=index">
                                 <input class="form-control input text-sm" type="number"
                                     (mousewheel)="$event.preventDefault()" [(ngModel)]="item.value">
@@ -59,7 +69,7 @@
                     <button class="min-w-40 mr-2" mat-stroked-button [matTooltip]="'Clear All Fields'">
                         <span class="ml-1 mr-1" (click)="clearAll()">Clear All</span>
                     </button>
-                </div>
+                </div> -->
             </div>
         </fuse-card>
         <fuse-card class="rounded-2xl shadow bg-card flex flex-col lg:flex-row w-full"
