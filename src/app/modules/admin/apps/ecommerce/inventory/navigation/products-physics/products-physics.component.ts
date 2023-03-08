@@ -385,7 +385,7 @@ export class ProductsPhysicsComponent implements OnInit, OnDestroy {
             let physics = {
               weight: Number(weight).toFixed(2),
               unitsInWeight: unitsInWeight,
-              dimensions: dimensions,
+              dimensions: dimensions.replace(/'/g, '"'),
               unitsInShippingPackage: unitsInShippingPackage,
               overPackCharge: Number(overPackCharge).toFixed(4)
             };
