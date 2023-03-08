@@ -10,6 +10,7 @@ import { VendorsService } from 'app/modules/admin/apps/vendors/components/vendor
 import { FileManagerService } from 'app/modules/admin/apps/file-manager/store-manager.service';
 import { CustomersService } from 'app/modules/admin/apps/ecommerce/customers/customers.service';
 import { OrdersService } from 'app/modules/admin/apps/orders/orders-components/orders.service';
+import { SearchService } from 'app/modules/admin/apps/search-modules/search.service';
 
 @Component({
     selector: 'search',
@@ -37,6 +38,7 @@ export class SearchComponent implements OnChanges, OnInit, OnDestroy {
         private _elementRef: ElementRef,
         private _httpClient: HttpClient,
         private _renderer2: Renderer2,
+        private _searchService: SearchService,
         private _productService: InventoryService,
         private _customerService: CustomersService,
         private _orderService: OrdersService,
@@ -138,11 +140,13 @@ export class SearchComponent implements OnChanges, OnInit, OnDestroy {
     searchProduct(event) {
         const val = event.target.value;
         if (val != '') {
-            this._productService.productSearchFilter.term = val;
+            this._searchService.productKeyword = val;
+            // this._productService.productSearchFilter.term = val;
             // this.router.navigateByUrl('/', { skipLocationChange: true }).then(() => {
             //     this.router.navigate(['/apps/ecommerce/inventory'])
             // });
-            this.router.navigateByUrl('/apps/ecommerce/inventory', { skipLocationChange: true });
+            // this.router.navigateByUrl('/apps/ecommerce/inventory', { skipLocationChange: true });
+            this.router.navigateByUrl('/apps/search/products');
         }
         this.close();
     }

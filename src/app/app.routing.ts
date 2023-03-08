@@ -87,6 +87,7 @@ export const appRoutes: Route[] = [
             {
                 path: 'apps', children: [
                     { path: 'academy', loadChildren: () => import('app/modules/admin/apps/academy/academy.module').then(m => m.AcademyModule) },
+                    { path: 'search', loadChildren: () => import('app/modules/admin/apps/search-modules/search-module.module').then(m => m.SearchModule) },
                     { path: 'calendar', loadChildren: () => import('app/modules/admin/apps/calendar/calendar.module').then(m => m.CalendarModule) },
                     { path: 'chat', loadChildren: () => import('app/modules/admin/apps/chat/chat.module').then(m => m.ChatModule) },
                     { path: 'contacts', loadChildren: () => import('app/modules/admin/apps/contacts/contacts.module').then(m => m.ContactsModule) },
