@@ -1,4 +1,4 @@
-import { Component, Input, OnInit, Output, EventEmitter, ChangeDetectorRef, OnDestroy } from '@angular/core';
+import { Component, Input, OnInit, Output, EventEmitter, ChangeDetectorRef, OnDestroy, ElementRef, ViewChild } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { InventoryService } from 'app/modules/admin/apps/ecommerce/inventory/inventory.service';
 import { Colors } from 'app/modules/admin/apps/ecommerce/inventory/inventory.types';
@@ -30,6 +30,8 @@ interface Color {
   styles: ['.img_wrp { display: inline - block; position: relative;} .close {position: absolute;top: 10px;right: 150px;}']
 })
 export class ColorComponent implements OnInit, OnDestroy {
+  @ViewChild('topScrollAnchor1') topScroll: ElementRef;
+
   selectedProduct: any;
   isLoading: boolean;
   private _unsubscribeAll: Subject<any> = new Subject<any>();
@@ -81,6 +83,9 @@ export class ColorComponent implements OnInit, OnDestroy {
   readonly separatorKeysCodes = [ENTER, COMMA] as const;
   colorTempImage: any;
   txtColorParts = '';
+
+  ngComboList1: any;
+  ngComboList2: any;
   constructor(
     private _changeDetectorRef: ChangeDetectorRef,
     private _inventoryService: InventoryService,
@@ -747,6 +752,29 @@ export class ColorComponent implements OnInit, OnDestroy {
     //   return `${this.isAllSelected() ? 'deselect' : 'select'} all`;
     // }
     // return `${this.selection.isSelected(row) ? 'deselect' : 'select'} row ${row.position + 1}`;
+  }
+  comboToolGenrator() {
+    var arr1 = new Array();
+    var arr2 = new Array();
+    arr1 = this.ngComboList1.replace(/'/g, "''").split(",");
+    arr2 = this.ngComboList2.replace(/'/g, "''").split(",");
+    let theCombo = '';
+    for (let i = 0; i < arr1.length; i++) {
+      for (let j = 0; j < arr2.length; j++) {
+        if (theCombo.length) {
+          theCombo = theCombo + ',';
+        }
+        theCombo = theCombo + arr1[i] + '/' + arr2[j];
+      }
+    }
+    let arr3 = new Array();
+    arr3 = theCombo.split(",");
+    arr3.forEach(element => {
+      this.customColorsList.push({ colorId: null, colorName: element, image: null, run: '0.0', hex: '' });
+    });
+    this.ngComboList1 = '';
+    this.ngComboList2 = '';
+    this.topScroll.nativeElement.scrollIntoView({ behavior: 'smooth' });
   }
 
   /**

@@ -2,7 +2,7 @@
     <ngx-skeleton-loader count="8" appearance="line" animation="pulse" *ngIf="isLoading">
     </ngx-skeleton-loader>
 
-    <div class="row" *ngIf="!isLoading">
+    <div class="row" *ngIf="!isLoading" #topScrollAnchor1>
         <div class="col-12 my-2">
             <fuse-card class="rounded-2xl shadow bg-card flex flex-col lg:flex-row w-full">
                 <div class="p-6 sm:p-8 lg:p-10 w-full">
@@ -338,6 +338,45 @@
                                 </mat-progress-spinner>
                                 <span *ngIf="!selectedTermUpdateLoader" class="ml-1 mr-1">Run Combo Tool</span>
                             </button>
+                        </div>
+                    </div>
+                </div>
+            </fuse-card>
+        </div>
+    </div>
+
+    <div class="row" *ngIf="!isLoading">
+        <div class="col-12 my-2">
+            <fuse-card class="rounded-2xl shadow bg-card flex flex-col lg:flex-row w-full">
+                <div class="p-6 sm:p-8 lg:p-10 w-full">
+                    <div class="text-2xl font-bold">
+                        Combo tool
+                    </div>
+
+                    <div class="row mt-6">
+                        <div class="col-12">
+                            <fuse-alert [appearance]="'soft'" [type]="'success'" [showIcon]="false">
+                                The combo tool allows you to define two separate lists of color attributes. The system
+                                will then automatically combine them. For example, if you have a pen that has two color
+                                attributes: body and trim, you can specify the body colors in the first list, and the
+                                trim colors in the second list and they will be combined. Make sure to separate all
+                                colors with commas.
+                                <br>
+                                The final list will show up in the new color field above.
+                            </fuse-alert>
+                            <div class="mt-2">
+                                <mat-form-field class="w-full">
+                                    <mat-label>List 1</mat-label>
+                                    <input matInput [(ngModel)]="ngComboList1">
+                                </mat-form-field>
+                                <mat-form-field class="w-full">
+                                    <mat-label>List 2</mat-label>
+                                    <input matInput [(ngModel)]="ngComboList2">
+                                </mat-form-field>
+                                <button mat-stroked-button class="min-w-40" (click)="comboToolGenrator()">
+                                    <span>Run combo tool</span>
+                                </button>
+                            </div>
                         </div>
                     </div>
                 </div>
