@@ -187,8 +187,12 @@
                                     </th>
                                     <td mat-cell *matCellDef="let element">
                                         <div class="p-2">
-                                            <img class="w-10"
-                                                src="https://assets.consolidus.com/globalAssets/Products/HiRes/{{element.pk_storeProductID}}.jpg">
+                                            <img class="w-10" *ngIf="!element.pk_storeProductID"
+                                                src="https://assets.consolidus.com/globalAssets/Products/coming_soon.jpg">
+                                            <img *ngIf="element.pk_storeProductID" class="w-10"
+                                                src="https://assets.consolidus.com/globalAssets/Products/HiRes/{{element.pk_storeProductID}}.jpg"
+                                                onError="this.src='https://assets.consolidus.com/globalAssets/Products/coming_soon.jpg'">
+
                                         </div>
                                     </td>
                                 </ng-container>
