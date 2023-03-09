@@ -3,17 +3,15 @@ import { debounceTime, distinctUntilChanged, filter, finalize, switchMap, takeUn
 import { fuseAnimations } from '@fuse/animations';
 import { ActivatedRoute, NavigationEnd, Router } from '@angular/router';
 import { FuseMediaWatcherService } from '@fuse/services/media-watcher';
-import { UsersService } from './users.service';
-import { UserService } from 'app/core/user/user.service';
-import { AuthService } from 'app/core/auth/auth.service';
-import { MatDrawer } from '@angular/material/sidenav';
-import Swal from 'sweetalert2'
-import { FormControl } from '@angular/forms';
-import { VendorsService } from '../../apps/vendors/components/vendors.service';
 import { LocationStrategy, PathLocationStrategy, Location } from '@angular/common';
 import { PreventNavigation } from 'app/can-deactivate.guard';
 import { fromEvent, Subject } from 'rxjs';
 import { HttpClient } from '@angular/common/http';
+import { SmartArtService } from './smartart.service';
+import * as CryptoJS from 'crypto-js';
+
+import { SmartArtLogin } from './smartart.types';
+
 
 
 @Component({
@@ -37,13 +35,15 @@ export class SmartArtComponent {
 
     loginCheck: boolean = false;
     isLoginLoader: boolean = false;
+    ngEmail = '';
+    ngPassword = '';
     /**
      * Constructor
      */
     constructor(
         private _changeDetectorRef: ChangeDetectorRef,
         private _httpClient: HttpClient,
-        private _vendorsService: VendorsService,
+        private _smartArtService: SmartArtService,
         private _router: Router,
         private route: ActivatedRoute,
         private _fuseMediaWatcherService: FuseMediaWatcherService,
@@ -127,15 +127,38 @@ export class SmartArtComponent {
         this.drawerOpened = !this.drawerOpened;
     }
     loginSmartArt() {
+        if (this.ngEmail == '' || this.ngPassword == '') {
+            this._smartArtService.snackBar('Email & password is required.');
+            return;
+        }
+        let obj = {
+            username: this.ngEmail,
+            password: this.ngPassword
+        }
         this.isLoginLoader = true;
-        setTimeout(() => {
-            sessionStorage.setItem('smartArt', 'test');
-            this.loginCheck = true;
-            this._router.navigateByUrl(this._router.url);
-            this.isLoginLoader = false;
-            this._changeDetectorRef.markForCheck();
-        }, 2000);
+        const secretKey = 'smart_art_login';
+        const objectString = JSON.stringify(obj);
+        const encryptedObject = CryptoJS.AES.encrypt(objectString, secretKey).toString();
+        // const token = sign(obj, 'smart_art_login');
+        let payload: SmartArtLogin = {
+            payload: encryptedObject,
+            smartart_login: true
+        }
+        this._smartArtService.AddSmartArtData(payload).pipe(takeUntil(this._unsubscribeAll),
+            finalize(() => {
+                this.isLoginLoader = false;
+                this._changeDetectorRef.markForCheck();
+            })).subscribe(res => {
+                if (res["isLogin"]) {
+                    this.loginCheck = true;
+                    sessionStorage.setItem('smartArt', JSON.stringify(res["data"][0]));
+                    this._router.navigateByUrl(this._router.url);
+                    this._changeDetectorRef.markForCheck();
+                } else {
+                    this._smartArtService.snackBar('Please check your credentials');
+                }
 
+            });
     }
     logout() {
         this._router.navigateByUrl('/smartart');

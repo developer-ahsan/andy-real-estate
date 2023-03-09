@@ -1,0 +1,1 @@
+export interface SmartArtLogin { payload: string; smartart_login: boolean; };

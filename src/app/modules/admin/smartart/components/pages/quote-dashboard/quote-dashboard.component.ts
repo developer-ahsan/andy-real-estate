@@ -41,6 +41,9 @@ export class QuoteDashboardComponent implements OnInit, OnDestroy {
   ngUserField = '';
   ngFilterField = '2';
   isFilterLoader: boolean = false;
+
+  smartArtUser: any = JSON.parse(sessionStorage.getItem('smartArt'));
+
   constructor(
     private _changeDetectorRef: ChangeDetectorRef,
     private _smartartService: SmartArtService
@@ -138,7 +141,7 @@ export class QuoteDashboardComponent implements OnInit, OnDestroy {
   getSmartArtList(page, type) {
     let params = {
       quote_dashboard: true,
-      userName: 'bill',
+      userName: this.smartArtUser.userName,
       page: page,
       size: 20,
       store_id: this.ngSearchStore,

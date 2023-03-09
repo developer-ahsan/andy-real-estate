@@ -43,6 +43,7 @@ export class OrderDashboardComponent implements OnInit, OnDestroy {
   ngFilterField = '2';
   ngFilterProduct = '';
   isFilterLoader: boolean = false;
+  smartArtUser: any = JSON.parse(sessionStorage.getItem('smartArt'));
   constructor(
     private _changeDetectorRef: ChangeDetectorRef,
     private _smartartService: SmartArtService,
@@ -140,7 +141,7 @@ export class OrderDashboardComponent implements OnInit, OnDestroy {
   }
   getSmartArtList(page, type) {
     let params = {
-      smart_art_userID: 7,
+      smart_art_userID: this.smartArtUser.pk_userID,
       smartart_list: true,
       page: page,
       size: 20,
