@@ -54,8 +54,8 @@
                             itemsPerPage: 10,
                             currentPage: tempProdData.page,
                             totalItems: tempProdData.totalImprints
-                          };">
-                            {{item.methodName}}/{{item.locationName}}-({{item.companyName}})
+                          };let i=index">
+                            {{i+1}}. {{item.methodName}}/{{item.locationName}}-({{item.companyName}})
                         </li>
                     </ul>
                     <div *ngIf="tempProdData.imprints.length < tempProdData.totalImprints" class="text-center mt-2">
