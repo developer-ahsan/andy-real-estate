@@ -3454,7 +3454,7 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
                 colors.push({
                     color_id: element.colorId,
                     the_run: element.run,
-                    rgb: element.hex.replace('#', '')
+                    rgb: element.hex
                 })
             });
             let custom_colors = [];
@@ -4227,9 +4227,9 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
     // Colors
     copyColorToHex(index, check) {
         if (check == 'default') {
-            this.selectedColorsListArray[index]['hex'] = this.colorValue.replace('#', '');
+            this.selectedColorsListArray[index]['hex'] = this.colorValue;
         } else {
-            this.customColorsList[index]['hex'] = this.colorValue.replace('#', '');
+            this.customColorsList[index]['hex'] = this.colorValue;
         }
     }
     addColorToArrayList() {

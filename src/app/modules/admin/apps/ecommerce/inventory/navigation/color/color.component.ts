@@ -494,12 +494,12 @@ export class ColorComponent implements OnInit, OnDestroy {
       });
   }
   copyColorToHex() {
-    this.hexColor = this.colorValue.replace('#', '')
-    this.colorForm.patchValue({ hex: this.colorValue.replace('#', '') });
+    this.hexColor = this.colorValue;
+    this.colorForm.patchValue({ hex: this.colorValue });
   };
   copyColorToHexx(index) {
-    this.dataSource[index].rgb = this.colorValue.replace('#', '');
-    let event = { target: { value: this.colorValue.replace('#', '') } };
+    this.dataSource[index].rgb = this.colorValue;
+    let event = { target: { value: this.colorValue } };
     this.rowUpdate(this.dataSource[index], 'rgb', event)
   };
 
@@ -535,7 +535,7 @@ export class ColorComponent implements OnInit, OnDestroy {
         colors.push({
           color_id: element.colorId,
           the_run: run,
-          rgb: hex
+          rgb: hex.replace('#', '').replace(/'/g, "''")
         })
       }
     });
@@ -545,7 +545,7 @@ export class ColorComponent implements OnInit, OnDestroy {
         custom_colors.push({
           color_name: element.colorName.replace(/'/g, "''"),
           the_run: run,
-          rgb: hex
+          rgb: hex.replace('#', '').replace(/'/g, "''")
         })
       }
 

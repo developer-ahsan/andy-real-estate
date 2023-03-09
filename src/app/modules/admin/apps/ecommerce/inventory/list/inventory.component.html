@@ -1337,9 +1337,8 @@
                                         </div>
                                         <div class="col-2">
                                             <mat-form-field class="w-full">
-                                                <span matTextPrefix>#&nbsp;</span>
-                                                <input [matTooltip]="'Color code without #'" matInput
-                                                    [(ngModel)]="item.hex" placeholder="Hex">
+                                                <!-- <span matTextPrefix>#&nbsp;</span> -->
+                                                <input matInput [(ngModel)]="item.hex" placeholder="Hex">
                                                 <mat-icon class="icon-size-5 text-secondary ml-2"
                                                     style="cursor: pointer;" (click)="copyColorToHex(i,'default')"
                                                     [matTooltip]="'Copy hex from color palette'"
@@ -1386,9 +1385,8 @@
                                         </div>
                                         <div class="col-2">
                                             <mat-form-field class="w-full">
-                                                <span matTextPrefix>#&nbsp;</span>
-                                                <input [matTooltip]="'Color code without #'" matInput
-                                                    [(ngModel)]="item.hex" placeholder="Hex">
+                                                <!-- <span matTextPrefix>#&nbsp;</span> -->
+                                                <input maxlength="7" matInput [(ngModel)]="item.hex" placeholder="Hex">
                                                 <mat-icon class="icon-size-5 text-secondary ml-2"
                                                     style="cursor: pointer;" (click)="copyColorToHex(i,'custom')"
                                                     [matTooltip]="'Copy hex from color palette'"
