@@ -21,19 +21,51 @@
                 </svg>
             </div>
             <div class="px-8">
+                <!-- Cost -->
+                <ngx-skeleton-loader *ngIf="costLoader" count="3" appearance="line" animation="pulse" [theme]="{ 
+                    'background-color': '#dedede'
+                  }">
+                </ngx-skeleton-loader>
+                <div *ngIf="tempProdData && !costLoader">
+                    <div class="text-xl font-semibold tracking-tight leading-8">Cost</div>
+                    <table class="table table-striped" *ngIf="tempProdData.costs.length > 0">
+                        <thead>
+                            <tr>
+                                <th *ngFor="let cost of tempProdData.costs">{{cost.quantity}}</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td *ngFor="let cost of tempProdData.costs">{{cost.cost | currency}}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <div *ngIf="tempProdData.costs.length == 0">No cost found for this product.</div>
+                </div>
+                <!-- Imprints -->
+                <div class="text-xl font-semibold tracking-tight leading-8">Imprints</div>
                 <ngx-skeleton-loader *ngIf="imprintLoader" count="8" appearance="line" animation="pulse" [theme]="{ 
                     'background-color': '#dedede'
                   }">
                 </ngx-skeleton-loader>
                 <div *ngIf="tempProdData && !imprintLoader">
-                    <div class="text-xl font-semibold tracking-tight leading-8">Imprints</div>
                     <ul *ngIf="tempProdData.imprints.length > 0">
-                        <li *ngFor="let item of tempProdData.imprints">
+                        <li *ngFor="let item of tempProdData.imprints | paginate : {
+                            itemsPerPage: 10,
+                            currentPage: tempProdData.page,
+                            totalItems: tempProdData.totalImprints
+                          };">
                             {{item.methodName}}/{{item.locationName}}-({{item.companyName}})
                         </li>
                     </ul>
+                    <div *ngIf="tempProdData.imprints.length < tempProdData.totalImprints" class="text-center mt-2">
+                        <pagination-controls previousLabel="Prev" nextLabel="Next"
+                            (pageChange)="getNextImprintsForProduct($event)">
+                        </pagination-controls>
+                    </div>
                     <div *ngIf="tempProdData.imprints.length == 0">No imprints found for this product.</div>
                 </div>
+
             </div>
         </mat-drawer>
 
@@ -62,8 +94,8 @@
                         <div class="flex-auto">
                             <mat-form-field class="fuse-mat-dense fuse-mat-no-subscript w-full min-w-50">
                                 <mat-icon class="icon-size-5" matPrefix [svgIcon]="'heroicons_solid:search'"></mat-icon>
-                                <input matInput [(ngModel)]="searchKeyword" [autocomplete]="'off'"
-                                    [placeholder]="'Search Products'">
+                                <input (keyup.enter)="searchProduct()" matInput [(ngModel)]="searchKeyword"
+                                    [autocomplete]="'off'" [placeholder]="'Search Products'">
                             </mat-form-field>
                         </div>
                         <!-- Add contact button -->

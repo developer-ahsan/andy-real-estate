@@ -28,6 +28,7 @@ import { searchRoutes } from './search-module.routing';
 import { NgxSkeletonLoaderModule } from 'ngx-skeleton-loader';
 import { MatPaginatorModule } from '@angular/material/paginator';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { NgxPaginationModule } from 'ngx-pagination';
 
 @NgModule({
     declarations: [
@@ -60,6 +61,7 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
         SharedModule,
         NgxSkeletonLoaderModule,
         MatProgressSpinnerModule,
+        NgxPaginationModule
     ],
     providers: [
         {

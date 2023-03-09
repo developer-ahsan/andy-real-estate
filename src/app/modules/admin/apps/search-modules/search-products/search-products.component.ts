@@ -14,7 +14,7 @@ import { MatPaginator } from '@angular/material/paginator';
 @Component({
     selector: 'search-products',
     templateUrl: './search-products.component.html',
-    styles: [".mat-paginator {border-radius: 16px !important}"],
+    styles: [".mat-paginator {border-radius: 16px !important} .ngx-pagination .current {background: #2c3344 !important}"],
     encapsulation: ViewEncapsulation.None,
     changeDetection: ChangeDetectionStrategy.OnPush
 })
@@ -44,6 +44,7 @@ export class SearchProductsComponents implements OnInit, OnDestroy {
 
     tempProdData: any;
     imprintLoader: boolean = false;
+    costLoader: boolean = false;
     /**
      * Constructor
      */
@@ -156,32 +157,58 @@ export class SearchProductsComponents implements OnInit, OnDestroy {
     };
     toggleDrawer(product) {
         this.imprintLoader = false;
+        this.costLoader = false;
         this.matDrawer.toggle();
-        if (!product.imprints) {
-            this.getImprintsForProduct(product);
+        product.page = 1;
+        product.totalImprints = 0;
+        this.getImprintsForProduct(product)
+        if (!product.costs) {
+            this.getProductNetCost(product);
         }
         this.tempProdData = product;
         this._changeDetectorRef.markForCheck();
     }
+    getNextImprintsForProduct(event) {
+        this.tempProdData.page = event;
+        this.getImprintsForProduct(this.tempProdData);
+    };
     getImprintsForProduct(product) {
         product.imprints = [];
         this.imprintLoader = true;
         let params = {
             imprint: true,
             product_id: product.pk_productID,
-            size: 50
+            page: product.page,
+            size: 10
         }
         this._searchService.getProductSearchData(params).pipe(takeUntil(this._unsubscribeAll), finalize(() => {
             this.imprintLoader = false;
             this._changeDetectorRef.markForCheck();
         })).subscribe(res => {
             product.imprints = res["data"];
+            product.totalImprints = res["totalRecords"];
+            this.tempProdData = product;
+        })
+    }
+    getProductNetCost(product) {
+        product.costs = [];
+        this.costLoader = true;
+        let params = {
+            net_cost: true,
+            cost: true,
+            product_id: product.pk_productID
+        }
+        this._searchService.getProductSearchData(params).pipe(takeUntil(this._unsubscribeAll), finalize(() => {
+            this.costLoader = false;
+            this._changeDetectorRef.markForCheck();
+        })).subscribe(res => {
+            product.costs = res["data"];
             this.tempProdData = product;
         })
     }
     /**
-     * On destroy
-     */
+    * On destroy
+    */
     ngOnDestroy(): void {
         // Unsubscribe from all subscriptions
         this._unsubscribeAll.next();
