@@ -120,6 +120,8 @@ export class LicensingCompaniesComponent implements OnInit, OnDestroy {
   toggleUpdateCompanyData(data, check) {
     this.isUpdateLicensing = check;
     if (check) {
+      this.companyTermsPage = 1;
+      this.companytermData = [];
       this.mainScreen = 'Edit Company';
       this.updateCompanyData = data;
       this.getCompanyTerms(1, 'get');
@@ -204,12 +206,21 @@ export class LicensingCompaniesComponent implements OnInit, OnDestroy {
     if (type == 'get' && this.companyTermsPage == 1) {
       this.isCompanyTermLoader = true;
     }
-    if (this.companyTermsPage == 1) {
+    if (this.companyTermsPage == 1 || type == 'add') {
+      this.companyTermsPage = 1;
       this.companytermData = [];
     }
     this._RoyaltyService.getCallsData(params).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+      console.log(res);
       res["data"].forEach(element => {
-        element.subCategories = JSON.parse(element.subCategories);
+        element.subCategories = [];
+        if (element.subCategoryList) {
+          let subCat = element.subCategoryList.split(',');
+          subCat.forEach(sub => {
+            let sub_cat = sub.split(':');
+            element.subCategories.push({ pk_licensingTermSubCategoryID: Number(sub_cat[0]), name: sub_cat[1], code: sub_cat[2], fk_licensingTermID: element.pk_licensingTermID });
+          });
+        }
         this.companytermData.push(element);
       });
       this.totalterms = res["totalRecords"];

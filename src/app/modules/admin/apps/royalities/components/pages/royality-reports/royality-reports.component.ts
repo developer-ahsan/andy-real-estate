@@ -256,7 +256,7 @@ export class RoyaltyReportsComponent implements OnInit, OnDestroy {
       { header: "Category_SubCategory_Code", key: "Category_SubCategory_Code", width: 30 },
       { header: "Prod_Description", key: "Prod_Description", width: 30 },
       { header: "Gross_Sales", key: "Gross_Sales", width: 30 },
-      { header: "Total_Units", key: "Gross_Sales", width: 10 },
+      { header: "Total_Units", key: "Total_Units", width: 10 },
       { header: "Royalty_Sales", key: "Royalty_Sales", width: 10 },
       { header: "MRU_Units", key: "MRU_Units", width: 10 },
       { header: "Associated_Inst", key: "Associated_Inst", width: 10 },
