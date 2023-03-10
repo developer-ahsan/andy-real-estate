@@ -31,7 +31,7 @@
                                             [name]="'alertBox3'" [type]="'warning'">CATEGORY
                                             CURRENTLY OFFLINE.</fuse-alert>
                                     </div>
-                                    <mat-checkbox class="col-6 text-sm" *ngFor="let child of item.Child"
+                                    <mat-checkbox class="col-6 text-sm" *ngFor="let child of item.subCategories"
                                         [(ngModel)]="child.isChecked"
                                         (change)="changeCheckbox(child,$event.checked)">{{child.subCategoryName}}</mat-checkbox>
                                     <div class="col-12">

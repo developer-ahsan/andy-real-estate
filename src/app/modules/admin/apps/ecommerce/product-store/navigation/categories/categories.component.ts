@@ -53,18 +53,35 @@ export class CategoriesComponent implements OnInit, OnDestroy {
     }
     this._storeService.commonGetCalls(params).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
       res["data"].forEach(element => {
+        element.subCategories = [];
         if (element.Child) {
-          element.Child = JSON.parse(element.Child);
-          element.Child.forEach(item => {
-            if (item.isChecked) {
-              this.selectedCategories.push({ subcategory_id: item.pk_subCategoryID, isChecked: true });
+          let subCat = element.Child.split(',');
+          subCat.forEach(sub => {
+            let sub_cat = sub.split(':');
+            if (sub_cat[2] == 1) {
+              sub_cat[2] = true;
+              this.selectedCategories.push({ subcategory_id: Number(sub_cat[0]), isChecked: true });
+            } else {
+              sub_cat[2] = false;
             }
+            element.subCategories.push({ pk_subCategoryID: Number(sub_cat[0]), subCategoryName: sub_cat[1], isChecked: sub_cat[2], pk_categoryID: element.pk_categoryID });
           });
-        } else {
-          element.Child = [];
         }
         this.allCategories.push(element);
       });
+      // res["data"].forEach(element => {
+      //   if (element.Child) {
+      //     element.Child = JSON.parse(element.Child);
+      //     element.Child.forEach(item => {
+      //       if (item.isChecked) {
+      //         this.selectedCategories.push({ subcategory_id: item.pk_subCategoryID, isChecked: true });
+      //       }
+      //     });
+      //   } else {
+      //     element.Child = [];
+      //   }
+      //   this.allCategories.push(element);
+      // });
       this.totalCategories = res["totalRecords"];
       this.isCategoryLoader = false;
       this.isLoading = false;
@@ -110,7 +127,7 @@ export class CategoriesComponent implements OnInit, OnDestroy {
     item.addLoader = true;
     this._storeService.postStoresProductsData(payload).subscribe(res => {
       if (res["success"]) {
-        item.Child.push({ subCategoryName: payload.subCategory_name, pk_subCategoryID: res["newID"], isChecked: 0 });
+        item.subCategories.push({ subCategoryName: payload.subCategory_name, pk_subCategoryID: res["newID"], isChecked: 0 });
       }
       item.addLoader = false;
       item.newChild = '';
