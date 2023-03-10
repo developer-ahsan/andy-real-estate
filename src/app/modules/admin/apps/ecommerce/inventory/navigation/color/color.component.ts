@@ -310,14 +310,14 @@ export class ColorComponent implements OnInit, OnDestroy {
       colorObj.rgb = value;
     };
 
-    if (!this.arrayToUpdate?.length) {
-      this.arrayToUpdate.push(colorObj);
-    } else {
-      let obj = this.arrayToUpdate.find(o => o.fk_colorID === fk_colorID);
-      if (!obj) {
-        this.arrayToUpdate.push(colorObj);
-      }
-    };
+    // if (!this.arrayToUpdate?.length) {
+    //   this.arrayToUpdate.push(colorObj);
+    // } else {
+    //   let obj = this.arrayToUpdate.find(o => o.fk_colorID === fk_colorID);
+    //   if (!obj) {
+    //     this.arrayToUpdate.push(colorObj);
+    //   }
+    // };
   };
 
   upload(event, index) {
@@ -401,7 +401,7 @@ export class ColorComponent implements OnInit, OnDestroy {
 
   updateColor() {
     const { pk_productID } = this.selectedProduct;
-
+    this.arrayToUpdate = this.selection.selected;
     if (this.updateImageTouched) {
 
       for (const obj of this.dataSource) {
@@ -741,6 +741,7 @@ export class ColorComponent implements OnInit, OnDestroy {
     //   return;
     // }
     // this.selection.select(...this.dataSource.data);
+
     this.isAllSelected() ?
       this.selection.clear() :
       this.dataSource.forEach(row => this.selection.select(row));
@@ -748,6 +749,7 @@ export class ColorComponent implements OnInit, OnDestroy {
 
   /** The label for the checkbox on the passed row */
   checkboxLabel(row?: any): void {
+
     // if (!row) {
     //   return `${this.isAllSelected() ? 'deselect' : 'select'} all`;
     // }
