@@ -46,6 +46,14 @@ export class OrderDashboardDetailsComponent implements OnInit, OnDestroy {
 
   // Comment Toggle
   isCommentToggle: boolean = false;
+
+  // loader
+  isDetailLoader: boolean = false;
+
+  // Order Details
+  orderData: any;
+  imprintdata: any;
+  paramData: any;
   constructor(
     private _changeDetectorRef: ChangeDetectorRef,
     private _smartartService: SmartArtService,
@@ -53,12 +61,46 @@ export class OrderDashboardDetailsComponent implements OnInit, OnDestroy {
   ) { }
 
   ngOnInit(): void {
+    this.paramData = this._smartartService.routeData;
     console.log(this._smartartService.routeData);
     if (!this._smartartService.routeData) {
       // this.router.navigate(['/smartart/orders-dashboard']);
     }
     this.isLoading = true;
+    this.getOrderDetails();
   };
+  getOrderDetails() {
+    let params = {
+      order_online_details_v2: true,
+      orderLine_id: 95831,
+      order_id: 56060
+    }
+    this._smartartService.getSmartArtData(params).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+      this.orderData = res["data"][0];
+      this.getImpritData();
+      this._changeDetectorRef.markForCheck();
+      console.log(this.orderData);
+    }, err => {
+      this.isLoading = false;
+      this._changeDetectorRef.markForCheck();
+    });
+  }
+  getImpritData() {
+    let params = {
+      order_online_details_imprints_colors: true,
+      orderLine_id: 95831,
+      orderLineImprint_id: 34017
+    }
+    this._smartartService.getSmartArtData(params).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+      this.imprintdata = res["data"];
+      this.isLoading = false;
+      this._changeDetectorRef.markForCheck();
+      console.log(this.imprintdata);
+    }, err => {
+      this.isLoading = false;
+      this._changeDetectorRef.markForCheck();
+    });
+  }
   backToList() {
     this.router.navigate(['/smartart/orders-dashboard']);
   }

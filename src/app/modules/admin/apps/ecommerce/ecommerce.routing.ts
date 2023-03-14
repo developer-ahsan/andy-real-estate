@@ -57,6 +57,7 @@ import { ProductReviewsComponent } from './product-store/navigation/product-revi
 import { StoreUpdateHistoryComponent } from './product-store/navigation/update-history/update-history.component';
 import { ProfitCalculatorComponent } from './product-store/navigation/profit-calculator/profit-calculator.component';
 import { RemoveFromStoreComponent } from './product-store/navigation/remove-from-store/remove-from-store.component';
+import { RemoveProductComponent } from './inventory/navigation/delete-product/delete-product.component';
 
 export const ecommerceRoutes: Route[] = [
     {
@@ -291,6 +292,14 @@ export const ecommerceRoutes: Route[] = [
                         data: {
                             title: 'Duplicate',
                             url: 'duplicate'
+                        }
+                    },
+                    {
+                        path: 'remove-product',
+                        component: RemoveProductComponent,
+                        data: {
+                            title: 'Remove Product',
+                            url: 'remove-product'
                         }
                     }
                 ]

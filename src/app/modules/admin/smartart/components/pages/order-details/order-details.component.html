@@ -7,7 +7,13 @@
                 </div>
                 <button class="min-w-40 mb-2" mat-button mat-stroked-button (click)="backToList()">Back to List</button>
             </div>
-            <div class="row">
+            <div *ngIf="isLoading" class="my-2 px-5">
+                <ngx-skeleton-loader count="8" appearance="line" animation="pulse" [theme]="{ 
+                    'background-color': '#dedede'
+                  }">
+                </ngx-skeleton-loader>
+            </div>
+            <div class="row" *ngIf="!isLoading">
                 <div class="col-12 col-md-4 mt-3">
                     <mat-accordion multi>
                         <mat-expansion-panel [expanded]="true">
@@ -25,15 +31,16 @@
                                 </mat-panel-title>
                             </mat-expansion-panel-header>
                             <div>
-                                <div><b>Company name:</b> National Student Speech Language Hearing Association</div>
-                                <div><b>Name:</b> Callie Terrell</div>
-                                <div><b>Company:</b> National Student Speech Language Hearing Association</div>
-                                <div><b>Address:</b> 80 E Exchange Street apt 413B Akron, OH 44308</div>
-                                <div><b>Phone:</b> 330-461-3637</div>
-                                <div><b>Email:</b> ct102@uakron.edu</div>
+                                <div><b>Company name:</b> {{orderData?.companyInformationName}}</div>
+                                <div><b>Name:</b> {{orderData.shippingName}}</div>
+                                <div><b>Company:</b> {{orderData.shippingCompanyName}}</div>
+                                <div><b>Address:</b> {{orderData.shippingAddress}} {{orderData.shippingCity}}</div>
+                                <div><b>Phone:</b> {{orderData.shippingPhone}}</div>
+                                <div><b>Email:</b> {{orderData.shippingEmail}}</div>
                                 <div><b>Designer notes:</b> None</div>
                             </div>
                         </mat-expansion-panel>
+                        <!-- Order Information -->
                         <mat-expansion-panel [expanded]="true">
                             <mat-expansion-panel-header>
                                 <mat-panel-title>
@@ -41,15 +48,39 @@
                                 </mat-panel-title>
                             </mat-expansion-panel-header>
                             <div>
-                                <div><b>Order:</b> 73960</div>
-                                <div><b>Quote ID:</b> 487228-365203</div>
-                                <div><b>PO:</b> 73960-132976</div>
-                                <div><b>Order Placed:</b> 02/28/2023</div>
-                                <div><b>Store:</b> theUAshop.com</div>
+                                <div><b>Order:</b> {{orderData.fk_orderID}}</div>
+                                <div><b>Quote ID:</b> {{orderData.quoteID}}-{{paramData?.fk_imprintID}}</div>
+                                <div><b>PO:</b> {{orderData.fk_orderID}}-{{paramData?.pk_orderLineID}}</div>
+                                <div><b>Order Placed:</b> {{orderData.orderDate | date: 'MM/dd/yyyy'}}</div>
+                                <div><b>Store:</b> {{orderData.storeName}}</div>
                                 <div><b>Brand Guide:</b> Click here</div>
                                 <div><b>Rush:</b> NO</div>
+                                <div>
+                                    <b>In-Hands:</b> (mm/dd/yyyy)
+                                    <mat-form-field class="fuse-mat-dense fuse-mat-no-subscript w-full min-w-50">
+                                        <input matInput readonly [matDatepicker]="picker" (click)="picker.open()">
+                                        <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
+                                        <mat-datepicker #picker></mat-datepicker>
+                                    </mat-form-field>
+                                </div>
+                                <div>
+                                    <b>Event:</b>
+                                    <mat-form-field class="fuse-mat-dense fuse-mat-no-subscript w-full min-w-50">
+                                        <input matInput>
+                                    </mat-form-field>
+                                </div>
+                                <div>
+                                    <mat-checkbox><b>Ignore Scheduler</b></mat-checkbox>
+                                </div>
+                                <div>
+                                    <mat-checkbox><b>Ignore additional proof emails</b></mat-checkbox>
+                                </div>
+                                <div>
+                                    <button class="min-w-40 btn buttonComment hover:bg-gray-200">Update</button>
+                                </div>
                             </div>
                         </mat-expansion-panel>
+                        <!-- Supplier -->
                         <mat-expansion-panel [expanded]="true">
                             <mat-expansion-panel-header>
                                 <mat-panel-title>
@@ -57,19 +88,22 @@
                                 </mat-panel-title>
                             </mat-expansion-panel-header>
                             <div>
-                                <div><b>SKU:</b>
-                                    <p>CustomUA-GroupOrder_BM</p>
-                                    <p>S & S Active Wear</p>
-                                    <p>630-679-9940</p>
+                                <div><b>SKU:</b>{{orderData.SKU}}
+                                    <p>{{orderData.supplierCompanyName}}</p>
+                                    <p>{{orderData.companyPhone}}</p>
                                 </div>
-                                <div><b>ASI:</b>84358</div>
-                                <div><b>PPAI:</b> 256121</div>
-                                <div><b>Order Placed:</b> 02/28/2023</div>
-                                <div>http://www.ssactivewear.com</div>
+                                <div><b>ASI:</b>{{orderData.ASI}}</div>
+                                <div><b>PPAI:</b> {{orderData.PPAI}}</div>
+                                <div><b>Order Placed:</b> {{orderData.orderDate | date: 'MM/dd/yyyy'}}</div>
+                                <div>
+                                    <a href="{{orderData.companyWebsite}}"
+                                        target="_blank">{{orderData.companyWebsite}}</a>
+                                </div>
                                 <div>art@bluemoonscreenprint.com</div>
                                 <div><b>Product Link:</b> Click here</div>
                             </div>
                         </mat-expansion-panel>
+                        <!-- Decorator -->
                         <mat-expansion-panel [expanded]="true">
                             <mat-expansion-panel-header>
                                 <mat-panel-title>
@@ -77,12 +111,12 @@
                                 </mat-panel-title>
                             </mat-expansion-panel-header>
                             <div>
-                                <p>Blue Moon Screenprinting, Inc.</p>
-                                <p>440.942.6055</p>
-                                <p>art@bluemoonscreenprint.com</p>
-                                <p>http://bmpromotional.com/</p>
+                                <p>{{imprintdata[0].digitizer || 'NONE'}}</p>
+                                <p>{{imprintdata[0].phone}}</p>
+                                <a href="{{orderData.companyWebsite}}" target="_blank">{{orderData.companyWebsite}}</a>
                             </div>
                         </mat-expansion-panel>
+                        <!-- Comments -->
                         <mat-expansion-panel [expanded]="true">
                             <mat-expansion-panel-header>
                                 <mat-panel-title>
@@ -90,16 +124,22 @@
                                 </mat-panel-title>
                             </mat-expansion-panel-header>
                             <div>
-                                <fuse-alert class="my-2" [appearance]="'soft'" [type]="'warning'" [showIcon]="false">
+                                <fuse-alert *ngIf="!orderData.internalComments" class="my-2" [appearance]="'soft'"
+                                    [type]="'warning'" [showIcon]="false">
                                     There are no comments on this order.
                                 </fuse-alert>
-
+                                <div *ngIf="orderData.internalComments"
+                                    class="mb-2 max-h-40 overflow-y-auto border p-2">
+                                    <p [innerHTML]="orderData.internalComments"></p>
+                                </div>
                                 <mat-form-field class="w-full">
                                     <mat-label>Leave a comment</mat-label>
                                     <textarea matInput></textarea>
                                 </mat-form-field>
+                                <button class="min-w-40 btn buttonComment hover:bg-gray-200">Add Comment</button>
                             </div>
                         </mat-expansion-panel>
+                        <!-- Purchase Comments -->
                         <mat-expansion-panel>
                             <mat-expansion-panel-header>
                                 <mat-panel-title>
@@ -107,6 +147,7 @@
                                 </mat-panel-title>
                             </mat-expansion-panel-header>
                         </mat-expansion-panel>
+                        <!-- Manually Update Proof -->
                         <mat-expansion-panel>
                             <mat-expansion-panel-header>
                                 <mat-panel-title>
@@ -114,6 +155,7 @@
                                 </mat-panel-title>
                             </mat-expansion-panel-header>
                         </mat-expansion-panel>
+                        <!-- Artwork tags for CLC report -->
                         <mat-expansion-panel>
                             <mat-expansion-panel-header>
                                 <mat-panel-title>
@@ -121,12 +163,30 @@
                                 </mat-panel-title>
                             </mat-expansion-panel-header>
                         </mat-expansion-panel>
+                        <!-- Upload Virtual Proof -->
                         <mat-expansion-panel>
                             <mat-expansion-panel-header>
                                 <mat-panel-title>
                                     Upload Virtual Proof
                                 </mat-panel-title>
                             </mat-expansion-panel-header>
+                            <div>
+                                <p class="text-secondary text-sm">Uploading a virtual proof will add to the product
+                                    images for
+                                    this product on the SmartSite, as well as appear to the customer in various emails
+                                    and account detail areas.</p>
+                                <p class="text-red-500 text-sm">
+                                    Virtual proof images must be at least 600px by 600px, but no larger than 1500px by
+                                    1500px. The larger the better. JPG format only.
+                                </p>
+                                <input type="file">
+                                <div>
+                                    <mat-checkbox><b>Include on store as an image</b></mat-checkbox>
+                                </div>
+                                <div>
+                                    <button class="min-w-40 btn buttonComment hover:bg-gray-200">Upload</button>
+                                </div>
+                            </div>
                         </mat-expansion-panel>
                         <mat-expansion-panel>
                             <mat-expansion-panel-header>
@@ -153,14 +213,15 @@
                 </div>
                 <div class="col-12 col-md-8 mt-3">
                     <mat-accordion multi>
-                        <mat-expansion-panel [expanded]="true">
+                        <mat-expansion-panel [expanded]="true" *ngFor="let imprint of imprintdata">
                             <mat-expansion-panel-header>
                                 <mat-panel-title>
                                     Imprint 1 of 1 for Gildan Heavy Cotton T-Shirt - (Full Front/Direct to Garment)
                                 </mat-panel-title>
                             </mat-expansion-panel-header>
                             <div>
-                                <div class="w-full font-medium text-md">PO: 73960-132976</div>
+                                <div class="w-full font-medium text-md">PO:
+                                    {{orderData.fk_orderID}}-{{paramData?.pk_orderLineID}}</div>
                                 <div class="row w-full">
                                     <div class="col-12 col-md-6">
                                         <mat-form-field class="w-full">
@@ -183,25 +244,28 @@
                                     <div class="col-md-8 col-12 mt-3">
                                         <div class="row">
                                             <div class="col-6 font-bold">Quantity:</div>
-                                            <div class="col-6">1</div>
+                                            <div class="col-6">{{orderData.quantity}}</div>
                                             <div class="col-6 font-bold">Imprint Colors:</div>
                                             <div class="col-6"></div>
                                             <div class="col-6 font-bold">Imprint Location:</div>
-                                            <div class="col-6"></div>
+                                            <div class="col-6">{{imprint.locationName}}</div>
                                             <div class="col-6 font-bold">Item Colors:</div>
                                             <div class="col-6">
-                                                <div class="h-30 border overflow-y-auto"></div>
+                                                <div class="max-h-20 border overflow-y-auto p-2">
+                                                    {{imprint.itemColors}}
+                                                </div>
+
                                             </div>
                                             <div class="col-6 font-bold">Imprint Size:</div>
                                             <div class="col-6">12" W x 16" H</div>
                                             <div class="col-6 font-bold">Item Dimensions:</div>
-                                            <div class="col-6"></div>
+                                            <div class="col-6">{{imprint.area}}</div>
                                             <div class="col-6 font-bold">Imprint Method:</div>
-                                            <div class="col-6">Direct to Garment</div>
+                                            <div class="col-6">{{imprint.methodName}}</div>
                                             <div class="col-6 font-bold">Artwork File Types:</div>
                                             <div class="col-6">NONE</div>
                                             <div class="col-6 font-bold">Digitizer:</div>
-                                            <div class="col-6">NONE</div>
+                                            <div class="col-6">{{imprint.digitizer || 'NONE'}}</div>
                                         </div>
                                     </div>
                                     <div class="col-md-4 col-12">
@@ -218,13 +282,16 @@
                                     <div class="col-12" *ngIf="isCommentToggle">
                                         <div class="font-bold">Customer Comments</div>
                                         <div class="h-40 border overflow-y-auto p-2">
-                                            Customer Comments
+                                            <p *ngIf="!imprint.imprintComments">No Comments</p>
+                                            <p *ngIf="imprint.imprintComments" [innerHtml]="imprint.imprintComments">No
+                                                Comments</p>
                                         </div>
                                     </div>
                                     <div class="col-12 mt-2">
                                         <fuse-alert class="mb-2" [appearance]="'outline'" [type]="'warning'"
                                             [showIcon]="false">
-                                            As of 03/01/2023 the status of this item is New - Pending Review.
+                                            As of {{orderData.orderDate | date: 'MM/dd/yyyy'}} the status of this item
+                                            is {{paramData.statusName}}.
                                         </fuse-alert>
                                         <div class="rounded-2xl shadow bg-card p-4 ">
                                             <p class="text-lg font-bold">Make Manual Updates to this Imprint Status</p>

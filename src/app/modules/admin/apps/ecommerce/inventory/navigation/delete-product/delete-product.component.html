@@ -1,0 +1,41 @@
+<div class="w-full">
+    <ngx-skeleton-loader count="8" appearance="line" animation="pulse" *ngIf="isLoading">
+    </ngx-skeleton-loader>
+    <div class="row" *ngIf="!isLoading">
+        <div class="col-12 my-2">
+            <fuse-card class="rounded-2xl shadow bg-card flex flex-col lg:flex-row w-full">
+                <div class="p-6 sm:p-8 lg:p-10 w-full">
+                    <div class="text-2xl font-bold">
+                        Delete Product
+                    </div>
+                    <!-- Core product -->
+                    <div class="gap-y-4 mt-6">
+                        <fuse-alert *ngIf="totalStores > 0" class="mb-2" [appearance]="'soft'" [type]="'warning'"
+                            [showIcon]="true">
+                            ERROR: Product is assigned to {{totalStores}} store(s). Un-assign first.
+                        </fuse-alert>
+                        <div *ngIf="totalStores == 0">
+                            <fuse-alert class="mb-2" [appearance]="'soft'" [type]="'success'" [showIcon]="true">
+                                Product is not assigned to any store.
+                            </fuse-alert>
+                            <mat-form-field class="w-full">
+                                <mat-label>Enter your password to confirm deletion</mat-label>
+                                <input matInput>
+                            </mat-form-field>
+                            <div>
+                                <button class="min-w-40" mat-stroked-button [matTooltip]="'Delete Product'"
+                                    (click)="addDuplicate()" [disabled]="duplicateLoader">
+                                    <mat-progress-spinner *ngIf="duplicateLoader" [diameter]="24"
+                                        [mode]="'indeterminate'">
+                                    </mat-progress-spinner>
+                                    <mat-icon *ngIf="!duplicateLoader" svgIcon="heroicons_outline:trash"></mat-icon>
+                                    <span *ngIf="!duplicateLoader" class="ml-1 mr-1">Delete Product</span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </fuse-card>
+        </div>
+    </div>
+</div>

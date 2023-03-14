@@ -148,5 +148,11 @@ export const navigations = [
         title: 'Duplicate',
         icon: 'heroicons_outline:duplicate',
         route: 'duplicate',
+    },
+    {
+        id: 23,
+        title: 'Remove Product',
+        icon: 'heroicons_outline:trash',
+        route: 'remove-product',
     }
 ];
