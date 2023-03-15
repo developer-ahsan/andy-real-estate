@@ -1,5 +1,11 @@
 export const navigations = [
     {
+        id: 21,
+        title: 'Status',
+        icon: 'heroicons_outline:status-online',
+        route: 'store-product-status',
+    },
+    {
         id: 2,
         title: 'Pricing',
         icon: 'mat_outline:price_change',
@@ -130,4 +136,5 @@ export const navigations = [
         icon: 'heroicons_outline:trash',
         route: 'remove-from-store',
     }
+
 ];

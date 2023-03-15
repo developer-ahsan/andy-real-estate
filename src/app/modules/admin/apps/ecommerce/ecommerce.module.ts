@@ -117,6 +117,7 @@ import { StoreProductDetailsComponent } from './product-store/details/product-de
 import { RemoveFromStoreComponent } from './product-store/navigation/remove-from-store/remove-from-store.component';
 import { ProductLicensingTermsComponent } from './inventory/list/licensing-terms/licensing-terms.component';
 import { RemoveProductComponent } from './inventory/navigation/delete-product/delete-product.component';
+import { StoreProductStatusComponent } from './product-store/navigation/store-product-status/store-product-status.component';
 
 @NgModule({
     declarations: [
@@ -200,7 +201,8 @@ import { RemoveProductComponent } from './inventory/navigation/delete-product/de
         StoreProductDetailsComponent,
         RemoveFromStoreComponent,
         ProductLicensingTermsComponent,
-        RemoveProductComponent
+        RemoveProductComponent,
+        StoreProductStatusComponent
     ],
     imports: [
         RouterModule.forChild(ecommerceRoutes),

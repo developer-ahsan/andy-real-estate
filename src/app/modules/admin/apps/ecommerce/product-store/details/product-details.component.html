@@ -43,14 +43,17 @@
                         <div class="text-2xl font-bold">{{selectedProduct?.productNumber}}:
                             {{selectedProduct?.productName}}</div>
                         <div>
-                            <span *ngIf="!selectedProduct?.blnActive"
-                                class="text-xs px-2.5 py-0.5 rounded-full tracking-wide bg-red-200 text-red-800 dark:bg-red-600 dark:text-red-50">
-                                <span class="leading-relaxed whitespace-nowrap">Inactive</span>
-                            </span>
-                            <span *ngIf="selectedProduct?.blnActive"
-                                class="text-xs px-2.5 py-1 rounded-full tracking-wide bg-green-200 text-green-800 dark:bg-green-600 dark:text-green-50">
-                                <span class="leading-relaxed whitespace-nowrap font-medium">Active</span>
-                            </span>
+                            <a routerLink='/apps/ecommerce/inventory/{{selectedProduct.fk_productID}}/status'
+                                target="_blank">
+                                <span *ngIf="!selectedProduct?.blnActive"
+                                    class="text-xs px-2.5 py-0.5 rounded-full tracking-wide bg-red-200 text-red-800 dark:bg-red-600 dark:text-red-50">
+                                    <span class="leading-relaxed whitespace-nowrap">Inactive</span>
+                                </span>
+                                <span *ngIf="selectedProduct?.blnActive"
+                                    class="text-xs px-2.5 py-1 rounded-full tracking-wide bg-green-200 text-green-800 dark:bg-green-600 dark:text-green-50">
+                                    <span class="leading-relaxed whitespace-nowrap font-medium">Active</span>
+                                </span>
+                            </a>
                         </div>
                     </div>
                     <div class="row w-full">
@@ -85,7 +88,7 @@
                             </div>
                             <div class="flex">
                                 <b class="text-secondary text-sm">Status:</b>
-                                <p class="ml-3 text-sm font-bold"
+                                <p class="ml-3 text-sm font-bold cursor-pointer" [routerLink]="['store-product-status']"
                                     [ngStyle]="selectedProduct?.blnStoreActive ? {'color':'#0ecd0e'} : {'color': '#ff0000'}">
                                     {{selectedProduct?.blnStoreActive ? 'Online' : 'Offline' }}</p>
                             </div>

@@ -58,6 +58,7 @@ import { StoreUpdateHistoryComponent } from './product-store/navigation/update-h
 import { ProfitCalculatorComponent } from './product-store/navigation/profit-calculator/profit-calculator.component';
 import { RemoveFromStoreComponent } from './product-store/navigation/remove-from-store/remove-from-store.component';
 import { RemoveProductComponent } from './inventory/navigation/delete-product/delete-product.component';
+import { StoreProductStatusComponent } from './product-store/navigation/store-product-status/store-product-status.component';
 
 export const ecommerceRoutes: Route[] = [
     {
@@ -475,14 +476,21 @@ export const ecommerceRoutes: Route[] = [
                             title: 'Profit Calculator',
                             url: 'profit-calculator'
                         }
-                    }
-                    ,
+                    },
                     {
                         path: 'remove-from-store',
                         component: RemoveFromStoreComponent,
                         data: {
                             title: 'Remove From Store',
                             url: 'remove-from-store'
+                        }
+                    },
+                    {
+                        path: 'store-product-status',
+                        component: StoreProductStatusComponent,
+                        data: {
+                            title: 'Status',
+                            url: 'store-product-status'
                         }
                     }
                 ]
