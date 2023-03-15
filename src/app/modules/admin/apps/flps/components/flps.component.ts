@@ -9,6 +9,9 @@ import { UserService } from 'app/core/user/user.service';
 import { AuthService } from 'app/core/auth/auth.service';
 import { MatDrawer } from '@angular/material/sidenav';
 import Swal from 'sweetalert2'
+import * as CryptoJS from 'crypto-js';
+import { FlpsLogin } from './flps.types';
+
 @Component({
     selector: 'flps',
     templateUrl: './flps.component.html',
@@ -135,19 +138,38 @@ export class FLPSComponent {
             return;
         }
         this.isLoginLoader = true;
-        let payload = {
-            login_check: true,
-            user_name: this.ngEmail,
+
+
+        let obj = {
+            username: this.ngEmail,
             password: this.ngPassword
         }
-        this._flpsService.getFlpsData(payload).subscribe(res => {
+        this.isLoginLoader = true;
+        const secretKey = 'flps_login';
+        const objectString = JSON.stringify(obj);
+        const encryptedObject = CryptoJS.AES.encrypt(objectString, secretKey).toString();
+
+        let payload: FlpsLogin = {
+            payload: encryptedObject,
+            flps_login_v2: true
+        }
+
+
+        // let payload = {
+        //     login_check: true,
+        //     user_name: this.ngEmail,
+        //     password: this.ngPassword
+        // }
+        this._flpsService.AddFlpsData(payload).subscribe(res => {
             if (res["success"]) {
-                this.flpsToken = 'userLoggedIn';
-                sessionStorage.setItem('flpsAccessToken', 'userLoggedIn');
-                sessionStorage.setItem('FullName', res["data"][0].firstName + ' ' + res["data"][0].lastName);
-                this._flpsService.snackBar(res["message"]);
-            } else {
-                this._flpsService.snackBar(res["message"]);
+                if (res["isLogin"]) {
+                    this.flpsToken = 'userLoggedIn';
+                    sessionStorage.setItem('flpsAccessToken', 'userLoggedIn');
+                    sessionStorage.setItem('FullName', res["data"][0].firstName + ' ' + res["data"][0].lastName);
+                    this._flpsService.snackBar(res["message"]);
+                } else {
+                    this._flpsService.snackBar(res["message"]);
+                }
             }
             this.isLoginLoader = false;
             this._changeDetectorRef.markForCheck();

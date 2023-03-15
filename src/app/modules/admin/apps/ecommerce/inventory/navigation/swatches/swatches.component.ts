@@ -57,9 +57,7 @@ export class SwatchesComponent implements OnInit, OnDestroy {
         setTimeout(() => {
           this.isLoading = false;
           this._changeDetectorRef.markForCheck();
-        }, 2500)
-
-
+        }, 2500);
       }
     });
   }

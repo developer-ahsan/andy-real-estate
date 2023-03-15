@@ -28,6 +28,7 @@
                             <div class="row ">
                                 <div class="col-2 text-center" *ngFor="let item of quantityData">{{item}}</div>
                             </div>
+
                         </div>
                     </div>
                     <div class="row">
@@ -41,8 +42,12 @@
                     <div class="row">
                         <div class="col-2">Standard Cost</div>
                         <div class="col-10">
-                            <div class="row mb-2">
+                            <div class="row mb-2" *ngIf="costData.length == 0">
                                 <div class="col-2 text-center" *ngFor="let item of costData">{{item | currency}}</div>
+                            </div>
+                            <div class="row " *ngIf="costData.length == 0">
+                                <div class="col-10 text-center text-red-600 font-bold">NO MARGINS HAVE BEEN SET YET
+                                </div>
                             </div>
                         </div>
                     </div>

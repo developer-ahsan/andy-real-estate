@@ -60,3 +60,7 @@ export interface AddFLPSStoreUser {
     bln_send_email: boolean;
     add_flps_store_user: boolean;
 };
+export interface FlpsLogin {
+    payload: any;
+    flps_login_v2: boolean;
+};
