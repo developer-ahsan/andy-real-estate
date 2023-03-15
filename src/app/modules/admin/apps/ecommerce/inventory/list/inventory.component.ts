@@ -40,6 +40,9 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
     @ViewChild('prodStandardImprints') prodStandardImprints: ProductImprintsComponent;
 
 
+    // Combotool
+    ngComboList1: any;
+    ngComboList2: any;
     // Imprints List
     displayedColumns: string[] = ['location', 'method', 'decorator', 'active'];
     dataSource = [];
@@ -4309,5 +4312,28 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
             this.imprintPage--;
         };
         this.getImprintsList(this.imprintPage);
+    }
+    // Combo Tool
+    comboToolGenrator() {
+        var arr1 = new Array();
+        var arr2 = new Array();
+        arr1 = this.ngComboList1.replace(/'/g, "''").split(",");
+        arr2 = this.ngComboList2.replace(/'/g, "''").split(",");
+        let theCombo = '';
+        for (let i = 0; i < arr1.length; i++) {
+            for (let j = 0; j < arr2.length; j++) {
+                if (theCombo.length) {
+                    theCombo = theCombo + ',';
+                }
+                theCombo = theCombo + arr1[i] + '/' + arr2[j];
+            }
+        }
+        let arr3 = new Array();
+        arr3 = theCombo.split(",");
+        arr3.forEach(element => {
+            this.customColorsList.push({ colorId: null, colorName: element, image: null, run: '0.0', hex: '' });
+        });
+        this.ngComboList1 = '';
+        this.ngComboList2 = '';
     }
 }
