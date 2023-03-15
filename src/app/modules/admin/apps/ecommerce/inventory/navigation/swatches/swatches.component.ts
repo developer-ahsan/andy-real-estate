@@ -54,10 +54,11 @@ export class SwatchesComponent implements OnInit, OnDestroy {
           let url = `${environment.productMedia}/Swatch/${pk_productID}/${pk_productID}-${i}.jpg`;
           this.checkIfImageExists(url);
         };
-
         setTimeout(() => {
-          this.isLoading = false
+          this.isLoading = false;
+          this._changeDetectorRef.markForCheck();
         }, 2500)
+
 
       }
     });
