@@ -20,9 +20,9 @@ export class UpdateHistoryComponent implements OnInit, OnDestroy {
   page = 1;
 
   legacyHistoryLoader = true;
-  showLegacyLoader = false;
+  showLegacyLoader = true;
 
-  buttonText = "Legacy System History";
+  buttonText = "View History";
 
   constructor(
     private _changeDetectorRef: ChangeDetectorRef,
