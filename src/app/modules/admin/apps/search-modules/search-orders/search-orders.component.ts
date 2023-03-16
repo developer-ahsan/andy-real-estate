@@ -101,7 +101,7 @@ export class SearchOrdersComponents implements OnInit, OnDestroy {
     * On destroy
     */
     ngOnDestroy(): void {
-        this.searchKeyword.orderKeyword$.unsubscribe();
+        this._searchService.orderKeyword$.unsubscribe();
 
         // Unsubscribe from all subscriptions
         this._unsubscribeAll.next();
