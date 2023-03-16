@@ -117,7 +117,7 @@ export class CampaignsComponent implements OnInit, OnDestroy {
         )
       )
     ).subscribe((data: any) => {
-      this.allProducts = data['data'];
+      this.allProducts = data['products'];
     });
   }
   onSelected(ev) {

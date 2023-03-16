@@ -433,7 +433,6 @@ export class EmailBlastComponent implements OnInit, OnDestroy {
       .pipe(takeUntil(this._unsubscribeAll))
       .subscribe((res: any) => {
         this.previewData = res.data;
-
         // Mark for check
         this._changeDetectorRef.markForCheck();
       }, err => {
