@@ -133,6 +133,7 @@ export class CampaignsComponent implements OnInit, OnDestroy {
       index = this.selectedProducts.findIndex(item => item.fk_storeProductID == ev.option.value.pk_storeProductID);
     }
     if (index == -1) {
+      ev.option.value['fk_storeProductID'] = ev.option.value.pk_storeProductID;
       this.selectedProducts.push(ev.option.value);
     }
   }
@@ -285,16 +286,16 @@ export class CampaignsComponent implements OnInit, OnDestroy {
           this.addNewCampaignLoader = false;
           this._changeDetectorRef.markForCheck();
         }
-        if (type != 'get') {
-          this.updateFeatureLoading = false;
-          this.flashMessage = type;
-          this.hideFlashMessage();
-        }
         if (type == 'update') {
           this.isCampaignUpdateLoader = false;
           this._storeManagerService.snackBar('Campaign Updated Successfully');
           this.mainScreen = 'Campaigns';
           this._changeDetectorRef.markForCheck();
+        }
+        if (type != 'get') {
+          this.updateFeatureLoading = false;
+          this.flashMessage = type;
+          this.hideFlashMessage();
         }
         // Mark for check
         this._changeDetectorRef.markForCheck();
@@ -403,6 +404,7 @@ export class CampaignsComponent implements OnInit, OnDestroy {
       }))
   }
   campaignEdit(campaign) {
+    this.selectedProducts = [];
     this.isCampaignProdLoader = true;
     this.getEditCampaignProducts(campaign.pk_campaignID);
     this.isEditCampaign = true;
@@ -551,7 +553,6 @@ export class CampaignsComponent implements OnInit, OnDestroy {
     }
     this._storeManagerService.putStoresData(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
       if (res["success"]) {
-        this.selectedProducts = [];
         // if (this.imageValue) {
         //   this.imageValue.campaign_id = res["campaign_id"];
         //   this.uploadMediaCampaign(this.imageValue);
