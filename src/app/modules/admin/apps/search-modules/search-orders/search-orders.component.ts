@@ -44,7 +44,7 @@ export class SearchOrdersComponents implements OnInit, OnDestroy {
      * On init
      */
     ngOnInit(): void {
-        this._searchService.orderKeyword$.subscribe(res => {
+        this._searchService.orderKeyword$.pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
             if (res != this.searchKeyword || this.searchKeyword == '') {
                 this.searchKeyword = res;
                 this.isOrderLoader = true;
@@ -101,7 +101,6 @@ export class SearchOrdersComponents implements OnInit, OnDestroy {
     * On destroy
     */
     ngOnDestroy(): void {
-        this._searchService.orderKeyword$.unsubscribe();
 
         // Unsubscribe from all subscriptions
         this._unsubscribeAll.next();
