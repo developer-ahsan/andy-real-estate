@@ -5,6 +5,7 @@ import { ContactsListComponents } from './list/list.component';
 import { ContactsDetailsComponents } from './details/details.component';
 import { SearchComponents } from './search.component';
 import { SearchProductsComponents } from './search-products/search-products.component';
+import { SearchOrdersComponents } from './search-orders/search-orders.component';
 
 export const searchRoutes: Route[] = [
     {
@@ -18,11 +19,11 @@ export const searchRoutes: Route[] = [
             },
             {
                 path: 'products',
-                component: SearchProductsComponents,
-                resolve: {
-                    tasks: ContactsResolver,
-                    countries: ContactsCountriesResolver
-                }
+                component: SearchProductsComponents
+            },
+            {
+                path: 'orders',
+                component: SearchOrdersComponents
             }
         ]
     }

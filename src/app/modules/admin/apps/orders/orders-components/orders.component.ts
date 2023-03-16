@@ -72,25 +72,26 @@ export class OrdersComponent {
 
         this.pageSize = 20;
         this.pageNo = 1;
-        if (this._orderService._searchKeyword == '') {
-            this._orderService.orders$
-                .pipe(takeUntil(this._unsubscribeAll))
-                .subscribe((orders: OrdersList[]) => {
-                    this.orders = orders["data"];
-                    this.ordersLength = orders["totalRecords"];
-                    if (this.tempOrdersArray.length == 0) {
-                        this.tempOrdersArray = orders["data"];
-                        this.tempTotalCount = orders["totalRecords"];
-                    }
-                    this.isLoading = false;
-                    this.isLoadingChange.emit(false);
+        this._orderService.orders$
+            .pipe(takeUntil(this._unsubscribeAll))
+            .subscribe((orders: OrdersList[]) => {
+                this.orders = orders["data"];
+                this.ordersLength = orders["totalRecords"];
+                if (this.tempOrdersArray.length == 0) {
+                    this.tempOrdersArray = orders["data"];
+                    this.tempTotalCount = orders["totalRecords"];
+                }
+                this.isLoading = false;
+                this.isLoadingChange.emit(false);
 
-                    // Mark for check
-                    this._changeDetectorRef.markForCheck();
-                });
-        } else {
-            this.getOrders(20, 1);
-        }
+                // Mark for check
+                this._changeDetectorRef.markForCheck();
+            });
+        // if (this._orderService._searchKeyword == '') {
+
+        // } else {
+        //     this.getOrders(20, 1);
+        // }
         // Get the brands
 
 
@@ -111,11 +112,6 @@ export class OrdersComponent {
     // -----------------------------------------------------------------------------------------------------
 
     getOrders(sizes, pageNo) {
-        7
-        if (this._orderService._searchKeyword) {
-            this.isLoading = true;
-        }
-        this.keyword = this._orderService._searchKeyword;
         let { store_id, range_end, range_start, search_order_id, size, order_type } = this.advancedSearchForm;
         if (!range_end) {
             range_end = '';

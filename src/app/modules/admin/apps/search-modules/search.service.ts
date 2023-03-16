@@ -12,6 +12,9 @@ export class SearchService {
 
     // Public
     productKeyword: any = '';
+    orderKeyword: any = new BehaviorSubject<string>('');
+    public orderKeyword$ = this.orderKeyword.asObservable();
+
     // Private
     private _contact: BehaviorSubject<Contact | null> = new BehaviorSubject(null);
     private _contacts: BehaviorSubject<Contact[] | null> = new BehaviorSubject(null);
@@ -27,6 +30,12 @@ export class SearchService {
 
     getProductSearchData(params): Observable<any[]> {
         return this._httpClient.get<any[]>(environment.products, {
+            params: params
+        }).pipe(retry(3));
+    };
+    // Orders
+    getOrdersSearchData(params): Observable<any[]> {
+        return this._httpClient.get<any[]>(environment.orders, {
             params: params
         }).pipe(retry(3));
     };

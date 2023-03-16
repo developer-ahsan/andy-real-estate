@@ -117,7 +117,7 @@ export class SearchProductsComponents implements OnInit, OnDestroy {
         this.isSearchLaoder = true;
         this._searchService.productKeyword = this.searchKeyword;
         this.page = 1;
-        if (this.productsData) {
+        if (this.productsData.length > 0) {
             this.paginator.pageIndex = 0;
         }
         this.getProductsData(1);

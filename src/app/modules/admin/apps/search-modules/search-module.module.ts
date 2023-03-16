@@ -29,11 +29,13 @@ import { NgxSkeletonLoaderModule } from 'ngx-skeleton-loader';
 import { MatPaginatorModule } from '@angular/material/paginator';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { NgxPaginationModule } from 'ngx-pagination';
+import { SearchOrdersComponents } from './search-orders/search-orders.component';
 
 @NgModule({
     declarations: [
         SearchComponents,
         SearchProductsComponents,
+        SearchOrdersComponents,
         ContactsListComponents,
         ContactsDetailsComponents
     ],
