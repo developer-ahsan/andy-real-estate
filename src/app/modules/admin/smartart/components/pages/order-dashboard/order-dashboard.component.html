@@ -282,7 +282,7 @@
                                 <tr mat-header-row *matHeaderRowDef="displayedColumns;" class="h-18 bg-light"></tr>
                                 <tr mat-row *matRowDef="let row; columns: displayedColumns;"
                                     class="h-14 hover:bg-gray-100 dark:hover:bg-hover" style="cursor: pointer;"
-                                    [ngClass]="{'bg-blue-200': row.blnAttention,'bg-green-200': row.paymentDate,'bg-pink-200': row.inHandsDate,'bg-yellow-200': row.blnReorder,'bg-purple-200': row.blnGroupRun}">
+                                    [ngClass]="{'bg-blue-200': row.blnAttention,'bg-pink-200': row.inHandsDate,'bg-orange-200': row.fk_groupOrderID,'bg-yellow-200': row.blnReorder,'bg-purple-200': row.blnGroupRun,'bg-green-200': row.paymentDate}">
                                 </tr>
                             </table>
                             <mat-paginator #paginator

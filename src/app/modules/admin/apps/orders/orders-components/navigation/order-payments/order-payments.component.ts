@@ -67,7 +67,8 @@ export class OrderPaymentComponent implements OnInit {
           let payload: StripePayment = {
             stripe_token: stripeToken.id,
             stripe_price: Number(this.ngAmount),
-            stripe_transaction: true
+            stripe_transaction: true,
+            order_id: Number(this.orderDetail.pk_orderID)
           }
           if (stripeToken) {
             this.isPaymentLoader = true;
@@ -95,7 +96,7 @@ export class OrderPaymentComponent implements OnInit {
         amount: Number(this.ngAmount * 100)
       });
     } else {
-      this._orderService.snackBar('Amount shout be greater than 0');
+      this._orderService.snackBar('Amount should be greater than 0');
     }
 
   }
