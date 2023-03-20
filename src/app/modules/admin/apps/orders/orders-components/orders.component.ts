@@ -126,7 +126,7 @@ export class OrdersComponent {
         let params = {
             list: true,
             size: sizes,
-            keyword: this.keyword,
+            // keyword: this.keyword,
             page: pageNo,
             store_id,
             range_end,

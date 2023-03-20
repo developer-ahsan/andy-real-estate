@@ -2,6 +2,7 @@ import { Component, OnInit, Input, Output, EventEmitter, ChangeDetectorRef } fro
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { OrdersService } from '../../orders.service';
+import { StripePayment } from '../../orders.types';
 
 interface Transaction {
   item: string;
@@ -20,7 +21,9 @@ export class OrderPaymentComponent implements OnInit {
   private _unsubscribeAll: Subject<any> = new Subject<any>();
   orderDetail: any;
   not_available_price: string = '0';
-
+  isPaymentLoader: boolean = false;
+  paymentHandler: any = null;
+  ngAmount = null;
   constructor(
     private _changeDetectorRef: ChangeDetectorRef,
     private _orderService: OrdersService
@@ -28,6 +31,7 @@ export class OrderPaymentComponent implements OnInit {
 
   ngOnInit(): void {
     this.getOrderDetail();
+    this.invokeStripe();
   }
   getOrderDetail() {
     this._orderService.orderDetail$.pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
@@ -35,4 +39,65 @@ export class OrderPaymentComponent implements OnInit {
       this.isLoading = false;
     });
   }
+  invokeStripe() {
+    if (!window.document.getElementById('stripe-script')) {
+      const script = window.document.createElement("script");
+      script.id = "stripe-script";
+      script.type = "text/javascript";
+      script.src = "https://checkout.stripe.com/checkout.js";
+      script.onload = () => {
+        this.paymentHandler = (<any>window).StripeCheckout.configure({
+          key: 'pk_test_51MW7XpKftHck147B5Rokid6Csvq6fNf8Tee690E3KuRzLd9P85yrvvQHpDK22ZTedK5WwzXAc2aVIY21Wyx4ia6V002R7AbvoW',
+          locale: 'auto',
+          token: function (stripeToken: any) {
+            console.log(stripeToken)
+            alert('Payment has been successfull!');
+          }
+        });
+      }
+      window.document.body.appendChild(script);
+    }
+  }
+  initializePayment() {
+    if (this.ngAmount > 0) {
+      const paymentHandler = (<any>window).StripeCheckout.configure({
+        key: 'pk_test_51MW7XpKftHck147B5Rokid6Csvq6fNf8Tee690E3KuRzLd9P85yrvvQHpDK22ZTedK5WwzXAc2aVIY21Wyx4ia6V002R7AbvoW',
+        locale: 'auto',
+        token: (stripeToken: any) => {
+          let payload: StripePayment = {
+            stripe_token: stripeToken.id,
+            stripe_price: Number(this.ngAmount),
+            stripe_transaction: true
+          }
+          if (stripeToken) {
+            this.isPaymentLoader = true;
+            this._changeDetectorRef.markForCheck();
+            this._orderService.orderPostCalls(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe((res: any) => {
+              this.isPaymentLoader = false;
+              if (res.paid) {
+                this.ngAmount = null;
+                this._orderService.snackBar('Payment Succeeded');
+              }
+              this._changeDetectorRef.markForCheck();
+            }, err => {
+              this._orderService.snackBar('Something went wrong');
+              this.isPaymentLoader = false;
+              this._changeDetectorRef.markForCheck();
+            });
+          }
+
+        }
+      });
+
+      paymentHandler.open({
+        name: this.orderDetail.pk_orderID,
+        description: this.orderDetail.userFirstName + ' ' + this.orderDetail.userLastName,
+        amount: Number(this.ngAmount * 100)
+      });
+    } else {
+      this._orderService.snackBar('Amount shout be greater than 0');
+    }
+
+  }
+
 }

@@ -97,22 +97,34 @@ export class OrdersDetailsComponent implements OnInit, OnDestroy {
                 }
                 const { blnAdditionalArtApproval, blnProcurement, paymentDate, fk_groupOrderID, pk_orderID } = this.selectedOrderDetail;
                 if (blnAdditionalArtApproval) {
-                    this._orderService.navigationLabels[2].children.push({ id: 10, title: 'Art Approval Settings', icon: 'mat_outline:settings', route: 'art-approval-settings' });
+                    let index = this._orderService.navigationLabels[2].children.findIndex(item => item.title == 'Art Approval Settings');
+                    if (index == -1) {
+                        this._orderService.navigationLabels[2].children.push({ id: 10, title: 'Art Approval Settings', icon: 'mat_outline:settings', route: 'art-approval-settings' });
+                    }
                 }
                 if (blnProcurement) {
-                    this._orderService.navigationLabels[2].children.push({ id: 10, title: 'Procurement Data', icon: 'heroicons_outline:database', route: 'procurement-data' });
+                    let index = this._orderService.navigationLabels[2].children.findIndex(item => item.title == 'Procurement Data');
+                    if (index == -1) {
+                        this._orderService.navigationLabels[2].children.push({ id: 10, title: 'Procurement Data', icon: 'heroicons_outline:database', route: 'procurement-data' });
+                    }
                 }
                 if (paymentDate) {
-                    this._orderService.navigationLabels[3].children.push({
-                        id: 10, title: 'Send Receipt Email', icon: 'mat_outline:email', route: 'reciept-email'
-                    });
+                    let index = this._orderService.navigationLabels[3].children.findIndex(item => item.title == 'Send Receipt Email');
+                    if (index == -1) {
+                        this._orderService.navigationLabels[3].children.push({
+                            id: 10, title: 'Send Receipt Email', icon: 'mat_outline:email', route: 'reciept-email'
+                        });
+                    }
                 }
                 if (fk_groupOrderID) {
                     this.getGroupOrderDetails(pk_orderID);
-                    this._orderService.navigationLabels[2].children.push(
-                        { id: 10, title: 'Group Order Details', icon: 'heroicons_outline:document-report', route: 'group-order-details' },
-                        { id: 10, title: 'Group Order Shipping', icon: 'heroicons_outline:document-report', route: 'group-order-shipping' }
-                    );
+                    let index = this._orderService.navigationLabels[2].children.findIndex(item => item.title == 'Group Order Details');
+                    if (index == -1) {
+                        this._orderService.navigationLabels[2].children.push(
+                            { id: 10, title: 'Group Order Details', icon: 'heroicons_outline:document-report', route: 'group-order-details' },
+                            { id: 10, title: 'Group Order Shipping', icon: 'heroicons_outline:document-report', route: 'group-order-shipping' }
+                        );
+                    }
                 }
                 this.routes = this._orderService.navigationLabels;
             } else {
