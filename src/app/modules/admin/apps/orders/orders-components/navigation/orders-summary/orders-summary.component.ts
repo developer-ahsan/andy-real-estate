@@ -8,7 +8,7 @@ import { Router } from '@angular/router';
 @Component({
   selector: 'app-orders-summary',
   templateUrl: './orders-summary.component.html',
-  styles: [".tracker {background-color: #eee;} .tracker-active {background-color: green;color: #fff;} .progress {height: 2rem}"]
+  styles: [".tracker {background-color: #eee;} .tracker-active {background-color: green;color: #fff;} .progress {height: 2rem} ::-webkit-scrollbar {width: 3px !important}"]
 })
 export class OrdersSummaryComponent implements OnInit {
   private _unsubscribeAll: Subject<any> = new Subject<any>();
