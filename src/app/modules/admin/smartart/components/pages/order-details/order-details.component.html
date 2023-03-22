@@ -117,6 +117,7 @@
                                     </div>
                                     <div *ngIf="!artWorkLoader">
                                         <b>Artwork Templates:</b>
+                                        <span *ngIf="artworktemplatesData.length == 0"> NONE</span>
                                         <br>
                                         <div *ngFor="let item of artworktemplatesData">
                                             <a target="_blank"
@@ -255,6 +256,26 @@
                                 <div>
                                     <button class="min-w-40 btn buttonComment hover:bg-gray-200">Upload</button>
                                 </div>
+                                <div class="mt-2">
+                                    <div *ngIf="artWorkLoader">
+                                        <mat-progress-spinner [diameter]="24" [mode]="'indeterminate'">
+                                        </mat-progress-spinner>
+                                    </div>
+                                    <div *ngIf="!artWorkLoader">
+                                        <p class="text-secondary text-sm w-full border-b">Existing Virtual Proof Images
+                                        </p>
+                                        <div class="mt-2 flex space-x-2 overflow-x-auto">
+                                            <div class="text-center" *ngFor="let item of virtualProofData">
+                                                <img class="w-10 border"
+                                                    src="https://assets.consolidus.com/globalAssets/StoreProducts/VirtualProofs/{{item.fk_storeProductID}}/{{item.pk_virtualProofID}}.jpg">
+                                                <mat-icon class="icon-size-5 text-red-500 cursor-pointer"
+                                                    matTooltip="Remove" fuseAlertIcon
+                                                    [svgIcon]="'heroicons_solid:trash'">
+                                                </mat-icon>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                         </mat-expansion-panel>
                         <!--  Update imprint colors -->
@@ -303,13 +324,23 @@
                                 </mat-panel-title>
                             </mat-expansion-panel-header>
                             <div>
-                                <table class="table">
+                                <fuse-alert *ngIf="approvalHistoryData.length == 0" class="my-2"
+                                    [appearance]="'outline'" [type]="'warning'" [showIcon]="false">
+                                    This order has no approval history.
+                                </fuse-alert>
+                                <table class="table" *ngIf="approvalHistoryData.length > 0">
                                     <thead>
                                         <tr>
                                             <th>Name</th>
                                             <th>Date</th>
                                         </tr>
                                     </thead>
+                                    <tbody>
+                                        <tr *ngFor="let item of approvalHistoryData">
+                                            <td>{{item.firstName + ' ' + item.lastName}}</td>
+                                            <td>{{item.statusDate | date}}</td>
+                                        </tr>
+                                    </tbody>
                                 </table>
                             </div>
                         </mat-expansion-panel>
@@ -400,7 +431,14 @@
                                             <div class="col-6 font-bold">Imprint Method:</div>
                                             <div class="col-6">{{imprint.methodName}}</div>
                                             <div class="col-6 font-bold">Artwork File Types:</div>
-                                            <div class="col-6">NONE</div>
+                                            <div class="col-6">
+                                                <div *ngIf="!artWorkLoader">
+                                                    <span *ngIf="artworktemplatesData.length == 0">NONE</span>
+                                                    <span
+                                                        *ngFor="let item of artworktemplatesData;let last=last">{{item.extension}}<span
+                                                            *ngIf="!last">, </span></span>
+                                                </div>
+                                            </div>
                                             <div class="col-6 font-bold">Digitizer:</div>
                                             <div class="col-6">{{imprint.digitizer || 'NONE'}}</div>
                                         </div>
@@ -435,14 +473,7 @@
                                             <p class="text-lg font-bold">Make Manual Updates to this Imprint Status</p>
                                             <div class="row">
                                                 <div class="col-md-8 col-12">
-                                                    <div class="text-md font-bold">Re-Send Art To Decorator</div>
-                                                    <mat-form-field class="w-full">
-                                                        <mat-label>Please enter the artwork's PO Number: (enter only
-                                                            numbers, dashes, or letters)</mat-label>
-                                                        <input matInput
-                                                            value="{{orderData.fk_orderID}}-{{paramData?.pk_orderLineID}}"
-                                                            id="{{imprint.pk_imprintID}}">
-                                                    </mat-form-field>
+                                                    <div class="text-md font-bold">Upload Artwork Proof</div>
                                                     <mat-form-field class="w-full">
                                                         <mat-label>Email recipients (comma-separated)</mat-label>
                                                         <input matInput value="{{orderData.shippingEmail}}"
@@ -456,11 +487,12 @@
                                                     </mat-form-field>
                                                     <div class="flex justify-between">
                                                         <input type="file">
+                                                        <mat-checkbox>Respond to designer</mat-checkbox>
                                                     </div>
                                                     <div>
                                                         <button
-                                                            class="min-w-30 mt-2 btn buttonComment hover:bg-gray-200">Resend
-                                                            artwork to decorator</button>
+                                                            class="min-w-30 mt-2 btn buttonComment hover:bg-gray-200">Update
+                                                            Artwork Proof</button>
                                                     </div>
                                                 </div>
                                                 <div class="col-md-4 col-12">
@@ -493,6 +525,34 @@
                                                         </div> -->
                                                     </div>
 
+                                                </div>
+                                            </div>
+                                            <p class="text-lg font-bold">Make Manual Updates to this Imprint Status</p>
+                                            <div class="row">
+                                                <div class="col-md-6 col-12">
+                                                    <p class="text-md font-bold">Offline Customer Communication:</p>
+                                                    <mat-radio-group class="example-radio-group">
+                                                        <mat-radio-button class="example-radio-button"
+                                                            value="approve">Customer Approved
+                                                            Artwork with comments</mat-radio-button>
+                                                        <mat-radio-button class="example-radio-button"
+                                                            value="request">Customer
+                                                            Requested Artwork Change</mat-radio-button>
+                                                    </mat-radio-group>
+                                                    <mat-checkbox>Respond to designer</mat-checkbox>
+                                                </div>
+                                                <div class="col-md-6 col-12">
+                                                    <mat-form-field class="w-full">
+                                                        <mat-label>Please enter comments regarding this
+                                                            communication:</mat-label>
+                                                        <textarea matInput></textarea>
+                                                    </mat-form-field>
+                                                    <div class="tex-right">
+                                                        <button
+                                                            class="min-w-30 mt-2 btn buttonComment hover:bg-gray-200">Apply
+                                                            Status
+                                                            Change</button>
+                                                    </div>
                                                 </div>
                                             </div>
                                         </div>

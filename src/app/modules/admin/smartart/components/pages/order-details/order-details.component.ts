@@ -74,6 +74,11 @@ export class OrderDashboardDetailsComponent implements OnInit, OnDestroy {
   // Artwork templates
   artWorkLoader: boolean = false;
   artworktemplatesData: any;
+  // Virtual Proof Images
+  virtualProofData: any;
+  // Approval History
+  approvalHistoryData: any;
+
   // Timer
   hours: number = 0;
   minutes: number = 0;
@@ -119,6 +124,7 @@ export class OrderDashboardDetailsComponent implements OnInit, OnDestroy {
       orderLineImprint_id: this.paramData.fk_imprintID
     }
     this._smartartService.getSmartArtData(params).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+      this.approvalHistoryData = res["approvalHistory"];
       this.imprintdata = res["data"];
       if (this.imprintdata.length > 0) {
         this.selectedImprint = this.imprintdata[0].pk_imprintID;
@@ -152,8 +158,14 @@ export class OrderDashboardDetailsComponent implements OnInit, OnDestroy {
       store_id: this.orderData.pk_storeID,
       store_product_id: this.orderData.pk_storeProductID
     }
+    this.artworktemplatesData = [];
     this._smartartService.getSmartArtData(params).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
-      this.artworktemplatesData = res["artworkTemplate"];
+      if (res["artworkTemplate"]) {
+        this.artworktemplatesData = res["artworkTemplate"];
+      }
+      if (res["virtualProof"]) {
+        this.virtualProofData = res["virtualProof"];
+      }
       this.artWorkLoader = false;
       this._changeDetectorRef.markForCheck();
     }, err => {

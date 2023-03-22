@@ -27,14 +27,16 @@ export const dashboardRoutes: Route[] = [
                 path: 'overview',
                 component: DashboardOverviewComponent,
                 resolve: {
-                    suplier: AnalyticsResolver
+                    suplier: AnalyticsResolver,
+                    data: ProjectResolver
                 }
             },
             {
                 path: 'reports',
                 component: ProjectComponent,
                 resolve: {
-                    suplier: ProjectResolver
+                    suplier: AnalyticsResolver,
+                    data: ProjectResolver
                 }
             }
         ]
