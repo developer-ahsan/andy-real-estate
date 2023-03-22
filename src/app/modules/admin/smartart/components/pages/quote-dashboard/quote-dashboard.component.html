@@ -153,7 +153,8 @@
                                     <th mat-header-cell *matHeaderCellDef class="w-20 min-w-20 px-2">
                                         Date
                                     </th>
-                                    <td mat-cell *matCellDef="let element" class="text-xs px-2">
+                                    <td mat-cell *matCellDef="let element" class="text-xs px-2"
+                                        (click)="quoteDetails(element)">
                                         {{element.dateCreated | date: 'MM/dd/yy'}}
                                     </td>
                                 </ng-container>
@@ -161,7 +162,8 @@
                                     <th mat-header-cell *matHeaderCellDef class="w-20 min-w-20 px-2">
                                         In-Hands
                                     </th>
-                                    <td mat-cell *matCellDef="let element" class="text-xs px-2">
+                                    <td mat-cell *matCellDef="let element" class="text-xs px-2"
+                                        (click)="quoteDetails(element)">
                                         {{(element.inHandsDate |
                                         date: 'MM/dd/yy') || 'N/A'}}
                                     </td>
@@ -170,14 +172,16 @@
                                     <th mat-header-cell *matHeaderCellDef class="w-20 min-w-20 px-2">
                                         Cart
                                     </th>
-                                    <td mat-cell *matCellDef="let element" class="text-xs px-2">{{element.fk_cartID}}
+                                    <td mat-cell *matCellDef="let element" class="text-xs px-2"
+                                        (click)="quoteDetails(element)">{{element.fk_cartID}}
                                     </td>
                                 </ng-container>
                                 <ng-container matColumnDef="line">
                                     <th mat-header-cell *matHeaderCellDef class="w-20 min-w-20 px-2">
                                         Line
                                     </th>
-                                    <td mat-cell *matCellDef="let element" class="text-xs px-2">
+                                    <td mat-cell *matCellDef="let element" class="text-xs px-2"
+                                        (click)="quoteDetails(element)">
                                         {{element.pk_cartLineID}}
                                     </td>
                                 </ng-container>
@@ -185,7 +189,8 @@
                                     <th mat-header-cell *matHeaderCellDef class="w-30 min-w-30">
                                         Customer
                                     </th>
-                                    <td mat-cell *matCellDef="let element" class="text-xs pr-1">{{element.firstName + '
+                                    <td mat-cell *matCellDef="let element" class="text-xs pr-1"
+                                        (click)="quoteDetails(element)">{{element.firstName + '
                                         ' +element.lastName}}
                                     </td>
                                 </ng-container>
@@ -193,14 +198,16 @@
                                     <th mat-header-cell *matHeaderCellDef class="w-50 min-w-50">
                                         Product
                                     </th>
-                                    <td mat-cell *matCellDef="let element" class="text-xs pr-1">{{element.productName}}
+                                    <td mat-cell *matCellDef="let element" class="text-xs pr-1"
+                                        (click)="quoteDetails(element)">{{element.productName}}
                                     </td>
                                 </ng-container>
                                 <ng-container matColumnDef="supplier">
                                     <th mat-header-cell *matHeaderCellDef class="w-30 min-w-30">
                                         Supplier
                                     </th>
-                                    <td mat-cell *matCellDef="let element" class="text-xs pr-1">
+                                    <td mat-cell *matCellDef="let element" class="text-xs pr-1"
+                                        (click)="quoteDetails(element)">
                                         {{element.supplierCompanyName}}
                                     </td>
                                 </ng-container>
@@ -208,21 +215,24 @@
                                     <th mat-header-cell *matHeaderCellDef class="w-30 min-w-30">
                                         Status
                                     </th>
-                                    <td mat-cell *matCellDef="let element" class="text-xs pr-1">{{element.statusName}}
+                                    <td mat-cell *matCellDef="let element" class="text-xs pr-1"
+                                        (click)="quoteDetails(element)">{{element.statusName}}
                                     </td>
                                 </ng-container>
                                 <ng-container matColumnDef="age">
                                     <th mat-header-cell *matHeaderCellDef class="w-10 min-w-10 text-center">
                                         Age
                                     </th>
-                                    <td mat-cell *matCellDef="let element" class="text-xs pr-1 text-center">10
+                                    <td mat-cell *matCellDef="let element" class="text-xs pr-1 text-center"
+                                        (click)="quoteDetails(element)">10
                                     </td>
                                 </ng-container>
                                 <ng-container matColumnDef="store">
                                     <th mat-header-cell *matHeaderCellDef class="w-30 min-w-30">
                                         Store
                                     </th>
-                                    <td mat-cell *matCellDef="let element" class="text-xs pr-1">{{element.storeCode}}
+                                    <td mat-cell *matCellDef="let element" class="text-xs pr-1"
+                                        (click)="quoteDetails(element)">{{element.storeCode}}
                                     </td>
                                 </ng-container>
                                 <ng-container matColumnDef="proof">

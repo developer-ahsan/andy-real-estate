@@ -2,7 +2,7 @@ import { Component, Input, OnInit, ChangeDetectorRef, OnDestroy, ViewChild } fro
 import { FormControl } from '@angular/forms';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatDrawer } from '@angular/material/sidenav';
-import { Router } from '@angular/router';
+import { NavigationExtras, Router } from '@angular/router';
 import { Subject } from 'rxjs';
 import { debounceTime, distinctUntilChanged, filter, finalize, switchMap, takeUntil, tap } from 'rxjs/operators';
 import { SmartArtService } from '../../smartart.service';
@@ -245,7 +245,10 @@ export class OrderDashboardComponent implements OnInit, OnDestroy {
   // Order Details
   orderDetails(item) {
     this._smartartService.routeData = item;
-    this.router.navigate(['/smartart/order-details']);
+    const queryParams: NavigationExtras = {
+      queryParams: { fk_orderID: item.fk_orderID, fk_imprintID: item.fk_imprintID, pk_orderLineID: item.pk_orderLineID, statusName: item.statusName }
+    };
+    this.router.navigate(['/smartart/order-details'], queryParams);
   }
   /**
      * On destroy

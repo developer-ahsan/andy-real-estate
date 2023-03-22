@@ -1,0 +1,82 @@
+<div class="flex flex-col flex-auto mt-8 p-6 bg-card shadow rounded-2xl overflow-hidden w-full">
+    <div class="text-lg font-medium tracking-tight leading-6 truncate">Color Keys</div>
+    <div class="mt-2 flex">
+        <div class="mr-2">
+            <p>Rush Orders</p>
+            <hr class="m-0 h-2" style="background: #ffcaca;">
+        </div>
+        <div class="mr-2">
+            <p>Reorder</p>
+            <hr class="m-0 h-2" style="background: #feee84;">
+        </div>
+        <div class="mr-2">
+            <p>Group Order</p>
+            <hr class="m-0 h-2" style="background: #fca769;">
+        </div>
+        <div class="mr-2">
+            <p>Priority</p>
+            <hr class="m-0 h-2" style="background: #e0f0d5;">
+        </div>
+    </div>
+    <div>
+        <div class="flex justify-between border-b mt-4">
+            <div class="text-lg font-medium tracking-tight leading-6 truncate ">Pending Quotes</div>
+        </div>
+        <div class="mt-2">
+            <fuse-alert class="mt-2" [appearance]="'soft'" [type]="'warning'">
+                <mat-icon class="icon-size-5" fuseAlertIcon [svgIcon]="'heroicons_solid:lock-open'">
+                </mat-icon>
+                No data available in table.
+            </fuse-alert>
+        </div>
+    </div>
+    <div>
+        <div class="flex justify-between border-b mt-4">
+            <div class="text-lg font-medium tracking-tight leading-6 truncate ">Sample Status</div>
+        </div>
+        <div class="mt-2">
+            <fuse-alert class="mt-2" [appearance]="'soft'" [type]="'warning'">
+                <mat-icon class="icon-size-5" fuseAlertIcon [svgIcon]="'heroicons_solid:lock-open'">
+                </mat-icon>
+                No data available in table.
+            </fuse-alert>
+        </div>
+    </div>
+    <div>
+        <div class="flex justify-between border-b mt-4">
+            <div class="text-lg font-medium tracking-tight leading-6 truncate ">Around This Time Last Year
+            </div>
+        </div>
+        <div class="mt-2">
+            <fuse-alert class="mt-2" [appearance]="'soft'" [type]="'warning'">
+                <mat-icon class="icon-size-5" fuseAlertIcon [svgIcon]="'heroicons_solid:lock-open'">
+                </mat-icon>
+                There are currently no orders for your customers around this time last year.
+            </fuse-alert>
+        </div>
+    </div>
+    <div>
+        <div class="flex justify-between border-b mt-4">
+            <div class="text-lg font-medium tracking-tight leading-6 truncate ">Keyword Searches</div>
+        </div>
+        <div class="mt-2">
+            <fuse-alert class="mt-2" [appearance]="'soft'" [type]="'warning'">
+                <mat-icon class="icon-size-5" fuseAlertIcon [svgIcon]="'heroicons_solid:lock-open'">
+                </mat-icon>
+                There are currently no keywords for your customers around this time last year.
+            </fuse-alert>
+        </div>
+    </div>
+    <div>
+        <div class="flex justify-between border-b mt-4">
+            <div class="text-lg font-medium tracking-tight leading-6 truncate ">Post-Sale Activity</div>
+        </div>
+        <div class="mt-2">
+            <fuse-alert class="mt-2" [appearance]="'soft'" [type]="'warning'">
+                <mat-icon class="icon-size-5" fuseAlertIcon [svgIcon]="'heroicons_solid:lock-open'">
+                </mat-icon>
+                There are currently no keywords for your customers around this time last year.
+            </fuse-alert>
+        </div>
+    </div>
+</div>

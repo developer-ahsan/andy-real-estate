@@ -17,13 +17,21 @@ import { AnalyticsComponent } from './components/analytics/analytics.component';
 import { DashboardOverviewComponent } from './components/overview/overview.component';
 import { ProjectComponent } from './components/project/project.component';
 import { MatTabsModule } from '@angular/material/tabs';
+import { FuseAlertModule } from '@fuse/components/alert';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+import { MatSelectModule } from '@angular/material/select';
+import { OrderStatusComponent } from './components/analytics/order-status/order-status.component';
+import { GeneratorsComponent } from './components/analytics/generators/generators.component';
 
 @NgModule({
     declarations: [
         DashboardDetailsComponent,
         DashboardOverviewComponent,
         AnalyticsComponent,
-        ProjectComponent
+        ProjectComponent,
+        OrderStatusComponent,
+        GeneratorsComponent
     ],
     imports: [
         RouterModule.forChild(dashboardRoutes),
@@ -36,10 +44,14 @@ import { MatTabsModule } from '@angular/material/tabs';
         MatSortModule,
         MatTableModule,
         MatTooltipModule,
+        MatFormFieldModule,
+        MatInputModule,
+        MatSelectModule,
         NgApexchartsModule,
         MatTableModule,
         MatTabsModule,
-        SharedModule
+        SharedModule,
+        FuseAlertModule
     ],
     entryComponents: [],
 })

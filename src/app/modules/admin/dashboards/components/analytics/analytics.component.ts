@@ -1,10 +1,27 @@
-import { ChangeDetectionStrategy, Component, OnDestroy, OnInit, ViewEncapsulation } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnDestroy, OnInit, ViewChild, ViewEncapsulation } from '@angular/core';
 import { Router } from '@angular/router';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
-import { ApexOptions } from 'ng-apexcharts';
+import { ApexAxisChartSeries, ApexChart, ApexDataLabels, ApexFill, ApexLegend, ApexNonAxisChartSeries, ApexOptions, ApexPlotOptions, ApexResponsive, ApexStroke, ApexTooltip, ApexXAxis, ApexYAxis, ChartComponent } from 'ng-apexcharts';
 import { DashboardsService } from '../../dashboard.service';
-
+export type ChartOptions = {
+    series: ApexNonAxisChartSeries;
+    chart: ApexChart;
+    responsive: ApexResponsive[];
+    labels: any;
+};
+export type ChartOptions1 = {
+    series: ApexAxisChartSeries;
+    chart: ApexChart;
+    dataLabels: ApexDataLabels;
+    plotOptions: ApexPlotOptions;
+    yaxis: ApexYAxis;
+    xaxis: ApexXAxis;
+    fill: ApexFill;
+    tooltip: ApexTooltip;
+    stroke: ApexStroke;
+    legend: ApexLegend;
+};
 @Component({
     selector: 'analytics',
     templateUrl: './analytics.component.html',
@@ -34,6 +51,15 @@ export class AnalyticsComponent implements OnInit, OnDestroy {
 
     private _unsubscribeAll: Subject<any> = new Subject<any>();
 
+    mainScreen = 'sales';
+    testData: any;
+    // Pie Chart
+    @ViewChild("chart") chart: ChartComponent;
+    public chartOptions: Partial<ChartOptions>;
+    @ViewChild("chart1") chart1: ChartComponent;
+    public chartOptions1: Partial<ChartOptions1>;
+    chartGithubIssues: ApexOptions = {};
+
     /**
      * Constructor
      */
@@ -41,6 +67,173 @@ export class AnalyticsComponent implements OnInit, OnDestroy {
         private _analyticsService: DashboardsService,
         private _router: Router
     ) {
+        this._analyticsService.dataProject$
+            .pipe(takeUntil(this._unsubscribeAll))
+            .subscribe((data) => {
+
+                // Store the data
+                this.testData = data;
+
+                // Prepare the chart data
+                this._prepareChartData();
+            });
+        this.chartOptions = {
+            series: [44, 55, 13, 43, 22],
+            chart: {
+                width: 380,
+                type: "pie"
+            },
+            labels: ["Team A", "Team B", "Team C", "Team D", "Team E"],
+            responsive: [
+                {
+                    breakpoint: 480,
+                    options: {
+                        chart: {
+                            width: 200
+                        },
+                        legend: {
+                            position: "bottom"
+                        }
+                    }
+                }
+            ]
+        }
+        this.chartOptions1 = {
+            series: [
+                {
+                    name: "Net Profit",
+                    data: [44, 55, 57, 56, 61, 58, 63, 60, 66]
+                },
+                {
+                    name: "Revenue",
+                    data: [76, 85, 101, 98, 87, 105, 91, 114, 94]
+                },
+                {
+                    name: "Free Cash Flow",
+                    data: [35, 41, 36, 26, 45, 48, 52, 53, 41]
+                }
+            ],
+            chart: {
+                type: "bar",
+                height: 350
+            },
+            plotOptions: {
+                bar: {
+                    horizontal: false,
+                    columnWidth: "55%"
+                }
+            },
+            dataLabels: {
+                enabled: false
+            },
+            stroke: {
+                show: true,
+                width: 2,
+                colors: ["transparent"]
+            },
+            xaxis: {
+                categories: [
+                    "Feb",
+                    "Mar",
+                    "Apr",
+                    "May",
+                    "Jun",
+                    "Jul",
+                    "Aug",
+                    "Sep",
+                    "Oct"
+                ]
+            },
+            yaxis: {
+                title: {
+                    text: "$ (thousands)"
+                }
+            },
+            fill: {
+                opacity: 1
+            },
+            tooltip: {
+                y: {
+                    formatter: function (val) {
+                        return "$ " + val + " thousands";
+                    }
+                }
+            }
+        };
+        this.chartGithubIssues = {
+            chart: {
+                fontFamily: 'inherit',
+                foreColor: 'inherit',
+                height: '100%',
+                type: 'line',
+                toolbar: {
+                    show: false
+                },
+                zoom: {
+                    enabled: false
+                }
+            },
+            colors: ['#64748B', '#94A3B8'],
+            dataLabels: {
+                enabled: true,
+                enabledOnSeries: [0],
+                background: {
+                    borderWidth: 0
+                }
+            },
+            grid: {
+                borderColor: 'var(--fuse-border)'
+            },
+            labels: this.testData.githubIssues.labels,
+            legend: {
+                show: false
+            },
+            plotOptions: {
+                bar: {
+                    columnWidth: '50%'
+                }
+            },
+            series: this.testData.githubIssues.series,
+            states: {
+                hover: {
+                    filter: {
+                        type: 'darken',
+                        value: 0.75
+                    }
+                }
+            },
+            stroke: {
+                width: [3, 0]
+            },
+            tooltip: {
+                followCursor: true,
+                theme: 'dark'
+            },
+            xaxis: {
+                axisBorder: {
+                    show: false
+                },
+                axisTicks: {
+                    color: 'var(--fuse-border)'
+                },
+                labels: {
+                    style: {
+                        colors: 'var(--fuse-text-secondary)'
+                    }
+                },
+                tooltip: {
+                    enabled: false
+                }
+            },
+            yaxis: {
+                labels: {
+                    offsetX: -16,
+                    style: {
+                        colors: 'var(--fuse-text-secondary)'
+                    }
+                }
+            }
+        };
     }
 
     // -----------------------------------------------------------------------------------------------------
@@ -52,6 +245,8 @@ export class AnalyticsComponent implements OnInit, OnDestroy {
      */
     ngOnInit(): void {
         // Get the data
+
+
         this._analyticsService.data$
             .pipe(takeUntil(this._unsubscribeAll))
             .subscribe((data) => {
@@ -76,6 +271,9 @@ export class AnalyticsComponent implements OnInit, OnDestroy {
                 }
             }
         };
+    }
+    calledScreen(screen) {
+        this.mainScreen = screen;
     }
 
     /**

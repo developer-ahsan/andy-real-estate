@@ -1,4 +1,5 @@
 import { Component, OnInit, Input, Output, EventEmitter, ChangeDetectorRef } from '@angular/core';
+import moment from 'moment';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { OrdersService } from '../../orders.service';
@@ -77,7 +78,9 @@ export class OrderPaymentComponent implements OnInit {
               this.isPaymentLoader = false;
               if (res.paid) {
                 this.ngAmount = null;
-                this._orderService.snackBar('Payment Succeeded');
+                // this.orderDetail.paymentDate = new Date(res?.created);
+                // console.log(new Date(res?.created))
+                this._orderService.snackBar(`Payment Succeeded txID:${res?.balance_transaction}`);
               }
               this._changeDetectorRef.markForCheck();
             }, err => {

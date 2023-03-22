@@ -19,7 +19,8 @@ export const dashboardRoutes: Route[] = [
                 path: 'analytics',
                 component: AnalyticsComponent,
                 resolve: {
-                    suplier: AnalyticsResolver
+                    suplier: AnalyticsResolver,
+                    data: ProjectResolver
                 }
             },
             {

@@ -2,6 +2,7 @@ import { Component, Input, OnInit, ChangeDetectorRef, OnDestroy, ViewChild } fro
 import { FormControl } from '@angular/forms';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatDrawer } from '@angular/material/sidenav';
+import { NavigationExtras, Router } from '@angular/router';
 import { Subject } from 'rxjs';
 import { debounceTime, distinctUntilChanged, filter, finalize, switchMap, takeUntil, tap } from 'rxjs/operators';
 import { SmartArtService } from '../../smartart.service';
@@ -46,7 +47,8 @@ export class QuoteDashboardComponent implements OnInit, OnDestroy {
 
   constructor(
     private _changeDetectorRef: ChangeDetectorRef,
-    private _smartartService: SmartArtService
+    private _smartartService: SmartArtService,
+    private router: Router
   ) { }
 
   ngOnInit(): void {
@@ -234,6 +236,14 @@ export class QuoteDashboardComponent implements OnInit, OnDestroy {
     }
     this._changeDetectorRef.markForCheck();
     this.getSmartArtList(1, 'get');
+  }
+  quoteDetails(item) {
+    console.log(item);
+    this._smartartService.routeData = item;
+    const queryParams: NavigationExtras = {
+      queryParams: { fk_orderID: item.fk_orderID, fk_imprintID: item.fk_imprintID, pk_orderLineID: item.pk_orderLineID, statusName: item.statusName }
+    };
+    this.router.navigate(['/smartart/quote-details'], queryParams);
   }
   /**
      * On destroy

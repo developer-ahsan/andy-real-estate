@@ -8,15 +8,13 @@ import moment from 'moment';
 import { Subject } from 'rxjs';
 import { debounceTime, distinctUntilChanged, filter, finalize, switchMap, takeUntil, tap } from 'rxjs/operators';
 import { SmartArtService } from '../../smartart.service';
-import { interval } from 'rxjs';
-
 @Component({
-  selector: 'app-order-details',
-  templateUrl: './order-details.component.html',
+  selector: 'app-quote-details',
+  templateUrl: './quote-details.component.html',
   encapsulation: ViewEncapsulation.None,
-  styleUrls: ['./order-detail.scss']
+  styleUrls: ['./quote-details.scss']
 })
-export class OrderDashboardDetailsComponent implements OnInit, OnDestroy {
+export class QuoteDashboardDetailsComponent implements OnInit, OnDestroy {
   @ViewChild('paginator') paginator: MatPaginator;
   @ViewChild('drawer', { static: true }) drawer: MatDrawer;
   @Input() isLoading: boolean;
@@ -80,7 +78,6 @@ export class OrderDashboardDetailsComponent implements OnInit, OnDestroy {
   seconds: number = 0;
   intervalId: any;
 
-
   constructor(
     private _changeDetectorRef: ChangeDetectorRef,
     private _authService: AuthService,
@@ -91,13 +88,23 @@ export class OrderDashboardDetailsComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.userData = this._authService.parseJwt(this._authService.accessToken);
-    this._activeRoute.queryParams.subscribe(res => {
-      this.paramData = res
-    });
+    // this._activeRoute.queryParams.subscribe(res => {
+    //   // this.paramData = res;
+    //   this.paramData.fk_imprintID = 34017;
+    //   this.paramData.pk_orderLineID = 95831;
+    //   this.paramData.fk_orderID = 56060;
+    // });
+    this.paramData = {
+      fk_imprintID: 34017,
+      pk_orderLineID: 95831,
+      fk_orderID: 56060,
+      statusName: "New Pending Review"
+    }
     this.isLoading = true;
     this.getOrderDetails();
   };
   getOrderDetails() {
+    console.log(this.paramData)
     let params = {
       order_online_details_v2: true,
       orderLine_id: this.paramData.pk_orderLineID,
@@ -238,8 +245,8 @@ export class OrderDashboardDetailsComponent implements OnInit, OnDestroy {
      * On destroy
      */
   ngOnDestroy(): void {
-    // Unsubscribe from all subscriptions
     clearInterval(this.intervalId);
+    // Unsubscribe from all subscriptions
     this._unsubscribeAll.next();
     this._unsubscribeAll.complete();
   };
