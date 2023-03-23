@@ -258,8 +258,9 @@
                                     </th>
                                     <td mat-cell *matCellDef="let element" class="text-center">
                                         <div class="flex justify-center">
-                                            <mat-icon svgIcon="heroicons_outline:mail" class="mr-1 icon-size-4"
-                                                matTooltip="Email"></mat-icon>
+                                            <mat-icon svgIcon="heroicons_outline:mail"
+                                                class="mr-1 cursor-pointer icon-size-4" matTooltip="Email"
+                                                (click)="customerEmail(element)"></mat-icon>
                                             <mat-icon svgIcon="heroicons_outline:eye-off" class="mr-1 icon-size-4"
                                                 matTooltip="Hide"></mat-icon>
                                             <mat-icon svgIcon="heroicons_outline:flag" class="mr-1 icon-size-4"

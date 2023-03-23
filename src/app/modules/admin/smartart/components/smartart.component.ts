@@ -67,7 +67,6 @@ export class SmartArtComponent {
      */
 
     ngOnInit(): void {
-        console.log(this._router.url)
         if (this.loginCheck) {
             this._router.events.subscribe((event) => {
                 if (event instanceof NavigationEnd) {

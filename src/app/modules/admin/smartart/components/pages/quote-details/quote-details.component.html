@@ -40,34 +40,43 @@
                                 </mat-panel-title>
                             </mat-expansion-panel-header>
                             <div>
-                                <div><b>Company name:</b> {{orderData?.companyInformationName}}</div>
-                                <div><b>Name:</b> {{orderData.shippingName}}</div>
-                                <div><b>Company:</b> {{orderData.shippingCompanyName}}</div>
-                                <div><b>Address:</b> {{orderData.shippingAddress}} {{orderData.shippingCity}}</div>
-                                <div><b>Phone:</b> {{orderData.shippingPhone}}</div>
-                                <div><b>Email:</b> {{orderData.shippingEmail}}</div>
+                                <div><b>Company name:</b> {{quoteData?.companyName}}</div>
+                                <div><b>Company:</b> {{quoteData.companyName}}</div>
+                                <div><b>Address:</b> {{quoteData?.companyAddress}}</div>
+                                <div><b>Phone:</b> {{quoteData?.dayPhone}}</div>
+                                <div><b>Email:</b> {{quoteData?.supplierInformationEmail}}</div>
                                 <div><b>Designer notes:</b> None</div>
+                                <div class="space-y-1">
+                                    <button class="min-w-60 btn buttonComment hover:bg-gray-200">Email Customer</button>
+                                    <br>
+                                    <button class="min-w-60 btn buttonComment hover:bg-gray-200">Auto Art
+                                        Request</button>
+                                    <br>
+                                    <button class="min-w-60 btn buttonComment hover:bg-gray-200">Order History</button>
+                                </div>
                             </div>
                         </mat-expansion-panel>
-                        <!-- Order Information -->
+                        <!-- Quote Information -->
                         <mat-expansion-panel [expanded]="true">
                             <mat-expansion-panel-header>
                                 <mat-panel-title>
-                                    Order Information
+                                    Quote Information
                                 </mat-panel-title>
                             </mat-expansion-panel-header>
                             <div>
-                                <div><b>Order:</b> {{orderData.fk_orderID}}</div>
-                                <div><b>Quote ID:</b> {{orderData.quoteID}}-{{paramData?.fk_imprintID}}</div>
-                                <div><b>PO:</b> {{orderData.fk_orderID}}-{{paramData?.pk_orderLineID}}</div>
-                                <div><b>Order Placed:</b> {{orderData.orderDate | date: 'MM/dd/yyyy'}}</div>
-                                <div><b>Store:</b> {{orderData.storeName}}</div>
-                                <div><b>Brand Guide:</b> Click here</div>
-                                <div><b>Rush:</b> NO</div>
+                                <div><b>Quote ID:</b> {{paramData.fk_cartID}}-{{paramData?.pk_cartLineID}}</div>
+                                <div><b>Created:</b> {{quoteData.dateCreated | date: 'MM/dd/yyyy'}}</div>
+                                <div><b>Store:</b> <a href="{{quoteData?.storeURL}}" target="_blank">
+                                        {{quoteData?.storeName}}</a></div>
+                                <div><b>Brand Guide:</b> <a
+                                        href="https://assets.consolidus.com/globalAssets/Stores/BrandGuide/{{quoteData?.pk_storeID}}.pdf">Click
+                                        here</a></div>
+                                <div><b>Rush:</b> {{quoteData.blnRushFlexibility? 'YES' : 'NO'}}</div>
                                 <div>
                                     <b>In-Hands:</b> (mm/dd/yyyy)
                                     <mat-form-field class="fuse-mat-dense fuse-mat-no-subscript w-full min-w-50">
-                                        <input matInput readonly [matDatepicker]="picker" (click)="picker.open()">
+                                        <input matInput readonly [(ngModel)]="quoteData.inHandsDate"
+                                            [matDatepicker]="picker" (click)="picker.open()">
                                         <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
                                         <mat-datepicker #picker></mat-datepicker>
                                     </mat-form-field>
@@ -75,17 +84,34 @@
                                 <div>
                                     <b>Event:</b>
                                     <mat-form-field class="fuse-mat-dense fuse-mat-no-subscript w-full min-w-50">
-                                        <input matInput>
+                                        <input matInput [(ngModel)]="quoteData.event">
                                     </mat-form-field>
                                 </div>
                                 <div>
-                                    <mat-checkbox><b>Ignore Scheduler</b></mat-checkbox>
+                                    <mat-checkbox [(ngModel)]="quoteData.bypassScheduler"><b>Ignore
+                                            Scheduler</b></mat-checkbox>
                                 </div>
                                 <div>
-                                    <mat-checkbox><b>Ignore additional proof emails</b></mat-checkbox>
+                                    <mat-checkbox [(ngModel)]="quoteData.blnIgnoreAdditionalArtEmails"><b>Ignore
+                                            additional proof emails</b></mat-checkbox>
                                 </div>
                                 <div>
-                                    <button class="min-w-40 btn buttonComment hover:bg-gray-200">Update</button>
+                                    <b>Additional Contacts:</b>
+                                    <mat-form-field class="fuse-mat-dense fuse-mat-no-subscript w-full min-w-50">
+                                        <mat-select [(ngModel)]="quoteData.blnAdditionalApprovalOverride" matInput>
+                                            <mat-option [value]="true">Enabled</mat-option>
+                                            <mat-option [value]="false">Disabled</mat-option>
+                                        </mat-select>
+                                    </mat-form-field>
+                                </div>
+                                <div class="my-2">
+                                    <button [disabled]="updateQuoteInfoLoader" (click)="updateQuote()"
+                                        class="min-w-40 btn buttonComment hover:bg-gray-200">
+                                        <span *ngIf="!updateQuoteInfoLoader">Update</span>
+                                        <mat-progress-spinner *ngIf="updateQuoteInfoLoader" [diameter]="24"
+                                            [mode]="'indeterminate'">
+                                        </mat-progress-spinner>
+                                    </button>
                                 </div>
                             </div>
                         </mat-expansion-panel>
@@ -97,19 +123,17 @@
                                 </mat-panel-title>
                             </mat-expansion-panel-header>
                             <div>
-                                <div><b>SKU:</b>{{orderData.SKU}}
-                                    <p>{{orderData.supplierCompanyName}}</p>
-                                    <p>{{orderData.companyPhone}}</p>
+                                <div><b>SKU:</b>{{quoteData?.supplierSku}}
+                                    <p>{{quoteData?.supplierName}}</p>
+                                    <p>{{quoteData.dayPhone}}</p>
                                 </div>
-                                <div><b>ASI:</b>{{orderData.ASI}}</div>
-                                <div><b>PPAI:</b> {{orderData.PPAI}}</div>
-                                <div><b>Order Placed:</b> {{orderData.orderDate | date: 'MM/dd/yyyy'}}</div>
+                                <div><b>ASI:</b>{{quoteData.ASI}}</div>
+                                <div><b>PPAI:</b> {{quoteData.PPAI}}</div>
                                 <div>
-                                    <a href="{{orderData.companyWebsite}}"
-                                        target="_blank">{{orderData.companyWebsite}}</a>
+                                    <a href="{{quoteData?.websiteURL}}" target="_blank">{{quoteData?.websiteURL}}</a>
                                 </div>
-                                <div>art@bluemoonscreenprint.com</div>
-                                <div><b>Product Link:</b> Click here</div>
+                                <div>{{quoteData?.companyEmail}}</div>
+                                <!-- <div><b>Product Link:</b> Click here</div> -->
                                 <div>
                                     <div *ngIf="artWorkLoader">
                                         <mat-progress-spinner [diameter]="24" [mode]="'indeterminate'">
@@ -117,6 +141,7 @@
                                     </div>
                                     <div *ngIf="!artWorkLoader">
                                         <b>Artwork Templates:</b>
+                                        <span *ngIf="artworktemplatesData.length == 0">None</span>
                                         <br>
                                         <div *ngFor="let item of artworktemplatesData">
                                             <a target="_blank"
@@ -135,16 +160,17 @@
                                 </mat-panel-title>
                             </mat-expansion-panel-header>
                             <div>
-                                <p>{{imprintdata[0].digitizer || 'NONE'}}</p>
-                                <p>{{imprintdata[0].phone}}</p>
-                                <a href="{{orderData.companyWebsite}}" target="_blank">{{orderData.companyWebsite}}</a>
+                                <p>{{quoteData.supplierName || 'NONE'}}</p>
+                                <p>{{quoteData.dayPhone || 'NONE'}}</p>
+                                <a href="{{quoteData.supplierInformationWebsiteURL}}"
+                                    target="_blank">{{quoteData.supplierInformationWebsiteURL}}</a>
                             </div>
                         </mat-expansion-panel>
                         <!-- Comments -->
-                        <mat-expansion-panel [expanded]="true">
+                        <!-- <mat-expansion-panel [expanded]="true">
                             <mat-expansion-panel-header>
                                 <mat-panel-title>
-                                    Order comments
+                                    Quote comments
                                 </mat-panel-title>
                             </mat-expansion-panel-header>
                             <div>
@@ -164,9 +190,9 @@
                                 <button class="min-w-40 btn buttonComment hover:bg-gray-200" (click)="addComment()">Add
                                     Comment</button>
                             </div>
-                        </mat-expansion-panel>
+                        </mat-expansion-panel> -->
                         <!-- Purchase Comments -->
-                        <mat-expansion-panel>
+                        <mat-expansion-panel *ngIf="selectedPurchaseImprint">
                             <mat-expansion-panel-header>
                                 <mat-panel-title>
                                     Purchase Order Comments
@@ -174,17 +200,24 @@
                             </mat-expansion-panel-header>
                             <div>
                                 <mat-form-field class="w-full mt-2">
-                                    <mat-select [(ngModel)]="selectedImprint">
-                                        <mat-option *ngFor="let imprint of imprintdata"
-                                            [value]="imprint.pk_imprintID">({{imprint.pk_imprintID}})
+                                    <mat-select [(ngModel)]="selectedPurchaseImprint">
+                                        <mat-option *ngFor="let imprint of quoteImprintdata"
+                                            [value]="imprint">({{imprint.imprintID}})
                                             {{imprint.locationName}}/{{imprint.methodName}}</mat-option>
                                     </mat-select>
                                 </mat-form-field>
                                 <mat-form-field class="w-full">
-                                    <textarea matInput></textarea>
+                                    <textarea matInput
+                                        [(ngModel)]="selectedPurchaseImprint.originalArtworkComment"></textarea>
                                 </mat-form-field>
                                 <div>
-                                    <button class="min-w-40 btn buttonComment hover:bg-gray-200">Update Comment</button>
+                                    <button [disabled]="isPurchaseCommentLoader" (click)="updatePurchaseComment()"
+                                        class="min-w-40 btn buttonComment hover:bg-gray-200">
+                                        <span *ngIf="!isPurchaseCommentLoader">Update Comment</span>
+                                        <mat-progress-spinner *ngIf="isPurchaseCommentLoader" [diameter]="24"
+                                            [mode]="'indeterminate'">
+                                        </mat-progress-spinner>
+                                    </button>
                                 </div>
                             </div>
                         </mat-expansion-panel>
@@ -202,8 +235,8 @@
                                 </p>
                                 <mat-form-field class="w-full mt-2">
                                     <mat-select [(ngModel)]="selectedImprint">
-                                        <mat-option *ngFor="let imprint of imprintdata"
-                                            [value]="imprint.pk_imprintID">({{imprint.pk_imprintID}})
+                                        <mat-option *ngFor="let imprint of quoteImprintdata"
+                                            [value]="imprint.imprintID">({{imprint.imprintID}})
                                             {{imprint.locationName}}/{{imprint.methodName}}</mat-option>
                                     </mat-select>
                                 </mat-form-field>
@@ -226,6 +259,12 @@
                                     For any stores using CLC Reporting functionality, we must designate the Artwork
                                     Tag(s) for each product by selecting them from the list below.
                                 </p>
+                                <mat-form-field appearance="fill" class="w-full mt-2" *ngIf="artworktags">
+                                    <mat-select [(ngModel)]="selectedMultipleTags" multiple>
+                                        <mat-option *ngFor="let tags of artworktags"
+                                            [value]="tags.id">{{tags.name}}</mat-option>
+                                    </mat-select>
+                                </mat-form-field>
                                 <div class="mt-3">
                                     <button class="min-w-40 btn buttonComment hover:bg-gray-200">Update artwork
                                         tags</button>
@@ -233,7 +272,7 @@
                             </div>
                         </mat-expansion-panel>
                         <!-- Upload Virtual Proof -->
-                        <mat-expansion-panel>
+                        <!-- <mat-expansion-panel>
                             <mat-expansion-panel-header>
                                 <mat-panel-title>
                                     Upload Virtual Proof
@@ -256,7 +295,7 @@
                                     <button class="min-w-40 btn buttonComment hover:bg-gray-200">Upload</button>
                                 </div>
                             </div>
-                        </mat-expansion-panel>
+                        </mat-expansion-panel> -->
                         <!--  Update imprint colors -->
                         <mat-expansion-panel>
                             <mat-expansion-panel-header>
@@ -267,8 +306,8 @@
                             <div>
                                 <mat-form-field class="w-full mt-2">
                                     <mat-select [(ngModel)]="selectedImprint" (selectionChange)="onChangeColor($event)">
-                                        <mat-option *ngFor="let imprint of imprintdata"
-                                            [value]="imprint.pk_imprintID">({{imprint.pk_imprintID}})
+                                        <mat-option *ngFor="let imprint of quoteImprintdata"
+                                            [value]="imprint.imprintID">({{imprint.imprintID}})
                                             {{imprint.locationName}}/{{imprint.methodName}}</mat-option>
                                     </mat-select>
                                 </mat-form-field>
@@ -303,13 +342,23 @@
                                 </mat-panel-title>
                             </mat-expansion-panel-header>
                             <div>
-                                <table class="table">
+                                <fuse-alert *ngIf="approvalHistoryData.length == 0" class="my-2"
+                                    [appearance]="'outline'" [type]="'warning'" [showIcon]="false">
+                                    This order has no approval history.
+                                </fuse-alert>
+                                <table class="table" *ngIf="approvalHistoryData.length > 0">
                                     <thead>
                                         <tr>
                                             <th>Name</th>
                                             <th>Date</th>
                                         </tr>
                                     </thead>
+                                    <tbody>
+                                        <tr *ngFor="let item of approvalHistoryData">
+                                            <td>{{item.firstName + ' ' + item.lastName}}</td>
+                                            <td>{{item.statusDate | date}}</td>
+                                        </tr>
+                                    </tbody>
                                 </table>
                             </div>
                         </mat-expansion-panel>
@@ -326,8 +375,8 @@
                                     '2.0' }}</div>
                                 <mat-form-field class="w-full mt-2">
                                     <mat-select [(ngModel)]="selectedImprint">
-                                        <mat-option *ngFor="let imprint of imprintdata"
-                                            [value]="imprint.pk_imprintID">({{imprint.pk_imprintID}})
+                                        <mat-option *ngFor="let imprint of quoteImprintdata"
+                                            [value]="imprint.imprintID">({{imprint.imprintID}})
                                             {{imprint.locationName}}/{{imprint.methodName}}</mat-option>
                                     </mat-select>
                                 </mat-form-field>
@@ -346,30 +395,35 @@
                 </div>
                 <div class="col-12 col-md-8 mt-3">
                     <mat-accordion multi>
-                        <mat-expansion-panel [expanded]="true" *ngFor="let imprint of imprintdata;let i=index">
+                        <mat-expansion-panel [expanded]="true" *ngFor="let imprint of quoteImprintdata;let i=index">
                             <mat-expansion-panel-header>
                                 <mat-panel-title>
-                                    Imprint {{i+1}} of {{imprintdata.length}} for {{orderData.productName}} -
+                                    Imprint {{i+1}} of {{quoteImprintdata.length}} for {{quoteData.productName}} -
                                     ({{imprint.locationName}}/{{imprint.methodName}})
                                 </mat-panel-title>
                             </mat-expansion-panel-header>
                             <div>
-                                <div class="w-full font-medium text-md">PO:
-                                    {{orderData.fk_orderID}}-{{paramData?.pk_orderLineID}}</div>
+                                <div class="w-full font-medium text-md">Quote:
+                                    {{paramData.fk_cartID}}-{{paramData.pk_cartLineID}}</div>
                                 <div class="row w-full">
                                     <div class="col-12 col-md-6">
                                         <mat-form-field class="w-full">
                                             <mat-label>Reorder</mat-label>
                                             <input matInput>
                                         </mat-form-field>
-                                        <button class="min-w-30 btn buttonComment hover:bg-gray-200">Apply</button>
-                                        <!-- <button class="min-w-30" mat-button mat-stroked-button>Apply</button> -->
+                                        <button (click)="updateReorder(imprint)" [disabled]="imprint?.reorderLoader"
+                                            class="min-w-30 btn buttonComment hover:bg-gray-200">
+                                            <span *ngIf="!imprint?.reorderLoader">Apply</span>
+                                            <mat-progress-spinner *ngIf="imprint.reorderLoader" [diameter]="24"
+                                                [mode]="'indeterminate'">
+                                            </mat-progress-spinner>
+                                        </button>
                                     </div>
                                     <div class="col-12 col-md-6">
                                         <mat-form-field class="w-full">
                                             <mat-label>Proof Contact</mat-label>
                                             <mat-select matInput>
-                                                <mat-option value="12">Callie Terr</mat-option>
+                                                <mat-option value="12">Test</mat-option>
                                             </mat-select>
                                         </mat-form-field>
                                         <button class="min-w-30 btn buttonComment hover:bg-gray-200">Update</button>
@@ -378,11 +432,11 @@
                                     <div class="col-md-8 col-12 mt-3">
                                         <div class="row">
                                             <div class="col-6 font-bold">Quantity:</div>
-                                            <div class="col-6">{{orderData.quantity}}</div>
+                                            <div class="col-6">{{imprint.orderQuantity}}</div>
                                             <div class="col-6 font-bold">Imprint Colors:</div>
                                             <div class="col-6">
                                                 <div class="max-h-20  overflow-y-auto ">
-                                                    {{imprint.imprintColors}}
+                                                    {{imprint?.imprintColors || 'NONE'}}
                                                 </div>
                                             </div>
                                             <div class="col-6 font-bold">Imprint Location:</div>
@@ -394,15 +448,24 @@
                                                 </div>
                                             </div>
                                             <div class="col-6 font-bold">Imprint Size:</div>
-                                            <div class="col-6">{{imprint.area}}</div>
+                                            <div class="col-6">{{imprint.imprintSize}}</div>
                                             <div class="col-6 font-bold">Item Dimensions:</div>
-                                            <div class="col-6">{{orderData.itemDimension || 'N/A'}}</div>
+                                            <div class="col-6">{{quoteData.dimensions || 'N/A'}}</div>
                                             <div class="col-6 font-bold">Imprint Method:</div>
                                             <div class="col-6">{{imprint.methodName}}</div>
                                             <div class="col-6 font-bold">Artwork File Types:</div>
-                                            <div class="col-6">NONE</div>
+                                            <div class="col-6">
+                                                <div *ngIf="!artWorkLoader">
+                                                    <span *ngIf="artworktemplatesData.length == 0">NONE</span>
+                                                    <span
+                                                        *ngFor="let item of artworktemplatesData;let last=last">{{item.extension}}<span
+                                                            *ngIf="!last">, </span></span>
+                                                </div>
+                                            </div>
                                             <div class="col-6 font-bold">Digitizer:</div>
-                                            <div class="col-6">{{imprint.digitizer || 'NONE'}}</div>
+                                            <div class="col-6">{{imprint.fk_digitizerID ? 'YES' : 'NONE'}}</div>
+                                            <div class="col-6 font-bold">Royalty-bearing:</div>
+                                            <div class="col-6">{{imprint.blnRoyalty ? 'YES' : 'NONE'}}</div>
                                         </div>
                                     </div>
                                     <div class="col-md-4 col-12">
@@ -410,7 +473,7 @@
                                             <div class="flex justify-end">
                                                 <img class="w-40"
                                                     onError="this.src='https://assets.consolidus.com/globalAssets/Products/coming_soon.jpg'"
-                                                    src="https://assets.consolidus.com/globalAssets/Products/HiRes/{{orderData.pk_storeProductID}}.jpg">
+                                                    src="https://assets.consolidus.com/globalAssets/Products/HiRes/{{imprint.pk_storeProductID}}.jpg">
                                             </div>
                                             <button (click)="isCommentToggle = !isCommentToggle"
                                                 class="min-w-30 mt-2 btn buttonComment hover:bg-gray-200">Customer
@@ -420,15 +483,15 @@
                                     <div class="col-12" *ngIf="isCommentToggle">
                                         <div class="font-bold">Customer Comments</div>
                                         <div class="h-40 border overflow-y-auto p-2">
-                                            <p *ngIf="!imprint.imprintComments">No Comments</p>
-                                            <p *ngIf="imprint.imprintComments" [innerHtml]="imprint.imprintComments">No
-                                                Comments</p>
+                                            <p *ngIf="!imprint.customerComments">No Comments</p>
+                                            <p *ngIf="imprint.customerComments" [innerHtml]="imprint.customerComments">
+                                            </p>
                                         </div>
                                     </div>
                                     <div class="col-12 mt-2">
                                         <fuse-alert class="mb-2" [appearance]="'outline'" [type]="'warning'"
                                             [showIcon]="false">
-                                            As of {{orderData.orderDate | date: 'MM/dd/yyyy'}} the status of this item
+                                            As of {{quoteData.dateCreated | date: 'MM/dd/yyyy'}} the status of this item
                                             is {{paramData.statusName}}.
                                         </fuse-alert>
                                         <div class="rounded-2xl shadow bg-card p-4 ">
@@ -438,7 +501,7 @@
                                                     <div class="text-md font-bold">Upload Artwork Proof</div>
                                                     <mat-form-field class="w-full">
                                                         <mat-label>Email recipients (comma-separated)</mat-label>
-                                                        <input matInput>
+                                                        <input matInput [value]="quoteData.companyEmail">
                                                     </mat-form-field>
                                                     <mat-form-field class="w-full">
                                                         <mat-label>Please enter any comments relating to this artwork:
@@ -483,9 +546,11 @@
                                                 <div class="col-md-6 col-12">
                                                     <p class="text-md font-bold">Approved per customer comments:</p>
                                                     <mat-radio-group class="example-radio-group">
-                                                        <mat-radio-button class="example-radio-button">Customer Approved
+                                                        <mat-radio-button class="example-radio-button"
+                                                            value="approve">Customer Approved
                                                             Artwork with comments</mat-radio-button>
-                                                        <mat-radio-button class="example-radio-button">Customer
+                                                        <mat-radio-button class="example-radio-button"
+                                                            value="request">Customer
                                                             Requested Artwork Change</mat-radio-button>
                                                     </mat-radio-group>
                                                     <mat-checkbox>Respond to designer</mat-checkbox>

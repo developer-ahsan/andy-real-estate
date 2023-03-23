@@ -5,6 +5,7 @@ import { OrderDashboardDetailsComponent } from './components/pages/order-details
 import { OrderSchedulerComponent } from './components/pages/order-scheduler/order-scheduler.component';
 import { QuoteDashboardComponent } from './components/pages/quote-dashboard/quote-dashboard.component';
 import { QuoteDashboardDetailsComponent } from './components/pages/quote-details/quote-details.component';
+import { QuoteOrderEmailComponent } from './components/pages/quote-order-emails/quote-order-emails.component';
 import { QuoteSchedulerComponent } from './components/pages/quote-scheduler/quote-scheduler.component';
 import { SmartArtComponent } from './components/smartart.component';
 import { SmartArtStoresResolver, SmartArtUsersResolver } from './components/smartart.resolvers';
@@ -69,6 +70,14 @@ export const smartartRoutes: Route[] = [
                 data: {
                     title: 'Quote Details',
                     url: 'quote-details'
+                }
+            },
+            {
+                path: 'email-customer',
+                component: QuoteOrderEmailComponent,
+                data: {
+                    title: 'Customer Email',
+                    url: 'email-customer'
                 }
             },
         ]

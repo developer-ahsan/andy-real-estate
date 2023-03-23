@@ -28,6 +28,7 @@ import { OrderProccurementComponent } from './orders-components/navigation/order
 import { OrderReceiptEmailComponent } from './orders-components/navigation/order-receipt-email/order-receipt-email.component';
 import { GroupOrdersDetailsComponent } from './orders-components/navigation/group-order-details/group-order-details.component';
 import { GroupOrdersShippingComponent } from './orders-components/navigation/group-order-shipping/group-order-shipping.component';
+import { OrderPaymentBillComponent } from './orders-components/navigation/order-payments-bill/order-payments-billcomponent';
 
 export const ordersRoutes: Route[] = [
     {
@@ -217,6 +218,14 @@ export const ordersRoutes: Route[] = [
                 data: {
                     title: 'Enter Payments',
                     url: 'payments'
+                }
+            },
+            {
+                path: 'bill-payments',
+                component: OrderPaymentBillComponent,
+                data: {
+                    title: 'Bill to Credit Card',
+                    url: 'bill-payments'
                 }
             },
             {

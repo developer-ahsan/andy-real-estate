@@ -64,6 +64,8 @@ import { OrderApprovalSettingsComponent } from './orders-components/navigation/o
 import { OrderProccurementComponent } from './orders-components/navigation/order-procurement-data/order-procurement-data.component';
 import { GroupOrdersDetailsComponent } from './orders-components/navigation/group-order-details/group-order-details.component';
 import { GroupOrdersShippingComponent } from './orders-components/navigation/group-order-shipping/group-order-shipping.component';
+import { OrderPaymentBillComponent } from './orders-components/navigation/order-payments-bill/order-payments-billcomponent';
+import { NgxStripeModule } from 'ngx-stripe';
 
 @NgModule({
     declarations: [
@@ -96,6 +98,7 @@ import { GroupOrdersShippingComponent } from './orders-components/navigation/gro
         OrderProccurementComponent,
         GroupOrdersDetailsComponent,
         GroupOrdersShippingComponent,
+        OrderPaymentBillComponent,
         SafePipe
     ],
     imports: [
@@ -134,6 +137,7 @@ import { GroupOrdersShippingComponent } from './orders-components/navigation/gro
         MatAutocompleteModule,
         MatSnackBarModule,
         FuseCardModule,
+        NgxStripeModule
     ],
 })
 export class OrdersModule {

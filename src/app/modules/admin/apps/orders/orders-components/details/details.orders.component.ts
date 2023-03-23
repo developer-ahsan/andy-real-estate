@@ -95,7 +95,7 @@ export class OrdersDetailsComponent implements OnInit, OnDestroy {
                 } else {
                     this.getOrderStatus();
                 }
-                const { blnAdditionalArtApproval, blnProcurement, paymentDate, fk_groupOrderID, pk_orderID } = this.selectedOrderDetail;
+                const { blnAdditionalArtApproval, blnProcurement, paymentDate, fk_groupOrderID, pk_orderID, gatewayTrxID } = this.selectedOrderDetail;
                 if (blnAdditionalArtApproval) {
                     let index = this._orderService.navigationLabels[2].children.findIndex(item => item.title == 'Art Approval Settings');
                     if (index == -1) {
@@ -123,6 +123,14 @@ export class OrdersDetailsComponent implements OnInit, OnDestroy {
                         this._orderService.navigationLabels[2].children.push(
                             { id: 10, title: 'Group Order Details', icon: 'heroicons_outline:document-report', route: 'group-order-details' },
                             { id: 10, title: 'Group Order Shipping', icon: 'heroicons_outline:document-report', route: 'group-order-shipping' }
+                        );
+                    }
+                }
+                if (!gatewayTrxID && !paymentDate) {
+                    let index = this._orderService.navigationLabels[5].children.findIndex(item => item.title == 'Bill to Credit Card');
+                    if (index == -1) {
+                        this._orderService.navigationLabels[5].children.push(
+                            { id: 111, title: 'Bill to Credit Card', icon: 'heroicons_outline:currency-dollar', route: 'bill-payments' },
                         );
                     }
                 }

@@ -238,12 +238,18 @@ export class QuoteDashboardComponent implements OnInit, OnDestroy {
     this.getSmartArtList(1, 'get');
   }
   quoteDetails(item) {
-    console.log(item);
     this._smartartService.routeData = item;
     const queryParams: NavigationExtras = {
-      queryParams: { fk_orderID: item.fk_orderID, fk_imprintID: item.fk_imprintID, pk_orderLineID: item.pk_orderLineID, statusName: item.statusName }
+      queryParams: { fk_cartID: item.fk_cartID, pk_cartLineID: item.pk_cartLineID, pk_storeID: item.pk_storeID, fk_productID: item.fk_productID, statusName: item.statusName }
     };
     this.router.navigate(['/smartart/quote-details'], queryParams);
+  }
+  // Customer Email
+  customerEmail(item) {
+    const queryParams: NavigationExtras = {
+      queryParams: { fk_cartID: item.fk_cartID, pk_cartLineID: item.pk_cartLineID, pk_storeID: item.pk_storeID, fk_productID: item.fk_productID, statusName: item.statusName }
+    };
+    this.router.navigate(['/smartart/email-customer'], queryParams);
   }
   /**
      * On destroy

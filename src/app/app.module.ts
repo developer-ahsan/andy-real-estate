@@ -16,6 +16,7 @@ import { HttpClientModule } from '@angular/common/http';
 import { environment } from 'environments/environment';
 import { AngularFireModule } from '@angular/fire/compat';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
+import { NgxStripeModule } from 'ngx-stripe';
 
 const routerConfig: ExtraOptions = {
     scrollPositionRestoration: 'enabled',
@@ -40,7 +41,7 @@ const routerConfig: ExtraOptions = {
 
         // Core
         CoreModule,
-
+        NgxStripeModule.forRoot('pk_test_51MW7XpKftHck147B5Rokid6Csvq6fNf8Tee690E3KuRzLd9P85yrvvQHpDK22ZTedK5WwzXAc2aVIY21Wyx4ia6V002R7AbvoW'),
         // Layout
         LayoutModule,
         MatSnackBarModule,
