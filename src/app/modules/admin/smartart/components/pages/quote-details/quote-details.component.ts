@@ -2,13 +2,13 @@ import { Component, Input, OnInit, ChangeDetectorRef, OnDestroy, ViewChild, View
 import { FormControl } from '@angular/forms';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatDrawer } from '@angular/material/sidenav';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute, NavigationExtras, Router } from '@angular/router';
 import { AuthService } from 'app/core/auth/auth.service';
 import moment from 'moment';
 import { Subject } from 'rxjs';
 import { debounceTime, distinctUntilChanged, filter, finalize, switchMap, takeUntil, tap } from 'rxjs/operators';
 import { SmartArtService } from '../../smartart.service';
-import { UpdateQuoteOptions, updateQuotePurchaseOrderComment, updateReorderNumber } from '../../smartart.types';
+import { sendAutoRequest, UpdateArtworkTgas, UpdateQuoteOptions, updateQuotePurchaseOrderComment, updateReorderNumber } from '../../smartart.types';
 @Component({
   selector: 'app-quote-details',
   templateUrl: './quote-details.component.html',
@@ -68,6 +68,7 @@ export class QuoteDashboardDetailsComponent implements OnInit, OnDestroy {
   ngComment = '';
   allColors: any;
   selectedImprint: any;
+  selectedProofImprint: any;
   selectedImprintColor = '';
   selectedMultipleColors: any;
   // Artwork templates
@@ -89,6 +90,10 @@ export class QuoteDashboardDetailsComponent implements OnInit, OnDestroy {
   // Updates
   updateQuoteInfoLoader: boolean = false;
   isPurchaseCommentLoader: boolean = false;
+  isArtworkTagsLoader: boolean = false;
+  isAutoRequestLoader: boolean = false;
+  isManualProofLoader: boolean = false;
+  imageValue: any;
   constructor(
     private _changeDetectorRef: ChangeDetectorRef,
     private _authService: AuthService,
@@ -115,11 +120,17 @@ export class QuoteDashboardDetailsComponent implements OnInit, OnDestroy {
     }
     this._smartartService.getSmartArtData(params).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
       this.quoteData = res["data"][0];
-      let tags = this.quoteData.artworkTags.split(',');
       this.approvalHistoryData = res["approvalHistory"];
+      let tags = this.quoteData.artworkTags.split(',');
       tags.forEach(element => {
         let tag = element.split(':');
         this.artworktags.push({ id: tag[0], name: tag[1] });
+      });
+      let selectedTags = this.quoteData.cartlineArtworkTags.split(',');
+      this.selectedMultipleTags = [];
+      selectedTags.forEach(element => {
+        let tag = element.split(':');
+        this.selectedMultipleTags.push(tag[0]);
       });
       // this.isLoading = false;
       this.getQuoteImpritData();
@@ -139,9 +150,9 @@ export class QuoteDashboardDetailsComponent implements OnInit, OnDestroy {
       this.quoteImprintdata = res["data"];
       this.artworktemplatesData = res["artworkTemplates"];
       this.artWorkLoader = false;
-      console.log(this.quoteImprintdata)
       if (this.quoteImprintdata.length > 0) {
         this.selectedImprint = this.quoteImprintdata[0].imprintID;
+        this.selectedProofImprint = this.quoteImprintdata[0].imprintID;
         this.selectedPurchaseImprint = this.quoteImprintdata[0];
 
         //   if (this.imprintdata[0].allColors) {
@@ -296,6 +307,115 @@ export class QuoteDashboardDetailsComponent implements OnInit, OnDestroy {
       this._changeDetectorRef.markForCheck();
     }, err => {
       this.isPurchaseCommentLoader = false;
+      this._changeDetectorRef.markForCheck();
+    });
+  }
+  updateArtworkTags() {
+    if (this.selectedMultipleTags) {
+      if (this.selectedMultipleTags.length > 0) {
+        let tags = [];
+        this.selectedMultipleTags.forEach(element => {
+          tags.push(Number(element));
+        });
+        this.isArtworkTagsLoader = true;
+        this._changeDetectorRef.markForCheck();
+        let payload: UpdateArtworkTgas = {
+          cartline_id: Number(this.paramData.pk_cartLineID),
+          artwork_ids: tags,
+          update_artwork_tags: true
+        }
+        this._smartartService.UpdateSmartArtData(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+          this._smartartService.snackBar(res["message"]);
+          this.isArtworkTagsLoader = false;
+          this._changeDetectorRef.markForCheck();
+        }, err => {
+          this.isArtworkTagsLoader = false;
+          this._changeDetectorRef.markForCheck();
+        });
+      } else {
+        this._smartartService.snackBar('Please select atleast 1 tag');
+      }
+    } else {
+      this._smartartService.snackBar('Please select atleast 1 tag');
+    }
+  }
+  // Auto Art Request
+  senAutoArtRequest() {
+    this.isAutoRequestLoader = true;
+    this._changeDetectorRef.markForCheck();
+    let payload: sendAutoRequest = {
+      customer_email: '',
+      customer_name: '',
+      storeName: this.quoteData.storeName,
+      store_id: this.quoteData.pk_storeID,
+      storeURL: this.quoteData.storeURL,
+      cartLineImprintID: this.paramData.fk_imprintID,
+      userID: this.paramData.pfk_userID,
+      cartLineID: this.paramData.pk_cartLineID,
+      productName: this.quoteData.productName,
+      cartID: this.paramData.fk_cartID,
+      auto_art_request: true
+    }
+    this._smartartService.AddSmartArtData(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+      this._smartartService.snackBar(res["message"]);
+      this.isAutoRequestLoader = false;
+      this._changeDetectorRef.markForCheck();
+    }, err => {
+      this.isAutoRequestLoader = false;
+      this._changeDetectorRef.markForCheck();
+    });
+  }
+  customerEmail() {
+    const queryParams: NavigationExtras = {
+      queryParams: { fk_imprintID: this.paramData.fk_imprintID, pfk_userID: this.paramData.pfk_userID, fk_cartID: this.paramData.fk_cartID, pk_cartLineID: this.paramData.pk_cartLineID, pk_storeID: this.paramData.pk_storeID, fk_productID: this.paramData.fk_productID, statusName: this.paramData.statusName }
+    };
+    this.router.navigate(['/smartart/email-customer'], queryParams);
+  }
+  // Manually Upload Proof
+  uploadFile(event): void {
+    if (event.target.files[0]) {
+      const file = event.target.files[0];
+      const reader = new FileReader();
+      if (file)
+        reader.readAsDataURL(file);
+      reader.onload = () => {
+        let image: any = new Image;
+        image.src = reader.result;
+        image.onload = () => {
+          this.imageValue = {
+            imageUpload: reader.result,
+            type: file["type"]
+          };
+        }
+      }
+    }
+  };
+  uploadProofMedia() {
+    if (!this.imageValue) {
+      this._smartartService.snackBar('Please choose any image');
+      return;
+    }
+    this.isManualProofLoader = true;
+    this._changeDetectorRef.markForCheck();
+    let base64;
+    const { imageUpload } = this.imageValue;
+    base64 = imageUpload.split(",")[1];
+    const img_path = `quoteProofDestination/${this.paramData.pfk_userID}/${this.paramData.fk_cartID}/${this.paramData.pk_cartLineID}/${this.selectedProofImprint}.jpg`;
+
+    const payload = {
+      file_upload: true,
+      image_file: base64,
+      image_path: img_path
+    };
+    this._smartartService.AddSmartArtData(payload).subscribe(res => {
+      this.imageValue = null;
+      if (res["success"]) {
+        this._smartartService.snackBar(res["message"]);
+      }
+      this.isManualProofLoader = false;
+      this._changeDetectorRef.markForCheck();
+    }, err => {
+      this.isManualProofLoader = false;
       this._changeDetectorRef.markForCheck();
     });
   }

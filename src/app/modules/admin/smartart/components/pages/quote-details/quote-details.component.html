@@ -47,10 +47,16 @@
                                 <div><b>Email:</b> {{quoteData?.supplierInformationEmail}}</div>
                                 <div><b>Designer notes:</b> None</div>
                                 <div class="space-y-1">
-                                    <button class="min-w-60 btn buttonComment hover:bg-gray-200">Email Customer</button>
+                                    <button class="min-w-60 btn buttonComment hover:bg-gray-200"
+                                        (click)="customerEmail()">Email Customer</button>
                                     <br>
-                                    <button class="min-w-60 btn buttonComment hover:bg-gray-200">Auto Art
-                                        Request</button>
+                                    <button [disabled]="isAutoRequestLoader" (click)="senAutoArtRequest()"
+                                        class="min-w-60 btn buttonComment hover:bg-gray-200">
+                                        <span *ngIf="!isAutoRequestLoader">Auto Art Request</span>
+                                        <mat-progress-spinner *ngIf="isAutoRequestLoader" [diameter]="24"
+                                            [mode]="'indeterminate'">
+                                        </mat-progress-spinner>
+                                    </button>
                                     <br>
                                     <button class="min-w-60 btn buttonComment hover:bg-gray-200">Order History</button>
                                 </div>
@@ -73,13 +79,13 @@
                                         here</a></div>
                                 <div><b>Rush:</b> {{quoteData.blnRushFlexibility? 'YES' : 'NO'}}</div>
                                 <div>
-                                    <b>In-Hands:</b> (mm/dd/yyyy)
-                                    <mat-form-field class="fuse-mat-dense fuse-mat-no-subscript w-full min-w-50">
+                                    <b>In-Hands:</b> {{quoteData.inHandsDate | date}}
+                                    <!-- <mat-form-field class="fuse-mat-dense fuse-mat-no-subscript w-full min-w-50">
                                         <input matInput readonly [(ngModel)]="quoteData.inHandsDate"
                                             [matDatepicker]="picker" (click)="picker.open()">
                                         <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
                                         <mat-datepicker #picker></mat-datepicker>
-                                    </mat-form-field>
+                                    </mat-form-field> -->
                                 </div>
                                 <div>
                                     <b>Event:</b>
@@ -234,16 +240,22 @@
                                     notify the customer.
                                 </p>
                                 <mat-form-field class="w-full mt-2">
-                                    <mat-select [(ngModel)]="selectedImprint">
+                                    <mat-select [(ngModel)]="selectedProofImprint">
                                         <mat-option *ngFor="let imprint of quoteImprintdata"
                                             [value]="imprint.imprintID">({{imprint.imprintID}})
                                             {{imprint.locationName}}/{{imprint.methodName}}</mat-option>
                                     </mat-select>
                                 </mat-form-field>
                                 <mat-label>Select a new proof image file:</mat-label>
-                                <input type="file">
+                                <input type="file" accept=".jpg" id="image" (change)="uploadFile($event)">
                                 <div class="mt-3">
-                                    <button class="min-w-40 btn buttonComment hover:bg-gray-200">Update Proof</button>
+                                    <button [disabled]="isManualProofLoader" (click)="uploadProofMedia()"
+                                        class="min-w-40 btn buttonComment hover:bg-gray-200">
+                                        <span *ngIf="!isManualProofLoader">Update Proof</span>
+                                        <mat-progress-spinner *ngIf="isManualProofLoader" [diameter]="24"
+                                            [mode]="'indeterminate'">
+                                        </mat-progress-spinner>
+                                    </button>
                                 </div>
                             </div>
                         </mat-expansion-panel>
@@ -266,8 +278,13 @@
                                     </mat-select>
                                 </mat-form-field>
                                 <div class="mt-3">
-                                    <button class="min-w-40 btn buttonComment hover:bg-gray-200">Update artwork
-                                        tags</button>
+                                    <button [disabled]="isArtworkTagsLoader" (click)="updateArtworkTags()"
+                                        class="min-w-40 btn buttonComment hover:bg-gray-200">
+                                        <span *ngIf="!isArtworkTagsLoader">Update artwork tags</span>
+                                        <mat-progress-spinner *ngIf="isArtworkTagsLoader" [diameter]="24"
+                                            [mode]="'indeterminate'">
+                                        </mat-progress-spinner>
+                                    </button>
                                 </div>
                             </div>
                         </mat-expansion-panel>

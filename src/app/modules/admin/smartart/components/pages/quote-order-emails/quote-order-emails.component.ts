@@ -8,6 +8,7 @@ import moment from 'moment';
 import { Subject } from 'rxjs';
 import { debounceTime, distinctUntilChanged, filter, finalize, switchMap, takeUntil, tap } from 'rxjs/operators';
 import { SmartArtService } from '../../smartart.service';
+import { sendQuoteCustomerEmail } from '../../smartart.types';
 @Component({
   selector: 'app-quote-order-emails',
   templateUrl: './quote-order-emails.component.html',
@@ -82,6 +83,11 @@ export class QuoteOrderEmailComponent implements OnInit, OnDestroy {
 
   // Email Check
   emailCheckOrder: boolean = false;
+  sendEmailLoader: boolean = false;
+  ngFrom = '';
+  ngTo = '';
+  ngSubject = '';
+  ngMessage = '';
   constructor(
     private _changeDetectorRef: ChangeDetectorRef,
     private _authService: AuthService,
@@ -112,6 +118,8 @@ export class QuoteOrderEmailComponent implements OnInit, OnDestroy {
     }
     this._smartartService.getSmartArtData(params).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
       this.orderData = res["data"][0];
+
+      this.ngFrom = this.orderData.companyEmail;
       this.getQuoteImpritData();
       this._changeDetectorRef.markForCheck();
     }, err => {
@@ -163,7 +171,33 @@ export class QuoteOrderEmailComponent implements OnInit, OnDestroy {
       this._changeDetectorRef.markForCheck();
     });
   }
-
+  senAutoArtRequest() {
+    this.sendEmailLoader = true;
+    this._changeDetectorRef.markForCheck();
+    let payload: sendQuoteCustomerEmail = {
+      to_email: this.ngTo,
+      from: this.ngFrom,
+      subject: this.ngSubject,
+      message: this.ngMessage,
+      storeName: this.orderData.storeName,
+      store_id: this.orderData.pk_storeID,
+      storeURL: this.orderData.storeURL,
+      cartLineImprintID: this.paramData.fk_imprintID,
+      userID: this.paramData.pfk_userID,
+      cartLineID: this.paramData.pk_cartLineID,
+      productName: this.orderData.productName,
+      cartID: this.paramData.fk_cartID,
+      send_customer_email: true
+    };
+    this._smartartService.AddSmartArtData(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+      this._smartartService.snackBar(res["message"]);
+      this.sendEmailLoader = false;
+      this._changeDetectorRef.markForCheck();
+    }, err => {
+      this.sendEmailLoader = false;
+      this._changeDetectorRef.markForCheck();
+    });
+  }
   backToList() {
     if (this.emailCheckOrder) {
       this.router.navigate(['/smartart/orders-dashboard']);

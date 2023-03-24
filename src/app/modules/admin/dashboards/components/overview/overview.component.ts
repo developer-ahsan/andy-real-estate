@@ -35,6 +35,14 @@ export class DashboardOverviewComponent implements OnInit, OnDestroy {
 
     private _unsubscribeAll: Subject<any> = new Subject<any>();
 
+
+    // Table
+    employeePerformanceData = [];
+    employeePerformanceColumns: string[] = ['name', 't_sales', 'n_sales', 'a_sales', 'scr'];
+    totalUsers = 0;
+    page = 1;
+    programPerformanceData = [];
+    programPerformanceColumns: string[] = ['store', 'sales', 'py', 'percent', 'difference', 'n_sales', 'pyns', 'avg', 'margin'];
     /**
      * Constructor
      */
@@ -52,6 +60,7 @@ export class DashboardOverviewComponent implements OnInit, OnDestroy {
      * On init
      */
     ngOnInit(): void {
+        this.dummyData();
         // Get the data
         this._analyticsService.data$
             .pipe(takeUntil(this._unsubscribeAll))
@@ -85,7 +94,138 @@ export class DashboardOverviewComponent implements OnInit, OnDestroy {
             }
         };
     }
-
+    dummyData() {
+        this.employeePerformanceData = [
+            {
+                name: 'Lindsey Myers',
+                t_sales: 1095109.82,
+                n_sales: 712,
+                a_sales: 1538.08,
+                scr: '0/62 (0%)'
+            },
+            {
+                name: 'Rhianne Smith',
+                t_sales: 446674.29,
+                n_sales: 306,
+                a_sales: 1459.72,
+                scr: '7/21 (33.33%)'
+            },
+            {
+                name: 'Matt Heldman',
+                t_sales: 349269.93,
+                n_sales: 180,
+                a_sales: 1940.39,
+                scr: '0/67 (0%)'
+            },
+            {
+                name: 'Abena Oworae',
+                t_sales: 223924.69,
+                n_sales: 208,
+                a_sales: 1076.56,
+                scr: '3/13 (23.08%)'
+            },
+            {
+                name: 'Andy Halm',
+                t_sales: 199767.43,
+                n_sales: 107,
+                a_sales: 1866.99,
+                scr: '0/13 (0%)'
+            },
+            {
+                name: 'Ronny Vorthong',
+                t_sales: 182892.60,
+                n_sales: 137,
+                a_sales: 1334.98,
+                scr: '1/13 ( 7.69%)'
+            }
+        ]
+        this.programPerformanceData = [
+            {
+                store: 'SummaHealthShop',
+                sales: '0.00',
+                py: '1,125.80',
+                percent: '100%',
+                low: true,
+                difference: '($1,125.80)',
+                n_sales: 0,
+                pyns: 1,
+                avg: 0,
+                margin: '0.00%'
+            },
+            {
+                store: '10ksbPromosAndPrint',
+                sales: '53.14',
+                py: 1223.97,
+                percent: '96%',
+                low: true,
+                difference: '($1,170.83)',
+                n_sales: 1,
+                pyns: 1,
+                avg: 53.14,
+                margin: '39.78%'
+            },
+            {
+                store: 'UWSPromos',
+                sales: '1,190.98',
+                py: '6,634.99',
+                percent: '82%',
+                low: true,
+                difference: '($5,444.01)',
+                n_sales: 3,
+                pyns: 6,
+                avg: 396.99,
+                margin: '34.23%'
+            },
+            {
+                store: 'Promos4NonProfits',
+                sales: '3,290.63',
+                py: '11,083.97',
+                percent: '70%',
+                low: true,
+                difference: '($7,793.34)',
+                n_sales: 2,
+                pyns: 3,
+                avg: 1645.32,
+                margin: '39.69%'
+            },
+            {
+                store: 'CCUPromos',
+                sales: '8,293.08',
+                py: '18,909.98',
+                percent: '56%',
+                low: true,
+                difference: '($10,616.90)',
+                n_sales: 6,
+                pyns: 6,
+                avg: 1382.18,
+                margin: '35.53%'
+            },
+            {
+                store: 'theYSUshop',
+                sales: '13,215.85',
+                py: '26,695.95',
+                percent: '50%',
+                low: true,
+                difference: '($13,480.10)',
+                n_sales: 15,
+                pyns: 17,
+                avg: 881.06,
+                margin: '37.91%'
+            },
+            {
+                store: 'PromosAndPrint',
+                sales: '24,876.48',
+                py: '49,144.31',
+                percent: '49%',
+                low: true,
+                difference: '($24,267.83)',
+                n_sales: 26,
+                pyns: 27,
+                avg: 956.79,
+                margin: '39.77%'
+            }
+        ]
+    }
     /**
      * On destroy
      */
