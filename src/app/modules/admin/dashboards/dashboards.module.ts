@@ -23,6 +23,7 @@ import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { OrderStatusComponent } from './components/analytics/order-status/order-status.component';
 import { GeneratorsComponent } from './components/analytics/generators/generators.component';
+import { MatPaginatorModule } from '@angular/material/paginator';
 
 @NgModule({
     declarations: [
@@ -50,6 +51,7 @@ import { GeneratorsComponent } from './components/analytics/generators/generator
         NgApexchartsModule,
         MatTableModule,
         MatTabsModule,
+        MatPaginatorModule,
         SharedModule,
         FuseAlertModule
     ],

@@ -156,18 +156,17 @@
             </div>
         </div>
         <!-- Program Performance -->
-        <div class="flex flex-col flex-auto p-6 bg-card shadow rounded-2xl overflow-hidden mt-8" *ngIf="dataProject">
+        <div class="w-full p-6 bg-card shadow rounded-2xl overflow-hidden mt-8" *ngIf="programPerformanceData">
             <div class="text-lg font-medium tracking-tight leading-6 truncate">Program Performance</div>
-            <div class="flex flex-col flex-auto mt-2 overflow-x-auto">
-                <table class="min-w-240 overflow-y-visible" mat-table [dataSource]="programPerformanceData">
-
+            <div class="w-full mt-2 overflow-x-auto">
+                <table mat-table [dataSource]="programPerformanceData" class="w-full border-t">
                     <!-- Type -->
-                    <ng-container matColumnDef="store" sticky>
+                    <ng-container matColumnDef="store">
                         <th mat-header-cell *matHeaderCellDef>
                             Store
                         </th>
-                        <td mat-cell *matCellDef="let budget">
-                            {{budget.store}}
+                        <td mat-cell *matCellDef="let element">
+                            {{element.storeName}}
                         </td>
                     </ng-container>
 
@@ -176,9 +175,9 @@
                         <th mat-header-cell *matHeaderCellDef>
                             Sales
                         </th>
-                        <td mat-cell *matCellDef="let budget">
+                        <td mat-cell *matCellDef="let element">
                             <span class="font-medium text-right">
-                                ${{budget.sales}}
+                                {{element.monthlyEarnings | currency}}
                             </span>
                         </td>
                     </ng-container>
@@ -192,8 +191,8 @@
                                     [svgIcon]="'heroicons_solid:question-mark-circle'"></mat-icon>
                             </div>
                         </th>
-                        <td mat-cell *matCellDef="let budget">
-                            ${{budget.py}}
+                        <td mat-cell *matCellDef="let element">
+                            {{element.previousYearSales | currency}}
                         </td>
                     </ng-container>
 
@@ -202,11 +201,19 @@
                         <th mat-header-cell *matHeaderCellDef>
                             (%)
                         </th>
-                        <td mat-cell *matCellDef="let budget">
-                            <div class="flex">
+                        <td mat-cell *matCellDef="let element">
+                            <div class="flex" *ngIf="element.color == 'red'">
                                 <mat-icon class="icon-size-5 text-red-500"
                                     [svgIcon]="'heroicons_solid:trending-down'"></mat-icon>
-                                <span class="text-red-500">{{budget.percent}}</span>
+                                <span class="text-red-500">{{element.percent}}%</span>
+                            </div>
+                            <div class="flex" *ngIf="element.color == 'green'">
+                                <mat-icon class="icon-size-5 text-green-500"
+                                    [svgIcon]="'heroicons_solid:trending-up'"></mat-icon>
+                                <span class="text-green-500">{{element.percent}}%</span>
+                            </div>
+                            <div class="flex" *ngIf="element.color == 'gray'">
+                                <span>{{element.percent}}%</span>
                             </div>
                         </td>
                     </ng-container>
@@ -220,8 +227,12 @@
                                     [svgIcon]="'heroicons_solid:question-mark-circle'"></mat-icon>
                             </div>
                         </th>
-                        <td mat-cell *matCellDef="let budget" class="text-red-500">
-                            {{budget.difference}}
+                        <td mat-cell *matCellDef="let element" class="text-red-500">
+                            <span *ngIf="element.color == 'green'" class="text-green-500">{{element.difference |
+                                currency}}</span>
+                            <span *ngIf="element.color == 'red'" class="text-red-500">({{element.difference |
+                                currency}})</span>
+                            <span *ngIf="element.color == 'gray'">{{element.difference | currency}}</span>
                         </td>
                     </ng-container>
 
@@ -234,8 +245,8 @@
                                     [svgIcon]="'heroicons_solid:question-mark-circle'"></mat-icon>
                             </div>
                         </th>
-                        <td mat-cell *matCellDef="let budget">
-                            {{budget.n_sales}}
+                        <td mat-cell *matCellDef="let element">
+                            {{element.NS}}
                         </td>
                     </ng-container>
                     <ng-container matColumnDef="pyns">
@@ -246,8 +257,8 @@
                                     [svgIcon]="'heroicons_solid:question-mark-circle'"></mat-icon>
                             </div>
                         </th>
-                        <td mat-cell *matCellDef="let budget">
-                            {{budget.pyns}}
+                        <td mat-cell *matCellDef="let element">
+                            {{element.PYNS}}
                         </td>
                     </ng-container>
                     <ng-container matColumnDef="avg">
@@ -258,22 +269,25 @@
                                     [svgIcon]="'heroicons_solid:question-mark-circle'"></mat-icon>
                             </div>
                         </th>
-                        <td mat-cell *matCellDef="let budget">
-                            {{budget.avg | currency}}
+                        <td mat-cell *matCellDef="let element">
+                            {{element.avg | currency}}
                         </td>
                     </ng-container>
                     <ng-container matColumnDef="margin">
                         <th mat-header-cell *matHeaderCellDef>
                             Margin
                         </th>
-                        <td mat-cell *matCellDef="let budget">
-                            {{budget.margin}}
+                        <td mat-cell *matCellDef="let element">
+                            {{element.margin}}%
                         </td>
                     </ng-container>
                     <tr mat-header-row *matHeaderRowDef="programPerformanceColumns"></tr>
                     <tr mat-row *matRowDef="let row; columns: programPerformanceColumns;"></tr>
                 </table>
-
+                <mat-paginator #paginator class="border-b sm:border-t sm:border-b-0 z-10 bg-gray-50 dark:bg-transparent"
+                    [length]="totalPerformanceRecords" [pageIndex]="0" [pageSize]="20"
+                    (page)="getNextPortfolioData($event)" [hidePageSize]="true">
+                </mat-paginator>
             </div>
         </div>
     </div>

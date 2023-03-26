@@ -43,6 +43,8 @@ export class DashboardOverviewComponent implements OnInit, OnDestroy {
     page = 1;
     programPerformanceData = [];
     programPerformanceColumns: string[] = ['store', 'sales', 'py', 'percent', 'difference', 'n_sales', 'pyns', 'avg', 'margin'];
+    totalPerformanceRecords = 0;
+    pagePerformance = 1;
     /**
      * Constructor
      */
@@ -60,6 +62,7 @@ export class DashboardOverviewComponent implements OnInit, OnDestroy {
      * On init
      */
     ngOnInit(): void {
+        this.getAllPortfolioPerformance();
         this.dummyData();
         // Get the data
         this._analyticsService.data$
@@ -139,92 +142,62 @@ export class DashboardOverviewComponent implements OnInit, OnDestroy {
                 scr: '1/13 ( 7.69%)'
             }
         ]
-        this.programPerformanceData = [
-            {
-                store: 'SummaHealthShop',
-                sales: '0.00',
-                py: '1,125.80',
-                percent: '100%',
-                low: true,
-                difference: '($1,125.80)',
-                n_sales: 0,
-                pyns: 1,
-                avg: 0,
-                margin: '0.00%'
-            },
-            {
-                store: '10ksbPromosAndPrint',
-                sales: '53.14',
-                py: 1223.97,
-                percent: '96%',
-                low: true,
-                difference: '($1,170.83)',
-                n_sales: 1,
-                pyns: 1,
-                avg: 53.14,
-                margin: '39.78%'
-            },
-            {
-                store: 'UWSPromos',
-                sales: '1,190.98',
-                py: '6,634.99',
-                percent: '82%',
-                low: true,
-                difference: '($5,444.01)',
-                n_sales: 3,
-                pyns: 6,
-                avg: 396.99,
-                margin: '34.23%'
-            },
-            {
-                store: 'Promos4NonProfits',
-                sales: '3,290.63',
-                py: '11,083.97',
-                percent: '70%',
-                low: true,
-                difference: '($7,793.34)',
-                n_sales: 2,
-                pyns: 3,
-                avg: 1645.32,
-                margin: '39.69%'
-            },
-            {
-                store: 'CCUPromos',
-                sales: '8,293.08',
-                py: '18,909.98',
-                percent: '56%',
-                low: true,
-                difference: '($10,616.90)',
-                n_sales: 6,
-                pyns: 6,
-                avg: 1382.18,
-                margin: '35.53%'
-            },
-            {
-                store: 'theYSUshop',
-                sales: '13,215.85',
-                py: '26,695.95',
-                percent: '50%',
-                low: true,
-                difference: '($13,480.10)',
-                n_sales: 15,
-                pyns: 17,
-                avg: 881.06,
-                margin: '37.91%'
-            },
-            {
-                store: 'PromosAndPrint',
-                sales: '24,876.48',
-                py: '49,144.31',
-                percent: '49%',
-                low: true,
-                difference: '($24,267.83)',
-                n_sales: 26,
-                pyns: 27,
-                avg: 956.79,
-                margin: '39.77%'
-            }
-        ]
+    }
+    getAllPortfolioPerformance() {
+        this._analyticsService.portfolioData$.pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+            this.programPerformanceData = res["data"];
+            this.totalPerformanceRecords = res["totalRecords"];
+            this.programPerformanceData.forEach(element => {
+                element.percent = Number(100 - (element.monthlyEarnings / element.previousYearSales) * 100);
+                if (!element.percent) {
+                    element.percent = 0;
+                }
+                if (element.percent < 0) {
+                    element.color = 'red';
+                } else if (element.percent > 0) {
+                    element.color = 'green'
+                } else {
+                    element.color = 'gray';
+                }
+                element.difference = Number(element.monthlyEarnings - element.previousYearSales);
+                if (!element.difference) {
+                    element.difference = 0;
+                }
+                if (element.difference < 0) {
+                    element.difference = -1 * element.difference;
+                }
+                element.avg = Number(element.monthlyEarnings / element.NS);
+                if (!element.avg) {
+                    element.avg = 0;
+                }
+                element.margin = Number(((element.price - element.cost) / element.price) * 100);
+                if (!element.margin) {
+                    element.margin = 0;
+                }
+            });
+            console.log(this.programPerformanceData)
+        });
+    }
+    getNextPortfolioData(event) {
+        const { previousPageIndex, pageIndex } = event;
+        if (pageIndex > previousPageIndex) {
+            this.pagePerformance++;
+        } else {
+            this.pagePerformance--;
+        };
+        this.getPortfolioData(this.pagePerformance);
+    };
+    getPortfolioData(page) {
+        let params = {
+            performance_report: true,
+            size: 20,
+            page: page
+        }
+        this._analyticsService.getDashboardData(params).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+            this.programPerformanceData = res["data"];
+            this.totalPerformanceRecords = res["totalRecords"];
+        }, err => {
+        });
     }
     /**
      * On destroy

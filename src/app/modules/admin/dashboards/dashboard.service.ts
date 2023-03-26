@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { tap } from 'rxjs/operators';
+import { environment } from 'environments/environment';
 
 @Injectable({
     providedIn: 'root'
@@ -9,6 +10,7 @@ import { tap } from 'rxjs/operators';
 export class DashboardsService {
     private _data: BehaviorSubject<any> = new BehaviorSubject(null);
     private _dataProject: BehaviorSubject<any> = new BehaviorSubject(null);
+    private _porfolioData: BehaviorSubject<any> = new BehaviorSubject(null);
 
     /**
      * Constructor
@@ -25,6 +27,9 @@ export class DashboardsService {
      */
     get data$(): Observable<any> {
         return this._data.asObservable();
+    }
+    get portfolioData$(): Observable<any> {
+        return this._porfolioData.asObservable();
     }
 
     // -----------------------------------------------------------------------------------------------------
@@ -60,4 +65,23 @@ export class DashboardsService {
             })
         );
     }
+
+    getPortfolio(): Observable<any> {
+        let params = {
+            performance_report: true,
+            size: 20
+        }
+        return this._httpClient.get(environment.dashboard, { params: params }).pipe(
+            tap((response: any) => {
+                this._porfolioData.next(response);
+            })
+        );
+    }
+    // Common get call
+    // Common get Calls
+    getDashboardData(params): Observable<any[]> {
+        return this._httpClient.get<any[]>(environment.dashboard, {
+            params: params
+        });
+    };
 }
