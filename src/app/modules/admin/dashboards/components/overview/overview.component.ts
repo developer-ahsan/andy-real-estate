@@ -175,7 +175,6 @@ export class DashboardOverviewComponent implements OnInit, OnDestroy {
                     element.margin = 0;
                 }
             });
-            console.log(this.programPerformanceData)
         });
     }
     getNextPortfolioData(event) {
@@ -196,6 +195,34 @@ export class DashboardOverviewComponent implements OnInit, OnDestroy {
         this._analyticsService.getDashboardData(params).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
             this.programPerformanceData = res["data"];
             this.totalPerformanceRecords = res["totalRecords"];
+            this.programPerformanceData.forEach(element => {
+                element.percent = Number(100 - (element.monthlyEarnings / element.previousYearSales) * 100);
+                if (!element.percent) {
+                    element.percent = 0;
+                }
+                if (element.percent < 0) {
+                    element.color = 'red';
+                } else if (element.percent > 0) {
+                    element.color = 'green'
+                } else {
+                    element.color = 'gray';
+                }
+                element.difference = Number(element.monthlyEarnings - element.previousYearSales);
+                if (!element.difference) {
+                    element.difference = 0;
+                }
+                if (element.difference < 0) {
+                    element.difference = -1 * element.difference;
+                }
+                element.avg = Number(element.monthlyEarnings / element.NS);
+                if (!element.avg) {
+                    element.avg = 0;
+                }
+                element.margin = Number(((element.price - element.cost) / element.price) * 100);
+                if (!element.margin) {
+                    element.margin = 0;
+                }
+            });
         }, err => {
         });
     }
