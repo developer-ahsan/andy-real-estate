@@ -1,15 +1,17 @@
-import { ChangeDetectionStrategy, Component, OnDestroy, OnInit, ViewEncapsulation } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnInit, ViewEncapsulation } from '@angular/core';
 import { Router } from '@angular/router';
 import { Subject } from 'rxjs';
-import { takeUntil } from 'rxjs/operators';
+import { finalize, takeUntil } from 'rxjs/operators';
 import { ApexOptions } from 'ng-apexcharts';
 import { DashboardsService } from '../../dashboard.service';
+import { fuseAnimations } from '@fuse/animations';
 
 @Component({
     selector: 'overview',
     templateUrl: './overview.component.html',
     encapsulation: ViewEncapsulation.None,
-    changeDetection: ChangeDetectionStrategy.OnPush
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    animations: fuseAnimations
 })
 export class DashboardOverviewComponent implements OnInit, OnDestroy {
     chartVisitors: ApexOptions;
@@ -37,19 +39,29 @@ export class DashboardOverviewComponent implements OnInit, OnDestroy {
 
 
     // Table
-    employeePerformanceData = [];
-    employeePerformanceColumns: string[] = ['name', 't_sales', 'n_sales', 'a_sales', 'scr'];
-    totalUsers = 0;
+
     page = 1;
     programPerformanceData = [];
     programPerformanceColumns: string[] = ['store', 'sales', 'py', 'percent', 'difference', 'n_sales', 'pyns', 'avg', 'margin'];
     totalPerformanceRecords = 0;
     pagePerformance = 1;
+
+    // Employee Performance
+    employeePerformanceData = [];
+    employeePerformanceColumns: string[] = ['name', 't_sales', 'n_sales', 'a_sales', 'scr', 'action'];
+    totalEmployees = 0;
+    employeePage = 1;
+    employeeListLoader: boolean = false;
+
+    employeeStoresData: any;
+    isEmployeeStoreLoader: boolean = false;
+    expandedElement: any
     /**
      * Constructor
      */
     constructor(
         private _analyticsService: DashboardsService,
+        private _changeDetectorRef: ChangeDetectorRef,
         private _router: Router
     ) {
     }
@@ -62,8 +74,9 @@ export class DashboardOverviewComponent implements OnInit, OnDestroy {
      * On init
      */
     ngOnInit(): void {
+        this.employeeListLoader = true;
         this.getAllPortfolioPerformance();
-        this.dummyData();
+        this.getEmployeePerformance(1);
         // Get the data
         this._analyticsService.data$
             .pipe(takeUntil(this._unsubscribeAll))
@@ -97,6 +110,35 @@ export class DashboardOverviewComponent implements OnInit, OnDestroy {
             }
         };
     }
+    getEmployeePerformance(page) {
+        let params = {
+            employee_performance_list: true,
+            size: 20,
+            page: page
+        }
+        this._analyticsService.getDashboardData(params).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+            this.employeePerformanceData = res["data"];
+            this.totalEmployees = res["totalRecords"];
+            this.employeePerformanceData.forEach(element => {
+                element.avg = Number(element.TOTAL_SALES / element.NS);
+                element.scr = 0
+            });
+            this.employeeListLoader = false;
+            this._changeDetectorRef.markForCheck();
+        }, err => {
+            this.employeeListLoader = false;
+            this._changeDetectorRef.markForCheck();
+        });
+    }
+    getNextEmployeeData(event) {
+        const { previousPageIndex, pageIndex } = event;
+        if (pageIndex > previousPageIndex) {
+            this.employeePage++;
+        } else {
+            this.employeePage--;
+        };
+        this.getEmployeePerformance(this.employeePage);
+    };
     dummyData() {
         this.employeePerformanceData = [
             {
@@ -151,6 +193,7 @@ export class DashboardOverviewComponent implements OnInit, OnDestroy {
                 element.percent = Number(100 - (element.monthlyEarnings / element.previousYearSales) * 100);
                 if (!element.percent) {
                     element.percent = 0;
+                    element.color = 'gray';
                 }
                 if (element.percent < 0) {
                     element.color = 'red';
@@ -164,7 +207,7 @@ export class DashboardOverviewComponent implements OnInit, OnDestroy {
                     element.difference = 0;
                 }
                 if (element.difference < 0) {
-                    element.difference = -1 * element.difference;
+                    element.difference = Math.abs(element.difference);
                 }
                 element.avg = Number(element.monthlyEarnings / element.NS);
                 if (!element.avg) {
@@ -199,6 +242,7 @@ export class DashboardOverviewComponent implements OnInit, OnDestroy {
                 element.percent = Number(100 - (element.monthlyEarnings / element.previousYearSales) * 100);
                 if (!element.percent) {
                     element.percent = 0;
+                    element.color = 'gray';
                 }
                 if (element.percent < 0) {
                     element.color = 'red';
@@ -212,7 +256,63 @@ export class DashboardOverviewComponent implements OnInit, OnDestroy {
                     element.difference = 0;
                 }
                 if (element.difference < 0) {
-                    element.difference = -1 * element.difference;
+                    element.difference = Math.abs(element.difference);
+                }
+                element.avg = Number(element.monthlyEarnings / element.NS);
+                if (!element.avg) {
+                    element.avg = 0;
+                }
+                element.margin = Number(((element.price - element.cost) / element.price) * 100);
+                if (!element.margin) {
+                    element.margin = 0;
+                }
+            });
+        }, err => {
+        });
+    }
+    openedAccordion(item) {
+        this.employeeStoresData = item;
+        if (!item.storesData) {
+            item.storeLoader = true;
+            this._changeDetectorRef.markForCheck();
+            this.getEmployeeStoresData(1);
+        } else {
+            item.storeLoader = false;
+            this._changeDetectorRef.markForCheck();
+        }
+    }
+    getEmployeeStoresData(page) {
+        let params = {
+            stores_per_employee: true,
+            size: 20,
+            page: page,
+            user_id: this.employeeStoresData.pk_userID
+        }
+        this._analyticsService.getDashboardData(params).pipe(takeUntil(this._unsubscribeAll), finalize(() => {
+            this.employeeStoresData.storeLoader = false;
+            this._changeDetectorRef.markForCheck();
+        })).subscribe(res => {
+            this.employeeStoresData.storesData = res["data"];
+            this.employeeStoresData.totalRecords = res["totalRecords"];
+            this.employeeStoresData.storesData.forEach(element => {
+                element.percent = Number(100 - (element.monthlyEarnings / element.previousYearSales) * 100);
+                if (!element.percent) {
+                    element.percent = 0;
+                    element.color = 'gray';
+                }
+                if (element.percent < 0) {
+                    element.color = 'red';
+                } else if (element.percent > 0) {
+                    element.color = 'green'
+                } else {
+                    element.color = 'gray';
+                }
+                element.difference = Number(element.monthlyEarnings - element.previousYearSales);
+                if (!element.difference) {
+                    element.difference = 0;
+                }
+                if (element.difference < 0) {
+                    element.difference = Math.abs(element.difference);
                 }
                 element.avg = Number(element.monthlyEarnings / element.NS);
                 if (!element.avg) {

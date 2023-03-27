@@ -47,6 +47,20 @@
                                 <div><b>Phone:</b> {{orderData.shippingPhone}}</div>
                                 <div><b>Email:</b> {{orderData.shippingEmail}}</div>
                                 <div><b>Designer notes:</b> None</div>
+                                <div class="space-y-1">
+                                    <!-- <button class="min-w-60 btn buttonComment hover:bg-gray-200"
+                                        (click)="customerEmail()">Email Customer</button> -->
+                                    <!-- <br> -->
+                                    <button [disabled]="isAutoRequestLoader" (click)="senAutoArtRequest()"
+                                        class="min-w-60 btn buttonComment hover:bg-gray-200">
+                                        <span *ngIf="!isAutoRequestLoader">Auto Art Request</span>
+                                        <mat-progress-spinner *ngIf="isAutoRequestLoader" [diameter]="24"
+                                            [mode]="'indeterminate'">
+                                        </mat-progress-spinner>
+                                    </button>
+                                    <!-- <br> -->
+                                    <!-- <button class="min-w-60 btn buttonComment hover:bg-gray-200">Order History</button> -->
+                                </div>
                             </div>
                         </mat-expansion-panel>
                         <!-- Order Information -->
@@ -63,7 +77,7 @@
                                 <div><b>Order Placed:</b> {{orderData.orderDate | date: 'MM/dd/yyyy'}}</div>
                                 <div><b>Store:</b> {{orderData.storeName}}</div>
                                 <div><b>Brand Guide:</b> Click here</div>
-                                <div><b>Rush:</b> NO</div>
+                                <div><b>Rush:</b> {{orderData.blnRushFlexibility? 'YES' : 'NO'}}</div>
                                 <div>
                                     <b>In-Hands:</b> (mm/dd/yyyy)
                                     <mat-form-field class="fuse-mat-dense fuse-mat-no-subscript w-full min-w-50">
@@ -75,11 +89,12 @@
                                 <div>
                                     <b>Event:</b>
                                     <mat-form-field class="fuse-mat-dense fuse-mat-no-subscript w-full min-w-50">
-                                        <input matInput>
+                                        <input matInput [(ngModel)]="orderData.event">
                                     </mat-form-field>
                                 </div>
                                 <div>
-                                    <mat-checkbox><b>Ignore Scheduler</b></mat-checkbox>
+                                    <mat-checkbox [(ngModel)]="orderData.bypassScheduler"><b>Ignore
+                                            Scheduler</b></mat-checkbox>
                                 </div>
                                 <div>
                                     <mat-checkbox><b>Ignore additional proof emails</b></mat-checkbox>
@@ -162,8 +177,13 @@
                                     <mat-label>Leave a comment</mat-label>
                                     <textarea matInput [(ngModel)]="ngComment"></textarea>
                                 </mat-form-field>
-                                <button class="min-w-40 btn buttonComment hover:bg-gray-200" (click)="addComment()">Add
-                                    Comment</button>
+                                <button [disabled]="isAddCommentLoader" (click)="addComment()"
+                                    class="min-w-40 btn buttonComment hover:bg-gray-200">
+                                    <span *ngIf="!isAddCommentLoader">Add Comment</span>
+                                    <mat-progress-spinner *ngIf="isAddCommentLoader" [diameter]="24"
+                                        [mode]="'indeterminate'">
+                                    </mat-progress-spinner>
+                                </button>
                             </div>
                         </mat-expansion-panel>
                         <!-- Purchase Comments -->
@@ -202,16 +222,22 @@
                                     notify the customer.
                                 </p>
                                 <mat-form-field class="w-full mt-2">
-                                    <mat-select [(ngModel)]="selectedImprint">
+                                    <mat-select [(ngModel)]="selectedProofImprint">
                                         <mat-option *ngFor="let imprint of imprintdata"
                                             [value]="imprint.pk_imprintID">({{imprint.pk_imprintID}})
                                             {{imprint.locationName}}/{{imprint.methodName}}</mat-option>
                                     </mat-select>
                                 </mat-form-field>
                                 <mat-label>Select a new proof image file:</mat-label>
-                                <input type="file">
+                                <input type="file" accept=".jpg" id="image" (change)="uploadFile($event)">
                                 <div class="mt-3">
-                                    <button class="min-w-40 btn buttonComment hover:bg-gray-200">Update Proof</button>
+                                    <button [disabled]="isManualProofLoader" (click)="uploadProofMedia()"
+                                        class="min-w-40 btn buttonComment hover:bg-gray-200">
+                                        <span *ngIf="!isManualProofLoader">Update Proof</span>
+                                        <mat-progress-spinner *ngIf="isManualProofLoader" [diameter]="24"
+                                            [mode]="'indeterminate'">
+                                        </mat-progress-spinner>
+                                    </button>
                                 </div>
                             </div>
                         </mat-expansion-panel>
@@ -311,8 +337,14 @@
                                     <input matInput [(ngModel)]="selectedImprintColor">
                                 </mat-form-field>
                                 <div>
-                                    <button class="min-w-40 btn buttonComment hover:bg-gray-200">Update imprint
-                                        colors</button>
+                                    <button [disabled]="imprintColorsLoader" (click)="updateOrderLineImprintColors()"
+                                        class="min-w-40 btn buttonComment hover:bg-gray-200">
+                                        <span *ngIf="!imprintColorsLoader">Update imprint
+                                            colors</span>
+                                        <mat-progress-spinner *ngIf="imprintColorsLoader" [diameter]="24"
+                                            [mode]="'indeterminate'">
+                                        </mat-progress-spinner>
+                                    </button>
                                 </div>
                             </div>
                         </mat-expansion-panel>
@@ -391,10 +423,15 @@
                                     <div class="col-12 col-md-6">
                                         <mat-form-field class="w-full">
                                             <mat-label>Reorder</mat-label>
-                                            <input matInput>
+                                            <input matInput [(ngModel)]="imprint.reorderNumber">
                                         </mat-form-field>
-                                        <button class="min-w-30 btn buttonComment hover:bg-gray-200">Apply</button>
-                                        <!-- <button class="min-w-30" mat-button mat-stroked-button>Apply</button> -->
+                                        <button (click)="updateReorder(imprint)" [disabled]="imprint?.reorderLoader"
+                                            class="min-w-30 btn buttonComment hover:bg-gray-200">
+                                            <span *ngIf="!imprint?.reorderLoader">Apply</span>
+                                            <mat-progress-spinner *ngIf="imprint.reorderLoader" [diameter]="24"
+                                                [mode]="'indeterminate'">
+                                            </mat-progress-spinner>
+                                        </button>
                                     </div>
                                     <div class="col-12 col-md-6">
                                         <mat-form-field class="w-full">

@@ -2,7 +2,7 @@ import { Route } from '@angular/router';
 import { AnalyticsComponent } from './components/analytics/analytics.component';
 import { DashboardOverviewComponent } from './components/overview/overview.component';
 import { ProjectComponent } from './components/project/project.component';
-import { AnalyticsResolver, PortfolioPerformanceResolver, ProjectResolver } from './dashboard.resolvers';
+import { AnalyticsResolver, EmployeePerformanceResolver, PortfolioPerformanceResolver, ProjectResolver } from './dashboard.resolvers';
 import { DashboardDetailsComponent } from './details/dashboard-details.component';
 export const dashboardRoutes: Route[] = [
 
@@ -10,7 +10,6 @@ export const dashboardRoutes: Route[] = [
         path: '',
         component: DashboardDetailsComponent,
         resolve: {
-            PortfolioPerformanceResolver
         },
         children: [
             {
@@ -31,7 +30,8 @@ export const dashboardRoutes: Route[] = [
                 component: DashboardOverviewComponent,
                 resolve: {
                     suplier: AnalyticsResolver,
-                    data: ProjectResolver
+                    data: ProjectResolver,
+                    portfolio: PortfolioPerformanceResolver
                 }
             },
             {
@@ -39,7 +39,8 @@ export const dashboardRoutes: Route[] = [
                 component: ProjectComponent,
                 resolve: {
                     suplier: AnalyticsResolver,
-                    data: ProjectResolver
+                    data: ProjectResolver,
+                    employee: EmployeePerformanceResolver
                 }
             }
         ]

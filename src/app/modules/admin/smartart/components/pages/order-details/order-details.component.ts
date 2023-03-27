@@ -9,6 +9,7 @@ import { Subject } from 'rxjs';
 import { debounceTime, distinctUntilChanged, filter, finalize, switchMap, takeUntil, tap } from 'rxjs/operators';
 import { SmartArtService } from '../../smartart.service';
 import { interval } from 'rxjs';
+import { AddOrderComment, sendAutoRequest, sendAutoRequestOrder, updateOrderLineImprintColors, updateReorderNumberOrder } from '../../smartart.types';
 
 @Component({
   selector: 'app-order-details',
@@ -84,7 +85,13 @@ export class OrderDashboardDetailsComponent implements OnInit, OnDestroy {
   minutes: number = 0;
   seconds: number = 0;
   intervalId: any;
+  isAutoRequestLoader: boolean;
+  imageValue: any;
+  isManualProofLoader: boolean;
+  selectedProofImprint: any;
 
+  imprintColorsLoader: boolean = false;
+  isAddCommentLoader: boolean;
 
   constructor(
     private _changeDetectorRef: ChangeDetectorRef,
@@ -128,6 +135,7 @@ export class OrderDashboardDetailsComponent implements OnInit, OnDestroy {
       this.imprintdata = res["data"];
       if (this.imprintdata.length > 0) {
         this.selectedImprint = this.imprintdata[0].pk_imprintID;
+        this.selectedProofImprint = this.imprintdata[0].imprintID;
         if (this.imprintdata[0].allColors) {
           let colors = this.imprintdata[0].allColors;
           let colorsArr = colors.split(',');
@@ -199,13 +207,29 @@ export class OrderDashboardDetailsComponent implements OnInit, OnDestroy {
   }
   // Add Comment
   addComment() {
-    let comment = `<b><span class="fa fa-circle disabled"></span> ${this.userData.name}</b> said on ${moment().format('MMM DD YYYY')} | ${moment().format('h:mm:ss')}<br>${this.ngComment}<br><br>`;
-    this.orderData.internalComments = this.orderData.internalComments + comment;
-    setTimeout(() => {
-      const element = document.getElementById('scrollBottomComment');
-      element.scrollIntoView({ behavior: 'smooth' });
+    this.isAddCommentLoader = true;
+    let payload: AddOrderComment = {
+      internalComments: this.ngComment,
+      order_id: this.paramData.fk_orderID,
+      add_order_comment: true
+    }
+    this._smartartService.AddSmartArtData(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+      let comment = `<b><span class="fa fa-circle disabled"></span> ${this.userData.name}</b> said on ${moment().format('MMM DD YYYY')} | ${moment().format('h:mm:ss')}<br>${this.ngComment}<br><br>`;
+      this.orderData.internalComments = this.orderData.internalComments + comment;
+      setTimeout(() => {
+        const element = document.getElementById('scrollBottomComment');
+        element.scrollIntoView({ behavior: 'smooth' });
+        this._changeDetectorRef.markForCheck();
+        this.ngComment = '';
+      }, 100);
+      this._smartartService.snackBar(res["message"]);
+      this.isAddCommentLoader = false;
       this._changeDetectorRef.markForCheck();
-    }, 100);
+    }, err => {
+      this.isAddCommentLoader = false;
+      this._changeDetectorRef.markForCheck();
+    });
+
   }
   // Imprint Colors
   onChangeColor(event) {
@@ -245,6 +269,120 @@ export class OrderDashboardDetailsComponent implements OnInit, OnDestroy {
     this.seconds = 0;
     clearInterval(this.intervalId);
     this._changeDetectorRef.markForCheck();
+  }
+
+  // Put Calls
+  // Auto Art Request
+  senAutoArtRequest() {
+    this.isAutoRequestLoader = true;
+    this._changeDetectorRef.markForCheck();
+    let payload: sendAutoRequestOrder = {
+      customer_email: '',
+      customer_name: '',
+      storeName: this.orderData.storeName,
+      store_id: this.orderData.pk_storeID,
+      storeURL: this.orderData?.storeURL,
+      orderLineImprintID: Number(this.paramData.fk_imprintID),
+      userID: this.paramData.pfk_userID,
+      orderLineID: Number(this.paramData.pk_orderLineID),
+      productName: this.orderData.productName,
+      orderID: Number(this.paramData.fk_orderID),
+      auto_order_art_request: true
+    }
+    this._smartartService.AddSmartArtData(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+      this._smartartService.snackBar(res["message"]);
+      this.isAutoRequestLoader = false;
+      this._changeDetectorRef.markForCheck();
+    }, err => {
+      this.isAutoRequestLoader = false;
+      this._changeDetectorRef.markForCheck();
+    });
+  }
+  // Update Reorder
+  updateReorder(imprint) {
+    imprint.reorderLoader = true;
+    this._changeDetectorRef.markForCheck();
+    let payload: updateReorderNumberOrder = {
+      reorderNumber: imprint.reorderNumber,
+      orderline_id: this.paramData.pk_orderLineID,
+      imprint_id: imprint.pk_imprintID,
+      update_order_reorder_number: true
+    }
+    this._smartartService.UpdateSmartArtData(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+      this._smartartService.snackBar('Reorder updated successfully');
+      imprint.reorderLoader = false;
+      this._changeDetectorRef.markForCheck();
+    }, err => {
+      imprint.reorderLoader = false;
+      this._changeDetectorRef.markForCheck();
+    });
+  }
+  // Manually Upload Proof
+  uploadFile(event): void {
+    if (event.target.files[0]) {
+      const file = event.target.files[0];
+      const reader = new FileReader();
+      if (file)
+        reader.readAsDataURL(file);
+      reader.onload = () => {
+        let image: any = new Image;
+        image.src = reader.result;
+        image.onload = () => {
+          this.imageValue = {
+            imageUpload: reader.result,
+            type: file["type"]
+          };
+        }
+      }
+    }
+  };
+  uploadProofMedia() {
+    if (!this.imageValue) {
+      this._smartartService.snackBar('Please choose any image');
+      return;
+    }
+    this.isManualProofLoader = true;
+    this._changeDetectorRef.markForCheck();
+    let base64;
+    const { imageUpload } = this.imageValue;
+    base64 = imageUpload.split(",")[1];
+    const img_path = `proofDestination/${this.paramData.pfk_userID}/${this.paramData.fk_orderID}/${this.paramData.pk_orderLineID}/${this.selectedProofImprint}.jpg`;
+
+    const payload = {
+      file_upload: true,
+      image_file: base64,
+      image_path: img_path
+    };
+    this._smartartService.AddSmartArtData(payload).subscribe(res => {
+      this.imageValue = null;
+      if (res["success"]) {
+        this._smartartService.snackBar(res["message"]);
+      }
+      this.isManualProofLoader = false;
+      this._changeDetectorRef.markForCheck();
+    }, err => {
+      this.isManualProofLoader = false;
+      this._changeDetectorRef.markForCheck();
+    });
+  }
+  // Imprint Colors
+  updateOrderLineImprintColors() {
+    this.imprintColorsLoader = true;
+    this._changeDetectorRef.markForCheck();
+    let payload: updateOrderLineImprintColors = {
+      imprintColors: this.selectedMultipleColors.toString(),
+      orderline_id: this.paramData.pk_orderLineID,
+      imprint_id: this.selectedImprint,
+      update_order_imprint_colors: true
+    }
+    this._smartartService.UpdateSmartArtData(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+      this._smartartService.snackBar(res["message"]);
+      this.imprintColorsLoader = false;
+      this._changeDetectorRef.markForCheck();
+    }, err => {
+      this.imprintColorsLoader = false;
+      this._changeDetectorRef.markForCheck();
+    });
   }
   /**
      * On destroy

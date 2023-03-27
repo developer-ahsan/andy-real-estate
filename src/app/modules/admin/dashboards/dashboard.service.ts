@@ -11,6 +11,7 @@ export class DashboardsService {
     private _data: BehaviorSubject<any> = new BehaviorSubject(null);
     private _dataProject: BehaviorSubject<any> = new BehaviorSubject(null);
     private _porfolioData: BehaviorSubject<any> = new BehaviorSubject(null);
+    private _employeeData: BehaviorSubject<any> = new BehaviorSubject(null);
 
     /**
      * Constructor
@@ -31,7 +32,9 @@ export class DashboardsService {
     get portfolioData$(): Observable<any> {
         return this._porfolioData.asObservable();
     }
-
+    get employeeData$(): Observable<any> {
+        return this._employeeData.asObservable();
+    }
     // -----------------------------------------------------------------------------------------------------
     // @ Public methods
     // -----------------------------------------------------------------------------------------------------
@@ -74,6 +77,17 @@ export class DashboardsService {
         return this._httpClient.get(environment.dashboard, { params: params }).pipe(
             tap((response: any) => {
                 this._porfolioData.next(response);
+            })
+        );
+    }
+    getPeformanceEmployee(): Observable<any> {
+        let params = {
+            employees_list: true,
+            size: 20
+        }
+        return this._httpClient.get(environment.dashboard, { params: params }).pipe(
+            tap((response: any) => {
+                this._employeeData.next(response);
             })
         );
     }

@@ -426,7 +426,7 @@
                                     <div class="col-12 col-md-6">
                                         <mat-form-field class="w-full">
                                             <mat-label>Reorder</mat-label>
-                                            <input matInput>
+                                            <input matInput [(ngModel)]="imprint.reorderNumber">
                                         </mat-form-field>
                                         <button (click)="updateReorder(imprint)" [disabled]="imprint?.reorderLoader"
                                             class="min-w-30 btn buttonComment hover:bg-gray-200">

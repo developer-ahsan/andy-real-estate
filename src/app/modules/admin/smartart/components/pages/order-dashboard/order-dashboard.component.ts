@@ -6,6 +6,7 @@ import { NavigationExtras, Router } from '@angular/router';
 import { Subject } from 'rxjs';
 import { debounceTime, distinctUntilChanged, filter, finalize, switchMap, takeUntil, tap } from 'rxjs/operators';
 import { SmartArtService } from '../../smartart.service';
+import { updateAttentionFlagOrder } from '../../smartart.types';
 @Component({
   selector: 'app-order-dashboard',
   templateUrl: './order-dashboard.component.html',
@@ -244,18 +245,39 @@ export class OrderDashboardComponent implements OnInit, OnDestroy {
   }
   // Order Details
   orderDetails(item) {
+    console.log(item)
     this._smartartService.routeData = item;
     const queryParams: NavigationExtras = {
-      queryParams: { fk_orderID: item.fk_orderID, fk_imprintID: item.fk_imprintID, pk_orderLineID: item.pk_orderLineID, statusName: item.statusName }
+      queryParams: { pfk_userID: item.pfk_userID, fk_orderID: item.fk_orderID, fk_imprintID: item.fk_imprintID, pk_orderLineID: item.pk_orderLineID, statusName: item.statusName }
     };
     this.router.navigate(['/smartart/order-details'], queryParams);
   }
   // Customer Email
   customerEmail(item) {
     const queryParams: NavigationExtras = {
-      queryParams: { fk_orderID: item.fk_orderID, fk_imprintID: item.fk_imprintID, pk_orderLineID: item.pk_orderLineID, statusName: item.statusName }
+      queryParams: { pfk_userID: item.pfk_userID, fk_orderID: item.fk_orderID, fk_imprintID: item.fk_imprintID, pk_orderLineID: item.pk_orderLineID, statusName: item.statusName }
     };
     this.router.navigate(['/smartart/email-customer'], queryParams);
+  }
+  // Update order Attention
+  updateAttentionFlagOrder(item, check) {
+    item.isFlagLoader = true;
+    this._changeDetectorRef.markForCheck();
+    let payload: updateAttentionFlagOrder = {
+      bln_attention: check,
+      orderline_id: item.pk_orderLineID,
+      imprint_id: Number(item.fk_imprintID),
+      update_order_attention_flag: true
+    }
+    this._smartartService.UpdateSmartArtData(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+      this._smartartService.snackBar(res["message"]);
+      item.isFlagLoader = false;
+      item.blnAttention = check;
+      this._changeDetectorRef.markForCheck();
+    }, err => {
+      item.isFlagLoader = false;
+      this._changeDetectorRef.markForCheck();
+    });
   }
   /**
      * On destroy

@@ -24,6 +24,8 @@ import { MatSelectModule } from '@angular/material/select';
 import { OrderStatusComponent } from './components/analytics/order-status/order-status.component';
 import { GeneratorsComponent } from './components/analytics/generators/generators.component';
 import { MatPaginatorModule } from '@angular/material/paginator';
+import { NgxSkeletonLoaderModule } from 'ngx-skeleton-loader';
+import { MatAutocompleteModule } from '@angular/material/autocomplete';
 
 @NgModule({
     declarations: [
@@ -49,11 +51,12 @@ import { MatPaginatorModule } from '@angular/material/paginator';
         MatInputModule,
         MatSelectModule,
         NgApexchartsModule,
-        MatTableModule,
         MatTabsModule,
         MatPaginatorModule,
         SharedModule,
-        FuseAlertModule
+        FuseAlertModule,
+        NgxSkeletonLoaderModule,
+        MatAutocompleteModule,
     ],
     entryComponents: [],
 })

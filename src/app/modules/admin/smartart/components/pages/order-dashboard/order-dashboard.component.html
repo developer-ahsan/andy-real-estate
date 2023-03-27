@@ -273,8 +273,22 @@
                                                 (click)="customerEmail(element)"></mat-icon>
                                             <mat-icon svgIcon="heroicons_outline:eye-off" class="mr-1 icon-size-4"
                                                 matTooltip="Hide"></mat-icon>
-                                            <mat-icon svgIcon="heroicons_outline:flag" class="mr-1 icon-size-4"
-                                                matTooltip="Flag"></mat-icon>
+                                            <div>
+                                                <div *ngIf="!element?.isFlagLoader">
+                                                    <mat-icon (click)="updateAttentionFlagOrder(element, true)"
+                                                        *ngIf="!element.blnAttention" svgIcon="heroicons_outline:flag"
+                                                        class="mr-1 icon-size-4 text-red-500"
+                                                        matTooltip="Flag"></mat-icon>
+                                                    <mat-icon (click)="updateAttentionFlagOrder(element, false)"
+                                                        *ngIf="element.blnAttention" svgIcon="heroicons_outline:flag"
+                                                        class="mr-1 icon-size-4 text-green-500"
+                                                        matTooltip="Unflag"></mat-icon>
+                                                </div>
+                                                <mat-progress-spinner *ngIf="element?.isFlagLoader" [diameter]="24"
+                                                    [mode]="'indeterminate'">
+                                                </mat-progress-spinner>
+                                            </div>
+
                                             <mat-icon svgIcon="heroicons_outline:exclamation" class="mr-1 icon-size-4"
                                                 matTooltip="Claim"></mat-icon>
                                         </div>

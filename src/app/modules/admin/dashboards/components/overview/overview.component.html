@@ -95,64 +95,205 @@
             </div>
         </div>
         <!-- Employee Performance -->
-        <div class="flex flex-col flex-auto p-6 bg-card shadow rounded-2xl overflow-hidden mt-8" *ngIf="dataProject">
-            <div class="text-lg font-medium tracking-tight leading-6 truncate">Employee Performance</div>
-            <div class="flex flex-col flex-auto mt-2 overflow-x-auto">
-                <table class="min-w-240 overflow-y-visible" mat-table [dataSource]="employeePerformanceData">
+        <div class="flex flex-col flex-auto p-6 bg-card shadow rounded-2xl overflow-hidden mt-8">
+            <div class="w-full" *ngIf="employeeListLoader">
+                <ngx-skeleton-loader count="8" appearance="line" animation="pulse" [theme]="{ 
+                    'background-color': '#dedede'
+                  }">
+                </ngx-skeleton-loader>
+            </div>
+            <div class="w-full" *ngIf="!employeeListLoader">
+                <div class="text-lg font-medium tracking-tight leading-6 truncate">Employee Performance</div>
+                <div class="flex flex-col flex-auto mt-2 overflow-x-auto">
+                    <table class="min-w-240 overflow-y-visible" mat-table [dataSource]="employeePerformanceData"
+                        [multiTemplateDataRows]="true">
+                        <ng-container matColumnDef="name" sticky>
+                            <th mat-header-cell *matHeaderCellDef>
+                                Employee
+                            </th>
+                            <td mat-cell *matCellDef="let element">
+                                {{element.firstName + ' ' + element.lastName}}
+                            </td>
+                        </ng-container>
+                        <ng-container matColumnDef="t_sales">
+                            <th mat-header-cell *matHeaderCellDef>
+                                Total Sales
+                            </th>
+                            <td mat-cell *matCellDef="let element">
+                                {{element.TOTAL_SALES | currency}}
+                            </td>
+                        </ng-container>
+                        <ng-container matColumnDef="n_sales">
+                            <th mat-header-cell *matHeaderCellDef>
+                                Number of Sales
+                            </th>
+                            <td mat-cell *matCellDef="let element">
+                                {{element.NS}}
+                            </td>
+                        </ng-container>
+                        <ng-container matColumnDef="a_sales">
+                            <th mat-header-cell *matHeaderCellDef>
+                                Average Sales
+                            </th>
+                            <td mat-cell *matCellDef="let element">
+                                {{element.avg | currency}}
+                            </td>
+                        </ng-container>
+                        <ng-container matColumnDef="scr">
+                            <th mat-header-cell *matHeaderCellDef>
+                                Sample Conversion Rate
+                            </th>
+                            <td mat-cell *matCellDef="let element">
+                                {{element.scr}}
+                            </td>
+                        </ng-container>
+                        <ng-container matColumnDef="action">
+                            <th mat-header-cell *matHeaderCellDef class="w-15 min-w-15 text-center">
+                                Action
+                            </th>
+                            <td mat-cell *matCellDef="let element" class="text-center">
+                                <button class="min-w-10 min-h-7 h-7 px-2 leading-6" mat-stroked-button
+                                    (click)="openedAccordion(element)">
+                                    <mat-icon class="icon-size-5"
+                                        [svgIcon]="employeeStoresData?.pk_userID == element.pk_userID ? 'heroicons_solid:chevron-up' : 'heroicons_solid:chevron-down'">
+                                    </mat-icon>
+                                </button>
+                            </td>
+                        </ng-container>
+                        <!--Employees Stores List  -->
+                        <ng-container matColumnDef="storesList">
+                            <td class="p-0 border-b text-sm" mat-cell *matCellDef="let element"
+                                [attr.colspan]="employeePerformanceColumns.length">
+                                <div class="shadow-lg overflow-hidden" *ngIf="employeeStoresData"
+                                    [@expandCollapse]="employeeStoresData.pk_userID == element.pk_userID ? 'expanded' : 'collapsed'">
+                                    <div class="row mb-1 bg-hover p-5 font-medium text-secondary"
+                                        *ngIf="!employeeStoresData.storeLoader">
+                                        <div class="col-2">
+                                            Store
+                                        </div>
+                                        <div class="col-2">
+                                            Sales
+                                        </div>
+                                        <div class="col-2">
+                                            <div class="flex">
+                                                <span>PY</span>
+                                                <mat-icon class="icon-size-4 ml-1" matTooltip="Previous year sales"
+                                                    [svgIcon]="'heroicons_solid:question-mark-circle'"></mat-icon>
+                                            </div>
+                                        </div>
+                                        <div class="col-1">
+                                            %
+                                        </div>
+                                        <div class="col-1">
+                                            <div class="flex">
+                                                <span>Diff</span>
+                                                <mat-icon class="icon-size-4 ml-1" matTooltip="Sales Difference"
+                                                    [svgIcon]="'heroicons_solid:question-mark-circle'"></mat-icon>
+                                            </div>
+                                        </div>
+                                        <div class="col-1">
+                                            <div class="flex">
+                                                <span>NS</span>
+                                                <mat-icon class="icon-size-4 ml-1" matTooltip="Number of sales"
+                                                    [svgIcon]="'heroicons_solid:question-mark-circle'"></mat-icon>
+                                            </div>
+                                        </div>
+                                        <div class="col-1">
+                                            <div class="flex">
+                                                <span>PYNS</span>
+                                                <mat-icon class="icon-size-4 ml-1"
+                                                    matTooltip="previous year number of sales"
+                                                    [svgIcon]="'heroicons_solid:question-mark-circle'"></mat-icon>
+                                            </div>
+                                        </div>
+                                        <div class="col-1">
+                                            <div class="flex">
+                                                <span>AVG</span>
+                                                <mat-icon class="icon-size-4 ml-1" matTooltip="Average sales"
+                                                    [svgIcon]="'heroicons_solid:question-mark-circle'"></mat-icon>
+                                            </div>
+                                        </div>
+                                        <div class="col-1">
+                                            Margin
+                                        </div>
+                                    </div>
 
-                    <!-- Type -->
-                    <ng-container matColumnDef="name" sticky>
-                        <th mat-header-cell *matHeaderCellDef>
-                            Employee
-                        </th>
-                        <td mat-cell *matCellDef="let element">
-                            {{element.name}}
-                        </td>
-                    </ng-container>
 
-                    <!-- Total -->
-                    <ng-container matColumnDef="t_sales">
-                        <th mat-header-cell *matHeaderCellDef>
-                            Total Sales
-                        </th>
-                        <td mat-cell *matCellDef="let element">
-                            {{element.t_sales | currency}}
-                        </td>
-                    </ng-container>
+                                    <div class="p-5"
+                                        *ngIf="!employeeStoresData.storeLoader && employeeStoresData.storesData">
+                                        <div class="row pb-4"
+                                            *ngFor="let element of employeeStoresData.storesData;let index=index">
+                                            <div class="col-2">{{element.storeName}} </div>
+                                            <div class="col-2">{{element.monthlyEarnings | currency}}</div>
+                                            <div class="col-2">{{element.previousYearSales | currency}}</div>
+                                            <div class="col-1">
+                                                <div class="flex" *ngIf="element.color == 'red'">
+                                                    <mat-icon class="icon-size-5 text-red-500"
+                                                        [svgIcon]="'heroicons_solid:trending-down'"></mat-icon>
+                                                    <span class="text-red-500">{{element.percent.toFixed(2)}}%</span>
+                                                </div>
+                                                <div class="flex" *ngIf="element.color == 'green'">
+                                                    <mat-icon class="icon-size-5 text-green-500"
+                                                        [svgIcon]="'heroicons_solid:trending-up'"></mat-icon>
+                                                    <span class="text-green-500">{{element.percent.toFixed(2)}}%</span>
+                                                </div>
+                                                <div class="flex" *ngIf="element.color == 'gray'">
+                                                    <span>{{element.percent.toFixed(2)}}%</span>
+                                                </div>
+                                            </div>
+                                            <div class="col-1 ">
+                                                <span *ngIf="element.color == 'green'"
+                                                    class="text-green-500">{{element.difference.toFixed(2) |
+                                                    currency}}</span>
+                                                <span *ngIf="element.color == 'red'"
+                                                    class="text-red-500">({{element.difference.toFixed(2) |
+                                                    currency}})</span>
+                                                <span *ngIf="element.color == 'gray'">{{element.difference.toFixed(2) |
+                                                    currency}}</span>
+                                            </div>
+                                            <div class="col-1">{{element.NS}}</div>
+                                            <div class="col-1">
+                                                {{element.PYNS.toFixed(2)}}
+                                            </div>
+                                            <div class="col-1">{{element.avg.toFixed(2) | currency}}</div>
+                                            <div class="col-1">{{element.margin.toFixed(2)}}%</div>
+                                        </div>
+                                        <!-- <div class="flex justify-end cursor-pointer"
+                                            (click)="ViewMoreStandardImprints()"
+                                            *ngIf="element.sub_imprints.length < element.sub_imprints_total">
+                                            <span *ngIf="!viewImprintLoader">View More</span>
+                                            <mat-progress-spinner *ngIf="viewImprintLoader" [diameter]="24"
+                                                [mode]="'indeterminate'">
+                                            </mat-progress-spinner>
+                                        </div> -->
+                                    </div>
 
-                    <!-- Expenses amount -->
-                    <ng-container matColumnDef="n_sales">
-                        <th mat-header-cell *matHeaderCellDef>
-                            Number of Sales
-                        </th>
-                        <td mat-cell *matCellDef="let element">
-                            {{element.n_sales}}
-                        </td>
-                    </ng-container>
-
-                    <!-- Expenses percentage -->
-                    <ng-container matColumnDef="a_sales">
-                        <th mat-header-cell *matHeaderCellDef>
-                            Average Sales
-                        </th>
-                        <td mat-cell *matCellDef="let element">
-                            {{element.a_sales | currency}}
-                        </td>
-                    </ng-container>
-
-                    <!-- Remaining amount -->
-                    <ng-container matColumnDef="scr">
-                        <th mat-header-cell *matHeaderCellDef>
-                            Sample Conversion Rate
-                        </th>
-                        <td mat-cell *matCellDef="let element">
-                            {{element.scr}}
-                        </td>
-                    </ng-container>
-                    <tr mat-header-row *matHeaderRowDef="employeePerformanceColumns"></tr>
-                    <tr mat-row *matRowDef="let row; columns: employeePerformanceColumns;"></tr>
-                </table>
-
+                                    <div class="p-5 border-b"
+                                        *ngIf="!employeeStoresData.storeLoader && employeeStoresData.storesData">
+                                        <div class="row text-center" *ngIf="employeeStoresData?.storesData.length == 0">
+                                            <div class="col-12">
+                                                No Stores found
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="m-3" *ngIf="employeeStoresData.storeLoader">
+                                        <ngx-skeleton-loader count="3" appearance="line" animation="pulse">
+                                        </ngx-skeleton-loader>
+                                    </div>
+                                </div>
+                            </td>
+                        </ng-container>
+                        <tr mat-header-row *matHeaderRowDef="employeePerformanceColumns"></tr>
+                        <tr mat-row *matRowDef="let row; columns: employeePerformanceColumns;"></tr>
+                        <tr class="h-0 border-b-1" mat-row *matRowDef="let row; columns: ['storesList']">
+                        </tr>
+                    </table>
+                    <mat-paginator #paginator
+                        class="border-b sm:border-t sm:border-b-0 z-10 bg-gray-50 dark:bg-transparent"
+                        [length]="totalEmployees" [pageIndex]="0" [pageSize]="20" (page)="getNextEmployeeData($event)"
+                        [hidePageSize]="true">
+                    </mat-paginator>
+                </div>
             </div>
         </div>
         <!-- Program Performance -->
@@ -205,15 +346,15 @@
                             <div class="flex" *ngIf="element.color == 'red'">
                                 <mat-icon class="icon-size-5 text-red-500"
                                     [svgIcon]="'heroicons_solid:trending-down'"></mat-icon>
-                                <span class="text-red-500">{{element.percent}}%</span>
+                                <span class="text-red-500">{{element.percent.toFixed(2)}}%</span>
                             </div>
                             <div class="flex" *ngIf="element.color == 'green'">
                                 <mat-icon class="icon-size-5 text-green-500"
                                     [svgIcon]="'heroicons_solid:trending-up'"></mat-icon>
-                                <span class="text-green-500">{{element.percent}}%</span>
+                                <span class="text-green-500">{{element.percent.toFixed(2)}}%</span>
                             </div>
                             <div class="flex" *ngIf="element.color == 'gray'">
-                                <span>{{element.percent}}%</span>
+                                <span>{{element.percent.toFixed(2)}}%</span>
                             </div>
                         </td>
                     </ng-container>
@@ -227,12 +368,13 @@
                                     [svgIcon]="'heroicons_solid:question-mark-circle'"></mat-icon>
                             </div>
                         </th>
-                        <td mat-cell *matCellDef="let element" class="text-red-500">
-                            <span *ngIf="element.color == 'green'" class="text-green-500">{{element.difference |
+                        <td mat-cell *matCellDef="let element">
+                            <span *ngIf="element.color == 'green'"
+                                class="text-green-500">{{element.difference.toFixed(2) |
                                 currency}}</span>
-                            <span *ngIf="element.color == 'red'" class="text-red-500">({{element.difference |
+                            <span *ngIf="element.color == 'red'" class="text-red-500">({{element.difference.toFixed(2) |
                                 currency}})</span>
-                            <span *ngIf="element.color == 'gray'">{{element.difference | currency}}</span>
+                            <span *ngIf="element.color == 'gray'">{{element.difference.toFixed(2) | currency}}</span>
                         </td>
                     </ng-container>
 
@@ -258,7 +400,7 @@
                             </div>
                         </th>
                         <td mat-cell *matCellDef="let element">
-                            {{element.PYNS}}
+                            {{element.PYNS.toFixed(2)}}
                         </td>
                     </ng-container>
                     <ng-container matColumnDef="avg">
@@ -270,7 +412,7 @@
                             </div>
                         </th>
                         <td mat-cell *matCellDef="let element">
-                            {{element.avg | currency}}
+                            {{element.avg.toFixed(2) | currency}}
                         </td>
                     </ng-container>
                     <ng-container matColumnDef="margin">
@@ -278,7 +420,7 @@
                             Margin
                         </th>
                         <td mat-cell *matCellDef="let element">
-                            {{element.margin}}%
+                            {{element.margin.toFixed(2)}}%
                         </td>
                     </ng-container>
                     <tr mat-header-row *matHeaderRowDef="programPerformanceColumns"></tr>
