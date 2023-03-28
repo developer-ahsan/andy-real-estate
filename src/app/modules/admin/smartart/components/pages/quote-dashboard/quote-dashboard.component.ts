@@ -6,6 +6,7 @@ import { NavigationExtras, Router } from '@angular/router';
 import { Subject } from 'rxjs';
 import { debounceTime, distinctUntilChanged, filter, finalize, switchMap, takeUntil, tap } from 'rxjs/operators';
 import { SmartArtService } from '../../smartart.service';
+import { HideUnhideQuote } from '../../smartart.types';
 @Component({
   selector: 'app-quote-dashboard',
   templateUrl: './quote-dashboard.component.html',
@@ -250,6 +251,26 @@ export class QuoteDashboardComponent implements OnInit, OnDestroy {
       queryParams: { fk_imprintID: item.fk_imprintID, pfk_userID: item.pfk_userID, fk_cartID: item.fk_cartID, pk_cartLineID: item.pk_cartLineID, pk_storeID: item.pk_storeID, fk_productID: item.fk_productID, statusName: item.statusName }
     };
     this.router.navigate(['/smartart/email-customer'], queryParams);
+  }
+  // Update order Hidden
+  HideUnhideCart(item, check) {
+    item.isHiddenLoader = true;
+    this._changeDetectorRef.markForCheck();
+    let payload: HideUnhideQuote = {
+      blnHidden: check,
+      cartline_id: Number(item.pk_cartLineID),
+      imprint_id: Number(item.fk_imprintID),
+      hide_unhide_quote: true
+    }
+    this._smartartService.UpdateSmartArtData(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+      this._smartartService.snackBar(res["message"]);
+      item.isHiddenLoader = false;
+      item.blnHidden = check;
+      this._changeDetectorRef.markForCheck();
+    }, err => {
+      item.isHiddenLoader = false;
+      this._changeDetectorRef.markForCheck();
+    });
   }
   /**
      * On destroy

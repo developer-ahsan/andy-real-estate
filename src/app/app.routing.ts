@@ -100,6 +100,7 @@ export const appRoutes: Route[] = [
                     { path: 'promostandards', loadChildren: () => import('app/modules/admin/apps/promostandards/promostandards.module').then(m => m.PromoStandardsModule) },
                     { path: 'stores', loadChildren: () => import('app/modules/admin/apps/file-manager/stores.module').then(m => m.StoresModule) },
                     { path: 'royalties', loadChildren: () => import('app/modules/admin/apps/royalities/royalities.module').then(m => m.RoyalitiesModule) },
+                    { path: 'reports', loadChildren: () => import('app/modules/admin/apps/reports/reports.module').then(m => m.ReportsModule) },
                     { path: 'help-center', loadChildren: () => import('app/modules/admin/apps/help-center/help-center.module').then(m => m.HelpCenterModule) },
                     { path: 'mailbox', loadChildren: () => import('app/modules/admin/apps/mailbox/mailbox.module').then(m => m.MailboxModule) },
                     { path: 'notes', loadChildren: () => import('app/modules/admin/apps/notes/notes.module').then(m => m.NotesModule) },

@@ -1,0 +1,62 @@
+<div class="w-full">
+    <div class="px-8 pb-4">
+        <div class="row">
+            <div class="col-12 col-md-4">
+                <mat-form-field class="w-full">
+                    <mat-label>Vendor</mat-label>
+                    <mat-select matInput [(ngModel)]="companyID">
+                        <mat-option [value]="0">Any Vendor</mat-option>
+                        <mat-option [value]="637">365Wholesale.com</mat-option>
+                        <mat-option [value]="229">3M Promotional Markets Dept</mat-option>
+                        <mat-option [value]="587">4over</mat-option>
+                        <mat-option [value]="12">A Akron Line</mat-option>
+
+                    </mat-select>
+                </mat-form-field>
+            </div>
+            <div class="col-12 col-md-4">
+                <mat-form-field class="w-full">
+                    <mat-label>Store</mat-label>
+                    <mat-select matInput [(ngModel)]="ngStore">
+                        <mat-option [value]="637">365Wholesale.com</mat-option>
+                        <mat-option [value]="229">3M Promotional Markets Dept</mat-option>
+                    </mat-select>
+                </mat-form-field>
+            </div>
+            <div class="col-12 col-md-4">
+                <mat-form-field class="w-full">
+                    <mat-label>Product type</mat-label>
+                    <mat-select matInput [(ngModel)]="productType">
+                        <mat-option [value]="0" selected="">All</mat-option>
+                        <mat-option [value]="1">Regular items only</mat-option>
+                        <mat-option [value]="2">Apparel only</mat-option>
+                    </mat-select>
+                </mat-form-field>
+            </div>
+            <div class="col-12 col-md-4">
+                <mat-form-field class="w-full">
+                    <mat-label>Keyword</mat-label>
+                    <input matInput [(ngModel)]="keyword">
+                </mat-form-field>
+            </div>
+            <div class="col-12 col-md-4">
+                <mat-form-field class="w-full">
+                    <mat-label>Order in range</mat-label>
+                    <mat-date-range-input [rangePicker]="picker">
+                        <input matStartDate placeholder="Start date">
+                        <input matEndDate placeholder="End date">
+                    </mat-date-range-input>
+                    <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
+                    <mat-date-range-picker #picker></mat-date-range-picker>
+                </mat-form-field>
+            </div>
+            <div class="col-12 text-right">
+                <button mat-flat-button class="min-w-60" [color]="'primary'">
+                    <span>Apply Filter</span>
+                    <!-- <mat-progress-spinner *ngIf="isUpdateWebsiteLoader" [diameter]="24" [mode]="'indeterminate'">
+                    </mat-progress-spinner> -->
+                </button>
+            </div>
+        </div>
+    </div>
+</div>

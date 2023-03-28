@@ -84,45 +84,8 @@ export const defaultNavigation: FuseNavigationItem[] = [
                 id: 'reports',
                 title: 'Reports',
                 icon: 'heroicons_outline:presentation-chart-line',
-                type: 'collapsable',
-                children: [
-                    {
-                        id: 'apps.reports.store-sales',
-                        title: 'Store Sales',
-                        type: 'basic',
-                        icon: 'heroicons_outline:shopping-bag',
-                    },
-                    {
-                        id: 'apps.reports.store-sales',
-                        title: 'Supplier Sales',
-                        type: 'basic',
-                        icon: 'heroicons_outline:office-building',
-                    },
-                    {
-                        id: 'apps.reports.store-sales',
-                        title: 'Employee Sales',
-                        type: 'basic',
-                        icon: 'heroicons_outline:user-circle',
-                    },
-                    {
-                        id: 'apps.reports.store-sales',
-                        title: 'Location Sales',
-                        type: 'basic',
-                        icon: 'heroicons_outline:location-marker',
-                    },
-                    {
-                        id: 'apps.reports.store-sales',
-                        title: 'Top Customers',
-                        type: 'basic',
-                        icon: 'heroicons_outline:sparkles',
-                    },
-                    {
-                        id: 'apps.reports.store-sales',
-                        title: 'Best Sellers',
-                        type: 'basic',
-                        icon: 'heroicons_outline:star',
-                    },
-                ]
+                type: 'basic',
+                link: '/apps/reports',
             },
             {
                 id: 'flps',

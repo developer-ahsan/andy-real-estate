@@ -91,3 +91,15 @@ export interface updateAttentionFlagOrder {
     imprint_id: number;
     update_order_attention_flag: boolean;
 };
+export interface HideUnhideQuote {
+    cartline_id: number;
+    imprint_id: number;
+    blnHidden: boolean;
+    hide_unhide_quote: boolean;
+};
+export interface HideUnhideCart {
+    orderline_id: number;
+    imprint_id: number;
+    blnHidden: boolean;
+    hide_unhide_cart: boolean;
+};

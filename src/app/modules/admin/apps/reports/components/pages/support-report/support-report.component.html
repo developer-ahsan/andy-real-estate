@@ -1,0 +1,29 @@
+<div class="w-full">
+    <div class="px-8 pb-4">
+        <div class="row">
+            <div class="col-12">
+                <mat-form-field class="w-full">
+                    <mat-label>Select a employee role:</mat-label>
+                    <mat-select matInput [(ngModel)]="roleID">
+                        <mat-option [value]="0">SELECT A ROLE</mat-option>
+                        <mat-option [value]="1">Graphics</mat-option>
+                        <mat-option [value]="2">Order Processing</mat-option>
+                        <mat-option [value]="3">Program Manager</mat-option>
+                        <mat-option [value]="4">Billing</mat-option>
+                        <mat-option [value]="5">Content Management</mat-option>
+                    </mat-select>
+                </mat-form-field>
+            </div>
+            <div class="col-12">
+                <app-report-filters></app-report-filters>
+            </div>
+            <div class="col-12 text-right">
+                <button mat-flat-button class="min-w-60" [color]="'primary'">
+                    <span>Generate Support Report</span>
+                    <!-- <mat-progress-spinner *ngIf="isUpdateWebsiteLoader" [diameter]="24" [mode]="'indeterminate'">
+                    </mat-progress-spinner> -->
+                </button>
+            </div>
+        </div>
+    </div>
+</div>

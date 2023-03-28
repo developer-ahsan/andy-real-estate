@@ -1,0 +1,76 @@
+<div class="grid sm:grid-cols-2 gap-4 w-full" *ngIf="ngReportType == 'c'">
+    <mat-radio-group class="invisible absolute w-0 h-0 pointer-events-none" [(ngModel)]="ngPlan"
+        #planRadioGroup="matRadioGroup">
+        <ng-container *ngFor="let plan of plans; trackBy: trackByFn">
+            <mat-radio-button [value]="plan.value"></mat-radio-button>
+        </ng-container>
+    </mat-radio-group>
+    <ng-container *ngFor="let plan of plans; trackBy: trackByFn">
+        <div class="relative flex flex-col items-start justify-start p-6 rounded-md shadow cursor-pointer bg-card"
+            [ngClass]="{'ring ring-inset ring-primary': ngPlan === plan.value}" (click)="ngPlan = plan.value">
+            <ng-container *ngIf="ngPlan === plan.value">
+                <mat-icon class="absolute top-0 right-0 mt-3 mr-3 icon-size-7 text-primary"
+                    [svgIcon]="'heroicons_solid:check-circle'"></mat-icon>
+            </ng-container>
+            <div class="font-medium">{{plan.label}}</div>
+            <div class="mt-1 whitespace-normal text-secondary">{{plan.details}}</div>
+            <div class="flex-auto"></div>
+            <div *ngIf="plan.value == 'weekly'" class="w-full mt-2">
+                <mat-form-field appearance="fill" class="w-full">
+                    <input matInput [matDatepicker]="picker" (click)="picker.open()" readonly [max]="maxDate"
+                        [(ngModel)]="WeekDate">
+                    <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
+                    <mat-datepicker #picker></mat-datepicker>
+                </mat-form-field>
+            </div>
+            <div *ngIf="plan.value == 'monthly'" class="w-full mt-2 flex">
+                <mat-form-field class="w-50 mr-2">
+                    <mat-select [(ngModel)]="monthlyMonth">
+                        <mat-option *ngFor="let item of months" [value]="item">{{item}}</mat-option>
+                    </mat-select>
+                </mat-form-field>
+                <mat-form-field class="w-50">
+                    <mat-select [(ngModel)]="monthlyYear">
+                        <mat-option *ngFor="let item of years" [value]="item">{{item}}</mat-option>
+                    </mat-select>
+                </mat-form-field>
+            </div>
+            <div *ngIf="plan.value == 'quarterly'" class="w-full mt-2 flex">
+                <mat-form-field class="w-50 mr-2">
+                    <mat-select [(ngModel)]="quarterMonth">
+                        <mat-option *ngFor="let item of quarterly" [value]="item.value">{{item.text}}</mat-option>
+                    </mat-select>
+                </mat-form-field>
+                <mat-form-field class="w-50">
+                    <mat-select [(ngModel)]="quarterYear">
+                        <mat-option *ngFor="let item of years" [value]="item">{{item}}</mat-option>
+                    </mat-select>
+                </mat-form-field>
+            </div>
+            <div *ngIf="plan.value == 'yearly'" class="w-full mt-2 flex">
+                <mat-form-field class="w-full ">
+                    <mat-select [(ngModel)]="yearlyYear">
+                        <mat-option *ngFor="let item of years" [value]="item">{{item}}</mat-option>
+                    </mat-select>
+                </mat-form-field>
+            </div>
+            <div *ngIf="plan.value == 'range'" class="w-full mt-2 flex">
+                <mat-form-field class="w-full">
+                    <mat-date-range-input [rangePicker]="picker1" (click)="picker1.open()" [max]="maxDate">
+                        <input matStartDate placeholder="Start date" readonly [(ngModel)]="ngRangeStart">
+                        <input matEndDate placeholder="End date" readonly [(ngModel)]="ngRangeEnd">
+                    </mat-date-range-input>
+                    <mat-datepicker-toggle matIconSuffix [for]="picker1"></mat-datepicker-toggle>
+                    <mat-date-range-picker #picker1></mat-date-range-picker>
+                </mat-form-field>
+            </div>
+            <!-- <div class="mt-8 text-lg">
+                    <span>{{plan.price | currency:'USD':'symbol':'1.0'}}</span>
+                    <span class="text-secondary"> / month</span>
+                </div> -->
+        </div>
+    </ng-container>
+</div>
+
+<!-- Divider -->
+<div class="mt-5 mb-5 border-t"></div>

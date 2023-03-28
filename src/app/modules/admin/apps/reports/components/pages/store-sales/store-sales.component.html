@@ -1,0 +1,85 @@
+<div class="w-full">
+    <div class="px-8 pb-4">
+        <div class="row">
+            <div class="col-12 col-md-4">
+                <mat-form-field class="w-full">
+                    <mat-select matInput [(ngModel)]="reportType">
+                        <mat-option [value]="0">Normal & fulfillment orders</mat-option>
+                        <mat-option [value]="1">Normal orders only</mat-option>
+                        <mat-option [value]="2">Fulfillment orders only</mat-option>
+                    </mat-select>
+                </mat-form-field>
+            </div>
+            <div class="col-12 col-md-4">
+                <mat-form-field class="w-full">
+                    <mat-select matInput [(ngModel)]="blnShowCancelled">
+                        <mat-option [value]="1">Show cancelled/uncancelled orders</mat-option>
+                        <mat-option [value]="0" selected>Do not show cancelled orders</mat-option>
+                        <mat-option [value]="2">Show only cancelled orders</mat-option>
+                    </mat-select>
+                </mat-form-field>
+            </div>
+            <div class="col-12 col-md-4">
+                <mat-form-field class="w-full">
+                    <mat-select matInput [(ngModel)]="paymentStatus">
+                        <mat-option [value]="1" selected="">Paid &amp; unpaid orders</mat-option>
+                        <mat-option [value]="2">Paid orders only</mat-option>
+                        <mat-option [value]="3">Unpaid orders only</mat-option>
+                    </mat-select>
+                </mat-form-field>
+            </div>
+            <div class="col-12 col-md-4">
+                <mat-form-field class="w-full">
+                    <mat-select matInput [(ngModel)]="blnYTD">
+                        <mat-option [value]="0" selected>Do not include YTD</mat-option>
+                        <mat-option [value]="1">Include YTD</mat-option>
+                    </mat-select>
+                </mat-form-field>
+            </div>
+            <div class="col-12 col-md-4">
+                <mat-form-field class="w-full">
+                    <mat-select matInput [(ngModel)]="blnIndividualOrders">
+                        <mat-option [value]="0" selected>Do not show individual orders</mat-option>
+                        <mat-option [value]="1">Show individual orders</mat-option>
+                    </mat-select>
+                </mat-form-field>
+            </div>
+            <div class="col-12 col-md-4">
+                <mat-form-field class="w-full">
+                    <mat-select matInput [(ngModel)]="state">
+                        <mat-option value="" selected>All states</mat-option>
+                        <mat-option value="AL">Alabama</mat-option>
+                        <mat-option value="AK">Alaska</mat-option>
+                    </mat-select>
+                </mat-form-field>
+            </div>
+            <div class="col-12 col-md-4">
+                <mat-form-field class="w-full">
+                    <mat-select matInput [(ngModel)]="promocode">
+                        <mat-option value="" selected>Any promocode</mat-option>
+                        <mat-option value="$10OFF">$10OFF</mat-option>
+                        <mat-option value="$15OFF2012">$15OFF2012</mat-option>
+                    </mat-select>
+                </mat-form-field>
+            </div>
+            <div class="col-12 col-md-4">
+                <mat-form-field class="w-full">
+                    <mat-select matInput [(ngModel)]="blnCost">
+                        <mat-option [value]="0" selected>Don't show cost</mat-option>
+                        <mat-option [value]="1">Show cost</mat-option>
+                    </mat-select>
+                </mat-form-field>
+            </div>
+            <div class="col-12">
+                <app-report-filters></app-report-filters>
+            </div>
+            <div class="col-12 text-right">
+                <button mat-flat-button class="min-w-60" [color]="'primary'" [disabled]="isUpdateWebsiteLoader">
+                    <span *ngIf="!isUpdateWebsiteLoader">Generate Report</span>
+                    <mat-progress-spinner *ngIf="isUpdateWebsiteLoader" [diameter]="24" [mode]="'indeterminate'">
+                    </mat-progress-spinner>
+                </button>
+            </div>
+        </div>
+    </div>
+</div>

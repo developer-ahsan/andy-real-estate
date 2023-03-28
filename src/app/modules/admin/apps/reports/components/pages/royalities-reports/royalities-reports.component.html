@@ -1,0 +1,53 @@
+<div class="w-full">
+    <div class="px-8 pb-4">
+        <div class="row">
+            <div class="col-12 col-md-6">
+                <mat-form-field class="w-full">
+                    <mat-label>Select a store</mat-label>
+                    <mat-select matInput [(ngModel)]="ngStore">
+                        <mat-option [value]="637">365Wholesale.com</mat-option>
+                        <mat-option [value]="229">3M Promotional Markets Dept</mat-option>
+                    </mat-select>
+                </mat-form-field>
+            </div>
+            <div class="col-12 col-md-6">
+                <mat-form-field class="w-full">
+                    <mat-label>Royalty</mat-label>
+                    <mat-select matInput [(ngModel)]="royaltyID">
+                        <mat-option [value]="0">Select royalty</mat-option>
+                        <mat-option [value]="8">Internal Royalties</mat-option>
+                    </mat-select>
+                </mat-form-field>
+            </div>
+            <div class="col-12 col-md-6">
+                <mat-form-field class="w-full">
+                    <mat-label>Show payment status</mat-label>
+                    <mat-select matInput [(ngModel)]="paymentStatus">
+                        <mat-option [value]="1">All</mat-option>
+                        <mat-option [value]="2">Paid orders only</mat-option>
+                        <mat-option [value]="3">Unpaid orders only</mat-option>
+                    </mat-select>
+                </mat-form-field>
+            </div>
+            <div class="col-12 col-md-6">
+                <mat-form-field class="w-full">
+                    <mat-label>Include Fulfillment Orders</mat-label>
+                    <mat-select matInput [(ngModel)]="blnIncludeFulfillment">
+                        <mat-option [value]="0">No</mat-option>
+                        <mat-option [value]="1">Yes</mat-option>
+                    </mat-select>
+                </mat-form-field>
+            </div>
+            <div class="col-12">
+                <app-report-filters></app-report-filters>
+            </div>
+            <div class="col-12 text-right">
+                <button mat-flat-button class="min-w-60" [color]="'primary'">
+                    <span>Generate Royalty Report</span>
+                    <!-- <mat-progress-spinner *ngIf="isUpdateWebsiteLoader" [diameter]="24" [mode]="'indeterminate'">
+                    </mat-progress-spinner> -->
+                </button>
+            </div>
+        </div>
+    </div>
+</div>

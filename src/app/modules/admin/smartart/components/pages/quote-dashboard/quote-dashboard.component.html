@@ -261,8 +261,22 @@
                                             <mat-icon svgIcon="heroicons_outline:mail"
                                                 class="mr-1 cursor-pointer icon-size-4" matTooltip="Email"
                                                 (click)="customerEmail(element)"></mat-icon>
-                                            <mat-icon svgIcon="heroicons_outline:eye-off" class="mr-1 icon-size-4"
-                                                matTooltip="Hide"></mat-icon>
+                                            <!-- Hidden -->
+                                            <div>
+                                                <div *ngIf="!element?.isHiddenLoader">
+                                                    <mat-icon svgIcon="heroicons_outline:eye-off"
+                                                        class="mr-1 icon-size-4" matTooltip="Hide"
+                                                        (click)="HideUnhideCart(element, true)"
+                                                        *ngIf="!element.blnHidden"></mat-icon>
+                                                    <mat-icon svgIcon="heroicons_outline:eye" class="mr-1 icon-size-4"
+                                                        matTooltip="UnHide" (click)="HideUnhideCart(element, false)"
+                                                        *ngIf="element.blnHidden"></mat-icon>
+                                                </div>
+                                                <mat-progress-spinner *ngIf="element?.isHiddenLoader" [diameter]="24"
+                                                    [mode]="'indeterminate'">
+                                                </mat-progress-spinner>
+                                            </div>
+                                            <!-- Attention -->
                                             <mat-icon svgIcon="heroicons_outline:flag" class="mr-1 icon-size-4"
                                                 matTooltip="Flag"></mat-icon>
                                             <mat-icon svgIcon="heroicons_outline:exclamation" class="mr-1 icon-size-4"

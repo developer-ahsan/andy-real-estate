@@ -1,9 +1,10 @@
-import { ChangeDetectionStrategy, Component, OnDestroy, OnInit, ViewChild, ViewEncapsulation } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnInit, ViewChild, ViewEncapsulation } from '@angular/core';
 import { Router } from '@angular/router';
 import { Subject } from 'rxjs';
-import { takeUntil } from 'rxjs/operators';
+import { finalize, takeUntil } from 'rxjs/operators';
 import { ApexAxisChartSeries, ApexChart, ApexDataLabels, ApexFill, ApexLegend, ApexNonAxisChartSeries, ApexOptions, ApexPlotOptions, ApexResponsive, ApexStroke, ApexTooltip, ApexXAxis, ApexYAxis, ChartComponent } from 'ng-apexcharts';
 import { DashboardsService } from '../../dashboard.service';
+import { AuthService } from 'app/core/auth/auth.service';
 export type ChartOptions = {
     series: ApexNonAxisChartSeries;
     chart: ApexChart;
@@ -62,14 +63,20 @@ export class AnalyticsComponent implements OnInit, OnDestroy {
     chartGithubIssues: ApexOptions = {};
     programPerformanceData = [];
     programPerformanceColumns: string[] = ['store', 'sales', 'py', 'percent', 'difference', 'n_sales', 'pyns', 'avg', 'margin'];
-
+    pagePerformance = 1;
+    totalPerformanceRecords = 0;
+    isPerformanceLoader: boolean;
     /**
      * Constructor
      */
     constructor(
         private _analyticsService: DashboardsService,
+        private _authService: AuthService,
+        private _changeDetectorRef: ChangeDetectorRef,
         private _router: Router
     ) {
+        let user = this._authService.parseJwt(this._authService.accessToken);
+        console.log(user);
         this._analyticsService.dataProject$
             .pipe(takeUntil(this._unsubscribeAll))
             .subscribe((data) => {
@@ -296,93 +303,59 @@ export class AnalyticsComponent implements OnInit, OnDestroy {
             }
         };
     }
-    dummyData() {
-        this.programPerformanceData = [
-            {
-                store: 'SummaHealthShop',
-                sales: '0.00',
-                py: '1,125.80',
-                percent: '100%',
-                low: true,
-                difference: '($1,125.80)',
-                n_sales: 0,
-                pyns: 1,
-                avg: 0,
-                margin: '0.00%'
-            },
-            {
-                store: '10ksbPromosAndPrint',
-                sales: '53.14',
-                py: 1223.97,
-                percent: '96%',
-                low: true,
-                difference: '($1,170.83)',
-                n_sales: 1,
-                pyns: 1,
-                avg: 53.14,
-                margin: '39.78%'
-            },
-            {
-                store: 'UWSPromos',
-                sales: '1,190.98',
-                py: '6,634.99',
-                percent: '82%',
-                low: true,
-                difference: '($5,444.01)',
-                n_sales: 3,
-                pyns: 6,
-                avg: 396.99,
-                margin: '34.23%'
-            },
-            {
-                store: 'Promos4NonProfits',
-                sales: '3,290.63',
-                py: '11,083.97',
-                percent: '70%',
-                low: true,
-                difference: '($7,793.34)',
-                n_sales: 2,
-                pyns: 3,
-                avg: 1645.32,
-                margin: '39.69%'
-            },
-            {
-                store: 'CCUPromos',
-                sales: '8,293.08',
-                py: '18,909.98',
-                percent: '56%',
-                low: true,
-                difference: '($10,616.90)',
-                n_sales: 6,
-                pyns: 6,
-                avg: 1382.18,
-                margin: '35.53%'
-            },
-            {
-                store: 'theYSUshop',
-                sales: '13,215.85',
-                py: '26,695.95',
-                percent: '50%',
-                low: true,
-                difference: '($13,480.10)',
-                n_sales: 15,
-                pyns: 17,
-                avg: 881.06,
-                margin: '37.91%'
-            },
-            {
-                store: 'PromosAndPrint',
-                sales: '24,876.48',
-                py: '49,144.31',
-                percent: '49%',
-                low: true,
-                difference: '($24,267.83)',
-                n_sales: 26,
-                pyns: 27,
-                avg: 956.79,
-                margin: '39.77%'
-            }
-        ]
+    getNextPortfolioData(event) {
+        const { previousPageIndex, pageIndex } = event;
+        if (pageIndex > previousPageIndex) {
+            this.pagePerformance++;
+        } else {
+            this.pagePerformance--;
+        };
+        this.getPortfolioData(this.pagePerformance);
+    };
+    getPortfolioData(page) {
+        let params = {
+            stores_per_employee: true,
+            size: 20,
+            page: page,
+            user_id: 78
+        }
+        this._analyticsService.getDashboardData(params).pipe(takeUntil(this._unsubscribeAll), finalize(() => {
+            this.isPerformanceLoader = false;
+            this._changeDetectorRef.markForCheck();
+        })).subscribe(res => {
+            this.programPerformanceData = res["data"];
+            this.totalPerformanceRecords = res["totalRecords"];
+            this.programPerformanceData.forEach(element => {
+                element.percent = Number(100 - (element.monthlyEarnings / element.previousYearSales) * 100);
+                if (!element.percent) {
+                    element.percent = 0;
+                    element.color = 'gray';
+                }
+                if (element.percent < 0) {
+                    element.color = 'red';
+                } else if (element.percent > 0) {
+                    element.color = 'green'
+                } else {
+                    element.color = 'gray';
+                }
+                element.difference = Number(element.monthlyEarnings - element.previousYearSales);
+                if (!element.difference) {
+                    element.difference = 0;
+                }
+                if (element.difference < 0) {
+                    element.difference = Math.abs(element.difference);
+                }
+                element.avg = Number(element.monthlyEarnings / element.NS);
+                if (!element.avg) {
+                    element.avg = 0;
+                }
+                element.margin = Number(((element.price - element.cost) / element.price) * 100);
+                if (!element.margin) {
+                    element.margin = 0;
+                }
+            });
+        }, err => {
+        });
     }
     // -----------------------------------------------------------------------------------------------------
     // @ Lifecycle hooks
@@ -393,7 +366,7 @@ export class AnalyticsComponent implements OnInit, OnDestroy {
      */
     ngOnInit(): void {
         // Get the data
-        this.dummyData();
+        this.getPortfolioData(1);
 
 
         this._analyticsService.data$

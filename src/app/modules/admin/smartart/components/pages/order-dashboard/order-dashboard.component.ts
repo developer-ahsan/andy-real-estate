@@ -6,7 +6,7 @@ import { NavigationExtras, Router } from '@angular/router';
 import { Subject } from 'rxjs';
 import { debounceTime, distinctUntilChanged, filter, finalize, switchMap, takeUntil, tap } from 'rxjs/operators';
 import { SmartArtService } from '../../smartart.service';
-import { updateAttentionFlagOrder } from '../../smartart.types';
+import { HideUnhideCart, updateAttentionFlagOrder } from '../../smartart.types';
 @Component({
   selector: 'app-order-dashboard',
   templateUrl: './order-dashboard.component.html',
@@ -276,6 +276,26 @@ export class OrderDashboardComponent implements OnInit, OnDestroy {
       this._changeDetectorRef.markForCheck();
     }, err => {
       item.isFlagLoader = false;
+      this._changeDetectorRef.markForCheck();
+    });
+  }
+  // Update order Hidden
+  HideUnhideCart(item, check) {
+    item.isHiddenLoader = true;
+    this._changeDetectorRef.markForCheck();
+    let payload: HideUnhideCart = {
+      blnHidden: check,
+      orderline_id: item.pk_orderLineID,
+      imprint_id: Number(item.fk_imprintID),
+      hide_unhide_cart: true
+    }
+    this._smartartService.UpdateSmartArtData(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+      this._smartartService.snackBar(res["message"]);
+      item.isHiddenLoader = false;
+      item.blnHidden = check;
+      this._changeDetectorRef.markForCheck();
+    }, err => {
+      item.isHiddenLoader = false;
       this._changeDetectorRef.markForCheck();
     });
   }

@@ -81,6 +81,7 @@ export class AuthService {
         return this.afAuth
             .signInWithEmailAndPassword(email, password)
             .then((response: any) => {
+                console.log(response)
                 const result = response["user"]?.["_delegate"];
                 // Creating basic payload for sign in
                 const payload = {
