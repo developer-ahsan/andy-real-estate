@@ -108,7 +108,7 @@
                                                     not_available}}</div>
                                             </div>
                                         </div>
-                                        <div class="grid grid-cols-12 gap-x-1 mt-8">
+                                        <div class="grid grid-cols-12 gap-x-1 mt-8 max-h-50 overflow-y-auto">
                                             <div class="font-bold col-span-12 mb-4 font-large text-secondary">Internal
                                                 Comments
                                             </div>
@@ -122,7 +122,7 @@
                                                 <div class="row">
                                                     <div class="col-9">
                                                         <p class="font-bold text-medium">
-                                                            <a
+                                                            <a target="_blank"
                                                                 routerLink="/apps/ecommerce/inventory/{{item.products[0]?.pk_productID}}">({{item.products[0]?.pk_productID}})</a>
                                                             {{item.products[0]?.productNumber}}:
                                                             {{item.products[0]?.productName}}

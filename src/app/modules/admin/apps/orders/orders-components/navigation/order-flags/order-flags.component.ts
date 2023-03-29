@@ -45,7 +45,7 @@ export class OrderFlagsComponent implements OnInit, OnDestroy {
   updateOrderFlags() {
     const { blnFulfillmentCancel, blnFinalized, blnIgnore, blnReorderIgnore, blnReviewIgnore, blnRoyaltyIgnore, blnIgnoreSales } = this.flagForm.getRawValue();
     let payload: UpdateOrderFlag = {
-      blnFulfillmentCancel, blnFinalized, blnIgnore, blnReorderIgnore, blnReviewIgnore, blnRoyaltyIgnore, blnIgnoreSales, isblnFulfillmentCancelChanged: false, isblnFinalizedChanged: false, isblnIgnoreChanged: false, isblnReorderIgnoreChanged: false, isblnReviewIgnoreChanged: false, isblnRoyaltyIgnoreChanged: false, isblnIgnoreSalesChanged: false, order_id: this.selectedOrder.pk_orderID, update_order_flag: true
+      blnFulfillmentCancel, blnFinalized, blnIgnore, blnReorderIgnore, blnReviewIgnore, blnRoyaltyIgnore, blnIgnoreSales, isblnFulfillmentCancelChanged: false, isblnFinalizedChanged: false, isblnIgnoreChanged: false, isblnReorderIgnoreChanged: false, isblnReviewIgnoreChanged: false, isblnRoyaltyIgnoreChanged: false, isblnIgnoreSalesChanged: false, order_id: this.orderDetail.pk_orderID, update_order_flag: true
     }
     if (this.orderDetail.blnFulfillmentCancel != blnFulfillmentCancel) {
       payload.isblnFulfillmentCancelChanged = true;
@@ -70,7 +70,7 @@ export class OrderFlagsComponent implements OnInit, OnDestroy {
     }
     this.isLoader = true;
     this._orderService.updateOrderCalls(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe((res: any) => {
-      this.getOrderDetail(this.selectedOrder.pk_orderID, res.message)
+      this.getOrderDetail(this.orderDetail.pk_orderID, res.message)
 
     }, err => {
       this.isLoader = false;

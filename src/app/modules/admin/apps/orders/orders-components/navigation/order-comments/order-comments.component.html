@@ -1,6 +1,6 @@
 <ngx-skeleton-loader count="8" appearance="line" animation="pulse" *ngIf="isLoading">
 </ngx-skeleton-loader>
-<div class="row my-3" *ngIf="!isLoading">
+<div class="row my-3 w-full" *ngIf="!isLoading">
     <div class="col-12 my-2">
         <mat-button-toggle-group #group="matButtonToggleGroup" [value]="mainScreen"
             (change)="calledScreen(group.value)">
@@ -21,6 +21,7 @@
 
                 <div *ngIf="mainScreen == 'Current Comments'" class="mt-5">
                     <div [innerHtml]="currentComments"></div>
+                    <div *ngIf="!currentComments">No Comment Found</div>
                 </div>
                 <div *ngIf="mainScreen == 'Add New Comment'" class="mt-5">
                     <div class="w-full">
