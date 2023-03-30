@@ -111,6 +111,9 @@ export const appRoutes: Route[] = [
             },
             // smartart
             { path: 'smartart', loadChildren: () => import('app/modules/admin/smartart/smartart.module').then(m => m.SmartArtModule) },
+            { path: 'rapidbuild', loadChildren: () => import('app/modules/admin/rapidBuild/rapid-build.module').then(m => m.RapidBuildModule) },
+            { path: 'ordermanage', loadChildren: () => import('app/modules/admin/orderManage/order-manage.module').then(m => m.OrderManageModule) },
+            { path: 'import-export', loadChildren: () => import('app/modules/admin/import-export/import-export.module').then(m => m.ImportExportModule) },
 
             // Pages
             {

@@ -1,0 +1,95 @@
+<div class=" rounded-2xl shadow bg-card flex flex-col lg:flex-row w-full">
+    <div class="w-full">
+        <div class="px-4 sm:px-4 lg:px-8 py-4">
+            <div class="flex align-items-center justify-between">
+                <h2 class="text-xl md:text-xl font-extrabold tracking-tight leading-7 sm:leading-10 truncate">
+                    Export Data
+                </h2>
+                <button mat-stroked-button (click)="goBack()">Go Back</button>
+            </div>
+            <mat-form-field class=" min-w-100">
+                <mat-label>Select a Store</mat-label>
+                <mat-select matInput [(ngModel)]="store_id">
+                    <mat-option [value]="0">Select a store</mat-option>
+                    <mat-option [value]="142">10ksbPromosAndPrint.com</mat-option>
+                    <mat-option [value]="187">2ndFamilyShop.com</mat-option>
+                    <mat-option [value]="60">AirForceROTCShop.com</mat-option>
+                    <mat-option [value]="64">ArmyROTCShop.com</mat-option>
+                    <mat-option [value]="177">AZPromoShop.com</mat-option>
+                    <mat-option [value]="159">BrandItShop.com</mat-option>
+                    <mat-option [value]="163">CCUPromos.com</mat-option>
+                    <mat-option [value]="122">ChurchPromoShop.com</mat-option>
+                    <mat-option [value]="190">ConsolidusDemoSite.com</mat-option>
+                    <mat-option [value]="160">ConsolidusPromos.com</mat-option>
+                    <mat-option [value]="146">ConsolidusShop.com</mat-option>
+                    <mat-option [value]="66">CUpromos.com</mat-option>
+                    <mat-option [value]="164">FitNationPromos.com</mat-option>
+                    <mat-option [value]="174">FloridaPolyShop.com</mat-option>
+                    <mat-option [value]="192">GovMVMTPromos.com</mat-option>
+                    <mat-option [value]="153">HCHPromosAndPrint.com</mat-option>
+                    <mat-option [value]="189">IrreverentWarriorsStore.com</mat-option>
+                    <mat-option [value]="129">IUCshop.com</mat-option>
+                    <mat-option [value]="182">JDogShop.com</mat-option>
+                    <mat-option [value]="80">LeadingAgeOhioShop.com</mat-option>
+                    <mat-option [value]="167">MemberPromos.com</mat-option>
+                    <mat-option [value]="131">MiamiOHshop.com</mat-option>
+                    <mat-option [value]="76">MicrobrewMarketing.com</mat-option>
+                    <mat-option [value]="109">MyGymPromos.com</mat-option>
+                    <mat-option [value]="91">MySBDCshop.com</mat-option>
+                    <mat-option [value]="74">MySummaShop.com</mat-option>
+                    <mat-option [value]="180">MyTexasRealtorsStore.com</mat-option>
+                    <mat-option [value]="171">NJCCPromos.com</mat-option>
+                    <mat-option [value]="145">OHIOPromoShop.com</mat-option>
+                    <mat-option [value]="152">PHCPromosAndPrint.com</mat-option>
+                    <mat-option [value]="156">Promos4NonProfits.com</mat-option>
+                    <mat-option [value]="128">PromosAndPrint.com</mat-option>
+                    <mat-option [value]="158">S4LPromoShop.com</mat-option>
+                    <mat-option [value]="105">ShopAkronChildrens.com</mat-option>
+                    <mat-option [value]="126">ShopCharterSchools.com</mat-option>
+                    <mat-option [value]="188">ShopMySalonSuite.com</mat-option>
+                    <mat-option [value]="168">SummaHealthShop.com</mat-option>
+                    <mat-option [value]="178">SwagByConsolidus.com</mat-option>
+                    <mat-option [value]="181">TCCDpromos.com</mat-option>
+                    <mat-option [value]="175">TexasRealtorsStore.com</mat-option>
+                    <mat-option [value]="140">thebbbspromoshop.com</mat-option>
+                    <mat-option [value]="179">theCHCstore.com</mat-option>
+                    <mat-option [value]="123">theJCUShop.com</mat-option>
+                    <mat-option [value]="184">theKSUshop.com</mat-option>
+                    <mat-option [value]="103">theUAshop.com</mat-option>
+                    <mat-option [value]="125">theYSUshop.com</mat-option>
+                    <mat-option [value]="127">Tri-Cshop.com</mat-option>
+                    <mat-option [value]="96">TuffyShop.com</mat-option>
+                    <mat-option [value]="169">UDPromos.com</mat-option>
+                    <mat-option [value]="157">UMFSPromoShop.com</mat-option>
+                    <mat-option [value]="191">UNFPromos.com</mat-option>
+                    <mat-option [value]="139">universitypromosandprint.com</mat-option>
+                    <mat-option [value]="173">utdpromos.com</mat-option>
+                    <mat-option [value]="161">UWSPromos.com</mat-option>
+                    <mat-option [value]="183">vsbswag.com</mat-option>
+                    <mat-option [value]="165">WrightStatePromos.com</mat-option>
+                    <mat-option [value]="172">Ypromoshop.com</mat-option>
+                </mat-select>
+            </mat-form-field>
+            <mat-radio-group aria-labelledby="example-radio-group-label" class="example-radio-group m-0 w-full"
+                [(ngModel)]="ngType">
+                <mat-radio-button class="example-radio-button w-full" value="products">
+                    <fuse-alert [appearance]="'soft'" [showIcon]="false" class="w-full" [type]="'success'">
+                        <b>Products: </b> Export product meta data
+                    </fuse-alert>
+                </mat-radio-button>
+                <mat-radio-button class="example-radio-button w-full" value="categories">
+                    <fuse-alert [appearance]="'soft'" [type]="'warning'" [showIcon]="false" class="w-full">
+                        <b>Category: </b> Export category and subcategory meta data
+                    </fuse-alert>
+                </mat-radio-button>
+            </mat-radio-group>
+            <div>
+                <button mat-flat-button class="min-w-40" [color]="'primary'">
+                    <span>Continue</span>
+                    <!-- <mat-progress-spinner *ngIf="isUpdateWebsiteLoader" [diameter]="24" [mode]="'indeterminate'">
+                    </mat-progress-spinner> -->
+                </button>
+            </div>
+        </div>
+    </div>
+</div>

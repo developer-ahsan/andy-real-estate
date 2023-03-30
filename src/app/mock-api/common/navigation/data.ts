@@ -125,6 +125,14 @@ export const defaultNavigation: FuseNavigationItem[] = [
         ]
     },
     {
+        id: 'import',
+        title: 'Import/Export',
+        type: 'basic',
+        // subtitle: 'Smartart Dashboards',
+        link: '/import-export',
+        icon: 'mat_outline:import_export',
+    },
+    {
         id: 'smartart',
         title: 'Smartart',
         type: 'collapsable',
@@ -160,6 +168,22 @@ export const defaultNavigation: FuseNavigationItem[] = [
                 link: '/smartart/quote-scheduler',
             }
         ]
+    },
+    {
+        id: 'rapidBuild',
+        title: 'RapidBuild',
+        type: 'basic',
+        // subtitle: 'Smartart Dashboards',
+        link: '/rapidbuild',
+        icon: 'heroicons_outline:office-building',
+    },
+    {
+        id: 'ordermanage',
+        title: 'Order Manage',
+        type: 'basic',
+        // subtitle: 'Smartart Dashboards',
+        link: '/ordermanage',
+        icon: 'heroicons_outline:briefcase',
     }
 ];
 export const compactNavigation: FuseNavigationItem[] = [

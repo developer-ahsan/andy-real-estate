@@ -1,0 +1,37 @@
+<div class=" rounded-2xl shadow bg-card flex flex-col lg:flex-row w-full">
+    <div class="w-full">
+        <div class="px-4 sm:px-4 lg:px-8 py-4">
+            <h2 class="text-xl md:text-xl font-extrabold tracking-tight leading-7 sm:leading-10 truncate">
+                Export Ordermanage Data
+            </h2>
+            <p class="text-secondary mb-2">This tool lets you export a list of orders for a certain orderManage status.
+                The information exported is the same that appears on the dashboard.
+            </p>
+            <mat-form-field class="min-w-100 mr-2">
+                <mat-select [(ngModel)]="ngstatusID" matInput>
+                    <mat-option [value]="1">New Order</mat-option>
+                    <mat-option [value]="2">Artwork Approved</mat-option>
+                    <mat-option [value]="3">PO Sent</mat-option>
+                    <mat-option [value]="4">PO Acknowledged</mat-option>
+                    <mat-option [value]="5">Shipped</mat-option>
+                    <mat-option [value]="6">Delivered</mat-option>
+                    <mat-option [value]="8">Picked up</mat-option>
+                    <mat-option [value]="9">Backorder</mat-option>
+                    <mat-option [value]="16">Not on backorder</mat-option>
+                    <mat-option [value]="10">Waiting For GroupBuy</mat-option>
+                    <mat-option [value]="11">Hidden</mat-option>
+                    <mat-option [value]="12">Unhidden</mat-option>
+                    <mat-option [value]="14">Semi-rush</mat-option>
+                    <mat-option [value]="15">Un-semi-rush</mat-option>
+                </mat-select>
+            </mat-form-field>
+            <div>
+                <button mat-flat-button class="min-w-40" [color]="'primary'">
+                    <span>Export</span>
+                    <!-- <mat-progress-spinner *ngIf="isUpdateWebsiteLoader" [diameter]="24" [mode]="'indeterminate'">
+                    </mat-progress-spinner> -->
+                </button>
+            </div>
+        </div>
+    </div>
+</div>

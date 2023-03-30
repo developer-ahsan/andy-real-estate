@@ -72,6 +72,7 @@ export class AuthService {
     SignInUsingEmailPassword(email: string, password: string) {
         sessionStorage.removeItem('flpsAccessToken');
         sessionStorage.removeItem('smartArt');
+        sessionStorage.removeItem('orderManage');
         // Throw error, if the user is already logged in
         if (this._authenticated) {
             this._userLoginMessage = 1;
@@ -81,7 +82,6 @@ export class AuthService {
         return this.afAuth
             .signInWithEmailAndPassword(email, password)
             .then((response: any) => {
-                console.log(response)
                 const result = response["user"]?.["_delegate"];
                 // Creating basic payload for sign in
                 const payload = {

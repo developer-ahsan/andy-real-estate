@@ -1,0 +1,95 @@
+<div class="absolute inset-0 flex flex-col min-w-0 overflow-auto bg-card">
+    <div class="relative flex flex-col sm:flex-row flex-0 sm:items-center sm:justify-between pb-1 border-b"
+        *ngIf="isLoading">
+        <div class="absolute inset-x-0 bottom-1">
+            <mat-progress-bar [mode]="'indeterminate'"></mat-progress-bar>
+        </div>
+    </div>
+    <mat-drawer-container class="example-container w-full bg-light" [hasBackdrop]="false">
+        <mat-drawer #drawer [mode]="'over'" position="end" style="width: 350px !important; ">
+            <div class="row w-full p-5 m-0 mt-4">
+                <div class="col-9">
+                    <div class="text-2xl font-extrabold tracking-tight leading-none"> Advanced Search
+                    </div>
+                </div>
+                <div class="col-3 text-right">
+                    <mat-icon (click)="toggleDrawer()" matTooltip="Close Search" class="mr-2 cursor-pointer"
+                        [svgIcon]="'mat_outline:close'">
+                    </mat-icon>
+                </div>
+
+                <div class="col-12 mt-5">
+                    <mat-form-field class="w-full">
+                        <mat-label>Keyword (PID/SPID/RBID):</mat-label>
+                        <input matInput>
+                    </mat-form-field>
+                </div>
+                <div class="col-12">
+                    <mat-form-field class="w-full">
+                        <mat-label>Product Name:</mat-label>
+                        <input matInput>
+                    </mat-form-field>
+                </div>
+                <div class="col-12">
+                    <mat-form-field class="w-full">
+                        <mat-label>Stores:</mat-label>
+                        <mat-select matInput>
+                            <mat-option [value]="0">All Stores</mat-option>
+                            <mat-option [value]="1">10ksbPromosAndPrint.com</mat-option>
+                            <mat-option [value]="2">2ndFamilyShop.com</mat-option>
+                            <mat-option [value]="3">AirForceROTCShop.com</mat-option>
+                            <mat-option [value]="4">ArmyROTCShop.com</mat-option>
+                        </mat-select>
+                    </mat-form-field>
+                </div>
+                <div class="col-12">
+                    <mat-form-field class="w-full">
+                        <mat-label>Statuses:</mat-label>
+                        <mat-select matInput>
+                            <mat-option [value]="0">All statuses</mat-option>
+                            <mat-option [value]="1">Image Needed</mat-option>
+                            <mat-option [value]="2">Awaiting Approval</mat-option>
+                            <mat-option [value]="3">Revision Requested</mat-option>
+                            <mat-option [value]="4">Finished</mat-option>
+                            <mat-option [value]="5">Needs Review</mat-option>
+                        </mat-select>
+                    </mat-form-field>
+                </div>
+                <div class="col-12">
+                    <button [color]="'primary'" class="w-full" mat-button mat-stroked-button>Filter</button>
+                </div>
+            </div>
+        </mat-drawer>
+        <mat-drawer-content style="height: 100vh;">
+            <div
+                class="flex flex-col sm:flex-row flex-0 sm:items-center sm:justify-between p-6 sm:py-8 sm:px-10 border-b bg-card dark:bg-transparent">
+                <div class="flex-1 min-w-0">
+                    <!-- Breadcrumbs -->
+
+                    <!-- Title -->
+                    <div class="mt-2" #topScrollAnchor>
+                        <div class="flex align-items-center justify-between">
+                            <h2
+                                class="text-3xl md:text-4xl font-extrabold tracking-tight leading-7 sm:leading-10 truncate">
+                                Rapid Build
+                            </h2>
+                            <button class="min-w-40" mat-stroked-button (click)="toggleDrawer()">Filter</button>
+                        </div>
+                    </div>
+                    <div class="flex flex-wrap items-center font-medium">
+                        <a class="whitespace-nowrap text-primary-500" *ngIf="!isLoading">Welcome, Bill</a>
+                    </div>
+                </div>
+            </div>
+            <div class="flex-auto p-6 sm:p-6 space-y-2">
+                <mat-button-toggle-group #group="matButtonToggleGroup" [value]="selectedRoute"
+                    (change)="calledScreen(group.value)">
+                    <mat-button-toggle *ngFor="let item of routes" [value]="item.route">
+                        {{item.title}}
+                    </mat-button-toggle>
+                </mat-button-toggle-group>
+                <router-outlet></router-outlet>
+            </div>
+        </mat-drawer-content>
+    </mat-drawer-container>
+</div>

@@ -1,0 +1,27 @@
+<div class=" rounded-2xl shadow bg-card flex flex-col lg:flex-row w-full">
+    <div class="w-full">
+        <div class="px-4 sm:px-4 lg:px-8 py-4">
+            <h2 class="text-xl md:text-xl font-extrabold tracking-tight leading-7 sm:leading-10 truncate">
+                Clear RapidBuild Store
+            </h2>
+            <p class="text-secondary mb-2">This tool will clear all rapidBuild entries for store products on the store
+                you
+                specify below.
+            </p>
+            <mat-form-field class="min-w-100">
+                <mat-select matInput [(ngModel)]="ngStore">
+                    <mat-option [value]="0">Select a store</mat-option>
+                    <mat-option [value]="637">365Wholesale.com</mat-option>
+                    <mat-option [value]="229">3M Promotional Markets Dept</mat-option>
+                </mat-select>
+            </mat-form-field>
+            <div>
+                <button mat-flat-button class="min-w-40" [color]="'primary'">
+                    <span>Clear Store</span>
+                    <!-- <mat-progress-spinner *ngIf="isUpdateWebsiteLoader" [diameter]="24" [mode]="'indeterminate'">
+                    </mat-progress-spinner> -->
+                </button>
+            </div>
+        </div>
+    </div>
+</div>

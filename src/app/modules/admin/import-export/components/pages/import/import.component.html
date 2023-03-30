@@ -1,0 +1,41 @@
+<div class=" rounded-2xl shadow bg-card flex flex-col lg:flex-row w-full">
+    <div class="w-full">
+        <div class="px-4 sm:px-4 lg:px-8 py-4">
+            <div class="flex align-items-center justify-between">
+                <h2 class="text-xl md:text-xl font-extrabold tracking-tight leading-7 sm:leading-10 truncate">
+                    Import Data
+                </h2>
+                <button mat-stroked-button (click)="goBack()">Go Back</button>
+            </div>
+            <mat-form-field class="min-w-100">
+                <mat-label>Select whether you are importing product or category data</mat-label>
+                <mat-select matInput [(ngModel)]="ngType">
+                    <mat-option [value]="0">SELECT DATA TYPE</mat-option>
+                    <mat-option [value]="1">Product</mat-option>
+                    <mat-option [value]="2">Category</mat-option>
+                </mat-select>
+            </mat-form-field>
+            <div>
+                <mat-label>Please select a Excel (.xls) file to import:</mat-label>
+                <br>
+                <input type="file" accept=".xls">
+            </div>
+            <br>
+
+            <div>
+                <mat-form-field class="min-w-100">
+                    <mat-label>Enter your password for security purposes:</mat-label>
+                    <input type="text" matInput>
+                </mat-form-field>
+            </div>
+
+            <div>
+                <button mat-flat-button class="min-w-40" [color]="'primary'">
+                    <span>Import</span>
+                    <!-- <mat-progress-spinner *ngIf="isUpdateWebsiteLoader" [diameter]="24" [mode]="'indeterminate'">
+                    </mat-progress-spinner> -->
+                </button>
+            </div>
+        </div>
+    </div>
+</div>

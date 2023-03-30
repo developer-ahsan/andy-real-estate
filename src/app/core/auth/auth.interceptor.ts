@@ -36,17 +36,19 @@ export class AuthInterceptor implements HttpInterceptor {
         // the user out from the app.
         if (this._authService.accessToken && !AuthUtils.isTokenExpired(this._authService.accessToken)) {
             this._afAuth.authState.subscribe(user => {
-                this._afAuth.idTokenResult.subscribe(token => {
-                    const now = moment().unix()
-                    const lastFetched = token.claims.exp;
-                    const duration = moment.duration(moment.unix(lastFetched).diff(moment.unix(now)));
-                    const getMinutes = duration.asMinutes();
-                    if (getMinutes <= 30) {
-                        user.getIdToken(true).then(res => {
-                            this._authService.accessToken = res;
-                        });
-                    }
-                });
+                if (user) {
+                    this._afAuth.idTokenResult.subscribe(token => {
+                        const now = moment().unix()
+                        const lastFetched = token.claims.exp;
+                        const duration = moment.duration(moment.unix(lastFetched).diff(moment.unix(now)));
+                        const getMinutes = duration.asMinutes();
+                        if (getMinutes <= 30) {
+                            user.getIdToken(true).then(res => {
+                                this._authService.accessToken = res;
+                            });
+                        }
+                    });
+                }
             });
             newReq = req.clone({
                 headers: req.headers.set('Authorization', 'Bearer ' + this._authService.accessToken)

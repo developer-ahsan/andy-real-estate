@@ -101,12 +101,12 @@ export const navigations = [
                 route: 'supportReport'
             },
             {
-                title: 'Graphics Support Report',
+                title: 'Graphics Support',
                 icon: 'heroicons_outline:currency-dollar',
                 route: 'graphicsSupportReport'
             },
             {
-                title: 'Quote Graphics Support Report',
+                title: 'Quote Graphics',
                 icon: 'mat_outline:money',
                 route: 'quoteGraphicsSupportReport'
             },

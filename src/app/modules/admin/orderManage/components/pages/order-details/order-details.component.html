@@ -1,0 +1,365 @@
+<div class="row w-full" *ngIf="!isLoading">
+    <div class="col-12 col-md-4 space-y-3">
+        <div class=" rounded-2xl shadow bg-card w-full">
+            <div class="px-4 sm:px-4 lg:px-8 py-4">
+                <h2 class="text-xl md:text-xl font-extrabold tracking-tight leading-7 sm:leading-10 truncate">
+                    Invoice Status
+                </h2>
+                <mat-slide-toggle [(ngModel)]="orderData.blnInvoiced">
+                    Invoice
+                </mat-slide-toggle>
+            </div>
+        </div>
+
+        <div class=" rounded-2xl shadow bg-card w-full">
+            <div class="w-full">
+                <div class="px-4 sm:px-4 lg:px-8 py-4">
+                    <h2 class="text-xl md:text-xl font-extrabold tracking-tight leading-7 sm:leading-10 truncate">
+                        Modify Status
+                    </h2>
+                    <div class="space-y-2">
+                        <span><b>Current Status:</b> Artwork Approved</span>
+                        <mat-form-field class="w-full">
+                            <mat-select [(ngModel)]="statusID">
+                                <mat-option [value]="1">New-Pending</mat-option>
+                                <mat-option [value]="2">Artwork Approved</mat-option>
+                                <mat-option [value]="3">Purchase Order Sent</mat-option>
+                                <mat-option [value]="4">Purchase Order Acknowledged</mat-option>
+                                <mat-option [value]="5">Shipped</mat-option>
+                                <mat-option [value]="6">Delivered</mat-option>
+                                <mat-option [value]="8">Picked up</mat-option>
+                                <mat-option [value]="10">Waiting For GroupBuy</mat-option>
+                            </mat-select>
+                        </mat-form-field>
+                        <button class="min-w-40 btn buttonComment hover:bg-gray-200">Update</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Rush -->
+        <div class=" rounded-2xl shadow bg-card  w-full">
+            <div class="w-full">
+                <div class="px-4 sm:px-4 lg:px-8 py-4">
+                    <h2 class="text-xl md:text-xl font-extrabold tracking-tight leading-7 sm:leading-10 truncate">
+                        Rush
+                    </h2>
+                    <div class="space-y-2">
+                        <div *ngIf="!orderData.blnRushFlexibility">---</div>
+                        <div *ngIf="orderData.blnRushFlexibility">
+                            <span><b>Rush Flexibility:</b> Yes</span>
+                            <br>
+                            <span><b>Comment:</b> {{orderData.rushFlexibilityComment}}</span>
+                        </div>
+                        <mat-form-field class="w-full">
+                            <mat-label>Add or Update In-Hands Date</mat-label>
+                            <input matInput [matDatepicker]="picker" readonly [(ngModel)]="orderData.inHandsDate">
+                            <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
+                            <mat-datepicker #picker></mat-datepicker>
+                        </mat-form-field>
+                        <button class="min-w-40 btn buttonComment hover:bg-gray-200">Update</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Imprint Information -->
+        <div class=" rounded-2xl shadow bg-card  w-full">
+            <div class="w-full">
+                <div class="px-4 sm:px-4 lg:px-8 py-4">
+                    <h2 class="text-xl md:text-xl font-extrabold tracking-tight leading-7 sm:leading-10 truncate">
+                        Imprint Information
+                    </h2>
+                    <div class="space-y-2 max-h-60 overflow-y-auto">
+                        <fuse-alert *ngIf="imprintdata.length == 0" [appearance]="'soft'" [type]="'warning'">
+                            No imprints
+                        </fuse-alert>
+                        <div *ngFor="let item of imprintdata">
+                            <span>{{item.productName}}</span>
+                            <br>
+                            <span>{{item.locationName}}/{{item.methodName}} - <b>{{item.statusName}}</b></span>
+                            <br>
+                            <a href="https://assets.consolidus.com/artwork/Proof/{{orderData.fk_storeUserID}}/{{orderData.fk_orderID}}/{{orderData.pk_orderLineID}}/{{item.fk_imprintID}}.jpg"
+                                target="_blank">View Proof</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Shipping/Tracking -->
+        <div class=" rounded-2xl shadow bg-card  w-full">
+            <div class="w-full">
+                <div class="px-4 sm:px-4 lg:px-8 py-4">
+                    <h2 class="text-xl md:text-xl font-extrabold tracking-tight leading-7 sm:leading-10 truncate">
+                        Shipping/Tracking
+                    </h2>
+                    <div class="space-y-2">
+                        <div>
+                            <mat-form-field class="w-full">
+                                <mat-label>Tracking:</mat-label>
+                                <input matInput [(ngModel)]="orderData.trackingNumber">
+                            </mat-form-field>
+                        </div>
+                        <div>
+                            <mat-form-field class="w-full">
+                                <mat-label>Ship Date:</mat-label>
+                                <input matInput [matDatepicker]="shipDate" readonly
+                                    [(ngModel)]="orderData.shippingDate">
+                                <mat-datepicker-toggle matIconSuffix [for]="shipDate"></mat-datepicker-toggle>
+                                <mat-datepicker #shipDate></mat-datepicker>
+                            </mat-form-field>
+                        </div>
+                        <div>
+                            <mat-form-field class="w-full">
+                                <mat-label>Carrier:</mat-label>
+                                <mat-select matInput [(ngModel)]="orderData.shippingCarrier">
+                                    <mat-option [value]="1">UPS</mat-option>
+                                    <mat-option [value]="2">FedEx</mat-option>
+                                    <mat-option [value]="3">Freight</mat-option>
+                                    <mat-option [value]="4">USPS</mat-option>
+                                    <mat-option [value]="5">Delivery</mat-option>
+                                    <mat-option [value]="6">DHL</mat-option>
+                                </mat-select>
+                            </mat-form-field>
+                        </div>
+                        <mat-checkbox>Send Email?</mat-checkbox>
+                        <br>
+                        <mat-checkbox>Revised?</mat-checkbox>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Estimated Shipping Date -->
+        <div class=" rounded-2xl shadow bg-card  w-full">
+            <div class="w-full">
+                <div class="px-4 sm:px-4 lg:px-8 py-4">
+                    <h2 class="text-xl md:text-xl font-extrabold tracking-tight leading-7 sm:leading-10 truncate">
+                        Estimated Shipping Date
+                    </h2>
+                    <div class="space-y-2">
+                        <mat-form-field class="w-full">
+                            <mat-label>Estimated Shipping Date</mat-label>
+                            <input matInput [matDatepicker]="Estpicker" readonly
+                                [(ngModel)]="orderData.estimatedShippingDate">
+                            <mat-datepicker-toggle matIconSuffix [for]="Estpicker"></mat-datepicker-toggle>
+                            <mat-datepicker #Estpicker></mat-datepicker>
+                        </mat-form-field>
+                        <button class="min-w-40 btn buttonComment hover:bg-gray-200">Update</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Order Comments -->
+        <div class=" rounded-2xl shadow bg-card  w-full">
+            <div class="w-full">
+                <div class="px-4 sm:px-4 lg:px-8 py-4">
+                    <h2 class="text-xl md:text-xl font-extrabold tracking-tight leading-7 sm:leading-10 truncate">
+                        Order Comments
+                    </h2>
+                    <div class="space-y-2">
+                        <div class="min-h-50 overflow-y-auto border p-3" [innerHTML]="orderData.internalComments"></div>
+                        <mat-form-field class="w-full">
+                            <mat-label>Add a comment:</mat-label>
+                            <textarea matInput rows="5"></textarea>
+                        </mat-form-field>
+                        <button class="min-w-40 btn buttonComment hover:bg-gray-200">Add Comment</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-12 col-md-8">
+        <div class=" rounded-2xl shadow bg-card flex flex-col lg:flex-row w-full">
+            <div class="w-full">
+                <div class="px-4 sm:px-4 lg:px-8 py-4">
+                    <h2 class="text-xl md:text-xl font-extrabold tracking-tight leading-7 sm:leading-10 truncate">
+                        Order Details
+                    </h2>
+                    <div>
+                        <mat-checkbox>Do not duplicate</mat-checkbox>
+                        <div class="flex justify-between border-b">
+                            <p class="text-secodary mb-2">Consolidus LLC<br />526 S.Main St.<br />Suite 804<br />Akron,
+                                OH
+                                44311<br />P:
+                                330-319-7203, F: 330-319-7213</p>
+                            <div>
+                                <mat-form-field class="min-w-80">
+                                    <mat-label>Purchase Order</mat-label>
+                                    <input matInput readonly
+                                        value="{{orderData.fk_orderID}}-{{orderData.pk_orderLineID}}">
+                                </mat-form-field>
+                            </div>
+                        </div>
+                        <div class="row border-b py-2">
+                            <div class="col-12">
+                                <p>Purchase Order: {{orderData.fk_orderID}}-{{orderData.pk_orderLineID}}</p>
+                            </div>
+                            <div class="col-12 col-md-6">
+                                <mat-form-field class="w-full">
+                                    <mat-label>Vendors</mat-label>
+                                    <input matInput [(ngModel)]="orderData.companyName">
+                                </mat-form-field>
+                            </div>
+                            <div class="col-12 col-md-6">
+                                <mat-form-field class="w-full">
+                                    <mat-label>Address</mat-label>
+                                    <input matInput [(ngModel)]="orderData.address">
+                                </mat-form-field>
+                            </div>
+                            <div class="col-12 col-md-6">
+                                <mat-form-field class="w-full">
+                                    <mat-label>City</mat-label>
+                                    <input matInput [(ngModel)]="orderData.city">
+                                </mat-form-field>
+                            </div>
+                            <div class="col-6 col-md-3">
+                                <mat-form-field class="w-full">
+                                    <mat-label>State</mat-label>
+                                    <input matInput [(ngModel)]="orderData.state">
+                                </mat-form-field>
+                            </div>
+                            <div class="col-6 col-md-3">
+                                <mat-form-field class="w-full">
+                                    <mat-label>Zip</mat-label>
+                                    <input matInput [(ngModel)]="orderData.zipCode">
+                                </mat-form-field>
+                            </div>
+                            <div class="col-12 col-md-6">
+                                <mat-form-field class="w-full">
+                                    <mat-label>Phone</mat-label>
+                                    <input matInput [(ngModel)]="orderData.phone">
+                                </mat-form-field>
+                            </div>
+                            <div class="col-12 col-md-6">
+                                <mat-form-field class="w-full">
+                                    <mat-label>Fax</mat-label>
+                                    <input matInput [(ngModel)]="orderData.fax">
+                                </mat-form-field>
+                            </div>
+                            <div class="col-12 col-md-6">
+                                <mat-form-field class="w-full">
+                                    <mat-label>Email</mat-label>
+                                    <input matInput [(ngModel)]="orderData.samplesContactEmail">
+                                </mat-form-field>
+                            </div>
+                            <div class="col-12 col-md-6">
+                                <mat-form-field class="w-full">
+                                    <mat-label>Shipping</mat-label>
+                                    <input matInput [(ngModel)]="orderData.shippingComment">
+                                </mat-form-field>
+                            </div>
+                            <div class="col-12 col-md-6" *ngIf="orderData.inHandsDate">
+                                <mat-form-field class="w-full">
+                                    <mat-label>In-Hands Date</mat-label>
+                                    <input matInput [matDatepicker]="picker5" readonly
+                                        [(ngModel)]="orderData.inHandsDate">
+                                    <mat-datepicker-toggle matIconSuffix [for]="picker5"></mat-datepicker-toggle>
+                                    <mat-datepicker #picker5></mat-datepicker>
+                                </mat-form-field>
+                            </div>
+                        </div>
+                        <div class="row border-b py-2">
+                            <div class="col-12" *ngFor="let item of imprintdata">
+                                <mat-form-field class="w-full">
+                                    <input matInput [(ngModel)]="item.productName" readonly>
+                                </mat-form-field>
+                            </div>
+                            <div class="col-12">
+                                <mat-form-field class="w-50">
+                                    <mat-label>Quantity</mat-label>
+                                    <input matInput [(ngModel)]="orderData.quantity">
+                                </mat-form-field>
+                                <p class="text-red-500">Produce exact quantity of the items on this order. Please
+                                    contact us if there's a charge for this service.
+                                </p>
+                            </div>
+                            <div class="col-12 mt-2 ">
+                                <p class="font-medium text-secondary">COLOR/SIZE BREAKDOWN</p>
+                                <div class="flex align-items-center">
+                                    <mat-form-field class="w-70">
+                                        <input matInput value="Rosewood">
+                                    </mat-form-field>
+                                    <span class="mx-3">X</span>
+                                    <mat-form-field class="w-30">
+                                        <input matInput [(ngModel)]="orderData.quantity">
+                                    </mat-form-field>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row border-b py-2">
+                            <div class="col-12">
+                                <p class="font-medium text-secondary">Ship To</p>
+                            </div>
+                            <div class="col-12 col-md-6">
+                                <mat-form-field class="w-full">
+                                    <mat-label>Shipping Company</mat-label>
+                                    <input matInput [(ngModel)]="orderData.shippingCompanyName">
+                                </mat-form-field>
+                            </div>
+                            <div class="col-12 col-md-6">
+                                <mat-form-field class="w-full">
+                                    <mat-label>Address</mat-label>
+                                    <input matInput [(ngModel)]="orderData.shipToDeliverTo">
+                                </mat-form-field>
+                            </div>
+                            <div class="col-12 col-md-6">
+                                <mat-form-field class="w-full">
+                                    <mat-label>PO</mat-label>
+                                    <input matInput [(ngModel)]="orderData.purchaseOrderNum">
+                                </mat-form-field>
+                            </div>
+                            <div class="col-12 col-md-6">
+                                <mat-form-field class="w-full">
+                                    <mat-label>Shipping Address</mat-label>
+                                    <input matInput [(ngModel)]="orderData.shippingAddress">
+                                </mat-form-field>
+                            </div>
+                            <div class="col-12 col-md-6">
+                                <mat-form-field class="w-full">
+                                    <mat-label>Deliver To</mat-label>
+                                    <input matInput [(ngModel)]="orderData.shipToDeliverTo">
+                                </mat-form-field>
+                            </div>
+                            <div class="col-12 col-md-6">
+                                <mat-form-field class="w-full">
+                                    <mat-label>City</mat-label>
+                                    <input matInput [(ngModel)]="orderData.shippingCity">
+                                </mat-form-field>
+                            </div>
+                            <div class="col-6 col-md-3">
+                                <mat-form-field class="w-full">
+                                    <mat-label>State</mat-label>
+                                    <input matInput [(ngModel)]="orderData.shippingState">
+                                </mat-form-field>
+                            </div>
+                            <div class="col-6 col-md-3">
+                                <mat-form-field class="w-full">
+                                    <mat-label>Zip</mat-label>
+                                    <input matInput [(ngModel)]="orderData.shippingZip">
+                                </mat-form-field>
+                            </div>
+                            <div class="col-12 col-md-6">
+                                <mat-form-field class="w-full">
+                                    <mat-label>Country</mat-label>
+                                    <input matInput [(ngModel)]="orderData.shippingCountry">
+                                </mat-form-field>
+                            </div>
+                        </div>
+                        <!-- <fuse-alert [appearance]="'soft'" [type]="'warning'">
+                            Coming Soon
+                        </fuse-alert> -->
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+<div *ngIf="isLoading" class=" rounded-2xl shadow bg-card flex flex-col lg:flex-row w-full">
+    <div class="w-full">
+        <div class="px-4 sm:px-4 lg:px-8 py-4">
+            <ngx-skeleton-loader count="8" appearance="line" animation="pulse" [theme]="{ 
+                'background-color': '#dedede'
+              }">
+            </ngx-skeleton-loader>
+        </div>
+    </div>
+</div>

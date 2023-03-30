@@ -1,0 +1,29 @@
+<div class=" rounded-2xl shadow bg-card flex flex-col lg:flex-row w-full">
+    <div class="w-full">
+        <div class="px-4 sm:px-4 lg:px-8 py-4">
+            <h2 class="text-xl md:text-xl font-extrabold tracking-tight leading-7 sm:leading-10 truncate">
+                Select the type of process you want to perform:
+            </h2>
+            <mat-radio-group aria-labelledby="example-radio-group-label" class="example-radio-group"
+                [(ngModel)]="ngExport">
+                <mat-radio-button class="example-radio-button" value="export">
+                    <fuse-alert [appearance]="'soft'" [showIcon]="false" [type]="'success'">
+                        <b>Export: </b> Export product or category/subcategory meta data to a XLS file.
+                    </fuse-alert>
+                </mat-radio-button>
+                <mat-radio-button class="example-radio-button" value="import">
+                    <fuse-alert [appearance]="'soft'" [type]="'warning'" [showIcon]="false">
+                        <b>Import: </b> Import product or category/subcategory meta data from a XLS file.
+                    </fuse-alert>
+                </mat-radio-button>
+            </mat-radio-group>
+            <div>
+                <button mat-flat-button class="min-w-40" [color]="'primary'" (click)="goToImporExport()">
+                    <span>Continue</span>
+                    <!-- <mat-progress-spinner *ngIf="isUpdateWebsiteLoader" [diameter]="24" [mode]="'indeterminate'">
+                    </mat-progress-spinner> -->
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
