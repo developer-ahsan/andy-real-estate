@@ -57,7 +57,6 @@ export class RapidBuildComponent {
      */
 
     ngOnInit(): void {
-        console.log()
         this._router.events.subscribe((event) => {
             if (event instanceof NavigationEnd) {
                 this.selectedScreeen = this.route.children[0].snapshot.data.title;
