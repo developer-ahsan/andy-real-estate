@@ -139,7 +139,8 @@
                                                     </div>
                                                     <div class="col-3 text-right w-full">
                                                         <img style="display: inline;width:50%"
-                                                            src="https://assets.consolidus.com/globalAssets/Products/coming_soon.jpg">
+                                                            src="https://assets.consolidus.com/globalAssets/products/thumbnails/{{item.products[0]?.pk_storeProductID}}.jpg"
+                                                            onError="this.src='https://assets.consolidus.com/globalAssets/Products/coming_soon.jpg'">
                                                     </div>
                                                 </div>
                                                 <div class="grid grid-cols-12 gap-x-1 mt-1">
