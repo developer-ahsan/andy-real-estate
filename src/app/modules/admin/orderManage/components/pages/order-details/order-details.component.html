@@ -1,16 +1,17 @@
 <div class="row w-full" *ngIf="!isLoading">
-    <div class="col-12 col-md-4 space-y-3">
-        <div class=" rounded-2xl shadow bg-card w-full">
-            <div class="px-4 sm:px-4 lg:px-8 py-4">
-                <h2 class="text-xl md:text-xl font-extrabold tracking-tight leading-7 sm:leading-10 truncate">
-                    Invoice Status
-                </h2>
-                <mat-slide-toggle [(ngModel)]="orderData.blnInvoiced">
-                    Invoice
-                </mat-slide-toggle>
-            </div>
+    <div class="col-12  mb-2 flex justify-between">
+        <div class="space-x-2">
+            <button class="min-w-40 btn buttonComment hover:bg-gray-200">Add PO to this order </button>
+            <a target="_blank"
+                href="https://admin.consolidus.com/ssadm/controller/view/system/tempDocs/Purchase-Order-{{orderData.fk_orderID}}-{{orderData.pk_orderLineID}}.pdf"
+                class="min-w-40 btn buttonComment hover:bg-gray-200">View PDF</a>
         </div>
+        <div>
+            <button class="min-w-40 btn buttonComment hover:bg-gray-200">Back to List</button>
 
+        </div>
+    </div>
+    <div class="col-12 col-md-4 space-y-3">
         <div class=" rounded-2xl shadow bg-card w-full">
             <div class="w-full">
                 <div class="px-4 sm:px-4 lg:px-8 py-4">
@@ -165,6 +166,102 @@
                 </div>
             </div>
         </div>
+        <!-- Attachments -->
+        <div class=" rounded-2xl shadow bg-card  w-full">
+            <div class="w-full">
+                <div class="px-4 sm:px-4 lg:px-8 py-4">
+                    <h2 class="text-xl md:text-xl font-extrabold tracking-tight leading-7 sm:leading-10 truncate">
+                        Attachments
+                    </h2>
+                    <div class="space-y-2">
+                        <p class="text-secondary">These files will be included as attachments on the purchase order when
+                            it is sent.</p>
+                        <fuse-alert [appearance]="'soft'" [type]="'warning'">
+                            There are no attachments on this purchase order.
+                        </fuse-alert>
+                        <mat-form-field class="w-full">
+                            <mat-label>Name</mat-label>
+                            <input matInput>
+                        </mat-form-field>
+                        <input type="file">
+                        <button class="min-w-40 btn buttonComment hover:bg-gray-200">Add Attachment</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Bill Pay -->
+        <div class=" rounded-2xl shadow bg-card  w-full">
+            <div class="w-full">
+                <div class="px-4 sm:px-4 lg:px-8 py-4">
+                    <h2 class="text-xl md:text-xl font-extrabold tracking-tight leading-7 sm:leading-10 truncate">
+                        Bill Pay
+                    </h2>
+                    <div class="space-y-2">
+                        <mat-form-field class="w-full">
+                            <mat-label>Payment date:</mat-label>
+                            <mat-select mayInput>
+                                <mat-option value="" selected="">None</mat-option>
+                                <mat-option value="American Express">American Express</mat-option>
+                                <mat-option value="Capital One">Capital One</mat-option>
+                                <mat-option value="Chase Visa">Chase Visa</mat-option>
+                                <mat-option value="Vendor Website">Vendor Website</mat-option>
+                                <mat-option value="ACH">ACH</mat-option>
+                                <mat-option value="Check">Check</mat-option>
+                            </mat-select>
+                        </mat-form-field>
+                        <mat-form-field class="w-full">
+                            <mat-label>Payment reference:</mat-label>
+                            <input matInput>
+                        </mat-form-field>
+                        <mat-form-field class="w-full">
+                            <mat-label>Payment date:</mat-label>
+                            <input matInput [matDatepicker]="Estpicker" readonly>
+                            <mat-datepicker-toggle matIconSuffix [for]="Estpicker"></mat-datepicker-toggle>
+                            <mat-datepicker #Estpicker></mat-datepicker>
+                        </mat-form-field>
+                        <mat-checkbox class="w-full">Paid</mat-checkbox>
+                        <button class="min-w-40 btn buttonComment hover:bg-gray-200">Save bill pay</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Vendor bill information -->
+        <div class=" rounded-2xl shadow bg-card  w-full">
+            <div class="w-full">
+                <div class="px-4 sm:px-4 lg:px-8 py-4">
+                    <h2 class="text-xl md:text-xl font-extrabold tracking-tight leading-7 sm:leading-10 truncate">
+                        Vendor bill information
+                    </h2>
+                    <div class="space-y-2">
+                        <mat-form-field class="w-full">
+                            <mat-label>Vendor invoice number:</mat-label>
+                            <input matInput>
+                        </mat-form-field>
+                        <mat-form-field class="w-full">
+                            <mat-label>Vendor invoice date:</mat-label>
+                            <input matInput [matDatepicker]="Estpicker" readonly>
+                            <mat-datepicker-toggle matIconSuffix [for]="Estpicker"></mat-datepicker-toggle>
+                            <mat-datepicker #Estpicker></mat-datepicker>
+                        </mat-form-field>
+                        <mat-form-field class="w-full">
+                            <mat-label>Payment terms:</mat-label>
+                            <mat-select mayInput>
+                                <mat-option value="" selected="">None</mat-option>
+                                <mat-option value="PrePaid">PrePaid</mat-option>
+                                <mat-option value="Due On Receipt">Due On Receipt</mat-option>
+                                <mat-option value="Net 10">Net 10</mat-option>
+                                <mat-option value="Net 15">Net 15</mat-option>
+                                <mat-option value="Net 30">Net 30</mat-option>
+                                <mat-option value="Net 45">Net 45</mat-option>
+                                <mat-option value="Net 60">Net 60</mat-option>
+                            </mat-select>
+                        </mat-form-field>
+                        <mat-checkbox class="w-full">Invoiced</mat-checkbox>
+                        <button class="min-w-40 btn buttonComment hover:bg-gray-200">Save vendor bill</button>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
     <div class="col-12 col-md-8">
         <div class=" rounded-2xl shadow bg-card flex flex-col lg:flex-row w-full">
@@ -174,7 +271,6 @@
                         Order Details
                     </h2>
                     <div>
-                        <mat-checkbox>Do not duplicate</mat-checkbox>
                         <div class="flex justify-between border-b">
                             <p class="text-secodary mb-2">Consolidus LLC<br />526 S.Main St.<br />Suite 804<br />Akron,
                                 OH
@@ -190,48 +286,12 @@
                         </div>
                         <div class="row border-b py-2">
                             <div class="col-12">
-                                <p>Purchase Order: {{orderData.fk_orderID}}-{{orderData.pk_orderLineID}}</p>
+                                <p><b>Purchase Order #:</b> {{orderData.fk_orderID}}-{{orderData.pk_orderLineID}}</p>
                             </div>
                             <div class="col-12 col-md-6">
                                 <mat-form-field class="w-full">
-                                    <mat-label>Vendors</mat-label>
+                                    <mat-label>Vendor</mat-label>
                                     <input matInput [(ngModel)]="orderData.companyName">
-                                </mat-form-field>
-                            </div>
-                            <div class="col-12 col-md-6">
-                                <mat-form-field class="w-full">
-                                    <mat-label>Address</mat-label>
-                                    <input matInput [(ngModel)]="orderData.address">
-                                </mat-form-field>
-                            </div>
-                            <div class="col-12 col-md-6">
-                                <mat-form-field class="w-full">
-                                    <mat-label>City</mat-label>
-                                    <input matInput [(ngModel)]="orderData.city">
-                                </mat-form-field>
-                            </div>
-                            <div class="col-6 col-md-3">
-                                <mat-form-field class="w-full">
-                                    <mat-label>State</mat-label>
-                                    <input matInput [(ngModel)]="orderData.state">
-                                </mat-form-field>
-                            </div>
-                            <div class="col-6 col-md-3">
-                                <mat-form-field class="w-full">
-                                    <mat-label>Zip</mat-label>
-                                    <input matInput [(ngModel)]="orderData.zipCode">
-                                </mat-form-field>
-                            </div>
-                            <div class="col-12 col-md-6">
-                                <mat-form-field class="w-full">
-                                    <mat-label>Phone</mat-label>
-                                    <input matInput [(ngModel)]="orderData.phone">
-                                </mat-form-field>
-                            </div>
-                            <div class="col-12 col-md-6">
-                                <mat-form-field class="w-full">
-                                    <mat-label>Fax</mat-label>
-                                    <input matInput [(ngModel)]="orderData.fax">
                                 </mat-form-field>
                             </div>
                             <div class="col-12 col-md-6">
@@ -242,51 +302,52 @@
                             </div>
                             <div class="col-12 col-md-6">
                                 <mat-form-field class="w-full">
+                                    <mat-label>Address1</mat-label>
+                                    <input matInput disabled [(ngModel)]="orderData.address">
+                                </mat-form-field>
+                            </div>
+                            <div class="col-12 col-md-6">
+                                <mat-form-field class="w-full">
+                                    <mat-label>Address2</mat-label>
+                                    <input matInput disabled [(ngModel)]="orderData.address">
+                                </mat-form-field>
+                            </div>
+                            <div class="col-12 col-md-6">
+                                <mat-form-field class="w-full">
+                                    <mat-label>City</mat-label>
+                                    <input matInput disabled [(ngModel)]="orderData.city">
+                                </mat-form-field>
+                            </div>
+                            <div class="col-6 col-md-3">
+                                <mat-form-field class="w-full">
+                                    <mat-label>State</mat-label>
+                                    <input matInput disabled [(ngModel)]="orderData.state">
+                                </mat-form-field>
+                            </div>
+                            <div class="col-6 col-md-3">
+                                <mat-form-field class="w-full">
+                                    <mat-label>Zip</mat-label>
+                                    <input matInput disabled [(ngModel)]="orderData.zipCode">
+                                </mat-form-field>
+                            </div>
+                            <div class="col-12 col-md-6">
+                                <mat-form-field class="w-full">
+                                    <mat-label>Phone</mat-label>
+                                    <input matInput disabled [(ngModel)]="orderData.phone">
+                                </mat-form-field>
+                            </div>
+
+                            <div class="col-12">
+                                <mat-form-field class="w-full">
                                     <mat-label>Shipping</mat-label>
                                     <input matInput [(ngModel)]="orderData.shippingComment">
                                 </mat-form-field>
                             </div>
-                            <div class="col-12 col-md-6" *ngIf="orderData.inHandsDate">
-                                <mat-form-field class="w-full">
-                                    <mat-label>In-Hands Date</mat-label>
-                                    <input matInput [matDatepicker]="picker5" readonly
-                                        [(ngModel)]="orderData.inHandsDate">
-                                    <mat-datepicker-toggle matIconSuffix [for]="picker5"></mat-datepicker-toggle>
-                                    <mat-datepicker #picker5></mat-datepicker>
-                                </mat-form-field>
-                            </div>
                         </div>
-                        <div class="row border-b py-2">
-                            <div class="col-12" *ngFor="let item of imprintdata">
-                                <mat-form-field class="w-full">
-                                    <input matInput [(ngModel)]="item.productName" readonly>
-                                </mat-form-field>
-                            </div>
-                            <div class="col-12">
-                                <mat-form-field class="w-50">
-                                    <mat-label>Quantity</mat-label>
-                                    <input matInput [(ngModel)]="orderData.quantity">
-                                </mat-form-field>
-                                <p class="text-red-500">Produce exact quantity of the items on this order. Please
-                                    contact us if there's a charge for this service.
-                                </p>
-                            </div>
-                            <div class="col-12 mt-2 ">
-                                <p class="font-medium text-secondary">COLOR/SIZE BREAKDOWN</p>
-                                <div class="flex align-items-center">
-                                    <mat-form-field class="w-70">
-                                        <input matInput value="Rosewood">
-                                    </mat-form-field>
-                                    <span class="mx-3">X</span>
-                                    <mat-form-field class="w-30">
-                                        <input matInput [(ngModel)]="orderData.quantity">
-                                    </mat-form-field>
-                                </div>
-                            </div>
-                        </div>
+                        <!-- Ship To -->
                         <div class="row border-b py-2">
                             <div class="col-12">
-                                <p class="font-medium text-secondary">Ship To</p>
+                                <p class="font-medium text-xl text-secondary">Ship To:</p>
                             </div>
                             <div class="col-12 col-md-6">
                                 <mat-form-field class="w-full">
@@ -343,6 +404,138 @@
                                 </mat-form-field>
                             </div>
                         </div>
+                        <!-- Product Data -->
+                        <div class="row border-b py-2">
+                            <div class="col-12 col-md-9">
+                                <mat-form-field class="w-full">
+                                    <mat-label>Product</mat-label>
+                                    <input matInput [(ngModel)]="imprintdata[0].productName">
+                                </mat-form-field>
+                            </div>
+                            <div class="col-12 col-md-3">
+                                <mat-form-field class="w-full">
+                                    <mat-label>Quantity</mat-label>
+                                    <input matInput readonly [(ngModel)]="orderData.quantity">
+                                </mat-form-field>
+                            </div>
+                            <div class="col-12 mt-2 border-b">
+                                <p class="font-medium text-secondary py-1 border-b">COLOR/SIZE BREAKDOWN</p>
+                                <div class="mt-3 row">
+                                    <div class="col-5">
+                                        <mat-form-field class="w-full">
+                                            <mat-label>New option name/description</mat-label>
+                                            <input matInput>
+                                        </mat-form-field>
+                                    </div>
+                                    <div class="col-2">
+                                        <mat-form-field class="w-full">
+                                            <mat-label>Quantity</mat-label>
+                                            <input matInput>
+                                        </mat-form-field>
+                                    </div>
+                                    <div class="col-2">
+                                        <mat-form-field class="w-full">
+                                            <mat-label>Unit cost</mat-label>
+                                            <input matInput>
+                                        </mat-form-field>
+                                    </div>
+                                    <div class="col-2">
+                                    </div>
+                                    <div class="col-1 mt-7 text-right">
+                                        <mat-icon svgIcon="mat_outline:add" matTooltip="Add"
+                                            class="cursor-pointer"></mat-icon>
+                                    </div>
+                                </div>
+                                <p class="font-medium text-secondary py-1 border-b">Accessories</p>
+                                <div class="mt-3 row">
+                                    <div class="col-5">
+                                        <mat-form-field class="w-full">
+                                            <mat-label>New accessory name/description:</mat-label>
+                                            <input matInput>
+                                        </mat-form-field>
+                                    </div>
+                                    <div class="col-2">
+                                        <mat-form-field class="w-full">
+                                            <mat-label>Quantity</mat-label>
+                                            <input matInput>
+                                        </mat-form-field>
+                                    </div>
+                                    <div class="col-2">
+                                        <mat-form-field class="w-full">
+                                            <mat-label>Unit cost</mat-label>
+                                            <input matInput>
+                                        </mat-form-field>
+                                    </div>
+                                    <div class="col-2">
+                                        <mat-form-field class="w-full">
+                                            <mat-label>Setup</mat-label>
+                                            <input matInput>
+                                        </mat-form-field>
+                                    </div>
+                                    <div class="col-1 mt-7 text-right">
+                                        <mat-icon svgIcon="mat_outline:add" matTooltip="Add"
+                                            class="cursor-pointer"></mat-icon>
+                                    </div>
+                                </div>
+                                <p class="font-medium text-secondary py-1 border-b">Adjustments</p>
+                                <div class="mt-3 row">
+                                    <div class="col-5">
+                                        <mat-form-field class="w-full">
+                                            <mat-label>New adjustment name/description:</mat-label>
+                                            <input matInput>
+                                        </mat-form-field>
+                                    </div>
+                                    <div class="col-2">
+                                    </div>
+                                    <div class="col-2">
+                                    </div>
+                                    <div class="col-3 text-right">
+                                        <div class="flex align-items-center justify-content-end">
+                                            <mat-form-field class="mr-1">
+                                                <mat-label>Total cost</mat-label>
+                                                <input matInput>
+                                            </mat-form-field>
+                                            <mat-icon svgIcon="mat_outline:add" matTooltip="Add"
+                                                class="cursor-pointer"></mat-icon>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-12">
+                                <div class="row py-1">
+                                    <div class="col-9">
+                                        <p class="text-xl font-bold text-secondary">Total</p>
+                                    </div>
+                                    <div class="col-3 text-right">
+                                        <div class="flex align-items-center justify-content-end">
+                                            <mat-form-field class="mr-1">
+                                                <input matInput disabled>
+                                            </mat-form-field>
+                                            <mat-icon></mat-icon>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-12 mt-2">
+                            <mat-form-field class="w-full">
+                                <mat-label>Purchase Order Comments</mat-label>
+                                <textarea matInput></textarea>
+                            </mat-form-field>
+                            <mat-checkbox class="mr-3">Do not duplicate:</mat-checkbox>
+                            <mat-checkbox> Resend artwork:</mat-checkbox>
+                            <div class="flex justify-between">
+                                <div class="space-x-2">
+                                    <button class="min-w-40 btn buttonComment hover:bg-gray-200">Save </button>
+                                    <button class="min-w-40 btn buttonComment hover:bg-gray-200">Save & Send</button>
+
+                                </div>
+                                <div>
+                                    <button class="min-w-40 btn buttonComment hover:bg-gray-200">Remove PO</button>
+                                </div>
+                            </div>
+                        </div>
+
                         <!-- <fuse-alert [appearance]="'soft'" [type]="'warning'">
                             Coming Soon
                         </fuse-alert> -->

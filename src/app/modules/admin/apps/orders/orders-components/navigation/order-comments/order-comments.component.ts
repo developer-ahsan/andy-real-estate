@@ -9,7 +9,7 @@ import { IDropdownSettings } from 'ng-multiselect-dropdown';
 import { Subject } from 'rxjs';
 import { debounceTime, finalize, switchMap, takeUntil, tap } from 'rxjs/operators';
 import { OrdersService } from '../../orders.service';
-import { addComment } from '../../orders.types';
+import { addComment, addComments } from '../../orders.types';
 
 @Component({
   selector: 'app-order-comments',
@@ -106,10 +106,14 @@ export class OrderCommentsComponent implements OnInit, OnDestroy {
       }
     });
     this.isAddCommentLoader = true;
-    let payload: addComment = {
+    let payload: addComments = {
       order_id: Number(this.selectedOrder.pk_orderID),
       comment: this.ngComment,
       emails: emailArr,
+      store_id: Number(this.selectedOrder.fk_storeID),
+      store_userId: Number(this.selectedOrder.fk_storeUserID),
+      store_name: this.selectedOrder.storeName,
+      internalComments: this.selectedOrder.internalComments,
       add_comment: true
     }
     this._orderService.AddComment(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {

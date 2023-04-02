@@ -97,6 +97,16 @@ export interface addComment {
     emails: string[];
     add_comment: true;
 };
+export interface addComments {
+    order_id: number;
+    comment: string;
+    emails: string[];
+    store_id: number;
+    store_userId: number;
+    store_name: string;
+    internalComments: string;
+    add_comment: true;
+};
 export interface UpdateOrderFlag {
     blnFulfillmentCancel: boolean;
     blnFinalized: boolean;
