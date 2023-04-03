@@ -247,6 +247,8 @@
                                             <p>{{item.statusName}}</p>
                                             <p *ngIf="item.trackingNumber"><b>Tracking Number:
                                                 </b>{{item.trackingNumber}}</p>
+                                            <p *ngIf="item?.shippingDate"><b>Shipping Date: </b>{{item.shippingDate |
+                                                date}}</p>
                                         </div>
                                     </td>
                                 </tr>

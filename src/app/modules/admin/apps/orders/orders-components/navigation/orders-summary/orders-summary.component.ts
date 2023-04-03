@@ -121,31 +121,6 @@ export class OrdersSummaryComponent implements OnInit {
     this._orderService.orderProducts$.pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
       let value = [];
       this.shippingReportProducts = res["data"];
-      res["data"].forEach((element, index) => {
-        value.push(element.pk_orderLineID);
-        if (index == res["data"].length - 1) {
-          this.getLineProducts(value.toString());
-        }
-      });
-    })
-  }
-  getLineProducts(value) {
-    let params = {
-      order_line_item: true,
-      order_line_id: value
-    }
-    this._orderService.getOrderLineProducts(params).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
-      res["data"].forEach(element => {
-        this.shippingReportProducts.forEach(item => {
-          if (item.pk_orderLineID == element.fk_orderLineID) {
-            item.productName = element.productName;
-          }
-        });
-      });
-      this.isShippingReportLoader = false;
-      this._changeDetectorRef.markForCheck();
-      console.log(this.shippingReportProducts);
-    }, err => {
       this.isShippingReportLoader = false;
       this._changeDetectorRef.markForCheck();
     })
