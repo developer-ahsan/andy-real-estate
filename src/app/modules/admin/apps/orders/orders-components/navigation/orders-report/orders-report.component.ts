@@ -139,20 +139,20 @@ export class OrdersReportComponent implements OnInit {
         let prod = [];
         if (products.length == 0) {
           let royaltyPrice = element.royaltyPrice;
-          let cost = (element.cost * element.quantity) + element.shippingCost + element.royaltyPrice;
+          let cost = (element.cost * element.quantity) + element.shippingCost;
           let price = (element.price * element.quantity) + element.shippingPrice + element.royaltyPrice;
           prod.push(element);
           products.push({ products: prod, order_line_id: element.fk_orderLineID, accessories: [], imprints: [], totalQuantity: element.quantity, totalMercandiseCost: cost, totalMerchendisePrice: price, royaltyPrice: royaltyPrice });
         } else {
           const index = products.findIndex(item => item.order_line_id == element.fk_orderLineID);
           if (index < 0) {
-            let cost = (element.cost * element.quantity) + element.shippingCost + element.royaltyPrice;
+            let cost = (element.cost * element.quantity) + element.shippingCost;
             let price = (element.price * element.quantity) + element.shippingPrice + element.royaltyPrice;
             let royaltyPrice = element.royaltyPrice;
             prod.push(element);
             products.push({ products: prod, order_line_id: element.fk_orderLineID, accessories: [], imprints: [], totalQuantity: element.quantity, totalMercandiseCost: cost, totalMerchendisePrice: price, royaltyPrice: royaltyPrice });
           } else {
-            let cost = (element.cost * element.quantity) + element.royaltyPrice;
+            let cost = (element.cost * element.quantity);
             let price = (element.price * element.quantity) + element.royaltyPrice;
 
             prod = products[index].products;
