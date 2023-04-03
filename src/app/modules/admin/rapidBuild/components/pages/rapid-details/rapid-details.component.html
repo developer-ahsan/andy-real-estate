@@ -1,0 +1,237 @@
+<div class=" rounded-2xl shadow bg-card flex flex-col lg:flex-row w-full">
+    <div class="w-full">
+        <div class="px-4 sm:px-4 lg:px-8 py-4">
+            <div class="flex justify-between">
+                <div class="text-2xl font-bold">
+                    Details
+                </div>
+                <button class="min-w-40 mb-2" mat-button mat-stroked-button (click)="backToList()">Back to List</button>
+            </div>
+            <div *ngIf="isLoading" class="my-2 px-5">
+                <ngx-skeleton-loader count="8" appearance="line" animation="pulse" [theme]="{ 
+                    'background-color': '#dedede'
+                  }">
+                </ngx-skeleton-loader>
+            </div>
+            <div class="row" *ngIf="!isLoading">
+                <div class="col-12 col-md-4 mt-3">
+                    <mat-accordion multi>
+                        <mat-expansion-panel [expanded]="true">
+                            <mat-expansion-panel-header>
+                                <mat-panel-title>
+                                    Update status
+                                </mat-panel-title>
+                            </mat-expansion-panel-header>
+                            <div>
+                                <mat-form-field class="w-full">
+                                    <mat-select matInput>
+                                        <mat-option [value]="1">Image Needed</mat-option>
+                                        <mat-option [value]="2">Awaiting Approval</mat-option>
+                                        <mat-option [value]="3">Revision Requested</mat-option>
+                                        <mat-option [value]="4">Finished</mat-option>
+                                        <mat-option [value]="5">Needs Review</mat-option>
+                                    </mat-select>
+                                </mat-form-field>
+                            </div>
+                            <div class="space-x-2">
+                                <button class="min-w-20 btn buttonComment hover:bg-gray-200">Update</button>
+                                <button class="min-w-20 btn  buttonDanger hover:bg-gray-200">Remove Entry
+                                    <!-- <mat-progress-spinner *ngIf="isAutoRequestLoader" [diameter]="24"
+                                            [mode]="'indeterminate'">
+                                        </mat-progress-spinner> -->
+                                </button>
+                            </div>
+                        </mat-expansion-panel>
+                        <mat-expansion-panel [expanded]="true">
+                            <mat-expansion-panel-header>
+                                <mat-panel-title>
+                                    Current Proof
+                                </mat-panel-title>
+                            </mat-expansion-panel-header>
+                            <div>
+                                <div class="py-2">
+                                    <fuse-alert class="my-2" [appearance]="'soft'" [type]="'warning'"
+                                        [showIcon]="false">
+                                        This product does not yet have a proof.
+                                    </fuse-alert>
+                                </div>
+                            </div>
+                        </mat-expansion-panel>
+                        <mat-expansion-panel [expanded]="true">
+                            <mat-expansion-panel-header>
+                                <mat-panel-title>
+                                    Upload proof
+                                </mat-panel-title>
+                            </mat-expansion-panel-header>
+                            <div class="mt-2">
+                                <input type="file">
+                                <br>
+                                <mat-form-field class="w-full mt-2">
+                                    <mat-label>Proof Comments</mat-label>
+                                    <textarea matInput></textarea>
+                                </mat-form-field>
+                                <div class="py-2">
+                                    <fuse-alert class="my-2" [appearance]="'soft'" [type]="'warning'"
+                                        [showIcon]="false">
+                                        600px X 600px JPG only.
+                                    </fuse-alert>
+                                </div>
+                            </div>
+                        </mat-expansion-panel>
+                        <mat-expansion-panel [expanded]="true">
+                            <mat-expansion-panel-header>
+                                <mat-panel-title>
+                                    Proof Comments
+                                </mat-panel-title>
+                            </mat-expansion-panel-header>
+                            <div>
+                                <div class="py-2">
+                                    <fuse-alert class="my-2" [appearance]="'soft'" [type]="'warning'"
+                                        [showIcon]="false">
+                                        This proof does not currently have any comments.
+                                    </fuse-alert>
+                                </div>
+                            </div>
+                        </mat-expansion-panel>
+                    </mat-accordion>
+                </div>
+                <div class="col-12 col-md-8 mt-3">
+                    <mat-accordion multi>
+                        <mat-expansion-panel [expanded]="true">
+                            <mat-expansion-panel-header>
+                                <mat-panel-title>
+                                    Details
+                                </mat-panel-title>
+                            </mat-expansion-panel-header>
+                            <div>
+                                <table class="py-2">
+                                    <tbody>
+                                        <tr>
+                                            <td valign="top" width="200"><b>RapidBuild ID:</b></td>
+                                            <td valign="top">87075</td>
+                                        </tr>
+                                        <tr>
+                                            <td valign="top"><b>Image status:</b></td>
+                                            <td valign="top">
+                                                Image Needed
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td valign="top"><b>Store:</b></td>
+                                            <td valign="top">
+                                                <a href="https://www.theksushop.com/apparel/1-and-4-zips--and--half-zips/sport-tek-endeavor-1-and-4-zip-pullover"
+                                                    target="_blank">theKSUshop.com</a>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td valign="top"><b>Product name:</b></td>
+                                            <td valign="top">Sport-Tek Endeavor 1/4 Zip Pullover</td>
+                                        </tr>
+                                        <tr>
+                                            <td valign="top"><b>Product number:</b></td>
+                                            <td valign="top">ST469/LST469_GJ</td>
+                                        </tr>
+                                        <tr>
+                                            <td valign="top"><b>Product Type:</b></td>
+                                            <td valign="top">
+                                                Apparel
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td valign="top"><b>Sex:</b></td>
+                                            <td valign="top">
+                                                Men's/Women's
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td valign="top"><b>Supplier Link:</b></td>
+                                            <td valign="top">
+                                                <a href="https://www.sanmar.com/p/10183_BlkHthr"
+                                                    target="_blank">Supplier product link</a>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td valign="top"><b>Supplier:</b></td>
+                                            <td valign="top">
+                                                <a href="http://www.sanmar.com" target="_blank">SanMar</a>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td valign="top"><b>SPID:</b></td>
+                                            <td valign="top">
+                                                <a href="https://admin.consolidus.com/ssadm/index.cfm?action=storeProduct.viewPricing&amp;storeProductID=154483"
+                                                    target="_blank">154483</a>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td valign="top"><b>Imprint details:</b></td>
+                                            <td valign="top">
+                                                Embroidery/Right Chest - Personalization (1) Name/Word ((1)
+                                                Name/Word)<br>
+                                                Screen Printing/Right Chest (4" W x 4" H)<br>
+                                                Embroidery/Right Chest (3-1/2" W x 3-1/2" H)<br>
+                                                Screen Printing/Left Chest (4" W x 4" H)<br>
+                                                Embroidery (up to 15K stitches)/Left Chest (3-1/2" W x 3-1/2" H)<br>
+                                                Embroidery/Left Chest (3-1/2" W x 3-1/2" H)<br>
+                                                Screen Printing/Full Front (12" W x 14" H)<br>
+                                                Screen Printing/Full Back (12" W x 14" H)<br>
+                                                Screen Printing/Left Sleeve (3-1/2" W x 3-1/2" H)<br>
+                                                Embroidery/Left Sleeve (3" W x 3" H)<br>
+                                                Screen Printing/Right Sleeve (3-1/2" W x 3-1/2" H)<br>
+                                                Embroidery/Right Sleeve (3" W x 3" H)<br>
+                                                Cad cut/Numbers on back of shirt (10" W x 12" H)<br>
+                                                Screen Printing/Back Yoke (4" W x 4" H)<br>
+                                                Embroidery/Back Yoke (3-1/2" W x 2" H)<br>
+                                                Cad cut/Names on back of shirt - one line (Approximately 3" x 12")<br>
+                                                Embroidery/Left Chest - Personalization (1) Name/Word ((1)
+                                                Name/Word)<br>
+                                                Embroidery/Left Chest - Personalization (2) Names/Words ((2)
+                                                Names/Words)<br>
+                                                Embroidery/Right Chest - Personalization (2) Names/Words ((2)
+                                                Names/Words)<br>
+
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td valign="top"><b>Available Colors:</b></td>
+                                            <td valign="top">
+                                                Black Heather<br>
+                                                Dark Royal Heather<br>
+                                                Deep Navy Heather<br>
+                                                Light Grey Heather<br>
+
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td valign="top"><b>Show additional color options:</b> <span
+                                                    matTooltip="Whether or not to include additional color options on the image proof."
+                                                    class="fa fa-question-circle fa-lg clickable"
+                                                    title="Whether or not to include additional color options on the image proof."></span>
+                                            </td>
+                                            <td valign="top">
+                                                <span class="disabled"><span class="fa fa-times fa-lg"></span> No</span>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td valign="top"><b>Categories:</b></td>
+                                            <td valign="top">
+                                                1/4-Zips / Half-Zips<br>
+
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td colspan="2" align="right">
+                                                <button class="min-w-60 btn buttonComment hover:bg-gray-200">Flag this
+                                                    product for review</button>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </mat-expansion-panel>
+                    </mat-accordion>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

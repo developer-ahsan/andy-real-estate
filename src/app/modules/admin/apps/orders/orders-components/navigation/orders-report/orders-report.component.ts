@@ -99,6 +99,7 @@ export class OrdersReportComponent implements OnInit {
         }
         this._orderService.getOrder(params).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
           this.orderTotal = res["data"][0];
+          console.log(this.orderTotal)
         })
       }
     })
@@ -137,23 +138,27 @@ export class OrdersReportComponent implements OnInit {
       res["data"].forEach(element => {
         let prod = [];
         if (products.length == 0) {
-          let cost = (element.cost * element.quantity) + element.shippingCost;
-          let price = (element.price * element.quantity) + element.shippingPrice;
+          let royaltyPrice = element.royaltyPrice;
+          let cost = (element.cost * element.quantity) + element.shippingCost + element.royaltyPrice;
+          let price = (element.price * element.quantity) + element.shippingPrice + element.royaltyPrice;
           prod.push(element);
-          products.push({ products: prod, order_line_id: element.fk_orderLineID, accessories: [], imprints: [], totalQuantity: element.quantity, totalMercandiseCost: cost, totalMerchendisePrice: price });
+          products.push({ products: prod, order_line_id: element.fk_orderLineID, accessories: [], imprints: [], totalQuantity: element.quantity, totalMercandiseCost: cost, totalMerchendisePrice: price, royaltyPrice: royaltyPrice });
         } else {
           const index = products.findIndex(item => item.order_line_id == element.fk_orderLineID);
           if (index < 0) {
-            let cost = (element.cost * element.quantity) + element.shippingCost;
-            let price = (element.price * element.quantity) + element.shippingPrice;
+            let cost = (element.cost * element.quantity) + element.shippingCost + element.royaltyPrice;
+            let price = (element.price * element.quantity) + element.shippingPrice + element.royaltyPrice;
+            let royaltyPrice = element.royaltyPrice;
             prod.push(element);
-            products.push({ products: prod, order_line_id: element.fk_orderLineID, accessories: [], imprints: [], totalQuantity: element.quantity, totalMercandiseCost: cost, totalMerchendisePrice: price });
+            products.push({ products: prod, order_line_id: element.fk_orderLineID, accessories: [], imprints: [], totalQuantity: element.quantity, totalMercandiseCost: cost, totalMerchendisePrice: price, royaltyPrice: royaltyPrice });
           } else {
-            let cost = (element.cost * element.quantity);
-            let price = (element.price * element.quantity);
+            let cost = (element.cost * element.quantity) + element.royaltyPrice;
+            let price = (element.price * element.quantity) + element.royaltyPrice;
+
             prod = products[index].products;
             prod.push(element);
             products[index].products = prod;
+            products[index].royaltyPrice = products[index].royaltyPrice + element.royaltyPrice;
             products[index].totalQuantity = products[index].totalQuantity + element.quantity;
             products[index].totalMercandiseCost = products[index].totalMercandiseCost + cost;
             products[index].totalMerchendisePrice = products[index].totalMerchendisePrice + price;
@@ -178,6 +183,7 @@ export class OrdersReportComponent implements OnInit {
     })
   }
   getProductImprints(value, data) {
+    console.log(data);
     let params = {
       imprint_report: true,
       order_line_id: value

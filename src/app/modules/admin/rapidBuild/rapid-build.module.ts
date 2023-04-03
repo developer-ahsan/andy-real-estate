@@ -46,14 +46,14 @@ import { RapidNewRequestsComponent } from './components/pages/new-requests/new-r
 import { OrderSchedulerComponent } from './components/pages/order-scheduler/order-scheduler.component';
 import { RapidSummaryComponent } from './components/pages/summary/summary.component';
 import { ClearStoreRapidComponent } from './components/pages/clear-store/clear-store.component';
-import { QuoteDashboardDetailsComponent } from './components/pages/quote-details/quote-details.component';
+import { RapidBuildDetailsComponent } from './components/pages/rapid-details/rapid-details.component';
 import { QuoteOrderEmailComponent } from './components/pages/quote-order-emails/quote-order-emails.component';
 
 @NgModule({
     declarations: [
         RapidBuildComponent,
         RapidImageManagementComponent,
-        RapidNewRequestsComponent, OrderSchedulerComponent, RapidSummaryComponent, ClearStoreRapidComponent, QuoteDashboardDetailsComponent,
+        RapidNewRequestsComponent, OrderSchedulerComponent, RapidSummaryComponent, ClearStoreRapidComponent, RapidBuildDetailsComponent,
         QuoteOrderEmailComponent
     ],
     imports: [

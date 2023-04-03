@@ -4,7 +4,7 @@ import { RapidImageManagementComponent } from './components/pages/image-manageme
 import { ClearStoreRapidComponent } from './components/pages/clear-store/clear-store.component';
 import { OrderSchedulerComponent } from './components/pages/order-scheduler/order-scheduler.component';
 import { RapidNewRequestsComponent } from './components/pages/new-requests/new-requests.component';
-import { QuoteDashboardDetailsComponent } from './components/pages/quote-details/quote-details.component';
+import { RapidBuildDetailsComponent } from './components/pages/rapid-details/rapid-details.component';
 import { QuoteOrderEmailComponent } from './components/pages/quote-order-emails/quote-order-emails.component';
 import { RapidSummaryComponent } from './components/pages/summary/summary.component';
 import { RapidBuildComponent } from './components/rapid-build.component';
@@ -57,8 +57,8 @@ export const smartartRoutes: Route[] = [
                 }
             },
             {
-                path: 'quote-details',
-                component: QuoteDashboardDetailsComponent,
+                path: 'rapidBuild-details',
+                component: RapidBuildDetailsComponent,
                 data: {
                     title: 'Quote Details',
                     url: 'quote-details'

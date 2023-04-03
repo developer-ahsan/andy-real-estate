@@ -25,7 +25,8 @@ export class RapidImageManagementComponent implements OnInit, OnDestroy {
 
   constructor(
     private _changeDetectorRef: ChangeDetectorRef,
-    private _RapidBuildService: RapidBuildService
+    private _RapidBuildService: RapidBuildService,
+    private router: Router
   ) { }
 
   dataInit() {
@@ -277,6 +278,10 @@ export class RapidImageManagementComponent implements OnInit, OnDestroy {
   };
   getNextDataAwaiting(ev) {
 
+  }
+  goToDetailPage(item) {
+    console.log(item)
+    this.router.navigate(['/rapidbuild/rapidBuild-details']);
   }
   /**
      * On destroy

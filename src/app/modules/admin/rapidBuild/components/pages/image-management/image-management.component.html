@@ -33,14 +33,16 @@
                     <th mat-header-cell *matHeaderCellDef class="w-10 min-w-10 px-2">
                         Age
                     </th>
-                    <td mat-cell *matCellDef="let element" class="text-sm px-2">{{element.FIELD3}}
+                    <td mat-cell *matCellDef="let element" class="text-sm px-2">
+                        {{element.FIELD3}}
                     </td>
                 </ng-container>
                 <ng-container matColumnDef="SPID">
                     <th mat-header-cell *matHeaderCellDef class="w-10 min-w-10 px-2">
                         SPID
                     </th>
-                    <td mat-cell *matCellDef="let element" class="text-sm px-2">{{element.FIELD4}}
+                    <td mat-cell *matCellDef="let element" class="text-sm px-2">
+                        {{element.FIELD4}}
                     </td>
                 </ng-container>
                 <ng-container matColumnDef="PID">
@@ -87,7 +89,7 @@
                     </td>
                 </ng-container>
                 <tr mat-header-row *matHeaderRowDef="displayedColumns;" class="h-18 bg-light"></tr>
-                <tr mat-row *matRowDef="let row; columns: displayedColumns;"
+                <tr mat-row *matRowDef="let row; columns: displayedColumns;" (click)="goToDetailPage(row)"
                     class="h-14 hover:bg-gray-100 dark:hover:bg-hover" style="cursor: pointer;">
                 </tr>
             </table>

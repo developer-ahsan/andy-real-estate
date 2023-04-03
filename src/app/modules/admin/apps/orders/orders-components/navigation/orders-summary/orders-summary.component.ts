@@ -119,7 +119,6 @@ export class OrdersSummaryComponent implements OnInit {
   getOrderProducts() {
     this.isShippingReportLoader = true;
     this._orderService.orderProducts$.pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
-      let value = [];
       this.shippingReportProducts = res["data"];
       this.isShippingReportLoader = false;
       this._changeDetectorRef.markForCheck();
