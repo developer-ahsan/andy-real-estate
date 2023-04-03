@@ -134,7 +134,6 @@ export class OrdersReportComponent implements OnInit {
     }
     this._orderService.getOrderLineProducts(params).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
       let products = [];
-
       res["data"].forEach(element => {
         let prod = [];
         if (products.length == 0) {
@@ -167,8 +166,8 @@ export class OrdersReportComponent implements OnInit {
       });
       if (res["accessories"].length > 0) {
         res["accessories"].forEach(element => {
-          let cost = (element.runCost * element.quantity);
-          let price = (element.runPrice * element.quantity);
+          let cost = (element.runCost * element.quantity) + element.setupCost;
+          let price = (element.runPrice * element.quantity) + element.setupPrice;
           const index = products.findIndex(item => item.order_line_id == element.orderLineID);
           products[index].accessories.push(element);
           products[index].totalMercandiseCost = products[index].totalMercandiseCost + cost;
