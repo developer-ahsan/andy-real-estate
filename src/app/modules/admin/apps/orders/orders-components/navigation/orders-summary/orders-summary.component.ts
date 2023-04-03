@@ -28,6 +28,9 @@ export class OrdersSummaryComponent implements OnInit {
   status: any[];
   statusText = '';
 
+  // ShippingReport
+  shippingReportProducts: any;
+  isShippingReportLoader: boolean = false;
   constructor(
     private _changeDetectorRef: ChangeDetectorRef,
     private _orderService: OrdersService,
@@ -65,6 +68,7 @@ export class OrdersSummaryComponent implements OnInit {
     this._changeDetectorRef.markForCheck();
     // Get the order
     this.getOrderSummary();
+    this.getOrderProducts();
   }
   getOrderSummary() {
     this._orderService.orderDetail$.pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
@@ -111,5 +115,39 @@ export class OrdersSummaryComponent implements OnInit {
   }
   goToComments() {
     this.router.navigateByUrl(`/apps/orders/${this.orderDetail.pk_orderID}/comments`);
+  }
+  getOrderProducts() {
+    this.isShippingReportLoader = true;
+    this._orderService.orderProducts$.pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+      let value = [];
+      this.shippingReportProducts = res["data"];
+      res["data"].forEach((element, index) => {
+        value.push(element.pk_orderLineID);
+        if (index == res["data"].length - 1) {
+          this.getLineProducts(value.toString());
+        }
+      });
+    })
+  }
+  getLineProducts(value) {
+    let params = {
+      order_line_item: true,
+      order_line_id: value
+    }
+    this._orderService.getOrderLineProducts(params).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+      res["data"].forEach(element => {
+        this.shippingReportProducts.forEach(item => {
+          if (item.pk_orderLineID == element.fk_orderLineID) {
+            item.productName = element.productName;
+          }
+        });
+      });
+      this.isShippingReportLoader = false;
+      this._changeDetectorRef.markForCheck();
+      console.log(this.shippingReportProducts);
+    }, err => {
+      this.isShippingReportLoader = false;
+      this._changeDetectorRef.markForCheck();
+    })
   }
 }

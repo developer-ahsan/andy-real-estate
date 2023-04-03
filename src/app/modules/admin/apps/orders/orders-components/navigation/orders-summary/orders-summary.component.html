@@ -220,6 +220,41 @@
                     </div> -->
                 </div>
             </div>
+            <!-- Shipping Report -->
+            <div class="my-2 col-12">
+                <div class="rounded-2xl shadow bg-card flex flex-col lg:flex-row w-full">
+                    <div class="p-4 w-full">
+                        <div class="text-xl font-semibold leading-tight pb-3">Shipping Report</div>
+
+                        <div *ngIf="isShippingReportLoader" class="mt-2">
+                            <ngx-skeleton-loader count="4" appearance="line" animation="pulse">
+                            </ngx-skeleton-loader>
+                        </div>
+                        <table class="table table-striped" *ngIf="!isShippingReportLoader">
+                            <thead>
+                                <tr>
+                                    <th scope="col">PO</th>
+                                    <th scope="col">Product</th>
+                                    <th scope="col">Status</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr *ngFor="let item of shippingReportProducts">
+                                    <td>{{orderDetail.pk_orderID + '-' + item.pk_orderLineID}}</td>
+                                    <td>{{item?.productName}}</td>
+                                    <td>
+                                        <div>
+                                            <p>{{item.statusName}}</p>
+                                            <p *ngIf="item.trackingNumber"><b>Tracking Number:
+                                                </b>{{item.trackingNumber}}</p>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
         </div>
 
         <div class=" my-2 rounded-2xl shadow bg-card">
@@ -372,7 +407,7 @@
             </div>
         </div>
 
-        <div class="my-2">
+        <div class="my-2 row">
             <div class="rounded-2xl shadow bg-card flex flex-col lg:flex-row w-full">
                 <div class="p-4 w-full">
                     <div class="text-lg font-medium tracking-tight leading-6 truncate ">
