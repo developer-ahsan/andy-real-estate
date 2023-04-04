@@ -107,24 +107,6 @@ export interface addComments {
     internalComments: string;
     add_comment: true;
 };
-export interface UpdateOrderFlag {
-    blnFulfillmentCancel: boolean;
-    blnFinalized: boolean;
-    blnIgnore: boolean;
-    blnReorderIgnore: boolean;
-    blnReviewIgnore: boolean;
-    blnRoyaltyIgnore: boolean;
-    blnIgnoreSales: boolean;
-    isblnFulfillmentCancelChanged: boolean;
-    isblnFinalizedChanged: boolean;
-    isblnIgnoreChanged: boolean;
-    isblnReorderIgnoreChanged: boolean;
-    isblnReviewIgnoreChanged: boolean;
-    isblnRoyaltyIgnoreChanged: boolean;
-    isblnIgnoreSalesChanged: boolean;
-    order_id: number;
-    update_order_flag: boolean;
-};
 
 // Incident Report
 export interface CreateIncidentReport {
@@ -214,3 +196,97 @@ export interface UpdateProcurementData {
 };
 export interface OrderProcess { bln_cancelled: boolean; order_lines: string; bln_Eprocurement: boolean; get_order_process: boolean; };
 export interface StripePayment { stripe_price: number; stripe_token: string; stripe_transaction: true; order_id: number };
+
+
+
+// Modify Orders
+export interface contactInfoObj {
+    order_id: number;
+    store_id: number;
+    billing_company_name: string;
+    billing_first_name: string;
+    billing_last_name: string;
+    billing_address: string;
+    billing_city: string;
+    billing_state: string;
+    billing_zip: string;
+    billing_country: string;
+    billing_phone: string;
+    billing_email: string;
+    shipping_company_name: string;
+    shipping_first_name: string;
+    shipping_last_name: string;
+    shipping_address: string;
+    shipping_city: string;
+    shipping_state: string;
+    shipping_zip: string;
+    shipping_zip_ext: string;
+    shipping_country: string;
+    shipping_phone: string;
+    shipping_email: string;
+    account_charge_code: string;
+    proof_email: string;
+    alternate_proof_emails: string[];
+    billing_location: string;
+    shipping_location: string;
+    ship_to_deliver_to: string;
+    bill_to_deliver_to: string;
+    modify_contact_info: boolean;
+};
+export interface shippingDetailsObj {
+    order_id: number;
+    in_hands_date: string;
+    payment_date: string;
+    shipping_carrier_name: string;
+    shipping_service_name: string;
+    shipping_customer_account_number: string;
+    shipping_service_code: string;
+    purchase_order_num: string;
+    invoice_due_date: string;
+    cost_center_code: string;
+    modify_shipping_details: boolean;
+};
+export interface paymentInfoObj {
+    payment_method_id: number;
+    payment_method_name: string;
+    gateway_trx_id: string;
+    discount_code: string;
+    discount_amount: number;
+    sales_tax_rate: number;
+    tax_exemption_comment: string;
+    instructions: string;
+    is_taxable: boolean;
+    credit_term_id: number;
+    order_id: number;
+    modify_payment_info: boolean;
+};
+
+export interface UpdateOrderFlag {
+    blnFulfillmentCancel: boolean;
+    cancelledReason: string;
+    blnFinalized: boolean;
+    blnIgnore: boolean;
+    blnReorderIgnore: boolean;
+    blnReviewIgnore: boolean;
+    blnRoyaltyIgnore: boolean;
+    blnIgnoreSales: boolean;
+    isblnFulfillmentCancelChanged: boolean;
+    isblnFinalizedChanged: boolean;
+    isblnIgnoreChanged: boolean;
+    isblnReorderIgnoreChanged: boolean;
+    isblnReviewIgnoreChanged: boolean;
+    isblnRoyaltyIgnoreChanged: boolean;
+    isblnIgnoreSalesChanged: boolean;
+    order_id: number;
+    store_id: number;
+    storeName: string;
+    orderTotal: number;
+    paymentDate: string;
+    orderLines: OrderLine[];
+    update_order_flag: boolean;
+};
+interface OrderLine {
+    fk_productID: number;
+    blnWarehouse: boolean;
+    quantity: number;
+};

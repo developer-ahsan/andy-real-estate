@@ -12,7 +12,7 @@ import { UpdateOrderFlag } from '../../orders.types';
 })
 export class OrderFlagsComponent implements OnInit, OnDestroy {
   @Input() isLoading: boolean;
-  @Input() selectedOrder: any;
+  selectedOrder: any;
   @Output() isLoadingChange = new EventEmitter<boolean>();
   private _unsubscribeAll: Subject<any> = new Subject<any>();
 
@@ -33,7 +33,8 @@ export class OrderFlagsComponent implements OnInit, OnDestroy {
       blnReorderIgnore: new FormControl(),
       blnReviewIgnore: new FormControl(),
       blnRoyaltyIgnore: new FormControl(),
-      blnIgnoreSales: new FormControl()
+      blnIgnoreSales: new FormControl(),
+      cancelledReason: new FormControl('')
     })
     this._orderService.orderDetail$.pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
       this.isLoading = false;
@@ -43,9 +44,23 @@ export class OrderFlagsComponent implements OnInit, OnDestroy {
     })
   };
   updateOrderFlags() {
-    const { blnFulfillmentCancel, blnFinalized, blnIgnore, blnReorderIgnore, blnReviewIgnore, blnRoyaltyIgnore, blnIgnoreSales } = this.flagForm.getRawValue();
+    const { blnFulfillmentCancel, cancelledReason, blnFinalized, blnIgnore, blnReorderIgnore, blnReviewIgnore, blnRoyaltyIgnore, blnIgnoreSales } = this.flagForm.getRawValue();
+    let OrderLine: any = [];
+    this._orderService.orderProducts$.pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+      res["data"].forEach(element => {
+        OrderLine.push({
+          fk_productID: Number(element.fk_productID),
+          blnWarehouse: element.blnWarehouse,
+          quantity: element.quantity
+        })
+      });
+    });
     let payload: UpdateOrderFlag = {
-      blnFulfillmentCancel, blnFinalized, blnIgnore, blnReorderIgnore, blnReviewIgnore, blnRoyaltyIgnore, blnIgnoreSales, isblnFulfillmentCancelChanged: false, isblnFinalizedChanged: false, isblnIgnoreChanged: false, isblnReorderIgnoreChanged: false, isblnReviewIgnoreChanged: false, isblnRoyaltyIgnoreChanged: false, isblnIgnoreSalesChanged: false, order_id: this.orderDetail.pk_orderID, update_order_flag: true
+      blnFulfillmentCancel, blnFinalized, blnIgnore, blnReorderIgnore, blnReviewIgnore, blnRoyaltyIgnore, blnIgnoreSales, isblnFulfillmentCancelChanged: false, isblnFinalizedChanged: false, isblnIgnoreChanged: false, isblnReorderIgnoreChanged: false, isblnReviewIgnoreChanged: false, isblnRoyaltyIgnoreChanged: false, isblnIgnoreSalesChanged: false, order_id: this.orderDetail.pk_orderID, update_order_flag: true, orderLines: OrderLine, cancelledReason,
+      store_id: this.orderDetail.fk_storeID,
+      storeName: this.orderDetail.storeName,
+      orderTotal: this.orderDetail.orderTotal,
+      paymentDate: this.orderDetail.paymentDate
     }
     if (this.orderDetail.blnFulfillmentCancel != blnFulfillmentCancel) {
       payload.isblnFulfillmentCancelChanged = true;

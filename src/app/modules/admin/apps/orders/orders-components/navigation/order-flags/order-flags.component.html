@@ -19,7 +19,7 @@
                             </mat-form-field>
                             <mat-form-field class="w-full" *ngIf="flagForm.get('blnFulfillmentCancel').value == true">
                                 <mat-label>Why was this order cancelled?</mat-label>
-                                <input matInput>
+                                <input matInput formControlName="cancelledReason">
                             </mat-form-field>
                         </div>
                         <div class="col-md-6 col-12">

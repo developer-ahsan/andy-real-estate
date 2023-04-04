@@ -106,7 +106,7 @@ export class RapidBuildDetailsComponent implements OnInit, OnDestroy {
 
   };
   backToList() {
-    this.router.navigate(['/smartart/quotes-dashboard']);
+    this.router.navigate(['/rapidbuild/image-management']);
   }
   /**
      * On destroy

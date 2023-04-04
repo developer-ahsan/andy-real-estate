@@ -1,15 +1,16 @@
 import { COMMA, ENTER } from '@angular/cdk/keycodes';
 import { Component, Input, OnInit, Output, EventEmitter, ChangeDetectorRef, OnDestroy } from '@angular/core';
-import { FormControl } from '@angular/forms';
+import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { MatChipInputEvent } from '@angular/material/chips';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { AuthService } from 'app/core/auth/auth.service';
 import { environment } from 'environments/environment';
+import moment from 'moment';
 import { IDropdownSettings } from 'ng-multiselect-dropdown';
 import { Subject } from 'rxjs';
 import { debounceTime, finalize, switchMap, takeUntil, tap } from 'rxjs/operators';
 import { OrdersService } from '../../orders.service';
-import { addComment } from '../../orders.types';
+import { addComment, contactInfoObj, paymentInfoObj, shippingDetailsObj } from '../../orders.types';
 
 @Component({
   selector: 'app-order-modify',
@@ -18,7 +19,7 @@ import { addComment } from '../../orders.types';
 })
 export class OrderModifyComponent implements OnInit, OnDestroy {
   @Input() isLoading: boolean;
-  @Input() selectedOrder: any;
+  selectedOrder: any;
   @Output() isLoadingChange = new EventEmitter<boolean>();
   private _unsubscribeAll: Subject<any> = new Subject<any>();
 
@@ -39,6 +40,14 @@ export class OrderModifyComponent implements OnInit, OnDestroy {
 
   isAddCommentLoader: boolean = false;
   ngComment: string = '';
+
+  billingShippingForm: FormGroup;
+  shippingForm: FormGroup;
+  paymentForm: FormGroup;
+  paymentMethods: any;
+  isBillingLoader: boolean = false;
+  isShippingLoader: boolean = false;
+  isPaymentLoader: boolean = false;
   constructor(
     private _changeDetectorRef: ChangeDetectorRef,
     private _orderService: OrdersService,
@@ -46,135 +55,216 @@ export class OrderModifyComponent implements OnInit, OnDestroy {
     private _snackBar: MatSnackBar
   ) { }
 
-  ngOnInit(): void {
-    this.user = this._authService.parseJwt(this._authService.accessToken);
-
-    this.emailControl.valueChanges.pipe(debounceTime(500), tap(() => {
-      this.resultEmails = [];
-      this.isEmailLoader = true;
-      this._changeDetectorRef.markForCheck();
-    }),
-      switchMap(value => this._orderService.getCommentatorEmails(value)
-        .pipe(
-          finalize(() => {
-            this.isEmailLoader = false;
-            this._changeDetectorRef.markForCheck();
-          }),
-        ))).subscribe(data => {
-          this.resultEmails = data["data"] as any[];
-          this._changeDetectorRef.markForCheck();
-        });
-
-    this.isLoading = true;
-    this.getOrderComments();
-    setTimeout(() => {
-      this.isLoadingChange.emit(false);
-    }, 100);
-    this.dropdownSettings = {
-      singleSelection: false,
-      idField: 'id',
-      textField: 'name',
-      selectAllText: 'Select All',
-      unSelectAllText: 'UnSelect All',
-      itemsShowLimit: 3,
-      allowSearchFilter: true
-    };
-  };
-  getOrderComments() {
-    this._orderService.orderDetail$.pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
-      this.currentComments = res["data"][0].internalComments;
-      this.isLoading = false;
-      this._changeDetectorRef.markForCheck();
-    }, err => {
-      this.isLoading = false;
-      this._changeDetectorRef.markForCheck();
-    })
-  }
-  calledScreen(value) {
-    this.mainScreen = value;
-    if (value == 'Current Comments') {
-      if (this.currentComments) {
-        // this.getCurrentRelatedProducts(1);
+  formInitialization() {
+    this.paymentMethods = [
+      {
+        id: 1,
+        name: 'Online Credit Card'
+      },
+      {
+        id: 5,
+        name: 'Third Party Payment'
+      },
+      {
+        id: 3,
+        name: 'Prepayment'
+      },
+      {
+        id: 4,
+        name: 'Credit Terms'
       }
-    }
+    ]
+    this.billingShippingForm = new FormGroup({
+      billingCompanyName: new FormControl('', Validators.required),
+      billingFirstName: new FormControl('', Validators.required),
+      billingLastName: new FormControl('', Validators.required),
+      billingLocation: new FormControl(''),
+      billToDeliverTo: new FormControl(''),
+      billingAddress: new FormControl('', Validators.required),
+      billingCity: new FormControl('', Validators.required),
+      billingState: new FormControl('', Validators.required),
+      billingZip: new FormControl('', Validators.required),
+      billingCountry: new FormControl('', Validators.required),
+      billingPhone: new FormControl('', Validators.required),
+      billingEmail: new FormControl('', Validators.required),
+      shippingCompanyName: new FormControl('', Validators.required),
+      shippingFirstName: new FormControl('', Validators.required),
+      shippingLastName: new FormControl('', Validators.required),
+      shippingLocation: new FormControl(''),
+      shipToDeliverTo: new FormControl(''),
+      shippingAddress: new FormControl('', Validators.required),
+      shippingCity: new FormControl('', Validators.required),
+      shippingState: new FormControl('', Validators.required),
+      shippingZip: new FormControl('', Validators.required),
+      shippingZipExt: new FormControl(''),
+      shippingCountry: new FormControl('', Validators.required),
+      shippingPhone: new FormControl('', Validators.required),
+      shippingEmail: new FormControl('', Validators.required),
+      accountChargeCode: new FormControl('')
+    });
+    this.shippingForm = new FormGroup({
+      inHandsDate: new FormControl(''),
+      shippingCarrierName: new FormControl('', Validators.required),
+      paymentDate: new FormControl(''),
+      shippingServiceName: new FormControl('', Validators.required),
+      purchaseOrderNum: new FormControl(''),
+      shippingCustomerAccountNumber: new FormControl(''),
+      invoiceDueDate: new FormControl(''),
+      shippingServiceCode: new FormControl('', Validators.required),
+      costCenterCode: new FormControl('')
+    });
+    this.paymentForm = new FormGroup({
+      paymentMethodID: new FormControl(''),
+      discountCode: new FormControl(''),
+      transactionID: new FormControl(''), //misssing in detail object
+      discountAmount: new FormControl(''),
+      salesTaxRate: new FormControl('', Validators.required),
+      taxExemptionComment: new FormControl(''),
+      instructions: new FormControl(''),
+      blnTaxable: new FormControl()
+    });
   }
 
-  selectedEmails(res) {
-    this.emailSelected.push(res.email);
-    this.emailControl.reset();
+  ngOnInit(): void {
+    this.formInitialization();
+    this._orderService.orderDetail$.pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+      if (res["data"].length) {
+        this.selectedOrder = res["data"][0];
+        this.billingShippingForm.patchValue(this.selectedOrder);
+        this.shippingForm.patchValue(this.selectedOrder);
+        this.paymentForm.patchValue(this.selectedOrder);
+      }
+    });
+  };
+  calledScreen(screen) {
+    this.mainScreen = screen;
   }
-  removeSelectedEmail(index) {
-    this.emailSelected.splice(index, 1);
-  }
-
-  add(event: MatChipInputEvent): void {
-    const value = (event.value || '').trim();
-    if (value) {
-      this.emails.push(value);
-    }
-    event.chipInput!.clear();
-  }
-
-  remove(email): void {
-    const index = this.emails.indexOf(email);
-    if (index >= 0) {
-      this.emails.splice(index, 1);
-    }
-  }
-
-  addComment() {
-    let emailArr = this.emails.concat(this.emailSelected);
-    if (this.ngComment! == '') {
-      this._snackBar.open("Comment is required", '', {
-        horizontalPosition: 'center',
-        verticalPosition: 'bottom',
-        duration: 3500
-      });
+  updateContactInformation() {
+    if (!this.billingShippingForm.valid) {
+      this._orderService.snackBar('Please fill out required fields');
       return;
     }
-    if (emailArr.length == 0) {
-      this._snackBar.open("Email is required", '', {
-        horizontalPosition: 'center',
-        verticalPosition: 'bottom',
-        duration: 3500
-      });
+    this.isBillingLoader = true;
+    const { billingCompanyName, billingFirstName, billingLastName, billingLocation, billToDeliverTo, billingAddress, billingCity, billingState, billingZip, billingCountry, billingPhone, billingEmail, shippingCompanyName, shippingFirstName, shippingLastName, shippingLocation, shipToDeliverTo, shippingAddress, shippingCity, shippingState, shippingZip, shippingZipExt, shippingCountry, shippingPhone, shippingEmail, accountChargeCode } = this.billingShippingForm.value;
+    let payload: contactInfoObj = {
+      order_id: this.selectedOrder.pk_orderID,
+      store_id: this.selectedOrder.fk_storeID,
+      billing_company_name: billingCompanyName,
+      billing_first_name: billingFirstName,
+      billing_last_name: billingLastName,
+      billing_address: billingAddress,
+      billing_city: billingCity,
+      billing_state: billingState,
+      billing_zip: billingZip,
+      billing_country: billingCountry,
+      billing_phone: billingPhone,
+      billing_email: billingEmail,
+      shipping_company_name: shippingCompanyName,
+      shipping_first_name: shippingFirstName,
+      shipping_last_name: shippingLastName,
+      shipping_address: shippingAddress,
+      shipping_city: shippingCity,
+      shipping_state: shippingState,
+      shipping_zip: shippingZip,
+      shipping_zip_ext: shippingZipExt,
+      shipping_country: shippingCountry,
+      shipping_phone: shippingPhone,
+      shipping_email: shippingEmail,
+      account_charge_code: accountChargeCode,
+      proof_email: '',
+      alternate_proof_emails: this.emails,
+      billing_location: billingLocation,
+      shipping_location: shippingLocation,
+      ship_to_deliver_to: shipToDeliverTo,
+      bill_to_deliver_to: billToDeliverTo,
+      modify_contact_info: true
+    };
+    this._orderService.updateOrderCalls(payload).pipe(takeUntil(this._unsubscribeAll), finalize(() => {
+      this.isBillingLoader = false;
+      this._changeDetectorRef.markForCheck();
+    })).subscribe(res => {
+      if (res["success"]) {
+        this._orderService.snackBar(res["message"]);
+      }
+    }, err => {
+      console.log(err);
+    });
+  }
+  updateShippingInformation() {
+    if (!this.shippingForm.valid) {
+      this._orderService.snackBar('Please fill out required fields');
       return;
     }
-    this.isAddCommentLoader = true;
-    let payload: addComment = {
-      order_id: Number(this.selectedOrder.pk_orderID),
-      comment: this.ngComment,
-      emails: emailArr,
-      add_comment: true
+    const { inHandsDate, shippingCarrierName, paymentDate, shippingServiceName, purchaseOrderNum, shippingCustomerAcc, invoiceDueDate, shippingServiceCode, costCenterCode } = this.shippingForm.value;
+    let inhands = '';
+    if (inHandsDate) {
+      inhands = moment(inHandsDate).format('MM/DD/yyyy');
     }
-    this._orderService.AddComment(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
-      this.getOrderDetail(this.selectedOrder.pk_orderID);
-    }, err => {
-      this.isAddCommentLoader = false;
+    let pDate = '';
+    if (paymentDate) {
+      pDate = moment(paymentDate).format('MM/DD/yyyy');
+    }
+    let invoice = '';
+    if (invoiceDueDate) {
+      invoice = moment(invoiceDueDate).format('MM/DD/yyyy');
+    }
+    this.isShippingLoader = true;
+    let payload: shippingDetailsObj = {
+      order_id: this.selectedOrder.pk_orderID,
+      in_hands_date: inhands,
+      payment_date: pDate,
+      shipping_carrier_name: shippingCarrierName,
+      shipping_service_name: shippingServiceName,
+      shipping_customer_account_number: shippingCustomerAcc,
+      shipping_service_code: shippingServiceCode,
+      purchase_order_num: purchaseOrderNum,
+      invoice_due_date: invoice,
+      cost_center_code: costCenterCode,
+      modify_shipping_details: true
+    };
+    this._orderService.updateOrderCalls(payload).pipe(takeUntil(this._unsubscribeAll), finalize(() => {
+      this.isShippingLoader = false;
       this._changeDetectorRef.markForCheck();
-    })
+    })).subscribe(res => {
+      if (res["success"]) {
+        this._orderService.snackBar(res["message"]);
+      }
+    }, err => {
+      console.log(err);
+    });
   }
-  getOrderDetail(orderId) {
-    let params = {
-      main: true,
-      order_id: orderId
+  updatePaymentInformation() {
+    if (!this.paymentForm.valid) {
+      this._orderService.snackBar('Please fill out required fields');
+      return;
     }
-    this._orderService.getOrderMainDetail(params).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
-      this._snackBar.open("Comment added successfully", '', {
-        horizontalPosition: 'center',
-        verticalPosition: 'bottom',
-        duration: 3500
-      });
-      this.ngComment = '';
-      this.emails = [];
-      this.emailSelected = [];
-      this.mainScreen = 'Current Comments';
-      this.isAddCommentLoader = false;
+    const { paymentMethodID, discountCode, transactionID, discountAmount, salesTaxRate, taxExemptionCom, instructions, blnTaxable } = this.paymentForm.value;
+    let paymentName = this.paymentMethods.filter(item => item.id == paymentMethodID);
+    let payload: paymentInfoObj = {
+      payment_method_id: paymentMethodID,
+      payment_method_name: paymentName[0].name,
+      gateway_trx_id: transactionID,
+      discount_code: discountCode,
+      discount_amount: discountAmount,
+      sales_tax_rate: salesTaxRate,
+      tax_exemption_comment: taxExemptionCom,
+      instructions: instructions,
+      is_taxable: blnTaxable,
+      credit_term_id: 0,
+      order_id: this.selectedOrder.pk_orderID,
+      modify_payment_info: true
+    };
+    this.isPaymentLoader = true;
+    this._orderService.updateOrderCalls(payload).pipe(takeUntil(this._unsubscribeAll), finalize(() => {
+      this.isPaymentLoader = false;
       this._changeDetectorRef.markForCheck();
+    })).subscribe(res => {
+      if (res["success"]) {
+        this._orderService.snackBar(res["message"]);
+      }
     }, err => {
-      this.isAddCommentLoader = false;
-      this._changeDetectorRef.markForCheck();
-    })
+      console.log(err);
+    });
   }
   /**
      * On destroy

@@ -69,8 +69,9 @@
                     <div class="flex flex-col w-full">
                         <div class="text-xl font-semibold leading-tight">In-Hands Date</div>
                         <div class="text-md text-secondary h-10 overflow-y-auto">
-                            <p *ngIf="inHandsDate">{{(orderDetail?.inHandsDate.substr(0,10) | date: 'MM-dd-yyyy')}}</p>
-                            <p *ngIf="!inHandsDate">{{not_available}}</p>
+                            <p *ngIf="orderDetail.inHandsDate">{{(orderDetail?.inHandsDate.substr(0,10) | date:
+                                'MM-dd-yyyy')}}</p>
+                            <p *ngIf="!orderDetail.inHandsDate">{{not_available}}</p>
                             <span class="font-bold">Rush Flexibility: </span>
                             <span *ngIf="!orderDetail.blnRushFlexibility" class="text-red-500">NO</span>
                             <span *ngIf="orderDetail.blnRushFlexibility" class="text-green-500">YES</span>
