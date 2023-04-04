@@ -27,7 +27,7 @@ export class OrderFlagsComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.flagForm = new FormGroup({
-      blnFulfillmentCancel: new FormControl(),
+      blnCancelled: new FormControl(),
       blnFinalized: new FormControl(),
       blnIgnore: new FormControl(),
       blnReorderIgnore: new FormControl(),
@@ -44,25 +44,28 @@ export class OrderFlagsComponent implements OnInit, OnDestroy {
     })
   };
   updateOrderFlags() {
-    const { blnFulfillmentCancel, cancelledReason, blnFinalized, blnIgnore, blnReorderIgnore, blnReviewIgnore, blnRoyaltyIgnore, blnIgnoreSales } = this.flagForm.getRawValue();
+    const { blnCancelled, cancelledReason, blnFinalized, blnIgnore, blnReorderIgnore, blnReviewIgnore, blnRoyaltyIgnore, blnIgnoreSales } = this.flagForm.getRawValue();
     let OrderLine: any = [];
     this._orderService.orderProducts$.pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
       res["data"].forEach(element => {
-        OrderLine.push({
-          fk_productID: Number(element.fk_productID),
-          blnWarehouse: element.blnWarehouse,
-          quantity: element.quantity
-        })
+        let index = OrderLine.findIndex(item => item.fk_productID == element.fk_productID);
+        if (index < 0) {
+          OrderLine.push({
+            fk_productID: Number(element.fk_productID),
+            blnWarehouse: element.blnWarehouse,
+            quantity: element.quantity
+          })
+        }
       });
     });
     let payload: UpdateOrderFlag = {
-      blnFulfillmentCancel, blnFinalized, blnIgnore, blnReorderIgnore, blnReviewIgnore, blnRoyaltyIgnore, blnIgnoreSales, isblnFulfillmentCancelChanged: false, isblnFinalizedChanged: false, isblnIgnoreChanged: false, isblnReorderIgnoreChanged: false, isblnReviewIgnoreChanged: false, isblnRoyaltyIgnoreChanged: false, isblnIgnoreSalesChanged: false, order_id: this.orderDetail.pk_orderID, update_order_flag: true, orderLines: OrderLine, cancelledReason,
+      blnFulfillmentCancel: blnCancelled, blnFinalized, blnIgnore, blnReorderIgnore, blnReviewIgnore, blnRoyaltyIgnore, blnIgnoreSales, isblnFulfillmentCancelChanged: false, isblnFinalizedChanged: false, isblnIgnoreChanged: false, isblnReorderIgnoreChanged: false, isblnReviewIgnoreChanged: false, isblnRoyaltyIgnoreChanged: false, isblnIgnoreSalesChanged: false, order_id: this.orderDetail.pk_orderID, update_order_flag: true, orderLines: OrderLine, cancelledReason,
       store_id: this.orderDetail.fk_storeID,
       storeName: this.orderDetail.storeName,
       orderTotal: this.orderDetail.orderTotal,
       paymentDate: this.orderDetail.paymentDate
     }
-    if (this.orderDetail.blnFulfillmentCancel != blnFulfillmentCancel) {
+    if (this.orderDetail.blnCancelled != blnCancelled) {
       payload.isblnFulfillmentCancelChanged = true;
     }
     if (this.orderDetail.blnFinalized != blnFinalized) {

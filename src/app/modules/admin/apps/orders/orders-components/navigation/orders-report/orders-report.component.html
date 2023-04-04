@@ -187,20 +187,20 @@
                                                                 {{colors.quantity}}</div>
                                                             <div
                                                                 class="pl-3 col-span-2 flex justify-between  font-medium text-md  text-secondary">
-                                                                <span>{{colors.cost |
-                                                                    currency}}</span>
+                                                                <span>{{colors.cost | currency: 'USD':
+                                                                    'symbol-narrow': '.3-3'}}</span>
                                                                 <span>{{(colors.cost *
-                                                                    colors.quantity).toFixed(3) |
-                                                                    currency
+                                                                    colors.quantity) | currency: 'USD':
+                                                                    'symbol-narrow': '.3-3'
                                                                     }}</span>
                                                             </div>
                                                             <div
                                                                 class=" col-span-2 pl-3 flex justify-between  text-center font-medium text-md  text-secondary">
-                                                                <span>{{colors.price |
-                                                                    currency}}</span>
+                                                                <span>{{colors.price | currency: 'USD':
+                                                                    'symbol-narrow': '.3-3'}}</span>
                                                                 <span>{{(colors.price *
-                                                                    colors.quantity).toFixed(3) |
-                                                                    currency
+                                                                    colors.quantity) | currency: 'USD':
+                                                                    'symbol-narrow': '.3-3'
                                                                     }}</span>
                                                             </div>
                                                         </div>
@@ -221,19 +221,19 @@
                                                             </div>
                                                             <div
                                                                 class="pl-3 flex justify-between col-span-2 text-center font-medium text-md  text-secondary">
-                                                                <span>{{imprint?.runCost.toFixed(3) |
-                                                                    currency}}</span>
+                                                                <span>{{imprint?.runCost | currency: 'USD':
+                                                                    'symbol-narrow': '.3-3'}}</span>
                                                                 <span>{{(imprint?.runCost *
-                                                                    imprint?.quantity).toFixed(3) |
-                                                                    currency}}</span>
+                                                                    imprint?.quantity) | currency: 'USD':
+                                                                    'symbol-narrow': '.3-3'}}</span>
                                                             </div>
                                                             <div
                                                                 class="pl-3 flex justify-between col-span-2 text-center font-medium text-md  text-secondary">
-                                                                <span>{{imprint?.runPrice.toFixed(3) |
-                                                                    currency}}</span>
+                                                                <span>{{imprint?.runPrice | currency: 'USD':
+                                                                    'symbol-narrow': '.3-3'}}</span>
                                                                 <span>{{(imprint?.runPrice *
-                                                                    imprint?.quantity).toFixed(3) |
-                                                                    currency}}</span>
+                                                                    imprint?.quantity) | currency: 'USD':
+                                                                    'symbol-narrow': '.3-3'}}</span>
                                                             </div>
                                                             <!-- Setups -->
                                                             <div
@@ -248,13 +248,13 @@
                                                             <div
                                                                 class="pl-3 flex justify-between mt-2 col-span-2 text-center font-medium text-md  text-secondary">
                                                                 <span></span>
-                                                                <span>{{(imprint?.setupCost).toFixed(3) |
-                                                                    currency}}</span>
+                                                                <span>{{(imprint?.setupCost) | currency: 'USD':
+                                                                    'symbol-narrow': '.3-3'}}</span>
                                                             </div>
                                                             <div
                                                                 class="pl-3 flex justify-content-end mt-2 col-span-2 text-right font-medium text-md  text-secondary">
-                                                                <span>{{(imprint?.setupPrice).toFixed(3) |
-                                                                    currency}}</span>
+                                                                <span>{{(imprint?.setupPrice) | currency: 'USD':
+                                                                    'symbol-narrow': '.3-3'}}</span>
                                                             </div>
                                                         </div>
                                                     </div>
@@ -274,15 +274,19 @@
                                                                 {{access.quantity}}</div>
                                                             <div
                                                                 class="pl-3 flex justify-between font-medium text-md text-secondary col-span-2 text-center">
-                                                                <span>{{access?.runCost.toFixed(3)}}</span>
+                                                                <span>{{access?.runCost | currency: 'USD':
+                                                                    'symbol-narrow': '.3-3'}}</span>
                                                                 <span>{{(access?.runCost *
-                                                                    access.quantity).toFixed(3)}}</span>
+                                                                    access.quantity) | currency: 'USD':
+                                                                    'symbol-narrow': '.3-3'}}</span>
                                                             </div>
                                                             <div
                                                                 class="pl-3 flex justify-between font-medium text-md text-secondary col-span-2 text-center">
-                                                                <span>{{access?.runPrice.toFixed(3)}}</span>
+                                                                <span>{{access?.runPrice | currency: 'USD':
+                                                                    'symbol-narrow': '.3-3'}}</span>
                                                                 <span>{{(access?.runPrice *
-                                                                    access.quantity).toFixed(3)}}</span>
+                                                                    access.quantity) | currency: 'USD':
+                                                                    'symbol-narrow': '.3-3'}}</span>
                                                             </div>
                                                             <!-- Accesories Setups -->
                                                             <div
@@ -295,13 +299,13 @@
                                                             <div
                                                                 class="pl-3 flex justify-between mt-2 col-span-2 text-center font-medium text-md  text-secondary">
                                                                 <span></span>
-                                                                <span>{{(access?.setupCost).toFixed(3) |
-                                                                    currency}}</span>
+                                                                <span>{{(access?.setupCost) | currency: 'USD':
+                                                                    'symbol-narrow': '.3-3'}}</span>
                                                             </div>
                                                             <div
                                                                 class="pl-3 flex justify-content-end mt-2 col-span-2 text-right font-medium text-md  text-secondary">
-                                                                <span>{{(access?.setupPrice).toFixed(3) |
-                                                                    currency}}</span>
+                                                                <span>{{(access?.setupPrice) | currency: 'USD':
+                                                                    'symbol-narrow': '.3-3'}}</span>
                                                             </div>
                                                         </div>
                                                     </div>
@@ -313,12 +317,14 @@
                                                     <div
                                                         class="pl-3 flex justify-between mt-2 col-span-2 text-secondary text-center font-medium text-md">
                                                         <span></span>
-                                                        <span>{{item.products[0]?.shippingCost | currency}}</span>
+                                                        <span>{{item.products[0]?.shippingCost | currency: 'USD':
+                                                            'symbol-narrow': '.3-3'}}</span>
                                                     </div>
                                                     <div
                                                         class="pl-3 flex justify-between mt-2 col-span-2 text-secondary text-center font-medium text-md">
                                                         <span></span>
-                                                        <span>{{item.products[0]?.shippingPrice | currency}}</span>
+                                                        <span>{{item.products[0]?.shippingPrice | currency: 'USD':
+                                                            'symbol-narrow': '.3-3'}}</span>
                                                     </div>
                                                     <!-- Royalities	 -->
                                                     <div class="mt-2 col-span-7 font-medium font-bold text-md mb-4">
@@ -333,7 +339,8 @@
                                                     <div
                                                         class="pl-3 flex justify-between mt-2 col-span-2 text-secondary text-center font-medium text-md">
                                                         <span></span>
-                                                        <span>{{item.products[0]?.royaltyPrice | currency}}</span>
+                                                        <span>{{item.products[0]?.royaltyPrice | currency: 'USD':
+                                                            'symbol-narrow': '.3-3'}}</span>
                                                     </div>
                                                     <!-- Mechandise Subtotal -->
                                                     <div class="mt-2 col-span-7 font-bold font-medium text-md  mb-4">
@@ -343,13 +350,14 @@
                                                     <div
                                                         class="pl-3 flex justify-between mt-2 col-span-2 text-center font-medium text-md  font-bold">
                                                         <span></span>
-                                                        <span>{{item.totalMercandiseCost.toFixed(3) | currency}}</span>
+                                                        <span>{{item.totalMercandiseCost | currency: 'USD':
+                                                            'symbol-narrow': '.3-3'}}</span>
                                                     </div>
                                                     <div
                                                         class="pl-3 flex justify-between mt-2 text-center font-medium col-span-2 text-md font-bold">
                                                         <span></span>
-                                                        <span>{{item.totalMerchendisePrice.toFixed(3) |
-                                                            currency}}</span>
+                                                        <span>{{item.totalMerchendisePrice | currency: 'USD':
+                                                            'symbol-narrow': '.3-3'}}</span>
                                                     </div>
                                                 </div>
                                             </div>
@@ -359,10 +367,12 @@
                                             </div>
                                             <div class="font-medium my-2  text-md  text-right text-secondary"></div>
                                             <div class="col-span-2 my-2 text-right  font-medium text-md">
-                                                -{{orderTotal.discount.toFixed(3)}}
+                                                -{{orderTotal.discount | currency: 'USD':
+                                                'symbol-narrow': '.3-3'}}
                                             </div>
                                             <div class="col-span-2 my-2 text-right  font-medium text-md">
-                                                -{{orderTotal.discount.toFixed(3)}}
+                                                -{{orderTotal.discount | currency: 'USD':
+                                                'symbol-narrow': '.3-3'}}
                                             </div>
                                             <div
                                                 class="col-span-7 my-2 self-center font-medium tracking-tight text-secondary">
@@ -370,9 +380,11 @@
                                             </div>
                                             <div class="font-medium my-2 text-md  text-right text-secondary"></div>
                                             <div class="col-span-2 my-2 text-right  font-medium text-md">
-                                                {{orderTotal.cost.toFixed(3) | currency}}</div>
+                                                {{orderTotal.cost | currency: 'USD':
+                                                'symbol-narrow': '.3-3'}}</div>
                                             <div class="col-span-2 my-2 text-right  font-medium text-md">
-                                                {{orderTotal.price.toFixed(3) | currency}}
+                                                {{orderTotal.price | currency: 'USD':
+                                                'symbol-narrow': '.3-3'}}
                                             </div>
                                             <div
                                                 class="col-span-7 my-2 self-center font-medium tracking-tight text-secondary">
@@ -381,8 +393,8 @@
                                             <div class="font-medium my-2 text-md  text-right text-secondary"></div>
                                             <div class="col-span-2 my-2 text-right  font-medium text-md"></div>
                                             <div class="col-span-2 my-2 text-right  font-medium text-md">
-                                                {{orderTotal.tax |
-                                                currency}}
+                                                {{orderTotal.tax | currency: 'USD':
+                                                'symbol-narrow': '.3-3'}}
                                             </div>
                                             <!-- <div class="col-span-7 self-center font-medium tracking-tight text-secondary">
                                                 ADJUSTMENTS
@@ -394,9 +406,11 @@
                                             </div>
                                             <div class="font-medium text-md my-2 text-right text-secondary"></div>
                                             <div class="col-span-2 text-right my-2 font-medium text-md font-bold">
-                                                {{orderTotal.cost.toFixed(3) | currency}}</div>
+                                                {{orderTotal.cost | currency: 'USD':
+                                                'symbol-narrow': '.3-3'}}</div>
                                             <div class="col-span-2 text-right my-2 font-medium text-md font-bold">
-                                                {{orderTotal.total.toFixed(3) | currency}}
+                                                {{orderTotal.total | currency: 'USD':
+                                                'symbol-narrow': '.3-3'}}
                                             </div>
                                         </div>
 

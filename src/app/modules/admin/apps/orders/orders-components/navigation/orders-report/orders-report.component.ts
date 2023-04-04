@@ -99,7 +99,6 @@ export class OrdersReportComponent implements OnInit {
         }
         this._orderService.getOrder(params).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
           this.orderTotal = res["data"][0];
-          console.log(this.orderTotal)
         })
       }
     })
@@ -182,7 +181,6 @@ export class OrdersReportComponent implements OnInit {
     })
   }
   getProductImprints(value, data) {
-    console.log(data);
     let params = {
       imprint_report: true,
       order_line_id: value
