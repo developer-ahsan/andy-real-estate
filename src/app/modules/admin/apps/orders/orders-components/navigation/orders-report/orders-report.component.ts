@@ -178,7 +178,7 @@ export class OrdersReportComponent implements OnInit {
       this.isLoading = false;
       this.isLoadingChange.emit(false);
       this._changeDetectorRef.markForCheck();
-    })
+    });
   }
   getProductImprints(value, data) {
     let params = {
