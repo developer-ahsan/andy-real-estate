@@ -186,18 +186,18 @@
                                                                 {{colors.quantity}}</div>
                                                             <div
                                                                 class="pl-3 col-span-2 flex justify-between  font-small text-sm  text-secondary">
-                                                                <span>{{colors.cost | currency: 'USD':
+                                                                <span>{{colors.runCost | currency: 'USD':
                                                                     'symbol-narrow': '.3-3'}}</span>
-                                                                <span>{{(colors.cost *
+                                                                <span>{{(colors.runCost *
                                                                     colors.quantity) | currency: 'USD':
                                                                     'symbol-narrow': '.3-3'
                                                                     }}</span>
                                                             </div>
                                                             <div
                                                                 class=" col-span-2 pl-3 flex justify-between  text-center font-small text-sm  text-secondary">
-                                                                <span>{{colors.price | currency: 'USD':
+                                                                <span>{{colors.runPrice | currency: 'USD':
                                                                     'symbol-narrow': '.3-3'}}</span>
-                                                                <span>{{(colors.price *
+                                                                <span>{{(colors.runPrice *
                                                                     colors.quantity) | currency: 'USD':
                                                                     'symbol-narrow': '.3-3'
                                                                     }}</span>
