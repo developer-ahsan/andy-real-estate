@@ -1,4 +1,8 @@
 export interface SmartArtLogin { payload: string; smartart_login: boolean; };
+export interface RapidBuildLogin {
+    payload: string;
+    rapidbuild_login: boolean;
+};
 export interface UpdateQuoteOptions {
     blnAdditionalProofContacts: boolean;
     blnIgnoreAdditionalArtEmails: boolean;

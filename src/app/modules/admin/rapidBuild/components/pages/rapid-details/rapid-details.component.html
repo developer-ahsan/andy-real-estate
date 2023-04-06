@@ -24,12 +24,9 @@
                             </mat-expansion-panel-header>
                             <div>
                                 <mat-form-field class="w-full">
-                                    <mat-select matInput>
-                                        <mat-option [value]="1">Image Needed</mat-option>
-                                        <mat-option [value]="2">Awaiting Approval</mat-option>
-                                        <mat-option [value]="3">Revision Requested</mat-option>
-                                        <mat-option [value]="4">Finished</mat-option>
-                                        <mat-option [value]="5">Needs Review</mat-option>
+                                    <mat-select matInput [(ngModel)]="buildDetails.pk_statusID">
+                                        <mat-option *ngFor="let item of allStatus"
+                                            [value]="item.pk_statusID">{{item.statusName}}</mat-option>
                                     </mat-select>
                                 </mat-form-field>
                             </div>
@@ -101,8 +98,7 @@
                             </mat-expansion-panel-header>
                             <div>
                                 <div class="py-2">
-                                    <p>Please feature navy, black, or white product colors. Yellow or gold product
-                                        colors are OK too.
+                                    <p>{{buildDetails.designer_color_notes}}
                                     </p>
                                 </div>
                             </div>
@@ -118,129 +114,136 @@
                                 </mat-panel-title>
                             </mat-expansion-panel-header>
                             <div>
-                                <table class="py-2">
+                                <table class="py-2 w-full">
                                     <tbody>
                                         <tr>
                                             <td valign="top" width="200"><b>RapidBuild ID:</b></td>
-                                            <td valign="top">87075</td>
+                                            <td valign="top">{{buildDetails.pk_rapidBuildID}}</td>
                                         </tr>
                                         <tr>
                                             <td valign="top"><b>Image status:</b></td>
                                             <td valign="top">
-                                                Image Needed
+                                                {{buildDetails.statusName}}
                                             </td>
                                         </tr>
                                         <tr>
                                             <td valign="top"><b>Store:</b></td>
-                                            <td valign="top">
-                                                <a href="https://www.theksushop.com/apparel/1-and-4-zips--and--half-zips/sport-tek-endeavor-1-and-4-zip-pullover"
-                                                    target="_blank">theKSUshop.com</a>
+                                            <td valign="top">{{buildDetails.storeName}}
                                             </td>
                                         </tr>
                                         <tr>
                                             <td valign="top"><b>Product name:</b></td>
-                                            <td valign="top">Sport-Tek Endeavor 1/4 Zip Pullover</td>
+                                            <td valign="top">{{buildDetails.productName}}</td>
                                         </tr>
                                         <tr>
                                             <td valign="top"><b>Product number:</b></td>
-                                            <td valign="top">ST469/LST469_GJ</td>
+                                            <td valign="top">{{buildDetails.productNumber}}</td>
                                         </tr>
                                         <tr>
                                             <td valign="top"><b>Product Type:</b></td>
                                             <td valign="top">
-                                                Apparel
+                                                <span *ngIf="buildDetails.blnService">Service</span>
+                                                <span *ngIf="buildDetails.blnApparel">Apparel</span>
+                                                <span
+                                                    *ngIf="!buildDetails.blnService && !buildDetails.blnApparel">Normal
+                                                    promotional merchandise</span>
                                             </td>
                                         </tr>
                                         <tr>
                                             <td valign="top"><b>Sex:</b></td>
                                             <td valign="top">
-                                                Men's/Women's
+                                                <span *ngIf="buildDetails.sex == 0">N/A</span>
+                                                <span *ngIf="buildDetails.sex == 1">Men's</span>
+                                                <span *ngIf="buildDetails.sex == 2">Women's</span>
+                                                <span *ngIf="buildDetails.sex == 3">Men's/Women's</span>
+                                                <span *ngIf="buildDetails.sex == 4">Unisex</span>
                                             </td>
                                         </tr>
-                                        <tr>
+                                        <!-- <tr>
                                             <td valign="top"><b>Supplier Link:</b></td>
                                             <td valign="top">
                                                 <a href="https://www.sanmar.com/p/10183_BlkHthr"
                                                     target="_blank">Supplier product link</a>
                                             </td>
-                                        </tr>
+                                        </tr> -->
                                         <tr>
                                             <td valign="top"><b>Supplier:</b></td>
                                             <td valign="top">
-                                                <a href="http://www.sanmar.com" target="_blank">SanMar</a>
+                                                <a href="{{buildDetails.websiteURL}}"
+                                                    target="_blank">{{buildDetails.companyName}}</a>
                                             </td>
                                         </tr>
                                         <tr>
                                             <td valign="top"><b>SPID:</b></td>
                                             <td valign="top">
-                                                <a href="https://admin.consolidus.com/ssadm/index.cfm?action=storeProduct.viewPricing&amp;storeProductID=154483"
-                                                    target="_blank">154483</a>
+                                                <!-- <a href="https://admin.consolidus.com/ssadm/index.cfm?action=storeProduct.viewPricing&amp;storeProductID=154483"
+                                                    target="_blank"> -->
+                                                {{buildDetails.fk_storeProductID}}
+                                                <!-- </a> -->
                                             </td>
                                         </tr>
                                         <tr>
                                             <td valign="top"><b>Imprint details:</b></td>
                                             <td valign="top">
-                                                Embroidery/Right Chest - Personalization (1) Name/Word ((1)
-                                                Name/Word)<br>
-                                                Screen Printing/Right Chest (4" W x 4" H)<br>
-                                                Embroidery/Right Chest (3-1/2" W x 3-1/2" H)<br>
-                                                Screen Printing/Left Chest (4" W x 4" H)<br>
-                                                Embroidery (up to 15K stitches)/Left Chest (3-1/2" W x 3-1/2" H)<br>
-                                                Embroidery/Left Chest (3-1/2" W x 3-1/2" H)<br>
-                                                Screen Printing/Full Front (12" W x 14" H)<br>
-                                                Screen Printing/Full Back (12" W x 14" H)<br>
-                                                Screen Printing/Left Sleeve (3-1/2" W x 3-1/2" H)<br>
-                                                Embroidery/Left Sleeve (3" W x 3" H)<br>
-                                                Screen Printing/Right Sleeve (3-1/2" W x 3-1/2" H)<br>
-                                                Embroidery/Right Sleeve (3" W x 3" H)<br>
-                                                Cad cut/Numbers on back of shirt (10" W x 12" H)<br>
-                                                Screen Printing/Back Yoke (4" W x 4" H)<br>
-                                                Embroidery/Back Yoke (3-1/2" W x 2" H)<br>
-                                                Cad cut/Names on back of shirt - one line (Approximately 3" x 12")<br>
-                                                Embroidery/Left Chest - Personalization (1) Name/Word ((1)
-                                                Name/Word)<br>
-                                                Embroidery/Left Chest - Personalization (2) Names/Words ((2)
-                                                Names/Words)<br>
-                                                Embroidery/Right Chest - Personalization (2) Names/Words ((2)
-                                                Names/Words)<br>
-
+                                                <div class="max-h-40 overflow-y-auto" *ngIf="imprintDetails.length > 0">
+                                                    <p *ngFor="let item of imprintDetails">
+                                                        {{item.methodName}}/{{item.locationName}}
+                                                    </p>
+                                                </div>
+                                                <p *ngIf="imprintDetails.length == 0">N/A</p>
                                             </td>
                                         </tr>
                                         <tr>
                                             <td valign="top"><b>Available Colors:</b></td>
                                             <td valign="top">
-                                                Black Heather<br>
-                                                Dark Royal Heather<br>
-                                                Deep Navy Heather<br>
-                                                Light Grey Heather<br>
-
+                                                <div class="max-h-40 overflow-y-auto" *ngIf="colorsData.length > 0">
+                                                    <p *ngFor="let item of colorsData">
+                                                        {{item.colorName}}
+                                                    </p>
+                                                </div>
+                                                <p *ngIf="colorsData.length == 0">N/A</p>
                                             </td>
                                         </tr>
                                         <tr>
                                             <td valign="top"><b>Show additional color options:</b> <span
                                                     matTooltip="Whether or not to include additional color options on the image proof."
-                                                    class="fa fa-question-circle fa-lg clickable"
-                                                    title="Whether or not to include additional color options on the image proof."></span>
+                                                    class="fa fa-question-circle fa-md clickable"></span>
                                             </td>
                                             <td valign="top">
-                                                <span class="disabled"><span class="fa fa-times fa-lg"></span> No</span>
+                                                <span class="disabled"
+                                                    *ngIf="buildDetails.additionalColorsCount > 0"><span
+                                                        class="fa fa-times fa-md"></span> No</span>
+                                                <span class="active"
+                                                    *ngIf="buildDetails.additionalColorsCount == 0"><span
+                                                        class="fa fa-check fa-md"></span> Yes</span>
                                             </td>
                                         </tr>
                                         <tr>
                                             <td valign="top"><b>Categories:</b></td>
                                             <td valign="top">
-                                                1/4-Zips / Half-Zips<br>
-
+                                                <span>{{buildDetails.productCategories || 'N/A'}}</span>
                                             </td>
                                         </tr>
-                                        <tr>
-                                            <td colspan="2" align="right">
-                                                <button class="min-w-60 btn buttonComment hover:bg-gray-200">Flag this
-                                                    product for review</button>
+                                        <tr *ngIf="!userData.blnMaster && colorsData.length > 0">
+                                            <td valign="top"><b>Blank Images:</b></td>
+                                            <td valign="top">
+                                                <div *ngIf="colorsData.length > 0">
+                                                    <span class="space-x-2 space-y-2" *ngFor="let item of colorsData">
+                                                        <a href="https://assets.consolidus.com/globalAssets/Products/Colors/{{item.pk_productID}}/{{item.fk_colorID}}.jpg"
+                                                            target="_blank">
+                                                            <img class="w-20"
+                                                                src="https://assets.consolidus.com/globalAssets/Products/Colors/{{item.pk_productID}}/{{item.fk_colorID}}.jpg">
+                                                        </a>
+                                                    </span>
+                                                </div>
                                             </td>
                                         </tr>
                                     </tbody>
                                 </table>
+                                <div class="text-right">
+                                    <button class="min-w-60 btn buttonComment hover:bg-gray-200">Flag this
+                                        product for review</button>
+                                </div>
                             </div>
                         </mat-expansion-panel>
                         <!-- Brand Guide -->
@@ -251,7 +254,7 @@
                                 </mat-panel-title>
                             </mat-expansion-panel-header>
                             <div>
-                                <a href="https://assets.consolidus.com/globalAssets/Stores/BrandGuide/184.pdf"
+                                <a href="https://assets.consolidus.com/globalAssets/Stores/BrandGuide/{{buildDetails.pk_storeID}}.pdf"
                                     target="_blank" style="text-decoration: none;">
                                     <div class="alert alert-success no-bottom-margin add-padding-sm"
                                         style="font-size: 16px; font-weight: bold;">

@@ -18,7 +18,8 @@ export class RapidBuildService {
 
     private _smartArtUsers: BehaviorSubject<any[] | null> = new BehaviorSubject<any[]>(null);
     private _employeeAdmins: BehaviorSubject<any[] | null> = new BehaviorSubject<any[]>(null);
-    private _smartArtStores: BehaviorSubject<any[] | null> = new BehaviorSubject<any[]>(null);
+    private _rapidBuildStores: BehaviorSubject<any[] | null> = new BehaviorSubject<any[]>(null);
+    private _rapidBuildStatuses: BehaviorSubject<any[] | null> = new BehaviorSubject<any[]>(null);
     private _reportUsers: BehaviorSubject<any[] | null> = new BehaviorSubject<any[]>(null);
     /**
      * Constructor
@@ -51,8 +52,12 @@ export class RapidBuildService {
         return this._smartArtUsers.asObservable();
     };
     // Stores
-    get adminStores$(): Observable<any[]> {
-        return this._smartArtStores.asObservable();
+    get rapidBuildStores$(): Observable<any[]> {
+        return this._rapidBuildStores.asObservable();
+    };
+    // Stauses
+    get rapidBuildStatuses$(): Observable<any[]> {
+        return this._rapidBuildStatuses.asObservable();
     };
 
 
@@ -68,28 +73,34 @@ export class RapidBuildService {
             })
         );
     };
-    getStoresData(params): Observable<any[]> {
-        return this._httpClient.get<any[]>(environment.admins, {
+
+    // Common get Calls
+    getSmartArtData(params): Observable<any[]> {
+        return this._httpClient.get<any[]>(environment.rapid_build, {
             params: params
         }).pipe(retry(3));
     };
-    // Common get Calls
-    getSmartArtData(params): Observable<any[]> {
-        return this._httpClient.get<any[]>(environment.smartart, {
+    getRapidBuildData(params): Observable<any[]> {
+        return this._httpClient.get<any[]>(environment.rapid_build, {
             params: params
         }).pipe(retry(3));
     };
     // Common Post Call
+    PostAPIData(payload) {
+        const headers = { 'Authorization': `Bearer ${this._authService.accessToken}` };
+        return this._httpClient.post(
+            environment.rapid_build, payload, { headers });
+    };
     AddSmartArtData(payload) {
         const headers = { 'Authorization': `Bearer ${this._authService.accessToken}` };
         return this._httpClient.post(
-            environment.smartart, payload, { headers });
+            environment.rapid_build, payload, { headers });
     };
     // Common put Call
     UpdateSmartArtData(payload) {
         const headers = { 'Authorization': `Bearer ${this._authService.accessToken}` };
         return this._httpClient.put(
-            environment.smartart, payload, { headers });
+            environment.rapid_build, payload, { headers });
     };
 
     // Admin Employees
@@ -132,20 +143,24 @@ export class RapidBuildService {
         );
     };
     // Admin Stores
-    getSmartArtStores(): Observable<any[]> {
-        return this._httpClient.get<any[]>(environment.smartart, {
-            params: {
-                stores: true,
-                bln_active: 1,
-                size: 10
-            }
+    getRapidBuildStores(params): Observable<any[]> {
+        return this._httpClient.get<any[]>(environment.rapid_build, {
+            params: params
         }).pipe(
             tap((response: any) => {
-                this._smartArtStores.next(response);
+                this._rapidBuildStores.next(response);
             })
         );
     };
-    getIPAddress() {
-        return this._httpClient.get("http://api.ipify.org/?format=json");
-    }
+    getRapidBuildStatus(): Observable<any[]> {
+        return this._httpClient.get<any[]>(environment.rapid_build, {
+            params: {
+                rapidbuild_status: true
+            }
+        }).pipe(
+            tap((response: any) => {
+                this._rapidBuildStatuses.next(response);
+            })
+        );
+    };
 }

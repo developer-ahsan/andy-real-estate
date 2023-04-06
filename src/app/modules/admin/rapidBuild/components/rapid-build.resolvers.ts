@@ -64,7 +64,7 @@ export class FlpsLoginResolver implements Resolve<any>
 @Injectable({
     providedIn: 'root'
 })
-export class SmartArtStoresResolver implements Resolve<any>
+export class RapidBuildStoresResolver implements Resolve<any>
 {
     /**
      * Constructor
@@ -83,13 +83,16 @@ export class SmartArtStoresResolver implements Resolve<any>
      * @param state
      */
     resolve(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<any[]> {
-        return this._RapidBuildService.getSmartArtStores();
+        let params = {
+            stores: true
+        }
+        return this._RapidBuildService.getRapidBuildStores(params);
     }
 }
 @Injectable({
     providedIn: 'root'
 })
-export class SmartArtUsersResolver implements Resolve<any>
+export class RapidBuildStatusesResolver implements Resolve<any>
 {
     /**
      * Constructor
@@ -108,7 +111,7 @@ export class SmartArtUsersResolver implements Resolve<any>
      * @param state
      */
     resolve(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<any[]> {
-        return this._RapidBuildService.getSmartArtUsers();
+        return this._RapidBuildService.getRapidBuildStatus();
     }
 }
 

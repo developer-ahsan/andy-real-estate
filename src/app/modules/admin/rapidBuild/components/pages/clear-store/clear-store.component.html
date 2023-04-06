@@ -9,11 +9,18 @@
                 specify below.
             </p>
             <mat-form-field class="min-w-100">
-                <mat-select matInput [(ngModel)]="ngStore">
-                    <mat-option [value]="0">Select a store</mat-option>
-                    <mat-option [value]="637">365Wholesale.com</mat-option>
-                    <mat-option [value]="229">3M Promotional Markets Dept</mat-option>
-                </mat-select>
+                <mat-label>Select a store:</mat-label>
+                <input matInput placeholder="Search Stores" matTooltip="Search Stores by name" [matAutocomplete]="auto"
+                    [formControl]="searchStoreCtrl">
+                <mat-autocomplete class="w-full" #auto="matAutocomplete" (optionSelected)="onSelected($event)"
+                    [displayWith]="displayWith">
+                    <mat-option *ngIf="isSearchingStore" class="is-loading">Loading...</mat-option>
+                    <ng-container *ngIf="!isSearchingStore">
+                        <mat-option *ngFor="let item of allStores" [value]="item">
+                            <span>{{item.storeName}}</span>
+                        </mat-option>
+                    </ng-container>
+                </mat-autocomplete>
             </mat-form-field>
             <div>
                 <button mat-flat-button class="min-w-40" [color]="'primary'">

@@ -21,42 +21,43 @@
                 <div class="col-12 mt-5">
                     <mat-form-field class="w-full">
                         <mat-label>Keyword (PID/SPID/RBID):</mat-label>
-                        <input matInput>
+                        <input matInput [(ngModel)]="ngKeyword">
                     </mat-form-field>
                 </div>
                 <div class="col-12">
                     <mat-form-field class="w-full">
                         <mat-label>Product Name:</mat-label>
-                        <input matInput>
+                        <input matInput [(ngModel)]="ngProductName">
                     </mat-form-field>
                 </div>
                 <div class="col-12">
                     <mat-form-field class="w-full">
                         <mat-label>Stores:</mat-label>
-                        <mat-select matInput>
-                            <mat-option [value]="0">All Stores</mat-option>
-                            <mat-option [value]="1">10ksbPromosAndPrint.com</mat-option>
-                            <mat-option [value]="2">2ndFamilyShop.com</mat-option>
-                            <mat-option [value]="3">AirForceROTCShop.com</mat-option>
-                            <mat-option [value]="4">ArmyROTCShop.com</mat-option>
-                        </mat-select>
+                        <input matInput placeholder="Search Stores" matTooltip="Search Stores by name"
+                            [matAutocomplete]="auto" [formControl]="searchStoreCtrl">
+                        <mat-autocomplete class="w-full" #auto="matAutocomplete" (optionSelected)="onSelected($event)"
+                            [displayWith]="displayWith">
+                            <mat-option *ngIf="isSearchingStore" class="is-loading">Loading...</mat-option>
+                            <ng-container *ngIf="!isSearchingStore">
+                                <mat-option *ngFor="let item of allStores" [value]="item">
+                                    <span>{{item.storeName}}</span>
+                                </mat-option>
+                            </ng-container>
+                        </mat-autocomplete>
                     </mat-form-field>
                 </div>
                 <div class="col-12">
                     <mat-form-field class="w-full">
                         <mat-label>Statuses:</mat-label>
-                        <mat-select matInput>
-                            <mat-option [value]="0">All statuses</mat-option>
-                            <mat-option [value]="1">Image Needed</mat-option>
-                            <mat-option [value]="2">Awaiting Approval</mat-option>
-                            <mat-option [value]="3">Revision Requested</mat-option>
-                            <mat-option [value]="4">Finished</mat-option>
-                            <mat-option [value]="5">Needs Review</mat-option>
+                        <mat-select matInput [(ngModel)]="ngStatus">
+                            <mat-option *ngFor="let item of allStatus"
+                                [value]="item.pk_statusID">{{item.statusName}}</mat-option>
                         </mat-select>
                     </mat-form-field>
                 </div>
                 <div class="col-12">
-                    <button [color]="'primary'" class="w-full" mat-button mat-stroked-button>Filter</button>
+                    <button [color]="'primary'" class="w-full" mat-button mat-stroked-button
+                        (click)="filterBuildData()">Filter</button>
                 </div>
             </div>
         </mat-drawer>
@@ -73,15 +74,22 @@
                                 class="text-3xl md:text-4xl font-extrabold tracking-tight leading-7 sm:leading-10 truncate">
                                 Rapid Build
                             </h2>
-                            <button class="min-w-40" mat-stroked-button (click)="toggleDrawer()">Filter</button>
+                            <div class="flex space-x-2" *ngIf="loginCheck">
+                                <button class="min-w-40" mat-stroked-button (click)="toggleDrawer()">Filter</button>
+                                <button *ngIf="loginCheck" class="min-w-40" mat-stroked-button
+                                    (click)="logout()">Logout</button>
+                            </div>
+
                         </div>
                     </div>
-                    <div class="flex flex-wrap items-center font-medium">
-                        <a class="whitespace-nowrap text-primary-500" *ngIf="!isLoading">Welcome, Bill</a>
+                    <div class="flex flex-wrap items-center font-medium" *ngIf="loginCheck">
+                        <a class="whitespace-nowrap text-primary-500" *ngIf="!isLoading">Welcome, {{userData?.firstName
+                            + ' ' +
+                            userData?.lastName}}</a>
                     </div>
                 </div>
             </div>
-            <div class="flex-auto p-6 sm:p-6 space-y-2">
+            <div class="flex-auto p-6 sm:p-6 space-y-2" *ngIf="loginCheck">
                 <mat-button-toggle-group #group="matButtonToggleGroup" [value]="selectedRoute"
                     (change)="calledScreen(group.value)">
                     <mat-button-toggle *ngFor="let item of routes" [value]="item.route">
@@ -89,6 +97,27 @@
                     </mat-button-toggle>
                 </mat-button-toggle-group>
                 <router-outlet></router-outlet>
+            </div>
+            <div class="flex items-center justify-center px-6" *ngIf="!loginCheck" style="height: 70%;">
+                <div class="w-full sm:w-auto py-8 px-4 sm:p-12 sm:rounded-2xl sm:shadow sm:bg-card">
+                    <div class="w-full max-w-80 sm:w-80 mx-auto sm:mx-0">
+                        <div class="mt-8 text-4xl font-extrabold tracking-tight leading-tight">RapidBuild Login</div>
+                        <mat-form-field class="w-full">
+                            <mat-label>Username</mat-label>
+                            <input matInput [(ngModel)]="ngEmail" type="text">
+                        </mat-form-field>
+                        <mat-form-field class="w-full">
+                            <mat-label>Password</mat-label>
+                            <input matInput [(ngModel)]="ngPassword" type="password">
+                        </mat-form-field>
+                        <button [disabled]="isLoginLoader" mat-flat-button class="w-full" [color]="'primary'"
+                            [matTooltip]="'Login'" (click)="loginRapidBuild()">
+                            <span *ngIf="!isLoginLoader"> Login </span>
+                            <mat-progress-spinner *ngIf="isLoginLoader" [diameter]="24" [mode]="'indeterminate'">
+                            </mat-progress-spinner>
+                        </button>
+                    </div>
+                </div>
             </div>
         </mat-drawer-content>
     </mat-drawer-container>

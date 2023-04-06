@@ -94,17 +94,71 @@ export class RapidBuildDetailsComponent implements OnInit, OnDestroy {
   isAutoRequestLoader: boolean = false;
   isManualProofLoader: boolean = false;
   imageValue: any;
+
+  allStatus: any;
+  buildDetails: any;
+  imprintDetails: any;
+  colorsData: any;
   constructor(
     private _changeDetectorRef: ChangeDetectorRef,
     private _authService: AuthService,
-    private _RapidBuildService: RapidBuildService,
+    private _rapidService: RapidBuildService,
     private router: Router,
     private _activeRoute: ActivatedRoute
   ) { }
 
   ngOnInit(): void {
-
+    this.userData = JSON.parse(sessionStorage.getItem('rapidBuild'));
+    this._activeRoute.params.subscribe(res => {
+      this.isLoading = true;
+      this.getRapidBuildDetails(res.id);
+    });
+    this._rapidService.rapidBuildStatuses$.pipe(takeUntil(this._unsubscribeAll)).subscribe(statuses => {
+      this.allStatus = statuses['data'];
+    });
   };
+  getRapidBuildDetails(rbid) {
+    let params = {
+      rbid: rbid,
+      rapidbuild_details: true
+    }
+    this._rapidService.getRapidBuildData(params).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+      this.buildDetails = res["data"][0];
+      this.getImprintData(this.buildDetails.pk_productID);
+    }, err => {
+      this.isLoading = false;
+      this._changeDetectorRef.markForCheck();
+    });
+  }
+  getImprintData(pid) {
+    let params = {
+      product_id: pid,
+      rapidbuild_imprints: true,
+      size: 50
+    }
+    this._rapidService.getRapidBuildData(params).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+      this.imprintDetails = res["data"];
+      this.getColorsData(this.buildDetails.fk_storeProductID);
+    }, err => {
+      this.isLoading = false;
+      this._changeDetectorRef.markForCheck();
+    });
+  }
+  getColorsData(spid) {
+    let params = {
+      spid: spid,
+      rapidbuild_colors: true,
+      size: 50
+    }
+    this._rapidService.getRapidBuildData(params).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+      this.colorsData = res["data"];
+      this.isLoading = false;
+      this._changeDetectorRef.markForCheck();
+    }, err => {
+      this.isLoading = false;
+      this._changeDetectorRef.markForCheck();
+    });
+  }
   backToList() {
     this.router.navigate(['/rapidbuild/image-management']);
   }

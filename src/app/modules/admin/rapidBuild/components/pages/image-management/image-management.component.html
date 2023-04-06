@@ -1,39 +1,45 @@
-<div class=" rounded-2xl shadow bg-card flex flex-col lg:flex-row w-full">
-    <div class="w-full">
+<div class=" w-full">
+    <div class="w-full rounded-2xl shadow bg-card mb-15">
         <div class="px-4 flex justify-between sm:px-4 lg:px-8 py-4">
             <h2 class="text-xl sm:text-xl font-extrabold tracking-tight leading-7 sm:leading-10 truncate">
                 Image Management
             </h2>
-            <button mat-flat-button class="min-w-40" [color]="'primary'">
+            <button *ngIf="!isLoading" mat-flat-button class="min-w-40" [color]="'primary'">
                 <mat-icon svgIcon="heroicons_outline:trash"></mat-icon>
                 <span>Remove Selected Entries</span>
                 <!-- <mat-progress-spinner *ngIf="isUpdateWebsiteLoader" [diameter]="24" [mode]="'indeterminate'">
                 </mat-progress-spinner> -->
             </button>
         </div>
-        <div class="mt-2 overflow-x-auto">
+        <div *ngIf="isLoading" class="px-4 py-4">
+            <ngx-skeleton-loader count="8" appearance="line" animation="pulse" [theme]="{ 
+                'background-color': '#dedede'
+              }">
+            </ngx-skeleton-loader>
+        </div>
+        <div class="mt-2 overflow-x-auto" *ngIf="!isLoading">
             <table mat-table [dataSource]="dataSource" class="w-full border-t">
                 <ng-container matColumnDef="ID">
                     <th mat-header-cell *matHeaderCellDef class="w-10 min-w-10 px-2">
                         ID
                     </th>
-                    <td mat-cell *matCellDef="let element" class="text-sm px-2">
-                        {{element.FIELD1}}
+                    <td mat-cell *matCellDef="let element" class="text-sm px-2" (click)="goToDetailPage(element)">
+                        {{element.pk_rapidBuildID}}
                     </td>
                 </ng-container>
                 <ng-container matColumnDef="Status">
                     <th mat-header-cell *matHeaderCellDef class="w-20 min-w-20 px-2">
                         Status
                     </th>
-                    <td mat-cell *matCellDef="let element" class="text-sm px-2">
-                        {{element.FIELD2}}
+                    <td mat-cell *matCellDef="let element" class="text-sm px-2" (click)="goToDetailPage(element)">
+                        {{element.statusName}}
                     </td>
                 </ng-container>
                 <ng-container matColumnDef="Age">
                     <th mat-header-cell *matHeaderCellDef class="w-10 min-w-10 px-2">
                         Age
                     </th>
-                    <td mat-cell *matCellDef="let element" class="text-sm px-2">
+                    <td mat-cell *matCellDef="let element" class="text-sm px-2" (click)="goToDetailPage(element)">
                         {{element.FIELD3}}
                     </td>
                 </ng-container>
@@ -41,43 +47,50 @@
                     <th mat-header-cell *matHeaderCellDef class="w-10 min-w-10 px-2">
                         SPID
                     </th>
-                    <td mat-cell *matCellDef="let element" class="text-sm px-2">
-                        {{element.FIELD4}}
+                    <td mat-cell *matCellDef="let element" class="text-sm px-2" (click)="goToDetailPage(element)">
+                        {{element.fk_storeProductID}}
                     </td>
                 </ng-container>
                 <ng-container matColumnDef="PID">
                     <th mat-header-cell *matHeaderCellDef class="w-10 min-w-10 px-2">
                         PID
                     </th>
-                    <td mat-cell *matCellDef="let element" class="text-sm px-2">{{element.FIELD5}}
+                    <td mat-cell *matCellDef="let element" class="text-sm px-2" (click)="goToDetailPage(element)">
+                        {{element.pk_productID}}
                     </td>
                 </ng-container>
                 <ng-container matColumnDef="Product">
                     <th mat-header-cell *matHeaderCellDef class="w-40 min-w-40 px-2">
                         Product
                     </th>
-                    <td mat-cell *matCellDef="let element" class="text-sm px-2">{{element.FIELD6}}
+                    <td mat-cell *matCellDef="let element" class="text-sm px-2" (click)="goToDetailPage(element)">
+                        {{element.productName}}
                     </td>
                 </ng-container>
                 <ng-container matColumnDef="Supplier">
                     <th mat-header-cell *matHeaderCellDef class="w-20 min-w-20 px-2">
                         Supplier
                     </th>
-                    <td mat-cell *matCellDef="let element" class="text-sm px-2">{{element.FIELD7}}
+                    <td mat-cell *matCellDef="let element" class="text-sm px-2" (click)="goToDetailPage(element)">
+                        {{element.companyName}}
                     </td>
                 </ng-container>
                 <ng-container matColumnDef="Store">
                     <th mat-header-cell *matHeaderCellDef class="w-20 min-w-20 px-2">
                         Store
                     </th>
-                    <td mat-cell *matCellDef="let element" class="text-sm px-2">{{element.FIELD8}}
+                    <td mat-cell *matCellDef="let element" class="text-sm px-2" (click)="goToDetailPage(element)">
+                        {{element.storeName}}
                     </td>
                 </ng-container>
                 <ng-container matColumnDef="proof">
                     <th mat-header-cell *matHeaderCellDef class="w-20 min-w-20 px-2">
                         Last Proof
                     </th>
-                    <td mat-cell *matCellDef="let element" class="text-sm px-2">{{element.FIELD9}}
+                    <td mat-cell *matCellDef="let element" class="text-sm px-2" (click)="goToDetailPage(element)">
+                        <span *ngIf="element.adminUserFirstName"> {{element.adminUserFirstName + ' ' +
+                            element.adminUserLastName}}</span>
+                        <span *ngIf="!element.adminUserFirstName"> N/A</span>
                     </td>
                 </ng-container>
                 <ng-container matColumnDef="action">
@@ -89,12 +102,12 @@
                     </td>
                 </ng-container>
                 <tr mat-header-row *matHeaderRowDef="displayedColumns;" class="h-18 bg-light"></tr>
-                <tr mat-row *matRowDef="let row; columns: displayedColumns;" (click)="goToDetailPage(row)"
+                <tr mat-row *matRowDef="let row; columns: displayedColumns;"
                     class="h-14 hover:bg-gray-100 dark:hover:bg-hover" style="cursor: pointer;">
                 </tr>
             </table>
             <mat-paginator #paginator class="border-b sm:border-t sm:border-b-0 z-10 bg-gray-50 dark:bg-transparent"
-                [length]="tempRecords" [pageIndex]="0" [pageSize]="20" (page)="getNextDataAwaiting($event)"
+                [length]="totalRecords" [pageIndex]="0" [pageSize]="20" (page)="getNextData($event)"
                 [hidePageSize]="true">
             </mat-paginator>
         </div>
