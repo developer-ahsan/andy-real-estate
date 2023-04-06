@@ -27,7 +27,7 @@ export class NewVendorsComponent implements OnInit, OnDestroy {
   addCompanyForm: FormGroup;
   isAddLoader: boolean = false;
 
-  ngSupplier = false;
+  ngSupplier = true;
   ngDecorator = true;
   ngDigitizer = false;
   constructor(
