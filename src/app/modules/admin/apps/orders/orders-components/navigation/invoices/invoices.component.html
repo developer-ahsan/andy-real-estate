@@ -103,7 +103,7 @@
                                                 <div class="font-medium">
                                                     <p *ngIf="orderDetail.inHandsDate">
                                                         {{(orderDetail?.inHandsDate.substr(0,10) | date:
-                                                        'MM-dd-yyyy')}}</p>
+                                                        'medium')}}</p>
                                                     <p *ngIf="!orderDetail.inHandsDate">{{not_available}}</p>
                                                 </div>
                                                 <div
