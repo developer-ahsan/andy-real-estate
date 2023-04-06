@@ -281,68 +281,19 @@
                                 </mat-panel-title>
                             </mat-expansion-panel-header>
                             <div>
-                                <div class="py-2">
-                                    <div class="flex space-x-1">
-                                        <a href="https://assets.consolidus.com/globalAssets/Stores/logoBank2/184/5043.eps"
+                                <div *ngIf="isLogoBankLoader" class="py-2 px-5">
+                                    <ngx-skeleton-loader count="4" appearance="line" animation="pulse" [theme]="{ 
+                                        'background-color': '#dedede'
+                                      }">
+                                    </ngx-skeleton-loader>
+                                </div>
+                                <div class="py-2" *ngIf="!isLogoBankLoader">
+                                    <div class="flex space-x-1 overflow-x-auto">
+                                        <a *ngFor="let item of logoData"
+                                            href="https://assets.consolidus.com/globalAssets/Stores/logoBank2/{{item.fk_storeID}}/{{item.pk_logoBankID}}.{{item.extension}}"
                                             target="_blank"
                                             title="Kent State University Stacked 2 color - Kent State University Stacked 2 color">
-                                            <img src="https://assets.consolidus.com/globalAssets/Stores/logoBank2/184/Thumbs/5043.jpg"
-                                                style="width: 50px; height: auto; border:1px solid #000; margin: 0 0 10px 0;">
-                                        </a>
-
-                                        <a href="https://assets.consolidus.com/globalAssets/Stores/logoBank2/184/5045.eps"
-                                            target="_blank"
-                                            title="Kent State University Stacked 1 Color Black - Kent State University Stacked 1 Color Black">
-                                            <img src="https://assets.consolidus.com/globalAssets/Stores/logoBank2/184/Thumbs/5045.jpg"
-                                                style="width: 50px; height: auto; border:1px solid #000; margin: 0 0 10px 0;">
-                                        </a>
-
-                                        <a href="https://assets.consolidus.com/globalAssets/Stores/logoBank2/184/5047.eps"
-                                            target="_blank"
-                                            title="Kent State University Stacked 1 Color Navy 281 - Kent State University Stacked 1 Color Navy 281">
-                                            <img src="https://assets.consolidus.com/globalAssets/Stores/logoBank2/184/Thumbs/5047.jpg"
-                                                style="width: 50px; height: auto; border:1px solid #000; margin: 0 0 10px 0;">
-                                        </a>
-
-                                        <a href="https://assets.consolidus.com/globalAssets/Stores/logoBank2/184/5049.eps"
-                                            target="_blank"
-                                            title="Kent State University Stacked 2 color Reversed - Kent State University Stacked 2 color Reversed">
-                                            <img src="https://assets.consolidus.com/globalAssets/Stores/logoBank2/184/Thumbs/5049.jpg"
-                                                style="width: 50px; height: auto; border:1px solid #000; margin: 0 0 10px 0;">
-                                        </a>
-
-                                        <a href="https://assets.consolidus.com/globalAssets/Stores/logoBank2/184/5051.eps"
-                                            target="_blank"
-                                            title="Kent State University Horizontal 1 Color Navy 281 - Kent State University Horizontal 1 Color Navy 281">
-                                            <img src="https://assets.consolidus.com/globalAssets/Stores/logoBank2/184/Thumbs/5051.jpg"
-                                                style="width: 50px; height: auto; border:1px solid #000; margin: 0 0 10px 0;">
-                                        </a>
-
-                                        <a href="https://assets.consolidus.com/globalAssets/Stores/logoBank2/184/5053.eps"
-                                            target="_blank"
-                                            title="Kent State University Horizontal 1 Color Black - Kent State University Horizontal 1 Color Black">
-                                            <img src="https://assets.consolidus.com/globalAssets/Stores/logoBank2/184/Thumbs/5053.jpg"
-                                                style="width: 50px; height: auto; border:1px solid #000; margin: 0 0 10px 0;">
-                                        </a>
-
-                                        <a href="https://assets.consolidus.com/globalAssets/Stores/logoBank2/184/5055.eps"
-                                            target="_blank"
-                                            title="Kent State University Horizontal 2 Color  - Kent State University Horizontal 2 Color">
-                                            <img src="https://assets.consolidus.com/globalAssets/Stores/logoBank2/184/Thumbs/5055.jpg"
-                                                style="width: 50px; height: auto; border:1px solid #000; margin: 0 0 10px 0;">
-                                        </a>
-
-                                        <a href="https://assets.consolidus.com/globalAssets/Stores/logoBank2/184/5057.eps"
-                                            target="_blank"
-                                            title="Kent State University Horizontal 2 Color Reversed - Kent State University Horizontal 2 Color Reversed">
-                                            <img src="https://assets.consolidus.com/globalAssets/Stores/logoBank2/184/Thumbs/5057.jpg"
-                                                style="width: 50px; height: auto; border:1px solid #000; margin: 0 0 10px 0;">
-                                        </a>
-
-                                        <a href="https://assets.consolidus.com/globalAssets/Stores/logoBank2/184/5059.eps"
-                                            target="_blank"
-                                            title="Kent State University Horizontal 1 Color Reversed - Kent State University Horizontal 1 Color Reversed">
-                                            <img src="https://assets.consolidus.com/globalAssets/Stores/logoBank2/184/Thumbs/5059.jpg"
+                                            <img src="https://assets.consolidus.com/globalAssets/Stores/logoBank2/{{item.fk_storeID}}/Thumbs/{{item.pk_logoBankID}}.jpg"
                                                 style="width: 50px; height: auto; border:1px solid #000; margin: 0 0 10px 0;">
                                         </a>
                                     </div>

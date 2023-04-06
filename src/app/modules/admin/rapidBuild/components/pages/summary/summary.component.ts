@@ -13,148 +13,52 @@ import { RapidBuildService } from '../../rapid-build.service';
 export class RapidSummaryComponent implements OnInit, OnDestroy {
   @ViewChild('paginator') paginator: MatPaginator;
   private _unsubscribeAll: Subject<any> = new Subject<any>();
+  isLoading: boolean = false;
 
 
   mainScreen = 'Artwork Approved';
   dataSource = [];
   displayedColumns: string[] = ['store', 'images', 'approval'];
-  tempRecords = 20;
+  totalRecords = 20;
   page = 1;
+  userData: any;
 
   constructor(
     private _changeDetectorRef: ChangeDetectorRef,
     private _RapidBuildService: RapidBuildService
   ) { }
 
-  dataInit() {
-    this.dataSource = [
-      {
-        "name": "10ksbPromosAndPrint.com",
-        "column1": "3",
-        "column2": "0"
-      },
-      {
-        "name": "2ndFamilyShop.com",
-        "column1": "7",
-        "column2": "1"
-      },
-      {
-        "name": "AirForceROTCShop.com",
-        "column1": "8",
-        "column2": "0"
-      },
-      {
-        "name": "ArmyROTCShop.com",
-        "column1": "7",
-        "column2": "0"
-      },
-      {
-        "name": "AZPromoShop.com",
-        "column1": "2",
-        "column2": "9"
-      },
-      {
-        "name": "BrandItShop.com",
-        "column1": "16",
-        "column2": "2"
-      },
-      {
-        "name": "CCUPromos.com",
-        "column1": "1",
-        "column2": "0"
-      },
-      {
-        "name": "ChurchPromoShop.com",
-        "column1": "2",
-        "column2": "9"
-      },
-      {
-        "name": "ConsolidusPromos.com",
-        "column1": "42",
-        "column2": "0"
-      },
-      {
-        "name": "ConsolidusShop.com",
-        "column1": "21",
-        "column2": "14"
-      },
-      {
-        "name": "CUpromos.com",
-        "column1": "2",
-        "column2": "12"
-      },
-      {
-        "name": "FitNationPromos.com",
-        "column1": "1",
-        "column2": "9"
-      },
-      {
-        "name": "FloridaPolyShop.com",
-        "column1": "18",
-        "column2": "0"
-      },
-      {
-        "name": "HCHPromosAndPrint.com",
-        "column1": "8",
-        "column2": "0"
-      },
-      {
-        "name": "IrreverentWarriorsStore.com",
-        "column1": "12",
-        "column2": "0"
-      },
-      {
-        "name": "IUCshop.com",
-        "column1": "16",
-        "column2": "0"
-      },
-      {
-        "name": "JDogShop.com",
-        "column1": "5",
-        "column2": "1"
-      },
-      {
-        "name": "LeadingAgeOhioShop.com",
-        "column1": "9",
-        "column2": "0"
-      },
-      {
-        "name": "MemberPromos.com",
-        "column1": "9",
-        "column2": "1"
-      },
-      {
-        "name": "MiamiOHshop.com",
-        "column1": "10",
-        "column2": "0"
-      },
-      {
-        "name": "MicrobrewMarketing.com",
-        "column1": "2",
-        "column2": "0"
-      },
-      {
-        "name": "MyGymPromos.com",
-        "column1": "1",
-        "column2": "6"
-      },
-      {
-        "name": "MySBDCshop.com",
-        "column1": "8",
-        "column2": "1"
-      },
-      {
-        "name": "MySummaShop.com",
-        "column1": "26",
-        "column2": "0"
-      }
-    ]
-  }
   ngOnInit(): void {
-    this.dataInit();
+    this.userData = JSON.parse(sessionStorage.getItem('rapidBuild'));
+    this.isLoading = true;
+    this.getSummaryData(1);
   };
-  getNextDataAwaiting(ev) {
+  getSummaryData(page) {
 
+    let params = {
+      store_list: this.userData.storesList,
+      size: 20,
+      page: page,
+      rapidbuild_summary: true
+    }
+    this._RapidBuildService.getRapidBuildData(params).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+      this.dataSource = res["data"];
+      this.totalRecords = res["totalRecords"];
+      this.isLoading = false;
+      this._changeDetectorRef.markForCheck();
+    }, err => {
+      this.isLoading = false;
+      this._changeDetectorRef.markForCheck();
+    });
+  }
+  getNextData(event) {
+    const { previousPageIndex, pageIndex } = event;
+    if (pageIndex > previousPageIndex) {
+      this.page++;
+    } else {
+      this.page--;
+    };
+    this.getSummaryData(this.page);
   }
   /**
      * On destroy

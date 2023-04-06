@@ -99,6 +99,8 @@ export class RapidBuildDetailsComponent implements OnInit, OnDestroy {
   buildDetails: any;
   imprintDetails: any;
   colorsData: any;
+  logoData: any;
+  isLogoBankLoader: boolean = false;
   constructor(
     private _changeDetectorRef: ChangeDetectorRef,
     private _authService: AuthService,
@@ -152,10 +154,27 @@ export class RapidBuildDetailsComponent implements OnInit, OnDestroy {
     }
     this._rapidService.getRapidBuildData(params).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
       this.colorsData = res["data"];
+      this.isLogoBankLoader = true;
       this.isLoading = false;
       this._changeDetectorRef.markForCheck();
+      this.getLogoBank()
     }, err => {
       this.isLoading = false;
+      this._changeDetectorRef.markForCheck();
+    });
+  }
+  getLogoBank() {
+    let params = {
+      store_id: this.buildDetails.pk_storeID,
+      rapidbuild_logobanks: true,
+      size: 50
+    }
+    this._rapidService.getRapidBuildData(params).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+      this.logoData = res["data"];
+      this.isLogoBankLoader = false;
+      this._changeDetectorRef.markForCheck();
+    }, err => {
+      this.isLogoBankLoader = false;
       this._changeDetectorRef.markForCheck();
     });
   }

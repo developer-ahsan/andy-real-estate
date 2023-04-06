@@ -4,14 +4,20 @@
             <h2 class="text-xl md:text-xl font-extrabold tracking-tight leading-7 sm:leading-10 truncate">
                 RapidBuild Summary
             </h2>
-            <div>
+            <div *ngIf="isLoading" class="px-4 py-4">
+                <ngx-skeleton-loader count="8" appearance="line" animation="pulse" [theme]="{ 
+                    'background-color': '#dedede'
+                  }">
+                </ngx-skeleton-loader>
+            </div>
+            <div *ngIf="!isLoading">
                 <table mat-table [dataSource]="dataSource" class="w-full border-t">
                     <ng-container matColumnDef="store">
                         <th mat-header-cell *matHeaderCellDef class="w-60 min-w-60 px-2">
                             Store
                         </th>
                         <td mat-cell *matCellDef="let element" class="text-md px-2">
-                            {{element.name}}
+                            {{element.storeName}}
                         </td>
                     </ng-container>
                     <ng-container matColumnDef="images">
@@ -19,14 +25,15 @@
                             Images Needed
                         </th>
                         <td mat-cell *matCellDef="let element" class="text-md px-2">
-                            {{element.column1}}
+                            {{element.imageNeededCount}}
                         </td>
                     </ng-container>
                     <ng-container matColumnDef="approval">
                         <th mat-header-cell *matHeaderCellDef class="w-20 min-w-20 px-2">
                             Images Waiting Approval
                         </th>
-                        <td mat-cell *matCellDef="let element" class="text-md px-2">{{element.column2}}
+                        <td mat-cell *matCellDef="let element" class="text-md px-2">
+                            {{element.imageAwaitingApprovalCount}}
                         </td>
                     </ng-container>
                     <tr mat-header-row *matHeaderRowDef="displayedColumns;" class="h-18 bg-light"></tr>
@@ -35,7 +42,7 @@
                     </tr>
                 </table>
                 <mat-paginator #paginator class="border-b sm:border-t sm:border-b-0 z-10 bg-gray-50 dark:bg-transparent"
-                    [length]="tempRecords" [pageIndex]="0" [pageSize]="20" (page)="getNextDataAwaiting($event)"
+                    [length]="totalRecords" [pageIndex]="0" [pageSize]="20" (page)="getNextData($event)"
                     [hidePageSize]="true">
                 </mat-paginator>
             </div>
