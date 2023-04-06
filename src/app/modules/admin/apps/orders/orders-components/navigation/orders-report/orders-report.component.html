@@ -97,8 +97,11 @@
                                                     class="justify-self-start font-medium tracking-tight text-secondary">
                                                     In-Hands Date
                                                 </div>
-                                                <div class="font-medium">{{(orderDetail?.inHandsDate | date:'medium') ||
-                                                    not_available}}
+                                                <div class="font-medium">
+                                                    <p *ngIf="orderDetail.inHandsDate">
+                                                        {{(orderDetail?.inHandsDate.substr(0,10) | date:
+                                                        'MM-dd-yyyy')}}</p>
+                                                    <p *ngIf="!orderDetail.inHandsDate">{{not_available}}</p>
                                                 </div>
                                                 <div
                                                     class="justify-self-start font-medium tracking-tight text-secondary">
