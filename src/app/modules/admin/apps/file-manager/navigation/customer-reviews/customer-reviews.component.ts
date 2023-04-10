@@ -14,8 +14,8 @@ export class CustomerReviewsComponent implements OnInit, OnDestroy {
   @Directive({ selector: '[myHighlight]' })
   @ViewChild('myHighlight') myHighlight: ElementRef;
 
-  @Input() selectedStore: any;
-  @Input() isLoading: boolean;
+  selectedStore: any;
+  isLoading: boolean;
   @Output() isLoadingChange = new EventEmitter<boolean>();
   private _unsubscribeAll: Subject<any> = new Subject<any>();
 
@@ -51,7 +51,7 @@ export class CustomerReviewsComponent implements OnInit, OnDestroy {
 
   isAddLoader: boolean = false;
   constructor(
-    private _fileManagerService: FileManagerService,
+    private _storeManagerService: FileManagerService,
     private _changeDetectorRef: ChangeDetectorRef,
     private fb: FormBuilder,
     private _snackBar: MatSnackBar,
@@ -60,11 +60,19 @@ export class CustomerReviewsComponent implements OnInit, OnDestroy {
   ) { }
 
   ngOnInit(): void {
-    this.initialize();
-    this.dataSourceLoading = true;
-    this.getCustomerReviews(1);
-    this.isLoadingChange.emit(false);
+    this.getStoreDetails();
   };
+  getStoreDetails() {
+    this._storeManagerService.storeDetail$
+      .pipe(takeUntil(this._unsubscribeAll))
+      .subscribe((items: any) => {
+        this.selectedStore = items["data"][0];
+        this.dataSourceLoading = true;
+        this.initialize();
+        this.dataSourceLoading = true;
+        this.getCustomerReviews(1);
+      });
+  }
   initialize() {
     this.user = this._authService.parseJwt(this._authService.accessToken);
     this.productReviewForm = this.fb.group({
@@ -97,7 +105,7 @@ export class CustomerReviewsComponent implements OnInit, OnDestroy {
       page: page,
       size: 20
     }
-    this._fileManagerService.getStoresData(params)
+    this._storeManagerService.getStoresData(params)
       .pipe(takeUntil(this._unsubscribeAll))
       .subscribe((response: any) => {
         this.dataSource = response["data"];
@@ -123,7 +131,7 @@ export class CustomerReviewsComponent implements OnInit, OnDestroy {
       review_details: true,
       store_product_id: product.pk_storeProductID
     }
-    this._fileManagerService.getStoresData(params)
+    this._storeManagerService.getStoresData(params)
       .pipe(takeUntil(this._unsubscribeAll))
       .subscribe((response: any) => {
         this.productReviewsData = response["data"];
@@ -178,7 +186,7 @@ export class CustomerReviewsComponent implements OnInit, OnDestroy {
       pk_reviewID: element.get('pk_reviewID').value,
       delete_review: true
     }
-    this._fileManagerService.putStoresData(payload)
+    this._storeManagerService.putStoresData(payload)
       .pipe(takeUntil(this._unsubscribeAll))
       .subscribe(res => {
         if (res["success"]) {
@@ -242,7 +250,7 @@ export class CustomerReviewsComponent implements OnInit, OnDestroy {
       loader: true
     })
     let payload = element.value;
-    this._fileManagerService.putStoresData(payload)
+    this._storeManagerService.putStoresData(payload)
       .pipe(takeUntil(this._unsubscribeAll))
       .subscribe((response: any) => {
         if (response["success"] === true) {
@@ -277,7 +285,7 @@ export class CustomerReviewsComponent implements OnInit, OnDestroy {
       name: name + '-' + company, company, date, rating, comment,
       add_review: true
     };
-    this._fileManagerService.postStoresData(payload)
+    this._storeManagerService.postStoresData(payload)
       .pipe(takeUntil(this._unsubscribeAll))
       .subscribe((response: any) => {
         if (response["success"]) {
@@ -305,7 +313,7 @@ export class CustomerReviewsComponent implements OnInit, OnDestroy {
     let payload = {
       email_list: emails, subject, store_name, html_body, send_review_email
     }
-    this._fileManagerService.postStoresData(payload)
+    this._storeManagerService.postStoresData(payload)
       .pipe(takeUntil(this._unsubscribeAll))
       .subscribe((response: any) => {
         // if (response["success"]) {

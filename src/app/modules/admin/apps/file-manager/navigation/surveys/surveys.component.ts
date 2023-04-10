@@ -10,8 +10,8 @@ import { MatSnackBar } from '@angular/material/snack-bar';
   templateUrl: './surveys.component.html'
 })
 export class SurveysComponent implements OnInit, OnDestroy {
-  @Input() selectedStore: any;
-  @Input() isLoading: boolean;
+  selectedStore: any;
+  isLoading: boolean;
   @Output() isLoadingChange = new EventEmitter<boolean>();
   private _unsubscribeAll: Subject<any> = new Subject<any>();
 
@@ -26,20 +26,27 @@ export class SurveysComponent implements OnInit, OnDestroy {
   flashMessage: 'success' | 'error' | null = null;
 
   constructor(
-    private _storesManagerService: FileManagerService,
+    private _storeManagerService: FileManagerService,
     private _changeDetectorRef: ChangeDetectorRef,
     private _snackBar: MatSnackBar
   ) { }
 
   ngOnInit(): void {
-    this.getFirstCall();
+    this.getStoreDetails();
   };
-
+  getStoreDetails() {
+    this._storeManagerService.storeDetail$
+      .pipe(takeUntil(this._unsubscribeAll))
+      .subscribe((items: any) => {
+        this.selectedStore = items["data"][0]
+        this.getFirstCall();
+      });
+  }
   getFirstCall() {
     const { pk_storeID } = this.selectedStore;
 
     // Get the supplier products
-    this._storesManagerService.getSurveysByStoreId(pk_storeID)
+    this._storeManagerService.getSurveysByStoreId(pk_storeID)
       .pipe(takeUntil(this._unsubscribeAll))
       .subscribe((response: any) => {
         this.dataSource = response["data"];
@@ -76,10 +83,10 @@ export class SurveysComponent implements OnInit, OnDestroy {
       };
 
       this.isUpdate = true;
-      this._storesManagerService.addSurvey(payload)
+      this._storeManagerService.addSurvey(payload)
         .subscribe((res) => {
           // Get the supplier products
-          this._storesManagerService.getSurveysByStoreId(pk_storeID)
+          this._storeManagerService.getSurveysByStoreId(pk_storeID)
             .pipe(takeUntil(this._unsubscribeAll))
             .subscribe((response: any) => {
               this.dataSource = response["data"];

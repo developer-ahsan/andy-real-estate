@@ -11,8 +11,8 @@ import { FormControl, FormGroup } from '@angular/forms';
 })
 export class StorePlanComponent implements OnInit, OnDestroy {
 
-  @Input() selectedStore: any;
-  @Input() isLoading: boolean;
+  selectedStore: any;
+  isLoading: boolean;
   @Output() isLoadingChange = new EventEmitter<boolean>();
   private _unsubscribeAll: Subject<any> = new Subject<any>();
   displayedColumns: string[] = ['quarter', 'director', 'created', 'updated', 'submitted'];
@@ -26,17 +26,24 @@ export class StorePlanComponent implements OnInit, OnDestroy {
   isEditStorePlanForm: FormGroup;
   isEditStoreLoader: boolean = false;
   constructor(
-    private _fileManagerService: FileManagerService,
+    private _storeManagerService: FileManagerService,
     private _changeDetectorRef: ChangeDetectorRef,
     private _snackBar: MatSnackBar
   ) { }
 
   ngOnInit(): void {
-    this.initialize();
-    this.dataSourceLoading = true;
-    this.getDataPlans('get');
-    this.isLoadingChange.emit(false);
+    this.getStoreDetails();
   };
+  getStoreDetails() {
+    this._storeManagerService.storeDetail$
+      .pipe(takeUntil(this._unsubscribeAll))
+      .subscribe((items: any) => {
+        this.selectedStore = items["data"][0];
+        this.initialize();
+        this.dataSourceLoading = true;
+        this.getDataPlans('get');
+      });
+  }
   initialize() {
     this.isEditStorePlanForm = new FormGroup({
       reportId: new FormControl(''),
@@ -62,7 +69,7 @@ export class StorePlanComponent implements OnInit, OnDestroy {
       store_plan: true
     }
     // Get the offline products
-    this._fileManagerService.getStoresData(params)
+    this._storeManagerService.getStoresData(params)
       .pipe(takeUntil(this._unsubscribeAll))
       .subscribe((response: any) => {
         this.dataSource = response["data"];
@@ -99,7 +106,7 @@ export class StorePlanComponent implements OnInit, OnDestroy {
   };
   updateStorePlan() {
     this.isEditStoreLoader = true;
-    this._fileManagerService.putStoresData(this.isEditStorePlanForm.value).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+    this._storeManagerService.putStoresData(this.isEditStorePlanForm.value).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
       this.getDataPlans('update')
       this._changeDetectorRef.markForCheck();
     }, err => {

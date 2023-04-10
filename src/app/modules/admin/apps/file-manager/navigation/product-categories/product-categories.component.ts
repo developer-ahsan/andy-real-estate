@@ -15,8 +15,8 @@ import { FormControl, FormGroup } from '@angular/forms';
 })
 
 export class ProductCategoriesComponent implements OnInit, OnDestroy {
-  @Input() selectedStore: any;
-  @Input() isLoading: boolean;
+  selectedStore: any;
+  isLoading: boolean;
   @Output() isLoadingChange = new EventEmitter<boolean>();
   private _unsubscribeAll: Subject<any> = new Subject<any>();
   displayedColumns: string[] = ['categoryName', 'isRecommended', 'isBestSeller', 'isTopRated', 'subCategories'];
@@ -48,17 +48,24 @@ export class ProductCategoriesComponent implements OnInit, OnDestroy {
   addCategoryForm: FormGroup;
   addCategoryLoader: boolean = false;
   constructor(
-    private _fileManagerService: FileManagerService,
+    private _storeManagerService: FileManagerService,
     private _changeDetectorRef: ChangeDetectorRef,
     private _snackBar: MatSnackBar
   ) { }
 
   ngOnInit(): void {
-    this.initialize();
-    this.dataSourceLoading = true;
-    this.getFirstCall(this.page, 'get');
-    this.isLoadingChange.emit(false);
+    this.getStoreDetails();
   };
+  getStoreDetails() {
+    this._storeManagerService.storeDetail$
+      .pipe(takeUntil(this._unsubscribeAll))
+      .subscribe((items: any) => {
+        this.selectedStore = items["data"][0];
+        this.dataSourceLoading = true;
+        this.initialize();
+        this.getFirstCall(this.page, 'get');
+      });
+  }
   initialize() {
     this.addCategoryForm = new FormGroup({
       fk_storeID: new FormControl(this.selectedStore.pk_storeID),
@@ -81,7 +88,7 @@ export class ProductCategoriesComponent implements OnInit, OnDestroy {
     const { pk_storeID } = this.selectedStore;
 
     // Get the offline products
-    this._fileManagerService.getStoreCategory(pk_storeID, page)
+    this._storeManagerService.getStoreCategory(pk_storeID, page)
       .pipe(takeUntil(this._unsubscribeAll))
       .subscribe((response: any) => {
         this.dataSource = response["data"];
@@ -126,7 +133,7 @@ export class ProductCategoriesComponent implements OnInit, OnDestroy {
     const { pk_storeID } = this.selectedStore;
 
     // Get the offline products
-    this._fileManagerService.getStoreCategory(pk_storeID, page)
+    this._storeManagerService.getStoreCategory(pk_storeID, page)
       .pipe(takeUntil(this._unsubscribeAll))
       .subscribe((response: any) => {
         this.dataSource = response["data"];
@@ -191,7 +198,7 @@ export class ProductCategoriesComponent implements OnInit, OnDestroy {
     this.subCategoriesLoader = true;
 
     // Get the offline products
-    this._fileManagerService.getStoreSubCategory(pk_categoryID)
+    this._storeManagerService.getStoreSubCategory(pk_categoryID)
       .pipe(takeUntil(this._unsubscribeAll))
       .subscribe((response: any) => {
         this.subCategories = response["data"];
@@ -236,7 +243,7 @@ export class ProductCategoriesComponent implements OnInit, OnDestroy {
       categories: checkArray,
       update_category_status: true
     }
-    this._fileManagerService.putStoresData(params)
+    this._storeManagerService.putStoresData(params)
       .pipe(takeUntil(this._unsubscribeAll))
       .subscribe(res => {
         this.getFirstCall(1, 'status');
@@ -260,7 +267,7 @@ export class ProductCategoriesComponent implements OnInit, OnDestroy {
       categories: checkArray,
       category_display_order: true
     }
-    this._fileManagerService.putStoresData(params)
+    this._storeManagerService.putStoresData(params)
       .pipe(takeUntil(this._unsubscribeAll))
       .subscribe(res => {
         this.getFirstCall(1, 'order');
@@ -283,7 +290,7 @@ export class ProductCategoriesComponent implements OnInit, OnDestroy {
       let params = {
         fk_storeID, categoryName, categoryDesc, categoryMiniDesc, listOrder, browserTitle, metaDesc, permalink, blnScroller, add_category
       }
-      this._fileManagerService.postStoresData(params)
+      this._storeManagerService.postStoresData(params)
         .pipe(takeUntil(this._unsubscribeAll))
         .subscribe(res => {
           this.getFirstCall(1, 'add');

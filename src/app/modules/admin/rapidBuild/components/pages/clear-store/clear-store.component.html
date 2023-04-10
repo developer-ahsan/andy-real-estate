@@ -23,10 +23,11 @@
                 </mat-autocomplete>
             </mat-form-field>
             <div>
-                <button mat-flat-button class="min-w-40" [color]="'primary'">
-                    <span>Clear Store</span>
-                    <!-- <mat-progress-spinner *ngIf="isUpdateWebsiteLoader" [diameter]="24" [mode]="'indeterminate'">
-                    </mat-progress-spinner> -->
+                <button mat-flat-button [disabled]="isClearLaoder" class="min-w-40" [color]="'primary'"
+                    (click)="clearStore()">
+                    <span *ngIf="!isClearLaoder">Clear Store</span>
+                    <mat-progress-spinner *ngIf="isClearLaoder" [diameter]="24" [mode]="'indeterminate'">
+                    </mat-progress-spinner>
                 </button>
             </div>
         </div>

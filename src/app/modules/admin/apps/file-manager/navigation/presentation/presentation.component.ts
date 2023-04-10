@@ -26,8 +26,8 @@ import { MatSnackBar } from "@angular/material/snack-bar";
   styleUrls: ["./presentation.scss"],
 })
 export class PresentationComponent implements OnInit, OnDestroy {
-  @Input() selectedStore: any;
-  @Input() isLoading: boolean;
+  selectedStore: any;
+  isLoading: boolean;
   @Output() isLoadingChange = new EventEmitter<boolean>();
   private _unsubscribeAll: Subject<any> = new Subject<any>();
 
@@ -162,7 +162,7 @@ export class PresentationComponent implements OnInit, OnDestroy {
 
 
   constructor(
-    private _fileManagerService: FileManagerService,
+    private _storeManagerService: FileManagerService,
     private _changeDetectorRef: ChangeDetectorRef,
     private _matDialog: MatDialog,
     private _snackBar: MatSnackBar,
@@ -170,13 +170,20 @@ export class PresentationComponent implements OnInit, OnDestroy {
   ) { }
 
   ngOnInit(): void {
-    this.isLoadingChange.emit(false);
-    this.initialize();
-    this._fileManagerService.settings$.pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
-      if (res) {
-        this.ngBlnColorHeader = res["data"][0].blnColorHeaders;
-      }
-    })
+    this.getStoreDetails();
+  }
+  getStoreDetails() {
+    this._storeManagerService.storeDetail$
+      .pipe(takeUntil(this._unsubscribeAll))
+      .subscribe((items: any) => {
+        this.selectedStore = items["data"][0];
+        this.initialize();
+        this._storeManagerService.settings$.pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+          if (res) {
+            this.ngBlnColorHeader = res["data"][0].blnColorHeaders;
+          }
+        })
+      });
   }
   initialize() {
     this.initSiteColorForm();
@@ -346,7 +353,7 @@ export class PresentationComponent implements OnInit, OnDestroy {
       store_id: this.selectedStore.pk_storeID,
       [value]: true,
     };
-    this._fileManagerService
+    this._storeManagerService
       .getPresentationData(params)
       .pipe(takeUntil(this._unsubscribeAll))
       .subscribe((res: any) => {
@@ -425,10 +432,10 @@ export class PresentationComponent implements OnInit, OnDestroy {
       fk_storeID: this.selectedStore.pk_storeID,
       color_header_update: true
     }
-    this._fileManagerService.colorHeaderUpdate(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+    this._storeManagerService.colorHeaderUpdate(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
       this.lookFeelLoader = false;
       if (res["success"]) {
-        this._fileManagerService.getStoreSetting(this.selectedStore.pk_storeID).pipe(takeUntil(this._unsubscribeAll)).subscribe();
+        this._storeManagerService.getStoreSetting(this.selectedStore.pk_storeID).pipe(takeUntil(this._unsubscribeAll)).subscribe();
         this.lookFeelMsg = true;
         setTimeout(() => {
           this.lookFeelMsg = false;
@@ -478,7 +485,7 @@ export class PresentationComponent implements OnInit, OnDestroy {
       site_colors_update
     }
     this.siteColorLoader = true;
-    this._fileManagerService.colorsUpdate(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+    this._storeManagerService.colorsUpdate(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
       this.siteColorLoader = false;
       if (res["success"]) {
         this.siteColorMsg = true;
@@ -496,7 +503,7 @@ export class PresentationComponent implements OnInit, OnDestroy {
   // Special Offers
   UpdateSpecialOffer() {
     this.specialOfferLoader = true;
-    this._fileManagerService.UpdateSpecialOffer(this.specialOfferForm.value).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+    this._storeManagerService.UpdateSpecialOffer(this.specialOfferForm.value).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
       this.specialOfferLoader = false;
       if (res["success"]) {
         this.specialOfferMsg = true;
@@ -519,7 +526,7 @@ export class PresentationComponent implements OnInit, OnDestroy {
       update_typekit: true
     }
     this.typekitLoader = true;
-    this._fileManagerService.UpdateTypeKit(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+    this._storeManagerService.UpdateTypeKit(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
       this.typekitLoader = false;
       if (res["success"]) {
         this.typekitMsg = true;
@@ -560,7 +567,7 @@ export class PresentationComponent implements OnInit, OnDestroy {
         news, add_news_feed
       }
       this.newsFeedAddLoader = true;
-      this._fileManagerService.AddNewsFeed(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+      this._storeManagerService.AddNewsFeed(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
         this.newsFeedAddLoader = false;
         if (res["success"]) {
           this.getScreenData("news_feed", this.presentationScreen);
@@ -591,7 +598,7 @@ export class PresentationComponent implements OnInit, OnDestroy {
         news, update_news_feed, pk_newsFeedID
       }
       this.newsFeedUpdateLoader = true;
-      this._fileManagerService.UpdateNewsFeed(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+      this._storeManagerService.UpdateNewsFeed(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
         this.newsFeedUpdateLoader = false;
         if (res["success"]) {
           this.getScreenData("news_feed", this.presentationScreen);
@@ -615,7 +622,7 @@ export class PresentationComponent implements OnInit, OnDestroy {
       pk_newsFeedID: element.pk_newsFeedID,
       delete_news_feed: true
     }
-    this._fileManagerService.DeleteNewsFeed(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+    this._storeManagerService.DeleteNewsFeed(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
       element.deleteLoader = false;
       this.newsFeedData = this.newsFeedData.filter((value) => {
         return value.pk_newsFeedID != element.pk_newsFeedID;
@@ -636,7 +643,7 @@ export class PresentationComponent implements OnInit, OnDestroy {
   // Dashboard Emails
   DefaultEmailUpdate() {
     this.dashboardEmailLoader = true;
-    this._fileManagerService.DefaultEmailUpdate(this.dashboardEmailsForm.value).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+    this._storeManagerService.DefaultEmailUpdate(this.dashboardEmailsForm.value).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
       this.dashboardEmailLoader = false;
       if (res["success"]) {
         this.dashboardEmailMsg = true;
@@ -665,7 +672,7 @@ export class PresentationComponent implements OnInit, OnDestroy {
       fk_storeID: this.selectedStore.pk_storeID,
       update_presentation_feature_campaign: true
     }
-    this._fileManagerService.UpdateFeatureCampaign(payload)
+    this._storeManagerService.UpdateFeatureCampaign(payload)
       .pipe(takeUntil(this._unsubscribeAll))
       .subscribe(res => {
         this.fetureCampaignLoader = false;
@@ -725,7 +732,7 @@ export class PresentationComponent implements OnInit, OnDestroy {
       image_path: `/globalAssets/Stores/mastheads/${this.selectedStore.pk_storeID}.gif`
     };
 
-    this._fileManagerService.addPresentationMedia(payload)
+    this._storeManagerService.addPresentationMedia(payload)
       .subscribe((response) => {
         this.mastHeadImg = environment.storeMedia + `/mastheads/` + this.selectedStore.pk_storeID + ".gif?" + Math.random();
         this.masHeadLoader = false;
@@ -785,7 +792,7 @@ export class PresentationComponent implements OnInit, OnDestroy {
       image_path: `/globalAssets/Stores/quickGuides/headers/${this.selectedStore.pk_storeID}.jpg`
     };
 
-    this._fileManagerService.addPresentationMedia(payload)
+    this._storeManagerService.addPresentationMedia(payload)
       .subscribe((response) => {
         this.mastHeadImg = environment.storeMedia + `/quickGuides/headers/` + this.selectedStore.pk_storeID + ".jpg?" + Math.random();
         this.quickGuideCheck = true;
@@ -854,7 +861,7 @@ export class PresentationComponent implements OnInit, OnDestroy {
       image_path: img_path
     };
 
-    this._fileManagerService.addPresentationMedia(payload)
+    this._storeManagerService.addPresentationMedia(payload)
       .subscribe((response) => {
         this.mastHeadImg = url;
         if (check == 'options') {
@@ -885,7 +892,7 @@ export class PresentationComponent implements OnInit, OnDestroy {
       blnAllowImprintColorSelection: this.productBuilderSettings.blnAllowImprintColorSelection,
       update_product_builder: true
     }
-    this._fileManagerService.UpdateProductBuilder(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+    this._storeManagerService.UpdateProductBuilder(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
       this.productBuilderLoader = false;
       this.productBuilderMsg = true;
       setTimeout(() => {

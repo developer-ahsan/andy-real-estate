@@ -9,8 +9,8 @@ import { takeUntil } from 'rxjs/operators';
   templateUrl: './credit-terms.component.html',
 })
 export class CreditTermsComponent implements OnInit, OnDestroy {
-  @Input() selectedStore: any;
-  @Input() isLoading: boolean;
+  selectedStore: any;
+  isLoading: boolean;
   @Output() isLoadingChange = new EventEmitter<boolean>();
   private _unsubscribeAll: Subject<any> = new Subject<any>();
   isPageLoading: boolean = false;
@@ -19,21 +19,30 @@ export class CreditTermsComponent implements OnInit, OnDestroy {
   isApplyLoader: boolean = false;
   isApplyMsg: boolean = false;
   constructor(
-    private _fileManagerService: FileManagerService,
+    private _storeManagerService: FileManagerService,
     private _changeDetectorRef: ChangeDetectorRef,
     private _snackBar: MatSnackBar
   ) { }
 
   ngOnInit() {
     this.isPageLoading = true;
-    this.getCredits();
+    this.getStoreDetails();
+  }
+  getStoreDetails() {
+    this._storeManagerService.storeDetail$
+      .pipe(takeUntil(this._unsubscribeAll))
+      .subscribe((items: any) => {
+        this.selectedStore = items["data"][0];
+        this.isPageLoading = true;
+        this.getCredits();
+      });
   }
   getCredits() {
     let params = {
       store_id: this.selectedStore.pk_storeID,
       credit_term: true
     }
-    this._fileManagerService.getStoresData(params)
+    this._storeManagerService.getStoresData(params)
       .pipe(takeUntil(this._unsubscribeAll))
       .subscribe(res => {
         this.isPageLoading = false;
@@ -49,7 +58,7 @@ export class CreditTermsComponent implements OnInit, OnDestroy {
         credit_term_id: this.selectedTerm,
         update_credit_terms: true
       }
-      this._fileManagerService.putStoresData(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+      this._storeManagerService.putStoresData(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
         if (res["success"]) {
           this.selectedTerm = null;
           this.isApplyLoader = false;

@@ -1,0 +1,134 @@
+<div class="absolute inset-0 flex flex-col min-w-0 overflow-auto bg-card">
+    <div class="relative flex flex-col sm:flex-row flex-0 sm:items-center sm:justify-between pb-1 border-b"
+        *ngIf="isLoading">
+        <div class="absolute inset-x-0 bottom-1">
+            <mat-progress-bar [mode]="'indeterminate'"></mat-progress-bar>
+        </div>
+    </div>
+    <mat-drawer-container class="example-container w-full bg-light" [hasBackdrop]="false">
+        <mat-drawer #drawer [mode]="'over'" position="end" style="width: 350px !important; ">
+            <div class="row w-full p-5 m-0 mt-4">
+                <div class="col-9">
+                    <div class="text-2xl font-extrabold tracking-tight leading-none"> Advanced Search
+                    </div>
+                </div>
+                <div class="col-3 text-right">
+                    <mat-icon (click)="toggleDrawer()" matTooltip="Close Search" class="mr-2 cursor-pointer"
+                        [svgIcon]="'mat_outline:close'">
+                    </mat-icon>
+                </div>
+                <div class="col-12 mt-5">
+                    <mat-form-field class="w-full">
+                        <mat-select name="filterView" [(ngModel)]="ngFilterView">
+                            <mat-option [value]="1">Revenue</mat-option>
+                            <mat-option [value]="2">Orders to close</mat-option>
+                            <mat-option [value]="3">POs need billed</mat-option>
+                            <mat-option [value]="4">Receive payments</mat-option>
+                            <mat-option [value]="5">Vendor bills need paid</mat-option>
+                        </mat-select>
+                    </mat-form-field>
+                </div>
+                <div class="col-12">
+                    <mat-form-field class="w-full">
+                        <mat-label>Stores:</mat-label>
+                        <input matInput placeholder="Search Stores" matTooltip="Search Stores by name"
+                            [matAutocomplete]="auto" [formControl]="searchStoreCtrl">
+                        <mat-autocomplete class="w-full" #auto="matAutocomplete" (optionSelected)="onSelected($event)"
+                            [displayWith]="displayWith">
+                            <mat-option *ngIf="isSearchingStore" class="is-loading">Loading...</mat-option>
+                            <ng-container *ngIf="!isSearchingStore">
+                                <mat-option *ngFor="let item of allStores" [value]="item">
+                                    <span>{{item.storeName}}</span>
+                                </mat-option>
+                            </ng-container>
+                        </mat-autocomplete>
+                    </mat-form-field>
+                </div>
+                <div class="col-12 mt-5">
+                    <mat-form-field class="w-full">
+                        <mat-label>Order ID/PO:</mat-label>
+                        <input matInput [(ngModel)]="ngKeyword">
+                    </mat-form-field>
+                </div>
+                <div class="col-12">
+                    <mat-form-field class="w-full">
+                        <mat-label>Customer/Company/Vendor:</mat-label>
+                        <input matInput [(ngModel)]="ngProductName">
+                    </mat-form-field>
+                </div>
+                <div class="col-12">
+                    <mat-form-field class="w-full">
+                        <mat-label>Start-End Date:</mat-label>
+                        <mat-date-range-input [rangePicker]="dateRange">
+                            <input matStartDate placeholder="Start date">
+                            <input matEndDate placeholder="End date">
+                        </mat-date-range-input>
+                        <mat-datepicker-toggle matIconSuffix [for]="dateRange"></mat-datepicker-toggle>
+                        <mat-date-range-picker #dateRange></mat-date-range-picker>
+                    </mat-form-field>
+                </div>
+                <div class="col-12">
+                    <button [color]="'primary'" class="w-full" mat-button mat-stroked-button
+                        (click)="filterBuildData()">Filter</button>
+                </div>
+            </div>
+        </mat-drawer>
+        <mat-drawer-content style="height: 100vh;">
+            <div
+                class="flex flex-col sm:flex-row flex-0 sm:items-center sm:justify-between p-6 sm:py-8 sm:px-10 border-b bg-card dark:bg-transparent">
+                <div class="flex-1 min-w-0">
+                    <!-- Breadcrumbs -->
+
+                    <!-- Title -->
+                    <div class="mt-2" #topScrollAnchor>
+                        <div class="flex align-items-center justify-between">
+                            <h2
+                                class="text-3xl md:text-4xl font-extrabold tracking-tight leading-7 sm:leading-10 truncate">
+                                SMARTCENTS
+                            </h2>
+                            <div class="flex space-x-2">
+                                <button class="min-w-40" mat-stroked-button (click)="toggleDrawer()">Filter</button>
+                                <button *ngIf="loginCheck" class="min-w-40" mat-stroked-button
+                                    (click)="logout()">Logout</button>
+                            </div>
+
+                        </div>
+                    </div>
+                    <div class="flex flex-wrap items-center font-medium">
+                        <a class="whitespace-nowrap text-primary-500" *ngIf="!isLoading">Bill Harris</a>
+                    </div>
+                </div>
+            </div>
+            <div class="flex-auto p-6 sm:p-6 space-y-2">
+                <mat-button-toggle-group #group="matButtonToggleGroup" [value]="selectedRoute"
+                    (change)="calledScreen(group.value)">
+                    <mat-button-toggle *ngFor="let item of routes" [value]="item.route">
+                        {{item.title}}
+                    </mat-button-toggle>
+                </mat-button-toggle-group>
+                <router-outlet></router-outlet>
+            </div>
+            <!-- <div class="flex items-center justify-center px-6" *ngIf="!loginCheck" style="height: 70%;">
+                <div class="w-full sm:w-auto py-8 px-4 sm:p-12 sm:rounded-2xl sm:shadow sm:bg-card">
+                    <div class="w-full max-w-80 sm:w-80 mx-auto sm:mx-0">
+                        <div class="mt-8 text-4xl font-extrabold tracking-tight leading-tight">RapidBuild Login</div>
+                        <mat-form-field class="w-full">
+                            <mat-label>Username</mat-label>
+                            <input matInput [(ngModel)]="ngEmail" type="text">
+                        </mat-form-field>
+                        <mat-form-field class="w-full">
+                            <mat-label>Password</mat-label>
+                            <input matInput [(ngModel)]="ngPassword" type="password">
+                        </mat-form-field>
+                        <button [disabled]="isLoginLoader" mat-flat-button class="w-full" [color]="'primary'"
+                            [matTooltip]="'Login'" (click)="loginRapidBuild()">
+                            <span *ngIf="!isLoginLoader"> Login </span>
+                            <mat-progress-spinner *ngIf="isLoginLoader" [diameter]="24" [mode]="'indeterminate'">
+                            </mat-progress-spinner>
+                        </button>
+                    </div>
+                </div>
+            </div> -->
+        </mat-drawer-content>
+    </mat-drawer-container>
+</div>

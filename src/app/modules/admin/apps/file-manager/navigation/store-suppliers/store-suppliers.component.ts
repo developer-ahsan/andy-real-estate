@@ -10,8 +10,8 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 })
 export class StoreSuppliersComponent implements OnInit, OnDestroy {
 
-  @Input() selectedStore: any;
-  @Input() isLoading: boolean;
+  selectedStore: any;
+  isLoading: boolean;
   @Output() isLoadingChange = new EventEmitter<boolean>();
   private _unsubscribeAll: Subject<any> = new Subject<any>();
   displayedColumns: string[] = ['company', 'productName', 'percentage'];
@@ -24,22 +24,29 @@ export class StoreSuppliersComponent implements OnInit, OnDestroy {
   totalPercentage: number = 0;
 
   constructor(
-    private _fileManagerService: FileManagerService,
+    private _storeManagerService: FileManagerService,
     private _changeDetectorRef: ChangeDetectorRef,
     private _snackBar: MatSnackBar
   ) { }
 
   ngOnInit(): void {
-    this.dataSourceLoading = true;
-    this.isLoadingChange.emit(false);
-    this.getSuppliers();
+    this.getStoreDetails();
   };
+  getStoreDetails() {
+    this._storeManagerService.storeDetail$
+      .pipe(takeUntil(this._unsubscribeAll))
+      .subscribe((items: any) => {
+        this.selectedStore = items["data"][0];
+        this.dataSourceLoading = true;
+        this.getSuppliers();
+      });
+  }
   getSuppliers() {
     let params = {
       view_supplier: true,
       store_id: this.selectedStore.pk_storeID
     }
-    this._fileManagerService.getStoresData(params)
+    this._storeManagerService.getStoresData(params)
       .pipe(takeUntil(this._unsubscribeAll))
       .subscribe((response: any) => {
         this.dataSource = response["data"];

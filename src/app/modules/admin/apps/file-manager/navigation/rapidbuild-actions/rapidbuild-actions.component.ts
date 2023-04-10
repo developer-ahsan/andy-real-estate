@@ -13,8 +13,8 @@ import { takeUntil } from 'rxjs/operators';
 })
 
 export class RapidbuildActionsComponent implements OnInit, OnDestroy {
-  @Input() selectedStore: any;
-  @Input() isLoading: boolean;
+  selectedStore: any;
+  isLoading: boolean;
   @Output() isLoadingChange = new EventEmitter<boolean>();
   private _unsubscribeAll: Subject<any> = new Subject<any>();
   displayedColumns: string[] = ['spid', 'name', 'master', 'store'];
@@ -24,21 +24,28 @@ export class RapidbuildActionsComponent implements OnInit, OnDestroy {
   page: number = 1;
 
   constructor(
-    private _fileManagerService: FileManagerService,
+    private _storeManagerService: FileManagerService,
     private _changeDetectorRef: ChangeDetectorRef
   ) { }
 
   ngOnInit(): void {
-    this.dataSourceLoading = true;
-    this.getMainStoreCall(this.page);
-    this.isLoadingChange.emit(false);
+    this.getStoreDetails();
+  }
+  getStoreDetails() {
+    this._storeManagerService.storeDetail$
+      .pipe(takeUntil(this._unsubscribeAll))
+      .subscribe((items: any) => {
+        this.selectedStore = items["data"][0];
+        this.dataSourceLoading = true;
+        this.getMainStoreCall(this.page);
+      });
   }
 
   getMainStoreCall(page) {
     const { pk_storeID } = this.selectedStore;
 
     // Get the offline products
-    this._fileManagerService.getStoreProducts(pk_storeID, page)
+    this._storeManagerService.getStoreProducts(pk_storeID, page)
       .pipe(takeUntil(this._unsubscribeAll))
       .subscribe((response: any) => {
         this.dataSource = response["data"];

@@ -184,7 +184,15 @@ export const defaultNavigation: FuseNavigationItem[] = [
         // subtitle: 'Smartart Dashboards',
         link: '/ordermanage',
         icon: 'heroicons_outline:briefcase',
-    }
+    },
+    {
+        id: 'smartcents',
+        title: 'SmartCents',
+        type: 'basic',
+        // subtitle: 'Smartart Dashboards',
+        link: '/smartcents',
+        icon: 'heroicons_outline:library',
+    },
 ];
 export const compactNavigation: FuseNavigationItem[] = [
     {

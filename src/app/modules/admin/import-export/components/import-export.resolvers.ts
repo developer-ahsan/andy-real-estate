@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { ActivatedRouteSnapshot, Resolve, Router, RouterStateSnapshot } from '@angular/router';
 import { AuthService } from 'app/core/auth/auth.service';
 import { Observable } from 'rxjs';
-import { OrderManageService } from './import-export.service';
+import { ImportExportService } from './import-export.service';
 
 @Injectable({
     providedIn: 'root'
@@ -13,7 +13,7 @@ export class EmployeesListsResolver implements Resolve<any>
      * Constructor
      */
     constructor(
-        private _OrderManageService: OrderManageService
+        private _ImportExportService: ImportExportService
     ) {
     }
 
@@ -28,7 +28,7 @@ export class EmployeesListsResolver implements Resolve<any>
      * @param state
      */
     resolve(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<any[]> {
-        return this._OrderManageService.getAllEmployees();
+        return this._ImportExportService.getAllEmployees();
     }
 }
 @Injectable({
@@ -39,7 +39,7 @@ export class FlpsLoginResolver implements Resolve<any>
     /**
      * Constructor
      */
-    constructor(private _OrderManageService: OrderManageService, private _authService: AuthService) {
+    constructor(private _ImportExportService: ImportExportService, private _authService: AuthService) {
     }
 
     // -----------------------------------------------------------------------------------------------------
@@ -58,18 +58,18 @@ export class FlpsLoginResolver implements Resolve<any>
             login_check: true,
             email: user.email
         }
-        return this._OrderManageService.checkFLPSLogin(params);
+        return this._ImportExportService.checkFLPSLogin(params);
     }
 }
 @Injectable({
     providedIn: 'root'
 })
-export class SmartArtStoresResolver implements Resolve<any>
+export class ImportExportStoresResolver implements Resolve<any>
 {
     /**
      * Constructor
      */
-    constructor(private _OrderManageService: OrderManageService, private _authService: AuthService) {
+    constructor(private _ImportExportService: ImportExportService, private _authService: AuthService) {
     }
 
     // -----------------------------------------------------------------------------------------------------
@@ -83,7 +83,7 @@ export class SmartArtStoresResolver implements Resolve<any>
      * @param state
      */
     resolve(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<any[]> {
-        return this._OrderManageService.getSmartArtStores();
+        return this._ImportExportService.getAllStores();
     }
 }
 @Injectable({
@@ -94,7 +94,7 @@ export class SmartArtUsersResolver implements Resolve<any>
     /**
      * Constructor
      */
-    constructor(private _OrderManageService: OrderManageService) {
+    constructor(private _ImportExportService: ImportExportService) {
     }
 
     // -----------------------------------------------------------------------------------------------------
@@ -108,7 +108,7 @@ export class SmartArtUsersResolver implements Resolve<any>
      * @param state
      */
     resolve(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<any[]> {
-        return this._OrderManageService.getSmartArtUsers();
+        return this._ImportExportService.getSmartArtUsers();
     }
 }
 

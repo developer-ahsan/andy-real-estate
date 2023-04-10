@@ -16,7 +16,7 @@
             <div class="row" *ngIf="!isLoading">
                 <div class="col-12 col-md-4 mt-3">
                     <mat-accordion multi>
-                        <mat-expansion-panel [expanded]="true">
+                        <mat-expansion-panel [expanded]="true" *ngIf="userData.blnMaster">
                             <mat-expansion-panel-header>
                                 <mat-panel-title>
                                     Update status
@@ -31,11 +31,19 @@
                                 </mat-form-field>
                             </div>
                             <div class="space-x-2">
-                                <button class="min-w-20 btn buttonComment hover:bg-gray-200">Update</button>
-                                <button class="min-w-20 btn  buttonDanger hover:bg-gray-200">Remove Entry
-                                    <!-- <mat-progress-spinner *ngIf="isAutoRequestLoader" [diameter]="24"
-                                            [mode]="'indeterminate'">
-                                        </mat-progress-spinner> -->
+                                <button class="min-w-20 btn buttonComment hover:bg-gray-200" [disabled]="isUpdateLoader"
+                                    (click)="updateStatus()">
+                                    <span *ngIf="!isUpdateLoader">Update</span>
+                                    <mat-progress-spinner *ngIf="isUpdateLoader" [diameter]="24"
+                                        [mode]="'indeterminate'">
+                                    </mat-progress-spinner>
+                                </button>
+                                <button [disabled]="isRemoveLoader" (click)="removeBuild()"
+                                    class="min-w-20 btn  buttonDanger hover:bg-gray-200">
+                                    <span *ngIf="!isRemoveLoader">Remove Entry</span>
+                                    <mat-progress-spinner *ngIf="isRemoveLoader" [diameter]="24"
+                                        [mode]="'indeterminate'">
+                                    </mat-progress-spinner>
                                 </button>
                             </div>
                         </mat-expansion-panel>
@@ -47,8 +55,11 @@
                             </mat-expansion-panel-header>
                             <div>
                                 <div class="py-2">
-                                    <fuse-alert class="my-2" [appearance]="'soft'" [type]="'warning'"
-                                        [showIcon]="false">
+                                    <img *ngIf="ngProofCheck"
+                                        src="https://assets.consolidus.com/globalAssets/rapidBuild/{{buildDetails.pk_rapidBuildID}}.jpg"
+                                        class="w-full" (error)="checkProof($event)">
+                                    <fuse-alert *ngIf="!ngProofCheck" class="my-2" [appearance]="'soft'"
+                                        [type]="'warning'" [showIcon]="false">
                                         This product does not yet have a proof.
                                     </fuse-alert>
                                 </div>
@@ -61,12 +72,19 @@
                                 </mat-panel-title>
                             </mat-expansion-panel-header>
                             <div class="mt-2">
-                                <input type="file">
+                                <input type="file" accept=".jpg" id="myfile" (change)="uploadFile($event)">
                                 <br>
                                 <mat-form-field class="w-full mt-2">
                                     <mat-label>Proof Comments</mat-label>
-                                    <textarea matInput></textarea>
+                                    <textarea matInput [(ngModel)]="ngProofComment"></textarea>
                                 </mat-form-field>
+                                <button class="min-w-20 btn buttonComment hover:bg-gray-200"
+                                    [disabled]="isUploadProofLoader" (click)="updateProof()">
+                                    <span *ngIf="!isUploadProofLoader">Upload Proof</span>
+                                    <mat-progress-spinner *ngIf="isUploadProofLoader" [diameter]="24"
+                                        [mode]="'indeterminate'">
+                                    </mat-progress-spinner>
+                                </button>
                                 <div class="py-2">
                                     <fuse-alert class="my-2" [appearance]="'soft'" [type]="'warning'"
                                         [showIcon]="false">
@@ -83,7 +101,7 @@
                             </mat-expansion-panel-header>
                             <div>
                                 <div class="py-2">
-                                    <p *ngIf="buildDetails.proofComments">{{buildDetails.proofComments}}</p>
+                                    <p *ngIf="buildDetails.proofComments" [innerHtml]="buildDetails.proofComments"></p>
                                     <fuse-alert *ngIf="!buildDetails.proofComments" class="my-2" [appearance]="'soft'"
                                         [type]="'warning'" [showIcon]="false">
                                         This proof does not currently have any comments.
@@ -223,6 +241,15 @@
                                             <td valign="top"><b>Categories:</b></td>
                                             <td valign="top">
                                                 <span>{{buildDetails.productCategories || 'N/A'}}</span>
+                                            </td>
+                                        </tr>
+                                        <tr *ngIf="artWorkDetails.length > 0">
+                                            <td valign="top"><b>Artworks:</b></td>
+                                            <td valign="top">
+                                                <div *ngFor="let item of artWorkDetails">
+                                                    <a target="_blank"
+                                                        href="https://assets.consolidus.com/globalAssets/Products/artworkTemplates/{{item.fk_productID}}/{{item.pk_artworkTemplateID}}.{{item.extension}}">ArtworkTemplate</a>
+                                                </div>
                                             </td>
                                         </tr>
                                         <tr *ngIf="!userData.blnMaster && colorsData.length > 0">

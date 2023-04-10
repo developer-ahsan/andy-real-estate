@@ -19,8 +19,8 @@ export interface Task {
   templateUrl: './store-settings.component.html'
 })
 export class StoreSettingsComponent implements OnInit, OnDestroy {
-  @Input() selectedStore: any;
-  @Input() isLoading: boolean;
+  selectedStore: any;
+  isLoading: boolean;
   @Output() isLoadingChange = new EventEmitter<boolean>();
   isStoreFetch: boolean = true;
   selected = 'YES';
@@ -54,7 +54,28 @@ export class StoreSettingsComponent implements OnInit, OnDestroy {
   ) { }
 
   ngOnInit(): void {
-    // Create the selected product form
+    this.getStoreDetails();
+  };
+  getStoreDetails() {
+    this._storesManagerService.storeDetail$
+      .pipe(takeUntil(this._unsubscribeAll))
+      .subscribe((items: any) => {
+        this.initialize();
+        this._storesManagerService.settings$.pipe(takeUntil(this._unsubscribeAll))
+          .subscribe((settings: any) => {
+            let storeSetting = settings["data"][0];
+            let selectedStore = items["data"][0];
+            selectedStore["reportColor"] = `#${selectedStore["reportColor"]}`;
+            storeSetting["cashbackPercent"] = storeSetting["cashbackPercent"] * 100;
+
+            this.storeSettingsForm.patchValue(selectedStore);
+            this.storeSettingsForm.patchValue(storeSetting);
+
+            this.isStoreFetch = false;
+          });
+      });
+  }
+  initialize() {
     this.storeSettingsForm = this._formBuilder.group({
       storeName: ['', Validators.required],
       storeCode: [''],
@@ -110,81 +131,7 @@ export class StoreSettingsComponent implements OnInit, OnDestroy {
       cashbackPercent: [''],
       blnRegisteredUsersCashbackDefault: ['']
     });
-
-    const { pk_storeID } = this.selectedStore;
-
-    this._storesManagerService.storeDetail$.subscribe(result => {
-      this._storesManagerService.getStoreSetting(pk_storeID)
-        .pipe(takeUntil(this._unsubscribeAll))
-        .subscribe((response: any) => {
-          let storeSetting = response["data"][0];
-          let selectedStore = result["data"][0];
-          selectedStore["reportColor"] = `#${selectedStore["reportColor"]}`;
-          storeSetting["cashbackPercent"] = storeSetting["cashbackPercent"] * 100;
-
-          this.storeSettingsForm.patchValue(selectedStore);
-          this.storeSettingsForm.patchValue(storeSetting);
-
-          this.isStoreFetch = false;
-
-          // Mark for check
-          this._changeDetectorRef.markForCheck();
-        }, err => {
-          this._snackBar.open("Some error occured", '', {
-            horizontalPosition: 'center',
-            verticalPosition: 'bottom',
-            duration: 3500
-          });
-          this.isStoreFetch = false;
-
-          // Mark for check
-          this._changeDetectorRef.markForCheck();
-        });
-    })
-    // Store get call
-    // this._storesManagerService.getStoreByStoreId(pk_storeID)
-    //   .pipe(takeUntil(this._unsubscribeAll))
-    //   .subscribe((result: any) => {
-    //     // Get the items
-    //     this._storesManagerService.getStoreSetting(pk_storeID)
-    //       .pipe(takeUntil(this._unsubscribeAll))
-    //       .subscribe((response: any) => {
-    //         let storeSetting = response["data"][0];
-    //         let selectedStore = result["data"][0];
-    //         selectedStore["reportColor"] = `#${selectedStore["reportColor"]}`;
-    //         storeSetting["cashbackPercent"] = storeSetting["cashbackPercent"] * 100;
-
-    //         this.storeSettingsForm.patchValue(selectedStore);
-    //         this.storeSettingsForm.patchValue(storeSetting);
-
-    //         this.isStoreFetch = false;
-
-    //         // Mark for check
-    //         this._changeDetectorRef.markForCheck();
-    //       }, err => {
-    //         this._snackBar.open("Some error occured", '', {
-    //           horizontalPosition: 'center',
-    //           verticalPosition: 'bottom',
-    //           duration: 3500
-    //         });
-    //         this.isStoreFetch = false;
-
-    //         // Mark for check
-    //         this._changeDetectorRef.markForCheck();
-    //       });
-    //   }, err => {
-    //     this._snackBar.open("Some error occured", '', {
-    //       horizontalPosition: 'center',
-    //       verticalPosition: 'bottom',
-    //       duration: 3500
-    //     });
-    //     this.isStoreFetch = false;
-
-    //     // Mark for check
-    //     this._changeDetectorRef.markForCheck();
-    //   })
-
-  };
+  }
 
   calledScreen(screenName): void {
     this.mainScreen = screenName;

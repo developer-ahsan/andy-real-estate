@@ -3,14 +3,16 @@ import { ImportExportHomeComponent } from './components/pages/home/home.componen
 import { OrderExportComponent } from './components/pages/export/export.component';
 import { ImportExportComponent } from './components/import-export.component';
 import { OrderImportComponent } from './components/pages/import/import.component';
+import { ExportDetailComponent } from './components/pages/export-details/export-details.component';
+import { ImportExportStoresResolver } from './components/import-export.resolvers';
 
 export const importExportRoutes: Route[] = [
     {
         path: '',
         component: ImportExportComponent,
-        // resolve: {
-        //     SmartArtStoresResolver, SmartArtUsersResolver
-        // },
+        resolve: {
+            ImportExportStoresResolver
+        },
         children: [
             {
                 path: '',
@@ -39,6 +41,14 @@ export const importExportRoutes: Route[] = [
                 data: {
                     title: 'Import',
                     url: 'import'
+                }
+            },
+            {
+                path: 'export-details',
+                component: ExportDetailComponent,
+                data: {
+                    title: 'Export Details',
+                    url: 'export-details'
                 }
             }
         ]

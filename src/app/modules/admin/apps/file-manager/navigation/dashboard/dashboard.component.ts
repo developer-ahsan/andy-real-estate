@@ -97,8 +97,8 @@ export type ChartOptionsThree = {
   providers: [CurrencyPipe],
 })
 export class DashboardComponent implements OnInit, OnDestroy {
-  @Input() selectedStore: any;
-  @Input() isLoading: boolean;
+  selectedStore: any;
+  isLoading: boolean;
   @Output() isLoadingChange = new EventEmitter<boolean>();
   private _unsubscribeAll: Subject<any> = new Subject<any>();
 
@@ -360,6 +360,14 @@ export class DashboardComponent implements OnInit, OnDestroy {
     for (let index = new Date().getFullYear(); index > 2005; index--) {
       this.yearArray.push(index);
     }
+    this._fileManagerService.storeDetail$
+      .pipe(takeUntil(this._unsubscribeAll))
+      .subscribe((items: any) => {
+        this.selectedStore = items["data"][0];
+
+        // Mark for check
+        this._changeDetectorRef.markForCheck();
+      });
   }
   getDashboardGraphsData(value) {
     if (value == "historical_store_sales") {

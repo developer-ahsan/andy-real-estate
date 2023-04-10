@@ -4,7 +4,7 @@ import { MatDrawer } from '@angular/material/sidenav';
 import { ActivatedRoute, Router } from '@angular/router';
 import { AuthService } from 'app/core/auth/auth.service';
 import { Subject } from 'rxjs';
-import { OrderManageService } from '../../import-export.service';
+import { ImportExportService } from '../../import-export.service';
 
 @Component({
   selector: 'app-import-order',
@@ -18,7 +18,7 @@ export class OrderImportComponent implements OnInit, OnDestroy {
   constructor(
     private _changeDetectorRef: ChangeDetectorRef,
     private _authService: AuthService,
-    private _OrderManageService: OrderManageService,
+    private _ImportExportService: ImportExportService,
     private router: Router,
     private _activeRoute: ActivatedRoute
   ) { }

@@ -9,8 +9,8 @@ import { MatSnackBar } from '@angular/material/snack-bar';
   templateUrl: './store-videos.component.html'
 })
 export class StoreVideosComponent implements OnInit, OnDestroy {
-  @Input() selectedStore: any;
-  @Input() isLoading: boolean;
+  selectedStore: any;
+  isLoading: boolean;
   @Output() isLoadingChange = new EventEmitter<boolean>();
   private _unsubscribeAll: Subject<any> = new Subject<any>();
   displayedColumns: string[] = ['pid', 'product_number', 'product_name', 'vendor', 'status'];
@@ -37,17 +37,23 @@ export class StoreVideosComponent implements OnInit, OnDestroy {
   keywordSearch: string = "";
 
   constructor(
-    private _fileManagerService: FileManagerService,
+    private _storeManagerService: FileManagerService,
     private _changeDetectorRef: ChangeDetectorRef,
     private _snackBar: MatSnackBar
   ) { }
 
   ngOnInit(): void {
-    this.dataSourceLoading = true;
-    this.getFirstCall(1);
-    this.isLoadingChange.emit(false);
+    this.getStoreDetails();
   }
-
+  getStoreDetails() {
+    this._storeManagerService.storeDetail$
+      .pipe(takeUntil(this._unsubscribeAll))
+      .subscribe((items: any) => {
+        this.selectedStore = items["data"][0];
+        this.dataSourceLoading = true;
+        this.getFirstCall(1);
+      });
+  }
   calledScreen(screenName): void {
     this.mainScreen = screenName;
 
@@ -65,7 +71,7 @@ export class StoreVideosComponent implements OnInit, OnDestroy {
     if (!this.dataSource2.length) {
 
       // Get the supplier products
-      this._fileManagerService.getStoreProductLevelVideos(pk_storeID, 1)
+      this._storeManagerService.getStoreProductLevelVideos(pk_storeID, 1)
         .pipe(takeUntil(this._unsubscribeAll))
         .subscribe((response: any) => {
           this.dataSource2 = response["data"];
@@ -91,7 +97,7 @@ export class StoreVideosComponent implements OnInit, OnDestroy {
     const { pk_storeID } = this.selectedStore;
 
     // Get the supplier products
-    this._fileManagerService.getStoreVideos(pk_storeID, page)
+    this._storeManagerService.getStoreVideos(pk_storeID, page)
       .pipe(takeUntil(this._unsubscribeAll))
       .subscribe((response: any) => {
         this.dataSource = response["data"];
@@ -116,7 +122,7 @@ export class StoreVideosComponent implements OnInit, OnDestroy {
     const { pk_storeID } = this.selectedStore;
 
     // Get the products videos
-    this._fileManagerService.getStoreVideos(pk_storeID, page)
+    this._storeManagerService.getStoreVideos(pk_storeID, page)
       .pipe(takeUntil(this._unsubscribeAll))
       .subscribe((response: any) => {
         this.dataSource = response["data"];
@@ -141,7 +147,7 @@ export class StoreVideosComponent implements OnInit, OnDestroy {
     const { pk_storeID } = this.selectedStore;
 
     // Get the products videos
-    this._fileManagerService.getStoreProductLevelVideos(pk_storeID, page)
+    this._storeManagerService.getStoreProductLevelVideos(pk_storeID, page)
       .pipe(takeUntil(this._unsubscribeAll))
       .subscribe((response: any) => {
         this.dataSource2 = response["data"];
@@ -200,7 +206,7 @@ export class StoreVideosComponent implements OnInit, OnDestroy {
 
     if (this.keywordSearch) {
       this.isKeywordSearch = true;
-      this._fileManagerService.getOfflineProductsByKeyword(pk_storeID, keyword)
+      this._storeManagerService.getOfflineProductsByKeyword(pk_storeID, keyword)
         .pipe(takeUntil(this._unsubscribeAll))
         .subscribe((response: any) => {
           this.dataSource = response["data"];

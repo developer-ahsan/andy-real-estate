@@ -10,8 +10,8 @@ import * as Excel from 'exceljs/dist/exceljs.min.js';
 })
 export class OptInUserDataComponent implements OnInit, OnDestroy {
 
-  @Input() selectedStore: any;
-  @Input() isLoading: boolean;
+  selectedStore: any;
+  isLoading: boolean;
   @Output() isLoadingChange = new EventEmitter<boolean>();
   private _unsubscribeAll: Subject<any> = new Subject<any>();
 
@@ -19,13 +19,20 @@ export class OptInUserDataComponent implements OnInit, OnDestroy {
   fileUserRecord: any;
   ngFilterType = 'all';
   constructor(
-    private _fileManagerService: FileManagerService,
+    private _storeManagerService: FileManagerService,
     private _changeDetectorRef: ChangeDetectorRef,
     private _snackBar: MatSnackBar
   ) { }
 
   ngOnInit() {
-    this.isLoadingChange.emit(false);
+    this.getStoreDetails();
+  }
+  getStoreDetails() {
+    this._storeManagerService.storeDetail$
+      .pipe(takeUntil(this._unsubscribeAll))
+      .subscribe((items: any) => {
+        this.selectedStore = items["data"][0]
+      });
   }
   getUserData() {
     let params: any;
@@ -42,7 +49,7 @@ export class OptInUserDataComponent implements OnInit, OnDestroy {
       }
     }
     this.isPageLoading = true;
-    this._fileManagerService.getStoresData(params)
+    this._storeManagerService.getStoresData(params)
       .pipe(takeUntil(this._unsubscribeAll))
       .subscribe(res => {
         this.fileUserRecord = res["data"];

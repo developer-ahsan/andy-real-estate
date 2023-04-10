@@ -9,8 +9,8 @@ import { FormArray, FormBuilder, FormControl, FormGroup, Validators } from '@ang
   templateUrl: './fullfilment-contacts.component.html',
 })
 export class FullfilmentContactsComponent implements OnInit, OnDestroy {
-  @Input() selectedStore: any;
-  @Input() isLoading: boolean;
+  selectedStore: any;
+  isLoading: boolean;
   @Output() isLoadingChange = new EventEmitter<any>();
   private _unsubscribeAll: Subject<any> = new Subject<any>();
   locationsData: any;
@@ -33,18 +33,26 @@ export class FullfilmentContactsComponent implements OnInit, OnDestroy {
   isAddLoader: boolean = false;
   isAddMsg: boolean = false;
   constructor(
-    private _fileManagerService: FileManagerService,
+    private _storeManagerService: FileManagerService,
     private _changeDetectorRef: ChangeDetectorRef,
     private _snackBar: MatSnackBar,
     private fb: FormBuilder
   ) { }
 
-  ngOnInit() {
+  ngOnInit(): void {
     this.isPageLoading = true;
-    this.getLocations();
-    this.getUsers();
-    this.getContactList('get');
-    this.initialize();
+    this.getStoreDetails();
+  };
+  getStoreDetails() {
+    this._storeManagerService.storeDetail$
+      .pipe(takeUntil(this._unsubscribeAll))
+      .subscribe((items: any) => {
+        this.selectedStore = items["data"][0];
+        this.getLocations();
+        this.getUsers();
+        this.getContactList('get');
+        this.initialize();
+      });
   }
   initialize() {
     this.dataSource = [];
@@ -71,7 +79,7 @@ export class FullfilmentContactsComponent implements OnInit, OnDestroy {
       contact: true,
       locations: true
     }
-    this._fileManagerService.getStoresData(params)
+    this._storeManagerService.getStoresData(params)
       .pipe(takeUntil(this._unsubscribeAll))
       .subscribe(res => {
         this.locationsData = res["data"];
@@ -84,7 +92,7 @@ export class FullfilmentContactsComponent implements OnInit, OnDestroy {
       contact: true,
       users: true
     }
-    this._fileManagerService.getStoresData(params)
+    this._storeManagerService.getStoresData(params)
       .pipe(takeUntil(this._unsubscribeAll))
       .subscribe(res => {
         this.isPageLoading = false;
@@ -99,7 +107,7 @@ export class FullfilmentContactsComponent implements OnInit, OnDestroy {
       store_id: this.selectedStore.pk_storeID,
       fulfillment_contact: true
     }
-    this._fileManagerService.getStoresData(params)
+    this._storeManagerService.getStoresData(params)
       .pipe(takeUntil(this._unsubscribeAll))
       .subscribe(res => {
         res["data"].forEach(element => {
@@ -140,7 +148,7 @@ export class FullfilmentContactsComponent implements OnInit, OnDestroy {
       fk_attributeID: attribute,
       blnPrimary, blnRevisedInvoices, add_fulfillment_contact
     }
-    this._fileManagerService.postStoresData(payload)
+    this._storeManagerService.postStoresData(payload)
       .pipe(takeUntil(this._unsubscribeAll))
       .subscribe(res => {
         if (res["success"]) {
@@ -159,7 +167,7 @@ export class FullfilmentContactsComponent implements OnInit, OnDestroy {
       pk_fulfillmentContactID: item.pk_fulfillmentContactID,
       delete_fulfillment_contact: true
     }
-    this._fileManagerService.putStoresData(payload)
+    this._storeManagerService.putStoresData(payload)
       .pipe(takeUntil(this._unsubscribeAll))
       .subscribe(res => {
         if (res["success"]) {
@@ -197,7 +205,7 @@ export class FullfilmentContactsComponent implements OnInit, OnDestroy {
       pk_fulfillmentContactID: item.pk_fulfillmentContactID,
       update_fulfillment_contact: true
     }
-    this._fileManagerService.putStoresData(payload)
+    this._storeManagerService.putStoresData(payload)
       .pipe(takeUntil(this._unsubscribeAll))
       .subscribe(res => {
         if (res["success"]) {

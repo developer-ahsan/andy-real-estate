@@ -17,8 +17,8 @@ export class ReferalLocationsComponent implements OnInit, OnDestroy {
     "Add New Referral Location"
   ];
   dataSourceLoading: boolean = false;
-  @Input() selectedStore: any;
-  @Input() isLoading: boolean;
+  selectedStore: any;
+  isLoading: boolean;
   @Output() isLoadingChange = new EventEmitter<boolean>();
   private _unsubscribeAll: Subject<any> = new Subject<any>();
   dataSource: any;
@@ -27,20 +27,28 @@ export class ReferalLocationsComponent implements OnInit, OnDestroy {
   displayedColumns: string[] = ['Primary', 'User', 'Location', 'Revised', 'Action'];
   panelOpenState = false;
   constructor(
-    private _fileManagerService: FileManagerService,
+    private _storeManagerService: FileManagerService,
     private _changeDetectorRef: ChangeDetectorRef,
     private _snackBar: MatSnackBar,
     private fb: FormBuilder
   ) { }
 
-  ngOnInit() {
-    this.contactForm = this.fb.group({
-      contacts: new FormArray([])
-    });
-    this.referralForm = this.fb.group({
-      locations: new FormArray([])
-    });
-    this.getContactList()
+  ngOnInit(): void {
+    this.getStoreDetails();
+  };
+  getStoreDetails() {
+    this._storeManagerService.storeDetail$
+      .pipe(takeUntil(this._unsubscribeAll))
+      .subscribe((items: any) => {
+        this.selectedStore = items["data"][0];
+        this.contactForm = this.fb.group({
+          contacts: new FormArray([])
+        });
+        this.referralForm = this.fb.group({
+          locations: new FormArray([])
+        });
+        this.getContactList()
+      });
   }
   getContactList() {
     this.dataSourceLoading = true;
@@ -48,7 +56,7 @@ export class ReferalLocationsComponent implements OnInit, OnDestroy {
       store_id: this.selectedStore.pk_storeID,
       referral_location: true
     }
-    this._fileManagerService.getStoresData(params)
+    this._storeManagerService.getStoresData(params)
       .pipe(takeUntil(this._unsubscribeAll))
       .subscribe(res => {
         this.dataSourceLoading = false;

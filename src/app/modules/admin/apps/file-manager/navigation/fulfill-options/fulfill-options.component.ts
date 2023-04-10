@@ -11,15 +11,15 @@ import { FormControl, FormGroup, Validators } from '@angular/forms';
 })
 export class FulfillOptionsComponent implements OnInit, OnDestroy {
 
-  @Input() selectedStore: any;
-  @Input() isLoading: boolean;
+  selectedStore: any;
+  isLoading: boolean;
   @Output() isLoadingChange = new EventEmitter<boolean>();
   private _unsubscribeAll: Subject<any> = new Subject<any>();
 
   isPageLoading: boolean = false;
   optionForm: FormGroup;
   constructor(
-    private _fileManagerService: FileManagerService,
+    private _storeManagerService: FileManagerService,
     private _changeDetectorRef: ChangeDetectorRef,
     private _snackBar: MatSnackBar
   ) { }
@@ -39,14 +39,22 @@ export class FulfillOptionsComponent implements OnInit, OnDestroy {
       blnBilling: new FormControl(true, Validators.required)
     })
     this.isPageLoading = true;
-    this.getOptionsData();
+    this.getStoreDetails();
+  }
+  getStoreDetails() {
+    this._storeManagerService.storeDetail$
+      .pipe(takeUntil(this._unsubscribeAll))
+      .subscribe((items: any) => {
+        this.selectedStore = items["data"][0];
+        this.getOptionsData();
+      });
   }
   getOptionsData() {
     let params = {
       store_id: this.selectedStore.pk_storeID,
       fulfillment_option: true
     }
-    this._fileManagerService.getStoresData(params)
+    this._storeManagerService.getStoresData(params)
       .pipe(takeUntil(this._unsubscribeAll))
       .subscribe(res => {
         this.optionForm.patchValue(res["data"][0]);

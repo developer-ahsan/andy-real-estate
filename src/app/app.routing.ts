@@ -114,6 +114,7 @@ export const appRoutes: Route[] = [
             { path: 'rapidbuild', loadChildren: () => import('app/modules/admin/rapidBuild/rapid-build.module').then(m => m.RapidBuildModule) },
             { path: 'ordermanage', loadChildren: () => import('app/modules/admin/orderManage/order-manage.module').then(m => m.OrderManageModule) },
             { path: 'import-export', loadChildren: () => import('app/modules/admin/import-export/import-export.module').then(m => m.ImportExportModule) },
+            { path: 'smartcents', loadChildren: () => import('app/modules/admin/smartcents/smartcents.module').then(m => m.SmartCentsModule) },
 
             // Pages
             {

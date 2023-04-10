@@ -3,6 +3,55 @@ export interface RapidBuildLogin {
     payload: string;
     rapidbuild_login: boolean;
 };
+export interface clearStore {
+    store_id: number;
+    clear_store: boolean;
+};
+export interface removeRapidBuildEntry {
+    rbid: number;
+    spid: number;
+    remove_rapidbuild_entry: boolean;
+};
+export interface bulkRemoveRapidBuildEntry {
+    rbid: string;
+    bulk_remove_rapidbuild_entry: boolean;
+};
+export interface updateStatus {
+    rbid: number;
+    imageStatusID: number;
+    blnLeaveComment: boolean;
+    blnAdmin: boolean;
+    blnStatusUpdate: boolean;
+    comments: string;
+    statusName: string;
+    rapidbuild_userId: number;
+    rapidbuild_username: string;
+    user_full_name: string;
+    update_status: boolean;
+};
+export interface uploadProof {
+    rbid: number;
+    comments: string;
+    upload_proof: boolean;
+    blnAdmin: boolean;
+    fk_imageStatusID: number;
+    blnStatusUpdate: boolean;
+    status_name: string;
+    rapidbuild_userId: number;
+    rapidbuild_username: string;
+};
+export interface updateProof {
+    rbid: number;
+    comments: string;
+    blnAdmin: boolean;
+    fk_imageStatusID: number;
+    blnStatusUpdate: boolean;
+    status_name: string;
+    rapidbuild_userId: number;
+    rapidbuild_username: string;
+    update_proof: boolean;
+};
+
 export interface UpdateQuoteOptions {
     blnAdditionalProofContacts: boolean;
     blnIgnoreAdditionalArtEmails: boolean;

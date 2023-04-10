@@ -9,8 +9,8 @@ import { environment } from 'environments/environment';
   templateUrl: './rapidbuild.component.html'
 })
 export class RapidbuildComponent implements OnInit, OnDestroy {
-  @Input() selectedStore: any;
-  @Input() isLoading: boolean;
+  selectedStore: any;
+  isLoading: boolean;
   @Output() isLoadingChange = new EventEmitter<boolean>();
   private _unsubscribeAll: Subject<any> = new Subject<any>();
   displayedColumns: string[] = ['id', 'status', 'product', 'supplier', 'last_proof_of'];
@@ -52,24 +52,30 @@ export class RapidbuildComponent implements OnInit, OnDestroy {
   ) { }
 
   ngOnInit(): void {
-    const { pk_storeID } = this.selectedStore;
-
-    // Get the offline products
-    this._storeManagerService.getRapidBuildDropDown(pk_storeID)
-      .pipe(takeUntil(this._unsubscribeAll))
-      .subscribe((response: any) => {
-        this.dropdown = response["data"];
-        this.selectedStatus = this.dropdown[1];
-        this.dropdownLoader = false;
-
-        // Mark for check
-        this._changeDetectorRef.markForCheck();
-      });
-
-    this.getRapidBuildImages(2);
-
-    this.isLoadingChange.emit(false);
+    this.getStoreDetails();
   };
+  getStoreDetails() {
+    this._storeManagerService.storeDetail$
+      .pipe(takeUntil(this._unsubscribeAll))
+      .subscribe((items: any) => {
+        this.selectedStore = items["data"][0];
+        const { pk_storeID } = this.selectedStore;
+
+        // Get the offline products
+        this._storeManagerService.getRapidBuildDropDown(pk_storeID)
+          .pipe(takeUntil(this._unsubscribeAll))
+          .subscribe((response: any) => {
+            this.dropdown = response["data"];
+            this.selectedStatus = this.dropdown[1];
+            this.dropdownLoader = false;
+
+            // Mark for check
+            this._changeDetectorRef.markForCheck();
+          });
+
+        this.getRapidBuildImages(2);
+      });
+  }
 
   calledScreen(screenName): void {
     this.mainScreen = screenName;

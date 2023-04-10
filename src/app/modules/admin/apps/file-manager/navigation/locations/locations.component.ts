@@ -22,8 +22,8 @@ export class LocationsComponent implements OnInit, OnDestroy {
       this.userSearchInput = content;
     }
   }
-  @Input() selectedStore: any;
-  @Input() isLoading: boolean;
+  selectedStore: any;
+  isLoading: boolean;
   @Output() isLoadingChange = new EventEmitter<boolean>();
   private _unsubscribeAll: Subject<any> = new Subject<any>();
 
@@ -75,17 +75,24 @@ export class LocationsComponent implements OnInit, OnDestroy {
   isAddMainLocationLoader: boolean = false;
   ngAddMainLocation = '';
   constructor(
-    private _fileManagerService: FileManagerService,
+    private _storeManagerService: FileManagerService,
     private _changeDetectorRef: ChangeDetectorRef,
     private _snackBar: MatSnackBar,
     public dialog: MatDialog
   ) { }
 
   ngOnInit(): void {
-    this.dataSourceLoading = true;
-    this.getLocations(1, 'get');
-    this.isLoadingChange.emit(false);
+    this.getStoreDetails();
   };
+  getStoreDetails() {
+    this._storeManagerService.storeDetail$
+      .pipe(takeUntil(this._unsubscribeAll))
+      .subscribe((items: any) => {
+        this.selectedStore = items["data"][0];
+        this.dataSourceLoading = true;
+        this.getLocations(1, 'get');
+      });
+  }
   calledScreen(screenName): void {
     this.mainScreen = screenName;
     if (this.usersList.length == 0) {
@@ -100,7 +107,7 @@ export class LocationsComponent implements OnInit, OnDestroy {
       size: 10
     }
     // Get the offline products
-    this._fileManagerService.getStoresData(params)
+    this._storeManagerService.getStoresData(params)
       .pipe(takeUntil(this._unsubscribeAll))
       .subscribe((response: any) => {
         this.dataSource = response["data"];
@@ -166,7 +173,7 @@ export class LocationsComponent implements OnInit, OnDestroy {
       attribute_id: pk_attributeID
     }
     // Get the offline products
-    this._fileManagerService.getStoresData(params)
+    this._storeManagerService.getStoresData(params)
       .pipe(takeUntil(this._unsubscribeAll))
       .subscribe((response: any) => {
         this.subCategories = response["data"];
@@ -185,7 +192,7 @@ export class LocationsComponent implements OnInit, OnDestroy {
       pk_attributeID: item.pk_attributeID,
       update_attribute_name: true
     }
-    this._fileManagerService.putStoresData(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+    this._storeManagerService.putStoresData(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
       if (res['success']) {
         item.updateLoader = false;
         this._snackBar.open("Attribute Location Updated Successfully", '', {
@@ -206,7 +213,7 @@ export class LocationsComponent implements OnInit, OnDestroy {
       pk_locationID: item.pk_locationID,
       delete_attribute_location: true
     }
-    this._fileManagerService.putStoresData(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+    this._storeManagerService.putStoresData(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
       if (res["success"]) {
         item.deleteLoader = false;
         this.subCategories = this.subCategories.filter((value) => {
@@ -232,7 +239,7 @@ export class LocationsComponent implements OnInit, OnDestroy {
         locationName: this.ngSublocationName,
         add_attribute_location: true,
       }
-      this._fileManagerService.postStoresData(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+      this._storeManagerService.postStoresData(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
         if (res["success"]) {
           this.refreshSubCategories();
         }
@@ -256,7 +263,7 @@ export class LocationsComponent implements OnInit, OnDestroy {
       attribute_id: this.updateAttributeId
     }
     // Get the offline products
-    this._fileManagerService.getStoresData(params)
+    this._storeManagerService.getStoresData(params)
       .pipe(takeUntil(this._unsubscribeAll))
       .subscribe((response: any) => {
         this.subCategories = response["data"];
@@ -273,7 +280,7 @@ export class LocationsComponent implements OnInit, OnDestroy {
       pk_locationID: item.pk_locationID,
       update_sub_location: true
     }
-    this._fileManagerService.putStoresData(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+    this._storeManagerService.putStoresData(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
       if (res['success']) {
         item.updateLoader = false;
         this._snackBar.open("Sub Location Updated Successfully", '', {
@@ -309,7 +316,7 @@ export class LocationsComponent implements OnInit, OnDestroy {
       users_per_location: true,
       location_id: this.subLocationData.pk_locationID
     }
-    this._fileManagerService.getStoresData(params).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+    this._storeManagerService.getStoresData(params).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
       this.subLocationUsers = res["data"];
       this.tempSubLocationUsers = res["data"];
       this.isSubLocationLoader = false;
@@ -358,7 +365,7 @@ export class LocationsComponent implements OnInit, OnDestroy {
       }
     }
 
-    this._fileManagerService.getStoresData(params).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+    this._storeManagerService.getStoresData(params).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
       this.usersList = res["data"];
       this.userTotalRecords = res["totalRecords"];
       this.isUserListLoader = false;
@@ -400,7 +407,7 @@ export class LocationsComponent implements OnInit, OnDestroy {
       user_ids: this.checkedUserArray,
       delete_users_association: true
     }
-    this._fileManagerService.putStoresData(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+    this._storeManagerService.putStoresData(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
       if (res["success"]) {
         this.checkedUserArray = [];
         this.getSubLocationsUserList('delete');
@@ -420,7 +427,7 @@ export class LocationsComponent implements OnInit, OnDestroy {
         location_name: this.ngAddMainLocation,
         add_main_location: true,
       }
-      this._fileManagerService.postStoresData(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+      this._storeManagerService.postStoresData(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
         if (res["success"]) {
           this.getLocations(1, 'add');
         }
@@ -455,7 +462,7 @@ export class LocationsComponent implements OnInit, OnDestroy {
           attribute_id: item.pk_attributeID,
           delete_main_location: true
         }
-        this._fileManagerService.putStoresData(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+        this._storeManagerService.putStoresData(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
           if (res["success"]) {
             item.deleteLoader = false;
             this.dataSource = this.dataSource.filter((value) => {
@@ -483,7 +490,7 @@ export class LocationsComponent implements OnInit, OnDestroy {
       user_ids: this.addCheckedUserArray,
       association_users_location: true
     }
-    this._fileManagerService.postStoresData(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+    this._storeManagerService.postStoresData(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
       if (res["success"]) {
         this.addCheckedUserArray = [];
         this.getSubLocationsUserList('add');

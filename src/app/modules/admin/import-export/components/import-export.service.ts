@@ -12,7 +12,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 @Injectable({
     providedIn: 'root'
 })
-export class OrderManageService {
+export class ImportExportService {
     public OrderIDSearch: any;
     public CustomerSearch: any;
     public SearchLoader: boolean = false;
@@ -21,7 +21,7 @@ export class OrderManageService {
 
     private _smartArtUsers: BehaviorSubject<any[] | null> = new BehaviorSubject<any[]>(null);
     private _employeeAdmins: BehaviorSubject<any[] | null> = new BehaviorSubject<any[]>(null);
-    private _smartArtStores: BehaviorSubject<any[] | null> = new BehaviorSubject<any[]>(null);
+    private _importExportStores: BehaviorSubject<any[] | null> = new BehaviorSubject<any[]>(null);
     private _reportUsers: BehaviorSubject<any[] | null> = new BehaviorSubject<any[]>(null);
     /**
      * Constructor
@@ -54,8 +54,8 @@ export class OrderManageService {
         return this._smartArtUsers.asObservable();
     };
     // Stores
-    get adminStores$(): Observable<any[]> {
-        return this._smartArtStores.asObservable();
+    get importExportStores$(): Observable<any[]> {
+        return this._importExportStores.asObservable();
     };
 
 
@@ -78,7 +78,7 @@ export class OrderManageService {
     };
     // Common get Calls
     getAPIData(params): Observable<any[]> {
-        return this._httpClient.get<any[]>(environment.order_manage, {
+        return this._httpClient.get<any[]>(environment.import_export, {
             params: params
         }).pipe(retry(3));
     };
@@ -135,8 +135,8 @@ export class OrderManageService {
         );
     };
     // Admin Stores
-    getSmartArtStores(): Observable<any[]> {
-        return this._httpClient.get<any[]>(environment.smartart, {
+    getAllStores(): Observable<any[]> {
+        return this._httpClient.get<any[]>(environment.import_export, {
             params: {
                 stores: true,
                 bln_active: 1,
@@ -144,7 +144,7 @@ export class OrderManageService {
             }
         }).pipe(
             tap((response: any) => {
-                this._smartArtStores.next(response);
+                this._importExportStores.next(response);
             })
         );
     };

@@ -8,20 +8,26 @@ import { takeUntil } from 'rxjs/operators';
   templateUrl: './reset-top-ten.component.html'
 })
 export class ResetTopTenComponent implements OnInit, OnDestroy {
-  @Input() selectedStore: any;
-  @Input() isLoading: boolean;
+  selectedStore: any;
+  isLoading: boolean;
   @Output() isLoadingChange = new EventEmitter<boolean>();
   private _unsubscribeAll: Subject<any> = new Subject<any>();
 
   constructor(
-    private _fileManagerService: FileManagerService,
+    private _storeManagerService: FileManagerService,
     private _changeDetectorRef: ChangeDetectorRef
   ) { }
 
   ngOnInit(): void {
-    this.isLoadingChange.emit(false);
+    this.getStoreDetails();
   };
-
+  getStoreDetails() {
+    this._storeManagerService.storeDetail$
+      .pipe(takeUntil(this._unsubscribeAll))
+      .subscribe((items: any) => {
+        this.selectedStore = items["data"][0];
+      });
+  }
   reset(): void {
     console.log("resetted");
   };

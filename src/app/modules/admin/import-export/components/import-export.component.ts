@@ -7,7 +7,7 @@ import { LocationStrategy, PathLocationStrategy, Location } from '@angular/commo
 import { PreventNavigation } from 'app/can-deactivate.guard';
 import { fromEvent, Subject } from 'rxjs';
 import { HttpClient } from '@angular/common/http';
-import { OrderManageService } from './import-export.service';
+import { ImportExportService } from './import-export.service';
 import * as CryptoJS from 'crypto-js';
 
 import { FormControl } from '@angular/forms';
@@ -40,7 +40,7 @@ export class ImportExportComponent {
     constructor(
         private _changeDetectorRef: ChangeDetectorRef,
         private _router: Router,
-        public _rapidService: OrderManageService,
+        public _rapidService: ImportExportService,
         private route: ActivatedRoute,
     ) {
 

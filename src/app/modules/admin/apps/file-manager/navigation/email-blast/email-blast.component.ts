@@ -15,8 +15,8 @@ import * as XLSX from 'xlsx';
   styles: ['::ng-deep {.ql-container {height: auto}}']
 })
 export class EmailBlastComponent implements OnInit, OnDestroy {
-  @Input() selectedStore: any;
-  @Input() isLoading: boolean;
+  selectedStore: any;
+  isLoading: boolean;
   @Output() isLoadingChange = new EventEmitter<boolean>();
   private _unsubscribeAll: Subject<any> = new Subject<any>();
   presentationScreen: string = "Dropdowns";
@@ -152,7 +152,15 @@ export class EmailBlastComponent implements OnInit, OnDestroy {
     });
     this.isLoadingChange.emit(false);
     this.initAddForm();
-    this.getEmailTemplate('get');
+    this.getStoreDetails();
+  }
+  getStoreDetails() {
+    this._fileManagerService.storeDetail$
+      .pipe(takeUntil(this._unsubscribeAll))
+      .subscribe((items: any) => {
+        this.selectedStore = items["data"][0]
+        this.getEmailTemplate('get');
+      });
   }
   initAddForm() {
     this.addOptInForm = new FormGroup({

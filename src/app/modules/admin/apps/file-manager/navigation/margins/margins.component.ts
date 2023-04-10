@@ -11,8 +11,8 @@ import { FormControl, FormGroup } from '@angular/forms';
 })
 export class MarginsComponent implements OnInit, OnDestroy {
 
-  @Input() selectedStore: any;
-  @Input() isLoading: boolean;
+  selectedStore: any;
+  isLoading: boolean;
   @Output() isLoadingChange = new EventEmitter<boolean>();
   private _unsubscribeAll: Subject<any> = new Subject<any>();
   displayedColumns: string[] = ['frequency', '1', '2', '3', '4', '5', '6'];
@@ -41,22 +41,26 @@ export class MarginsComponent implements OnInit, OnDestroy {
   ) { }
 
   ngOnInit(): void {
-    this.initialize();
-    this._storesManagerService.storeDetail$.subscribe(result => {
-      let data = result["data"][0];
-      this.defaultMarginForm.patchValue({
-        margin1: Number((data.margin1 * 100).toFixed(2)),
-        margin2: Number((data.margin2 * 100).toFixed(2)),
-        margin3: Number((data.margin3 * 100).toFixed(2)),
-        margin4: Number((data.margin4 * 100).toFixed(2)),
-        margin5: Number((data.margin5 * 100).toFixed(2)),
-        margin6: Number((data.margin6 * 100).toFixed(2)),
-      });
-    })
-    this.dataSourceLoading = true;
-    this.getFirstCall();
-    this.isLoadingChange.emit(false);
+    this.getStoreDetails();
   };
+  getStoreDetails() {
+    this._storesManagerService.storeDetail$
+      .pipe(takeUntil(this._unsubscribeAll))
+      .subscribe((items: any) => {
+        this.selectedStore = items["data"][0];
+        this.initialize();
+        this.defaultMarginForm.patchValue({
+          margin1: Number((this.selectedStore.margin1 * 100).toFixed(2)),
+          margin2: Number((this.selectedStore.margin2 * 100).toFixed(2)),
+          margin3: Number((this.selectedStore.margin3 * 100).toFixed(2)),
+          margin4: Number((this.selectedStore.margin4 * 100).toFixed(2)),
+          margin5: Number((this.selectedStore.margin5 * 100).toFixed(2)),
+          margin6: Number((this.selectedStore.margin6 * 100).toFixed(2)),
+        });
+        this.dataSourceLoading = true;
+        this.getFirstCall();
+      });
+  }
   initialize() {
     this.defaultMarginForm = new FormGroup({
       margin1: new FormControl(''),

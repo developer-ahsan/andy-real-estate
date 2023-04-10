@@ -5,7 +5,7 @@ import { MatDrawer } from '@angular/material/sidenav';
 import { ActivatedRoute, NavigationExtras, Router } from '@angular/router';
 import { Subject } from 'rxjs';
 import { debounceTime, distinctUntilChanged, filter, finalize, switchMap, takeUntil, tap } from 'rxjs/operators';
-import { OrderManageService } from '../../import-export.service';
+import { ImportExportService } from '../../import-export.service';
 import { HideUnhideCart, updateAttentionFlagOrder } from '../../import-export.types';
 @Component({
   selector: 'app-importexport-home',
@@ -18,7 +18,7 @@ export class ImportExportHomeComponent implements OnInit, OnDestroy {
   ngExport = 'export';
   constructor(
     private _changeDetectorRef: ChangeDetectorRef,
-    private _OrderManageService: OrderManageService,
+    private _ImportExportService: ImportExportService,
     private router: Router,
     private _activeRoute: ActivatedRoute
   ) { }

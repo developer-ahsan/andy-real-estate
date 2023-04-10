@@ -166,7 +166,7 @@ export class RapidBuildComponent {
             payload: encryptedObject,
             rapidbuild_login: true
         }
-        this._rapidService.PostAPIData(payload).pipe(takeUntil(this._unsubscribeAll),
+        this._rapidService.PostApiData(payload).pipe(takeUntil(this._unsubscribeAll),
             finalize(() => {
                 this.isLoginLoader = false;
                 this._changeDetectorRef.markForCheck();

@@ -7,6 +7,7 @@ import { AuthService } from 'app/core/auth/auth.service';
 import { Subject } from 'rxjs';
 import { debounceTime, distinctUntilChanged, filter, finalize, switchMap, takeUntil, tap } from 'rxjs/operators';
 import { RapidBuildService } from '../../rapid-build.service';
+import { clearStore } from '../../rapid-build.types';
 
 @Component({
   selector: 'app-clear-store',
@@ -21,6 +22,8 @@ export class ClearStoreRapidComponent implements OnInit, OnDestroy {
   searchStoreCtrl = new FormControl();
   selectedStore: any;
   isSearchingStore = false;
+
+  isClearLaoder: boolean = false;
   constructor(
     private _changeDetectorRef: ChangeDetectorRef,
     private _authService: AuthService,
@@ -67,6 +70,21 @@ export class ClearStoreRapidComponent implements OnInit, OnDestroy {
   }
   displayWith(value: any) {
     return value?.storeName;
+  }
+  clearStore() {
+    this.isClearLaoder = true;
+    let payload: clearStore = {
+      store_id: Number(this.selectedStore.pk_storeID),
+      clear_store: true
+    };
+    this._rapidService.UpdateAPIData(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+      this._rapidService.snackBar(res["message"]);
+      this.isClearLaoder = false;
+      this._changeDetectorRef.markForCheck();
+    }, err => {
+      this.isClearLaoder = false;
+      this._changeDetectorRef.markForCheck();
+    });
   }
   /**
      * On destroy

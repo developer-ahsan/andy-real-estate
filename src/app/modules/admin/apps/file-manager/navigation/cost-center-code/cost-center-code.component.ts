@@ -10,8 +10,8 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 })
 export class CostCenterCodeComponent implements OnInit, OnDestroy {
 
-  @Input() selectedStore: any;
-  @Input() isLoading: boolean;
+  selectedStore: any;
+  isLoading: boolean;
   @Output() isLoadingChange = new EventEmitter<boolean>();
   private _unsubscribeAll: Subject<any> = new Subject<any>();
   mainScreen: string = "Cost Center Codes";
@@ -29,16 +29,23 @@ export class CostCenterCodeComponent implements OnInit, OnDestroy {
   ngCostCode = '';
 
   constructor(
-    private _fileManagerService: FileManagerService,
+    private _storeManagerService: FileManagerService,
     private _changeDetectorRef: ChangeDetectorRef,
     private _snackBar: MatSnackBar
   ) { }
 
-  ngOnInit(): void {
-    this.isPageLoading = true;
-    this.getData('get');
-    this.isLoadingChange.emit(false);
-  };
+  ngOnInit() {
+    this.getStoreDetails();
+  }
+  getStoreDetails() {
+    this._storeManagerService.storeDetail$
+      .pipe(takeUntil(this._unsubscribeAll))
+      .subscribe((items: any) => {
+        this.selectedStore = items["data"][0];
+        this.isPageLoading = true;
+        this.getData('get');
+      });
+  }
   calledScreen(screenName): void {
     this.mainScreen = screenName;
   };
@@ -47,7 +54,7 @@ export class CostCenterCodeComponent implements OnInit, OnDestroy {
       store_id: this.selectedStore.pk_storeID,
       center_code: true
     }
-    this._fileManagerService.getStoresData(params)
+    this._storeManagerService.getStoresData(params)
       .pipe(takeUntil(this._unsubscribeAll))
       .subscribe(res => {
         if (type == 'add') {
@@ -77,7 +84,7 @@ export class CostCenterCodeComponent implements OnInit, OnDestroy {
         code: this.ngCostCode,
         add_center_code: true
       }
-      this._fileManagerService.postStoresData(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+      this._storeManagerService.postStoresData(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
         if (res["success"]) {
           this.getData('add');
         }
@@ -100,7 +107,7 @@ export class CostCenterCodeComponent implements OnInit, OnDestroy {
       pk_costCenterCodeID: item.pk_costCenterCodeID,
       delete_center_code: true
     }
-    this._fileManagerService.putStoresData(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+    this._storeManagerService.putStoresData(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
       if (res["success"]) {
         item.delLoader = false;
         this.dataSource = this.dataSource.filter((value) => {
@@ -126,7 +133,7 @@ export class CostCenterCodeComponent implements OnInit, OnDestroy {
         pk_costCenterCodeID: item.pk_costCenterCodeID,
         update_center_code: true
       }
-      this._fileManagerService.putStoresData(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+      this._storeManagerService.putStoresData(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
         if (res["success"]) {
           item.updateLoader = false;
           this._snackBar.open("Cost Code Updated Successfully", '', {

@@ -11,8 +11,8 @@ import { FileManagerService } from '../../store-manager.service';
 })
 export class ApparelDecoratorComponent implements OnInit, OnDestroy {
 
-  @Input() selectedStore: any;
-  @Input() isLoading: boolean;
+  selectedStore: any;
+  isLoading: boolean;
   @Output() isLoadingChange = new EventEmitter<boolean>();
   private _unsubscribeAll: Subject<any> = new Subject<any>();
 
@@ -40,23 +40,31 @@ export class ApparelDecoratorComponent implements OnInit, OnDestroy {
   totalSuppliers = 0;
   isPageLoading: boolean = false;
   constructor(
-    private _fileManagerService: FileManagerService,
+    private _storeManagerService: FileManagerService,
     private _changeDetectorRef: ChangeDetectorRef,
     private _snackBar: MatSnackBar
   ) { }
 
   ngOnInit() {
-    this.isPageLoading = true;
-    this.getSuppliers();
+    this.getStoreDetails();
+  }
+  getStoreDetails() {
+    this._storeManagerService.storeDetail$
+      .pipe(takeUntil(this._unsubscribeAll))
+      .subscribe((items: any) => {
+        this.selectedStore = items["data"][0];
+        this.isPageLoading = true;
+        this.getSuppliers();
+      });
   }
   getSuppliers() {
     this.dropdownList.push({ companyName: 'NONE - Use master product level imprint settings' })
-    this._fileManagerService.suppliers$
+    this._storeManagerService.suppliers$
       .pipe(takeUntil(this._unsubscribeAll))
       .subscribe(res => {
         this.totalSuppliers = res.totalRecords;
       })
-    this._fileManagerService.getAllSuppliersBln(this.totalSuppliers)
+    this._storeManagerService.getAllSuppliersBln(this.totalSuppliers)
       .pipe(takeUntil(this._unsubscribeAll))
       .subscribe(res => {
         this.isPageLoading = false;

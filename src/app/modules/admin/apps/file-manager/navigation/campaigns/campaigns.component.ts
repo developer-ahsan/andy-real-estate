@@ -15,8 +15,8 @@ import { deleteCampaign, updateCampaign } from '../../stores.types';
   styles: ['::ng-deep {.ql-container {height: auto}}']
 })
 export class CampaignsComponent implements OnInit, OnDestroy {
-  @Input() selectedStore: any;
-  @Input() isLoading: boolean;
+  selectedStore: any;
+  isLoading: boolean;
   @Output() isLoadingChange = new EventEmitter<boolean>();
   selected = 'YES';
   quillModules: any = {
@@ -85,11 +85,21 @@ export class CampaignsComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.dataSourceLoading = true;
-    this.getProducts();
-    this.initialize();
-    this.getFirstCall('get');
-    this.getMainCampaign();
+    this.getStoreDetails();
   };
+  getStoreDetails() {
+    this._storeManagerService.storeDetail$
+      .pipe(takeUntil(this._unsubscribeAll))
+      .subscribe((items: any) => {
+        this.selectedStore = items["data"][0]
+        this.getProducts();
+        this.initialize();
+        this.getFirstCall('get');
+        this.getMainCampaign();
+        // Mark for check
+        this._changeDetectorRef.markForCheck();
+      });
+  }
   getProducts() {
     let params;
     this.searchProductCtrl.valueChanges.pipe(

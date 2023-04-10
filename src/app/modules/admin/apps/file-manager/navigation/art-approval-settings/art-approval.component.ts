@@ -24,8 +24,8 @@ export class ArtApprovalComponent implements OnInit, OnDestroy {
     "Current Emails",
     "Create New Email"
   ];
-  @Input() selectedStore: any;
-  @Input() isLoading: boolean;
+  selectedStore: any;
+  isLoading: boolean;
   @Output() isLoadingChange = new EventEmitter<any>();
   private _unsubscribeAll: Subject<any> = new Subject<any>();
   quillModules: any = {
@@ -112,7 +112,7 @@ export class ArtApprovalComponent implements OnInit, OnDestroy {
 
   selectedItems: any;
   constructor(
-    private _storeService: FileManagerService,
+    private _storeManagerService: FileManagerService,
     private _changeDetectorRef: ChangeDetectorRef,
     private _snackBar: MatSnackBar,
     private fb: FormBuilder,
@@ -129,7 +129,15 @@ export class ArtApprovalComponent implements OnInit, OnDestroy {
       // itemsShowLimit: 3,
       allowSearchFilter: true
     };
-    this.initialize();
+    this.getStoreDetails()
+  }
+  getStoreDetails() {
+    this._storeManagerService.storeDetail$
+      .pipe(takeUntil(this._unsubscribeAll))
+      .subscribe((items: any) => {
+        this.selectedStore = items["data"][0];
+        this.initialize();
+      });
   }
   initialize() {
     this.initEditEmailForm();
@@ -219,9 +227,9 @@ export class ArtApprovalComponent implements OnInit, OnDestroy {
       blnAdditionalArtApproval: this.selectedStore.blnAdditionalArtApproval,
       update_approval_setting: true
     };
-    this._storeService.putStoresData(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+    this._storeManagerService.putStoresData(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
       if (res["success"]) {
-        this._storeService.getStoreByStoreId(this.selectedStore.pk_storeID).subscribe(res => {
+        this._storeManagerService.getStoreByStoreId(this.selectedStore.pk_storeID).subscribe(res => {
           this.selectedStore.loader = false;
           this.selectedStore.loaderMsg = true;
           setTimeout(() => {
@@ -250,7 +258,7 @@ export class ArtApprovalComponent implements OnInit, OnDestroy {
       size: 20,
       page: page
     }
-    this._storeService.getStoresData(params).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+    this._storeManagerService.getStoresData(params).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
       this.proofEmails = res['data'];
       this.dataSourceTotalRecord = res['totalRecords'];
       if (type == 'update') {
@@ -294,7 +302,7 @@ export class ArtApprovalComponent implements OnInit, OnDestroy {
       pk_emailID: item.pk_emailID,
       delete_proof_email: true
     }
-    this._storeService.putStoresData(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+    this._storeManagerService.putStoresData(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
       if (res["success"]) {
         item.delLoader = false;
         this.proofEmails = this.proofEmails.filter((value) => {
@@ -322,7 +330,7 @@ export class ArtApprovalComponent implements OnInit, OnDestroy {
   updateProofEmail() {
     this.isEditEmailLoader = true;
     let payload = this.isEditEmailForm.value;
-    this._storeService.putStoresData(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+    this._storeManagerService.putStoresData(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
       if (res["success"]) {
         this.getAdditionalEmails(1, 'update');
       }
@@ -342,7 +350,7 @@ export class ArtApprovalComponent implements OnInit, OnDestroy {
     } else {
       this.isAddEmailLoader = true;
       let payload = this.isAddEmailForm.value;
-      this._storeService.postStoresData(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+      this._storeManagerService.postStoresData(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
         if (res["success"]) {
           this.getAdditionalEmails(1, 'add');
         }
@@ -371,7 +379,7 @@ export class ArtApprovalComponent implements OnInit, OnDestroy {
       size: 20
     }
     // Get the offline products
-    this._storeService.getStoresData(params)
+    this._storeManagerService.getStoresData(params)
       .pipe(takeUntil(this._unsubscribeAll))
       .subscribe((response: any) => {
         this.locationsList = response["data"];
@@ -386,7 +394,7 @@ export class ArtApprovalComponent implements OnInit, OnDestroy {
       sub_locations: true,
       attribute_id: obj.pk_attributeID
     }
-    this._storeService.getStoresData(params)
+    this._storeManagerService.getStoresData(params)
       .pipe(takeUntil(this._unsubscribeAll))
       .subscribe((response: any) => {
         this.subLocationsList = response["data"];
@@ -404,7 +412,7 @@ export class ArtApprovalComponent implements OnInit, OnDestroy {
       size: 20,
       page: page
     }
-    this._storeService.getStoresData(params).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+    this._storeManagerService.getStoresData(params).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
       this.isDefaultGroupData = res["data"];
       this.isDefaultGroupDataTotal = res["totalRecords"];
       this.isDefaultGroupLoader = false;
@@ -480,7 +488,7 @@ export class ArtApprovalComponent implements OnInit, OnDestroy {
         fk_storeUserID: val.toString()
       })
       this.isEditDefaultContactLoader = true;
-      this._storeService.putStoresData(this.isEditDefaultContactForm.value).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+      this._storeManagerService.putStoresData(this.isEditDefaultContactForm.value).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
         this.getContactGroups(1, 'update', this.selectedGroup);
         this._changeDetectorRef.markForCheck();
       }, err => {
@@ -507,7 +515,7 @@ export class ArtApprovalComponent implements OnInit, OnDestroy {
           fk_approvalContactID: item.pk_artApprovalContactID,
           delete_approval_contact: true
         }
-        this._storeService.putStoresData(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+        this._storeManagerService.putStoresData(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
           item.delLoader = false;
           this.isDefaultGroupDataTotal = this.isDefaultGroupDataTotal - 1;
           this.isDefaultGroupData = this.isDefaultGroupData.filter((value) => {
@@ -534,7 +542,7 @@ export class ArtApprovalComponent implements OnInit, OnDestroy {
       art_approval_groups: true,
       store_id: this.selectedStore.pk_storeID
     }
-    this._storeService.getStoresData(params).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+    this._storeManagerService.getStoresData(params).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
       this.approvalGroupList = res["data"];
       if (type == 'add') {
         this.initAddGroupForm();
@@ -572,7 +580,7 @@ export class ArtApprovalComponent implements OnInit, OnDestroy {
       store_id: this.selectedStore.pk_storeID,
       bln_active: 1
     }
-    this._storeService.getStoresData(params).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+    this._storeManagerService.getStoresData(params).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
       this.storeUsersLoader = false;
       this.storeUsers = res["data"];
       this.storeUsers.forEach(element => {
@@ -613,7 +621,7 @@ export class ArtApprovalComponent implements OnInit, OnDestroy {
         blnEmails, blnStoreUserApprovalContacts, blnRoyalties, add_artApproval_contact
       }
       this.isAddApprovalLoader = true;
-      this._storeService.postStoresData(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+      this._storeManagerService.postStoresData(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
         this.getContactGroups(1, 'add', this.selectedGroup);
         this._changeDetectorRef.markForCheck();
       }, err => {
@@ -634,7 +642,7 @@ export class ArtApprovalComponent implements OnInit, OnDestroy {
       page: page,
       group_id: id
     }
-    this._storeService.getStoresData(params).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+    this._storeManagerService.getStoresData(params).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
       this.isDefaultGroupData = res["data"];
       this.isDefaultGroupDataTotal = res["totalRecords"];
       this.isDefaultGroupLoader = false;
@@ -683,7 +691,7 @@ export class ArtApprovalComponent implements OnInit, OnDestroy {
 
       let payload = { name, fk_storeID, fk_attributeID, fk_locationID, add_artContact_group }
       this.addGroupFormLoader = true;
-      this._storeService.postStoresData(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+      this._storeManagerService.postStoresData(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
         this.getApprovalGroupList('add');
       }, err => {
         this.addGroupFormLoader = false;

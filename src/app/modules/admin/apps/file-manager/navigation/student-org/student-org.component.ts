@@ -13,8 +13,8 @@ import { I } from '@angular/cdk/keycodes';
 })
 export class StudentOrgComponent implements OnInit, OnDestroy {
 
-  @Input() selectedStore: any;
-  @Input() isLoading: boolean;
+  selectedStore: any;
+  isLoading: boolean;
   @Output() isLoadingChange = new EventEmitter<any>();
   private _unsubscribeAll: Subject<any> = new Subject<any>();
   locationsData: any;
@@ -43,16 +43,24 @@ export class StudentOrgComponent implements OnInit, OnDestroy {
   isCampusUpdateMsg: boolean = false;
 
   constructor(
-    private _fileManagerService: FileManagerService,
+    private _storeManagerService: FileManagerService,
     private _changeDetectorRef: ChangeDetectorRef,
     private _snackBar: MatSnackBar,
     public dialog: MatDialog,
     private fb: FormBuilder
   ) { }
 
-  ngOnInit() {
-    this.initialize();
-    this.getOrgsList('get');
+  ngOnInit(): void {
+    this.getStoreDetails();
+  };
+  getStoreDetails() {
+    this._storeManagerService.storeDetail$
+      .pipe(takeUntil(this._unsubscribeAll))
+      .subscribe((items: any) => {
+        this.selectedStore = items["data"][0];
+        this.initialize();
+        this.getOrgsList('get');
+      });
   }
   initialize() {
     this.isEditFormOrg = new FormGroup({
@@ -88,7 +96,7 @@ export class StudentOrgComponent implements OnInit, OnDestroy {
       store_id: this.selectedStore.pk_storeID,
       getStudentOrgs: true
     }
-    this._fileManagerService.getStoresData(params)
+    this._storeManagerService.getStoresData(params)
       .pipe(takeUntil(this._unsubscribeAll))
       .subscribe(res => {
         if (type == 'update') {
@@ -144,7 +152,7 @@ export class StudentOrgComponent implements OnInit, OnDestroy {
           delete_student_org: true,
           fk_storeID
         }
-        this._fileManagerService.putStoresData(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+        this._storeManagerService.putStoresData(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
           if (res["success"]) {
             item.deleteLoader = false;
             this.dataSource = this.dataSource.filter((value) => {
@@ -175,7 +183,7 @@ export class StudentOrgComponent implements OnInit, OnDestroy {
       });
     } else {
       this.isEditLoader = true;
-      this._fileManagerService.putStoresData(this.isEditFormOrg.value).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+      this._storeManagerService.putStoresData(this.isEditFormOrg.value).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
         if (res["success"]) {
           this.getOrgsList('update')
           this._changeDetectorRef.markForCheck();
@@ -202,7 +210,7 @@ export class StudentOrgComponent implements OnInit, OnDestroy {
       let payload = {
         fk_storeID, advisorEmail, advisorName, name, campus, code, add_student_org: true
       }
-      this._fileManagerService.postStoresData(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+      this._storeManagerService.postStoresData(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
         this.isAddMsgText = res["message"];
         if (res["success"]) {
           this.getOrgsList('add')
@@ -251,7 +259,7 @@ export class StudentOrgComponent implements OnInit, OnDestroy {
         advisorEmail, advisorName, campus, update_campus, fk_storeID: this.selectedStore.pk_storeID
       }
       this.isCampusUpdateLoader = true;
-      this._fileManagerService.putStoresData(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+      this._storeManagerService.putStoresData(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
         if (res["success"]) {
           this.isCampusUpdateMsg = true;
           this.initialize();

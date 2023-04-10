@@ -2,6 +2,7 @@ import {
   ChangeDetectionStrategy,
   ChangeDetectorRef,
   Component,
+  ElementRef,
   OnDestroy,
   OnInit,
   ViewChild,
@@ -12,20 +13,25 @@ import { takeUntil } from "rxjs/operators";
 import { FileManagerService } from "app/modules/admin/apps/file-manager/store-manager.service";
 import moment from "moment";
 import { FuseMediaWatcherService } from "@fuse/services/media-watcher";
-import { Router } from "@angular/router";
+import { ActivatedRoute, NavigationEnd, Router } from "@angular/router";
 
 @Component({
   selector: "file-manager-details",
   templateUrl: "./details.component.html",
   encapsulation: ViewEncapsulation.None,
   changeDetection: ChangeDetectionStrategy.OnPush,
+  styles: [`layout router-outlet + *  {display: block !important}`]
 })
 export class StoresDetailsComponent implements OnInit, OnDestroy {
   @ViewChild("panel") panel;
+  @ViewChild('topScrollAnchor') topScroll: ElementRef;
 
   selectedStore: any = null;
   private _unsubscribeAll: Subject<any> = new Subject<any>();
   routes = null;
+  selectedScreeen = '';
+  selectedRoute = '';
+
   not_available: string = "N/A";
   stores = [];
   launchDate = "";
@@ -47,6 +53,7 @@ export class StoresDetailsComponent implements OnInit, OnDestroy {
     private _changeDetectorRef: ChangeDetectorRef,
     private _fuseMediaWatcherService: FuseMediaWatcherService,
     private _storesManagerService: FileManagerService,
+    private route: ActivatedRoute,
     private _router: Router
   ) { }
 
@@ -62,17 +69,26 @@ export class StoresDetailsComponent implements OnInit, OnDestroy {
     this.panel.close();
   }
   ngOnInit(): void {
-    const storeId = location.pathname.split("/")[3];
+    let storeId;
+    this.route.params.subscribe(param => {
+      storeId = param.id;
+    })
     this.routes = this._storesManagerService.navigationLabels;
 
+    this._router.events.subscribe((event) => {
+      if (event instanceof NavigationEnd) {
+        this.selectedScreeen = this.route.children[0].snapshot.data.title;
+        this.selectedRoute = this.route.children[0].snapshot.data.url;
+      }
+    })
+    this.selectedScreeen = this.route.children[0].snapshot.data.title;
+    this.selectedRoute = this.route.children[0].snapshot.data.url;
     // Get the items
-    this._storesManagerService.stores$
+    this._storesManagerService.storeDetail$
       .pipe(takeUntil(this._unsubscribeAll))
       .subscribe((items: any) => {
         this.stores = items["data"];
-        this.selectedStore =
-          this.stores.find((value) => value.pk_storeID == storeId) ||
-          this.stores[0];
+        this.selectedStore = items["data"][0]
         this.launchDate = this.selectedStore?.launchDate
           ? moment.utc(this.selectedStore?.launchDate).format("lll")
           : "N/A";
@@ -112,18 +128,28 @@ export class StoresDetailsComponent implements OnInit, OnDestroy {
   // -----------------------------------------------------------------------------------------------------
   // @ Public methods
   // -----------------------------------------------------------------------------------------------------
-
-  clicked(index) {
-    if (window.screen.width < 760) {
-      this.drawerOpened = false;
+  clicked(item) {
+    if (item.route != this.selectedRoute) {
+      this.selectedScreeen = item.title;
+      this.selectedRoute = item.route;
+      setTimeout(() => {
+        this.topScroll.nativeElement.scrollIntoView({ behavior: 'smooth' });
+      }, 100);
+      this._router.navigate([item.route], { relativeTo: this.route });
     }
-    const { title } = index;
-    if (title === this.selectedIndex) {
-      return;
-    }
-    // this.isLoading = true;
-    this.selectedIndex = title;
   }
+
+  // clicked(index) {
+  //   if (window.screen.width < 760) {
+  //     this.drawerOpened = false;
+  //   }
+  //   const { title } = index;
+  //   if (title === this.selectedIndex) {
+  //     return;
+  //   }
+  //   // this.isLoading = true;
+  //   this.selectedIndex = title;
+  // }
 
   goToLink(link: string) {
     const { storeURL, protocol } = this.selectedStore;

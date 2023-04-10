@@ -86,18 +86,18 @@ export class RapidBuildService {
         }).pipe(retry(3));
     };
     // Common Post Call
-    PostAPIData(payload) {
-        const headers = { 'Authorization': `Bearer ${this._authService.accessToken}` };
-        return this._httpClient.post(
-            environment.rapid_build, payload, { headers });
-    };
     AddSmartArtData(payload) {
         const headers = { 'Authorization': `Bearer ${this._authService.accessToken}` };
         return this._httpClient.post(
             environment.rapid_build, payload, { headers });
     };
+    PostApiData(payload) {
+        const headers = { 'Authorization': `Bearer ${this._authService.accessToken}` };
+        return this._httpClient.post(
+            environment.rapid_build, payload, { headers });
+    };
     // Common put Call
-    UpdateSmartArtData(payload) {
+    UpdateAPIData(payload) {
         const headers = { 'Authorization': `Bearer ${this._authService.accessToken}` };
         return this._httpClient.put(
             environment.rapid_build, payload, { headers });

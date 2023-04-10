@@ -10,8 +10,8 @@ import { MatSnackBar } from '@angular/material/snack-bar';
   templateUrl: './shipping-notificaiton.component.html'
 })
 export class ShippingNotificaitonComponent implements OnInit, OnDestroy {
-  @Input() selectedStore: any;
-  @Input() isLoading: boolean;
+  selectedStore: any;
+  isLoading: boolean;
   @Output() isLoadingChange = new EventEmitter<boolean>();
   private _unsubscribeAll: Subject<any> = new Subject<any>();
   shippingNotificationForm: FormGroup;
@@ -21,41 +21,49 @@ export class ShippingNotificaitonComponent implements OnInit, OnDestroy {
   flashMessage: 'success' | 'error' | null = null;
 
   constructor(
-    private _storesManagerService: FileManagerService,
+    private _storeManagerService: FileManagerService,
     private _changeDetectorRef: ChangeDetectorRef,
     private _formBuilder: FormBuilder,
     private _snackBar: MatSnackBar
   ) { }
 
   ngOnInit(): void {
-    this.shippingNotificationForm = this._formBuilder.group({
-      blnShippingNotification: ['']
-    });
-
-    const { pk_storeID } = this.selectedStore;
-
-    // Get the items
-    this._storesManagerService.getShippingNotifications(pk_storeID)
-      .pipe(takeUntil(this._unsubscribeAll))
-      .subscribe((response: any) => {
-        let shippingNotification = response["data"][0];
-        this.shippingNotificationForm.patchValue(shippingNotification);
-        this.isStoreFetch = false;
-
-        // Mark for check
-        this._changeDetectorRef.markForCheck();
-      }, err => {
-        this._snackBar.open("Some error occured", '', {
-          horizontalPosition: 'center',
-          verticalPosition: 'bottom',
-          duration: 3500
-        });
-        this.isStoreFetch = false;
-
-        // Mark for check
-        this._changeDetectorRef.markForCheck();
-      });
+    this.getStoreDetails();
   };
+  getStoreDetails() {
+    this._storeManagerService.storeDetail$
+      .pipe(takeUntil(this._unsubscribeAll))
+      .subscribe((items: any) => {
+        this.selectedStore = items["data"][0];
+        this.shippingNotificationForm = this._formBuilder.group({
+          blnShippingNotification: ['']
+        });
+
+        const { pk_storeID } = this.selectedStore;
+
+        // Get the items
+        this._storeManagerService.getShippingNotifications(pk_storeID)
+          .pipe(takeUntil(this._unsubscribeAll))
+          .subscribe((response: any) => {
+            let shippingNotification = response["data"][0];
+            this.shippingNotificationForm.patchValue(shippingNotification);
+            this.isStoreFetch = false;
+
+            // Mark for check
+            this._changeDetectorRef.markForCheck();
+          }, err => {
+            this._snackBar.open("Some error occured", '', {
+              horizontalPosition: 'center',
+              verticalPosition: 'bottom',
+              duration: 3500
+            });
+            this.isStoreFetch = false;
+
+            // Mark for check
+            this._changeDetectorRef.markForCheck();
+          });
+      });
+  }
 
   /**
 * Show flash message
@@ -99,7 +107,7 @@ export class ShippingNotificaitonComponent implements OnInit, OnDestroy {
     };
 
     this.updateLoader = true;
-    this._storesManagerService.updateShippingNotifications(payload)
+    this._storeManagerService.updateShippingNotifications(payload)
       .subscribe((response) => {
         this.showFlashMessage(
           response["success"] === true ?

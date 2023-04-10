@@ -10,8 +10,8 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 })
 export class FulfillmentInvoicesComponent implements OnInit, OnDestroy {
 
-  @Input() selectedStore: any;
-  @Input() isLoading: boolean;
+  selectedStore: any;
+  isLoading: boolean;
   @Output() isLoadingChange = new EventEmitter<boolean>();
   private _unsubscribeAll: Subject<any> = new Subject<any>();
   displayedColumns: string[] = ['id', 'date', 'status'];
@@ -25,22 +25,29 @@ export class FulfillmentInvoicesComponent implements OnInit, OnDestroy {
   isKeywordSearch: boolean = false;
 
   constructor(
-    private _fileManagerService: FileManagerService,
+    private _storeManagerService: FileManagerService,
     private _changeDetectorRef: ChangeDetectorRef,
     private _snackBar: MatSnackBar
   ) { }
 
   ngOnInit(): void {
     this.dataSourceLoading = true;
-    this.getInvoiceData();
-    this.isLoadingChange.emit(false);
+    this.getStoreDetails();
   };
+  getStoreDetails() {
+    this._storeManagerService.storeDetail$
+      .pipe(takeUntil(this._unsubscribeAll))
+      .subscribe((items: any) => {
+        this.selectedStore = items["data"][0];
+        this.getInvoiceData();
+      });
+  }
   getInvoiceData() {
     let params = {
       store_id: this.selectedStore.pk_storeID,
       fulfillment_invoice: true
     }
-    this._fileManagerService.getStoresData(params)
+    this._storeManagerService.getStoresData(params)
       .pipe(takeUntil(this._unsubscribeAll))
       .subscribe(res => {
         this.dataSourceLoading = false;
@@ -52,7 +59,7 @@ export class FulfillmentInvoicesComponent implements OnInit, OnDestroy {
     const { pk_storeID } = this.selectedStore;
 
     // Get the supplier products
-    this._fileManagerService.getOfflineProducts(pk_storeID, page)
+    this._storeManagerService.getOfflineProducts(pk_storeID, page)
       .pipe(takeUntil(this._unsubscribeAll))
       .subscribe((response: any) => {
         this.dataSource = response["data"];
@@ -77,7 +84,7 @@ export class FulfillmentInvoicesComponent implements OnInit, OnDestroy {
     const { pk_storeID } = this.selectedStore;
 
     // Get the offline products
-    this._fileManagerService.getOfflineProducts(pk_storeID, page)
+    this._storeManagerService.getOfflineProducts(pk_storeID, page)
       .pipe(takeUntil(this._unsubscribeAll))
       .subscribe((response: any) => {
         this.dataSource = response["data"];
@@ -126,7 +133,7 @@ export class FulfillmentInvoicesComponent implements OnInit, OnDestroy {
 
     if (this.keywordSearch) {
       this.isKeywordSearch = true;
-      this._fileManagerService.getOfflineProductsByKeyword(pk_storeID, keyword)
+      this._storeManagerService.getOfflineProductsByKeyword(pk_storeID, keyword)
         .pipe(takeUntil(this._unsubscribeAll))
         .subscribe((response: any) => {
           this.dataSource = response["data"];

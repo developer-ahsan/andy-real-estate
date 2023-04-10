@@ -6,7 +6,7 @@ import { ActivatedRoute, NavigationExtras, Router } from '@angular/router';
 import { Subject } from 'rxjs';
 import { debounceTime, distinctUntilChanged, filter, finalize, switchMap, takeUntil, tap } from 'rxjs/operators';
 import { RapidBuildService } from '../../rapid-build.service';
-import { HideUnhideCart, updateAttentionFlagOrder } from '../../rapid-build.types';
+import { HideUnhideCart, bulkRemoveRapidBuildEntry, updateAttentionFlagOrder } from '../../rapid-build.types';
 @Component({
   selector: 'app-image-management',
   templateUrl: './image-management.component.html',
@@ -27,6 +27,7 @@ export class RapidImageManagementComponent implements OnInit, OnDestroy {
   parameters: any;
   userData: any;
 
+  isRemoveLoader: boolean = false;
   constructor(
     private _changeDetectorRef: ChangeDetectorRef,
     private _RapidBuildService: RapidBuildService,
@@ -76,6 +77,9 @@ export class RapidImageManagementComponent implements OnInit, OnDestroy {
       rapidbuild_list: true
     }
     this._RapidBuildService.getRapidBuildData(params).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+      res["data"].forEach(element => {
+        element.isChecked = false;
+      });
       this.dataSource = res["data"];
       this.totalRecords = res["totalRecords"];
       this.isLoading = false;
@@ -100,6 +104,36 @@ export class RapidImageManagementComponent implements OnInit, OnDestroy {
       queryParams: { fk_orderID: item.fk_orderID, pk_orderLineID: item.pk_orderLineID }
     };
     this.router.navigate([`/rapidbuild/rapidBuild-details/${item.pk_rapidBuildID}`]);
+  }
+  changeCheckbox(item, checked) {
+    item.isChecked = checked;
+  }
+  removeBulkBuilds() {
+    let data = [];
+    this.dataSource.forEach(element => {
+      if (element.isChecked) {
+        data.push(element.pk_rapidBuildID);
+      }
+    });
+    this.isRemoveLoader = true;
+    let payload: bulkRemoveRapidBuildEntry = {
+      rbid: data.toString(),
+      bulk_remove_rapidbuild_entry: true
+    };
+    this._RapidBuildService.UpdateAPIData(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+      this._RapidBuildService.snackBar(res["message"]);
+      this.isRemoveLoader = false;
+      if (this.dataSource.length > 0) {
+        this.paginator.pageIndex = 0;
+        this.page = 1;
+      }
+      this.isLoading = true;
+      this.getRapidBuildData(1);
+      this._changeDetectorRef.markForCheck();
+    }, err => {
+      this.isRemoveLoader = false;
+      this._changeDetectorRef.markForCheck();
+    });
   }
   /**
      * On destroy

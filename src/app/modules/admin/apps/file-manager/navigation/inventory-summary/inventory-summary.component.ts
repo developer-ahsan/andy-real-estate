@@ -12,8 +12,8 @@ import { InventoryService } from '../../../ecommerce/inventory/inventory.service
   templateUrl: './inventory-summary.component.html'
 })
 export class InventorySummaryComponent implements OnInit, OnDestroy {
-  @Input() selectedStore: any;
-  @Input() isLoading: boolean;
+  selectedStore: any;
+  isLoading: boolean;
   @Output() isLoadingChange = new EventEmitter<boolean>();
   private _unsubscribeAll: Subject<any> = new Subject<any>();
   displayedColumns: string[] = ['spid', 'id', 'product', 'vendor', 'inventory', 'threshold', 'fee'];
@@ -28,7 +28,7 @@ export class InventorySummaryComponent implements OnInit, OnDestroy {
   isEditInventory: boolean = false;
   isEditInventoryForm: FormGroup;
   constructor(
-    private _fileManagerService: FileManagerService,
+    private _storeManagerService: FileManagerService,
     private _inventoryService: InventoryService,
     private _changeDetectorRef: ChangeDetectorRef,
     private _snackBar: MatSnackBar,
@@ -36,23 +36,30 @@ export class InventorySummaryComponent implements OnInit, OnDestroy {
   ) { }
 
   ngOnInit(): void {
-    this.isEditInventoryForm = new FormGroup({
-      isWarehouse: new FormControl(true),
-      inventory: new FormControl(''),
-      inventoryThreshold: new FormControl(''),
-      warehousingCost: new FormControl(''),
-      maxQuantity: new FormControl(''),
-      deliveryNote: new FormControl(''),
-      pk_storeProductID: new FormControl(''),
-      productName: new FormControl(''),
-      pk_productID: new FormControl(''),
-      companyName: new FormControl(''),
-      vendorRelation: new FormControl(''),
-    })
-    this.dataSourceLoading = true;
-    this.getSummary(1);
-    this.isLoadingChange.emit(false);
+    this.getStoreDetails();
   };
+  getStoreDetails() {
+    this._storeManagerService.storeDetail$
+      .pipe(takeUntil(this._unsubscribeAll))
+      .subscribe((items: any) => {
+        this.selectedStore = items["data"][0];
+        this.isEditInventoryForm = new FormGroup({
+          isWarehouse: new FormControl(true),
+          inventory: new FormControl(''),
+          inventoryThreshold: new FormControl(''),
+          warehousingCost: new FormControl(''),
+          maxQuantity: new FormControl(''),
+          deliveryNote: new FormControl(''),
+          pk_storeProductID: new FormControl(''),
+          productName: new FormControl(''),
+          pk_productID: new FormControl(''),
+          companyName: new FormControl(''),
+          vendorRelation: new FormControl(''),
+        })
+        this.dataSourceLoading = true;
+        this.getSummary(1);
+      });
+  }
   getSummary(page) {
     let params = {
       store_id: this.selectedStore.pk_storeID,
@@ -60,7 +67,7 @@ export class InventorySummaryComponent implements OnInit, OnDestroy {
       size: 20,
       page: page
     }
-    this._fileManagerService.getStoresData(params)
+    this._storeManagerService.getStoresData(params)
       .pipe(takeUntil(this._unsubscribeAll))
       .subscribe(res => {
         this.dataSourceLoading = false;

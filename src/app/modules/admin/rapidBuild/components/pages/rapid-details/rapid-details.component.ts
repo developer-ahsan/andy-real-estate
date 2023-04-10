@@ -8,7 +8,7 @@ import moment from 'moment';
 import { Subject } from 'rxjs';
 import { debounceTime, distinctUntilChanged, filter, finalize, switchMap, takeUntil, tap } from 'rxjs/operators';
 import { RapidBuildService } from '../../rapid-build.service';
-import { sendAutoRequest, UpdateArtworkTgas, UpdateQuoteOptions, updateQuotePurchaseOrderComment, updateReorderNumber } from '../../rapid-build.types';
+import { removeRapidBuildEntry, sendAutoRequest, UpdateArtworkTgas, updateProof, UpdateQuoteOptions, updateQuotePurchaseOrderComment, updateReorderNumber, updateStatus, uploadProof } from '../../rapid-build.types';
 @Component({
   selector: 'app-rapid-details',
   templateUrl: './rapid-details.component.html',
@@ -93,14 +93,22 @@ export class RapidBuildDetailsComponent implements OnInit, OnDestroy {
   isArtworkTagsLoader: boolean = false;
   isAutoRequestLoader: boolean = false;
   isManualProofLoader: boolean = false;
-  imageValue: any;
 
   allStatus: any;
   buildDetails: any;
   imprintDetails: any;
+  artWorkDetails: any;
   colorsData: any;
   logoData: any;
   isLogoBankLoader: boolean = false;
+  isRemoveLoader: boolean;
+  isUpdateLoader: boolean;
+
+  ngStatus = 0;
+  ngProofCheck = true;
+  imageValue: any;
+  ngProofComment: any;
+  isUploadProofLoader: boolean = false;
   constructor(
     private _changeDetectorRef: ChangeDetectorRef,
     private _authService: AuthService,
@@ -126,6 +134,7 @@ export class RapidBuildDetailsComponent implements OnInit, OnDestroy {
     }
     this._rapidService.getRapidBuildData(params).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
       this.buildDetails = res["data"][0];
+      this.ngStatus = this.buildDetails.pk_statusID;
       this.getImprintData(this.buildDetails.pk_productID);
     }, err => {
       this.isLoading = false;
@@ -140,6 +149,7 @@ export class RapidBuildDetailsComponent implements OnInit, OnDestroy {
     }
     this._rapidService.getRapidBuildData(params).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
       this.imprintDetails = res["data"];
+      this.artWorkDetails = res["artwork_templates"];
       this.getColorsData(this.buildDetails.fk_storeProductID);
     }, err => {
       this.isLoading = false;
@@ -180,6 +190,153 @@ export class RapidBuildDetailsComponent implements OnInit, OnDestroy {
   }
   backToList() {
     this.router.navigate(['/rapidbuild/image-management']);
+  }
+  removeBuild() {
+    this.isRemoveLoader = true;
+    let payload: removeRapidBuildEntry = {
+      rbid: this.buildDetails.pk_rapidBuildID,
+      spid: this.buildDetails.fk_storeProductID,
+      remove_rapidbuild_entry: true
+    };
+    this._rapidService.UpdateAPIData(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+      this._rapidService.snackBar(res["message"]);
+      this.isRemoveLoader = false;
+      this.backToList();
+      this._changeDetectorRef.markForCheck();
+    }, err => {
+      this.isRemoveLoader = false;
+      this._changeDetectorRef.markForCheck();
+    });
+  }
+  updateStatus() {
+    let blnStatusUpdate = false;
+    if (this.ngStatus != this.buildDetails.pk_statusID) {
+      blnStatusUpdate = true;
+    }
+    let status = this.allStatus.filter(item => item.pk_statusID == this.buildDetails.pk_statusID);
+    this.isUpdateLoader = true;
+    let payload: updateStatus = {
+      rbid: this.buildDetails.pk_rapidBuildID,
+      imageStatusID: this.buildDetails.pk_statusID,
+      blnLeaveComment: true,
+      blnAdmin: this.userData.blnMaster,
+      blnStatusUpdate: blnStatusUpdate,
+      comments: this.buildDetails.proofComments,
+      statusName: status[0].statusName,
+      rapidbuild_userId: this.userData.pk_userID,
+      rapidbuild_username: this.userData.userName,
+      user_full_name: '',
+      update_status: true
+    };
+    this._rapidService.UpdateAPIData(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+      this._rapidService.snackBar(res["message"]);
+      this.isUpdateLoader = false;
+      this._changeDetectorRef.markForCheck();
+    }, err => {
+      this.isUpdateLoader = false;
+      this._changeDetectorRef.markForCheck();
+    });
+  }
+  checkProof(ev) {
+    this.ngProofCheck = false;
+  }
+  uploadFile(event) {
+    this.imageValue = null;
+    const file = event.target.files[0];
+    let type = file["type"];
+    const reader = new FileReader();
+    reader.readAsDataURL(file);
+    reader.onload = () => {
+      this.imageValue = {
+        imageUpload: reader.result,
+        type: file["type"]
+      };
+      let image: any = new Image;
+      image.src = reader.result;
+      image.onload = () => {
+        if (image.width != 600 || image.height != 600) {
+          this._rapidService.snackBar("Dimensions allowed are 600px x 600px");
+          this.imageValue = null;
+          this._changeDetectorRef.markForCheck();
+          return;
+        };
+
+        if (type != "image/jpeg") {
+          this._rapidService.snackBar("Image extensions are allowed in JPG");
+          this.imageValue = null;
+          this._changeDetectorRef.markForCheck();
+          return;
+        }
+        this._changeDetectorRef.markForCheck();
+      };
+    }
+  };
+  updateProof() {
+    if (this.imageValue) {
+      this.uploadMedia();
+    }
+    this.isUploadProofLoader = true;
+    if (!this.ngProofCheck) {
+      let payload: uploadProof = {
+        rbid: this.buildDetails.pk_rapidBuildID,
+        comments: this.ngProofComment,
+        blnAdmin: this.userData.blnMaster,
+        fk_imageStatusID: this.buildDetails.fk_imageStatusID,
+        blnStatusUpdate: true,
+        status_name: this.buildDetails.statusName,
+        rapidbuild_userId: Number(this.buildDetails.pk_userID),
+        rapidbuild_username: this.buildDetails.userName,
+        upload_proof: true
+      };
+      this._rapidService.PostApiData(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+        this._rapidService.snackBar(res["message"]);
+        this.ngProofComment = '';
+        this.imageValue = null;
+        this.ngProofCheck = true;
+        this.isUploadProofLoader = false;
+        this._changeDetectorRef.markForCheck();
+      }, err => {
+        this.isUploadProofLoader = false;
+        this._changeDetectorRef.markForCheck();
+      });
+    } else {
+      let payload: updateProof = {
+        rbid: this.buildDetails.pk_rapidBuildID,
+        comments: this.ngProofComment,
+        blnAdmin: this.userData.blnMaster,
+        fk_imageStatusID: this.buildDetails.fk_imageStatusID,
+        blnStatusUpdate: true,
+        status_name: this.buildDetails.statusName,
+        rapidbuild_userId: Number(this.buildDetails.pk_userID),
+        rapidbuild_username: this.buildDetails.userName,
+        update_proof: true
+      };
+      this._rapidService.UpdateAPIData(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+        this._rapidService.snackBar(res["message"]);
+        this.ngProofComment = '';
+        this.imageValue = null;
+        this.isUploadProofLoader = false;
+        this._changeDetectorRef.markForCheck();
+      }, err => {
+        this.isUploadProofLoader = false;
+        this._changeDetectorRef.markForCheck();
+      });
+    }
+  }
+  uploadMedia() {
+    const { pk_rapidBuildID } = this.buildDetails;
+    const { imageUpload, name, type } = this.imageValue;
+    const base64 = imageUpload.split(",")[1];
+    const payload = {
+      file_upload: true,
+      image_file: base64,
+      image_path: `/globalAssets/rapidBuild/${pk_rapidBuildID}.jpg`
+    };
+    this._rapidService.PostApiData(payload)
+      .subscribe((response) => {
+        // Mark for check
+        this._changeDetectorRef.markForCheck();
+      })
   }
   /**
      * On destroy

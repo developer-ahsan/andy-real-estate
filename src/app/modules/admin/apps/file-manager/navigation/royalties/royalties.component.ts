@@ -14,8 +14,8 @@ import { FileManagerService } from '../../store-manager.service';
 })
 export class RoyaltiesComponent implements OnInit, OnDestroy {
   @ViewChild('select') select: MatSelect;
-  @Input() selectedStore: any;
-  @Input() isLoading: boolean;
+  selectedStore: any;
+  isLoading: boolean;
   @Output() isLoadingChange = new EventEmitter<boolean>();
   private _unsubscribeAll: Subject<any> = new Subject<any>();
   quillModules: any = {
@@ -52,15 +52,23 @@ export class RoyaltiesComponent implements OnInit, OnDestroy {
   isAddMsgLoading: boolean = false;
   addRoyalityForm: FormGroup;
   constructor(
-    private _fileManagerService: FileManagerService,
+    private _storeManagerService: FileManagerService,
     private _changeDetectorRef: ChangeDetectorRef,
     private _snackBar: MatSnackBar,
     private fb: FormBuilder
   ) { }
 
   ngOnInit() {
-    this.initialize();
-    this.getRoyalityList('get')
+    this.getStoreDetails()
+  }
+  getStoreDetails() {
+    this._storeManagerService.storeDetail$
+      .pipe(takeUntil(this._unsubscribeAll))
+      .subscribe((items: any) => {
+        this.selectedStore = items["data"][0];
+        this.initialize();
+        this.getRoyalityList('get');
+      });
   }
   initialize() {
     this.royalityForm = this.fb.group({
@@ -110,7 +118,7 @@ export class RoyaltiesComponent implements OnInit, OnDestroy {
       store_id: this.selectedStore.pk_storeID,
       royality: true
     }
-    this._fileManagerService.getStoresData(params)
+    this._storeManagerService.getStoresData(params)
       .pipe(takeUntil(this._unsubscribeAll))
       .subscribe(res => {
         this.isPageLoading = false;
@@ -159,7 +167,7 @@ export class RoyaltiesComponent implements OnInit, OnDestroy {
       percentage: Number((percentage / 100).toFixed(2)),
       blnSales, blnShipping, blnSetups, blnRuns, blnCheckout, blnRequireCheckout, blnCost, blnPrice, pk_royaltyID, update_royality
     };
-    this._fileManagerService.putStoresData(payload)
+    this._storeManagerService.putStoresData(payload)
       .pipe(takeUntil(this._unsubscribeAll))
       .subscribe(res => {
         item.patchValue({
@@ -191,7 +199,7 @@ export class RoyaltiesComponent implements OnInit, OnDestroy {
       pk_royaltyID: data.pk_royaltyID,
       delete_royality: true
     }
-    this._fileManagerService.putStoresData(payload)
+    this._storeManagerService.putStoresData(payload)
       .pipe(takeUntil(this._unsubscribeAll))
       .subscribe(res => {
         if (res["success"]) {
@@ -226,7 +234,7 @@ export class RoyaltiesComponent implements OnInit, OnDestroy {
       blnSetups,
       blnRuns, blnCheckout, blnRequireCheckout, blnCost, blnPrice, pk_royaltyID, add_royality
     };
-    this._fileManagerService.postStoresData(payload)
+    this._storeManagerService.postStoresData(payload)
       .pipe(takeUntil(this._unsubscribeAll))
       .subscribe(res => {
         if (res["success"]) {

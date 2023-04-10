@@ -28,23 +28,25 @@
                 <mat-expansion-panel class="bg-light" #panel [class.mat-elevation-z0]="true" dense
                     *ngIf="route.children.length == 0" hideToggle (click)="clicked(route)" (opened)="doSomething()">
                     <mat-expansion-panel-header
-                        [style.background-color]="route.title === selectedIndex ? '#d4d7dd' : 'transparent'"
-                        [ngClass]="route.title === selectedIndex ? 'opacity-100' : 'opacity-80'">
+                        [style.background-color]="route.title === selectedScreeen ? '#d4d7dd' : 'transparent'"
+                        [ngClass]="route.title === selectedScreeen ? 'opacity-100' : 'opacity-80'">
                         <mat-icon svgIcon="{{route.icon}}" class="icon-size-5 text-primary"></mat-icon>
-                        <span style="font-size: 13px; font-weight: bold; margin-left: 10px;"> {{route.title}} </span>
+                        <span style="font-size: 13px; font-weight: bold; margin-left: 10px;"> {{route.title}}
+                        </span>
                     </mat-expansion-panel-header>
                 </mat-expansion-panel>
                 <mat-expansion-panel class="bg-light" [expanded]="true" [class.mat-elevation-z0]="true" dense
                     *ngIf="route.children.length > 0">
                     <mat-expansion-panel-header class="bg-light"
-                        [ngClass]="route.title === selectedIndex ? 'opacity-100' : 'opacity-80'">
+                        [ngClass]="route.title === selectedScreeen ? 'opacity-100' : 'opacity-80'">
                         <mat-icon svgIcon="{{route.icon}}" class="icon-size-5 text-primary"></mat-icon>
-                        <span style="font-size: 13px; font-weight: bold; margin-left: 10px;"> {{route.title}} </span>
+                        <span style="font-size: 13px; font-weight: bold; margin-left: 10px;"> {{route.title}}
+                        </span>
                     </mat-expansion-panel-header>
                     <mat-nav-list dense *ngFor="let child of route.children" class="bg-light">
                         <button style="padding: 15px;"
-                            [style.background-color]="child.title === selectedIndex ? '#d4d7dd' : 'transparent'"
-                            [ngClass]="child.title === selectedIndex ? 'opacity-100' : 'opacity-80'" mat-button
+                            [style.background-color]="child.title === selectedScreeen ? '#d4d7dd' : 'transparent'"
+                            [ngClass]="child.title === selectedScreeen ? 'opacity-100' : 'opacity-80'" mat-button
                             class="w-full my-1 mr-2 justify-content-start" (click)="clicked(child)">
                             <mat-icon svgIcon="{{child.icon}}" class="icon-size-5 text-primary"></mat-icon>
                             <span style="font-size: 13px; font-weight: bold; margin-left: 10px;"> {{child.title}}
@@ -53,222 +55,46 @@
                     </mat-nav-list>
                 </mat-expansion-panel>
             </div>
-            <!-- <div *ngFor="let route of routes;let i = index">
-                <button style="padding: 15px;"
-                    [style.background-color]="route.title === selectedIndex ? '#d4d7dd' : 'transparent'"
-                    [ngClass]="route.title === selectedIndex ? 'opacity-100' : 'opacity-80'" mat-button
-                    class="w-full my-1 mr-2 justify-content-start" (click)="clicked(route)">
-                    <mat-icon svgIcon="{{route.icon}}" class="icon-size-5 text-primary"></mat-icon>
-                    <span style="font-size: 13px; font-weight: bold; margin-left: 10px;"> {{route.title}} </span>
-                </button>
-            </div> -->
         </mat-drawer>
 
-        <div class="sub-sidenav-content bg-light p-2">
+        <div class="sub-sidenav-content bg-light p-2" #topScrollAnchor>
             <div class="flex justify-content-between">
                 <mat-icon class="subnav-menu-icon ml-1" svgIcon="heroicons_outline:menu" (click)="toggleDrawer()">
                 </mat-icon>
             </div>
-
-            <ng-template #myCard>
-                <div class="bg-card shadow p-6">
-                    <div class="row w-full">
-                        <div class="col-lg-4 col-md-6 col-12">
-                            <b class="text-secondary text-sm">Store ID</b>
-                            <p class="float-right text-sm">{{selectedStore?.pk_storeID || not_available}}</p>
-                        </div>
-                        <div class="col-lg-4 col-md-6 col-12">
-                            <b class="text-secondary text-sm">Launch Date</b>
-                            <p class="float-right text-sm">{{launchDate}}</p>
-                        </div>
-                        <div class="col-lg-4 col-md-6 col-12">
-                            <b class="text-secondary text-sm">Program Manager</b>
-                            <p class="float-right text-sm">{{selectedStore?.championName || not_available}}</p>
-                        </div>
-                        <div class="col-lg-4 col-md-6 col-12">
-                            <b class="text-secondary text-sm">Secured</b>
-                            <p class="float-right text-sm text-secondary">{{selectedStore?.blnElectronicInvoicing ?
-                                'YES' : 'NO'}}</p>
-                        </div>
-                        <div class="col-lg-4 col-md-6 col-12">
-                            <b class="text-secondary text-sm">Site</b>
-                            <a class="text-md float-right cursor-pointer font-medium text-primary-500 hover:underline"
-                                (click)="goToLink('storeURL')">
-                                {{selectedStore?.storeURL || not_available}}
-                            </a>
+            <div class="row p-2">
+                <div class="col-12">
+                    <div class="bg-card shadow p-6">
+                        <div class="row w-full">
+                            <div class="col-lg-4 col-md-6 col-12">
+                                <b class="text-secondary text-sm">Store ID</b>
+                                <p class="float-right text-sm">{{selectedStore?.pk_storeID || not_available}}</p>
+                            </div>
+                            <div class="col-lg-4 col-md-6 col-12">
+                                <b class="text-secondary text-sm">Launch Date</b>
+                                <p class="float-right text-sm">{{launchDate}}</p>
+                            </div>
+                            <div class="col-lg-4 col-md-6 col-12">
+                                <b class="text-secondary text-sm">Program Manager</b>
+                                <p class="float-right text-sm">{{selectedStore?.championName || not_available}}</p>
+                            </div>
+                            <div class="col-lg-4 col-md-6 col-12">
+                                <b class="text-secondary text-sm">Secured</b>
+                                <p class="float-right text-sm text-secondary">{{selectedStore?.blnElectronicInvoicing ?
+                                    'YES' : 'NO'}}</p>
+                            </div>
+                            <div class="col-lg-4 col-md-6 col-12">
+                                <b class="text-secondary text-sm">Site</b>
+                                <a class="text-md float-right cursor-pointer font-medium text-primary-500 hover:underline"
+                                    (click)="goToLink('storeURL')">
+                                    {{selectedStore?.storeURL || not_available}}
+                                </a>
+                            </div>
                         </div>
                     </div>
                 </div>
-            </ng-template>
-
-            <div class="row p-2">
-                <!-- <div class="col-12">
-                    <mat-form-field appearance="fill" class="w-full">
-                        <mat-icon svgIcon="mat_outline:storefront"></mat-icon>
-                        <mat-select [(ngModel)]="selectedStore">
-                            <mat-option (click)="changeStoreSelection(store)" value="{{store}}"
-                                *ngFor="let store of stores">
-                                {{store.storeName}}
-                            </mat-option>
-                        </mat-select>
-                    </mat-form-field>
-                </div> -->
-                <div class="col-12">
-                    <ng-container *ngTemplateOutlet="myCard"></ng-container>
-                </div>
-                <div class="col-12 my-5">
-                    <ng-template [ngIf]="selectedIndex === 'Dashboard'">
-                        <app-dashboard [(isLoading)]="isLoading" [selectedStore]="selectedStore"></app-dashboard>
-                    </ng-template>
-
-                    <ng-template [ngIf]="selectedIndex === 'Store Products'">
-                        <app-store-products [(isLoading)]="isLoading" [selectedStore]="selectedStore">
-                        </app-store-products>
-                    </ng-template>
-                    <ng-template [ngIf]="selectedIndex === 'Product Categories'">
-                        <app-product-categories [(isLoading)]="isLoading" [selectedStore]="selectedStore">
-                        </app-product-categories>
-                    </ng-template>
-                    <ng-template [ngIf]="selectedIndex === 'Products/Supplier'">
-                        <app-products-suppliers [(isLoading)]="isLoading" [selectedStore]="selectedStore">
-                        </app-products-suppliers>
-                    </ng-template>
-                    <ng-template [ngIf]="selectedIndex === 'Offline Products'">
-                        <app-offline-products [(isLoading)]="isLoading" [selectedStore]="selectedStore">
-                        </app-offline-products>
-                    </ng-template>
-                    <ng-template [ngIf]="selectedIndex === 'Store Product Videos'">
-                        <app-store-videos [(isLoading)]="isLoading" [selectedStore]="selectedStore">
-                        </app-store-videos>
-                    </ng-template>
-                    <ng-template [ngIf]="selectedIndex === 'RapidBuild'">
-                        <app-rapidbuild [(isLoading)]="isLoading" [selectedStore]="selectedStore">
-                        </app-rapidbuild>
-                    </ng-template>
-                    <ng-template [ngIf]="selectedIndex === 'RapidBuild Bulk Actions'">
-                        <app-rapidbuild-actions [(isLoading)]="isLoading" [selectedStore]="selectedStore">
-                        </app-rapidbuild-actions>
-                    </ng-template>
-                    <ng-template [ngIf]="selectedIndex === 'Store Settings'">
-                        <app-store-settings [(isLoading)]="isLoading" [selectedStore]="selectedStore">
-                        </app-store-settings>
-                    </ng-template>
-                    <ng-template [ngIf]="selectedIndex === 'Jaggaer Settings'">
-                        <app-jaggaer-settings [(isLoading)]="isLoading" [selectedStore]="selectedStore">
-                        </app-jaggaer-settings>
-                    </ng-template>
-                    <ng-template [ngIf]="selectedIndex === 'Group Order Settings'">
-                        <app-group-order-settings [(isLoading)]="isLoading" [selectedStore]="selectedStore">
-                        </app-group-order-settings>
-                    </ng-template>
-                    <ng-template [ngIf]="selectedIndex === 'Campaigns'">
-                        <app-campaigns [(isLoading)]="isLoading" [selectedStore]="selectedStore">
-                        </app-campaigns>
-                    </ng-template>
-                    <ng-template [ngIf]="selectedIndex === 'Presentation'">
-                        <app-presentation [(isLoading)]="isLoading" [selectedStore]="selectedStore">
-                        </app-presentation>
-                    </ng-template>
-                    <ng-template [ngIf]="selectedIndex === 'Shipping Notifications'">
-                        <app-shipping-notificaiton [(isLoading)]="isLoading" [selectedStore]="selectedStore">
-                        </app-shipping-notificaiton>
-                    </ng-template>
-                    <ng-template [ngIf]="selectedIndex === 'Reset Top Ten'">
-                        <app-reset-top-ten [(isLoading)]="isLoading" [selectedStore]="selectedStore">
-                        </app-reset-top-ten>
-                    </ng-template>
-                    <ng-template [ngIf]="selectedIndex === 'Surveys'">
-                        <app-surveys [(isLoading)]="isLoading" [selectedStore]="selectedStore">
-                        </app-surveys>
-                    </ng-template>
-                    <ng-template [ngIf]="selectedIndex === 'Email Blast'">
-                        <app-email-blast [(isLoading)]="isLoading" [selectedStore]="selectedStore">
-                        </app-email-blast>
-                    </ng-template>
-                    <ng-template [ngIf]="selectedIndex === 'Store Suppliers'">
-                        <app-store-suppliers [(isLoading)]="isLoading" [selectedStore]="selectedStore">
-                        </app-store-suppliers>
-                    </ng-template>
-                    <ng-template [ngIf]="selectedIndex === 'Product Clicks'">
-                        <app-product-clicks [(isLoading)]="isLoading" [selectedStore]="selectedStore">
-                        </app-product-clicks>
-                    </ng-template>
-                    <ng-template [ngIf]="selectedIndex === 'Search History'">
-                        <app-search-history [(isLoading)]="isLoading" [selectedStore]="selectedStore">
-                        </app-search-history>
-                    </ng-template>
-                    <ng-template [ngIf]="selectedIndex === 'User Data File'">
-                        <app-user-data-file [(isLoading)]="isLoading" [selectedStore]="selectedStore">
-                        </app-user-data-file>
-                    </ng-template>
-                    <ng-template [ngIf]="selectedIndex === 'Opt-In Data File'">
-                        <app-opt-in-user-data [(isLoading)]="isLoading" [selectedStore]="selectedStore">
-                        </app-opt-in-user-data>
-                    </ng-template>
-                    <ng-template [ngIf]="selectedIndex === 'Fulfillment Options'">
-                        <app-fulfill-options [(isLoading)]="isLoading" [selectedStore]="selectedStore">
-                        </app-fulfill-options>
-                    </ng-template>
-                    <ng-template [ngIf]="selectedIndex === 'Royalities'">
-                        <app-royalties [(isLoading)]="isLoading" [selectedStore]="selectedStore">
-                        </app-royalties>
-                    </ng-template>
-                    <ng-template [ngIf]="selectedIndex === 'Store Apparel Decorator'">
-                        <app-apparel-decorator [(isLoading)]="isLoading" [selectedStore]="selectedStore">
-                        </app-apparel-decorator>
-                    </ng-template>
-                    <ng-template [ngIf]="selectedIndex === 'Customer Reviews'">
-                        <app-customer-reviews [(isLoading)]="isLoading" [selectedStore]="selectedStore">
-                        </app-customer-reviews>
-                    </ng-template>
-                    <ng-template [ngIf]="selectedIndex === 'Fulfillment Invoices'">
-                        <app-fulfillment-invoices [(isLoading)]="isLoading" [selectedStore]="selectedStore">
-                        </app-fulfillment-invoices>
-                    </ng-template>
-                    <ng-template [ngIf]="selectedIndex === 'Referral Locations'">
-                        <app-referal-locations [(isLoading)]="isLoading" [selectedStore]="selectedStore">
-                        </app-referal-locations>
-                    </ng-template>
-                    <ng-template [ngIf]="selectedIndex === 'Fulfillment Contacts'">
-                        <app-fullfilment-contacts [(isLoading)]="isLoading" [selectedStore]="selectedStore">
-                        </app-fullfilment-contacts>
-                    </ng-template>
-                    <ng-template [ngIf]="selectedIndex === 'Margins'">
-                        <app-margins [(isLoading)]="isLoading" [selectedStore]="selectedStore">
-                        </app-margins>
-                    </ng-template>
-                    <ng-template [ngIf]="selectedIndex === 'Inventory Summary'">
-                        <app-inventory-summary [(isLoading)]="isLoading" [selectedStore]="selectedStore">
-                        </app-inventory-summary>
-                    </ng-template>
-                    <ng-template [ngIf]="selectedIndex === 'Cost Center Codes'">
-                        <app-cost-center-code [(isLoading)]="isLoading" [selectedStore]="selectedStore">
-                        </app-cost-center-code>
-                    </ng-template>
-                    <ng-template [ngIf]="selectedIndex === 'Locations'">
-                        <app-locations [(isLoading)]="isLoading" [selectedStore]="selectedStore">
-                        </app-locations>
-                    </ng-template>
-                    <ng-template [ngIf]="selectedIndex === 'Blanket Credit Terms'">
-                        <app-credit-terms [(isLoading)]="isLoading" [selectedStore]="selectedStore">
-                        </app-credit-terms>
-                    </ng-template>
-                    <ng-template [ngIf]="selectedIndex === 'Store Plan/Strategies'">
-                        <app-store-plan [(isLoading)]="isLoading" [selectedStore]="selectedStore">
-                        </app-store-plan>
-                    </ng-template>
-                    <ng-template [ngIf]="selectedIndex === 'Student orgs'">
-                        <app-student-org [(isLoading)]="isLoading" [selectedStore]="selectedStore">
-                        </app-student-org>
-                    </ng-template>
-                    <ng-template [ngIf]="selectedIndex === 'Art Approval Settings'">
-                        <art-approval-settings [(isLoading)]="isLoading" [selectedStore]="selectedStore">
-                        </art-approval-settings>
-                    </ng-template>
-                    <ng-template [ngIf]="selectedIndex === 'Consolidated Bill'">
-                        <app-consolidated-bill [(isLoading)]="isLoading" [selectedStore]="selectedStore">
-                        </app-consolidated-bill>
-                    </ng-template>
+                <div class="col-12 my-5 w-full">
+                    <router-outlet [(isLoading)]="isLoading" [selectedStore]="selectedStore"></router-outlet>
                 </div>
             </div>
         </div>

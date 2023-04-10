@@ -16,8 +16,8 @@ import moment from "moment";
 export class UserDataFileComponent implements OnInit, OnDestroy {
 
   @ViewChild('select') select: MatSelect;
-  @Input() selectedStore: any;
-  @Input() isLoading: boolean;
+  selectedStore: any;
+  isLoading: boolean;
   @Output() isLoadingChange = new EventEmitter<boolean>();
   private _unsubscribeAll: Subject<any> = new Subject<any>();
 
@@ -47,16 +47,23 @@ export class UserDataFileComponent implements OnInit, OnDestroy {
 
   maxDate = new Date();
   constructor(
-    private _fileManagerService: FileManagerService,
+    private _storeManagerService: FileManagerService,
     private _changeDetectorRef: ChangeDetectorRef,
     private _snackBar: MatSnackBar
   ) { }
 
   ngOnInit() {
     this.isLoadingChange.emit(false);
-
+    this.getStoreDetails();
     // Mark for observable
     this._changeDetectorRef.markForCheck();
+  }
+  getStoreDetails() {
+    this._storeManagerService.storeDetail$
+      .pipe(takeUntil(this._unsubscribeAll))
+      .subscribe((items: any) => {
+        this.selectedStore = items["data"][0]
+      });
   }
   getUserData() {
     this.isPageLoading = true;
@@ -66,7 +73,7 @@ export class UserDataFileComponent implements OnInit, OnDestroy {
       end_date: moment(this.ngEndDate).format('yyyy-MM-DD'),
       user_data: true
     }
-    this._fileManagerService.getUserData(params)
+    this._storeManagerService.getUserData(params)
       .pipe(takeUntil(this._unsubscribeAll))
       .subscribe(res => {
         this.fileUserRecord = res["data"];

@@ -14,8 +14,8 @@ const API_KEY = "e8067b53"
   templateUrl: './consolidated-bill.component.html',
 })
 export class ConsolidatedBillComponent implements OnInit, OnDestroy {
-  @Input() selectedStore: any;
-  @Input() isLoading: boolean;
+  selectedStore: any;
+  isLoading: boolean;
   @Output() isLoadingChange = new EventEmitter<boolean>();
   private _unsubscribeAll: Subject<any> = new Subject<any>();
   isPageLoading: boolean = false;
@@ -42,7 +42,7 @@ export class ConsolidatedBillComponent implements OnInit, OnDestroy {
   consolidatedData: any;
   totalAmount = 0;
   constructor(
-    private _fileManagerService: FileManagerService,
+    private _storeManagerService: FileManagerService,
     private _changeDetectorRef: ChangeDetectorRef,
     private _snackBar: MatSnackBar,
     private http: HttpClient
@@ -63,7 +63,15 @@ export class ConsolidatedBillComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    this.getLocationsSearch();
+    this.getStoreDetails();
+  }
+  getStoreDetails() {
+    this._storeManagerService.storeDetail$
+      .pipe(takeUntil(this._unsubscribeAll))
+      .subscribe((items: any) => {
+        this.selectedStore = items["data"][0];
+        this.getLocationsSearch();
+      });
   }
   ngOnDestroy(): void {
     // Unsubscribe from all subscriptions
@@ -84,7 +92,7 @@ export class ConsolidatedBillComponent implements OnInit, OnDestroy {
           this._changeDetectorRef.markForCheck();
 
         }),
-        switchMap(value => this._fileManagerService.getStoresData({
+        switchMap(value => this._storeManagerService.getStoresData({
           store_id: this.selectedStore.pk_storeID,
           store_locations: true,
           size: 20,
@@ -125,7 +133,7 @@ export class ConsolidatedBillComponent implements OnInit, OnDestroy {
       order_type: this.ngOrder,
       attribute_id: this.slectedLocation
     }
-    this._fileManagerService.getStoresData(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+    this._storeManagerService.getStoresData(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
       this.consolidatedData = res["data"];
       this.consolidatedData.forEach(element => {
         this.totalAmount += element.total;
@@ -143,7 +151,7 @@ export class ConsolidatedBillComponent implements OnInit, OnDestroy {
       consolidated_bill_products: true,
       order_line_id: obj.pk_orderLineID
     }
-    this._fileManagerService.getStoresData(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+    this._storeManagerService.getStoresData(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
       console.log(res);
       obj.productsData = res["data"];
       obj.loader = false;

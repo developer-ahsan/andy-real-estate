@@ -42,14 +42,15 @@ import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatTreeModule } from '@angular/material/tree';
 import { ImportExportComponent } from './components/import-export.component';
 import { ImportExportHomeComponent } from './components/pages/home/home.component';
-import { OrderExportComponent } from './components/pages/export/export.component';
 import { OrderImportComponent } from './components/pages/import/import.component';
+import { ExportDetailComponent } from './components/pages/export-details/export-details.component';
+import { OrderExportComponent } from './components/pages/export/export.component';
 
 @NgModule({
     declarations: [
         ImportExportComponent,
         ImportExportHomeComponent,
-        OrderImportComponent, OrderExportComponent
+        OrderImportComponent, OrderExportComponent, ExportDetailComponent
     ],
     imports: [
         RouterModule.forChild(importExportRoutes),

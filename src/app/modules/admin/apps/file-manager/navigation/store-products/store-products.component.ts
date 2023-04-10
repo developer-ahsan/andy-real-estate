@@ -15,8 +15,8 @@ import { Router } from '@angular/router';
 })
 
 export class StoreProductsComponent implements OnInit, OnDestroy {
-  @Input() selectedStore: any;
-  @Input() isLoading: boolean;
+  selectedStore: any;
+  isLoading: boolean;
   @Output() isLoadingChange = new EventEmitter<boolean>();
   private _unsubscribeAll: Subject<any> = new Subject<any>();
   displayedColumns: string[] = ['spid', 'name', 'vendor', 'master', 'store', 'desc', 'video', 'techno_logo'];
@@ -31,16 +31,23 @@ export class StoreProductsComponent implements OnInit, OnDestroy {
   isFilterLoader: boolean = false;
   isToggleFilter: boolean = false;
   constructor(
-    private _fileManagerService: FileManagerService,
+    private _storeManagerService: FileManagerService,
     private _changeDetectorRef: ChangeDetectorRef,
     private _snackBar: MatSnackBar,
     private router: Router
   ) { }
 
   ngOnInit(): void {
-    this.dataSourceLoading = true;
-    this.getFirstCall(this.page);
-    this.isLoadingChange.emit(false);
+    this.getStoreDetails();
+  }
+  getStoreDetails() {
+    this._storeManagerService.storeDetail$
+      .pipe(takeUntil(this._unsubscribeAll))
+      .subscribe((items: any) => {
+        this.selectedStore = items["data"][0];
+        this.dataSourceLoading = true;
+        this.getFirstCall(this.page);
+      });
   }
   toggleFilter() {
     this.isToggleFilter = !this.isToggleFilter;
@@ -49,7 +56,7 @@ export class StoreProductsComponent implements OnInit, OnDestroy {
     const { pk_storeID } = this.selectedStore;
 
     // Get the store products
-    this._fileManagerService.getStoreProducts(pk_storeID, page)
+    this._storeManagerService.getStoreProducts(pk_storeID, page)
       .pipe(takeUntil(this._unsubscribeAll))
       .subscribe((response: any) => {
         this.dataSource = response["data"];
@@ -74,7 +81,7 @@ export class StoreProductsComponent implements OnInit, OnDestroy {
     const { pk_storeID } = this.selectedStore;
 
     // Get the store products
-    this._fileManagerService.getStoreProducts(pk_storeID, page)
+    this._storeManagerService.getStoreProducts(pk_storeID, page)
       .pipe(takeUntil(this._unsubscribeAll))
       .subscribe((response: any) => {
         this.dataSource = response["data"];
@@ -109,7 +116,7 @@ export class StoreProductsComponent implements OnInit, OnDestroy {
 
     if (this.keywordSearch) {
       this.isKeywordSearch = true;
-      this._fileManagerService.getStoreProductsByKeywords(pk_storeID, keyword)
+      this._storeManagerService.getStoreProductsByKeywords(pk_storeID, keyword)
         .pipe(takeUntil(this._unsubscribeAll))
         .subscribe((response: any) => {
           this.dataSource = response["data"];
