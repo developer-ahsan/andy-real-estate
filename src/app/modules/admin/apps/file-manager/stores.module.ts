@@ -89,6 +89,8 @@ import { PresentationArtworkTagsComponent } from "./navigation/presentation/artw
 import { PresentationSiteColorsComponent } from "./navigation/presentation/site-colors/site-colors.component";
 import { PresentationQuickGuidesComponent } from "./navigation/presentation/quick-guides/quick-guides.component";
 import { PresentationHeaderImageComponent } from "./navigation/presentation/header-image/header-image.component";
+import { SimpleEmailBlastComponent } from "./navigation/email-blast/simple-email/simple-email.component";
+import { NgxDropzoneModule } from "ngx-dropzone";
 
 @NgModule({
   declarations: [
@@ -147,7 +149,8 @@ import { PresentationHeaderImageComponent } from "./navigation/presentation/head
     PresentationArtworkTagsComponent,
     PresentationSiteColorsComponent,
     PresentationQuickGuidesComponent,
-    PresentationHeaderImageComponent
+    PresentationHeaderImageComponent,
+    SimpleEmailBlastComponent
   ],
   imports: [
     RouterModule.forChild(storeRoutes),
@@ -184,7 +187,8 @@ import { PresentationHeaderImageComponent } from "./navigation/presentation/head
     MatStepperModule,
     MatChipsModule,
     MatAutocompleteModule,
-    MatSlideToggleModule
+    MatSlideToggleModule,
+    NgxDropzoneModule
   ],
   entryComponents: [ConfirmationDialogComponent],
 })

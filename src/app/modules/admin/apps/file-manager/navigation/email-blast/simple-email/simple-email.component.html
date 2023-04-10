@@ -1,0 +1,53 @@
+<div class="row">
+  <div class="col-12 p-12 pt-0 bg-card rounded-2xl">
+    <form [formGroup]="sendEmailForm">
+      <div class="row mb-3">
+        <div class="col-12">
+          <mat-form-field appearance="fill" class="w-full">
+            <mat-label>Subject</mat-label>
+            <input matInput [formControlName]="'subject'" />
+            <mat-error>Please add subject</mat-error>
+          </mat-form-field>
+        </div>
+
+        <div class="col-12">
+          <mat-form-field class="example-chip-list w-full" appearance="fill">
+            <mat-label>Emails (Comma-seperated)</mat-label>
+            <mat-chip-list class="pt-1" #chipList1>
+              <mat-chip [removable]="true" [selectable]="true" *ngFor="let email of emails" (removed)="remove(email)">
+                {{email}}
+                <mat-icon class="icon-size-5" matChipRemove [svgIcon]="'heroicons_solid:minus-circle'"></mat-icon>
+              </mat-chip>
+              <input #chipList [matChipInputFor]="chipList1" placeholder="Add Emails"
+                [matChipInputSeparatorKeyCodes]="separatorKeysCodes" [matChipInputAddOnBlur]="addOnBlur"
+                (matChipInputTokenEnd)="add($event)">
+            </mat-chip-list>
+          </mat-form-field>
+        </div>
+        <div class="col-12">
+          <div style="font-weight: 500">Message</div>
+          <quill-editor [modules]="quillModules" [formControlName]="'message'"> </quill-editor>
+          <!-- <mat-error>Please add message</mat-error> -->
+        </div>
+        <div class="col-12 mt-2">
+          <div style="font-weight: 500">Choose image:</div>
+          <br>
+          <ngx-dropzone [multiple]="false" accept="image/jpeg,image/jpg" (change)="onSelect($event)">
+            <ngx-dropzone-label>Choose Image</ngx-dropzone-label>
+            <ngx-dropzone-preview *ngIf="file" [removable]="true" (removed)="onRemove()">
+              <ngx-dropzone-label>{{ file.name }} ({{ file.type }})</ngx-dropzone-label>
+            </ngx-dropzone-preview>
+          </ngx-dropzone>
+        </div>
+        <div class="col-12 text-right my-2">
+          <button (click)="sendEmail()" [disabled]="isEmailLoader" class="ml-4 min-w-40" mat-flat-button
+            [color]="'primary'" [matTooltip]="'Send an Email'">
+            <span class="ml-2 mr-1" *ngIf="!isEmailLoader">Send Email</span>
+            <mat-progress-spinner *ngIf="isEmailLoader" [diameter]="24" [mode]="'indeterminate'">
+            </mat-progress-spinner>
+          </button>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>

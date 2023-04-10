@@ -43,10 +43,11 @@
                     </mat-progress-spinner>
                 </div>
                 <div class="col-12 my-2">
-                    <button mat-flat-button class="min-w-40" [color]="'primary'">
-                        <span>Export</span>
-                        <!-- <mat-progress-spinner *ngIf="isUpdateWebsiteLoader" [diameter]="24" [mode]="'indeterminate'">
-                        </mat-progress-spinner> -->
+                    <button [disabled]="isExportLoader" (click)="getCategoriesEcportData()" mat-flat-button
+                        class="min-w-40" [color]="'primary'">
+                        <span *ngIf="!isExportLoader">Export</span>
+                        <mat-progress-spinner *ngIf="isExportLoader" [diameter]="24" [mode]="'indeterminate'">
+                        </mat-progress-spinner>
                     </button>
                 </div>
             </div>

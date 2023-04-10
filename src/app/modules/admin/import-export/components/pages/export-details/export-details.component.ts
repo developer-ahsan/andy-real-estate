@@ -28,6 +28,7 @@ export class ExportDetailComponent implements OnInit, OnDestroy {
   removedCategories = [];
 
   ngSelectAll: boolean = true;
+  isExportLoader: boolean;
   constructor(
     private _changeDetectorRef: ChangeDetectorRef,
     private _authService: AuthService,
@@ -78,6 +79,28 @@ export class ExportDetailComponent implements OnInit, OnDestroy {
     this.categorypage++;
     this.getCategories(this.categorypage);
   };
+  getCategoriesEcportData() {
+    this.isExportLoader = true;
+    let catList = [];
+    this.allCategories.forEach(element => {
+      if (element.checked) {
+        catList.push(element.pk_categoryID);
+      }
+    });
+    let params = {
+      export_categories: true,
+      categories_id_list: catList.toString(),
+      store_id: this.paramsData.storeID
+    }
+    this._exportService.getAPIData(params).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+      console.log(res);
+      this.isExportLoader = false;
+      this._changeDetectorRef.markForCheck();
+    }, err => {
+      this.isExportLoader = false;
+      this._changeDetectorRef.markForCheck();
+    });
+  }
   changeCheckbox(item, checked) {
     if (checked) {
       const index = this.selectedCategories.findIndex(val => val.subcategory_id == item.pk_subCategoryID);

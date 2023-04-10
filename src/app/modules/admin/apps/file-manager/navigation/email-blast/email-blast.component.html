@@ -7,8 +7,14 @@
       <mat-button-toggle value="actvity">
         Email Activity
       </mat-button-toggle>
+      <mat-button-toggle value="simple">
+        Simple Email
+      </mat-button-toggle>
     </mat-button-toggle-group>
   </div>
+</div>
+<div *ngIf="mainScreen == 'simple'">
+  <app-simple-email></app-simple-email>
 </div>
 <div *ngIf="mainScreen=='actvity'">
   <ngx-skeleton-loader count="8" appearance="line" animation="pulse" *ngIf="isActivityLoader">
