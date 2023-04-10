@@ -76,7 +76,6 @@ export class AnalyticsComponent implements OnInit, OnDestroy {
         private _router: Router
     ) {
         let user = this._authService.parseJwt(this._authService.accessToken);
-        console.log(user);
         this._analyticsService.dataProject$
             .pipe(takeUntil(this._unsubscribeAll))
             .subscribe((data) => {
@@ -326,8 +325,12 @@ export class AnalyticsComponent implements OnInit, OnDestroy {
             this.programPerformanceData = res["data"];
             this.totalPerformanceRecords = res["totalRecords"];
             this.programPerformanceData.forEach(element => {
-                element.percent = Number(100 - (element.monthlyEarnings / element.previousYearSales) * 100);
-                if (!element.percent) {
+                if (element.previousYearSales == 0) {
+                    element.percent = 0
+                } else {
+                    element.percent = Number(100 - (element.monthlyEarnings / element.previousYearSales) * 100);
+                }
+                if (element.percent == 0) {
                     element.percent = 0;
                     element.color = 'gray';
                 }

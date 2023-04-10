@@ -17,21 +17,21 @@ export const defaultNavigation: FuseNavigationItem[] = [
                 children: [
                     {
                         id: 'apps.reports.store-sales',
-                        title: 'Analytics',
+                        title: 'Manager/Employee',
                         type: 'basic',
                         icon: 'mat_outline:analytics',
                         link: '/dashboards/analytics',
                     },
                     {
                         id: 'apps.reports.store-sales',
-                        title: 'Overview',
+                        title: 'Company Overview',
                         type: 'basic',
                         icon: 'heroicons_outline:view-boards',
                         link: '/dashboards/overview',
                     },
                     {
                         id: 'apps.reports.store-sales',
-                        title: 'Reports',
+                        title: 'Employee Reports',
                         type: 'basic',
                         icon: 'heroicons_outline:document-report',
                         link: '/dashboards/reports',
