@@ -56,6 +56,19 @@ export class RapidBuildComponent {
     ngPassword = '';
     userData: any;
 
+    navigations = [
+        {
+            title: 'Image Management',
+            icon: 'heroicons_outline:document-report',
+            route: 'image-management'
+        },
+        {
+            title: 'Summary',
+            icon: 'mat_outline:settings_suggest',
+            route: 'summary'
+
+        },
+    ];
     /**
      * Constructor
      */
@@ -68,10 +81,26 @@ export class RapidBuildComponent {
         if (sessionStorage.getItem('rapidBuild')) {
             this.loginCheck = true;
             this.userData = JSON.parse(sessionStorage.getItem('rapidBuild'));
+            if (this.userData.blnMaster) {
+                this.navigations.push(
+                    {
+                        title: 'New Product Requests',
+                        icon: 'mat_outline:settings',
+                        route: 'new-requests'
+
+                    },
+                    {
+                        title: 'Clear Store',
+                        icon: 'mat_outline:settings_suggest',
+                        route: 'clear-store'
+
+                    }
+                )
+            }
         } else {
             this.loginCheck = false;
         }
-        this.routes = this._rapidService.navigationLabels;
+        this.routes = this.navigations;
     }
 
     // -----------------------------------------------------------------------------------------------------
@@ -174,8 +203,23 @@ export class RapidBuildComponent {
                 if (res["isLogin"]) {
                     this.loginCheck = true;
                     this.userData = res["data"][0];
+                    if (this.userData.blnMaster) {
+                        this.navigations.push(
+                            {
+                                title: 'New Product Requests',
+                                icon: 'mat_outline:settings',
+                                route: 'new-requests'
+
+                            },
+                            {
+                                title: 'Clear Store',
+                                icon: 'mat_outline:settings_suggest',
+                                route: 'clear-store'
+
+                            }
+                        )
+                    }
                     sessionStorage.setItem('rapidBuild', JSON.stringify(res["data"][0]));
-                    console.log(this._router.url);
                     this._router.navigateByUrl(this._router.url);
                     this._changeDetectorRef.markForCheck();
                 } else {
