@@ -7,34 +7,53 @@
                 </h2>
                 <button mat-stroked-button (click)="goBack()">Go Back</button>
             </div>
-            <mat-form-field class="min-w-100">
-                <mat-label>Select whether you are importing product or category data</mat-label>
-                <mat-select matInput [(ngModel)]="ngType">
-                    <mat-option [value]="0">SELECT DATA TYPE</mat-option>
-                    <mat-option [value]="1">Product</mat-option>
-                    <mat-option [value]="2">Category</mat-option>
-                </mat-select>
-            </mat-form-field>
-            <div>
-                <mat-label>Please select a Excel (.xls) file to import:</mat-label>
-                <br>
-                <input type="file" accept=".xls">
-            </div>
-            <br>
+            <div class="row">
+                <div class="col-12 col-md-6">
+                    <mat-form-field class="w-full">
+                        <mat-label>Select whether you are importing product or category data</mat-label>
+                        <mat-select matInput [(ngModel)]="ngType">
+                            <!-- <mat-option [value]="0">SELECT DATA TYPE</mat-option> -->
+                            <mat-option [value]="1">Product</mat-option>
+                            <mat-option [value]="2">Category</mat-option>
+                        </mat-select>
+                    </mat-form-field>
+                    <div>
+                        <mat-label>Please select a Excel (.xls) file to import:</mat-label>
+                        <br>
+                        <input type="file" accept=".xls" (change)="onFileSelected($event)">
+                    </div>
+                    <br>
+                    <div>
+                        <mat-form-field class="w-full">
+                            <mat-label>Enter your password for security purposes:</mat-label>
+                            <input type="text" matInput>
+                        </mat-form-field>
+                    </div>
 
-            <div>
-                <mat-form-field class="min-w-100">
-                    <mat-label>Enter your password for security purposes:</mat-label>
-                    <input type="text" matInput>
-                </mat-form-field>
-            </div>
-
-            <div>
-                <button mat-flat-button class="min-w-40" [color]="'primary'">
-                    <span>Import</span>
-                    <!-- <mat-progress-spinner *ngIf="isUpdateWebsiteLoader" [diameter]="24" [mode]="'indeterminate'">
-                    </mat-progress-spinner> -->
-                </button>
+                    <div>
+                        <button (click)="assignImportData()" [disabled]="isImportLoader" mat-flat-button
+                            class="min-w-40" [color]="'primary'">
+                            <span>Import</span>
+                        </button>
+                    </div>
+                </div>
+                <div class="col-12 col-md-6" *ngIf="dataChecked">
+                    <p class="py-2 px-2">
+                        <b>PLEASE NOTE:</b> Due to the plain-text nature of the import/export Excel files, this import
+                        will remove any special formatting (colors, bulleted lists, images, links, etc.) CURRENTLY
+                        ENTERED in for the master product or store product descriptions. You will need to go back to the
+                        products with HTML/special formatting and reapply this formatting. This action cannot be undone.
+                        Do you want to continue?
+                    </p>
+                    <div class="text-right">
+                        <button (click)="importData()" [disabled]="isImportLoader" mat-flat-button class="min-w-40"
+                            [color]="'primary'">
+                            <span *ngIf="!isImportLoader">Continue</span>
+                            <mat-progress-spinner *ngIf="isImportLoader" [diameter]="24" [mode]="'indeterminate'">
+                            </mat-progress-spinner>
+                        </button>
+                    </div>
+                </div>
             </div>
         </div>
     </div>

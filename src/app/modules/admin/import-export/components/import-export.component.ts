@@ -32,7 +32,27 @@ export class ImportExportComponent {
     @ViewChild('topScrollAnchor') topScroll: ElementRef;
     @ViewChild('drawer') drawer: MatDrawer;
     drawerMode: 'over' | 'side' = 'over';
+    routes = [
+        {
+            title: 'Import/Export',
+            icon: 'heroicons_outline:document-report',
+            route: 'home'
+        },
+        {
+            title: 'Export',
+            icon: 'mat_outline:settings_suggest',
+            route: 'export'
 
+        },
+        {
+            title: 'Import',
+            icon: 'mat_outline:settings_suggest',
+            route: 'import'
+
+        }
+    ];
+    selectedScreeen: any = 'Import Export';
+    selectedRoute: any = 'home';
 
     /**
      * Constructor
@@ -55,10 +75,22 @@ export class ImportExportComponent {
      */
 
     ngOnInit(): void {
-
+        this._router.events.subscribe((event) => {
+            if (event instanceof NavigationEnd) {
+                this.selectedScreeen = this.route.children[0].snapshot.data.title;
+                this.selectedRoute = this.route.children[0].snapshot.data.url;
+            }
+        })
+        this.selectedScreeen = this.route.children[0].snapshot.data.title;
+        this.selectedRoute = this.route.children[0].snapshot.data.url;
     }
 
-
+    calledScreen(route) {
+        if (this.selectedRoute != route) {
+            this.selectedRoute = route;
+            this._router.navigate([`import-export/${route}`]);
+        }
+    }
     /**
      * On destroy
      */

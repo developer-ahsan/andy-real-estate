@@ -63,7 +63,7 @@ export class RoyalitySummaryReportComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.initForm();
     this.isLoading = true;
-    this.getVendorsData();
+    // this.getVendorsData();
   };
   calledScreen(screen) {
     this.mainScreen = screen;

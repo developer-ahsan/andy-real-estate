@@ -32,6 +32,7 @@ export class ExportDetailComponent implements OnInit, OnDestroy {
   ngSelectAll: boolean = true;
   isExportLoader: boolean;
   cateGoryExcelData1: any;
+  productsExcelData: any;
   constructor(
     private _changeDetectorRef: ChangeDetectorRef,
     private _authService: AuthService,
@@ -104,6 +105,29 @@ export class ExportDetailComponent implements OnInit, OnDestroy {
       this._changeDetectorRef.markForCheck();
     });
   }
+  getExportProductsData() {
+    this.isExportLoader = true;
+    let catSubList = [];
+    this.allCategories.forEach(element => {
+      element.subCats.forEach(item => {
+        if (item.isChecked) {
+          catSubList.push(item.pk_subCategoryID);
+        }
+      });
+    });
+    let params = {
+      export_products: true,
+      categories_id_list: catSubList.toString()
+    }
+    this._exportService.getAPIData(params).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+      this.productsExcelData = res["data"];
+      this.isExportLoader = false;
+      this._changeDetectorRef.markForCheck();
+    }, err => {
+      this.isExportLoader = false;
+      this._changeDetectorRef.markForCheck();
+    });
+  }
   changeCheckbox(item, checked) {
     if (checked) {
       const index = this.selectedCategories.findIndex(val => val.subcategory_id == item.pk_subCategoryID);
@@ -158,9 +182,9 @@ export class ExportDetailComponent implements OnInit, OnDestroy {
         });
       }
     });
-    const fileName = `${this.paramsData.storeID}-${moment(new Date()).format('MM-DD-yy-hh-mm-ss')}`;
+    const fileName = `Categories_Export-${this.paramsData.storeName}-${moment(new Date()).format('MM-DD-yy-hh-mm-ss')}`;
     const workbook = new Excel.Workbook();
-    const worksheet = workbook.addWorksheet("Customers");
+    const worksheet = workbook.addWorksheet("Categories_Export");
 
     // Columns
     worksheet.columns = [
@@ -171,6 +195,49 @@ export class ExportDetailComponent implements OnInit, OnDestroy {
       { header: "subCategoryName", key: "subCategoryName", width: 20 },
       { header: "categoryPermalink", key: "permalink", width: 20 },
       { header: "subCategoryPermalink", key: "subCategoryPermalink", width: 20 }
+    ];
+    for (const obj of data) {
+      worksheet.addRow(obj);
+    }
+    setTimeout(() => {
+      workbook.xlsx.writeBuffer().then((data: any) => {
+        const blob = new Blob([data], {
+          type:
+            "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+        });
+        let url = window.URL.createObjectURL(blob);
+        let a = document.createElement("a");
+        document.body.appendChild(a);
+        a.setAttribute("style", "display: none");
+        a.href = url;
+        a.download = `${fileName}.xlsx`;
+        a.click();
+        window.URL.revokeObjectURL(url);
+        a.remove();
+        this._changeDetectorRef.markForCheck();
+      });
+    }, 500);
+
+  }
+  downloadProductsExcelWorkSheet() {
+    let data = this.productsExcelData;
+    const fileName = `Product_Export-${this.paramsData.storeName}-${moment(new Date()).format('MM-DD-yy-hh-mm-ss')}`;
+    const workbook = new Excel.Workbook();
+    const worksheet = workbook.addWorksheet("Product_Export");
+
+    // Columns
+    worksheet.columns = [
+      { header: "storeID", key: "storeID", width: 10 },
+      { header: "productID", key: "pk_productID", width: 10 },
+      { header: "storeProductID", key: "storeProductID", width: 20 },
+      { header: "productName", key: "productName", width: 70 },
+      { header: "productDescription", key: "productDescription", width: 100 },
+      { header: "productMetaDescription", key: "storeProductMetaDescription", width: 50 },
+      { header: "keywords", key: "keywords", width: 50 },
+      { header: "storeProductPermalink", key: "storeProductPermalink", width: 50 },
+      { header: "storeProductDescription", key: "storeProductDescription", width: 50 },
+      { header: "storeProductMiniDescription", key: "storeProductMiniDescription", width: 50 },
+      { header: "storeProductMetaDescription", key: "storeProductMetaDescription", width: 50 },
     ];
     for (const obj of data) {
       worksheet.addRow(obj);

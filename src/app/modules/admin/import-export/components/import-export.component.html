@@ -15,6 +15,12 @@
         </div>
     </div>
     <div class="p-6 sm:p-6 space-y-2">
+        <mat-button-toggle-group #group="matButtonToggleGroup" [value]="selectedRoute"
+            (change)="calledScreen(group.value)">
+            <mat-button-toggle *ngFor="let item of routes" [value]="item.route">
+                {{item.title}}
+            </mat-button-toggle>
+        </mat-button-toggle-group>
         <router-outlet></router-outlet>
     </div>
 </div>

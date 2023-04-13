@@ -86,7 +86,7 @@ export class ImportExportService {
     PostAPIData(payload) {
         const headers = { 'Authorization': `Bearer ${this._authService.accessToken}` };
         return this._httpClient.post(
-            environment.order_manage, payload, { headers });
+            environment.import_export, payload, { headers });
     };
     // Common put Call
     PutAPIData(payload) {

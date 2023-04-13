@@ -80,7 +80,7 @@ export class OrderExportComponent implements OnInit, OnDestroy {
       return;
     }
     const queryParams: NavigationExtras = {
-      queryParams: { storeID: this.selectedStore.pk_storeID, type: this.ngType }
+      queryParams: { storeID: this.selectedStore.pk_storeID, type: this.ngType, storeName: this.selectedStore.storeName }
     };
     this.router.navigate(['/import-export/export-details'], queryParams);
   }

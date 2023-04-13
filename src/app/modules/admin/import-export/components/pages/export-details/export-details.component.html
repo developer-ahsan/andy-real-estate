@@ -43,9 +43,15 @@
                     </mat-progress-spinner>
                 </div>
                 <div class="col-12 my-2">
-                    <button [disabled]="isExportLoader" (click)="getCategoriesEcportData()" mat-flat-button
-                        class="min-w-40" [color]="'primary'">
-                        <span *ngIf="!isExportLoader">Export</span>
+                    <button *ngIf="paramsData.type == 'categories'" [disabled]="isExportLoader"
+                        (click)="getCategoriesEcportData()" mat-flat-button class="min-w-40" [color]="'primary'">
+                        <span *ngIf="!isExportLoader">Export Categories</span>
+                        <mat-progress-spinner *ngIf="isExportLoader" [diameter]="24" [mode]="'indeterminate'">
+                        </mat-progress-spinner>
+                    </button>
+                    <button *ngIf="paramsData.type == 'products'" [disabled]="isExportLoader"
+                        (click)="getExportProductsData()" mat-flat-button class="min-w-40" [color]="'primary'">
+                        <span *ngIf="!isExportLoader">Export Products</span>
                         <mat-progress-spinner *ngIf="isExportLoader" [diameter]="24" [mode]="'indeterminate'">
                         </mat-progress-spinner>
                     </button>
@@ -68,6 +74,28 @@
                     </fuse-alert>
                     <fuse-alert class="my-2" [appearance]="'soft'" [type]="'success'" [showIcon]="false">
                         <a class="cursor-pointer" (click)="downloadCatExcelWorkSheet()">Click here to download excel
+                            file</a>
+                    </fuse-alert>
+                </div>
+                <div class="col-12" *ngIf="!isExportLoader && paramsData.type == 'products' && productsExcelData">
+                    <fuse-alert class="my-2" [appearance]="'soft'" [type]="'warning'" [showIcon]="false">
+                        <b>NOTE: </b> Please read the below requirements for your export file:
+                        <br>
+                        <ul>
+                            <li>DO NOT MODIFY OR REMOVE THE "STOREID", "PRODUCTID", OR "STOREPRODUCTID" COLUMNS IN THE
+                                DATA FILE
+                            </li>
+                            <li>DO NOT MODIFY OR REMOVE ANY OF THE DATA IN ANY OF THE "STOREID", "PRODUCTID", OR
+                                "STOREPRODUCTID" FIELDS
+                            </li>
+                            <li>THE DATA CONTAINED IN THE ABOVE FIELDS IS ESSENTIAL FOR MAPPING THE DATA TO THE CORRECT
+                                PRODUCTS IN THE SYSTEM DURING AN IMPORT
+                            </li>
+                        </ul>
+                    </fuse-alert>
+                    <fuse-alert class="my-2" [appearance]="'soft'" [type]="'success'" [showIcon]="false">
+                        <a class="cursor-pointer" (click)="downloadProductsExcelWorkSheet()">Click here to download
+                            excel
                             file</a>
                     </fuse-alert>
                 </div>

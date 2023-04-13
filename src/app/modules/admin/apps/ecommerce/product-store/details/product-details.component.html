@@ -57,7 +57,7 @@
                         </div>
                     </div>
                     <div class="row w-full">
-                        <div class="col-12 col-lg-6">
+                        <div class="col-12 col-lg-5">
                             <div class="flex">
                                 <b class="text-secondary text-sm">PID:</b>
                                 <p class="ml-3 text-sm">{{selectedProduct?.fk_productID || not_available}}</p>
@@ -77,7 +77,7 @@
                                 </p>
                             </div>
                         </div>
-                        <div class="col-12 col-lg-6">
+                        <div class="col-12 col-lg-5">
                             <div class="flex">
                                 <b class="text-secondary text-sm">Store Name:</b>
                                 <p class="ml-3 text-sm">{{selectedProduct?.storeName || not_available}}</p>
@@ -92,6 +92,13 @@
                                     [ngStyle]="selectedProduct?.blnStoreActive ? {'color':'#0ecd0e'} : {'color': '#ff0000'}">
                                     {{selectedProduct?.blnStoreActive ? 'Online' : 'Offline' }}</p>
                             </div>
+                        </div>
+                        <div class="col-12 col-lg-2 text-right">
+                            <a href="https://assets.consolidus.com/globalAssets/products/HiRes/{{selectedProduct?.pk_storeProductID}}.jpg"
+                                target="_blank" style="text-align: -webkit-right;">
+                                <img class="w-15"
+                                    src="https://assets.consolidus.com/globalAssets/products/thumbnails/{{selectedProduct?.pk_storeProductID}}.jpg">
+                            </a>
                         </div>
                     </div>
                 </div>

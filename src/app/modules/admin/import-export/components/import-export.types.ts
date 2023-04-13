@@ -1,3 +1,36 @@
+export interface importCategory {
+    categories: Category[];
+    import_categories: boolean;
+};
+interface Category {
+    storeID: number;
+    categoryID: number;
+    subCategoryID?: number;
+    categoryName: string;
+    browserTitle: string;
+    categoryDescription: string;
+    categoryMetaDescription: string;
+    permalink: string;
+};
+
+export interface importProduct {
+    products: Product[];
+    import_products: boolean;
+};
+interface Product {
+    productDescription: string;
+    productMiniDescription: string;
+    keywords: string;
+    metaDesc: string;
+    productName: string;
+    productID: number;
+    storeProductID: number;
+    storeProductPermalink: string;
+    storeProductDescription: string;
+    storeProductMiniDescription: string;
+    storeProductMetaDescription: string;
+};
+
 export interface SmartArtLogin { payload: string; smartart_login: boolean; };
 export interface UpdateQuoteOptions {
     blnAdditionalProofContacts: boolean;
