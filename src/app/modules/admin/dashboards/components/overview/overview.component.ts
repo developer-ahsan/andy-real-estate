@@ -207,8 +207,12 @@ export class DashboardOverviewComponent implements OnInit, OnDestroy {
             this.programPerformanceData = res["data"];
             this.totalPerformanceRecords = res["totalRecords"];
             this.programPerformanceData.forEach(element => {
-                element.percent = Number(100 - (element.monthlyEarnings / element.previousYearSales) * 100);
-                if (!element.percent) {
+                if (element.previousYearSales == 0) {
+                    element.percent = 0
+                } else {
+                    element.percent = Number(100 - (element.monthlyEarnings / element.previousYearSales) * 100);
+                }
+                if (element.percent == 0) {
                     element.percent = 0;
                     element.color = 'gray';
                 }
