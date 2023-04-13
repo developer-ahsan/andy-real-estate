@@ -116,7 +116,7 @@ export class VendorsDetailsComponent implements OnInit, OnDestroy {
             route: 'information'
           },
           {
-            title: 'Top Order Products',
+            title: 'Top Ordered Products',
             icon: 'mat_outline:bar_chart',
             route: 'top-order-products'
           },

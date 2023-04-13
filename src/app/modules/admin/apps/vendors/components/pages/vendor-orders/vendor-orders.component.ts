@@ -4,6 +4,7 @@ import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { VendorsService } from '../../vendors.service';
 import * as Excel from 'exceljs/dist/exceljs.min.js';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-vendor-orders',
@@ -27,7 +28,8 @@ export class VendorOrdersComponent implements OnInit, OnDestroy {
 
   constructor(
     private _changeDetectorRef: ChangeDetectorRef,
-    private _vendorService: VendorsService
+    private _vendorService: VendorsService,
+    private router: Router
   ) { }
 
   ngOnInit(): void {
@@ -68,7 +70,9 @@ export class VendorOrdersComponent implements OnInit, OnDestroy {
     };
     this.getVendorOrders(this.page);
   };
-
+  goToOrders(item) {
+    this.router.navigate([`apps/orders/${item.pk_orderID}/summary`]);
+  }
   // Download Excel File
   downloadExcelWorkSheet() {
     let payload = {

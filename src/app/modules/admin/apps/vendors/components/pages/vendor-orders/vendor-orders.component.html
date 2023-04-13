@@ -47,7 +47,7 @@
                     </td>
                 </ng-container>
                 <tr mat-header-row *matHeaderRowDef="displayedColumns;" class="h-18 bg-light"></tr>
-                <tr mat-row *matRowDef="let row; columns: displayedColumns;" target="_blank"
+                <tr mat-row *matRowDef="let row; columns: displayedColumns;" (click)="goToOrders(row)" target="_blank"
                     class="h-14 hover:bg-gray-100 dark:hover:bg-hover" style="cursor: pointer;">
                 </tr>
             </table>

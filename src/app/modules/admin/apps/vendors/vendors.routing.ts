@@ -58,7 +58,7 @@ export const vendorsRoutes: Route[] = [
                 path: 'top-order-products',
                 component: VendorTopOrderComponent,
                 data: {
-                    title: 'Top Order Products',
+                    title: 'Top Ordered Products',
                     url: 'top-order-products'
                 }
             },
