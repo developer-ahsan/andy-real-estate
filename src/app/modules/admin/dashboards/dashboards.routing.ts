@@ -2,7 +2,7 @@ import { Route } from '@angular/router';
 import { AnalyticsComponent } from './components/analytics/analytics.component';
 import { DashboardOverviewComponent } from './components/overview/overview.component';
 import { ProjectComponent } from './components/project/project.component';
-import { AnalyticsResolver, EmployeePerformanceResolver, PortfolioPerformanceResolver, ProjectResolver } from './dashboard.resolvers';
+import { AnalyticsResolver, EmployeePerformanceResolver, PortfolioPerformanceResolver, ProjectResolver, YTDDataResolver } from './dashboard.resolvers';
 import { DashboardDetailsComponent } from './details/dashboard-details.component';
 export const dashboardRoutes: Route[] = [
 
@@ -10,6 +10,7 @@ export const dashboardRoutes: Route[] = [
         path: '',
         component: DashboardDetailsComponent,
         resolve: {
+            YTDDataResolver
         },
         children: [
             {

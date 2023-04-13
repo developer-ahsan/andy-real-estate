@@ -110,3 +110,29 @@ export class EmployeePerformanceResolver implements Resolve<any>
         return this._dashboardService.getPeformanceEmployee();
     }
 }
+
+@Injectable({
+    providedIn: 'root'
+})
+export class YTDDataResolver implements Resolve<any>
+{
+    /**
+     * Constructor
+     */
+    constructor(private _dashboardService: DashboardsService) {
+    }
+
+    // -----------------------------------------------------------------------------------------------------
+    // @ Public methods
+    // -----------------------------------------------------------------------------------------------------
+
+    /**
+     * Resolver
+     *
+     * @param route
+     * @param state
+     */
+    resolve(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<any> {
+        return this._dashboardService.getYTDData();
+    }
+}

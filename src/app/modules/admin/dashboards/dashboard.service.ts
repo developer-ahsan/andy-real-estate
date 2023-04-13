@@ -12,6 +12,7 @@ export class DashboardsService {
     private _dataProject: BehaviorSubject<any> = new BehaviorSubject(null);
     private _porfolioData: BehaviorSubject<any> = new BehaviorSubject(null);
     private _employeeData: BehaviorSubject<any> = new BehaviorSubject(null);
+    private _ytdData: BehaviorSubject<any> = new BehaviorSubject(null);
 
     /**
      * Constructor
@@ -34,6 +35,9 @@ export class DashboardsService {
     }
     get employeeData$(): Observable<any> {
         return this._employeeData.asObservable();
+    }
+    get ytdData$(): Observable<any> {
+        return this._ytdData.asObservable();
     }
     // -----------------------------------------------------------------------------------------------------
     // @ Public methods
@@ -68,7 +72,16 @@ export class DashboardsService {
             })
         );
     }
-
+    getYTDData(): Observable<any> {
+        let params = {
+            ytd_mtd_wtd: true
+        }
+        return this._httpClient.get(environment.dashboard, { params: params }).pipe(
+            tap((response: any) => {
+                this._ytdData.next(response);
+            })
+        );
+    }
     getPortfolio(): Observable<any> {
         let params = {
             performance_report: true,

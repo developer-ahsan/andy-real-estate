@@ -66,6 +66,8 @@ export class AnalyticsComponent implements OnInit, OnDestroy {
     pagePerformance = 1;
     totalPerformanceRecords = 0;
     isPerformanceLoader: boolean;
+    isYTDLoader: boolean = false;
+    ytDDataMain: any;
     /**
      * Constructor
      */
@@ -302,6 +304,21 @@ export class AnalyticsComponent implements OnInit, OnDestroy {
             }
         };
     }
+    getYTDData() {
+        this._analyticsService.ytdData$.pipe(takeUntil(this._unsubscribeAll), finalize(() => {
+            this._changeDetectorRef.markForCheck();
+        })).subscribe(res => {
+            this.ytDDataMain = res["data"][0];
+            let ytdPercent = Math.round(((this.ytDDataMain.YTD - this.ytDDataMain.LAST_YTD) / this.ytDDataMain.LAST_YTD) * 100);
+            let mtdPercent = Math.round(((this.ytDDataMain.MTD - this.ytDDataMain.LAST_MTD) / this.ytDDataMain.LAST_MTD) * 100);
+            let wtdPercent = Math.round(((this.ytDDataMain.WTD - this.ytDDataMain.LAST_WTD) / this.ytDDataMain.LAST_WTD) * 100);
+            this.ytDDataMain.ytdPercent = ytdPercent;
+            this.ytDDataMain.mtdPercent = mtdPercent;
+            this.ytDDataMain.wtdPercent = wtdPercent;
+        }, err => {
+
+        });
+    }
     getNextPortfolioData(event) {
         const { previousPageIndex, pageIndex } = event;
         if (pageIndex > previousPageIndex) {
@@ -369,6 +386,8 @@ export class AnalyticsComponent implements OnInit, OnDestroy {
      */
     ngOnInit(): void {
         // Get the data
+        this.isYTDLoader = true;
+        this.getYTDData();
         this.getPortfolioData(1);
 
 

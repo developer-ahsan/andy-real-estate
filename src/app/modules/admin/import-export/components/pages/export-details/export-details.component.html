@@ -11,7 +11,7 @@
                 data from the categories you select.<br>
                 The export will only include active, online products.
             </p>
-            <div *ngIf="isLoading">
+            <div *ngIf="isLoading" class="my-2">
                 <ngx-skeleton-loader count="8" appearance="line" animation="pulse" *ngIf="isLoading"
                     [theme]="{'background-color': '#dedede'}">
                 </ngx-skeleton-loader>
@@ -49,6 +49,27 @@
                         <mat-progress-spinner *ngIf="isExportLoader" [diameter]="24" [mode]="'indeterminate'">
                         </mat-progress-spinner>
                     </button>
+                </div>
+                <div class="col-12" *ngIf="!isExportLoader && cateGoryExcelData1">
+                    <fuse-alert class="my-2" [appearance]="'soft'" [type]="'warning'" [showIcon]="false">
+                        <b>NOTE: </b> Please read the below requirements for your export file:
+                        <br>
+                        <ul>
+                            <li>DO NOT MODIFY OR REMOVE THE "STOREID", "CATEGORYID", OR "SUBCATEGORYID" COLUMNS IN THE
+                                DATA FILE
+                            </li>
+                            <li>DO NOT MODIFY OR REMOVE ANY OF THE DATA IN ANY OF THE "STOREID", "CATEGORYID", OR
+                                "SUBCATEGORYID" FIELDS
+                            </li>
+                            <li>THE DATA CONTAINED IN THE ABOVE FIELDS IS ESSENTIAL FOR MAPPING THE DATA TO THE CORRECT
+                                CATEGORIES IN THE SYSTEM DURING AN IMPORT
+                            </li>
+                        </ul>
+                    </fuse-alert>
+                    <fuse-alert class="my-2" [appearance]="'soft'" [type]="'success'" [showIcon]="false">
+                        <a class="cursor-pointer" (click)="downloadCatExcelWorkSheet()">Click here to download excel
+                            file</a>
+                    </fuse-alert>
                 </div>
             </div>
         </div>

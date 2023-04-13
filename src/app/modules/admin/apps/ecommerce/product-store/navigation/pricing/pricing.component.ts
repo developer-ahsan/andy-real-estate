@@ -164,8 +164,8 @@ export class PricingComponent implements OnInit, OnDestroy {
       marginSix: ''
     })
   }
-  setMarginValues() {
-
+  setMarginValues(val) {
+    this._storeService.snackBar('Coming Soon');
   }
   UpdatePricing() {
     this.isUpdateLoading = true;

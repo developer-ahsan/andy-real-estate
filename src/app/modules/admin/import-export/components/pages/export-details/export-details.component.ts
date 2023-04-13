@@ -7,6 +7,8 @@ import { AuthService } from 'app/core/auth/auth.service';
 import { Subject } from 'rxjs';
 import { debounceTime, distinctUntilChanged, filter, finalize, switchMap, takeUntil, tap } from 'rxjs/operators';
 import { ImportExportService } from '../../import-export.service';
+import * as Excel from 'exceljs/dist/exceljs.min.js';
+import moment from 'moment';
 
 @Component({
   selector: 'app-export-details',
@@ -29,6 +31,7 @@ export class ExportDetailComponent implements OnInit, OnDestroy {
 
   ngSelectAll: boolean = true;
   isExportLoader: boolean;
+  cateGoryExcelData1: any;
   constructor(
     private _changeDetectorRef: ChangeDetectorRef,
     private _authService: AuthService,
@@ -93,7 +96,7 @@ export class ExportDetailComponent implements OnInit, OnDestroy {
       store_id: this.paramsData.storeID
     }
     this._exportService.getAPIData(params).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
-      console.log(res);
+      this.cateGoryExcelData1 = res["data"];
       this.isExportLoader = false;
       this._changeDetectorRef.markForCheck();
     }, err => {
@@ -130,6 +133,67 @@ export class ExportDetailComponent implements OnInit, OnDestroy {
         item.isChecked = checked;
       });
     });
+  }
+  downloadCatExcelWorkSheet() {
+    let data = [];
+    this.cateGoryExcelData1.forEach(element => {
+      element.subCategoryID = 0;
+      element.subCategoryName = '';
+      element.subCategoryPermalink = '';
+      data.push(element);
+      if (element.subCategories) {
+        let subCat = element.subCategories.split(',');
+        subCat.forEach(sub => {
+          let sub_cat = sub.split(':');
+          data.push(
+            {
+              categoryName: '',
+              fk_storeID: element.fk_storeID,
+              subCategoryID: Number(sub_cat[0]),
+              subCategoryName: sub_cat[1],
+              subCategoryPermalink: sub_cat[2],
+              pk_categoryID: element.pk_categoryID,
+              permalink: ''
+            });
+        });
+      }
+    });
+    const fileName = `${this.paramsData.storeID}-${moment(new Date()).format('MM-DD-yy-hh-mm-ss')}`;
+    const workbook = new Excel.Workbook();
+    const worksheet = workbook.addWorksheet("Customers");
+
+    // Columns
+    worksheet.columns = [
+      { header: "storeID", key: "fk_storeID", width: 10 },
+      { header: "categoryID", key: "pk_categoryID", width: 10 },
+      { header: "subCategoryID", key: "subCategoryID", width: 10 },
+      { header: "categoryName", key: "categoryName", width: 20 },
+      { header: "subCategoryName", key: "subCategoryName", width: 20 },
+      { header: "categoryPermalink", key: "permalink", width: 20 },
+      { header: "subCategoryPermalink", key: "subCategoryPermalink", width: 20 }
+    ];
+    for (const obj of data) {
+      worksheet.addRow(obj);
+    }
+    setTimeout(() => {
+      workbook.xlsx.writeBuffer().then((data: any) => {
+        const blob = new Blob([data], {
+          type:
+            "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+        });
+        let url = window.URL.createObjectURL(blob);
+        let a = document.createElement("a");
+        document.body.appendChild(a);
+        a.setAttribute("style", "display: none");
+        a.href = url;
+        a.download = `${fileName}.xlsx`;
+        a.click();
+        window.URL.revokeObjectURL(url);
+        a.remove();
+        this._changeDetectorRef.markForCheck();
+      });
+    }, 500);
+
   }
   goBack() {
     this.router.navigateByUrl('import-export/export');

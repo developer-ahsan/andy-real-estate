@@ -56,6 +56,7 @@ export class DashboardOverviewComponent implements OnInit, OnDestroy {
     employeeStoresData: any;
     isEmployeeStoreLoader: boolean = false;
     expandedElement: any
+    ytDDataMain: any;
     /**
      * Constructor
      */
@@ -74,6 +75,7 @@ export class DashboardOverviewComponent implements OnInit, OnDestroy {
      * On init
      */
     ngOnInit(): void {
+        this.getYTDData();
         this.employeeListLoader = true;
         this.getAllPortfolioPerformance();
         this.getEmployeePerformance(1);
@@ -109,6 +111,21 @@ export class DashboardOverviewComponent implements OnInit, OnDestroy {
                 }
             }
         };
+    }
+    getYTDData() {
+        this._analyticsService.ytdData$.pipe(takeUntil(this._unsubscribeAll), finalize(() => {
+            this._changeDetectorRef.markForCheck();
+        })).subscribe(res => {
+            this.ytDDataMain = res["data"][0];
+            let ytdPercent = Math.round(((this.ytDDataMain.YTD - this.ytDDataMain.LAST_YTD) / this.ytDDataMain.LAST_YTD) * 100);
+            let mtdPercent = Math.round(((this.ytDDataMain.MTD - this.ytDDataMain.LAST_MTD) / this.ytDDataMain.LAST_MTD) * 100);
+            let wtdPercent = Math.round(((this.ytDDataMain.WTD - this.ytDDataMain.LAST_WTD) / this.ytDDataMain.LAST_WTD) * 100);
+            this.ytDDataMain.ytdPercent = ytdPercent;
+            this.ytDDataMain.mtdPercent = mtdPercent;
+            this.ytDDataMain.wtdPercent = wtdPercent;
+        }, err => {
+
+        });
     }
     getEmployeePerformance(page) {
         let params = {
