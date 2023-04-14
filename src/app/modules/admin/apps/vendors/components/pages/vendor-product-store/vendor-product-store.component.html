@@ -11,16 +11,22 @@
         <div *ngIf="dataSource.length > 0" class="px-8 pb-8">
             <div *ngFor="let item of dataSource; let i=index">
                 <div *ngIf="i==0" class="bg-gray-300 p-5 rounded-lg cursor-pointer hover:text-blue-900">
-                    <b>{{item.storeName}}</b>
+                    <a [routerLink]="['/apps/stores/',item.fk_storeID]" target="_blank">
+                        <b>{{item.storeName}}</b>
+                    </a>
                 </div>
                 <div *ngIf="i > 0">
                     <div class="bg-gray-300  p-5 rounded-lg  mt-2 cursor-pointer hover:text-blue-900"
                         *ngIf="item.storeName != dataSource[i-1].storeName">
-                        <b>{{item.storeName}}</b>
+                        <a [routerLink]="['/apps/stores/',item.fk_storeID]" target="_blank">
+                            <b>{{item.storeName}}</b>
+                        </a>
                     </div>
                 </div>
                 <div class="px-5 mt-2 cursor-pointer hover:text-blue-900" [ngClass]="{'text-red-600': !item.blnActive}">
-                    {{item.productName}}
+                    <a [routerLink]="['/apps/ecommerce/inventory/storeProduct',item.pk_storeProductID]" target="_blank">
+                        {{item.productName}}
+                    </a>
                 </div>
             </div>
             <div class="flex justify-center" *ngIf="dataSource.length < totalUsers">

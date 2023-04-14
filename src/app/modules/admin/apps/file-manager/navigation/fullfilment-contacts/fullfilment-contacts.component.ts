@@ -120,11 +120,8 @@ export class FullfilmentContactsComponent implements OnInit, OnDestroy {
 
         if (check == 'add') {
           this.isAddLoader = false;
-          this.isAddMsg = true;
-          setTimeout(() => {
-            this.isAddMsg = false;
-            this._changeDetectorRef.markForCheck();
-          }, 2000);
+          this.mainScreen = 'Fulfillment Contacts';
+          this._storeManagerService.snackBar('Fullfillment contact added successfully');
         }
         this.isContactListLoading = false;
 

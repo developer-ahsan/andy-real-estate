@@ -7,6 +7,7 @@ import { fuseAnimations } from '@fuse/animations';
 import { MatDialog } from '@angular/material/dialog';
 import { ConfirmationDialogComponent, ConfirmDialogModel } from '../../confirmation-dialog/confirmation-dialog.component';
 import { debounceTime, map, distinctUntilChanged, filter } from "rxjs/operators";
+import { Router } from '@angular/router';
 @Component({
   selector: 'app-locations',
   templateUrl: './locations.component.html',
@@ -78,6 +79,7 @@ export class LocationsComponent implements OnInit, OnDestroy {
     private _storeManagerService: FileManagerService,
     private _changeDetectorRef: ChangeDetectorRef,
     private _snackBar: MatSnackBar,
+    private router: Router,
     public dialog: MatDialog
   ) { }
 
@@ -550,6 +552,14 @@ export class LocationsComponent implements OnInit, OnDestroy {
         this.getAllUserList(1, 'filter');
       });
     }, 1000);
+  }
+  goToCustomers(user) {
+    let url = `apps/ecommerce/customers/${user.fk_userID}`;
+    this.router.navigate([]).then((result) => {
+      window.open(url, '_blank');
+    });
+
+    // this.router.navigate([]);
   }
   ngOnDestroy(): void {
     // Unsubscribe from all subscriptions

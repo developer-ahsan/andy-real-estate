@@ -154,7 +154,8 @@
           </ng-template>
         </div>
         <div class="col-12" *ngIf="!isKeywordSearch">
-          <mat-paginator class="sm:bottom-0 border-b sm:border-t sm:border-b-0 z-10 bg-gray-50 dark:bg-transparent"
+          <mat-paginator #paginator
+            class="sm:bottom-0 border-b sm:border-t sm:border-b-0 z-10 bg-gray-50 dark:bg-transparent"
             [ngClass]="{'pointer-events-none': isLoading}" (page)="getNextData($event)" [length]="dataSourceTotalRecord"
             [pageIndex]="0" [pageSize]="20" [hidePageSize]="true">
           </mat-paginator>

@@ -144,11 +144,9 @@ export class RoyaltiesComponent implements OnInit, OnDestroy {
           }));
           if (check == 'add') {
             this.isAddLoading = false;
-            this.isAddMsgLoading = true;
-            setTimeout(() => {
-              this.isAddMsgLoading = false;
-              this._changeDetectorRef.markForCheck();
-            }, 2000);
+            this.mainScreen = "Current Royalities";
+            this._storeManagerService.snackBar('Royalty added successfully');
+            this._changeDetectorRef.markForCheck();
           }
         }
         this._changeDetectorRef.markForCheck();

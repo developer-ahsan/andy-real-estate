@@ -60,6 +60,7 @@ export class StoreSettingsComponent implements OnInit, OnDestroy {
     this._storesManagerService.storeDetail$
       .pipe(takeUntil(this._unsubscribeAll))
       .subscribe((items: any) => {
+        this.selectedStore = items["data"][0];
         this.initialize();
         this._storesManagerService.settings$.pipe(takeUntil(this._unsubscribeAll))
           .subscribe((settings: any) => {

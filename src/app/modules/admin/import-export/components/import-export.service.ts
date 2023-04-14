@@ -148,6 +148,11 @@ export class ImportExportService {
             })
         );
     };
+    getStoresSearch(params): Observable<any[]> {
+        return this._httpClient.get<any[]>(environment.import_export, {
+            params: params
+        })
+    };
     getIPAddress() {
         return this._httpClient.get("http://api.ipify.org/?format=json");
     }

@@ -41,6 +41,8 @@ export class OrderExportComponent implements OnInit, OnDestroy {
       filter((res: any) => {
         params = {
           stores: true,
+          bln_active: 1,
+          size: 10,
           keyword: res
         }
         return res !== null && res.length >= 3
@@ -52,7 +54,7 @@ export class OrderExportComponent implements OnInit, OnDestroy {
         this.isSearchingStore = true;
         this._changeDetectorRef.markForCheck();
       }),
-      switchMap(value => this._exportService.getAllStores()
+      switchMap(value => this._exportService.getStoresSearch(params)
         .pipe(
           finalize(() => {
             this.isSearchingStore = false

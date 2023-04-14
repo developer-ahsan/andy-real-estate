@@ -1,4 +1,4 @@
-import { Component, Input, Output, OnInit, EventEmitter, ChangeDetectorRef, OnDestroy } from '@angular/core';
+import { Component, Input, Output, OnInit, EventEmitter, ChangeDetectorRef, OnDestroy, ViewChild } from '@angular/core';
 import { Subject } from 'rxjs';
 import { FileManagerService } from 'app/modules/admin/apps/file-manager/store-manager.service';
 import { takeUntil } from 'rxjs/operators';
@@ -6,6 +6,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import * as moment from 'moment';
 import { FormControl, FormGroup } from '@angular/forms';
 import { MatFormFieldControl } from '@angular/material/form-field';
+import { MatPaginator } from '@angular/material/paginator';
 @Component({
   selector: 'app-search-history',
   templateUrl: './search-history.component.html',
@@ -15,6 +16,7 @@ import { MatFormFieldControl } from '@angular/material/form-field';
   ]
 })
 export class SearchHistoryComponent implements OnInit, OnDestroy {
+  @ViewChild('paginator') paginator: MatPaginator;
   selectedStore: any;
   isLoading: boolean;
   @Output() isLoadingChange = new EventEmitter<boolean>();
@@ -133,6 +135,7 @@ export class SearchHistoryComponent implements OnInit, OnDestroy {
     this.isAdvancedSearch = false;
     this.filterSearch = false;
     this.page = 1;
+    this.paginator.pageIndex = 0;
     this.dataSource = this.firstDataTemp.data;
     this.dataSourceTotalRecord = this.firstDataTemp.totalRecords;
     this.filterForm.reset();
@@ -143,6 +146,10 @@ export class SearchHistoryComponent implements OnInit, OnDestroy {
     this._changeDetectorRef.markForCheck();
   };
   filterSearchHistory(page) {
+    if (page == 1) {
+      this.page = 1;
+      this.paginator.pageIndex = 0;
+    }
     this.isFilterLoader = true;
     const { pk_storeID } = this.selectedStore;
     const { keyword, start_date, end_date } = this.filterForm.getRawValue();

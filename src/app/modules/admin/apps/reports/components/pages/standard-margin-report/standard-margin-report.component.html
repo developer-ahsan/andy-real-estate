@@ -1,3 +1,76 @@
-<div class="w-full text-center">
-    <p class="text-3xl font-bold py-8">Working...</p>
+<div class="w-full ">
+    <div *ngIf="dataSource.length > 0;else other_content" class="w-full">
+        <table mat-table [dataSource]="dataSource" class="w-full border-t">
+            <ng-container matColumnDef="store">
+                <th mat-header-cell *matHeaderCellDef class="w-10 min-w-10">
+                    Store
+                </th>
+                <td mat-cell *matCellDef="let element">
+                    {{element?.store}}
+                </td>
+            </ng-container>
+            <ng-container matColumnDef="m1">
+                <th mat-header-cell *matHeaderCellDef class="w-30 min-w-30">
+                    Margin1
+                </th>
+                <td mat-cell *matCellDef="let element">
+                    {{element?.m1}}
+                </td>
+            </ng-container>
+            <ng-container matColumnDef="m2">
+                <th mat-header-cell *matHeaderCellDef class="w-30 min-w-30">
+                    Margin2
+                </th>
+                <td mat-cell *matCellDef="let element">
+                    {{element?.m2}}
+                </td>
+            </ng-container>
+            <ng-container matColumnDef="m3">
+                <th mat-header-cell *matHeaderCellDef class="w-30 min-w-30">
+                    Margin3
+                </th>
+                <td mat-cell *matCellDef="let element">
+                    {{element?.m3}}
+                </td>
+            </ng-container>
+            <ng-container matColumnDef="m4">
+                <th mat-header-cell *matHeaderCellDef class="w-30 min-w-30">
+                    Margin4
+                </th>
+                <td mat-cell *matCellDef="let element">
+                    {{element?.m4}}
+                </td>
+            </ng-container>
+            <ng-container matColumnDef="m5">
+                <th mat-header-cell *matHeaderCellDef class="w-30 min-w-30">
+                    Margin5
+                </th>
+                <td mat-cell *matCellDef="let element">
+                    {{element?.m5}}
+                </td>
+            </ng-container>
+            <ng-container matColumnDef="m6">
+                <th mat-header-cell *matHeaderCellDef class="w-30 min-w-30">
+                    Margin6
+                </th>
+                <td mat-cell *matCellDef="let element">
+                    {{element?.m6}}
+                </td>
+            </ng-container>
+            <tr mat-header-row *matHeaderRowDef="displayedColumns;" class="h-18 bg-light"></tr>
+            <tr mat-row *matRowDef="let row; columns: displayedColumns;"
+                class="h-14 hover:bg-gray-100 dark:hover:bg-hover" style="cursor: pointer;">
+            </tr>
+        </table>
+        <mat-paginator #paginator class="border-b sm:border-t sm:border-b-0 z-10 bg-gray-50 dark:bg-transparent"
+            [ngClass]="{'pointer-events-none': isLoading}" [length]="total" [pageIndex]="0" [pageSize]="20"
+            (page)="getNextData($event)" [hidePageSize]="true">
+        </mat-paginator>
+    </div>
+    <!-- No color Found -->
+    <ng-template #other_content>
+        <div class="text-secondary font-semibold p-5 text-center">
+            There are currently no margins.
+        </div>
+    </ng-template>
 </div>
