@@ -7,7 +7,7 @@ import { debounceTime, distinctUntilChanged, filter, finalize, switchMap, takeUn
 import * as Excel from 'exceljs/dist/exceljs.min.js';
 
 import { applyBlanketCustomerPercentage, newFLPSUser, newOrderManageUser, removeFLPSUser, RemoveUser, updateFLPSUser, updateOrderManageUser, updateOrderManageUserStores } from 'app/modules/admin/apps/royalities/components/royalities.types';
-import { RoyaltyService } from 'app/modules/admin/apps/royalities/components/royalities.service';
+import { ReportsService } from '../../reports.service';
 @Component({
   selector: 'app-report-filters',
   templateUrl: './report-filters.component.html',
@@ -101,7 +101,7 @@ export class ReportFiltersComponent implements OnInit, OnDestroy {
 
   constructor(
     private _changeDetectorRef: ChangeDetectorRef,
-    private _RoyaltyService: RoyaltyService
+    public _reportsService: ReportsService
   ) { }
 
   initForm() {
@@ -140,111 +140,25 @@ export class ReportFiltersComponent implements OnInit, OnDestroy {
         price: '40'
       }
     ];
-    let params;
-    this.searchStoreCtrl.valueChanges.pipe(
-      filter(res => {
-        params = {
-          stores_list: true,
-          keyword: res
-        }
-        return res !== null && res.length >= this.minLengthTerm
-      }),
-      distinctUntilChanged(),
-      debounceTime(500),
-      tap(() => {
-        this.storesList = [];
-        this.isSearching = true;
-        this._changeDetectorRef.markForCheck();
-      }),
-      switchMap(value => this._RoyaltyService.getCallsData(params)
-        .pipe(
-          finalize(() => {
-            this.isSearching = false
-            this._changeDetectorRef.markForCheck();
-          }),
-        )
-      )
-    ).subscribe((data: any) => {
-      this.storesList = data['data'];
-    });
-    this.isLoading = false;
-    this._changeDetectorRef.markForCheck();
+    this._reportsService.WeekDate = new Date();
+    this._reportsService.monthlyMonth = 1;
+    this._reportsService.monthlyYear = new Date().getFullYear();
+    this._reportsService.quarterMonth = 1;
+    this._reportsService.quarterYear = new Date().getFullYear();
+    this._reportsService.yearlyYear = new Date().getFullYear();
+    this._reportsService.ngRangeStart = new Date();
+    this._reportsService.ngRangeEnd = new Date();
+    this._reportsService.ngPlan = 'weekly';
+    this._reportsService.startDate = moment(this.WeekDate).startOf('week').format('MM/DD/yyyy');
+    this._reportsService.endDate = moment(this.WeekDate).endOf('week').format('MM/DD/yyyy');
+    this._reportsService.reportType = 'Weekly Sales';
   }
   ngOnInit(): void {
     this.initForm();
-    this.isLoading = true;
   };
-  onSelected(ev) {
-    this.selectedStore = ev.option.value;
-  }
-  displayWith(value: any) {
-    return value ? value?.storeName : '';
-  }
-  generateReport() {
-    if (!this.selectedStore) {
-      this._RoyaltyService.snackBar('Please select any store');
-      return;
-    }
-    this.generateReportLoader = true;
-    this.reportParams = {
-      page: this.page,
-      start_date: '',
-      end_date: '',
-      store_id: this.selectedStore.pk_storeID,
-      options_report: true
-    };
-    if (this.ngPlan == 'weekly') {
-      this.reportParams.start_date = moment(this.WeekDate).startOf('week').format('MM/DD/yyyy');
-      this.reportParams.end_date = moment(this.WeekDate).endOf('week').format('MM/DD/yyyy');
-      this.report_type = 'Weekly Sales';
-    } else if (this.ngPlan == 'monthly') {
-      let d = new Date(this.monthlyYear, this.monthlyMonth - 1, 1);
-      this.reportParams.start_date = moment(d).startOf('month').format('MM/DD/yyyy');
-      this.reportParams.end_date = moment(d).endOf('month').format('MM/DD/yyyy');
-      this.report_type = 'Monthly Sales';
-    } else if (this.ngPlan == 'quarterly') {
-      let s;
-      let e;
-      if (this.quarterMonth == 1) {
-        s = new Date(this.quarterYear, 0, 1);
-        e = new Date(this.quarterYear, 2, 1);
-      } else if (this.quarterMonth == 2) {
-        s = new Date(this.quarterYear, 3, 1);
-        e = new Date(this.quarterYear, 5, 1);
-      } else if (this.quarterMonth == 3) {
-        s = new Date(this.quarterYear, 6, 1);
-        e = new Date(this.quarterYear, 8, 1);
-      } else if (this.quarterMonth == 4) {
-        s = new Date(this.quarterYear, 9, 1);
-        e = new Date(this.quarterYear, 11, 1);
-      }
-      this.reportParams.start_date = moment(s).startOf('month').format('MM/DD/yyyy');
-      this.reportParams.end_date = moment(e).endOf('month').format('MM/DD/yyyy');
-      this.report_type = 'Quarterly Sales';
-    } else if (this.ngPlan == 'yearly') {
-      let d = new Date(this.yearlyYear, 0, 1);
-      this.reportParams.start_date = moment(d).startOf('year').format('MM/DD/yyyy');
-      this.reportParams.end_date = moment(d).endOf('year').format('MM/DD/yyyy');
-    } else if (this.ngPlan == 'range') {
-      this.reportParams.start_date = moment(this.ngRangeStart).format('MM/DD/yyyy');
-      this.reportParams.end_date = moment(this.ngRangeEnd).format('MM/DD/yyyy');
-      this.report_type = 'Range Sales';
-    }
-    this._RoyaltyService.getCallsData(this.reportParams).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
-      if (res["data"].length == 0) {
-        this.generateReportLoader = false;
-        this._RoyaltyService.snackBar('No data have been found in the specified range that match your criteria.');
-      } else {
-        this.downloadExcelWorkSheet(res["data"]);
-      }
-      this.isGenerateReport = true;
-      this.dataSource = res["data"];
-      this.totalUsers = res["totalRecords"];
-      this._changeDetectorRef.markForCheck();
-    }, err => {
-      this.generateReportLoader = false;
-      this._changeDetectorRef.markForCheck();
-    })
+  changePlan(plan) {
+    this.ngPlan = plan;
+    this._reportsService.ngPlan = plan;
   }
   downloadExcelWorkSheet(data) {
     const fileName = `${this.selectedStore.storeName}-${moment(new Date()).format('MM-DD-yy-hh-mm-ss')}`;

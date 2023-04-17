@@ -11,7 +11,7 @@ export class SuppliersListsResolver implements Resolve<any>
     /**
      * Constructor
      */
-    constructor(private _vendorService: ReportsService) {
+    constructor(private _reportService: ReportsService) {
     }
 
     // -----------------------------------------------------------------------------------------------------
@@ -25,7 +25,7 @@ export class SuppliersListsResolver implements Resolve<any>
      * @param state
      */
     resolve(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<any[]> {
-        return this._vendorService.getAllvendorsSuppliers();
+        return this._reportService.getAllvendorsSuppliers();
     }
 }
 // get Supplier BYID
@@ -37,7 +37,7 @@ export class SuppliersByIdResolver implements Resolve<any>
     /**
      * Constructor
      */
-    constructor(private _vendorService: ReportsService) {
+    constructor(private _reportService: ReportsService) {
     }
 
     // -----------------------------------------------------------------------------------------------------
@@ -51,7 +51,7 @@ export class SuppliersByIdResolver implements Resolve<any>
      * @param state
      */
     resolve(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<any[]> {
-        return this._vendorService.getVendorsSupplierById(Number(route.params.id));
+        return this._reportService.getVendorsSupplierById(Number(route.params.id));
     }
 }
 
@@ -64,7 +64,7 @@ export class StatesResolver implements Resolve<any>
     /**
      * Constructor
      */
-    constructor(private _vendorService: ReportsService) {
+    constructor(private _reportService: ReportsService) {
     }
 
     // -----------------------------------------------------------------------------------------------------
@@ -78,7 +78,59 @@ export class StatesResolver implements Resolve<any>
      * @param state
      */
     resolve(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<any[]> {
-        return this._vendorService.getVendorsStates();
+        return this._reportService.getStates();
+    }
+}
+// Get Stores
+@Injectable({
+    providedIn: 'root'
+})
+export class StoresResolver implements Resolve<any>
+{
+    /**
+     * Constructor
+     */
+    constructor(private _reportService: ReportsService) {
+    }
+
+    // -----------------------------------------------------------------------------------------------------
+    // @ Public methods
+    // -----------------------------------------------------------------------------------------------------
+
+    /**
+     * Resolver
+     *
+     * @param route
+     * @param state
+     */
+    resolve(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<any[]> {
+        return this._reportService.getStores();
+    }
+}
+// Get PromoCodes
+@Injectable({
+    providedIn: 'root'
+})
+export class PromoCodesResolver implements Resolve<any>
+{
+    /**
+     * Constructor
+     */
+    constructor(private _reportService: ReportsService) {
+    }
+
+    // -----------------------------------------------------------------------------------------------------
+    // @ Public methods
+    // -----------------------------------------------------------------------------------------------------
+
+    /**
+     * Resolver
+     *
+     * @param route
+     * @param state
+     */
+    resolve(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<any[]> {
+        return this._reportService.getPromoCodes();
     }
 }
 

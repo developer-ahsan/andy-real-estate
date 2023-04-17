@@ -20,14 +20,17 @@ import { ReportsComponent } from './components/reports.component';
 import { ReportVendorRelationsComponent } from './components/pages/vendor-relations/vendor-relations.component';
 import { ReportSupportComponent } from './components/pages/support-report/support-report.component';
 import { ReportsDetailsComponent } from './components/details/details-reports.component';
+import { PromoCodesResolver, StatesResolver, StoresResolver } from './components/reports.resolvers';
 export const vendorsRoutes: Route[] = [
 
     {
         path: '',
         component: ReportsDetailsComponent,
-        // resolve: {
-        //     suppliers: SuppliersListsResolver
-        // }
+        resolve: {
+            states: StatesResolver,
+            stores: StoresResolver,
+            codes: PromoCodesResolver
+        },
         children: [
             {
                 path: '',

@@ -3,11 +3,18 @@
         <div class="row">
             <div class="col-12 col-md-4">
                 <mat-form-field class="w-full">
-                    <mat-label>Select a store:</mat-label>
-                    <mat-select matInput [(ngModel)]="ngStore">
-                        <mat-option [value]="637">365Wholesale.com</mat-option>
-                        <mat-option [value]="229">3M Promotional Markets Dept</mat-option>
-                    </mat-select>
+                    <mat-label>Select Store</mat-label>
+                    <input matInput placeholder="Search stores" matTooltip="Search stores by name"
+                        [matAutocomplete]="auto" [formControl]="searchStoresCtrl">
+                    <mat-autocomplete class="w-full" #auto="matAutocomplete" (optionSelected)="onSelectedStores($event)"
+                        [displayWith]="displayWithStores">
+                        <mat-option *ngIf="isSearchingStores" class="is-loading">Loading...</mat-option>
+                        <ng-container *ngIf="!isSearchingStores">
+                            <mat-option *ngFor="let item of allStores" [value]="item">
+                                <span>{{item.storeName}}</span>
+                            </mat-option>
+                        </ng-container>
+                    </mat-autocomplete>
                 </mat-form-field>
             </div>
             <div class="col-12 col-md-4">

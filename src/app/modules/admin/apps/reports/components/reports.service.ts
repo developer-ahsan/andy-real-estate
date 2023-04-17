@@ -8,11 +8,25 @@ import { productDescription } from 'app/modules/admin/apps/ecommerce/inventory/i
 import { AuthService } from 'app/core/auth/auth.service';
 import { navigations } from './navigations';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import moment from 'moment';
 
 @Injectable({
     providedIn: 'root'
 })
 export class ReportsService {
+    public startDate: any;
+    public endDate: any;
+    public reportType: any;
+    public WeekDate = new Date();
+    public monthlyMonth = 1;
+    public monthlyYear = new Date().getFullYear();
+    public quarterMonth = 1;
+    public quarterYear = new Date().getFullYear();
+    public yearlyYear = new Date().getFullYear();
+    public ngRangeStart = new Date();
+    public ngRangeEnd = new Date();
+    public ngPlan = 'weekly';
+
     public vendorsSearchKeyword = '';
     public navigationLabels = navigations;
 
@@ -32,11 +46,14 @@ export class ReportsService {
     private _vendors: BehaviorSubject<InventoryVendor[] | null> = new BehaviorSubject(null);
     private _suppliers: BehaviorSubject<any[] | null> = new BehaviorSubject<any[]>(null);
     private _single_suppliers: BehaviorSubject<any[] | null> = new BehaviorSubject<any[]>(null);
-    private _states: BehaviorSubject<any[] | null> = new BehaviorSubject<any[]>(null);
     private _imprintMethods: BehaviorSubject<any[] | null> = new BehaviorSubject<any[]>(null);
     private _imprintLocations: BehaviorSubject<any[] | null> = new BehaviorSubject<any[]>(null);
     private _imprintDigitizer: BehaviorSubject<any[] | null> = new BehaviorSubject<any[]>(null);
     private _distributionCodes: BehaviorSubject<any | null> = new BehaviorSubject(null);
+
+    private _states: BehaviorSubject<any[] | null> = new BehaviorSubject<any[]>(null);
+    private _stores: BehaviorSubject<any[] | null> = new BehaviorSubject<any[]>(null);
+    private _promoCodes: BehaviorSubject<any[] | null> = new BehaviorSubject<any[]>(null);
 
     opts = [];
 
@@ -56,6 +73,45 @@ export class ReportsService {
             verticalPosition: 'bottom',
             duration: 3500
         });
+    }
+    setFiltersReport() {
+        if (this.ngPlan == 'weekly') {
+            this.startDate = moment(this.WeekDate).startOf('week').format('MM/DD/yyyy');
+            this.endDate = moment(this.WeekDate).endOf('week').format('MM/DD/yyyy');
+            this.reportType = 'Weekly Sales';
+        } else if (this.ngPlan == 'monthly') {
+            let d = new Date(this.monthlyYear, this.monthlyMonth - 1, 1);
+            this.startDate = moment(d).startOf('month').format('MM/DD/yyyy');
+            this.endDate = moment(d).endOf('month').format('MM/DD/yyyy');
+            this.reportType = 'Monthly Sales';
+        } else if (this.ngPlan == 'quarterly') {
+            let s;
+            let e;
+            if (this.quarterMonth == 1) {
+                s = new Date(this.quarterYear, 0, 1);
+                e = new Date(this.quarterYear, 2, 1);
+            } else if (this.quarterMonth == 2) {
+                s = new Date(this.quarterYear, 3, 1);
+                e = new Date(this.quarterYear, 5, 1);
+            } else if (this.quarterMonth == 3) {
+                s = new Date(this.quarterYear, 6, 1);
+                e = new Date(this.quarterYear, 8, 1);
+            } else if (this.quarterMonth == 4) {
+                s = new Date(this.quarterYear, 9, 1);
+                e = new Date(this.quarterYear, 11, 1);
+            }
+            this.startDate = moment(s).startOf('month').format('MM/DD/yyyy');
+            this.endDate = moment(e).endOf('month').format('MM/DD/yyyy');
+            this.reportType = 'Quarterly Sales';
+        } else if (this.ngPlan == 'yearly') {
+            let d = new Date(this.yearlyYear, 0, 1);
+            this.startDate = moment(d).startOf('year').format('MM/DD/yyyy');
+            this.endDate = moment(d).endOf('year').format('MM/DD/yyyy');
+        } else if (this.ngPlan == 'range') {
+            this.startDate = moment(this.ngRangeStart).format('MM/DD/yyyy');
+            this.endDate = moment(this.ngRangeEnd).format('MM/DD/yyyy');
+            this.reportType = 'Range Sales';
+        }
     }
     // -----------------------------------------------------------------------------------------------------
     // @ Accessors
@@ -77,20 +133,14 @@ export class ReportsService {
     get States$(): Observable<any[]> {
         return this._states.asObservable();
     };
+    get Stores$(): Observable<any[]> {
+        return this._stores.asObservable();
+    };
+    get PromoCodes$(): Observable<any[]> {
+        return this._promoCodes.asObservable();
+    };
 
-    get imprintMethods$(): Observable<any[]> {
-        return this._imprintMethods.asObservable();
-    };
-    get imprintLocations$(): Observable<any[]> {
-        return this._imprintLocations.asObservable();
-    };
-    get imprintDigitizer$(): Observable<any[]> {
-        return this._imprintDigitizer.asObservable();
-    };
-    // Distribution Codes
-    get distributionCodes$(): Observable<any> {
-        return this._distributionCodes.asObservable();
-    }
+
 
     // -----------------------------------------------------------------------------------------------------
     // @ Public methods
@@ -224,7 +274,13 @@ export class ReportsService {
     getIPAddress() {
         return this._httpClient.get("http://api.ipify.org/?format=json");
     }
+
     // Get calls
+    getAPIData(params): Observable<any[]> {
+        return this._httpClient.get<any[]>(environment.reports, {
+            params: params
+        });
+    };
     getVendorsData(params): Observable<any[]> {
         return this._httpClient.get<any[]>(environment.vendors, {
             params: params
@@ -270,14 +326,37 @@ export class ReportsService {
         );
     };
     // GEt States
-    getVendorsStates(): Observable<any[]> {
-        return this._httpClient.get<any[]>(environment.vendors, {
+    getStates(): Observable<any[]> {
+        return this._httpClient.get<any[]>(environment.reports, {
             params: {
                 states: true
             }
         }).pipe(
             tap((response: any) => {
                 this._states.next(response);
+            })
+        );
+    };
+    getStores(): Observable<any[]> {
+        return this._httpClient.get<any[]>(environment.reports, {
+            params: {
+                stores: true,
+                size: 20
+            }
+        }).pipe(
+            tap((response: any) => {
+                this._stores.next(response);
+            })
+        );
+    };
+    getPromoCodes(): Observable<any[]> {
+        return this._httpClient.get<any[]>(environment.reports, {
+            params: {
+                promocodes: true
+            }
+        }).pipe(
+            tap((response: any) => {
+                this._promoCodes.next(response);
             })
         );
     };
