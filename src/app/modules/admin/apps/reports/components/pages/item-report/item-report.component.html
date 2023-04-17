@@ -44,15 +44,15 @@
             <div class="col-12 col-md-4">
                 <mat-form-field class="w-full">
                     <mat-label>Select columns</mat-label>
-                    <mat-select matInput multiple="true">
-                        <mat-option [value]="637">Setups</mat-option>
-                        <mat-option [value]="229">Shipping</mat-option>
-                        <mat-option [value]="2291">Subtotal</mat-option>
-                        <mat-option [value]="2292">Paid/unpaid</mat-option>
-                        <mat-option [value]="2293">Unit price</mat-option>
-                        <mat-option [value]="2294">Runs</mat-option>
-                        <mat-option [value]="2295">Zip code</mat-option>
-                        <mat-option [value]="2296">Internal royalty</mat-option>
+                    <mat-select matInput multiple="true" [(ngModel)]="ngSelectedColumns">
+                        <mat-option [value]="'setups'">Setups</mat-option>
+                        <mat-option [value]="'shipping'">Shipping</mat-option>
+                        <mat-option [value]="'subtotal'">Subtotal</mat-option>
+                        <mat-option [value]="'paid'">Paid/unpaid</mat-option>
+                        <mat-option [value]="'price'">Unit price</mat-option>
+                        <mat-option [value]="'runs'">Runs</mat-option>
+                        <mat-option [value]="'zip'">Zip code</mat-option>
+                        <mat-option [value]="'internalRoyalty'">Internal royalty</mat-option>
                     </mat-select>
                 </mat-form-field>
             </div>

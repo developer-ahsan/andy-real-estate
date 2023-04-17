@@ -34,6 +34,7 @@ export class ReportItemsComponent implements OnInit, OnDestroy {
   blnShowCancelled = 0;
   paymentStatus = 1;
   ngStore = 637;
+  ngSelectedColumns = ['setups', 'shipping', 'subtotal', 'paid', 'price', 'runs', 'zip', 'internalRoyalty'];
   constructor(
     private _changeDetectorRef: ChangeDetectorRef,
     private _reportService: ReportsService

@@ -202,8 +202,10 @@ export class OrdersComponent {
         this._changeDetectorRef.markForCheck();
     }
     getStoresList() {
+        this.storesList = [];
         this._orderService.stores$.pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
-            this.storesList = res["data"];
+            this.storesList.push({ storeName: 'All Stores', pk_storeID: 0 });
+            this.storesList = this.storesList.concat(res["data"]);
         })
     }
     searchOrder() {
