@@ -28,7 +28,7 @@ export const environment = {
   rapid_build: "http://localhost:7071/api/rapidbuild",
   import_export: "http://localhost:7071/api/import_export",
   vendors: "http://localhost:7071/api/vendors",
-  reports: "http://localhost:7071/api/reports",
+  reports: "https://consolidus.azurewebsites.net/api/reports",
   campaignMedia: "https://assets.consolidus.com/globalAssets/Campaigns",
   productMedia: "https://assets.consolidus.com/globalAssets/Products",
   imprintMedia: "https://assets.consolidus.com/globalAssets/Imprints",

@@ -18,7 +18,7 @@ export class ReportCustomerPurchaseComponent implements OnInit, OnDestroy {
   generateReportData: any;
   reportPage = 1;
   totalData = 0;
-  displayedColumns: string[] = ['id', 'fName', 'lName', 'company', 'no', 'pv', 'tno', 'tpv', 'nc'];
+  displayedColumns: string[] = ['id', 'fName', 'lName', 'company', 'no', 'pv', 'tno', 'tpv'];
 
   // ReportDropdowns
   reportType = 0;
@@ -112,39 +112,6 @@ export class ReportCustomerPurchaseComponent implements OnInit, OnDestroy {
       if (res["data"].length > 0) {
         this.generateReportData = res["data"];
         this.totalData = res["totalRecords"];
-        this.generateReportData.forEach(element => {
-          if (element.previousYearSales == 0) {
-            element.percent = 0
-          } else {
-            element.percent = Number(100 - (element.monthlyEarnings / element.previousYearSales) * 100);
-          }
-          if (element.percent == 0) {
-            element.percent = 0;
-            element.color = 'gray';
-          }
-          if (element.percent < 0) {
-            element.color = 'red';
-          } else if (element.percent > 0) {
-            element.color = 'green'
-          } else {
-            element.color = 'gray';
-          }
-          element.difference = Number(element.monthlyEarnings - element.previousYearSales);
-          if (!element.difference) {
-            element.difference = 0;
-          }
-          if (element.difference < 0) {
-            element.difference = Math.abs(element.difference);
-          }
-          element.avg = Number(element.monthlyEarnings / element.NS);
-          if (!element.avg) {
-            element.avg = 0;
-          }
-          element.margin = Number(((element.price - element.cost) / element.price) * 100);
-          if (!element.margin) {
-            element.margin = 0;
-          }
-        });
       } else {
         this.generateReportData = null;
         this._reportService.snackBar('No records found');
