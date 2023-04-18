@@ -337,7 +337,7 @@
       <app-payment-methods [selectedStore]="selectedStore" [screenData]="presentationData"></app-payment-methods>
     </div>
     <!-- Support Team -->
-    <div *ngIf="presentationScreen == 'Support Team' && presentationData">
+    <div *ngIf="presentationScreen == 'Support Team' && presentationData && availableTeamData">
       <app-presentation-support-team [selectedStore]="selectedStore" [screenData]="presentationData"
         [availableTeamData]="availableTeamData">
       </app-presentation-support-team>

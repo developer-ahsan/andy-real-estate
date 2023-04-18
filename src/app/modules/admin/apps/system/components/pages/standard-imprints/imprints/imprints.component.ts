@@ -115,6 +115,12 @@ export class AddEditImprintsComponent implements OnInit, OnDestroy {
   isLocationLoading: boolean = false;
   public methodSearchControl = new FormControl();
   isMethodLoading: boolean = false;
+
+  // Suppliers/Decorators
+  allSuppliers = [];
+  searchSuppliersCtrl = new FormControl();
+  selectedSuppliers: any;
+  isSearchingSuppliers = false;
   constructor(
     private _changeDetectorRef: ChangeDetectorRef,
     private _systemService: SystemService,
@@ -238,11 +244,12 @@ export class AddEditImprintsComponent implements OnInit, OnDestroy {
       this.getAddImprintDigitizers();
       this.getAddImprintMethods();
       this.getAddImprintLocations();
-      this.getAllSuppliers();
+      // this.getAllSuppliers();
+      this.getSuppliers();
     } else {
-      const { name, pk_standardImprintID, minProductQty, maxColors, imprintComments, fk_standardImprintGroupID, fk_setupChargeID, fk_runChargeID, fk_multiColorMinQID, fk_collectionID, displayOrder, blnUserColorSelection, blnStitchProcess, blnSingleton, blnSingleProcess, blnIncludable, blnColorProcess, area, locationName, methodName } = this.imprintData.imprintData;
-      this.locationSearchControl.setValue(locationName);
-      this.methodSearchControl.setValue(methodName);
+      const { name, pk_standardImprintID, minProductQty, maxColors, imprintComments, fk_standardImprintGroupID, fk_setupChargeID, fk_runChargeID, fk_multiColorMinQID, fk_collectionID, displayOrder, blnUserColorSelection, blnStitchProcess, blnSingleton, blnSingleProcess, blnIncludable, blnColorProcess, area, locationName, methodName, fk_locationID, fk_methodID, decoratorName, fk_decoratorID } = this.imprintData.imprintData;
+      this.locationSearchControl.setValue({ locationName: locationName, pk_locationID: fk_locationID });
+      this.methodSearchControl.setValue({ methodName: methodName, pk_methodID: fk_methodID });
       this.imprintName = name;
       this.minQuantity = minProductQty;
       this.maxColorSelected = maxColors;
@@ -267,9 +274,16 @@ export class AddEditImprintsComponent implements OnInit, OnDestroy {
       this.getAddImprintDigitizers(this.imprintData.imprintData);
       this.getAddImprintMethods(this.imprintData.imprintData);
       this.getAddImprintLocations(this.imprintData.imprintData);
-      this.getAllSuppliers(this.imprintData.imprintData);
+      // this.getAllSuppliers(this.imprintData.imprintData);
+      this.getSuppliers(this.imprintData.imprintData);
     }
   };
+  displayWithLocations(value: any) {
+    return value?.locationName;
+  }
+  displayWithMethods(value: any) {
+    return value?.methodName;
+  }
   private _filter(value: string): string[] {
     const filterValue = value.toLowerCase();
     return this.addImprintMethods.filter(option => option.methodName.toLowerCase().includes(filterValue));
@@ -282,7 +296,7 @@ export class AddEditImprintsComponent implements OnInit, OnDestroy {
     this.selectedMethod = obj;
     if (obj.methodName.includes('Embroidery') || obj.methodName.includes('Embroidering') || obj.methodName.includes('Embroidered')) {
       this.favoriteSeason = 1;
-      this.selectedDigitizer = this.addImprintDigitizers.find(x => x.pfk_digitizerID == this.selectedSupplier.pk_companyID) || this.addImprintDigitizers[0];
+      this.selectedDigitizer = this.addImprintDigitizers.find(x => x.pfk_digitizerID == this.selectedSuppliers.pk_companyID) || this.addImprintDigitizers[0];
     }
     this.methodSearchControl.setValue(obj.methodName)
     // if (obj.pk_methodID == 20) {
@@ -292,6 +306,58 @@ export class AddEditImprintsComponent implements OnInit, OnDestroy {
   locationSelected(obj) {
     this.selectedLocation = obj;
     this.locationSearchControl.setValue(obj.locationName)
+  }
+  onSelectedSuppliers(obj) {
+    this.selectedSuppliers = obj;
+  }
+  displayWithSuppliers(value) {
+    return value?.companyName;
+  }
+  getSuppliers(data?: any) {
+    this._systemService.Suppliers$.pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+      this.allSuppliers = this.allSuppliers.concat(res["data"]);
+      if (data) {
+        const { decoratorName, fk_decoratorID } = data;
+        this.searchSuppliersCtrl.setValue({ companyName: decoratorName, pk_companyID: fk_decoratorID });
+        this.selectedSuppliers = { companyName: decoratorName, pk_companyID: fk_decoratorID };
+      } else {
+        this.selectedSuppliers = this.allSuppliers[0];
+        this.searchSuppliersCtrl.setValue(this.selectedSuppliers);
+      }
+      this.isLoading = false;
+      this._changeDetectorRef.markForCheck();
+    }, err => {
+      this.isLoading = false;
+      this._changeDetectorRef.markForCheck();
+    });
+    let params;
+    this.searchSuppliersCtrl.valueChanges.pipe(
+      filter((res: any) => {
+        params = {
+          supplier: true,
+          bln_active: 1,
+          keyword: res
+        }
+        return res !== null && res.length >= 2
+      }),
+      distinctUntilChanged(),
+      debounceTime(300),
+      tap(() => {
+        this.allSuppliers = [];
+        this.isSearchingSuppliers = true;
+        this._changeDetectorRef.markForCheck();
+      }),
+      switchMap(value => this._systemService.getSystemsData(params)
+        .pipe(
+          finalize(() => {
+            this.isSearchingSuppliers = false
+            this._changeDetectorRef.markForCheck();
+          }),
+        )
+      )
+    ).subscribe((data: any) => {
+      this.allSuppliers = data['data'];
+    });
   }
   getAllSuppliers(data?: any) {
     this._systemService.Suppliers$
@@ -374,7 +440,7 @@ export class AddEditImprintsComponent implements OnInit, OnDestroy {
   generateCollectionId() {
     this.getSupplierColorCollections();
     this.getImprintColorCollectionLoader = true;
-    const { pk_companyID } = this.selectedSupplier;
+    const { pk_companyID } = this.selectedSuppliers;
     this._systemService.getCollectionIds(pk_companyID)
       .pipe(takeUntil(this._unsubscribeAll))
       .subscribe((collection_ids) => {
@@ -408,7 +474,7 @@ export class AddEditImprintsComponent implements OnInit, OnDestroy {
       });
   };
   getSupplierColorCollections() {
-    const { pk_companyID } = this.selectedSupplier;
+    const { pk_companyID } = this.selectedSuppliers;
 
     let params = {
       supplier_available_colors: true,
@@ -535,7 +601,7 @@ export class AddEditImprintsComponent implements OnInit, OnDestroy {
     let payload: AddStandardImprint = {
       fk_standardImprintGroupID: this.imprintData.pk_standardImprintGroupID,
       name: this.imprintName,
-      fk_decoratorID: this.selectedSupplier.pk_companyID,
+      fk_decoratorID: this.selectedSuppliers.pk_companyID,
       fk_methodID: this.selectedMethod.pk_methodID,
       method_name: this.method_name,
       location_name: this.location_name,
@@ -648,7 +714,7 @@ export class AddEditImprintsComponent implements OnInit, OnDestroy {
     let payload: UpdateStandardImprint = {
       standardImprintGroupID: this.imprintData.pk_standardImprintGroupID,
       name: this.imprintName,
-      fk_decoratorID: this.selectedSupplier.pk_companyID,
+      fk_decoratorID: this.selectedSuppliers.pk_companyID,
       fk_methodID: this.selectedMethod.pk_methodID,
       method_name: this.method_name,
       location_name: this.location_name,
@@ -691,7 +757,7 @@ export class AddEditImprintsComponent implements OnInit, OnDestroy {
     this._systemService.UpdateSystemData(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe((response) => {
       if (response["success"]) {
         this._systemService.snackBar('Standard Imprint Updated Successfully');
-        this.imprintData.imprintData.decoratorName = this.selectedSupplier.companyName;
+        this.imprintData.imprintData.decoratorName = this.selectedSuppliers.companyName;
         this.imprintData.imprintData.locationName = this.selectedLocation.locationName;
         this.imprintData.imprintData.methodName = this.selectedMethod.methodName;
         this.imprintData.imprintData.area = payload.area;
@@ -714,8 +780,6 @@ export class AddEditImprintsComponent implements OnInit, OnDestroy {
         this.imprintData.imprintData.maxColors = payload.maxColors;
         this.imprintData.imprintData.minProductQty = payload.minProductQty;
         this.imprintData.imprintData.name = payload.name;
-
-        console.log(this.imprintData);
         this.addImprintLoader = false;
       } else {
         this.addImprintLoader = false;
@@ -750,7 +814,7 @@ export class AddEditImprintsComponent implements OnInit, OnDestroy {
   }
   changeProcessMode(ev) {
     if (ev.value == 1) {
-      let digitizer = this.addImprintDigitizers.filter(digitizer => digitizer.pk_companyID == this.selectedSupplier.pk_companyID);
+      let digitizer = this.addImprintDigitizers.filter(digitizer => digitizer.pk_companyID == this.selectedSuppliers.pk_companyID);
       if (digitizer) {
         this.selectedDigitizer = digitizer[0];
       }
@@ -758,7 +822,7 @@ export class AddEditImprintsComponent implements OnInit, OnDestroy {
     }
   }
   changeSupplerSelection() {
-    let digitizer = this.addImprintDigitizers.filter(digitizer => digitizer.pk_companyID == this.selectedSupplier.pk_companyID);
+    let digitizer = this.addImprintDigitizers.filter(digitizer => digitizer.pk_companyID == this.selectedSuppliers.pk_companyID);
     if (digitizer) {
       this.selectedDigitizer = digitizer[0];
     }

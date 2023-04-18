@@ -22,7 +22,9 @@ export class PresentationSupportTeamComponent implements OnInit {
   teamForm: FormGroup;
   updateLoader: boolean = false;
   addNewTeamLoader: boolean = false;
-
+  totalAvailableTeam = 0;
+  page = 1;
+  teamLoader: boolean = false;
   constructor(
     private _storeManagerService: FileManagerService,
     private _snackBar: MatSnackBar,
@@ -32,10 +34,35 @@ export class PresentationSupportTeamComponent implements OnInit {
 
 
   ngOnInit() {
+    this.totalAvailableTeam = this.availableTeamData.totalRecords;
+
+    console.log(this.availableTeamData)
+    console.log(this.screenData)
     this.initialize();
   }
   initialize() {
 
+  }
+  getNextTeamData() {
+    this.page++;
+    this.teamLoader = true;
+    let params = {
+      presentation: true,
+      store_id: this.selectedStore.pk_storeID,
+      available_support_team: true,
+      page: this.page
+    }
+    this._storeManagerService
+      .getPresentationData(params)
+      .pipe(takeUntil(this._unsubscribeAll))
+      .subscribe((res: any) => {
+        this.availableTeamData["data"] = this.availableTeamData["data"].concat(res["data"]);
+        this.teamLoader = false;
+        this._changeDetectorRef.markForCheck();
+      }, err => {
+        this.teamLoader = false;
+        this._changeDetectorRef.markForCheck();
+      });
   }
   UpdateSocialMedia() {
     this.updateLoader = true;
@@ -58,7 +85,8 @@ export class PresentationSupportTeamComponent implements OnInit {
       add_available_member: true
     }
     this._storeManagerService.AddAvailableMember(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
-      this.availableTeamData = this.availableTeamData.filter(item => item.pk_ID != obj.pk_ID);
+      this.availableTeamData.data = this.availableTeamData.data.filter(item => item.pk_ID != obj.pk_ID);
+      this.totalAvailableTeam--;
       const data = {
         email: obj.email,
         name: obj.name,

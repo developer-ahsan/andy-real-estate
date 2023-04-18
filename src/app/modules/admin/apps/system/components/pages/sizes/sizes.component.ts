@@ -94,11 +94,7 @@ export class SizesComponent implements OnInit, OnDestroy {
   }
   getNextData(event) {
     const { previousPageIndex, pageIndex } = event;
-    if (pageIndex > previousPageIndex) {
-      this.page++;
-    } else {
-      this.page--;
-    };
+    this.page = pageIndex;
     this.getSizes(this.page, 'get');
   };
   searchSize(value) {

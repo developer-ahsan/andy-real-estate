@@ -279,6 +279,41 @@
                       }">
                     </ngx-skeleton-loader>
                 </div>
+                <div class="px-3 pb-2 row w-full" *ngIf="!customerLoader">
+                    <div class="col-md-4 col-12">
+                        <mat-form-field class="w-full">
+                            <mat-label>Select Range</mat-label>
+                            <mat-date-range-input [rangePicker]="picker1" (click)="picker1.open()" [max]="maxDate">
+                                <input matStartDate placeholder="Start date" readonly [(ngModel)]="ngRangeStart">
+                                <input matEndDate placeholder="End date" readonly [(ngModel)]="ngRangeEnd">
+                            </mat-date-range-input>
+                            <mat-datepicker-toggle matIconSuffix [for]="picker1"></mat-datepicker-toggle>
+                            <mat-date-range-picker #picker1></mat-date-range-picker>
+                        </mat-form-field>
+                    </div>
+                    <div class="col-md-4 col-12">
+                        <mat-form-field class="w-full" [(ngModel)]="ngSPID">
+                            <mat-label>SPID</mat-label>
+                            <input type="text" matInput>
+                        </mat-form-field>
+                    </div>
+                    <div class="col-md-4 col-12">
+                        <mat-form-field class="w-full">
+                            <mat-label>Type</mat-label>
+                            <mat-select matInput [(ngModel)]="ngType">
+                                <mat-option value="All">All</mat-option>
+                                <mat-option value="Normal">Normal</mat-option>
+                                <mat-option value="Revision">Revision</mat-option>
+                                <mat-option value="Final">Final</mat-option>
+                            </mat-select>
+                        </mat-form-field>
+                    </div>
+                    <div class="col-12 text-right">
+                        <button class="min-w-40" mat-button mat-stroked-button>
+                            <span>Filter</span>
+                        </button>
+                    </div>
+                </div>
                 <div *ngIf="customersDataSource.length > 0 && !customerLoader;else other_content" class="w-full">
                     <table mat-table [dataSource]="customersDataSource" class="w-full border-t">
                         <ng-container matColumnDef="id">
@@ -293,7 +328,7 @@
                             <th mat-header-cell *matHeaderCellDef>
                                 Name
                             </th>
-                            <td mat-cell *matCellDef="let element" class="text-sm">
+                            <td mat-cell *matCellDef="let element" class="text-sm pl-2">
                                 {{updateUserData.firstName + ' ' + updateUserData.lastName}}
                             </td>
                         </ng-container>

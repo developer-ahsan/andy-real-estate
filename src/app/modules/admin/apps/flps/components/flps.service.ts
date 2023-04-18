@@ -100,7 +100,7 @@ export class FLPSService {
         return this._httpClient.get<any[]>(environment.flps, {
             params: {
                 view_store_all_admins: true,
-                size: 10
+                size: 500
             }
         }).pipe(
             tap((response: any) => {

@@ -142,6 +142,9 @@ export class GenerateReportComponent implements OnInit {
                     view_store_all_admins: true,
                     keyword: res
                 }
+                if (res.length == 0) {
+                    this.getEmployees();
+                }
                 return res !== null && res.length >= this.minLengthTerm
             }),
             distinctUntilChanged(),

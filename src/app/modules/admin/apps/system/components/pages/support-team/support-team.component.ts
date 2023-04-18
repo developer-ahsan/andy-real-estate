@@ -330,12 +330,13 @@ export class SupportTeamComponent implements OnInit, OnDestroy {
         let image: any = new Image;
         image.src = reader.result;
         image.onload = () => {
-          if (image.width != 147 || image.height != 201) {
-            this._systemService.snackBar("Dimensions allowed are 147px x 201px");
-            this.imageValue = null;
-            this._changeDetectorRef.markForCheck();
-            return;
-          } else if (file["type"] != 'image/jpeg' && file["type"] != 'image/jpg') {
+          // if (image.width != 147 || image.height != 201) {
+          //   this._systemService.snackBar("Dimensions allowed are 147px x 201px");
+          //   this.imageValue = null;
+          //   this._changeDetectorRef.markForCheck();
+          //   return;
+          // } else 
+          if (file["type"] != 'image/jpeg' && file["type"] != 'image/jpg') {
             this._systemService.snackBar("Image should be jpg format only");
             this.imageValue = null;
             this._changeDetectorRef.markForCheck();
@@ -361,6 +362,7 @@ export class SupportTeamComponent implements OnInit, OnDestroy {
       image_path: img_path
     };
     this._systemService.AddSystemData(payload).subscribe(res => {
+      this.updateTeamData.random = Math.random();
       this.imageValue = null;
       this._changeDetectorRef.markForCheck();
     }, err => {

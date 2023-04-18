@@ -4,7 +4,7 @@
       Support Team
     </div>
     <div class="row" *ngIf="availableTeamData">
-      <div class="col-md-2 col-4" style="text-align: -webkit-center" *ngFor="let item of availableTeamData">
+      <div class="col-md-2 col-4" style="text-align: -webkit-center" *ngFor="let item of availableTeamData.data">
         <div ng-repeat="file in imagefinaldata" class="img_wrp">
           <img height="200" width="250" src="{{ teamImageUrl + item.fk_defaultMemberID }}.jpg"
             onError="this.src='https://assets.consolidus.com/globalAssets/Support/anonymous.png'"
@@ -20,6 +20,12 @@
           src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSNnBYwnpEUhBQQ83LsiN2RvVkfQW75_JNfrfL1NiY&s"
         /> -->
         </div>
+      </div>
+      <div class="col-12 flex justify-end" *ngIf="totalAvailableTeam > availableTeamData.data.length">
+        <mat-progress-spinner *ngIf="teamLoader" class="close cursor-pointer bg-gray-100" [diameter]="24"
+          [mode]="'indeterminate'">
+        </mat-progress-spinner>
+        <span class="cursor-pointer" *ngIf="!teamLoader" (click)="getNextTeamData()">Load More</span>
       </div>
     </div>
   </div>

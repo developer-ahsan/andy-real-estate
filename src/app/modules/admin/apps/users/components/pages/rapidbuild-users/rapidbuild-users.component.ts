@@ -56,6 +56,12 @@ export class RapidBuildUsersComponent implements OnInit, OnDestroy {
   totalStores = 0;
   updateStoreLoader: boolean = false;
 
+  // Users history filter
+  ngRangeStart = new Date();
+  ngRangeEnd = new Date();
+  ngType = 'All';
+  ngSPID = '';
+
   constructor(
     private _changeDetectorRef: ChangeDetectorRef,
     private _UsersService: UsersService

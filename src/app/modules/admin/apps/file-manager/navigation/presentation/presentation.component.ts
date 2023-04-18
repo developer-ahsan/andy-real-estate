@@ -383,7 +383,7 @@ export class PresentationComponent implements OnInit, OnDestroy {
           this.creditTermsForm.patchValue(res.data[3]);
         } else if (screen == "Support Team") {
           if (value == "available_support_team") {
-            this.availableTeamData = res.data;
+            this.availableTeamData = res;
           } else {
             this.teamData = res.data;
             this.presentationData = res.data;
