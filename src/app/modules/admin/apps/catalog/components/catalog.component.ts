@@ -94,7 +94,10 @@ export class CatalogComponent {
   toggleDrawer() {
     this.sidenav.toggle();
   }
-  ngOnInit(): void {
+  getSuppliers() {
+    this._catalogService.Suppliers$.pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+      this.allSuppliers = res["data"];
+    });
     let params;
     this.searchSupplierCtrl.valueChanges.pipe(
       filter((res: any) => {
@@ -123,37 +126,11 @@ export class CatalogComponent {
     ).subscribe((data: any) => {
       this.allSuppliers = data['data'];
     });
-
-    // Colors
-    let paramsColor;
-    this.searchColorCtrl.valueChanges.pipe(
-      filter((res: any) => {
-        paramsColor = {
-          colors: true,
-          keyword: res
-        }
-        return res !== null && res.length >= 3
-      }),
-      distinctUntilChanged(),
-      debounceTime(300),
-      tap(() => {
-        this.allColors = [];
-        this.isSearchingColor = true;
-        this._changeDetectorRef.markForCheck();
-      }),
-      switchMap(value => this._catalogService.getCatalogData(paramsColor)
-        .pipe(
-          finalize(() => {
-            this.isSearchingColor = false
-            this._changeDetectorRef.markForCheck();
-          }),
-        )
-      )
-    ).subscribe((data: any) => {
-      this.allColors = data['data'];
+  }
+  getSizes() {
+    this._catalogService.Sizes$.pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+      this.allSizes = res["data"];
     });
-
-    // Sizes
     let paramsSizes;
     this.searchSizeCtrl.valueChanges.pipe(
       filter((res: any) => {
@@ -181,7 +158,43 @@ export class CatalogComponent {
     ).subscribe((data: any) => {
       this.allSizes = data['data'];
     });
-    // Methods
+  }
+  getColors() {
+    this._catalogService.Colors$.pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+      this.allColors = res["data"];
+    });
+    let paramsColor;
+    this.searchColorCtrl.valueChanges.pipe(
+      filter((res: any) => {
+        paramsColor = {
+          colors: true,
+          keyword: res
+        }
+        return res !== null && res.length >= 3
+      }),
+      distinctUntilChanged(),
+      debounceTime(300),
+      tap(() => {
+        this.allColors = [];
+        this.isSearchingColor = true;
+        this._changeDetectorRef.markForCheck();
+      }),
+      switchMap(value => this._catalogService.getCatalogData(paramsColor)
+        .pipe(
+          finalize(() => {
+            this.isSearchingColor = false
+            this._changeDetectorRef.markForCheck();
+          }),
+        )
+      )
+    ).subscribe((data: any) => {
+      this.allColors = data['data'];
+    });
+  }
+  getImprints() {
+    this._catalogService.Imprints$.pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+      this.allMethods = res["data"];
+    });
     let paramsMethod;
     this.searchMethodCtrl.valueChanges.pipe(
       filter((res: any) => {
@@ -209,7 +222,12 @@ export class CatalogComponent {
     ).subscribe((data: any) => {
       this.allMethods = data['data'];
     });
-    // this.isLoading = true;
+  }
+  ngOnInit(): void {
+    this.getSuppliers();
+    this.getColors();
+    this.getSizes();
+    this.getImprints();
     // this.getCatalogs(1);
   }
   // Vendors

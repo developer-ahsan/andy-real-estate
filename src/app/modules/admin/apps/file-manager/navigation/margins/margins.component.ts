@@ -56,6 +56,18 @@ export class MarginsComponent implements OnInit, OnDestroy {
           margin4: Number((this.selectedStore.margin4 * 100).toFixed(2)),
           margin5: Number((this.selectedStore.margin5 * 100).toFixed(2)),
           margin6: Number((this.selectedStore.margin6 * 100).toFixed(2)),
+          apperel1: Number((this.selectedStore?.apparelmargin1 * 100).toFixed(2)),
+          apperel2: Number((this.selectedStore?.apparelMargin2 * 100).toFixed(2)),
+          apperel3: Number((this.selectedStore?.apparelMargin3 * 100).toFixed(2)),
+          apperel4: Number((this.selectedStore?.apparelMargin4 * 100).toFixed(2)),
+          apperel5: Number((this.selectedStore?.apparelMargin5 * 100).toFixed(2)),
+          apperel6: Number((this.selectedStore?.apparelMargin6 * 100).toFixed(2)),
+          print1: Number((this.selectedStore?.printMargin1 * 100).toFixed(2)),
+          print2: Number((this.selectedStore?.printMargin2 * 100).toFixed(2)),
+          print3: Number((this.selectedStore?.printMargin3 * 100).toFixed(2)),
+          print4: Number((this.selectedStore?.printMargin4 * 100).toFixed(2)),
+          print5: Number((this.selectedStore?.printMargin5 * 100).toFixed(2)),
+          print6: Number((this.selectedStore?.printMargin6 * 100).toFixed(2)),
         });
         this.dataSourceLoading = true;
         this.getFirstCall();
@@ -69,6 +81,18 @@ export class MarginsComponent implements OnInit, OnDestroy {
       margin4: new FormControl(''),
       margin5: new FormControl(''),
       margin6: new FormControl(''),
+      apparel1: new FormControl(''),
+      apparel2: new FormControl(''),
+      apparel3: new FormControl(''),
+      apparel4: new FormControl(''),
+      apparel5: new FormControl(''),
+      apparel6: new FormControl(''),
+      print1: new FormControl(''),
+      print2: new FormControl(''),
+      print3: new FormControl(''),
+      print4: new FormControl(''),
+      print5: new FormControl(''),
+      print6: new FormControl(''),
       store_id: new FormControl(this.selectedStore.pk_storeID),
       update_default_margin: new FormControl(true)
     })
@@ -186,7 +210,7 @@ export class MarginsComponent implements OnInit, OnDestroy {
   updateDefaultMargin() {
     this.defaultMarginLoader = true;
     const { pk_storeID } = this.selectedStore;
-    const { margin1, margin2, margin3, margin4, margin5, margin6, store_id, update_default_margin } = this.defaultMarginForm.getRawValue();
+    const { margin1, margin2, margin3, margin4, margin5, margin6, apparel1, apparel2, apparel3, apparel4, apparel5, apparel6, print1, print2, print3, print4, print5, print6, store_id, update_default_margin } = this.defaultMarginForm.getRawValue();
     let payload = {
       margin1: (margin1 / 100).toFixed(2),
       margin2: (margin2 / 100).toFixed(2),
@@ -194,6 +218,18 @@ export class MarginsComponent implements OnInit, OnDestroy {
       margin4: (margin4 / 100).toFixed(2),
       margin5: (margin5 / 100).toFixed(2),
       margin6: (margin6 / 100).toFixed(2),
+      apparelMargin1: (apparel1 / 100).toFixed(2),
+      apparelMargin2: (apparel2 / 100).toFixed(2),
+      apparelMargin3: (apparel3 / 100).toFixed(2),
+      apparelMargin4: (apparel4 / 100).toFixed(2),
+      apparelMargin5: (apparel5 / 100).toFixed(2),
+      apparelMargin6: (apparel6 / 100).toFixed(2),
+      printMargin1: (print1 / 100).toFixed(2),
+      printMargin2: (print2 / 100).toFixed(2),
+      printMargin3: (print3 / 100).toFixed(2),
+      printMargin4: (print4 / 100).toFixed(2),
+      printMargin5: (print5 / 100).toFixed(2),
+      printMargin6: (print6 / 100).toFixed(2),
       store_id, update_default_margin
     };
     // Get the supplier products
@@ -203,6 +239,24 @@ export class MarginsComponent implements OnInit, OnDestroy {
         this._storesManagerService.getStoreByStoreId(pk_storeID).subscribe(res => {
           this.defaultMarginLoader = false;
           this.defaultMarginMsgLoader = true;
+          this.selectedStore.margin1 = margin1;
+          this.selectedStore.margin2 = margin2;
+          this.selectedStore.margin3 = margin3;
+          this.selectedStore.margin4 = margin4;
+          this.selectedStore.margin5 = margin5;
+          this.selectedStore.margin6 = margin6;
+          this.selectedStore.printMargin1 = print1;
+          this.selectedStore.printMargin12 = print2;
+          this.selectedStore.printMargin13 = print3;
+          this.selectedStore.printMargin14 = print4;
+          this.selectedStore.printMargin15 = print5;
+          this.selectedStore.printMargin16 = print6;
+          this.selectedStore.apparelmargin1 = apparel1;
+          this.selectedStore.apparelMargin2 = apparel2;
+          this.selectedStore.apparelMargin3 = apparel3;
+          this.selectedStore.apparelMargin4 = apparel4;
+          this.selectedStore.apparelMargin5 = apparel5;
+          this.selectedStore.apparelMargin6 = apparel6;
           setTimeout(() => {
             this.defaultMarginMsgLoader = false;
             this._changeDetectorRef.markForCheck();

@@ -7,34 +7,7 @@ import { CatalogService } from './catalog.service';
 @Injectable({
     providedIn: 'root'
 })
-export class EmployeesListsResolver implements Resolve<any>
-{
-    /**
-     * Constructor
-     */
-    constructor(
-        private _UsersService: CatalogService
-    ) {
-    }
-
-    // -----------------------------------------------------------------------------------------------------
-    // @ Public methods
-    // -----------------------------------------------------------------------------------------------------
-
-    /**
-     * Resolver
-     *
-     * @param route
-     * @param state
-     */
-    resolve(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<any[]> {
-        return this._UsersService.getAllEmployees();
-    }
-}
-@Injectable({
-    providedIn: 'root'
-})
-export class FlpsLoginResolver implements Resolve<any>
+export class ColorsResolver implements Resolve<any>
 {
     /**
      * Constructor
@@ -53,43 +26,13 @@ export class FlpsLoginResolver implements Resolve<any>
      * @param state
      */
     resolve(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<any[]> {
-        let user = this._authService.parseJwt(this._authService.accessToken);
-        let params = {
-            login_check: true,
-            email: user.email
-        }
-        return this._CatalogService.checkFLPSLogin(params);
+        return this._CatalogService.getAdminColors();
     }
 }
 @Injectable({
     providedIn: 'root'
 })
-export class AdminStoresResolver implements Resolve<any>
-{
-    /**
-     * Constructor
-     */
-    constructor(private _CatalogService: CatalogService, private _authService: AuthService) {
-    }
-
-    // -----------------------------------------------------------------------------------------------------
-    // @ Public methods
-    // -----------------------------------------------------------------------------------------------------
-
-    /**
-     * Resolver
-     *
-     * @param route
-     * @param state
-     */
-    resolve(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<any[]> {
-        return this._CatalogService.getAdminStores();
-    }
-}
-@Injectable({
-    providedIn: 'root'
-})
-export class AdminCompaniesResolver implements Resolve<any>
+export class AdminSuppliersResolver implements Resolve<any>
 {
     /**
      * Constructor
@@ -108,9 +51,59 @@ export class AdminCompaniesResolver implements Resolve<any>
      * @param state
      */
     resolve(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<any[]> {
-        return this._CatalogService.getAdminCompanies();
+        return this._CatalogService.getAdminSuppliers();
     }
 }
 
 
+@Injectable({
+    providedIn: 'root'
+})
+export class SizesResolver implements Resolve<any>
+{
+    /**
+     * Constructor
+     */
+    constructor(private _CatalogService: CatalogService, private _authService: AuthService) {
+    }
 
+    // -----------------------------------------------------------------------------------------------------
+    // @ Public methods
+    // -----------------------------------------------------------------------------------------------------
+
+    /**
+     * Resolver
+     *
+     * @param route
+     * @param state
+     */
+    resolve(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<any[]> {
+        return this._CatalogService.getAdminSizes();
+    }
+}
+
+@Injectable({
+    providedIn: 'root'
+})
+export class ImprintsResolver implements Resolve<any>
+{
+    /**
+     * Constructor
+     */
+    constructor(private _CatalogService: CatalogService, private _authService: AuthService) {
+    }
+
+    // -----------------------------------------------------------------------------------------------------
+    // @ Public methods
+    // -----------------------------------------------------------------------------------------------------
+
+    /**
+     * Resolver
+     *
+     * @param route
+     * @param state
+     */
+    resolve(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<any[]> {
+        return this._CatalogService.getAdminDecorators();
+    }
+}

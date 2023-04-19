@@ -13,9 +13,11 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 })
 export class CatalogService {
 
-    private _companyAdmins: BehaviorSubject<any[] | null> = new BehaviorSubject<any[]>(null);
+    private _suppliers: BehaviorSubject<any[] | null> = new BehaviorSubject<any[]>(null);
     private _employeeAdmins: BehaviorSubject<any[] | null> = new BehaviorSubject<any[]>(null);
-    private _adminStores: BehaviorSubject<any[] | null> = new BehaviorSubject<any[]>(null);
+    private _colors: BehaviorSubject<any[] | null> = new BehaviorSubject<any[]>(null);
+    private _sizes: BehaviorSubject<any[] | null> = new BehaviorSubject<any[]>(null);
+    private _imprints: BehaviorSubject<any[] | null> = new BehaviorSubject<any[]>(null);
     private _reportUsers: BehaviorSubject<any[] | null> = new BehaviorSubject<any[]>(null);
     /**
      * Constructor
@@ -43,13 +45,21 @@ export class CatalogService {
     get employeeAdmins$(): Observable<any[]> {
         return this._employeeAdmins.asObservable();
     };
-    // Companies
-    get companyAdmins$(): Observable<any[]> {
-        return this._companyAdmins.asObservable();
+    // Suppliers
+    get Suppliers$(): Observable<any[]> {
+        return this._suppliers.asObservable();
     };
-    // Stores
-    get adminStores$(): Observable<any[]> {
-        return this._adminStores.asObservable();
+    // Colors
+    get Colors$(): Observable<any[]> {
+        return this._colors.asObservable();
+    };
+    // Colors
+    get Sizes$(): Observable<any[]> {
+        return this._sizes.asObservable();
+    };
+    // Imprints
+    get Imprints$(): Observable<any[]> {
+        return this._imprints.asObservable();
     };
 
 
@@ -115,34 +125,57 @@ export class CatalogService {
             })
         );
     };
-    // Get Companies
-    getAdminCompanies(): Observable<any[]> {
-        return this._httpClient.get<any[]>(environment.admins, {
+    // Get Suppliers
+    getAdminSuppliers(): Observable<any[]> {
+        return this._httpClient.get<any[]>(environment.catalog, {
             params: {
-                companies: true,
-                size: 20
+                supplier: true,
+                size: 10,
+                bln_active: 1
             }
         }).pipe(
             tap((response: any) => {
-                this._companyAdmins.next(response);
+                this._suppliers.next(response);
             })
         );
     };
-    // Admin Stores
-    getAdminStores(): Observable<any[]> {
-        return this._httpClient.get<any[]>(environment.admins, {
+    // Admin colors
+    getAdminColors(): Observable<any[]> {
+        return this._httpClient.get<any[]>(environment.catalog, {
             params: {
-                stores: true,
-                bln_active: 1,
-                size: 20
+                colors: true,
+                size: 10
             }
         }).pipe(
             tap((response: any) => {
-                this._adminStores.next(response);
+                this._colors.next(response);
             })
         );
     };
-    getIPAddress() {
-        return this._httpClient.get("http://api.ipify.org/?format=json");
-    }
+    // Admin Sizes
+    getAdminSizes(): Observable<any[]> {
+        return this._httpClient.get<any[]>(environment.catalog, {
+            params: {
+                apparel_sizes: true,
+                size: 10
+            }
+        }).pipe(
+            tap((response: any) => {
+                this._sizes.next(response);
+            })
+        );
+    };
+    // Admin Decorators
+    getAdminDecorators(): Observable<any[]> {
+        return this._httpClient.get<any[]>(environment.catalog, {
+            params: {
+                imprint_methods: true,
+                size: 10
+            }
+        }).pipe(
+            tap((response: any) => {
+                this._imprints.next(response);
+            })
+        );
+    };
 }
