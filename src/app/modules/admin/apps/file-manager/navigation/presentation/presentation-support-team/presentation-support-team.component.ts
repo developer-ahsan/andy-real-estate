@@ -18,7 +18,7 @@ export class PresentationSupportTeamComponent implements OnInit {
   @Output() isLoadingChange = new EventEmitter<boolean>();
   private _unsubscribeAll: Subject<any> = new Subject<any>();
 
-  teamImageUrl = environment.supportTeam;
+  teamImageUrl = 'https://assets.consolidus.com/globalAssets/System/Defaults/SupportTeam/';
   teamForm: FormGroup;
   updateLoader: boolean = false;
   addNewTeamLoader: boolean = false;
@@ -37,7 +37,6 @@ export class PresentationSupportTeamComponent implements OnInit {
     this.totalAvailableTeam = this.availableTeamData.totalRecords;
 
     console.log(this.availableTeamData)
-    console.log(this.screenData)
     this.initialize();
   }
   initialize() {

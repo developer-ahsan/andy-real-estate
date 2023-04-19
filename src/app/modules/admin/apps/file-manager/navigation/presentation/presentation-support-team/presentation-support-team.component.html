@@ -3,10 +3,11 @@
     <div class="text-2xl font-extrabold tracking-tight leading-none my-3">
       Support Team
     </div>
-    <div class="row" *ngIf="availableTeamData">
+    <div class="row" *ngIf="availableTeamData.data.length > 0">
       <div class="col-md-2 col-4" style="text-align: -webkit-center" *ngFor="let item of availableTeamData.data">
         <div ng-repeat="file in imagefinaldata" class="img_wrp">
-          <img height="200" width="250" src="{{ teamImageUrl + item.fk_defaultMemberID }}.jpg"
+          <img height="200" width="250"
+            src="https://assets.consolidus.com/globalAssets/System/Defaults/SupportTeam/{{item.pk_ID}}.jpg"
             onError="this.src='https://assets.consolidus.com/globalAssets/Support/anonymous.png'"
             alt="{{ item.name }}" />
           <p class="text-lg mt-2">{{ item.name }}</p>

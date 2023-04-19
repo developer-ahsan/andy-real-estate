@@ -147,7 +147,8 @@
                                 <fuse-alert class="mb-3" [appearance]="'soft'" [type]="'warning'" [showIcon]="false">
                                     Image 147px W X 201px H JPG only!
                                 </fuse-alert>
-                                <input type="file" accept=".jpg" id="image" (change)="uploadFile($event)">
+                                <input type="file" id="fileControl" accept=".jpg" #myInput id="image"
+                                    (change)="uploadFile($event)">
                             </div>
                             <div class="justify-end flex col-12">
                                 <button [disabled]="isUpdateMemberLoader" class="min-w-30 mr-2" mat-stroked-button
@@ -295,7 +296,7 @@
                     <fuse-alert class="mb-3" [appearance]="'soft'" [type]="'warning'" [showIcon]="false">
                         Image 147px W X 201px H JPG only!
                     </fuse-alert>
-                    <input type="file" accept=".jpg" id="image">
+                    <input type="file" accept=".jpg" id="image" #myInput>
                 </div>
                 <div class="text-right col-12">
                     <button [disabled]="isAddTeamLoader" class="min-w-40" mat-stroked-button

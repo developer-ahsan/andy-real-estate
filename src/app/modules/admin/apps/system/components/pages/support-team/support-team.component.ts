@@ -1,6 +1,6 @@
 import { ENTER, COMMA } from '@angular/cdk/keycodes';
-import { Component, Input, OnInit, Output, EventEmitter, ChangeDetectorRef, OnDestroy, ViewChild } from '@angular/core';
-import { FormControl, FormGroup } from '@angular/forms';
+import { Component, Input, OnInit, Output, EventEmitter, ChangeDetectorRef, OnDestroy, ViewChild, ElementRef } from '@angular/core';
+import { FormControl, FormGroup, NgForm } from '@angular/forms';
 import { MatChipInputEvent } from '@angular/material/chips';
 import { MatPaginator } from '@angular/material/paginator';
 import { Subject } from 'rxjs';
@@ -350,6 +350,8 @@ export class SupportTeamComponent implements OnInit, OnDestroy {
       }
     }
   };
+  @ViewChild('myInput') myInput: ElementRef;
+
   uploadMedia(pk_ID) {
     let base64;
     const { imageUpload } = this.imageValue;
@@ -364,6 +366,7 @@ export class SupportTeamComponent implements OnInit, OnDestroy {
     this._systemService.AddSystemData(payload).subscribe(res => {
       this.updateTeamData.random = Math.random();
       this.imageValue = null;
+      this.myInput.nativeElement.value = '';
       this._changeDetectorRef.markForCheck();
     }, err => {
       this._changeDetectorRef.markForCheck();
