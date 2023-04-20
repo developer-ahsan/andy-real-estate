@@ -1860,6 +1860,9 @@ export class ImprintComponent implements OnInit, OnDestroy {
 
               // Mark for check
               this._changeDetectorRef.markForCheck();
+            }, err => {
+              this.updateImprintLoader = false;
+              this._changeDetectorRef.markForCheck();
             });
         });
       return;
@@ -1876,6 +1879,9 @@ export class ImprintComponent implements OnInit, OnDestroy {
         this.updateImprintLoader = false;
 
         // Mark for check
+        this._changeDetectorRef.markForCheck();
+      }, err => {
+        this.updateImprintLoader = false;
         this._changeDetectorRef.markForCheck();
       });
   }

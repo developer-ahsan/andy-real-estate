@@ -19,11 +19,11 @@ export const navigations = [
         title: 'Credit Terms',
         icon: 'mat_outline:price_change'
     },
-    {
-        id: 5,
-        title: 'Credit Applications',
-        icon: 'mat_outline:settings_applications',
-    },
+    // {
+    //     id: 5,
+    //     title: 'Credit Applications',
+    //     icon: 'mat_outline:settings_applications',
+    // },
     {
         id: 6,
         title: 'User Comments',

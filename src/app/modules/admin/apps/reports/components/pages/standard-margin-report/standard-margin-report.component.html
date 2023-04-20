@@ -1,4 +1,14 @@
 <div class="w-full ">
+    <div class="p-5 text-right">
+        <mat-form-field class="min-w-100">
+            <input matInput placeholder="Search Keyword" [disabled]="isSearching" [(ngModel)]="keyword"
+                (keyup.enter)="getStores(1)">
+        </mat-form-field>
+        <p class="text-secondary text-right font-medium cursor-pointer mb-2" *ngIf="!isSearching"
+            (click)="resetSearch()">
+            Reset</p>
+        <p class="text-secondary text-right font-medium mb-2" *ngIf="isSearching">Searching...</p>
+    </div>
     <div *ngIf="dataSource.length > 0;else other_content" class="w-full">
         <table mat-table [dataSource]="dataSource" class="w-full border-t">
             <ng-container matColumnDef="store">
@@ -6,7 +16,7 @@
                     Store
                 </th>
                 <td mat-cell *matCellDef="let element">
-                    {{element?.store}}
+                    {{element?.storeName}}
                 </td>
             </ng-container>
             <ng-container matColumnDef="m1">
@@ -14,7 +24,7 @@
                     Margin1
                 </th>
                 <td mat-cell *matCellDef="let element">
-                    {{element?.m1}}
+                    {{element?.margin1}}%
                 </td>
             </ng-container>
             <ng-container matColumnDef="m2">
@@ -22,7 +32,7 @@
                     Margin2
                 </th>
                 <td mat-cell *matCellDef="let element">
-                    {{element?.m2}}
+                    {{element?.margin2}}%
                 </td>
             </ng-container>
             <ng-container matColumnDef="m3">
@@ -30,7 +40,7 @@
                     Margin3
                 </th>
                 <td mat-cell *matCellDef="let element">
-                    {{element?.m3}}
+                    {{element?.margin3}}%
                 </td>
             </ng-container>
             <ng-container matColumnDef="m4">
@@ -38,7 +48,7 @@
                     Margin4
                 </th>
                 <td mat-cell *matCellDef="let element">
-                    {{element?.m4}}
+                    {{element?.margin4}}%
                 </td>
             </ng-container>
             <ng-container matColumnDef="m5">
@@ -46,7 +56,7 @@
                     Margin5
                 </th>
                 <td mat-cell *matCellDef="let element">
-                    {{element?.m5}}
+                    {{element?.margin5}}%
                 </td>
             </ng-container>
             <ng-container matColumnDef="m6">
@@ -54,7 +64,7 @@
                     Margin6
                 </th>
                 <td mat-cell *matCellDef="let element">
-                    {{element?.m6}}
+                    {{element?.margin6}}%
                 </td>
             </ng-container>
             <tr mat-header-row *matHeaderRowDef="displayedColumns;" class="h-18 bg-light"></tr>
