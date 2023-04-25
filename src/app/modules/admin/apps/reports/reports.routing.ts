@@ -177,7 +177,7 @@ export const vendorsRoutes: Route[] = [
                 path: 'graphicsSupportReport',
                 component: GraphicsSupportReportComponent,
                 data: {
-                    title: 'Graphics Support Report',
+                    title: 'Graphics Support',
                     url: 'graphicsSupportReport'
                 }
             },
@@ -185,7 +185,7 @@ export const vendorsRoutes: Route[] = [
                 path: 'quoteGraphicsSupportReport',
                 component: QuoteGraphicsReportComponent,
                 data: {
-                    title: 'Quote Graphics Support Report',
+                    title: 'Quote Graphics',
                     url: 'quoteGraphicsSupportReport'
                 }
             }

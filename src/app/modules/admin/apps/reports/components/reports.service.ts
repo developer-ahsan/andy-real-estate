@@ -360,4 +360,10 @@ export class ReportsService {
             })
         );
     };
+    // Royalty Stores
+    getRoyaltyStores(params): Observable<any[]> {
+        return this._httpClient.get<any[]>(environment.reports, {
+            params: params
+        });
+    };
 }

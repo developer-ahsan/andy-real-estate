@@ -3,11 +3,12 @@ import { Component, Input, OnInit, Output, EventEmitter, ChangeDetectorRef, OnDe
 import { MatChipInputEvent } from '@angular/material/chips';
 import { MatPaginator } from '@angular/material/paginator';
 import { forkJoin, Subject } from 'rxjs';
-import { finalize, takeUntil } from 'rxjs/operators';
+import { debounceTime, distinctUntilChanged, filter, finalize, switchMap, takeUntil, tap } from 'rxjs/operators';
 import { ReportsService } from '../../reports.service';
 import { AddColor, AddImprintColor, AddImprintMethod, AddStandardImprintGroup, DeleteColor, DeleteImprintColor, DeleteStandardImprint, DeleteStandardImprintGroup, UpdateColor, UpdateImprintColor, UpdateImprintMethod, UpdateStandardImprintGroup } from '../../reports.types';
 import { fuseAnimations } from '@fuse/animations';
 import { InventoryService } from 'app/modules/admin/apps/ecommerce/inventory/inventory.service';
+import { FormControl } from '@angular/forms';
 
 @Component({
   selector: 'app-support-report',
@@ -17,7 +18,7 @@ import { InventoryService } from 'app/modules/admin/apps/ecommerce/inventory/inv
 })
 export class ReportSupportComponent implements OnInit, OnDestroy {
   @ViewChild('paginator') paginator: MatPaginator;
-  @Input() isLoading: boolean;
+  isLoading: boolean = false;
   @Output() isLoadingChange = new EventEmitter<boolean>();
   private _unsubscribeAll: Subject<any> = new Subject<any>();
 
@@ -56,13 +57,70 @@ export class ReportSupportComponent implements OnInit, OnDestroy {
 
   // ReportDropdowns
   roleID = 0;
+
+  allRoles = [];
+  searchRolesCtrl = new FormControl();
+  selectedRoles: any;
+  isSearchingRoles = false;
   constructor(
     private _changeDetectorRef: ChangeDetectorRef,
-    private _vendorService: ReportsService
+    private _reportService: ReportsService
   ) { }
 
   ngOnInit(): void {
+    this.isLoading = true;
+    this.getRoles();
   };
+  getRoles() {
+    let param = {
+      roles: true
+    }
+    this._reportService.getAPIData(param).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+      this.allRoles.push({ roleName: 'Select a role', pk_roleID: '' });
+      this.allRoles = this.allRoles.concat(res["data"]);
+      this.selectedRoles = this.allRoles[0];
+      this.searchRolesCtrl.setValue(this.selectedRoles);
+      this.isLoading = false;
+      this._changeDetectorRef.markForCheck();
+    }, err => {
+      this.isLoading = false;
+      this._changeDetectorRef.markForCheck();
+    });
+    let params;
+    this.searchRolesCtrl.valueChanges.pipe(
+      filter((res: any) => {
+        params = {
+          roles: true,
+          keyword: res
+        }
+        return res !== null && res.length >= 2
+      }),
+      distinctUntilChanged(),
+      debounceTime(300),
+      tap(() => {
+        this.allRoles = [];
+        this.isSearchingRoles = true;
+        this._changeDetectorRef.markForCheck();
+      }),
+      switchMap(value => this._reportService.getAPIData(params)
+        .pipe(
+          finalize(() => {
+            this.isSearchingRoles = false
+            this._changeDetectorRef.markForCheck();
+          }),
+        )
+      )
+    ).subscribe((data: any) => {
+      this.allRoles.push({ roleName: 'Select a role', pk_roleID: '' });
+      this.allRoles = this.allRoles.concat(data["data"]);
+    });
+  }
+  onSelectedRoles(ev) {
+    this.selectedRoles = ev.option.value;
+  }
+  displayWithRoles(value: any) {
+    return value?.roleName;
+  }
   /**
      * On destroy
      */

@@ -44,7 +44,7 @@ export class ReportAccountCodeComponent implements OnInit, OnDestroy {
   };
   getStores() {
     this._reportService.Stores$.pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
-      this.allStores.push({ storeName: 'All Stores', pk_storeID: 0 });
+      this.allStores.push({ storeName: 'Select a store', pk_storeID: 0 });
       this.allStores = this.allStores.concat(res["data"]);
       this.selectedStores = this.allStores[0];
       this.searchStoresCtrl.setValue(this.selectedStores);
@@ -79,7 +79,7 @@ export class ReportAccountCodeComponent implements OnInit, OnDestroy {
         )
       )
     ).subscribe((data: any) => {
-      this.allStores.push({ storeName: 'All Stores', pk_storeID: 0 });
+      this.allStores.push({ storeName: 'Select a store', pk_storeID: 0 });
       this.allStores = this.allStores.concat(data["data"]);
     });
   }
@@ -91,6 +91,10 @@ export class ReportAccountCodeComponent implements OnInit, OnDestroy {
   }
   // Reports
   generateReport(page) {
+    if (this.selectedStores.pk_storeID == 0) {
+      this._reportService.snackBar('Please select a store');
+      return;
+    }
     if (page == 1) {
       this.reportPage = 1;
       if (this.generateReportData) {
@@ -99,23 +103,13 @@ export class ReportAccountCodeComponent implements OnInit, OnDestroy {
       this.generateReportData = null;
     }
     this._reportService.setFiltersReport();
-    let selectedStores = [];
-    this.allStores.forEach(element => {
-      if (element.isChecked) {
-        selectedStores.push(element.pk_storeID);
-      }
-    });
-    if (selectedStores.length == 0) {
-      this._reportService.snackBar('Please select at least 1 store');
-      return;
-    }
     this.isGenerateReportLoader = true;
     let params = {
       page: page,
       store_sales__report: true,
       start_date: this._reportService.startDate,
       end_date: this._reportService.endDate,
-      stores_list: selectedStores.toString(),
+      stores_list: this.selectedStores.pk_storeID,
       size: 20
     }
     this._reportService.getAPIData(params).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {

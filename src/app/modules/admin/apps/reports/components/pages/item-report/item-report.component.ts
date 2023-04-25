@@ -6,6 +6,7 @@ import { ReportsService } from '../../reports.service';
 import * as Excel from 'exceljs/dist/exceljs.min.js';
 import { FormControl, FormGroup } from '@angular/forms';
 import { AddFOBLocation, RemoveFOBLocation } from '../../reports.types';
+import moment from 'moment';
 
 @Component({
   selector: 'app-item-report',
@@ -105,49 +106,16 @@ export class ReportItemsComponent implements OnInit, OnDestroy {
     this.isGenerateReportLoader = true;
     let params = {
       page: page,
-      store_sales__report: true,
+      itemized_report: true,
+      payment_status: this.paymentStatus,
       start_date: this._reportService.startDate,
       end_date: this._reportService.endDate,
       stores_list: selectedStores.toString(),
-      size: 20
+      rangeBasedOn: this.rangeBasedOn
     }
     this._reportService.getAPIData(params).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
       if (res["data"].length > 0) {
-        this.generateReportData = res["data"];
-        this.totalData = res["totalRecords"];
-        this.generateReportData.forEach(element => {
-          if (element.previousYearSales == 0) {
-            element.percent = 0
-          } else {
-            element.percent = Number(100 - (element.monthlyEarnings / element.previousYearSales) * 100);
-          }
-          if (element.percent == 0) {
-            element.percent = 0;
-            element.color = 'gray';
-          }
-          if (element.percent < 0) {
-            element.color = 'red';
-          } else if (element.percent > 0) {
-            element.color = 'green'
-          } else {
-            element.color = 'gray';
-          }
-          element.difference = Number(element.monthlyEarnings - element.previousYearSales);
-          if (!element.difference) {
-            element.difference = 0;
-          }
-          if (element.difference < 0) {
-            element.difference = Math.abs(element.difference);
-          }
-          element.avg = Number(element.monthlyEarnings / element.NS);
-          if (!element.avg) {
-            element.avg = 0;
-          }
-          element.margin = Number(((element.price - element.cost) / element.price) * 100);
-          if (!element.margin) {
-            element.margin = 0;
-          }
-        });
+        this.downloadExcelWorkSheet(res["data"]);
       } else {
         this.generateReportData = null;
         this._reportService.snackBar('No records found');
@@ -159,19 +127,97 @@ export class ReportItemsComponent implements OnInit, OnDestroy {
       this._changeDetectorRef.markForCheck();
     });
   }
-  backToList() {
-    this.generateReportData = null;
-    this._changeDetectorRef.markForCheck();
+  downloadExcelWorkSheet(data) {
+    const fileName = `ItemReport_${moment(new Date()).format('MM-DD-yy-hh-mm-ss')}`;
+    const workbook = new Excel.Workbook();
+    const worksheet = workbook.addWorksheet("Items");
+
+    // Columns
+    let columns = [
+      { header: "ID", key: "ID", width: 30 },
+      { header: "Store", key: "storeName", width: 30 },
+      { header: "InvoiceDate", key: "InvoiceDate", width: 30 },
+      { header: "Customer", key: "CUSTOMER", width: 30 },
+      { header: "Location", key: "Location", width: 30 },
+      { header: "Item", key: "Item", width: 20 },
+      { header: "Description", key: "Description", width: 60 },
+      { header: "Quantity", key: "Quantity", width: 20 },
+      { header: "ExtendedPrice", key: "ExtendedPrice", width: 20 }
+    ]
+    this.ngSelectedColumns.filter(item => {
+      if (item == 'price') {
+        columns.push(
+          { header: "Price", key: "UnitPrice", width: 20 },
+        )
+      }
+      if (item == 'setups') {
+        columns.push(
+          { header: "Setups", key: "setupPrice", width: 20 }
+        )
+      }
+      if (item == 'shipping') {
+        columns.push(
+          { header: "Shipping", key: "shippingPrice", width: 20 }
+        )
+      }
+      if (item == 'subtotal') {
+        columns.push(
+          { header: "Subtotal", key: "subTotal", width: 20 }
+        )
+      }
+      if (item == 'paid') {
+        columns.push(
+          { header: "Paid", key: "paymentDate", width: 30 }
+        )
+      }
+
+      if (item == 'runs') {
+        columns.push(
+          { header: "Runs", key: "Runs", width: 20 }
+        )
+      }
+
+      if (item == 'internalRoyalty') {
+        columns.push(
+          { header: "InternalRoyalty", key: "InternalRoyalty", width: 20 }
+        )
+      }
+      if (item == 'zip') {
+        columns.push(
+          { header: "BillingZip", key: "billingZip", width: 20 }
+        )
+      }
+    });
+    columns.push(
+      { header: "CustomerPO", key: "CustomerPO", width: 20 },
+      { header: "AccountChargeCode", key: "accountChargeCode", width: 20 },
+      { header: "CostCenterCode", key: "CostCenterCode", width: 20 }
+    );
+    worksheet.columns = columns;
+    for (const obj of data) {
+      worksheet.addRow(obj);
+    }
+    setTimeout(() => {
+      workbook.xlsx.writeBuffer().then((data: any) => {
+        const blob = new Blob([data], {
+          type:
+            "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+        });
+        let url = window.URL.createObjectURL(blob);
+        let a = document.createElement("a");
+        document.body.appendChild(a);
+        a.setAttribute("style", "display: none");
+        a.href = url;
+        a.download = `${fileName}.xlsx`;
+        a.click();
+        window.URL.revokeObjectURL(url);
+        a.remove();
+        this.isGenerateReportLoader = false;
+        this._changeDetectorRef.markForCheck();
+      });
+    }, 500);
+
   }
-  getNextReportData(event) {
-    const { previousPageIndex, pageIndex } = event;
-    if (pageIndex > previousPageIndex) {
-      this.reportPage++;
-    } else {
-      this.reportPage--;
-    };
-    this.generateReport(this.reportPage);
-  };
   /**
      * On destroy
      */

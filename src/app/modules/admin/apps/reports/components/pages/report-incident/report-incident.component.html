@@ -1,3 +1,95 @@
 <div class="w-full text-center">
-    <p class="text-3xl font-bold py-8">Working...</p>
+    <div class="px-8 pb-4">
+        <div *ngIf="isLoading">
+            <ngx-skeleton-loader count="8" appearance="line" animation="pulse" [theme]="{ 
+                'background-color': '#dedede'
+              }">
+            </ngx-skeleton-loader>
+        </div>
+        <div class="row" *ngIf="!isLoading">
+            <div class="col-12 col-md-4">
+                <mat-form-field class="w-full">
+                    <mat-label>Select Store</mat-label>
+                    <input matInput placeholder="Search stores" matTooltip="Search stores by name"
+                        [matAutocomplete]="auto" [formControl]="searchStoresCtrl">
+                    <mat-autocomplete class="w-full" #auto="matAutocomplete" (optionSelected)="onSelectedStores($event)"
+                        [displayWith]="displayWithStores">
+                        <mat-option *ngIf="isSearchingStores" class="is-loading">Loading...</mat-option>
+                        <ng-container *ngIf="!isSearchingStores">
+                            <mat-option *ngFor="let item of allStores" [value]="item">
+                                <span>{{item.storeName}}</span>
+                            </mat-option>
+                        </ng-container>
+                    </mat-autocomplete>
+                </mat-form-field>
+            </div>
+            <div class="col-12 col-md-4">
+                <mat-form-field class="w-full">
+                    <mat-label>Submitted by</mat-label>
+                    <input matInput placeholder="Search employees" matTooltip="Search employees by name"
+                        [matAutocomplete]="employee" [formControl]="searchEmployeesCtrl">
+                    <mat-autocomplete class="w-full" #employee="matAutocomplete"
+                        (optionSelected)="onSelectedEmployees($event)" [displayWith]="displayWithEmployees">
+                        <mat-option *ngIf="isSearchingEmployees" class="is-loading">Loading...</mat-option>
+                        <ng-container *ngIf="!isSearchingEmployees">
+                            <mat-option *ngFor="let item of allEmployees" [value]="item">
+                                <span>{{item.firstName + ' ' + item.lastName}}</span>
+                            </mat-option>
+                        </ng-container>
+                    </mat-autocomplete>
+                </mat-form-field>
+            </div>
+            <div class="col-12 col-md-4">
+                <mat-form-field class="w-full">
+                    <mat-label>Range</mat-label>
+                    <mat-date-range-input [rangePicker]="picker1" (click)="picker1.open()" [max]="maxDate">
+                        <input matStartDate placeholder="Start date" readonly [(ngModel)]="ngRangeStart">
+                        <input matEndDate placeholder="End date" readonly [(ngModel)]="ngRangeEnd">
+                    </mat-date-range-input>
+                    <mat-datepicker-toggle matIconSuffix [for]="picker1"></mat-datepicker-toggle>
+                    <mat-date-range-picker #picker1></mat-date-range-picker>
+                </mat-form-field>
+            </div>
+            <div class="col-12 col-md-6">
+                <mat-form-field class="w-full">
+                    <mat-label>Source Employee</mat-label>
+                    <input matInput placeholder="Search employees" matTooltip="Search employees by name"
+                        [matAutocomplete]="source" [formControl]="searchEmployeesCtrlSource">
+                    <mat-autocomplete class="w-full" #source="matAutocomplete"
+                        (optionSelected)="onSelectedEmployeesSource($event)" [displayWith]="displayWithEmployeesSource">
+                        <mat-option *ngIf="isSearchingEmployeesSource" class="is-loading">Loading...</mat-option>
+                        <ng-container *ngIf="!isSearchingEmployeesSource">
+                            <mat-option *ngFor="let item of allEmployeesSource" [value]="item">
+                                <span>{{item.firstName + ' ' + item.lastName}}</span>
+                            </mat-option>
+                        </ng-container>
+                    </mat-autocomplete>
+                </mat-form-field>
+            </div>
+            <div class="col-12 col-md-6">
+                <mat-form-field class="w-full">
+                    <mat-label>Select Vendor</mat-label>
+                    <input matInput placeholder="Search suppliers" matTooltip="Search suppliers by name"
+                        [matAutocomplete]="vendors" [formControl]="searchSuppliersCtrl">
+                    <mat-autocomplete class="w-full" #vendors="matAutocomplete"
+                        (optionSelected)="onSelectedSuppliers($event)" [displayWith]="displayWithSuppliers">
+                        <mat-option *ngIf="isSearchingSuppliers" class="is-loading">Loading...</mat-option>
+                        <ng-container *ngIf="!isSearchingSuppliers">
+                            <mat-option *ngFor="let item of allSuppliers" [value]="item">
+                                <span>{{item.companyName}}</span>
+                            </mat-option>
+                        </ng-container>
+                    </mat-autocomplete>
+                </mat-form-field>
+            </div>
+            <!-- <div class="col-12 text-right">
+                <button mat-flat-button class="min-w-60" [color]="'primary'" [disabled]="isGenerateReportLoader"
+                    (click)="generateReport(1)">
+                    <span *ngIf="!isGenerateReportLoader">Generate Report</span>
+                    <mat-progress-spinner *ngIf="isGenerateReportLoader" [diameter]="24" [mode]="'indeterminate'">
+                    </mat-progress-spinner>
+                </button>
+            </div> -->
+        </div>
+    </div>
 </div>

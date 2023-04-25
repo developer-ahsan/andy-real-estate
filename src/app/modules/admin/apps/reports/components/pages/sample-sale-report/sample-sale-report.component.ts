@@ -19,61 +19,122 @@ export class ReportSampleSaleComponent implements OnInit, OnDestroy {
   @Output() isLoadingChange = new EventEmitter<boolean>();
   private _unsubscribeAll: Subject<any> = new Subject<any>();
 
-  dataSource = [];
-  tempDataSource = [];
-  displayedColumns: string[] = ['name', 'expired', 'action'];
-  totalUsers = 0;
-  tempTotalUsers = 0;
-  page = 1;
+  displayedColumns: string[] = ['date', 'id', 'company', 'paid', 'status', 'sa'];
+  totalData = 0;
+  reportPage: number = 1;
+  generateReportData: any;
+  isGenerateReportLoader: boolean;
   not_available = 'N/A';
-
-  supplierData: any;
-
-  mainScreen = 'Current'
-
-  // States
-  allStates = [];
-  tempStates = [];
-  totalStates = 0;
-
-  searchStateCtrl = new FormControl();
-  selectedState: any;
-  isSearchingState = false;
-
-  // Location Data for Update
-  coopData: any;
-  isUpdate: boolean = false;
-
-  // Add FOB Location
-  addCoopForm: FormGroup;
-  isAddLoader: boolean = false;
-
-  // Search By Keyword
-  isSearching: boolean = false;
-  keyword = '';
-
-  minDate: any;
-  updateDate: any;
-  isUpdateLoader: boolean = false;
-  updateData = {
-    coOp_id: '',
-    coopName: '',
-    coopExpDay: null,
-    pricing: '',
-    ltm: '',
-    setups: '',
-    productionTime: '',
-    update_coop: true
-  }
   // ReportDropdowns
   blnShowCancelled = 0;
   ngStore = 637;
+
+  allStores = [];
+  searchStoresCtrl = new FormControl();
+  selectedStores: any;
+  isSearchingStores = false;
+
   constructor(
     private _changeDetectorRef: ChangeDetectorRef,
-    private _vendorService: ReportsService
+    private _reportService: ReportsService
   ) { }
 
   ngOnInit(): void {
+    this.isLoading = true;
+    this.getStores();
+  };
+  getStores() {
+    this._reportService.Stores$.pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+      this.allStores.push({ storeName: 'All Stores', pk_storeID: '' });
+      this.allStores = this.allStores.concat(res["data"]);
+      this.selectedStores = this.allStores[0];
+      this.searchStoresCtrl.setValue(this.selectedStores);
+    }, err => {
+      this.isLoading = false;
+      this._changeDetectorRef.markForCheck();
+    });
+    let params;
+    this.searchStoresCtrl.valueChanges.pipe(
+      filter((res: any) => {
+        params = {
+          stores: true,
+          keyword: res
+        }
+        return res !== null && res.length >= 2
+      }),
+      distinctUntilChanged(),
+      debounceTime(300),
+      tap(() => {
+        this.allStores = [];
+        this.isSearchingStores = true;
+        this._changeDetectorRef.markForCheck();
+      }),
+      switchMap(value => this._reportService.getAPIData(params)
+        .pipe(
+          finalize(() => {
+            this.isSearchingStores = false
+            this._changeDetectorRef.markForCheck();
+          }),
+        )
+      )
+    ).subscribe((data: any) => {
+      this.allStores.push({ storeName: 'All Stores', pk_storeID: '' });
+      this.allStores = this.allStores.concat(data["data"]);
+    });
+  }
+  onSelectedStores(ev) {
+    this.selectedStores = ev.option.value;
+  }
+  displayWithStores(value: any) {
+    return value?.storeName;
+  }
+  // Reports
+  generateReport(page) {
+    if (page == 1) {
+      this.reportPage = 1;
+      if (this.generateReportData) {
+        this.paginator.pageIndex = 0;
+      }
+      this.generateReportData = null;
+    }
+    this._reportService.setFiltersReport();
+    this.isGenerateReportLoader = true;
+    let params = {
+      page: page,
+      samples_report: true,
+      bln_cancel: this.blnShowCancelled,
+      start_date: this._reportService.startDate,
+      end_date: this._reportService.endDate,
+      store_id: this.selectedStores.pk_storeID,
+      size: 20
+    }
+    this._reportService.getAPIData(params).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+      if (res["data"].length > 0) {
+        this.generateReportData = res["data"];
+        this.totalData = res["totalRecords"];
+      } else {
+        this.generateReportData = null;
+        this._reportService.snackBar('No records found');
+      }
+      this.isGenerateReportLoader = false;
+      this._changeDetectorRef.markForCheck();
+    }, err => {
+      this.isGenerateReportLoader = false;
+      this._changeDetectorRef.markForCheck();
+    });
+  }
+  backToList() {
+    this.generateReportData = null;
+    this._changeDetectorRef.markForCheck();
+  }
+  getNextReportData(event) {
+    const { previousPageIndex, pageIndex } = event;
+    if (pageIndex > previousPageIndex) {
+      this.reportPage++;
+    } else {
+      this.reportPage--;
+    };
+    this.generateReport(this.reportPage);
   };
   /**
      * On destroy
