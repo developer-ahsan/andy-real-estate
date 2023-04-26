@@ -66,7 +66,8 @@ export class PricingComponent implements OnInit, OnDestroy {
     this.isLoadingChange.emit(true);
     let params = {
       pricing: true,
-      store_product_id: this.selectedProduct.pk_storeProductID
+      store_product_id: this.selectedProduct.pk_storeProductID,
+      store_id: this.selectedProduct.fk_storeID
     }
     this._storeService.getStoreProducts(params).pipe(takeUntil(this._unsubscribeAll)).subscribe((res: any) => {
       this.pricingData = res;
