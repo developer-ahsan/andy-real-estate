@@ -40,6 +40,9 @@ export class SearchHistoryComponent implements OnInit, OnDestroy {
     totalRecords: 0
   };
   isFilterLoader: boolean = false;
+
+  sortBy = 'counter';
+  sortOrderd = 'ASC';
   constructor(
     private _storeManagerService: FileManagerService,
     private _changeDetectorRef: ChangeDetectorRef,
@@ -88,6 +91,8 @@ export class SearchHistoryComponent implements OnInit, OnDestroy {
       search_history: true,
       store_id: this.selectedStore.pk_storeID,
       page: page,
+      sort_by: this.sortBy,
+      sort_order: this.sortOrderd,
       size: 20
     }
     // Get the supplier products
@@ -130,7 +135,19 @@ export class SearchHistoryComponent implements OnInit, OnDestroy {
       this.getFirstCall(this.page);
     }
   };
-
+  sortData(ev) {
+    if (ev.active == 'frequency') {
+      this.sortBy = 'counter';
+      this.sortOrderd = ev.direction;
+    } else if (ev.active == 'results') {
+      this.sortBy = 'resultSum';
+      this.sortOrderd = ev.direction;
+    } else if (ev.active == 'daysAgo') {
+      this.sortBy = 'daysAgo';
+      this.sortOrderd = ev.direction;
+    }
+    this.filterSearchHistory(1);
+  }
   resetSearch(): void {
     this.isAdvancedSearch = false;
     this.filterSearch = false;
@@ -157,6 +174,8 @@ export class SearchHistoryComponent implements OnInit, OnDestroy {
       search_history: true,
       store_id: this.selectedStore.pk_storeID,
       page: page,
+      sort_by: this.sortBy,
+      sort_order: this.sortOrderd,
       size: 20
     }
     if (keyword != '' || keyword != null) {
@@ -196,7 +215,7 @@ export class SearchHistoryComponent implements OnInit, OnDestroy {
   }
   getDiferenceInDays(theDate: any) {
     let firstDate = new Date(moment(theDate).format('YYYY-MM-DD')); //new Date('2019-11-12');
-    let secondDate = new Date('Tue Nov 26 2019 17:28:33');//new Date('2019-11-20');
+    let secondDate = new Date();//new Date('2019-11-20');
 
     let milliSFirst = firstDate.getTime();
     let milliSSecond = secondDate.getTime();
