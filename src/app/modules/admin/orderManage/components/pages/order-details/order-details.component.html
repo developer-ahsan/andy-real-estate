@@ -7,8 +7,7 @@
                 class="min-w-40 btn buttonComment hover:bg-gray-200">View PDF</a>
         </div>
         <div>
-            <button class="min-w-40 btn buttonComment hover:bg-gray-200">Back to List</button>
-
+            <button class="min-w-40 btn buttonComment hover:bg-gray-200" (click)="backToList()">Back to List</button>
         </div>
     </div>
     <div class="col-12 col-md-4 space-y-3">
@@ -156,7 +155,7 @@
                         Order Comments
                     </h2>
                     <div class="space-y-2">
-                        <div class="min-h-50 overflow-y-auto border p-3" [innerHTML]="orderData.internalComments"></div>
+                        <div class="h-50 overflow-y-auto border p-3" [innerHTML]="orderData.internalComments"></div>
                         <mat-form-field class="w-full">
                             <mat-label>Add a comment:</mat-label>
                             <textarea matInput rows="5"></textarea>
@@ -215,9 +214,9 @@
                         </mat-form-field>
                         <mat-form-field class="w-full">
                             <mat-label>Payment date:</mat-label>
-                            <input matInput [matDatepicker]="Estpicker" readonly>
-                            <mat-datepicker-toggle matIconSuffix [for]="Estpicker"></mat-datepicker-toggle>
-                            <mat-datepicker #Estpicker></mat-datepicker>
+                            <input matInput [matDatepicker]="Estpickers" readonly>
+                            <mat-datepicker-toggle matIconSuffix [for]="Estpickers"></mat-datepicker-toggle>
+                            <mat-datepicker #Estpickers></mat-datepicker>
                         </mat-form-field>
                         <mat-checkbox class="w-full">Paid</mat-checkbox>
                         <button class="min-w-40 btn buttonComment hover:bg-gray-200">Save bill pay</button>
@@ -239,9 +238,9 @@
                         </mat-form-field>
                         <mat-form-field class="w-full">
                             <mat-label>Vendor invoice date:</mat-label>
-                            <input matInput [matDatepicker]="Estpicker" readonly>
-                            <mat-datepicker-toggle matIconSuffix [for]="Estpicker"></mat-datepicker-toggle>
-                            <mat-datepicker #Estpicker></mat-datepicker>
+                            <input matInput [matDatepicker]="Estpickerss" readonly>
+                            <mat-datepicker-toggle matIconSuffix [for]="Estpickerss"></mat-datepicker-toggle>
+                            <mat-datepicker #Estpickerss></mat-datepicker>
                         </mat-form-field>
                         <mat-form-field class="w-full">
                             <mat-label>Payment terms:</mat-label>

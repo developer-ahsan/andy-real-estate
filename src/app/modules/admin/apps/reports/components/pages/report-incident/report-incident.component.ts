@@ -8,6 +8,7 @@ import { AuthService } from 'app/core/auth/auth.service';
 import { MatChipInputEvent } from '@angular/material/chips';
 import { ENTER, COMMA } from '@angular/cdk/keycodes';
 import { vendorComment } from '../../reports.types';
+import moment from 'moment';
 
 @Component({
   selector: 'app-report-incident-report',
@@ -19,6 +20,11 @@ export class ReportIncidentComponent implements OnInit, OnDestroy {
   isLoading: boolean;
   @Output() isLoadingChange = new EventEmitter<boolean>();
   private _unsubscribeAll: Subject<any> = new Subject<any>();
+
+  dataSource = [];
+  displayedColumns: string[] = ['id', 'created', 'modified', 'submitted', 'store', 'cost', 'source', 'entities', 'action'];
+  totalData = 0;
+  page = 1;
 
   allStores = [];
   searchStoresCtrl = new FormControl();
@@ -46,6 +52,8 @@ export class ReportIncidentComponent implements OnInit, OnDestroy {
   ngRangeStart: any;
   ngRangeEnd: any;
 
+  isIncidentReportLoader: boolean = false;
+
   constructor(
     private _changeDetectorRef: ChangeDetectorRef,
     private _reportService: ReportsService
@@ -53,9 +61,12 @@ export class ReportIncidentComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.isLoading = true;
+    this.isIncidentReportLoader = true;
     this.getStores();
+    this.getSuppliers();
     this.getEmployees();
     this.getSourceEmployee();
+    this.getIncidentReportData(1);
   };
   getStores() {
     this._reportService.Stores$.pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
@@ -109,9 +120,11 @@ export class ReportIncidentComponent implements OnInit, OnDestroy {
       size: 10
     }
     this._reportService.getAPIData(param).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+      this.allEmployees.push({ pk_userID: '', employeeName: 'All Employees' });
       this.allEmployees = this.allEmployees.concat(res["data"]);
       this.selectedEmployees = this.allEmployees[0];
       this.searchEmployeesCtrl.setValue(this.selectedEmployees);
+      this.allEmployeesSource.push({ pk_userID: '', employeeName: 'All Employees' });
       this.allEmployeesSource = this.allEmployeesSource.concat(res["data"]);
       this.selectedEmployeesSource = this.allEmployeesSource[0];
       this.searchEmployeesCtrlSource.setValue(this.selectedEmployeesSource);
@@ -146,6 +159,7 @@ export class ReportIncidentComponent implements OnInit, OnDestroy {
         )
       )
     ).subscribe((data: any) => {
+      this.allEmployees.push({ pk_userID: '', employeeName: 'All Employees' });
       this.allEmployees = data['data'];
     });
   }
@@ -153,7 +167,7 @@ export class ReportIncidentComponent implements OnInit, OnDestroy {
     this.selectedEmployees = ev.option.value;
   }
   displayWithEmployees(value: any) {
-    let name = value?.firstName + ' ' + value?.lastName;
+    let name = value?.employeeName;
     return name;
   }
   getSourceEmployee() {
@@ -182,6 +196,7 @@ export class ReportIncidentComponent implements OnInit, OnDestroy {
         )
       )
     ).subscribe((data: any) => {
+      this.allEmployeesSource.push({ pk_userID: '', employeeName: 'All Employees' });
       this.allEmployeesSource = data['data'];
     });
   }
@@ -189,7 +204,7 @@ export class ReportIncidentComponent implements OnInit, OnDestroy {
     this.selectedEmployeesSource = ev.option.value;
   }
   displayWithEmployeesSource(value: any) {
-    let name = value?.firstName + ' ' + value?.lastName;
+    let name = value?.employeeName;
     return name;
   }
   // Suppliers
@@ -199,6 +214,7 @@ export class ReportIncidentComponent implements OnInit, OnDestroy {
       size: 10
     }
     this._reportService.getAPIData(param).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+      this.allSuppliers.push({ pk_companyID: '', companyName: 'All Suppliers' });
       this.allSuppliers = this.allSuppliers.concat(res["data"]);
       this.selectedSuppliers = this.allSuppliers[0];
       this.searchSuppliersCtrl.setValue(this.selectedSuppliers);
@@ -242,6 +258,49 @@ export class ReportIncidentComponent implements OnInit, OnDestroy {
   displayWithSuppliers(value: any) {
     return value?.companyName;
   }
+
+  getIncidentReportData(page) {
+    if (page == 1) {
+      if (this.dataSource.length > 0) {
+        this.paginator.pageIndex = 0;
+      }
+      this.isIncidentReportLoader = true;
+    }
+    if (!this.selectedEmployees) {
+      this.selectedEmployees = { pk_userID: '' };
+      this.selectedEmployeesSource = { pk_userID: '' };
+    }
+    if (!this.selectedSuppliers) {
+      this.selectedSuppliers = { pk_companyID: '' };
+    }
+    let params = {
+      incident_reports: true,
+      store_list: this.selectedStores.pk_storeID,
+      supplier_list: this.selectedSuppliers.pk_companyID,
+      source_employee_list: this.selectedEmployeesSource.pk_userID,
+      submittedBy_employee_list: this.selectedEmployees.pk_userID,
+      startDate: moment(this.ngRangeStart).format('MM/DD/yyyy'),
+      endDate: moment(this.ngRangeEnd).format('MM/DD/yyyy'),
+    }
+    this._reportService.getAPIData(params).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+      this.dataSource = res["data"];
+      this.totalData = res["totalRecords"];
+      this.isIncidentReportLoader = false;
+      this._changeDetectorRef.markForCheck();
+    }, err => {
+      this.isIncidentReportLoader = false;
+      this._changeDetectorRef.markForCheck();
+    });
+  }
+  getNextPageData(event) {
+    const { previousPageIndex, pageIndex } = event;
+    if (pageIndex > previousPageIndex) {
+      this.page++;
+    } else {
+      this.page--;
+    };
+    this.getIncidentReportData(this.page);
+  };
   /**
      * On destroy
      */

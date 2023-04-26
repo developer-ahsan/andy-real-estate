@@ -138,9 +138,9 @@
             <div class="col-12 text-right">
                 <button mat-flat-button [color]="'primary'" [disabled]="isLoading" class="min-w-40"
                     (click)="filterOrderManageData()">
-                    <span *ngIf="!isLoading">Filter</span>
-                    <mat-progress-spinner *ngIf="isLoading" [diameter]="24" [mode]="'indeterminate'">
-                    </mat-progress-spinner>
+                    <span>Filter</span>
+                    <!-- <mat-progress-spinner *ngIf="isLoading" [diameter]="24" [mode]="'indeterminate'">
+                    </mat-progress-spinner> -->
                 </button>
             </div>
         </div>

@@ -1,4 +1,4 @@
-<div class="w-full text-center">
+<div class="w-full">
     <div class="px-8 pb-4">
         <div *ngIf="isLoading">
             <ngx-skeleton-loader count="8" appearance="line" animation="pulse" [theme]="{ 
@@ -33,7 +33,7 @@
                         <mat-option *ngIf="isSearchingEmployees" class="is-loading">Loading...</mat-option>
                         <ng-container *ngIf="!isSearchingEmployees">
                             <mat-option *ngFor="let item of allEmployees" [value]="item">
-                                <span>{{item.firstName + ' ' + item.lastName}}</span>
+                                <span>{{item.employeeName}}</span>
                             </mat-option>
                         </ng-container>
                     </mat-autocomplete>
@@ -60,7 +60,7 @@
                         <mat-option *ngIf="isSearchingEmployeesSource" class="is-loading">Loading...</mat-option>
                         <ng-container *ngIf="!isSearchingEmployeesSource">
                             <mat-option *ngFor="let item of allEmployeesSource" [value]="item">
-                                <span>{{item.firstName + ' ' + item.lastName}}</span>
+                                <span>{{item.employeeName}}</span>
                             </mat-option>
                         </ng-container>
                     </mat-autocomplete>
@@ -82,14 +82,107 @@
                     </mat-autocomplete>
                 </mat-form-field>
             </div>
-            <!-- <div class="col-12 text-right">
-                <button mat-flat-button class="min-w-60" [color]="'primary'" [disabled]="isGenerateReportLoader"
-                    (click)="generateReport(1)">
-                    <span *ngIf="!isGenerateReportLoader">Generate Report</span>
-                    <mat-progress-spinner *ngIf="isGenerateReportLoader" [diameter]="24" [mode]="'indeterminate'">
-                    </mat-progress-spinner>
+            <div class="col-12 text-right">
+                <button mat-flat-button class="min-w-60" [color]="'primary'" [disabled]="isIncidentReportLoader"
+                    (click)="getIncidentReportData(1)">
+                    <span>Filter</span>
                 </button>
-            </div> -->
+            </div>
+        </div>
+        <div *ngIf="isIncidentReportLoader" class="mt-2">
+            <ngx-skeleton-loader count="8" appearance="line" animation="pulse" [theme]="{ 
+                'background-color': '#dedede'
+              }">
+            </ngx-skeleton-loader>
         </div>
     </div>
+    <div *ngIf="dataSource.length > 0 && !isIncidentReportLoader;else other_content" class="w-full mt-2">
+        <table mat-table [dataSource]="dataSource" class="w-full border-t">
+            <ng-container matColumnDef="id">
+                <th mat-header-cell *matHeaderCellDef class="">
+                    ID
+                </th>
+                <td mat-cell *matCellDef="let element">
+                    {{element?.pk_incidentReportID}}
+                </td>
+            </ng-container>
+            <ng-container matColumnDef="created">
+                <th mat-header-cell *matHeaderCellDef class="">
+                    Created
+                </th>
+                <td mat-cell *matCellDef="let element">
+                    {{element?.date | date: 'MM-dd-yyyy'}}
+                </td>
+            </ng-container>
+            <ng-container matColumnDef="modified">
+                <th mat-header-cell *matHeaderCellDef class="">
+                    Modified
+                </th>
+                <td mat-cell *matCellDef="let element">
+                    {{element?.dateModified | date: 'MM-dd-yyyy'}}
+                </td>
+            </ng-container>
+            <ng-container matColumnDef="submitted">
+                <th mat-header-cell *matHeaderCellDef class="">
+                    Submitted
+                </th>
+                <td mat-cell *matCellDef="let element">
+                    {{element?.submittedBy}}
+                </td>
+            </ng-container>
+            <ng-container matColumnDef="store">
+                <th mat-header-cell *matHeaderCellDef class="">
+                    Store
+                </th>
+                <td mat-cell *matCellDef="let element">
+                    {{element?.storeName}}
+                </td>
+            </ng-container>
+            <ng-container matColumnDef="cost">
+                <th mat-header-cell *matHeaderCellDef class="">
+                    Cost
+                </th>
+                <td mat-cell *matCellDef="let element">
+                    {{element?.rerunCost}}
+                </td>
+            </ng-container>
+            <ng-container matColumnDef="source">
+                <th mat-header-cell *matHeaderCellDef class="">
+                    Source(s)
+                </th>
+                <td mat-cell *matCellDef="let element">
+                    {{element?.sourceNames}}
+                </td>
+            </ng-container>
+            <ng-container matColumnDef="entities">
+                <th mat-header-cell *matHeaderCellDef class="">
+                    Source Entities
+                </th>
+                <td mat-cell *matCellDef="let element">
+                    {{element?.sourceEntity}}
+                </td>
+            </ng-container>
+            <ng-container matColumnDef="action">
+                <th mat-header-cell *matHeaderCellDef class="">
+                    Action
+                </th>
+                <td mat-cell *matCellDef="let element">
+                    <span class="cursor-pointer">View</span>
+                </td>
+            </ng-container>
+            <tr mat-header-row *matHeaderRowDef="displayedColumns;" class="h-18 bg-light"></tr>
+            <tr mat-row *matRowDef="let row; columns: displayedColumns;"
+                class="h-14 hover:bg-gray-100 dark:hover:bg-hover" style="cursor: pointer;">
+            </tr>
+        </table>
+        <mat-paginator #paginator class="border-b sm:border-t sm:border-b-0 z-10 bg-gray-50 dark:bg-transparent"
+            [ngClass]="{'pointer-events-none': isLoading}" [length]="totalData" [pageIndex]="0" [pageSize]="20"
+            (page)="getNextReportData($event)" [hidePageSize]="true">
+        </mat-paginator>
+    </div>
+    <ng-template #other_content>
+        <div class="text-secondary font-semibold p-5 text-center" *ngIf="!isIncidentReportLoader">
+            There are currently no incident reports found.
+        </div>
+    </ng-template>
 </div>

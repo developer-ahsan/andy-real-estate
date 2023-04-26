@@ -70,7 +70,7 @@ export class PricingComponent implements OnInit, OnDestroy {
     }
     this._storeService.getStoreProducts(params).pipe(takeUntil(this._unsubscribeAll)).subscribe((res: any) => {
       this.pricingData = res;
-      res.current_pricing.forEach(element => {
+      res.current_pricing[0].forEach(element => {
         this.quantityData.push(element.quantity);
         this.priceData.push(element.price);
         this.costData.push(element.cost);
@@ -125,7 +125,6 @@ export class PricingComponent implements OnInit, OnDestroy {
 
   updateQuantity(str: string) {
     const netCostFormValues = this.netCostForm.getRawValue();
-
     if (str == "quantityTwo") {
       const { quantityOne } = netCostFormValues;
       this.netCostForm.patchValue({
@@ -165,7 +164,36 @@ export class PricingComponent implements OnInit, OnDestroy {
     })
   }
   setMarginValues(val) {
-    this._storeService.snackBar('Coming Soon');
+    const { margin1, margin2, margin3, margin4, margin5, margin6, apparelMargin1, apparelMargin2, apparelMargin3, apparelMargin4, apparelMargin5, apparelMargin6, printMargin1, printMargin2, printMargin3, printMargin4, printMargin5, printMargin6 } = this.pricingData.current_pricing[1];
+
+    if (val == 1) {
+      this.netCostForm.patchValue({
+        marginOne: margin1,
+        marginTwo: margin2,
+        marginThree: margin3,
+        marginFour: margin4,
+        marginFive: margin5,
+        marginSix: margin6
+      })
+    } else if (val == 2) {
+      this.netCostForm.patchValue({
+        marginOne: apparelMargin1,
+        marginTwo: apparelMargin2,
+        marginThree: apparelMargin3,
+        marginFour: apparelMargin4,
+        marginFive: apparelMargin5,
+        marginSix: apparelMargin6
+      })
+    } else if (val == 3) {
+      this.netCostForm.patchValue({
+        marginOne: printMargin1,
+        marginTwo: printMargin2,
+        marginThree: printMargin3,
+        marginFour: printMargin4,
+        marginFive: printMargin5,
+        marginSix: printMargin6
+      })
+    }
   }
   UpdatePricing() {
     this.isUpdateLoading = true;

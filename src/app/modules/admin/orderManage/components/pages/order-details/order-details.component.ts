@@ -67,6 +67,9 @@ export class OrderManageDetailsComponent implements OnInit, OnDestroy {
       this._changeDetectorRef.markForCheck();
     });
   }
+  backToList() {
+    this.router.navigateByUrl('ordermanage/dashboard');
+  }
   /**
      * On destroy
      */

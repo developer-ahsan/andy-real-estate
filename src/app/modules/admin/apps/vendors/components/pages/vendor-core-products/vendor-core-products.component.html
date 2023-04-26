@@ -4,50 +4,54 @@
         </ngx-skeleton-loader>
     </div>
     <div *ngIf="!isLoading">
-        <div *ngIf="dataSource.length;else other_content" class="w-full">
-            <table mat-table [dataSource]="dataSource" class="w-full border-t">
-                <ng-container matColumnDef="pid">
-                    <th mat-header-cell *matHeaderCellDef class="w-15 min-w-15">
-                        PID
-                    </th>
-                    <td mat-cell *matCellDef="let element">
-                        {{element.pk_locationID}}
-                    </td>
-                </ng-container>
-                <ng-container matColumnDef="spid">
-                    <th mat-header-cell *matHeaderCellDef>
-                        Number
-                    </th>
-                    <td mat-cell *matCellDef="let element">
-                        {{element.locationName || not_available}}
-                    </td>
-                </ng-container>
-                <ng-container matColumnDef="name">
-                    <th mat-header-cell *matHeaderCellDef>
-                        Name
-                    </th>
-                    <td mat-cell *matCellDef="let element">
-                        {{element.locationName || not_available}}
-                    </td>
-                </ng-container>
-                <tr mat-header-row *matHeaderRowDef="displayedColumns;" class="h-18 bg-light"></tr>
-                <tr mat-row *matRowDef="let row; columns: displayedColumns;"
-                    class="h-14 hover:bg-gray-100 dark:hover:bg-hover" style="cursor: pointer;">
-                </tr>
-            </table>
-            <mat-paginator #paginator class="border-b sm:border-t sm:border-b-0 z-10 bg-gray-50 dark:bg-transparent"
-                [ngClass]="{'pointer-events-none': isLoading}" [length]="totalUsers" [pageIndex]="0" [pageSize]="20"
-                (page)="getNextData($event)" [hidePageSize]="true">
-            </mat-paginator>
+        <div class="px-5 pb-5" *ngIf="dataSource.length == 0">
+            <fuse-alert [appearance]="'soft'" [type]="'warning'" [showIcon]="false">This supplier does not currently
+                have any products in any core product lists.</fuse-alert>
         </div>
-
-        <!-- No data Found -->
-        <ng-template #other_content>
-            <div class="px-5 pb-5">
-                <fuse-alert [appearance]="'soft'" [type]="'warning'" [showIcon]="false">This supplier does not currently
-                    have
-                    any products in any core product lists.</fuse-alert>
+        <div *ngIf="dataSource.length > 0" class="px-8 pb-8">
+            <div *ngFor="let item of dataSource; let i=index">
+                <div class="bg-gray-300 p-5 rounded-lg cursor-pointer hover:text-blue-900 mb-2">
+                    <!-- <a [routerLink]="['/apps/stores/',item.fk_storeID]" target="_blank"> -->
+                    <b>{{item.coreName}}</b>
+                    <!-- </a> -->
+                </div>
+                <div>
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>PID</th>
+                                <th>SPID</th>
+                                <th>PRODUCT</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr *ngFor="let product of item.products">
+                                <td>
+                                    <a [routerLink]="['/apps/ecommerce/inventory',product.id]" target="_blank">
+                                        {{product.id}}
+                                    </a>
+                                </td>
+                                <td>
+                                    <a [routerLink]="['/apps/ecommerce/inventory',product.id]" target="_blank">
+                                        {{product.number}}
+                                    </a>
+                                </td>
+                                <td>
+                                    <a [routerLink]="['/apps/ecommerce/inventory',product.id]" target="_blank">
+                                        {{product.name}}
+                                    </a>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
             </div>
-        </ng-template>
+            <div class="flex justify-center" *ngIf="dataSource.length < totalUsers">
+                <p class="cursor-pointer text-gray-600 hover:text-gray-900" (click)="getNextData()" *ngIf="!isLoadMore">
+                    View More</p>
+                <mat-progress-spinner *ngIf="isLoadMore" [diameter]="24" [mode]="'indeterminate'">
+                </mat-progress-spinner>
+            </div>
+        </div>
     </div>
 </div>

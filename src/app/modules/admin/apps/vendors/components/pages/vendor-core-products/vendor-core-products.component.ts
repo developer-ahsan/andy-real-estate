@@ -23,7 +23,7 @@ export class VendorCoreProductsComponent implements OnInit, OnDestroy {
   page = 1;
   not_available = 'N/A';
   supplierData: any;
-
+  isLoadMore: boolean = false;
   constructor(
     private _changeDetectorRef: ChangeDetectorRef,
     private _vendorService: VendorsService
@@ -47,24 +47,32 @@ export class VendorCoreProductsComponent implements OnInit, OnDestroy {
       size: 20
     }
     this._vendorService.getVendorsData(params).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
-      this.dataSource = res["data"];
+      res["data"].forEach(element => {
+        element.products = [];
+        let productIDs = element.productIDs.split(',');
+        productIDs.forEach(product => {
+          let products = product.split(':');
+          element.products.push({
+            id: products[0],
+            number: products[1],
+            name: products[2]
+          })
+        });
+      });
+      this.dataSource = this.dataSource.concat(res["data"]);
       this.totalUsers = res["totalRecords"];
       this.isLoading = false;
-      this.isLoadingChange.emit(false);
+      this.isLoadMore = false;
       this._changeDetectorRef.markForCheck();
     }, err => {
       this.isLoading = false;
-      this.isLoadingChange.emit(false);
+      this.isLoadMore = false;
       this._changeDetectorRef.markForCheck();
     });
   }
-  getNextData(event) {
-    const { previousPageIndex, pageIndex } = event;
-    if (pageIndex > previousPageIndex) {
-      this.page++;
-    } else {
-      this.page--;
-    };
+  getNextData() {
+    this.page++;
+    this.isLoadMore = true;
     this.getProducts(this.page);
   };
 

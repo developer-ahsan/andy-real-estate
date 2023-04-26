@@ -4,6 +4,8 @@ import { Subject } from 'rxjs';
 import { debounceTime, distinctUntilChanged, filter, finalize, switchMap, takeUntil, tap } from 'rxjs/operators';
 import { ReportsService } from '../../reports.service';
 import { FormControl } from '@angular/forms';
+import * as Excel from 'exceljs/dist/exceljs.min.js';
+import moment from 'moment';
 
 @Component({
   selector: 'app-account-code',
@@ -19,7 +21,7 @@ export class ReportAccountCodeComponent implements OnInit, OnDestroy {
   generateReportData: any;
   reportPage = 1;
   totalData = 0;
-  displayedColumns: string[] = ['store', 'cost', 'py', 'percent', 'difference', 'n_sales', 'pyns', 'avg', 'margin'];
+  displayedColumns: string[] = ['code', 'customer', 'sales', 'n_sales'];
   // ReportDropdowns
   reportType = 0;
   blnShowCancelled = 0;
@@ -32,6 +34,8 @@ export class ReportAccountCodeComponent implements OnInit, OnDestroy {
   isSearchingStores = false;
   isGenerateReportLoader: boolean;
 
+
+  totalDataCalculations: any;
 
   constructor(
     private _changeDetectorRef: ChangeDetectorRef,
@@ -90,65 +94,26 @@ export class ReportAccountCodeComponent implements OnInit, OnDestroy {
     return value?.storeName;
   }
   // Reports
-  generateReport(page) {
+  generateReport() {
     if (this.selectedStores.pk_storeID == 0) {
       this._reportService.snackBar('Please select a store');
       return;
     }
-    if (page == 1) {
-      this.reportPage = 1;
-      if (this.generateReportData) {
-        this.paginator.pageIndex = 0;
-      }
-      this.generateReportData = null;
-    }
-    this._reportService.setFiltersReport();
     this.isGenerateReportLoader = true;
     let params = {
-      page: page,
-      store_sales__report: true,
-      start_date: this._reportService.startDate,
-      end_date: this._reportService.endDate,
-      stores_list: this.selectedStores.pk_storeID,
-      size: 20
+      account_code: true,
+      store_list: this.selectedStores.pk_storeID
     }
     this._reportService.getAPIData(params).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
       if (res["data"].length > 0) {
         this.generateReportData = res["data"];
-        this.totalData = res["totalRecords"];
+        let total = this.generateReportData[0].NO_Charge_Total;
+        let totalSales = this.generateReportData[0].NO_Charge_Num_Sales;
         this.generateReportData.forEach(element => {
-          if (element.previousYearSales == 0) {
-            element.percent = 0
-          } else {
-            element.percent = Number(100 - (element.monthlyEarnings / element.previousYearSales) * 100);
-          }
-          if (element.percent == 0) {
-            element.percent = 0;
-            element.color = 'gray';
-          }
-          if (element.percent < 0) {
-            element.color = 'red';
-          } else if (element.percent > 0) {
-            element.color = 'green'
-          } else {
-            element.color = 'gray';
-          }
-          element.difference = Number(element.monthlyEarnings - element.previousYearSales);
-          if (!element.difference) {
-            element.difference = 0;
-          }
-          if (element.difference < 0) {
-            element.difference = Math.abs(element.difference);
-          }
-          element.avg = Number(element.monthlyEarnings / element.NS);
-          if (!element.avg) {
-            element.avg = 0;
-          }
-          element.margin = Number(((element.price - element.cost) / element.price) * 100);
-          if (!element.margin) {
-            element.margin = 0;
-          }
+          total = total + element.SALES;
+          totalSales = totalSales + element.Num_Sales;
         });
+        this.totalDataCalculations = { total: total, totalSales: totalSales };
       } else {
         this.generateReportData = null;
         this._reportService.snackBar('No records found');
@@ -164,15 +129,45 @@ export class ReportAccountCodeComponent implements OnInit, OnDestroy {
     this.generateReportData = null;
     this._changeDetectorRef.markForCheck();
   }
-  getNextReportData(event) {
-    const { previousPageIndex, pageIndex } = event;
-    if (pageIndex > previousPageIndex) {
-      this.reportPage++;
-    } else {
-      this.reportPage--;
-    };
-    this.generateReport(this.reportPage);
-  };
+  downloadExcelWorkSheet() {
+    let data = [{ purchaseOrderNum: 'No Charge Code', CUSTOMER: '---', SALES: this.generateReportData[0].NO_Charge_Total, Num_Orders: this.generateReportData[0].NO_Charge_Num_Sales }];
+    this.generateReportData = data.concat(this.generateReportData);
+    const fileName = `AccountChargeCode_${moment(new Date()).format('MM-DD-yy-hh-mm-ss')}`;
+    const workbook = new Excel.Workbook();
+    const worksheet = workbook.addWorksheet("AccountChargeCode");
+
+    // Columns
+    let columns = [
+      { header: "AccountChargeCode", key: "purchaseOrderNum", width: 30 },
+      { header: "CUSTOMER", key: "CUSTOMER", width: 50 },
+      { header: "Total", key: "SALES", width: 40 },
+      { header: "Num_Orders", key: "Num_Sales", width: 30 }
+    ]
+    worksheet.columns = columns;
+    for (const obj of this.generateReportData) {
+      worksheet.addRow(obj);
+    }
+    setTimeout(() => {
+      workbook.xlsx.writeBuffer().then((data: any) => {
+        const blob = new Blob([data], {
+          type:
+            "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+        });
+        let url = window.URL.createObjectURL(blob);
+        let a = document.createElement("a");
+        document.body.appendChild(a);
+        a.setAttribute("style", "display: none");
+        a.href = url;
+        a.download = `${fileName}.xlsx`;
+        a.click();
+        window.URL.revokeObjectURL(url);
+        a.remove();
+        this.isGenerateReportLoader = false;
+        this._changeDetectorRef.markForCheck();
+      });
+    }, 500);
+
+  }
   /**
      * On destroy
      */

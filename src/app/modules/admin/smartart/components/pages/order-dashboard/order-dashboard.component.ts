@@ -2,7 +2,7 @@ import { Component, Input, OnInit, ChangeDetectorRef, OnDestroy, ViewChild } fro
 import { FormControl } from '@angular/forms';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatDrawer } from '@angular/material/sidenav';
-import { NavigationExtras, Router } from '@angular/router';
+import { ActivatedRoute, NavigationExtras, Router } from '@angular/router';
 import { Subject } from 'rxjs';
 import { debounceTime, distinctUntilChanged, filter, finalize, switchMap, takeUntil, tap } from 'rxjs/operators';
 import { SmartArtService } from '../../smartart.service';
@@ -45,16 +45,21 @@ export class OrderDashboardComponent implements OnInit, OnDestroy {
   ngFilterProduct = '';
   isFilterLoader: boolean = false;
   smartArtUser: any = JSON.parse(sessionStorage.getItem('smartArt'));
+  paramsData: any;
   constructor(
     private _changeDetectorRef: ChangeDetectorRef,
     private _smartartService: SmartArtService,
-    private router: Router
+    private router: Router,
+    private _activeRoute: ActivatedRoute
   ) { }
 
   ngOnInit(): void {
-    this.isLoading = true;
-    this.searchableFields();
-    this.getSmartArtList(1, 'get');
+    this._activeRoute.queryParams.subscribe(res => {
+      this.paramsData = res;
+      this.isLoading = true;
+      this.getSmartArtList(1, 'get');
+    });
+    // this.searchableFields();
   };
   searchableFields() {
     this._smartartService.adminStores$.pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
@@ -146,12 +151,12 @@ export class OrderDashboardComponent implements OnInit, OnDestroy {
       smartart_list: true,
       page: page,
       size: 20,
-      store_id: this.ngSearchStore,
-      designerID: this.ngSearchDesigner,
+      store_id: this.paramsData.store ? this.paramsData?.store : '',
+      designerID: this.paramsData.designer ? this.paramsData.designer : '',
       filter_field: this.ngFilterField,
-      search_field: this.ngSearchField,
-      user_search_field: this.ngCustomerField,
-      product_search: this.ngFilterProduct
+      search_field: this.paramsData.search ? this.paramsData.search : '',
+      user_search_field: this.paramsData.customer ? this.paramsData.customer : '',
+      product_search: this.paramsData.product ? this.paramsData.product : ''
     }
     this._smartartService.getSmartArtData(params).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
       if (this.isFilterLoader) {
