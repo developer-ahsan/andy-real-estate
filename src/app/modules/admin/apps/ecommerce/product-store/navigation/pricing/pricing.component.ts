@@ -165,8 +165,7 @@ export class PricingComponent implements OnInit, OnDestroy {
     })
   }
   setMarginValues(val) {
-    const { margin1, margin2, margin3, margin4, margin5, margin6, apparelMargin1, apparelMargin2, apparelMargin3, apparelMargin4, apparelMargin5, apparelMargin6, printMargin1, printMargin2, printMargin3, printMargin4, printMargin5, printMargin6 } = this.pricingData.current_pricing[1];
-    console.log(this.pricingData)
+    const { margin1, margin2, margin3, margin4, margin5, margin6, apparelMargin1, apparelMargin2, apparelMargin3, apparelMargin4, apparelMargin5, apparelMargin6, printMargin1, printMargin2, printMargin3, printMargin4, printMargin5, printMargin6 } = this.pricingData.current_pricing[1][0];
     if (val == 1) {
       this.netCostForm.patchValue({
         marginOne: margin1,
