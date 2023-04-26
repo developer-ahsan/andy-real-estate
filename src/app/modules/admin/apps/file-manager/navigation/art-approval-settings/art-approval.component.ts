@@ -81,7 +81,7 @@ export class ArtApprovalComponent implements OnInit, OnDestroy {
   isDefaultGroupData: any = [];
   isDefaultGroupDataTotal: any;
   isDefaultGroupPage = 1;
-  isDefaultGroupColumns: string[] = ['order', 'first', 'last', 'emails', 'royalities', 'ca', 'action'];
+  isDefaultGroupColumns: string[] = ['order', 'first', 'last', 'emails', 'user', 'royalities', 'ca', 'action'];
 
 
   locationsList: any;
@@ -415,6 +415,7 @@ export class ArtApprovalComponent implements OnInit, OnDestroy {
     this._storeManagerService.getStoresData(params).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
       this.isDefaultGroupData = res["data"];
       this.isDefaultGroupDataTotal = res["totalRecords"];
+
       this.isDefaultGroupLoader = false;
       if (type == 'update') {
         this.isEditDefaultContactLoader = false;
@@ -646,6 +647,14 @@ export class ArtApprovalComponent implements OnInit, OnDestroy {
       this.isDefaultGroupData = res["data"];
       this.isDefaultGroupDataTotal = res["totalRecords"];
       this.isDefaultGroupLoader = false;
+      this.isDefaultGroupData.forEach(element => {
+        element.users = [];
+        if (element.UsersList) {
+          let users = element.UsersList.split('),');
+          element.users = users;
+        }
+      });
+      console.log(this.isDefaultGroupData);
       if (type == 'update') {
         this.isEditDefaultContactLoader = false;
         this._snackBar.open("Contact Updated Successfully", '', {

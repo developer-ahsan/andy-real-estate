@@ -168,30 +168,30 @@ export class PricingComponent implements OnInit, OnDestroy {
     const { margin1, margin2, margin3, margin4, margin5, margin6, apparelMargin1, apparelMargin2, apparelMargin3, apparelMargin4, apparelMargin5, apparelMargin6, printMargin1, printMargin2, printMargin3, printMargin4, printMargin5, printMargin6 } = this.pricingData.current_pricing[1][0];
     if (val == 1) {
       this.netCostForm.patchValue({
-        marginOne: margin1,
-        marginTwo: margin2,
-        marginThree: margin3,
-        marginFour: margin4,
-        marginFive: margin5,
-        marginSix: margin6
+        marginOne: margin1 * 100,
+        marginTwo: margin2 * 100,
+        marginThree: margin3 * 100,
+        marginFour: margin4 * 100,
+        marginFive: margin5 * 100,
+        marginSix: margin6 * 100
       })
     } else if (val == 2) {
       this.netCostForm.patchValue({
-        marginOne: apparelMargin1,
-        marginTwo: apparelMargin2,
-        marginThree: apparelMargin3,
-        marginFour: apparelMargin4,
-        marginFive: apparelMargin5,
-        marginSix: apparelMargin6
+        marginOne: apparelMargin1 * 100,
+        marginTwo: apparelMargin2 * 100,
+        marginThree: apparelMargin3 * 100,
+        marginFour: apparelMargin4 * 100,
+        marginFive: apparelMargin5 * 100,
+        marginSix: apparelMargin6 * 100
       })
     } else if (val == 3) {
       this.netCostForm.patchValue({
-        marginOne: printMargin1,
-        marginTwo: printMargin2,
-        marginThree: printMargin3,
-        marginFour: printMargin4,
-        marginFive: printMargin5,
-        marginSix: printMargin6
+        marginOne: printMargin1 * 100,
+        marginTwo: printMargin2 * 100,
+        marginThree: printMargin3 * 100,
+        marginFour: printMargin4 * 100,
+        marginFive: printMargin5 * 100,
+        marginSix: printMargin6 * 100
       })
     }
   }
