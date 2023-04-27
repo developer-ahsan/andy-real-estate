@@ -325,7 +325,11 @@
         </div>
         <!-- Program Performance -->
         <div class="w-full p-6 bg-card shadow rounded-2xl overflow-hidden mt-8" *ngIf="programPerformanceData">
-            <div class="text-lg font-medium tracking-tight leading-6 truncate">Program Performance</div>
+            <div class="flex">
+                <div class="text-lg font-medium tracking-tight leading-6 truncate mr-2">Program Performance</div>
+                <mat-progress-spinner *ngIf="isPerformanceLoader" [diameter]="24" [mode]="'indeterminate'">
+                </mat-progress-spinner>
+            </div>
             <div class="w-full mt-2 overflow-x-auto">
                 <table matSort matSortActive="sales" matSortDirection="asc" (matSortChange)="sortData($event)" mat-table
                     [dataSource]="programPerformanceData" class="w-full border-t">

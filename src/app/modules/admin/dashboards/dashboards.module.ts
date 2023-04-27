@@ -26,6 +26,7 @@ import { GeneratorsComponent } from './components/analytics/generators/generator
 import { MatPaginatorModule } from '@angular/material/paginator';
 import { NgxSkeletonLoaderModule } from 'ngx-skeleton-loader';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 
 @NgModule({
     declarations: [
@@ -50,6 +51,7 @@ import { MatAutocompleteModule } from '@angular/material/autocomplete';
         MatFormFieldModule,
         MatInputModule,
         MatSelectModule,
+        MatProgressSpinnerModule,
         NgApexchartsModule,
         MatTabsModule,
         MatPaginatorModule,

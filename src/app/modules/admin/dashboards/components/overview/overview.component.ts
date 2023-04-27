@@ -261,6 +261,7 @@ export class DashboardOverviewComponent implements OnInit, OnDestroy {
         this.getPortfolioData(this.pagePerformance);
     };
     sortData(ev) {
+        this.isPerformanceLoader = true;
         this._changeDetectorRef.markForCheck();
         if (ev.active == 'sales') {
             this.sortBy = 'monthlyEarnings';
