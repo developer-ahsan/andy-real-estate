@@ -302,11 +302,9 @@ export class CustomersService {
     /**
    * Get Commentators of customers
    */
-    getCommentators() {
+    getCommentators(param) {
         return this._httpClient.get(environment.customerList, {
-            params: {
-                commentor: true
-            }
+            params: param
         })
     }
 

@@ -1,101 +1,117 @@
 <ngx-skeleton-loader count="8" appearance="line" animation="pulse" *ngIf="isLoading">
 </ngx-skeleton-loader>
 
-<div class="row" *ngIf="!isLoading">
+<div class="row my-3 w-full" *ngIf="!isLoading">
     <div class="col-12 my-2">
-        <div class="p-6 w-full">
-            <div class="text-3xl font-bold">
-                User Comments
-            </div>
-        </div>
-        <fuse-card class="rounded-2xl bg-card flex flex-col lg:flex-row w-full">
-            <div class="p-6 sm:p-8 lg:p-10 w-full">
-                <div class="text-2xl font-bold">
-                    New Comment
-                </div>
-                <div class="mt-2 leading-relaxed text-secondary">
-                    Comments cannot be updated or deleted. Jeff will be the author.<br />
-                    All comments, including the new one will be emailed to the checked addresses, if any.
-                </div>
-
-                <!-- Adding comment form -->
-                <div class="gap-y-4 mt-6">
-                    <form [formGroup]="commentAddingForm">
-                        <div class="row">
-                            <div class="col-lg-7 col-12">
-                                <mat-form-field class="w-full">
-                                    <textarea matInput rows="10" placeholder="Add Comments here..."
-                                        [formControlName]="'comment'"></textarea>
-                                </mat-form-field>
-                            </div>
-                            <div class="col-lg-5 col-12">
-                                <mat-selection-list #list class="w-full">
-                                    <mat-list-option *ngFor="let commentator of commentators"
-                                        (click)="selectOption(list)" [value]="commentator.email"
-                                        [selected]="allSelected">
-                                        <p class="font-small">{{commentator.email}}</p>
-                                    </mat-list-option>
-                                    <mat-list-option (click)="selectAll()">
-                                        <p class="font-medium font-semibold text-secondary">Select All</p>
-                                    </mat-list-option>
-                                </mat-selection-list>
-                            </div>
-                        </div>
-                        <div class="flex items-center justify-end w-full px-8 py-4">
-                            <div class="flex items-center">
-                                <div class="flex items-center mr-4" *ngIf="flashMessage">
-                                    <ng-container *ngIf="flashMessage === 'success'">
-                                        <mat-icon class="text-green-500" [svgIcon]="'heroicons_outline:check'">
-                                        </mat-icon>
-                                        <span class="ml-2">Comment added successfully</span>
-                                    </ng-container>
-                                    <ng-container *ngIf="flashMessage === 'error'">
-                                        <mat-icon class="text-red-500" [svgIcon]="'heroicons_outline:x'"></mat-icon>
-                                        <span class="ml-2">An error occurred, try again!</span>
-                                    </ng-container>
-                                </div>
-                                <button class="min-w-40" mat-stroked-button [matTooltip]="'Add Comment'"
-                                    (click)="addComment()" [disabled]="commentUpdateLoader">
-                                    <mat-progress-spinner *ngIf="commentUpdateLoader" [diameter]="24"
-                                        [mode]="'indeterminate'">
-                                    </mat-progress-spinner>
-                                    <mat-icon *ngIf="!commentUpdateLoader" [svgIcon]="'heroicons_outline:plus'">
-                                    </mat-icon>
-                                    <span *ngIf="!commentUpdateLoader" class="ml-1 mr-1">Add Comment</span>
-                                </button>
-                            </div>
-                        </div>
-                    </form>
-                </div>
-            </div>
-        </fuse-card>
+        <mat-button-toggle-group #group="matButtonToggleGroup" [value]="mainScreen"
+            (change)="calledScreen(group.value)">
+            <mat-button-toggle value="Current Comments">
+                Current Comments
+            </mat-button-toggle>
+            <mat-button-toggle value="Add New Comment">
+                Add New Comment
+            </mat-button-toggle>
+        </mat-button-toggle-group>
     </div>
-
-    <div class="col-12 my-2">
-        <fuse-card class="rounded-2xl bg-card flex flex-col lg:flex-row w-full">
+    <div class="col-12">
+        <fuse-card class="rounded-2xl shadow bg-card flex flex-col lg:flex-row w-full">
             <div class="p-6 sm:p-8 lg:p-10 w-full">
                 <div class="text-2xl font-bold">
                     Comments
                 </div>
-                <!-- Update history -->
-                <div *ngIf="adminComment.length > 0;else other_content">
-                    <div class="flex items-start mt-8 w-full">
-                        <img class="w-8 h-8 rounded-full mr-4" src="assets/images/avatars/person.jpg"
-                            alt="Card cover image">
-                        <div class="flex flex-col mt-0.5">
-                            <span>
-                                <a class="text-capitalize">{{adminComment}}</a>
-                            </span>
+                <!-- Current Comments -->
+                <div *ngIf="mainScreen == 'Current Comments'" class="mt-5">
+                    <div *ngIf="adminComment.length > 0;else other_content">
+                        <div class="flex items-start mt-8 w-full">
+                            <img class="w-8 h-8 rounded-full mr-4" src="assets/images/avatars/person.jpg"
+                                alt="Card cover image">
+                            <div class="flex flex-col mt-0.5">
+                                <span>
+                                    {{adminComment}}
+                                </span>
+                            </div>
                         </div>
                     </div>
+                    <ng-template #other_content>
+                        <div class="text-secondary font-semibold">
+                            *No comments found
+                        </div>
+                    </ng-template>
                 </div>
+                <!-- Add New Comment -->
+                <div *ngIf="mainScreen == 'Add New Comment'" class="mt-5">
+                    <div class="w-full">
+                        <div class="row">
+                            <div class="col-12 col-md-7">
+                                <note class="text-md text-secondary">Comments cannot be updated or deleted.
+                                    {{currentSelectedCustomer?.firstName + ' ' + currentSelectedCustomer?.lastName}}
+                                    will be the author.</note>
+                                <br>
+                                <note class="tex-md text-secondary">All comments, including the new one will be emailed
+                                    to the checked addresses, if any.
+                                </note>
+                                <mat-form-field class="w-full">
+                                    <textarea [(ngModel)]="ngComment" rows="6" matInput></textarea>
+                                </mat-form-field>
+                                <mat-form-field class="example-chip-list w-full" appearance="fill">
+                                    <mat-label>Additional Emails (Comma-seperated)</mat-label>
+                                    <mat-chip-list class="pt-1" #chipList1>
+                                        <mat-chip [removable]="true" [selectable]="true" *ngFor="let email of emails"
+                                            (removed)="remove(email)">
+                                            {{email}}
+                                            <mat-icon class="icon-size-5" matChipRemove
+                                                [svgIcon]="'heroicons_solid:minus-circle'"></mat-icon>
+                                        </mat-chip>
+                                        <input [matChipInputFor]="chipList1" placeholder="New Email"
+                                            [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
+                                            [matChipInputAddOnBlur]="addOnBlur" (matChipInputTokenEnd)="add($event)">
+                                    </mat-chip-list>
+                                </mat-form-field>
+                            </div>
+                            <div class="col-12 col-md-5">
+                                <div class="flex justify-between mb-2">
+                                    <div class="text-lg font-bold">Commentators</div>
+                                    <div class="cursor-pointer text-gray-600 hover:text-gray-900"
+                                        (click)="checkAllCommentators()">
+                                        Check All</div>
+                                </div>
+                                <div class="border rounded-lg p-3  h-50 overflow-y-auto overflow-x-hidden">
+                                    <div class="w-full" *ngIf="isCommentatorLoader">
+                                        <ngx-skeleton-loader count="8" appearance="line" animation="pulse">
+                                        </ngx-skeleton-loader>
+                                    </div>
+                                    <div class="row" *ngIf="!isCommentatorLoader">
+                                        <div class="col-12" *ngFor="let item of commentators">
+                                            <mat-checkbox [(ngModel)]="item.checked">{{item.email}}</mat-checkbox>
+                                        </div>
+                                        <div class="col-12 flex justify-end mr-2"
+                                            *ngIf="totalCommentator > commentators.length">
+                                            <span *ngIf="!isLoadMore" (click)="getNexCommentator()"
+                                                class="cursor-pointer text-gray-600 hover:text-gray-900">Load
+                                                More</span>
+                                            <mat-progress-spinner *ngIf="isLoadMore" [diameter]="24"
+                                                [mode]="'indeterminate'"></mat-progress-spinner>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="w-full alert alert-warning  mt-2 border rounded-lg p-2 pt-3">
+                                    <mat-checkbox><b>Urgent</b></mat-checkbox>
+                                </div>
+                                <div class="text-right mt-2">
+                                    <button class="min-w-40" mat-stroked-button [disabled]="isAddCommentLoader"
+                                        [matTooltip]="'Add Comment'" (click)="addComment()">
+                                        <mat-progress-spinner *ngIf="isAddCommentLoader" [diameter]="24"
+                                            [mode]="'indeterminate'"></mat-progress-spinner>
+                                        <mat-icon *ngIf="!isAddCommentLoader" [svgIcon]="'heroicons_outline:plus'">
+                                        </mat-icon>
+                                        <span *ngIf="!isAddCommentLoader" class="ml-1 mr-1">Add Comment</span>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
 
-                <!-- No Comments -->
-                <ng-template #other_content>
-                    <div class="text-secondary font-semibold">
-                        *No comments found
                     </div>
-                </ng-template>
+                </div>
             </div>
         </fuse-card>
     </div>

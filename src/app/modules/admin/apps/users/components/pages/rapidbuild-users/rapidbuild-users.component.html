@@ -301,15 +301,16 @@
                         <mat-form-field class="w-full">
                             <mat-label>Type</mat-label>
                             <mat-select matInput [(ngModel)]="ngType">
-                                <mat-option value="All">All</mat-option>
-                                <mat-option value="Normal">Normal</mat-option>
-                                <mat-option value="Revision">Revision</mat-option>
-                                <mat-option value="Final">Final</mat-option>
+                                <mat-option value="ALL">All</mat-option>
+                                <mat-option value="NORMAL">Normal</mat-option>
+                                <mat-option value="REVISION">Revision</mat-option>
+                                <mat-option value="FINAL">Final</mat-option>
                             </mat-select>
                         </mat-form-field>
                     </div>
                     <div class="col-12 text-right">
-                        <button class="min-w-40" mat-button mat-stroked-button>
+                        <button (click)="getAdminCustomers(1)" [disabled]="customerLoader" class="min-w-40" mat-button
+                            mat-stroked-button>
                             <span>Filter</span>
                         </button>
                     </div>

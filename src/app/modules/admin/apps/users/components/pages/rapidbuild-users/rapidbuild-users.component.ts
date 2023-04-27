@@ -5,6 +5,7 @@ import { Subject } from 'rxjs';
 import { finalize, takeUntil } from 'rxjs/operators';
 import { UsersService } from '../../users.service';
 import { applyBlanketCustomerPercentage, newFLPSUser, newRapidbuildUser, removeFLPSUser, RemoveRapidUser, updateFLPSUser, updateRapidbuildUser, updateRapidBuildUserStores } from '../../users.types';
+import moment from 'moment';
 @Component({
   selector: 'app-rapidbuild-users',
   templateUrl: './rapidbuild-users.component.html',
@@ -57,9 +58,9 @@ export class RapidBuildUsersComponent implements OnInit, OnDestroy {
   updateStoreLoader: boolean = false;
 
   // Users history filter
-  ngRangeStart = new Date();
-  ngRangeEnd = new Date();
-  ngType = 'All';
+  ngRangeStart: any;
+  ngRangeEnd: any;
+  ngType = 'ALL';
   ngSPID = '';
 
   constructor(
@@ -307,8 +308,18 @@ export class RapidBuildUsersComponent implements OnInit, OnDestroy {
   };
 
   getAdminCustomers(page) {
+    if (page == 1) {
+      this.customerLoader = true;
+      if (this.customersDataSource.length > 0) {
+        this.paginator.pageIndex = 0;
+      }
+    }
     let params = {
       rapidbuild_history: true,
+      storeProductID: this.ngSPID,
+      startDate: moment(this.ngRangeStart).format('MM/DD/yyyy'),
+      endDate: moment(this.ngRangeEnd).format('MM/DD/yyyy'),
+      type: this.ngType,
       page: page,
       user_id: this.updateUserData.pk_userID,
       size: 20
