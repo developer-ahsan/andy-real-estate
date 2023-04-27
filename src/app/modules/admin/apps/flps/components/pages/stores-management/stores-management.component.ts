@@ -2,9 +2,11 @@ import { ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, OnIn
 import { FormControl } from '@angular/forms';
 import { MatPaginator } from '@angular/material/paginator';
 import { Subject } from 'rxjs';
-import { filter, takeUntil } from 'rxjs/operators';
+import { debounceTime, distinctUntilChanged, filter, finalize, switchMap, takeUntil, tap } from 'rxjs/operators';
 import { FLPSService } from '../../flps.service';
 import { AddFLPSStoreUser, DeleteFlpsUser, UpdateFlpsUser } from '../../flps.types';
+import * as Excel from 'exceljs/dist/exceljs.min.js';
+import moment from 'moment';
 
 @Component({
     selector: 'app-storess-management',
@@ -35,7 +37,7 @@ export class FLPSsStoresManagementComponent implements OnInit {
     // Quick Stores
     tempquickStoresList = [];
     quickStoresList = [];
-    displayedStoresColumns: string[] = ['id', 'store', 'management', 'edit'];
+    displayedStoresColumns: string[] = ['store', 'users', 's_commission', 'd_commission', 'management', 'edit'];
     totalStores = 0;
     temptotalStores = 0;
     storesPage = 1;
@@ -60,6 +62,7 @@ export class FLPSsStoresManagementComponent implements OnInit {
     isSearchingEmployee = false;
     minLengthTerm = 3;
     employeeAdmins: any[];
+    isGenerateReportLoader: boolean;
 
     constructor(
         private _changeDetectorRef: ChangeDetectorRef,
@@ -76,6 +79,24 @@ export class FLPSsStoresManagementComponent implements OnInit {
      */
     ngOnInit(): void {
         this._flpsService.flpsStores$.pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+            res["data"].forEach(element => {
+                element.users = [];
+                element.s_Commission = [];
+                element.d_Commission = [];
+                if (element.storeUsers) {
+                    let users = element.storeUsers.split(',');
+                    users.forEach(user => {
+                        let data = user.split(':');
+                        if (data[3] == 1) {
+                            element.users.push(data[0] + ' (primary)');
+                        } else {
+                            element.users.push(data[0]);
+                        }
+                        element.s_Commission.push(data[1]);
+                        element.d_Commission.push(data[2]);
+                    });
+                }
+            });
             this.tempquickStoresList = res["data"];
             this.quickStoresList = res["data"];
             this.totalStores = res["totalRecords"];
@@ -349,24 +370,74 @@ export class FLPSsStoresManagementComponent implements OnInit {
     backToStoreList() {
         this.isUpdateStore = false;
     }
-}
-function distinctUntilChanged(): import("rxjs").OperatorFunction<any, unknown> {
-    throw new Error('Function not implemented.');
-}
+    getStoresData() {
+        this.isGenerateReportLoader = true;
+        let params = {
+            view_stores: true,
+            bln_active: 1,
+            size: this.totalStores
+        }
+        this._flpsService.getFlpsData(params).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+            res["data"].forEach(element => {
+                element.users = [];
+                element.s_Commission = [];
+                element.d_Commission = [];
+                if (element.storeUsers) {
+                    let users = element.storeUsers.split(',');
+                    users.forEach(user => {
+                        let data = user.split(':');
+                        if (data[3] == 1) {
+                            element.users.push(data[0] + ' (primary)');
+                        } else {
+                            element.users.push(data[0]);
+                        }
+                        element.s_Commission.push(data[1]);
+                        element.d_Commission.push(data[2]);
+                    });
+                }
+            });
+            this.downloadExcelWorkSheet(res["data"]);
+        }, err => {
+            this.isGenerateReportLoader = false;
+            this._changeDetectorRef.markForCheck();
+        });
+    }
+    downloadExcelWorkSheet(data) {
+        const fileName = `FLPSStore_${moment(new Date()).format('MM-DD-yy-hh-mm-ss')}`;
+        const workbook = new Excel.Workbook();
+        const worksheet = workbook.addWorksheet("FLPSStore");
 
-function debounceTime(arg0: number): import("rxjs").OperatorFunction<unknown, unknown> {
-    throw new Error('Function not implemented.');
-}
+        // Columns
+        let columns = [
+            { header: "Store Name", key: "storeName", width: 30 },
+            { header: "CUSTOMER", key: "users", width: 50 },
+            { header: "Store Commission", key: "s_Commission", width: 40 },
+            { header: "Default Commission", key: "d_Commission", width: 30 },
+            { header: "Management", key: "flpsManagement", width: 30 }
+        ]
+        worksheet.columns = columns;
+        for (const obj of data) {
+            worksheet.addRow(obj);
+        }
+        setTimeout(() => {
+            workbook.xlsx.writeBuffer().then((data: any) => {
+                const blob = new Blob([data], {
+                    type:
+                        "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+                });
+                let url = window.URL.createObjectURL(blob);
+                let a = document.createElement("a");
+                document.body.appendChild(a);
+                a.setAttribute("style", "display: none");
+                a.href = url;
+                a.download = `${fileName}.xlsx`;
+                a.click();
+                window.URL.revokeObjectURL(url);
+                a.remove();
+                this.isGenerateReportLoader = false;
+                this._changeDetectorRef.markForCheck();
+            });
+        }, 500);
 
-function tap(arg0: () => void): import("rxjs").OperatorFunction<unknown, unknown> {
-    throw new Error('Function not implemented.');
+    }
 }
-
-function switchMap(arg0: (value: any) => import("rxjs").Observable<unknown>): import("rxjs").OperatorFunction<unknown, unknown> {
-    throw new Error('Function not implemented.');
-}
-
-function finalize(arg0: () => void): import("rxjs").OperatorFunction<any[], unknown> {
-    throw new Error('Function not implemented.');
-}
-

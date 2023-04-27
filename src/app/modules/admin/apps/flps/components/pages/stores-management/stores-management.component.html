@@ -14,6 +14,18 @@
         <div>
             <div class="bg-card shadow p-5">
                 <div class="row">
+                    <div class="col-12 mb-2">
+                        <div class="text-lg font-medium tracking-tight leading-6 truncate cursor-pointer">
+                            <fuse-alert [appearance]="'soft'" [dismissed]="false" [name]="'alertBox1'"
+                                [type]="'success'">
+                                <mat-progress-spinner *ngIf="isGenerateReportLoader" [diameter]="24"
+                                    [mode]="'indeterminate'">
+                                </mat-progress-spinner>
+                                <span (click)="getStoresData()" *ngIf="!isGenerateReportLoader">Click here to download
+                                    Excel file.</span>
+                            </fuse-alert>
+                        </div>
+                    </div>
                     <div class="col-12">
                         <mat-form-field class="w-full">
                             <input matInput placeholder="Search Keyword" [disabled]="isSearching" [(ngModel)]="keyword"
@@ -44,7 +56,30 @@
                         {{element.storeName}}
                     </td>
                 </ng-container>
-
+                <ng-container matColumnDef="users">
+                    <th mat-header-cell *matHeaderCellDef class="text-sm">
+                        Users
+                    </th>
+                    <td mat-cell *matCellDef="let element" class="text-sm">
+                        <span *ngFor="let item of element.users">{{item}}<br></span>
+                    </td>
+                </ng-container>
+                <ng-container matColumnDef="s_commission">
+                    <th mat-header-cell *matHeaderCellDef class="text-sm">
+                        Store Commission
+                    </th>
+                    <td mat-cell *matCellDef="let element" class="text-sm">
+                        <span *ngFor="let item of element.s_Commission">{{item}}%<br></span>
+                    </td>
+                </ng-container>
+                <ng-container matColumnDef="d_commission">
+                    <th mat-header-cell *matHeaderCellDef class="text-sm">
+                        Default Commission
+                    </th>
+                    <td mat-cell *matCellDef="let element" class="text-sm">
+                        <span *ngFor="let item of element.d_Commission">{{item}}%<br></span>
+                    </td>
+                </ng-container>
                 <ng-container matColumnDef="management">
                     <th mat-header-cell *matHeaderCellDef class="text-sm">
                         Management
