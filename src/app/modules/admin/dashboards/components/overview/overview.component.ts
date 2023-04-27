@@ -312,7 +312,6 @@ export class DashboardOverviewComponent implements OnInit, OnDestroy {
                     element.margin = 0;
                 }
             });
-
             this.isPerformanceLoader = false;
             this._changeDetectorRef.markForCheck();
         }, err => {
