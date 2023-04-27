@@ -57,6 +57,10 @@ export class DashboardOverviewComponent implements OnInit, OnDestroy {
     isEmployeeStoreLoader: boolean = false;
     expandedElement: any
     ytDDataMain: any;
+
+    sortOrder: string = 'ASC'
+    sortBy: string = 'monthlyEarnings';
+    isPerformanceLoader: boolean = false;
     /**
      * Constructor
      */
@@ -77,6 +81,7 @@ export class DashboardOverviewComponent implements OnInit, OnDestroy {
     ngOnInit(): void {
         this.getYTDData();
         this.employeeListLoader = true;
+        this.isPerformanceLoader = true;
         this.getAllPortfolioPerformance();
         this.getEmployeePerformance(1);
         // Get the data
@@ -239,6 +244,11 @@ export class DashboardOverviewComponent implements OnInit, OnDestroy {
                     element.margin = 0;
                 }
             });
+            this.isPerformanceLoader = false;
+            this._changeDetectorRef.markForCheck();
+        }, err => {
+            this.isPerformanceLoader = false;
+            this._changeDetectorRef.markForCheck();
         });
     }
     getNextPortfolioData(event) {
@@ -250,9 +260,23 @@ export class DashboardOverviewComponent implements OnInit, OnDestroy {
         };
         this.getPortfolioData(this.pagePerformance);
     };
+    sortData(ev) {
+        this._changeDetectorRef.markForCheck();
+        if (ev.active == 'sales') {
+            this.sortBy = 'monthlyEarnings';
+            if (ev.direction == '') {
+                this.sortOrder = 'ASC';
+            } else {
+                this.sortOrder = ev.direction;
+            }
+        }
+        this.getPortfolioData(1);
+    }
     getPortfolioData(page) {
         let params = {
             performance_report: true,
+            sort_order: this.sortOrder,
+            sort_by: this.sortBy,
             size: 20,
             page: page
         }
@@ -288,7 +312,11 @@ export class DashboardOverviewComponent implements OnInit, OnDestroy {
                     element.margin = 0;
                 }
             });
+            this.isPerformanceLoader = false;
+            this._changeDetectorRef.markForCheck();
         }, err => {
+            this.isPerformanceLoader = false;
+            this._changeDetectorRef.markForCheck();
         });
     }
     openedAccordion(item) {
