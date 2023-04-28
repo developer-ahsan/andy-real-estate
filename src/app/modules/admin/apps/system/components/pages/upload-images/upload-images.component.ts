@@ -30,7 +30,9 @@ export class UploadImagesComponent implements OnInit, OnDestroy {
       this.images.push('https://assets.consolidus.com/globalAssets/Uploads/' + index + '.jpg');
     }
     this.isLoading = false;
-    this.isLoadingChange.emit(false);
+    setTimeout(() => {
+      this.isLoadingChange.emit(false);
+    }, 100);
     this._changeDetectorRef.markForCheck();
   }
   /**

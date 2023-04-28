@@ -58,6 +58,13 @@ export class OrderCommentsComponent implements OnInit, OnDestroy {
   getOrderComments() {
     this._orderService.orderDetail$.pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
       this.selectedOrder = res["data"][0];
+      this.commentators.push(
+        { email: `orders@${this.selectedOrder.storeName}`, checked: false },
+        { email: `artwork@${this.selectedOrder.storeName}`, checked: false },
+        { email: `billing@consolidus.com`, checked: false },
+        { email: `service@${this.selectedOrder.storeName}`, checked: false },
+        { email: `content@consolidus.com`, checked: false }
+      )
       this.currentComments = res["data"][0].internalComments;
       this.isLoading = false;
       this._changeDetectorRef.markForCheck();

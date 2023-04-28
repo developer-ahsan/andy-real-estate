@@ -345,16 +345,17 @@ export class AnalyticsComponent implements OnInit, OnDestroy {
                 if (element.previousYearSales == 0) {
                     element.percent = 0
                 } else {
-                    element.percent = Number(100 - (element.monthlyEarnings / element.previousYearSales) * 100);
+                    element.percent = Math.round(Number(100 - (element.monthlyEarnings / element.previousYearSales) * 100));
                 }
                 if (element.percent == 0) {
                     element.percent = 0;
                     element.color = 'gray';
                 }
                 if (element.percent < 0) {
-                    element.color = 'red';
+                    element.percent = element.percent * -1;
+                    element.color = 'green';
                 } else if (element.percent > 0) {
-                    element.color = 'green'
+                    element.color = 'red'
                 } else {
                     element.color = 'gray';
                 }

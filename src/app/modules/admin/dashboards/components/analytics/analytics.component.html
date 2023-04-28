@@ -342,15 +342,15 @@
                                     <div class="flex" *ngIf="element.color == 'red'">
                                         <mat-icon class="icon-size-5 text-red-500"
                                             [svgIcon]="'heroicons_solid:trending-down'"></mat-icon>
-                                        <span class="text-red-500">{{element.percent.toFixed(2)}}%</span>
+                                        <span class="text-red-500">{{element.percent}}%</span>
                                     </div>
                                     <div class="flex" *ngIf="element.color == 'green'">
                                         <mat-icon class="icon-size-5 text-green-500"
                                             [svgIcon]="'heroicons_solid:trending-up'"></mat-icon>
-                                        <span class="text-green-500">{{element.percent.toFixed(2)}}%</span>
+                                        <span class="text-green-500">{{element.percent}}%</span>
                                     </div>
                                     <div class="flex" *ngIf="element.color == 'gray'">
-                                        <span>{{element.percent.toFixed(2)}}%</span>
+                                        <span>{{element.percent}}%</span>
                                     </div>
                                 </td>
                             </ng-container>
@@ -360,7 +360,7 @@
                                 <th mat-header-cell *matHeaderCellDef>
                                     <div class="flex">
                                         <span>Diff</span>
-                                        <mat-icon class="icon-size-4 ml-1" matTooltip="Sales Difference"
+                                        <mat-icon class="icon-size-4  ml-1" matTooltip="Sales Difference"
                                             [svgIcon]="'heroicons_solid:question-mark-circle'"></mat-icon>
                                     </div>
                                 </th>
