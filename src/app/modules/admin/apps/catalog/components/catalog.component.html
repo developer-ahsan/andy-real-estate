@@ -199,22 +199,27 @@
                         <pagination-controls *ngIf="dataSource.length > 0" previousLabel="Prev" nextLabel="Next"
                             (pageChange)="getNextCatalogData($event)">
                         </pagination-controls>
-                        <div class="prose prose-sm max-w-5xl" *ngIf="!isPageLoading">
+                        <div class="w-full" *ngIf="!isPageLoading">
                             <ng-container *ngFor="let item of dataSource |  paginate : {
                                 itemsPerPage: itemsPerPage,
                                 currentPage: page,
                                 totalItems: total
                               };">
                                 <div class="mb-12 p-8 rounded-2xl shadow bg-card">
-                                    <div class="flex justify-between">
+                                    <div class="flex justify-between align-items-center">
                                         <div>
-                                            <h2 class="my-0">{{item.productName}} - ({{item.pk_productID}})</h2>
+                                            <h2 class="my-0 font-semibold">{{item.productName}} -
+                                                ({{item.pk_productID}})</h2>
                                             <div class="font-semibold text-md text-secondary">{{item.companyName}}</div>
                                         </div>
                                         <img class="w-20 h-20 m-0"
                                             src="https://assets.consolidus.com/globalAssets/Products/coming_soon.jpg">
                                     </div>
-                                    <hr class="mt-2">
+                                    <div class="col-12">
+                                        <span
+                                            class="inline-flex bg-default rounded py-1 text-secondary font-bold">Description</span>
+                                        <div [innerHTML]="item.description" class="text-justify"></div>
+                                    </div>
                                     <div class="row">
                                         <div *ngIf="item.Cost" class="col-12 col-md-6 m-0 overflow-x-auto">
                                             <span
@@ -232,11 +237,7 @@
                                                 </tbody>
                                             </table>
                                         </div>
-                                        <div class="col-12 col-md-6">
-                                            <span
-                                                class="inline-flex bg-default rounded px-3 py-1 text-secondary font-bold">Description</span>
-                                            <div [innerHTML]="item.description" class="text-justify"></div>
-                                        </div>
+
 
                                     </div>
                                     <hr class="mt-2">

@@ -2824,7 +2824,8 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
         // Add products form multi stepper back to products
 
         this.backListLoader = true;  // Loader for the button
-
+        this._inventoryService.standardImprints = null;
+        this.productId = null;
         // Get the products
         this._inventoryService.products$
             .pipe(takeUntil(this._unsubscribeAll))

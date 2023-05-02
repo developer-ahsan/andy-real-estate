@@ -615,7 +615,8 @@ export class InventoryService {
             params: {
                 imprint: true,
                 paginated_location: true,
-                keyword: keyword
+                keyword: keyword,
+                size: 30
             }
         });
     };
@@ -639,7 +640,8 @@ export class InventoryService {
             params: {
                 imprint: true,
                 paginated_method: true,
-                keyword: keyword
+                keyword: keyword,
+                size: 30
             }
         });
     };
@@ -674,7 +676,8 @@ export class InventoryService {
         return this._httpClient.get<any[]>(environment.products, {
             params: {
                 imprint: true,
-                digitizer: true
+                digitizer: true,
+                size: 30
             }
         });
     };
@@ -697,7 +700,7 @@ export class InventoryService {
                 imprint: true,
                 decoration: true,
                 collection: true,
-                decorator_id: companyId
+                decorator_id: companyId,
             }
         });
     };

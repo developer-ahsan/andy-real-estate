@@ -30,7 +30,11 @@ export class OrdersHistoryComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     const { pk_userID } = this.currentSelectedCustomer;
-    this._customerService.getOrderHistory(pk_userID)
+    let params = {
+      orders_history: true,
+      user_id: pk_userID
+    }
+    this._customerService.getAPIData(params)
       .pipe(takeUntil(this._unsubscribeAll))
       .subscribe((quotes) => {
         this.dataSource = quotes["data"];

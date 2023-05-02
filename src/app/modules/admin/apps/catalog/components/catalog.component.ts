@@ -104,7 +104,8 @@ export class CatalogComponent {
         params = {
           supplier: true,
           bln_active: 1,
-          keyword: res
+          keyword: res,
+          size: 30
         }
         return res !== null && res.length >= 3
       }),
@@ -136,7 +137,8 @@ export class CatalogComponent {
       filter((res: any) => {
         paramsSizes = {
           apparel_sizes: true,
-          keyword: res
+          keyword: res,
+          size: 30
         }
         return res !== null && res.length >= 1
       }),
@@ -168,7 +170,8 @@ export class CatalogComponent {
       filter((res: any) => {
         paramsColor = {
           colors: true,
-          keyword: res
+          keyword: res,
+          size: 30
         }
         return res !== null && res.length >= 3
       }),
@@ -200,7 +203,8 @@ export class CatalogComponent {
       filter((res: any) => {
         paramsMethod = {
           imprint_methods: true,
-          keyword: res
+          keyword: res,
+          size: 30
         }
         return res !== null && res.length >= 1
       }),
@@ -304,10 +308,10 @@ export class CatalogComponent {
       distinctUntilChanged())
       .subscribe(res => {
         this.total = res["totalRecords"];
-        res["data"].forEach((element, index) => {
-          element.Cost = JSON.parse(element.Cost);
-          element.Imprint = JSON.parse(element.Imprint);
-        });
+        // res["data"].forEach((element, index) => {
+        //   element.Cost = JSON.parse(element.Cost);
+        //   element.Imprint = JSON.parse(element.Imprint);
+        // });
         this.dataSource = res["data"];
         this.isLoading = false;
         this.isFilterLoader = false;

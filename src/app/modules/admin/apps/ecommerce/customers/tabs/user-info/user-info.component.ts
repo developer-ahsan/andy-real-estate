@@ -1,5 +1,5 @@
 import { Component, Input, OnInit, Output, EventEmitter, ChangeDetectorRef } from '@angular/core';
-import { FormBuilder, FormGroup } from '@angular/forms';
+import { FormBuilder, FormControl, FormGroup } from '@angular/forms';
 import { CustomersService } from 'app/modules/admin/apps/ecommerce/customers/customers.service';
 import { takeUntil } from 'rxjs/operators';
 import { merge, Observable, Subject } from 'rxjs';
@@ -19,6 +19,7 @@ export class UserInfoComponent implements OnInit {
   updateUserLoader = false;
   flashMessage: 'success' | 'error' | null = null;
 
+  selectedCustomer: any;
   constructor(
     private _customerService: CustomersService,
     private _changeDetectorRef: ChangeDetectorRef,
@@ -26,31 +27,66 @@ export class UserInfoComponent implements OnInit {
   ) { }
 
   ngOnInit(): void {
-
-    // Create the selected product form
-    this.selectedCustomerForm = this._formBuilder.group({
-      id: [''],
-      firstName: [''],
-      lastName: [''],
-      email: [''],
-      companyName: [''],
-      storeName: [''],
-      title: [''],
-      date: [''],
-      ipaddress: [''],
-      fax: [''],
-      dayPhone: [''],
-      zipCode: [''],
-      city: [''],
-      blnActive: [''],
-      website: [''],
-      department: ['']
+    this.selectedCustomerForm = new FormGroup({
+      userName: new FormControl(''),
+      password: new FormControl(''),
+      blnActive: new FormControl(true),
+      new_email: new FormControl(''),
+      old_email: new FormControl(''),
+      blnAdmin: new FormControl(false),
+      email: new FormControl(''),
+      firstName: new FormControl(''),
+      lastName: new FormControl(''),
+      website: new FormControl(''),
+      fax: new FormControl(''),
+      title: new FormControl(''),
+      department: new FormControl(''),
+      companyName: new FormControl(''),
+      account_charge_code: new FormControl(''),
+      shippingAddress1: new FormControl(''),
+      shippingAddress2: new FormControl(''),
+      shippingCity: new FormControl(''),
+      shippingCompanyName: new FormControl(''),
+      shippingDayPhone: new FormControl(''),
+      shippingEmail: new FormControl(''),
+      shippingFirstName: new FormControl(''),
+      shippingLastName: new FormControl(''),
+      shippingState: new FormControl(''),
+      shippingStudentOrgCode: new FormControl(''),
+      shippingStudentOrgName: new FormControl(''),
+      shippingZipCode: new FormControl(''),
+      shippingZipCodeExt: new FormControl(''),
+      billingStudentOrgName: new FormControl(''),
+      billingStudentOrgCode: new FormControl(''),
     });
+    // Create the selected product form
+    // this.selectedCustomerForm = this._formBuilder.group({
+    //   id: [''],
+    //   firstName: [''],
+    //   lastName: [''],
+    //   email: [''],
+    //   companyName: [''],
+    //   storeName: [''],
+    //   title: [''],
+    //   date: [''],
+    //   ipaddress: [''],
+    //   fax: [''],
+    //   dayPhone: [''],
+    //   zipCode: [''],
+    //   city: [''],
+    //   blnActive: [''],
+    //   website: [''],
+    //   department: ['']
+    // });
 
     this._customerService.customer$
       .pipe(takeUntil(this._unsubscribeAll))
       .subscribe((response) => {
+        this.selectedCustomer = response;
         this.selectedCustomerForm.patchValue(response);
+        this.selectedCustomerForm.patchValue({
+          new_email: response.email
+        })
 
         // Mark for check
         this._changeDetectorRef.markForCheck();
@@ -64,34 +100,65 @@ export class UserInfoComponent implements OnInit {
     const { pk_userID } = this.currentSelectedCustomer;
 
     // Get the product object
-    const customerForm = this.selectedCustomerForm.getRawValue();
-
-    console.log("this.currentSelectedCustomer", this.currentSelectedCustomer);
-    console.log("this.selectedCustomerForm", customerForm);
+    const { userName, password, blnActive, new_email, old_email, blnAdmin, email, firstName, lastName, website, fax, title, department, companyName, account_charge_code, shippingAddress1,
+      shippingAddress2,
+      shippingCity,
+      shippingCompanyName,
+      shippingDayPhone,
+      shippingEmail,
+      shippingFirstName,
+      shippingLastName,
+      shippingState,
+      shippingStudentOrgCode,
+      shippingStudentOrgName,
+      shippingZipCode,
+      shippingZipCodeExt,
+      billingStudentOrgName,
+      billingStudentOrgCode, } = this.selectedCustomerForm.getRawValue();
 
     const payload = {
-      user: true,
-      user_role: "admin",
-      email: customerForm.email,
-      user_name: `${customerForm.firstName} ${customerForm.lastName}`,
-      first_name: customerForm.firstName,
-      last_name: customerForm.lastName,
-      user_id: parseInt(pk_userID),
-      password: "password",
-      user_type: "admin",
+      update_user: true,
+      userID: parseInt(pk_userID),
+      user_name: userName,
+      password: password,
+      bln_active: blnActive,
+      new_email: new_email,
+      old_email: email,
+      first_name: firstName,
+      last_name: lastName,
+      company_name: companyName,
+      department: department,
+      website: website,
+      title: title,
+      fax: fax,
+      account_charge_code: account_charge_code,
+      billingOrgName: billingStudentOrgName,
+      billingOrgCode: billingStudentOrgCode,
+      shippingFirstName: shippingFirstName,
+      shippingLastName: shippingLastName,
+      shippingCompany: shippingCompanyName,
+      shippingEmail: shippingEmail,
+      shipping_address1: shippingAddress1,
+      shipping_address2: shippingAddress2,
+      shippingOrgName: shippingStudentOrgName,
+      shippingOrgCode: shippingStudentOrgCode,
+      shippingCity: shippingCity,
+      shippingState: shippingState,
+      shippingZip: shippingZipCode,
+      shippingZipExt: shippingZipCodeExt,
+      shippingPhone: shippingDayPhone
     };
 
-    console.log("payload", payload);
     this.updateUserLoader = true;
     this._customerService.upgradeUser(payload)
       .subscribe((response: any) => {
-        console.log("response", response);
-        this.showFlashMessage(
-          response["success"] === true ?
-            'success' :
-            'error'
-        );
         this.updateUserLoader = false;
+        this._customerService.snackBar(response["message"]);
+        this._changeDetectorRef.markForCheck();
+      }, err => {
+        this.updateUserLoader = false;
+        this._changeDetectorRef.markForCheck();
+        this._changeDetectorRef.markForCheck();
       });
   }
 

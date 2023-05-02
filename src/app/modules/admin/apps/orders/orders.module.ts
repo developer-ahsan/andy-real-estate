@@ -66,6 +66,7 @@ import { GroupOrdersDetailsComponent } from './orders-components/navigation/grou
 import { GroupOrdersShippingComponent } from './orders-components/navigation/group-order-shipping/group-order-shipping.component';
 import { OrderPaymentBillComponent } from './orders-components/navigation/order-payments-bill/order-payments-billcomponent';
 import { NgxStripeModule } from 'ngx-stripe';
+import { ProductsOrderModifyComponent } from './orders-components/navigation/order-modify/products-modify.component';
 
 @NgModule({
     declarations: [
@@ -99,6 +100,7 @@ import { NgxStripeModule } from 'ngx-stripe';
         GroupOrdersDetailsComponent,
         GroupOrdersShippingComponent,
         OrderPaymentBillComponent,
+        ProductsOrderModifyComponent,
         SafePipe
     ],
     imports: [

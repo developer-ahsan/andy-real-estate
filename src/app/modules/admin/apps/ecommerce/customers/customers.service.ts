@@ -1,11 +1,12 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { BehaviorSubject, Observable, of, throwError } from 'rxjs';
-import { filter, map, switchMap, take, tap } from 'rxjs/operators';
+import { filter, map, retry, switchMap, take, tap } from 'rxjs/operators';
 import { CustomersProduct, UserCreditTerms, AddUserComment, AddUserLocation, ApprovalContact, AddReminder, UpdateCashback, CreateStore, UserUpdateObject } from 'app/modules/admin/apps/ecommerce/customers/customers.types';
 import { environment } from 'environments/environment';
 import { AuthService } from 'app/core/auth/auth.service';
 import { navigations } from 'app/modules/admin/apps/ecommerce/customers/customers.navigator';
+import { MatSnackBar } from '@angular/material/snack-bar';
 
 @Injectable({
     providedIn: 'root'
@@ -26,10 +27,17 @@ export class CustomersService {
      */
     constructor(
         private _httpClient: HttpClient,
-        private _authService: AuthService
+        private _authService: AuthService,
+        private _snackBar: MatSnackBar
     ) {
     }
-
+    snackBar(msg) {
+        this._snackBar.open(msg, '', {
+            horizontalPosition: 'center',
+            verticalPosition: 'bottom',
+            duration: 3500
+        });
+    }
     // -----------------------------------------------------------------------------------------------------
     // @ Accessors
     // -----------------------------------------------------------------------------------------------------
@@ -203,7 +211,7 @@ export class CustomersService {
     }
 
     // PUT CALL CUSTOMER
-    upgradeUser(payload: UserUpdateObject) {
+    upgradeUser(payload) {
         const headers = { 'Authorization': `Bearer ${this._authService.accessToken}` };
         return this._httpClient.put(environment.customerList, payload, { headers });
     }
@@ -536,5 +544,12 @@ export class CustomersService {
     createStore(payload: CreateStore) {
         return this._httpClient.post(
             `${environment.customerList}`, payload);
+    }
+
+
+    getAPIData(params): Observable<any> {
+        return this._httpClient.get<any[]>(environment.customerList, {
+            params: params
+        }).pipe(retry(3));
     }
 }

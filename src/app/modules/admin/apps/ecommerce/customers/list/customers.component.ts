@@ -25,7 +25,7 @@ export class CustomersListComponent implements OnInit, OnDestroy {
     isLoading: boolean = false;
     pagination: CustomersPagination;
     customersCount: number;
-    customerTableColumns: string[] = ['_id', 'first_name', 'last_name', 'customer_email', 'customer_store', 'customer_company'];
+    customerTableColumns: string[] = ['_id', 'first_name', 'last_name', 'customer_email', 'customer_store', 'customer_company', 'mrp'];
     selectedCustomer: CustomersProduct | null = null;
     selectedCustomerForm: FormGroup;
     not_available = "N/A";
