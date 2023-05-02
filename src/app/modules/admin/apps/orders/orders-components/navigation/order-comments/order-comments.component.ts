@@ -117,6 +117,7 @@ export class OrderCommentsComponent implements OnInit, OnDestroy {
       order_id: Number(this.selectedOrder.pk_orderID),
       comment: this.ngComment,
       emails: emailArr,
+      company_name: this.selectedOrder.billingCompanyName,
       store_id: Number(this.selectedOrder.fk_storeID),
       store_userId: Number(this.selectedOrder.fk_storeUserID),
       store_name: this.selectedOrder.storeName,

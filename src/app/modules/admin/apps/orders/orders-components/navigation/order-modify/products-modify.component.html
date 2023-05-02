@@ -90,6 +90,183 @@
     </div>
     <div class="col-12">
         <p class="text-lg font-bold border-b mb-2">Product Options</p>
+        <table
+            class="w-full table table-striped table-bordered table-condensed table-hover padding-1x wide no-bottom-margin"
+            id="updateProductOptionsTable_138125">
+            <thead>
+                <tr class="columnHeader2">
+                    <td width="20%" colspan="2">COLOR/SIZE</td>
+                    <td width="5%" align="center">QTY</td>
+                    <td width="20%" colspan="2" align="center">COST</td>
+                    <td width="20%" colspan="2" align="center">PRICE</td>
+                    <td width="1%" align="center" valign="middle"><span class="fa fa-trash fa-lg"></span></td>
+                </tr>
+            </thead>
+
+            <tbody>
+                <tr>
+                    <td colspan="2"></td>
+                    <td></td>
+                    <td colspan="2">
+                        <b>Standard Cost:</b><br>
+                        <div class="form-group no-bottom-marginp">
+                            <div class="input-group no-bottom-margin">
+                                <!-- <div class="input-group-addon">$</div> -->
+                                <input type="text" name="standardCost" class="adminInput light wide form-control"
+                                    maxlength="8" required="" value="16.1900" id="standardCost_138125">
+                            </div>
+                        </div>
+                    </td>
+
+                    <td colspan="2">
+                        <b>Standard Price:</b><br>
+                        <div class="form-group no-bottom-margin">
+                            <div class="input-group no-bottom-margin">
+                                <!-- <div class="input-group-addon">$</div> -->
+                                <input type="text" name="standardPrice"
+                                    class="form-control adminInput light wide form-control" maxlength="8" required=""
+                                    value="26.9900" id="standardPrice_138125">
+                            </div>
+                        </div>
+                    </td>
+                    <td></td>
+                </tr>
+
+                <tr>
+                    <td>
+                        <b>Color</b>
+
+                    </td>
+                    <td><b>Size</b></td>
+                    <td></td>
+                    <td align="center"><b>Unit</b></td>
+                    <td align="center"><b>Total</b></td>
+                    <td align="center"><b>Unit</b></td>
+                    <td align="center"><b>Total</b></td>
+                    <td></td>
+                </tr>
+
+
+
+                <tr class="clickable">
+                    <td width="10%">
+                        <select name="color138125" class="select1 wide form-control">
+
+                            <option value="7" selected="">Gray</option>
+
+                        </select>
+                    </td>
+
+                    <td width="10%">
+                        <select name="size138125" class="select1 wide form-control">
+
+                            <option value="0">N/A</option>
+
+                        </select>
+                    </td>
+
+                    <td><input type="text" name="quantity138125" class="adminInput light wide form-control" value="21"
+                            required="" maxlength="8"></td>
+                    <td>
+                        <div class="form-group no-bottom-margin">
+                            <div class="input-group no-bottom-margin">
+                                <!-- <div class="input-group-addon">$</div> -->
+                                <input type="text" name="runCost138125" class="adminInput light wide form-control"
+                                    value="0.0000" required="" maxlength="8">
+                            </div>
+                        </div>
+                    </td>
+                    <td align="center">+ $16.1900 = $16.1900</td>
+                    <td>
+                        <div class="form-group no-bottom-margin">
+                            <div class="input-group no-bottom-margin">
+                                <!-- <div class="input-group-addon">$</div> -->
+                                <input type="text" name="runPrice138125" class="form-control adminInput light wide"
+                                    value="0.0000" required="" maxlength="8">
+                            </div>
+                        </div>
+                    </td>
+                    <td align="center">+ $26.9900 = $26.9900</td>
+                    <td align="center" valign="top"><input type="checkbox" class="primaryCheck form-control"
+                            name="removeList" value="248483"></td>
+                </tr>
+                <tr class="columnHeader2">
+                    <td colspan="3"></td>
+                    <td align="center">TOTAL:</td>
+                    <td align="center">$339.99</td>
+                    <td align="center">TOTAL:</td>
+                    <td align="center">$566.79</td>
+                    <td></td>
+                </tr>
+
+                <tr class="columnHeader2">
+                    <td colspan="2">GRAND TOTAL:</td>
+                    <td align="center">21</td>
+                    <td></td>
+                    <td align="center">$339.99</td>
+                    <td></td>
+                    <td align="center">$566.79</td>
+                    <td></td>
+                </tr>
+            </tbody>
+        </table>
+        <div class=" flex justify-between align-items-center">
+            <div class="row space-x-1 ">
+                <div class="col-xs-3 add-padding-sm flex justify-between align-items-center">
+                    <div class="alert alert-warning clickable add-padding-sm no-bottom-margin bold"
+                        id="blnOverrideStandardCostPrice_138125Box"
+                        onclick="checkboxColorBoxToggle('blnOverrideStandardCostPrice_138125');">
+                        <div class="container-fluid">
+                            <div class="row">
+                                <div class="col-xs-11 no-padding">Override Standard Cost/Price:</div>
+                                <div class="col-xs-1 no-padding text-right">
+                                    <input type="checkbox" name="blnOverrideStandardCostPrice"
+                                        id="blnOverrideStandardCostPrice_138125" value="1"
+                                        onclick="checkboxColorBoxToggle('blnOverrideStandardCostPrice_138125');">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-xs-3 add-padding-sm  flex justify-between align-items-center">
+                    <div class="alert alert-warning clickable add-padding-sm no-bottom-margin no-margin bold"
+                        id="blnOverrideCostPrice_138125Box"
+                        onclick="checkboxColorBoxToggle('blnOverrideCostPrice_138125');">
+                        <div class="container-fluid">
+                            <div class="row">
+                                <div class="col-xs-11 no-padding">Override Unit Cost/Price:</div>
+                                <div class="col-xs-1 no-padding text-right">
+                                    <input type="checkbox" name="blnOverrideCostPrice" id="blnOverrideCostPrice_138125"
+                                        value="1" onclick="checkboxColorBoxToggle('blnOverrideCostPrice_138125');">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-xs-3 add-padding-sm  flex justify-between align-items-center">
+                    <div class="alert alert-warning clickable add-padding-sm no-bottom-margin bold"
+                        id="blnOverrideShippingOptons_138125Box"
+                        onclick="checkboxColorBoxToggle('blnOverrideShippingOptons_138125');">
+                        <div class="container-fluid">
+                            <div class="row">
+                                <div class="col-xs-11 no-padding">Override Shipping:</div>
+                                <div class="col-xs-1 no-padding text-right">
+                                    <input type="checkbox" name="blnOverrideShippingOptions"
+                                        id="blnOverrideShippingOptons_138125" value="1"
+                                        onclick="checkboxColorBoxToggle('blnOverrideShippingOptons_138125');">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div>
+                <button mat-button mat-stroked-button id="updateProductOptionsButton_138125"
+                    onclick="updateForm('updateProductOptions', '', ['updateProductOptions_container_138125', 'updateImprint_container_138125','addImprint_container_138125', 'royalties_container_138125']);">Update
+                    options</button>
+            </div>
+        </div>
     </div>
     <div id="products" class="">
 
@@ -115,126 +292,7 @@
                     </div>
 
                     <div id="updateProductOptions_container_138125">
-                        <table
-                            class="table table-striped table-bordered table-condensed table-hover padding-1x wide no-bottom-margin"
-                            id="updateProductOptionsTable_138125">
-                            <thead>
-                                <tr class="columnHeader2">
-                                    <td width="20%" colspan="2">COLOR/SIZE</td>
-                                    <td width="5%" align="center">QTY</td>
-                                    <td width="20%" colspan="2" align="center">COST</td>
-                                    <td width="20%" colspan="2" align="center">PRICE</td>
-                                    <td width="1%" align="center" valign="middle"><span
-                                            class="fa fa-trash fa-lg"></span></td>
-                                </tr>
-                            </thead>
 
-                            <tbody>
-                                <tr>
-                                    <td colspan="2"></td>
-                                    <td></td>
-                                    <td colspan="2">
-                                        <b>Standard Cost:</b><br>
-                                        <div class="form-grou no-bottom-marginp">
-                                            <div class="input-group no-bottom-margin">
-                                                <div class="input-group-addon">$</div>
-                                                <input type="text" name="standardCost" class="adminInput light wide"
-                                                    maxlength="8" required="" value="16.1900" id="standardCost_138125">
-                                            </div>
-                                        </div>
-                                    </td>
-
-                                    <td colspan="2">
-                                        <b>Standard Price:</b><br>
-                                        <div class="form-group no-bottom-margin">
-                                            <div class="input-group no-bottom-margin">
-                                                <div class="input-group-addon">$</div>
-                                                <input type="text" name="standardPrice" class="adminInput light wide"
-                                                    maxlength="8" required="" value="26.9900" id="standardPrice_138125">
-                                            </div>
-                                        </div>
-                                    </td>
-                                    <td></td>
-                                </tr>
-
-                                <tr>
-                                    <td>
-                                        <b>Color</b>
-
-                                    </td>
-                                    <td><b>Size</b></td>
-                                    <td></td>
-                                    <td align="center"><b>Unit</b></td>
-                                    <td align="center"><b>Total</b></td>
-                                    <td align="center"><b>Unit</b></td>
-                                    <td align="center"><b>Total</b></td>
-                                    <td></td>
-                                </tr>
-
-
-
-                                <tr class="clickable">
-                                    <td width="10%">
-                                        <select name="color138125" class="select1 wide">
-
-                                            <option value="7" selected="">Gray</option>
-
-                                        </select>
-                                    </td>
-
-                                    <td width="10%">
-                                        <select name="size138125" class="select1 wide">
-
-                                            <option value="0">N/A</option>
-
-                                        </select>
-                                    </td>
-
-                                    <td><input type="text" name="quantity138125" class="adminInput light wide"
-                                            value="21" required="" maxlength="8"></td>
-                                    <td>
-                                        <div class="form-group no-bottom-margin">
-                                            <div class="input-group no-bottom-margin">
-                                                <div class="input-group-addon">$</div>
-                                                <input type="text" name="runCost138125" class="adminInput light wide"
-                                                    value="0.0000" required="" maxlength="8">
-                                            </div>
-                                        </div>
-                                    </td>
-                                    <td align="center">+ $16.1900 = $16.1900</td>
-                                    <td>
-                                        <div class="form-group no-bottom-margin">
-                                            <div class="input-group no-bottom-margin">
-                                                <div class="input-group-addon">$</div>
-                                                <input type="text" name="runPrice138125" class="adminInput light wide"
-                                                    value="0.0000" required="" maxlength="8">
-                                            </div>
-                                        </div>
-                                    </td>
-                                    <td align="center">+ $26.9900 = $26.9900</td>
-                                    <td align="center" valign="top"><input type="checkbox" class="primaryCheck"
-                                            name="removeList" value="248483"></td>
-                                </tr>
-                                <tr class="columnHeader2">
-                                    <td colspan="3"></td>
-                                    <td align="center">TOTAL:</td>
-                                    <td align="center">$339.99</td>
-                                    <td align="center">TOTAL:</td>
-                                    <td align="center">$566.79</td>
-                                    <td></td>
-                                </tr>
-
-                                <tr class="columnHeader2">
-                                    <td colspan="2">GRAND TOTAL:</td>
-                                    <td align="center">21</td>
-                                    <td></td>
-                                    <td align="center">$339.99</td>
-                                    <td></td>
-                                    <td align="center">$566.79</td>
-                                    <td></td>
-                                </tr>
-                            </tbody>
-                        </table>
                     </div>
                     <br>
 

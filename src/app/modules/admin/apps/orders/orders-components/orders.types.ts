@@ -104,6 +104,7 @@ export interface addComments {
     store_id: number;
     store_userId: number;
     store_name: string;
+    company_name: string;
     internalComments: string;
     add_comment: true;
 };
