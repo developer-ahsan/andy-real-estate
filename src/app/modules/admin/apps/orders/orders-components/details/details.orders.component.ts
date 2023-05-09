@@ -167,7 +167,7 @@ export class OrdersDetailsComponent implements OnInit, OnDestroy {
     clicked(item) {
         if (item.route != this.selectedRoute) {
             if (item.title == 'Customer Info') {
-                let route = '/apps/ecommerce/customers/' + this.selectedOrderDetail.fk_storeUserID;
+                let route = '/apps/customers/' + this.selectedOrderDetail.fk_storeUserID;
                 this._router.navigate([route]);
             } else {
                 this.selectedScreeen = item.title;

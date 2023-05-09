@@ -1,0 +1,52 @@
+<div class="inset-0 min-w-50 overflow-hidden mt-5 bg-card dark:bg-transparent w-full">
+    <ngx-skeleton-loader count="8" appearance="line" animation="pulse" *ngIf="isLoading">
+    </ngx-skeleton-loader>
+    <div *ngIf="!isLoading">
+        <div class="flex-auto">
+            <b class="text-2xl" style="color: #64748b; line-height: 2;">Registration Emails</b>
+        </div>
+        <div class="border p-3 mt-2">
+            <b class="text-1xl">This will resend the registration email to the customer.</b>
+            <p class="text-1xl">Select which store you want to send the registration emails from:</p>
+            <p class="text-info"><i class="fa fa-info-circle mr-3"></i>Below are all the stores this user is registered
+                on</p>
+            <mat-divider class="mb-2"></mat-divider>
+            <div class="w-full">
+                <form>
+                    <div class="row w-full">
+                        <div class="col-12">
+                            <mat-form-field class="w-full">
+                                <mat-select [(ngModel)]="selectedStore" name="store">
+                                    <mat-option (click)="storeSelection(store)" *ngFor="let store of storesList"
+                                        [value]="store">
+                                        {{store.storeName}}
+                                    </mat-option>
+                                </mat-select>
+                            </mat-form-field>
+                        </div>
+                    </div>
+                    <div class="border-t">
+                        <div class="flex items-center mt-2 justify-content-end">
+                            <div class="flex items-center mr-4" *ngIf="flashMessage">
+                                <ng-container *ngIf="flashMessage === 'success'">
+                                    <mat-icon class="text-green-500" [svgIcon]="'heroicons_outline:check'"></mat-icon>
+                                    <span class="ml-2">Email sent</span>
+                                </ng-container>
+                                <ng-container *ngIf="flashMessage === 'error'">
+                                    <mat-icon class="text-red-500" [svgIcon]="'heroicons_outline:x'"></mat-icon>
+                                    <span class="ml-2">An error occurred, try again!</span>
+                                </ng-container>
+                            </div>
+
+                            <!-- Add Reminder button -->
+                            <button mat-flat-button [color]="'primary'" (click)="sendEmail()">
+                                <mat-icon svgIcon="mat_solid:send"></mat-icon>
+                                <span class="ml-2 mr-1">Re-send registration emails</span>
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

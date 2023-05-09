@@ -67,6 +67,7 @@ import { GroupOrdersShippingComponent } from './orders-components/navigation/gro
 import { OrderPaymentBillComponent } from './orders-components/navigation/order-payments-bill/order-payments-billcomponent';
 import { NgxStripeModule } from 'ngx-stripe';
 import { ProductsOrderModifyComponent } from './orders-components/navigation/order-modify/products-modify.component';
+import { QuillModule } from 'ngx-quill';
 
 @NgModule({
     declarations: [
@@ -139,7 +140,8 @@ import { ProductsOrderModifyComponent } from './orders-components/navigation/ord
         MatAutocompleteModule,
         MatSnackBarModule,
         FuseCardModule,
-        NgxStripeModule
+        NgxStripeModule,
+        QuillModule.forRoot()
     ],
 })
 export class OrdersModule {

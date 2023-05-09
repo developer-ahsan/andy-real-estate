@@ -291,3 +291,32 @@ interface OrderLine {
     blnWarehouse: boolean;
     quantity: number;
 };
+
+// Modify Orders
+export interface UpdateRoyalties {
+    royalty_price: number;
+    orderLine_id: number;
+    update_royalty: boolean;
+};
+export interface UpdateShipping {
+    shipping_price: number;
+    shipping_cost: number;
+    orderLine_id: number;
+    update_shipping: boolean;
+};
+
+// Add Product Options
+export interface AddProduct {
+    orderLine_id: number,
+    colorID: number,
+    sizeID: number,
+    quantity: number,
+    runCost: number,
+    setupCost: number,
+    runPrice: number,
+    setupPrice: number,
+    bln_apparel: boolean;
+    bln_sample: boolean;
+    blnOverride: boolean;
+    modify_order_add_product: boolean;
+};

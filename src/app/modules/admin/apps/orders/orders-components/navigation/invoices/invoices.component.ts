@@ -113,7 +113,6 @@ export class InvoicesComponent implements OnInit {
           this.getLineProducts(value.toString());
         }
       });
-      // this.orderProducts = res["data"];
     })
   }
   getLineProducts(value) {
@@ -189,6 +188,7 @@ export class InvoicesComponent implements OnInit {
       });
 
       this.orderProducts = data;
+      console.log(this.orderProducts)
       this.getProductTotal();
       this.isLoading = false;
       this.isLoadingChange.emit(false);

@@ -554,7 +554,7 @@ export class LocationsComponent implements OnInit, OnDestroy {
     }, 1000);
   }
   goToCustomers(user) {
-    let url = `apps/ecommerce/customers/${user.fk_userID}`;
+    let url = `apps/customers/${user.fk_userID}`;
     this.router.navigate([]).then((result) => {
       window.open(url, '_blank');
     });

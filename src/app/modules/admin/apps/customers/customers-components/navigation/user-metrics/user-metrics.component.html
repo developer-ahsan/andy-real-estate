@@ -1,0 +1,49 @@
+<div class="w-full" *ngIf="isLoading">
+    <ngx-skeleton-loader count="8" appearance="line" animation="pulse">
+    </ngx-skeleton-loader>
+</div>
+<div class="row w-full" *ngIf="!isLoading">
+    <div class="p-6 w-full">
+        <div class="text-3xl font-bold">
+            User Metrics
+        </div>
+    </div>
+    <div class="col-12 my-2">
+        <fuse-card class="flex flex-col lg:flex-row bg-card rounded-2xl filter-pricing shadow">
+            <div class="p-6 sm:p-8 lg:p-10 w-full">
+                <div class="text-2xl font-bold">Stores Visited</div>
+                <div class="flex items-center mt-10">
+                    <div class="font-medium text-secondary">Stores Logged In</div>
+                    <div class="flex-auto ml-2 border-b-2"></div>
+                </div>
+                <!-- Stores -->
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-y-4 mt-6">
+                    <div class="flex items-center" *ngFor="let store of storeNames">
+                        <mat-icon class="icon-size-5 text-primary" [svgIcon]="'heroicons_solid:check-circle'">
+                        </mat-icon>
+                        <div class="ml-2">{{store.storeName}}</div>
+                    </div>
+                </div>
+            </div>
+        </fuse-card>
+    </div>
+
+    <div class="col-12 my-2">
+        <fuse-card class="flex flex-col lg:flex-row bg-card rounded-2xl filter-pricing">
+            <div class="p-6 sm:p-8 lg:p-10">
+                <div class="text-2xl font-bold">Registration Information</div>
+
+                <!-- Registrations -->
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-y-4 gap-x-30 mt-6">
+                    <div *ngFor="let register of registersInfo">
+                        <div class="ml-2 font-semibold">{{register.metricsTypeName}}</div>
+                        <div class="text-sm">
+                            <span class="mx-2">&bull;</span>
+                            {{register.metric || 'Not provided'}}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </fuse-card>
+    </div>
+</div>

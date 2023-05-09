@@ -1,0 +1,57 @@
+<div class="w-full" *ngIf="isLoading">
+    <ngx-skeleton-loader count="8" appearance="line" animation="pulse">
+    </ngx-skeleton-loader>
+</div>
+<div class="row w-full" *ngIf="!isLoading">
+    <div class="p-6 w-full">
+        <div class="text-3xl font-bold">
+            Credit Terms
+        </div>
+    </div>
+    <div class="col-12 my-2">
+        <fuse-card class="flex flex-col lg:flex-row bg-card rounded-2xl filter-pricing shadow">
+            <div class="p-6 sm:p-8 lg:p-10 w-full">
+                <div class="text-2xl font-bold">User Credit Terms</div>
+
+                <!-- Credit Term Options -->
+                <div class="grid grid-cols-1 gap-y-4 mt-6">
+                    <mat-radio-group aria-labelledby="example-radio-group-label" class="example-radio-group"
+                        [(ngModel)]="selected_credit_term">
+                        <mat-radio-button class="example-radio-button" *ngFor="let credit_term of credit_term_options;"
+                            [value]="credit_term">
+                            <p [ngStyle]="credit_term.creditTermName === 'Expired' ?
+                                {'color':'#d9534f'} : 
+                                {'color': '#292b2c'}">
+                                {{credit_term.creditTermName}}
+                                <span class="ml-2" *ngIf="credit_term.creditTermDesc?.length">
+                                    <i class="fa fa-question-circle" matTooltip="{{credit_term.creditTermDesc}}"></i>
+                                </span>
+                            </p>
+                        </mat-radio-button>
+                    </mat-radio-group>
+
+                    <div class="flex items-center justify-end w-full px-8 py-4">
+                        <div class="flex items-center">
+                            <div class="flex items-center mr-4" *ngIf="flashMessage">
+                                <ng-container *ngIf="flashMessage === 'success'">
+                                    <mat-icon class="text-green-500" [svgIcon]="'heroicons_outline:check'"></mat-icon>
+                                    <span class="ml-2">Credit term updated successfully</span>
+                                </ng-container>
+                                <ng-container *ngIf="flashMessage === 'error'">
+                                    <mat-icon class="text-red-500" [svgIcon]="'heroicons_outline:x'"></mat-icon>
+                                    <span class="ml-2">An error occurred, try again!</span>
+                                </ng-container>
+                            </div>
+                            <button class="w-40" mat-stroked-button (click)="updateCreditTerm()"
+                                [disabled]="updateLoader">
+                                <mat-progress-spinner *ngIf="updateLoader" [diameter]="24" [mode]="'indeterminate'">
+                                </mat-progress-spinner>
+                                <span *ngIf="!updateLoader">Update</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </fuse-card>
+    </div>
+</div>

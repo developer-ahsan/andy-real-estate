@@ -1,0 +1,256 @@
+<div class="absolute inset-0 flex flex-col min-w-0 overflow-y-auto bg-light dark:bg-transparent">
+    <!-- Header -->
+    <div
+        class="relative bg-light flex flex-col sm:flex-row flex-0 sm:items-center sm:justify-between py-2 px-6 md:px-8 border-b">
+        <!-- Loader -->
+        <!-- <div class="absolute inset-x-0 bottom-1" *ngIf="isLoading">
+            <mat-progress-bar [mode]="'indeterminate'"></mat-progress-bar>
+        </div> -->
+        <!-- Title -->
+        <!-- Title -->
+        <div class="text-3xl font-extrabold tracking-tight">Customer Details</div>
+        <!-- Actions -->
+        <div class="flex flex-shrink-0 items-center mt-6 sm:mt-0 sm:ml-4">
+            <!-- Back to Customers Page button -->
+            <button class="ml-4" mat-flat-button [color]="'primary'" (click)="backToCustomersScreen()">
+                <mat-icon [svgIcon]="'heroicons_outline:arrow-narrow-left'"></mat-icon>
+                <span class="ml-2 mr-1">Back to Customers</span>
+            </button>
+        </div>
+    </div>
+
+    <mat-drawer-container class="sub-nav-component bg-light" autosize>
+        <mat-drawer #drawer class="sub-sidenav bg-light" [mode]="drawerMode" [opened]="drawerOpened">
+            <div *ngFor="let route of routes;let i = index">
+                <mat-expansion-panel class="bg-light" #panel [class.mat-elevation-z0]="true" dense
+                    *ngIf="route.children.length == 0" hideToggle (click)="clicked(route)" (opened)="doSomething()">
+                    <mat-expansion-panel-header
+                        [style.background-color]="route.title === selectedScreeen ? '#d4d7dd' : 'transparent'"
+                        [ngClass]="route.title === selectedScreeen ? 'opacity-100' : 'opacity-80'">
+                        <mat-icon svgIcon="{{route.icon}}" class="icon-size-5 text-primary"></mat-icon>
+                        <span style="font-size: 13px; font-weight: bold; margin-left: 10px;"> {{route.title}} </span>
+                    </mat-expansion-panel-header>
+                </mat-expansion-panel>
+                <mat-expansion-panel class="bg-light" [expanded]="true" [class.mat-elevation-z0]="true" dense
+                    *ngIf="route.children.length > 0">
+                    <mat-expansion-panel-header class="bg-light"
+                        [ngClass]="route.title === selectedScreeen ? 'opacity-100' : 'opacity-80'">
+                        <mat-icon svgIcon="{{route.icon}}" class="icon-size-5 text-primary"></mat-icon>
+                        <span style="font-size: 13px; font-weight: bold; margin-left: 10px;"> {{route.title}} </span>
+                    </mat-expansion-panel-header>
+                    <mat-nav-list dense *ngFor="let child of route.children" class="bg-light">
+                        <button style="padding: 15px;"
+                            [style.background-color]="child.title === selectedScreeen ? '#d4d7dd' : 'transparent'"
+                            [ngClass]="child.title === selectedScreeen ? 'opacity-100' : 'opacity-80'" mat-button
+                            class="w-full my-1 mr-2 justify-content-start" (click)="clicked(child)">
+                            <mat-icon svgIcon="{{child.icon}}" class="icon-size-5 text-primary"></mat-icon>
+                            <span style="font-size: 13px; font-weight: bold; margin-left: 10px;"> {{child.title}}
+                            </span>
+                        </button>
+                    </mat-nav-list>
+                </mat-expansion-panel>
+            </div>
+        </mat-drawer>
+
+        <div class="sub-sidenav-content bg-light p-2" #topScrollAnchor>
+            <mat-icon class="subnav-menu-icon ml-1" svgIcon="heroicons_outline:menu" (click)="toggleDrawer()">
+            </mat-icon>
+            <ng-template #myCard>
+                <div class="bg-card shadow-lg p-4">
+                    <div class="flex items-center">
+                        <div class="text-2xl font-bold">Customer General Information</div>
+                    </div>
+                    <div class="row w-full">
+                        <div class="col-lg-4 col-md-6 col-12">
+                            <b class="text-secondary text-sm">ID</b>
+                            <p class="float-right text-sm">{{selectedCustomer?.pk_userID || not_available}}</p>
+                        </div>
+                        <div class="col-lg-4 col-md-6 col-12">
+                            <b class="text-secondary text-sm">Name</b>
+                            <p class="float-right text-sm">
+                                {{selectedCustomer?.firstName || not_available}}
+                                {{selectedCustomer?.lastName || not_available}}
+                            </p>
+                        </div>
+                        <div class="col-lg-4 col-md-6 col-12">
+                            <b class="text-secondary text-sm">Company Name</b>
+                            <p class="float-right text-sm">{{selectedCustomer?.companyName || not_available}}</p>
+                        </div>
+                        <div class="col-lg-4 col-md-6 col-12">
+                            <b class="text-secondary text-sm">Email</b>
+                            <p class="float-right text-sm">{{selectedCustomer?.email || not_available}}</p>
+                        </div>
+                        <div class="col-lg-4 col-md-6 col-12">
+                            <b class="text-secondary text-sm">Phone</b>
+                            <p class="float-right text-sm">{{selectedCustomer?.dayPhone || not_available}}</p>
+                        </div>
+                        <div class="col-lg-4 col-md-6 col-12">
+                            <b class="text-secondary text-sm">Address</b>
+                            <p class="float-right text-sm">{{selectedCustomer?.address1 || not_available}}</p>
+                        </div>
+                        <div class="col-lg-4 col-md-6 col-12">
+                            <b class="text-secondary text-sm">Fax</b>
+                            <p class="float-right text-sm">{{selectedCustomer?.fax || not_available}}</p>
+                        </div>
+                        <div class="col-lg-4 col-md-6 col-12">
+                            <b class="text-secondary text-sm">Program Manager</b>
+                            <p class="float-right text-sm">{{selectedCustomer?.programManager || not_available}}</p>
+                        </div>
+                    </div>
+                </div>
+            </ng-template>
+            <div class="row">
+                <div class="col-12 my-3">
+                    <ng-container *ngTemplateOutlet="myCard"></ng-container>
+                </div>
+                <div class="col-12">
+                    <router-outlet></router-outlet>
+                </div>
+                <!-- <div class="col-12">
+                    <ng-template [ngIf]="selectedScreeen == 'Summary'">
+                        <app-orders-summary [selectedOrder]="selectedOrder" [(isLoading)]="isLoading">
+                        </app-orders-summary>
+                    </ng-template>
+                </div>
+                <div class="col-12">
+                    <ng-template [ngIf]="selectedScreeen == 'Entities List'">
+                        <app-orders-entities-list [selectedOrder]="selectedOrder" [(isLoading)]="isLoading">
+                        </app-orders-entities-list>
+                    </ng-template>
+                </div>
+                <div class="col-12">
+                    <ng-template [ngIf]="selectedScreeen == 'Order Report'">
+                        <app-orders-report [(isLoading)]="isLoading" [selectedOrder]="selectedOrder">
+                        </app-orders-report>
+                    </ng-template>
+                </div>
+                <div class="col-12">
+                    <ng-template [ngIf]="selectedScreeen == 'Order Original Report'">
+                        <app-original-order-report [selectedOrder]="selectedOrder" [(isLoading)]="isLoading">
+                        </app-original-order-report>
+                    </ng-template>
+                </div>
+                <div class="col-12">
+                    <ng-template [ngIf]="selectedScreeen == 'Comments'">
+                        <app-order-comments [selectedOrder]="selectedOrder" [(isLoading)]="isLoading">
+                        </app-order-comments>
+                    </ng-template>
+                </div>
+                <div class="col-12">
+                    <ng-template [ngIf]="selectedScreeen == 'Modify Orders'">
+                        <app-order-modify [selectedOrder]="selectedOrder" [(isLoading)]="isLoading">
+                        </app-order-modify>
+                    </ng-template>
+                </div>
+                <div class="col-12">
+                    <ng-template [ngIf]="selectedScreeen == 'Adjustments'">
+                        <app-order-adjustment [selectedOrder]="selectedOrder" [(isLoading)]="isLoading">
+                        </app-order-adjustment>
+                    </ng-template>
+                </div>
+                <div class="col-12">
+                    <ng-template [ngIf]="selectedScreeen == 'Art Approval Settings'">
+                        <app-order-approval-settings [selectedOrder]="selectedOrder" [(isLoading)]="isLoading">
+                        </app-order-approval-settings>
+                    </ng-template>
+                </div>
+                <div class="col-12">
+                    <ng-template [ngIf]="selectedScreeen == 'Procurement Data'">
+                        <app-order-procurement-data [selectedOrder]="selectedOrder" [(isLoading)]="isLoading">
+                        </app-order-procurement-data>
+                    </ng-template>
+                </div>
+                <div class="col-12">
+                    <ng-template [ngIf]="selectedScreeen == 'Enter Payments'">
+                        <app-order-payments [selectedOrder]="selectedOrder" [(isLoading)]="isLoading">
+                        </app-order-payments>
+                    </ng-template>
+                </div>
+                <div class="col-12">
+                    <ng-template [ngIf]="selectedScreeen == 'Invoice'">
+                        <app-orders-invoice [(isLoading)]="isLoading" [selectedOrder]="selectedOrder">
+                        </app-orders-invoice>
+                    </ng-template>
+                </div>
+                <div class="col-12">
+                    <ng-template [ngIf]="selectedScreeen == 'Purchase Orders'">
+                        <app-orders-purchases [selectedOrder]="selectedOrder" [(isLoading)]="isLoading">
+                        </app-orders-purchases>
+                    </ng-template>
+                </div>
+                <div class="col-12">
+                    <ng-template [ngIf]="selectedScreeen == 'Order Flags'">
+                        <app-order-flags sm:p-8 lg:p-10 w-full [selectedOrder]="selectedOrder"
+                            [(isLoading)]="isLoading">
+                        </app-order-flags>
+                    </ng-template>
+                </div>
+                <div class="col-12">
+                    <ng-template [ngIf]="selectedScreeen == 'Shipping Report'">
+                        <app-orders-shipping-reports [(isLoading)]="isLoading" [selectedOrder]="selectedOrder">
+                        </app-orders-shipping-reports>
+                    </ng-template>
+                </div>
+                <div class="col-12">
+                    <ng-template [ngIf]="selectedScreeen == 'Cost Analysis'">
+                        <app-cost-analysis [(isLoading)]="isLoading" [selectedOrder]="selectedOrder">
+                        </app-cost-analysis>
+                    </ng-template>
+                </div>
+                <div class="col-12">
+                    <ng-template [ngIf]="selectedScreeen == 'Survey'">
+                        <app-order-survey [selectedOrder]="selectedOrder" [(isLoading)]="isLoading"></app-order-survey>
+                    </ng-template>
+                </div>
+                <div class="col-12">
+                    <ng-template [ngIf]="selectedScreeen == 'Artwork Details'">
+                        <app-order-artwork [selectedOrder]="selectedOrder" [(isLoading)]="isLoading">
+                        </app-order-artwork>
+                    </ng-template>
+                </div>
+                <div class="col-12">
+                    <ng-template [ngIf]="selectedScreeen == 'Send Reorder Email'">
+                        <app-order-reorder-email [selectedOrder]="selectedOrder" [(isLoading)]="isLoading">
+                        </app-order-reorder-email>
+                    </ng-template>
+                </div>
+                <div class="col-12">
+                    <ng-template [ngIf]="selectedScreeen == 'Send Review Email'">
+                        <app-order-review-email [selectedOrder]="selectedOrder" [(isLoading)]="isLoading">
+                        </app-order-review-email>
+                    </ng-template>
+                </div>
+                <div class="col-12">
+                    <ng-template [ngIf]="selectedScreeen == 'Payment Link Email'">
+                        <app-order-payment-email [selectedOrder]="selectedOrder" [(isLoading)]="isLoading">
+                        </app-order-payment-email>
+                    </ng-template>
+                </div>
+                <div class="col-12">
+                    <ng-template [ngIf]="selectedScreeen == 'Send Receipt Email'">
+                        <app-order-receipt-email [selectedOrder]="selectedOrder" [(isLoading)]="isLoading">
+                        </app-order-receipt-email>
+                    </ng-template>
+                </div>
+                <div class="col-12">
+                    <ng-template [ngIf]="selectedScreeen == 'Timeline'">
+                        <app-timeline [selectedOrder]="selectedOrder" [(isLoading)]="isLoading"></app-timeline>
+                    </ng-template>
+                </div>
+                <div class="col-12">
+                    <ng-template [ngIf]="selectedScreeen == 'Incident Reports'">
+                        <app-incident-reports [(isLoading)]="isLoading" [selectedOrder]="selectedOrder">
+                        </app-incident-reports>
+                    </ng-template>
+                </div>
+                <div class="col-12">
+                    <ng-template [ngIf]="selectedScreeen == 'FLPS'">
+                        <app-flps-users [(isLoading)]="isLoading"></app-flps-users>
+                    </ng-template>
+                </div> -->
+            </div>
+        </div>
+
+    </mat-drawer-container>
+
+</div>

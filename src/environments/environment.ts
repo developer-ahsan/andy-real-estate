@@ -11,7 +11,7 @@ export const environment = {
   mediaAccessUrl: "https://admin.consolidus.com/ssadm/imageUpload.cfm",
   customerList: "http://localhost:7071/api/users",
   customer: "http://localhost:7071/api/user",
-  orders: "http://localhost:7071/api/orders",
+  orders: "https://consolidus.azurewebsites.net/api/orders",
   stores: "http://localhost:7100/api/stores",
   storeNewUrl: "http://localhost:7100/api/stores",
   storeNewUrlRapidBuild: "https://stores-staging.azurewebsites.net/api/rapid_build",

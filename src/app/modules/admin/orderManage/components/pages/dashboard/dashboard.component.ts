@@ -118,7 +118,7 @@ export class OrderManageDashboardComponent implements OnInit, OnDestroy {
   goToOrderDetails(item) {
     console.log(item)
     const queryParams: NavigationExtras = {
-      queryParams: { fk_orderID: item.fk_orderID, pk_orderLineID: item.pk_orderLineID }
+      queryParams: { fk_orderID: item.fk_orderID, pk_orderLineID: item.pk_orderLineID, pk_orderLinePOID: item.pk_orderLinePOID }
     };
     this.router.navigate(['/ordermanage/order-details'], queryParams);
   }

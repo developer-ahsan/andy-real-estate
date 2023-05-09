@@ -176,7 +176,7 @@ export class SearchComponent implements OnChanges, OnInit, OnDestroy {
             // this.router.navigateByUrl('/', { skipLocationChange: true }).then(() => {
             //     this.router.navigate(['/apps/ecommerce/inventory'])
             // });
-            this.router.navigateByUrl('/apps/ecommerce/customers');
+            this.router.navigateByUrl('/apps/customers');
         }
         this.close();
     }

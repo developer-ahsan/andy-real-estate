@@ -8,46 +8,59 @@ import { environment } from 'environments/environment';
 import moment from 'moment';
 import { IDropdownSettings } from 'ng-multiselect-dropdown';
 import { Subject } from 'rxjs';
-import { debounceTime, finalize, switchMap, takeUntil, tap } from 'rxjs/operators';
+import { debounceTime, distinctUntilChanged, filter, finalize, switchMap, takeUntil, tap } from 'rxjs/operators';
 import { OrdersService } from '../../orders.service';
-import { addComment, contactInfoObj, paymentInfoObj, shippingDetailsObj } from '../../orders.types';
+import { AddProduct, UpdateRoyalties, UpdateShipping, addComment, contactInfoObj, paymentInfoObj, shippingDetailsObj } from '../../orders.types';
 
 @Component({
   selector: 'app-products-modify',
   templateUrl: './products-modify.component.html',
-  styles: ['::-webkit-scrollbar {width: 2px !important}']
+  styles: ['::-webkit-scrollbar {width: 2px !important} ::ng-deep {.ql-container {height: auto}}']
 })
 export class ProductsOrderModifyComponent implements OnInit, OnDestroy {
   @Input() isLoading: boolean;
-  selectedOrder: any;
+  orderDetail: any;
   @Output() isLoadingChange = new EventEmitter<boolean>();
   private _unsubscribeAll: Subject<any> = new Subject<any>();
+  orderTotal: any;
+  orderProducts: any;
+  orderLines: any;
+  ngSelectedProduct: any;
+  ngSelectedImprint: any;
 
-  mainScreen: string = 'Contact Information';
-  currentComments: any;
-
-  dropdownList = [{ id: 1, name: 'ahsan' }, { id: 2, name: 'ahsan1' }];
-  dropdownSettings: IDropdownSettings = {};
-  addOnBlur = true;
-  readonly separatorKeysCodes = [ENTER, COMMA] as const;
-
-  emails = [];
-  resultEmails = [];
-  public emailControl = new FormControl;
-  isEmailLoader: boolean = false;
-  emailSelected = [];
-  user: any;
-
-  isAddCommentLoader: boolean = false;
-  ngComment: string = '';
-
-  billingShippingForm: FormGroup;
-  shippingForm: FormGroup;
-  paymentForm: FormGroup;
-  paymentMethods: any;
-  isBillingLoader: boolean = false;
+  isRoyaltyLoader: boolean = false;
   isShippingLoader: boolean = false;
-  isPaymentLoader: boolean = false;
+
+  isOrderLineDetailsLoader: boolean = false;
+
+  // Add Product options
+  ngColor = 0;
+  ngSize = 0;
+  ngQuantity = 0;
+  ngOverrideShipping: boolean = false;
+  isAddOptionLoader: boolean = false;
+  // AddImprintOption
+  ngImrintId = '';
+
+  quillModules: any = {
+    toolbar: [
+      ["bold", "italic", "underline", "strike"],
+      ["blockquote", "code-block"],
+      [{ color: [] }, { background: [] }],
+      [{ font: [] }],
+      [{ align: [] }],
+      ["clean"],
+    ],
+  };
+
+  // Products
+  allProducts = [];
+  searchProductCtrl = new FormControl();
+  currentSearchProductCtrl = new FormControl();
+  selectedProduct: any;
+  currentSelectedProduct: any;
+  isSearchingProduct = false;
+  orderLinesItems: any;
   constructor(
     private _changeDetectorRef: ChangeDetectorRef,
     private _orderService: OrdersService,
@@ -55,215 +68,389 @@ export class ProductsOrderModifyComponent implements OnInit, OnDestroy {
     private _snackBar: MatSnackBar
   ) { }
 
-  formInitialization() {
-    this.paymentMethods = [
-      {
-        id: 1,
-        name: 'Online Credit Card'
-      },
-      {
-        id: 5,
-        name: 'Third Party Payment'
-      },
-      {
-        id: 3,
-        name: 'Prepayment'
-      },
-      {
-        id: 4,
-        name: 'Credit Terms'
+
+  ngOnInit(): void {
+    this.isLoading = true;
+    this._orderService.orderDetail$.pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+      if (res["data"].length) {
+        this.orderDetail = res["data"][0];
+        let params = {
+          order_total: true,
+          order_id: this.orderDetail.pk_orderID
+        }
+        this._orderService.getOrder(params).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+          this.orderTotal = res["data"][0];
+        })
       }
-    ]
-    this.billingShippingForm = new FormGroup({
-      billingCompanyName: new FormControl('', Validators.required),
-      billingFirstName: new FormControl('', Validators.required),
-      billingLastName: new FormControl('', Validators.required),
-      billingLocation: new FormControl(''),
-      billToDeliverTo: new FormControl(''),
-      billingAddress: new FormControl('', Validators.required),
-      billingCity: new FormControl('', Validators.required),
-      billingState: new FormControl('', Validators.required),
-      billingZip: new FormControl('', Validators.required),
-      billingCountry: new FormControl('', Validators.required),
-      billingPhone: new FormControl('', Validators.required),
-      billingEmail: new FormControl('', Validators.required),
-      shippingCompanyName: new FormControl('', Validators.required),
-      shippingFirstName: new FormControl('', Validators.required),
-      shippingLastName: new FormControl('', Validators.required),
-      shippingLocation: new FormControl(''),
-      shipToDeliverTo: new FormControl(''),
-      shippingAddress: new FormControl('', Validators.required),
-      shippingCity: new FormControl('', Validators.required),
-      shippingState: new FormControl('', Validators.required),
-      shippingZip: new FormControl('', Validators.required),
-      shippingZipExt: new FormControl(''),
-      shippingCountry: new FormControl('', Validators.required),
-      shippingPhone: new FormControl('', Validators.required),
-      shippingEmail: new FormControl('', Validators.required),
-      accountChargeCode: new FormControl('')
+    })
+    this.getOrderProducts();
+    this.getProductsControl();
+  }
+  getProductsControl() {
+    let data = this.orderLines.filter(data => data.pk_orderLineID == this.ngSelectedProduct?.order_line_id);
+
+    let getGroupRunProducts = false;
+    let getWarehouseProducts = false;
+    let getProducts = false;
+    if (data.length > 0) {
+      if (data[0].blnGroupRun && data[0].groupRunOrderLineID) {
+        getGroupRunProducts = true;
+      } else if (data[0].blnWarehouse) {
+        getWarehouseProducts = true;
+      } else {
+        getProducts = true;
+      }
+    }
+
+    let params;
+    this.searchProductCtrl.valueChanges.pipe(
+      filter((res: any) => {
+        params = {
+          store_id: this.orderDetail.fk_storeID,
+          groupRunProducts: getGroupRunProducts,
+          getWarehouseProducts: getWarehouseProducts,
+          getProducts: getProducts,
+          modify_orders_current_products: true,
+        }
+        return res !== null && res.length >= 3
+      }),
+      distinctUntilChanged(),
+      debounceTime(300),
+      tap(() => {
+        this.allProducts = [];
+        this.isSearchingProduct = true;
+        this._changeDetectorRef.markForCheck();
+      }),
+      switchMap(value => this._orderService.getOrderCommonCall(params)
+        .pipe(
+          finalize(() => {
+            this.isSearchingProduct = false
+            this._changeDetectorRef.markForCheck();
+          }),
+        )
+      )
+    ).subscribe((data: any) => {
+      this.allProducts = data['data'];
     });
-    this.shippingForm = new FormGroup({
-      inHandsDate: new FormControl(''),
-      shippingCarrierName: new FormControl('', Validators.required),
-      paymentDate: new FormControl(''),
-      shippingServiceName: new FormControl('', Validators.required),
-      purchaseOrderNum: new FormControl(''),
-      shippingCustomerAccountNumber: new FormControl(''),
-      invoiceDueDate: new FormControl(''),
-      shippingServiceCode: new FormControl('', Validators.required),
-      costCenterCode: new FormControl('')
+    this.currentSearchProductCtrl.valueChanges.pipe(
+      filter((res: any) => {
+        params = {
+          store_id: this.orderDetail.fk_storeID,
+          groupRunProducts: getGroupRunProducts,
+          getWarehouseProducts: getWarehouseProducts,
+          getProducts: getProducts,
+          modify_orders_current_products: true,
+        }
+        return res !== null && res.length >= 3
+      }),
+      distinctUntilChanged(),
+      debounceTime(300),
+      tap(() => {
+        this.allProducts = [];
+        this.isSearchingProduct = true;
+        this._changeDetectorRef.markForCheck();
+      }),
+      switchMap(value => this._orderService.getOrderCommonCall(params)
+        .pipe(
+          finalize(() => {
+            this.isSearchingProduct = false
+            this._changeDetectorRef.markForCheck();
+          }),
+        )
+      )
+    ).subscribe((data: any) => {
+      this.allProducts = data['data'];
     });
-    this.paymentForm = new FormGroup({
-      paymentMethodID: new FormControl(''),
-      discountCode: new FormControl(''),
-      transactionID: new FormControl(''), //misssing in detail object
-      discountAmount: new FormControl(''),
-      salesTaxRate: new FormControl('', Validators.required),
-      taxExemptionComment: new FormControl(''),
-      instructions: new FormControl(''),
-      blnTaxable: new FormControl()
+  }
+  onSelected(ev) {
+    this.selectedProduct = ev.option.value;
+  }
+  onCurrentSelected(ev) {
+    this.currentSelectedProduct = ev.option.value;
+  }
+  displayWith(value: any) {
+    return value?.productName;
+  }
+  getOrderProducts() {
+    this._orderService.orderProducts$.pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+      this.orderLinesItems = res["data"];
+      this.getOrderLineProducts(this.orderLinesItems[0]);
+      let value = [];
+      res["data"].forEach((element, index) => {
+        value.push(element.pk_orderLineID);
+        if (index == res["data"].length - 1) {
+          this.getLineProducts(value.toString());
+        }
+      });
+      this.orderLines = res["data"];
+    })
+  }
+  getLineProducts(value) {
+    let params = {
+      order_line_item: true,
+      order_line_id: value
+    }
+    this._orderService.getOrderLineProducts(params).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+      let products = [];
+      res["data"].forEach(element => {
+        element.colors = [];
+        element.sizes = [];
+        element.imprintColorsData = [];
+        // colorsList
+        if (element.colorsList) {
+          let colors = element.colorsList.split(',');
+          colors.forEach((color, index) => {
+            let colorData = color.split(':');
+            if (index == 0) {
+              this.ngColor = Number(colorData[0]);
+            }
+            element.colors.push({ id: Number(colorData[0]), name: colorData[1], setup: colorData[2], run: colorData[3] });
+          });
+        } else {
+          element.colors = [];
+        }
+        // sizes
+        if (element.sizesList) {
+          let sizes = element.sizesList.split(',');
+          sizes.forEach(size => {
+            let sizeData = size.split(':');
+            element.sizes.push({ id: Number(sizeData[0]), name: sizeData[1] });
+          });
+        } else {
+          element.sizes = [];
+        }
+        // ImprintColors
+        if (element.imprintColors) {
+          let imprintColors = element.imprintColors.split(',');
+          imprintColors.forEach(color => {
+            let imprintColorsData = color.split(':');
+            element.imprintColorsData.push({ name: imprintColorsData[0], id: imprintColorsData[1], code: imprintColorsData[2] });
+          });
+        } else {
+          element.imprintColorsData = [];
+        }
+        let prod = [];
+        if (products.length == 0) {
+          let royaltyPrice = element.royaltyPrice;
+          let shippingCost = element.shippingCost;
+          let shippingPrice = element.shippingPrice;
+          let cost = (element.runCost * element.quantity) + element.shippingCost;
+          let price = (element.runPrice * element.quantity) + element.shippingPrice + element.royaltyPrice;
+          let totalRunintCost = (element.runCostInit + element.cost) * element.quantity;
+          let totalRunintPrice = (element.runPriceInit + element.price) * element.quantity;
+          prod.push(element);
+          products.push({ products: prod, order_line_id: element.fk_orderLineID, allProducts: [], accessories: [], imprints: [], totalQuantity: element.quantity, totalMercandiseCost: cost, totalMerchendisePrice: price, royaltyPrice: royaltyPrice, shippingCost: shippingCost, shippingPrice: shippingPrice, colors: element.colors, sizes: element.sizes, imprintColorsData: element.imprintColorsData, totalRunintCost: totalRunintCost, totalRunintPrice: totalRunintPrice });
+        } else {
+          const index = products.findIndex(item => item.order_line_id == element.fk_orderLineID);
+          if (index < 0) {
+            let shippingCost = element.shippingCost;
+            let shippingPrice = element.shippingPrice;
+            let cost = (element.runCost * element.quantity) + element.shippingCost;
+            let price = (element.runPrice * element.quantity) + element.shippingPrice + element.royaltyPrice;
+            let royaltyPrice = element.royaltyPrice;
+            let totalRunintCost = (element.runCostInit + element.cost) * element.quantity;
+            let totalRunintPrice = (element.runPriceInit + element.price) * element.quantity;
+            prod.push(element);
+            products.push({ products: prod, order_line_id: element.fk_orderLineID, allProducts: [], accessories: [], imprints: [], totalQuantity: element.quantity, totalMercandiseCost: cost, totalMerchendisePrice: price, royaltyPrice: royaltyPrice, shippingCost: shippingCost, shippingPrice: shippingPrice, colors: element.colors, sizes: element.sizes, imprintColorsData: element.imprintColorsData, totalRunintCost: totalRunintCost, totalRunintPrice: totalRunintPrice });
+          } else {
+            let cost = (element.runCost * element.quantity);
+            let price = (element.runPrice * element.quantity) + element.royaltyPrice;
+            let totalRunintCost = (element.runCostInit + element.cost) * element.quantity;
+            let totalRunintPrice = (element.runPriceInit + element.price) * element.quantity;
+            prod = products[index].products;
+            prod.push(element);
+            products[index].products = prod;
+            products[index].royaltyPrice = products[index].royaltyPrice + element.royaltyPrice;
+            products[index].totalQuantity = products[index].totalQuantity + element.quantity;
+            products[index].shippingCost = products[index].shippingCost + element.shippingCost;
+            products[index].shippingPrice = products[index].shippingPrice + element.shippingPrice;
+            products[index].totalMercandiseCost = products[index].totalMercandiseCost + cost;
+            products[index].totalMerchendisePrice = products[index].totalMerchendisePrice + price;
+            products[index].totalRunintCost = products[index].totalRunintCost + totalRunintCost;
+            products[index].totalRunintPrice = products[index].totalRunintPrice + totalRunintPrice;
+          }
+        }
+      });
+      if (res["accessories"].length > 0) {
+        res["accessories"].forEach(element => {
+          let cost = (element.runCost * element.quantity) + element.setupCost;
+          let price = (element.runPrice * element.quantity) + element.setupPrice;
+          const index = products.findIndex(item => item.order_line_id == element.orderLineID);
+          products[index].accessories.push(element);
+          products[index].totalMercandiseCost = products[index].totalMercandiseCost + cost;
+          products[index].totalMerchendisePrice = products[index].totalMerchendisePrice + price;
+        });
+      }
+      // this.getProductImprints(value, products);
+      this.orderProducts = products;
+      this.getOrderLineDetails(this.orderProducts[0].order_line_id, 0);
+    }, err => {
+      this.isLoading = false;
+      this.isLoadingChange.emit(false);
+      this._changeDetectorRef.markForCheck();
+    });
+  }
+  getOrderLineProducts(data) {
+    let getGroupRunProducts = false;
+    let getWarehouseProducts = false;
+    let getProducts = false;
+    if (data.blnGroupRun && data.groupRunOrderLineID) {
+      getGroupRunProducts = true;
+    } else if (data.blnWarehouse) {
+      getWarehouseProducts = true;
+    } else {
+      getProducts = true;
+    }
+    let params = {
+      store_id: this.orderDetail.fk_storeID,
+      groupRunProducts: getGroupRunProducts,
+      getWarehouseProducts: getWarehouseProducts,
+      getProducts: getProducts,
+      modify_orders_current_products: true,
+    }
+    this._orderService.getOrderCommonCall(params).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+      this.allProducts = res["data"];
+      this._changeDetectorRef.markForCheck();
+    }, err => {
+      this.isLoading = false;
+      this.isLoadingChange.emit(false);
+      this._changeDetectorRef.markForCheck();
     });
   }
 
-  ngOnInit(): void {
-    this.formInitialization();
-    this._orderService.orderDetail$.pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
-      if (res["data"].length) {
-        this.selectedOrder = res["data"][0];
-        this.billingShippingForm.patchValue(this.selectedOrder);
-        this.shippingForm.patchValue(this.selectedOrder);
-        this.paymentForm.patchValue(this.selectedOrder);
-      }
-    });
-  };
-  calledScreen(screen) {
-    this.mainScreen = screen;
-  }
-  updateContactInformation() {
-    if (!this.billingShippingForm.valid) {
-      this._orderService.snackBar('Please fill out required fields');
-      return;
+  getOrderLineDetails(id, check) {
+    let params = {
+      order_line_details: true,
+      order_lineID: id
     }
-    this.isBillingLoader = true;
-    const { billingCompanyName, billingFirstName, billingLastName, billingLocation, billToDeliverTo, billingAddress, billingCity, billingState, billingZip, billingCountry, billingPhone, billingEmail, shippingCompanyName, shippingFirstName, shippingLastName, shippingLocation, shipToDeliverTo, shippingAddress, shippingCity, shippingState, shippingZip, shippingZipExt, shippingCountry, shippingPhone, shippingEmail, accountChargeCode } = this.billingShippingForm.value;
-    let payload: contactInfoObj = {
-      order_id: this.selectedOrder.pk_orderID,
-      store_id: this.selectedOrder.fk_storeID,
-      billing_company_name: billingCompanyName,
-      billing_first_name: billingFirstName,
-      billing_last_name: billingLastName,
-      billing_address: billingAddress,
-      billing_city: billingCity,
-      billing_state: billingState,
-      billing_zip: billingZip,
-      billing_country: billingCountry,
-      billing_phone: billingPhone,
-      billing_email: billingEmail,
-      shipping_company_name: shippingCompanyName,
-      shipping_first_name: shippingFirstName,
-      shipping_last_name: shippingLastName,
-      shipping_address: shippingAddress,
-      shipping_city: shippingCity,
-      shipping_state: shippingState,
-      shipping_zip: shippingZip,
-      shipping_zip_ext: shippingZipExt,
-      shipping_country: shippingCountry,
-      shipping_phone: shippingPhone,
-      shipping_email: shippingEmail,
-      account_charge_code: accountChargeCode,
-      proof_email: '',
-      alternate_proof_emails: this.emails,
-      billing_location: billingLocation,
-      shipping_location: shippingLocation,
-      ship_to_deliver_to: shipToDeliverTo,
-      bill_to_deliver_to: billToDeliverTo,
-      modify_contact_info: true
-    };
-    this._orderService.updateOrderCalls(payload).pipe(takeUntil(this._unsubscribeAll), finalize(() => {
-      this.isBillingLoader = false;
+    this._orderService.getOrderCommonCall(params).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+      this.orderProducts[check].color_sizes = res["color_sizes"];
+      this.orderProducts[check].imprintsSelected = [];
+      this.orderProducts[check].imprintsUnSelected = [];
+      this.orderProducts[check].accessoriesSelected = res["orderline_accessories"];
+      this.orderProducts[check].accessoriesUnSelected = res["dropdown_accessories"];
+      res["dropdown_imprints"].forEach((element) => {
+        if (element.isSelected == 0) {
+          this.orderProducts[check].imprintsUnSelected.push(element);
+        } else {
+          this.orderProducts[check].imprintsSelected.push(element);
+        }
+      });
+      this.orderProducts[check].imprints = res["imprints"];
+      this.orderProducts[check].dropdown_imprints = res["dropdown_imprints"];
+      res["main_imprints"].forEach(element => {
+        element.colorsList = element.imprintColors.split(',');
+      });
+      this.orderProducts[check].main_imprints = res["main_imprints"];
+      this.orderProducts[check].allProducts = this.allProducts;
+      this.ngSelectedProduct = this.orderProducts[check];
+      if (this.ngSelectedProduct.imprintsUnSelected.length > 0) {
+        this.ngImrintId = this.ngSelectedProduct.imprintsUnSelected[0].pk_imprintID;
+      }
+      this.currentSearchProductCtrl.setValue(this.ngSelectedProduct.products[0]);
+      console.log(this.ngSelectedProduct)
+      this.isOrderLineDetailsLoader = false;
+      this.isLoading = false;
       this._changeDetectorRef.markForCheck();
-    })).subscribe(res => {
+    }, err => {
+      this.isOrderLineDetailsLoader = false;
+      this.isLoading = false;
+      this._changeDetectorRef.markForCheck();
+    });
+  }
+  changeOrderLine(item) {
+    let index = this.orderProducts.findIndex(data => data.order_line_id == item.order_line_id);
+    let orderLine = this.orderLines.findIndex(data => data.pk_orderLineID == item.order_line_id);
+    if (item.allProducts.length == 0) {
+      this.getOrderLineProducts(this.orderLinesItems[orderLine]);
+    }
+    if (item.color_sizes) {
+      this.ngSelectedProduct = item;
+    } else {
+      this.isOrderLineDetailsLoader = true;
+      this._changeDetectorRef.markForCheck();
+      this.getOrderLineDetails(item.order_line_id, index);
+    }
+  }
+  updateRoyalties() {
+    let price = 0;
+    if (this.ngSelectedProduct.royaltyPrice) {
+      price = this.ngSelectedProduct.royaltyPrice;
+    }
+    let paylaod: UpdateRoyalties = {
+      royalty_price: price,
+      orderLine_id: this.ngSelectedProduct.order_line_id,
+      update_royalty: true
+    }
+    this.isRoyaltyLoader = true;
+    this._orderService.updateOrderCalls(paylaod).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
       if (res["success"]) {
         this._orderService.snackBar(res["message"]);
       }
+      this.isRoyaltyLoader = false;
+      this._changeDetectorRef.markForCheck();
     }, err => {
-      console.log(err);
+      this.isRoyaltyLoader = false;
+      this._changeDetectorRef.markForCheck();
     });
   }
-  updateShippingInformation() {
-    if (!this.shippingForm.valid) {
-      this._orderService.snackBar('Please fill out required fields');
-      return;
+  updateShipping() {
+    let price = 0;
+    if (this.ngSelectedProduct.royaltyPrice) {
+      price = this.ngSelectedProduct.royaltyPrice;
     }
-    const { inHandsDate, shippingCarrierName, paymentDate, shippingServiceName, purchaseOrderNum, shippingCustomerAcc, invoiceDueDate, shippingServiceCode, costCenterCode } = this.shippingForm.value;
-    let inhands = '';
-    if (inHandsDate) {
-      inhands = moment(inHandsDate).format('MM/DD/yyyy');
-    }
-    let pDate = '';
-    if (paymentDate) {
-      pDate = moment(paymentDate).format('MM/DD/yyyy');
-    }
-    let invoice = '';
-    if (invoiceDueDate) {
-      invoice = moment(invoiceDueDate).format('MM/DD/yyyy');
+    let paylaod: UpdateShipping = {
+      shipping_price: Number(this.ngSelectedProduct.products[0].shippingPrice),
+      shipping_cost: Number(this.ngSelectedProduct.products[0].shippingCost),
+      orderLine_id: this.ngSelectedProduct.order_line_id,
+      update_shipping: true
     }
     this.isShippingLoader = true;
-    let payload: shippingDetailsObj = {
-      order_id: this.selectedOrder.pk_orderID,
-      in_hands_date: inhands,
-      payment_date: pDate,
-      shipping_carrier_name: shippingCarrierName,
-      shipping_service_name: shippingServiceName,
-      shipping_customer_account_number: shippingCustomerAcc,
-      shipping_service_code: shippingServiceCode,
-      purchase_order_num: purchaseOrderNum,
-      invoice_due_date: invoice,
-      cost_center_code: costCenterCode,
-      modify_shipping_details: true
-    };
-    this._orderService.updateOrderCalls(payload).pipe(takeUntil(this._unsubscribeAll), finalize(() => {
+    this._orderService.updateOrderCalls(paylaod).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+      if (res["success"]) {
+        this._orderService.snackBar(res["message"]);
+      }
       this.isShippingLoader = false;
       this._changeDetectorRef.markForCheck();
-    })).subscribe(res => {
-      if (res["success"]) {
-        this._orderService.snackBar(res["message"]);
-      }
     }, err => {
-      console.log(err);
+      this.isShippingLoader = false;
+      this._changeDetectorRef.markForCheck();
     });
   }
-  updatePaymentInformation() {
-    if (!this.paymentForm.valid) {
-      this._orderService.snackBar('Please fill out required fields');
+  addProductOptions() {
+    if (this.ngQuantity == 0) {
+      this._orderService.snackBar('Quantity should be greater than 0');
       return;
     }
-    const { paymentMethodID, discountCode, transactionID, discountAmount, salesTaxRate, taxExemptionCom, instructions, blnTaxable } = this.paymentForm.value;
-    let paymentName = this.paymentMethods.filter(item => item.id == paymentMethodID);
-    let payload: paymentInfoObj = {
-      payment_method_id: paymentMethodID,
-      payment_method_name: paymentName[0].name,
-      gateway_trx_id: transactionID,
-      discount_code: discountCode,
-      discount_amount: discountAmount,
-      sales_tax_rate: salesTaxRate,
-      tax_exemption_comment: taxExemptionCom,
-      instructions: instructions,
-      is_taxable: blnTaxable,
-      credit_term_id: 0,
-      order_id: this.selectedOrder.pk_orderID,
-      modify_payment_info: true
-    };
-    this.isPaymentLoader = true;
-    this._orderService.updateOrderCalls(payload).pipe(takeUntil(this._unsubscribeAll), finalize(() => {
-      this.isPaymentLoader = false;
+    let color = this.ngSelectedProduct.colors.filter(item => item.id == this.ngColor);
+    let setupCost = 0.000;
+    let setupPrice = 0.000;
+    if (color.length > 0) {
+      setupCost = color[0].setup;
+      setupPrice = color[0].run;
+    }
+    let payload: AddProduct = {
+      orderLine_id: this.ngSelectedProduct.order_line_id,
+      colorID: this.ngColor,
+      sizeID: this.ngSize,
+      quantity: this.ngQuantity,
+      runCost: 0.000,
+      setupCost: setupCost,
+      runPrice: 0.000,
+      setupPrice: setupPrice,
+      bln_apparel: this.ngSelectedProduct.products[0].blnApparel,
+      bln_sample: this.ngSelectedProduct.products[0].blnSample,
+      blnOverride: this.ngOverrideShipping,
+      modify_order_add_product: true
+    }
+    this.isAddOptionLoader = true;
+    this._orderService.orderPostCalls(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+      this._orderService.snackBar(res["message"]);
+      this.isAddOptionLoader = false;
       this._changeDetectorRef.markForCheck();
-    })).subscribe(res => {
-      if (res["success"]) {
-        this._orderService.snackBar(res["message"]);
-      }
     }, err => {
-      console.log(err);
+      this.isAddOptionLoader = false;
+      this._changeDetectorRef.markForCheck();
     });
   }
   /**
@@ -276,3 +463,4 @@ export class ProductsOrderModifyComponent implements OnInit, OnDestroy {
   };
 
 }
+

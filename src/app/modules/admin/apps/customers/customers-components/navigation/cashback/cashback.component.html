@@ -1,0 +1,74 @@
+<div class="inset-0 min-w-50 overflow-hidden mt-5 bg-card dark:bg-transparent w-full">
+  <ngx-skeleton-loader count="8" appearance="line" animation="pulse" *ngIf="isLoading">
+  </ngx-skeleton-loader>
+  <div *ngIf="!isLoading">
+    <b class="text-2xl" style="color: #64748b; line-height: 2;">Cashback</b>
+    <div class="border p-4 mt-3 overflow-x-auto">
+      <b>Cashback for {{selectedCustomer.firstName}} {{selectedCustomer.lastName}}:</b>
+      <mat-divider class="mb-2"></mat-divider>
+      <div class="row w-full">
+        <div class="col-12">
+          <mat-form-field class="w-full">
+            <mat-label>Select a store to view cashback details for this user:</mat-label>
+            <mat-select [(ngModel)]="selectedStore" name="store">
+              <mat-option (click)="storeSelection(store)" *ngFor="let store of storesList" [value]="store">
+                {{store.storeName}}
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
+        </div>
+        <div class="col-lg-6 col-md-6 col-12" *ngIf="enableOtherForms">
+          <div class="border w-full px-3 my-2 overflow-x-auto" style="min-height: 170px;">
+            <b>Current cashback amount on this store</b>
+            <button mat-icon-button
+              matTooltip="Recalculating this customer's cashback total for this store will go through the entire order history for this customer (excluding cancelled orders), calculate the cashback per order (per the percentage defined at the store-level), and sum this to determine the customer's new total cashback credit. This action cannot be undone"
+              matTooltipClass="example-tooltip-red">
+              <i class="fas fa-question-circle"></i>
+            </button>
+            <mat-divider class="my-2"></mat-divider>
+            <p class="text-danger font-semibold pt-3">$0.00</p>
+            <mat-divider class="my-2"></mat-divider>
+            <div>
+              <button class="float-right" mat-stroked-button>
+                <mat-icon svgIcon="heroicons_outline:calculator"></mat-icon>
+                <span class="ml-2 mr-1" [matTooltip]="'Recalculate total amount'">Recalculate cashback amount</span>
+              </button>
+            </div>
+          </div>
+        </div>
+        <div class="col-lg-6 col-md-6 col-12" *ngIf="enableOtherForms">
+          <div class="border w-full p-4 my-2 overflow-x-auto" style="min-height: 170px;">
+            <b class="py-3">Cashback settings for this user on this store</b>
+            <mat-divider class="mb-2"></mat-divider>
+            <mat-select class="my-3" [(value)]="selected">
+              <mat-option value="allow" selected>Allow user to use cashback</mat-option>
+              <mat-option value="dont-allow">Do not allow user to use cashback</mat-option>
+            </mat-select>
+            <mat-divider class="my-2"></mat-divider>
+            <div class="flex items-center justify-end w-full">
+              <div class="flex items-center">
+                <div class="flex items-center mr-4" *ngIf="flashMessage">
+                  <ng-container *ngIf="flashMessage === 'success'">
+                    <mat-icon class="text-green-500" [svgIcon]="'heroicons_outline:check'"></mat-icon>
+                    <span class="ml-2">Updated successfully</span>
+                  </ng-container>
+                  <ng-container *ngIf="flashMessage === 'error'">
+                    <mat-icon class="text-red-500" [svgIcon]="'heroicons_outline:x'"></mat-icon>
+                    <span class="ml-2">An error occurred, try again!</span>
+                  </ng-container>
+                </div>
+                <button class="min-w-40" mat-stroked-button [matTooltip]="'Update Cashback Restriction'"
+                  (click)="updateCashback()" [disabled]="commentUpdateLoader">
+                  <mat-progress-spinner *ngIf="commentUpdateLoader" [diameter]="24" [mode]="'indeterminate'">
+                  </mat-progress-spinner>
+                  <mat-icon *ngIf="!commentUpdateLoader" svgIcon="mode_edit_outline"></mat-icon>
+                  <span *ngIf="!commentUpdateLoader" class="ml-1 mr-1">Update</span>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

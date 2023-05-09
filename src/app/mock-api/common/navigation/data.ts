@@ -78,7 +78,7 @@ export const defaultNavigation: FuseNavigationItem[] = [
                 title: 'Customers',
                 icon: 'heroicons_outline:user-group',
                 type: 'basic',
-                link: '/apps/ecommerce/customers',
+                link: '/apps/customers',
             },
             {
                 id: 'reports',

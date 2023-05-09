@@ -103,3 +103,45 @@ export interface HideUnhideCart {
     blnHidden: boolean;
     hide_unhide_cart: boolean;
 };
+
+
+export interface UpdateInHandsDate {
+    inHandsDate: string;
+    order_id: number;
+    update_inHands_date: boolean;
+};
+export interface AddComment {
+    comment: string;
+    order_id: number;
+    post_comment: boolean;
+};
+export interface UpdateTracking {
+    orderLinePOID: number;
+    orderLineID: number;
+    orderID: number;
+    blnGroupRun: boolean;
+    blnGroupOrder: boolean;
+    trackingNumber: string;
+    shipDate: string;
+    carrier: number;
+    carrierName: string;
+    blnSendShippingEmail: boolean;
+    blnRevised: boolean;
+    update_shipping_tracking: boolean;
+};
+export interface saveBillPay {
+    orderLinePOID: number;
+    billPayPaymentMethod: string;
+    billPayReference: string;
+    billPayPaymentDate: string;
+    blnPaid: boolean;
+    update_save_bill_pay: boolean;
+};
+export interface saveVendorBill {
+    orderLinePOID: number;
+    vendorInvoiceNumber: string;
+    vendorInvoiceDate: string;
+    vendorInvoiceNetTerms: string;
+    blnInvoiced: boolean;
+    update_save_vendor_bill: boolean;
+};
