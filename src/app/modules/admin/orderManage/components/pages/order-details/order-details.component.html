@@ -155,7 +155,13 @@
                             <mat-datepicker-toggle matIconSuffix [for]="Estpicker"></mat-datepicker-toggle>
                             <mat-datepicker #Estpicker></mat-datepicker>
                         </mat-form-field>
-                        <button class="min-w-40 btn buttonComment hover:bg-gray-200">Update</button>
+                        <button class="min-w-40 btn buttonComment hover:bg-gray-200" (click)="updateEstimatedShipping()"
+                            [disabled]="isEstimatedDateLoader">
+                            <span *ngIf="!isEstimatedDateLoader">Update</span>
+                            <mat-progress-spinner *ngIf="isEstimatedDateLoader" [diameter]="24"
+                                [mode]="'indeterminate'">
+                            </mat-progress-spinner>
+                        </button>
                     </div>
                 </div>
             </div>
@@ -219,9 +225,9 @@
                     </h2>
                     <div class="space-y-2">
                         <mat-form-field class="w-full">
-                            <mat-label>Payment date:</mat-label>
-                            <mat-select mayInput>
-                                <mat-option value="" selected="">None</mat-option>
+                            <mat-label>Payment method:</mat-label>
+                            <mat-select mayInput [(ngModel)]="BillData.billPayPaymentMethod">
+                                <mat-option [value]="0">None</mat-option>
                                 <mat-option value="American Express">American Express</mat-option>
                                 <mat-option value="Capital One">Capital One</mat-option>
                                 <mat-option value="Chase Visa">Chase Visa</mat-option>
@@ -232,16 +238,22 @@
                         </mat-form-field>
                         <mat-form-field class="w-full">
                             <mat-label>Payment reference:</mat-label>
-                            <input matInput>
+                            <input matInput [(ngModel)]="BillData.billPayReference">
                         </mat-form-field>
                         <mat-form-field class="w-full">
                             <mat-label>Payment date:</mat-label>
-                            <input matInput [matDatepicker]="Estpickers" readonly>
+                            <input matInput [matDatepicker]="Estpickers" readonly
+                                [(ngModel)]="BillData.billPayPaymentDate">
                             <mat-datepicker-toggle matIconSuffix [for]="Estpickers"></mat-datepicker-toggle>
                             <mat-datepicker #Estpickers></mat-datepicker>
                         </mat-form-field>
-                        <mat-checkbox class="w-full">Paid</mat-checkbox>
-                        <button class="min-w-40 btn buttonComment hover:bg-gray-200">Save bill pay</button>
+                        <mat-checkbox class="w-full" [(ngModel)]="BillData.blnPaid">Paid</mat-checkbox>
+                        <button class="min-w-40 btn buttonComment hover:bg-gray-200" (click)="updateBillPay()"
+                            [disabled]="isBillLoader">
+                            <span *ngIf="!isBillLoader">Save bill pay</span>
+                            <mat-progress-spinner *ngIf="isBillLoader" [diameter]="24" [mode]="'indeterminate'">
+                            </mat-progress-spinner>
+                        </button>
                     </div>
                 </div>
             </div>
@@ -484,26 +496,30 @@
                                     <div class="col-5">
                                         <mat-form-field class="w-full">
                                             <mat-label>New option name/description</mat-label>
-                                            <input matInput>
+                                            <input matInput [(ngModel)]="colorsForm.name">
                                         </mat-form-field>
                                     </div>
                                     <div class="col-2">
                                         <mat-form-field class="w-full">
                                             <mat-label>Quantity</mat-label>
-                                            <input matInput>
+                                            <input matInput [(ngModel)]="colorsForm.quantity">
                                         </mat-form-field>
                                     </div>
                                     <div class="col-2">
                                         <mat-form-field class="w-full">
                                             <mat-label>Unit cost</mat-label>
-                                            <input matInput>
+                                            <input matInput [(ngModel)]="colorsForm.cost">
                                         </mat-form-field>
                                     </div>
                                     <div class="col-2">
                                     </div>
                                     <div class="col-1 mt-7 text-right">
-                                        <mat-icon svgIcon="mat_outline:add" matTooltip="Add"
+                                        <mat-icon (click)="addColorsPO()" svgIcon="mat_outline:add"
+                                            *ngIf="!isAddColorLoader" matTooltip="Add"
                                             class="cursor-pointer"></mat-icon>
+                                        <mat-progress-spinner *ngIf="isAddColorLoader" [diameter]="24"
+                                            [mode]="'indeterminate'">
+                                        </mat-progress-spinner>
                                     </div>
                                 </div>
                                 <!-- Imprints -->
@@ -558,41 +574,45 @@
                                     <div class="col-5">
                                         <mat-form-field class="w-full">
                                             <mat-label>New imprint name/method/location:</mat-label>
-                                            <input matInput>
+                                            <input matInput [(ngModel)]="imprintForm.name">
                                         </mat-form-field>
                                     </div>
                                     <div class="col-2">
                                         <mat-form-field class="w-full">
                                             <mat-label>Quantity</mat-label>
-                                            <input matInput>
+                                            <input matInput [(ngModel)]="imprintForm.quantity">
                                         </mat-form-field>
                                     </div>
                                     <div class="col-2">
                                         <mat-form-field class="w-full">
                                             <mat-label>Run</mat-label>
-                                            <input matInput>
+                                            <input matInput [(ngModel)]="imprintForm.run">
                                         </mat-form-field>
                                     </div>
                                     <div class="col-2">
                                         <mat-form-field class="w-full">
                                             <mat-label>Setup</mat-label>
-                                            <input matInput>
+                                            <input matInput [(ngModel)]="imprintForm.setup">
                                         </mat-form-field>
                                     </div>
                                     <div class="col-1 mt-7 text-right">
-                                        <mat-icon svgIcon="mat_outline:add" matTooltip="Add"
+                                        <mat-icon (click)="addAccessories()" svgIcon="mat_outline:add"
+                                            *ngIf="!isAddImprintLoader" matTooltip="Add"
                                             class="cursor-pointer"></mat-icon>
+                                        <mat-progress-spinner *ngIf="isAddImprintLoader" [diameter]="24"
+                                            [mode]="'indeterminate'">
+                                        </mat-progress-spinner>
                                     </div>
                                     <div class="col-2">
                                         <mat-form-field class="w-full">
                                             <mat-label># Colors</mat-label>
-                                            <input matInput>
+                                            <input matInput [(ngModel)]="imprintForm.n_color">
                                         </mat-form-field>
                                     </div>
                                     <div class="col-4">
                                         <mat-form-field class="w-full">
                                             <mat-label>Imprint colors</mat-label>
-                                            <input matInput>
+                                            <input matInput [(ngModel)]="imprintForm.imprint_color">
                                         </mat-form-field>
                                     </div>
                                 </div>
@@ -638,30 +658,34 @@
                                     <div class="col-4">
                                         <mat-form-field class="w-full">
                                             <mat-label>New accessory name/description:</mat-label>
-                                            <input matInput>
+                                            <input matInput [(ngModel)]="accessoryForm.name">
                                         </mat-form-field>
                                     </div>
                                     <div class="col-2">
                                         <mat-form-field class="w-full">
                                             <mat-label>Quantity</mat-label>
-                                            <input matInput>
+                                            <input matInput [(ngModel)]="accessoryForm.quantity">
                                         </mat-form-field>
                                     </div>
                                     <div class="col-2">
                                         <mat-form-field class="w-full">
                                             <mat-label>Unit cost</mat-label>
-                                            <input matInput>
+                                            <input matInput [(ngModel)]="accessoryForm.cost">
                                         </mat-form-field>
                                     </div>
                                     <div class="col-2">
                                         <mat-form-field class="w-full">
                                             <mat-label>Setup</mat-label>
-                                            <input matInput>
+                                            <input matInput [(ngModel)]="accessoryForm.setup">
                                         </mat-form-field>
                                     </div>
                                     <div class="col-2 mt-7 text-right">
-                                        <mat-icon svgIcon="mat_outline:add" matTooltip="Add"
+                                        <mat-icon (click)="addAccessories()" svgIcon="mat_outline:add"
+                                            *ngIf="!isAccessoriesLoader" matTooltip="Add"
                                             class="cursor-pointer"></mat-icon>
+                                        <mat-progress-spinner *ngIf="isAccessoriesLoader" [diameter]="24"
+                                            [mode]="'indeterminate'">
+                                        </mat-progress-spinner>
                                     </div>
                                 </div>
                                 <!-- Adjustments -->
@@ -704,7 +728,7 @@
                                     <div class="col-5">
                                         <mat-form-field class="w-full">
                                             <mat-label>New adjustment name/description:</mat-label>
-                                            <input matInput>
+                                            <input matInput [(ngModel)]="adjustmentForm.name">
                                         </mat-form-field>
                                     </div>
                                     <div class="col-2">
@@ -715,10 +739,14 @@
                                         <div class="flex align-items-center justify-content-end">
                                             <mat-form-field class="mr-1">
                                                 <mat-label>Total cost</mat-label>
-                                                <input matInput>
+                                                <input matInput [(ngModel)]="adjustmentForm.cost">
                                             </mat-form-field>
-                                            <mat-icon svgIcon="mat_outline:add" matTooltip="Add"
+                                            <mat-icon (click)="addAdjustment()" svgIcon="mat_outline:add"
+                                                *ngIf="!isAdjustmentLoader" matTooltip="Add"
                                                 class="cursor-pointer"></mat-icon>
+                                            <mat-progress-spinner *ngIf="isAdjustmentLoader" [diameter]="24"
+                                                [mode]="'indeterminate'">
+                                            </mat-progress-spinner>
                                         </div>
                                     </div>
                                 </div>

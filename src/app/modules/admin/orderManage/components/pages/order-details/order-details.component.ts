@@ -6,7 +6,7 @@ import { ActivatedRoute, NavigationExtras, Router } from '@angular/router';
 import { Subject } from 'rxjs';
 import { debounceTime, distinctUntilChanged, filter, finalize, switchMap, takeUntil, tap } from 'rxjs/operators';
 import { OrderManageService } from '../../order-manage.service';
-import { AddComment, HideUnhideQuote, UpdateInHandsDate, UpdateTracking, saveVendorBill } from '../../order-manage.types';
+import { AddAdjustment, AddComment, AddPOOption, Add_PO_Imprint, HideUnhideQuote, UpdateEstimatedShipping, UpdateInHandsDate, UpdateTracking, addAccessory, saveBillPay, saveVendorBill } from '../../order-manage.types';
 import moment from 'moment';
 import { AuthService } from 'app/core/auth/auth.service';
 @Component({
@@ -63,6 +63,14 @@ export class OrderManageDetailsComponent implements OnInit, OnDestroy {
     }
   ];
   // Vendor Bill
+  isEstimatedDateLoader: boolean = false;
+  isBillLoader: boolean = false;
+  BillData = {
+    billPayPaymentMethod: null,
+    billPayPaymentDate: null,
+    billPayReference: null,
+    blnPaid: false
+  }
   isVendorBillLoader: boolean = false;
   vendorBillData = {
     vendorInvoiceNumber: null,
@@ -75,6 +83,37 @@ export class OrderManageDetailsComponent implements OnInit, OnDestroy {
   accessoriesList: any = [];
   adjustmentsList: any = [];
   attachmentsList: any = [];
+  // Accessories
+  isAccessoriesLoader: boolean = false;
+  accessoryForm = {
+    name: '',
+    quantity: '',
+    cost: '',
+    setup: ''
+  }
+  // Adjustment
+  isAdjustmentLoader: boolean = false;
+  adjustmentForm = {
+    name: '',
+    cost: ''
+  }
+  // Imprints
+  isAddImprintLoader: boolean = false;
+  imprintForm = {
+    name: '',
+    quantity: '',
+    run: '',
+    setup: '',
+    n_color: '',
+    imprint_color: ''
+  }
+  // Colors
+  isAddColorLoader: boolean = false;
+  colorsForm = {
+    name: '',
+    quantity: '',
+    cost: ''
+  }
   constructor(
     private _changeDetectorRef: ChangeDetectorRef,
     private _activeRoute: ActivatedRoute,
@@ -108,15 +147,21 @@ export class OrderManageDetailsComponent implements OnInit, OnDestroy {
           vendorInvoiceNetTerms: this.orderDataPO.vendorInvoiceNetTerms ? this.orderDataPO.vendorInvoiceNetTerms : 0,
           blnInvoiced: false
         }
+        this.BillData = {
+          billPayPaymentMethod: this.orderDataPO.billPayPaymentMethod ? this.orderDataPO.billPayPaymentMethod : 0,
+          billPayPaymentDate: this.orderDataPO.billPayPaymentDate ? this.orderDataPO.billPayPaymentDate : null,
+          billPayReference: this.orderDataPO.billPayReference ? this.orderDataPO.billPayReference : null,
+          blnPaid: this.orderDataPO.blnPaid
+        }
       }
-      this.getImpritData();
+      this.getImprintData();
       this._changeDetectorRef.markForCheck();
     }, err => {
       this.isLoading = false;
       this._changeDetectorRef.markForCheck();
     });
   }
-  getImpritData() {
+  getImprintData() {
     let params = {
       order_manage_imprint_details: true,
       orderLine_id: this.paramData.pk_orderLineID,
@@ -128,10 +173,41 @@ export class OrderManageDetailsComponent implements OnInit, OnDestroy {
       this.adjustmentsList = res["adjustments"];
       this.accessoriesList = res["accessories"];
       this.attachmentsList = res["attachments"];
+      this.isAccessoriesLoader = false;
+      this.isAdjustmentLoader = false;
+      this.isAddImprintLoader = false;
+      this.isAddColorLoader = false;
+      this.accessoryForm = {
+        name: '',
+        quantity: '',
+        cost: '',
+        setup: ''
+      }
+      this.adjustmentForm = {
+        name: '',
+        cost: ''
+      }
+      this.imprintForm = {
+        name: '',
+        quantity: '',
+        run: '',
+        setup: '',
+        n_color: '',
+        imprint_color: ''
+      }
+      this.colorsForm = {
+        name: '',
+        quantity: '',
+        cost: ''
+      }
       this.isLoading = false;
       this._changeDetectorRef.markForCheck();
     }, err => {
       this.isLoading = false;
+      this.isAddColorLoader = false;
+      this.isAdjustmentLoader = false;
+      this.isAddImprintLoader = false;
+      this.isAccessoriesLoader = false;
       this._changeDetectorRef.markForCheck();
     });
   }
@@ -194,7 +270,7 @@ export class OrderManageDetailsComponent implements OnInit, OnDestroy {
     if (this.orderData.shippingDate) {
       date = moment(this.orderData.shippingDate).format('L');
     }
-    let paylaod: UpdateTracking = {
+    let payload: UpdateTracking = {
       orderLinePOID: this.orderData.fk_reOrderLineID,
       orderLineID: this.orderData.fk_cartLineID,
       orderID: this.orderData.fk_orderID,
@@ -208,7 +284,7 @@ export class OrderManageDetailsComponent implements OnInit, OnDestroy {
       blnRevised: this.blnRevised,
       update_shipping_tracking: true
     }
-    this._OrderManageService.PutAPIData(paylaod).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+    this._OrderManageService.PutAPIData(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
       if (res["success"]) {
         this._OrderManageService.snackBar(res["message"]);
       }
@@ -219,34 +295,54 @@ export class OrderManageDetailsComponent implements OnInit, OnDestroy {
       this._changeDetectorRef.markForCheck();
     });
   }
-  updateBillPay() {
-    this.isTrackingLoader = true;
+  updateEstimatedShipping() {
+    this.isEstimatedDateLoader = true;
     let date = null;
-    if (this.orderData.shippingDate) {
-      date = moment(this.orderData.shippingDate).format('L');
+    if (this.orderData.estimatedShippingDate) {
+      date = moment(this.orderData.estimatedShippingDate).format('L');
     }
-    let paylaod: UpdateTracking = {
-      orderLinePOID: this.orderData.fk_reOrderLineID,
-      orderLineID: this.orderData.fk_cartLineID,
-      orderID: this.orderData.fk_orderID,
+    let payload: UpdateEstimatedShipping = {
+      orderLinePOID: this.orderDataPO.pk_orderLinePOID,
+      orderLineID: this.orderData.pk_orderLineID,
+      orderID: this.orderData.pk_orderID,
       blnGroupRun: this.orderData.blnGroupRun,
-      blnGroupOrder: this.orderData.blnGroupOrder,
-      trackingNumber: this.orderData.trackingNumber,
-      shipDate: date,
-      carrier: this.orderData.shippingCarrier,
-      carrierName: this.orderData.shippingCarrier,
-      blnSendShippingEmail: this.blnblnSendShippingEmail,
-      blnRevised: this.blnRevised,
-      update_shipping_tracking: true
+      blnGroupOrder: false,
+      estimatedShippingDate: date,   // format: mm/dd/yy
+      update_estimated_shipping: false
     }
-    this._OrderManageService.PutAPIData(paylaod).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+    this._OrderManageService.PutAPIData(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
       if (res["success"]) {
         this._OrderManageService.snackBar(res["message"]);
       }
-      this.isTrackingLoader = false;
+      this.isEstimatedDateLoader = false;
       this._changeDetectorRef.markForCheck();
     }, err => {
-      this.isTrackingLoader = false;
+      this.isEstimatedDateLoader = false;
+      this._changeDetectorRef.markForCheck();
+    });
+  }
+  updateBillPay() {
+    this.isBillLoader = true;
+    let date = null;
+    if (this.BillData.billPayPaymentDate) {
+      date = moment(this.BillData.billPayPaymentDate).format('L');
+    }
+    let payload: saveBillPay = {
+      orderLinePOID: this.orderDataPO.pk_orderLinePOID,
+      billPayPaymentMethod: this.BillData.billPayPaymentMethod,
+      billPayReference: this.BillData.billPayReference,
+      billPayPaymentDate: date,
+      blnPaid: this.BillData.blnPaid,
+      update_save_bill_pay: true
+    }
+    this._OrderManageService.PutAPIData(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+      if (res["success"]) {
+        this._OrderManageService.snackBar(res["message"]);
+      }
+      this.isBillLoader = false;
+      this._changeDetectorRef.markForCheck();
+    }, err => {
+      this.isBillLoader = false;
       this._changeDetectorRef.markForCheck();
     });
   }
@@ -260,7 +356,7 @@ export class OrderManageDetailsComponent implements OnInit, OnDestroy {
     if (this.vendorBillData.vendorInvoiceNetTerms == '0') {
       term = null;
     }
-    let paylaod: saveVendorBill = {
+    let payload: saveVendorBill = {
       orderLinePOID: this.orderDataPO.pk_orderLinePOID,
       vendorInvoiceNumber: this.vendorBillData.vendorInvoiceNumber,
       vendorInvoiceDate: date,
@@ -268,7 +364,7 @@ export class OrderManageDetailsComponent implements OnInit, OnDestroy {
       blnInvoiced: this.vendorBillData.blnInvoiced,
       update_save_vendor_bill: true
     }
-    this._OrderManageService.PutAPIData(paylaod).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+    this._OrderManageService.PutAPIData(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
       if (res["success"]) {
         this._OrderManageService.snackBar(res["message"]);
       }
@@ -276,6 +372,97 @@ export class OrderManageDetailsComponent implements OnInit, OnDestroy {
       this._changeDetectorRef.markForCheck();
     }, err => {
       this.isVendorBillLoader = false;
+      this._changeDetectorRef.markForCheck();
+    });
+  }
+  addAccessories() {
+    this.isAccessoriesLoader = true;
+    let payload: addAccessory = {
+      orderLinePOID: this.orderDataPO.pk_orderLinePOID,
+      accessoryName: this.accessoryForm.name,
+      accessoryQuantity: Number(this.accessoryForm.quantity),
+      accessoryUnitCost: Number(this.accessoryForm.cost),
+      accessorySetup: Number(this.accessoryForm.cost),
+      add_accessory: true
+    }
+    this._OrderManageService.PostAPIData(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+      if (res["success"]) {
+        this._OrderManageService.snackBar(res["message"]);
+        this.getImprintData();
+      } else {
+        this.isAccessoriesLoader = false;
+        this._changeDetectorRef.markForCheck();
+      }
+    }, err => {
+      this.isAccessoriesLoader = false;
+      this._changeDetectorRef.markForCheck();
+    });
+  }
+  addAdjustment() {
+    this.isAdjustmentLoader = true;
+    let payload: AddAdjustment = {
+      orderLinePOID: this.orderDataPO.pk_orderLinePOID,
+      adjustmentTotalCost: Number(this.adjustmentForm.cost),
+      adjustmentName: this.adjustmentForm.name,
+      add_adjustment: true
+    }
+    this._OrderManageService.PostAPIData(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+      if (res["success"]) {
+        this._OrderManageService.snackBar(res["message"]);
+        this.getImprintData();
+      } else {
+        this.isAdjustmentLoader = false;
+        this._changeDetectorRef.markForCheck();
+      }
+    }, err => {
+      this.isAdjustmentLoader = false;
+      this._changeDetectorRef.markForCheck();
+    });
+  }
+  addImprintPO() {
+    this.isAddImprintLoader = true;
+    let payload: Add_PO_Imprint = {
+      orderLinePOID: this.orderDataPO.pk_orderLinePOID,
+      imprintName: this.imprintForm.name,
+      imprintQuantity: Number(this.imprintForm.quantity),
+      imprintRun: Number(this.imprintForm.run),
+      imprintSetup: Number(this.imprintForm.setup),
+      imprintNumColors: Number(this.imprintForm.n_color),
+      imprintColors: this.imprintForm.imprint_color,
+      add_po_imprint: true
+    }
+    this._OrderManageService.PostAPIData(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+      if (res["success"]) {
+        this._OrderManageService.snackBar(res["message"]);
+        this.getImprintData();
+      } else {
+        this.isAddImprintLoader = false;
+        this._changeDetectorRef.markForCheck();
+      }
+    }, err => {
+      this.isAddImprintLoader = false;
+      this._changeDetectorRef.markForCheck();
+    });
+  }
+  addColorsPO() {
+    this.isAddColorLoader = true;
+    let payload: AddPOOption = {
+      orderLinePOID: this.orderDataPO.pk_orderLinePOID,
+      optionName: this.colorsForm.name,
+      optionQuantity: Number(this.colorsForm.quantity),
+      optionUnitCost: Number(this.colorsForm.cost),
+      add_po_options: true
+    }
+    this._OrderManageService.PostAPIData(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+      if (res["success"]) {
+        this._OrderManageService.snackBar(res["message"]);
+        this.getImprintData();
+      } else {
+        this.isAddColorLoader = false;
+        this._changeDetectorRef.markForCheck();
+      }
+    }, err => {
+      this.isAddColorLoader = false;
       this._changeDetectorRef.markForCheck();
     });
   }

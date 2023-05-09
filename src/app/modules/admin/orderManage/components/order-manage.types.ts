@@ -145,3 +145,44 @@ export interface saveVendorBill {
     blnInvoiced: boolean;
     update_save_vendor_bill: boolean;
 };
+export interface UpdateEstimatedShipping {
+    orderLinePOID: number;
+    orderLineID: number;
+    orderID: number;
+    blnGroupRun: boolean;
+    blnGroupOrder: boolean;
+    estimatedShippingDate: string;   // format: mm/dd/yy
+    update_estimated_shipping: boolean;
+};
+
+export interface addAccessory {
+    orderLinePOID: number;
+    accessoryName: string;
+    accessoryQuantity: number;
+    accessoryUnitCost: number;
+    accessorySetup: number;
+    add_accessory: boolean;
+};
+export interface AddAdjustment {
+    orderLinePOID: number;
+    adjustmentTotalCost: number;
+    adjustmentName: string;
+    add_adjustment: boolean;
+};
+export interface Add_PO_Imprint {
+    orderLinePOID: number;
+    imprintName: string;
+    imprintQuantity: number;
+    imprintRun: number;
+    imprintSetup: number;
+    imprintNumColors: number;
+    imprintColors: string;
+    add_po_imprint: boolean;
+};
+export interface AddPOOption {
+    orderLinePOID: number;
+    optionName: string;
+    optionQuantity: number;
+    optionUnitCost: number;
+    add_po_options: boolean;
+};
