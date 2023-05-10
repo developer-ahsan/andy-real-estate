@@ -186,3 +186,110 @@ export interface AddPOOption {
     optionUnitCost: number;
     add_po_options: boolean;
 };
+
+export interface DeleteAdjustment {
+    orderLinePOAdjustmentID: number;
+    orderLinePOID: number;
+    remove_adjustment: boolean;
+};
+
+export interface RemovePOOptions {
+    orderLinePOOptionID: number;
+    orderLinePOID: number;
+    remove_po_options: boolean;
+};
+
+export interface RemoveAccessory {
+    orderLinePOAccessoryID: number;
+    orderLinePOID: number;
+    remove_accessory: boolean;
+};
+
+export interface Remove_PO_Imprint {
+    orderLinePOImprintID: number;
+    orderLinePOID: number;
+    remove_po_imprint: boolean;
+};
+
+export interface SendPurchaseOrder {
+    orderLinePOID: number;
+    fk_vendorID: number;
+    purchaseOrderNumber: string;
+    vendorShippingName: string;
+    shippingDate: string;
+    estimatedShippingDate: string;
+    trackingNumber: string;
+    total: number;
+    blnArtNeedsResent: boolean;
+    send_purchase_order: boolean
+};
+
+
+export interface SavePurchaseOrder {
+    orderLinePOID: number;
+    orderLinePO: OrderLinePO;
+    orderLineOptions: orderLineOption[];
+    orderLineImprints: orderLineImprint[];
+    orderLineAccessories: orderLineAccessory[];
+    save_purchase_order: boolean;
+};
+interface orderLineAccessory {
+    accessoryName: string;
+    quantity: number;
+    unitCost: number;
+    totalCost: number;
+    setupCost: number;
+    pk_orderLinePOAccessoryID: number;
+};
+interface orderLineOption {
+    optionName: string;
+    quantity: number;
+    unitCost: number;
+    total: number;
+    pk_orderLinePOOptionID: number;
+};
+interface orderLineImprint {
+    imprintName: string;
+    quantity: number;
+    unitCost: number;
+    total: number;
+    colors: string;
+    setup: number;
+    totalImprintColors: number;
+    processQuantity: number;
+    pk_orderLinePOImprintID: number;
+};
+interface OrderLinePO {
+    fk_vendorID: number;
+    vendorShippingName: string;
+    vendorShippingAddress1: string;
+    vendorShippingAddress2: string;
+    vendorShippingCity: string;
+    vendorShippingState: string;
+    vendorShippingZip: string;
+    vendorShippingPhone: string;
+    vendorShippingEmail: string;
+    shippingComment: string;
+    shipToCompanyName: string;
+    shipToCustomerName: string;
+    shipToLocation: string;
+    shipToPurchaseOrder: string;
+    shipToAddress: string;
+    shipToCity: string;
+    shipToState: string;
+    shipToZip: string;
+    shipToCountry: string;
+    imprintComment: string;
+    POTotal: number;
+    shipToDeliverTo: string;
+    productName: string;
+    quantity: string;
+    purchaseOrderNumber: string;
+    purchaseOrderComments: string;
+    blnDuplicate: boolean;
+};
+export interface removePurchaseOrderItem {
+    orderID: number;
+    orderLineID: number;
+    remove_purchase_order_item: boolean;
+};

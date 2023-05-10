@@ -6,7 +6,7 @@ import { ActivatedRoute, NavigationExtras, Router } from '@angular/router';
 import { Subject } from 'rxjs';
 import { debounceTime, distinctUntilChanged, filter, finalize, switchMap, takeUntil, tap } from 'rxjs/operators';
 import { OrderManageService } from '../../order-manage.service';
-import { AddAdjustment, AddComment, AddPOOption, Add_PO_Imprint, HideUnhideQuote, UpdateEstimatedShipping, UpdateInHandsDate, UpdateTracking, addAccessory, saveBillPay, saveVendorBill } from '../../order-manage.types';
+import { AddAdjustment, AddComment, AddPOOption, Add_PO_Imprint, HideUnhideQuote, SavePurchaseOrder, SendPurchaseOrder, UpdateEstimatedShipping, UpdateInHandsDate, UpdateTracking, addAccessory, removePurchaseOrderItem, saveBillPay, saveVendorBill } from '../../order-manage.types';
 import moment from 'moment';
 import { AuthService } from 'app/core/auth/auth.service';
 @Component({
@@ -85,6 +85,7 @@ export class OrderManageDetailsComponent implements OnInit, OnDestroy {
   attachmentsList: any = [];
   // Accessories
   isAccessoriesLoader: boolean = false;
+  isAccessoriesDelLoader: boolean = false;
   accessoryForm = {
     name: '',
     quantity: '',
@@ -93,12 +94,14 @@ export class OrderManageDetailsComponent implements OnInit, OnDestroy {
   }
   // Adjustment
   isAdjustmentLoader: boolean = false;
+  isAdjustmentDelLoader: boolean = false;
   adjustmentForm = {
     name: '',
     cost: ''
   }
   // Imprints
   isAddImprintLoader: boolean = false;
+  isDelImprintLoader: boolean = false;
   imprintForm = {
     name: '',
     quantity: '',
@@ -109,11 +112,19 @@ export class OrderManageDetailsComponent implements OnInit, OnDestroy {
   }
   // Colors
   isAddColorLoader: boolean = false;
+  isDelColorLoader: boolean = false;
   colorsForm = {
     name: '',
     quantity: '',
     cost: ''
   }
+  // Send Purchase Order
+  isSentPOLoader: boolean = false;
+  blnArtNeedsResent: boolean = false;
+  isSavePOLoader: boolean = false;
+  isRemovePOLoader: boolean = false;
+  ngImprint = '';
+
   constructor(
     private _changeDetectorRef: ChangeDetectorRef,
     private _activeRoute: ActivatedRoute,
@@ -201,6 +212,11 @@ export class OrderManageDetailsComponent implements OnInit, OnDestroy {
         cost: ''
       }
       this.isLoading = false;
+      // DelLoaders
+      this.isAccessoriesDelLoader = false;
+      this.isAdjustmentDelLoader = false;
+      this.isDelColorLoader = false;
+      this.isDelImprintLoader = false;
       this._changeDetectorRef.markForCheck();
     }, err => {
       this.isLoading = false;
@@ -208,6 +224,11 @@ export class OrderManageDetailsComponent implements OnInit, OnDestroy {
       this.isAdjustmentLoader = false;
       this.isAddImprintLoader = false;
       this.isAccessoriesLoader = false;
+      // DelLoaders
+      this.isAccessoriesDelLoader = false;
+      this.isAdjustmentDelLoader = false;
+      this.isDelColorLoader = false;
+      this.isDelImprintLoader = false;
       this._changeDetectorRef.markForCheck();
     });
   }
@@ -463,6 +484,204 @@ export class OrderManageDetailsComponent implements OnInit, OnDestroy {
       }
     }, err => {
       this.isAddColorLoader = false;
+      this._changeDetectorRef.markForCheck();
+    });
+  }
+  removePODetails(item, check) {
+    let params: any;
+    if (check == 'adjustment') {
+      this.isAdjustmentDelLoader = true;
+      params = {
+        orderLinePOAdjustmentID: item.pk_orderLinePOAdjustmentID,
+        orderLinePOID: this.orderDataPO.pk_orderLinePOID,
+        remove_adjustment: true
+      }
+    } else if (check == 'colors') {
+      this.isDelColorLoader = false;
+      params = {
+        orderLinePOOptionID: item.pk_orderLinePOOptionID,
+        orderLinePOID: this.orderDataPO.pk_orderLinePOID,
+        remove_po_options: true
+      }
+    } else if (check == 'accessory') {
+      this.isAccessoriesDelLoader = false;
+      params = {
+        orderLinePOAccessoryID: item.pk_orderLinePOAccessoryID,
+        orderLinePOID: this.orderDataPO.pk_orderLinePOID,
+        remove_accessory: true
+      }
+    } else if (check == 'imprint') {
+      this.isDelImprintLoader = false;
+      params = {
+        orderLinePOImprintID: item.pk_orderLinePOImprintID,
+        orderLinePOID: this.orderDataPO.pk_orderLinePOID,
+        remove_po_imprint: true
+      }
+    }
+    this._OrderManageService.PutAPIData(params).pipe(takeUntil(this._unsubscribeAll), finalize(() => {
+      // this.isAccessoriesDelLoader = false;
+      // this.isAdjustmentDelLoader = false;
+      // this.isDelColorLoader = false;
+      // this.isDelImprintLoader = false;
+      // this._changeDetectorRef.markForCheck();
+    })).subscribe(res => {
+      if (res["success"]) {
+        this.getImprintData();
+        setTimeout(() => {
+          this._OrderManageService.snackBar(res["message"]);
+        }, 500);
+      } else {
+        this.isAccessoriesDelLoader = false;
+        this.isAdjustmentDelLoader = false;
+        this.isDelColorLoader = false;
+        this.isDelImprintLoader = false;
+        this._changeDetectorRef.markForCheck();
+      }
+    }, err => {
+      this.isAccessoriesDelLoader = false;
+      this.isAdjustmentDelLoader = false;
+      this.isDelColorLoader = false;
+      this.isDelImprintLoader = false;
+      this._changeDetectorRef.markForCheck();
+    })
+  }
+  sendPoOrder() {
+    this.isSentPOLoader = true;
+    let payload: SendPurchaseOrder = {
+      orderLinePOID: this.orderDataPO.pk_orderLinePOID,
+      fk_vendorID: this.orderData.pk_companyID,
+      purchaseOrderNumber: this.orderData.purchaseOrderNum,
+      vendorShippingName: this.orderDataPO.vendorShippingName,
+      shippingDate: this.orderData.shippingDate,
+      estimatedShippingDate: this.orderData.estimatedShippingDate,
+      trackingNumber: this.orderData.trackingNumber,
+      total: this.orderData.currentTotal,
+      blnArtNeedsResent: this.blnArtNeedsResent,
+      send_purchase_order: true
+    }
+    this._OrderManageService.PostAPIData(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+      if (res["success"]) {
+        this._OrderManageService.snackBar(res["message"]);
+      }
+      this.isSentPOLoader = false;
+      this._changeDetectorRef.markForCheck();
+    }, err => {
+      this.isSentPOLoader = false;
+      this._changeDetectorRef.markForCheck();
+    });
+  }
+  savePoOrder() {
+    this.isSavePOLoader = true;
+    // Colors
+    let OrderLinePOOptions = [];
+    this.colorsList.forEach(element => {
+      OrderLinePOOptions.push({
+        optionName: element.optionName,
+        quantity: element.quantity,
+        unitCost: element.unitCost,
+        total: element.total,
+        pk_orderLinePOOptionID: element.pk_orderLinePOOptionID
+      });
+    });
+    // Imprints
+    let orderLineImprint = [];
+    this.imprintdata.forEach(element => {
+      orderLineImprint.push({
+        imprintName: element.imprintName,
+        quantity: element.quantity,
+        unitCost: element.unitCost,
+        total: element.total,
+        colors: element.colors,
+        setup: element.setup,
+        totalImprintColors: element.totalImprintColors,
+        processQuantity: element.processQuantity,
+        pk_orderLinePOImprintID: element.pk_orderLinePOImprintID,
+      });
+    });
+    // Accessories
+    let orderLineAccessory = [];
+    this.accessoriesList.forEach(element => {
+      orderLineAccessory.push({
+        accessoryName: element.accessoryName,
+        quantity: element.quantity,
+        unitCost: element.unitCost,
+        totalCost: element.totalCost,
+        setupCost: element.setupCost,
+        pk_orderLinePOAccessoryID: element.pk_orderLinePOAccessoryID,
+      });
+    });
+    // OrderLinePO
+    let OrderLinePO = {
+      fk_vendorID: this.orderData.pk_companyID,
+      vendorShippingName: this.orderDataPO.vendorShippingName,
+      vendorShippingAddress1: this.orderDataPO.vendorShippingAddress1,
+      vendorShippingAddress2: this.orderDataPO.vendorShippingAddress2,
+      vendorShippingCity: this.orderDataPO.vendorShippingCity,
+      vendorShippingState: this.orderDataPO.vendorShippingState,
+      vendorShippingZip: this.orderDataPO.vendorShippingZip,
+      vendorShippingPhone: this.orderDataPO.vendorShippingPhone,
+      vendorShippingEmail: this.orderDataPO.vendorShippingEmail,
+      shippingComment: this.orderDataPO.shippingComment,
+      shipToCompanyName: this.orderDataPO.shipToCompanyName,
+      shipToCustomerName: this.orderDataPO.shipToCustomerName,
+      shipToLocation: this.orderDataPO.shipToLocation,
+      shipToPurchaseOrder: this.orderDataPO.shipToPurchaseOrder,
+      shipToAddress: this.orderDataPO.shipToAddress,
+      shipToCity: this.orderDataPO.shipToCity,
+      shipToState: this.orderDataPO.shipToState,
+      shipToZip: this.orderDataPO.shipToZip,
+      shipToCountry: this.orderDataPO.shipToCountry,
+      imprintComment: this.orderDataPO.imprintComment,
+      POTotal: this.orderDataPO.POTotal,
+      shipToDeliverTo: this.orderDataPO.shipToDeliverTo,
+      productName: this.orderData.productName,
+      quantity: this.orderData.quantity,
+      purchaseOrderNumber: this.orderDataPO.purchaseOrderNumber,
+      purchaseOrderComments: this.orderDataPO.purchaseOrderComments,
+      blnDuplicate: true
+    }
+    let payload: SavePurchaseOrder = {
+      orderLinePOID: this.orderDataPO.pk_orderLinePOID,
+      orderLinePO: OrderLinePO,
+      orderLineOptions: OrderLinePOOptions,
+      orderLineImprints: orderLineImprint,
+      orderLineAccessories: orderLineAccessory,
+      save_purchase_order: true
+    }
+    this._OrderManageService.PutAPIData(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+      if (res["success"]) {
+        this._OrderManageService.snackBar(res["message"]);
+      }
+      this.isSavePOLoader = false;
+      this._changeDetectorRef.markForCheck();
+    }, err => {
+      this.isSavePOLoader = false;
+      this._changeDetectorRef.markForCheck();
+    });
+  }
+  removePoOrder() {
+    this.isRemovePOLoader = true;
+    let orderID = this.orderData.fk_orderID;
+    let orderLineID = this.orderDataPO.fk_orderLineID;
+    if (orderLineID) {
+      orderID = 0;
+    } else {
+      orderLineID = 0;
+    }
+    let payload: removePurchaseOrderItem = {
+      orderID: orderID,
+      orderLineID: orderLineID,
+      remove_purchase_order_item: true
+    }
+    this._OrderManageService.PutAPIData(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+      if (res["success"]) {
+        this._OrderManageService.snackBar(res["message"]);
+        this.backToList();
+      }
+      this.isRemovePOLoader = false;
+      this._changeDetectorRef.markForCheck();
+    }, err => {
+      this.isRemovePOLoader = false;
       this._changeDetectorRef.markForCheck();
     });
   }
