@@ -60,6 +60,10 @@ export class AuthService {
         return this._httpClient.post('api/auth/forgot-password', email);
     }
 
+    siginPostApiCall(payload) {
+        return this._httpClient.post(environment.customerList, payload);
+    }
+
     /**
      * Reset password
      *

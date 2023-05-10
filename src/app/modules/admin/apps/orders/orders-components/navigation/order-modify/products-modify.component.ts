@@ -10,7 +10,7 @@ import { IDropdownSettings } from 'ng-multiselect-dropdown';
 import { Subject } from 'rxjs';
 import { debounceTime, distinctUntilChanged, filter, finalize, switchMap, takeUntil, tap } from 'rxjs/operators';
 import { OrdersService } from '../../orders.service';
-import { AddProduct, UpdateRoyalties, UpdateShipping, addComment, contactInfoObj, paymentInfoObj, shippingDetailsObj } from '../../orders.types';
+import { AddProduct, UpdateModifyOrderImprints, UpdateRoyalties, UpdateShipping, addAccessory, addComment, addModifyOrderImprints, contactInfoObj, paymentInfoObj, shippingDetailsObj } from '../../orders.types';
 
 @Component({
   selector: 'app-products-modify',
@@ -40,7 +40,7 @@ export class ProductsOrderModifyComponent implements OnInit, OnDestroy {
   ngOverrideShipping: boolean = false;
   isAddOptionLoader: boolean = false;
   // AddImprintOption
-  ngImrintId = '';
+  ngImprintSelected = '';
 
   quillModules: any = {
     toolbar: [
@@ -61,6 +61,10 @@ export class ProductsOrderModifyComponent implements OnInit, OnDestroy {
   currentSelectedProduct: any;
   isSearchingProduct = false;
   orderLinesItems: any;
+  ngSelectedAccessory: any;
+  isAddAccessoryLoader: boolean = false;
+  isUpdateImprintLoader: boolean = false;
+  isAddImprintLoader: boolean = false;
   constructor(
     private _changeDetectorRef: ChangeDetectorRef,
     private _orderService: OrdersService,
@@ -329,6 +333,9 @@ export class ProductsOrderModifyComponent implements OnInit, OnDestroy {
       this.orderProducts[check].imprintsUnSelected = [];
       this.orderProducts[check].accessoriesSelected = res["orderline_accessories"];
       this.orderProducts[check].accessoriesUnSelected = res["dropdown_accessories"];
+      if (this.orderProducts[check].accessoriesUnSelected.length > 0) {
+        this.ngSelectedAccessory = this.orderProducts[check].accessoriesUnSelected[0];
+      }
       res["dropdown_imprints"].forEach((element) => {
         if (element.isSelected == 0) {
           this.orderProducts[check].imprintsUnSelected.push(element);
@@ -339,13 +346,17 @@ export class ProductsOrderModifyComponent implements OnInit, OnDestroy {
       this.orderProducts[check].imprints = res["imprints"];
       this.orderProducts[check].dropdown_imprints = res["dropdown_imprints"];
       res["main_imprints"].forEach(element => {
-        element.colorsList = element.imprintColors.split(',');
+        if (element.imprintColors) {
+          element.colorsList = element.imprintColors.split(',');
+        } else {
+          element.colorsList = '';
+        }
       });
       this.orderProducts[check].main_imprints = res["main_imprints"];
       this.orderProducts[check].allProducts = this.allProducts;
       this.ngSelectedProduct = this.orderProducts[check];
       if (this.ngSelectedProduct.imprintsUnSelected.length > 0) {
-        this.ngImrintId = this.ngSelectedProduct.imprintsUnSelected[0].pk_imprintID;
+        this.ngImprintSelected = this.ngSelectedProduct.imprintsUnSelected[0];
       }
       this.currentSearchProductCtrl.setValue(this.ngSelectedProduct.products[0]);
       console.log(this.ngSelectedProduct)
@@ -450,6 +461,91 @@ export class ProductsOrderModifyComponent implements OnInit, OnDestroy {
       this._changeDetectorRef.markForCheck();
     }, err => {
       this.isAddOptionLoader = false;
+      this._changeDetectorRef.markForCheck();
+    });
+  }
+  // Add Accessories
+  addAccoryOptionOptions() {
+    let payload: addAccessory = {
+      orderLine_id: this.ngSelectedProduct.order_line_id,
+      packaginID: this.ngSelectedAccessory.fk_packagingID,
+      quantity: this.ngSelectedAccessory.quantity,
+      runCost: this.ngSelectedAccessory.run,
+      setupCost: this.ngSelectedAccessory.setup,
+      runPrice: this.ngSelectedAccessory.run,
+      setupPrice: this.ngSelectedAccessory.setup,
+      modify_order_add_accessory: true
+    }
+    this.isAddAccessoryLoader = true;
+    this._orderService.orderPostCalls(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+      this._orderService.snackBar(res["message"]);
+      this.isAddAccessoryLoader = false;
+      this._changeDetectorRef.markForCheck();
+    }, err => {
+      this.isAddAccessoryLoader = false;
+      this._changeDetectorRef.markForCheck();
+    });
+  }
+  // Update Imprints
+  updateImprintOptions() {
+    let Imprint = [];
+    let imprints = this.ngSelectedProduct.main_imprints;
+    imprints.forEach(element => {
+      Imprint.push({
+        imprint_id: element.fk_imprintID,
+        new_imprint_id: element.fk_imprintID,
+        process_quantity: element.processQuantity,
+        imprint_colors: element.colorsList.toString(),
+        runCost: element.runCost,
+        runPrice: element.runPrice,
+        setupCost: element.setupCost,
+        setupPrice: element.setupPrice,
+        blnOverrideRunSetup: element.blnOverride,
+        customerArtworkComment: element.customerArtworkComment
+      })
+    });
+    let payload: UpdateModifyOrderImprints = {
+      imprints: Imprint,
+      orderLineId: this.ngSelectedProduct.order_line_id,
+      update_modify_order_imprint: true
+    }
+    this.isUpdateImprintLoader = true;
+    this._orderService.updateOrderCalls(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+      this._orderService.snackBar(res["message"]);
+      this.isUpdateImprintLoader = false;
+      this._changeDetectorRef.markForCheck();
+    }, err => {
+      this.isUpdateImprintLoader = false;
+      this._changeDetectorRef.markForCheck();
+    });
+  }
+  // Update Imprints
+  addImprintOptions() {
+    let Imprint = [];
+    Imprint.push({
+      imprint_id: this.ngSelectedImprint.pk_imprintID,
+      new_imprint_id: this.ngSelectedImprint.pk_imprintID,
+      process_quantity: this.ngSelectedImprint.pk_imprintID,
+      imprint_colors: this.ngSelectedImprint.pk_imprintID,
+      runCost: this.ngSelectedImprint.pk_imprintID,
+      runPrice: this.ngSelectedImprint.pk_imprintID,
+      setupCost: this.ngSelectedImprint.pk_imprintID,
+      setupPrice: this.ngSelectedImprint.pk_imprintID,
+      decoratorFOBzip: this.ngSelectedImprint.pk_imprintID,
+      customerArtworkComment: this.ngSelectedImprint.pk_imprintID,
+    })
+    let payload: addModifyOrderImprints = {
+      imprints: Imprint,
+      orderLineId: this.ngSelectedProduct.order_line_id,
+      add_modify_order_imprint: true
+    }
+    this.isAddImprintLoader = true;
+    this._orderService.orderPostCalls(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+      this._orderService.snackBar(res["message"]);
+      this.isAddImprintLoader = false;
+      this._changeDetectorRef.markForCheck();
+    }, err => {
+      this.isAddImprintLoader = false;
       this._changeDetectorRef.markForCheck();
     });
   }

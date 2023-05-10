@@ -320,3 +320,48 @@ export interface AddProduct {
     blnOverride: boolean;
     modify_order_add_product: boolean;
 };
+export interface addAccessory {
+    orderLine_id: number,
+    packaginID: number,
+    quantity: number,
+    runCost: number,
+    setupCost: number,
+    runPrice: number,
+    setupPrice: number,
+    modify_order_add_accessory: boolean;
+};
+
+export interface UpdateModifyOrderImprints {
+    imprints: Imprint[];
+    orderLineId: number;
+    update_modify_order_imprint: boolean;
+};
+interface Imprint {
+    imprint_id: number;
+    new_imprint_id: number;
+    process_quantity: number;
+    imprint_colors: string;
+    runCost: number;
+    runPrice: number;
+    setupCost: number;
+    setupPrice: number;
+    blnOverrideRunSetup: boolean;
+    customerArtworkComment: string;
+};
+export interface addModifyOrderImprints {
+    imprints: Imprint[];
+    orderLineId: number;
+    add_modify_order_imprint: boolean;
+};
+interface Imprint {
+    imprint_id: number;
+    new_imprint_id: number;
+    process_quantity: number;
+    imprint_colors: string;
+    runCost: number;
+    runPrice: number;
+    setupCost: number;
+    setupPrice: number;
+    decoratorFOBzip: string;
+    customerArtworkComment: string;
+};
