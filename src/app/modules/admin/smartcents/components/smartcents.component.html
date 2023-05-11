@@ -47,6 +47,7 @@
                 </div>
                 <div class="col-12 mt-5" *ngIf="ngOrderType > 1">
                     <mat-form-field class="w-full">
+                        <mat-label>Status:</mat-label>
                         <mat-select name="filterView" [(ngModel)]="ngStatus" *ngIf="ngOrderType !=4">
                             <mat-option [value]="0">All statuses</mat-option>
                             <mat-option [value]="1" *ngIf="ngOrderType == 5">New order</mat-option>
@@ -78,6 +79,7 @@
                 </div>
                 <div class="col-12 mt-5" *ngIf="ngOrderType == 5">
                     <mat-form-field class="w-full">
+                        <mat-label>Status:</mat-label>
                         <mat-select name="filterView" [(ngModel)]="ngTerms">
                             <mat-option [value]="''">All net terms</mat-option>
                             <mat-option [value]="'PrePaid'">PrePaid</mat-option>
@@ -92,6 +94,7 @@
                 </div>
                 <div class="col-12 mt-5" *ngIf="ngOrderType == 5">
                     <mat-form-field class="w-full">
+                        <mat-label>Payment Method:</mat-label>
                         <mat-select name="paymentMethod" [(ngModel)]="ngPayment">
                             <mat-option value="">All payment methods</mat-option>
                             <mat-option value="American Express">American Express</mat-option>
