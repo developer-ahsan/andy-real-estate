@@ -19,7 +19,8 @@
                 </div>
                 <div class="col-12 mt-5">
                     <mat-form-field class="w-full">
-                        <mat-select name="filterView" [(ngModel)]="ngFilterView">
+                        <mat-select name="filterView" [(ngModel)]="ngOrderType"
+                            (selectionChange)="changeOrderType($event)">
                             <mat-option [value]="1">Revenue</mat-option>
                             <mat-option [value]="2">Orders to close</mat-option>
                             <mat-option [value]="3">POs need billed</mat-option>
@@ -44,24 +45,82 @@
                         </mat-autocomplete>
                     </mat-form-field>
                 </div>
+                <div class="col-12 mt-5" *ngIf="ngOrderType > 1">
+                    <mat-form-field class="w-full">
+                        <mat-select name="filterView" [(ngModel)]="ngStatus" *ngIf="ngOrderType !=4">
+                            <mat-option [value]="0">All statuses</mat-option>
+                            <mat-option [value]="1" *ngIf="ngOrderType == 5">New order</mat-option>
+                            <mat-option [value]="2" *ngIf="ngOrderType == 5">Artwork approved</mat-option>
+                            <mat-option [value]="3" *ngIf="ngOrderType == 5">PO Sent</mat-option>
+                            <mat-option [value]="4" *ngIf="ngOrderType == 5">PO Acknowledged</mat-option>
+                            <mat-option [value]="5"
+                                *ngIf="ngOrderType == 5 || ngOrderType == 3 || ngOrderType == 2">Shipped</mat-option>
+                            <mat-option [value]="6"
+                                *ngIf="ngOrderType == 5 || ngOrderType == 3 || ngOrderType == 2">Delivered</mat-option>
+                            <mat-option [value]="7" *ngIf="ngOrderType == 5">Awaiting eProcurement
+                                Confirmation</mat-option>
+                            <mat-option [value]="8"
+                                *ngIf="ngOrderType == 5 || ngOrderType == 3 || ngOrderType == 2">Picked up</mat-option>
+                            <mat-option [value]="11" *ngIf="ngOrderType == 5">Billed</mat-option>
+                            <mat-option [value]="10" *ngIf="ngOrderType == 5">Waiting for Group Order</mat-option>
+                            <mat-option [value]="12" *ngIf="ngOrderType == 5">Paid</mat-option>
+                        </mat-select>
+                        <mat-select name="filterView" [(ngModel)]="ngStatus" *ngIf="ngOrderType ==4">
+                            <mat-option [value]="">All statuses</mat-option>
+                            <mat-option [value]="0">Order created</mat-option>
+                            <mat-option [value]="1">Art proof sent</mat-option>
+                            <mat-option [value]="2">All approvals received</mat-option>
+                            <mat-option [value]="3">Esimated ship date scheduled</mat-option>
+                            <mat-option [value]="4">Shipped</mat-option>
+                            <mat-option [value]="5">Delivered</mat-option>
+                        </mat-select>
+                    </mat-form-field>
+                </div>
+                <div class="col-12 mt-5" *ngIf="ngOrderType == 5">
+                    <mat-form-field class="w-full">
+                        <mat-select name="filterView" [(ngModel)]="ngTerms">
+                            <mat-option [value]="''">All net terms</mat-option>
+                            <mat-option [value]="'PrePaid'">PrePaid</mat-option>
+                            <mat-option [value]="'Due on receipt'">Due on receipt</mat-option>
+                            <mat-option [value]="'Net 10'">Net 10</mat-option>
+                            <mat-option [value]="'Net 15'">Net 15</mat-option>
+                            <mat-option [value]="'Net 30'">Net 30</mat-option>
+                            <mat-option [value]="'Net 45'">Net 45</mat-option>
+                            <mat-option [value]="'Net 60'">Net 60</mat-option>
+                        </mat-select>
+                    </mat-form-field>
+                </div>
+                <div class="col-12 mt-5" *ngIf="ngOrderType == 5">
+                    <mat-form-field class="w-full">
+                        <mat-select name="paymentMethod" [(ngModel)]="ngPayment">
+                            <mat-option value="">All payment methods</mat-option>
+                            <mat-option value="American Express">American Express</mat-option>
+                            <mat-option value="Capital One">Capital One</mat-option>
+                            <mat-option value="Chase Vise">Chase Visa</mat-option>
+                            <mat-option value="Vendor Website">Vendor Website</mat-option>
+                            <mat-option value="ACH">ACH</mat-option>
+                            <mat-option value="Check">Check</mat-option>
+                        </mat-select>
+                    </mat-form-field>
+                </div>
                 <div class="col-12 mt-5">
                     <mat-form-field class="w-full">
                         <mat-label>Order ID/PO:</mat-label>
-                        <input matInput [(ngModel)]="ngKeyword">
+                        <input matInput [(ngModel)]="ngOrderKeyword">
                     </mat-form-field>
                 </div>
                 <div class="col-12">
                     <mat-form-field class="w-full">
                         <mat-label>Customer/Company/Vendor:</mat-label>
-                        <input matInput [(ngModel)]="ngProductName">
+                        <input matInput [(ngModel)]="ngCompanyKeyword">
                     </mat-form-field>
                 </div>
                 <div class="col-12">
                     <mat-form-field class="w-full">
                         <mat-label>Start-End Date:</mat-label>
                         <mat-date-range-input [rangePicker]="dateRange">
-                            <input matStartDate placeholder="Start date">
-                            <input matEndDate placeholder="End date">
+                            <input matStartDate placeholder="Start date" [(ngModel)]="ngStartDate">
+                            <input matEndDate placeholder="End date" [(ngModel)]="ngEndDate">
                         </mat-date-range-input>
                         <mat-datepicker-toggle matIconSuffix [for]="dateRange"></mat-datepicker-toggle>
                         <mat-date-range-picker #dateRange></mat-date-range-picker>

@@ -38,6 +38,7 @@ export class RapidImageManagementComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.userData = JSON.parse(sessionStorage.getItem('rapidBuild'));
     this._route.queryParams.subscribe(res => {
+      console.log(res)
       if (this.dataSource.length > 0) {
         this.paginator.pageIndex = 0;
         this.page = 1;

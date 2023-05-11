@@ -655,7 +655,8 @@
                         Shipping</mat-checkbox>
                 </div>
                 <div class="col-12 text-right">
-                    <button mat-button mat-stroked-button (click)="updateShipping()" [disabled]="isShippingLoader">
+                    <button class="min-w-40" mat-button mat-stroked-button (click)="updateShipping()"
+                        [disabled]="isShippingLoader">
                         <sapn *ngIf="!isShippingLoader">Update Shipping</sapn>
                         <mat-progress-spinner *ngIf="isShippingLoader" [diameter]="24" [mode]="'indeterminate'">
                         </mat-progress-spinner>
@@ -679,7 +680,8 @@
                     </mat-form-field>
                 </div>
                 <div class="col-12 col-md-3 mt-7">
-                    <button mat-button mat-stroked-button (click)="updateRoyalties()" [disabled]="isRoyaltyLoader">
+                    <button class="min-w-40" mat-button mat-stroked-button (click)="updateRoyalties()"
+                        [disabled]="isRoyaltyLoader">
                         <sapn *ngIf="!isRoyaltyLoader">Update Royalties</sapn>
                         <mat-progress-spinner *ngIf="isRoyaltyLoader" [diameter]="24" [mode]="'indeterminate'">
                         </mat-progress-spinner>

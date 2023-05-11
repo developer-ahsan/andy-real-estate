@@ -21,6 +21,7 @@ export const environment = {
     rapid_build: "https://consolidus.azurewebsites.net/api/rapidbuild",
     import_export: "https://consolidus.azurewebsites.net/api/import_export",
     order_manage: "https://consolidus.azurewebsites.net/api/order_manage",
+    smartcents: "https://consolidus.azurewebsites.net/api/smartcents",
     vendors: "https://consolidus.azurewebsites.net/api/vendors",
     reports: "https://consolidus.azurewebsites.net/api/reports",
     campaignMedia: "https://assets.consolidus.com/globalAssets/Campaigns",

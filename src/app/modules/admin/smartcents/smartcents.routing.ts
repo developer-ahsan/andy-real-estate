@@ -2,15 +2,15 @@ import { Route } from '@angular/router';
 import { SmartCentsDashboardComponent } from './components/pages/dashboard/dashboard.component';
 import { ExportBillDataComponent } from './components/pages/export-bill/export-bill.component';
 import { SmartCentsComponent } from './components/smartcents.component';
-import { RapidBuildStatusesResolver, RapidBuildStoresResolver } from './components/smartcents.resolvers';
 import { CustomerInvoiceComponent } from './components/pages/customer-invoice/customer-invoice.component';
+import { SmartCentStoresResolver } from './components/smartcents.resolvers';
 
 export const smartartRoutes: Route[] = [
     {
         path: '',
         component: SmartCentsComponent,
         resolve: {
-            // RapidBuildStoresResolver, RapidBuildStatusesResolver
+            SmartCentStoresResolver
         },
         children: [
             {

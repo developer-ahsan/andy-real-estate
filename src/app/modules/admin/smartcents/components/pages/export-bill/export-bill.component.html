@@ -100,27 +100,32 @@
                 </div>
             </div>
             <div *ngIf="selectedRoute=='exports'">
-                <div id="exportContainer">
-
+                <div *ngIf="isLoading" class="py-4">
+                    <ngx-skeleton-loader count="8" appearance="line" animation="pulse" [theme]="{ 
+                        'background-color': '#dedede'
+                      }">
+                    </ngx-skeleton-loader>
+                </div>
+                <div id="exportContainer" *ngIf="!isLoading">
                     <table
                         class="table big-table table-hover table-condensed table-striped padding-2x wide no-bottom-margin clickable-table-new-window">
                         <tbody>
-
-                            <tr class="clickable">
+                            <tr class="clickable" *ngFor="let item of exportsData">
                                 <td width="100%">
                                     <div class="container-fluid">
                                         <div class="flex justify-between align-items-center">
                                             <div class="flex align-items-center">
                                                 <mat-icon svgIcon="mat_outline:insert_drive_file"
                                                     class="pr-3 icon-size-10"></mat-icon>
-                                                <a href="https://assets.consolidus.com/globalAssets/smartCents/exports/SmartCents_Customer_Invoice_Export_03-28-2023-For-Range-02-01-2023-02-28-2023.xls"
+                                                <a href="https://assets.consolidus.com/globalAssets/smartCents/exports/{{item.fileName}}"
                                                     target="_&quot;blank&quot;" style="font-size: 14px;">
-                                                    SmartCents Customer Invoice Export For Range <b>02/01/2023</b>
-                                                    through <b>03/01/2023</b>
+                                                    SmartCents Customer Invoice Export For Range <b>{{item.rangeStart |
+                                                        date:'MM/dd/yyyy'}}</b>
+                                                    through <b>{{item.rangeEnd | date:'MM/dd/yyyy'}}</b>
                                                 </a>
                                             </div>
                                             <div>
-                                                <h2 class="font-bold text-lg text-secondary ">19
+                                                <h2 class="font-bold text-lg text-secondary ">{{item.pk_exportID}}
                                                 </h2>
                                             </div>
                                         </div>
@@ -128,153 +133,8 @@
                                             <mat-icon svgIcon="mat_outline:insert_drive_file" class="pr-3 icon-size-10"
                                                 style="visibility: hidden;"></mat-icon>
                                             <div>
-                                                Exported on 03/28/2023 @ 05:00 PM<br>
-                                                Number of Invoices: 621
-                                            </div>
-                                        </div>
-                                    </div>
-                                </td>
-                            </tr>
-                            <tr class="clickable">
-                                <td width="100%">
-                                    <div class="container-fluid">
-                                        <div class="flex justify-between align-items-center">
-                                            <div class="flex align-items-center">
-                                                <mat-icon svgIcon="mat_outline:insert_drive_file"
-                                                    class="pr-3 icon-size-10"></mat-icon>
-                                                <a href="https://assets.consolidus.com/globalAssets/smartCents/exports/SmartCents_Customer_Invoice_Export_03-28-2023-For-Range-02-01-2023-02-28-2023.xls"
-                                                    target="_&quot;blank&quot;" style="font-size: 14px;">
-                                                    SmartCents Customer Invoice Export For Range <b>02/01/2023</b>
-                                                    through <b>03/01/2023</b>
-                                                </a>
-                                            </div>
-                                            <div>
-                                                <h2 class="font-bold text-lg text-secondary ">19
-                                                </h2>
-                                            </div>
-                                        </div>
-                                        <div class="flex">
-                                            <mat-icon svgIcon="mat_outline:insert_drive_file" class="pr-3 icon-size-10"
-                                                style="visibility: hidden;"></mat-icon>
-                                            <div>
-                                                Exported on 03/28/2023 @ 05:00 PM<br>
-                                                Number of Invoices: 621
-                                            </div>
-                                        </div>
-                                    </div>
-                                </td>
-                            </tr>
-                            <tr class="clickable">
-                                <td width="100%">
-                                    <div class="container-fluid">
-                                        <div class="flex justify-between align-items-center">
-                                            <div class="flex align-items-center">
-                                                <mat-icon svgIcon="mat_outline:insert_drive_file"
-                                                    class="pr-3 icon-size-10"></mat-icon>
-                                                <a href="https://assets.consolidus.com/globalAssets/smartCents/exports/SmartCents_Customer_Invoice_Export_03-28-2023-For-Range-02-01-2023-02-28-2023.xls"
-                                                    target="_&quot;blank&quot;" style="font-size: 14px;">
-                                                    SmartCents Customer Invoice Export For Range <b>02/01/2023</b>
-                                                    through <b>03/01/2023</b>
-                                                </a>
-                                            </div>
-                                            <div>
-                                                <h2 class="font-bold text-lg text-secondary ">19
-                                                </h2>
-                                            </div>
-                                        </div>
-                                        <div class="flex">
-                                            <mat-icon svgIcon="mat_outline:insert_drive_file" class="pr-3 icon-size-10"
-                                                style="visibility: hidden;"></mat-icon>
-                                            <div>
-                                                Exported on 03/28/2023 @ 05:00 PM<br>
-                                                Number of Invoices: 621
-                                            </div>
-                                        </div>
-                                    </div>
-                                </td>
-                            </tr>
-                            <tr class="clickable">
-                                <td width="100%">
-                                    <div class="container-fluid">
-                                        <div class="flex justify-between align-items-center">
-                                            <div class="flex align-items-center">
-                                                <mat-icon svgIcon="mat_outline:insert_drive_file"
-                                                    class="pr-3 icon-size-10"></mat-icon>
-                                                <a href="https://assets.consolidus.com/globalAssets/smartCents/exports/SmartCents_Customer_Invoice_Export_03-28-2023-For-Range-02-01-2023-02-28-2023.xls"
-                                                    target="_&quot;blank&quot;" style="font-size: 14px;">
-                                                    SmartCents Customer Invoice Export For Range <b>02/01/2023</b>
-                                                    through <b>03/01/2023</b>
-                                                </a>
-                                            </div>
-                                            <div>
-                                                <h2 class="font-bold text-lg text-secondary ">19
-                                                </h2>
-                                            </div>
-                                        </div>
-                                        <div class="flex">
-                                            <mat-icon svgIcon="mat_outline:insert_drive_file" class="pr-3 icon-size-10"
-                                                style="visibility: hidden;"></mat-icon>
-                                            <div>
-                                                Exported on 03/28/2023 @ 05:00 PM<br>
-                                                Number of Invoices: 621
-                                            </div>
-                                        </div>
-                                    </div>
-                                </td>
-                            </tr>
-                            <tr class="clickable">
-                                <td width="100%">
-                                    <div class="container-fluid">
-                                        <div class="flex justify-between align-items-center">
-                                            <div class="flex align-items-center">
-                                                <mat-icon svgIcon="mat_outline:insert_drive_file"
-                                                    class="pr-3 icon-size-10"></mat-icon>
-                                                <a href="https://assets.consolidus.com/globalAssets/smartCents/exports/SmartCents_Customer_Invoice_Export_03-28-2023-For-Range-02-01-2023-02-28-2023.xls"
-                                                    target="_&quot;blank&quot;" style="font-size: 14px;">
-                                                    SmartCents Customer Invoice Export For Range <b>02/01/2023</b>
-                                                    through <b>03/01/2023</b>
-                                                </a>
-                                            </div>
-                                            <div>
-                                                <h2 class="font-bold text-lg text-secondary ">19
-                                                </h2>
-                                            </div>
-                                        </div>
-                                        <div class="flex">
-                                            <mat-icon svgIcon="mat_outline:insert_drive_file" class="pr-3 icon-size-10"
-                                                style="visibility: hidden;"></mat-icon>
-                                            <div>
-                                                Exported on 03/28/2023 @ 05:00 PM<br>
-                                                Number of Invoices: 621
-                                            </div>
-                                        </div>
-                                    </div>
-                                </td>
-                            </tr>
-                            <tr class="clickable">
-                                <td width="100%">
-                                    <div class="container-fluid">
-                                        <div class="flex justify-between align-items-center">
-                                            <div class="flex align-items-center">
-                                                <mat-icon svgIcon="mat_outline:insert_drive_file"
-                                                    class="pr-3 icon-size-10"></mat-icon>
-                                                <a href="https://assets.consolidus.com/globalAssets/smartCents/exports/SmartCents_Customer_Invoice_Export_03-28-2023-For-Range-02-01-2023-02-28-2023.xls"
-                                                    target="_&quot;blank&quot;" style="font-size: 14px;">
-                                                    SmartCents Customer Invoice Export For Range <b>02/01/2023</b>
-                                                    through <b>03/01/2023</b>
-                                                </a>
-                                            </div>
-                                            <div>
-                                                <h2 class="font-bold text-lg text-secondary ">19
-                                                </h2>
-                                            </div>
-                                        </div>
-                                        <div class="flex">
-                                            <mat-icon svgIcon="mat_outline:insert_drive_file" class="pr-3 icon-size-10"
-                                                style="visibility: hidden;"></mat-icon>
-                                            <div>
-                                                Exported on 03/28/2023 @ 05:00 PM<br>
-                                                Number of Invoices: 621
+                                                Exported on {{item.dateCreated | date:'medium'}}<br>
+                                                Number of Invoices: {{item.numberOfPOs}}
                                             </div>
                                         </div>
                                     </div>
@@ -282,7 +142,14 @@
                             </tr>
                         </tbody>
                     </table>
-
+                    <div *ngIf="exportsData.length > 0">
+                        <div class="flex justify-center my-3" *ngIf="exportsData.length < totalExportsData">
+                            <p class="cursor-pointer hover:text-gray-900" (click)="getNextPageData()"
+                                *ngIf="!isNextPageLoader">Load More</p>
+                            <mat-progress-spinner *ngIf="isNextPageLoader" [diameter]="24" [mode]="'indeterminate'">
+                            </mat-progress-spinner>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>

@@ -5,7 +5,7 @@ import { MatDrawer } from '@angular/material/sidenav';
 import { NavigationExtras, Router } from '@angular/router';
 import { Subject } from 'rxjs';
 import { debounceTime, distinctUntilChanged, filter, finalize, switchMap, takeUntil, tap } from 'rxjs/operators';
-import { RapidBuildService } from '../../smartcents.service';
+import { SmartCentsService } from '../../smartcents.service';
 import { HideUnhideQuote } from '../../smartcents.types';
 @Component({
   selector: 'app-customer-invoice',
@@ -68,9 +68,14 @@ export class CustomerInvoiceComponent implements OnInit, OnDestroy {
 
   isLoading: boolean = false;
   selectedRoute = 'settings';
+
+  exportsData: any = [];
+  totalExportsData = 0;
+  page = 1;
+  isNextPageLoader: boolean = false;
   constructor(
     private _changeDetectorRef: ChangeDetectorRef,
-    private _RapidBuildService: RapidBuildService,
+    private _smartCentService: SmartCentsService,
     private router: Router
   ) { }
   calledScreen(screen) {
@@ -112,46 +117,34 @@ export class CustomerInvoiceComponent implements OnInit, OnDestroy {
         price: '40'
       }
     ];
-    let params;
-    this.searchStoreCtrl.valueChanges.pipe(
-      filter(res => {
-        params = {
-          stores_list: true,
-          keyword: res
-        }
-        return res !== null && res.length >= this.minLengthTerm
-      }),
-      distinctUntilChanged(),
-      debounceTime(500),
-      tap(() => {
-        this.storesList = [];
-        this.isSearching = true;
-        this._changeDetectorRef.markForCheck();
-      }),
-      // switchMap(
-      //   // value => this._RoyaltyService.getCallsData(params)
-      //   // .pipe(
-      //   //   finalize(() => {
-      //   //     this.isSearching = false
-      //   //     this._changeDetectorRef.markForCheck();
-      //   //   }),
-      //   // )
-      // )
-    ).subscribe((data: any) => {
-      this.storesList = data['data'];
-    });
-    this.isLoading = false;
-    this._changeDetectorRef.markForCheck();
   }
   ngOnInit(): void {
     this.initForm();
     this.isLoading = true;
+    this.getExportsData(1);
   };
-  onSelected(ev) {
-    this.selectedStore = ev.option.value;
+  getExportsData(page) {
+    let params = {
+      customer_exports: true,
+      page: page,
+      size: 10
+    }
+    this._smartCentService.getApiData(params).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+      this.exportsData = this.exportsData.concat(res["data"]);
+      this.totalExportsData = res["totalRecords"];
+      this.isNextPageLoader = false;
+      this.isLoading = false;
+      this._changeDetectorRef.markForCheck();
+    }, err => {
+      this.isNextPageLoader = false;
+      this.isLoading = false;
+      this._changeDetectorRef.markForCheck();
+    });
   }
-  displayWith(value: any) {
-    return value ? value?.storeName : '';
+  getNextPageData() {
+    this.page++;
+    this.isNextPageLoader = true;
+    this.getExportsData(this.page);
   }
   /**
      * On destroy

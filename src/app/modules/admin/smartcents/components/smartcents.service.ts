@@ -12,13 +12,13 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 @Injectable({
     providedIn: 'root'
 })
-export class RapidBuildService {
+export class SmartCentsService {
     public routeData: any;
     public navigationLabels = navigations;
 
     private _smartArtUsers: BehaviorSubject<any[] | null> = new BehaviorSubject<any[]>(null);
     private _employeeAdmins: BehaviorSubject<any[] | null> = new BehaviorSubject<any[]>(null);
-    private _rapidBuildStores: BehaviorSubject<any[] | null> = new BehaviorSubject<any[]>(null);
+    private _smartCentsStores: BehaviorSubject<any[] | null> = new BehaviorSubject<any[]>(null);
     private _rapidBuildStatuses: BehaviorSubject<any[] | null> = new BehaviorSubject<any[]>(null);
     private _reportUsers: BehaviorSubject<any[] | null> = new BehaviorSubject<any[]>(null);
     /**
@@ -38,26 +38,9 @@ export class RapidBuildService {
             duration: 3500
         });
     }
-
-    // Reports
-    get reportUsers$(): Observable<any[]> {
-        return this._reportUsers.asObservable();
-    };
-    // Observables
-    get employeeAdmins$(): Observable<any[]> {
-        return this._employeeAdmins.asObservable();
-    };
-    // Companies
-    get smartArtUsers$(): Observable<any[]> {
-        return this._smartArtUsers.asObservable();
-    };
     // Stores
-    get rapidBuildStores$(): Observable<any[]> {
-        return this._rapidBuildStores.asObservable();
-    };
-    // Stauses
-    get rapidBuildStatuses$(): Observable<any[]> {
-        return this._rapidBuildStatuses.asObservable();
+    get smartCentsStores$(): Observable<any[]> {
+        return this._smartCentsStores.asObservable();
     };
 
 
@@ -75,13 +58,8 @@ export class RapidBuildService {
     };
 
     // Common get Calls
-    getSmartArtData(params): Observable<any[]> {
-        return this._httpClient.get<any[]>(environment.rapid_build, {
-            params: params
-        }).pipe(retry(3));
-    };
-    getRapidBuildData(params): Observable<any[]> {
-        return this._httpClient.get<any[]>(environment.rapid_build, {
+    getApiData(params): Observable<any[]> {
+        return this._httpClient.get<any[]>(environment.smartcents, {
             params: params
         }).pipe(retry(3));
     };
@@ -89,18 +67,13 @@ export class RapidBuildService {
     PostAPIData(payload) {
         const headers = { 'Authorization': `Bearer ${this._authService.accessToken}` };
         return this._httpClient.post(
-            environment.rapid_build, payload, { headers });
-    };
-    AddSmartArtData(payload) {
-        const headers = { 'Authorization': `Bearer ${this._authService.accessToken}` };
-        return this._httpClient.post(
-            environment.rapid_build, payload, { headers });
+            environment.smartcents, payload, { headers });
     };
     // Common put Call
-    UpdateSmartArtData(payload) {
+    UpdateAPiData(payload) {
         const headers = { 'Authorization': `Bearer ${this._authService.accessToken}` };
         return this._httpClient.put(
-            environment.rapid_build, payload, { headers });
+            environment.smartcents, payload, { headers });
     };
 
     // Admin Employees
@@ -116,50 +89,13 @@ export class RapidBuildService {
             })
         );
     };
-    // Generate Report Users
-    getAllReportUsers(): Observable<any[]> {
-        return this._httpClient.get<any[]>(environment.flps, {
-            params: {
-                view_store_all_admins: true,
-                size: 10
-            }
-        }).pipe(
-            tap((response: any) => {
-                this._reportUsers.next(response);
-            })
-        );
-    };
-    // Get getSmartArtUsers
-    getSmartArtUsers(): Observable<any[]> {
-        return this._httpClient.get<any[]>(environment.smartart, {
-            params: {
-                smart_art_users: true,
-                size: 20
-            }
-        }).pipe(
-            tap((response: any) => {
-                this._smartArtUsers.next(response);
-            })
-        );
-    };
     // Admin Stores
-    getRapidBuildStores(params): Observable<any[]> {
-        return this._httpClient.get<any[]>(environment.rapid_build, {
+    getSmartCentsStores(params): Observable<any[]> {
+        return this._httpClient.get<any[]>(environment.smartcents, {
             params: params
         }).pipe(
             tap((response: any) => {
-                this._rapidBuildStores.next(response);
-            })
-        );
-    };
-    getRapidBuildStatus(): Observable<any[]> {
-        return this._httpClient.get<any[]>(environment.rapid_build, {
-            params: {
-                rapidbuild_status: true
-            }
-        }).pipe(
-            tap((response: any) => {
-                this._rapidBuildStatuses.next(response);
+                this._smartCentsStores.next(response);
             })
         );
     };

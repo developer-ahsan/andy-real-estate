@@ -428,6 +428,53 @@ export class ProductsOrderModifyComponent implements OnInit, OnDestroy {
       this._changeDetectorRef.markForCheck();
     });
   }
+  getOrderLineDetailsAfterUpdateOrAdd(msg) {
+    let params = {
+      order_line_details: true,
+      order_lineID: this.ngSelectedProduct.order_line_id
+    }
+    this._orderService.getOrderCommonCall(params).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+      this.ngSelectedProduct.color_sizes = res["color_sizes"];
+      this.ngSelectedProduct.imprintsSelected = [];
+      this.ngSelectedProduct.imprintsUnSelected = [];
+      this.ngSelectedProduct.accessoriesSelected = res["orderline_accessories"];
+      this.ngSelectedProduct.accessoriesUnSelected = res["dropdown_accessories"];
+      if (this.ngSelectedProduct.accessoriesUnSelected.length > 0) {
+        this.ngSelectedAccessory = this.ngSelectedProduct.accessoriesUnSelected[0];
+      }
+      res["dropdown_imprints"].forEach((element) => {
+        if (element.isSelected == 0) {
+          this.ngSelectedProduct.imprintsUnSelected.push(element);
+        } else {
+          this.ngSelectedProduct.imprintsSelected.push(element);
+        }
+      });
+      this.ngSelectedProduct.imprints = res["imprints"];
+      this.ngSelectedProduct.dropdown_imprints = res["dropdown_imprints"];
+      res["main_imprints"].forEach(element => {
+        if (element.imprintColors) {
+          element.colorsList = element.imprintColors.split(',');
+        } else {
+          element.colorsList = '';
+        }
+      });
+      this.ngSelectedProduct.main_imprints = res["main_imprints"];
+      this.ngSelectedProduct.allProducts = this.allProducts;
+      this.ngSelectedProduct = this.ngSelectedProduct;
+      if (this.ngSelectedProduct.imprintsUnSelected.length > 0) {
+        this.ngImprintSelected = this.ngSelectedProduct.imprintsUnSelected[0];
+      }
+      this.currentSearchProductCtrl.setValue(this.ngSelectedProduct.products[0]);
+      this._orderService.snackBar(msg);
+      this.isAddOptionLoader = false;
+      this.isUpdateImprintLoader = false;
+      this._changeDetectorRef.markForCheck();
+    }, err => {
+      this.isUpdateImprintLoader = false;
+      this.isAddOptionLoader = false;
+      this._changeDetectorRef.markForCheck();
+    });
+  }
   addProductOptions() {
     if (this.ngQuantity == 0) {
       this._orderService.snackBar('Quantity should be greater than 0');
@@ -456,8 +503,11 @@ export class ProductsOrderModifyComponent implements OnInit, OnDestroy {
     }
     this.isAddOptionLoader = true;
     this._orderService.orderPostCalls(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
-      this._orderService.snackBar(res["message"]);
-      this.isAddOptionLoader = false;
+      if (res["success"]) {
+        this.getOrderLineDetailsAfterUpdateOrAdd(res["message"]);
+      } else {
+        this.isAddOptionLoader = false;
+      }
       this._changeDetectorRef.markForCheck();
     }, err => {
       this.isAddOptionLoader = false;
@@ -511,8 +561,11 @@ export class ProductsOrderModifyComponent implements OnInit, OnDestroy {
     }
     this.isUpdateImprintLoader = true;
     this._orderService.updateOrderCalls(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
-      this._orderService.snackBar(res["message"]);
-      this.isUpdateImprintLoader = false;
+      if (res["success"]) {
+        this.getOrderLineDetailsAfterUpdateOrAdd(res["message"]);
+      } else {
+        this.isUpdateImprintLoader = false;
+      }
       this._changeDetectorRef.markForCheck();
     }, err => {
       this.isUpdateImprintLoader = false;

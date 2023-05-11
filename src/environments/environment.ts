@@ -25,6 +25,7 @@ export const environment = {
   admins: "http://localhost:7071/api/consolidus/admin",
   smartart: "http://localhost:7071/api/smartart",
   order_manage: "https://consolidus.azurewebsites.net/api/order_manage",
+  smartcents: "https://consolidus.azurewebsites.net/api/smartcents",
   rapid_build: "http://localhost:7071/api/rapidbuild",
   import_export: "http://localhost:7071/api/import_export",
   vendors: "http://localhost:7071/api/vendors",
