@@ -44,12 +44,13 @@ import { SmartCentsComponent } from './components/smartcents.component';
 import { SmartCentsDashboardComponent } from './components/pages/dashboard/dashboard.component';
 import { ExportBillDataComponent } from './components/pages/export-bill/export-bill.component';
 import { CustomerInvoiceComponent } from './components/pages/customer-invoice/customer-invoice.component';
+import { SmartCentsDetailsComponent } from './components/pages/smartcents-details/smartcents-details.component';
 
 @NgModule({
     declarations: [
         SmartCentsComponent,
         SmartCentsDashboardComponent,
-        ExportBillDataComponent, CustomerInvoiceComponent
+        ExportBillDataComponent, CustomerInvoiceComponent, SmartCentsDetailsComponent
     ],
     imports: [
         RouterModule.forChild(smartartRoutes),

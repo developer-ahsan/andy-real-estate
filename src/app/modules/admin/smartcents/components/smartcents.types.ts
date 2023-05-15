@@ -107,3 +107,20 @@ export interface HideUnhideCart {
     blnHidden: boolean;
     hide_unhide_cart: boolean;
 };
+
+export interface saveBillPay {
+    orderLinePOID: number;
+    billPayPaymentMethod: string;
+    billPayReference: string;
+    billPayPaymentDate: string;
+    blnPaid: boolean;
+    update_save_bill_pay: boolean;
+};
+export interface saveVendorBill {
+    orderLinePOID: number;
+    vendorInvoiceNumber: string;
+    vendorInvoiceDate: string;
+    vendorInvoiceNetTerms: string;
+    blnInvoiced: boolean;
+    update_save_vendor_bill: boolean;
+};

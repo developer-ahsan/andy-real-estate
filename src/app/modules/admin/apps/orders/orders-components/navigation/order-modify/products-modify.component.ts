@@ -10,7 +10,7 @@ import { IDropdownSettings } from 'ng-multiselect-dropdown';
 import { Subject } from 'rxjs';
 import { debounceTime, distinctUntilChanged, filter, finalize, switchMap, takeUntil, tap } from 'rxjs/operators';
 import { OrdersService } from '../../orders.service';
-import { AddProduct, UpdateModifyOrderImprints, UpdateRoyalties, UpdateShipping, addAccessory, addComment, addModifyOrderImprints, contactInfoObj, paymentInfoObj, shippingDetailsObj } from '../../orders.types';
+import { AddNewProduct, AddOption, AddProduct, UpdateColorSize, UpdateModifyOrderImprints, UpdateRoyalties, UpdateShipping, addAccessory, addComment, addModifyOrderImprints, contactInfoObj, paymentInfoObj, shippingDetailsObj } from '../../orders.types';
 
 @Component({
   selector: 'app-products-modify',
@@ -65,6 +65,14 @@ export class ProductsOrderModifyComponent implements OnInit, OnDestroy {
   isAddAccessoryLoader: boolean = false;
   isUpdateImprintLoader: boolean = false;
   isAddImprintLoader: boolean = false;
+
+  newProductQuantity: any = '';
+  isAddNewProdLoader: boolean = false;
+  newBlnTax: boolean = false;
+  newBlnSample: boolean = false;
+  newBlnOverride: boolean = false;
+
+  isUpdateOptionLoader: boolean = false;
   constructor(
     private _changeDetectorRef: ChangeDetectorRef,
     private _orderService: OrdersService,
@@ -468,10 +476,14 @@ export class ProductsOrderModifyComponent implements OnInit, OnDestroy {
       this._orderService.snackBar(msg);
       this.isAddOptionLoader = false;
       this.isUpdateImprintLoader = false;
+      this.isUpdateOptionLoader = false;
+      this.isAddNewProdLoader = false;
       this._changeDetectorRef.markForCheck();
     }, err => {
       this.isUpdateImprintLoader = false;
       this.isAddOptionLoader = false;
+      this.isUpdateOptionLoader = false;
+      this.isAddNewProdLoader = false;
       this._changeDetectorRef.markForCheck();
     });
   }
@@ -480,26 +492,14 @@ export class ProductsOrderModifyComponent implements OnInit, OnDestroy {
       this._orderService.snackBar('Quantity should be greater than 0');
       return;
     }
-    let color = this.ngSelectedProduct.colors.filter(item => item.id == this.ngColor);
-    let setupCost = 0.000;
-    let setupPrice = 0.000;
-    if (color.length > 0) {
-      setupCost = color[0].setup;
-      setupPrice = color[0].run;
-    }
-    let payload: AddProduct = {
-      orderLine_id: this.ngSelectedProduct.order_line_id,
-      colorID: this.ngColor,
-      sizeID: this.ngSize,
+    let payload: AddOption = {
+      order_lineID: this.ngSelectedProduct.order_line_id,
+      color_id: this.ngColor,
+      size_id: this.ngSize,
       quantity: this.ngQuantity,
-      runCost: 0.000,
-      setupCost: setupCost,
-      runPrice: 0.000,
-      setupPrice: setupPrice,
       bln_apparel: this.ngSelectedProduct.products[0].blnApparel,
-      bln_sample: this.ngSelectedProduct.products[0].blnSample,
       blnOverride: this.ngOverrideShipping,
-      modify_order_add_product: true
+      add_options: true
     }
     this.isAddOptionLoader = true;
     this._orderService.orderPostCalls(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
@@ -511,6 +511,43 @@ export class ProductsOrderModifyComponent implements OnInit, OnDestroy {
       this._changeDetectorRef.markForCheck();
     }, err => {
       this.isAddOptionLoader = false;
+      this._changeDetectorRef.markForCheck();
+    });
+  }
+  updateProductOptions() {
+    let options = [];
+    this.ngSelectedProduct.color_sizes.forEach(element => {
+      options.push({
+        color_id: element.fk_colorID,
+        size_id: element.fk_sizeID,
+        quantity: element.quantity,
+        cost: element.runCost,
+        price: element.runPrice,
+        bln_override: element.blnOverride,
+        option_id: element.pk_optionID
+      })
+    });
+    let payload: UpdateColorSize = {
+      orderline_id: this.ngSelectedProduct.order_line_id,
+      options: options,
+      standard_cost: this.ngSelectedProduct.products[0].runCost,
+      standard_price: this.ngSelectedProduct.products[0].runPrice,
+      update_options: true
+    }
+    this.isUpdateOptionLoader = true;
+    this._orderService.updateOrderCalls(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe((res: any) => {
+      if (res) {
+        if (res["success"]) {
+          this.getOrderLineDetailsAfterUpdateOrAdd(res["message"]);
+        } else {
+          this.isUpdateOptionLoader = false;
+        }
+      } else {
+        this.isUpdateOptionLoader = false;
+      }
+      this._changeDetectorRef.markForCheck();
+    }, err => {
+      this.isUpdateOptionLoader = false;
       this._changeDetectorRef.markForCheck();
     });
   }
@@ -599,6 +636,43 @@ export class ProductsOrderModifyComponent implements OnInit, OnDestroy {
       this._changeDetectorRef.markForCheck();
     }, err => {
       this.isAddImprintLoader = false;
+      this._changeDetectorRef.markForCheck();
+    });
+  }
+  // Add New Product
+  addNewProduct() {
+    if (this.newProductQuantity == 0) {
+      this._orderService.snackBar('Quantity should be greater than 0');
+      return;
+    }
+    if (!this.selectedProduct) {
+      this._orderService.snackBar('No product is selected');
+      return;
+    }
+    let payload: AddNewProduct = {
+      orderLine_id: this.ngSelectedProduct.order_line_id,
+      product_id: this.selectedProduct.fk_productID,
+      store_product_id: this.selectedProduct.pk_storeProductID,
+      bln_apparel: this.ngSelectedProduct.products[0].blnApparel,
+      bln_warehouse: this.ngSelectedProduct.products[0].blnWarehouse,
+      quantity: this.newProductQuantity,
+      bln_override: this.newBlnOverride,
+      bln_sample: this.newBlnSample,
+      bln_taxable: this.newBlnTax,
+      bln_royalty: false,
+      modify_order_add_product: true
+    }
+    this.isAddNewProdLoader = true;
+    this._orderService.orderPostCalls(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+      console.log(res);
+      if (res["success"]) {
+        // this.getOrderLineDetailsAfterUpdateOrAdd(res["message"]);
+      } else {
+        this.isAddNewProdLoader = false;
+      }
+      this._changeDetectorRef.markForCheck();
+    }, err => {
+      this.isAddNewProdLoader = false;
       this._changeDetectorRef.markForCheck();
     });
   }

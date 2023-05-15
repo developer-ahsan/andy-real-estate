@@ -152,11 +152,10 @@ export class SmartCentsDashboardComponent implements OnInit, OnDestroy {
     this.getSmartCentsData(this.page);
   }
   goToDetailPage(item) {
-    console.log(item)
-    const queryParams: NavigationExtras = {
-      queryParams: { fk_orderID: item.fk_orderID, pk_orderLineID: item.pk_orderLineID }
-    };
-    this.router.navigate([`/rapidbuild/rapidBuild-details/${item.pk_rapidBuildID}`]);
+    // const queryParams: NavigationExtras = {
+    //   queryParams: { fk_orderID: item.fk_orderID, pk_orderLineID: item.pk_orderLineID }
+    // };
+    this.router.navigate([`/smartcents/smartcents-details/${item.pk_orderLinePOID}`]);
   }
   /**
      * On destroy

@@ -483,7 +483,7 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
 
 
     productStepComplete: boolean = false;
-    productId: any;
+    productId: any = 19696;
     pk_productId: any;
     createProductDetailLoader: boolean = false;
     updateProductLicensingLoader: boolean = false;
@@ -761,7 +761,12 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
             .pipe(takeUntil(this._unsubscribeAll))
             .subscribe((supplier) => {
                 this.suppliers = supplier["data"];
-                this.dropdownList = this.suppliers;
+                this.suppliers.forEach(element => {
+                    if (element.blnActiveVendor) {
+                        this.dropdownList.push(element);
+                    }
+                });
+                // this.dropdownList = this.suppliers;
                 this.isSupplierNotReceived = false;
                 if (this._inventoryService.productSearchFilter.supplier) {
                     this.selectedSupplier = this._inventoryService.productSearchFilter.supplier;
@@ -2825,6 +2830,7 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
 
         this.backListLoader = true;  // Loader for the button
         this._inventoryService.standardImprints = null;
+        this.imprintsLocalList = [];
         this.productId = null;
         // Get the products
         this._inventoryService.products$
@@ -3709,7 +3715,7 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
         };
 
         if (this.defaultImprintColorSpecification === 'Yes') {
-            if (!this.collectionIdsArray.length && !this.customColorId) {
+            if (!this.customColorId) {
                 this._snackBar.open("Select a color collection", '', {
                     horizontalPosition: 'center',
                     verticalPosition: 'bottom',
@@ -3790,7 +3796,7 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
             area: this.areaValue.replace(/'/g, '"'),
             bln_user_color_selection: this.defaultImprintColorSpecification === 'Yes' ? 1 : 0,
             multi_color_min_id: 1,
-            collection_id: this.collectionIdsArray.length ? this.selectedCollectionId[0].fk_collectionID : Number(this.customColorId),
+            collection_id: Number(this.customColorId),
             max_colors: this.defaultImprintColorSpecification === 'Yes' ? this.maxColorSelected : null,
             bln_process_mode: processMode,
             min_product_qty: this.minQuantity || 1,
@@ -3829,7 +3835,7 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
                         setTimeout(() => {
                             this.imprintsLocalList = imprints;
                             this.resetImprints();
-                        }, 100);
+                        }, 200);
                         this._snackBar.open("Imprint listed successfully", '', {
                             horizontalPosition: 'center',
                             verticalPosition: 'bottom',
@@ -3847,7 +3853,7 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
                 setTimeout(() => {
                     this.imprintsLocalList = imprints;
                     this.resetImprints();
-                }, 100);
+                }, 200);
                 this._changeDetectorRef.markForCheck();
                 this._snackBar.open("Imprint listed successfully", '', {
                     horizontalPosition: 'center',

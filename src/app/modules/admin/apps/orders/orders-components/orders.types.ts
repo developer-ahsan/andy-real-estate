@@ -365,3 +365,56 @@ interface Imprint {
     decoratorFOBzip: string;
     customerArtworkComment: string;
 };
+
+export interface AddNewProduct {
+    orderLine_id: number,
+    product_id: number;
+    store_product_id: number;
+    bln_apparel: boolean;
+    bln_warehouse: boolean;
+    quantity: number;
+    bln_override: boolean;
+    bln_sample: boolean;
+    bln_taxable: boolean;
+    bln_royalty: boolean;
+    modify_order_add_product: boolean;
+};
+export interface addModifyOrderImprints {
+    imprints: Imprint[];
+    orderLineId: number;
+    add_modify_order_imprint: boolean;
+};
+interface Imprint {
+    imprint_id: number;
+    new_imprint_id: number;
+    process_quantity: number;
+    imprint_colors: string;
+    decoratorFOBzip: string;
+    customerArtworkComment: string;
+};
+export interface AddOption {
+    order_lineID: number;
+    color_id: number;
+    size_id: number;
+    quantity: number;
+    bln_apparel: boolean;
+    blnOverride: boolean;
+    add_options: boolean;
+};
+export interface UpdateColorSize {
+    options: UpdateOptions[];
+    standard_cost: number;
+    standard_price: number;
+    orderline_id: number;
+    update_options: boolean;
+};
+
+interface UpdateOptions {
+    color_id: number;
+    size_id: number;
+    quantity: number;
+    cost: number;
+    price: number;
+    bln_override: boolean;
+    option_id: number;
+};

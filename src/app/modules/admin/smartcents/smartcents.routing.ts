@@ -4,6 +4,7 @@ import { ExportBillDataComponent } from './components/pages/export-bill/export-b
 import { SmartCentsComponent } from './components/smartcents.component';
 import { CustomerInvoiceComponent } from './components/pages/customer-invoice/customer-invoice.component';
 import { SmartCentStoresResolver } from './components/smartcents.resolvers';
+import { SmartCentsDetailsComponent } from './components/pages/smartcents-details/smartcents-details.component';
 
 export const smartartRoutes: Route[] = [
     {
@@ -25,6 +26,15 @@ export const smartartRoutes: Route[] = [
                 data: {
                     title: 'Dashboard',
                     url: 'dashboard'
+                }
+            },
+            {
+                path: 'smartcents-details/:poid',
+                // canDeactivate: [CanDeactivateGuard],
+                component: SmartCentsDetailsComponent,
+                data: {
+                    title: 'SmartCents Details',
+                    url: 'smartcents-details'
                 }
             },
             {
