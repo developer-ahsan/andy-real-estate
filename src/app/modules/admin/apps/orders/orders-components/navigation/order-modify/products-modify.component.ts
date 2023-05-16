@@ -10,7 +10,7 @@ import { IDropdownSettings } from 'ng-multiselect-dropdown';
 import { Subject } from 'rxjs';
 import { debounceTime, distinctUntilChanged, filter, finalize, switchMap, takeUntil, tap } from 'rxjs/operators';
 import { OrdersService } from '../../orders.service';
-import { AddNewProduct, AddOption, AddProduct, UpdateColorSize, UpdateModifyOrderImprints, UpdateRoyalties, UpdateShipping, addAccessory, addComment, addModifyOrderImprints, contactInfoObj, paymentInfoObj, shippingDetailsObj } from '../../orders.types';
+import { AddNewProduct, AddOption, AddProduct, UpdateAccessory, UpdateColorSize, UpdateModifyOrderImprints, UpdateProduct, UpdateRoyalties, UpdateShipping, addAccessory, addComment, addModifyOrderImprints, contactInfoObj, paymentInfoObj, shippingDetailsObj } from '../../orders.types';
 
 @Component({
   selector: 'app-products-modify',
@@ -40,7 +40,7 @@ export class ProductsOrderModifyComponent implements OnInit, OnDestroy {
   ngOverrideShipping: boolean = false;
   isAddOptionLoader: boolean = false;
   // AddImprintOption
-  ngImprintSelected = '';
+  ngImprintSelected: any;
 
   quillModules: any = {
     toolbar: [
@@ -63,6 +63,7 @@ export class ProductsOrderModifyComponent implements OnInit, OnDestroy {
   orderLinesItems: any;
   ngSelectedAccessory: any;
   isAddAccessoryLoader: boolean = false;
+  isUpdateAccessoryLoader: boolean = false;
   isUpdateImprintLoader: boolean = false;
   isAddImprintLoader: boolean = false;
 
@@ -73,6 +74,9 @@ export class ProductsOrderModifyComponent implements OnInit, OnDestroy {
   newBlnOverride: boolean = false;
 
   isUpdateOptionLoader: boolean = false;
+
+  // UpdateProduct 
+  isUpdateProductLoader: boolean = false;
   constructor(
     private _changeDetectorRef: ChangeDetectorRef,
     private _orderService: OrdersService,
@@ -191,13 +195,13 @@ export class ProductsOrderModifyComponent implements OnInit, OnDestroy {
       res["data"].forEach((element, index) => {
         value.push(element.pk_orderLineID);
         if (index == res["data"].length - 1) {
-          this.getLineProducts(value.toString());
+          this.getLineProducts(value.toString(), 0);
         }
       });
       this.orderLines = res["data"];
     })
   }
-  getLineProducts(value) {
+  getLineProducts(value, index) {
     let params = {
       order_line_item: true,
       order_line_id: value
@@ -295,7 +299,7 @@ export class ProductsOrderModifyComponent implements OnInit, OnDestroy {
       }
       // this.getProductImprints(value, products);
       this.orderProducts = products;
-      this.getOrderLineDetails(this.orderProducts[0].order_line_id, 0);
+      this.getOrderLineDetails(this.orderProducts[0].order_line_id, index);
     }, err => {
       this.isLoading = false;
       this.isLoadingChange.emit(false);
@@ -367,12 +371,15 @@ export class ProductsOrderModifyComponent implements OnInit, OnDestroy {
         this.ngImprintSelected = this.ngSelectedProduct.imprintsUnSelected[0];
       }
       this.currentSearchProductCtrl.setValue(this.ngSelectedProduct.products[0]);
+      this.currentSelectedProduct = this.ngSelectedProduct.products[0];
       console.log(this.ngSelectedProduct)
       this.isOrderLineDetailsLoader = false;
+      this.isUpdateProductLoader = false;
       this.isLoading = false;
       this._changeDetectorRef.markForCheck();
     }, err => {
       this.isOrderLineDetailsLoader = false;
+      this.isUpdateProductLoader = false;
       this.isLoading = false;
       this._changeDetectorRef.markForCheck();
     });
@@ -427,6 +434,14 @@ export class ProductsOrderModifyComponent implements OnInit, OnDestroy {
     this.isShippingLoader = true;
     this._orderService.updateOrderCalls(paylaod).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
       if (res["success"]) {
+        let value = [];
+        this.orderLines.forEach((element, index) => {
+          value.push(element.pk_orderLineID);
+          if (index == this.orderLines.length - 1) {
+            let index = this.orderProducts.findIndex(data => data.order_line_id == this.ngSelectedProduct.order_line_id);
+            this.getLineProducts(value.toString(), index);
+          }
+        });
         this._orderService.snackBar(res["message"]);
       }
       this.isShippingLoader = false;
@@ -478,12 +493,20 @@ export class ProductsOrderModifyComponent implements OnInit, OnDestroy {
       this.isUpdateImprintLoader = false;
       this.isUpdateOptionLoader = false;
       this.isAddNewProdLoader = false;
+      this.isAddImprintLoader = false;
+      this.isUpdateProductLoader = false;
+      this.isAddAccessoryLoader = false;
+      this.isUpdateAccessoryLoader = false;
       this._changeDetectorRef.markForCheck();
     }, err => {
       this.isUpdateImprintLoader = false;
       this.isAddOptionLoader = false;
       this.isUpdateOptionLoader = false;
+      this.isAddImprintLoader = false;
       this.isAddNewProdLoader = false;
+      this.isUpdateProductLoader = false;
+      this.isAddAccessoryLoader = false;
+      this.isUpdateAccessoryLoader = false;
       this._changeDetectorRef.markForCheck();
     });
   }
@@ -496,7 +519,7 @@ export class ProductsOrderModifyComponent implements OnInit, OnDestroy {
       order_lineID: this.ngSelectedProduct.order_line_id,
       color_id: this.ngColor,
       size_id: this.ngSize,
-      quantity: this.ngQuantity,
+      quantity: Number(this.ngQuantity),
       bln_apparel: this.ngSelectedProduct.products[0].blnApparel,
       blnOverride: this.ngOverrideShipping,
       add_options: true
@@ -551,6 +574,51 @@ export class ProductsOrderModifyComponent implements OnInit, OnDestroy {
       this._changeDetectorRef.markForCheck();
     });
   }
+  // Update Product
+  updateModifyProduct() {
+    let estimated_date = null;
+    if (this.ngSelectedProduct.products[0].estimatedShippingDate) {
+      estimated_date = moment(this.ngSelectedProduct.products[0].estimatedShippingDate).format('L');
+    }
+    let payload: UpdateProduct = {
+      orderLine_id: this.ngSelectedProduct.order_line_id,
+      estimated_shipping_date: estimated_date,
+      product_id: Number(this.currentSelectedProduct.fk_productID),
+      quantity: Number(this.currentSelectedProduct.minQuantity),
+      bln_override: this.ngSelectedProduct.products[0].blnOverride,
+      bln_sample: this.ngSelectedProduct.products[0].blnSample,
+      bln_taxable: this.ngSelectedProduct.products[0].blnTaxable,
+      bln_royalty: this.ngSelectedProduct.products[0].blnRoyalty,
+      modify_order_update_product: true
+    }
+    this.isUpdateProductLoader = true;
+    this._orderService.updateOrderCalls(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe((res: any) => {
+      if (res) {
+        if (res["success"]) {
+          this.isOrderLineDetailsLoader = true;
+          this._changeDetectorRef.markForCheck();
+          let value = [];
+          this.orderLines.forEach((element, index) => {
+            value.push(element.pk_orderLineID);
+            if (index == this.orderLines.length - 1) {
+              let index = this.orderProducts.findIndex(data => data.order_line_id == this.ngSelectedProduct.order_line_id);
+              this.getLineProducts(value.toString(), index);
+            }
+          });
+
+          // this.getOrderLineDetailsAfterUpdateOrAdd(res["message"]);
+        } else {
+          this.isUpdateProductLoader = false;
+        }
+      } else {
+        this.isUpdateProductLoader = false;
+      }
+      this._changeDetectorRef.markForCheck();
+    }, err => {
+      this.isUpdateProductLoader = false;
+      this._changeDetectorRef.markForCheck();
+    });
+  }
   // Add Accessories
   addAccoryOptionOptions() {
     let payload: addAccessory = {
@@ -565,11 +633,47 @@ export class ProductsOrderModifyComponent implements OnInit, OnDestroy {
     }
     this.isAddAccessoryLoader = true;
     this._orderService.orderPostCalls(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
-      this._orderService.snackBar(res["message"]);
-      this.isAddAccessoryLoader = false;
-      this._changeDetectorRef.markForCheck();
+      if (res["success"]) {
+        this.getOrderLineDetailsAfterUpdateOrAdd(res["message"]);
+      } else {
+        this.isAddAccessoryLoader = false;
+        this._changeDetectorRef.markForCheck();
+      }
     }, err => {
       this.isAddAccessoryLoader = false;
+      this._changeDetectorRef.markForCheck();
+    });
+  }
+  // Update Accessories
+  updateAccessoriesOptions() {
+    let accessories = [];
+    let accessories_selected = this.ngSelectedProduct.accessoriesSelected;
+    accessories_selected.forEach(element => {
+      accessories.push({
+        accessory_id: element.fk_packagingID,
+        quantity: element.quantity,
+        runCost: element.runCost,
+        runPrice: element.runPrice,
+        setupCost: element.setupCost,
+        setupPrice: element.setupPrice,
+        bln_decorator: element.blnDecoratorPO,
+      })
+    });
+    let payload: UpdateAccessory = {
+      orderline_id: this.ngSelectedProduct.order_line_id,
+      accessories: accessories,
+      modify_order_update_accessory: true
+    }
+    this.isUpdateAccessoryLoader = true;
+    this._orderService.updateOrderCalls(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+      if (res["success"]) {
+        this.getOrderLineDetailsAfterUpdateOrAdd(res["message"]);
+      } else {
+        this.isUpdateAccessoryLoader = false;
+      }
+      this._changeDetectorRef.markForCheck();
+    }, err => {
+      this.isUpdateAccessoryLoader = false;
       this._changeDetectorRef.markForCheck();
     });
   }
@@ -609,20 +713,16 @@ export class ProductsOrderModifyComponent implements OnInit, OnDestroy {
       this._changeDetectorRef.markForCheck();
     });
   }
-  // Update Imprints
+  // Add Imprints
   addImprintOptions() {
     let Imprint = [];
     Imprint.push({
-      imprint_id: this.ngSelectedImprint.pk_imprintID,
-      new_imprint_id: this.ngSelectedImprint.pk_imprintID,
-      process_quantity: this.ngSelectedImprint.pk_imprintID,
-      imprint_colors: this.ngSelectedImprint.pk_imprintID,
-      runCost: this.ngSelectedImprint.pk_imprintID,
-      runPrice: this.ngSelectedImprint.pk_imprintID,
-      setupCost: this.ngSelectedImprint.pk_imprintID,
-      setupPrice: this.ngSelectedImprint.pk_imprintID,
-      decoratorFOBzip: this.ngSelectedImprint.pk_imprintID,
-      customerArtworkComment: this.ngSelectedImprint.pk_imprintID,
+      imprint_id: this.ngImprintSelected.pk_imprintID,
+      new_imprint_id: this.ngImprintSelected.pk_imprintID,
+      process_quantity: 1,
+      imprint_colors: this.ngImprintSelected.imprintColors,
+      decoratorFOBzip: Number(this.ngImprintSelected.decoratorFOBzip),
+      customerArtworkComment: this.ngImprintSelected.customerArtworkComment,
     })
     let payload: addModifyOrderImprints = {
       imprints: Imprint,
@@ -631,9 +731,13 @@ export class ProductsOrderModifyComponent implements OnInit, OnDestroy {
     }
     this.isAddImprintLoader = true;
     this._orderService.orderPostCalls(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
-      this._orderService.snackBar(res["message"]);
-      this.isAddImprintLoader = false;
-      this._changeDetectorRef.markForCheck();
+      if (res["success"]) {
+        this.getOrderLineDetailsAfterUpdateOrAdd(res["message"]);
+      } else {
+        this.isAddImprintLoader = false;
+        this._changeDetectorRef.markForCheck();
+      }
+
     }, err => {
       this.isAddImprintLoader = false;
       this._changeDetectorRef.markForCheck();
@@ -664,7 +768,6 @@ export class ProductsOrderModifyComponent implements OnInit, OnDestroy {
     }
     this.isAddNewProdLoader = true;
     this._orderService.orderPostCalls(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
-      console.log(res);
       if (res["success"]) {
         // this.getOrderLineDetailsAfterUpdateOrAdd(res["message"]);
       } else {

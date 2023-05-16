@@ -358,10 +358,6 @@ interface Imprint {
     new_imprint_id: number;
     process_quantity: number;
     imprint_colors: string;
-    runCost: number;
-    runPrice: number;
-    setupCost: number;
-    setupPrice: number;
     decoratorFOBzip: string;
     customerArtworkComment: string;
 };
@@ -417,4 +413,29 @@ interface UpdateOptions {
     price: number;
     bln_override: boolean;
     option_id: number;
+};
+export interface UpdateProduct {
+    orderLine_id: number,
+    estimated_shipping_date: string;
+    product_id: number;
+    quantity: number;
+    bln_override: boolean;
+    bln_sample: boolean;
+    bln_taxable: boolean;
+    bln_royalty: boolean;
+    modify_order_update_product: boolean;
+};
+export interface UpdateAccessory {
+    orderline_id: number;
+    accessories: Accessory[];
+    modify_order_update_accessory: boolean;
+};
+interface Accessory {
+    accessory_id: number;
+    quantity: number;
+    runCost: number;
+    runPrice: number;
+    setupCost: number;
+    setupPrice: number;
+    bln_decorator: boolean;
 };

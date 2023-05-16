@@ -15,7 +15,7 @@
 <div>
   <div *ngIf="!isLoading">
     <fuse-card class="rounded-2xl shadow bg-card flex" *ngIf="mainScreen == 'Margins' && !dataSourceLoading">
-      <div class="row" style="width: -webkit-fill-available;">
+      <div class="row" style="width: -webkit-fill-available;" *ngIf="!isMarginDetails">
         <div class="col-12">
           <div class="p-6 sm:p-8 lg:p-10 w-full">
             <div class="row">
@@ -112,7 +112,7 @@
               </div>
               <tr mat-header-row class="h-16 shadow bg-card" *matHeaderRowDef="displayedColumns"></tr>
               <tr mat-row class="hover:bg-gray-100 dark:hover:bg-hover" style="cursor: pointer;"
-                *matRowDef="let row; columns: displayedColumns"></tr>
+                *matRowDef="let row; columns: displayedColumns" (click)="marginDetails(row)"></tr>
             </table>
           </ng-container>
           <ng-template #noRecords>
@@ -120,6 +120,99 @@
               <p>No record found</p>
             </div>
           </ng-template>
+        </div>
+      </div>
+      <div class="row w-full" *ngIf="isMarginDetails">
+        <div class="col-12">
+          <div class="p-6 sm:p-8 lg:p-10 w-full">
+            <div class="text-right m-2">
+              <button mat-button mat-stroked-button (click)="isMarginDetails = !isMarginDetails"
+                matTooltip="Back to margins list" class="min-w-30">Back
+                to margins</button>
+            </div>
+            <table class="table">
+              <tr>
+                <th>1</th>
+                <th>2</th>
+                <th>3</th>
+                <th>4</th>
+                <th>5</th>
+                <th>6</th>
+              </tr>
+              <tr>
+                <td class="font-bold">{{(marginDetailsData.margin1 * 100).toFixed(2)}} %</td>
+                <td class="font-bold">{{(marginDetailsData.margin2 * 100).toFixed(2)}}%</td>
+                <td class="font-bold">{{(marginDetailsData.margin3 * 100).toFixed(2)}}%</td>
+                <td class="font-bold">{{(marginDetailsData.margin4 * 100).toFixed(2)}}%</td>
+                <td class="font-bold">{{(marginDetailsData.margin5 * 100).toFixed(2)}}%</td>
+                <td class="font-bold">{{(marginDetailsData.margin6 * 100).toFixed(2)}}%</td>
+              </tr>
+            </table>
+          </div>
+        </div>
+        <div class="col-12 my-2">
+          <div class="p-6 sm:p-8 lg:p-10 w-full">
+            <p class="text-lg text-secondary font-bold">Margin Update</p>
+            <p class="text-red-500">The margins will be updated for all the products above.</p>
+            <div class="row my-2" [formGroup]="marginDetailForm">
+              <div class="col-md-2 col-6">
+                <mat-form-field appearance="fill" class="w-full">
+                  <mat-label>
+                    Margin1 %
+                  </mat-label>
+                  <input matInput formControlName="margin1" />
+                </mat-form-field>
+              </div>
+              <div class="col-md-2 col-6">
+                <mat-form-field appearance="fill" class="w-full">
+                  <mat-label>
+                    Margin2 %
+                  </mat-label>
+                  <input matInput formControlName="margin2" />
+                </mat-form-field>
+              </div>
+              <div class="col-md-2 col-6">
+                <mat-form-field appearance="fill" class="w-full">
+                  <mat-label>
+                    Margin3 %
+                  </mat-label>
+                  <input matInput formControlName="margin3" />
+                </mat-form-field>
+              </div>
+              <div class="col-md-2 col-6">
+                <mat-form-field appearance="fill" class="w-full">
+                  <mat-label>
+                    Margin4 %
+                  </mat-label>
+                  <input matInput formControlName="margin4" />
+                </mat-form-field>
+              </div>
+              <div class="col-md-2 col-6">
+                <mat-form-field appearance="fill" class="w-full">
+                  <mat-label>
+                    Margin5 %
+                  </mat-label>
+                  <input matInput formControlName="margin5" />
+                </mat-form-field>
+              </div>
+              <div class="col-md-2 col-6">
+                <mat-form-field appearance="fill" class="w-full">
+                  <mat-label>
+                    Margin6 %
+                  </mat-label>
+                  <input matInput formControlName="margin6" />
+                </mat-form-field>
+              </div>
+            </div>
+            <div class="my-2">
+              <a (click)="applyMargins('goods')" class="cursor-pointer">Apply hardgoods margins</a>
+              <br>
+              <a (click)="applyMargins('apparel')" class="cursor-pointer">Apply apparel margins</a>
+            </div>
+            <div>
+              <button mat-button mat-stroked-button class="min-w-30">Update product margins</button>
+            </div>
+          </div>
         </div>
       </div>
     </fuse-card>

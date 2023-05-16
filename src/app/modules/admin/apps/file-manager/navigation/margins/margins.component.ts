@@ -34,6 +34,10 @@ export class MarginsComponent implements OnInit, OnDestroy {
   defaultMarginLoader: boolean = false;
   defaultMarginMsgLoader: boolean = false;
 
+  isMarginDetails: boolean = false;
+  marginDetailsData: any;
+  marginDetailForm: FormGroup;
+
   constructor(
     private _storesManagerService: FileManagerService,
     private _changeDetectorRef: ChangeDetectorRef,
@@ -95,7 +99,15 @@ export class MarginsComponent implements OnInit, OnDestroy {
       print6: new FormControl(''),
       store_id: new FormControl(this.selectedStore.pk_storeID),
       update_default_margin: new FormControl(true)
-    })
+    });
+    this.marginDetailForm = new FormGroup({
+      margin1: new FormControl(''),
+      margin2: new FormControl(''),
+      margin3: new FormControl(''),
+      margin4: new FormControl(''),
+      margin5: new FormControl(''),
+      margin6: new FormControl('')
+    });
   }
   calledScreen(screenName): void {
     this.mainScreen = screenName;
@@ -273,6 +285,42 @@ export class MarginsComponent implements OnInit, OnDestroy {
         this.defaultMarginLoader = false;
       });
   };
+  marginDetails(item) {
+    this.marginDetailsData = item;
+    this.marginDetailForm.patchValue({
+      margin1: (item.margin1 * 100).toFixed(2),
+      margin2: (item.margin2 * 100).toFixed(2),
+      margin3: (item.margin3 * 100).toFixed(2),
+      margin4: (item.margin4 * 100).toFixed(2),
+      margin5: (item.margin5 * 100).toFixed(2),
+      margin6: (item.margin6 * 100).toFixed(2)
+    });
+    console.log(item)
+    this.isMarginDetails = true;
+    this._changeDetectorRef.markForCheck();
+  }
+  applyMargins(type) {
+    const { margin1, margin2, margin3, margin4, margin5, margin6, apparel1, apparel2, apparel3, apparel4, apparel5, apparel6, print1, print2, print3, print4, print5, print6, store_id, update_default_margin } = this.defaultMarginForm.getRawValue();
+    if (type == 'goods') {
+      this.marginDetailForm.patchValue({
+        margin1: apparel1,
+        margin2: apparel2,
+        margin3: apparel3,
+        margin4: apparel4,
+        margin5: apparel5,
+        margin6: apparel6
+      });
+    } else {
+      this.marginDetailForm.patchValue({
+        margin1: print1,
+        margin2: print2,
+        margin3: print3,
+        margin4: print4,
+        margin5: print5,
+        margin6: print6
+      });
+    }
+  }
   ngOnDestroy(): void {
     // Unsubscribe from all subscriptions
     this._unsubscribeAll.next();
