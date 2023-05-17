@@ -137,7 +137,9 @@ export class SearchProductsComponents implements OnInit, OnDestroy {
                 this.productsData = res["data"];
                 this.totalRecords = res["totalRecords"];
             }, err => {
-
+                this.isSearchLaoder = false;
+                this.isProductLoader = false;
+                this._changeDetectorRef.markForCheck();
             });
     }
     goToProductDetails(val) {
