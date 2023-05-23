@@ -73,11 +73,12 @@ import { VendorSetupChargesComponent } from './components/pages/vendor-setup-cha
 import { VendorUsersComponent } from './components/pages/vendor-users/vendor-users.component';
 import { VendorStatusComponent } from './components/pages/vendor-status/vendor-status.component';
 import { VendorStatusGuard } from './vendor-status.guard';
+import { VendorsProfileComponent } from './components/pages/vendor-profile/vendor-profile.component';
 
 @NgModule({
     declarations: [
         VendorsComponent, VendorsListComponent, NewVendorsComponent, VendorsDisabledListComponent, VendorsDownloadComponent, VendorsEmailComponent, VendorsDetailsComponent, VendorsInfoComponent, SystemImprintRunComponent, ImprintChargesComponent, StandardImprintsComponent, AddEditImprintsComponent, VendorTopOrderComponent, VendorSettingsComponent, VendorProductsComponent, VendorCoreProductsComponent, VendorProductsSummaryComponent, VendorFOBLocationComponent,
-        VendorProductsStoreComponent, VendorBlanketComponent, VendorSizingChartComponent, VendorVideosComponent, VendorCoopComponent, VendorBlanketCoopComponent, VendorCommentsComponent, VendorOrdersComponent, VendorApplicationComponent, VendorImprintColorsComponent, VendorBlanketColorsComponent, VendorRunChargesComponent, VendorSetupChargesComponent, VendorUsersComponent, VendorStatusComponent
+        VendorProductsStoreComponent, VendorBlanketComponent, VendorSizingChartComponent, VendorVideosComponent, VendorCoopComponent, VendorBlanketCoopComponent, VendorCommentsComponent, VendorOrdersComponent, VendorApplicationComponent, VendorImprintColorsComponent, VendorBlanketColorsComponent, VendorRunChargesComponent, VendorSetupChargesComponent, VendorUsersComponent, VendorStatusComponent, VendorsProfileComponent
     ],
     imports: [
         RouterModule.forChild(vendorsRoutes),

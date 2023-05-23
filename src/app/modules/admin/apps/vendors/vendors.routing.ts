@@ -25,6 +25,7 @@ import { VendorVideosComponent } from './components/pages/vendor-videos/vendor-v
 import { VendorsInfoComponent } from './components/pages/vendors-info/vendors-info.component';
 import { VendorsComponent } from './components/vendors.component';
 import { SuppliersByIdResolver, SuppliersListsResolver } from './components/vendors.resolvers';
+import { VendorsProfileComponent } from './components/pages/vendor-profile/vendor-profile.component';
 export const vendorsRoutes: Route[] = [
 
     {
@@ -52,6 +53,14 @@ export const vendorsRoutes: Route[] = [
                 data: {
                     title: 'Vendor Information',
                     url: 'information'
+                }
+            },
+            {
+                path: 'accounting-profile',
+                component: VendorsProfileComponent,
+                data: {
+                    title: 'Accounting Profile',
+                    url: 'accounting-profile'
                 }
             },
             {

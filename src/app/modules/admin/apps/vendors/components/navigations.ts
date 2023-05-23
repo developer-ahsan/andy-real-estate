@@ -9,6 +9,11 @@ export const navigations = [
                 route: 'information'
             },
             {
+                title: 'Accounting Profile',
+                icon: 'mat_outline:user',
+                route: 'accounting-profile'
+            },
+            {
                 title: 'Top Ordered Products',
                 icon: 'mat_outline:bar_chart',
                 route: 'top-order-products'

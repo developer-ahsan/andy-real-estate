@@ -1,0 +1,84 @@
+<div class="w-full">
+    <div class="px-8 pb-4">
+        <div class="row" [formGroup]="updateProfileForm">
+            <div class="col-12 col-md-6">
+                <mat-form-field class="w-full">
+                    <mat-label>AP Contact Name</mat-label>
+                    <input matInput placeholder="AP Contact Name" formControlName="APContactName">
+                </mat-form-field>
+            </div>
+            <div class="col-12 col-md-6">
+                <mat-form-field class="w-full">
+                    <mat-label>AP Email</mat-label>
+                    <input matInput placeholder="AP Email" formControlName="APEmail">
+                </mat-form-field>
+            </div>
+            <div class="col-12 col-md-6">
+                <mat-form-field class="w-full">
+                    <mat-label>Remit Email</mat-label>
+                    <input matInput placeholder="Remit Email" formControlName="remitEmailAddress">
+                </mat-form-field>
+            </div>
+            <div class="col-12 col-md-6">
+                <mat-form-field class="w-full">
+                    <mat-label>Additional Emails: Comma-separated list of email addresses</mat-label>
+                    <mat-chip-list class="pt-1" #emailchiplist>
+                        <mat-chip [removable]="true" [selectable]="true" *ngFor="let email of additionalOrderEmails"
+                            (removed)="removeAdditionalEmails(email)">
+                            {{email}}
+                            <mat-icon class="icon-size-5" matChipRemove
+                                [svgIcon]="'heroicons_solid:minus-circle'"></mat-icon>
+                        </mat-chip>
+                        <input [matChipInputFor]="emailchiplist" placeholder="New Email"
+                            [matChipInputSeparatorKeyCodes]="separatorKeysCodes" [matChipInputAddOnBlur]="addOnBlur"
+                            (matChipInputTokenEnd)="additionalEmails($event)">
+                    </mat-chip-list>
+                </mat-form-field>
+            </div>
+            <div class="col-12 col-md-6">
+                <mat-form-field class="w-full">
+                    <mat-label>Net Terms</mat-label>
+                    <mat-select matInput formControlName="netTerms">
+                        <mat-option value="0">None</mat-option>
+                        <mat-option value="PrePaid">PrePaid</mat-option>
+                        <mat-option value="Due On Receipt">Due On Receipt</mat-option>
+                        <mat-option value="Net 10">Net 10</mat-option>
+                        <mat-option value="Net 15">Net 15</mat-option>
+                        <mat-option value="Net 30">Net 30</mat-option>
+                        <mat-option value="Net 45">Net 45</mat-option>
+                        <mat-option value="Net 60">Net 60</mat-option>
+                    </mat-select>
+                </mat-form-field>
+            </div>
+            <div class="col-12 col-md-6">
+                <mat-form-field class="w-full">
+                    <mat-label>Credit Limit</mat-label>
+                    <input matInput placeholder="Credit Limit" type="number" formControlName="creditLimit">
+                </mat-form-field>
+            </div>
+            <div class="col-12 col-md-6">
+                <mat-form-field class="w-full">
+                    <mat-label>Payment Method</mat-label>
+                    <mat-select matInput formControlName="paymentMethod">
+                        <mat-option value="0">None</mat-option>
+                        <mat-option value="American Express">American Express</mat-option>
+                        <mat-option value="Capital One">Capital One</mat-option>
+                        <mat-option value="Chase Visa">Chase Visa</mat-option>
+                        <mat-option value="Vendor Website">Vendor Website</mat-option>
+                        <mat-option value="ACH">ACH</mat-option>
+                        <mat-option value="Check">Check</mat-option>
+                    </mat-select>
+                </mat-form-field>
+            </div>
+            <div class="col-12 text-right ">
+                <button mat-stroked-button class="min-w-40" [disabled]="isUpdateLoader">
+                    <mat-icon *ngIf="!isUpdateLoader" svgIcon="heroicons_outline:pencil-alt"></mat-icon>
+
+                    <span *ngIf="!isUpdateLoader">Update</span>
+                    <mat-progress-spinner *ngIf="isUpdateLoader" [diameter]="24" [mode]="'indeterminate'">
+                    </mat-progress-spinner>
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
