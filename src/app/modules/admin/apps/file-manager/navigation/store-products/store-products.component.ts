@@ -134,7 +134,6 @@ export class StoreProductsComponent implements OnInit, OnDestroy {
     }
     this._storeManagerService.getStoresData(params).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
       this.storeCategories = res["data"];
-      console.log(res);
     });
   }
   // getNextData() {
