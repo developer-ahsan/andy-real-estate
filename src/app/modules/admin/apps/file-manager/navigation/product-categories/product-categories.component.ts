@@ -5,6 +5,7 @@ import { takeUntil } from 'rxjs/operators';
 import { fuseAnimations } from '@fuse/animations';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { FormControl, FormGroup } from '@angular/forms';
+import { DeleteSubCategory, RemoveCategory } from '../../stores.types';
 
 @Component({
   selector: 'app-product-categories',
@@ -19,7 +20,7 @@ export class ProductCategoriesComponent implements OnInit, OnDestroy {
   isLoading: boolean;
   @Output() isLoadingChange = new EventEmitter<boolean>();
   private _unsubscribeAll: Subject<any> = new Subject<any>();
-  displayedColumns: string[] = ['categoryName', 'isRecommended', 'isBestSeller', 'isTopRated', 'subCategories'];
+  displayedColumns: string[] = ['categoryName', 'isRecommended', 'isBestSeller', 'isTopRated', 'subCategories', 'action'];
   dataSource = [];
   duplicatedDataSource = [];
   dataSourceTotalRecord: number;
@@ -314,5 +315,41 @@ export class ProductCategoriesComponent implements OnInit, OnDestroy {
   toggleEditSubCategory(item) {
     this.subCatData = item;
     this._storeManagerService.isEditSubCategory = !this._storeManagerService.isEditSubCategory;
+  }
+  deleteCategory(item) {
+    let payload: RemoveCategory = {
+      category_id: item.pk_categoryID,
+      delete_category: true
+    }
+    item.deleteLoader = true;
+    this._storeManagerService.putStoresData(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+      this._storeManagerService.snackBar(res["message"]);
+      // let index = this.dataSource.findIndex(elem => elem.pk_categoryID == item.pk_categoryID);
+      // console.log(index)
+      // this.dataSource.splice(index, 1);
+      this.dataSource = this.dataSource.filter(elem => elem.pk_categoryID != item.pk_categoryID)
+      item.deleteLoader = false;
+      this._changeDetectorRef.markForCheck();
+    }, err => {
+      item.deleteLoader = false;
+      this._changeDetectorRef.markForCheck();
+    })
+  }
+  deleteSubCategory(item) {
+    let payload: DeleteSubCategory = {
+      subCategoryID: item.pk_subCategoryID,
+      remove_subCategory: true
+    }
+    item.deleteLoader = true;
+    this._storeManagerService.putStoresData(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+      this._storeManagerService.snackBar(res["message"]);
+      let index = this.subCategories.findIndex(elem => elem.pk_subCategoryID == item.pk_subCategoryID);
+      this.subCategories.splice(index, 1);
+      item.deleteLoader = false;
+      this._changeDetectorRef.markForCheck();
+    }, err => {
+      item.deleteLoader = false;
+      this._changeDetectorRef.markForCheck();
+    })
   }
 }

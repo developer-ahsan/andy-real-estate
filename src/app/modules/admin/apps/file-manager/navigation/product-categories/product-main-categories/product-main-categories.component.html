@@ -100,7 +100,7 @@
                 </mat-form-field>
             </div>
             <div class="col-12 flex justify-end">
-                <button class="min-w-30 mr-2" mat-button mat-stroked-button>Remove Category</button>
+                <!-- <button class="min-w-30 mr-2" mat-button mat-stroked-button>Remove Category</button> -->
                 <button class="min-w-30" mat-button mat-stroked-button
                     [disabled]="!updateCatForm.valid || mainCatData.updateLoader" (click)="updateCategory()">
                     <span *ngIf="!mainCatData.updateLoader">Update Category</span>

@@ -100,12 +100,12 @@
                 </mat-form-field>
             </div>
             <div class="col-12 flex justify-end">
-                <button class="min-w-30 mr-1" mat-button mat-stroked-button [disabled]="subCatData.deleteLoader"
+                <!-- <button class="min-w-30 mr-1" mat-button mat-stroked-button [disabled]="subCatData.deleteLoader"
                     (click)="deleteCategory()">
                     <span *ngIf="!subCatData.deleteLoader">Remove Category</span>
                     <mat-progress-spinner *ngIf="subCatData.deleteLoader" [diameter]="24" [mode]="'indeterminate'">
                     </mat-progress-spinner>
-                </button>
+                </button> -->
                 <button class="min-w-30" mat-button mat-stroked-button [disabled]="isUpdateCatLoader"
                     (click)="updateCategory()">
                     <span *ngIf="!isUpdateCatLoader">Update Category</span>
