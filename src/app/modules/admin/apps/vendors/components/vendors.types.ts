@@ -375,6 +375,7 @@ export interface AddCompany {
     insideRepEmail: string;
     samplesContactEmail: string;
     companyType: number[];
+    customerAccountNumber: string;
     create_company: boolean;
 };
 export interface UpdateCompany {
@@ -449,12 +450,14 @@ export interface AddSizeChart {
     company_id: number;
     name: string;
     description: string;
+    extension: string;
     add_size: boolean;
 };
 export interface UpdateSizeChart {
     company_id: number;
     name: string;
     description: string;
+    extension: string;
     chart_id: number;
     update_size: boolean;
 };

@@ -112,6 +112,15 @@
                             [(ngModel)]="updateData.productionTime"></textarea>
                     </mat-form-field>
                 </div>
+                <div class="col-12 mb-2">
+                    <mat-label>Image (JPG): </mat-label>
+                    <ngx-dropzone [multiple]="true" accept="image/jpg,image/jpeg" (change)="onSelect($event)">
+                        <ngx-dropzone-label>Choose Image</ngx-dropzone-label>
+                        <ngx-dropzone-preview *ngIf="file" [removable]="true" (removed)="onRemove()">
+                            <ngx-dropzone-label>{{ file.name }} ({{ file.type }})</ngx-dropzone-label>
+                        </ngx-dropzone-preview>
+                    </ngx-dropzone>
+                </div>
                 <div class="col-12 text-right">
                     <button [disabled]="isUpdateLoader" mat-stroked-button class="min-w-40 mr-2 mb-2"
                         (click)="updateCoop()">
@@ -173,6 +182,15 @@
                     <mat-label>Production Time</mat-label>
                     <textarea matInput placeholder="Production Time" formControlName="productionTime"></textarea>
                 </mat-form-field>
+            </div>
+            <div class="col-12 mb-2">
+                <mat-label>Image (JPG): </mat-label>
+                <ngx-dropzone accept="image/jpg,image/jpeg" (change)="onSelect($event)">
+                    <ngx-dropzone-label>Choose Image</ngx-dropzone-label>
+                    <ngx-dropzone-preview *ngFor="let f of file" [removable]="true" (removed)="onRemove(f)">
+                        <ngx-dropzone-label>{{ f.name }} ({{ f.type }})</ngx-dropzone-label>
+                    </ngx-dropzone-preview>
+                </ngx-dropzone>
             </div>
             <div class="col-12 text-right">
                 <button [disabled]="isAddLoader" mat-stroked-button class="min-w-40 mr-2 mb-2" (click)="addNewCoop()">

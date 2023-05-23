@@ -296,7 +296,6 @@ export class ArtApprovalComponent implements OnInit, OnDestroy {
     this.getAdditionalEmails(this.page, 'get');
   };
   removeAdditionalEmail(item) {
-    console.log(item);
     item.delLoader = true;
     let payload = {
       pk_emailID: item.pk_emailID,
@@ -413,6 +412,7 @@ export class ArtApprovalComponent implements OnInit, OnDestroy {
       page: page
     }
     this._storeManagerService.getStoresData(params).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+
       this.isDefaultGroupData = res["data"];
       this.isDefaultGroupDataTotal = res["totalRecords"];
 
@@ -471,6 +471,31 @@ export class ArtApprovalComponent implements OnInit, OnDestroy {
   }
   backToDefaultGroupList() {
     this.isEditDefaultContactGroup = false;
+  }
+
+  updateDefaultToggleData(item) {
+    item.updateLoader = true;
+    this._changeDetectorRef.markForCheck();
+    let fk_storeUserID = [];
+    item.selectedItems.forEach(element => {
+      fk_storeUserID.push(element.item_id)
+    });
+    this.isEditDefaultContactForm.patchValue({
+      listOrder: item.listOrder,
+      firstName: item.firstName,
+      lastName: item.lastName,
+      email: item.email,
+      blnIncludeAdditionalEmails: item.blnIncludeAdditionalEmails,
+      blnStoreUserApprovalContacts: item.blnStoreUserApprovalContacts,
+      blnRoyalties: item.blnRoyalties,
+      pk_artApprovalContactID: item.pk_artApprovalContactID,
+      fk_storeUserID: fk_storeUserID
+    });
+    this.updateDefaulApprovalGroupContact();
+    setTimeout(() => {
+      item.updateLoader = false;
+      this._changeDetectorRef.markForCheck();
+    }, 300);
   }
   updateDefaulApprovalGroupContact() {
     const { listOrder, firstName, lastName, email } = this.isEditDefaultContactForm.getRawValue();
@@ -646,15 +671,30 @@ export class ArtApprovalComponent implements OnInit, OnDestroy {
     this._storeManagerService.getStoresData(params).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
       this.isDefaultGroupData = res["data"];
       this.isDefaultGroupDataTotal = res["totalRecords"];
-      this.isDefaultGroupLoader = false;
       this.isDefaultGroupData.forEach(element => {
+        element.selectedItems = [];
         element.users = [];
         if (element.UsersList) {
           let users = element.UsersList.split('),');
           element.users = users;
         }
       });
-      console.log(this.isDefaultGroupData);
+      setTimeout(() => {
+        if (this.usersDropDown.length > 0) {
+          res["data"].forEach(element => {
+            let users = element.fk_storeUserID.split(',');
+            users.forEach(user => {
+              this.usersDropDown.filter(item => {
+                if (item.item_id == user) {
+                  element.selectedItems.push({ item_id: item.item_id, item_text: item.item_text })
+                }
+              });
+            });
+          });
+        }
+        this.isDefaultGroupLoader = false;
+        this._changeDetectorRef.markForCheck();
+      }, 200);
       if (type == 'update') {
         this.isEditDefaultContactLoader = false;
         this._snackBar.open("Contact Updated Successfully", '', {

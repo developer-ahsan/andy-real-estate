@@ -122,7 +122,7 @@ export const storeRoutes: Route[] = [
                 path: 'product-suppliers',
                 component: ProductsSuppliersComponent,
                 data: {
-                    title: 'Product/Supplier',
+                    title: 'Products/Supplier',
                     url: 'product-suppliers'
                 }
             },

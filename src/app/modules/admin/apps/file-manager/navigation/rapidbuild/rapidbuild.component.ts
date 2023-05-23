@@ -223,19 +223,16 @@ export class RapidbuildComponent implements OnInit, OnDestroy {
     this.getImageOrFallback('https://assets.consolidus.com/globalAssets/rapidBuild/rbid.jpg').then(res => {
       this.currentProof = true;
     }, err => {
-      console.log(err)
     });
   }
   getRebuildDetails() {
     this.isRebuildDetailLoader = true;
-    console.log(this.editItemData)
     let params = {
       rapidbuild_details: true,
       rbid: this.editItemData.pk_rapidBuildID,
       spid: this.editItemData.fk_storeProductID
     }
     this._storeManagerService.getRapidData(params).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
-      console.log(res)
       this.buildDetailData = res["data"];
       let arr = [];
       res["colors"].forEach(element => {

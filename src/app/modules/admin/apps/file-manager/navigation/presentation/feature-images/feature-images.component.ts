@@ -217,7 +217,6 @@ export class PresentationFeatureImagesComponent implements OnInit {
     obj.arrowColor = '#' + obj.arrowColor;
     this.featureImageObj = obj;
     this.addfeatureImageForm.patchValue(obj);
-    console.log(obj)
   }
   AddFeatureImage() {
     if (!this.imageValue) {

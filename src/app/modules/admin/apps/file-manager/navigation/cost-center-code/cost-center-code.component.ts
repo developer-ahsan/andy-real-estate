@@ -101,7 +101,6 @@ export class CostCenterCodeComponent implements OnInit, OnDestroy {
     }
   }
   removeCostCode(item) {
-    console.log(item)
     item.delLoader = true;
     let payload = {
       pk_costCenterCodeID: item.pk_costCenterCodeID,

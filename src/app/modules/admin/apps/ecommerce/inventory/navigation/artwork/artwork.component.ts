@@ -176,7 +176,6 @@ export class ArtworkComponent implements OnInit, OnDestroy {
 
   };
   UpdateArtwork(data): void {
-    console.log(data)
     data.updateLoader = true;
     const { pk_artworkTemplateID, name } = data;
     const { pk_productID } = this.selectedProduct;

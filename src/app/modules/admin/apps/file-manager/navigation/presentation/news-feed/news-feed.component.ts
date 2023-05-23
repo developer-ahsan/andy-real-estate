@@ -35,7 +35,6 @@ export class PresentationNewsFeedComponent implements OnInit {
 
 
   ngOnInit() {
-    console.log(this.newsFeedData)
     this.initialize();
   }
   initialize() {

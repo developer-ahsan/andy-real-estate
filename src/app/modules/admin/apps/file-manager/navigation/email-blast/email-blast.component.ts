@@ -91,6 +91,8 @@ export class EmailBlastComponent implements OnInit, OnDestroy {
   isActivityLoader: boolean = false;
   displayedActivityColumns: string[] = ['status', 'subject', 'from_email', 'to_email', 'opens', 'clicks'];
   @ViewChild('chipList', { static: false }) chipList: ElementRef<HTMLInputElement>;
+
+  ngEmailOptIn: boolean = false;
   incomingfile(event) {
     const target: DataTransfer = <DataTransfer>(event.target);
     if (target.files.length !== 1) {
@@ -158,7 +160,8 @@ export class EmailBlastComponent implements OnInit, OnDestroy {
     this._fileManagerService.storeDetail$
       .pipe(takeUntil(this._unsubscribeAll))
       .subscribe((items: any) => {
-        this.selectedStore = items["data"][0]
+        this.selectedStore = items["data"][0];
+        this.getOptInEmail('get');
         this.getEmailTemplate('get');
       });
   }
@@ -534,6 +537,23 @@ export class EmailBlastComponent implements OnInit, OnDestroy {
       });
 
   };
+  changeEmailCheckBox(ev) {
+    if (ev.checked) {
+      this.OptInEmails.forEach(element => {
+        let index = this.fruits.indexOf(element.email);
+        if (index == -1) {
+          this.fruits.push(element.email);
+        }
+      });
+    } else {
+      this.OptInEmails.forEach(element => {
+        let index = this.fruits.indexOf(element.email);
+        if (index > -1) {
+          this.fruits.splice(index, 1);
+        }
+      });
+    }
+  }
 
   ngOnDestroy(): void {
     // Unsubscribe from all subscriptions

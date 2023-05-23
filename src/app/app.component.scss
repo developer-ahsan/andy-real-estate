@@ -11,4 +11,8 @@
     .mat-expansion-indicator, .mat-expansion-indicator:after {
         border-color: rgb(121, 118, 118) !important;
       }
+      .ngx-pagination .current {
+        background: #2c3344 !important;
+        border-radius: 15px !important;
+    }
 }

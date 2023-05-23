@@ -35,8 +35,6 @@ export class PresentationSupportTeamComponent implements OnInit {
 
   ngOnInit() {
     this.totalAvailableTeam = this.availableTeamData.totalRecords;
-
-    console.log(this.availableTeamData)
     this.initialize();
   }
   initialize() {

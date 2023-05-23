@@ -15,7 +15,7 @@ export interface PeriodicElement {
 }
 
 const ELEMENT_DATA: PeriodicElement[] = [
-  {store: "MySummaShop.com", signed_by: 'Bill Harris', last_modified: '05/01/2018 @ 04:23:00 PM'}
+  { store: "MySummaShop.com", signed_by: 'Bill Harris', last_modified: '05/01/2018 @ 04:23:00 PM' }
 ];
 
 @Component({
@@ -45,7 +45,7 @@ export class CreditApplicationsComponent implements OnInit {
 
   pageSize = 10;
   pageSizeOptions: number[] = [5, 10, 25, 100];
-  
+
   @ViewChild(MatPaginator) paginator: MatPaginator;
 
   ngAfterViewInit() {
@@ -58,12 +58,12 @@ export class CreditApplicationsComponent implements OnInit {
   ) {
     this.stepperOrientation = breakpointObserver
       .observe('(min-width: 880px)')
-      .pipe(map(({matches}) => (matches ? 'horizontal' : 'vertical')));
-   }
+      .pipe(map(({ matches }) => (matches ? 'horizontal' : 'vertical')));
+  }
 
   ngOnInit(): void {
     this.breakpoint = (window.innerWidth <= 620) ? 1 : (window.innerWidth <= 880) ? 2 : 3;
-    
+
     this.firstFormGroup = this._formBuilder.group({
       firstName: ['', Validators.required],
       lastName: ['', Validators.required],
@@ -115,9 +115,9 @@ export class CreditApplicationsComponent implements OnInit {
     const { pk_userID } = this.currentSelectedCustomer;
     this.fetchCreditApplications = this._customerService.getCreditApplications(pk_userID)
       .subscribe((applications) => {
-          this.credit_applications = applications["data"];
-          this.credit_applications_length = this.credit_applications.length;
-          this.isLoadingChange.emit(false);
+        this.credit_applications = applications["data"];
+        this.credit_applications_length = this.credit_applications.length;
+        this.isLoadingChange.emit(false);
       });
   }
 
@@ -190,11 +190,9 @@ export class CreditApplicationsComponent implements OnInit {
     })
   }
 
-  updateCreditApplication(){
-    console.log("Updating");
+  updateCreditApplication() {
   }
 
-  approveCreditApplication(){
-    console.log("Approving");
+  approveCreditApplication() {
   }
 }

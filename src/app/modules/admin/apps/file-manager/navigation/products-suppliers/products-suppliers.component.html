@@ -1,135 +1,131 @@
-<ngx-skeleton-loader count="8" appearance="line" animation="pulse" *ngIf="dataSourceLoading">
-</ngx-skeleton-loader>
-<div *ngIf="!dataSourceLoading">
-    <div *ngIf="!isLoading">
-        <fuse-card class="rounded-2xl shadow bg-card flex pb-10">
-            <div class="row" style="width: -webkit-fill-available;">
-                <div class="col-12">
-                    <div class="p-6 sm:p-8 lg:p-10 w-full">
-                        <div class="row">
-                            <div class="col-lg-6 col-12">
-                                <div class="text-2xl font-bold">
-                                    Products/Supplier
-                                </div>
-                            </div>
-                            <div class="col-lg-6 col-12">
-                                <mat-form-field class="fuse-mat-dense fuse-mat-no-subscript w-full">
-                                    <input class="h-6" matInput [matTooltip]="'Press enter key after typing'"
-                                        (keyup.enter)="searchStoreProduct($event)" [value]="keywordSearch" type="text"
-                                        [autocomplete]="'off'" [disabled]="isKeywordSearch"
-                                        [placeholder]="'Search by keyword'">
-                                    <mat-icon matPrefix [svgIcon]="'heroicons_outline:search'"></mat-icon>
-                                </mat-form-field>
-                            </div>
-                            <div class="col-12 flex justify-end">
-                                <p class="text-md cursor-pointer font-medium text-primary-500 hover:underline"
-                                    (click)="resetSearch()">
-                                    Reset Search
-                                </p>
-                            </div>
+<div class="rounded-2xl shadow bg-card flex pb-10" #topScrollAnchor>
+    <div class="row" style="width: -webkit-fill-available;">
+        <div class="col-12">
+            <div class="p-6 pb-2 sm:p-8 dm:pb-2 lg:p-10 lg:pb-2 w-full">
+                <div class="row">
+                    <div class="col-12 col-lg-6 flex justify-between">
+                        <div class="text-2xl font-bold">
+                            Products/Supplier
                         </div>
+                        <!-- <p class="text-lg font-bold px-2">Total products: {{totalProducts}}</p> -->
+                    </div>
+                    <div class="col-lg-6 col-12" *ngIf="!isLoading">
+                        <mat-form-field class="fuse-mat-dense fuse-mat-no-subscript w-full">
+                            <input class="h-6" matInput [matTooltip]="'Press enter key after typing'"
+                                (keyup.enter)="getProductsSearchByKeyword()" [(ngModel)]="keywordSearch" type="text"
+                                [autocomplete]="'off'" [disabled]="isKeywordSearch" [placeholder]="'Search by keyword'">
+                            <mat-icon matPrefix [svgIcon]="'heroicons_outline:search'"></mat-icon>
+                        </mat-form-field>
+                    </div>
+                    <div class="col-12 flex justify-end" *ngIf="!isLoading">
+                        <p class="text-md cursor-pointer font-medium text-primary-500 hover:underline"
+                            (click)="resetSearch()">
+                            Reset Search
+                        </p>
                     </div>
                 </div>
-
-                <div class="col-12 px-10" *ngIf="isKeywordSearch">
-                    <ngx-skeleton-loader count="8" appearance="line" animation="pulse" *ngIf="isKeywordSearch">
+                <div class="my-2">
+                    <ngx-skeleton-loader count="8" appearance="line" animation="pulse"
+                        *ngIf="isLoading || isKeywordSearch">
                     </ngx-skeleton-loader>
                 </div>
-
-                <div class="col-12 h-full" *ngIf="!isKeywordSearch">
-                    <ng-container *ngIf="dataSource.length > 0; else noRecords">
-                        <div class="overflow-auto" cdkScrollable>
-                            <table mat-table [dataSource]="dataSource" class="w-full">
-                                <div class="color-blue">
-                                    <!-- PID Column -->
-                                    <ng-container matColumnDef="pid">
-                                        <th class="min-w-10 bg-gray-50 dark:bg-black dark:bg-opacity-5" mat-header-cell
-                                            *matHeaderCellDef>
-                                            PID
-                                        </th>
-                                        <td mat-cell *matCellDef="let element">{{ element.fk_productID }}</td>
-                                    </ng-container>
-
-                                    <!-- SPID Column -->
-                                    <ng-container matColumnDef="spid">
-                                        <th class="min-w-10 bg-gray-50 dark:bg-black dark:bg-opacity-5" mat-header-cell
-                                            *matHeaderCellDef>
-                                            SPID
-                                        </th>
-                                        <td mat-cell *matCellDef="let element">{{ element.pk_storeProductID }}</td>
-                                    </ng-container>
-
-                                    <!-- SID Column -->
-                                    <ng-container matColumnDef="sid">
-                                        <th class="min-w-10 bg-gray-50 dark:bg-black dark:bg-opacity-5" mat-header-cell
-                                            *matHeaderCellDef>
-                                            SID
-                                        </th>
-                                        <td mat-cell *matCellDef="let element">{{ element.productNumber }}</td>
-                                    </ng-container>
-
-                                    <!-- Name Column -->
-                                    <ng-container matColumnDef="name">
-                                        <th class="min-w-40 bg-gray-50 dark:bg-black dark:bg-opacity-5" mat-header-cell
-                                            *matHeaderCellDef>
-                                            Product
-                                        </th>
-                                        <td mat-cell *matCellDef="let element">
-                                            {{ element.productName }}
-                                        </td>
-                                    </ng-container>
-
-                                    <!-- Master Column -->
-                                    <ng-container matColumnDef="master">
-                                        <th class="min-w-24 bg-gray-50 dark:bg-black dark:bg-opacity-5" mat-header-cell
-                                            *matHeaderCellDef>
-                                            Master
-                                        </th>
-                                        <td mat-cell *matCellDef="let element">
-                                            <span *ngIf="element.blnActive" style="color: green;">Active</span>
-                                            <span *ngIf="!element.blnActive" style="color: red;">Inactive</span>
-                                        </td>
-                                    </ng-container>
-
-                                    <!-- Store Column -->
-                                    <ng-container matColumnDef="store">
-                                        <th class="min-w-24 bg-gray-50 dark:bg-black dark:bg-opacity-5" mat-header-cell
-                                            *matHeaderCellDef>
-                                            Store
-                                        </th>
-                                        <td mat-cell *matCellDef="let element">
-                                            <span *ngIf="element.blnStoreActive" style="color: green;">Online</span>
-                                            <span *ngIf="!element.blnStoreActive" style="color: red;">Offline</span>
-                                        </td>
-                                    </ng-container>
-                                </div>
-                                <tr mat-header-row class="h-16 shadow bg-card" *matHeaderRowDef="displayedColumns"></tr>
-                                <tr mat-row class="hover:bg-gray-100 dark:hover:bg-hover" style="cursor: pointer;"
-                                    *matRowDef="let row; columns: displayedColumns"></tr>
-                            </table>
-                        </div>
-
-                        <mat-paginator
-                            class="sm:absolute sm:inset-x-0 sm:bottom-0 border-b sm:border-t sm:border-b-0 z-10 bg-gray-50 dark:bg-transparent"
-                            [ngClass]="{'pointer-events-none': isLoading}" (page)="getNextData($event)"
-                            [length]="dataSourceTotalRecord" [pageIndex]="0" [pageSize]="20" [hidePageSize]="true">
-                        </mat-paginator>
-
-                    </ng-container>
-                    <ng-template #noRecords>
-                        <div class="font-semibold tracking-tight text-center">
-                            <p>No record found</p>
-                        </div>
-                    </ng-template>
-                </div>
-                <!-- <div class="col-12" *ngIf="!isKeywordSearch">
-                    <mat-paginator
-                        class="sm:absolute sm:inset-x-0 sm:bottom-0 border-b sm:border-t sm:border-b-0 z-10 bg-gray-50 dark:bg-transparent"
-                        [ngClass]="{'pointer-events-none': isLoading}" (page)="getNextData($event)"
-                        [length]="dataSourceTotalRecord" [pageIndex]="0" [pageSize]="20" [hidePageSize]="true">
-                    </mat-paginator>
-                </div> -->
             </div>
-        </fuse-card>
+        </div>
+        <!-- Table -->
+        <div class="col-12 h-full py-2" *ngIf="!isLoading && !isKeywordSearch">
+            <div class="text-center">
+                <pagination-controls (pageChange)="getNextProductData($event)" *ngIf="dataSource.length > 0"
+                    previousLabel="Prev" nextLabel="Next">
+                </pagination-controls>
+            </div>
+            <ngx-skeleton-loader count="8" appearance="line" animation="pulse" *ngIf="isLoading">
+            </ngx-skeleton-loader>
+            <div *ngIf="!isLoading">
+                <ng-container *ngIf="dataSource.length > 0; else noRecords">
+                    <div *ngFor="let category of dataSource |  paginate : {
+                        itemsPerPage: itemsPerPage,
+                        currentPage: page,
+                        totalItems: totalRecords
+                      };">
+                        <div class="p-6 pb-2 sm:p-8 dm:pb-2 lg:p-10 lg:pb-2">
+                            <div class="text-secondary pb-0 mb-2 text-lg">
+                                <b>
+                                    <div class="flex align-items-center space-x-2" *ngIf="category.vendorRelation == 3">
+                                        <span class="badge badge-secondary">{{category.productsCount}}</span>
+                                        <p>{{category.companyName}}</p>
+                                        <mat-icon svgIcon="heroicons_solid:star"
+                                            class="icon-size-4 text-green-700"></mat-icon>
+                                    </div>
+                                    <div class="flex align-items-center space-x-2" *ngIf="category.vendorRelation == 2">
+                                        <span class="badge badge-secondary">{{category.productsCount}}</span>
+                                        <p>{{category.companyName}}</p>
+                                        <mat-icon svgIcon="heroicons_solid:badge-check" class="icon-size-4"
+                                            color="warn"></mat-icon>
+                                    </div>
+                                    <div class="flex align-items-center space-x-2" *ngIf="category.vendorRelation == 1">
+                                        <span class="badge badge-secondary">{{category.productsCount}}</span>
+                                        <p>{{category.companyName}}</p>
+                                    </div>
+                                </b>
+                            </div>
+                        </div>
+                        <table class="table table-striped overflow-x-auto">
+                            <thead>
+                                <tr>
+                                    <th width="5%">
+                                        <span>PID</span> <span class="fa fa-question-circle"
+                                            matTooltip="Product Id Number"></span>
+                                    </th>
+                                    <th width="5%">
+                                        <span>SPID</span> <span class="fa fa-question-circle"
+                                            matTooltip="Store Product Id Number"></span>
+                                    </th>
+                                    <th width="20%">
+                                        <span>SPID</span> <span class="fa fa-question-circle"
+                                            matTooltip="Supplier Id Number"></span>
+                                    </th>
+                                    <th width="50%">Product</th>
+                                    <th width="10%" class="text-center">Master</th>
+                                    <th width="10%" class="text-center">Store</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr *ngFor="let product of category.products">
+                                    <td>
+                                        <a [routerLink]="['/apps/ecommerce/inventory/storeProduct',product.spid]"
+                                            target="_blank">{{product.pid}}</a>
+                                    </td>
+                                    <td>
+                                        <a [routerLink]="['/apps/ecommerce/inventory/storeProduct',product.spid]"
+                                            target="_blank">{{product.spid}}</a>
+                                    </td>
+                                    <td>
+                                        <a [routerLink]="['/apps/ecommerce/inventory/storeProduct',product.spid]"
+                                            target="_blank">{{product.sid}}</a>
+                                    </td>
+                                    <td>
+                                        <a [routerLink]="['/apps/ecommerce/inventory/storeProduct',product.spid]"
+                                            target="_blank">{{product.product}}</a>
+                                    </td>
+                                    <td class="text-center">
+                                        <span *ngIf="product.master == 0" class="text-red-700">Disable</span>
+                                        <span *ngIf="product.master == 1" class="text-green-500">Active</span>
+                                    </td>
+                                    <td class="text-center">
+                                        <span *ngIf="product.store == 0" class="text-red-700">Offline</span>
+                                        <span *ngIf="product.store == 1" class="text-green-500">Online</span>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </ng-container>
+                <ng-template #noRecords>
+                    <div class="font-semibold tracking-tight text-center">
+                        <p class="text-lg">No record found</p>
+                    </div>
+                </ng-template>
+            </div>
+        </div>
     </div>
 </div>

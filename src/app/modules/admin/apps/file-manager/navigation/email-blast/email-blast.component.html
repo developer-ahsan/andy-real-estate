@@ -178,6 +178,9 @@
                     (matChipInputTokenEnd)="add($event)">
                 </mat-chip-list>
               </mat-form-field>
+              <mat-checkbox [(ngModel)]="ngEmailOptIn" [ngModelOptions]="{standalone: true}"
+                (change)="changeEmailCheckBox($event)">Opt-In
+                Emails</mat-checkbox>
             </div>
 
             <div class="col-12">

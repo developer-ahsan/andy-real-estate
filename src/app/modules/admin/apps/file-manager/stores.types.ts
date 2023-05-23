@@ -367,3 +367,230 @@ export interface updateCampaign {
     store_product_ids: number[];
     update_campaign_list: boolean;
 };
+
+export interface UpdateCategory {
+    category_id: number;
+    categoryName: string;
+    categoryDesc: string;
+    categoryMiniDesc: string;
+    browserTitle: string;
+    metaDesc: string;
+    permalink: string;
+    blnScroller: boolean;
+    store_id: number;
+    update_category: boolean;
+};
+export interface RemoveCategory {
+    category_id: number;
+    delete_category: boolean;
+};
+export interface AddCategoryKeyword {
+    category_id: number;
+    keyword: string;
+    add_category_keyword: boolean;
+};
+export interface RemoveCategoryKeyword {
+    keyword_id: number;
+    delete_category_keyword: boolean;
+};
+// Feature Images
+export interface createCategoryFeatureImage {
+    category_id: number;
+    buttonURL: string;
+    displayOrder: number;
+    blnNewWindow: boolean;
+    headerCopy: string;
+    buttonCopy: string;
+    align: number;
+    headerCopyColor: string;
+    buttonBackgroundColor: string;
+    buttonColor: string;
+    arrowColor: string;
+    add_category_feature_image: boolean;
+};
+export interface updateCategoryImage {
+    store_product_category_image_id: number;
+    category_id: number;
+    update_category_image: boolean;
+};
+
+export interface addToRecommended {
+    categoryID: number;
+    list: RecommendedProducts[];
+    add_category_recommended_products: boolean;
+};
+
+interface RecommendedProducts {
+    store_productID: number;
+};
+
+export interface updateRecommededProducts {
+    deleteRecommendationProducts: DeleteRecommendation[];
+    updateRecommendationProducts: UpdateRecommendation[];
+    category_id: number;
+    update_category_recommendations: boolean;
+};
+interface DeleteRecommendation {
+    store_product_id: number;
+};
+interface UpdateRecommendation {
+    store_product_id: number;
+    featured: boolean;
+    mostPopular: boolean;
+    primaryRecomm: boolean;
+    recomm: boolean;
+};
+export interface RemoveCategoryFeatureImage {
+    feature_image_id: number;
+    delete_category_feature: boolean;
+};
+export interface updateCategoryFeatureImage {
+    buttonURL: string;
+    displayOrder: number;
+    blnNewWindow: boolean;
+    headerCopy: string;
+    buttonCopy: string;
+    align: number;
+    headerCopyColor: string;
+    buttonBackgroundColor: string;
+    buttonColor: string;
+    arrowColor: string;
+    image_url: string;
+    feature_image_id: number;
+    update_category_feature_image: boolean;
+};
+
+// Subcategories
+export interface UpdateSubCategory {
+    category_id: number;
+    subCategoryID: number;
+    subCategoryName: string;
+    subCategoryDesc: string;
+    browserTitle: string;
+    metaDesc: string;
+    permalink: string;
+    update_subCategory: boolean;
+};
+
+export interface DeleteSubCategory {
+    subCategoryID: number;
+    remove_subCategory: boolean;
+};
+
+export interface updateSubCategoriesDisplayOrder {
+    subCategories: SubCategories[];
+    update_subCategory_list_order: boolean;
+};
+
+interface SubCategories {
+    subCategoryID: number;
+    list_order: number;
+};
+
+export interface updateSubCategoriesStatus {
+    subCategories: SubCategory[];
+    category_id: number;
+    update_subCategory_status: boolean;
+};
+
+interface SubCategory {
+    bln_active: boolean;
+    subCategory_id: number;
+};
+
+export interface AddSubCategoryKeyword {
+    sub_category_id: number;
+    keyword: string;
+    add_subcategory_keyword: boolean;
+};
+
+export interface RemoveSubCategoryKeyword {
+    keyword_id: number;
+    delete_subcategory_keyword: boolean;
+};
+
+export interface createSubCategoryFeatureImage {
+    subCategory_id: number;
+    buttonURL: string;
+    displayOrder: number;
+    blnNewWindow: boolean;
+    headerCopy: string;
+    buttonCopy: string;
+    align: number;
+    headerCopyColor: string;
+    buttonBackgroundColor: string;
+    buttonColor: string;
+    arrowColor: string;
+    add_subCategory_feature_image: boolean;
+};
+export interface RemoveSubCategoryFeatureImage {
+    subCategory_feature_image_id: number;
+    delete_category_feature: boolean;
+};
+export interface updateSubCategoryFeatureImage {
+    buttonURL: string;
+    displayOrder: number;
+    blnNewWindow: boolean;
+    headerCopy: string;
+    buttonCopy: string;
+    align: number;
+    headerCopyColor: string;
+    buttonBackgroundColor: string;
+    buttonColor: string;
+    arrowColor: string;
+    image_url: string;
+    subCategory_feature_image_id: number;
+    update_subCategory_feature_image: boolean;
+};
+
+export interface updateSubCatProductDisplayOrder {
+    storeProducts: StoreProducts[];
+    subCategory_id: number;
+    update_display_order: boolean;
+};
+
+interface StoreProducts {
+    store_produt_id: number;
+    list_order: number;
+};
+
+export interface removeSubCategoryProducts {
+    store_product_ids: number[];
+    subCategory_id: number;
+    category_id: number;
+    remove_subCategory_products: boolean;
+};
+
+export interface addSubCategoryProducts {
+    store_product_ids: number[];
+    subCategory_id: number;
+    add_subCategory_products: boolean;
+};
+
+export interface LogoBankNotesUpdate {
+    notes: string;
+    fk_storeID: number;
+    update_logo_bank_notes: boolean;
+};
+
+export interface addStoreLogoBank {
+    store_id: number;
+    name: string;
+    description: string;
+    displayOrder: number;
+    bank_type: number; // [1,2,3]
+    file_extension: string;
+    color_list: string;
+    add_store_logoBank: boolean;
+};
+export interface RemoveStoreLogoBank {
+    logo_bank_id: number;
+    delete_store_logoBank: boolean;
+};
+export interface updateStoreLogoBank {
+    name: string;
+    description: string;
+    color_list: string;
+    logo_bank_id: number;
+    update_store_logoBank: boolean;
+};

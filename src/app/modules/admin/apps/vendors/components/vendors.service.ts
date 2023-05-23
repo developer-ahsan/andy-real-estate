@@ -281,4 +281,9 @@ export class VendorsService {
             })
         );
     };
+    addMedia(payload) {
+        const headers = { 'Authorization': `Bearer ${this._authService.accessToken}` };
+        return this._httpClient.post(
+            environment.products, payload, { headers });
+    };
 }

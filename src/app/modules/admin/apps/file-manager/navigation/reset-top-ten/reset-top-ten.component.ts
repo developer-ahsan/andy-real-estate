@@ -29,7 +29,6 @@ export class ResetTopTenComponent implements OnInit, OnDestroy {
       });
   }
   reset(): void {
-    console.log("resetted");
   };
   ngOnDestroy(): void {
     // Unsubscribe from all subscriptions

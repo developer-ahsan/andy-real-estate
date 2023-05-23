@@ -47,13 +47,19 @@ export class ProductCategoriesComponent implements OnInit, OnDestroy {
   updateOrderLoader: boolean = false;
   addCategoryForm: FormGroup;
   addCategoryLoader: boolean = false;
+  // Edit Categories
+  isEditMainCategory: boolean = false;
+  mainCatData: any;
+  subCatData: any;
   constructor(
-    private _storeManagerService: FileManagerService,
+    public _storeManagerService: FileManagerService,
     private _changeDetectorRef: ChangeDetectorRef,
     private _snackBar: MatSnackBar
   ) { }
 
   ngOnInit(): void {
+    this._storeManagerService.isEditMainCategory = false;
+    this._storeManagerService.isEditSubCategory = false;
     this.getStoreDetails();
   };
   getStoreDetails() {
@@ -300,7 +306,13 @@ export class ProductCategoriesComponent implements OnInit, OnDestroy {
           this._changeDetectorRef.markForCheck();
         }))
     }
-
-
+  }
+  toggleEditMainCategory(item) {
+    this.mainCatData = item;
+    this._storeManagerService.isEditMainCategory = !this._storeManagerService.isEditMainCategory;
+  }
+  toggleEditSubCategory(item) {
+    this.subCatData = item;
+    this._storeManagerService.isEditSubCategory = !this._storeManagerService.isEditSubCategory;
   }
 }

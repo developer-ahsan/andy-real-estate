@@ -118,9 +118,11 @@ import { RemoveFromStoreComponent } from './product-store/navigation/remove-from
 import { ProductLicensingTermsComponent } from './inventory/list/licensing-terms/licensing-terms.component';
 import { RemoveProductComponent } from './inventory/navigation/delete-product/delete-product.component';
 import { StoreProductStatusComponent } from './product-store/navigation/store-product-status/store-product-status.component';
+import { OptionsScrollDirective } from 'app/options-scroll.directive';
 
 @NgModule({
     declarations: [
+        OptionsScrollDirective,
         InventoryComponent,
         InventoryListComponent,
         ProductDetailsComponent,

@@ -43,6 +43,9 @@ import { MatSnackBar } from "@angular/material/snack-bar";
 })
 export class FileManagerService {
 
+  public isEditMainCategory: boolean = false;
+  public isEditSubCategory: boolean = false;
+  public subCatData: any;
   public _storeSearchKeyword = '';
   // Private
   private _selectedStore: BehaviorSubject<StoreList | null> =
@@ -725,4 +728,9 @@ export class FileManagerService {
     const headers = { 'Authorization': `Bearer ${this._authService.accessToken}` };
     return this._httpClient.put(environment.storeNewUrl, payload, { headers }).pipe(retry(3));
   }
+  addMedia(payload) {
+    const headers = { 'Authorization': `Bearer ${this._authService.accessToken}` };
+    return this._httpClient.post(
+      environment.products, payload, { headers });
+  };
 }

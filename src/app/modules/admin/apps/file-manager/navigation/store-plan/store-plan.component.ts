@@ -88,7 +88,6 @@ export class StorePlanComponent implements OnInit, OnDestroy {
       });
   }
   editStorePlan(obj) {
-    console.log(obj)
     this.isEditStorePlan = true;
     this.isEditStorePlanData = obj;
     this.isEditStorePlanForm.patchValue({

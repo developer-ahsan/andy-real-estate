@@ -42,7 +42,6 @@ export class StoreProductStatusComponent implements OnInit, OnDestroy {
       status_check: true
     }
     this._storeService.getStoreProducts(params).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
-      console.log(res);
       this.statusProductData = res;
       this.isLoading = false;
       this.isLoadingChange.emit(false);

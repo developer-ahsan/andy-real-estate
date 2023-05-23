@@ -149,7 +149,6 @@ export class SimpleEmailBlastComponent implements OnInit, OnDestroy {
       this.isEmailLoader = false;
       this._changeDetectorRef.markForCheck();
     });
-    console.log(payload)
   }
   ngOnDestroy(): void {
     // Unsubscribe from all subscriptions

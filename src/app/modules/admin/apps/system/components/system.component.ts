@@ -2,7 +2,7 @@ import { ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, OnDe
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { fuseAnimations } from '@fuse/animations';
-import { Router } from '@angular/router';
+import { ActivatedRoute, NavigationEnd, Router } from '@angular/router';
 import { FuseMediaWatcherService } from '@fuse/services/media-watcher';
 import { SystemService } from './system.service';
 
@@ -17,6 +17,7 @@ export class SystemComponent {
     private _unsubscribeAll: Subject<any> = new Subject<any>();
     routes = [];
     selectedScreeen = 'Product Colors';
+    selectedRoute = '';
 
     // Sidebar stuff
     drawerMode: 'over' | 'side' = 'side';
@@ -31,6 +32,7 @@ export class SystemComponent {
         private _changeDetectorRef: ChangeDetectorRef,
         private _systemService: SystemService,
         private _router: Router,
+        private route: ActivatedRoute,
         private _fuseMediaWatcherService: FuseMediaWatcherService,
     ) {
     }
@@ -45,6 +47,14 @@ export class SystemComponent {
 
     ngOnInit(): void {
         this.routes = this._systemService.navigationLabels;
+        this._router.events.subscribe((event) => {
+            if (event instanceof NavigationEnd) {
+                this.selectedScreeen = this.route.children[0].snapshot.data.title;
+                this.selectedRoute = this.route.children[0].snapshot.data.url;
+            }
+        })
+        this.selectedScreeen = this.route.children[0].snapshot.data.title;
+        this.selectedRoute = this.route.children[0].snapshot.data.url;
         this.isLoading = false;
         this.sideDrawer();
     }
@@ -74,12 +84,20 @@ export class SystemComponent {
     // -----------------------------------------------------------------------------------------------------
     // @ Public methods
     // -----------------------------------------------------------------------------------------------------
-    clicked(title) {
-        if (title != this.selectedScreeen) {
-            this.selectedScreeen = title;
-            this.isLoading = true;
+    clicked(item) {
+        // if (title != this.selectedScreeen) {
+        //     this.selectedScreeen = title;
+        //     this.isLoading = true;
+        // }
+        // this.topScroll.nativeElement.scrollIntoView({ behavior: 'smooth' });
+        if (item.route != this.selectedRoute) {
+            this.selectedScreeen = item.title;
+            this.selectedRoute = item.route;
+            setTimeout(() => {
+                this.topScroll.nativeElement.scrollIntoView({ behavior: 'smooth' });
+            }, 100);
+            this._router.navigate([item.route], { relativeTo: this.route });
         }
-        this.topScroll.nativeElement.scrollIntoView({ behavior: 'smooth' });
     }
     // Drawer Open Close
     toggleDrawer() {

@@ -65,6 +65,8 @@ export class VendorCoopComponent implements OnInit, OnDestroy {
     productionTime: '',
     update_coop: true
   }
+  file: any = [];
+  imageValue: any = [];
   constructor(
     private _changeDetectorRef: ChangeDetectorRef,
     private _vendorService: VendorsService
@@ -215,6 +217,11 @@ export class VendorCoopComponent implements OnInit, OnDestroy {
     this.isAddLoader = true;
     this._vendorService.postVendorsData(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
       if (res["success"]) {
+        if (this.file.length > 0) {
+          this.imageValue.forEach((element, index) => {
+            this.uploadCoopImages(element, res["new_id"], index);
+          });
+        }
         this.getCoopData(1, 'add');
       } else {
         this.isAddLoader = false;
@@ -226,6 +233,21 @@ export class VendorCoopComponent implements OnInit, OnDestroy {
       this.isAddLoader = false;
       this._changeDetectorRef.markForCheck();
     })
+  }
+  uploadCoopImages(obj, id, index) {
+    const base64 = obj.imageUpload.split(",")[1];
+    const payload = {
+      file_upload: true,
+      image_file: base64,
+      image_path: `/globalAssets/Companies/Coops/${this.supplierData.pk_companyID}/${id}/${index}.jpg`
+    };
+    this._vendorService.addMedia(payload)
+      .subscribe((response) => {
+        this.file = [];
+        this.imageValue = [];
+        // Mark for check
+        this._changeDetectorRef.markForCheck();
+      })
   }
   // RemoveLocation
   deleteCoop(coop) {
@@ -306,7 +328,6 @@ export class VendorCoopComponent implements OnInit, OnDestroy {
   }
   onSelected(ev) {
     this.selectedState = ev.option.value;
-    console.log(this.selectedState)
   }
 
   displayWith(value: any) {
@@ -322,7 +343,36 @@ export class VendorCoopComponent implements OnInit, OnDestroy {
     } else {
       item.expired = true;
     }
-    console.log(days);
+  }
+  onSelect(event) {
+    this.file = event.addedFiles;
+    this.file.forEach(element => {
+      const reader = new FileReader();
+      reader.readAsDataURL(element);
+      reader.onload = () => {
+        this.imageValue.push({
+          imageUpload: reader.result,
+          name: element.name,
+          type: element["type"]
+        });
+      }
+    });
+
+  }
+  onRemove(ev) {
+    this.file.splice(this.file.indexOf(ev), 1);
+    this.imageValue = [];
+    this.file.forEach(element => {
+      const reader = new FileReader();
+      reader.readAsDataURL(element);
+      reader.onload = () => {
+        this.imageValue.push({
+          imageUpload: reader.result,
+          name: element.name,
+          type: element["type"]
+        });
+      }
+    });
   }
   /**
      * On destroy

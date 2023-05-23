@@ -141,17 +141,26 @@ export class VendorSizingChartComponent implements OnInit, OnDestroy {
   }
   // Add New Chart
   addNewSize() {
+    if (!this.imageValue) {
+      this._vendorService.snackBar('Image is required');
+      return;
+    }
+    let extension = null;
+    if (this.imageValue) {
+      extension = this.imageValue.type.replace('application/', '').replace('image/', '');
+    }
     const { name, description } = this.addSizingForm.getRawValue();
     if (name == '') {
       this._vendorService.snackBar('Please fill out the required fields');
       return;
     }
     let payload: AddSizeChart = {
-      name, description, company_id: this.supplierData.pk_companyID, add_size: true
+      name, description, company_id: this.supplierData.pk_companyID, extension: extension, add_size: true
     }
     this.isAddLoader = true;
     this._vendorService.postVendorsData(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
       if (res["success"]) {
+        this.uploadSizeImage(res["newID"], extension)
         this.getSizingCharts(1, 'add');
       } else {
         this.isAddLoader = false;
@@ -163,6 +172,21 @@ export class VendorSizingChartComponent implements OnInit, OnDestroy {
       this.isAddLoader = false;
       this._changeDetectorRef.markForCheck();
     })
+  }
+  uploadSizeImage(id, extension) {
+    const base64 = this.imageValue.imageUpload.split(",")[1];
+    const payload = {
+      file_upload: true,
+      image_file: base64,
+      image_path: `/globalAssets/Companies/SizingCharts/${id}.${extension}`
+    };
+    this._vendorService.addMedia(payload)
+      .subscribe((response) => {
+        this.file = null;
+        this.imageValue = null;
+        // Mark for check
+        this._changeDetectorRef.markForCheck();
+      })
   }
   // Remove Chart
   deleteChart(chart) {
@@ -195,6 +219,10 @@ export class VendorSizingChartComponent implements OnInit, OnDestroy {
   }
   // Update Size Chart
   updateSizeChart() {
+    let extension = null;
+    if (this.imageValue) {
+      extension = this.imageValue.type.replace('application/', '').replace('image/', '');
+    }
     const { pk_chartID } = this.chartData;
     if (this.ngName == '') {
       this._vendorService.snackBar('Please fill out the required fields');
@@ -205,11 +233,15 @@ export class VendorSizingChartComponent implements OnInit, OnDestroy {
       description: this.ngDescription,
       company_id: this.supplierData.pk_companyID,
       update_size: true,
+      extension: extension,
       chart_id: pk_chartID
     }
     this.isUpdateLoader = true;
     this._vendorService.putVendorsData(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
       if (res["success"]) {
+        if (this.imageValue) {
+          this.uploadSizeImage(pk_chartID, extension)
+        }
         this.dataSource.filter(item => {
           if (item.pk_chartID == pk_chartID) {
             item.name = this.ngName;
@@ -248,27 +280,10 @@ export class VendorSizingChartComponent implements OnInit, OnDestroy {
     const reader = new FileReader();
     reader.readAsDataURL(this.file);
     reader.onload = () => {
-      let image: any = new Image;
-      image.src = reader.result;
-      image.onload = () => {
-        // if (image.width != 600 || image.height != 600) {
-        //   this._storeService.snackBar("Dimensions should be 600px by 600px.");
-        //   this.imageValue = null;
-        //   this.file = null;
-        //   this._changeDetectorRef.markForCheck();
-        //   return;
-        // } else if (this.file["type"] != 'image/jpeg' && this.file["type"] != 'image/jpg') {
-        //   this._storeService.snackBar("Image should be jpg format only");
-        //   this.file = null;
-        //   this.imageValue = null;
-        //   this._changeDetectorRef.markForCheck();
-        //   return;
-        // }
-        this.imageValue = {
-          imageUpload: reader.result,
-          type: this.file["type"]
-        };
-      }
+      this.imageValue = {
+        imageUpload: reader.result,
+        type: this.file["type"]
+      };
     }
   }
   onRemove() {

@@ -79,7 +79,6 @@ export class StoreUsageComponent implements OnInit, OnDestroy {
   }
 
   deleteStore(store): void {
-    console.log("store", store);
   }
 
   createStore(): void {

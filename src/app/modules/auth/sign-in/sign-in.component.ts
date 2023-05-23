@@ -51,8 +51,13 @@ export class AuthSignInComponent implements OnInit {
         this.signInForm = this._formBuilder.group({
             email: ['', [Validators.required, Validators.email]],
             password: ['', [Validators.required, Validators.minLength(6)]],
-            rememberMe: ['']
+            rememberMe: [false]
         });
+
+        this.signInForm.patchValue({
+            email: localStorage.getItem('userEmail'),
+            password: localStorage.getItem('userPassword')
+        })
     }
 
     // -----------------------------------------------------------------------------------------------------
@@ -74,7 +79,12 @@ export class AuthSignInComponent implements OnInit {
         // Hide the alert
         this.showAlert = false;
 
-        const { email, password } = this.signInForm.getRawValue();
+        const { email, password, rememberMe } = this.signInForm.getRawValue();
+        console.log(rememberMe);
+        if (rememberMe) {
+            localStorage.setItem('userEmail', email);
+            localStorage.setItem('userPassword', password);
+        }
         let payload = {
             email: email,
             password: password,

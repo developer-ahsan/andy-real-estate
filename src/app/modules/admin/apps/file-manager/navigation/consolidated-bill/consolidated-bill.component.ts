@@ -50,7 +50,6 @@ export class ConsolidatedBillComponent implements OnInit, OnDestroy {
 
   onSelected() {
     this.slectedLocation = this.slectedLocation;
-    console.log(this.slectedLocation)
   }
 
   displayWith(value: any) {
@@ -115,7 +114,6 @@ export class ConsolidatedBillComponent implements OnInit, OnDestroy {
           this.filteredLocations = data['data'];
           this._changeDetectorRef.markForCheck();
         }
-        console.log(this.filteredLocations);
       });
   }
   getConsolidatedBill() {
@@ -152,7 +150,6 @@ export class ConsolidatedBillComponent implements OnInit, OnDestroy {
       order_line_id: obj.pk_orderLineID
     }
     this._storeManagerService.getStoresData(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
-      console.log(res);
       obj.productsData = res["data"];
       obj.loader = false;
       obj.hide = true;

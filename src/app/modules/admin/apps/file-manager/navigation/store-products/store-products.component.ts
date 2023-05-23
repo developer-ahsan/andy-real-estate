@@ -1,7 +1,7 @@
-import { Component, Input, Output, OnInit, EventEmitter, ChangeDetectorRef, OnDestroy } from '@angular/core';
+import { Component, Input, Output, OnInit, EventEmitter, ChangeDetectorRef, OnDestroy, ElementRef, ViewChild } from '@angular/core';
 import { Subject } from 'rxjs';
 import { FileManagerService } from 'app/modules/admin/apps/file-manager/store-manager.service';
-import { takeUntil } from 'rxjs/operators';
+import { retry, takeUntil } from 'rxjs/operators';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { Router } from '@angular/router';
 
@@ -11,16 +11,21 @@ import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-store-products',
-  templateUrl: './store-products.component.html'
+  templateUrl: './store-products.component.html',
 })
 
 export class StoreProductsComponent implements OnInit, OnDestroy {
+  @ViewChild('topScrollAnchor') topScroll: ElementRef;
   selectedStore: any;
   isLoading: boolean;
   @Output() isLoadingChange = new EventEmitter<boolean>();
   private _unsubscribeAll: Subject<any> = new Subject<any>();
   displayedColumns: string[] = ['spid', 'name', 'vendor', 'master', 'store', 'desc', 'video', 'techno_logo'];
   dataSource = [];
+  totalRecords = 0;
+  totalProducts = 0;
+  itemsPerPage = 5;
+
   duplicatedDataSource = [];
   dataSourceTotalRecord: number;
   dataSourceLoading = false;
@@ -30,6 +35,16 @@ export class StoreProductsComponent implements OnInit, OnDestroy {
 
   isFilterLoader: boolean = false;
   isToggleFilter: boolean = false;
+
+  storeCategories = [];
+
+  keyword = '';
+  category = 0;
+  status = 'all';
+  hasDescription = 'all';
+  hasOrdered = -1;
+  vendorRelation = 0;
+  hasVideo = 'all';
   constructor(
     private _storeManagerService: FileManagerService,
     private _changeDetectorRef: ChangeDetectorRef,
@@ -45,10 +60,88 @@ export class StoreProductsComponent implements OnInit, OnDestroy {
       .pipe(takeUntil(this._unsubscribeAll))
       .subscribe((items: any) => {
         this.selectedStore = items["data"][0];
-        this.dataSourceLoading = true;
-        this.getFirstCall(this.page);
+        this.isLoading = true;
+        this.getStoreCategories();
+        this.getProductsByCategories(this.page);
       });
   }
+  getProductsByCategories(page) {
+    if (page == 1) {
+      this.page = 1;
+      this.isFilterLoader = true;
+    }
+    let params = {
+      store_product: true,
+      store_id: this.selectedStore.pk_storeID,
+      keyword: this.keyword,
+      status: this.status,
+      filter_category: this.category,
+      has_description: this.hasDescription,
+      has_ordered: this.hasOrdered,
+      vendor_relation: this.vendorRelation,
+      has_video: this.hasVideo,
+      size: 5,
+      page: page
+    }
+    this._storeManagerService.getStoresData(params).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+      res["data"].forEach(element => {
+        element.products = [];
+        if (element.productsList) {
+          let cat_List = element.productsList.split(',,');
+          cat_List.forEach(product => {
+            let data = product.split('==');
+            element.products.push({
+              spid: data[0],
+              name: data[1],
+              vendor: data[2],
+              relation: data[3],
+              date: data[4],
+              master: data[5],
+              store: data[6],
+              desc: data[7],
+              image: data[8],
+              video: data[9],
+              colors: data[10],
+              logo: data[11],
+              o: data[12],
+            })
+          });
+        }
+      });
+      this.dataSource = res["data"];
+      this.totalRecords = res["categoryCount"];
+      this.totalProducts = res["totalRecords"];
+      this.isLoading = false;
+      this.isFilterLoader = false;
+      this._changeDetectorRef.markForCheck();
+    }, err => {
+      this.isFilterLoader = false;
+      this.isLoading = false;
+      this._changeDetectorRef.markForCheck();
+    });
+  }
+  getNextPrductData(event) {
+    this.page = event;
+    this.isLoading = true;
+    this.topScroll.nativeElement.scrollIntoView({ behavior: 'smooth' });
+    this.getProductsByCategories(this.page);
+  };
+  getStoreCategories() {
+    let params = {
+      category: true,
+      store_id: this.selectedStore.pk_storeID,
+      size: 100
+    }
+    this._storeManagerService.getStoresData(params).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+      this.storeCategories = res["data"];
+      console.log(res);
+    });
+  }
+  // getNextData() {
+  //   this.page++;
+  //   this.isLoadMore = true;
+  //   this.getProducts(this.page);
+  // };
   toggleFilter() {
     this.isToggleFilter = !this.isToggleFilter;
   }
@@ -57,7 +150,7 @@ export class StoreProductsComponent implements OnInit, OnDestroy {
 
     // Get the store products
     this._storeManagerService.getStoreProducts(pk_storeID, page)
-      .pipe(takeUntil(this._unsubscribeAll))
+      .pipe(takeUntil(this._unsubscribeAll), retry(3))
       .subscribe((response: any) => {
         this.dataSource = response["data"];
         this.duplicatedDataSource = this.dataSource;
@@ -69,7 +162,7 @@ export class StoreProductsComponent implements OnInit, OnDestroy {
       }, err => {
 
         // Recall on error
-        this.getMainStoreCall(1);
+        // this.getMainStoreCall(1);
         this.dataSourceLoading = false;
 
         // Mark for check

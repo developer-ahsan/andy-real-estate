@@ -63,7 +63,6 @@ export class SendRegisterEmailsComponent implements OnInit, OnDestroy {
       });
   }
   storeSelection(store) {
-    console.log("store selected", store);
   }
 
   storeFormToggle() {

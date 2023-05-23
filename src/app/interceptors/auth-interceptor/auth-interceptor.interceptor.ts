@@ -19,9 +19,8 @@ export class AuthInterceptor implements HttpInterceptor {
     ): Observable<HttpEvent<unknown>> {
         let url = null;
         this.token = localStorage.getItem('token');
-        console.log('request', request);
         if (!request.url.includes("dashboard")) {
-             url = `http://localhost:5000/dev/${request.url}`
+            url = `http://localhost:5000/dev/${request.url}`
             //url = `https://cqlfqg2orc.execute-api.us-east-2.amazonaws.com/${request.url}`
         }
 

@@ -91,6 +91,11 @@ import { PresentationQuickGuidesComponent } from "./navigation/presentation/quic
 import { PresentationHeaderImageComponent } from "./navigation/presentation/header-image/header-image.component";
 import { SimpleEmailBlastComponent } from "./navigation/email-blast/simple-email/simple-email.component";
 import { NgxDropzoneModule } from "ngx-dropzone";
+import { ProductMainCategoriesComponent } from "./navigation/product-categories/product-main-categories/product-main-categories.component";
+import { MatBadgeModule } from '@angular/material/badge';
+import { NgxPaginationModule } from "ngx-pagination";
+import { ProductSubCategoriesComponent } from "./navigation/product-categories/product-sub-categories/product-sub-categories.component";
+import { ScrollingModule } from "@angular/cdk/scrolling";
 
 @NgModule({
   declarations: [
@@ -150,7 +155,9 @@ import { NgxDropzoneModule } from "ngx-dropzone";
     PresentationSiteColorsComponent,
     PresentationQuickGuidesComponent,
     PresentationHeaderImageComponent,
-    SimpleEmailBlastComponent
+    SimpleEmailBlastComponent,
+    ProductMainCategoriesComponent,
+    ProductSubCategoriesComponent
   ],
   imports: [
     RouterModule.forChild(storeRoutes),
@@ -188,7 +195,10 @@ import { NgxDropzoneModule } from "ngx-dropzone";
     MatChipsModule,
     MatAutocompleteModule,
     MatSlideToggleModule,
-    NgxDropzoneModule
+    NgxDropzoneModule,
+    MatBadgeModule,
+    NgxPaginationModule,
+    ScrollingModule
   ],
   entryComponents: [ConfirmationDialogComponent],
 })

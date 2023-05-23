@@ -1,4 +1,5 @@
-<div class="row py-2 overflow-auto">
+<div class="row py-2 overflow-auto w-full"
+    *ngIf="!_storeManagerService.isEditMainCategory && !_storeManagerService.isEditSubCategory">
     <div class="col-12">
         <mat-button-toggle-group #group="matButtonToggleGroup" [value]="mainScreen"
             (change)="calledScreen(group.value)">
@@ -8,12 +9,14 @@
         </mat-button-toggle-group>
     </div>
 </div>
-<ngx-skeleton-loader count="8" appearance="line" animation="pulse" *ngIf="dataSourceLoading">
+<ngx-skeleton-loader count="8" appearance="line" animation="pulse"
+    *ngIf="dataSourceLoading && !isEditMainCategory && !_storeManagerService.isEditSubCategory">
 </ngx-skeleton-loader>
-<div *ngIf="!dataSourceLoading">
+<div *ngIf="!dataSourceLoading" class="w-full">
     <div *ngIf="!isLoading">
-        <fuse-card class="rounded-2xl shadow bg-card flex pb-10">
-            <div class="row" style="width: -webkit-fill-available;" *ngIf="mainScreen=='Categories'">
+        <fuse-card class="rounded-2xl shadow bg-card flex pb-10"
+            *ngIf="!_storeManagerService.isEditMainCategory && !_storeManagerService.isEditSubCategory">
+            <div class="row w-full" style="width: -webkit-fill-available;" *ngIf="mainScreen=='Categories'">
                 <div class="col-12">
                     <div class="p-6 sm:p-8 lg:p-10 w-full">
                         <div class="text-2xl font-bold">
@@ -36,7 +39,8 @@
                                         *matHeaderCellDef>
                                         CATEGORY
                                     </th>
-                                    <td mat-cell *matCellDef="let element"> {{ element.RowNumber }}. {{
+                                    <td mat-cell *matCellDef="let element" (click)="toggleEditMainCategory(element)"> {{
+                                        element.RowNumber }}. {{
                                         element.categoryName }}</td>
                                 </ng-container>
 
@@ -46,7 +50,8 @@
                                         mat-header-cell *matHeaderCellDef>
                                         RECOMMENDED
                                     </th>
-                                    <td mat-cell *matCellDef="let element" class="text-center">
+                                    <td mat-cell *matCellDef="let element" class="text-center"
+                                        (click)="toggleEditMainCategory(element)">
                                         <mat-icon class="text-green-400 icon-size-5" *ngIf="element.recommended"
                                             [svgIcon]="'heroicons_solid:check'"></mat-icon>
                                         <mat-icon class="text-gray-400 icon-size-5" *ngIf="!element.recommended"
@@ -61,7 +66,8 @@
                                         mat-header-cell *matHeaderCellDef>
                                         BEST SELLER
                                     </th>
-                                    <td mat-cell *matCellDef="let element" class="text-center">
+                                    <td mat-cell *matCellDef="let element" class="text-center"
+                                        (click)="toggleEditMainCategory(element)">
                                         <mat-icon class="text-green-400 icon-size-5" *ngIf="element.bestSeller"
                                             [svgIcon]="'heroicons_solid:check'"></mat-icon>
                                         <mat-icon class="text-gray-400 icon-size-5" *ngIf="!element.bestSeller"
@@ -76,7 +82,8 @@
                                         mat-header-cell *matHeaderCellDef>
                                         TOP RATED
                                     </th>
-                                    <td mat-cell *matCellDef="let element" class="text-center">
+                                    <td mat-cell *matCellDef="let element" class="text-center"
+                                        (click)="toggleEditMainCategory(element)">
                                         <mat-icon class="text-green-400 icon-size-5" *ngIf="element.topRated"
                                             [svgIcon]="'heroicons_solid:check'"></mat-icon>
                                         <mat-icon class="text-gray-400 icon-size-5" *ngIf="!element.topRated"
@@ -122,7 +129,8 @@
                                             <div class="p-5" *ngIf="!subCategoriesLoader && subCategories.length">
                                                 <div class="row pb-1 border-b-1"
                                                     *ngFor="let item of subCategories; let last = last">
-                                                    <div class="col-6">
+                                                    <div class="col-6 cursor-pointer"
+                                                        (click)="toggleEditSubCategory(item)">
                                                         {{item.subCategoryName}}
                                                     </div>
                                                     <div class="col-3 text-center">
@@ -185,7 +193,7 @@
                     </ng-template>
                 </div>
             </div>
-            <div class="row" *ngIf="mainScreen == 'Online Status'">
+            <div class="row w-full" *ngIf="mainScreen == 'Online Status'">
                 <div class="col-12">
                     <div class="p-6 sm:p-8 lg:p-10 w-full">
                         <div class="text-2xl font-bold">
@@ -208,7 +216,7 @@
                     </button>
                 </div>
             </div>
-            <div class="row" *ngIf="mainScreen == 'Display Order'">
+            <div class="row w-full" *ngIf="mainScreen == 'Display Order'">
                 <div class="col-12">
                     <div class="p-6 sm:p-8 lg:p-10 w-full">
                         <div class="text-2xl font-bold">
@@ -236,7 +244,7 @@
                     </button>
                 </div>
             </div>
-            <div class="row" *ngIf="mainScreen == 'Add New Category'">
+            <div class="row w-full" *ngIf="mainScreen == 'Add New Category'">
                 <div class="col-12">
                     <div class="p-6 sm:p-8 lg:p-10 w-full">
                         <div class="text-2xl font-bold">
@@ -300,5 +308,12 @@
                 </div>
             </div>
         </fuse-card>
+        <div class="w-full" *ngIf="_storeManagerService.isEditMainCategory">
+            <app-product-main-categories [mainCatData]="mainCatData"></app-product-main-categories>
+        </div>
+        <div class="w-full" *ngIf="_storeManagerService.isEditSubCategory">
+            <app-product-sub-categories [subCatData]="subCatData" [subCategories]="subCategories"
+                [dataSource]="dataSource"></app-product-sub-categories>
+        </div>
     </div>
 </div>

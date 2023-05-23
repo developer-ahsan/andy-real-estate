@@ -135,7 +135,6 @@ export class UserLocationsComponent implements OnInit, OnDestroy {
   }
 
   addLocation() {
-    console.log("locationToAdd", this.locationToAdd);
     this.updateLoader = true;
     let payload = {
       user_location: true,
@@ -144,7 +143,6 @@ export class UserLocationsComponent implements OnInit, OnDestroy {
     }
     this._customerService.PostApiData(payload)
       .subscribe((response: any) => {
-        console.log("response ", response)
         this.showFlashMessage(
           response["success"] === true ?
             'success' :

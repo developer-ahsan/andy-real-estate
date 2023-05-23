@@ -150,6 +150,43 @@
             </table>
           </div>
         </div>
+        <div class="col-12">
+          <div class="px-6 sm:px-8 lg:px-10 w-full">
+            <mat-form-field class="min-w-100">
+              <mat-label>Filter</mat-label>
+              <mat-select matInput [(ngModel)]="ngProdFilter">
+                <mat-option [value]="'all'" (click)="getMarginProducts(1)">All</mat-option>
+                <mat-option [value]="'hardgoods'" (click)="getMarginProducts(1)">Hardgoods</mat-option>
+                <mat-option [value]="'apparel'" (click)="getMarginProducts(1)">Apparel</mat-option>
+              </mat-select>
+            </mat-form-field>
+            <div *ngIf="marginProdsLoader">
+              <ngx-skeleton-loader count="8" appearance="line" animation="pulse">
+              </ngx-skeleton-loader>
+            </div>
+            <div class="h-60 overflow-y-auto border p-2" *ngIf="!marginProdsLoader">
+              <table class="table table-striped">
+                <thead>
+                  <tr>
+                    <th width="30%">Vendor</th>
+                    <th width="70%">Product</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr *ngFor="let item of marginProducts">
+                    <td>{{item.vendor}}</td>
+                    <td>{{item.product}}</td>
+                  </tr>
+                </tbody>
+              </table>
+              <div class="flex justify-center cursor-pointer" *ngIf="marginTotalProds > marginProducts.length">
+                <p *ngIf="!marginLoadMore" (click)="marginNextProducts()">Load More</p>
+                <mat-progress-spinner *ngIf="marginLoadMore" [diameter]="24" [mode]="'indeterminate'">
+                </mat-progress-spinner>
+              </div>
+            </div>
+          </div>
+        </div>
         <div class="col-12 my-2">
           <div class="p-6 sm:p-8 lg:p-10 w-full">
             <p class="text-lg text-secondary font-bold">Margin Update</p>

@@ -231,7 +231,6 @@ export class GenerateReportComponent implements OnInit {
             this.report_type = 'Range Sales';
         }
         this._flpsService.getFlpsData(this.reportParams).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
-            console.log(res);
             if (res["data"].length == 0) {
                 this._flpsService.snackBar('No orders have been found in the specified range that match your criteria.');
             }

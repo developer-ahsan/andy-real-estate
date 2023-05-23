@@ -110,7 +110,6 @@ export class ProductDetailsComponent implements OnInit, OnDestroy {
         this.StoreProduct = false;
         if (this._inventoryService.selectedIndex == 'Store Versions') {
           this.selectedIndex = "Store Versions";
-          console.log(this.selectedIndex)
         } else if (this._inventoryService.selectedIndex == 'Warehouse Options') {
           this.selectedIndex = "Warehouse Options";
         } else {

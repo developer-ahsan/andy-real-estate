@@ -185,7 +185,11 @@
                             Users
                           </th>
                           <td mat-cell *matCellDef="let element">
-                            <span *ngFor="let item of element.users">{{item}}<br></span>
+                            <ng-multiselect-dropdown [(ngModel)]="element.selectedItems"
+                              [ngModelOptions]="{standalone: true}" [placeholder]="'Select User'"
+                              [settings]=" dropdownSettings" [data]="usersDropDown">
+                            </ng-multiselect-dropdown>
+                            <!-- <span *ngFor="let item of element.users">{{item}}<br></span> -->
                           </td>
                         </ng-container>
                         <ng-container matColumnDef="royalities">
@@ -227,6 +231,12 @@
                             </button>
                             <button (click)="isDefaultGroupEditToggle(element)" [matTooltip]="'Edit'">
                               <mat-icon svgIcon="mat_outline:edit"></mat-icon>
+                            </button>
+                            <button (click)="updateDefaultToggleData(element)" [matTooltip]="'Update'">
+                              <mat-progress-spinner *ngIf="element.updateLoader" [diameter]="24"
+                                [mode]="'indeterminate'">
+                              </mat-progress-spinner>
+                              <mat-icon svgIcon="mat_outline:check" *ngIf="!element.updateLoader"></mat-icon>
                             </button>
                           </td>
                         </ng-container>

@@ -1,0 +1,771 @@
+<div class="row py-2 overflow-auto w-full">
+    <div class="col-12">
+        <mat-button-toggle-group #group="matButtonToggleGroup" [value]="mainScreen"
+            (change)="calledScreen(group.value)">
+            <mat-button-toggle *ngFor="let buttonValue of screens" value="{{buttonValue}}">
+                {{ buttonValue }}
+            </mat-button-toggle>
+        </mat-button-toggle-group>
+    </div>
+</div>
+<!-- <ngx-skeleton-loader count="8" appearance="line" animation="pulse" *ngIf="dataSourceLoading">
+</ngx-skeleton-loader> -->
+<div class="rounded-2xl w-full shadow bg-card p-10">
+    <div class="flex justify-between align-items-center w-full">
+        <p class="font-bold text-xl">{{mainScreen}}</p>
+        <button class="min-w-30" mat-button mat-stroked-button (click)="backToMainScreen()">Back to list</button>
+    </div>
+    <!-- Edit Category -->
+    <div *ngIf="mainScreen == 'Edit Category'" class="w-full">
+        <div class="row" [formGroup]="updateCatForm">
+            <div class="col-12 col-md-6">
+                <mat-label>
+                    <p>Name (25)*</p>
+                </mat-label>
+                <mat-form-field class="w-full">
+                    <input matInput maxlength="25" formControlName="subCategoryName">
+                </mat-form-field>
+            </div>
+            <div class="col-12 col-md-6">
+                <mat-label>
+                    <div class="flex">
+                        <p>Permalink (25)*</p>
+                        <mat-icon style="width: 14px; height: 14px;min-height: 18px;margin-top:1px"
+                            svgIcon="heroicons_solid:question-mark-circle"
+                            [matTooltip]="'The permalink is the slug that will appear in the URL for this category.  Search engines place a lot of value and weight on this slug, so make sure the slug contains keywords that are specific to the category.  Do not make the slug too long, and separate any words by dashes.'">
+                        </mat-icon>
+                    </div>
+                </mat-label>
+                <mat-form-field class="w-full">
+                    <input matInput maxlength="300" formControlName="subCategoryName">
+                </mat-form-field>
+            </div>
+            <div class="col-12 col-md-6">
+                <mat-label>
+                    <div class="flex">
+                        <p>Description (1000)*</p>
+                        <mat-icon style="width: 14px; height: 14px;min-height: 18px;margin-top:1px"
+                            svgIcon="heroicons_solid:question-mark-circle"
+                            [matTooltip]="'The description will show as a paragraph at the top of the main category page.  Use this field to provide information or details about the category.'">
+                        </mat-icon>
+                    </div>
+                </mat-label>
+                <mat-form-field class="w-full">
+                    <textarea matInput maxlength="1000" formControlName="subCategoryDesc"></textarea>
+                </mat-form-field>
+            </div>
+            <div class="col-12 col-md-6">
+                <mat-label>
+                    <div class="flex">
+                        <p>Meta Description (300)*</p>
+                        <mat-icon style="width: 14px; height: 14px;min-height: 18px;margin-top:1px"
+                            svgIcon="heroicons_solid:question-mark-circle"
+                            [matTooltip]="'The meta description is what will appear in the HTML meta description tag.  Search engines will crawl and pick up this information, and contributes heavily to SEO value.  Please be very deliberate about what you put in this field, and follow SEO best practices.'">
+                        </mat-icon>
+                    </div>
+                </mat-label>
+                <mat-form-field class="w-full">
+                    <textarea matInput maxlength="300" formControlName="metaDesc"></textarea>
+                </mat-form-field>
+            </div>
+            <div class="col-12 col-md-6">
+                <mat-label>
+                    <div class="flex">
+                        <p>Browser title (180)</p>
+                        <mat-icon style="width: 14px; height: 14px;min-height: 18px;margin-top:1px"
+                            svgIcon="heroicons_solid:question-mark-circle"
+                            [matTooltip]="'This field lets you define what the browser title will be for this category.  This will be pulled in to the HTML title tag for this category, and will be pulled by search engines as the main title link for search results.'">
+                        </mat-icon>
+                    </div>
+                </mat-label>
+                <mat-form-field class="w-full">
+                    <input matInput maxlength="180" formControlName="browserTitle">
+                </mat-form-field>
+            </div>
+            <div class="col-12 col-md-6">
+                <mat-label>
+                    <div class="flex">
+                        <p>Category</p>
+                        <mat-icon style="width: 14px; height: 14px;min-height: 18px;margin-top:1px"
+                            svgIcon="heroicons_solid:question-mark-circle"
+                            [matTooltip]="'Setting this option to no will not allow any items in this category to be pulled in to the home page scrollers.'">
+                        </mat-icon>
+                    </div>
+                </mat-label>
+                <mat-form-field class="w-full">
+                    <mat-select formControlName="category_id">
+                        <mat-option [value]="item.pk_categoryID"
+                            *ngFor="let item of dataSource">{{item.categoryName}}</mat-option>
+                    </mat-select>
+                </mat-form-field>
+            </div>
+            <div class="col-12 flex justify-end">
+                <button class="min-w-30 mr-1" mat-button mat-stroked-button [disabled]="subCatData.deleteLoader"
+                    (click)="deleteCategory()">
+                    <span *ngIf="!subCatData.deleteLoader">Remove Category</span>
+                    <mat-progress-spinner *ngIf="subCatData.deleteLoader" [diameter]="24" [mode]="'indeterminate'">
+                    </mat-progress-spinner>
+                </button>
+                <button class="min-w-30" mat-button mat-stroked-button [disabled]="isUpdateCatLoader"
+                    (click)="updateCategory()">
+                    <span *ngIf="!isUpdateCatLoader">Update Category</span>
+                    <mat-progress-spinner *ngIf="isUpdateCatLoader" [diameter]="24" [mode]="'indeterminate'">
+                    </mat-progress-spinner>
+                </button>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-12">
+                <p class="text-lg font-bold">Add Products</p>
+                <mat-form-field class="w-full">
+                    <input matInput placeholder="Search product" matTooltip="Search product" [matAutocomplete]="auto"
+                        [formControl]="searchCatProdCtrl">
+                    <mat-autocomplete class="w-full" #auto="matAutocomplete" (optionSelected)="onSelected($event)"
+                        [displayWith]="displayWith">
+                        <mat-option *ngIf="isSearchingCatProd" class="is-loading">Loading...</mat-option>
+                        <ng-container *ngIf="!isSearchingCatProd">
+                            <mat-option *ngFor="let item of allCatProds" [value]="item">
+                                <span>{{item.productName}}</span>
+                            </mat-option>
+                        </ng-container>
+                    </mat-autocomplete>
+                </mat-form-field>
+                <div class="my-2">
+                    <p class="flex align-items-center" *ngFor="let item of selectedProducts;let i=index">
+                        {{item.productName}}<mat-icon (click)="removeProduct(i)"
+                            class=" ml-1 text-gray-400 icon-size-5 cursor-pointer"
+                            [svgIcon]="'heroicons_solid:x'"></mat-icon></p>
+                </div>
+                <button class="min-w-30 my-2" mat-button mat-stroked-button [disabled]="isAddProductLoader"
+                    (click)="addSubCatProds()">
+                    <span *ngIf="!isAddProductLoader">Add Products</span>
+                    <mat-progress-spinner *ngIf="isAddProductLoader" [diameter]="24" [mode]="'indeterminate'">
+                    </mat-progress-spinner>
+                </button>
+            </div>
+        </div>
+        <div *ngIf="isProductLoader">
+            <ngx-skeleton-loader count="8" appearance="line" animation="pulse">
+            </ngx-skeleton-loader>
+        </div>
+        <div class="row" *ngIf="!isProductLoader">
+            <div class="col-12">
+                <table class="w-full table table-striped">
+                    <thead>
+                        <tr>
+                            <th>Select</th>
+                            <th>PID</th>
+                            <th>SPID</th>
+                            <th>Active</th>
+                            <th>Online</th>
+                            <th>Product</th>
+                            <th>Image</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr *ngFor="let item of productsList" class="my-1">
+                            <td>
+                                <mat-checkbox [(ngModel)]="item.select"></mat-checkbox>
+                            </td>
+                            <td>{{item.fk_productID}}</td>
+                            <td>{{item.pk_storeProductID}}</td>
+                            <td>
+                                <span class="text-green-500" *ngIf="item.blnActive">Active</span>
+                                <span class="text-red-500" *ngIf="!item.blnActive">Disable</span>
+                            </td>
+                            <td>
+                                <span class="text-green-500" *ngIf="item.blnStoreActive">Online</span>
+                                <span class="text-red-500" *ngIf="!item.blnStoreActive">Offline</span>
+                            </td>
+                            <td>{{item.productName}}</td>
+                            <td>
+                                <img src="https://assets.consolidus.com/globalAssets/Products/HiRes/{{item.pk_storeProductID}}.jpg"
+                                    style="width:30px; height:30px;">
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="flex justify-center my-2 col-12" *ngIf="totalProds > productsList.length">
+                <span *ngIf="!isProductLoaderMore" (click)="getNextProductDisplayData()" class="cursor-pointer">Load
+                    More</span>
+                <mat-progress-spinner *ngIf="isProductLoaderMore" [diameter]="24" [mode]="'indeterminate'">
+                </mat-progress-spinner>
+            </div>
+            <div class="col-12 mt-2">
+                <button class="min-w-30" mat-button mat-stroked-button [disabled]="subCatData.removeLoader"
+                    (click)="removeProducts()">
+                    <span *ngIf="!subCatData.removeLoader">Remove selected products</span>
+                    <mat-progress-spinner *ngIf="subCatData.removeLoader" [diameter]="24" [mode]="'indeterminate'">
+                    </mat-progress-spinner>
+                </button>
+            </div>
+        </div>
+    </div>
+    <!-- Display Order -->
+    <div *ngIf="mainScreen == 'Display Order'" class="w-full">
+        <div class="row">
+            <div class="col-12 col-md-3" *ngFor="let item of subCategories">
+                <mat-form-field class="w-full">
+                    <mat-label>{{item.subCategoryName}}</mat-label>
+                    <mat-select matInput [(ngModel)]="item.listOrder">
+                        <mat-option *ngFor="let item of subCategories;let i=index" [value]="i+1">{{i+1}}</mat-option>
+                    </mat-select>
+                </mat-form-field>
+            </div>
+            <div class="col-12">
+                <button class="min-w-30" mat-button mat-stroked-button [disabled]="subCatData.displayLoader"
+                    (click)="updateDisplayOrder()">
+                    <span *ngIf="!subCatData.displayLoader">Update</span>
+                    <mat-progress-spinner *ngIf="subCatData.displayLoader" [diameter]="24" [mode]="'indeterminate'">
+                    </mat-progress-spinner>
+                </button>
+            </div>
+        </div>
+    </div>
+    <!-- Online Status -->
+    <div *ngIf="mainScreen == 'Online Status'" class="w-full">
+        <div class="row">
+            <div class="col-12 col-md-3" *ngFor="let item of subCategories">
+                <mat-checkbox [(ngModel)]="item.blnActive">{{item.subCategoryName}}</mat-checkbox>
+            </div>
+            <div class="col-12">
+                <button class="min-w-30" mat-button mat-stroked-button [disabled]="subCatData.statusLoader"
+                    (click)="updateOnlineStatus()">
+                    <span *ngIf="!subCatData.statusLoader">Update</span>
+                    <mat-progress-spinner *ngIf="subCatData.statusLoader" [diameter]="24" [mode]="'indeterminate'">
+                    </mat-progress-spinner>
+                </button>
+            </div>
+        </div>
+    </div>
+    <!-- Product Display Order -->
+    <div *ngIf="mainScreen == 'Product Display Order'" class="w-full">
+        <div *ngIf="isProductDisplayLoader">
+            <ngx-skeleton-loader count="8" appearance="line" animation="pulse">
+            </ngx-skeleton-loader>
+        </div>
+        <div class="row" *ngIf="!isProductDisplayLoader">
+            <div class="col-12 col-md-4" *ngFor="let item of productsDisplayList">
+                <div class="flex justify-center">
+                    <img src="https://assets.consolidus.com/globalAssets/Products/Thumbnails/{{item.pk_storeProductID}}.jpg"
+                        class="w-40">
+                </div>
+                <p>({{item.fk_productID}}) - {{item.productName}} - {{item.productNumber}}</p>
+                <div class="flex justify-center">
+                    <input class="form-control w-30" [(ngModel)]="item.listOrder">
+                </div>
+            </div>
+            <div class="flex justify-center my-2 col-12" *ngIf="totalDisplayProds > productsDisplayList.length">
+                <span *ngIf="!isProductDisplayMoreLoader" (click)="getNextProductDisplayData()"
+                    class="cursor-pointer">Load
+                    More</span>
+                <mat-progress-spinner *ngIf="isProductDisplayMoreLoader" [diameter]="24" [mode]="'indeterminate'">
+                </mat-progress-spinner>
+            </div>
+            <div class="col-12 mt-2">
+                <button class="min-w-30" mat-button mat-stroked-button [disabled]="isProductDisplayUpdate"
+                    (click)="updateProductDisplayOrder()">
+                    <span *ngIf="!isProductDisplayUpdate">Update</span>
+                    <mat-progress-spinner *ngIf="isProductDisplayUpdate" [diameter]="24" [mode]="'indeterminate'">
+                    </mat-progress-spinner>
+                </button>
+            </div>
+        </div>
+    </div>
+    <!-- Keywords -->
+    <div *ngIf="mainScreen == 'Keywords'" class="w-full">
+        <div class="row">
+            <div class="col-12" *ngIf="!isKeywordLoader">
+                <p class="font-bold text-xl">Add a keyword</p>
+                <mat-form-field class="w-full">
+                    <input matInput [(ngModel)]="ngKeyword">
+                </mat-form-field>
+                <button class="min-w-30" mat-button mat-stroked-button [disabled]="isAddKeyword"
+                    (click)="addKeywords()">
+                    <span *ngIf="!isAddKeyword">Add</span>
+                    <mat-progress-spinner *ngIf="isAddKeyword" [diameter]="24" [mode]="'indeterminate'">
+                    </mat-progress-spinner>
+                </button>
+            </div>
+            <div class="col-12 mt-2">
+                <p class="font-bold text-xl">Current Keywords</p>
+                <div class="mt-2">
+                    <ngx-skeleton-loader count="8" appearance="line" animation="pulse" *ngIf="isKeywordLoader">
+                    </ngx-skeleton-loader>
+                    <fuse-alert [appearance]="'soft'" [type]="'warning'"
+                        *ngIf="!isKeywordLoader && keywordsList.length == 0">
+                        <mat-icon class="icon-size-5" fuseAlertIcon [svgIcon]="'heroicons_solid:lock-open'">
+                        </mat-icon>
+                        There are currently no keywords defined for category.
+                    </fuse-alert>
+                    <div class="row">
+                        <div class="col-12 col-md-3" *ngFor="let item of keywordsList">
+                            <div class="flex justify-between">
+                                <p>{{item.keyword}}</p>
+                                <mat-progress-spinner *ngIf="item.deleteLoader" [diameter]="24"
+                                    [mode]="'indeterminate'">
+                                </mat-progress-spinner>
+                                <mat-icon (click)="deleteKeyword(item)" *ngIf="!item.deleteLoader"
+                                    class="text-gray-400 icon-size-5 cursor-pointer"
+                                    [svgIcon]="'heroicons_solid:x'"></mat-icon>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Subcategory Feature Image -->
+    <div *ngIf="mainScreen == 'Subcategory Feature Image'" class="w-full">
+        <mat-button-toggle-group #group="matButtonToggleGroup" [value]="featureScreen"
+            (change)="calledFeatureScreen(group.value)">
+            <mat-button-toggle value="Current Images">
+                Current Images
+            </mat-button-toggle>
+            <mat-button-toggle value="Add New">
+                Add New
+            </mat-button-toggle>
+        </mat-button-toggle-group>
+        <div class="row" *ngIf="featureScreen=='Current Images'">
+            <div class="col-12 mt-2">
+                <ngx-skeleton-loader count="8" appearance="line" animation="pulse" *ngIf="isFeatureImageLoader">
+                </ngx-skeleton-loader>
+                <fuse-alert [appearance]="'soft'" [type]="'warning'"
+                    *ngIf="!isFeatureImageLoader && featureImages.length == 0">
+                    <mat-icon class="icon-size-5" fuseAlertIcon [svgIcon]="'heroicons_solid:lock-open'">
+                    </mat-icon>
+                    There are currently no feature images defined for this category.
+                </fuse-alert>
+            </div>
+            <div *ngIf="!isEditFeatureImage" class="col-12">
+                <div class="row">
+                    <div class="col-12 col-md-3" *ngFor="let item of featureImages">
+                        <div class="text-center">
+                            <img class="w-60"
+                                src="https://assets.consolidus.com/globalAssets/Stores/subcategory/featureImages/{{item.fk_subCategoryID}}/{{item.pk_subCategoryFeatureImageID}}.jpg">
+                            <div class="flex">
+                                <button mat-button mat-stroked-button class="my-2 min-w-20 mr-2"
+                                    (click)="deleteFeatureImages(item)">
+                                    <span *ngIf="!item.deleteLoader">Remove</span>
+                                    <mat-progress-spinner *ngIf="item.deleteLoader" [diameter]="24"
+                                        [mode]="'indeterminate'">
+                                    </mat-progress-spinner>
+                                </button>
+                                <button mat-button mat-stroked-button class="my-2 min-w-20 mr-2"
+                                    (click)="editFeatureImage(item)">
+                                    <span>Edit</span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- Update Feature Image -->
+            <div *ngIf="isEditFeatureImage">
+                <div class="row" [formGroup]="updateFeatureForm">
+                    <div class="col-12 mt-2">
+                        <fuse-alert [appearance]="'soft'" [type]="'info'">
+                            <mat-icon class="icon-size-5" fuseAlertIcon [svgIcon]="'heroicons_solid:lock-open'">
+                            </mat-icon>
+                            Please note: the main text/header copy and the button copy are not required. If the button
+                            copy is
+                            left blank, the button will not show up at all on the feature image.
+                        </fuse-alert>
+                    </div>
+                    <div class="col-12 mt-2">
+                        <label>Select an image</label>
+                        <fuse-alert [appearance]="'soft'" [type]="'info'">
+                            <mat-icon class="icon-size-5" fuseAlertIcon [svgIcon]="'heroicons_solid:lock-open'">
+                            </mat-icon>
+                            Images must be 1500px W by 300px H. JPG format only.
+                            <br>
+                            Try to make the main content of the image be no wider than 768px, centered on the image. The
+                            image
+                            background should expand to the entire width of the image (1500px), but the main content of
+                            the
+                            feature image should be contained within a 768px box (this includes any main images and
+                            text).
+                            <br>
+                            <a href="https://admin.consolidus.com/ssadm/controller/view/system/images/feature-image-wireframe.jpg"
+                                target="_blank">Click here to see an example</a>
+                        </fuse-alert>
+                    </div>
+                    <div class="col-12 my-2">
+                        <input type="file" (change)="uploadImage($event)">
+                    </div>
+                    <div class="col-12">
+                        <mat-label>
+                            <div class="flex">
+                                <p>Main text/header copy</p>
+                                <mat-icon style="width: 14px; height: 14px;min-height: 18px;margin-top:1px"
+                                    svgIcon="heroicons_solid:question-mark-circle"
+                                    [matTooltip]="'This is the main text that will accompany the image.'">
+                                </mat-icon>
+                            </div>
+                        </mat-label>
+                        <mat-form-field class="w-full">
+                            <textarea matInput formControlName="headerCopy"></textarea>
+                        </mat-form-field>
+                    </div>
+                    <div class="col-12 col-md-6">
+                        <mat-label>
+                            <div class="flex">
+                                <p>Feature image link URL</p>
+                                <mat-icon style="width: 14px; height: 14px;min-height: 18px;margin-top:1px"
+                                    svgIcon="heroicons_solid:question-mark-circle"
+                                    [matTooltip]="'Specify a link for the entire feature image.  This will make the entire image clickable and will direct the user to the URL you specify.'">
+                                </mat-icon>
+                            </div>
+                        </mat-label>
+                        <mat-form-field class="w-full">
+                            <input matInput formControlName="buttonURL">
+                        </mat-form-field>
+                    </div>
+                    <div class="col-12 col-md-6">
+                        <mat-label>
+                            <div class="flex">
+                                <p>Main text/header text color</p>
+                                <mat-icon style="width: 14px; height: 14px;min-height: 18px;margin-top:1px"
+                                    svgIcon="heroicons_solid:question-mark-circle"
+                                    [matTooltip]="'This is the color of the main text'">
+                                </mat-icon>
+                            </div>
+                        </mat-label>
+                        <mat-form-field class="w-full">
+                            <input matInput formControlName="headerCopyColor">
+                        </mat-form-field>
+                    </div>
+                    <div class="col-12 col-md-6">
+                        <mat-label>
+                            <div class="flex">
+                                <p>Button copy</p>
+                                <mat-icon style="width: 14px; height: 14px;min-height: 18px;margin-top:1px"
+                                    svgIcon="heroicons_solid:question-mark-circle"
+                                    [matTooltip]="'This is the text for the main action button.  If you leave this blank, the button will not appear at all.'">
+                                </mat-icon>
+                            </div>
+                        </mat-label>
+                        <mat-form-field class="w-full">
+                            <input matInput formControlName="buttonCopy">
+                        </mat-form-field>
+                    </div>
+                    <div class="col-12 col-md-6">
+                        <mat-label>
+                            <div class="flex">
+                                <p>Button URL</p>
+                                <mat-icon style="width: 14px; height: 14px;min-height: 18px;margin-top:1px"
+                                    svgIcon="heroicons_solid:question-mark-circle"
+                                    [matTooltip]="'Enter a URL for the main action button.'">
+                                </mat-icon>
+                            </div>
+                        </mat-label>
+                        <mat-form-field class="w-full">
+                            <input matInput formControlName="buttonURL">
+                        </mat-form-field>
+                    </div>
+                    <div class="col-12 col-md-6">
+                        <mat-label>
+                            <div class="flex">
+                                <p>Button background color</p>
+                                <mat-icon style="width: 14px; height: 14px;min-height: 18px;margin-top:1px"
+                                    svgIcon="heroicons_solid:question-mark-circle"
+                                    [matTooltip]="'This determines the background color of the button.'">
+                                </mat-icon>
+                            </div>
+                        </mat-label>
+                        <mat-form-field class="w-full">
+                            <input matInput formControlName="buttonBackgroundColor">
+                        </mat-form-field>
+                    </div>
+                    <div class="col-12 col-md-6">
+                        <mat-label>
+                            <div class="flex">
+                                <p>Button text color</p>
+                                <mat-icon style="width: 14px; height: 14px;min-height: 18px;margin-top:1px"
+                                    svgIcon="heroicons_solid:question-mark-circle"
+                                    [matTooltip]="'This determines the color of the text on the button.'">
+                                </mat-icon>
+                            </div>
+                        </mat-label>
+                        <mat-form-field class="w-full">
+                            <input matInput formControlName="buttonColor">
+                        </mat-form-field>
+                    </div>
+                    <div class="col-12 col-md-6">
+                        <mat-label>
+                            <div class="flex">
+                                <p>Arrow color</p>
+                                <mat-icon style="width: 14px; height: 14px;min-height: 18px;margin-top:1px"
+                                    svgIcon="heroicons_solid:question-mark-circle"
+                                    [matTooltip]="'The color of the left and right arrows.'">
+                                </mat-icon>
+                            </div>
+                        </mat-label>
+                        <mat-form-field class="w-full">
+                            <input matInput formControlName="arrowColor">
+                        </mat-form-field>
+                    </div>
+                    <div class="col-12 col-md-6">
+                        <mat-label>
+                            <div class="flex">
+                                <p>Content alignment</p>
+                                <mat-icon style="width: 14px; height: 14px;min-height: 18px;margin-top:1px"
+                                    svgIcon="heroicons_solid:question-mark-circle"
+                                    [matTooltip]="'Align the header and button left, center, or right'">
+                                </mat-icon>
+                            </div>
+                        </mat-label>
+                        <mat-form-field class="w-full">
+                            <mat-select matInput formControlName="align">
+                                <mat-option [value]="0">Left</mat-option>
+                                <mat-option [value]="1">Center</mat-option>
+                                <mat-option [value]="2">Right</mat-option>
+                            </mat-select>
+                        </mat-form-field>
+                    </div>
+                    <div class="col-12 col-md-6">
+                        <mat-label>
+                            <div class="flex">
+                                <p>Display order</p>
+                                <mat-icon style="width: 14px; height: 14px;min-height: 18px;margin-top:1px"
+                                    svgIcon="heroicons_solid:question-mark-circle"
+                                    [matTooltip]="'This sets the order in which the images will be displayed when scrolling on the sites.'">
+                                </mat-icon>
+                            </div>
+                        </mat-label>
+                        <mat-form-field class="w-full">
+                            <input matInput formControlName="displayOrder">
+                        </mat-form-field>
+                    </div>
+                    <div class="col-12 col-md-6">
+                        <mat-label>
+                            <div class="flex">
+                                <p>Open link in new window</p>
+                                <mat-icon style="width: 14px; height: 14px;min-height: 18px;margin-top:1px"
+                                    svgIcon="heroicons_solid:question-mark-circle"
+                                    [matTooltip]="'Determines whether or not the provided link URL opens in a new window or not.  This applies to both the feature image link and the action button.'">
+                                </mat-icon>
+                            </div>
+                        </mat-label>
+                        <mat-form-field class="w-full">
+                            <mat-select matInput formControlName="blnNewWindow">
+                                <mat-option [value]="true">Yes</mat-option>
+                                <mat-option [value]="false">No</mat-option>
+                            </mat-select>
+                        </mat-form-field>
+                    </div>
+                </div>
+                <div class="flex justify-between">
+                    <button mat-button mat-stroked-button class="my-2 min-w-20 mr-2" (click)="closeEditFeatureImage()">
+                        <span>Cancel</span>
+                    </button>
+                    <button class="min-w-30 mb-2" (click)="updateFeatureImage()" mat-button mat-stroked-button
+                        [disabled]="isUpdateFeatureImageLoader">
+                        <mat-progress-spinner *ngIf="isUpdateFeatureImageLoader" [diameter]="24"
+                            [mode]="'indeterminate'">
+                        </mat-progress-spinner>
+                        <span *ngIf="!isUpdateFeatureImageLoader">Update</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+        <div class="row" *ngIf="featureScreen=='Add New'" [formGroup]="addFeatureForm">
+            <div class="col-12 mt-2">
+                <fuse-alert [appearance]="'soft'" [type]="'info'">
+                    <mat-icon class="icon-size-5" fuseAlertIcon [svgIcon]="'heroicons_solid:lock-open'">
+                    </mat-icon>
+                    Please note: the main text/header copy and the button copy are not required. If the button copy is
+                    left blank, the button will not show up at all on the feature image.
+                </fuse-alert>
+            </div>
+            <div class="col-12 mt-2">
+                <label>Select an image</label>
+                <fuse-alert [appearance]="'soft'" [type]="'info'">
+                    <mat-icon class="icon-size-5" fuseAlertIcon [svgIcon]="'heroicons_solid:lock-open'">
+                    </mat-icon>
+                    Images must be 1500px W by 300px H. JPG format only.
+                    <br>
+                    Try to make the main content of the image be no wider than 768px, centered on the image. The image
+                    background should expand to the entire width of the image (1500px), but the main content of the
+                    feature image should be contained within a 768px box (this includes any main images and text).
+                    <br>
+                    <a href="https://admin.consolidus.com/ssadm/controller/view/system/images/feature-image-wireframe.jpg"
+                        target="_blank">Click here to see an example</a>
+                </fuse-alert>
+            </div>
+            <div class="col-12 my-2">
+                <input type="file" (change)="uploadImage($event)">
+            </div>
+            <div class="col-12">
+                <mat-label>
+                    <div class="flex">
+                        <p>Main text/header copy</p>
+                        <mat-icon style="width: 14px; height: 14px;min-height: 18px;margin-top:1px"
+                            svgIcon="heroicons_solid:question-mark-circle"
+                            [matTooltip]="'This is the main text that will accompany the image.'">
+                        </mat-icon>
+                    </div>
+                </mat-label>
+                <mat-form-field class="w-full">
+                    <textarea matInput formControlName="headerCopy"></textarea>
+                </mat-form-field>
+            </div>
+            <div class="col-12 col-md-6">
+                <mat-label>
+                    <div class="flex">
+                        <p>Feature image link URL</p>
+                        <mat-icon style="width: 14px; height: 14px;min-height: 18px;margin-top:1px"
+                            svgIcon="heroicons_solid:question-mark-circle"
+                            [matTooltip]="'Specify a link for the entire feature image.  This will make the entire image clickable and will direct the user to the URL you specify.'">
+                        </mat-icon>
+                    </div>
+                </mat-label>
+                <mat-form-field class="w-full">
+                    <input matInput formControlName="buttonURL">
+                </mat-form-field>
+            </div>
+            <div class="col-12 col-md-6">
+                <mat-label>
+                    <div class="flex">
+                        <p>Main text/header text color</p>
+                        <mat-icon style="width: 14px; height: 14px;min-height: 18px;margin-top:1px"
+                            svgIcon="heroicons_solid:question-mark-circle"
+                            [matTooltip]="'This is the color of the main text'">
+                        </mat-icon>
+                    </div>
+                </mat-label>
+                <mat-form-field class="w-full">
+                    <input matInput formControlName="headerCopyColor">
+                </mat-form-field>
+            </div>
+            <div class="col-12 col-md-6">
+                <mat-label>
+                    <div class="flex">
+                        <p>Button copy</p>
+                        <mat-icon style="width: 14px; height: 14px;min-height: 18px;margin-top:1px"
+                            svgIcon="heroicons_solid:question-mark-circle"
+                            [matTooltip]="'This is the text for the main action button.  If you leave this blank, the button will not appear at all.'">
+                        </mat-icon>
+                    </div>
+                </mat-label>
+                <mat-form-field class="w-full">
+                    <input matInput formControlName="buttonCopy">
+                </mat-form-field>
+            </div>
+            <div class="col-12 col-md-6">
+                <mat-label>
+                    <div class="flex">
+                        <p>Button URL</p>
+                        <mat-icon style="width: 14px; height: 14px;min-height: 18px;margin-top:1px"
+                            svgIcon="heroicons_solid:question-mark-circle"
+                            [matTooltip]="'Enter a URL for the main action button.'">
+                        </mat-icon>
+                    </div>
+                </mat-label>
+                <mat-form-field class="w-full">
+                    <input matInput formControlName="buttonURL">
+                </mat-form-field>
+            </div>
+            <div class="col-12 col-md-6">
+                <mat-label>
+                    <div class="flex">
+                        <p>Button background color</p>
+                        <mat-icon style="width: 14px; height: 14px;min-height: 18px;margin-top:1px"
+                            svgIcon="heroicons_solid:question-mark-circle"
+                            [matTooltip]="'This determines the background color of the button.'">
+                        </mat-icon>
+                    </div>
+                </mat-label>
+                <mat-form-field class="w-full">
+                    <input matInput formControlName="buttonBackgroundColor">
+                </mat-form-field>
+            </div>
+            <div class="col-12 col-md-6">
+                <mat-label>
+                    <div class="flex">
+                        <p>Button text color</p>
+                        <mat-icon style="width: 14px; height: 14px;min-height: 18px;margin-top:1px"
+                            svgIcon="heroicons_solid:question-mark-circle"
+                            [matTooltip]="'This determines the color of the text on the button.'">
+                        </mat-icon>
+                    </div>
+                </mat-label>
+                <mat-form-field class="w-full">
+                    <input matInput formControlName="buttonColor">
+                </mat-form-field>
+            </div>
+            <div class="col-12 col-md-6">
+                <mat-label>
+                    <div class="flex">
+                        <p>Arrow color</p>
+                        <mat-icon style="width: 14px; height: 14px;min-height: 18px;margin-top:1px"
+                            svgIcon="heroicons_solid:question-mark-circle"
+                            [matTooltip]="'The color of the left and right arrows.'">
+                        </mat-icon>
+                    </div>
+                </mat-label>
+                <mat-form-field class="w-full">
+                    <input matInput formControlName="arrowColor">
+                </mat-form-field>
+            </div>
+            <div class="col-12 col-md-6">
+                <mat-label>
+                    <div class="flex">
+                        <p>Content alignment</p>
+                        <mat-icon style="width: 14px; height: 14px;min-height: 18px;margin-top:1px"
+                            svgIcon="heroicons_solid:question-mark-circle"
+                            [matTooltip]="'Align the header and button left, center, or right'">
+                        </mat-icon>
+                    </div>
+                </mat-label>
+                <mat-form-field class="w-full">
+                    <mat-select matInput formControlName="align">
+                        <mat-option [value]="0">Left</mat-option>
+                        <mat-option [value]="1">Center</mat-option>
+                        <mat-option [value]="2">Right</mat-option>
+                    </mat-select>
+                </mat-form-field>
+            </div>
+            <div class="col-12 col-md-6">
+                <mat-label>
+                    <div class="flex">
+                        <p>Display order</p>
+                        <mat-icon style="width: 14px; height: 14px;min-height: 18px;margin-top:1px"
+                            svgIcon="heroicons_solid:question-mark-circle"
+                            [matTooltip]="'This sets the order in which the images will be displayed when scrolling on the sites.'">
+                        </mat-icon>
+                    </div>
+                </mat-label>
+                <mat-form-field class="w-full">
+                    <input matInput formControlName="displayOrder">
+                </mat-form-field>
+            </div>
+            <div class="col-12 col-md-6">
+                <mat-label>
+                    <div class="flex">
+                        <p>Open link in new window</p>
+                        <mat-icon style="width: 14px; height: 14px;min-height: 18px;margin-top:1px"
+                            svgIcon="heroicons_solid:question-mark-circle"
+                            [matTooltip]="'Determines whether or not the provided link URL opens in a new window or not.  This applies to both the feature image link and the action button.'">
+                        </mat-icon>
+                    </div>
+                </mat-label>
+                <mat-form-field class="w-full">
+                    <mat-select matInput formControlName="blnNewWindow">
+                        <mat-option [value]="true">Yes</mat-option>
+                        <mat-option [value]="false">No</mat-option>
+                    </mat-select>
+                </mat-form-field>
+            </div>
+            <div class="col-12 text-right">
+                <button class="min-w-30 mb-2" (click)="addFeatureImage()" mat-button mat-stroked-button
+                    [disabled]="isAddFeatureLoader">
+                    <mat-progress-spinner *ngIf="isAddFeatureLoader" [diameter]="24" [mode]="'indeterminate'">
+                    </mat-progress-spinner>
+                    <span *ngIf="!isAddFeatureLoader">Add feature image</span>
+                </button>
+            </div>
+        </div>
+    </div>
+</div>

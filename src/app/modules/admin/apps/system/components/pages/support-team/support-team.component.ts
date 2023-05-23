@@ -167,7 +167,7 @@ export class SupportTeamComponent implements OnInit, OnDestroy {
       this._systemService.snackBar('Something went wrong');
     })
   }
-  // Delete Memeber
+  // Delete Member
   deleteMemeber(item) {
     item.delLoader = true;
     let payload: DeleteTeamMember = {
@@ -235,7 +235,7 @@ export class SupportTeamComponent implements OnInit, OnDestroy {
       this._systemService.snackBar('Something went wrong');
     })
   }
-  // Memeber Feature
+  // Member Feature
   toggleMemberFeature() {
     this.teamMemberFeature = !this.teamMemberFeature;
   }

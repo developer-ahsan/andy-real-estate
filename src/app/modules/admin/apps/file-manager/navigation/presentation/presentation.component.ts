@@ -20,6 +20,8 @@ import { FileManagerService } from "../../store-manager.service";
 import { environment } from "environments/environment";
 import moment from "moment";
 import { MatSnackBar } from "@angular/material/snack-bar";
+import { LogoBankNotesUpdate } from "./presentation.types";
+import { RemoveStoreLogoBank, addStoreLogoBank, updateStoreLogoBank } from "../../stores.types";
 @Component({
   selector: "app-presentation",
   templateUrl: "./presentation.component.html",
@@ -160,7 +162,18 @@ export class PresentationComponent implements OnInit, OnDestroy {
   productBuilderLoader: boolean = false;
   productBuilderMsg: boolean = false;
 
-
+  settings: any;
+  isLogoBankNotesLoader: boolean = false;
+  addLogoBankForm: FormGroup;
+  isAddLogoBankLoader: boolean = false;
+  logoBankImageValue: any;
+  logoBanks: any = [];
+  logoBanksLoader: boolean = false;
+  logoBanksTotal = 0;
+  logoBanksPage = 1;
+  logoBanksLoadMore: boolean = false;
+  ngLogoBank = 3;
+  ngLogoKeyword = '';
   constructor(
     private _storeManagerService: FileManagerService,
     private _changeDetectorRef: ChangeDetectorRef,
@@ -180,6 +193,7 @@ export class PresentationComponent implements OnInit, OnDestroy {
         this.initialize();
         this._storeManagerService.settings$.pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
           if (res) {
+            this.settings = res["data"][0];
             this.ngBlnColorHeader = res["data"][0].blnColorHeaders;
           }
         })
@@ -231,6 +245,13 @@ export class PresentationComponent implements OnInit, OnDestroy {
     });
     this.teamForm = this.formBuilder.group({
       memberDetails: this.formBuilder.array([]),
+    });
+    this.addLogoBankForm = new FormGroup({
+      name: new FormControl("", Validators.required),
+      description: new FormControl("", Validators.required),
+      displayOrder: new FormControl("", Validators.required),
+      bank_type: new FormControl(1, Validators.required),
+      color_list: new FormControl("", Validators.required),
     });
   }
   initSiteColorForm() {
@@ -343,6 +364,8 @@ export class PresentationComponent implements OnInit, OnDestroy {
         this.getScreenData("quickGuides_presentation", screenName);
       } else if (screenName == 'Header Image') {
         this.getScreenData("header_image_presentation", screenName);
+      } else if (screenName == 'Logo bank') {
+        this.getLogoBanks(1);
       }
     }
   }
@@ -904,5 +927,170 @@ export class PresentationComponent implements OnInit, OnDestroy {
       this.productBuilderLoader = false;
       this._changeDetectorRef.markForCheck();
     })
+  }
+  updateLogoBankNotes() {
+    let payload: LogoBankNotesUpdate = {
+      notes: this.settings.logoBankNotes,
+      fk_storeID: this.selectedStore.pk_storeID,
+      update_logo_bank_notes: true
+    }
+    this.isLogoBankNotesLoader = true;
+    this._storeManagerService.putStoresData(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+      if (res["success"]) {
+        this._storeManagerService.snackBar(res["message"]);
+      }
+      this.isLogoBankNotesLoader = false;
+      this._changeDetectorRef.markForCheck();
+    }, err => {
+      this.isLogoBankNotesLoader = false;
+      this._changeDetectorRef.markForCheck();
+    });
+  }
+  uploadLogoBank() {
+    if (!this.logoBankImageValue) {
+      this._storeManagerService.snackBar('Please select any file');
+      return;
+    }
+    const { name, description, displayOrder, bank_type, color_list } = this.addLogoBankForm.getRawValue();
+    let payload: addStoreLogoBank = {
+      store_id: this.selectedStore.pk_storeID,
+      name: name,
+      description: description,
+      displayOrder: displayOrder,
+      bank_type: bank_type,
+      file_extension: this.logoBankImageValue.type,
+      color_list: color_list,
+      add_store_logoBank: true
+    }
+    this.isAddLogoBankLoader = true;
+    this._storeManagerService.postStoresData(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+      if (res["success"]) {
+        this._storeManagerService.snackBar(res["message"]);
+        this.uploadMediaLogoBank(res["newFeatureImageID"]);
+        this.addLogoBankForm.reset();
+        this.getLogoBanks(1);
+      }
+      this.isAddLogoBankLoader = false;
+      this._changeDetectorRef.markForCheck();
+    }, err => {
+      this.isAddLogoBankLoader = false;
+      this._changeDetectorRef.markForCheck();
+    });
+  }
+  uploadLogoBankFile(event): void {
+    const file = event.target.files[0];
+    let type = '';
+    if (file.name.toLowerCase().endsWith('.eps')) {
+      type = 'eps';
+    } else if (file.type === 'application/postscript') {
+      type = 'ai';
+    } else {
+      this.logoBankImageValue = null;
+      this._storeManagerService.snackBar('Please select only AI or Eps file');
+      return;
+    }
+    const reader = new FileReader();
+    reader.readAsDataURL(file);
+
+    reader.onload = () => {
+      this.logoBankImageValue = {
+        imageUpload: reader.result,
+        type: type
+      };
+    };
+  };
+  uploadMediaLogoBank(id) {
+    const { imageUpload, type } = this.logoBankImageValue;
+    const base64 = imageUpload.split(",")[1];
+    const payload = {
+      file_upload: true,
+      image_file: base64,
+      image_path: `/globalAssets/Stores/LogoBank2/${this.selectedStore.pk_storeID}/${id}.${type}`
+    };
+
+    this._storeManagerService.addPresentationMedia(payload)
+      .subscribe((response) => {
+        // Mark for check
+        this.logoBankImageValue = null;
+        this._changeDetectorRef.markForCheck();
+      }, err => {
+        this.masHeadLoader = false;
+        // Mark for check
+        this._changeDetectorRef.markForCheck();
+      })
+  }
+  getLogoBanks(page) {
+    const { pk_storeID } = this.selectedStore;
+    let params = {
+      store_logo_banks: true,
+      store_id: pk_storeID,
+      page: page,
+      bank_type: this.ngLogoBank,
+      keyword: this.ngLogoKeyword
+    }
+    if (page == 1) {
+      this.logoBanksLoader = true;
+      this.logoBanks = [];
+    }
+    // Get the supplier products
+    this._storeManagerService.getStoresData(params)
+      .pipe(takeUntil(this._unsubscribeAll))
+      .subscribe((response: any) => {
+        this.logoBanks = this.logoBanks.concat(response["data"]);
+        this.logoBanksTotal = response["totalRecords"];
+        this.logoBanksLoader = false;
+        this.logoBanksLoadMore = false;
+        this._changeDetectorRef.markForCheck();
+      }, err => {
+        this.logoBanksLoader = false;
+        this.logoBanksLoadMore = false;
+        this._changeDetectorRef.markForCheck();
+      });
+  };
+  nextLogoBanks() {
+    this.logoBanksPage++;
+    this.logoBanksLoadMore = true;
+    this._changeDetectorRef.markForCheck();
+    this.getLogoBanks(this.logoBanksPage);
+  }
+  updateLogoBank(item) {
+    let payload: updateStoreLogoBank = {
+      name: item.name,
+      description: item.description,
+      color_list: item.color_list,
+      logo_bank_id: item.pk_logoBankID,
+      update_store_logoBank: true
+    }
+    item.updateLoader = true;
+    this._storeManagerService.putStoresData(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+      if (res["success"]) {
+        this._storeManagerService.snackBar(res["message"]);
+      }
+      item.updateLoader = false;
+      this._changeDetectorRef.markForCheck();
+    }, err => {
+      item.updateLoader = false;
+      this._changeDetectorRef.markForCheck();
+    });
+  }
+  removeLogoBank(item) {
+    let payload: RemoveStoreLogoBank = {
+      logo_bank_id: item.pk_logoBankID,
+      delete_store_logoBank: true
+    }
+    item.removeLoader = true;
+    this._storeManagerService.putStoresData(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+      if (res["success"]) {
+        this._storeManagerService.snackBar(res["message"]);
+        let index = this.logoBanks.findIndex(logo => logo.pk_logoBankID == item.pk_logoBankID);
+        this.logoBanks.splice(index, 1);
+        this.logoBanksTotal--;
+      }
+      item.removeLoader = false;
+      this._changeDetectorRef.markForCheck();
+    }, err => {
+      item.removeLoader = false;
+      this._changeDetectorRef.markForCheck();
+    });
   }
 }

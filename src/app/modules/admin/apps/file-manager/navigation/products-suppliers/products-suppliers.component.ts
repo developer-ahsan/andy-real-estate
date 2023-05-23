@@ -1,4 +1,4 @@
-import { Component, Input, Output, OnInit, EventEmitter, ChangeDetectorRef, OnDestroy } from '@angular/core';
+import { Component, Input, Output, OnInit, EventEmitter, ChangeDetectorRef, OnDestroy, ElementRef, ViewChild } from '@angular/core';
 import { Subject } from 'rxjs';
 import { FileManagerService } from 'app/modules/admin/apps/file-manager/store-manager.service';
 import { takeUntil } from 'rxjs/operators';
@@ -14,16 +14,21 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 })
 
 export class ProductsSuppliersComponent implements OnInit, OnDestroy {
+  @ViewChild('topScrollAnchor') topScroll: ElementRef;
+
   selectedStore: any;
   isLoading: boolean;
   @Output() isLoadingChange = new EventEmitter<boolean>();
   private _unsubscribeAll: Subject<any> = new Subject<any>();
   displayedColumns: string[] = ['pid', 'spid', 'sid', 'name', 'master', 'store'];
   dataSource = [];
+  totalRecords = 0;
+  totalProducts = 0;
   duplicatedDataSource = [];
   dataSourceTotalRecord: number;
   dataSourceLoading = false;
   page: number = 1;
+  itemsPerPage = 5;
 
   keywordSearch: string = "";
   isKeywordSearch: boolean = false;
@@ -43,10 +48,95 @@ export class ProductsSuppliersComponent implements OnInit, OnDestroy {
       .pipe(takeUntil(this._unsubscribeAll))
       .subscribe((items: any) => {
         this.selectedStore = items["data"][0];
-        this.dataSourceLoading = true;
-        this.getFirstCall(1);
+        this.isLoading = true;
+        this.getProductsBySuppliers(1);
       });
   }
+
+  getProductsBySuppliers(page) {
+    let params = {
+      supplier_products: true,
+      keyword: this.keywordSearch,
+      store_id: this.selectedStore.pk_storeID,
+      size: 5,
+      page: page
+    }
+    this._storeManagerService.getStoresData(params).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+      res["data"].forEach(element => {
+        element.products = [];
+        if (element.productDetails) {
+          let cat_List = element.productDetails.split(',,');
+          cat_List.forEach(product => {
+            let data = product.split(':');
+            element.products.push({
+              pid: data[0],
+              spid: data[1],
+              sid: data[2],
+              product: data[3],
+              master: data[4],
+              store: data[5]
+            })
+          });
+        }
+      });
+      this.dataSource = res["data"];
+      if (this.duplicatedDataSource.length == 0) {
+        this.duplicatedDataSource = res["data"];
+        this.dataSourceTotalRecord = res["totalRecords"];
+      }
+      this.totalRecords = res["totalRecords"];
+      this.totalProducts = res["totalRecords"];
+      this.isLoading = false;
+      this._changeDetectorRef.markForCheck();
+    }, err => {
+      this.isLoading = false;
+      this._changeDetectorRef.markForCheck();
+    });
+  }
+  getNextProductData(event) {
+    this.page = event;
+    this.isLoading = true;
+    this.topScroll.nativeElement.scrollIntoView({ behavior: 'smooth' });
+    this.getProductsBySuppliers(this.page);
+  };
+  getProductsSearchByKeyword() {
+    this.page = 1;
+    let params = {
+      supplier_products: true,
+      keyword: this.keywordSearch,
+      store_id: this.selectedStore.pk_storeID,
+      size: 5,
+      page: 1
+    }
+    this.isKeywordSearch = true;
+    this._storeManagerService.getStoresData(params).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+      res["data"].forEach(element => {
+        element.products = [];
+        if (element.productDetails) {
+          let cat_List = element.productDetails.split(',,');
+          cat_List.forEach(product => {
+            let data = product.split(':');
+            element.products.push({
+              pid: data[0],
+              spid: data[1],
+              sid: data[2],
+              product: data[3],
+              master: data[4],
+              store: data[5]
+            })
+          });
+        }
+      });
+      this.dataSource = res["data"];
+      this.totalRecords = res["totalRecords"];
+      this.isKeywordSearch = false;
+      this._changeDetectorRef.markForCheck();
+    }, err => {
+      this.isKeywordSearch = false;
+      this._changeDetectorRef.markForCheck();
+    });
+  }
+
   getFirstCall(page) {
     const { pk_storeID } = this.selectedStore;
 
@@ -113,6 +203,8 @@ export class ProductsSuppliersComponent implements OnInit, OnDestroy {
 
   resetSearch(): void {
     this.dataSource = this.duplicatedDataSource;
+    this.totalRecords = this.dataSourceTotalRecord;
+    this.page = 1;
     this.keywordSearch = "";
 
     // Mark for check
@@ -160,4 +252,5 @@ export class ProductsSuppliersComponent implements OnInit, OnDestroy {
     this._unsubscribeAll.complete();
   };
 }
+
 

@@ -38,6 +38,13 @@ export class MarginsComponent implements OnInit, OnDestroy {
   marginDetailsData: any;
   marginDetailForm: FormGroup;
 
+  ngProdFilter = 'all';
+  items = Array.from({ length: 100000 }).map((_, i) => `Item #${i}`);
+  marginProducts: any = [];
+  marginProdsLoader: boolean = false;
+  marginTotalProds = 0;
+  marginProdPage = 1;
+  marginLoadMore: boolean = false;
   constructor(
     private _storesManagerService: FileManagerService,
     private _changeDetectorRef: ChangeDetectorRef,
@@ -295,8 +302,8 @@ export class MarginsComponent implements OnInit, OnDestroy {
       margin5: (item.margin5 * 100).toFixed(2),
       margin6: (item.margin6 * 100).toFixed(2)
     });
-    console.log(item)
     this.isMarginDetails = true;
+    this.getMarginProducts(1);
     this._changeDetectorRef.markForCheck();
   }
   applyMargins(type) {
@@ -320,6 +327,67 @@ export class MarginsComponent implements OnInit, OnDestroy {
         margin6: print6
       });
     }
+  }
+  getMarginProducts(page) {
+    let margins = [];
+    let count = 0;
+    const { margin1, margin2, margin3, margin4, margin5, margin6 } = this.marginDetailsData;
+    const { pk_storeID } = this.selectedStore;
+    if (margin1) {
+      count = 1;
+      margins.push(margin1);
+    }
+    if (margin2) {
+      count = 2;
+      margins.push(margin2);
+    }
+    if (margin3) {
+      count = 3;
+      margins.push(margin3);
+    }
+    if (margin4) {
+      count = 4;
+      margins.push(margin4);
+    }
+    if (margin5) {
+      count = 5;
+      margins.push(margin5);
+    }
+    if (margin6) {
+      count = 6;
+      margins.push(margin6);
+    }
+    let params = {
+      margin_group: true,
+      store_id: pk_storeID,
+      page: page,
+      group_size: count,
+      margins: `${margins}`
+    }
+    if (page == 1) {
+      this.marginProdsLoader = true;
+      this.marginProducts = [];
+    }
+    // Get the supplier products
+    this._storesManagerService.getStoresData(params)
+      .pipe(takeUntil(this._unsubscribeAll))
+      .subscribe((response: any) => {
+        this.marginProducts = this.marginProducts.concat(response["data"]);
+        this.marginTotalProds = response["totalRecords"];
+        this.marginProdsLoader = false;
+        this.marginLoadMore = false;
+        this._changeDetectorRef.markForCheck();
+      }, err => {
+        this.marginProdsLoader = false;
+        this.marginLoadMore = false;
+        this._changeDetectorRef.markForCheck();
+      });
+  };
+  marginNextProducts() {
+    this.marginProdPage++;
+    this.marginLoadMore = true;
+    this._changeDetectorRef.markForCheck();
+    this.getMarginProducts(this.marginProdPage);
   }
   ngOnDestroy(): void {
     // Unsubscribe from all subscriptions

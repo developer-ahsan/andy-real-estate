@@ -99,6 +99,21 @@
                             [(ngModel)]="ngDescription"></textarea>
                     </mat-form-field>
                 </div>
+                <div class="col-6">
+                    <mat-label>Image (JPG,GIF,PNG,PDF): </mat-label>
+                    <ngx-dropzone [multiple]="false" accept="image/jpeg,image/jpg,image/png,image/gif,application/pdf"
+                        (change)="onSelect($event)">
+                        <ngx-dropzone-label>Choose Image</ngx-dropzone-label>
+                        <ngx-dropzone-preview *ngIf="file" [removable]="true" (removed)="onRemove()">
+                            <ngx-dropzone-label>{{ file.name }} ({{ file.type }})</ngx-dropzone-label>
+                        </ngx-dropzone-preview>
+                    </ngx-dropzone>
+                </div>
+                <div class="col-6">
+                    <img class="w-60"
+                        src="https://assets.consolidus.com/globalAssets/Companies/SizingCharts/{{chartData.pk_chartID}}.{{chartData.extension}}"
+                        alt="">
+                </div>
                 <div class="col-12 text-right">
                     <button [disabled]="isUpdateLoader" mat-stroked-button class="min-w-40 mr-2 mb-2"
                         (click)="updateSizeChart()">

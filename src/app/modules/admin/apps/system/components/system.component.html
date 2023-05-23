@@ -27,8 +27,7 @@
         <mat-drawer #drawer class="sub-sidenav bg-light" [mode]="drawerMode" [opened]="drawerOpened">
             <div *ngFor="let route of routes;let i = index">
                 <mat-expansion-panel class="bg-light" #panel [class.mat-elevation-z0]="true" dense
-                    *ngIf="route.children.length == 0" hideToggle (click)="clicked(route.title)"
-                    (opened)="doSomething()">
+                    *ngIf="route.children.length == 0" hideToggle (click)="clicked(route)" (opened)="doSomething()">
                     <mat-expansion-panel-header
                         [style.background-color]="route.title === selectedScreeen ? '#d4d7dd' : 'transparent'"
                         [ngClass]="route.title === selectedScreeen ? 'opacity-100' : 'opacity-80'">
@@ -49,7 +48,7 @@
                         <button style="padding: 15px;"
                             [style.background-color]="child.title === selectedScreeen ? '#d4d7dd' : 'transparent'"
                             [ngClass]="child.title === selectedScreeen ? 'opacity-100' : 'opacity-80'" mat-button
-                            class="w-full my-1 mr-2 justify-content-start" (click)="clicked(child.title)">
+                            class="w-full my-1 mr-2 justify-content-start" (click)="clicked(child)">
                             <mat-icon svgIcon="{{child.icon}}" class="icon-size-5 text-primary"></mat-icon>
                             <span style="font-size: 13px; font-weight: bold; margin-left: 10px;"> {{child.title}}
                             </span>
@@ -69,7 +68,7 @@
                             {{selectedScreeen}}
                         </div>
                     </div>
-                    <ng-template [ngIf]="selectedScreeen == 'Product Colors'">
+                    <!-- <ng-template [ngIf]="selectedScreeen == 'Product Colors'">
                         <app-product-colors [(isLoading)]="isLoading">
                         </app-product-colors>
                     </ng-template>
@@ -156,7 +155,8 @@
                     <ng-template [ngIf]="selectedScreeen == 'Permission Groups'">
                         <app-permissions-groups [(isLoading)]="isLoading">
                         </app-permissions-groups>
-                    </ng-template>
+                    </ng-template> -->
+                    <router-outlet></router-outlet>
                 </div>
             </div>
         </div>

@@ -55,6 +55,7 @@ export class NewVendorsComponent implements OnInit, OnDestroy {
       insideRepPhone: new FormControl(''),
       insideRepEmail: new FormControl(''),
       samplesContactEmail: new FormControl(''),
+      customerAccountNumber: new FormControl(''),
       companyType: new FormControl([1])
     });
   }
@@ -110,7 +111,7 @@ export class NewVendorsComponent implements OnInit, OnDestroy {
   }
   // Create New Company
   addNewCompany() {
-    const { companyName, address, city, zipCode, phone, fax, ASI, PPAI, artworkEmail, ordersEmail, websiteURL, outsideRep, insideRep, outsideRepPhone, outsideRepEmail, insideRepPhone, insideRepEmail, samplesContactEmail } = this.addCompanyForm.getRawValue();
+    const { companyName, address, city, zipCode, phone, fax, ASI, PPAI, artworkEmail, ordersEmail, websiteURL, outsideRep, insideRep, outsideRepPhone, outsideRepEmail, insideRepPhone, insideRepEmail, samplesContactEmail, customerAccountNumber } = this.addCompanyForm.getRawValue();
     if (companyName == '' || address == '' || city == '' || phone == '' || zipCode == '') {
       this._vendorService.snackBar('Please fill out the required fields');
       return;
@@ -126,7 +127,7 @@ export class NewVendorsComponent implements OnInit, OnDestroy {
       companyType.push(3);
     }
     let payload: AddCompany = {
-      companyName, address, city, zipCode, phone, fax, ASI, PPAI, artworkEmail, ordersEmail, websiteURL, outsideRep, insideRep, outsideRepPhone, outsideRepEmail, insideRepPhone, insideRepEmail, samplesContactEmail, companyType, state: this.selectedState.state, create_company: true
+      companyName, address, city, zipCode, phone, fax, ASI, PPAI, artworkEmail, ordersEmail, websiteURL, outsideRep, insideRep, outsideRepPhone, outsideRepEmail, insideRepPhone, insideRepEmail, samplesContactEmail, companyType, state: this.selectedState.state, customerAccountNumber, create_company: true
     }
     this.isAddLoader = true;
     this._vendorService.postVendorsData(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
