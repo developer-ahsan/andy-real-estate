@@ -148,8 +148,14 @@
                                 </thead>
                                 <tbody>
                                     <tr *ngFor="let product of category.products">
-                                        <td>{{product.spid}}</td>
-                                        <td>{{product.name}}</td>
+                                        <td>
+                                            <a
+                                                [routerLink]="['/apps/ecommerce/inventory/storeProduct',product.spid]">{{product.spid}}</a>
+                                        </td>
+                                        <td>
+                                            <a
+                                                [routerLink]="['/apps/ecommerce/inventory/storeProduct',product.spid]">{{product.name}}</a>
+                                        </td>
                                         <td>
                                             <div class="flex align-items-center" *ngIf="product.relation == 3">
                                                 <p>{{product.vendor}}</p>

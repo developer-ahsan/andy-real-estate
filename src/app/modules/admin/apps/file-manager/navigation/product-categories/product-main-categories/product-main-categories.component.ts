@@ -289,7 +289,7 @@ export class ProductMainCategoriesComponent implements OnInit, OnDestroy {
   // Remove Keyword
   deleteKeyword(item) {
     let payload: RemoveCategoryKeyword = {
-      keyword_id: this.mainCatData.pk_keywordID,
+      keyword_id: item.pk_keywordID,
       delete_category_keyword: true
     }
     item.deleteLoader = true;
