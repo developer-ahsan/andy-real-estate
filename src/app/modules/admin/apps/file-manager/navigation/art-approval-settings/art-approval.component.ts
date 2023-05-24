@@ -584,15 +584,12 @@ export class ArtApprovalComponent implements OnInit, OnDestroy {
           this.selectedGroup = item.pk_artApprovalGroupID;
         }
       })
-      if (!this.storeUsers) {
-        this.getUsersList();
-      } else {
-        this.storeUsersLoader = false;
-      }
-      if (this.isDefaultGroupData.length == 0) {
-        this.selectedGroupItem = this.approvalGroupList.filter(item => item.blnDefault == true)[0];
-        this.getContactGroups(1, 'get', this.selectedGroupItem.pk_artApprovalGroupID);
-      }
+      // if (!this.storeUsers) {
+      //   this.getUsersList();
+      // } else {
+      //   this.storeUsersLoader = false;
+      // }
+      this.getUsersList();
       this._changeDetectorRef.markForCheck();
     }, err => {
       this.storeUsersLoader = false;
@@ -615,6 +612,10 @@ export class ArtApprovalComponent implements OnInit, OnDestroy {
           item_text: element.firstName + ' ' + element.lastName
         })
       });
+      // if (this.isDefaultGroupData.length == 0) {
+      this.selectedGroupItem = this.approvalGroupList.filter(item => item.blnDefault == true)[0];
+      this.getContactGroups(1, 'get', this.selectedGroupItem.pk_artApprovalGroupID);
+      // }
       this._changeDetectorRef.markForCheck();
     }, err => {
       this.storeUsersLoader = false;
@@ -679,22 +680,20 @@ export class ArtApprovalComponent implements OnInit, OnDestroy {
           element.users = users;
         }
       });
-      setTimeout(() => {
-        if (this.usersDropDown.length > 0) {
-          res["data"].forEach(element => {
-            let users = element.fk_storeUserID.split(',');
-            users.forEach(user => {
-              this.usersDropDown.filter(item => {
-                if (item.item_id == user) {
-                  element.selectedItems.push({ item_id: item.item_id, item_text: item.item_text })
-                }
-              });
+      if (this.usersDropDown.length > 0) {
+        res["data"].forEach(element => {
+          let users = element.fk_storeUserID.split(',');
+          users.forEach(user => {
+            this.usersDropDown.filter(item => {
+              if (item.item_id == user) {
+                element.selectedItems.push({ item_id: item.item_id, item_text: item.item_text })
+              }
             });
           });
-        }
-        this.isDefaultGroupLoader = false;
-        this._changeDetectorRef.markForCheck();
-      }, 500);
+        });
+      }
+      this.isDefaultGroupLoader = false;
+      this._changeDetectorRef.markForCheck();
       if (type == 'update') {
         this.isEditDefaultContactLoader = false;
         this._snackBar.open("Contact Updated Successfully", '', {
