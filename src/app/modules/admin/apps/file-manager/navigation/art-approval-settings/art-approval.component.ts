@@ -694,7 +694,7 @@ export class ArtApprovalComponent implements OnInit, OnDestroy {
         }
         this.isDefaultGroupLoader = false;
         this._changeDetectorRef.markForCheck();
-      }, 200);
+      }, 500);
       if (type == 'update') {
         this.isEditDefaultContactLoader = false;
         this._snackBar.open("Contact Updated Successfully", '', {
