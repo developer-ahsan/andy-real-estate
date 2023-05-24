@@ -606,15 +606,18 @@ export class ArtApprovalComponent implements OnInit, OnDestroy {
     this._storeManagerService.getStoresData(params).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
       this.storeUsersLoader = false;
       this.storeUsers = res["data"];
-      this.storeUsers.forEach(element => {
+      this.storeUsers.forEach((element, index) => {
         this.usersDropDown.push({
           item_id: element.pfk_userID,
           item_text: element.firstName + ' ' + element.lastName
-        })
+        });
+        if (index == this.storeUsers.length - 1) {
+          this.selectedGroupItem = this.approvalGroupList.filter(item => item.blnDefault == true)[0];
+          this.getContactGroups(1, 'get', this.selectedGroupItem.pk_artApprovalGroupID);
+        }
       });
       // if (this.isDefaultGroupData.length == 0) {
-      this.selectedGroupItem = this.approvalGroupList.filter(item => item.blnDefault == true)[0];
-      this.getContactGroups(1, 'get', this.selectedGroupItem.pk_artApprovalGroupID);
+
       // }
       this._changeDetectorRef.markForCheck();
     }, err => {
@@ -682,14 +685,16 @@ export class ArtApprovalComponent implements OnInit, OnDestroy {
       });
       if (this.usersDropDown.length > 0) {
         res["data"].forEach(element => {
-          let users = element.fk_storeUserID.split(',');
-          users.forEach(user => {
-            this.usersDropDown.filter(item => {
-              if (item.item_id == user) {
-                element.selectedItems.push({ item_id: item.item_id, item_text: item.item_text })
-              }
+          if (element.fk_storeUserID) {
+            let users = element.fk_storeUserID.split(',');
+            users.forEach(user => {
+              this.usersDropDown.filter(item => {
+                if (item.item_id == user) {
+                  element.selectedItems.push({ item_id: item.item_id, item_text: item.item_text })
+                }
+              });
             });
-          });
+          }
         });
       }
       this.isDefaultGroupLoader = false;
