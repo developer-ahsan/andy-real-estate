@@ -14,10 +14,15 @@
                         proof with this store product, and not any particular order, item on an order, or customer. To
                         associated with a customer/order/item, upload the virtual proof via SmartArt.
                     </fuse-alert>
-                    <div class="mt-2 flex justify-between">
+                    <div class="mt-2">
                         <div>
-                            <input type="file" class="file-input mb-2" (change)="uploadFile($event)"
-                                accept="image/jpeg">
+                            <ngx-dropzone [multiple]="false" accept="image/jpeg,image/jpg" (change)="onSelect($event)">
+                                <ngx-dropzone-label>Choose Image</ngx-dropzone-label>
+                                <ngx-dropzone-image-preview *ngIf="file" [file]="file" [removable]="true"
+                                    (removed)="onRemove()">
+                                    <img [src]="file?.preview" alt="Preview Image" class="preview-image">
+                                </ngx-dropzone-image-preview>
+                            </ngx-dropzone>
                             <br>
                             <mat-checkbox [(ngModel)]="ngStoreCheck">Include image on this store</mat-checkbox>
                         </div>
@@ -33,7 +38,7 @@
                             *ngFor="let item of virtualImages">
                             <div class="">
                                 <img class="w-40 h-40"
-                                    src="https://assets.consolidus.com/globalAssets/StoreProducts/VirtualProofs/60646/{{item.pk_virtualProofID}}.jpg">
+                                    src="https://assets.consolidus.com/globalAssets/StoreProducts/VirtualProofs/{{selectedProduct.pk_storeProductID}}/{{item.pk_virtualProofID}}.jpg">
 
                             </div>
                             <div

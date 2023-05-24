@@ -60,6 +60,7 @@ export class ProductReviewsComponent implements OnInit, OnDestroy {
   getStoreProductDetail() {
     this._storeService.product$.pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
       this.selectedProduct = res["data"][0];
+      this.isLoading = true;
       this.getReviews(1);
     });
   }
@@ -84,6 +85,7 @@ export class ProductReviewsComponent implements OnInit, OnDestroy {
       this.reviewData = res["data"];
       this.reviewTotal = res["totalRecords"];
       this.isLoading = false;
+      this.mainScreen = 'Current Reviews';
       this.isLoadingChange.emit(false);
       this._changeDetectorRef.markForCheck();
     }, err => {
@@ -153,7 +155,7 @@ export class ProductReviewsComponent implements OnInit, OnDestroy {
     this.isAddLoader = true;
     const { name, date, rating, comment, company } = this.productAddReviewForm.getRawValue();
     let payload: AddReview = {
-      name, date, rating, comment, storeProductId: this.editData.fk_storeProductID, add_review: true
+      name, date, rating, comment, storeProductId: this.selectedProduct.pk_storeProductID, add_review: true
     };
     this._storeService.postStoresData(payload)
       .pipe(takeUntil(this._unsubscribeAll))
@@ -163,6 +165,7 @@ export class ProductReviewsComponent implements OnInit, OnDestroy {
         }
         this.isAddLoader = false;
         this.getReviews(1);
+        this.productAddReviewForm.reset();
         this._changeDetectorRef.markForCheck();
       }, err => {
         this.isAddLoader = false;

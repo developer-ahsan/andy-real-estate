@@ -389,6 +389,52 @@ export class MarginsComponent implements OnInit, OnDestroy {
     this._changeDetectorRef.markForCheck();
     this.getMarginProducts(this.marginProdPage);
   }
+
+  updateMarginProducts() {
+    const { margin1, margin2, margin3, margin4, margin5, margin6 } = this.marginDetailForm.getRawValue();
+    let marginsToUpdate = [];
+    let margin_group = [];
+    let count = 0;
+    const { pk_storeID } = this.selectedStore;
+    if (this.marginDetailsData.margin1) {
+      count = 1;
+      marginsToUpdate.push(this.marginDetailsData.margin1);
+      margin_group.push((margin1 / 100).toFixed(4));
+    }
+    if (this.marginDetailsData.margin2) {
+      count = 2;
+      marginsToUpdate.push(this.marginDetailsData.margin2);
+      margin_group.push((margin2 / 100).toFixed(4));
+    }
+    if (this.marginDetailsData.margin3) {
+      count = 3;
+      marginsToUpdate.push(this.marginDetailsData.margin3);
+      margin_group.push((margin3 / 100).toFixed(4));
+    }
+    if (this.marginDetailsData.margin4) {
+      count = 4;
+      marginsToUpdate.push(this.marginDetailsData.margin4);
+      margin_group.push((margin4 / 100).toFixed(4));
+    }
+    if (this.marginDetailsData.margin5) {
+      count = 5;
+      marginsToUpdate.push(this.marginDetailsData.margin5);
+      margin_group.push((margin5 / 100).toFixed(4));
+    }
+    if (this.marginDetailsData.margin6) {
+      count = 6;
+      marginsToUpdate.push(this.marginDetailsData.margin6);
+      margin_group.push((margin6 / 100).toFixed(4));
+    }
+    let payload = {
+      store_products_margin_bulk_update: true,
+      margin_group: `${margin_group.toString()}`,
+      store_id: pk_storeID,
+      group_size: count,
+      margins_to_update: marginsToUpdate
+    }
+    console.log(payload)
+  }
   ngOnDestroy(): void {
     // Unsubscribe from all subscriptions
     this._unsubscribeAll.next();

@@ -7,10 +7,12 @@ import { MatRadioChange } from '@angular/material/radio';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { StoreProductService } from '../../store.service';
 import { AddVirtualProofImage, DeleteVirtualProofImage } from '../../store.types';
+import { DomSanitizer } from '@angular/platform-browser';
 
 @Component({
   selector: 'app-virtual-proof-images',
-  templateUrl: './virtual-proof-images.component.html'
+  templateUrl: './virtual-proof-images.component.html',
+  styles: []
 })
 export class VirtualProofImagesComponent implements OnInit, OnDestroy {
   selectedProduct: any;
@@ -20,6 +22,9 @@ export class VirtualProofImagesComponent implements OnInit, OnDestroy {
 
   virtualImages: any;
   imageValue: any;
+  imagePreview: any;
+  file: File;
+
   isUpload: boolean = false;
 
   ngStoreCheck: boolean = false;
@@ -27,7 +32,8 @@ export class VirtualProofImagesComponent implements OnInit, OnDestroy {
     private _changeDetectorRef: ChangeDetectorRef,
     private _storeService: StoreProductService,
     private _formBuilder: FormBuilder,
-    private _snackBar: MatSnackBar
+    private _snackBar: MatSnackBar,
+    private sanitizer: DomSanitizer
   ) { }
 
   ngOnInit(): void {
@@ -41,16 +47,20 @@ export class VirtualProofImagesComponent implements OnInit, OnDestroy {
       this.selectedProduct = res["data"][0];
       this.isLoading = true;
       this._changeDetectorRef.markForCheck();
-      this.getVirtualImages();
+      this.getVirtualImages('');
     });
   }
-  getVirtualImages() {
+  getVirtualImages(msg) {
     let params = {
       store_product_virtual_proof: true,
       store_product_id: this.selectedProduct.pk_storeProductID
     }
     this._storeService.commonGetCalls(params).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
       this.virtualImages = res["data"];
+      if (msg != '') {
+        this._storeService.snackBar(msg);
+      }
+      this.isUpload = false;
       this.isLoading = false;
       this._changeDetectorRef.markForCheck();
     }, err => {
@@ -77,6 +87,43 @@ export class VirtualProofImagesComponent implements OnInit, OnDestroy {
     });
   }
   // File Upload
+  onSelect(event) {
+    this.file = event.addedFiles[0];
+    this.file['preview'] = this.sanitizer.bypassSecurityTrustUrl(URL.createObjectURL(this.file));
+    const reader = new FileReader();
+    reader.readAsDataURL(this.file);
+    reader.onload = (event: any) => {
+      let image: any = new Image;
+      image.src = reader.result;
+      image.onload = () => {
+        if (image.width < 600 || image.width > 1500 || image.height < 600 || image.height > 1500) {
+          this._storeService.snackBar("Virtual proof images must be at least 600px by 600px, but no larger than 1500px by 1500px.");
+          this.imageValue = null;
+          this.file = null;
+          this._changeDetectorRef.markForCheck();
+          return;
+        } else if (this.file["type"] != 'image/jpeg' && this.file["type"] != 'image/jpg') {
+          this._storeService.snackBar("Image should be jpg format only");
+          this.file = null;
+          this.imageValue = null;
+          this._changeDetectorRef.markForCheck();
+          return;
+        }
+        this.imageValue = {
+          imageUpload: reader.result,
+          type: this.file["type"]
+        };
+        setTimeout(() => {
+          this._changeDetectorRef.markForCheck();
+        }, 200);
+      }
+    }
+  }
+
+  onRemove() {
+    this.file = null;
+    this.imageValue = null;
+  }
   uploadFile(event): void {
     if (event.target.files[0]) {
       const file = event.target.files[0];
@@ -118,9 +165,10 @@ export class VirtualProofImagesComponent implements OnInit, OnDestroy {
       image_path: img_path
     };
     this._storeService.postStoresProductsData(payload).subscribe(res => {
-      this.isUpload = false;
-      this.getVirtualImages();
+      // this.isUpload = false;
+      this.getVirtualImages(res["message"]);
       this.imageValue = null;
+      this.file = null;
       this._changeDetectorRef.markForCheck();
     }, err => {
       this.isUpload = false;
@@ -141,9 +189,10 @@ export class VirtualProofImagesComponent implements OnInit, OnDestroy {
     this._storeService.postStoresProductsData(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
       if (res) {
         this.uploadMedia(res["new_id"]);
+      } else {
+        this.isUpload = false;
+        this._changeDetectorRef.markForCheck();
       }
-      this.isUpload = false;
-      this._changeDetectorRef.markForCheck();
     }, err => {
       this.isUpload = false;
       this._changeDetectorRef.markForCheck();
