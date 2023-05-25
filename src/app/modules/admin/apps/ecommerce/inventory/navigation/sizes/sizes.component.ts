@@ -1,10 +1,12 @@
 import { SelectionModel } from '@angular/cdk/collections';
 import { Component, Input, OnInit, Output, EventEmitter, ChangeDetectorRef, OnDestroy } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { MatRadioChange } from '@angular/material/radio';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { InventoryService } from 'app/modules/admin/apps/ecommerce/inventory/inventory.service';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
+import { UpdateChart } from '../../inventory.types';
 
 @Component({
   selector: 'app-sizes',
@@ -17,7 +19,7 @@ export class SizesComponent implements OnInit, OnDestroy {
   private _unsubscribeAll: Subject<any> = new Subject<any>();
 
   displayedColumns: string[] = ['select', 'sizeName', 'run', 'weight', 'unitsPerWeight'];
-  displayedColumnsChart: string[] = ['name'];
+  displayedColumnsChart: string[] = ['radio', 'name'];
   dataSource = [];
   dataSourceCharts = [];
   sizesLength: number = 0;
@@ -48,6 +50,9 @@ export class SizesComponent implements OnInit, OnDestroy {
 
   isColorSize: boolean = false;
   isSizeOrColoCorrrection: boolean = false;
+  selectedChart: any;
+  ngSelectedChart: any;
+  isChartUpdateLoader: boolean = false;
   constructor(
     private _changeDetectorRef: ChangeDetectorRef,
     private _inventoryService: InventoryService,
@@ -84,15 +89,18 @@ export class SizesComponent implements OnInit, OnDestroy {
     }
   }
   getSizes(page: number): void {
-    const { pk_productID } = this.selectedProduct;
+    const { pk_productID, fk_supplierID } = this.selectedProduct;
 
     this._inventoryService.getSizes(pk_productID, this.searchKeywordTerm, page)
       .pipe(takeUntil(this._unsubscribeAll))
       .subscribe((sizes) => {
-        this._inventoryService.getCharts(pk_productID, page)
+        this._inventoryService.getCharts(pk_productID, page, fk_supplierID)
           .pipe(takeUntil(this._unsubscribeAll))
           .subscribe((charts) => {
-            this.dataSourceCharts = charts["data"];
+            if (charts["selected_chart"].length > 0) {
+              this.ngSelectedChart = charts["selected_chart"][0].pk_chartID;
+            }
+            this.dataSourceCharts = charts["selected_chart"].concat(charts["data"]);
             this.chartsLength = charts["totalRecords"];
 
             const { selected, unSelected, frequentlyUsed } = sizes["data"];
@@ -145,12 +153,15 @@ export class SizesComponent implements OnInit, OnDestroy {
   };
 
   getCharts(page: number): void {
-    const { pk_productID } = this.selectedProduct;
+    const { pk_productID, fk_supplierID } = this.selectedProduct;
 
-    this._inventoryService.getCharts(pk_productID, page)
+    this._inventoryService.getCharts(pk_productID, page, fk_supplierID)
       .pipe(takeUntil(this._unsubscribeAll))
       .subscribe((charts) => {
-        this.dataSourceCharts = charts["data"];
+        if (charts["selected_chart"].length > 0) {
+          this.ngSelectedChart = charts["selected_chart"][0].pk_chartID;
+        }
+        this.dataSourceCharts = charts["selected_chart"].concat(charts["data"]);
         this.chartsLength = charts["totalRecords"];
 
         // Mark for check
@@ -354,5 +365,30 @@ export class SizesComponent implements OnInit, OnDestroy {
     this._unsubscribeAll.next();
     this._unsubscribeAll.complete();
   };
-
+  chartSelected(event: MatRadioChange, row) {
+    console.log(event);
+    console.log(row);
+  }
+  uploadChart() {
+    this.isChartUpdateLoader = true;
+    let payload: UpdateChart = {
+      chart_id: this.ngSelectedChart,
+      product_id: this.selectedProduct.pk_productID,
+      update_chart: true
+    }
+    this._inventoryService.putProductsData(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+      if (res["success"]) {
+        this._snackBar.open(res["message"], '', {
+          horizontalPosition: 'center',
+          verticalPosition: 'bottom',
+          duration: 3500
+        });
+      }
+      this.isChartUpdateLoader = false;
+      this._changeDetectorRef.markForCheck();
+    }, err => {
+      this.isChartUpdateLoader = false;
+      this._changeDetectorRef.markForCheck();
+    })
+  }
 }

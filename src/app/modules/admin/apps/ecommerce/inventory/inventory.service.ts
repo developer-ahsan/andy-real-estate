@@ -955,9 +955,10 @@ export class InventoryService {
         }).pipe(retry(3));
     };
 
-    getCharts(productId, page): Observable<any[]> {
+    getCharts(productId, page, fk_supplierID): Observable<any[]> {
         return this._httpClient.get<any[]>(environment.products, {
             params: {
+                company_id: fk_supplierID,
                 product_id: productId,
                 chart: true,
                 size: 20,
@@ -1403,4 +1404,8 @@ export class InventoryService {
         return this._httpClient.put(
             environment.products, payload, { headers });
     };
+    putProductsData(payload) {
+        const headers = { 'Authorization': `Bearer ${this._authService.accessToken}` };
+        return this._httpClient.put(environment.products, payload, { headers }).pipe(retry(3));
+    }
 }

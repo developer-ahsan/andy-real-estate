@@ -788,3 +788,8 @@ interface ColorSize {
     color_id: number;
     amount: number;
 };
+export interface UpdateChart {
+    chart_id: number;
+    product_id: number;
+    update_chart: boolean;
+};

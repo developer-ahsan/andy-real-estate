@@ -185,9 +185,9 @@ export class ProductSizesComponent implements OnInit, OnDestroy {
   };
 
   getCharts(page: number): void {
-    const pk_productID = this.selectedProduct;
+    const { pk_productID, fk_supplierID } = this.selectedProduct;
 
-    this._inventoryService.getCharts(pk_productID, page)
+    this._inventoryService.getCharts(pk_productID, page, fk_supplierID)
       .pipe(takeUntil(this._unsubscribeAll))
       .subscribe((charts) => {
         this.dataSourceCharts = charts["data"];
