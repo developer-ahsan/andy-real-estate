@@ -37,9 +37,9 @@
                                 </ng-container>
                             </mat-radio-group>
                             <ng-container *ngFor="let item of imagesData">
-                                <div class="relative flex flex-col items-start justify-center p-6 rounded-md shadow cursor-pointer bg-card"
+                                <div class="p-6 rounded-md shadow cursor-pointer bg-card"
                                     [ngClass]="{'ring ring-inset ring-primary': ngPlan === item.pk_storeProductID}"
-                                    (click)="ngPlan = item.pk_storeProductID">
+                                    (click)="ngPlan = item.pk_storeProductID" style="text-align: -webkit-center">
                                     <ng-container *ngIf="ngPlan === item.pk_storeProductID">
                                         <mat-icon class="absolute top-0 right-0 mt-3 mr-3 icon-size-7 text-primary"
                                             [svgIcon]="'heroicons_solid:check-circle'"></mat-icon>

@@ -57,6 +57,23 @@ export class SpecialDescComponent implements OnInit, OnDestroy {
         this._changeDetectorRef.markForCheck();
       });
   }
+  getStoresVersions() {
+    this._inventoryService
+      .getProductDescription(this.selectedProduct.fk_productID)
+      .pipe(takeUntil(this._unsubscribeAll))
+      .subscribe((description) => {
+        this.description = description["data"][0].productDesc;
+        this.miniDescription = description["data"][0].miniDesc;
+        this.metaDescription = description["data"][0].metaDesc;
+        this.isLoadingChange.emit(false);
+        this.isLoading = false;
+        this._changeDetectorRef.markForCheck();
+      }, err => {
+        this.isLoadingChange.emit(false);
+        this.isLoading = false;
+        this._changeDetectorRef.markForCheck();
+      });
+  }
 
 
   /**
