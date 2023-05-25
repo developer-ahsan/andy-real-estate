@@ -366,8 +366,6 @@ export class SizesComponent implements OnInit, OnDestroy {
     this._unsubscribeAll.complete();
   };
   chartSelected(event: MatRadioChange, row) {
-    console.log(event);
-    console.log(row);
   }
   uploadChart() {
     this.isChartUpdateLoader = true;
