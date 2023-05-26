@@ -17,10 +17,9 @@
                             <div class="my-2 text-lg font-bold border-b">
                                 Master Product
                             </div>
-                            <div *ngIf="statusProductData.inactiveProductResponse">
+                            <div *ngIf="statusProductData.data.length > 0">
                                 <div>
-                                    <span
-                                        *ngIf="statusProductData.inactiveProductResponse[0]?.costsCheck > 0; else elsecostsCheck"
+                                    <span *ngIf="statusProductData.data[0]?.costsCheck > 0; else elsecostsCheck"
                                         class="text-green-600">
                                         Cost levels were found
                                     </span>
@@ -29,8 +28,7 @@
                                     </ng-template>
                                 </div>
                                 <div>
-                                    <span
-                                        *ngIf="statusProductData.inactiveProductResponse[0]?.descCheck > 0; else elsedescCheck"
+                                    <span *ngIf="statusProductData.data[0]?.descCheck > 0; else elsedescCheck"
                                         class="text-green-600">
                                         Descriptions found
                                     </span>
@@ -40,8 +38,7 @@
                                 </div>
                                 <!-- FOBCheck -->
                                 <div>
-                                    <span
-                                        *ngIf="statusProductData.inactiveProductResponse[0]?.FOBCheck > 0; else elseFOBCheck"
+                                    <span *ngIf="statusProductData.data[0]?.FOBCheck > 0; else elseFOBCheck"
                                         class="text-green-600">
                                         Shipping FOB location(s) found
                                     </span>
@@ -51,8 +48,7 @@
                                 </div>
                                 <!-- colorCheck -->
                                 <div>
-                                    <span
-                                        *ngIf="statusProductData.inactiveProductResponse[0]?.colorCheck > 0; else elsecolorCheck"
+                                    <span *ngIf="statusProductData.data[0]?.colorCheck > 0; else elsecolorCheck"
                                         class="text-green-600">
                                         Color(s) found
                                     </span>
@@ -67,8 +63,7 @@
                                 </div>
                                 <!-- attributeCheck -->
                                 <div>
-                                    <span
-                                        *ngIf="statusProductData.inactiveProductResponse[0]?.attributeCheck > 0; else elseattributeCheck"
+                                    <span *ngIf="statusProductData.data[0]?.attributeCheck > 0; else elseattributeCheck"
                                         class="text-green-600">
                                         Feature(s) found
                                     </span>
@@ -79,13 +74,13 @@
                                 <!-- blnApparel AND sizesCheck -->
                                 <div>
                                     <span
-                                        *ngIf="statusProductData.inactiveProductResponse[0]?.sizesCheck > 0 && selectedProduct.blnApparel; else elsesizesCheck"
+                                        *ngIf="statusProductData.data[0]?.sizesCheck > 0 && selectedProduct.blnApparel; else elsesizesCheck"
                                         class="text-green-600">
                                         Apparel size(s) (and thus weight) found
                                     </span>
                                     <ng-template #elsesizesCheck>
                                         <span class="text-red-600"
-                                            *ngIf="statusProductData.inactiveProductResponse[0]?.sizesCheck == 0 && selectedProduct.blnApparel">ERROR:
+                                            *ngIf="statusProductData.data[0]?.sizesCheck == 0 && selectedProduct.blnApparel">ERROR:
                                             No apparel size(s) (and thus weight) was found</span>
                                     </ng-template>
                                 </div>
@@ -104,8 +99,7 @@
                                 </div>
                                 <!--  imprintsCheck -->
                                 <div *ngIf="selectedProduct.blnService">
-                                    <span
-                                        *ngIf="statusProductData.inactiveProductResponse[0]?.imprintsCheck > 0; else elseimprintsCheck"
+                                    <span *ngIf="statusProductData.data[0]?.imprintsCheck > 0; else elseimprintsCheck"
                                         class="text-green-600">
                                         Imprint(s) found
                                     </span>
@@ -115,8 +109,7 @@
                                 </div>
                                 <!--  blnSoldBlank imprintsCheck -->
                                 <div *ngIf="!selectedProduct.blnSoldBlank">
-                                    <span *ngIf="statusProductData.inactiveProductResponse[0]?.imprintsCheck == 0"
-                                        class="text-red-600">
+                                    <span *ngIf="statusProductData.data[0]?.imprintsCheck == 0" class="text-red-600">
                                         ERROR: Product is not allowed to be sold blank and at the same time has no
                                         imprints.
                                     </span>
@@ -124,7 +117,7 @@
                                 <!--  licensingTermCheck -->
                                 <div>
                                     <span
-                                        *ngIf="statusProductData.inactiveProductResponse[0]?.licensingTermCheck > 0; else elselicensingTermCheck"
+                                        *ngIf="statusProductData.data[0]?.licensingTermCheck > 0; else elselicensingTermCheck"
                                         class="text-green-600">
                                         Licensing term defined.
                                     </span>
@@ -135,8 +128,7 @@
                                 </div>
                                 <!--  msrpCheck -->
                                 <div>
-                                    <span
-                                        *ngIf="statusProductData.inactiveProductResponse[0]?.msrpCheck > 0; else elsemsrpCheck"
+                                    <span *ngIf="statusProductData.data[0]?.msrpCheck > 0; else elsemsrpCheck"
                                         class="text-green-600">
                                         MSRP cost defined.
                                     </span>
@@ -150,11 +142,10 @@
                             <div class="my-2 text-lg font-bold border-b">
                                 Store Product
                             </div>
-                            <div *ngIf="statusProductData.inactiveProductResponse">
+                            <div *ngIf="statusProductData.data">
                                 <!-- marginsCheck -->
                                 <div>
-                                    <span
-                                        *ngIf="statusProductData.inactiveProductResponse[0]?.marginsCheck > 0; else elsemarginsCheck"
+                                    <span *ngIf="statusProductData.data[0]?.marginsCheck > 0; else elsemarginsCheck"
                                         class="text-green-600">
                                         Margin levels were found
                                     </span>
@@ -164,8 +155,7 @@
                                 </div>
                                 <!-- subCatCheck -->
                                 <div>
-                                    <span
-                                        *ngIf="statusProductData.inactiveProductResponse[0]?.subCatCheck > 0; else elsesubCatCheck"
+                                    <span *ngIf="statusProductData.data[0]?.subCatCheck > 0; else elsesubCatCheck"
                                         class="text-green-600">
                                         Subcategories found
                                     </span>
@@ -193,75 +183,47 @@
                         </div>
                         <!-- Online --- Oflline -->
                         <div class="col-12" *ngIf="selectedProduct?.blnStoreActive">
-                            <div *ngIf="statusProductData.blnAllowStatusChange">
-                                <div *ngIf="statusProductData.categories.length > 0">
+                            <div *ngIf="!statusProductData.strStoreProductStatus.blnAllowStatusChange">
+                                <div *ngIf="statusProductData.strStoreProductStatus.categories.length > 0">
                                     <span class="text-green-600">
                                         This item is currently featured in the following categories on this store
                                     </span>
                                     <span
-                                        *ngFor="let item of statusProductData.categories;let last=last">{{item.categoryName}}<span
+                                        *ngFor="let item of statusProductData.strStoreProductStatus.categories;let last=last">{{item.categoryName}}<span
                                             *ngIf="!last">,</span>
                                     </span>
                                 </div>
-                                <div *ngIf="statusProductData.campaigns.length > 0">
+                                <div *ngIf="statusProductData.strStoreProductStatus.campaigns.length > 0">
                                     <span class="text-green-600">
                                         This item is currently featured in the following campaigns on this store
                                     </span>
                                     <span
-                                        *ngFor="let item of statusProductData.campaigns;let last=last">{{item.campaignName}}<span
+                                        *ngFor="let item of statusProductData.strStoreProductStatus.campaigns;let last=last">{{item.campaignName}}<span
                                             *ngIf="!last">,</span>
                                     </span>
                                 </div>
-                                <div *ngIf="statusProductData.quotes.length > 0">
+                                <div *ngIf="statusProductData.strStoreProductStatus.quotes.length > 0">
                                     <span class="text-green-600">
                                         This item is currently in the following quotes
                                     </span>
                                     <span
-                                        *ngFor="let item of statusProductData.quotes;let last=last">{{item.pk_cartID}}<span
+                                        *ngFor="let item of statusProductData.strStoreProductStatus.quotes;let last=last">{{item.pk_cartID}}<span
                                             *ngIf="!last">,</span>
                                     </span>
                                 </div>
                             </div>
-                            <div *ngIf="!statusProductData.blnAllowStatusChange">
+                            <div *ngIf="statusProductData.strStoreProductStatus.blnAllowStatusChange">
                                 <fuse-alert class="mb-2" [appearance]="'soft'" [dismissed]="false" [type]="'success'">
                                     This item is not featured in any categories or campaigns and can be taken offline.
                                 </fuse-alert>
                                 <mat-form-field class="min-w-100">
                                     <mat-label>Reason for taking offline</mat-label>
-                                    <input matInput>
+                                    <input matInput [(ngModel)]="offlineReason">
                                 </mat-form-field>
                                 <br>
-                                <button mat-stroked-button>
+                                <button mat-stroked-button
+                                    [disabled]="!statusProductData.strStoreProductStatus.blnAllowStatusChange">
                                     <span>Take offline</span>
-                                </button>
-                            </div>
-
-                            <div class="my-2 text-lg font-bold border-b">
-                                Master Product
-                            </div>
-                            <div class="text-green-600">
-                                This item is currently featured in the following categories on this store.
-                            </div>
-                            <div class="text-green-600">
-                                You must replace this item in these categories in order to take this item offline.
-                            </div>
-                            <div class="text-green-600">
-                                This item is not featured in any categories or campaigns and can be taken offline.
-                            </div>
-
-                            <!-- password -->
-                            <mat-form-field class="w-full mt-3">
-                                <mat-label>Enter your password to confirm deletion</mat-label>
-                                <input matInput>
-                            </mat-form-field>
-                            <div>
-                                <button class="min-w-40" mat-stroked-button [matTooltip]="'Remove product from store'"
-                                    (click)="addDuplicate()" [disabled]="duplicateLoader">
-                                    <mat-progress-spinner *ngIf="duplicateLoader" [diameter]="24"
-                                        [mode]="'indeterminate'">
-                                    </mat-progress-spinner>
-                                    <mat-icon *ngIf="!duplicateLoader" svgIcon="heroicons_outline:trash"></mat-icon>
-                                    <span *ngIf="!duplicateLoader" class="ml-1 mr-1">Remove product from store</span>
                                 </button>
                             </div>
                         </div>

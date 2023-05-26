@@ -7,6 +7,7 @@ import { MatRadioChange } from '@angular/material/radio';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { StoreProductService } from '../../store.service';
 import { UpdateSpecialDescription } from '../../store.types';
+import { ActivatedRoute } from '@angular/router';
 
 @Component({
   selector: 'app-special-description',
@@ -45,6 +46,7 @@ export class SpecialDescComponent implements OnInit, OnDestroy {
   constructor(
     private _changeDetectorRef: ChangeDetectorRef,
     private _inventoryService: InventoryService,
+    private route: ActivatedRoute,
     private _storeService: StoreProductService,
   ) { }
 
@@ -55,8 +57,6 @@ export class SpecialDescComponent implements OnInit, OnDestroy {
   }
   getStoreProductDetail() {
     this._storeService.product$.pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
-      console.log(res);
-      this.response = res;
       this.selectedProduct = res["data"][0];
       if (res["store_product_descriptions"].length > 0) {
         this.specialDesc = res["store_product_descriptions"][0];
@@ -153,16 +153,8 @@ export class SpecialDescComponent implements OnInit, OnDestroy {
     this._storeService.putStoresProductData(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
       this.isUpdateLoading = false;
       if (res["success"]) {
-        // if (this.response["store_product_descriptions"].length == 0) {
-        //   this.response["store_product_descriptions"][0]["specialDescription"] = this.descriptionStore;
-        //   this.response["store_product_descriptions"][0]["specialMetaDesc"] = this.metaDescriptionStore;
-        //   this.response["store_product_descriptions"][0]["specialMiniDescription"] = this.miniDescriptionStore;
-        // } else {
-        this.specialDesc.specialDescription = this.descriptionStore;
-        this.specialDesc.specialMetaDesc = this.metaDescriptionStore;
-        this.specialDesc.specialMiniDescription = this.miniDescriptionStore;
-        // }
         this.stores = [];
+        this._storeService.getStoreProductsDetail(this.selectedProduct.pk_storeProductID);
         this.getStoresVersions(1);
         this._storeService.snackBar(res["message"]);
       }

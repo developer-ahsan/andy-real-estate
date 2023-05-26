@@ -16,6 +16,7 @@ export class StoreProductStatusComponent implements OnInit, OnDestroy {
   removeProductData: any;
   statusProductData: any;
   isUpdateLoading: boolean = false;
+  offlineReason: any;
 
   constructor(
     private _changeDetectorRef: ChangeDetectorRef,
@@ -34,7 +35,6 @@ export class StoreProductStatusComponent implements OnInit, OnDestroy {
   }
   getRemoveProductsDetails() {
     let params = {
-      store_id: this.selectedProduct.fk_storeID,
       storeProduct_id: this.selectedProduct.pk_storeProductID,
       product_id: this.selectedProduct.fk_productID,
       bln_apparel: this.selectedProduct.blnApparel,
