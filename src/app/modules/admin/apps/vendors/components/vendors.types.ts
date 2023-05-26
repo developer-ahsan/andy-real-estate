@@ -542,3 +542,15 @@ export interface ApplyBlanketSetup {
     apply_blanket_setup: boolean;
 };
 export interface ApplyBlanketCollection { collection_id: number; supplier_id: number; apply_blanket_collection: boolean; };
+
+export interface UpdateAccountingProfile {
+    APContactName: string;
+    APEmail: string;
+    remitEmailAddress: string;
+    additionalEmail: string;
+    netTerms: string;
+    creditLimit: string;
+    paymentMethod: string;
+    fk_companyID: string;
+    update_vendor_profile: boolean;
+};

@@ -130,11 +130,6 @@ export const navigations = [
         icon: 'mat_outline:history',
         route: 'store-versions',
     },
-    {
-        id: 21,
-        title: 'Remove From Store',
-        icon: 'heroicons_outline:trash',
-        route: 'remove-from-store',
-    }
+
 
 ];

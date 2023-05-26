@@ -70,26 +70,25 @@
                     </mat-form-field>
                   </td>
                 </ng-container>
-                <!-- <ng-container matColumnDef="isRecommended">
+                <ng-container matColumnDef="department">
                   <th class="min-w-10 bg-gray-50 dark:bg-black dark:bg-opacity-5 text-center" mat-header-cell
                     *matHeaderCellDef>
-                    Locations
+                    Departments
                   </th>
                   <td mat-cell *matCellDef="let element" class="text-center">
-                    5
+                    {{element.departments}}
                   </td>
-                </ng-container> -->
+                </ng-container>
 
-                <!-- isBestSeller Column -->
-                <!-- <ng-container matColumnDef="isBestSeller">
+                <ng-container matColumnDef="user">
                   <th class="min-w-10 bg-gray-50 dark:bg-black dark:bg-opacity-5 text-center" mat-header-cell
                     *matHeaderCellDef>
                     Users
                   </th>
                   <td mat-cell *matCellDef="let element" class="text-center">
-                    0
+                    {{element.users}}
                   </td>
-                </ng-container> -->
+                </ng-container>
 
                 <!-- isTopRated Column -->
                 <ng-container matColumnDef="isTopRated">

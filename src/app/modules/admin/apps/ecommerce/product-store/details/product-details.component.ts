@@ -72,6 +72,23 @@ export class StoreProductDetailsComponent implements OnInit, OnDestroy {
   getStoreProductDetail(id) {
     this._storeProductService.product$.pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
       this.selectedProduct = res["data"][0];
+      if (!this.selectedProduct["blnStoreActive"]) {
+        this.routes.push(
+          {
+            id: 212,
+            title: 'Remove From Store',
+            icon: 'heroicons_outline:trash',
+            route: 'remove-from-store',
+          }
+        )
+        this._changeDetectorRef.markForCheck();
+      } else {
+        let index = this.routes.findIndex(item => item.id == 212);
+        if (index > -1) {
+          this.routes.splice(index, 1);
+        }
+      }
+      console.log(this.routes);
       this.isProductFetched = false;
       this.isLoading = false;
       this._changeDetectorRef.markForCheck();
@@ -84,6 +101,7 @@ export class StoreProductDetailsComponent implements OnInit, OnDestroy {
     })
   }
   ngOnInit(): void {
+    this.routes = [];
     // Initialize Screen
     this._router.events.subscribe((event) => {
       if (event instanceof NavigationEnd) {

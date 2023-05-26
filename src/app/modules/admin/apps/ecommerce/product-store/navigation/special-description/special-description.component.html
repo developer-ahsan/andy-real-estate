@@ -9,28 +9,109 @@
                         Special Description
                     </div>
                     <div class="mt-5 row">
-                        <div class="col-12">
+                        <div class="col-12 col-md-6">
+                            <p class="text-lg font-bold">Master product description</p>
+                            <div class="my-2">
+                                <fuse-alert *ngIf="!description" [appearance]="'soft'" [type]="'warning'"
+                                    [showIcon]="false">
+                                    This will copy the store description you define here to other stores. Stores with an
+                                    exclamation mark next to them already have special descriptions defined.
+                                </fuse-alert>
+                                <p [innerHTML]="description" *ngIf="description"></p>
+
+                                <div class="row">
+                                    <div *ngIf="description"
+                                        class="col-12 flex border-b cursor-pointer  mb-2 align-items-center"
+                                        matTooltip="Copy Description" (click)="assignDescriptions(1)">
+                                        <p class="my-2 text-secondary font-bold text-lg">Copy to store
+                                            product description
+                                        </p>
+                                        <mat-icon [svgIcon]="'heroicons_outline:clipboard-copy'"></mat-icon>
+                                    </div>
+                                    <div class="col-12 col-md-6" *ngFor="let item of stores">
+                                        <mat-checkbox [(ngModel)]="item.checked">
+                                            <div class="flex">
+                                                <p>{{item.storeName}}</p>
+                                                <mat-icon svgIcon="heroicons_outline:information-circle"
+                                                    *ngIf="item.description"
+                                                    matTooltip="This product on this store already has a description {{item.description}}"></mat-icon>
+                                            </div>
+                                        </mat-checkbox>
+                                    </div>
+                                    <div class="col-12 text-center" *ngIf="!storeLoader && storesTotal > stores.length">
+                                        <span class="cursor-pointer" (click)="getStoresVersions()">Load More</span>
+                                    </div>
+                                </div>
+                                <mat-progress-spinner *ngIf="storeLoader" [diameter]="24" [mode]="'indeterminate'">
+                                </mat-progress-spinner>
+                            </div>
+                        </div>
+                        <div class="col-12 col-md-6">
+                            <p class="text-lg font-bold">Store product description</p>
+                            <quill-editor class="my-2" [(ngModel)]="descriptionStore" [modules]="quillModules">
+                            </quill-editor>
+                        </div>
+                        <!-- Master product mini description -->
+                        <div class="col-12 col-md-6 mt-20">
+                            <p class="text-lg font-bold">Master product mini description</p>
+                            <div class="my-2">
+                                <fuse-alert *ngIf="!miniDescription" [appearance]="'soft'" [type]="'warning'"
+                                    [showIcon]="false">
+                                    There is currently no master product mini description defined for this product.
+                                </fuse-alert>
+                                <p *ngIf="miniDescription">{{miniDescription}}</p>
+
+                                <div class="row" *ngIf="!miniDescription">
+                                    <div class="col-12 flex cursor-pointer  mb-2 align-items-center"
+                                        matTooltip="Copy Mini Description" (click)="assignDescriptions(2)">
+                                        <p class="my-2 text-secondary font-bold text-lg">Copy to store
+                                            product description
+                                        </p>
+                                        <mat-icon [svgIcon]="'heroicons_outline:clipboard-copy'"></mat-icon>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Store product mini description -->
+                        <div class="col-12 col-md-6 mt-20">
+                            <p class="text-lg font-bold">Store product mini description</p>
                             <mat-form-field class="w-full">
-                                <mat-label>Store product description
-                                </mat-label>
-                                <textarea [(ngModel)]="description" matInput rows="10"></textarea>
+                                <textarea [(ngModel)]="miniDescriptionStore" matInput rows="10"></textarea>
                             </mat-form-field>
                         </div>
-                        <div class="col-12">
+
+                        <!-- Master product meta description -->
+                        <div class="col-12 col-md-6">
+                            <p class="text-lg font-bold">Master product meta description</p>
+                            <div class="my-2">
+                                <fuse-alert *ngIf="!metaDescription" [appearance]="'soft'" [type]="'warning'"
+                                    [showIcon]="false">
+                                    There is currently no master product meta description defined for this product.
+                                </fuse-alert>
+                                <p *ngIf="metaDescription">{{metaDescription}}</p>
+
+                                <div class="row" *ngIf="metaDescription">
+                                    <div class="col-12 flex cursor-pointer  mb-2 align-items-center"
+                                        matTooltip="Copy Meta Description" (click)="assignDescriptions(3)">
+                                        <p class="my-2 text-secondary font-bold text-lg">Copy to store
+                                            product description
+                                        </p>
+                                        <mat-icon [svgIcon]="'heroicons_outline:clipboard-copy'"></mat-icon>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Store product meta description -->
+                        <div class="col-12 col-md-6">
+                            <p class="text-lg font-bold">Store product meta description</p>
                             <mat-form-field class="w-full">
-                                <mat-label>Store product mini description</mat-label>
-                                <textarea [(ngModel)]="miniDescription" matInput rows="10"></textarea>
+                                <textarea [(ngModel)]="metaDescriptionStore" matInput rows="10"></textarea>
                             </mat-form-field>
                         </div>
-                        <div class="col-12">
-                            <mat-form-field class="w-full">
-                                <mat-label>Store product meta description (160)</mat-label>
-                                <textarea [(ngModel)]="metaDescription" matInput rows="10"></textarea>
-                            </mat-form-field>
-                        </div>
+
                         <div class="col-12 text-right">
                             <button [matTooltip]="'Update'" mat-stroked-button class="min-w-40"
-                                [disabled]="isUpdateLoading">
+                                [disabled]="isUpdateLoading" (click)="UpdateSpecialDescription()">
                                 <mat-progress-spinner *ngIf="isUpdateLoading" [diameter]="24" [mode]="'indeterminate'">
                                 </mat-progress-spinner>
                                 <span *ngIf="!isUpdateLoading" class="ml-1 mr-1">

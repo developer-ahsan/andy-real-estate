@@ -37,16 +37,16 @@
                             <!-- password -->
                             <mat-form-field class="w-full mt-3">
                                 <mat-label>Enter your password to confirm deletion</mat-label>
-                                <input matInput>
+                                <input matInput [(ngModel)]="ngPassword">
                             </mat-form-field>
                             <div>
                                 <button class="min-w-40" mat-stroked-button [matTooltip]="'Remove product from store'"
-                                    (click)="addDuplicate()" [disabled]="duplicateLoader">
-                                    <mat-progress-spinner *ngIf="duplicateLoader" [diameter]="24"
+                                    (click)="UpdateRemoveFromStore()" [disabled]="isUpdateLoading">
+                                    <mat-progress-spinner *ngIf="isUpdateLoading" [diameter]="24"
                                         [mode]="'indeterminate'">
                                     </mat-progress-spinner>
-                                    <mat-icon *ngIf="!duplicateLoader" svgIcon="heroicons_outline:trash"></mat-icon>
-                                    <span *ngIf="!duplicateLoader" class="ml-1 mr-1">Remove product from store</span>
+                                    <mat-icon *ngIf="!isUpdateLoading" svgIcon="heroicons_outline:trash"></mat-icon>
+                                    <span *ngIf="!isUpdateLoading" class="ml-1 mr-1">Remove product from store</span>
                                 </button>
                             </div>
                         </div>

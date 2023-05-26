@@ -6,6 +6,7 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { MatRadioChange } from '@angular/material/radio';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { StoreProductService } from '../../store.service';
+import { UpdateSpecialDescription } from '../../store.types';
 
 @Component({
   selector: 'app-special-description',
@@ -21,8 +22,26 @@ export class SpecialDescComponent implements OnInit, OnDestroy {
   description: string = '';
   miniDescription: string = '';
   metaDescription: string = '';
+  descriptionStore: string = '';
+  miniDescriptionStore: string = '';
+  metaDescriptionStore: string = '';
 
-
+  stores = [];
+  storesTotal = 0;
+  storePage = 1;
+  storeLoader: boolean = false;
+  quillModules: any = {
+    toolbar: [
+      ['bold', 'italic', 'underline', 'strike'],
+      ['blockquote', 'code-block'],
+      [{ 'color': [] }, { 'background': [] }],
+      [{ 'font': [] }],
+      [{ 'align': [] }],
+      ['clean']
+    ]
+  };
+  specialDesc: any;
+  response: any;
   constructor(
     private _changeDetectorRef: ChangeDetectorRef,
     private _inventoryService: InventoryService,
@@ -36,8 +55,18 @@ export class SpecialDescComponent implements OnInit, OnDestroy {
   }
   getStoreProductDetail() {
     this._storeService.product$.pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+      console.log(res);
+      this.response = res;
       this.selectedProduct = res["data"][0];
+      if (res["store_product_descriptions"].length > 0) {
+        this.specialDesc = res["store_product_descriptions"][0];
+        const { specialDescription, specialMetaDesc, specialMiniDescription } = res["store_product_descriptions"][0];
+        this.descriptionStore = specialDescription;
+        this.metaDescriptionStore = specialMetaDesc;
+        this.miniDescriptionStore = specialMiniDescription;
+      }
       this.getDescription();
+      this.getStoresVersions(1);
     });
   }
   getDescription() {
@@ -57,25 +86,92 @@ export class SpecialDescComponent implements OnInit, OnDestroy {
         this._changeDetectorRef.markForCheck();
       });
   }
-  getStoresVersions() {
-    this._inventoryService
-      .getProductDescription(this.selectedProduct.fk_productID)
+  getStoresVersions(page) {
+    this.storeLoader = true;
+    let params = {
+      page: page,
+      special_description_stores: true,
+      store_product_id: this.selectedProduct.pk_storeProductID,
+      product_id: this.selectedProduct.fk_productID,
+      size: 20
+    }
+    this._storeService
+      .getStoreProducts(params)
       .pipe(takeUntil(this._unsubscribeAll))
-      .subscribe((description) => {
-        this.description = description["data"][0].productDesc;
-        this.miniDescription = description["data"][0].miniDesc;
-        this.metaDescription = description["data"][0].metaDesc;
-        this.isLoadingChange.emit(false);
-        this.isLoading = false;
+      .subscribe((res) => {
+        this.stores = this.stores.concat(res["data"]);
+        this.storesTotal = res["totalRecords"];
+        this.storeLoader = false;
         this._changeDetectorRef.markForCheck();
       }, err => {
-        this.isLoadingChange.emit(false);
-        this.isLoading = false;
+        this.storeLoader = false;
         this._changeDetectorRef.markForCheck();
       });
   }
 
+  getNextStore() {
+    this.storePage++;
+    this.getStoresVersions(this.storePage);
+  }
+  assignDescriptions(check) {
+    if (check == 1) {
+      this.descriptionStore = this.description;
+    }
+    if (check == 2) {
+      this.miniDescriptionStore = this.miniDescription;
+    }
+    if (check == 3) {
+      this.metaDescriptionStore = this.metaDescription;
+    }
+  }
 
+  UpdateSpecialDescription() {
+    let stores = [];
+    stores.push({
+      productID: Number(this.selectedProduct.fk_productID),
+      storeProductID: Number(this.selectedProduct.pk_storeProductID)
+    });
+    this.stores.forEach(element => {
+      if (element.checked) {
+        stores.push({
+          productID: Number(this.selectedProduct.fk_productID),
+          storeProductID: Number(element.pk_storeProductID)
+        })
+      }
+    });
+    this.isUpdateLoading = true;
+    let payload = {
+      masterDescription: this.description.replace(/'/g, '"'),
+      masterMiniDescription: this.miniDescription.replace(/'/g, '"'),
+      specialDescription: this.descriptionStore.replace(/'/g, '"'),
+      specialMiniDescription: this.miniDescriptionStore.replace(/'/g, '"'),
+      specialMetaDescription: this.metaDescriptionStore.replace(/'/g, '"'),
+      storeProducts: stores,
+      storeName: this.selectedProduct.storeName,
+      update_special_description: true
+    }
+    this._storeService.putStoresProductData(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+      this.isUpdateLoading = false;
+      if (res["success"]) {
+        // if (this.response["store_product_descriptions"].length == 0) {
+        //   this.response["store_product_descriptions"][0]["specialDescription"] = this.descriptionStore;
+        //   this.response["store_product_descriptions"][0]["specialMetaDesc"] = this.metaDescriptionStore;
+        //   this.response["store_product_descriptions"][0]["specialMiniDescription"] = this.miniDescriptionStore;
+        // } else {
+        this.specialDesc.specialDescription = this.descriptionStore;
+        this.specialDesc.specialMetaDesc = this.metaDescriptionStore;
+        this.specialDesc.specialMiniDescription = this.miniDescriptionStore;
+        // }
+        this.stores = [];
+        this.getStoresVersions(1);
+        this._storeService.snackBar(res["message"]);
+      }
+      this._changeDetectorRef.markForCheck();
+    }, err => {
+      this.isUpdateLoading = false;
+      this._changeDetectorRef.markForCheck();
+    })
+  }
   /**
      * On destroy
      */

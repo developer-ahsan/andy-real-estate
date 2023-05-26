@@ -142,3 +142,25 @@ export interface AddRelatedProduct {
     storeName: string;
     add_related_product: boolean;
 };
+export interface removeStoreProduct {
+    storeProductID: number;
+    payload: any; // email, password, secretKey = 'remove_from_store'
+    productID: number;
+    storeName: string;
+    remove_store_product: boolean;
+};
+export interface UpdateSpecialDescription {
+    masterDescription: string;
+    masterMiniDescription: string;
+    specialDescription: string;
+    specialMiniDescription: string;
+    specialMetaDescription: string;
+    storeProducts: storeProduct[];
+    storeName: string;
+    update_special_description: boolean;
+};
+
+interface storeProduct {
+    productID: number;
+    storeProductID: number;
+}
