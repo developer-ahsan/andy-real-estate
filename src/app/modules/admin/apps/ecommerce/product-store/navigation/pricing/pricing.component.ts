@@ -114,27 +114,51 @@ export class PricingComponent implements OnInit, OnDestroy {
         marginThree: '',
         marginFour: '',
         marginFive: '',
-        marginSix: ''
+        marginSix: '',
+        priceOverrideOne: '',
+        priceOverrideTwo: '',
+        priceOverrideThree: '',
+        priceOverrideFour: '',
+        priceOverrideFive: '',
+        priceOverrideSix: '',
+        tccdPriceOne: '',
+        tccdPriceTwo: '',
+        tccdPriceThree: '',
+        tccdPriceFour: '',
+        tccdPriceFive: '',
+        tccdPriceSix: '',
       };
       res.margins.forEach((element, index) => {
         if (index == 0) {
           quantity.quantityOne = element.quantity;
           quantity.marginOne = String(element.margin * 100);
+          quantity.priceOverrideOne = String(element.priceOverride * 100);
+          quantity.tccdPriceOne = String(element.tccdPrice * 100);
         } else if (index == 1) {
           quantity.quantityTwo = element.quantity;
           quantity.marginTwo = String(element.margin * 100);
+          quantity.priceOverrideTwo = String(element.priceOverride * 100);
+          quantity.tccdPriceTwo = String(element.tccdPrice * 100);
         } else if (index == 2) {
           quantity.quantityThree = element.quantity;
           quantity.marginThree = String(element.margin * 100);
+          quantity.priceOverrideThree = String(element.priceOverride * 100);
+          quantity.tccdPriceThree = String(element.tccdPrice * 100);
         } else if (index == 3) {
           quantity.quantityFour = element.quantity;
           quantity.marginFour = String(element.margin * 100);
+          quantity.priceOverrideFour = String(element.priceOverride * 100);
+          quantity.tccdPriceFour = String(element.tccdPrice * 100);
         } else if (index == 4) {
           quantity.quantityFive = element.quantity;
           quantity.marginFive = String(element.margin * 100);
+          quantity.priceOverrideFive = String(element.priceOverride * 100);
+          quantity.tccdPriceFive = String(element.tccdPrice * 100);
         } else if (index == 5) {
           quantity.quantitySix = element.quantity;
           quantity.marginSix = String(element.margin * 100);
+          quantity.priceOverrideSix = String(element.priceOverride * 100);
+          quantity.tccdPriceSix = String(element.tccdPrice * 100);
         }
       });
       if (res.margins.length == 0) {
