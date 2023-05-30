@@ -291,3 +291,25 @@ interface OrderLine {
     blnWarehouse: boolean;
     quantity: number;
 };
+export interface updateLogoBank {
+    name: string;
+    description: string;
+    vectorFileExtension: string;
+    colorList: string;
+    logoBankID: number;
+    update_logo_bank: boolean;
+};
+
+export interface deleteLogoBank {
+    logoBankID: number;
+    delete_logo_bank: boolean;
+};
+export interface addLogoBank {
+    user_id: number;
+    name: string;
+    description: string;
+    vectorFileExtension: string;
+    store_id: number;
+    colorList: string;
+    add_logo_bank: boolean;
+};

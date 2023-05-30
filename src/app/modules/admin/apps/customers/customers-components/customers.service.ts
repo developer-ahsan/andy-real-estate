@@ -552,4 +552,9 @@ export class CustomersService {
             params: params
         }).pipe(retry(3));
     }
+    addCustomerMedia(payload) {
+        const headers = { 'Authorization': `Bearer ${this._authService.accessToken}` };
+        return this._httpClient.post(
+            environment.storeNewUrl, payload, { headers });
+    };
 }

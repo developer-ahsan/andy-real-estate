@@ -117,4 +117,9 @@ export class CustomersService {
     changePageNumber(status: 'increase' | 'decrease' | null = null): void {
         status === 'increase' ? this.pageNumber++ : this.pageNumber--;
     };
+    addCustomerMedia(payload) {
+        const headers = { 'Authorization': `Bearer ${this._authService.accessToken}` };
+        return this._httpClient.post(
+            environment.storeNewUrl, payload, { headers });
+    };
 }

@@ -1005,7 +1005,7 @@ export class PresentationComponent implements OnInit, OnDestroy {
     const payload = {
       file_upload: true,
       image_file: base64,
-      image_path: `/globalAssets/Stores/LogoBank2/${this.selectedStore.pk_storeID}/${id}.${type}`
+      image_path: `/globalAssets/Stores/LogoBank/${this.selectedStore.pk_storeID}/${id}.${type}`
     };
 
     this._storeManagerService.addPresentationMedia(payload)
