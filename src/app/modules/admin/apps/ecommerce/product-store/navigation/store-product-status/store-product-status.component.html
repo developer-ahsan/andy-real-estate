@@ -165,12 +165,18 @@
                                 </div>
                             </div>
                             <div class="w-full">
-                                <mat-checkbox class="w-full">Send product addition notification to program
+                                <mat-checkbox class="w-full" [(ngModel)]="blnSendEmail">Send product addition
+                                    notification to program
                                     manager?</mat-checkbox>
-                                <mat-checkbox class="w-full">Add to rapidBuild (this product currently <span
-                                        class="disabled bold">DOES NOT</span> have an image)</mat-checkbox>
-                                <button mat-stroked-button>
-                                    <span>Take online</span>
+                                <mat-checkbox class="w-full" [(ngModel)]="blnAddToRapidBuild">Add to rapidBuild (this
+                                    product currently <span class="disabled bold">DOES NOT</span> have an
+                                    image)</mat-checkbox>
+                                <button class="min-w-40" mat-stroked-button (click)="UpdateStoreStatus(true)"
+                                    [disabled]="isUpdateLoading">
+                                    <span *ngIf="!isUpdateLoading">Take online</span>
+                                    <mat-progress-spinner *ngIf="isUpdateLoading" [diameter]="24"
+                                        [mode]="'indeterminate'">
+                                    </mat-progress-spinner>
                                 </button>
                             </div>
                         </div>
@@ -214,9 +220,12 @@
                                     <input matInput [(ngModel)]="offlineReason">
                                 </mat-form-field>
                                 <br>
-                                <button mat-stroked-button
-                                    [disabled]="!statusProductData.strStoreProductStatus.blnAllowStatusChange">
-                                    <span>Take offline</span>
+                                <button class="min-w-40" mat-stroked-button (click)="UpdateStoreStatus(false)"
+                                    [disabled]="isUpdateLoading && !statusProductData.strStoreProductStatus.blnAllowStatusChange">
+                                    <span *ngIf="!isUpdateLoading">Take offline</span>
+                                    <mat-progress-spinner *ngIf="isUpdateLoading" [diameter]="24"
+                                        [mode]="'indeterminate'">
+                                    </mat-progress-spinner>
                                 </button>
                             </div>
                         </div>

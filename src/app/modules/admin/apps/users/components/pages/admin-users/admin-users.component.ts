@@ -135,7 +135,7 @@ export class AdminUsersComponent implements OnInit, OnDestroy {
     this.getAdminCompanies();
     this.getAdminUsers(1, 'get');
     let params;
-    this.searchCompanyCtrl.setValue({ companyName: 'All', pk_companyID: null });
+    this.searchCompanyCtrl.setValue({ companyName: 'All', pk_companyID: 101 });
     this.searchCompanyCtrl.valueChanges.pipe(
       filter((res: any) => {
         params = {
@@ -160,7 +160,7 @@ export class AdminUsersComponent implements OnInit, OnDestroy {
         )
       )
     ).subscribe((data: any) => {
-      this.companies.push({ companyName: 'All', pk_companyID: null });
+      this.companies.push({ companyName: 'All', pk_companyID: 101 });
       this.companies = this.companies.concat(data['data']);
     });
 
@@ -240,7 +240,7 @@ export class AdminUsersComponent implements OnInit, OnDestroy {
     this.mainScreenUser = value;
     if (this.mainScreenUser == 'Permissions') {
       // let params;
-      // this.permissionGrpCtrl.setValue({ groupName: 'None', pk_companyID: null });
+      // this.permissionGrpCtrl.setValue({ groupName: 'None', pk_companyID: 101 });
       // this.permissionGrpCtrl.valueChanges.pipe(
       //   filter((res: any) => {
       //     params = {
@@ -329,7 +329,7 @@ export class AdminUsersComponent implements OnInit, OnDestroy {
   }
   getAdminCompanies() {
     this._UsersService.companyAdmins$.pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
-      this.companies.push({ companyName: 'All', pk_companyID: null });
+      this.companies.push({ companyName: 'All', pk_companyID: 101 });
       this.companies = this.companies.concat(res['data']);
       this.selectedCompany = this.companies[0];
       this.addSelectedCompany = this.companies[0];

@@ -2,6 +2,7 @@ import { Component, Input, OnInit, Output, EventEmitter, ChangeDetectorRef, OnDe
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { StoreProductService } from '../../store.service';
+import { StatusUpdate } from '../../store.types';
 
 @Component({
   selector: 'app-store-product-status',
@@ -17,7 +18,8 @@ export class StoreProductStatusComponent implements OnInit, OnDestroy {
   statusProductData: any;
   isUpdateLoading: boolean = false;
   offlineReason: any;
-
+  blnSendEmail: boolean = false;
+  blnAddToRapidBuild: boolean = false;
   constructor(
     private _changeDetectorRef: ChangeDetectorRef,
     private _storeService: StoreProductService
@@ -53,24 +55,26 @@ export class StoreProductStatusComponent implements OnInit, OnDestroy {
     })
   }
 
-  // UpdateStoreLevelCoop() {
-  //   this.isUpdateLoading = true;
-  //   let payload = {
-  //     storeName: this.selectedProduct?.storeName,
-  //     coOpId: Number(this.coOpId),
-  //     update_store_coop: true,
-  //     storeProductID: Number(this.selectedProduct.pk_storeProductID),
-  //     product_id: Number(this.selectedProduct.fk_productID)
-  //   }
-  //   this._storeService.UpdateStoreLevelCoop(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
-  //     this.isUpdateLoading = false;
-  //     this._storeService.snackBar('Store Level Coop Updated Successfully');
-  //     this._changeDetectorRef.markForCheck();
-  //   }, err => {
-  //     this.isUpdateLoading = false;
-  //     this._changeDetectorRef.markForCheck();
-  //   })
-  // }
+  UpdateStoreStatus(value) {
+    this.isUpdateLoading = true;
+    let payload: StatusUpdate = {
+      bln_active: value,
+      store_name: this.selectedProduct?.storeName,
+      store_product_id: Number(this.selectedProduct.pk_storeProductID),
+      blnSendEmail: this.blnSendEmail,
+      blnAddToRapidBuild: this.blnAddToRapidBuild,
+      update_status: true
+    }
+    this._storeService.putStoresProductData(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+      this.isUpdateLoading = false;
+      this.selectedProduct.blnStoreActive = value;
+      this._changeDetectorRef.markForCheck();
+      this._storeService.snackBar(res["message"]);
+    }, err => {
+      this.isUpdateLoading = false;
+      this._changeDetectorRef.markForCheck();
+    })
+  }
   /**
      * On destroy
      */

@@ -181,3 +181,11 @@ interface PricesMargins {
     priceOverride: number;
     tccdPrice: number;
 };
+export interface StatusUpdate {
+    bln_active: boolean;
+    store_name: string;
+    store_product_id: number;
+    blnSendEmail: boolean;
+    blnAddToRapidBuild: boolean;
+    update_status: boolean;
+};
