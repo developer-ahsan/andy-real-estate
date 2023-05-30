@@ -11,13 +11,13 @@ export interface UpdateStoreLevelCoop {
     coOpId: number;
     update_store_coop: boolean;
 };
-export interface UpdatePricing {
-    storeProductID: number;
-    product_id: number;
-    storeName: string;
-    list: Quantities[];
-    update_pricing: boolean;
-};
+// export interface UpdatePricing {
+//     storeProductID: number;
+//     product_id: number;
+//     storeName: string;
+//     list: Quantities[];
+//     update_pricing: boolean;
+// };
 export interface Quantities {
     quantity: number;
     margin: number;
@@ -164,3 +164,17 @@ interface storeProduct {
     productID: number;
     storeProductID: number;
 }
+
+export interface UpdatePricing {
+    prices: Pricing[];
+    product_id: number;
+    update_pricing: boolean;
+};
+export interface Pricing {
+    storeProductID: number;
+    storeName: string;
+    quantity: number;
+    margin: number;
+    priceOverride: number;
+    tccdPrice: number;
+};

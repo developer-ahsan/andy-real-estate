@@ -193,6 +193,132 @@
                                             class="text-secondary font-semibold"> 6 </small>
                                     </mat-form-field>
                                 </div>
+                                <div class="col-12 text-center text-red-500">OR</div>
+                                <!-- Target Price -->
+                                <div class="col-12 mt-5 flex justify-between">
+                                    <b>Target Price</b>
+                                    <p>
+                                        <span class="underline font-semibold cursor-pointer mr-2"
+                                            (click)="clearTargets()">Clear</span>
+                                    </p>
+                                </div>
+                                <div class="col-lg-2 col-4">
+                                    <mat-form-field class="w-full">
+                                        <input matInput [formControlName]="'targetOne'"><small
+                                            class="text-secondary font-semibold"> 1 </small>
+                                    </mat-form-field>
+                                </div>
+                                <div class="col-lg-2 col-4">
+                                    <mat-form-field class="w-full">
+                                        <input matInput [formControlName]="'targetTwo'"><small
+                                            class="text-secondary font-semibold"> 2 </small>
+                                    </mat-form-field>
+                                </div>
+                                <div class="col-lg-2 col-4">
+                                    <mat-form-field class="w-full">
+                                        <input matInput [formControlName]="'targetThree'"><small
+                                            class="text-secondary font-semibold"> 3 </small>
+                                    </mat-form-field>
+                                </div>
+                                <div class="col-lg-2 col-4">
+                                    <mat-form-field class="w-full">
+                                        <input matInput [formControlName]="'targetFour'"><small
+                                            class="text-secondary font-semibold"> 4 </small>
+                                    </mat-form-field>
+                                </div>
+                                <div class="col-lg-2 col-4">
+                                    <mat-form-field class="w-full">
+                                        <input matInput [formControlName]="'targetFive'"><small
+                                            class="text-secondary font-semibold"> 5 </small>
+                                    </mat-form-field>
+                                </div>
+                                <div class="col-lg-2 col-4">
+                                    <mat-form-field class="w-full">
+                                        <input matInput [formControlName]="'targetSix'"><small
+                                            class="text-secondary font-semibold"> 6 </small>
+                                    </mat-form-field>
+                                </div>
+                                <!-- Price Overrid-->
+                                <div class="col-12 mt-5 flex justify-between">
+                                    <b>Price Override</b>
+                                </div>
+                                <div class="col-lg-2 col-4">
+                                    <mat-form-field class="w-full">
+                                        <input matInput [formControlName]="'priceOverrideOne'"><small
+                                            class="text-secondary font-semibold"> 1 </small>
+                                    </mat-form-field>
+                                </div>
+                                <div class="col-lg-2 col-4">
+                                    <mat-form-field class="w-full">
+                                        <input matInput [formControlName]="'priceOverrideTwo'"><small
+                                            class="text-secondary font-semibold"> 2 </small>
+                                    </mat-form-field>
+                                </div>
+                                <div class="col-lg-2 col-4">
+                                    <mat-form-field class="w-full">
+                                        <input matInput [formControlName]="'priceOverrideThree'"><small
+                                            class="text-secondary font-semibold"> 3 </small>
+                                    </mat-form-field>
+                                </div>
+                                <div class="col-lg-2 col-4">
+                                    <mat-form-field class="w-full">
+                                        <input matInput [formControlName]="'priceOverrideFour'"><small
+                                            class="text-secondary font-semibold"> 4 </small>
+                                    </mat-form-field>
+                                </div>
+                                <div class="col-lg-2 col-4">
+                                    <mat-form-field class="w-full">
+                                        <input matInput [formControlName]="'priceOverrideFive'"><small
+                                            class="text-secondary font-semibold"> 5 </small>
+                                    </mat-form-field>
+                                </div>
+                                <div class="col-lg-2 col-4">
+                                    <mat-form-field class="w-full">
+                                        <input matInput [formControlName]="'priceOverrideSix'"><small
+                                            class="text-secondary font-semibold"> 6 </small>
+                                    </mat-form-field>
+                                </div>
+                                <!-- Tccd Price -->
+                                <div class="col-12 mt-5 flex justify-between">
+                                    <b>Tccd Price</b>
+                                </div>
+                                <div class="col-lg-2 col-4">
+                                    <mat-form-field class="w-full">
+                                        <input matInput [formControlName]="'tccdPriceOne'"><small
+                                            class="text-secondary font-semibold"> 1 </small>
+                                    </mat-form-field>
+                                </div>
+                                <div class="col-lg-2 col-4">
+                                    <mat-form-field class="w-full">
+                                        <input matInput [formControlName]="'tccdPriceTwo'"><small
+                                            class="text-secondary font-semibold"> 2 </small>
+                                    </mat-form-field>
+                                </div>
+                                <div class="col-lg-2 col-4">
+                                    <mat-form-field class="w-full">
+                                        <input matInput [formControlName]="'tccdPriceThree'"><small
+                                            class="text-secondary font-semibold"> 3 </small>
+                                    </mat-form-field>
+                                </div>
+                                <div class="col-lg-2 col-4">
+                                    <mat-form-field class="w-full">
+                                        <input matInput [formControlName]="'tccdPriceFour'"><small
+                                            class="text-secondary font-semibold"> 4 </small>
+                                    </mat-form-field>
+                                </div>
+                                <div class="col-lg-2 col-4">
+                                    <mat-form-field class="w-full">
+                                        <input matInput [formControlName]="'tccdPriceFive'"><small
+                                            class="text-secondary font-semibold"> 5 </small>
+                                    </mat-form-field>
+                                </div>
+                                <div class="col-lg-2 col-4">
+                                    <mat-form-field class="w-full">
+                                        <input matInput [formControlName]="'tccdPriceSix'"><small
+                                            class="text-secondary font-semibold"> 6 </small>
+                                    </mat-form-field>
+                                </div>
+
                                 <div class="col-12 text-right">
                                     <button [matTooltip]="'Update'" mat-stroked-button class="min-w-40"
                                         (click)="UpdatePricing()" [disabled]="isUpdateLoading">

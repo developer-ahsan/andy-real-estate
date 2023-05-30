@@ -164,20 +164,13 @@
                                     </ng-template>
                                 </div>
                             </div>
-
-                            <!-- password -->
-                            <mat-form-field class="w-full mt-3">
-                                <mat-label>Enter your password to confirm deletion</mat-label>
-                                <input matInput>
-                            </mat-form-field>
-                            <div>
-                                <button class="min-w-40" mat-stroked-button [matTooltip]="'Remove product from store'"
-                                    (click)="addDuplicate()" [disabled]="duplicateLoader">
-                                    <mat-progress-spinner *ngIf="duplicateLoader" [diameter]="24"
-                                        [mode]="'indeterminate'">
-                                    </mat-progress-spinner>
-                                    <mat-icon *ngIf="!duplicateLoader" svgIcon="heroicons_outline:trash"></mat-icon>
-                                    <span *ngIf="!duplicateLoader" class="ml-1 mr-1">Remove product from store</span>
+                            <div class="w-full">
+                                <mat-checkbox class="w-full">Send product addition notification to program
+                                    manager?</mat-checkbox>
+                                <mat-checkbox class="w-full">Add to rapidBuild (this product currently <span
+                                        class="disabled bold">DOES NOT</span> have an image)</mat-checkbox>
+                                <button mat-stroked-button>
+                                    <span>Take online</span>
                                 </button>
                             </div>
                         </div>

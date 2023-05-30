@@ -97,7 +97,7 @@ export class StoreProductService {
         return this._httpClient.put(
             environment.storeProducts, payload, { headers });
     };
-    UpdatePricing(payload: UpdatePricing) {
+    UpdatePricing(payload) {
         const headers = { 'Authorization': `Bearer ${this._authService.accessToken}` };
         return this._httpClient.put(
             environment.storeProducts, payload, { headers });
