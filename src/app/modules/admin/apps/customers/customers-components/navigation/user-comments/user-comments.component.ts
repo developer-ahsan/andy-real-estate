@@ -167,6 +167,12 @@ export class UserCommentsComponent implements OnInit {
             'success' :
             'error'
         );
+        this.ngComment = '';
+        this.emails = [];
+        this.commentators.forEach(element => {
+          element.checked = false;
+        });
+
         this.adminComment = payload.admin_comment;
 
         let param = {
@@ -177,7 +183,7 @@ export class UserCommentsComponent implements OnInit {
           .subscribe((addresses) => {
             this.commentUpdateLoader = false;
             this.isAddCommentLoader = false;
-            this.adminComment = addresses["data"][0].adminComments;
+            this.adminComment = addresses["data"][0];
             this._snackBar.open("Comment added successfully", '', {
               horizontalPosition: 'center',
               verticalPosition: 'bottom',

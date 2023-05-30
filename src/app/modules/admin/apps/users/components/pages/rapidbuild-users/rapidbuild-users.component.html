@@ -316,6 +316,8 @@
                     </div>
                 </div>
                 <div *ngIf="customersDataSource.length > 0 && !customerLoader;else other_content" class="w-full">
+                    <div class="w-full text-red-500">{{totalCustomers}} total history entries, {{totalCustomers}}
+                        distinct products</div>
                     <table mat-table [dataSource]="customersDataSource" class="w-full border-t">
                         <ng-container matColumnDef="id">
                             <th mat-header-cell *matHeaderCellDef>

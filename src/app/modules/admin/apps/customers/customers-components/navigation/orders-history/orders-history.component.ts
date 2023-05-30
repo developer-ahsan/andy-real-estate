@@ -13,13 +13,14 @@ export class OrdersHistoryComponent implements OnInit, OnDestroy {
   isLoading: boolean = false;
   private _unsubscribeAll: Subject<any> = new Subject<any>();
 
-  displayedColumns: string[] = ['pk_orderID', 'orderDate', 'productName', 'storeName'];
+  displayedColumns: string[] = ['pk_orderID', 'orderDate', 'productName', 'storeName', 'paid', 'cancel', 'status'];
   dataSource = [];
   ordersHistoryLength: number = 0;
 
   pageSize = 10;
   pageSizeOptions: number[] = [5, 10, 25, 100];
-
+  page = 1;
+  totalOrder = 0;
   constructor(
     private _customerService: CustomersService,
     private _changeDetectorRef: ChangeDetectorRef,
@@ -35,22 +36,36 @@ export class OrdersHistoryComponent implements OnInit, OnDestroy {
       .pipe(takeUntil(this._unsubscribeAll))
       .subscribe((response) => {
         this.selectedCustomer = response;
-        let params = {
-          orders_history: true,
-          user_id: this.selectedCustomer.pk_userID,
-        }
-        this._customerService.GetApiData(params).pipe(takeUntil(this._unsubscribeAll), finalize(() => {
-          this.isLoading = false;
-          this._changeDetectorRef.markForCheck();
-        })).subscribe(quotes => {
-          this.dataSource = quotes["data"];
-          this.ordersHistoryLength = quotes["totalRecords"];
-        }, err => {
-          this.isLoading = false;
-          this._changeDetectorRef.markForCheck();
-        })
+        this.getOrdersHistory();
       });
   }
+  getOrdersHistory() {
+    let params = {
+      orders_history: true,
+      user_id: this.selectedCustomer.pk_userID,
+      page: this.page,
+      size: 20
+    }
+    this._customerService.GetApiData(params).pipe(takeUntil(this._unsubscribeAll), finalize(() => {
+      this.isLoading = false;
+      this._changeDetectorRef.markForCheck();
+    })).subscribe(quotes => {
+      this.dataSource = quotes["data"];
+      this.totalOrder = quotes["totalRecords"];
+    }, err => {
+      this.isLoading = false;
+      this._changeDetectorRef.markForCheck();
+    })
+  }
+  getNextOrders(event) {
+    const { previousPageIndex, pageIndex } = event;
+    if (pageIndex > previousPageIndex) {
+      this.page++;
+    } else {
+      this.page--;
+    };
+    this.getOrdersHistory();
+  };
   orderDetails(id) {
     this._router.navigate([`/apps/orders/${id}`]);
   }
