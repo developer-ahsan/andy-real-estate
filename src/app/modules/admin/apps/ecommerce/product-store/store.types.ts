@@ -166,13 +166,16 @@ interface storeProduct {
 }
 
 export interface UpdatePricing {
-    prices: Pricing[];
+    pricing_store_products: PricingStoreProducts[];
     product_id: number;
     update_pricing: boolean;
 };
-export interface Pricing {
+interface PricingStoreProducts {
     storeProductID: number;
     storeName: string;
+    pricesMargins: PricesMargins[];
+};
+interface PricesMargins {
     quantity: number;
     margin: number;
     priceOverride: number;

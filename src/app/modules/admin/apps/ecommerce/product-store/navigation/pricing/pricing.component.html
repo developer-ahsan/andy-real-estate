@@ -318,7 +318,22 @@
                                             class="text-secondary font-semibold"> 6 </small>
                                     </mat-form-field>
                                 </div>
-
+                                <!-- Stores -->
+                                <div class="col-12 mt-2">
+                                    <p class="font-bold">Update on all stores</p>
+                                    <mat-divider class="my-2"></mat-divider>
+                                </div>
+                                <div class="col-12 col-md-6" *ngFor="let item of stores">
+                                    <mat-checkbox [(ngModel)]="item.checked" [ngModelOptions]="{standalone: true}">
+                                        <div class="flex">
+                                            <p>{{item.storeName}}</p>
+                                        </div>
+                                    </mat-checkbox>
+                                </div>
+                                <div class="col-12 text-center" *ngIf="!storeLoader && storesTotal > stores.length">
+                                    <span class="cursor-pointer" (click)="getStoresVersions()">Load More</span>
+                                </div>
+                                <!-- Update -->
                                 <div class="col-12 text-right">
                                     <button [matTooltip]="'Update'" mat-stroked-button class="min-w-40"
                                         (click)="UpdatePricing()" [disabled]="isUpdateLoading">

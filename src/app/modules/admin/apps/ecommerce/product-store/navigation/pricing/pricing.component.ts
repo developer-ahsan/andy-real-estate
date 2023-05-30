@@ -27,6 +27,10 @@ export class PricingComponent implements OnInit, OnDestroy {
   netCostForm: FormGroup;
   isUpdateLoading: boolean = false;
 
+  stores = [];
+  storesTotal = 0;
+  storePage = 1;
+  storeLoader: boolean = false;
 
   constructor(
     private _changeDetectorRef: ChangeDetectorRef,
@@ -43,6 +47,7 @@ export class PricingComponent implements OnInit, OnDestroy {
     this._storeService.product$.pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
       this.selectedProduct = res["data"][0];
       this.getPricing();
+      this.getStoresVersions(1);
     });
   }
   initialize() {
@@ -277,15 +282,30 @@ export class PricingComponent implements OnInit, OnDestroy {
     Quantities.push({ quantity: q6, margin: m6 });
     let prices = [];
     const { pk_storeProductID, storeName } = this.selectedProduct;
-    prices.push({ quantity: q1, margin: m1, storeProductID: pk_storeProductID, storeName: storeName, priceOverride: p1, tccdPrice: t1 });
-    prices.push({ quantity: q2, margin: m2, storeProductID: pk_storeProductID, storeName: storeName, priceOverride: p2, tccdPrice: t2 });
-    prices.push({ quantity: q3, margin: m3, storeProductID: pk_storeProductID, storeName: storeName, priceOverride: p3, tccdPrice: t3 });
-    prices.push({ quantity: q4, margin: m4, storeProductID: pk_storeProductID, storeName: storeName, priceOverride: p4, tccdPrice: t4 });
-    prices.push({ quantity: q5, margin: m5, storeProductID: pk_storeProductID, storeName: storeName, priceOverride: p5, tccdPrice: t5 });
-    prices.push({ quantity: q6, margin: m6, storeProductID: pk_storeProductID, storeName: storeName, priceOverride: p6, tccdPrice: t6 });
+    prices.push({ quantity: q1, margin: m1, priceOverride: p1, tccdPrice: t1 });
+    prices.push({ quantity: q2, margin: m2, priceOverride: p2, tccdPrice: t2 });
+    prices.push({ quantity: q3, margin: m3, priceOverride: p3, tccdPrice: t3 });
+    prices.push({ quantity: q4, margin: m4, priceOverride: p4, tccdPrice: t4 });
+    prices.push({ quantity: q5, margin: m5, priceOverride: p5, tccdPrice: t5 });
+    prices.push({ quantity: q6, margin: m6, priceOverride: p6, tccdPrice: t6 });
+    let pricing_store_products = [];
+    pricing_store_products.push({
+      storeProductID: pk_storeProductID,
+      storeName: storeName,
+      pricesMargins: prices
+    });
+    this.stores.forEach(element => {
+      if (element.checked) {
+        pricing_store_products.push({
+          storeProductID: element.pk_storeProductID,
+          storeName: element.storeName,
+          pricesMargins: prices
+        });
+      }
+    });
 
     let payload: UpdatePricing = {
-      prices: prices,
+      pricing_store_products: pricing_store_products,
       product_id: Number(this.selectedProduct.fk_productID),
       update_pricing: true
       // storeProductID: Number(this.selectedProduct.pk_storeProductID),
@@ -303,6 +323,33 @@ export class PricingComponent implements OnInit, OnDestroy {
       this.isUpdateLoading = false;
       this._changeDetectorRef.markForCheck();
     })
+  }
+  getStoresVersions(page) {
+    this.storeLoader = true;
+    let params = {
+      page: page,
+      special_description_stores: true,
+      store_product_id: this.selectedProduct.pk_storeProductID,
+      product_id: this.selectedProduct.fk_productID,
+      size: 20
+    }
+    this._storeService
+      .getStoreProducts(params)
+      .pipe(takeUntil(this._unsubscribeAll))
+      .subscribe((res) => {
+        this.stores = this.stores.concat(res["data"]);
+        this.storesTotal = res["totalRecords"];
+        this.storeLoader = false;
+        this._changeDetectorRef.markForCheck();
+      }, err => {
+        this.storeLoader = false;
+        this._changeDetectorRef.markForCheck();
+      });
+  }
+
+  getNextStore() {
+    this.storePage++;
+    this.getStoresVersions(this.storePage);
   }
   /**
      * On destroy
