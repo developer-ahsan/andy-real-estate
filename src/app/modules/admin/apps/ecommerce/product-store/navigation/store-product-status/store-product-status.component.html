@@ -28,7 +28,7 @@
                                     </ng-template>
                                 </div>
                                 <div>
-                                    <span *ngIf="statusProductData.data[0]?.descCheck > 0; else elsedescCheck"
+                                    <span *ngIf="statusProductData.data[0]?.descCheck?.length > 0; else elsedescCheck"
                                         class="text-green-600">
                                         Descriptions found
                                     </span>
@@ -209,7 +209,7 @@
                                 <fuse-alert class="mb-2" [appearance]="'soft'" [dismissed]="false" [type]="'success'">
                                     This item is not featured in any categories or campaigns and can be taken offline.
                                 </fuse-alert>
-                                <mat-form-field class="min-w-100">
+                                <mat-form-field class="w-full">
                                     <mat-label>Reason for taking offline</mat-label>
                                     <input matInput [(ngModel)]="offlineReason">
                                 </mat-form-field>
