@@ -8,9 +8,9 @@ import { InventoryService } from 'app/modules/admin/apps/ecommerce/inventory/inv
 import { Router } from '@angular/router';
 import { VendorsService } from 'app/modules/admin/apps/vendors/components/vendors.service';
 import { FileManagerService } from 'app/modules/admin/apps/file-manager/store-manager.service';
-import { CustomersService } from 'app/modules/admin/apps/ecommerce/customers/customers.service';
 import { OrdersService } from 'app/modules/admin/apps/orders/orders-components/orders.service';
 import { SearchService } from 'app/modules/admin/apps/search-modules/search.service';
+import { CustomersService } from 'app/modules/admin/apps/customers/customers-components/orders.service';
 
 @Component({
     selector: 'search',
@@ -172,11 +172,11 @@ export class SearchComponent implements OnChanges, OnInit, OnDestroy {
     searchCustomer(event) {
         const val = event.target.value;
         if (val != '') {
-            this._customerService._searchKeyword = val;
+            this._searchService.customerKeyword = val;
             // this.router.navigateByUrl('/', { skipLocationChange: true }).then(() => {
             //     this.router.navigate(['/apps/ecommerce/inventory'])
             // });
-            this.router.navigateByUrl('/apps/customers');
+            this.router.navigateByUrl('/apps/search/customers');
         }
         this.close();
     }

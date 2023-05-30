@@ -85,7 +85,6 @@ export class RemindersComponent implements OnInit, OnDestroy {
       reminder: true
     }
 
-    console.log("payload", payload)
     this.commentUpdateLoader = true;
     this._customerService.PostApiData(payload)
       .subscribe((response: any) => {
@@ -102,9 +101,12 @@ export class RemindersComponent implements OnInit, OnDestroy {
           this.isLoading = false;
           this._changeDetectorRef.markForCheck();
         })).subscribe(reminders => {
+          this.commentUpdateLoader = false;
           this.dataSource = reminders["data"];
           this.remindersLength = reminders["totalRecords"];
+          this._changeDetectorRef.markForCheck();
         }, err => {
+          this.commentUpdateLoader = false;
           this.isLoading = false;
           this._changeDetectorRef.markForCheck();
         })

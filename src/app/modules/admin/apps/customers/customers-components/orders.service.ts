@@ -112,7 +112,7 @@ export class CustomersService {
     PutApiData(payload) {
         const headers = { 'Authorization': `Bearer ${this._authService.accessToken}` };
         return this._httpClient.put(
-            environment.orders, payload, { headers });
+            environment.customerList, payload, { headers });
     };
     changePageNumber(status: 'increase' | 'decrease' | null = null): void {
         status === 'increase' ? this.pageNumber++ : this.pageNumber--;

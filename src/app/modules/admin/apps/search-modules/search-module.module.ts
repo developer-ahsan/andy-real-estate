@@ -30,6 +30,7 @@ import { MatPaginatorModule } from '@angular/material/paginator';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { NgxPaginationModule } from 'ngx-pagination';
 import { SearchOrdersComponents } from './search-orders/search-orders.component';
+import { SearchCustomersComponents } from './search-customers/search-customers.component';
 
 @NgModule({
     declarations: [
@@ -37,6 +38,7 @@ import { SearchOrdersComponents } from './search-orders/search-orders.component'
         SearchProductsComponents,
         SearchOrdersComponents,
         ContactsListComponents,
+        SearchCustomersComponents,
         ContactsDetailsComponents
     ],
     imports: [
