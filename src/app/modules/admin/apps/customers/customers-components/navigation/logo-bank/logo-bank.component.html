@@ -71,7 +71,7 @@
             <div *ngIf="logoBanks.length == 0 && !logoBanksLoader" class="text-center my-2">
                 No Logo Bank Found
             </div>
-            <div class="col-12" *ngIf="logoBanks.length > 0">
+            <div class="col-12" *ngIf="allStores.length > 0 && !logoBanksLoader">
                 <mat-form-field class="w-full">
                     <input matInput placeholder="Search Stores" matTooltip="Search Stores by name"
                         [matAutocomplete]="auto" [formControl]="searchStoreCtrl">
