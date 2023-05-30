@@ -172,7 +172,7 @@
                                     product currently <span class="disabled bold">DOES NOT</span> have an
                                     image)</mat-checkbox>
                                 <button class="min-w-40" mat-stroked-button (click)="UpdateStoreStatus(true)"
-                                    [disabled]="isUpdateLoading">
+                                    [disabled]="isUpdateLoading || !enableButton">
                                     <span *ngIf="!isUpdateLoading">Take online</span>
                                     <mat-progress-spinner *ngIf="isUpdateLoading" [diameter]="24"
                                         [mode]="'indeterminate'">
@@ -221,7 +221,7 @@
                                 </mat-form-field>
                                 <br>
                                 <button class="min-w-40" mat-stroked-button (click)="UpdateStoreStatus(false)"
-                                    [disabled]="isUpdateLoading && !statusProductData.strStoreProductStatus.blnAllowStatusChange">
+                                    [disabled]="isUpdateLoading || !statusProductData.strStoreProductStatus.blnAllowStatusChange">
                                     <span *ngIf="!isUpdateLoading">Take offline</span>
                                     <mat-progress-spinner *ngIf="isUpdateLoading" [diameter]="24"
                                         [mode]="'indeterminate'">

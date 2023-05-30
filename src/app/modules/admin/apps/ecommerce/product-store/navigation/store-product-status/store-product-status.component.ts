@@ -20,6 +20,7 @@ export class StoreProductStatusComponent implements OnInit, OnDestroy {
   offlineReason: any;
   blnSendEmail: boolean = false;
   blnAddToRapidBuild: boolean = false;
+  enableButton: boolean = false;
   constructor(
     private _changeDetectorRef: ChangeDetectorRef,
     private _storeService: StoreProductService
@@ -45,6 +46,17 @@ export class StoreProductStatusComponent implements OnInit, OnDestroy {
     }
     this._storeService.getStoreProducts(params).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
       this.statusProductData = res;
+      const { FOBCheck, attributeCheck, colorCheck, costsCheck, descCheck, imprintsCheck, licensingTermCheck, marginsCheck, msrpCheck, subCatCheck, sizesCheck } = res["data"][0];
+      if (FOBCheck > 0 && attributeCheck > 0 && colorCheck > 0 && costsCheck > 0 && descCheck?.length > 0 && imprintsCheck > 0 && licensingTermCheck > 0 && marginsCheck > 0 && msrpCheck > 0 && subCatCheck) {
+        if (this.selectedProduct.blnApparel) {
+          if (sizesCheck > 0) {
+            this.enableButton = true;
+          }
+        } else {
+          this.enableButton = true;
+        }
+      }
+      console.log(this.enableButton);
       this.isLoading = false;
       this.isLoadingChange.emit(false);
       this._changeDetectorRef.markForCheck();
