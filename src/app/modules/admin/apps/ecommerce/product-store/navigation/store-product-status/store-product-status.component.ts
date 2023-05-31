@@ -40,7 +40,7 @@ export class StoreProductStatusComponent implements OnInit, OnDestroy {
     let params = {
       storeProduct_id: this.selectedProduct.pk_storeProductID,
       product_id: this.selectedProduct.fk_productID,
-      bln_apparel: this.selectedProduct.blnApparel,
+      bln_apparel: this.selectedProduct.blnApparel ? 1 : 0,
       bln_active: this.selectedProduct.blnStoreActive,
       status_check: true
     }
@@ -48,13 +48,13 @@ export class StoreProductStatusComponent implements OnInit, OnDestroy {
       this.statusProductData = res;
       const { FOBCheck, attributeCheck, colorCheck, costsCheck, descCheck, imprintsCheck, licensingTermCheck, marginsCheck, msrpCheck, subCatCheck, sizesCheck } = res["data"][0];
       if (FOBCheck > 0 && attributeCheck > 0 && colorCheck > 0 && costsCheck > 0 && descCheck?.length > 0 && imprintsCheck > 0 && licensingTermCheck > 0 && marginsCheck > 0 && msrpCheck > 0 && subCatCheck) {
-        // if (this.selectedProduct.blnApparel) {
-        //   if (sizesCheck > 0) {
-        //     this.enableButton = true;
-        //   }
-        // } else {
-        this.enableButton = true;
-        // }
+        if (this.selectedProduct.blnApparel) {
+          if (sizesCheck > 0) {
+            this.enableButton = true;
+          }
+        } else {
+          this.enableButton = true;
+        }
       }
       console.log(this.enableButton);
       this.isLoading = false;

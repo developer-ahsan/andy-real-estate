@@ -183,7 +183,7 @@ export class UserCommentsComponent implements OnInit {
           .subscribe((addresses) => {
             this.commentUpdateLoader = false;
             this.isAddCommentLoader = false;
-            this.adminComment = addresses["data"][0];
+            this.adminComment = addresses["data"];
             this._snackBar.open("Comment added successfully", '', {
               horizontalPosition: 'center',
               verticalPosition: 'bottom',
