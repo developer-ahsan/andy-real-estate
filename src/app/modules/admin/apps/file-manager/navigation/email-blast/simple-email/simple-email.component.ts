@@ -9,6 +9,7 @@ import { COMMA, ENTER } from '@angular/cdk/keycodes';
 import { MatChipInputEvent } from '@angular/material/chips';
 import * as XLSX from 'xlsx';
 import { read } from 'fs';
+import { sendgrid_simple_email } from '../../../stores.types';
 
 @Component({
   selector: 'app-simple-email',
@@ -38,6 +39,32 @@ export class SimpleEmailBlastComponent implements OnInit, OnDestroy {
   file: File;
   imageValue: any;
   isEmailLoader: boolean = false;
+
+  editorConfig = {
+    toolbar: [
+      { name: 'clipboard', items: ['Undo', 'Redo'] },
+      { name: 'styles', items: ['Format'] },
+      { name: 'basicstyles', items: ['Bold', 'Italic', 'Underline', 'Strike'] },
+      { name: 'align', items: ['JustifyLeft', 'JustifyCenter', 'JustifyRight', 'JustifyBlock'] },
+      { name: 'links', items: ['Link', 'Unlink'] },
+      { name: 'insert', items: ['Image', 'Table'] },
+      { name: 'tools', items: ['Maximize'] },
+    ],
+    extraPlugins: 'uploadimage,image2',
+    uploadUrl:
+      'https://ckeditor.com/apps/ckfinder/3.4.5/core/connector/php/connector.php?command=QuickUpload&type=Files&responseType=json',
+
+    // Configure your file manager integration. This example uses CKFinder 3 for PHP.
+    filebrowserBrowseUrl:
+      'https://ckeditor.com/apps/ckfinder/3.4.5/ckfinder.html',
+    filebrowserImageBrowseUrl:
+      'https://ckeditor.com/apps/ckfinder/3.4.5/ckfinder.html?type=Images',
+    filebrowserUploadUrl:
+      'https://ckeditor.com/apps/ckfinder/3.4.5/core/connector/php/connector.php?command=QuickUpload&type=Files',
+    filebrowserImageUploadUrl:
+      'https://ckeditor.com/apps/ckfinder/3.4.5/core/connector/php/connector.php?command=QuickUpload&type=Images'
+    // other options
+  };
   constructor(
     private _fileManagerService: FileManagerService,
     private _changeDetectorRef: ChangeDetectorRef,
@@ -105,35 +132,75 @@ export class SimpleEmailBlastComponent implements OnInit, OnDestroy {
 
   sendEmail() {
     const { subject, message } = this.sendEmailForm.getRawValue();
-    if (!subject) {
-      this._fileManagerService.snackBar('Subject is required');
-      return;
+    let messageData = message;
+    // if (!subject) {
+    //   this._fileManagerService.snackBar('Subject is required');
+    //   return;
+    // }
+    // if (!message) {
+    //   this._fileManagerService.snackBar('Message is required');
+    //   return;
+    // }
+    // if (this.emails.length == 0) {
+    //   this._fileManagerService.snackBar('At least 1 email is required');
+    //   return;
+    // }
+    // if (!this.imageValue) {
+    //   this._fileManagerService.snackBar('Please choose an image');
+    //   return;
+    // }
+    let images = [];
+
+    const parser = new DOMParser();
+    const doc = parser.parseFromString(message, 'text/html');
+    // Extract all img tags
+    const imgTags = doc.getElementsByTagName('img');
+    for (let i = 0; i < imgTags.length; i++) {
+      const imgTag = imgTags[i];
+      const src = imgTag.getAttribute('src');
+      console.log(src)
+      // Create a new canvas element to draw the image
+      const canvas = document.createElement('canvas');
+      const ctx = canvas.getContext('2d');
+
+      // Create an image element and set the src attribute
+      const img = new Image();
+      img.src = src;
+
+      img.onload = () => {
+        canvas.width = img.width;
+        canvas.height = img.height;
+        ctx.drawImage(img, 0, 0);
+
+        const base64Image = canvas.toDataURL('image/png'); // Convert image to base64
+
+        // Update the src attribute with the base64 image
+        imgTag.setAttribute('src', base64Image);
+
+        // Push the image details to the images array
+        images.push({
+          image: base64Image.split(',')[1],
+          image_title: `${i + 1}_image`,
+          template_id: 'none',
+          image_extension: 'png'
+        });
+
+        messageData = messageData.replace(src, `cid:${i + 1}_image`);
+        this._changeDetectorRef.markForCheck();
+      };
     }
-    if (!message) {
-      this._fileManagerService.snackBar('Message is required');
-      return;
-    }
-    if (this.emails.length == 0) {
-      this._fileManagerService.snackBar('At least 1 email is required');
-      return;
-    }
-    if (!this.imageValue) {
-      this._fileManagerService.snackBar('Please choose an image');
-      return;
-    }
-    const base64 = this.imageValue.imageUpload.split(",")[1];
-    let payload = {
+    console.log(images);
+
+    let payload: sendgrid_simple_email = {
       email_list: this.emails,
       subject: subject,
       store_name: this.selectedStore.storeName,
       is_html: true,
-      message: message,
-      image: base64,
-      image_title: this.imageValue.name,
-      template_id: "none",
-      image_extension: this.imageValue.type,
+      message: messageData,
+      images: images,
       simple_email: true
     }
+
     this.isEmailLoader = true;
     this._fileManagerService.postStoresData(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
       if (res["success"]) {

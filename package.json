@@ -40,6 +40,7 @@
         "@types/stripe": "^8.0.417",
         "angular-ng-autocomplete": "^2.0.7",
         "apexcharts": "3.26.2",
+        "ckeditor4-angular": "^3.3.0",
         "crypto-js": "^3.3.0",
         "exceljs": "^4.3.0",
         "firebase": "^9.8.3",

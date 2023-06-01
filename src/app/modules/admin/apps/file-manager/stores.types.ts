@@ -594,3 +594,19 @@ export interface updateStoreLogoBank {
     logo_bank_id: number;
     update_store_logoBank: boolean;
 };
+
+export interface sendgrid_simple_email {
+    email_list: string[];
+    subject: string;
+    store_name: string;
+    is_html: boolean;
+    message: string;
+    images: attachment[];
+    simple_email: boolean;
+}
+export interface attachment {
+    image: string;
+    image_title: string;
+    template_id: string;
+    image_extension: string;
+}

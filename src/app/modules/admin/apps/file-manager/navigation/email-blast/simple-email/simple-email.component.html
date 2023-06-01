@@ -26,7 +26,9 @@
         </div>
         <div class="col-12">
           <div style="font-weight: 500">Message</div>
-          <quill-editor [modules]="quillModules" [formControlName]="'message'"> </quill-editor>
+          <ckeditor [formControlName]="'message'" [config]="editorConfig"></ckeditor>
+
+          <!-- <quill-editor [modules]="quillModules" [formControlName]="'message'"> </quill-editor> -->
           <!-- <mat-error>Please add message</mat-error> -->
         </div>
         <div class="col-12 mt-2">

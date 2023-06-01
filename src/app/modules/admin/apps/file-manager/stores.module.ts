@@ -96,6 +96,7 @@ import { MatBadgeModule } from '@angular/material/badge';
 import { NgxPaginationModule } from "ngx-pagination";
 import { ProductSubCategoriesComponent } from "./navigation/product-categories/product-sub-categories/product-sub-categories.component";
 import { ScrollingModule } from "@angular/cdk/scrolling";
+import { CKEditorModule } from 'ckeditor4-angular';
 
 @NgModule({
   declarations: [
@@ -198,7 +199,8 @@ import { ScrollingModule } from "@angular/cdk/scrolling";
     NgxDropzoneModule,
     MatBadgeModule,
     NgxPaginationModule,
-    ScrollingModule
+    ScrollingModule,
+    CKEditorModule
   ],
   entryComponents: [ConfirmationDialogComponent],
 })

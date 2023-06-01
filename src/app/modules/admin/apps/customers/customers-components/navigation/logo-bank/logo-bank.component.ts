@@ -66,6 +66,9 @@ export class LogoBankComponent implements OnInit {
   logoBanksLoadMore: boolean = false;
   logoBankImageValue: any;
   isAddLogoBankLoader: boolean = false;
+
+  isSearchLaoder: boolean = false;
+  searchKeyword = '';
   constructor(
     private _cutomerService: CustomersService,
     private _changeDetectorRef: ChangeDetectorRef,
@@ -132,21 +135,33 @@ export class LogoBankComponent implements OnInit {
     this.selectedStore = this.allStores[0];
     this.searchStoreCtrl.setValue({ storeName: 'All Stores', storeID: null });
   }
+  searchLogoBank() {
+    this.isSearchLaoder = true;
+    this.logoBanksPage = 1;
+    this.logoBanks = [];
+    this.getLogoBanks(1);
+  }
   getLogoBanks(page) {
-    this.logoBanksLoader = true;
+    if (!this.isSearchLaoder) {
+      this.logoBanksLoader = true;
+    }
     let params = {
       page: page,
+      keyword: this.searchKeyword,
       logo_banks: true,
       user_id: this.selectedCustomer.pk_userID,
       store_id: this.selectedStore?.storeID
     }
+    if (page == 1) { }
     this._cutomerService.GetApiData(params).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
       this.logoBanksTotal = res["totalRecords"];
       this.logoBanks = res["data"];
       this.logoBanksLoader = false;
+      this.isSearchLaoder = false;
       this._changeDetectorRef.markForCheck();
     }, err => {
       this.logoBanksLoader = false;
+      this.isSearchLaoder = false;
       this._changeDetectorRef.markForCheck();
     });
   }

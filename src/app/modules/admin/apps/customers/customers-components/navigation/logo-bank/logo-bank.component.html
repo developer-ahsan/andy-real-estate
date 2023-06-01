@@ -83,8 +83,18 @@
                     </mat-autocomplete>
                 </mat-form-field>
             </div>
-            <div *ngIf="logoBanks.length == 0 && !logoBanksLoader" class="col-12 text-center my-2 font-bold">
+            <div *ngIf="logoBanks.length == 0 && !logoBanksLoader " class="col-12 text-center my-2 font-bold">
                 No Logo Bank Found
+            </div>
+            <div class="col-12" *ngIf="logoBanksTotal > 0">
+                <mat-form-field class="w-full">
+                    <input matInput [disabled]="isSearchLaoder" placeholder="Search By Logo Name"
+                        [(ngModel)]="searchKeyword" (keyup.enter)="searchLogoBank()">
+                </mat-form-field>
+            </div>
+            <div class="col-12" *ngIf="isSearchLaoder">
+                <ngx-skeleton-loader count="8" appearance="line" animation="pulse">
+                </ngx-skeleton-loader>
             </div>
             <div class="col-12 bg-card sm:p-6 md:p-6 lg:p-10 rounded-2xl shadow my-2" *ngFor="let item of logoBanks">
                 <div class="row">
@@ -130,7 +140,7 @@
                 </div>
             </div>
             <div class="col-12 flex justify-center cursor-pointer my-2"
-                *ngIf="(logoBanksTotal > logoBanks.length) && !logoBanksLoader">
+                *ngIf="(logoBanksTotal > logoBanks.length) && !logoBanksLoader && !isSearchLaoder">
                 <p *ngIf="!logoBanksLoadMore" class="text-lg font-bold" (click)="nextLogoBanks()">Load More</p>
                 <mat-progress-spinner *ngIf="logoBanksLoadMore" [diameter]="24" [mode]="'indeterminate'">
                 </mat-progress-spinner>
