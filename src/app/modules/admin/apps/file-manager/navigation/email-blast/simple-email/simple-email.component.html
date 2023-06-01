@@ -31,16 +31,6 @@
           <!-- <quill-editor [modules]="quillModules" [formControlName]="'message'"> </quill-editor> -->
           <!-- <mat-error>Please add message</mat-error> -->
         </div>
-        <div class="col-12 mt-2">
-          <div style="font-weight: 500">Choose image:</div>
-          <br>
-          <ngx-dropzone [multiple]="false" accept="image/jpeg,image/jpg" (change)="onSelect($event)">
-            <ngx-dropzone-label>Choose Image</ngx-dropzone-label>
-            <ngx-dropzone-preview *ngIf="file" [removable]="true" (removed)="onRemove()">
-              <ngx-dropzone-label>{{ file.name }} ({{ file.type }})</ngx-dropzone-label>
-            </ngx-dropzone-preview>
-          </ngx-dropzone>
-        </div>
         <div class="col-12 text-right my-2">
           <button (click)="sendEmail()" [disabled]="isEmailLoader" class="ml-4 min-w-40" mat-flat-button
             [color]="'primary'" [matTooltip]="'Send an Email'">

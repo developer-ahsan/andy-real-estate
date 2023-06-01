@@ -1,0 +1,13 @@
+{
+    "/image-proxy": {
+        "target": "https://ckeditor.com",
+        "secure": false,
+        "changeOrigin": true,
+        "pathRewrite": {
+            "^/image-proxy": "/apps/ckfinder/userfiles"
+        },
+        "headers": {
+            "Referer": "https://ckeditor.com"
+        }
+    }
+}

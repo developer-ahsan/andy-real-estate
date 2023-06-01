@@ -10,12 +10,16 @@ import { MatChipInputEvent } from '@angular/material/chips';
 import * as XLSX from 'xlsx';
 import { read } from 'fs';
 import { sendgrid_simple_email } from '../../../stores.types';
+import { HttpClient } from '@angular/common/http';
+import { DomSanitizer } from '@angular/platform-browser';
+// import { Base64UploadAdapter } from './base64-upload-adapter';
 
 @Component({
   selector: 'app-simple-email',
   templateUrl: './simple-email.component.html',
   styles: ['::ng-deep {.ql-container {height: auto}} ngx-dropzone {height: 125px} ngx-dropzone-preview {min-height: 100px !important;height: 100px !important}']
 })
+
 export class SimpleEmailBlastComponent implements OnInit, OnDestroy {
   selectedStore: any;
   isLoading: boolean;
@@ -53,7 +57,7 @@ export class SimpleEmailBlastComponent implements OnInit, OnDestroy {
     extraPlugins: 'uploadimage,image2',
     uploadUrl:
       'https://ckeditor.com/apps/ckfinder/3.4.5/core/connector/php/connector.php?command=QuickUpload&type=Files&responseType=json',
-
+    filebrowserUploadMethod: 'base64',
     // Configure your file manager integration. This example uses CKFinder 3 for PHP.
     filebrowserBrowseUrl:
       'https://ckeditor.com/apps/ckfinder/3.4.5/ckfinder.html',
@@ -65,11 +69,14 @@ export class SimpleEmailBlastComponent implements OnInit, OnDestroy {
       'https://ckeditor.com/apps/ckfinder/3.4.5/core/connector/php/connector.php?command=QuickUpload&type=Images'
     // other options
   };
+
   constructor(
     private _fileManagerService: FileManagerService,
     private _changeDetectorRef: ChangeDetectorRef,
     private _snackBar: MatSnackBar,
-    private _formBuilder: FormBuilder
+    private _formBuilder: FormBuilder,
+    private http: HttpClient,
+    private sanitizer: DomSanitizer
   ) { }
 
   ngOnInit(): void {
@@ -88,9 +95,12 @@ export class SimpleEmailBlastComponent implements OnInit, OnDestroy {
   }
   add(event: MatChipInputEvent): void {
     const value = (event.value || '').trim();
-    // Add our fruit
-    if (value) {
+    const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+    const valid = emailRegex.test(value);
+    if (valid) {
       this.emails.push(value);
+    } else {
+      this._fileManagerService.snackBar('Please enter a valid email');
     }
     // Clear the input value
     event.chipInput!.clear();
@@ -133,22 +143,18 @@ export class SimpleEmailBlastComponent implements OnInit, OnDestroy {
   sendEmail() {
     const { subject, message } = this.sendEmailForm.getRawValue();
     let messageData = message;
-    // if (!subject) {
-    //   this._fileManagerService.snackBar('Subject is required');
-    //   return;
-    // }
-    // if (!message) {
-    //   this._fileManagerService.snackBar('Message is required');
-    //   return;
-    // }
-    // if (this.emails.length == 0) {
-    //   this._fileManagerService.snackBar('At least 1 email is required');
-    //   return;
-    // }
-    // if (!this.imageValue) {
-    //   this._fileManagerService.snackBar('Please choose an image');
-    //   return;
-    // }
+    if (!subject) {
+      this._fileManagerService.snackBar('Subject is required');
+      return;
+    }
+    if (!message) {
+      this._fileManagerService.snackBar('Message is required');
+      return;
+    }
+    if (this.emails.length == 0) {
+      this._fileManagerService.snackBar('At least 1 email is required');
+      return;
+    }
     let images = [];
 
     const parser = new DOMParser();
@@ -158,39 +164,15 @@ export class SimpleEmailBlastComponent implements OnInit, OnDestroy {
     for (let i = 0; i < imgTags.length; i++) {
       const imgTag = imgTags[i];
       const src = imgTag.getAttribute('src');
-      console.log(src)
-      // Create a new canvas element to draw the image
-      const canvas = document.createElement('canvas');
-      const ctx = canvas.getContext('2d');
+      images.push({
+        image: src,
+        image_title: `${i + 1}_image`,
+        template_id: 'none',
+        image_extension: 'png'
+      });
+      messageData = messageData.replace(src, `cid:${i + 1}_image`);
 
-      // Create an image element and set the src attribute
-      const img = new Image();
-      img.src = src;
-
-      img.onload = () => {
-        canvas.width = img.width;
-        canvas.height = img.height;
-        ctx.drawImage(img, 0, 0);
-
-        const base64Image = canvas.toDataURL('image/png'); // Convert image to base64
-
-        // Update the src attribute with the base64 image
-        imgTag.setAttribute('src', base64Image);
-
-        // Push the image details to the images array
-        images.push({
-          image: base64Image.split(',')[1],
-          image_title: `${i + 1}_image`,
-          template_id: 'none',
-          image_extension: 'png'
-        });
-
-        messageData = messageData.replace(src, `cid:${i + 1}_image`);
-        this._changeDetectorRef.markForCheck();
-      };
     }
-    console.log(images);
-
     let payload: sendgrid_simple_email = {
       email_list: this.emails,
       subject: subject,
@@ -217,6 +199,27 @@ export class SimpleEmailBlastComponent implements OnInit, OnDestroy {
       this._changeDetectorRef.markForCheck();
     });
   }
+  // onEditorReady(editor: any) {
+  //   editor.plugins.get('FileRepository').createUploadAdapter = (loader: any) => {
+  //     return new Base64UploadAdapter(loader, 'https://ckeditor.com/apps/ckfinder/3.4.5/core/connector/php/connector.php?command=QuickUpload&type=Images');
+  //   };
+  // }
+  toDataURL(url, callback) {
+    let u: any = this.sanitizer.bypassSecurityTrustHtml(url)
+    console.log(url);
+    var xhr = new XMLHttpRequest();
+    xhr.onload = function () {
+      var reader = new FileReader();
+      reader.onloadend = function () {
+        callback(reader.result);
+      }
+      reader.readAsDataURL(xhr.response);
+    };
+    xhr.open('GET', u);
+    xhr.responseType = 'blob';
+    xhr.send();
+  }
+
   ngOnDestroy(): void {
     // Unsubscribe from all subscriptions
     this._unsubscribeAll.next();
