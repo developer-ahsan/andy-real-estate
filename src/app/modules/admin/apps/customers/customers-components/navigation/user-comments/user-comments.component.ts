@@ -42,6 +42,10 @@ export class UserCommentsComponent implements OnInit {
   emails = [];
   isAddCommentLoader: boolean;
 
+  totalComments = 0;
+  commentsPage = 1;
+  isLoadComments: boolean = false;
+
   constructor(
     private _customerService: CustomersService,
     private _formBuilder: FormBuilder,
@@ -63,19 +67,30 @@ export class UserCommentsComponent implements OnInit {
         this.selectedCustomer = response;
         let params = {
           user_comment: true,
-          user_id: this.selectedCustomer.pk_userID
+          user_id: this.selectedCustomer.pk_userID,
+          page: this.commentsPage
         }
         this._customerService.GetApiData(params).pipe(takeUntil(this._unsubscribeAll), finalize(() => {
           this.isLoading = false;
+          this.isLoadComments = false;
           this._changeDetectorRef.markForCheck();
         })).subscribe(comments => {
-          this.adminComment = comments["data"][0].adminComments;
-          this.getCommentators();
+          this.adminComment = comments["data"];
+          this.totalComments = comments["totalRecords"];
+          if (this.commentsPage == 1) {
+            this.getCommentators();
+          }
         }, err => {
+          this.isLoadComments = false;
           this.isLoading = false;
           this._changeDetectorRef.markForCheck();
         })
       });
+  }
+  getNextComments() {
+    this.commentsPage++;
+    this.isLoadComments = true;
+    this.getCustomer();
   }
   calledScreen(value) {
     this.mainScreen = value;
@@ -173,17 +188,17 @@ export class UserCommentsComponent implements OnInit {
           element.checked = false;
         });
 
-        this.adminComment = payload.admin_comment;
-
         let param = {
           user_comment: true,
-          user_id: this.selectedCustomer.pk_userID
+          user_id: this.selectedCustomer.pk_userID,
+          page: 1
         }
         this._customerService.GetApiData(param)
-          .subscribe((addresses) => {
+          .subscribe((comments) => {
             this.commentUpdateLoader = false;
             this.isAddCommentLoader = false;
-            this.adminComment = addresses["data"];
+            this._changeDetectorRef.markForCheck();
+            this.adminComment = comments["data"];
             this._snackBar.open("Comment added successfully", '', {
               horizontalPosition: 'center',
               verticalPosition: 'bottom',

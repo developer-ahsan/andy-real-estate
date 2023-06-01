@@ -7,7 +7,8 @@
     </div>
     <div class="border mt-3 overflow-auto">
       <ng-container *ngIf="totalOrder > 0; else noOrders">
-        <table mat-table [dataSource]="dataSource" class="w-full min-w-120 table-fixed bg-transparent">
+        <p class="text-red-500 my-2 font-bold">Total Sales: {{grandTotal | currency}}</p>
+        <table mat-table [dataSource]="dataSource" class="w-full bg-transparent">
           <!-- Position Column -->
           <ng-container matColumnDef="pk_orderID">
             <th mat-header-cell *matHeaderCellDef class="bg-light "> ID. </th>
@@ -23,7 +24,7 @@
 
           <!-- Weight Column -->
           <ng-container matColumnDef="productName">
-            <th mat-header-cell *matHeaderCellDef class="bg-light "> Products </th>
+            <th mat-header-cell *matHeaderCellDef class="bg-light min-w-50"> Products </th>
             <td mat-cell *matCellDef="let order" (click)="orderDetails(order.pk_orderID)">
               <div *ngFor="let product of (order.products?.split(','))">{{ product }}</div>
             </td>
@@ -33,6 +34,12 @@
           <ng-container matColumnDef="storeName">
             <th mat-header-cell *matHeaderCellDef class="bg-light "> Store </th>
             <td mat-cell *matCellDef="let order" (click)="orderDetails(order.pk_orderID)"> {{order.storeName}} </td>
+          </ng-container>
+          <ng-container matColumnDef="total">
+            <th mat-header-cell *matHeaderCellDef class="bg-light"> Total </th>
+            <td mat-cell *matCellDef="let order">
+              {{order.Total | currency}}
+            </td>
           </ng-container>
           <ng-container matColumnDef="paid">
             <th mat-header-cell *matHeaderCellDef class="bg-light"> Paid </th>
@@ -52,7 +59,7 @@
 
           <ng-container matColumnDef="status">
             <th mat-header-cell *matHeaderCellDef class="bg-light"> Status </th>
-            <td mat-cell *matCellDef="let order"> {{order.statusName}} </td>
+            <td mat-cell *matCellDef="let order"> {{order.statusName || '---'}} </td>
           </ng-container>
 
 

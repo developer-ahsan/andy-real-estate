@@ -19,98 +19,105 @@
             </ngx-skeleton-loader>
         </div>
         <div class="mt-2 overflow-x-auto" *ngIf="!isLoading">
-            <table mat-table [dataSource]="dataSource" class="w-full border-t">
-                <ng-container matColumnDef="ID">
-                    <th mat-header-cell *matHeaderCellDef class="w-10 min-w-10 px-2">
-                        ID
-                    </th>
-                    <td mat-cell *matCellDef="let element" class="text-sm px-2" (click)="goToDetailPage(element)">
-                        {{element.pk_rapidBuildID}}
-                    </td>
-                </ng-container>
-                <ng-container matColumnDef="Status">
-                    <th mat-header-cell *matHeaderCellDef class="w-20 min-w-20 px-2">
-                        Status
-                    </th>
-                    <td mat-cell *matCellDef="let element" class="text-sm px-2" (click)="goToDetailPage(element)">
-                        {{element.statusName}}
-                    </td>
-                </ng-container>
-                <ng-container matColumnDef="Age">
-                    <th mat-header-cell *matHeaderCellDef class="w-10 min-w-10 px-2">
-                        Age
-                    </th>
-                    <td mat-cell *matCellDef="let element" class="text-sm px-2" (click)="goToDetailPage(element)">
-                        {{element.FIELD3}}
-                    </td>
-                </ng-container>
-                <ng-container matColumnDef="SPID">
-                    <th mat-header-cell *matHeaderCellDef class="w-10 min-w-10 px-2">
-                        SPID
-                    </th>
-                    <td mat-cell *matCellDef="let element" class="text-sm px-2" (click)="goToDetailPage(element)">
-                        {{element.fk_storeProductID}}
-                    </td>
-                </ng-container>
-                <ng-container matColumnDef="PID">
-                    <th mat-header-cell *matHeaderCellDef class="w-10 min-w-10 px-2">
-                        PID
-                    </th>
-                    <td mat-cell *matCellDef="let element" class="text-sm px-2" (click)="goToDetailPage(element)">
-                        {{element.pk_productID}}
-                    </td>
-                </ng-container>
-                <ng-container matColumnDef="Product">
-                    <th mat-header-cell *matHeaderCellDef class="w-40 min-w-40 px-2">
-                        Product
-                    </th>
-                    <td mat-cell *matCellDef="let element" class="text-sm px-2" (click)="goToDetailPage(element)">
-                        {{element.productName}}
-                    </td>
-                </ng-container>
-                <ng-container matColumnDef="Supplier">
-                    <th mat-header-cell *matHeaderCellDef class="w-20 min-w-20 px-2">
-                        Supplier
-                    </th>
-                    <td mat-cell *matCellDef="let element" class="text-sm px-2" (click)="goToDetailPage(element)">
-                        {{element.companyName}}
-                    </td>
-                </ng-container>
-                <ng-container matColumnDef="Store">
-                    <th mat-header-cell *matHeaderCellDef class="w-20 min-w-20 px-2">
-                        Store
-                    </th>
-                    <td mat-cell *matCellDef="let element" class="text-sm px-2" (click)="goToDetailPage(element)">
-                        {{element.storeName}}
-                    </td>
-                </ng-container>
-                <ng-container matColumnDef="proof">
-                    <th mat-header-cell *matHeaderCellDef class="w-20 min-w-20 px-2">
-                        Last Proof
-                    </th>
-                    <td mat-cell *matCellDef="let element" class="text-sm px-2" (click)="goToDetailPage(element)">
-                        <span *ngIf="element.adminUserFirstName"> {{element.adminUserFirstName + ' ' +
-                            element.adminUserLastName}}</span>
-                        <span *ngIf="!element.adminUserFirstName"> N/A</span>
-                    </td>
-                </ng-container>
-                <ng-container matColumnDef="action">
-                    <th mat-header-cell *matHeaderCellDef class="w-20 min-w-20 px-2">
-                        Action
-                    </th>
-                    <td mat-cell *matCellDef="let element" class="text-sm px-2">
-                        <mat-checkbox [(ngModel)]="element.isChecked"></mat-checkbox>
-                    </td>
-                </ng-container>
-                <tr mat-header-row *matHeaderRowDef="displayedColumns;" class="h-18 bg-light"></tr>
-                <tr mat-row *matRowDef="let row; columns: displayedColumns;"
-                    class="h-14 hover:bg-gray-100 dark:hover:bg-hover" style="cursor: pointer;">
-                </tr>
-            </table>
-            <mat-paginator #paginator class="border-b sm:border-t sm:border-b-0 z-10 bg-gray-50 dark:bg-transparent"
-                [length]="totalRecords" [pageIndex]="0" [pageSize]="20" (page)="getNextData($event)"
-                [hidePageSize]="true">
-            </mat-paginator>
+            <ng-container *ngIf="totalRecords > 0; else noResult">
+                <table mat-table [dataSource]="dataSource" class="w-full border-t">
+                    <ng-container matColumnDef="ID">
+                        <th mat-header-cell *matHeaderCellDef class="w-10 min-w-10 px-2">
+                            ID
+                        </th>
+                        <td mat-cell *matCellDef="let element" class="text-sm px-2" (click)="goToDetailPage(element)">
+                            {{element.pk_rapidBuildID}}
+                        </td>
+                    </ng-container>
+                    <ng-container matColumnDef="Status">
+                        <th mat-header-cell *matHeaderCellDef class="w-20 min-w-20 px-2">
+                            Status
+                        </th>
+                        <td mat-cell *matCellDef="let element" class="text-sm px-2" (click)="goToDetailPage(element)">
+                            {{element.statusName}}
+                        </td>
+                    </ng-container>
+                    <ng-container matColumnDef="Age">
+                        <th mat-header-cell *matHeaderCellDef class="w-10 min-w-10 px-2">
+                            Age
+                        </th>
+                        <td mat-cell *matCellDef="let element" class="text-sm px-2" (click)="goToDetailPage(element)">
+                            {{element.FIELD3}}
+                        </td>
+                    </ng-container>
+                    <ng-container matColumnDef="SPID">
+                        <th mat-header-cell *matHeaderCellDef class="w-10 min-w-10 px-2">
+                            SPID
+                        </th>
+                        <td mat-cell *matCellDef="let element" class="text-sm px-2" (click)="goToDetailPage(element)">
+                            {{element.fk_storeProductID}}
+                        </td>
+                    </ng-container>
+                    <ng-container matColumnDef="PID">
+                        <th mat-header-cell *matHeaderCellDef class="w-10 min-w-10 px-2">
+                            PID
+                        </th>
+                        <td mat-cell *matCellDef="let element" class="text-sm px-2" (click)="goToDetailPage(element)">
+                            {{element.pk_productID}}
+                        </td>
+                    </ng-container>
+                    <ng-container matColumnDef="Product">
+                        <th mat-header-cell *matHeaderCellDef class="w-40 min-w-40 px-2">
+                            Product
+                        </th>
+                        <td mat-cell *matCellDef="let element" class="text-sm px-2" (click)="goToDetailPage(element)">
+                            {{element.productName}}
+                        </td>
+                    </ng-container>
+                    <ng-container matColumnDef="Supplier">
+                        <th mat-header-cell *matHeaderCellDef class="w-20 min-w-20 px-2">
+                            Supplier
+                        </th>
+                        <td mat-cell *matCellDef="let element" class="text-sm px-2" (click)="goToDetailPage(element)">
+                            {{element.companyName}}
+                        </td>
+                    </ng-container>
+                    <ng-container matColumnDef="Store">
+                        <th mat-header-cell *matHeaderCellDef class="w-20 min-w-20 px-2">
+                            Store
+                        </th>
+                        <td mat-cell *matCellDef="let element" class="text-sm px-2" (click)="goToDetailPage(element)">
+                            {{element.storeName}}
+                        </td>
+                    </ng-container>
+                    <ng-container matColumnDef="proof">
+                        <th mat-header-cell *matHeaderCellDef class="w-20 min-w-20 px-2">
+                            Last Proof
+                        </th>
+                        <td mat-cell *matCellDef="let element" class="text-sm px-2" (click)="goToDetailPage(element)">
+                            <span *ngIf="element.adminUserFirstName"> {{element.adminUserFirstName + ' ' +
+                                element.adminUserLastName}}</span>
+                            <span *ngIf="!element.adminUserFirstName"> N/A</span>
+                        </td>
+                    </ng-container>
+                    <ng-container matColumnDef="action">
+                        <th mat-header-cell *matHeaderCellDef class="w-20 min-w-20 px-2">
+                            Action
+                        </th>
+                        <td mat-cell *matCellDef="let element" class="text-sm px-2">
+                            <mat-checkbox [(ngModel)]="element.isChecked"></mat-checkbox>
+                        </td>
+                    </ng-container>
+                    <tr mat-header-row *matHeaderRowDef="displayedColumns;" class="h-18 bg-light"></tr>
+                    <tr mat-row *matRowDef="let row; columns: displayedColumns;"
+                        class="h-14 hover:bg-gray-100 dark:hover:bg-hover" style="cursor: pointer;">
+                    </tr>
+                </table>
+                <mat-paginator #paginator class="border-b sm:border-t sm:border-b-0 z-10 bg-gray-50 dark:bg-transparent"
+                    [length]="totalRecords" [pageIndex]="0" [pageSize]="20" (page)="getNextData($event)"
+                    [hidePageSize]="true">
+                </mat-paginator>
+            </ng-container>
+            <ng-template #noResult>
+                <div class="p-8 sm:p-16 text-2xl font-semibold not-found-color">
+                    There are no orders please check your keyword.
+                </div>
+            </ng-template>
         </div>
     </div>
 </div>

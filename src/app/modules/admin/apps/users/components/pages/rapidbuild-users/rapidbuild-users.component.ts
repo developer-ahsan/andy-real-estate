@@ -44,6 +44,7 @@ export class RapidBuildUsersComponent implements OnInit, OnDestroy {
   tempCustomersDataSource = [];
   displayedCustomersColumns: string[] = ['id', 'name', 'history', 'time', 'type'];
   totalCustomers = 0;
+  distinctProducts = 0;
   tempTotalCustomers = 0;
   customersPage = 1;
   customerLoader: boolean = false;
@@ -327,6 +328,7 @@ export class RapidBuildUsersComponent implements OnInit, OnDestroy {
     this._UsersService.getStoresData(params).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
       this.customersDataSource = res["data"];
       this.totalCustomers = res["totalRecords"];
+      this.distinctProducts = res["distinctProducts"];
       if (this.tempCustomersDataSource.length == 0) {
         this.tempCustomersDataSource = res["data"];
         this.tempTotalCustomers = res["totalRecords"];

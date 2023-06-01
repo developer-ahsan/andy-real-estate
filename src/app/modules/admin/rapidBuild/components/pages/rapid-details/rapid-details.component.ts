@@ -109,13 +109,17 @@ export class RapidBuildDetailsComponent implements OnInit, OnDestroy {
   imageValue: any;
   ngProofComment: any;
   isUploadProofLoader: boolean = false;
+
+  brandGuideExist: boolean = false;
   constructor(
     private _changeDetectorRef: ChangeDetectorRef,
     private _authService: AuthService,
     private _rapidService: RapidBuildService,
     private router: Router,
     private _activeRoute: ActivatedRoute
-  ) { }
+  ) {
+
+  }
 
   ngOnInit(): void {
     this.userData = JSON.parse(sessionStorage.getItem('rapidBuild'));
@@ -135,6 +139,7 @@ export class RapidBuildDetailsComponent implements OnInit, OnDestroy {
     this._rapidService.getRapidBuildData(params).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
       this.buildDetails = res["data"][0];
       this.ngStatus = this.buildDetails.pk_statusID;
+      this.checkBrandGuilde();
       this.getImprintData(this.buildDetails.pk_productID);
     }, err => {
       this.isLoading = false;
@@ -187,6 +192,22 @@ export class RapidBuildDetailsComponent implements OnInit, OnDestroy {
       this.isLogoBankLoader = false;
       this._changeDetectorRef.markForCheck();
     });
+  }
+  checkBrandGuilde() {
+    const fileUrl = `https://assets.consolidus.com/globalAssets/Stores/BrandGuide/${this.buildDetails.pk_storeID}.pdf`;
+    this._rapidService.checkFileExists(fileUrl)
+      .then(exists => {
+        if (exists) {
+          this.brandGuideExist = true;
+          this._changeDetectorRef.markForCheck();
+        } else {
+          this.brandGuideExist = false;
+          this._changeDetectorRef.markForCheck();
+        }
+      })
+      .catch(error => {
+        console.error('Error checking file existence:', error);
+      });
   }
   backToList() {
     this.router.navigate(['/rapidbuild/image-management']);

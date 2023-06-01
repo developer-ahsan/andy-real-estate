@@ -13,7 +13,7 @@ export class OrdersHistoryComponent implements OnInit, OnDestroy {
   isLoading: boolean = false;
   private _unsubscribeAll: Subject<any> = new Subject<any>();
 
-  displayedColumns: string[] = ['pk_orderID', 'orderDate', 'productName', 'storeName', 'paid', 'cancel', 'status'];
+  displayedColumns: string[] = ['pk_orderID', 'orderDate', 'productName', 'storeName', 'total', 'paid', 'cancel', 'status'];
   dataSource = [];
   ordersHistoryLength: number = 0;
 
@@ -21,6 +21,7 @@ export class OrdersHistoryComponent implements OnInit, OnDestroy {
   pageSizeOptions: number[] = [5, 10, 25, 100];
   page = 1;
   totalOrder = 0;
+  grandTotal = 0;
   constructor(
     private _customerService: CustomersService,
     private _changeDetectorRef: ChangeDetectorRef,
@@ -52,6 +53,7 @@ export class OrdersHistoryComponent implements OnInit, OnDestroy {
     })).subscribe(quotes => {
       this.dataSource = quotes["data"];
       this.totalOrder = quotes["totalRecords"];
+      this.grandTotal = quotes["grandTotal"];
     }, err => {
       this.isLoading = false;
       this._changeDetectorRef.markForCheck();

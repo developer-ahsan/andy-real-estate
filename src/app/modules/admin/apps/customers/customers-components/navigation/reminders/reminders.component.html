@@ -18,33 +18,63 @@
                 <table mat-table [dataSource]="dataSource" class="w-full min-w-120 table-fixed bg-transparent mb-10">
                     <!-- Position Column -->
                     <ng-container matColumnDef="name">
-                        <th mat-header-cell *matHeaderCellDef class="bg-light min-w-24"> Name </th>
+                        <th mat-header-cell *matHeaderCellDef class="bg-light min-w-10"> Name </th>
                         <td mat-cell *matCellDef="let element"> {{element.name}} </td>
                     </ng-container>
 
                     <!-- Name Column -->
                     <ng-container matColumnDef="notes">
-                        <th mat-header-cell *matHeaderCellDef class="bg-light min-w-24"> Name </th>
+                        <th mat-header-cell *matHeaderCellDef class="bg-light min-w-10"> Name </th>
                         <td mat-cell *matCellDef="let element"> {{element.notes}} </td>
                     </ng-container>
 
                     <!-- Weight Column -->
                     <ng-container matColumnDef="createdOn">
-                        <th mat-header-cell *matHeaderCellDef class="bg-light min-w-24"> Created On </th>
-                        <td mat-cell *matCellDef="let element"> {{element.createdOn}} </td>
+                        <th mat-header-cell *matHeaderCellDef class="bg-light min-w-20"> Created On </th>
+                        <td mat-cell *matCellDef="let element"> {{element.createdOn | date: 'MM/dd/yyyy'}} </td>
                     </ng-container>
 
                     <!-- Symbol Column -->
                     <ng-container matColumnDef="remindOn">
-                        <th mat-header-cell *matHeaderCellDef class="bg-light min-w-40"> Alert On </th>
-                        <td mat-cell *matCellDef="let element"> {{element.remindOn}} </td>
+                        <th mat-header-cell *matHeaderCellDef class="bg-light min-w-30"> Alert On </th>
+                        <td mat-cell *matCellDef="let element"> {{element.remindOn | date: 'MM/dd/yyyy hh:mm a'}} </td>
                     </ng-container>
 
+                    <ng-container matColumnDef="status">
+                        <th mat-header-cell *matHeaderCellDef class="min-w-10 text-center">
+                            Active
+                        </th>
+                        <td mat-cell *matCellDef="let element" class="text-center">
+                            <div class="flex justify-center">
+                                <mat-icon class="text-green-900" svgIcon="heroicons_outline:check"
+                                    *ngIf="element.blnActive"></mat-icon>
+                                <mat-icon class="text-red-900" svgIcon="heroicons_outline:x"
+                                    *ngIf="!element.blnActive"></mat-icon>
+                            </div>
+                        </td>
+                    </ng-container>
+                    <ng-container matColumnDef="action">
+                        <th mat-header-cell *matHeaderCellDef class="min-w-10 text-center">
+                            Action
+                        </th>
+                        <td mat-cell *matCellDef="let element" class="text-center">
+                            <div class="flex justify-center">
+                                <mat-icon (click)="toggleUpdateUserData(element, true)"
+                                    svgIcon="heroicons_outline:pencil-alt cursor-pointer"></mat-icon>
+                                <mat-icon (click)="deleteReminder(element)"
+                                    svgIcon="heroicons_outline:trash cursor-pointer"
+                                    *ngIf="!element.delLoader"></mat-icon>
+                                <mat-progress-spinner *ngIf="element.delLoader" [diameter]="24"
+                                    [mode]="'indeterminate'">
+                                </mat-progress-spinner>
+                            </div>
+                        </td>
+                    </ng-container>
                     <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
                     <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
                 </table>
-                <mat-paginator [length]="logoBanksLength" [pageSize]="pageSize" [pageSizeOptions]="pageSizeOptions"
-                    aria-label="Select page" class="bg-light">
+                <mat-paginator [length]="remindersLength" [pageIndex]="0" [pageSize]="20"
+                    (page)="getNextReminders($event)" [hidePageSize]="true" aria-label="Select page" class="bg-light">
                 </mat-paginator>
             </ng-container>
             <ng-template #noReminders>

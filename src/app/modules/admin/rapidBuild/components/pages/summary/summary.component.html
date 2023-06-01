@@ -36,7 +36,19 @@
                             {{element.imageAwaitingApprovalCount}}
                         </td>
                     </ng-container>
+
+                    <ng-container matColumnDef="total">
+                        <th mat-header-cell *matHeaderCellDef class="w-60 min-w-60 px-2"> Total </th>
+                    </ng-container>
+                    <ng-container matColumnDef="imagess">
+                        <th mat-header-cell *matHeaderCellDef class="w-20 min-w-20 px-2"> 100 </th>
+                    </ng-container>
+                    <ng-container matColumnDef="approvals">
+                        <th mat-header-cell *matHeaderCellDef class="w-20 min-w-20 px-2"> 200 </th>
+                    </ng-container>
+
                     <tr mat-header-row *matHeaderRowDef="displayedColumns;" class="h-18 bg-light"></tr>
+                    <tr mat-header-row *matHeaderRowDef="['total', 'imagess','approvals']"></tr>
                     <tr mat-row *matRowDef="let row; columns: displayedColumns;"
                         class="h-14 hover:bg-gray-100 dark:hover:bg-hover" style="cursor: pointer;">
                     </tr>

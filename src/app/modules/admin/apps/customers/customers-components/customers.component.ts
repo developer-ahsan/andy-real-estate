@@ -32,7 +32,7 @@ export class CustomersListComponent implements OnInit, OnDestroy {
     private _unsubscribeAll: Subject<any> = new Subject<any>();
 
     pageSize: number;
-    pageNo: number;
+    pageNo: number = 1;;
     keywordSearch: string = '';
 
     /**
@@ -85,10 +85,6 @@ export class CustomersListComponent implements OnInit, OnDestroy {
                 // Mark for check
                 this._changeDetectorRef.markForCheck();
             });
-        // Get the customers
-
-
-
     };
 
     /**
@@ -116,40 +112,35 @@ export class CustomersListComponent implements OnInit, OnDestroy {
     };
 
     pageEvents(event: any) {
-        const { pageIndex } = event;
+        const { pageIndex, previousPageIndex } = event;
         this.isLoading = true;
-
-        if (this._customerService.pageNumber > pageIndex) {
-            this._customerService.changePageNumber('decrease');
+        if (pageIndex > previousPageIndex) {
+            this.pageNo++;
         } else {
-            this._customerService.changePageNumber('increase');
+            this.pageNo--;
         };
-
-
-        this._customerService.getCustomersList()
-            .pipe(takeUntil(this._unsubscribeAll))
-            .subscribe((customers) => {
-                this.customers$ = customers["data"];
-                this.isLoading = false;
-
-                // Mark for check
-                this._changeDetectorRef.markForCheck();
-            });
+        this.getCustomersLists();
     };
+    getCustomersLists() {
+        let params = {
+            page: this.pageNo,
+            list: true,
+            size: 20,
+            keyword: this.keywordSearch,
+        }
+        this._customerService.GetApiData(params).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+            this.customers$ = res["data"];
+            this.customersCount = res["totalRecords"];
+            this.isLoading = false;
+            this._changeDetectorRef.markForCheck();
+        });
+    }
 
     searchKeyword(event): void {
+        this.pageNo = 1;
         this.isLoading = true;
         this.keywordSearch = event.target.value ? event.target.value : '';
-
-        this._customerService.getCustomersList(this.keywordSearch)
-            .pipe(takeUntil(this._unsubscribeAll))
-            .subscribe((customers) => {
-                this.customers$ = customers["data"];
-                this.isLoading = false;
-                this._customerService._searchKeyword = '';
-                // Mark for check
-                this._changeDetectorRef.markForCheck();
-            });
+        this.getCustomersLists();
     };
 
     /**
@@ -158,23 +149,6 @@ export class CustomersListComponent implements OnInit, OnDestroy {
      * @param customerId
      */
     toggleDetails(customerId: string): void {
-
-        // Get the customer by id
-        // this._customerService.getCustomerById(customerId)
-        //     .subscribe((customer) => {
-
-        //         // Set the selected customer
-        //         this.selectedCustomer = customer;
-
-        //         // Mark for check
-        //         this._changeDetectorRef.markForCheck();
-
-        //         // Fill the form
-        //         this.selectedCustomerForm.patchValue(customer);
-
-        //         // Mark for check
-        //         this._changeDetectorRef.markForCheck();
-        //     });
     };
 
     /**

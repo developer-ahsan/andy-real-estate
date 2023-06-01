@@ -126,7 +126,8 @@ export class SearchCustomersComponents implements OnInit, OnDestroy {
         let params = {
             keyword: this._searchService.customerKeyword,
             page: page,
-            list: true
+            list: true,
+            size: 20
         }
         this._searchService.getCustomersSearchData(params).pipe(takeUntil(this._unsubscribeAll),
             finalize(() => {

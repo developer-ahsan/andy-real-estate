@@ -38,7 +38,6 @@ export class RapidImageManagementComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.userData = JSON.parse(sessionStorage.getItem('rapidBuild'));
     this._route.queryParams.subscribe(res => {
-      console.log(res)
       if (this.dataSource.length > 0) {
         this.paginator.pageIndex = 0;
         this.page = 1;
@@ -100,7 +99,6 @@ export class RapidImageManagementComponent implements OnInit, OnDestroy {
     this.getRapidBuildData(this.page);
   }
   goToDetailPage(item) {
-    console.log(item)
     const queryParams: NavigationExtras = {
       queryParams: { fk_orderID: item.fk_orderID, pk_orderLineID: item.pk_orderLineID }
     };

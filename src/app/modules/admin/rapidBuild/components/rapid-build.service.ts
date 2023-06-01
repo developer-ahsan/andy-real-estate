@@ -163,4 +163,10 @@ export class RapidBuildService {
             })
         );
     };
+    checkFileExists(url: string): Promise<boolean> {
+        return this._httpClient.head(url)
+            .toPromise()
+            .then(() => true)
+            .catch(() => false);
+    }
 }

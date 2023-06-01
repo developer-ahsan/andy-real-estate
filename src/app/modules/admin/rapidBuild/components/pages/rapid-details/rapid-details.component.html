@@ -109,19 +109,6 @@
                                 </div>
                             </div>
                         </mat-expansion-panel>
-                        <mat-expansion-panel [expanded]="true">
-                            <mat-expansion-panel-header>
-                                <mat-panel-title>
-                                    Design/color notes
-                                </mat-panel-title>
-                            </mat-expansion-panel-header>
-                            <div>
-                                <div class="py-2">
-                                    <p>{{buildDetails.designer_color_notes || 'N/A'}}
-                                    </p>
-                                </div>
-                            </div>
-                        </mat-expansion-panel>
                     </mat-accordion>
                 </div>
                 <div class="col-12 col-md-8 mt-3">
@@ -280,7 +267,7 @@
                             </div>
                         </mat-expansion-panel>
                         <!-- Brand Guide -->
-                        <mat-expansion-panel [expanded]="true">
+                        <mat-expansion-panel [expanded]="true" *ngIf="brandGuideExist">
                             <mat-expansion-panel-header>
                                 <mat-panel-title>
                                     Brand Guide
@@ -305,7 +292,19 @@
                                 </a>
                             </div>
                         </mat-expansion-panel>
-
+                        <!-- Design Notes -->
+                        <mat-expansion-panel [expanded]="true">
+                            <mat-expansion-panel-header>
+                                <mat-panel-title>
+                                    Design/color notes
+                                </mat-panel-title>
+                            </mat-expansion-panel-header>
+                            <div>
+                                <div class="py-2">
+                                    <p [innerHTML]="buildDetails?.designer_color_notes"></p>
+                                </div>
+                            </div>
+                        </mat-expansion-panel>
                         <!-- Logo Bank -->
                         <mat-expansion-panel [expanded]="true">
                             <mat-expansion-panel-header>

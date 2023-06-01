@@ -15,7 +15,7 @@ export class RemindersComponent implements OnInit, OnDestroy {
   private _unsubscribeAll: Subject<any> = new Subject<any>();
 
   clickedRows = new Set<Reminders>();
-  displayedColumns: string[] = ['notes', 'name', 'createdOn', 'remindOn'];
+  displayedColumns: string[] = ['notes', 'name', 'createdOn', 'remindOn', 'status'];
   dataSource: Reminders[] = [];
   remindersLength: number = 0;
   logoBanksLength = 10;
@@ -33,6 +33,7 @@ export class RemindersComponent implements OnInit, OnDestroy {
 
   pageSize = 10;
   pageSizeOptions: number[] = [5, 10, 25, 100];
+  reminderPage = 1;
 
   constructor(
     private _customerService: CustomersService,
@@ -54,22 +55,41 @@ export class RemindersComponent implements OnInit, OnDestroy {
       .pipe(takeUntil(this._unsubscribeAll))
       .subscribe((response) => {
         this.selectedCustomer = response;
-        let params = {
-          reminder: true,
-          user_id: this.selectedCustomer.pk_userID,
-        }
-        this._customerService.GetApiData(params).pipe(takeUntil(this._unsubscribeAll), finalize(() => {
-          this.isLoading = false;
-          this._changeDetectorRef.markForCheck();
-        })).subscribe(reminders => {
-          this.dataSource = reminders["data"];
-          this.remindersLength = reminders["totalRecords"];
-        }, err => {
-          this.isLoading = false;
-          this._changeDetectorRef.markForCheck();
-        })
+        this.getReminders();
       });
   }
+  getReminders(type?) {
+    let params = {
+      reminder: true,
+      user_id: this.selectedCustomer.pk_userID,
+      page: this.reminderPage,
+      size: 20
+    }
+    this._customerService.GetApiData(params).pipe(takeUntil(this._unsubscribeAll), finalize(() => {
+      this.isLoading = false;
+      this._changeDetectorRef.markForCheck();
+    })).subscribe(reminders => {
+      this.dataSource = reminders["data"];
+      this.remindersLength = reminders["totalRecords"];
+      if (type == 'add') {
+        this.reminderForm.reset();
+        this.commentUpdateLoader = false;
+        this._changeDetectorRef.markForCheck();
+      }
+    }, err => {
+      this.isLoading = false;
+      this._changeDetectorRef.markForCheck();
+    });
+  }
+  getNextReminders(event) {
+    const { previousPageIndex, pageIndex } = event;
+    if (pageIndex > previousPageIndex) {
+      this.reminderPage++;
+    } else {
+      this.reminderPage--;
+    };
+    this.getReminders();
+  };
   locationFormToggle() {
     this.logoForm = !this.logoForm;
   }
@@ -97,22 +117,38 @@ export class RemindersComponent implements OnInit, OnDestroy {
           reminder: true,
           user_id: this.selectedCustomer.pk_userID,
         }
-        this._customerService.GetApiData(params).pipe(takeUntil(this._unsubscribeAll), finalize(() => {
-          this.isLoading = false;
-          this._changeDetectorRef.markForCheck();
-        })).subscribe(reminders => {
+        this.reminderPage = 1;
+        if (response["success"]) {
+          this.getReminders('add');
+        } else {
           this.commentUpdateLoader = false;
-          this.dataSource = reminders["data"];
-          this.remindersLength = reminders["totalRecords"];
           this._changeDetectorRef.markForCheck();
-        }, err => {
-          this.commentUpdateLoader = false;
-          this.isLoading = false;
-          this._changeDetectorRef.markForCheck();
-        })
+        }
+      }, err => {
+        this.commentUpdateLoader = false;
+        this._changeDetectorRef.markForCheck();
       });
   }
 
+  deleteReminder(item) {
+    item.delLoader = true;
+    this._changeDetectorRef.markForCheck();
+    let payload = {
+      user_id: item.pk_userID,
+      remove_rapidbuild_user: true
+    }
+    this._customerService.PutApiData(payload).pipe(takeUntil(this._unsubscribeAll), finalize(() => {
+      item.delLoader = false
+      this._changeDetectorRef.markForCheck();
+    })).subscribe(res => {
+      this.dataSource = this.dataSource.filter(elem => elem.pk_reminderID != item.pk_reminderID);
+      this.remindersLength--;
+      this._customerService.snackBar('Reminder Deleted Successfully');
+      this._changeDetectorRef.markForCheck();
+    }, err => {
+      this._customerService.snackBar('Something went wrong');
+    });
+  }
   /**
    * Show flash message
    */
