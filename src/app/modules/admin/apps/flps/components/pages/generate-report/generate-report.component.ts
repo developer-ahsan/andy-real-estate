@@ -69,6 +69,7 @@ export class GenerateReportComponent implements OnInit {
     page = 1;
     reportParams: any;
     report_type = '';
+    ngReportType = 1;
     /**
      * Constructor
      */

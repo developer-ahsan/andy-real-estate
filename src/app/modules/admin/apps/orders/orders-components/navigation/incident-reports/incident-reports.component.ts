@@ -172,6 +172,7 @@ export class IncidentReportsComponent implements OnInit {
   getOrderDetail() {
     this._orderService.orderDetail$.pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
       this.orderDetail = res["data"][0];
+      this.isLoading = true;
       this.getIncidentReports();
       this.getReports('get');
       this._changeDetectorRef.markForCheck();

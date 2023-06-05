@@ -260,7 +260,7 @@
             </div>
         </div>
 
-        <div class=" my-2 rounded-2xl shadow bg-card">
+        <div class="my-2 rounded-2xl shadow bg-card">
             <div class="row">
                 <div class="col-6 py-2">
                     <div class=" flex flex-col lg:flex-row w-full  border-r">
@@ -322,10 +322,11 @@
                                 </span>
                             </div>
                             <div class="text-right">
-                                <button mat-stroked-button>
+                                <a mat-stroked-button [routerLink]="['/apps/customers', orderDetail?.fk_storeUserID]"
+                                    target="_blank">
                                     <mat-icon svgIcon="heroicons_outline:eye"></mat-icon>
                                     <span class="ml-2">View Customer</span>
-                                </button>
+                                </a>
                             </div>
                         </div>
                     </div>
@@ -409,23 +410,32 @@
                 </div>
             </div>
         </div>
-
-        <div class="my-2 row">
-            <div class="rounded-2xl shadow bg-card flex flex-col lg:flex-row w-full">
-                <div class="p-4 w-full">
-                    <div class="text-lg font-medium tracking-tight leading-6 truncate ">
-                        Order comments
-                    </div>
-                    <div class="h-80 overflow-auto">
-                        <div [innerHTML]="htmlComment"></div>
-                    </div>
-                    <div class="text-right">
-                        <button mat-stroked-button (click)="goToComments()">
-                            <span>Add Comment</span>
-                        </button>
+        <div class="my-2 rounded-2xl shadow bg-card">
+            <div class="row">
+                <div class="col-12 py-2">
+                    <div class=" flex flex-col lg:flex-row w-full">
+                        <div class="p-4 w-full">
+                            <div class="text-lg font-medium tracking-tight leading-6 truncate ">
+                                Order comments
+                            </div>
+                            <div *ngIf="!htmlComment">
+                                <fuse-alert [appearance]="'border'" [type]="'warning'">
+                                    There are no order comments on this order.
+                                </fuse-alert>
+                            </div>
+                            <div class="max-h-80 overflow-auto" *ngIf="htmlComment">
+                                <div [innerHTML]="htmlComment"></div>
+                            </div>
+                            <div class="text-right">
+                                <button mat-stroked-button (click)="goToComments()">
+                                    <span>Add Comment</span>
+                                </button>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
+
     </div>
 </div>

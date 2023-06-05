@@ -69,7 +69,7 @@
                             <!-- Columns -->
                             <div class="col-span-6 font-medium text-md text-secondary">Imprint</div>
                             <div class="col-span-2 font-medium text-md text-left text-secondary">Status</div>
-                            <div class="col-span-1 font-medium text-md text-left text-secondary">Attr</div>
+                            <div class="col-span-1 font-medium text-md text-left text-secondary">Attachments</div>
                             <div class="col-span-1 font-medium text-md text-left text-secondary">Proof</div>
                             <div class="col-span-2 font-medium text-md text-left text-secondary">Details</div>
                             <!-- Divider -->
@@ -84,9 +84,15 @@
                                     </div>
                                     <div
                                         class="col-span-1 text-md text-left text-secondary cursor-pointer hover:text-gray-700">
-                                        <a class="text-decoration-none"
-                                            href="https://assets.consolidus.com/artwork/{{orderDetail.fk_storeID}}/{{orderDetail.fk_storeUserID}}/{{orderDetail.pk_orderID}}/{{item.order_line_id}}/{{imprint.pk_imprintID}}.jpg"
+                                        ---
+                                        <!-- <a *ngIf="imprint?.logoBankID" class="text-decoration-none"
+                                            href="https://assets.consolidus.com/globalAssets/Stores/logoBank2/{{orderDetail.fk_storeID}}/Thumbs/{{imprint?.logoBankID}}.jpg"                          target="_blank">View</a>
+                                            <a *ngIf="imprint?.customerLogoBankID" class="text-decoration-none"
+                                            href="https://assets.consolidus.com/globalAssets/StoreUser/LogoBank/#qryOrder.fk_storeUserID#/{{orderDetail.fk_storeID}}/Thumbs/{{imprint?.customerLogoBankID}}.jpg"
                                             target="_blank">View</a>
+                                            <a *ngIf="imprint?.locationLogoBankID" class="text-decoration-none"
+                                            href="https://assets.consolidus.com/globalAssets/Stores/locationLogoBank/{{imprint.pk_locationID}}/Thumbs/{{imprint?.locationLogoBankID}}.jpg     https://assets.consolidus.com/artwork/{{orderDetail.fk_storeID}}/{{orderDetail.fk_storeUserID}}/{{orderDetail.pk_orderID}}/{{item.order_line_id}}/{{imprint.pk_imprintID}}.jpg"
+                                            target="_blank">View</a> -->
                                     </div>
                                     <div
                                         class="col-span-1 text-md text-left text-secondary cursor-pointer hover:text-gray-700">

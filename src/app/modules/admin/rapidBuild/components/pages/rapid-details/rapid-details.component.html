@@ -320,14 +320,15 @@
                                     </ngx-skeleton-loader>
                                 </div>
                                 <div class="py-2" *ngIf="!isLogoBankLoader">
-                                    <div class="flex space-x-1 overflow-x-auto">
-                                        <a *ngFor="let item of logoData"
-                                            href="https://assets.consolidus.com/globalAssets/Stores/logoBank2/{{item.fk_storeID}}/{{item.pk_logoBankID}}.{{item.extension}}"
-                                            target="_blank"
-                                            title="Kent State University Stacked 2 color - Kent State University Stacked 2 color">
-                                            <img src="https://assets.consolidus.com/globalAssets/Stores/logoBank2/{{item.fk_storeID}}/Thumbs/{{item.pk_logoBankID}}.jpg"
-                                                style="width: 50px; height: auto; border:1px solid #000; margin: 0 0 10px 0;">
-                                        </a>
+                                    <div class="row">
+                                        <div class="col-2" *ngFor="let item of logoData">
+                                            <a href="https://assets.consolidus.com/globalAssets/Stores/logoBank2/{{item.fk_storeID}}/{{item.pk_logoBankID}}.{{item.extension}}"
+                                                target="_blank"
+                                                title="Kent State University Stacked 2 color - Kent State University Stacked 2 color">
+                                                <img src="https://assets.consolidus.com/globalAssets/Stores/logoBank2/{{item.fk_storeID}}/Thumbs/{{item.pk_logoBankID}}.jpg"
+                                                    style="width: 50px; height: auto; border:1px solid #000; margin: 0 0 10px 0;">
+                                            </a>
+                                        </div>
                                     </div>
                                 </div>
                             </div>

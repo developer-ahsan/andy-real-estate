@@ -34,20 +34,16 @@ export class OrdersPurchasesComponent implements OnInit {
   grandTotalCost: number;
   grandTotalPrice: number;
 
+  totalShippingCost = 0;
+
   constructor(
     private _orderService: OrdersService,
     private _changeDetectorRef: ChangeDetectorRef
   ) { }
 
   ngOnInit(): void {
-    console.log(this.selectedOrder);
-
-    this._orderService.orderDetail$.pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
-      if (res) {
-        this.orderDetail = res["data"][0];
-        console.log('OrderDetails=>', this.orderDetail);
-      }
-    })
+    this.isLoading = true;
+    this.getOrderDetail();
     this._orderService.orderProducts$.pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
       let value = [];
       res["data"].forEach((element, index) => {
@@ -57,19 +53,32 @@ export class OrdersPurchasesComponent implements OnInit {
         }
       });
       this.orderProducts = res["data"];
-      console.log(this.orderProducts)
+    });
+  }
+  getOrderDetail() {
+    this._orderService.orderDetail$.pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+      this.orderDetail = res["data"][0];
+      // this.getPurchaseOrders();
+    }, err => {
+      this.isLoading = false;
+      this._changeDetectorRef.markForCheck();
     })
-
-
-    this._orderService.getOrderPurchases(this.selectedOrder.pk_orderID)
+  }
+  getPurchaseOrders() {
+    let params = {
+      purchase_order: true,
+      order_id: this.orderDetail.pk_orderID
+    }
+    this._orderService.getOrderCommonCall(params)
       .pipe(takeUntil(this._unsubscribeAll))
       .subscribe((purchases) => {
         console.log("purchases => ", purchases);
-
+        this.isLoading = false;
+        this._changeDetectorRef.markForCheck();
+      }, err => {
+        this.isLoading = false;
         this._changeDetectorRef.markForCheck();
       });
-
-    this.isLoadingChange.emit(false);
   }
   getLineProducts(value) {
     let params = {
@@ -115,6 +124,7 @@ export class OrdersPurchasesComponent implements OnInit {
     this.grandTotalCost = 0;
     this.grandTotalPrice = 0;
     this.orderProducts.forEach(element => {
+      this.totalShippingCost = Number(this.totalShippingCost) + Number(element.product.shippingCost);
       const index = suppliersArray.findIndex(item => item.name == element.product.supplier_name);
       if (index > -1) {
         suppliersArray[index].count++;

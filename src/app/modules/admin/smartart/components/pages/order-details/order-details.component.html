@@ -41,11 +41,12 @@
                             </mat-expansion-panel-header>
                             <div>
                                 <div><b>Company name:</b> {{orderData?.companyInformationName}}</div>
-                                <div><b>Name:</b> {{orderData.shippingName}}</div>
-                                <div><b>Company:</b> {{orderData.shippingCompanyName}}</div>
-                                <div><b>Address:</b> {{orderData.shippingAddress}} {{orderData.shippingCity}}</div>
-                                <div><b>Phone:</b> {{orderData.shippingPhone}}</div>
-                                <div><b>Email:</b> {{orderData.shippingEmail}}</div>
+                                <div><b>Location:</b> {{orderData?.attributeName}}</div>
+                                <div><b>Name:</b> {{orderData.billingName}}</div>
+                                <div><b>Company:</b> {{orderData.companyInformationName}}</div>
+                                <div><b>Address:</b> {{orderData.billingAddress}} {{orderData.billingCity}}</div>
+                                <div><b>Phone:</b> {{orderData.billingPhone}}</div>
+                                <div><b>Email:</b> {{orderData.billingEmail}}</div>
                                 <div><b>Designer notes:</b> None</div>
                                 <div class="space-y-1">
                                     <!-- <button class="min-w-60 btn buttonComment hover:bg-gray-200"
@@ -76,7 +77,9 @@
                                 <div><b>PO:</b> {{orderData.fk_orderID}}-{{paramData?.pk_orderLineID}}</div>
                                 <div><b>Order Placed:</b> {{orderData.orderDate | date: 'MM/dd/yyyy'}}</div>
                                 <div><b>Store:</b> {{orderData.storeName}}</div>
-                                <div><b>Brand Guide:</b> Click here</div>
+                                <div><b>Brand Guide:</b>
+                                    <!-- <a href="https://assets.consolidus.com/globalAssets/Stores/BrandGuide/{{orderData.pk_storeID}}"></a> -->
+                                    Click here</div>
                                 <div><b>Rush:</b> {{orderData.blnRushFlexibility? 'YES' : 'NO'}}</div>
                                 <div>
                                     <b>In-Hands:</b> (mm/dd/yyyy)

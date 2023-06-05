@@ -9,6 +9,8 @@ import { Subject } from 'rxjs';
 import { debounceTime, distinctUntilChanged, filter, finalize, switchMap, takeUntil, tap } from 'rxjs/operators';
 import { RapidBuildService } from '../../rapid-build.service';
 import { removeRapidBuildEntry, sendAutoRequest, UpdateArtworkTgas, updateProof, UpdateQuoteOptions, updateQuotePurchaseOrderComment, updateReorderNumber, updateStatus, uploadProof } from '../../rapid-build.types';
+
+
 @Component({
   selector: 'app-rapid-details',
   templateUrl: './rapid-details.component.html',
@@ -195,19 +197,21 @@ export class RapidBuildDetailsComponent implements OnInit, OnDestroy {
   }
   checkBrandGuilde() {
     const fileUrl = `https://assets.consolidus.com/globalAssets/Stores/BrandGuide/${this.buildDetails.pk_storeID}.pdf`;
+
     this._rapidService.checkFileExists(fileUrl)
-      .then(exists => {
-        if (exists) {
-          this.brandGuideExist = true;
-          this._changeDetectorRef.markForCheck();
-        } else {
-          this.brandGuideExist = false;
-          this._changeDetectorRef.markForCheck();
-        }
-      })
-      .catch(error => {
-        console.error('Error checking file existence:', error);
-      });
+    // .then(exists => {
+    //   console.log(exists);
+    //   if (exists) {
+    //     this.brandGuideExist = true;
+    //     this._changeDetectorRef.markForCheck();
+    //   } else {
+    //     this.brandGuideExist = false;
+    //     this._changeDetectorRef.markForCheck();
+    //   }
+    // })
+    // .catch(error => {
+    //   console.error('Error checking file existence:', error);
+    // });
   }
   backToList() {
     this.router.navigate(['/rapidbuild/image-management']);

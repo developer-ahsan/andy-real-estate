@@ -20,7 +20,7 @@ export class CoreProductsComponent implements OnInit, OnDestroy {
 
   dataSource = [];
   tempDataSource = [];
-  displayedColumns: string[] = ['name', 'rgb', 'action'];
+  displayedColumns: string[] = ['name', 'cat', 'sub_cat', 'prod', 'unique', 'action'];
   totalUsers = 0;
   tempRecords = 0;
   page = 1;
@@ -32,8 +32,12 @@ export class CoreProductsComponent implements OnInit, OnDestroy {
 
   isSearching: boolean = false;
 
-  // Add Method
+  // Add New Core
   ngName: string = '';
+  ngCoreCheck: boolean = false;
+  ngCoreSelect: number = 0;
+  coreListCategories = [];
+
   ngDesc: string = '';
   isAddMethodLoader: boolean = false;
 
