@@ -127,21 +127,22 @@ export class RapidBuildDetailsComponent implements OnInit, OnDestroy {
     this.userData = JSON.parse(sessionStorage.getItem('rapidBuild'));
     this._activeRoute.params.subscribe(res => {
       this.isLoading = true;
-      this.getRapidBuildDetails(res.id);
+      this.getRapidBuildDetails(res.id, res.store);
     });
     this._rapidService.rapidBuildStatuses$.pipe(takeUntil(this._unsubscribeAll)).subscribe(statuses => {
       this.allStatus = statuses['data'];
     });
   };
-  getRapidBuildDetails(rbid) {
+  getRapidBuildDetails(rbid, store) {
     let params = {
       rbid: rbid,
+      store_id: Number(store),
       rapidbuild_details: true
     }
     this._rapidService.getRapidBuildData(params).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
       this.buildDetails = res["data"][0];
       this.ngStatus = this.buildDetails.pk_statusID;
-      this.checkBrandGuilde();
+      this.brandGuideExist = res["brandGuide"];
       this.getImprintData(this.buildDetails.pk_productID);
     }, err => {
       this.isLoading = false;
@@ -194,24 +195,6 @@ export class RapidBuildDetailsComponent implements OnInit, OnDestroy {
       this.isLogoBankLoader = false;
       this._changeDetectorRef.markForCheck();
     });
-  }
-  checkBrandGuilde() {
-    const fileUrl = `https://assets.consolidus.com/globalAssets/Stores/BrandGuide/${this.buildDetails.pk_storeID}.pdf`;
-
-    this._rapidService.checkFileExists(fileUrl)
-    // .then(exists => {
-    //   console.log(exists);
-    //   if (exists) {
-    //     this.brandGuideExist = true;
-    //     this._changeDetectorRef.markForCheck();
-    //   } else {
-    //     this.brandGuideExist = false;
-    //     this._changeDetectorRef.markForCheck();
-    //   }
-    // })
-    // .catch(error => {
-    //   console.error('Error checking file existence:', error);
-    // });
   }
   backToList() {
     this.router.navigate(['/rapidbuild/image-management']);

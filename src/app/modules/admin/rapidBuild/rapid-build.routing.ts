@@ -55,7 +55,7 @@ export const smartartRoutes: Route[] = [
                 }
             },
             {
-                path: 'rapidBuild-details/:id',
+                path: 'rapidBuild-details/:id/:store',
                 component: RapidBuildDetailsComponent,
                 data: {
                     title: 'Rapid Build Details',

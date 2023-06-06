@@ -100,9 +100,9 @@ export class RapidImageManagementComponent implements OnInit, OnDestroy {
   }
   goToDetailPage(item) {
     const queryParams: NavigationExtras = {
-      queryParams: { fk_orderID: item.fk_orderID, pk_orderLineID: item.pk_orderLineID }
+      queryParams: { fk_orderID: item.fk_orderID, pk_orderLineID: item.pk_orderLineID, store_id: item.pk_storeID }
     };
-    this.router.navigate([`/rapidbuild/rapidBuild-details/${item.pk_rapidBuildID}`]);
+    this.router.navigate([`/rapidbuild/rapidBuild-details/${item.pk_rapidBuildID}/${item.pk_storeID}`]);
   }
   changeCheckbox(item, checked) {
     item.isChecked = checked;

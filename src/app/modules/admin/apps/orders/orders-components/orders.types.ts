@@ -280,8 +280,12 @@ export interface UpdateOrderFlag {
     isblnIgnoreSalesChanged: boolean;
     order_id: number;
     store_id: number;
+    storeUserId: number;
+    storeUserName: string;
     storeName: string;
     orderTotal: number;
+    cashbackDiscount: number;
+    cashbackCredit: number;
     paymentDate: string;
     orderLines: OrderLine[];
     update_order_flag: boolean;

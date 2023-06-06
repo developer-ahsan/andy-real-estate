@@ -63,7 +63,11 @@ export class OrderFlagsComponent implements OnInit, OnDestroy {
       store_id: this.orderDetail.fk_storeID,
       storeName: this.orderDetail.storeName,
       orderTotal: this.orderDetail.orderTotal,
-      paymentDate: this.orderDetail.paymentDate
+      paymentDate: this.orderDetail.paymentDate,
+      storeUserId: this.orderDetail.fk_storeUserID,
+      storeUserName: this.orderDetail.userFirstName + ' ' + this.orderDetail.userLastName,
+      cashbackDiscount: this.orderDetail.orderTotalsCashbackDiscount,
+      cashbackCredit: this.orderDetail.orderTotalsCashbackCredit
     }
     if (this.orderDetail.blnCancelled != blnCancelled) {
       payload.isblnFulfillmentCancelChanged = true;
