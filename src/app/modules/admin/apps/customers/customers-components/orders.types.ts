@@ -313,3 +313,12 @@ export interface addLogoBank {
     colorList: string;
     add_logo_bank: boolean;
 };
+
+export interface sendRegistrationEmails {
+    store_id: number;
+    user_id: number;
+    store_name: string;
+    additionalEmails: string[];
+    user_email: string;
+    send_registration_email: boolean;
+};

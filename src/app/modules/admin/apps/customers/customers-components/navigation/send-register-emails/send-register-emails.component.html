@@ -16,12 +16,18 @@
                     <div class="row w-full">
                         <div class="col-12">
                             <mat-form-field class="w-full">
-                                <mat-select [(ngModel)]="selectedStore" name="store">
-                                    <mat-option (click)="storeSelection(store)" *ngFor="let store of storesList"
-                                        [value]="store">
-                                        {{store.storeName}}
-                                    </mat-option>
-                                </mat-select>
+                                <mat-label>Select Store</mat-label>
+                                <input matInput placeholder="Search Stores" matTooltip="Search Stores by name"
+                                    [matAutocomplete]="auto" [formControl]="searchStoreCtrl">
+                                <mat-autocomplete class="w-full" #auto="matAutocomplete"
+                                    (optionSelected)="onSelected($event)" [displayWith]="displayWith">
+                                    <mat-option *ngIf="isSearchingStore" class="is-loading">Loading...</mat-option>
+                                    <ng-container *ngIf="!isSearchingStore">
+                                        <mat-option *ngFor="let item of allStores" [value]="item">
+                                            <span>{{item.storeName}}</span>
+                                        </mat-option>
+                                    </ng-container>
+                                </mat-autocomplete>
                             </mat-form-field>
                         </div>
                     </div>
@@ -39,9 +45,13 @@
                             </div>
 
                             <!-- Add Reminder button -->
-                            <button mat-flat-button [color]="'primary'" (click)="sendEmail()">
-                                <mat-icon svgIcon="mat_solid:send"></mat-icon>
-                                <span class="ml-2 mr-1">Re-send registration emails</span>
+                            <button mat-flat-button [color]="'primary'" [disabled]="isSendEmailLoader"
+                                (click)="sendEmail()">
+                                <mat-icon svgIcon="mat_solid:send" *ngIf="!isSendEmailLoader"></mat-icon>
+                                <span *ngIf="!isSendEmailLoader" class="ml-2 mr-1">Re-send registration emails</span>
+                                <mat-progress-spinner *ngIf="isSendEmailLoader" [diameter]="24"
+                                    [mode]="'indeterminate'">
+                                </mat-progress-spinner>
                             </button>
                         </div>
                     </div>
