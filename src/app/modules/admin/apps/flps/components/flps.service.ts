@@ -99,8 +99,9 @@ export class FLPSService {
     getAllReportUsers(): Observable<any[]> {
         return this._httpClient.get<any[]>(environment.flps, {
             params: {
-                view_store_all_admins: true,
-                size: 500
+                // view_store_all_admins: true,
+                flps_users: true,
+                size: 10
             }
         }).pipe(
             tap((response: any) => {

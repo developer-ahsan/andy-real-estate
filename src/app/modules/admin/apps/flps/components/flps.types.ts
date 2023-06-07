@@ -64,3 +64,16 @@ export interface FlpsLogin {
     payload: any;
     flps_login_v2: boolean;
 };
+
+export interface updateReport {
+    flps_userID: number;
+    flpsOrders: FlpsOrders[];
+    blnSendEmail: boolean;
+    update_flps_report: boolean;
+};
+
+interface FlpsOrders {
+    order_id: number;
+    commissionPaidDate: string;
+    amountPaid: number;
+};

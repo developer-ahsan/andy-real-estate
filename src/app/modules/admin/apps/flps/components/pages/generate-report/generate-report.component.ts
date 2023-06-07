@@ -4,6 +4,8 @@ import moment from 'moment';
 import { fromEvent, of, Subject } from 'rxjs';
 import { debounceTime, distinctUntilChanged, filter, finalize, map, switchMap, takeUntil, tap } from 'rxjs/operators';
 import { FLPSService } from '../../flps.service';
+import * as Excel from 'exceljs/dist/exceljs.min.js';
+import { updateReport } from '../../flps.types';
 
 @Component({
     selector: 'app-generate-report',
@@ -70,6 +72,14 @@ export class GenerateReportComponent implements OnInit {
     reportParams: any;
     report_type = '';
     ngReportType = 1;
+
+    groupByStoresData: any;
+    reportSummaryData: any;
+    isUpdateCommissionLoader: boolean = false;
+    blnSendEmail: boolean = false;
+    @ViewChild('topScrollAnchor') topScroll: ElementRef;
+    @ViewChild('summaryScrollAnchor') summaryScrollAnchor: ElementRef;
+
     /**
      * Constructor
      */
@@ -192,6 +202,7 @@ export class GenerateReportComponent implements OnInit {
             start_date: '',
             end_date: '',
             flps_user_id: this.selectedEmployee.pk_userID,
+            report_type: this.ngReportType,
             options_report: true
         };
         if (this.ngPlan == 'weekly') {
@@ -238,6 +249,42 @@ export class GenerateReportComponent implements OnInit {
             this.isGenerateReport = true;
             this.dataSource = res["data"];
             this.totalUsers = res["totalRecords"];
+            let groupByStores = [];
+            this.dataSource.forEach(element => {
+                element.checked = false;
+                element.disabled = false;
+                if (element.paymentDate) {
+                    element.color = 'green';
+                } else {
+                    element.color = null;
+                }
+                if (element.commissionPaidDate) {
+                    element.checked = true;
+                    element.disabled = true;
+                } else if (element.paymentDate) {
+                    let paymentDate = moment(element.paymentDate);
+                    let start_date = moment(this.reportParams.start_date);
+                    let end_date = moment(this.reportParams.end_date);
+                    if (paymentDate.diff(start_date, 'days') > 0 && paymentDate.diff(end_date, 'days') < 0) {
+                        element.checked = true;
+                    }
+                }
+                if (groupByStores.length == 0) {
+                    groupByStores.push({ store: element.storeName, data: [element] });
+                } else {
+                    let index = groupByStores.findIndex(store => store.store == element.storeName);
+                    if (index == -1) {
+                        groupByStores.push({ store: element.storeName, data: [element] });
+                    } else {
+                        groupByStores[index].data.push(element);
+                    }
+                }
+            });
+            this.groupByStoresData = groupByStores;
+            this.reportSummaryData = res["storesData"];
+            setTimeout(() => {
+                this.topScroll.nativeElement.scrollIntoView({ behavior: 'smooth' });
+            }, 100);
             this.generateReportLoader = false;
             this._changeDetectorRef.markForCheck();
         }, err => {
@@ -257,7 +304,101 @@ export class GenerateReportComponent implements OnInit {
     };
     backToFilters() {
         this.isGenerateReport = false;
+        setTimeout(() => {
+            this.topScroll.nativeElement.scrollIntoView({ behavior: 'smooth' });
+        }, 100);
         this._changeDetectorRef.markForCheck();
+    }
+    goToSummary() {
+        setTimeout(() => {
+            this.summaryScrollAnchor.nativeElement.scrollIntoView({ behavior: 'smooth' });
+        }, 100);
+    }
+    backtoTop() {
+        setTimeout(() => {
+            this.topScroll.nativeElement.scrollIntoView({ behavior: 'smooth' });
+        }, 100);
+    }
+    checkOrUncheckStoresOrders(ev, storeOrders) {
+        storeOrders.data.forEach(element => {
+            if (!element.disabled) {
+                if (ev.checked) {
+                    element.checked = true;
+                } else {
+                    element.checked = false;
+                }
+            }
+        });
+    }
+    updateFlPSCommission() {
+        this.isUpdateCommissionLoader = true;
+        let FlpsOrders = [];
+        this.groupByStoresData.forEach(element => {
+            element.data.forEach(order => {
+                if (!order.disabled && order.checked) {
+                    FlpsOrders.push({ order_id: order.pk_orderID, commissionPaidDate: order.commissionPaidDate, amountPaid: order.amountPaid });
+                }
+            });
+        });
+        let payload: updateReport = {
+            flps_userID: this.selectedEmployee.pk_userID,
+            flpsOrders: FlpsOrders,
+            blnSendEmail: this.blnSendEmail,
+            update_flps_report: true
+        }
+        this._flpsService.UpdateFlpsData(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+            if (res["success"]) {
+                this._flpsService.snackBar(res["message"]);
+            }
+            this.isUpdateCommissionLoader = false;
+            this._changeDetectorRef.markForCheck();
+        }, err => {
+            this.isUpdateCommissionLoader = false;
+            this._changeDetectorRef.markForCheck();
+        });
+    }
+
+    downloadExcelWorkSheet() {
+        const fileName = `FLPS-Report-${this.selectedEmployee.firstName}-${this.selectedEmployee.lastName}-${this.reportParams.start_date}-${this.reportParams.end_date}`;
+        const workbook = new Excel.Workbook();
+        const worksheet = workbook.addWorksheet("FLPS-Reports");
+
+        // Columns
+        worksheet.columns = [
+            { header: "store", key: "storeName", width: 30 },
+            { header: "Date", key: "orderDate", width: 30 },
+            { header: "OrderID", key: "pk_orderID", width: 30 },
+            { header: "Customer", key: "companyName", width: 50 },
+            { header: "Sales", key: "Sales", width: 30 },
+            { header: "Revenue", key: "Revenue", width: 10 },
+            { header: "Margin", key: "Margin", width: 10 },
+            { header: "Profit", key: "Profit", width: 10 },
+            { header: "Commission", key: "CommissionPercentage", width: 10 },
+            { header: "CommissionPaidDate", key: "commissionPaidDate", width: 10 },
+            { header: "AmountPaid", key: "amountPaid", width: 10 }
+        ];
+        for (const obj of this.dataSource) {
+            worksheet.addRow(obj);
+        }
+        setTimeout(() => {
+            workbook.xlsx.writeBuffer().then((data: any) => {
+                const blob = new Blob([data], {
+                    type:
+                        "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+                });
+                let url = window.URL.createObjectURL(blob);
+                let a = document.createElement("a");
+                document.body.appendChild(a);
+                a.setAttribute("style", "display: none");
+                a.href = url;
+                a.download = `${fileName}.xlsx`;
+                a.click();
+                window.URL.revokeObjectURL(url);
+                a.remove();
+                // this.generateReportLoader = false;
+                this._changeDetectorRef.markForCheck();
+            });
+        }, 500);
     }
 
     // -----------------------------------------------------------------------------------------------------

@@ -1,3 +1,4 @@
+<div #topScrollAnchor></div>
 <div class="w-full lg:p-12 md:p-8 px-6" *ngIf="!isGenerateReport">
 
     <!-- Form -->
@@ -122,67 +123,111 @@
             <button matTooltip="Back to filters" class="min-w-30" mat-stroked-button
                 (click)="backToFilters()">Back</button>
         </div>
-
+        <div class="text-lg font-medium tracking-tight leading-6 truncate cursor-pointer my-2">
+            <fuse-alert [appearance]="'soft'" [dismissed]="false" [name]="'alertBox1'" [type]="'success'">
+                <span (click)="downloadExcelWorkSheet()">Click here to download report Excel export file.</span>
+            </fuse-alert>
+        </div>
         <fuse-alert [appearance]="'soft'" [type]="'warning'" [showIcon]="false">
             Programs with royalty passthrough amounts are reflecting the actual profit margins on the orders without
             royalties
         </fuse-alert>
     </div>
-    <div *ngIf="dataSource.length > 0;else other_content" class="w-full">
-        <table mat-table [dataSource]="dataSource" class="w-full border-t">
-            <ng-container matColumnDef="date">
-                <th mat-header-cell *matHeaderCellDef class="w-15 min-w-15">
-                    Date
-                </th>
-                <td mat-cell *matCellDef="let element">
-                    {{element.orderDate | date}}
-                </td>
-            </ng-container>
-            <ng-container matColumnDef="id">
-                <th mat-header-cell *matHeaderCellDef class="w-15 min-w-15">
-                    ID
-                </th>
-                <td mat-cell *matCellDef="let element">
-                    {{element.pk_orderID}}
-                </td>
-            </ng-container>
-            <ng-container matColumnDef="store_name">
-                <th mat-header-cell *matHeaderCellDef class="w-30 min-w-30 ">
-                    Store Name
-                </th>
-                <td mat-cell *matCellDef="let element">
-                    {{element.storeName}}
-                </td>
-            </ng-container>
-            <ng-container matColumnDef="payment">
-                <th mat-header-cell *matHeaderCellDef class="w-15 min-w-15 text-center">
-                    Amount Paid
-                </th>
-                <td mat-cell *matCellDef="let element" class="text-center">
-                    {{element.paymentDate ? element.price : 0.0 | currency}}
-                </td>
-            </ng-container>
-            <ng-container matColumnDef="action">
-                <th mat-header-cell *matHeaderCellDef class="w-15 min-w-15 text-center">
-                    Action
-                </th>
-                <td mat-cell *matCellDef="let element" class="text-center">
-                    <mat-checkbox></mat-checkbox>
-                </td>
-            </ng-container>
-            <tr mat-header-row *matHeaderRowDef="displayedColumns;" class="h-18 bg-light"></tr>
-            <tr mat-row *matRowDef="let row; columns: displayedColumns;"
-                class="h-14 hover:bg-gray-100 dark:hover:bg-hover" style="cursor: pointer;">
-            </tr>
-        </table>
-        <mat-paginator #paginator class="border-b sm:border-t sm:border-b-0 z-10 bg-gray-50 dark:bg-transparent"
-            [ngClass]="{'pointer-events-none': isLoading}" [length]="totalUsers" [pageIndex]="0" [pageSize]="20"
-            (page)="getNextData($event)" [hidePageSize]="true">
-        </mat-paginator>
+    <div class="w-full bg-card pb-5" *ngIf="groupByStoresData;else other_content">
+        <div class="text-right px-5">
+            <p class="cursor-pointer" (click)="goToSummary()">Go To Report Summary</p>
+        </div>
+        <div *ngFor="let item of groupByStoresData">
+            <div class="p-6 pb-2 sm:p-8 dm:pb-2 lg:p-10 lg:pb-2">
+                <div class="text-secondary pb-0 mb-2 text-lg flex justify-between">
+                    <b>{{item.store}}</b>
+                    <mat-checkbox (change)="checkOrUncheckStoresOrders($event)"></mat-checkbox>
+                </div>
+            </div>
+            <table class="table table-striped overflow-x-auto">
+                <thead>
+                    <tr class="columnHeader2">
+                        <th>Date</th>
+                        <th>ID</th>
+                        <th>Customer</th>
+                        <th>Sales</th>
+                        <th>Revenue</th>
+                        <th>Margin</th>
+                        <th>Profit</th>
+                        <th>Commission</th>
+                        <th>
+                            <span>CPD</span> <span class="fa fa-question-circle"
+                                matTooltip="Commission paid date"></span>
+                        </th>
+                        <th>Amount Paid</th>
+                        <th class="no-wrap">MCP <span class="fa fa-question-circle" title="Mark commission paid"></span>
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr *ngFor="let order of item.data" [ngClass]="{'bg-green-300': order.color}">
+                        <td>{{order.orderDate | date:'MM/dd/yyyy'}}</td>
+                        <td>{{order.pk_orderID}}</td>
+                        <td>{{order.companyName}}</td>
+                        <td>{{order.Sales | currency}}</td>
+                        <td>{{order.Revenue | currency}}</td>
+                        <td>{{order.Margin}} %</td>
+                        <td>{{order.Profit | currency}}</td>
+                        <td>{{order.CommissionPercentage | currency}}({{order.orderCommission}}%)</td>
+                        <td>{{order.commissionPaidDate | date:'MM/dd/yyyy'}}</td>
+                        <td>{{order.amountPaid | currency}}</td>
+                        <td>
+                            <mat-checkbox [disabled]="order.disabled" [(ngModel)]="order.checked"></mat-checkbox>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <div class="flex justify-end align-items-center">
+            <mat-checkbox class="mr-2" [(ngModel)]="blnSendEmail">Send commission paid email?</mat-checkbox>
+            <button class="ml-4 min-w-60" mat-flat-button type="button" [color]="'primary'"
+                (click)="updateFlPSCommission()" [disabled]="isUpdateCommissionLoader">
+                <span *ngIf="!isUpdateCommissionLoader">Mark Commission Paid</span>
+                <mat-progress-spinner *ngIf="isUpdateCommissionLoader" [diameter]="24" [mode]="'indeterminate'">
+                </mat-progress-spinner>
+            </button>
+        </div>
+        <!-- Report Summary -->
+        <div #summaryScrollAnchor>
+            <div class="p-6 pb-2 sm:p-8 dm:pb-2 lg:p-10 lg:pb-2">
+                <div class="text-secondary pb-0 mb-2 text-lg flex justify-between">
+                    <b>Report Summary</b>
+                    <p class="cursor-pointer" (click)="backtoTop()">Back to Top</p>
+                </div>
+            </div>
+            <table class="table table-striped overflow-x-auto">
+                <tbody>
+                    <tr>
+                        <th>Store</th>
+                        <th>Sales</th>
+                        <th>Revenue</th>
+                        <th>Num. Sales</th>
+                        <th>Margin</th>
+                        <th>Est. Profit</th>
+                        <th>Commission</th>
+                    </tr>
+
+                    <tr *ngFor="let item of reportSummaryData">
+                        <td>{{item.storeName}}</td>
+                        <td>{{item.Sales | currency}}</td>
+                        <td>{{item.Revenue | currency}}</td>
+                        <td>{{item.Num_Sales}}</td>
+                        <td> {{item.Margin}}%</td>
+                        <td>{{item.EST_Profit | currency}}</td>
+                        <td>{{item.orderCommission | currency}}</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
     </div>
     <!-- No color Found -->
     <ng-template #other_content>
-        <div class="text-secondary font-semibold p-5 text-center">
+        <div class="text-secondary font-semibold p-5 text-center bg-card pb-5">
             There are currently no Orders.
         </div>
     </ng-template>

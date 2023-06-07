@@ -20,7 +20,7 @@ export const environment = {
   royalties: "http://localhost:7071/api/royalties",
   storeProducts: "http://localhost:7100/api/store_products",
   system: "http://localhost:7071/api/system",
-  flps: "http://localhost:7071/api/flps",
+  flps: "https://consolidus.azurewebsites.net/api/flps",
   catalog: "http://localhost:7071/api/catalog",
   admins: "http://localhost:7071/api/consolidus/admin",
   smartart: "http://localhost:7071/api/smartart",
