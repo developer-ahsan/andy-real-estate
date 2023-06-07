@@ -134,7 +134,7 @@
         </fuse-alert>
     </div>
     <div class="w-full bg-card pb-5" *ngIf="groupByStoresData;else other_content">
-        <div class="text-right px-5">
+        <div class="text-right px-5" *ngIf="groupByStoresData.length > 0">
             <p class="cursor-pointer" (click)="goToSummary()">Go To Report Summary</p>
         </div>
         <div *ngFor="let item of groupByStoresData">
@@ -183,7 +183,7 @@
                 </tbody>
             </table>
         </div>
-        <div class="flex justify-end align-items-center">
+        <div class="flex justify-end align-items-center" *ngIf="groupByStoresData.length > 0">
             <mat-checkbox class="mr-2" [(ngModel)]="blnSendEmail">Send commission paid email?</mat-checkbox>
             <button class="ml-4 min-w-60" mat-flat-button type="button" [color]="'primary'"
                 (click)="updateFlPSCommission()" [disabled]="isUpdateCommissionLoader">
@@ -193,7 +193,7 @@
             </button>
         </div>
         <!-- Report Summary -->
-        <div #summaryScrollAnchor>
+        <div #summaryScrollAnchor *ngIf="groupByStoresData.length > 0">
             <div class="p-6 pb-2 sm:p-8 dm:pb-2 lg:p-10 lg:pb-2">
                 <div class="text-secondary pb-0 mb-2 text-lg flex justify-between">
                     <b>Report Summary</b>
@@ -223,6 +223,9 @@
                     </tr>
                 </tbody>
             </table>
+        </div>
+        <div *ngIf="groupByStoresData.length == 0" class="text-secondary font-semibold p-5 text-center bg-card pb-5">
+            There are currently no Orders.
         </div>
     </div>
     <!-- No color Found -->
