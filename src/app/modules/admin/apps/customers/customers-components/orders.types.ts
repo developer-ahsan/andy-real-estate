@@ -317,7 +317,10 @@ export interface addLogoBank {
 export interface sendRegistrationEmails {
     store_id: number;
     user_id: number;
+    storeUserFirstName: string;
+    storeUserName: string;
     store_name: string;
+    storeURL: string;
     additionalEmails: string[];
     user_email: string;
     send_registration_email: boolean;

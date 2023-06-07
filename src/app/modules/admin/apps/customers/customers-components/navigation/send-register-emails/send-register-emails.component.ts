@@ -129,7 +129,10 @@ export class SendRegisterEmailsComponent implements OnInit, OnDestroy {
     let payload: sendRegistrationEmails = {
       store_id: this.selectedStore.storeID,
       user_id: this.selectedCustomer.pk_userID,
+      storeUserFirstName: this.selectedCustomer.storeUserFirstName,
+      storeUserName: this.selectedCustomer.storeUserName,
       store_name: this.selectedStore.storeName,
+      storeURL: this.selectedStore.storeURL,
       additionalEmails: this.selectedCustomer.additionalEmails,
       user_email: this.selectedCustomer.email,
       send_registration_email: true,
