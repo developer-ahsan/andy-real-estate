@@ -65,7 +65,7 @@ export const systemRoutes: Route[] = [
             },
             {
                 path: 'core-products',
-                component: CoreProductsComponent,
+                loadChildren: () => import('app/modules/admin/apps/system/components/pages/core-products/core-products.module').then(m => m.CoreProductsModule),
                 data: {
                     title: 'Core Products',
                     url: 'core-products'

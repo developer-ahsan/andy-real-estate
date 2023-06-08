@@ -1,0 +1,21 @@
+export interface addCompanyProfile {
+    companyName: string;
+    companyWebsite: string;
+    address: string;
+    city: string;
+    state: string;
+    zip: string;
+    APContactName: string;
+    APEmail: string;
+    remitEmail: string;
+    additionalEmail: string;
+    creditLimit: number;
+    netTerms: string;
+    paymentMethod: string;
+    blnPORequired: boolean;
+    dateCreated: string;
+    storeID: number;
+    blnSalesTaxExempt: boolean;
+    phone: string;
+    add_company_profile: boolean;
+};

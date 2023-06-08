@@ -350,3 +350,14 @@ export interface DeleteNode {
     section_id: number;
     delete_node: boolean;
 };
+
+export interface AddNewCore {
+    core_name: string;
+    blnCopy: boolean;
+    categories: categories[];
+    add_core: boolean;
+};
+interface categories {
+    category_name: string;
+    subCategory_names: string[];
+};

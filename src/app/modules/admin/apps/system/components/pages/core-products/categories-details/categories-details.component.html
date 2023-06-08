@@ -2,11 +2,11 @@
     <div class="px-2 pb-2">
         <mat-button-toggle-group #group="matButtonToggleGroup" [value]="mainScreen"
             (change)="calledScreen(group.value)">
-            <mat-button-toggle value="Current Core Product Lists">
-                Current Core Product Lists
+            <mat-button-toggle value="Current Categories Lists">
+                Current Categories Lists
             </mat-button-toggle>
-            <mat-button-toggle value="Create New Core List">
-                Create New Core List
+            <mat-button-toggle value="Create New Categories">
+                Create New Categories
             </mat-button-toggle>
         </mat-button-toggle-group>
     </div>
@@ -14,7 +14,7 @@
         <ngx-skeleton-loader count="8" appearance="line" animation="pulse">
         </ngx-skeleton-loader>
     </div>
-    <div *ngIf="mainScreen == 'Current Core Product Lists' && !isLoading">
+    <div *ngIf="mainScreen == 'Current Categories Lists' && !isLoading">
         <div class="px-3" *ngIf="!isUpdateMethod">
             <mat-form-field class="w-full">
                 <input matInput placeholder="Search Keyword" [disabled]="isSearching" [(ngModel)]="keyword"
@@ -70,8 +70,7 @@
                     <th mat-header-cell *matHeaderCellDef class="w-15 min-w-15 text-center"> Action </th>
                     <td mat-cell *matCellDef="let element">
                         <div class="flex justify-center">
-                            <mat-icon svgIcon="heroicons_outline:eye"
-                                [routerLink]="['/apps/system/core-products/categories']" matTooltip="Summary">
+                            <mat-icon svgIcon="heroicons_outline:eye" matTooltip="Summary">
                             </mat-icon>
                             <mat-icon svgIcon="heroicons_outline:trash" matTooltip="Populate Store"></mat-icon>
                             <mat-icon svgIcon="heroicons_outline:trash" matTooltip="Remove">
@@ -117,11 +116,11 @@
         <!-- No color Found -->
         <ng-template #other_content>
             <div class="text-secondary font-semibold p-5 text-center" *ngIf="!isUpdateMethod">
-                No Core List Found.
+                No Imprint Methods Found.
             </div>
         </ng-template>
     </div>
-    <div *ngIf="mainScreen == 'Create New Core List' && !isLoading" class="p-6 row w-full">
+    <div *ngIf="mainScreen == 'Create New Categories' && !isLoading" class="p-6 row w-full">
         <div class="col-12">
             <mat-form-field class="example-chip-list w-full" appearance="fill">
                 <mat-label>Core Name</mat-label>

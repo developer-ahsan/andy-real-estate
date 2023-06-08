@@ -4,15 +4,15 @@ import { MatChipInputEvent } from '@angular/material/chips';
 import { MatPaginator } from '@angular/material/paginator';
 import { Subject } from 'rxjs';
 import { finalize, takeUntil } from 'rxjs/operators';
-import { SystemService } from '../../system.service';
-import { AddColor, AddImprintColor, AddImprintMethod, AddNewCore, DeleteColor, DeleteImprintColor, UpdateColor, UpdateImprintColor, UpdateImprintMethod } from '../../system.types';
+import { SystemService } from '../../../system.service';
+import { AddColor, AddImprintColor, AddImprintMethod, AddNewCore, DeleteColor, DeleteImprintColor, UpdateColor, UpdateImprintColor, UpdateImprintMethod } from '../../../system.types';
 
 @Component({
-  selector: 'app-core-products',
-  templateUrl: './core-products.component.html',
+  selector: 'app-categories-details-products',
+  templateUrl: './categories-details.component.html',
   styles: [".mat-paginator {border-radius: 16px !important}"]
 })
-export class CoreProductsComponent implements OnInit, OnDestroy {
+export class CategoriesDetailsComponent implements OnInit, OnDestroy {
   @ViewChild('paginator') paginator: MatPaginator;
   @Input() isLoading: boolean;
   @Output() isLoadingChange = new EventEmitter<boolean>();
@@ -25,7 +25,7 @@ export class CoreProductsComponent implements OnInit, OnDestroy {
   tempRecords = 0;
   page = 1;
 
-  mainScreen: string = 'Current Core Product Lists';
+  mainScreen: string = 'Current Categories Lists';
   keyword = '';
   not_available = 'N/A';
 
@@ -56,6 +56,7 @@ export class CoreProductsComponent implements OnInit, OnDestroy {
   ) { }
 
   ngOnInit(): void {
+    alert('here');
     this.isLoading = true;
     this.getCoreList(1, 'get');
   };

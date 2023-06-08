@@ -108,6 +108,7 @@ export const appRoutes: Route[] = [
                     // { path: 'customers', loadChildren: () => import('app/modules/admin/apps/ecommerce/ecommerce.module').then(m => m.ECommerceModule) },
                     { path: 'orders', loadChildren: () => import('app/modules/admin/apps/orders/orders.module').then(m => m.OrdersModule) },
                     { path: 'customers', loadChildren: () => import('app/modules/admin/apps/customers/customers.module').then(m => m.CustomersModule) },
+                    { path: 'companies', loadChildren: () => import('app/modules/admin/apps/company-profile/company-profile.module').then(m => m.CompanyProfileModule) },
                 ]
             },
             // smartart

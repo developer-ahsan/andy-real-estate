@@ -74,6 +74,13 @@ export const defaultNavigation: FuseNavigationItem[] = [
                 link: '/apps/vendors',
             },
             {
+                id: 'companies',
+                title: 'Companies',
+                icon: 'heroicons_outline:briefcase',
+                type: 'basic',
+                link: '/apps/companies',
+            },
+            {
                 id: 'customers',
                 title: 'Customers',
                 icon: 'heroicons_outline:user-group',

@@ -254,7 +254,12 @@ export class GenerateReportComponent implements OnInit {
                 element.checked = false;
                 element.disabled = false;
                 if (element.paymentDate) {
-                    element.color = 'green';
+                    let paymentDate = moment(element.paymentDate);
+                    let start_date = moment(this.reportParams.start_date);
+                    let end_date = moment(this.reportParams.end_date);
+                    if (paymentDate.diff(start_date, 'days') > 0 && paymentDate.diff(end_date, 'days') < 0) {
+                        element.color = 'green';
+                    }
                 } else {
                     element.color = null;
                 }
