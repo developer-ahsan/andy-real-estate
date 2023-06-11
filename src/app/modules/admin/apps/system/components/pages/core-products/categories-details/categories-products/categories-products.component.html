@@ -1,0 +1,52 @@
+<div class="w-full">
+    <div class="px-5 py-2" *ngIf="isLoading">
+        <ngx-skeleton-loader count="8" appearance="line" animation="pulse">
+        </ngx-skeleton-loader>
+    </div>
+    <div *ngIf="!isLoading" class="p-6 row w-full">
+        <div class="col-12">
+            <mat-form-field class="example-chip-list w-full" appearance="fill">
+                <mat-label>Category Name (25)</mat-label>
+                <input matInput [(ngModel)]="ngName" maxlength="25">
+            </mat-form-field>
+        </div>
+        <div class="col-12 text-right">
+            <button [disabled]="isUpdateCategoryLoader" class="min-w-30" mat-stroked-button
+                [matTooltip]="'Update Category'" (click)="updateCategory()">
+                <span class="ml-2" *ngIf="!isUpdateCategoryLoader"> Update Category </span>
+                <mat-progress-spinner *ngIf="isUpdateCategoryLoader" [diameter]="24" [mode]="'indeterminate'">
+                </mat-progress-spinner>
+            </button>
+        </div>
+        <div class="col-12">
+            <div class="border-b pb-1 font-bold text-lg">Products Currently In Category</div>
+            <div class="row">
+                <div class="col-12" *ngFor="let item of productsData">
+                    <div class="bg-gray-100 w-full py-2 px-2 flex justify-between">
+                        <p class="font-bold">{{item.companyName}}</p>
+                        <div class="flex">
+                            <p class="cursor-pointer" (click)="checkUncheckCoreProducts(item,true)">Select/</p>
+                            <p class="cursor-pointer" (click)="checkUncheckCoreProducts(item,false)">Unselect</p>
+                            <p class="cursor-pointer ml-2">Remove</p>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-12 col-md-3 my-1" *ngFor="let prod of item.productsData"
+                            style="text-align: -webkit-center;">
+                            <img src="https://assets.consolidus.com/globalAssets/Products/HiRes/{{prod.psid}}.jpg"
+                                class="w-50">
+                            <p>{{prod.name}}</p>
+                            <p><b>Starting at</b>: {{prod.price | currency}}</p>
+                            <mat-checkbox [(ngModel)]="prod.checked"></mat-checkbox>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-12 justify-center flex">
+                    <p *ngIf="!isLoadMore && totalRecords > productsData.length">Load More</p>
+                    <mat-progress-spinner *ngIf="isLoadMore" [diameter]="24" [mode]="'indeterminate'">
+                    </mat-progress-spinner>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

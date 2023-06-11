@@ -355,15 +355,21 @@
           <div class="text-2xl font-extrabold tracking-tight leading-none my-3">
             Add New Favicon Icon
           </div>
+          <img src="{{favImage}}" class="w-5" (error)="checkFavImageExist($event)" *ngIf="favImageCheck">
+
           <div class="col-12 fa fa-info-circle" style="color: rgb(101, 124, 174)">
             16px X 16px .ICO file only
           </div>
           <div class="row">
-            <input type="file" class="file-upload my-3 ml-3" onchange="console.log(event.target.files)" />
+            <input type="file" class="file-upload my-3 ml-3" (change)="uploadFaviconImage($event)" />
           </div>
           <div class="row mt-5">
             <div class="col-md-4">
-              <button mat-flat-button [matTooltip]="'Upload'" mat-stroked-button>
+              <button class="min-w-40" mat-stroked-button [matTooltip]="'Update'" (click)="uploadMediaFavicon()"
+                [disabled]="favUploadLoader">
+                <mat-progress-spinner *ngIf="favUploadLoader" [diameter]="24" [mode]="'indeterminate'">
+                </mat-progress-spinner>
+                <mat-icon *ngIf="!favUploadLoader" svgIcon="heroicons_outline:pencil-alt"></mat-icon>
                 <span class="px-2">Upload</span>
               </button>
             </div>

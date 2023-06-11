@@ -3,9 +3,11 @@ import { Component, Input, OnInit, Output, EventEmitter, ChangeDetectorRef, OnDe
 import { MatChipInputEvent } from '@angular/material/chips';
 import { MatPaginator } from '@angular/material/paginator';
 import { Subject } from 'rxjs';
-import { finalize, takeUntil } from 'rxjs/operators';
+import { debounceTime, distinctUntilChanged, filter, finalize, switchMap, takeUntil, tap } from 'rxjs/operators';
 import { SystemService } from '../../../system.service';
-import { AddColor, AddImprintColor, AddImprintMethod, AddNewCore, DeleteColor, DeleteImprintColor, UpdateColor, UpdateImprintColor, UpdateImprintMethod } from '../../../system.types';
+import { AddColor, AddCoreCategory, AddImprintColor, AddImprintMethod, AddNewCore, AddSubCategory, DeleteColor, DeleteImprintColor, UpdateColor, UpdateCoreCategory, UpdateImprintColor, UpdateImprintMethod, UpdateSubCategory } from '../../../system.types';
+import { ActivatedRoute } from '@angular/router';
+import { FormControl } from '@angular/forms';
 
 @Component({
   selector: 'app-categories-details-products',
@@ -19,263 +21,257 @@ export class CategoriesDetailsComponent implements OnInit, OnDestroy {
   private _unsubscribeAll: Subject<any> = new Subject<any>();
 
   dataSource = [];
-  tempDataSource = [];
-  displayedColumns: string[] = ['name', 'cat', 'sub_cat', 'prod', 'unique', 'action'];
-  totalUsers = 0;
-  tempRecords = 0;
+  displayedColumns: string[] = ['category', 'subcat', 'products', 'action'];
   page = 1;
 
   mainScreen: string = 'Current Categories Lists';
   keyword = '';
   not_available = 'N/A';
 
+  ngName: string = '';
+  ngSubcatName: string = '';
+  isAddCatLoader: boolean = false;
+  isAddSubCatLoader: boolean = false;
+
 
   isSearching: boolean = false;
-
-  // Add New Core
-  ngName: string = '';
-  ngCoreCheck: boolean = false;
-  ngCoreSelect: number = 0;
-  coreListCategories = [];
-  isCoreListCategoriesLoader: boolean = false;
-  categoryListPage = 1;
-  isMoreLoader: boolean = false;
   totalCategories = 0;
 
-  ngDesc: string = '';
-  isAddCoreLoader: boolean = false;
+  coreID: any;
+  // Categories Dropdown
+  allCategories = [];
+  searchCategoriesCtrl = new FormControl();
+  selectedCategories: any;
+  isSearchingCategories = false;
+  // Products Toggle
+  isCatProdsEnable: boolean = false;
+  paramsCatData: any;
+  isSubCatProdsEnable: boolean = false;
 
-  // Update Color
-  isUpdateMethodLoader: boolean = false;
-  isUpdateMethod: boolean = false;
-  updateMethodData: any;
-  ngRGBUpdate = '';
   constructor(
     private _changeDetectorRef: ChangeDetectorRef,
-    private _systemService: SystemService
+    private _systemService: SystemService,
+    private _activeRoute: ActivatedRoute
   ) { }
 
   ngOnInit(): void {
-    alert('here');
-    this.isLoading = true;
-    this.getCoreList(1, 'get');
+    this._activeRoute.params.subscribe(params => {
+      this.isLoading = true;
+      this.coreID = params.id;
+      this.getCoreListCategories(1, 'get')
+    });
+    this.initialize();
   };
+  initialize() {
+    let params;
+    this.searchCategoriesCtrl.valueChanges.pipe(
+      filter((res: any) => {
+        params = {
+          core_id: this.coreID,
+          core_categories_subcategories: true,
+          keyword: res
+        }
+        return res !== null && res.length >= 3
+      }),
+      distinctUntilChanged(),
+      debounceTime(300),
+      tap(() => {
+        this.allCategories = [];
+        this.isSearchingCategories = true;
+        this._changeDetectorRef.markForCheck();
+      }),
+      switchMap(value => this._systemService.getSystemsData(params)
+        .pipe(
+          finalize(() => {
+            this.isSearchingCategories = false
+            this._changeDetectorRef.markForCheck();
+          }),
+        )
+      )
+    ).subscribe((data: any) => {
+      this.allCategories = data['data'];
+    });
+  }
   calledScreen(value) {
     this.mainScreen = value;
   }
-  getCoreList(page, type) {
-    let params = {
-      all_cores: true,
-      keyword: this.keyword,
-      page: page,
-      size: 20
-    }
-    this._systemService.getSystemsData(params).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
-      this.dataSource = res["data"];
-      this.totalUsers = res["totalRecords"];
-      if (this.keyword == '') {
-        this.tempDataSource = res["data"];
-        this.tempRecords = res["totalRecords"];
-      }
-      if (type == 'add') {
-        this.isAddCoreLoader = false;
-        this.ngName = '';
-        this.coreListCategories = [];
-        this.ngCoreSelect = 0;
-        this.ngCoreCheck = false;
-        this._systemService.snackBar('New Core Added Successfully');
-        this.mainScreen = 'Current Core Product Lists';
-      }
-      this.isLoading = false;
-      this.isSearching = false;
-      this.isLoadingChange.emit(false);
-      this._changeDetectorRef.markForCheck();
-    }, err => {
-      this.isSearching = false;
-      this.isLoading = false;
-      this.isLoadingChange.emit(false);
-      this._changeDetectorRef.markForCheck();
-    });
-  }
-  getNextData(event) {
-    const { previousPageIndex, pageIndex } = event;
 
-    if (pageIndex > previousPageIndex) {
-      this.page++;
-    } else {
-      this.page--;
-    };
-    this.getCoreList(this.page, 'get');
-  };
-  searchColor(value) {
-    if (this.dataSource.length > 0) {
-      this.paginator.firstPage();
-    }
-    this.page = 1;
-    this.keyword = value;
-    this.isSearching = true;
-    this._changeDetectorRef.markForCheck();
-    this.getCoreList(1, 'get');
-  }
-  resetSearch() {
-    if (this.dataSource.length > 0) {
-      this.paginator.firstPage();
-    }
-    this.keyword = '';
-    this.dataSource = this.tempDataSource;
-    this.totalUsers = this.tempRecords;
-  }
-
-  // Get Categories List 
-  onChangeSelectionCore(value) {
-    this.coreListCategories = [];
-    if (value != 0) {
-      this.isCoreListCategoriesLoader = true;
-      this.getCoreListCategories(1);
-    }
-  }
-  getCoreListCategories(page) {
+  getCoreListCategories(page, type) {
     let params = {
       page: page,
-      core_id: this.ngCoreSelect,
+      core_id: this.coreID,
+      size: 20,
       core_categories_subcategories: true
     }
     this._systemService.getSystemsData(params).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
       res["data"].forEach(element => {
-        element.checked = true;
         element.subCats = [];
         if (element.subCategories) {
           let splitCats = element.subCategories.split(',');
           splitCats.forEach(cats => {
             let sub_cats = cats.split(':');
-            element.subCats.push({ id: sub_cats[0], name: sub_cats[1], checked: true });
+            element.subCats.push({ id: sub_cats[0], name: sub_cats[1], product: sub_cats[2] });
           });
         }
       });
-      this.coreListCategories = this.coreListCategories.concat(res["data"]);
+      this.dataSource = res["data"];
+      this.allCategories = res["data"];
       this.totalCategories = res["totalRecords"];
-      this.isCoreListCategoriesLoader = false;
-      this.isMoreLoader = false;
+      if (type != 'get') {
+        this.ngName = '';
+        this.ngSubcatName = '';
+        this.isAddCatLoader = false;
+        this.isAddSubCatLoader = false;
+        this._systemService.snackBar(type);
+      }
+      this.isLoading = false;
       this._changeDetectorRef.markForCheck();
     }, err => {
-      this.isMoreLoader = false;
-      this.isCoreListCategoriesLoader = false;
+      this.isLoading = false;
       this._changeDetectorRef.markForCheck();
     })
   }
-  getNextCoreCategories() {
-    this.categoryListPage++;
-    this.isMoreLoader = true;
-    this.getCoreListCategories(this.categoryListPage);
+  onSelected(ev) {
+    this.selectedCategories = ev.option.value;
   }
-
-  checkUncheckCoreCats(item, check, type, index) {
-    if (type == 'main') {
-      item.checked = check;
-      item.subCats.forEach(element => {
-        element.checked = check;
-      });
+  displayWith(value: any) {
+    return value?.categoryName;
+  }
+  getNextData(event) {
+    const { previousPageIndex, pageIndex } = event;
+    if (pageIndex > previousPageIndex) {
+      this.page++;
     } else {
-      item.subCats[index].checked = check;
-    }
-  }
-
-  addNewCoreList() {
+      this.page--;
+    };
+    this.getCoreListCategories(this.page, 'get');
+  };
+  // Add New Category
+  addNewCategory() {
     if (this.ngName == '') {
-      this._systemService.snackBar('Core list name is required');
+      this._systemService.snackBar('Category name is required');
       return;
     }
-    let categories = [];
-    if (this.ngCoreCheck) {
-      this.coreListCategories.forEach(element => {
-        if (element.checked) {
-          let subCategory_names = [];
-          element.subCats.forEach(sub => {
-            if (sub.checked) {
-              subCategory_names.push(sub.name.replace(/'/g, '"'));
-            }
-          });
-          categories.push({ category_name: element.categoryName, subCategory_names: subCategory_names });
-        }
-      });
+    let payload: AddCoreCategory = {
+      core_id: this.coreID,
+      category_name: this.ngName,
+      add_core_category: true
     }
-    let payload: AddNewCore = {
-      core_name: this.ngName,
-      blnCopy: this.ngCoreCheck,
-      categories: categories,
-      add_core: true
-    }
-    this.isAddCoreLoader = true;
+    this.isAddCatLoader = true;
     this._systemService.AddSystemData(payload).pipe(takeUntil(this._unsubscribeAll), finalize(() => {
       this._changeDetectorRef.markForCheck();
     })).subscribe(res => {
       if (res["success"]) {
-        this.getCoreList(1, 'add')
+        this.getCoreListCategories(1, res["message"]);
       } else {
-        this.isAddCoreLoader = false;
         this._systemService.snackBar(res["message"]);
+        this.isAddCatLoader = false;
       }
       this._changeDetectorRef.markForCheck();
     }, err => {
-      this.isAddCoreLoader = false;
+      this.isAddCatLoader = false;
       this._systemService.snackBar('Something went wrong');
     })
   }
-  // Delete Color
-  deleteColor(item) {
-    item.delLoader = true;
-    let payload: DeleteImprintColor = {
-      imprint_color_id: item.pk_imprintColorID,
-      delete_imprint_color: true
-    }
-    this._systemService.UpdateSystemData(payload).pipe(takeUntil(this._unsubscribeAll), finalize(() => {
-      item.delLoader = false
-      this._changeDetectorRef.markForCheck();
-    })).subscribe(res => {
-      this.dataSource = this.dataSource.filter(color => color.pk_imprintColorID != item.pk_imprintColorID);
-      this.totalUsers--;
-      this._systemService.snackBar('Color Deleted Successfully');
-      this._changeDetectorRef.markForCheck();
-    }, err => {
-      this._systemService.snackBar('Something went wrong');
-    });
-  }
-  // Update Method
-  updateMethodToggle(item) {
-    console.log(item)
-    this.updateMethodData = item;
-    this.isUpdateMethod = !this.isUpdateMethod;
-  }
-  updateMethod() {
-    if (this.updateMethodData.imprintColorName == '') {
-      this._systemService.snackBar('Color name is required');
+  addNewSubCategory() {
+    if (this.ngSubcatName == '') {
+      this._systemService.snackBar('Category name is required');
       return;
     }
-    const rgb = this.ngRGBUpdate.replace('#', '');
-    let payload: UpdateImprintMethod = {
-      method_id: this.updateMethodData.pk_methodID,
-      method_name: this.updateMethodData.methodName,
-      description: this.updateMethodData.methodDescription,
-      update_imprint_method: true
+    if (!this.selectedCategories) {
+      this._systemService.snackBar('Please select any category');
+      return;
     }
-    this.isUpdateMethodLoader = true;
-    this._systemService.UpdateSystemData(payload).pipe(takeUntil(this._unsubscribeAll), finalize(() => {
-      this.isUpdateMethodLoader = false
+    let payload: AddSubCategory = {
+      categoryID: this.selectedCategories.pk_categoryID,
+      subCategoryName: this.ngSubcatName,
+      add_subCategory: true
+    }
+    this.isAddSubCatLoader = true;
+    this._systemService.AddSystemData(payload).pipe(takeUntil(this._unsubscribeAll), finalize(() => {
       this._changeDetectorRef.markForCheck();
     })).subscribe(res => {
-      this.dataSource.filter(elem => {
-        if (elem.pk_methodID == this.updateMethodData.pk_methodID) {
-          elem.methodName = this.updateMethodData.methodName;
-          elem.methodDescription = this.updateMethodData.methodDescription;
-        }
-      });
-      this._systemService.snackBar('Method Updated Successfully');
+      if (res["success"]) {
+        this.getCoreListCategories(1, res["message"]);
+      } else {
+        this._systemService.snackBar(res["message"]);
+        this.isAddSubCatLoader = false;
+      }
       this._changeDetectorRef.markForCheck();
     }, err => {
+      this.isAddSubCatLoader = false;
       this._systemService.snackBar('Something went wrong');
     })
   }
 
+  // Go To Products
+  goToCatProducts(item) {
+    this.paramsCatData = { coreID: this.coreID, cat_id: item.pk_categoryID, name: item.categoryName };
+    this.isCatProdsEnable = true;
+    this._changeDetectorRef.markForCheck();
+  }
+  goToSubCatProducts(id, sub_Cat) {
+    this.paramsCatData = { coreID: this.coreID, cat_id: id, name: sub_Cat.name, sub_id: sub_Cat.id };
+    this.isSubCatProdsEnable = true;
+    this._changeDetectorRef.markForCheck();
+  }
+  backToCategories() {
+    this.paramsCatData = null;
+    this.isSubCatProdsEnable = false;
+    this.isCatProdsEnable = false;
+    this._changeDetectorRef.markForCheck();
+  }
+  removeSubCategory(cat, sub_cat) {
+    sub_cat.delLoader = true;
+    let payload: UpdateSubCategory = {
+      subCategory_name: sub_cat.name,
+      subCategory_id: Number(cat.pk_categoryID),
+      category_id: Number(sub_cat.id),
+      is_delete: true,
+      update_subCategory: true
+    }
+    this._systemService.UpdateSystemData(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+      if (res["success"]) {
+        let index = cat.subCats.findIndex(item => item.id == sub_cat.id);
+        cat.subCats.splice(index, 1);
+        this._systemService.snackBar(res["message"]);
+        sub_cat.delLoader = false;
+        this._changeDetectorRef.markForCheck();
+      } else {
+        sub_cat.delLoader = false;
+        this._changeDetectorRef.markForCheck();
+      }
+    }, err => {
+      sub_cat.delLoader = false;
+      this._changeDetectorRef.markForCheck();
+    });
+  }
+  removeCategory(cat) {
+    cat.delLoader = true;
+    let payload: UpdateCoreCategory = {
+      category_name: cat.categoryName,
+      core_id: Number(this.coreID),
+      category_id: Number(cat.pk_categoryID),
+      is_delete: true,
+      update_core_category: true
+    }
+    this._systemService.UpdateSystemData(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+      if (res["success"]) {
+        this.dataSource = this.dataSource.filter(item => item.pk_categoryID != cat.pk_categoryID);
+        this.allCategories = this.allCategories.filter(item => item.pk_categoryID != cat.pk_categoryID);
+        this.totalCategories--;
+        this._systemService.snackBar(res["message"]);
+        cat.delLoader = false;
+        this._changeDetectorRef.markForCheck();
+      } else {
+        cat.delLoader = false;
+        this._changeDetectorRef.markForCheck();
+      }
+    }, err => {
+      cat.delLoader = false;
+      this._changeDetectorRef.markForCheck();
+    });
+  }
   /**
      * On destroy
      */

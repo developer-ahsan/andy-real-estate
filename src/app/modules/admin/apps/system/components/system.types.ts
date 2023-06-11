@@ -361,3 +361,45 @@ interface categories {
     category_name: string;
     subCategory_names: string[];
 };
+export interface AddCoreCategory {
+    core_id: number;
+    category_name: string;
+    add_core_category: boolean;
+};
+export interface AddSubCategory {
+    categoryID: number;
+    subCategoryName: string;
+    add_subCategory: boolean;
+};
+export interface UpdateCoreCategory {
+    category_name: string;
+    core_id: number;
+    category_id: number;
+    is_delete: boolean;
+    update_core_category: boolean;
+};
+export interface UpdateSubCategory {
+    subCategory_name: string;
+    subCategory_id: number;
+    category_id: number;
+    is_delete: boolean;
+    update_subCategory: boolean;
+};
+export interface addSubCategoryProduct {
+    subCategoryID: number;
+    productIDs: number[];
+    add_subCategory_product: boolean;
+};
+export interface DeleteCore {
+    coreID: number;
+    delete_core: boolean;
+};
+export interface UpdateProductDisplayOrder {
+    subCategoryID: number;
+    products: Products[];
+    update_product_display_order: boolean;
+};
+interface Products {
+    list_order: number;
+    productID: number;
+}

@@ -57,6 +57,12 @@ export class OrdersService {
                     icon: 'mat_outline:featured_play_list',
                 },
                 {
+                    id: 5,
+                    title: 'Sent Purchase Orders',
+                    route: 'sent-purchase-order',
+                    icon: 'mat_outline:featured_play_list',
+                },
+                {
                     id: 6,
                     title: 'Shipping Report',
                     route: 'shipping-report',

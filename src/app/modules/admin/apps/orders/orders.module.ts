@@ -68,6 +68,7 @@ import { OrderPaymentBillComponent } from './orders-components/navigation/order-
 import { NgxStripeModule } from 'ngx-stripe';
 import { ProductsOrderModifyComponent } from './orders-components/navigation/order-modify/products-modify.component';
 import { QuillModule } from 'ngx-quill';
+import { SentOrdersPurchasesComponent } from './orders-components/navigation/sent-purchase-orders/sent-purchase-orders.component';
 
 @NgModule({
     declarations: [
@@ -102,6 +103,7 @@ import { QuillModule } from 'ngx-quill';
         GroupOrdersShippingComponent,
         OrderPaymentBillComponent,
         ProductsOrderModifyComponent,
+        SentOrdersPurchasesComponent,
         SafePipe
     ],
     imports: [

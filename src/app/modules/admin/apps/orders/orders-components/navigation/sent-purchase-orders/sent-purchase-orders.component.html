@@ -1,0 +1,60 @@
+<div class="w-full">
+    <ngx-skeleton-loader count="15" appearance="line" animation="pulse" *ngIf="isLoading">
+    </ngx-skeleton-loader>
+    <div class="row" *ngIf="!isLoading">
+        <div class="col-12 my-2">
+            <fuse-card class="rounded-2xl shadow bg-card flex flex-col lg:flex-row w-full">
+                <div class="w-full">
+                    <div class="p-6 sm:p-8 lg:p-10 w-full">
+                        <div class="text-2xl font-bold ">
+                            Sent Purchase Orders
+                        </div>
+                        <div class="mt-5">
+                            <table
+                                class="table table-condensed table-striped table-hover padding-1x wide no-bottom-margin">
+                                <thead>
+                                    <tr class="columnHeader2">
+                                        <th width="5%" valign="top">PO#</th>
+                                        <th width="5%" valign="top">Date sent</th>
+                                        <th width="5%" valign="top">OLID#</th>
+                                        <th width="10%" valign="top">Supplier</th>
+                                        <th width="40%" valign="top">Qty/Product</th>
+                                        <th width="10%" valign="top">Customer</th>
+                                        <th width="20%" valign="top">Shipping Date</th>
+                                        <th width="20%" valign="top">Tracking</th>
+                                        <th width="5%" valign="top">PDF</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr *ngFor="let item of orderProducts">
+                                        <td valign="top">{{item.pk_orderLineID}}</td>
+                                        <td valign="top">{{orderDetail.orderDate | date:'MM/DD/yyyy'}}</td>
+                                        <td valign="top">{{item.pk_orderLineID}}</td>
+                                        <td valign="top">{{item.companyName}}</td>
+                                        <td valign="top">{{item.quantity}} X {{item.productNumber}} -
+                                            {{item.productName}}
+                                        </td>
+                                        <td valign="top">{{item.userCompanyName}}</td>
+                                        <td valign="top">
+                                            <span class="text-red-500 font-bold" *ngIf="!item.shippingDate">x</span>
+                                            <span *ngIf="item.shippingDate">{{item.shippingDate | date:
+                                                'MM-DD-yyyy'}}</span>
+                                        </td>
+                                        <td valign="top">
+                                            <span class="text-red-500 font-bold" *ngIf="!item.trackingNumber">x</span>
+                                            <span *ngIf="item.trackingNumber">{{item.trackingNumber}}</span>
+                                        </td>
+                                        <td valign="top"><a
+                                                href="https://admin.consolidus.com/ssadm/controller/view/system/tempDocs/purchaseOrder-{{item.fk_orderID}}-57398_{{date}}.pdf"
+                                                target="_blank">PDF</a></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </fuse-card>
+        </div>
+
+    </div>
+</div>

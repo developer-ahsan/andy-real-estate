@@ -29,6 +29,7 @@ import { OrderReceiptEmailComponent } from './orders-components/navigation/order
 import { GroupOrdersDetailsComponent } from './orders-components/navigation/group-order-details/group-order-details.component';
 import { GroupOrdersShippingComponent } from './orders-components/navigation/group-order-shipping/group-order-shipping.component';
 import { OrderPaymentBillComponent } from './orders-components/navigation/order-payments-bill/order-payments-billcomponent';
+import { SentOrdersPurchasesComponent } from './orders-components/navigation/sent-purchase-orders/sent-purchase-orders.component';
 
 export const ordersRoutes: Route[] = [
     {
@@ -90,6 +91,14 @@ export const ordersRoutes: Route[] = [
                 data: {
                     title: 'Purchase Orders',
                     url: 'purchase-order'
+                }
+            },
+            {
+                path: 'sent-purchase-order',
+                component: SentOrdersPurchasesComponent,
+                data: {
+                    title: 'Sent Purchase Orders',
+                    url: 'sent-purchase-order'
                 }
             },
             {

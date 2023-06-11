@@ -21,6 +21,7 @@ export class OrderApprovalSettingsComponent implements OnInit, OnDestroy {
   currentApprovals: any;
   displayedColumns: string[] = ['order', 'user', 'email'];
   orderDetail: any;
+  isUpdateLoader: boolean = false;
   constructor(
     private _changeDetectorRef: ChangeDetectorRef,
     private _orderService: OrdersService
@@ -53,6 +54,7 @@ export class OrderApprovalSettingsComponent implements OnInit, OnDestroy {
     });
   }
   UpdateArtApprovalSettings() {
+    this.isUpdateLoader = true;
     this._changeDetectorRef.markForCheck();
     let params: UpdateArtApprovalSettings = {
       blnAdditionalApprovalOverride: this.orderDetail.blnAdditionalApprovalOverride,
@@ -60,8 +62,11 @@ export class OrderApprovalSettingsComponent implements OnInit, OnDestroy {
       update_art_approval: true
     }
     this._orderService.updateOrderCalls(params).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+      this._orderService.snackBar(res["message"]);
+      this.isUpdateLoader = false;
       this._changeDetectorRef.markForCheck();
     }, err => {
+      this.isUpdateLoader = false;
       this._changeDetectorRef.markForCheck();
     })
   }

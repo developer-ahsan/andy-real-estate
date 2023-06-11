@@ -42,6 +42,10 @@ import { QuillModule } from 'ngx-quill';
 import { NgxSkeletonLoaderModule } from 'ngx-skeleton-loader';
 import { CategoriesDetailsComponent } from './categories-details/categories-details.component';
 import { CoreRoutingProductsComponent } from './core-routing.component';
+import { CategoriesProductsComponent } from './categories-details/categories-products/categories-products.component';
+import { CoreProductsSuppliersComponent } from './products-suppliers/products-suppliers.component';
+import { NgxPaginationModule } from 'ngx-pagination';
+import { SubCategoriesProductsComponent } from './categories-details/subcategories-products/subcategories-products.component';
 
 
 const coreRoutes: Route[] = [
@@ -59,14 +63,18 @@ const coreRoutes: Route[] = [
         component: CoreProductsComponent
       },
       {
-        path: 'categories',
+        path: 'categories/:id',
         component: CategoriesDetailsComponent
+      },
+      {
+        path: 'summary/:id',
+        component: CoreProductsSuppliersComponent
       },
     ]
   }
 ]
 @NgModule({
-  declarations: [CoreProductsComponent, CategoriesDetailsComponent, CoreRoutingProductsComponent],
+  declarations: [CoreProductsComponent, CategoriesDetailsComponent, CoreRoutingProductsComponent, CategoriesProductsComponent, CoreProductsSuppliersComponent, SubCategoriesProductsComponent],
   imports: [RouterModule.forChild(coreRoutes), CommonModule,
     MatButtonModule,
     MatCheckboxModule,
@@ -106,6 +114,7 @@ const coreRoutes: Route[] = [
     FuseAlertModule,
     MatDialogModule,
     MatDatepickerModule,
+    NgxPaginationModule,
     MatNativeDateModule],
   exports: [RouterModule]
 })

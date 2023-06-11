@@ -180,9 +180,9 @@
                                         </th>
                                         <td class="pr-4" mat-cell *matCellDef="let order"
                                             (click)="orderDetails(order.pk_orderID)" style="cursor: pointer;">
-                                            <mat-icon class="text-green-400 icon-size-5" *ngIf="order.blnCancelled"
+                                            <mat-icon class="text-green-400 icon-size-5" *ngIf="!order.blnCancelled"
                                                 [svgIcon]="'heroicons_solid:check'"></mat-icon>
-                                            <mat-icon class="text-red-400 icon-size-5" *ngIf="!order.blnCancelled"
+                                            <mat-icon class="text-red-400 icon-size-5" *ngIf="order.blnCancelled"
                                                 [svgIcon]="'heroicons_solid:x'"></mat-icon>
                                         </td>
                                     </ng-container>

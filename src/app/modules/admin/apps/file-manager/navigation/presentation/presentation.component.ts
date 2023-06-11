@@ -174,6 +174,12 @@ export class PresentationComponent implements OnInit, OnDestroy {
   logoBanksLoadMore: boolean = false;
   ngLogoBank = 3;
   ngLogoKeyword = '';
+
+  // FavICon
+  favImage: string = '';
+  favImageCheck: boolean = true;
+  favimageValue: any;
+  favUploadLoader: boolean = false;
   constructor(
     private _storeManagerService: FileManagerService,
     private _changeDetectorRef: ChangeDetectorRef,
@@ -200,6 +206,7 @@ export class PresentationComponent implements OnInit, OnDestroy {
       });
   }
   initialize() {
+    this.favImage = `https://assets.consolidus.com/globalAssets/Stores/Favicon/${this.selectedStore.pk_storeID}.ico`;
     this.initSiteColorForm();
     this.initSpecialOfferForm();
     this.initNewsFeedForm();
@@ -1092,5 +1099,67 @@ export class PresentationComponent implements OnInit, OnDestroy {
       item.removeLoader = false;
       this._changeDetectorRef.markForCheck();
     });
+  }
+  checkFavImageExist(ev) {
+    this.favImageCheck = false;
+    this._changeDetectorRef.markForCheck();
+  }
+  uploadFaviconImage(event): void {
+    const file = event.target.files[0];
+    const reader = new FileReader();
+    reader.readAsDataURL(file);
+    reader.onload = () => {
+      let image: any = new Image;
+      image.src = reader.result;
+      image.onload = () => {
+        if (image.width != 16 || image.height != 16) {
+          this._snackBar.open("Dimensions allowed are 16px x 16px", '', {
+            horizontalPosition: 'center',
+            verticalPosition: 'bottom',
+            duration: 3500
+          });
+          this.favimageValue = null;
+          this._changeDetectorRef.markForCheck();
+          return;
+        };
+        this.favimageValue = {
+          imageUpload: reader.result,
+          type: file["type"]
+        };
+      }
+    };
+  };
+  uploadMediaFavicon() {
+    let payload;
+    if (!this.favimageValue) {
+      this._snackBar.open("File is required", '', {
+        horizontalPosition: 'center',
+        verticalPosition: 'bottom',
+        duration: 3000
+      });
+      return;
+    }
+    const { imageUpload, type } = this.favimageValue;
+    const base64 = imageUpload.split(",")[1];
+    this.favUploadLoader = true;
+    payload = {
+      file_upload: true,
+      image_file: base64,
+      image_path: `/globalAssets/Stores/Favicon/${this.selectedStore.pk_storeID}.ico`
+    };
+
+    this._storeManagerService.addPresentationMedia(payload)
+      .subscribe((response) => {
+        this.favImage = `https://assets.consolidus.com/globalAssets/Stores/Favicon/${this.selectedStore.pk_storeID}.ico`;
+        this.favImageCheck = true;
+        this.favimageValue = null;
+        // Mark for check
+        this.favUploadLoader = false;
+        this._changeDetectorRef.markForCheck();
+      }, err => {
+        // Mark for check
+        this.favUploadLoader = false;
+        this._changeDetectorRef.markForCheck();
+      })
   }
 }

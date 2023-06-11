@@ -5,7 +5,7 @@ import { MatPaginator } from '@angular/material/paginator';
 import { Subject } from 'rxjs';
 import { finalize, takeUntil } from 'rxjs/operators';
 import { SystemService } from '../../system.service';
-import { AddColor, AddImprintColor, AddImprintMethod, AddNewCore, DeleteColor, DeleteImprintColor, UpdateColor, UpdateImprintColor, UpdateImprintMethod } from '../../system.types';
+import { AddColor, AddImprintColor, AddImprintMethod, AddNewCore, DeleteColor, DeleteCore, DeleteImprintColor, UpdateColor, UpdateImprintColor, UpdateImprintMethod } from '../../system.types';
 
 @Component({
   selector: 'app-core-products',
@@ -273,6 +273,31 @@ export class CoreProductsComponent implements OnInit, OnDestroy {
     }, err => {
       this._systemService.snackBar('Something went wrong');
     })
+  }
+  // Remove CoreList
+  removeCoreList(item) {
+    item.delLoader = false;
+    let payload: DeleteCore = {
+      coreID: Number(item.pk_coreID),
+      delete_core: true
+    }
+    this._systemService.UpdateSystemData(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+      if (res["success"]) {
+        this.totalUsers--;
+        this.dataSource = this.dataSource.filter(data => data.pk_coreID != item.pk_coreID);
+        this.tempRecords--;
+        this.tempDataSource = this.tempDataSource.filter(data => data.pk_coreID != item.pk_coreID);
+        this._systemService.snackBar(res["message"]);
+        item.delLoader = false;
+        this._changeDetectorRef.markForCheck();
+      } else {
+        item.delLoader = false;
+        this._changeDetectorRef.markForCheck();
+      }
+    }, err => {
+      item.delLoader = false;
+      this._changeDetectorRef.markForCheck();
+    });
   }
 
   /**

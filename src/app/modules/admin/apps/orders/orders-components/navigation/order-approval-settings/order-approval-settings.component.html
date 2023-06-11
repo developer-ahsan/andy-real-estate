@@ -12,10 +12,26 @@
                         <div class="mt-2 text-secondary font-bold">
                             <div>You can override these settings by deactivating them below</div>
                             <div>
-                                <mat-slide-toggle [color]="'primary'" (change)="UpdateArtApprovalSettings()"
+                                <mat-form-field class="w-full">
+                                    <mat-label>Include additional art approval contacts for this order</mat-label>
+                                    <mat-select [disabled]="!currentApprovals.length"
+                                        [(ngModel)]="orderDetail.blnAdditionalApprovalOverride">
+                                        <mat-option [value]="false">ACTIVE</mat-option>
+                                        <mat-option [value]="true">Disabled</mat-option>
+                                    </mat-select>
+                                </mat-form-field>
+                                <button mat-button mat-stroked-button class="min-w-30"
+                                    [disabled]="!currentApprovals.length || isUpdateLoader"
+                                    (click)="UpdateArtApprovalSettings()">
+                                    <span *ngIf="!isUpdateLoader">Update</span>
+                                    <mat-progress-spinner *ngIf="isUpdateLoader" [diameter]="24"
+                                        [mode]="'indeterminate'">
+                                    </mat-progress-spinner>
+                                </button>
+                                <!-- <mat-slide-toggle [color]="'primary'" (change)="UpdateArtApprovalSettings()"
                                     [(ngModel)]="orderDetail.blnAdditionalApprovalOverride">
                                     Include additional art approval contacts for this order
-                                </mat-slide-toggle>
+                                </mat-slide-toggle> -->
                             </div>
                         </div>
                     </div>

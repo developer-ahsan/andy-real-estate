@@ -609,7 +609,8 @@
                 <fuse-alert [appearance]="'soft'" [type]="'info'">
                     <mat-icon class="icon-size-5" fuseAlertIcon [svgIcon]="'heroicons_solid:lock-open'">
                     </mat-icon>
-                    Select a store product from MySummaShop.com below to represent this category. The store product
+                    Select a store product from {{selectedStore.storeName}} below to represent this category. The store
+                    product
                     image for the selected product will be what shows for this category on the SmartSites. If a product
                     is not selected below, a random product from this category will be chosen. Select "No Product" to
                     remove a store product image from this category.

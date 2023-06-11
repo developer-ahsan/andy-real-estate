@@ -51,7 +51,7 @@
                                     <textarea [(ngModel)]="ngComment" rows="6" matInput></textarea>
                                 </mat-form-field>
                                 <mat-form-field class="example-chip-list w-full" appearance="fill">
-                                    <mat-label>Additional Emails (Comma-seperated)</mat-label>
+                                    <mat-label>Additional Emails (Comma-separated)</mat-label>
                                     <mat-chip-list class="pt-1" #chipList1>
                                         <mat-chip [removable]="true" [selectable]="true" *ngFor="let email of emails"
                                             (removed)="remove(email)">

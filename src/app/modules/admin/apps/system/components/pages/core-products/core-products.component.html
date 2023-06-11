@@ -31,7 +31,9 @@
                         Core Products List Name
                     </th>
                     <td mat-cell *matCellDef="let element">
-                        {{element.coreName || not_available}}
+                        <a [routerLink]="['/apps/system/core-products/categories',element.pk_coreID]">
+                            {{element.coreName || not_available}}
+                        </a>
                     </td>
                 </ng-container>
                 <ng-container matColumnDef="cat">
@@ -71,10 +73,15 @@
                     <td mat-cell *matCellDef="let element">
                         <div class="flex justify-center">
                             <mat-icon svgIcon="heroicons_outline:eye"
-                                [routerLink]="['/apps/system/core-products/categories']" matTooltip="Summary">
+                                [routerLink]="['/apps/system/core-products/summary',element.pk_coreID]"
+                                matTooltip="Summary">
                             </mat-icon>
-                            <mat-icon svgIcon="heroicons_outline:trash" matTooltip="Populate Store"></mat-icon>
-                            <mat-icon svgIcon="heroicons_outline:trash" matTooltip="Remove">
+                            <!-- <mat-icon svgIcon="heroicons_outline:trash" matTooltip="Populate Store"></mat-icon> -->
+
+                            <mat-progress-spinner *ngIf="element.delLoader" [diameter]="24" [mode]="'indeterminate'">
+                            </mat-progress-spinner>
+                            <mat-icon svgIcon="heroicons_outline:trash" *ngIf="!element.delLoader" matTooltip="Remove"
+                                (click)="removeCoreList(element)">
                             </mat-icon>
                         </div>
                     </td>

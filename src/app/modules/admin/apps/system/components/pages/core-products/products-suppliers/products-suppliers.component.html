@@ -1,0 +1,103 @@
+<div class="row w-full" #topScrollAnchor>
+    <div class="col-12">
+        <div class="p-6 pb-2 sm:p-8 dm:pb-2 lg:p-10 lg:pb-2 w-full">
+            <div class="row">
+                <div class="col-12 col-lg-6 flex justify-between">
+                    <div class="text-xl font-bold">
+                        Core Summary
+                    </div>
+                </div>
+                <div class="col-12" *ngIf="isLoading">
+                    <ngx-skeleton-loader count="8" appearance="line" animation="pulse">
+                    </ngx-skeleton-loader>
+                </div>
+                <div class="col-12 h-full py-2" *ngIf="!isLoading">
+                    <div>
+                        <p>{{totalRecords}} vendors</p>
+                        <p>{{productsCount}} products</p>
+                        <p>{{preferredSuppliersCount}} <mat-icon svgIcon="heroicons_solid:badge-check"
+                                class="icon-size-4" color="warn"></mat-icon> Preferred Suppliers</p>
+                        <p>{{partnerSuppliersCount}} <mat-icon svgIcon="heroicons_solid:star"
+                                class="icon-size-4 text-green-700"></mat-icon> Partner Suppliers</p>
+                    </div>
+                    <div class="text-center">
+                        <pagination-controls (pageChange)="getNextProductData($event)" *ngIf="dataSource.length > 0"
+                            previousLabel="Prev" nextLabel="Next">
+                        </pagination-controls>
+                    </div>
+                    <div *ngIf="!isLoading" class="px-4">
+                        <ng-container *ngIf="dataSource.length > 0; else noRecords">
+                            <div *ngFor="let supplier of dataSource |  paginate : {
+                                    itemsPerPage: itemsPerPage,
+                                    currentPage: page,
+                                    totalItems: totalRecords
+                                  };">
+                                <div class="py-6 pb-2 sm:py-8 dm:pb-2 lg:py-10 lg:pb-2">
+                                    <div class="text-secondary pb-0 mb-2 text-lg">
+                                        <b>
+                                            <div class="flex align-items-center space-x-2"
+                                                *ngIf="supplier.vendorRelation == 3">
+                                                <span class="badge badge-secondary">{{supplier.supplierCount}}</span>
+                                                <p>{{supplier.companyName}}</p>
+                                                <mat-icon svgIcon="heroicons_solid:star"
+                                                    class="icon-size-4 text-green-700"></mat-icon>
+                                            </div>
+                                            <div class="flex align-items-center space-x-2"
+                                                *ngIf="supplier.vendorRelation == 2">
+                                                <span class="badge badge-secondary">{{supplier.supplierCount}}</span>
+                                                <p>{{supplier.companyName}}</p>
+                                                <mat-icon svgIcon="heroicons_solid:badge-check" class="icon-size-4"
+                                                    color="warn"></mat-icon>
+                                            </div>
+                                            <div class="flex align-items-center space-x-2"
+                                                *ngIf="supplier.vendorRelation == 1">
+                                                <span class="badge badge-secondary">{{supplier.supplierCount}}</span>
+                                                <p>{{supplier.companyName}}</p>
+                                            </div>
+                                        </b>
+                                    </div>
+                                </div>
+                                <table class="table table-striped overflow-x-auto">
+                                    <thead>
+                                        <tr>
+                                            <th width="25%">
+                                                <span>PID</span> <span class="fa fa-question-circle"
+                                                    matTooltip="Product Id Number"></span>
+                                            </th>
+                                            <th width="25%">
+                                                <span>SPID</span> <span class="fa fa-question-circle"
+                                                    matTooltip="Store Product Id Number"></span>
+                                            </th>
+                                            <th width="50%">Product</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr *ngFor="let product of supplier.productsData">
+                                            <td>
+                                                <a [routerLink]="['/apps/ecommerce/inventory',product.pid]"
+                                                    target="_blank">{{product.pid}}</a>
+                                            </td>
+                                            <td>
+                                                <a [routerLink]="['/apps/ecommerce/inventory',product.pid]"
+                                                    target="_blank">{{product.spid}}</a>
+                                            </td>
+                                            <td>
+                                                <a [routerLink]="['/apps/ecommerce/inventory',product.pid]"
+                                                    target="_blank">{{product.product}}</a>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </ng-container>
+                        <ng-template #noRecords>
+                            <div class="font-semibold tracking-tight text-center">
+                                <p class="text-lg">No record found</p>
+                            </div>
+                        </ng-template>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

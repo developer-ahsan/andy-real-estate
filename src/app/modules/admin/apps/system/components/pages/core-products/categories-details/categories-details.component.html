@@ -1,4 +1,4 @@
-<div class="w-full">
+<div class="w-full" *ngIf="!isCatProdsEnable && !isSubCatProdsEnable">
     <div class="px-2 pb-2">
         <mat-button-toggle-group #group="matButtonToggleGroup" [value]="mainScreen"
             (change)="calledScreen(group.value)">
@@ -15,67 +15,63 @@
         </ngx-skeleton-loader>
     </div>
     <div *ngIf="mainScreen == 'Current Categories Lists' && !isLoading">
-        <div class="px-3" *ngIf="!isUpdateMethod">
-            <mat-form-field class="w-full">
-                <input matInput placeholder="Search Keyword" [disabled]="isSearching" [(ngModel)]="keyword"
-                    (keyup.enter)="searchColor($event.target.value)">
-            </mat-form-field>
-            <p class="text-secondary text-right font-medium cursor-pointer mb-2" *ngIf="!isSearching"
-                (click)="resetSearch()">Reset</p>
-            <p class="text-secondary text-right font-medium mb-2" *ngIf="isSearching">Searching...</p>
-        </div>
-        <div *ngIf="dataSource.length > 0 && !isUpdateMethod;else other_content" class="w-full">
+        <div *ngIf="dataSource.length > 0;else other_content" class="w-full">
             <table mat-table [dataSource]="dataSource" class="w-full border-t">
-                <ng-container matColumnDef="name">
+                <ng-container matColumnDef="category">
                     <th mat-header-cell *matHeaderCellDef class="w-40 min-w-40">
-                        Core Products List Name
-                    </th>
-                    <td mat-cell *matCellDef="let element">
-                        {{element.coreName || not_available}}
-                    </td>
-                </ng-container>
-                <ng-container matColumnDef="cat">
-                    <th mat-header-cell *matHeaderCellDef class="w-10 min-w-10">
                         Categories
                     </th>
                     <td mat-cell *matCellDef="let element">
-                        {{element.categories}}
+                        <div class="flex">
+                            <b class="mr-2" (click)="goToCatProducts(element)">{{element.categoryName}}</b>
+                            <mat-progress-spinner *ngIf="element.delLoader" [diameter]="24" [mode]="'indeterminate'">
+                            </mat-progress-spinner>
+                            <mat-icon class="icon-size-5" svgIcon="heroicons_outline:trash" *ngIf="!element.delLoader"
+                                matTooltip="Remove Category" (click)="removeCategory(element)">
+                            </mat-icon>
+                        </div>
+
                     </td>
                 </ng-container>
-                <ng-container matColumnDef="sub_cat">
+                <ng-container matColumnDef="subcat">
                     <th mat-header-cell *matHeaderCellDef class="w-10 min-w-10">
-                        Subcategories
+                        Sub Categories List
                     </th>
                     <td mat-cell *matCellDef="let element">
-                        {{element.subCategories }}
+                        <div class="my-2">
+                            <p *ngFor="let item of element.subCats">
+                                <a (click)="goToSubCatProducts(element.pk_categoryID,item)">{{item.name}}</a>
+                            </p>
+                        </div>
                     </td>
                 </ng-container>
-                <ng-container matColumnDef="prod">
+                <ng-container matColumnDef="products">
                     <th mat-header-cell *matHeaderCellDef class="w-10 min-w-10">
                         Products
                     </th>
                     <td mat-cell *matCellDef="let element">
-                        {{element.products }}
-                    </td>
-                </ng-container>
-                <ng-container matColumnDef="unique">
-                    <th mat-header-cell *matHeaderCellDef class="w-10 min-w-10">
-                        Unique Products
-                    </th>
-                    <td mat-cell *matCellDef="let element">
-                        {{element.uniqueProducts}}
+                        <div class="my-2">
+                            <p *ngFor="let item of element.subCats">
+                                <a>{{item.product}}</a>
+                            </p>
+                        </div>
                     </td>
                 </ng-container>
                 <ng-container matColumnDef="action">
-                    <th mat-header-cell *matHeaderCellDef class="w-15 min-w-15 text-center"> Action </th>
+                    <th mat-header-cell *matHeaderCellDef class="w-10 min-w-10">
+                        Action
+                    </th>
                     <td mat-cell *matCellDef="let element">
-                        <div class="flex justify-center">
-                            <mat-icon svgIcon="heroicons_outline:eye" matTooltip="Summary">
-                            </mat-icon>
-                            <mat-icon svgIcon="heroicons_outline:trash" matTooltip="Populate Store"></mat-icon>
-                            <mat-icon svgIcon="heroicons_outline:trash" matTooltip="Remove">
-                            </mat-icon>
+                        <div class="my-2">
+                            <div class="flex justify-center" *ngFor="let item of element.subCats;let i=index">
+                                <mat-progress-spinner *ngIf="item.delLoader" [diameter]="24" [mode]="'indeterminate'">
+                                </mat-progress-spinner>
+                                <mat-icon class="icon-size-5" svgIcon="heroicons_outline:trash" *ngIf="!item.delLoader"
+                                    matTooltip="Remove Subcategory" (click)="removeSubCategory(element, item)">
+                                </mat-icon>
+                            </div>
                         </div>
+
                     </td>
                 </ng-container>
                 <tr mat-header-row *matHeaderRowDef="displayedColumns;" class="h-18 bg-light"></tr>
@@ -84,101 +80,75 @@
                 </tr>
             </table>
             <mat-paginator #paginator class="border-b sm:border-t sm:border-b-0 z-10 bg-gray-50 dark:bg-transparent"
-                [ngClass]="{'pointer-events-none': isLoading}" [length]="totalUsers" [pageIndex]="0" [pageSize]="20"
-                (page)="getNextData($event)" [hidePageSize]="true">
+                [ngClass]="{'pointer-events-none': isLoading}" [length]="totalCategories" [pageIndex]="0"
+                [pageSize]="20" (page)="getNextData($event)" [hidePageSize]="true">
             </mat-paginator>
-        </div>
-        <!-- Update Method -->
-        <div *ngIf="isUpdateMethod" class="p-6">
-            <mat-form-field class="w-full">
-                <mat-label>Method Name (150)</mat-label>
-                <input matInput [(ngModel)]="updateMethodData.methodName" maxlength="150">
-            </mat-form-field>
-            <mat-form-field class="w-full">
-                <mat-label>Description (500 - optional)</mat-label>
-                <textarea cols="30" rows="5" matInput [(ngModel)]="updateMethodData.methodDescription"
-                    maxlength="500"></textarea>
-            </mat-form-field>
-            <div class="justify-end flex">
-                <button [disabled]="isUpdateMethodLoader" class="min-w-30 mr-2" mat-stroked-button
-                    [matTooltip]="'Back to list'" (click)="updateMethodToggle(null)">
-                    Cancel
-                </button>
-                <button [disabled]="isUpdateMethodLoader" class="min-w-40" mat-stroked-button
-                    [matTooltip]="'Update Method'" (click)="updateMethod()">
-                    <mat-icon svgIcon="heroicons_solid:pencil" *ngIf="!isUpdateMethodLoader"></mat-icon>
-                    <span class="ml-2" *ngIf="!isUpdateMethodLoader"> Update Method </span>
-                    <mat-progress-spinner *ngIf="isUpdateMethodLoader" [diameter]="24" [mode]="'indeterminate'">
-                    </mat-progress-spinner>
-                </button>
-            </div>
         </div>
         <!-- No color Found -->
         <ng-template #other_content>
-            <div class="text-secondary font-semibold p-5 text-center" *ngIf="!isUpdateMethod">
-                No Imprint Methods Found.
+            <div class="text-secondary font-semibold p-5 text-center">
+                No Categories Found.
             </div>
         </ng-template>
     </div>
     <div *ngIf="mainScreen == 'Create New Categories' && !isLoading" class="p-6 row w-full">
         <div class="col-12">
             <mat-form-field class="example-chip-list w-full" appearance="fill">
-                <mat-label>Core Name</mat-label>
-                <input matInput [(ngModel)]="ngName" maxlength="150">
+                <mat-label>Category Name (25)</mat-label>
+                <input matInput [(ngModel)]="ngName" maxlength="25">
             </mat-form-field>
         </div>
-        <div class="col-12">
-            <mat-checkbox [(ngModel)]="ngCoreCheck">Copy categories/subcategories/products from existing core?
-            </mat-checkbox>
+        <div class="col-12 text-right">
+            <button [disabled]="isAddCatLoader" class="min-w-40" mat-stroked-button [matTooltip]="'Add Category'"
+                (click)="addNewCategory()">
+                <mat-icon svgIcon="heroicons_solid:plus" *ngIf="!isAddCatLoader"></mat-icon>
+                <span class="ml-2" *ngIf="!isAddCatLoader"> Add Category </span>
+                <mat-progress-spinner *ngIf="isAddCatLoader" [diameter]="24" [mode]="'indeterminate'">
+                </mat-progress-spinner>
+            </button>
         </div>
-        <div class="col-12" *ngIf="ngCoreCheck">
+        <div class="col-12 col-md-6">
+            <mat-form-field class="w-full">
+                <mat-label>Search Categories</mat-label>
+                <input matInput placeholder="Search Categories" matTooltip="Search categories by name"
+                    [matAutocomplete]="auto" [formControl]="searchCategoriesCtrl">
+                <mat-autocomplete class="w-full" #auto="matAutocomplete" (optionSelected)="onSelected($event)"
+                    [displayWith]="displayWith">
+                    <mat-option *ngIf="isSearchingCategories" class="is-loading">Loading...</mat-option>
+                    <ng-container *ngIf="!isSearchingCategories">
+                        <mat-option *ngFor="let item of allCategories" [value]="item">
+                            <span>{{item.categoryName}}</span>
+                        </mat-option>
+                    </ng-container>
+                </mat-autocomplete>
+            </mat-form-field>
+        </div>
+        <div class="col-12 col-md-6">
             <mat-form-field class="example-chip-list w-full" appearance="fill">
-                <mat-label>Select Core List</mat-label>
-                <mat-select [disabled]="isCoreListCategoriesLoader" matInput [(ngModel)]="ngCoreSelect"
-                    (selectionChange)="onChangeSelectionCore($event.value)">
-                    <mat-option [value]="0">Select a core</mat-option>
-                    <mat-option [value]="item.pk_coreID"
-                        *ngFor="let item of tempDataSource">{{item.coreName}}</mat-option>
-                </mat-select>
+                <mat-label>Subcategory Name (22)</mat-label>
+                <input matInput [(ngModel)]="ngSubcatName" maxlength="22">
             </mat-form-field>
         </div>
-        <div class="col-12 mb-2" *ngIf="ngCoreCheck && coreListCategories.length == 0 && !isCoreListCategoriesLoader">
-            <fuse-alert [appearance]="'soft'" [name]="'alertBox1'" [type]="'warning'">
-                This core currently has no categories or subcategories.
-            </fuse-alert>
-        </div>
-        <div class="col-12" *ngIf="isCoreListCategoriesLoader">
-            <ngx-skeleton-loader count="8" appearance="line" animation="pulse">
-            </ngx-skeleton-loader>
-        </div>
-        <div class="col-12" *ngIf="ngCoreCheck && coreListCategories.length > 0 && !isCoreListCategoriesLoader">
-            <div class="row">
-                <div class="col-12 col-md-3 my-2" *ngFor="let item of coreListCategories">
-                    <h2 class="text-lg font-bold">
-                        <mat-checkbox [(ngModel)]="item.checked"
-                            (change)="checkUncheckCoreCats(item,$event.checked,'main',0)">{{item.categoryName}}</mat-checkbox>
-                    </h2>
-                    <p *ngFor="let sub of item.subCats;let i = index">
-                        <mat-checkbox [(ngModel)]="sub.checked"
-                            (change)="checkUncheckCoreCats(item,$event.checked,'sub',index)">{{sub.name}}</mat-checkbox>
-                    </p>
-                </div>
-                <div class="col-12" *ngIf="totalCategories > coreListCategories.length">
-                    <p class="cursor-pointer" *ngIf="!isMoreLoader" (click)="getNextCoreCategories()">Load More</p>
-                    <mat-progress-spinner *ngIf="isMoreLoader" [diameter]="24" [mode]="'indeterminate'">
-                    </mat-progress-spinner>
-                </div>
-            </div>
-        </div>
-
         <div class="text-right col-12">
-            <button [disabled]="isAddCoreLoader" class="min-w-50" mat-stroked-button [matTooltip]="'Add Method'"
-                (click)="addNewCoreList()">
-                <mat-icon svgIcon="heroicons_solid:plus" *ngIf="!isAddCoreLoader"></mat-icon>
-                <span class="ml-2" *ngIf="!isAddCoreLoader"> Create New </span>
-                <mat-progress-spinner *ngIf="isAddCoreLoader" [diameter]="24" [mode]="'indeterminate'">
+            <button [disabled]="isAddSubCatLoader" class="min-w-40" mat-stroked-button [matTooltip]="'Add Subcategory'"
+                (click)="addNewSubCategory()">
+                <mat-icon svgIcon="heroicons_solid:plus" *ngIf="!isAddSubCatLoader"></mat-icon>
+                <span class="ml-2" *ngIf="!isAddSubCatLoader"> Add Subcategory</span>
+                <mat-progress-spinner *ngIf="isAddSubCatLoader" [diameter]="24" [mode]="'indeterminate'">
                 </mat-progress-spinner>
             </button>
         </div>
     </div>
+</div>
+<div *ngIf="isCatProdsEnable" class="w-full">
+    <div class="text-right px-2">
+        <button class="min-w-30" mat-button mat-stroked-button (click)="backToCategories()">Back to Categories</button>
+    </div>
+    <app-categories-products [paramsCatData]="paramsCatData"></app-categories-products>
+</div>
+<div *ngIf="isSubCatProdsEnable" class="w-full">
+    <div class="text-right px-2">
+        <button class="min-w-30" mat-button mat-stroked-button (click)="backToCategories()">Back to Categories</button>
+    </div>
+    <app-subcategories-products [paramsCatData]="paramsCatData"></app-subcategories-products>
 </div>
