@@ -286,6 +286,23 @@ export class GenerateReportComponent implements OnInit {
                 }
             });
             this.groupByStoresData = groupByStores;
+            this.groupByStoresData.forEach((store) => {
+                store.date_data = [];
+                store.data.forEach(element => {
+                    let date_check = moment(element.orderDate).format('MMM,yyyy');
+                    if (store.date_data.length == 0) {
+                        store.date_data.push({ date: moment(element.orderDate).format('MMM,yyyy'), data: [element] });
+                    } else {
+                        const d_index = store.date_data.findIndex(date => date.date == date_check);
+                        if (d_index < 0) {
+                            store.date_data.push({ date: moment(element.orderDate).format('MMM,yyyy'), data: [element] });
+                        } else {
+                            store.date_data[d_index].data.push(element);
+                        }
+                    }
+                });
+            });
+            console.log(this.groupByStoresData)
             this.reportSummaryData = res["storesData"];
             setTimeout(() => {
                 this.topScroll.nativeElement.scrollIntoView({ behavior: 'smooth' });
