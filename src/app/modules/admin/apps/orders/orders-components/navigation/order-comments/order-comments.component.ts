@@ -22,7 +22,7 @@ export class OrderCommentsComponent implements OnInit, OnDestroy {
   @Output() isLoadingChange = new EventEmitter<boolean>();
   private _unsubscribeAll: Subject<any> = new Subject<any>();
 
-  mainScreen: string = 'Current Comments';
+  mainScreen: string = 'Add New Comment';
   currentComments: any;
 
   dropdownList = [{ id: 1, name: 'ahsan' }, { id: 2, name: 'ahsan1' }];

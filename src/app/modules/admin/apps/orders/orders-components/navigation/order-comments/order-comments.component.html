@@ -4,11 +4,11 @@
     <div class="col-12 my-2">
         <mat-button-toggle-group #group="matButtonToggleGroup" [value]="mainScreen"
             (change)="calledScreen(group.value)">
-            <mat-button-toggle value="Current Comments">
-                Current Comments
-            </mat-button-toggle>
             <mat-button-toggle value="Add New Comment">
                 Add New Comment
+            </mat-button-toggle>
+            <mat-button-toggle value="Current Comments">
+                Current Comments
             </mat-button-toggle>
         </mat-button-toggle-group>
     </div>

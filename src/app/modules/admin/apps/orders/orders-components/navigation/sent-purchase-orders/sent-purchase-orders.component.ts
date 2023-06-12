@@ -43,7 +43,6 @@ export class SentOrdersPurchasesComponent implements OnInit {
   ) { }
 
   ngOnInit(): void {
-    console.log(this.date)
     this.getOrderDetail();
   }
   getOrderDetail() {
@@ -51,7 +50,6 @@ export class SentOrdersPurchasesComponent implements OnInit {
       this.orderDetail = res["data"][0];
       this._orderService.orderProducts$.pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
         this.orderProducts = res["data"];
-        console.log(this.orderProducts)
       });
     }, err => {
       this.isLoading = false;
@@ -66,7 +64,6 @@ export class SentOrdersPurchasesComponent implements OnInit {
     this._orderService.getOrderCommonCall(params)
       .pipe(takeUntil(this._unsubscribeAll))
       .subscribe((purchases) => {
-        console.log("purchases => ", purchases);
         this.isLoading = false;
         this._changeDetectorRef.markForCheck();
       }, err => {
@@ -102,7 +99,6 @@ export class SentOrdersPurchasesComponent implements OnInit {
         });
       });
       this.orderProducts = tempArr;
-      console.log('Products=>', this.orderProducts)
       this.getProductTotal();
       this.isLoading = false;
       this.isLoadingChange.emit(false);
@@ -128,7 +124,6 @@ export class SentOrdersPurchasesComponent implements OnInit {
       this.grandTotalCost = this.grandTotalCost + ((element.product.cost * element.product.quantity) + (element.imprints.runCost * element.product.quantity) + (element.imprints.setupCost));
       this.grandTotalPrice = this.grandTotalPrice + ((element.product.price * element.product.quantity) + (element.imprints.runPrice * element.product.quantity) + (element.imprints.setupPrice))
     });
-    console.log(suppliersArray)
   }
   getTotalCost() {
     return this.transactions.map(t => t.total).reduce((acc, value) => acc + value, 0);
