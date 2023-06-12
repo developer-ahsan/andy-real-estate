@@ -1,4 +1,4 @@
-import { Component, Input, OnInit, Output, EventEmitter, ChangeDetectorRef, OnDestroy, ViewChild } from '@angular/core';
+import { Component, Input, OnInit, Output, EventEmitter, ChangeDetectorRef, OnDestroy, ViewChild, ElementRef } from '@angular/core';
 import { MatPaginator } from '@angular/material/paginator';
 import { Subject } from 'rxjs';
 import { SystemService } from '../../system.service';
@@ -11,6 +11,8 @@ import { takeUntil } from 'rxjs/operators';
 })
 export class UploadImagesComponent implements OnInit, OnDestroy {
   @ViewChild('paginator') paginator: MatPaginator;
+  @ViewChild('fileInput') fileInput: ElementRef;
+
   @Input() isLoading: boolean;
   @Output() isLoadingChange = new EventEmitter<boolean>();
   private _unsubscribeAll: Subject<any> = new Subject<any>();
@@ -75,6 +77,7 @@ export class UploadImagesComponent implements OnInit, OnDestroy {
     };
     this._systemService.addImprintMedia(payload)
       .subscribe((response) => {
+        this.fileInput.nativeElement.value = '';
         this.imageValue = null;
         this.images.push({ FILENAME: name })
         this._systemService.snackBar('Image Uploaded Successfully');

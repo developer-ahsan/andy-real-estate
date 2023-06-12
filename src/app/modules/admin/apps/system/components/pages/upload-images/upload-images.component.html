@@ -10,7 +10,8 @@
                     <fuse-alert class="mb-4" [appearance]="'soft'" [type]="'warning'" [showIcon]="false">
                         .JPG, .GIF, .PNG file types only!
                     </fuse-alert>
-                    <input type="file" accept=".jpg,.gif,.png" id="image" (change)="uploadImage($event)">
+                    <input type="file" accept=".jpg,.gif,.png" id="myFileInput" #fileInput
+                        (change)="uploadImage($event)">
                 </div>
                 <div class="text-right col-12">
                     <button [disabled]="isAddLoader" class="min-w-40" mat-stroked-button [matTooltip]="'Upload Image'"
