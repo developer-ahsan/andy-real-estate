@@ -54,7 +54,7 @@ export class UploadImagesComponent implements OnInit, OnDestroy {
         this.imageValue = {
           imageUpload: reader.result,
           type: file["type"],
-          campaign_id: null
+          name: file["name"]
         };
       }
     };
@@ -66,17 +66,17 @@ export class UploadImagesComponent implements OnInit, OnDestroy {
     }
     this.isAddLoader = true;
     // const { pk_productID } = this.selectedProduct;
-    const { imageUpload } = this.imageValue;
+    const { imageUpload, name, type } = this.imageValue;
     const base64 = imageUpload.split(",")[1];
     const payload = {
       file_upload: true,
       image_file: base64,
-      image_path: `/globalAssets/Uploads/${this.images.length + 1}.jpg`
+      image_path: `/globalAssets/Uploads/${name}`
     };
-    this._systemService.AddSystemData(payload)
+    this._systemService.addImprintMedia(payload)
       .subscribe((response) => {
         this.imageValue = null;
-        this.images.push({ FILENAME: this.images.length + '.jpg', })
+        this.images.push({ FILENAME: name })
         this._systemService.snackBar('Image Uploaded Successfully');
         this.isAddLoader = false;
         this._changeDetectorRef.markForCheck();
