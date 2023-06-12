@@ -145,7 +145,7 @@ export class OrderArtWorkComponent implements OnInit, OnDestroy {
         });
       });
       this.orderProducts = data;
-      console.log(this.orderProducts)
+      // console.log(this.orderProducts)
       this.isLoading = false;
       this.isLoadingChange.emit(false);
       this._changeDetectorRef.markForCheck();
@@ -157,7 +157,7 @@ export class OrderArtWorkComponent implements OnInit, OnDestroy {
 
   }
   openSideNav(item) {
-    console.log(item)
+    // console.log(item)
     this.sideNavData = item;
     this.sidenav.toggle();
   }

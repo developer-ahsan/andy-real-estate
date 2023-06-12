@@ -88,7 +88,6 @@ export class OrderManageDashboardComponent implements OnInit, OnDestroy {
       view_dashboard: true
     }
     this._orderService.getAPIData(params).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
-      console.log(res);
       this.dataSource = res["data"];
       this.totalRecords = res["totalRecords"];
       this.isLoading = false;
@@ -116,7 +115,6 @@ export class OrderManageDashboardComponent implements OnInit, OnDestroy {
     this.getOrderManage(this.page);
   }
   goToOrderDetails(item) {
-    console.log(item)
     const queryParams: NavigationExtras = {
       queryParams: { fk_orderID: item.fk_orderID, pk_orderLineID: item.pk_orderLineID, pk_orderLinePOID: item.pk_orderLinePOID }
     };

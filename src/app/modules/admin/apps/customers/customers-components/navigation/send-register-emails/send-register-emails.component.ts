@@ -53,7 +53,6 @@ export class SendRegisterEmailsComponent implements OnInit, OnDestroy {
       .pipe(takeUntil(this._unsubscribeAll))
       .subscribe((response) => {
         this.selectedCustomer = response;
-        console.log(this.selectedCustomer)
         this.initialize();
         this.getStores();
       });

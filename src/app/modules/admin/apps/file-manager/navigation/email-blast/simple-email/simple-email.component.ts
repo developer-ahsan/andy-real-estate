@@ -206,7 +206,7 @@ export class SimpleEmailBlastComponent implements OnInit, OnDestroy {
   // }
   toDataURL(url, callback) {
     let u: any = this.sanitizer.bypassSecurityTrustHtml(url)
-    console.log(url);
+    // console.log(url);
     var xhr = new XMLHttpRequest();
     xhr.onload = function () {
       var reader = new FileReader();

@@ -97,7 +97,7 @@ export class OrderPaymentBillComponent implements OnInit, OnDestroy {
           // Error creating the token
           this.isPaymentLoader = false;
           this._orderService.snackBar(result.error.message)
-          console.log(result.error.message);
+          // console.log(result.error.message);
         }
       });
   }

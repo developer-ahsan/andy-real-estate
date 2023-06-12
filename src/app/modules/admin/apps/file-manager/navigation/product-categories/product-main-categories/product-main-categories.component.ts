@@ -313,7 +313,7 @@ export class ProductMainCategoriesComponent implements OnInit, OnDestroy {
       category_id: this.mainCatData.pk_categoryID,
     }
     this._storeManagerService.getStoresData(params).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
-      console.log(res);
+      // console.log(res);
       this.featureImages = res["data"];
       this.isFeatureImageLoader = false;
       this._changeDetectorRef.markForCheck();

@@ -825,7 +825,7 @@ export class ImprintComponent implements OnInit, OnDestroy {
         // Mark for check
         this._changeDetectorRef.markForCheck();
       }, err => {
-        console.log(err);
+        // console.log(err);
         this.standardImprintAddLoader = false;
         this._changeDetectorRef.markForCheck();
       })

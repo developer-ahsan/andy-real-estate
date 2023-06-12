@@ -199,6 +199,7 @@ export class UserCommentsComponent implements OnInit {
             this.isAddCommentLoader = false;
             this._changeDetectorRef.markForCheck();
             this.adminComment = comments["data"];
+            this.mainScreen = 'Current Comments';
             this._snackBar.open("Comment added successfully", '', {
               horizontalPosition: 'center',
               verticalPosition: 'bottom',

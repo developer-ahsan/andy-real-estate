@@ -244,7 +244,6 @@ export class VendorFOBLocationComponent implements OnInit, OnDestroy {
 
   onSelected(ev) {
     this.selectedState = ev.option.value;
-    console.log(this.selectedState)
   }
 
   displayWith(value: any) {

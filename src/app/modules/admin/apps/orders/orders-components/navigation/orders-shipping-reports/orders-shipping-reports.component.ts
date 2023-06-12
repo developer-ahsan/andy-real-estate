@@ -125,7 +125,7 @@ export class OrdersShippingReportsComponent implements OnInit {
 
 
       this.orderProducts = data;
-      console.log(this.orderProducts)
+      // console.log(this.orderProducts)
       this.isLoading = false;
       this.isLoadingChange.emit(false);
       this._changeDetectorRef.markForCheck();

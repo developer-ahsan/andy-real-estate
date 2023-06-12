@@ -28,7 +28,7 @@
                                 <tbody>
                                     <tr *ngFor="let item of orderProducts">
                                         <td valign="top">{{item.pk_orderLineID}}</td>
-                                        <td valign="top">{{orderDetail.orderDate | date:'MM/DD/yyyy'}}</td>
+                                        <td valign="top">{{orderDetail.orderDate | date:'MM/dd/yyyy'}}</td>
                                         <td valign="top">{{item.pk_orderLineID}}</td>
                                         <td valign="top">{{item.companyName}}</td>
                                         <td valign="top">{{item.quantity}} X {{item.productNumber}} -
@@ -38,7 +38,7 @@
                                         <td valign="top">
                                             <span class="text-red-500 font-bold" *ngIf="!item.shippingDate">x</span>
                                             <span *ngIf="item.shippingDate">{{item.shippingDate | date:
-                                                'MM-DD-yyyy'}}</span>
+                                                'MM-dd-yyyy'}}</span>
                                         </td>
                                         <td valign="top">
                                             <span class="text-red-500 font-bold" *ngIf="!item.trackingNumber">x</span>

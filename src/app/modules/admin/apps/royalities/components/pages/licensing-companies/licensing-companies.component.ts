@@ -211,7 +211,7 @@ export class LicensingCompaniesComponent implements OnInit, OnDestroy {
       this.companytermData = [];
     }
     this._RoyaltyService.getCallsData(params).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
-      console.log(res);
+      // console.log(res);
       res["data"].forEach(element => {
         element.subCategories = [];
         if (element.subCategoryList) {

@@ -433,7 +433,7 @@ export class MarginsComponent implements OnInit, OnDestroy {
       group_size: count,
       margins_to_update: marginsToUpdate
     }
-    console.log(payload)
+    // console.log(payload)
   }
   ngOnDestroy(): void {
     // Unsubscribe from all subscriptions

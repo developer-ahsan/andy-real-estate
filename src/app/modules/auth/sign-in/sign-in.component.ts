@@ -80,7 +80,6 @@ export class AuthSignInComponent implements OnInit {
         this.showAlert = false;
 
         const { email, password, rememberMe } = this.signInForm.getRawValue();
-        console.log(rememberMe);
         if (rememberMe) {
             localStorage.setItem('userEmail', email);
             localStorage.setItem('userPassword', password);

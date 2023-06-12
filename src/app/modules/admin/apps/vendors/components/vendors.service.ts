@@ -224,6 +224,11 @@ export class VendorsService {
     getIPAddress() {
         return this._httpClient.get("http://api.ipify.org/?format=json");
     }
+    // Get All Files
+    getVendorsFiles(payload) {
+        return this._httpClient.post(environment.products,
+            payload);
+    };
     // Get calls
     getVendorsData(params): Observable<any[]> {
         return this._httpClient.get<any[]>(environment.vendors, {

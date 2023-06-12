@@ -372,7 +372,7 @@ export class ProductsOrderModifyComponent implements OnInit, OnDestroy {
       }
       this.currentSearchProductCtrl.setValue(this.ngSelectedProduct.products[0]);
       this.currentSelectedProduct = this.ngSelectedProduct.products[0];
-      console.log(this.ngSelectedProduct)
+      // console.log(this.ngSelectedProduct)
       this.isOrderLineDetailsLoader = false;
       this.isUpdateProductLoader = false;
       this.isLoading = false;

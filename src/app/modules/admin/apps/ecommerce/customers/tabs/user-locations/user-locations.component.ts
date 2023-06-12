@@ -114,11 +114,9 @@ export class UserLocationsComponent implements OnInit, OnDestroy {
   }
 
   addLocation() {
-    console.log("locationToAdd", this.locationToAdd);
     this.updateLoader = true;
     this._customerService.addUserLocation(this.locationToAdd)
       .subscribe((response: any) => {
-        console.log("response ", response)
         this.showFlashMessage(
           response["success"] === true ?
             'success' :

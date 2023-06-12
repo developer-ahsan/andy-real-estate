@@ -64,7 +64,9 @@
             </mat-paginator>
         </div>
         <div *ngIf="isUpdate" class="px-8 pb-5">
-            <div class="row">
+            <ngx-skeleton-loader count="8" *ngIf="isFileLoader" appearance="line" animation="pulse">
+            </ngx-skeleton-loader>
+            <div class="row" *ngIf="!isFileLoader">
                 <div class="col-12 text-right">
                     <button mat-flat-button [color]="'primary'" class="min-w-30 text-sm mr-2 mb-2"
                         (click)="backTolist()">
@@ -113,16 +115,50 @@
                     </mat-form-field>
                 </div>
                 <div class="col-12 mb-2">
-                    <mat-label>Image (JPG): </mat-label>
-                    <ngx-dropzone [multiple]="true" accept="image/jpg,image/jpeg" (change)="onSelect($event)">
+                    <mat-label>Attach Documents: </mat-label>
+                    <ngx-dropzone [multiple]="true" (change)="onSelect($event)">
                         <ngx-dropzone-label>Choose Image</ngx-dropzone-label>
-                        <ngx-dropzone-preview *ngIf="file" [removable]="true" (removed)="onRemove()">
-                            <ngx-dropzone-label>{{ file.name }} ({{ file.type }})</ngx-dropzone-label>
+                        <ngx-dropzone-preview *ngFor="let f of file" [removable]="true" (removed)="onRemove(f)">
+                            <ngx-dropzone-label>{{ f.name }} ({{ f.type }})</ngx-dropzone-label>
                         </ngx-dropzone-preview>
                     </ngx-dropzone>
                 </div>
-                <div class="col-12 text-right">
-                    <button [disabled]="isUpdateLoader" mat-stroked-button class="min-w-40 mr-2 mb-2"
+                <div class="col-12" *ngIf="updateData.files.length > 0">
+                    <p class="text-green-900">Current Documents</p>
+                    <div class="flex flex-wrap -m-2 mt-2">
+                        <a class="flex flex-col w-40 h-40 m-2 p-4 shadow rounded-2xl cursor-pointer bg-card ng-star-inserted"
+                            href="https://assets.consolidus.com/globalAssets/Companies/Coops/{{supplierData.pk_companyID}}/{{updateData.coOp_id}}/{{item.FILENAME}}"
+                            target="_blank" *ngFor="let item of updateData.files">
+                            <div class="aspect-[9/6]">
+                                <div class="flex items-center justify-center h-full">
+                                    <div class="relative"><mat-icon role="img"
+                                            class="mat-icon notranslate icon-size-14 text-hint opacity-50 mat-icon-no-color"
+                                            aria-hidden="true" data-mat-icon-type="svg" data-mat-icon-name="document"
+                                            data-mat-icon-namespace="heroicons_solid"><svg
+                                                xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"
+                                                fill="currentColor" aria-hidden="true" fit="" height="100%" width="100%"
+                                                preserveAspectRatio="xMidYMid meet" focusable="false">
+                                                <path
+                                                    d="M5.625 1.5c-1.036 0-1.875.84-1.875 1.875v17.25c0 1.035.84 1.875 1.875 1.875h12.75c1.035 0 1.875-.84 1.875-1.875V12.75A3.75 3.75 0 0016.5 9h-1.875a1.875 1.875 0 01-1.875-1.875V5.25A3.75 3.75 0 009 1.5H5.625z">
+                                                </path>
+                                                <path
+                                                    d="M12.971 1.816A5.23 5.23 0 0114.25 5.25v1.875c0 .207.168.375.375.375H16.5a5.23 5.23 0 013.434 1.279 9.768 9.768 0 00-6.963-6.963z">
+                                                </path>
+                                            </svg></mat-icon>
+                                        <div
+                                            class="absolute left-0 bottom-0 px-1.5 rounded text-sm font-semibold leading-5 text-white bg-red-600">
+                                            {{item.EXTENSION}} </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="flex flex-col flex-auto justify-center text-center text-sm font-medium">
+                                <div class="mat-mdc-tooltip-trigger truncate"
+                                    aria-describedby="cdk-describedby-message-ng-1-17" cdk-describedby-host="ng-1">
+                                    {{item.FILENAME}}</div><!----><!---->
+                            </div>
+                        </a><!---->
+                    </div>
+                    <button [disabled]="isUpdateLoader" mat-stroked-button class="min-w-40 mr-2 my-2"
                         (click)="updateCoop()">
                         <mat-icon *ngIf="!isUpdateLoader" class="mr-1"
                             svgIcon="heroicons_outline:pencil-alt"></mat-icon>
@@ -184,8 +220,8 @@
                 </mat-form-field>
             </div>
             <div class="col-12 mb-2">
-                <mat-label>Image (JPG): </mat-label>
-                <ngx-dropzone accept="image/jpg,image/jpeg" (change)="onSelect($event)">
+                <mat-label>Attach Documents: </mat-label>
+                <ngx-dropzone (change)="onSelect($event)">
                     <ngx-dropzone-label>Choose Image</ngx-dropzone-label>
                     <ngx-dropzone-preview *ngFor="let f of file" [removable]="true" (removed)="onRemove(f)">
                         <ngx-dropzone-label>{{ f.name }} ({{ f.type }})</ngx-dropzone-label>

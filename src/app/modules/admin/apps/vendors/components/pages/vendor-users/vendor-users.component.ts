@@ -269,7 +269,6 @@ export class VendorUsersComponent implements OnInit, OnDestroy {
 
   onSelected(ev) {
     this.selectedState = ev.option.value;
-    console.log(this.selectedState)
   }
 
   displayWith(value: any) {

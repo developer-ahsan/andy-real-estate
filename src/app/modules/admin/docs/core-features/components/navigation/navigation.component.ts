@@ -3,20 +3,18 @@ import { FuseNavigationItem, FuseNavigationService } from '@fuse/components/navi
 import { CoreFeaturesComponent } from 'app/modules/admin/docs/core-features/core-features.component';
 
 @Component({
-    selector   : 'navigation',
+    selector: 'navigation',
     templateUrl: './navigation.component.html',
-    styles     : ['']
+    styles: ['']
 })
-export class NavigationComponent
-{
+export class NavigationComponent {
     /**
      * Constructor
      */
     constructor(
         private _fuseNavigationService: FuseNavigationService,
         private _coreFeaturesComponent: CoreFeaturesComponent
-    )
-    {
+    ) {
 
     }
 
@@ -30,21 +28,18 @@ export class NavigationComponent
      * @param itemId
      * @param navigationName
      */
-    getNavItem(itemId, navigationName): FuseNavigationItem | null
-    {
+    getNavItem(itemId, navigationName): FuseNavigationItem | null {
         // Get the component -> navigation mock-api -> item
         const navComponent = this._fuseNavigationService.getComponent(navigationName);
 
         // Return if the navigation component does not exist
-        if ( !navComponent )
-        {
+        if (!navComponent) {
             return null;
         }
 
         // Get the navigation item
         const navigation = navComponent.navigation;
         const item = this._fuseNavigationService.getItem(itemId, navigation);
-        console.log(item);
         return item;
     }
 
@@ -55,14 +50,12 @@ export class NavigationComponent
      * @param navigationName
      * @param title
      */
-    updateBadgeTitle(itemId, navigationName, title): void
-    {
+    updateBadgeTitle(itemId, navigationName, title): void {
         // Get the component -> navigation mock-api -> item
         const navComponent = this._fuseNavigationService.getComponent(navigationName);
 
         // Return if the navigation component does not exist
-        if ( !navComponent )
-        {
+        if (!navComponent) {
             return null;
         }
 
@@ -79,14 +72,12 @@ export class NavigationComponent
      * @param itemId
      * @param navigationName
      */
-    toggleDisabled(itemId, navigationName): void
-    {
+    toggleDisabled(itemId, navigationName): void {
         // Get the component -> navigation mock-api -> item
         const navComponent = this._fuseNavigationService.getComponent(navigationName);
 
         // Return if the navigation component does not exist
-        if ( !navComponent )
-        {
+        if (!navComponent) {
             return null;
         }
 
@@ -102,67 +93,65 @@ export class NavigationComponent
      *
      * @param navigationName
      */
-    swapNavigationData(navigationName): void
-    {
+    swapNavigationData(navigationName): void {
         // Get the component -> navigation mock-api -> item
         const navComponent = this._fuseNavigationService.getComponent(navigationName);
 
         // Return if the navigation component does not exist
-        if ( !navComponent )
-        {
+        if (!navComponent) {
             return null;
         }
 
         // A navigation mock-api to replace with
         const newNavigation = [
             {
-                id      : 'supported-components',
-                title   : 'Supported components',
+                id: 'supported-components',
+                title: 'Supported components',
                 subtitle: 'Compatible third party components',
-                type    : 'group',
-                icon    : 'memory',
+                type: 'group',
+                icon: 'memory',
                 children: [
                     {
-                        id   : 'supported-components.apex-charts',
+                        id: 'supported-components.apex-charts',
                         title: 'ApexCharts',
-                        type : 'basic',
-                        icon : 'insert_chart',
-                        link : '/supported-components/apex-charts'
+                        type: 'basic',
+                        icon: 'insert_chart',
+                        link: '/supported-components/apex-charts'
                     },
                     {
-                        id   : 'supported-components.full-calendar',
+                        id: 'supported-components.full-calendar',
                         title: 'FullCalendar',
-                        type : 'basic',
-                        icon : 'today',
-                        link : '/supported-components/full-calendar'
+                        type: 'basic',
+                        icon: 'today',
+                        link: '/supported-components/full-calendar'
                     },
                     {
-                        id   : 'supported-components.google-maps',
+                        id: 'supported-components.google-maps',
                         title: 'Google Maps',
-                        type : 'basic',
-                        icon : 'map',
-                        link : '/supported-components/google-maps'
+                        type: 'basic',
+                        icon: 'map',
+                        link: '/supported-components/google-maps'
                     },
                     {
-                        id   : 'supported-components.ngx-markdown',
+                        id: 'supported-components.ngx-markdown',
                         title: 'ngx-markdown',
-                        type : 'basic',
-                        icon : 'text_format',
-                        link : '/supported-components/ngx-markdown'
+                        type: 'basic',
+                        icon: 'text_format',
+                        link: '/supported-components/ngx-markdown'
                     },
                     {
-                        id   : 'supported-components.quill-editor',
+                        id: 'supported-components.quill-editor',
                         title: 'Quill editor',
-                        type : 'basic',
-                        icon : 'font_download',
-                        link : '/supported-components/quill-editor'
+                        type: 'basic',
+                        icon: 'font_download',
+                        link: '/supported-components/quill-editor'
                     },
                     {
-                        id   : 'supported-components.youtube-player',
+                        id: 'supported-components.youtube-player',
                         title: 'Youtube player',
-                        type : 'basic',
-                        icon : 'play_circle_filled',
-                        link : '/supported-components/youtube-player'
+                        type: 'basic',
+                        icon: 'play_circle_filled',
+                        link: '/supported-components/youtube-player'
                     }
                 ]
             }
@@ -176,8 +165,7 @@ export class NavigationComponent
     /**
      * Toggle the drawer
      */
-    toggleDrawer(): void
-    {
+    toggleDrawer(): void {
         // Toggle the drawer
         this._coreFeaturesComponent.matDrawer.toggle();
     }

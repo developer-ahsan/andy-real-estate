@@ -56,7 +56,7 @@ export class StoreProductStatusComponent implements OnInit, OnDestroy {
           this.enableButton = true;
         }
       }
-      console.log(this.enableButton);
+      // console.log(this.enableButton);
       this.isLoading = false;
       this.isLoadingChange.emit(false);
       this._changeDetectorRef.markForCheck();

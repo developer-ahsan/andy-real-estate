@@ -142,7 +142,7 @@ export class OrdersPurchasesComponent implements OnInit {
       this.grandTotalCost = this.grandTotalCost + ((element.product.cost * element.product.quantity) + (element.imprints.runCost * element.product.quantity) + (element.imprints.setupCost));
       this.grandTotalPrice = this.grandTotalPrice + ((element.product.price * element.product.quantity) + (element.imprints.runPrice * element.product.quantity) + (element.imprints.setupPrice))
     });
-    console.log(suppliersArray)
+    // console.log(suppliersArray)
   }
   getTotalCost() {
     return this.transactions.map(t => t.total).reduce((acc, value) => acc + value, 0);

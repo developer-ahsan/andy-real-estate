@@ -38,7 +38,6 @@ export class CashbackComponent implements OnInit, OnDestroy {
     this._customerService.customer$
       .pipe(takeUntil(this._unsubscribeAll))
       .subscribe((response) => {
-        console.log(response)
         this.selectedCustomer = response;
         let params = {
           approval_contact: true,

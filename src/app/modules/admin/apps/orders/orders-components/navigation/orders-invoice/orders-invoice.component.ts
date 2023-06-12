@@ -49,7 +49,7 @@ export class OrdersInvoiceComponent implements OnInit {
     this._orderService.orderDetail$.pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
       if (res) {
         this.orderDetail = res["data"][0];
-        console.log(this.orderDetail)
+        // console.log(this.orderDetail)
       }
     });
 

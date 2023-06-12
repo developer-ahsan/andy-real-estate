@@ -84,7 +84,6 @@ export class ProductDetailsComponent implements OnInit, OnDestroy {
   getStoreDetails(id) {
     this._storeProductService.getStoreDetail(id).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
       this.storeData = res["data"][0];
-      console.log(this.storeData);
       this.isLoading = false;
       this._changeDetectorRef.markForCheck();
     })

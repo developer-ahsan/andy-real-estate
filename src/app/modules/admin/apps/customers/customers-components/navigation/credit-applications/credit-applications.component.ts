@@ -206,10 +206,10 @@ export class CreditApplicationsComponent implements OnInit {
   }
 
   updateCreditApplication() {
-    console.log("Updating");
+    // console.log("Updating");
   }
 
   approveCreditApplication() {
-    console.log("Approving");
+    // console.log("Approving");
   }
 }

@@ -162,7 +162,6 @@ export class ImprintMethodsComponent implements OnInit, OnDestroy {
   }
   // Update Method
   updateMethodToggle(item) {
-    console.log(item)
     this.updateMethodData = item;
     this.isUpdateMethod = !this.isUpdateMethod;
   }

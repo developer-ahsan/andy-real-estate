@@ -187,7 +187,7 @@ export class OrderModifyComponent implements OnInit, OnDestroy {
         this._orderService.snackBar(res["message"]);
       }
     }, err => {
-      console.log(err);
+      // console.log(err);
     });
   }
   updateShippingInformation() {
@@ -230,7 +230,7 @@ export class OrderModifyComponent implements OnInit, OnDestroy {
         this._orderService.snackBar(res["message"]);
       }
     }, err => {
-      console.log(err);
+      // console.log(err);
     });
   }
   updatePaymentInformation() {
@@ -263,7 +263,7 @@ export class OrderModifyComponent implements OnInit, OnDestroy {
         this._orderService.snackBar(res["message"]);
       }
     }, err => {
-      console.log(err);
+      // console.log(err);
     });
   }
   /**

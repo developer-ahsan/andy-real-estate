@@ -76,7 +76,6 @@ export class RemindersComponent implements OnInit, OnDestroy {
       reminder: true
     }
 
-    console.log("payload", payload)
     this.commentUpdateLoader = true;
     this._customerService.addReminder(payload)
       .subscribe((response: any) => {

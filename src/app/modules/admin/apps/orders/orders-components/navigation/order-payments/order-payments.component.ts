@@ -51,7 +51,7 @@ export class OrderPaymentComponent implements OnInit {
           key: 'pk_test_51MW7XpKftHck147B5Rokid6Csvq6fNf8Tee690E3KuRzLd9P85yrvvQHpDK22ZTedK5WwzXAc2aVIY21Wyx4ia6V002R7AbvoW',
           locale: 'auto',
           token: function (stripeToken: any) {
-            console.log(stripeToken)
+            // console.log(stripeToken)
             alert('Payment has been successfull!');
           }
         });

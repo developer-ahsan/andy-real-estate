@@ -1400,4 +1400,9 @@ export class SystemService {
         return this._httpClient.put(
             environment.system, payload, { headers });
     };
+    // Get All Files
+    getSystemFiles(payload) {
+        return this._httpClient.post(environment.products,
+            payload);
+    };
 }

@@ -715,7 +715,6 @@ export class AddEditImprintsComponent implements OnInit, OnDestroy {
         this.imprintData.imprintData.minProductQty = payload.minProductQty;
         this.imprintData.imprintData.name = payload.name;
 
-        console.log(this.imprintData);
         this.addImprintLoader = false;
       } else {
         this.addImprintLoader = false;

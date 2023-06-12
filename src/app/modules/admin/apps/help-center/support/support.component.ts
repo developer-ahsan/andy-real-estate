@@ -4,13 +4,12 @@ import { fuseAnimations } from '@fuse/animations';
 import { HelpCenterService } from 'app/modules/admin/apps/help-center/help-center.service';
 
 @Component({
-    selector     : 'help-center-support',
-    templateUrl  : './support.component.html',
+    selector: 'help-center-support',
+    templateUrl: './support.component.html',
     encapsulation: ViewEncapsulation.None,
-    animations   : fuseAnimations
+    animations: fuseAnimations
 })
-export class HelpCenterSupportComponent implements OnInit
-{
+export class HelpCenterSupportComponent implements OnInit {
     @ViewChild('supportNgForm') supportNgForm: NgForm;
 
     alert: any;
@@ -22,8 +21,7 @@ export class HelpCenterSupportComponent implements OnInit
     constructor(
         private _formBuilder: FormBuilder,
         private _helpCenterService: HelpCenterService
-    )
-    {
+    ) {
     }
 
     // -----------------------------------------------------------------------------------------------------
@@ -33,12 +31,11 @@ export class HelpCenterSupportComponent implements OnInit
     /**
      * On init
      */
-    ngOnInit(): void
-    {
+    ngOnInit(): void {
         // Create the support form
         this.supportForm = this._formBuilder.group({
-            name   : ['', Validators.required],
-            email  : ['', [Validators.required, Validators.email]],
+            name: ['', Validators.required],
+            email: ['', [Validators.required, Validators.email]],
             subject: ['', Validators.required],
             message: ['', Validators.required]
         });
@@ -51,8 +48,7 @@ export class HelpCenterSupportComponent implements OnInit
     /**
      * Clear the form
      */
-    clearForm(): void
-    {
+    clearForm(): void {
         // Reset the form
         this.supportNgForm.resetForm();
     }
@@ -60,15 +56,14 @@ export class HelpCenterSupportComponent implements OnInit
     /**
      * Send the form
      */
-    sendForm(): void
-    {
+    sendForm(): void {
         // Send your form here using an http request
-        console.log('Your message has been sent!');
+        // console.log('Your message has been sent!');
 
         // Show a success message (it can also be an error message)
         // and remove it after 5 seconds
         this.alert = {
-            type   : 'success',
+            type: 'success',
             message: 'Your request has been delivered! A member of our support staff will respond as soon as possible.'
         };
 

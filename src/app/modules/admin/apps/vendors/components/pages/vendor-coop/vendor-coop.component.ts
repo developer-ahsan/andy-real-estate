@@ -56,6 +56,7 @@ export class VendorCoopComponent implements OnInit, OnDestroy {
   updateDate: any;
   isUpdateLoader: boolean = false;
   updateData = {
+    files: [],
     coOp_id: '',
     coopName: '',
     coopExpDay: null,
@@ -67,6 +68,8 @@ export class VendorCoopComponent implements OnInit, OnDestroy {
   }
   file: any = [];
   imageValue: any = [];
+
+  isFileLoader: boolean = false;
   constructor(
     private _changeDetectorRef: ChangeDetectorRef,
     private _vendorService: VendorsService
@@ -236,10 +239,11 @@ export class VendorCoopComponent implements OnInit, OnDestroy {
   }
   uploadCoopImages(obj, id, index) {
     const base64 = obj.imageUpload.split(",")[1];
+    const extension = obj.type.split('/')[1];
     const payload = {
       file_upload: true,
       image_file: base64,
-      image_path: `/globalAssets/Companies/Coops/${this.supplierData.pk_companyID}/${id}/${index}.jpg`
+      image_path: `/globalAssets/Companies/Coops/${this.supplierData.pk_companyID}/${id}/${obj.name}.${extension}`
     };
     this._vendorService.addMedia(payload)
       .subscribe((response) => {
@@ -275,9 +279,11 @@ export class VendorCoopComponent implements OnInit, OnDestroy {
     });
   }
   toggleUpdate(data) {
+    this.isFileLoader = true;
     this.isUpdate = true;
     this.coopData = data;
     this.updateData = {
+      files: [],
       coOp_id: data.pk_coopID,
       coopName: data.name,
       coopExpDay: new Date(),
@@ -294,6 +300,21 @@ export class VendorCoopComponent implements OnInit, OnDestroy {
     }
     this.searchStateCtrl.setValue(data.state, { emitEvent: false });
     this.selectedState = data.state;
+    this.getCoopFiles();
+  }
+  getCoopFiles() {
+    let payload = {
+      files_fetch: true,
+      path: `/Companies/Coops/${this.supplierData.pk_companyID}/${this.updateData.coOp_id}`
+    }
+    this._changeDetectorRef.markForCheck();
+    this._vendorService.getVendorsFiles(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(files => {
+      this.updateData["files"] = files["data"];
+      this.isFileLoader = false;
+      this._changeDetectorRef.markForCheck();
+    }, err => { });
+    this.isFileLoader = false;
+    this._changeDetectorRef.markForCheck();
   }
   backTolist() {
     this.isUpdate = false;
@@ -310,12 +331,18 @@ export class VendorCoopComponent implements OnInit, OnDestroy {
     this.isUpdateLoader = true;
     this._vendorService.putVendorsData(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
       if (res["success"]) {
+        if (this.file.length > 0) {
+          this.imageValue.forEach((element, index) => {
+            this.uploadCoopImages(element, coOp_id, index);
+          });
+        }
         this.coopData.name = coopName;
         this.coopData.expirationDate = coopExpDay;
         this.coopData.pricing = pricing;
         this.coopData.ltm = ltm;
         this.coopData.setups = setups;
         this.coopData.productionTime = productionTime;
+        this.mainScreen = 'Current';
       }
       this.isUpdateLoader = false;
       this._vendorService.snackBar(res["message"]);
