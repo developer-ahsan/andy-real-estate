@@ -25,6 +25,7 @@ export class OrdersPurchasesComponent implements OnInit {
   private _unsubscribeAll: Subject<any> = new Subject<any>();
 
   displayedColumns: string[] = ['company', 'supplies', 'decorates', 'digitizes', 'total'];
+  displayedColumns1: string[] = ['companys', 'suppliess', 'decoratess', 'shippingtotal', 'totals'];
   transactions: OrdersPurchases[] = [
     { company: 'ARTWORK', supplies: true, decorates: false, digitizes: false, total: 255 }
   ];
@@ -35,7 +36,11 @@ export class OrdersPurchasesComponent implements OnInit {
   grandTotalPrice: number;
 
   totalShippingCost = 0;
-
+  purchases: any;
+  isViewData: any;
+  orderLineIDs: any;
+  isDetailLoader: boolean = false;
+  purchaseDetails: any;
   constructor(
     private _orderService: OrdersService,
     private _changeDetectorRef: ChangeDetectorRef
@@ -46,33 +51,37 @@ export class OrdersPurchasesComponent implements OnInit {
     this.getOrderDetail();
     this._orderService.orderProducts$.pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
       let value = [];
+      this.orderProducts = res["data"];
       res["data"].forEach((element, index) => {
         value.push(element.pk_orderLineID);
         if (index == res["data"].length - 1) {
-          this.getLineProducts(value.toString());
+          this.getPurchaseOrders(value.toString());
+          this.orderLineIDs = value.toString();
         }
       });
-      this.orderProducts = res["data"];
     });
   }
   getOrderDetail() {
     this._orderService.orderDetail$.pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
       this.orderDetail = res["data"][0];
-      // this.getPurchaseOrders();
     }, err => {
       this.isLoading = false;
       this._changeDetectorRef.markForCheck();
     })
   }
-  getPurchaseOrders() {
+  getPurchaseOrders(orderLineIDs) {
     let params = {
       purchase_order: true,
-      order_id: this.orderDetail.pk_orderID
+      order_line_id: orderLineIDs
     }
     this._orderService.getOrderCommonCall(params)
       .pipe(takeUntil(this._unsubscribeAll))
       .subscribe((purchases) => {
-        console.log("purchases => ", purchases);
+        this.purchases = purchases;
+        this.totalShippingCost = purchases["shippingPrice"][0].shippingCost;
+        purchases["data"].forEach(element => {
+          this.totalShippingCost = this.totalShippingCost + element.total;
+        });
         this.isLoading = false;
         this._changeDetectorRef.markForCheck();
       }, err => {
@@ -88,7 +97,7 @@ export class OrdersPurchasesComponent implements OnInit {
     this._orderService.getOrderLineProducts(params).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
       this.getProductImprints(value, res["data"]);
     }, err => {
-      this.isLoading = false;
+      this.isDetailLoader = false;
       this.isLoadingChange.emit(false);
       this._changeDetectorRef.markForCheck();
     })
@@ -108,13 +117,12 @@ export class OrdersPurchasesComponent implements OnInit {
         });
       });
       this.orderProducts = tempArr;
-      console.log('Products=>', this.orderProducts)
-      this.getProductTotal();
-      this.isLoading = false;
+      // this.getProductTotal();
+      this.isDetailLoader = false;
       this.isLoadingChange.emit(false);
       this._changeDetectorRef.markForCheck();
     }, err => {
-      this.isLoading = false;
+      this.isDetailLoader = false;
       this.isLoadingChange.emit(false);
       this._changeDetectorRef.markForCheck();
     })
@@ -140,8 +148,32 @@ export class OrdersPurchasesComponent implements OnInit {
     return this.transactions.map(t => t.total).reduce((acc, value) => acc + value, 0);
   }
 
-  viewPurchaseOrder(): void {
+  viewPurchaseOrder(item): void {
     this.isView = !this.isView;
+    if (this.isView) {
+      this.isDetailLoader = true;
+      this._changeDetectorRef.markForCheck();
+      this.isViewData = item;
+      this.getPurchaseOrdersDetails();
+    }
+  }
+  getPurchaseOrdersDetails() {
+    let params = {
+      view_purchase_order: true,
+      order_line_id: this.isViewData.fk_orderLineID,
+      vendor_id: this.isViewData.fk_vendorID
+    }
+    this._orderService.getOrderCommonCall(params)
+      .pipe(takeUntil(this._unsubscribeAll))
+      .subscribe((data) => {
+        this.purchaseDetails = data["data"][0];
+        this.getLineProducts(this.isViewData.fk_orderLineID);
+        // this.isDetailLoader = false;
+        this._changeDetectorRef.markForCheck();
+      }, err => {
+        this.isDetailLoader = false;
+        this._changeDetectorRef.markForCheck();
+      });
   }
 
   public exportHtmlToPDF() {

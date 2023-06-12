@@ -140,6 +140,7 @@ export interface UpdateIncidentReport {
     priority2: string;
     priority3: string;
     priority4: string;
+    blnFinalized: boolean;
     rerunCost: string;
     explanation: string;
     corrected: string;

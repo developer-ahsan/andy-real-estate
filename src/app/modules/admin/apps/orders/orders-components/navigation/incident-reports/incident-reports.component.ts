@@ -49,6 +49,7 @@ export class IncidentReportsComponent implements OnInit {
 
   formModal = {
     reportsSources: [],
+    blnFianlized: false,
     priority1: 'TBD',
     priority3: 'TBD',
     rerunCost: '',
@@ -74,6 +75,7 @@ export class IncidentReportsComponent implements OnInit {
     source_employee: null,
     supplierID: null,
     employeeID: null,
+    blnFinalized: false
   }
   public users = new FormControl();
   isUserLoader: boolean = false;
@@ -173,6 +175,7 @@ export class IncidentReportsComponent implements OnInit {
     this._orderService.orderDetail$.pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
       this.orderDetail = res["data"][0];
       this.isLoading = true;
+      this.formModal.blnFianlized = this.orderDetail.blnFinalized;
       this.getIncidentReports();
       this.getReports('get');
       this._changeDetectorRef.markForCheck();
@@ -204,6 +207,7 @@ export class IncidentReportsComponent implements OnInit {
     if (this.isView) {
       this.updateIncidentObj = item;
       this.isLoadingChange.emit(true);
+      this.updateFormModal.blnFinalized = item.blnFinalized;
       this.updateFormModal.rerunCost = item.rerunCost;
       this.updateFormModal.recommend = item.recommend;
       this.updateFormModal.explanation = item.explanation;
@@ -257,7 +261,6 @@ export class IncidentReportsComponent implements OnInit {
 
       this._changeDetectorRef.markForCheck();
 
-      console.log(item);
     }
 
   }
@@ -453,11 +456,11 @@ export class IncidentReportsComponent implements OnInit {
   // Update Incident
   updateIncident() {
     const { fk_adminUserID, fk_orderID, fk_storeUserID, fk_storeID, pk_incidentReportID } = this.updateIncidentObj;
-    const { reportsSources, priority1, priority2, priority3, priority4, rerunCost, explanation, corrected, how, recommend, source_supplier, source_employee } = this.updateFormModal;
+    const { reportsSources, priority1, priority2, priority3, priority4, rerunCost, explanation, corrected, how, recommend, source_supplier, source_employee, blnFinalized } = this.updateFormModal;
 
     let payload: UpdateIncidentReport = {
-      store_user_id: fk_storeUserID,
-      date: this.todayDate, priority1, priority2, priority3, priority4, rerunCost, explanation: explanation.replace("'", "''"), corrected, how: how.replace("'", "''"), recommend: recommend.replace("'", "''"), source_supplier, admin_user_id: fk_adminUserID, source_employee, dateModified: this.todayDate, incident_sources: reportsSources, incident_report_id: pk_incidentReportID, update_incident_report: true
+      store_user_id: fk_storeUserID, blnFinalized,
+      date: this.todayDate, priority1, priority2, priority3, priority4, rerunCost, explanation: explanation?.replace("'", "''"), corrected, how: how?.replace("'", "''"), recommend: recommend?.replace("'", "''"), source_supplier, admin_user_id: fk_adminUserID, source_employee, dateModified: this.todayDate, incident_sources: reportsSources, incident_report_id: pk_incidentReportID, update_incident_report: true
     }
     this.isUpdateLoader = true;
     this._orderService.updateOrderCalls(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
