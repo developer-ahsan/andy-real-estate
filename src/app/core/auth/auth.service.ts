@@ -61,7 +61,7 @@ export class AuthService {
     }
 
     siginPostApiCall(payload) {
-        return this._httpClient.post('https://consolidus-prod.azurewebsites.net/api/users', payload);
+        return this._httpClient.post(environment.customerList, payload);
     }
 
     /**
