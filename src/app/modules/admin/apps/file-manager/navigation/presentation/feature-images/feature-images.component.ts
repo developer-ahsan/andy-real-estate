@@ -341,6 +341,7 @@ export class PresentationFeatureImagesComponent implements OnInit {
             verticalPosition: 'bottom',
             duration: 3500
           });
+          this.fileInput.nativeElement.value = '';
           this.imageValue = null;
           this._changeDetectorRef.markForCheck();
           return;
