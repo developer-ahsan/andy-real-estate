@@ -52,7 +52,7 @@ export const navigations = [
             {
                 title: 'Imprint Locations',
                 icon: 'mat_outline:edit_location',
-                route: 'imprint-loactions'
+                route: 'imprint-locations'
             },
             {
                 title: 'Imprint Charges',

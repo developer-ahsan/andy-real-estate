@@ -80,8 +80,10 @@ export class VendorBlanketCoopComponent implements OnInit, OnDestroy {
     }
     this._vendorService.getVendorsData(params).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
       this.allCoops = res["data"];
-      this.selectedCoop = this.allCoops[0];
-      this.searchCoopCtrl.setValue({ name: this.selectedCoop.name }, { emitEvent: false });
+      if (this.allCoops.length > 0) {
+        this.selectedCoop = this.allCoops[0];
+        this.searchCoopCtrl.setValue({ name: this.selectedCoop.name }, { emitEvent: false });
+      }
       this.isLoading = false;
       this._changeDetectorRef.markForCheck();
     }, err => {
@@ -100,6 +102,10 @@ export class VendorBlanketCoopComponent implements OnInit, OnDestroy {
     this.searchCoopCtrl.setValue({ name: this.selectedCoop.name }, { emitEvent: false });
   }
   updateCoops() {
+    if (!this.selectedCoop) {
+      this._vendorService.snackBar('No Coop Selected');
+      return;
+    }
     let payload: applyCompanyWideCoop = {
       companyID: this.supplierData.pk_companyID,
       coopID: this.selectedCoop.pk_coopID,

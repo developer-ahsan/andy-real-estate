@@ -263,7 +263,8 @@
                     </div>
                     <!-- Listing -->
                     <div *ngIf="!isView" class=" pb-5">
-                        <table mat-table [dataSource]="purchases.data" class="w-full">
+                        <p class="font-bold text-center text-lg" *ngIf="purchases.data.length == 0">No data found.</p>
+                        <table *ngIf="purchases.data.length > 0" mat-table [dataSource]="purchases.data" class="w-full">
                             <!-- Company Column -->
                             <ng-container matColumnDef="company">
                                 <th mat-header-cell *matHeaderCellDef class="bg-light"> Company
@@ -342,7 +343,8 @@
                                 <td mat-footer-cell *matFooterCellDef class="font-semibold">Total</td>
                             </ng-container>
                             <ng-container matColumnDef="totals">
-                                <td mat-footer-cell *matFooterCellDef class="font-semibold">{{totalShippingCost}}</td>
+                                <td mat-footer-cell *matFooterCellDef class="font-semibold">
+                                    {{totalShippingCost.toFixed(2)}}</td>
                             </ng-container>
 
 
