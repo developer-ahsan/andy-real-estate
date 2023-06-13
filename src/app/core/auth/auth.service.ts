@@ -62,7 +62,7 @@ export class AuthService {
 
     siginPostApiCall(payload) {
         // Register new Users
-        return this._httpClient.post(environment.customerList, payload);
+        return this._httpClient.post(environment.customerList1, payload);
     }
 
     /**
