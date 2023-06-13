@@ -154,7 +154,6 @@ export class OrdersPurchasesComponent implements OnInit {
       this.isDetailLoader = true;
       this._changeDetectorRef.markForCheck();
       this.isViewData = item;
-      console.log(this.isViewData)
       this.getPurchaseOrdersDetails();
     }
   }
