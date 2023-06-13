@@ -32,7 +32,7 @@ export class OrderPaymentEmailComponent implements OnInit, OnDestroy {
       this.orderDetail = res["data"][0];
     })
     setTimeout(() => {
-      this.isLoading = true;
+      this.isLoading = false;
       this.isLoadingChange.emit(false);
     }, 100);
   };

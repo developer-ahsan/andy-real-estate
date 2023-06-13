@@ -154,20 +154,21 @@ export class OrdersPurchasesComponent implements OnInit {
       this.isDetailLoader = true;
       this._changeDetectorRef.markForCheck();
       this.isViewData = item;
+      console.log(this.isViewData)
       this.getPurchaseOrdersDetails();
     }
   }
   getPurchaseOrdersDetails() {
     let params = {
       view_purchase_order: true,
-      order_line_id: this.isViewData.fk_orderLineID,
+      order_line_id: this.orderLineIDs,
       vendor_id: this.isViewData.fk_vendorID
     }
     this._orderService.getOrderCommonCall(params)
       .pipe(takeUntil(this._unsubscribeAll))
       .subscribe((data) => {
         this.purchaseDetails = data["data"][0];
-        this.getLineProducts(this.isViewData.fk_orderLineID);
+        this.getLineProducts(this.orderLineIDs);
         // this.isDetailLoader = false;
         this._changeDetectorRef.markForCheck();
       }, err => {

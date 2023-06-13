@@ -10,7 +10,8 @@
                             Sent Purchase Orders
                         </div>
                         <div class="mt-5">
-                            <table
+                            <div class="text-center mt-5 font-bold" *ngIf="purchases.length == 0">No data found</div>
+                            <table *ngIf="purchases.length > 0"
                                 class="table table-condensed table-striped table-hover padding-1x wide no-bottom-margin">
                                 <thead>
                                     <tr class="columnHeader2">

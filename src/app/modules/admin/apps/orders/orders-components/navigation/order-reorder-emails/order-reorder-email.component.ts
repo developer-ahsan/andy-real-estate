@@ -33,7 +33,7 @@ export class OrderReorderEmailComponent implements OnInit, OnDestroy {
   getReorderEmail() {
     let params = {
       opt_in: true,
-      store_id: this.orderDetail.pk_storeID,
+      store_id: this.orderDetail.fk_storeID,
       email: this.orderDetail.managerEmail
     }
     this._orderService.getOrderCommonCall(params).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
