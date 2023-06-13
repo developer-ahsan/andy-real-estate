@@ -89,6 +89,7 @@ export class AuthSignInComponent implements OnInit {
             password: password,
             login: true
         }
+
         this._authService.siginPostApiCall(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
             if (res["success"]) {
                 this._authService.SignInUsingEmailPassword(email, password)
