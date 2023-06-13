@@ -26,15 +26,15 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    <tr *ngFor="let item of orderProducts">
-                                        <td valign="top">{{item.pk_orderLineID}}</td>
-                                        <td valign="top">{{orderDetail.orderDate | date:'MM/dd/yyyy'}}</td>
-                                        <td valign="top">{{item.pk_orderLineID}}</td>
+                                    <tr *ngFor="let item of purchases">
+                                        <td valign="top">{{item.fk_orderLineID}}</td>
+                                        <td valign="top">{{(orderDetail.orderDate | date:'MM/dd/yyyy') || '---'}}</td>
+                                        <td valign="top">{{item.fk_orderLineID}}</td>
                                         <td valign="top">{{item.companyName}}</td>
                                         <td valign="top">{{item.quantity}} X {{item.productNumber}} -
                                             {{item.productName}}
                                         </td>
-                                        <td valign="top">{{item.userCompanyName}}</td>
+                                        <td valign="top">{{item.Customer}}</td>
                                         <td valign="top">
                                             <span class="text-red-500 font-bold" *ngIf="!item.shippingDate">x</span>
                                             <span *ngIf="item.shippingDate">{{item.shippingDate | date:
@@ -45,7 +45,7 @@
                                             <span *ngIf="item.trackingNumber">{{item.trackingNumber}}</span>
                                         </td>
                                         <td valign="top"><a
-                                                href="https://admin.consolidus.com/ssadm/controller/view/system/tempDocs/purchaseOrder-{{item.fk_orderID}}-57398_{{date}}.pdf"
+                                                href="https://admin.consolidus.com/ssadm/controller/view/system/tempDocs/purchaseOrder-{{orderDetail.pk_orderID}}-{{item.pk_sentPOID}}_{{date}}.pdf"
                                                 target="_blank">PDF</a></td>
                                     </tr>
                                 </tbody>

@@ -14,14 +14,14 @@
             </div>
             <div class="col-md-2 col-5">
                 <mat-form-field class="fuse-mat-no-subscript w-full">
-                    <input class="" matInput [placeholder]="'Search Vendor'" (keyup.enter)="searchVendor($event)"
-                        (keydown)="onKeydown($event)" #barSearchInput1>
+                    <input class="" matInput [placeholder]="'Search Order'" (keyup.enter)="searchOrder($event)"
+                        (keydown)="onKeydown($event)" #barSearchInput2>
                 </mat-form-field>
             </div>
             <div class="col-md-2 col-5">
                 <mat-form-field class="fuse-mat-no-subscript w-full">
-                    <input class="" matInput [placeholder]="'Search Store'" (keyup.enter)="searchStore($event)"
-                        (keydown)="onKeydown($event)" #barSearchInput2>
+                    <input class="" matInput [placeholder]="'Search Vendor'" (keyup.enter)="searchVendor($event)"
+                        (keydown)="onKeydown($event)" #barSearchInput1>
                 </mat-form-field>
             </div>
             <div class="col-md-2 col-5">
@@ -32,10 +32,12 @@
             </div>
             <div class="col-md-2 col-5">
                 <mat-form-field class="fuse-mat-no-subscript w-full">
-                    <input class="" matInput [placeholder]="'Search Order'" (keyup.enter)="searchOrder($event)"
+                    <input class="" matInput [placeholder]="'Search Store'" (keyup.enter)="searchStore($event)"
                         (keydown)="onKeydown($event)" #barSearchInput2>
                 </mat-form-field>
             </div>
+
+
             <!-- <div class="col-3">
                 <mat-form-field class="fuse-mat-no-subscript w-full">
                     <input class="" matInput [placeholder]="'Search Product'" (keyup.enter)="searchProduct($event)"

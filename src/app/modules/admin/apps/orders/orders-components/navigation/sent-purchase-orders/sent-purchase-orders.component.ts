@@ -36,14 +36,26 @@ export class SentOrdersPurchasesComponent implements OnInit {
   grandTotalPrice: number;
 
   totalShippingCost = 0;
-  date = moment().format('MM-DD-yyyy-hh-mm-ss')
+  date = moment().format('MM-DD-yyyy-hh-mm-ss');
+  purchases: any;
   constructor(
     private _orderService: OrdersService,
     private _changeDetectorRef: ChangeDetectorRef
   ) { }
 
   ngOnInit(): void {
+    this.isLoading = true;
     this.getOrderDetail();
+    this._orderService.orderProducts$.pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+      let value = [];
+      this.orderProducts = res["data"];
+      res["data"].forEach((element, index) => {
+        value.push(element.pk_orderLineID);
+        if (index == res["data"].length - 1) {
+          this.getPurchaseOrders(value.toString());
+        }
+      });
+    });
   }
   getOrderDetail() {
     this._orderService.orderDetail$.pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
@@ -56,14 +68,15 @@ export class SentOrdersPurchasesComponent implements OnInit {
       this._changeDetectorRef.markForCheck();
     })
   }
-  getPurchaseOrders() {
+  getPurchaseOrders(value) {
     let params = {
-      purchase_order: true,
-      order_id: this.orderDetail.pk_orderID
+      sent_purchase_orders: true,
+      order_line_id: value
     }
     this._orderService.getOrderCommonCall(params)
       .pipe(takeUntil(this._unsubscribeAll))
       .subscribe((purchases) => {
+        this.purchases = purchases["data"];
         this.isLoading = false;
         this._changeDetectorRef.markForCheck();
       }, err => {

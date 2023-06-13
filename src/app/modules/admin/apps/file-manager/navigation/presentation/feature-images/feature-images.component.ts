@@ -1,4 +1,4 @@
-import { ChangeDetectorRef, Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { ChangeDetectorRef, Component, ElementRef, EventEmitter, Input, OnInit, Output, ViewChild } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { environment } from 'environments/environment';
@@ -17,6 +17,7 @@ export class PresentationFeatureImagesComponent implements OnInit {
   @Input() isLoading: boolean;
   @Output() isLoadingChange = new EventEmitter<boolean>();
   private _unsubscribeAll: Subject<any> = new Subject<any>();
+  @ViewChild('fileInput') fileInput: ElementRef;
 
   featureImagesData: any;
   featureImageUrl = "";
@@ -174,6 +175,7 @@ export class PresentationFeatureImagesComponent implements OnInit {
             duration: 3500
           });
           this.imageValue = null;
+          this.fileInput.nativeElement.value = '';
           this._changeDetectorRef.markForCheck();
           return;
         };
@@ -199,6 +201,7 @@ export class PresentationFeatureImagesComponent implements OnInit {
 
     this._storeManagerService.addPresentationMedia(payload)
       .subscribe((response) => {
+        this.fileInput.nativeElement.value = '';
         this.imageValue = null;
         this.mobileImageCheck = true;
         // Mark for check
@@ -364,6 +367,7 @@ export class PresentationFeatureImagesComponent implements OnInit {
     this._storeManagerService.addPresentationMedia(payload)
       .subscribe((response) => {
         this.getFeatureMedia(type);
+        this.fileInput.nativeElement.value = '';
         this.imageValue = null;
         this.mobileImageCheck = true;
         // Mark for check
