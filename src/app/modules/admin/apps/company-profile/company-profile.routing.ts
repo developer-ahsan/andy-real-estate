@@ -9,7 +9,7 @@ export const companyRoutes: Route[] = [
         component: CompaniesDetailsComponent,
         resolve: {
             states: StatesResolver,
-            stores: StoresResolver,
+            // stores: StoresResolver,
         },
         children: [
             {

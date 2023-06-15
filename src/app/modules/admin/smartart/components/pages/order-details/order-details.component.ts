@@ -2,14 +2,14 @@ import { Component, Input, OnInit, ChangeDetectorRef, OnDestroy, ViewChild, View
 import { FormControl } from '@angular/forms';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatDrawer } from '@angular/material/sidenav';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute, NavigationExtras, Router } from '@angular/router';
 import { AuthService } from 'app/core/auth/auth.service';
 import moment from 'moment';
 import { Subject } from 'rxjs';
 import { debounceTime, distinctUntilChanged, filter, finalize, switchMap, takeUntil, tap } from 'rxjs/operators';
 import { SmartArtService } from '../../smartart.service';
 import { interval } from 'rxjs';
-import { AddOrderComment, sendAutoRequest, sendAutoRequestOrder, updateOrderLineImprintColors, updateReorderNumberOrder } from '../../smartart.types';
+import { AddOrderComment, UpdateArtworkTags, UpdateArtworkTgas, UpdateOrderInformation, sendAutoRequest, sendAutoRequestOrder, updateOrderLineImprintColors, updateReorderNumberOrder } from '../../smartart.types';
 
 @Component({
   selector: 'app-order-details',
@@ -79,6 +79,8 @@ export class OrderDashboardDetailsComponent implements OnInit, OnDestroy {
   virtualProofData: any;
   // Approval History
   approvalHistoryData: any;
+  // artwork tags
+  artworkTags: any;
 
   // Timer
   hours: number = 0;
@@ -93,6 +95,10 @@ export class OrderDashboardDetailsComponent implements OnInit, OnDestroy {
   imprintColorsLoader: boolean = false;
   isAddCommentLoader: boolean;
 
+  smartArtUser: any;
+  viewProofCheck: boolean = false;
+  brandGuideExist: boolean = false;
+  selectedArtworkTags: any;
   constructor(
     private _changeDetectorRef: ChangeDetectorRef,
     private _authService: AuthService,
@@ -102,6 +108,7 @@ export class OrderDashboardDetailsComponent implements OnInit, OnDestroy {
   ) { }
 
   ngOnInit(): void {
+    this.smartArtUser = JSON.parse(sessionStorage.getItem('smartArt'));
     this.userData = this._authService.parseJwt(this._authService.accessToken);
     this._activeRoute.queryParams.subscribe(res => {
       this.paramData = res
@@ -148,7 +155,9 @@ export class OrderDashboardDetailsComponent implements OnInit, OnDestroy {
           this.selectedImprintColor = this.imprintdata[0].imprintColors;
         }
       }
+      this.checkFileExist(`https://assets.consolidus.com/globalAssets/Stores/BrandGuide/${this.orderData.pk_storeID}.pdf`, 'brand');
       this.getArtworkOther();
+      this.checkIfImageExists(`https://assets.consolidus.com/artwork/Proof/${this.paramData.pfk_userID}/${this.paramData.fk_orderID}/${this.paramData.pk_orderLineID}/${this.paramData.fk_imprintID}.jpg`);
       this.isLoading = false;
       this._changeDetectorRef.markForCheck();
     }, err => {
@@ -173,6 +182,13 @@ export class OrderDashboardDetailsComponent implements OnInit, OnDestroy {
       }
       if (res["virtualProof"]) {
         this.virtualProofData = res["virtualProof"];
+      }
+      if (res["storeArtworkTag"]) {
+        this.artworkTags = res["storeArtworkTag"];
+        this.selectedArtworkTags = [];
+        res["orderLineArtworkTag"].forEach(element => {
+          this.selectedArtworkTags.push(element);
+        });
       }
       this.artWorkLoader = false;
       this._changeDetectorRef.markForCheck();
@@ -383,6 +399,87 @@ export class OrderDashboardDetailsComponent implements OnInit, OnDestroy {
       this.imprintColorsLoader = false;
       this._changeDetectorRef.markForCheck();
     });
+  }
+  // Update Order Information
+  updateOrderInformation() {
+    let date = this.orderData.inHandsDate;
+    let converDate;
+    if (date) {
+      converDate = moment(date).format('MM/DD/yyyy')
+    }
+    this.orderData.isOrderInfoLoader = true;
+    this._changeDetectorRef.markForCheck();
+    let payload: UpdateOrderInformation = {
+      inHandsDate: converDate,
+      blnIgnoreAdditionalProofEmails: this.orderData.blnIgnoreAdditionalArtEmails,
+      blnAdditionalApprovalOverride: this.orderData.blnAdditionalApprovalOverride,
+      event: this.orderData.event,
+      blnBypassScheduler: this.orderData.bypassScheduler,
+      orderId: this.orderData.fk_orderID,
+      orderLineID: Number(this.paramData.pk_orderLineID),
+      update_order_info: true
+    }
+    this._smartartService.UpdateSmartArtData(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+      this._smartartService.snackBar(res["message"]);
+      this.orderData.isOrderInfoLoader = false;
+      this._changeDetectorRef.markForCheck();
+    }, err => {
+      this.orderData.isOrderInfoLoader = false;
+      this._changeDetectorRef.markForCheck();
+    });
+  }
+  // Update Artwork tags
+  updateArtWorkTags() {
+    this.artworkTags.updateLoader = true;
+    this._changeDetectorRef.markForCheck();
+    let payload: UpdateArtworkTags = {
+      cartline_id: Number(),
+      artwork_ids: this.selectedArtworkTags,
+      update_artwork_tags: true
+    }
+    this._smartartService.UpdateSmartArtData(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+      this._smartartService.snackBar(res["message"]);
+      this.artworkTags.updateLoader = false;
+      this._changeDetectorRef.markForCheck();
+    }, err => {
+      this.artworkTags.updateLoader = false;
+      this._changeDetectorRef.markForCheck();
+    });
+  }
+  // Customer Eamils
+  customerEmail(item) {
+    const queryParams: NavigationExtras = {
+      queryParams: { pfk_userID: this.paramData.pfk_userID, fk_orderID: this.paramData.fk_orderID, fk_imprintID: this.paramData.fk_imprintID, pk_orderLineID: this.paramData.pk_orderLineID, statusName: this.paramData.statusName }
+    };
+    this.router.navigate(['/smartart/email-customer'], queryParams);
+  }
+  checkIfImageExists(url) {
+    const img = new Image();
+    img.src = url;
+
+    if (img.complete) {
+
+    } else {
+      img.onload = () => {
+        this.viewProofCheck = true;
+      };
+
+      img.onerror = () => {
+        this.viewProofCheck = false;
+        return;
+      };
+    }
+  };
+  checkFileExist(url, type) {
+    let params = {
+      file_check: true,
+      url: url
+    }
+    this._smartartService.getSmartArtData(params).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+      if (type == 'brand') {
+        this.brandGuideExist = res["isFileExist"];
+      }
+    })
   }
   /**
      * On destroy

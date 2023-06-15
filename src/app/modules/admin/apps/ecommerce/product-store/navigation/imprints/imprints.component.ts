@@ -3,6 +3,7 @@ import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { InventoryService } from '../../../inventory/inventory.service';
 import { StoreProductService } from '../../store.service';
+import { DashboardsService } from 'app/modules/admin/dashboards/dashboard.service';
 
 @Component({
   selector: 'app-store-imprints',
@@ -31,11 +32,12 @@ export class StoreImprintsComponent implements OnInit, OnDestroy {
   constructor(
     private _changeDetectorRef: ChangeDetectorRef,
     private _storeService: StoreProductService,
+    private _commonService: DashboardsService,
     private _productService: InventoryService
   ) { }
 
   ngOnInit(): void {
-    this._productService.Suppliers$.pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+    this._commonService.suppliersData$.pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
       this.suppliers = res["data"];
     })
     // Create the selected product form

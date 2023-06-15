@@ -41,17 +41,17 @@
                             </mat-expansion-panel-header>
                             <div>
                                 <div><b>Company name:</b> {{orderData?.companyInformationName}}</div>
-                                <div><b>Location:</b> {{orderData?.attributeName}}</div>
+                                <div><b>Location:</b> {{orderData?.locationName}}</div>
                                 <div><b>Name:</b> {{orderData.billingName}}</div>
                                 <div><b>Company:</b> {{orderData.companyInformationName}}</div>
                                 <div><b>Address:</b> {{orderData.billingAddress}} {{orderData.billingCity}}</div>
                                 <div><b>Phone:</b> {{orderData.billingPhone}}</div>
                                 <div><b>Email:</b> {{orderData.billingEmail}}</div>
-                                <div><b>Designer notes:</b> None</div>
+                                <div><b>Designer notes:</b> {{orderData.designerNotes || 'None'}}</div>
                                 <div class="space-y-1">
-                                    <!-- <button class="min-w-60 btn buttonComment hover:bg-gray-200"
-                                        (click)="customerEmail()">Email Customer</button> -->
-                                    <!-- <br> -->
+                                    <button class="min-w-60 btn buttonComment hover:bg-gray-200"
+                                        (click)="customerEmail()">Email Customer</button>
+                                    <br>
                                     <button [disabled]="isAutoRequestLoader" (click)="senAutoArtRequest()"
                                         class="min-w-60 btn buttonComment hover:bg-gray-200">
                                         <span *ngIf="!isAutoRequestLoader">Auto Art Request</span>
@@ -59,8 +59,11 @@
                                             [mode]="'indeterminate'">
                                         </mat-progress-spinner>
                                     </button>
-                                    <!-- <br> -->
-                                    <!-- <button class="min-w-60 btn buttonComment hover:bg-gray-200">Order History</button> -->
+                                    <br>
+                                    <a class="min-w-60 btn buttonComment hover:bg-gray-200"
+                                        [routerLink]="['/apps/customers', orderData.fk_storeUserID, 'order-history']"
+                                        target="_blank">Order
+                                        History</a>
                                 </div>
                             </div>
                         </mat-expansion-panel>
@@ -71,20 +74,38 @@
                                     Order Information
                                 </mat-panel-title>
                             </mat-expansion-panel-header>
-                            <div>
+                            <div *ngIf="!smartArtUser.blnMaster">
                                 <div><b>Order:</b> {{orderData.fk_orderID}}</div>
+                                <div><b>Company:</b> {{orderData.companyInformationName}}</div>
+                                <div *ngIf="orderData.locationName"><b>Location:</b> {{orderData?.attributeName}} <br>
+                                    {{orderData.locationName}}</div>
+                                <div><b>Customer Name:</b> {{orderData?.firstName + ' ' + orderData?.lastName}}</div>
+                                <div><b>PO:</b> {{orderData.fk_orderID}}-{{paramData?.pk_orderLineID}}</div>
+                                <div><b>Order Placed:</b> {{orderData.orderDate | date: 'MM/dd/yyyy'}}</div>
+                                <div><b>Store:</b> {{orderData.storeName}}</div>
+                                <div><b>In-Hands:</b> {{orderData.inHandsDate | date: 'MM/dd/yyyy'}}</div>
+                                <div><b>Rush:</b> {{orderData.blnRushFlexibility? 'YES' : 'NO'}}</div>
+                            </div>
+                            <div *ngIf="smartArtUser.blnMaster">
+                                <div><b>Order:</b> <a [routerLink]="['/apps/orders',orderData.fk_storeUserID,'summary']"
+                                        target="_blank">{{orderData.fk_orderID}}</a>
+                                </div>
                                 <div><b>Quote ID:</b> {{orderData.quoteID}}-{{paramData?.fk_imprintID}}</div>
                                 <div><b>PO:</b> {{orderData.fk_orderID}}-{{paramData?.pk_orderLineID}}</div>
                                 <div><b>Order Placed:</b> {{orderData.orderDate | date: 'MM/dd/yyyy'}}</div>
                                 <div><b>Store:</b> {{orderData.storeName}}</div>
                                 <div><b>Brand Guide:</b>
-                                    <!-- <a href="https://assets.consolidus.com/globalAssets/Stores/BrandGuide/{{orderData.pk_storeID}}"></a> -->
-                                    Click here</div>
+                                    <a *ngIf="brandGuideExist" target="_blank"
+                                        href="https://assets.consolidus.com/globalAssets/Stores/BrandGuide/{{orderData.pk_storeID}}.pdf">Click
+                                        here</a>
+                                    <span *ngIf="!brandGuideExist">None</span>
+                                </div>
                                 <div><b>Rush:</b> {{orderData.blnRushFlexibility? 'YES' : 'NO'}}</div>
                                 <div>
                                     <b>In-Hands:</b> (mm/dd/yyyy)
                                     <mat-form-field class="fuse-mat-dense fuse-mat-no-subscript w-full min-w-50">
-                                        <input matInput readonly [matDatepicker]="picker" (click)="picker.open()">
+                                        <input matInput readonly [matDatepicker]="picker" (click)="picker.open()"
+                                            [(ngModel)]="orderData.inHandsDate">
                                         <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
                                         <mat-datepicker #picker></mat-datepicker>
                                     </mat-form-field>
@@ -100,10 +121,25 @@
                                             Scheduler</b></mat-checkbox>
                                 </div>
                                 <div>
-                                    <mat-checkbox><b>Ignore additional proof emails</b></mat-checkbox>
+                                    <mat-checkbox [(ngModel)]="orderData.blnIgnoreAdditionalArtEmails"><b>Ignore
+                                            additional proof emails</b></mat-checkbox>
+                                </div>
+                                <div *ngIf="orderData.blnAdditionalArtApproval">
+                                    <mat-form-field class="fuse-mat-dense fuse-mat-no-subscript w-full min-w-50">
+                                        <mat-select matInput [(ngModel)]="orderData.blnAdditionalApprovalOverride">
+                                            <mat-option [value]="0">ENABLED</mat-option>
+                                            <mat-option [value]="1">DISABLED</mat-option>
+                                        </mat-select>
+                                    </mat-form-field>
                                 </div>
                                 <div>
-                                    <button class="min-w-40 btn buttonComment hover:bg-gray-200">Update</button>
+                                    <button class="min-w-40 btn buttonComment hover:bg-gray-200"
+                                        (click)="updateOrderInformation()" [disabled]="orderData.isOrderInfoLoader">
+                                        <span *ngIf="!orderData.isOrderInfoLoader">Update</span>
+                                        <mat-progress-spinner *ngIf="orderData.isOrderInfoLoader" [diameter]="24"
+                                            [mode]="'indeterminate'">
+                                        </mat-progress-spinner>
+                                    </button>
                                 </div>
                             </div>
                         </mat-expansion-panel>
@@ -256,9 +292,21 @@
                                     For any stores using CLC Reporting functionality, we must designate the Artwork
                                     Tag(s) for each product by selecting them from the list below.
                                 </p>
-                                <div class="mt-3">
-                                    <button class="min-w-40 btn buttonComment hover:bg-gray-200">Update artwork
-                                        tags</button>
+                                <div class="mt-3" *ngIf="artworkTags.length">
+                                    <div>
+                                        <mat-form-field class="w-full">
+                                            <mat-select matInput [(ngModel)]="selectedArtworkTags" [multiple]="true">
+                                                <mat-option *ngFor="let item of artworkTags">{{item.name}}</mat-option>
+                                            </mat-select>
+                                        </mat-form-field>
+                                    </div>
+                                    <!-- <button class="min-w-40 btn buttonComment hover:bg-gray-200"
+                                        [disabled]="artworkTags.updateLoader" (click)="updateArtWorkTags()">
+                                        <span *ngIf="!artworkTags.updateLoader">Update artwork tags</span>
+                                        <mat-progress-spinner *ngIf="artworkTags.updateLoader" [diameter]="24"
+                                            [mode]="'indeterminate'">
+                                        </mat-progress-spinner>
+                                    </button> -->
                                 </div>
                             </div>
                         </mat-expansion-panel>
@@ -509,6 +557,12 @@
                                             As of {{orderData.orderDate | date: 'MM/dd/yyyy'}} the status of this item
                                             is {{paramData.statusName}}.
                                         </fuse-alert>
+                                        <div *ngIf="viewProofCheck">
+                                            <b>Re-Send Art To Decorator (<a target="_blank"
+                                                    href="https://assets.consolidus.com/artwork/Proof/{{this.paramData.pfk_userID}}/{{this.paramData.fk_orderID}}/{{this.paramData.pk_orderLineID}}/{{this.paramData.fk_imprintID}}.jpg">Click
+                                                    here to view
+                                                    proof</a>)</b>
+                                        </div>
                                         <div class="rounded-2xl shadow bg-card p-4 ">
                                             <p class="text-lg font-bold">Make Manual Updates to this Imprint Status</p>
                                             <div class="row">

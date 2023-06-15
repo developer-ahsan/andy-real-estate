@@ -71,7 +71,7 @@ export const ecommerceRoutes: Route[] = [
         component: InventoryComponent,
         resolve: {
             distributor: SystemDistributorCodes,
-            suppliers: SuppliersListResolver
+            // suppliers: SuppliersListResolver
         },
         children: [
             {
@@ -79,7 +79,7 @@ export const ecommerceRoutes: Route[] = [
                 component: InventoryListComponent,
                 resolve: {
                     products: ProductsListsResolver,
-                    stores: StoresListResolver
+                    // stores: StoresListResolver
                 }
             },
             {

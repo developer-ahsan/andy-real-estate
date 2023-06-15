@@ -7,13 +7,15 @@ import { UsersService } from 'app/modules/admin/apps/users/components/users.serv
 import { Subject } from 'rxjs';
 import { finalize, takeUntil } from 'rxjs/operators';
 import { VendorsService } from '../../vendors.service';
+import { DashboardsService } from 'app/modules/admin/dashboards/dashboard.service';
 @Component({
   selector: 'app-list-vendors',
   templateUrl: './list.component.html',
   styles: [".mat-paginator {border-radius: 16px !important}"]
 })
 export class VendorsListComponent implements OnInit, OnDestroy {
-  @ViewChild('paginator') paginator: MatPaginator;
+  // @ViewChild('paginator') paginator: MatPaginator;
+  @ViewChild('MatPaginator') paginator: MatPaginator;
   @Input() isLoading: boolean;
 
   // @Output() isLoadingChange = new EventEmitter<boolean>();
@@ -36,6 +38,7 @@ export class VendorsListComponent implements OnInit, OnDestroy {
     private _changeDetectorRef: ChangeDetectorRef,
     private _UsersService: UsersService,
     private _vendorService: VendorsService,
+    private _commonService: DashboardsService,
     private _router: Router,
     private route: ActivatedRoute
   ) { }
@@ -50,6 +53,17 @@ export class VendorsListComponent implements OnInit, OnDestroy {
     }
   };
   getAllSuppliers() {
+    // this._commonService.suppliersData$.pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+    //   res["data"].forEach(element => {
+    //     if (element.blnActive) {
+    //       this.dataSourceSupplier.push(element);
+    //       this.tempDataSourceSupplier.push(element);
+    //       this.totalSupplier++;
+    //       this.temptotalSupplier++;
+    //     }
+    //   });
+    //   console.log(res);
+    // });
     this._vendorService.Suppliers$.pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
       this.dataSourceSupplier = res["data"];
       this.totalSupplier = res["totalRecords"];

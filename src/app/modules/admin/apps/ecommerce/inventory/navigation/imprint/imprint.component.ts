@@ -11,6 +11,7 @@ import { environment } from 'environments/environment';
 import { MatDialog } from '@angular/material/dialog';
 import { ImprintRunComponent } from './imprint-run/imprint-run.component';
 import { ScrollStrategy, ScrollStrategyOptions } from '@angular/cdk/overlay';
+import { DashboardsService } from 'app/modules/admin/dashboards/dashboard.service';
 
 @Component({
   selector: 'app-imprint',
@@ -238,6 +239,7 @@ export class ImprintComponent implements OnInit, OnDestroy {
   constructor(
     private _changeDetectorRef: ChangeDetectorRef,
     private _inventoryService: InventoryService,
+    private _commonService: DashboardsService,
     private _snackBar: MatSnackBar,
     private _formBuilder: FormBuilder,
     public dialog: MatDialog,
@@ -1981,7 +1983,7 @@ export class ImprintComponent implements OnInit, OnDestroy {
       fk_decoratorID = data.fk_decoratorID;
     }
     // Get the suppliers
-    this._inventoryService.Suppliers$
+    this._commonService.suppliersData$
       .pipe(takeUntil(this._unsubscribeAll))
       .subscribe((supplier) => {
         if (supplier) {

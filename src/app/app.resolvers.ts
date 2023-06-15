@@ -4,6 +4,8 @@ import { ActivatedRouteSnapshot, Resolve, RouterStateSnapshot } from '@angular/r
 import { forkJoin, Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { InitialData } from 'app/app.types';
+import { environment } from 'environments/environment';
+import { DashboardsService } from './modules/admin/dashboards/dashboard.service';
 
 @Injectable({
     providedIn: 'root'
@@ -49,5 +51,56 @@ export class InitialDataResolver implements Resolve<any>
             })
             )
         );
+    }
+}
+
+@Injectable({
+    providedIn: 'root'
+})
+export class StoresResolver implements Resolve<any>
+{
+    /**
+     * Constructor
+     */
+    constructor(private _dashboardService: DashboardsService) {
+    }
+
+    // -----------------------------------------------------------------------------------------------------
+    // @ Public methods
+    // -----------------------------------------------------------------------------------------------------
+
+    /**
+     * Resolver
+     *
+     * @param route
+     * @param state
+     */
+    resolve(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<any> {
+        return this._dashboardService.getStoresData();
+    }
+}
+@Injectable({
+    providedIn: 'root'
+})
+export class SuppliersResolver implements Resolve<any>
+{
+    /**
+     * Constructor
+     */
+    constructor(private _dashboardService: DashboardsService) {
+    }
+
+    // -----------------------------------------------------------------------------------------------------
+    // @ Public methods
+    // -----------------------------------------------------------------------------------------------------
+
+    /**
+     * Resolver
+     *
+     * @param route
+     * @param state
+     */
+    resolve(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<any> {
+        return this._dashboardService.getSuppliersData();
     }
 }

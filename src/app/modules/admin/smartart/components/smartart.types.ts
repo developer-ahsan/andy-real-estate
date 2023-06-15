@@ -103,3 +103,18 @@ export interface HideUnhideCart {
     blnHidden: boolean;
     hide_unhide_cart: boolean;
 };
+export interface UpdateOrderInformation {
+    inHandsDate: string;
+    blnIgnoreAdditionalProofEmails: boolean;
+    blnAdditionalApprovalOverride: boolean;
+    event: string;
+    blnBypassScheduler: boolean;
+    orderId: number;
+    orderLineID: number;
+    update_order_info: boolean;
+};
+export interface UpdateArtworkTags {
+    cartline_id: number;
+    artwork_ids: number[];
+    update_artwork_tags: boolean;
+};

@@ -107,13 +107,13 @@ export class InventoryService {
         return this._vendors.asObservable();
     };
 
-    get Suppliers$(): Observable<any[]> {
-        return this._suppliers.asObservable();
-    };
+    // get Suppliers$(): Observable<any[]> {
+    //     return this._suppliers.asObservable();
+    // };
 
-    get stores$(): Observable<any[]> {
-        return this._stores.asObservable();
-    };
+    // get stores$(): Observable<any[]> {
+    //     return this._stores.asObservable();
+    // };
 
     get productLicensingTerms$(): Observable<any[]> {
         return this._productLicensingTerms.asObservable();

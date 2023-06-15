@@ -37,8 +37,8 @@ export const storeRoutes: Route[] = [
         path: '',
         component: StoresListComponent,
         resolve: {
-            items: StoresListResolver,
-            suppliers: SupplierResolver
+            // items: StoresListResolver,
+            // suppliers: SupplierResolver
         }
     },
     {

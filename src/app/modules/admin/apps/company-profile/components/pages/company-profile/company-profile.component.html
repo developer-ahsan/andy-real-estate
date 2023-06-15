@@ -35,18 +35,11 @@
                         </div>
                         <div class="col-12 col-md-4">
                             <mat-form-field class="w-full">
-                                <mat-label>Search stores</mat-label>
-                                <input matInput placeholder="Search stores" matTooltip="Search stores by name"
-                                    [matAutocomplete]="auto" [formControl]="searchStoresCtrl">
-                                <mat-autocomplete class="w-full" #auto="matAutocomplete"
-                                    (optionSelected)="onSelectedStores($event)" [displayWith]="displayWithStores">
-                                    <mat-option *ngIf="isSearchingStores" class="is-loading">Loading...</mat-option>
-                                    <ng-container *ngIf="!isSearchingStores">
-                                        <mat-option *ngFor="let item of allStores" [value]="item">
-                                            <span>{{item.storeName}}</span>
-                                        </mat-option>
-                                    </ng-container>
-                                </mat-autocomplete>
+                                <mat-label>Select stores</mat-label>
+                                <mat-select matInput [(ngModel)]="selectedStores">
+                                    <mat-option *ngFor="let store of allStores"
+                                        [value]="store">{{store.storeName}}</mat-option>
+                                </mat-select>
                             </mat-form-field>
                         </div>
                         <div class="col-12 text-right">
@@ -169,8 +162,11 @@
                     </div>
                     <div class="col-12 col-md-3">
                         <mat-form-field class="w-full">
-                            <mat-label>Store: *</mat-label>
-                            <input matInput placeholder="Store">
+                            <mat-label>Select stores</mat-label>
+                            <mat-select matInput [(ngModel)]="selectedStores">
+                                <mat-option *ngFor="let store of allStores"
+                                    [value]="store">{{store.storeName}}</mat-option>
+                            </mat-select>
                         </mat-form-field>
                     </div>
                     <div class="col-12 col-md-3">

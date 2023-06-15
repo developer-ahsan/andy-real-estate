@@ -6,6 +6,7 @@ import { MatPaginator } from '@angular/material/paginator';
 import { Subject } from 'rxjs';
 import { debounceTime, distinctUntilChanged, filter, finalize, switchMap, takeUntil, tap } from 'rxjs/operators';
 import { CompaniesService } from '../../companies.service';
+import { DashboardsService } from 'app/modules/admin/dashboards/dashboard.service';
 @Component({
   selector: 'app-company-profile',
   templateUrl: './company-profile.component.html',
@@ -39,7 +40,8 @@ export class CompanyProfileComponent implements OnInit, OnDestroy {
   isFilterLoader: boolean = false;
   constructor(
     private _changeDetectorRef: ChangeDetectorRef,
-    private _coampnyService: CompaniesService
+    private _coampnyService: CompaniesService,
+    private _commonService: DashboardsService
   ) { }
 
   ngOnInit(): void {
@@ -70,43 +72,15 @@ export class CompanyProfileComponent implements OnInit, OnDestroy {
       blnSalesTaxExempt: new FormControl(0),
       phone: new FormControl(''),
     });
-    let params;
-    this.searchStoresCtrl.valueChanges.pipe(
-      filter((res: any) => {
-        params = {
-          all_stores: true,
-          bln_active: 1,
-          keyword: res
-        }
-        return res !== null && res.length >= 3
-      }),
-      distinctUntilChanged(),
-      debounceTime(300),
-      tap(() => {
-        this.allStores = [];
-        this.isSearchingStores = true;
-        this._changeDetectorRef.markForCheck();
-      }),
-      switchMap(value => this._coampnyService.getAPIData(params)
-        .pipe(
-          finalize(() => {
-            this.isSearchingStores = false
-            this._changeDetectorRef.markForCheck();
-          }),
-        )
-      )
-    ).subscribe((data: any) => {
-      this.allStores.push({ pk_storeID: 0, storeName: 'All Stores' });
-      this.allStores = this.allStores.concat(data["data"]);
-    });
   }
   calledScreen(screen) {
     this.mainScreen = screen;
   }
   getStores() {
-    this._coampnyService.Stores$.pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+    this._commonService.storesData$.pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
       this.allStores.push({ pk_storeID: 0, storeName: 'All Stores' });
-      this.allStores = this.allStores.concat(res["data"]);
+      const stores = res["data"].filter(store => store.blnActive);
+      this.allStores = this.allStores.concat(stores);
       this.selectedStores = this.allStores[0];
       this.searchStoresCtrl.setValue(this.selectedStores);
     });

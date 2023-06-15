@@ -67,7 +67,7 @@
           <div class="overflow-auto" cdkScrollable>
             <!-- Table -->
             <table class="w-full table-fixed bg-transparent" [ngClass]="{ 'pointer-events-none': isLoading }" mat-table
-              [multiTemplateDataRows]="true" matSort [dataSource]="stores">
+              [multiTemplateDataRows]="true" [dataSource]="dataSource" matSort>
               <!-- Position Column -->
               <ng-container matColumnDef="pk_storeID">
                 <th class="w-40 bg-gray-50 dark:bg-black dark:bg-opacity-5" mat-header-cell *matHeaderCellDef

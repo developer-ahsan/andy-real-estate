@@ -13,6 +13,8 @@ export class DashboardsService {
     private _porfolioData: BehaviorSubject<any> = new BehaviorSubject(null);
     private _employeeData: BehaviorSubject<any> = new BehaviorSubject(null);
     private _ytdData: BehaviorSubject<any> = new BehaviorSubject(null);
+    private _allStores: BehaviorSubject<any> = new BehaviorSubject(null);
+    private _allSuppliers: BehaviorSubject<any> = new BehaviorSubject(null);
 
     /**
      * Constructor
@@ -38,6 +40,12 @@ export class DashboardsService {
     }
     get ytdData$(): Observable<any> {
         return this._ytdData.asObservable();
+    }
+    get storesData$(): Observable<any> {
+        return this._allStores.asObservable();
+    }
+    get suppliersData$(): Observable<any> {
+        return this._allSuppliers.asObservable();
     }
     // -----------------------------------------------------------------------------------------------------
     // @ Public methods
@@ -101,6 +109,26 @@ export class DashboardsService {
         return this._httpClient.get(environment.dashboard, { params: params }).pipe(
             tap((response: any) => {
                 this._employeeData.next(response);
+            })
+        );
+    }
+    getStoresData(): Observable<any> {
+        let params = {
+            get_stores: true
+        }
+        return this._httpClient.get(environment.dashboard, { params: params }).pipe(
+            tap((response: any) => {
+                this._allStores.next(response);
+            })
+        );
+    }
+    getSuppliersData(): Observable<any> {
+        let params = {
+            get_suppliers: true
+        }
+        return this._httpClient.get(environment.dashboard, { params: params }).pipe(
+            tap((response: any) => {
+                this._allSuppliers.next(response);
             })
         );
     }

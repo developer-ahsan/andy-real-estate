@@ -304,8 +304,13 @@
                                                 </mat-progress-spinner>
                                             </div>
 
-                                            <mat-icon svgIcon="heroicons_outline:exclamation" class="mr-1 icon-size-4"
-                                                matTooltip="Claim"></mat-icon>
+                                            <div>
+                                                <mat-icon svgIcon="heroicons_outline:exclamation"
+                                                    class="mr-1 icon-size-4" matTooltip="Claim this item"></mat-icon>
+                                                <br>
+                                                <span
+                                                    *ngIf="element.fk_smartArtDesignerClaimID && element.fk_smartArtDesignerClaimID != smartArtUser.pk_userID">{{element.claimedUserName}}</span>
+                                            </div>
                                         </div>
                                     </td>
                                 </ng-container>

@@ -408,7 +408,7 @@
         </div>
         <div class="col-12 col-md-6">
           <mat-form-field appearance="fill" class="w-full">
-            <mat-label>Which logo bank should this go in?</mat-label>
+            <mat-label>Select which logo bank to display below?</mat-label>
             <mat-select formControlName="bank_type">
               <mat-option [value]="1">Internal</mat-option>
               <mat-option [value]="2">Client</mat-option>
@@ -476,7 +476,7 @@
           <div class="row mt-4">
             <div class="col-md-6">
               <mat-form-field appearance="fill" class="w-full">
-                <mat-label>Which logo bank should this go in? </mat-label>
+                <mat-label>Select which logo bank to display below? </mat-label>
                 <mat-select [(ngModel)]="ngLogoBank" (selectionChange)="getLogoBanks(1)">
                   <mat-option [value]="3">All</mat-option>
                   <mat-option [value]="1">Internal</mat-option>

@@ -23,6 +23,7 @@ import { MatChipInputEvent } from '@angular/material/chips';
 import { MatDialog } from '@angular/material/dialog';
 import { ScrollStrategy, ScrollStrategyOptions } from '@angular/cdk/overlay';
 import { ImprintRunComponent } from '../navigation/imprint/imprint-run/imprint-run.component';
+import { DashboardsService } from 'app/modules/admin/dashboards/dashboard.service';
 
 @Component({
     selector: 'inventory-list',
@@ -558,6 +559,7 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
         private _changeDetectorRef: ChangeDetectorRef,
         private _formBuilder: FormBuilder,
         private _inventoryService: InventoryService,
+        private _commponService: DashboardsService,
         private _router: Router,
         breakpointObserver: BreakpointObserver,
         private _snackBar: MatSnackBar,
@@ -757,7 +759,7 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
         });
 
         // Get the suppliers
-        this._inventoryService.Suppliers$
+        this._commponService.suppliersData$
             .pipe(takeUntil(this._unsubscribeAll))
             .subscribe((supplier) => {
                 this.suppliers = supplier["data"];
@@ -781,7 +783,7 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
             });
 
         // Get the stores
-        this._inventoryService.stores$
+        this._commponService.storesData$
             .pipe(takeUntil(this._unsubscribeAll))
             .subscribe((stores) => {
                 this.stores = stores["data"];
@@ -1111,17 +1113,15 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
 
     getAllSuppliers(): void {
         // Get the suppliers
-        this._inventoryService.Suppliers$
+        this._commponService.suppliersData$
             .pipe(takeUntil(this._unsubscribeAll))
             .subscribe((supplier) => {
                 this.suppliers = supplier["data"];
                 this.dropdownList = this.suppliers;
                 this.isSupplierNotReceived = false;
-
                 // Mark for check
                 this._changeDetectorRef.markForCheck();
             }, err => {
-
                 // Mark for check
                 this._changeDetectorRef.markForCheck();
             });
@@ -1141,7 +1141,7 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
 
     getAllStores(): void {
         // Get the stores
-        this._inventoryService.stores$
+        this._commponService.storesData$
             .pipe(takeUntil(this._unsubscribeAll))
             .subscribe((stores) => {
                 this.stores = stores["data"];
@@ -2874,7 +2874,7 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
             })
         if (!this.suppliers.length) {
             this.firstFormLoader = true;
-            this._inventoryService.Suppliers$
+            this._commponService.suppliersData$
                 .pipe(takeUntil(this._unsubscribeAll))
                 .subscribe((supplier) => {
                     this.suppliers = supplier["data"];

@@ -9,6 +9,9 @@ import { Item, Items, StoreList } from 'app/modules/admin/apps/file-manager/stor
 import { Form, FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { MatStepper } from '@angular/material/stepper';
 import moment from 'moment';
+import { DashboardsService } from 'app/modules/admin/dashboards/dashboard.service';
+import { MatSort } from '@angular/material/sort';
+import { MatTableDataSource } from '@angular/material/table';
 @Component({
     selector: 'file-manager-list',
     templateUrl: './list.component.html',
@@ -63,11 +66,15 @@ export class StoresListComponent implements OnInit, OnDestroy {
     settingStoreLoader: boolean = false;
     @ViewChild('stepper') private myStepper: MatStepper;
     ngSearch = '';
+    @ViewChild(MatSort) sort: MatSort;
+    dataSource: MatTableDataSource<any>;
+
     constructor(
         private _activatedRoute: ActivatedRoute,
         private _changeDetectorRef: ChangeDetectorRef,
         private _router: Router,
         private _fileManagerService: FileManagerService,
+        private _commonService: DashboardsService,
         private _fuseMediaWatcherService: FuseMediaWatcherService,
         private _formBuilder: FormBuilder
     ) {
@@ -151,13 +158,14 @@ export class StoresListComponent implements OnInit, OnDestroy {
     }
     ngOnInit(): void {
         this.initCreateStoreForm();
-        this.isLoading = true;
+        // this.isLoading = true;
 
         // Get the stores
-        this._fileManagerService.stores$
+        this._commonService.storesData$
             .pipe(takeUntil(this._unsubscribeAll))
-            .subscribe((items: any) => {
-                this.stores = items["data"];
+            .subscribe((stores: any) => {
+                this.stores = stores["data"];
+                this.dataSource = new MatTableDataSource(this.stores);
                 this.duplicateStores = this.stores;
                 this.isStoreNotReceived = false;
                 this.isLoading = false;
@@ -179,7 +187,9 @@ export class StoresListComponent implements OnInit, OnDestroy {
                 this._changeDetectorRef.markForCheck();
             });
     }
-
+    ngAfterViewInit() {
+        this.dataSource.sort = this.sort;
+    }
     /**
      * On destroy
      */
@@ -225,6 +235,7 @@ export class StoresListComponent implements OnInit, OnDestroy {
         this.stores = this.duplicateStores.filter((item: any) => {
             return item.storeName.toLowerCase().includes(value.toLowerCase()) || item.pk_storeID.toString().toLowerCase().includes(value.toLowerCase());
         });
+        this.dataSource = new MatTableDataSource(this.stores);
     };
 
     clearFilter() { }

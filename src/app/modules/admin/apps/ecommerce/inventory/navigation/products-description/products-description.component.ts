@@ -13,6 +13,7 @@ import { InventoryService } from "app/modules/admin/apps/ecommerce/inventory/inv
 import { Subject } from "rxjs";
 import { takeUntil } from "rxjs/operators";
 import _ from "lodash";
+import { DashboardsService } from "app/modules/admin/dashboards/dashboard.service";
 
 @Component({
   selector: "app-products-description",
@@ -52,6 +53,7 @@ export class ProductsDescriptionComponent implements OnInit, OnDestroy {
   constructor(
     private _changeDetectorRef: ChangeDetectorRef,
     private _inventoryService: InventoryService,
+    private _commonService: DashboardsService,
     private _formBuilder: FormBuilder,
     private _snackBar: MatSnackBar
   ) { }
@@ -85,7 +87,7 @@ export class ProductsDescriptionComponent implements OnInit, OnDestroy {
       .subscribe((details) => {
         this.selectedProduct = details["data"][0];
         // Get the suppliers
-        this._inventoryService.Suppliers$.pipe(
+        this._commonService.suppliersData$.pipe(
           takeUntil(this._unsubscribeAll)
         ).subscribe((supplier) => {
           const { fk_supplierID } = details["data"][0];
