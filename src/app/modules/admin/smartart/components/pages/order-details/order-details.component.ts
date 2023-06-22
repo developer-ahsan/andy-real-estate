@@ -5,11 +5,11 @@ import { MatDrawer } from '@angular/material/sidenav';
 import { ActivatedRoute, NavigationExtras, Router } from '@angular/router';
 import { AuthService } from 'app/core/auth/auth.service';
 import moment from 'moment';
-import { Subject } from 'rxjs';
+import { Subject, forkJoin, of } from 'rxjs';
 import { debounceTime, distinctUntilChanged, filter, finalize, switchMap, takeUntil, tap } from 'rxjs/operators';
 import { SmartArtService } from '../../smartart.service';
 import { interval } from 'rxjs';
-import { AddOrderComment, UpdateArtworkTags, UpdateArtworkTgas, UpdateOrderInformation, sendAutoRequest, sendAutoRequestOrder, updateOrderLineImprintColors, updateReorderNumberOrder } from '../../smartart.types';
+import { AddOrderComment, UpdateOrderLineArtworkTags, UpdateArtworkTgas, UpdateOrderInformation, sendAutoRequest, sendAutoRequestOrder, updateOrderLineImprintColors, updateReorderNumberOrder, UpdateOrderLineClaim, updateOrderProofContact } from '../../smartart.types';
 
 @Component({
   selector: 'app-order-details',
@@ -80,7 +80,7 @@ export class OrderDashboardDetailsComponent implements OnInit, OnDestroy {
   // Approval History
   approvalHistoryData: any;
   // artwork tags
-  artworkTags: any;
+  artworkTags: any = [];
 
   // Timer
   hours: number = 0;
@@ -97,8 +97,13 @@ export class OrderDashboardDetailsComponent implements OnInit, OnDestroy {
 
   smartArtUser: any;
   viewProofCheck: boolean = false;
+  viewFinalArtworkCheck: boolean = false;
   brandGuideExist: boolean = false;
   selectedArtworkTags: any;
+  // contactProofs
+  contactProofs = [];
+  selectedContact: any;
+  selectedContactEmail = '';
   constructor(
     private _changeDetectorRef: ChangeDetectorRef,
     private _authService: AuthService,
@@ -141,24 +146,47 @@ export class OrderDashboardDetailsComponent implements OnInit, OnDestroy {
       this.approvalHistoryData = res["approvalHistory"];
       this.imprintdata = res["data"];
       if (this.imprintdata.length > 0) {
+        this.orderData.artworkEmail = this.imprintdata[0].artworkEmail;
         this.selectedImprint = this.imprintdata[0].pk_imprintID;
         this.selectedProofImprint = this.imprintdata[0].imprintID;
-        if (this.imprintdata[0].allColors) {
-          let colors = this.imprintdata[0].allColors;
-          let colorsArr = colors.split(',');
-          let finalColor = [];
-          colorsArr.forEach(element => {
-            let color = element.split(':');
-            finalColor.push({ id: color[0], name: color[1], hex: color[2] });
-          });
-          this.allColors = finalColor;
-          this.selectedImprintColor = this.imprintdata[0].imprintColors;
-        }
+        this.imprintdata.forEach(imprint => {
+          if (imprint.allColors) {
+            let colors = imprint.allColors;
+            let colorsArr = colors.split(',');
+            let finalColor = [];
+            colorsArr.forEach(element => {
+              let color = element.split(':');
+              finalColor.push({ id: color[0], name: color[1], hex: color[2] });
+            });
+            this.allColors = finalColor;
+            this.selectedImprintColor = imprint.imprintColors;
+          }
+          imprint.poSent = null;
+          if (res["poSent"].length) {
+            if (this.paramData.statusName == 'In Production') {
+              imprint.poSent = res["poSent"][0];
+            } else {
+              imprint.poSent = null;
+            }
+          }
+        });
       }
-      this.checkFileExist(`https://assets.consolidus.com/globalAssets/Stores/BrandGuide/${this.orderData.pk_storeID}.pdf`, 'brand');
-      this.getArtworkOther();
-      this.checkIfImageExists(`https://assets.consolidus.com/artwork/Proof/${this.paramData.pfk_userID}/${this.paramData.fk_orderID}/${this.paramData.pk_orderLineID}/${this.paramData.fk_imprintID}.jpg`);
-      this.isLoading = false;
+
+      // const checkFileExistObservable = of(this.checkFileExist(`https://assets.consolidus.com/globalAssets/Stores/BrandGuide/${this.orderData.pk_storeID}.pdf`, 'brand'));
+      // const checkFinalArtworkObservable = of(this.checkFileExist(`https://assets.consolidus.com/artwork/finalArt/${this.paramData.pfk_userID}/${this.paramData.fk_orderID}/${this.paramData.pk_orderLineID}/${this.paramData.fk_imprintID}.eps`, 'finalArtwork'));
+      const getArtworkOtherObservable = of(this.getArtworkOther());
+      // const checkIfImageExistsObservable = of(this.checkIfImageExists(`https://assets.consolidus.com/artwork/Proof/${this.paramData.pfk_userID}/${this.paramData.fk_orderID}/${this.paramData.pk_orderLineID}/${this.paramData.fk_imprintID}.jpg`));
+      forkJoin([
+        // checkFileExistObservable,
+        // checkFinalArtworkObservable,
+        getArtworkOtherObservable,
+        // checkIfImageExistsObservable
+      ])
+      // this.checkFileExist(`https://assets.consolidus.com/globalAssets/Stores/BrandGuide/${this.orderData.pk_storeID}.pdf`, 'brand');
+      // this.checkFileExist(`https://assets.consolidus.com/artwork/finalArt/${this.paramData.pfk_userID}/${this.paramData.fk_orderID}/${this.paramData.pk_orderLineID}/${this.paramData.fk_imprintID}.eps`, 'finalArtwork');
+      // this.getArtworkOther();
+      // this.checkIfImageExists(`https://assets.consolidus.com/artwork/Proof/${this.paramData.pfk_userID}/${this.paramData.fk_orderID}/${this.paramData.pk_orderLineID}/${this.paramData.fk_imprintID}.jpg`);
+      // this.isLoading = false;
       this._changeDetectorRef.markForCheck();
     }, err => {
       this.isLoading = false;
@@ -166,6 +194,7 @@ export class OrderDashboardDetailsComponent implements OnInit, OnDestroy {
     });
   }
   getArtworkOther() {
+    // this.selectedContactEmail = this.orderData?.shippingEmail;
     this.artWorkLoader = true;
     let params = {
       order_online_details_artApproval: true,
@@ -190,9 +219,48 @@ export class OrderDashboardDetailsComponent implements OnInit, OnDestroy {
           this.selectedArtworkTags.push(element);
         });
       }
+      // Assign email recipients
+      this.imprintdata.forEach(imprint => {
+        if (!imprint?.fk_artApprovalContactID && !imprint?.fk_storeUserApprovalContactID && !imprint?.blnStoreUserApprovalDone) {
+          imprint.selectedContact = 0;
+          if (res["contactProofs"].length > 0) {
+            imprint.selectedContactEmail = this.orderData.email;
+          } else {
+            imprint.selectedContactEmail = this.orderData.artworkEmail;
+          }
+        } else {
+          imprint.selectedContact = null;
+          imprint.selectedContactEmail = this.orderData.artworkEmail;
+        }
+      });
+      // Contact Proof
+      if (res["contactProofs"]) {
+        res["contactProofs"].forEach(element => {
+          if (element.blnStoreUserApprovalContact) {
+            element.value = element.pk_approvalContactID;
+          } else {
+            element.value = element.pk_artApprovalContactID;
+          }
+          this.imprintdata.forEach(imprint => {
+            if (imprint?.fk_storeUserApprovalContactID && !imprint?.blnStoreUserApprovalDone) {
+              if (imprint?.fk_storeUserApprovalContactID == element.pk_approvalContactID) {
+                imprint.selectedContact = element;
+                imprint.selectedContactEmail = element.email;
+              }
+            } else if (imprint?.fk_artApprovalContactID && imprint?.fk_artApprovalContactID == element.pk_artApprovalContactID) {
+              imprint.selectedContact = element;
+              imprint.selectedContactEmail = element.email;
+            }
+          });
+          element.blnStoreUserApproval = element.blnStoreUserApprovalContacts ? 1 : 0;
+        });
+        this.contactProofs = res["contactProofs"];
+      }
       this.artWorkLoader = false;
+      this.isLoading = false;
       this._changeDetectorRef.markForCheck();
     }, err => {
+      this.isLoading = false;
       this.artWorkLoader = false;
       this._changeDetectorRef.markForCheck();
     });
@@ -210,7 +278,7 @@ export class OrderDashboardDetailsComponent implements OnInit, OnDestroy {
     this.lastProofLoader = true;
     this._smartartService.getSmartArtData(params).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
       if (res["data"].length > 0) {
-        this.lastProofData = res["data"][0].proofSentDate;
+        this.lastProofData = res["data"][0];
       } else {
         this.lastProofData = 'N/A';
       }
@@ -392,7 +460,9 @@ export class OrderDashboardDetailsComponent implements OnInit, OnDestroy {
       update_order_imprint_colors: true
     }
     this._smartartService.UpdateSmartArtData(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
-      this._smartartService.snackBar(res["message"]);
+      if (res["success"]) {
+        this._smartartService.snackBar(res["message"]);
+      }
       this.imprintColorsLoader = false;
       this._changeDetectorRef.markForCheck();
     }, err => {
@@ -420,7 +490,9 @@ export class OrderDashboardDetailsComponent implements OnInit, OnDestroy {
       update_order_info: true
     }
     this._smartartService.UpdateSmartArtData(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
-      this._smartartService.snackBar(res["message"]);
+      if (res["success"]) {
+        this._smartartService.snackBar(res["message"]);
+      }
       this.orderData.isOrderInfoLoader = false;
       this._changeDetectorRef.markForCheck();
     }, err => {
@@ -432,13 +504,15 @@ export class OrderDashboardDetailsComponent implements OnInit, OnDestroy {
   updateArtWorkTags() {
     this.artworkTags.updateLoader = true;
     this._changeDetectorRef.markForCheck();
-    let payload: UpdateArtworkTags = {
-      cartline_id: Number(),
+    let payload: UpdateOrderLineArtworkTags = {
+      orderLineID: Number(this.paramData.pk_orderLineID),
       artwork_ids: this.selectedArtworkTags,
-      update_artwork_tags: true
+      update_orderline_artwork_tags: true
     }
     this._smartartService.UpdateSmartArtData(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
-      this._smartartService.snackBar(res["message"]);
+      if (res["success"]) {
+        this._smartartService.snackBar(res["message"]);
+      }
       this.artworkTags.updateLoader = false;
       this._changeDetectorRef.markForCheck();
     }, err => {
@@ -478,7 +552,68 @@ export class OrderDashboardDetailsComponent implements OnInit, OnDestroy {
     this._smartartService.getSmartArtData(params).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
       if (type == 'brand') {
         this.brandGuideExist = res["isFileExist"];
+      } else if (type == 'finalArtwork') {
+        this.viewFinalArtworkCheck = res["isFileExist"];
       }
+    })
+  }
+  // // Update Claim
+  updateClaim(item, check) {
+    item.isClaimLoader = true;
+    let claimID = null;
+    if (check) {
+      claimID = Number(this.smartArtUser.adminUserID)
+    } else {
+      claimID = null;
+    }
+    this._changeDetectorRef.markForCheck();
+    let payload: UpdateOrderLineClaim = {
+      orderLineID: Number(this.paramData.pk_orderLineID),
+      blnClaim: check,
+      fk_smartArtDesignerClaimID: claimID,
+      update_orderline_claim: true
+    }
+    this._smartartService.UpdateSmartArtData(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+      if (res["success"]) {
+        this._smartartService.snackBar(res["message"]);
+        item.fk_smartArtDesignerClaimID = claimID;
+      }
+      item.isClaimLoader = false;
+      this._changeDetectorRef.markForCheck();
+    }, err => {
+      item.isClaimLoader = false;
+      this._changeDetectorRef.markForCheck();
+    });
+  }
+  // Update Proof Contact
+  updateProofContact(imprint) {
+    let artAprrovalID;
+    if (imprint.selectedContact == 0) {
+      artAprrovalID = 0;
+    } else {
+      artAprrovalID = imprint.selectedContact.pk_artApprovalContactID;
+    }
+    imprint.isProofLoader = true;
+    let payload: updateOrderProofContact = {
+      artApproval_contact_id: artAprrovalID,
+      orderline_id: Number(this.paramData.pk_orderLineID),
+      imprint_id: Number(imprint.pk_imprintID),
+      update_order_proof_contact: true
+    }
+    this._smartartService.UpdateSmartArtData(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+      if (res["success"]) {
+        this._smartartService.snackBar(res["message"]);
+        if (imprint.selectedContact == 0) {
+          imprint.selectedContactEmail = this.orderData.email;
+        } else {
+          imprint.selectedContactEmail = imprint.selectedContact.email;
+        }
+      }
+      imprint.isProofLoader = false;
+      this._changeDetectorRef.markForCheck();
+    }, err => {
+      imprint.isProofLoader = false;
+      this._changeDetectorRef.markForCheck();
     })
   }
   /**

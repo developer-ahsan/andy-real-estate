@@ -13,6 +13,7 @@ import * as CryptoJS from 'crypto-js';
 import { SmartArtLogin } from './smartart.types';
 import { MatDrawer } from '@angular/material/sidenav';
 import { FormControl } from '@angular/forms';
+import { DashboardsService } from '../../dashboards/dashboard.service';
 
 
 
@@ -66,6 +67,7 @@ export class SmartArtComponent {
         private _changeDetectorRef: ChangeDetectorRef,
         private _httpClient: HttpClient,
         private _smartartService: SmartArtService,
+        private _commonService: DashboardsService,
         private _router: Router,
         private route: ActivatedRoute,
         private _fuseMediaWatcherService: FuseMediaWatcherService,
@@ -118,9 +120,14 @@ export class SmartArtComponent {
         this.sideDrawer();
     }
     searchableFields() {
-        this._smartartService.adminStores$.pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+        this._commonService.storesData$.pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
             this.allStores.push({ storeName: 'All Stores', pk_storeID: null });
-            this.allStores = this.allStores.concat(res['data']);
+            res["data"].forEach(element => {
+                if (element.blnActive) {
+                    this.allStores.push(element);
+                }
+            });
+            // this.allStores = this.allStores.concat(res['data']);
             this.selectedStore = this.allStores[0];
         });
         this._smartartService.smartArtUsers$.pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
@@ -295,7 +302,7 @@ export class SmartArtComponent {
             this._router.navigate(['/smartart/quotes-dashboard'], queryParams);
         }
 
-        this.drawer.toggle();
+        // this.drawer.toggle();
     }
     /**
      * On destroy

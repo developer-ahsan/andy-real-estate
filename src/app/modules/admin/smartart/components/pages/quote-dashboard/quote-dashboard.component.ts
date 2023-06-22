@@ -6,7 +6,7 @@ import { ActivatedRoute, NavigationExtras, Router } from '@angular/router';
 import { Subject } from 'rxjs';
 import { debounceTime, distinctUntilChanged, filter, finalize, switchMap, takeUntil, tap } from 'rxjs/operators';
 import { SmartArtService } from '../../smartart.service';
-import { HideUnhideQuote } from '../../smartart.types';
+import { HideUnhideQuote, UpdateQuoteClaim, updateQuoteAttentionFlag, updateQuoteBulkStatusUpdate } from '../../smartart.types';
 @Component({
   selector: 'app-quote-dashboard',
   templateUrl: './quote-dashboard.component.html',
@@ -46,7 +46,9 @@ export class QuoteDashboardComponent implements OnInit, OnDestroy {
 
   smartArtUser: any = JSON.parse(sessionStorage.getItem('smartArt'));
   paramsData: any;
-
+  // BUlk Update
+  status_id = 2;
+  isBulkLoader: boolean = false;
   constructor(
     private _changeDetectorRef: ChangeDetectorRef,
     private _smartartService: SmartArtService,
@@ -58,7 +60,7 @@ export class QuoteDashboardComponent implements OnInit, OnDestroy {
     this._activeRoute.queryParams.subscribe(res => {
       this.paramsData = res;
       this.isLoading = true;
-      this.getSmartArtList(1, 'get');
+      this.getSmartArtList(1, 'get', '');
     });
     // this.isLoading = true;
     // this.searchableFields();
@@ -148,7 +150,12 @@ export class QuoteDashboardComponent implements OnInit, OnDestroy {
     }
     return name;
   }
-  getSmartArtList(page, type) {
+  getSmartArtList(page, type, msg) {
+    if (page == 1) {
+      if (this.dataSource.length) {
+        this.paginator.pageIndex = 0;
+      }
+    }
     let params = {
       quote_dashboard: true,
       userName: this.smartArtUser.userName,
@@ -172,9 +179,15 @@ export class QuoteDashboardComponent implements OnInit, OnDestroy {
       }
       this.isLoading = false;
       this.isFilterLoader = false;
+      if (type == 'update') {
+        this.isBulkLoader = false;
+        this._smartartService.snackBar(msg);
+        this._changeDetectorRef.markForCheck();
+      }
       // this.isLoadingChange.emit(false);
       this._changeDetectorRef.markForCheck();
     }, err => {
+      this.isBulkLoader = false;
       this.isFilterLoader = false;
       this.isLoading = false;
       // this.isLoadingChange.emit(false);
@@ -189,7 +202,7 @@ export class QuoteDashboardComponent implements OnInit, OnDestroy {
     } else {
       this.page--;
     };
-    this.getSmartArtList(this.page, 'get');
+    this.getSmartArtList(this.page, 'get', '');
   };
   getSmartArtListProof(item) {
     item.proofLoader = true;
@@ -221,7 +234,7 @@ export class QuoteDashboardComponent implements OnInit, OnDestroy {
     this.ngUserField = '';
     this.ngSearchField = '';
     this.ngFilterField = ev;
-    this.getSmartArtList(1, 'get');
+    this.getSmartArtList(1, 'get', '');
   }
   filterSmartArtList() {
     this.isFilterLoader = true;
@@ -243,7 +256,7 @@ export class QuoteDashboardComponent implements OnInit, OnDestroy {
       }
     }
     this._changeDetectorRef.markForCheck();
-    this.getSmartArtList(1, 'get');
+    this.getSmartArtList(1, 'get', '');
   }
   quoteDetails(item) {
     this._smartartService.routeData = item;
@@ -276,6 +289,84 @@ export class QuoteDashboardComponent implements OnInit, OnDestroy {
       this._changeDetectorRef.markForCheck();
     }, err => {
       item.isHiddenLoader = false;
+      this._changeDetectorRef.markForCheck();
+    });
+  }
+  // Update order Attention
+  updateAttentionFlagOrder(item, check) {
+    item.isFlagLoader = true;
+    this._changeDetectorRef.markForCheck();
+    let payload: updateQuoteAttentionFlag = {
+      bln_attention: check,
+      cartLine_id: Number(item.pk_cartLineID),
+      imprint_id: Number(item.fk_imprintID),
+      update_quote_attention_flag: true
+    }
+    this._smartartService.UpdateSmartArtData(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+      this._smartartService.snackBar(res["message"]);
+      item.isFlagLoader = false;
+      item.blnAttention = check;
+      this._changeDetectorRef.markForCheck();
+    }, err => {
+      item.isFlagLoader = false;
+      this._changeDetectorRef.markForCheck();
+    });
+  }
+  // Update Claim
+  updateClaim(item, check) {
+    item.isClaimLoader = true;
+    this._changeDetectorRef.markForCheck();
+    let payload: UpdateQuoteClaim = {
+      cartLineID: Number(item.pk_cartLineID),
+      blnClaim: check,
+      fk_smartArtDesignerClaimID: Number(item.fk_smartArtDesignerClaimID),
+      update_quote_claim: true
+    }
+    this._smartartService.UpdateSmartArtData(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+      if (res["success"]) {
+        this._smartartService.snackBar(res["message"]);
+      }
+      item.isClaimLoader = false;
+      // item.blnAttention = check;
+      this._changeDetectorRef.markForCheck();
+    }, err => {
+      item.isClaimLoader = false;
+      this._changeDetectorRef.markForCheck();
+    });
+  }
+  // Update checked
+  OrderSelectionChange(ev, order) {
+    order.checked = ev.checked
+  }
+  bulkUploadStatus() {
+    let quotes = [];
+    this.dataSource.forEach(element => {
+      if (element.checked) {
+        quotes.push({
+          imprint_id: Number(element.fk_imprintID),
+          cartLine_id: Number(element.pk_cartLineID)
+        });
+      }
+    });
+    if (quotes.length == 0) {
+      this._smartartService.snackBar('Pleas check at least 1 quote');
+      return;
+    }
+    this.isBulkLoader = true;
+    let payload: updateQuoteBulkStatusUpdate = {
+      status_id: this.status_id,
+      quotes: quotes,
+      update_quote_bulk_status: true
+    }
+    this._smartartService.UpdateSmartArtData(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+      if (res["success"]) {
+        this.getSmartArtList(1, 'update', res["message"]);
+      } else {
+        this.isBulkLoader = false;
+        this._changeDetectorRef.markForCheck();
+      }
+    }, err => {
+      this.isBulkLoader = false;
       this._changeDetectorRef.markForCheck();
     });
   }

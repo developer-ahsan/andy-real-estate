@@ -85,6 +85,12 @@ export interface AddOrderComment {
     order_id: number;
     add_order_comment: boolean;
 };
+export interface HideUnhideOrder {
+    orderline_id: number;
+    imprint_id: number;
+    blnHidden: boolean;
+    hide_unhide_order: boolean;
+};
 export interface updateAttentionFlagOrder {
     bln_attention: boolean;
     orderline_id: number;
@@ -113,8 +119,53 @@ export interface UpdateOrderInformation {
     orderLineID: number;
     update_order_info: boolean;
 };
-export interface UpdateArtworkTags {
-    cartline_id: number;
+export interface UpdateOrderLineArtworkTags {
+    orderLineID: number;
     artwork_ids: number[];
-    update_artwork_tags: boolean;
+    update_orderline_artwork_tags: boolean;
+};
+export interface UpdateOrderLineClaim {
+    orderLineID: number;
+    blnClaim: boolean;
+    fk_smartArtDesignerClaimID: number;
+    update_orderline_claim: boolean;
+};
+export interface UpdateQuoteClaim {
+    cartLineID: number;
+    blnClaim: boolean;
+    fk_smartArtDesignerClaimID: number;
+    update_quote_claim: boolean;
+};
+export interface updateQuoteAttentionFlag {
+    bln_attention: boolean;
+    cartLine_id: number;
+    imprint_id: number;
+    update_quote_attention_flag: boolean;
+};
+// Pending
+export interface updateQuoteBulkStatusUpdate {
+    status_id: number;
+    quotes: Quote[];
+    update_quote_bulk_status: boolean;
+};
+
+interface Quote {
+    imprint_id: number;
+    cartLine_id: number;
+};
+export interface updateOrderBulkStatusUpdate {
+    status_id: number;
+    orders: Order[];
+    update_order_bulk_status: boolean;
+};
+interface Order {
+    imprint_id: number;
+    ordeLine_id: number;
+};
+
+export interface updateOrderProofContact {
+    artApproval_contact_id: number;
+    orderline_id: number;
+    imprint_id: number;
+    update_order_proof_contact: boolean;
 };

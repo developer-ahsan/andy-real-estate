@@ -12,9 +12,81 @@
                 <p class="text-seconday"></p>
             </h2>
             <div *ngIf="loginCheck">
-                <button (click)="drawer.toggle()" class="min-w-30 mr-2" mat-stroked-button mat-button>Filter</button>
+                <!-- <button (click)="drawer.toggle()" class="min-w-30 mr-2" mat-stroked-button mat-button>Filter</button> -->
                 <button *ngIf="loginCheck" (click)="logout()" class="min-w-30" mat-flat-button color="primary"
                     mat-button>Logout</button>
+            </div>
+        </div>
+
+
+        <!-- Filters -->
+        <div>
+            <h2 class="text-sm font-medium text-gray-500">Search Filters</h2>
+            <ul role="list" class="mt-3 grid grid-cols-1 gap-5 sm:grid-cols-2 sm:gap-6 lg:grid-cols-5">
+                <li class="col-span-1 flex rounded-md">
+                    <mat-form-field class="w-full" *ngIf="ngDashboardCheck == 0">
+                        <input matInput placeholder="Search Order" [(ngModel)]="ngSearchField"
+                            (keyup.enter)="filterSmartArtList(0)">
+                    </mat-form-field>
+                    <mat-form-field class="w-full" *ngIf="ngDashboardCheck == 1">
+                        <input matInput placeholder="Search Quote" [(ngModel)]="ngSearchField"
+                            (keyup.enter)="filterSmartArtList(1)">
+                    </mat-form-field>
+                </li>
+                <li class="col-span-1 flex rounded-md">
+                    <mat-form-field class="w-full">
+                        <input matInput placeholder="Search Customer">
+                    </mat-form-field>
+                </li>
+                <li class="col-span-1 flex rounded-md" *ngIf="ngDashboardCheck == 0">
+                    <mat-form-field class="w-full">
+                        <input matInput placeholder="Search Product" [(ngModel)]="ngFilterProduct">
+                    </mat-form-field>
+                </li>
+                <li class="col-span-1 flex rounded-md">
+                    <mat-form-field class="w-full">
+                        <mat-select matInput [(ngModel)]="selectedStore">
+                            <mat-option *ngFor="let store of allStores" [value]="store">
+                                <span>{{store.storeName}}</span></mat-option>
+                        </mat-select>
+                        <!-- <input matInput placeholder="Search Stores" matTooltip="Search stores by name"
+                            [matAutocomplete]="auto" [formControl]="searchStoreCtrl">
+                        <mat-autocomplete class="w-full" #auto="matAutocomplete" (optionSelected)="onSelected($event)"
+                            [displayWith]="displayWith">
+                            <mat-option *ngIf="isSearchingStore" class="is-loading">Loading...</mat-option>
+                            <ng-container *ngIf="!isSearchingStore">
+                                <mat-option *ngFor="let item of allStores" [value]="item">
+                                    <span>{{item.storeName}}</span>
+                                </mat-option>
+                            </ng-container>
+                        </mat-autocomplete> -->
+                    </mat-form-field>
+                </li>
+                <li class="col-span-1 flex rounded-md">
+                    <mat-form-field class="w-full">
+                        <input matInput placeholder="Search Designer" matTooltip="Search designer by name"
+                            [matAutocomplete]="designer" [formControl]="searchDesignerCtrl">
+                        <mat-autocomplete class="w-full" #designer="matAutocomplete"
+                            (optionSelected)="onSelectedDesigner($event)" [displayWith]="displayWithDesigner">
+                            <mat-option *ngIf="isSearchingDesigner" class="is-loading">Loading...</mat-option>
+                            <ng-container *ngIf="!isSearchingDesigner">
+                                <mat-option *ngFor="let item of allDesigners" [value]="item">
+                                    <span>{{item.firstName + ' ' + item.lastName}}</span>
+                                </mat-option>
+                            </ng-container>
+                        </mat-autocomplete>
+                    </mat-form-field>
+                </li>
+            </ul>
+            <div class="text-right">
+                <button *ngIf="ngDashboardCheck == 0" (click)="filterSmartArtList(0)" class="min-w-40"
+                    [color]="'primary'" mat-button mat-flat-button>
+                    <span>Filter</span>
+                </button>
+                <button *ngIf="ngDashboardCheck == 1" (click)="filterSmartArtList(1)" class="min-w-40"
+                    [color]="'primary'" mat-button mat-flat-button>
+                    <span>Filter</span>
+                </button>
             </div>
         </div>
     </div>

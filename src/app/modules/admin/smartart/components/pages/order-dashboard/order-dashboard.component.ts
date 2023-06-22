@@ -6,7 +6,8 @@ import { ActivatedRoute, NavigationExtras, Router } from '@angular/router';
 import { Subject } from 'rxjs';
 import { debounceTime, distinctUntilChanged, filter, finalize, switchMap, takeUntil, tap } from 'rxjs/operators';
 import { SmartArtService } from '../../smartart.service';
-import { HideUnhideCart, updateAttentionFlagOrder } from '../../smartart.types';
+import { HideUnhideCart, HideUnhideOrder, UpdateOrderLineClaim, updateAttentionFlagOrder, updateOrderBulkStatusUpdate } from '../../smartart.types';
+import { AuthService } from 'app/core/auth/auth.service';
 @Component({
   selector: 'app-order-dashboard',
   templateUrl: './order-dashboard.component.html',
@@ -46,10 +47,14 @@ export class OrderDashboardComponent implements OnInit, OnDestroy {
   isFilterLoader: boolean = false;
   smartArtUser: any = JSON.parse(sessionStorage.getItem('smartArt'));
   paramsData: any;
+  // BUlk Update
+  status_id = 2;
+  isBulkLoader: boolean = false;
   constructor(
     private _changeDetectorRef: ChangeDetectorRef,
     private _smartartService: SmartArtService,
     private router: Router,
+    private _authService: AuthService,
     private _activeRoute: ActivatedRoute
   ) { }
 
@@ -57,7 +62,7 @@ export class OrderDashboardComponent implements OnInit, OnDestroy {
     this._activeRoute.queryParams.subscribe(res => {
       this.paramsData = res;
       this.isLoading = true;
-      this.getSmartArtList(1, 'get');
+      this.getSmartArtList(1, 'get', '');
     });
     // this.searchableFields();
   };
@@ -145,7 +150,12 @@ export class OrderDashboardComponent implements OnInit, OnDestroy {
     }
     return name;
   }
-  getSmartArtList(page, type) {
+  getSmartArtList(page, type, msg) {
+    if (page == 1) {
+      if (this.dataSource.length) {
+        this.paginator.pageIndex = 0;
+      }
+    }
     let params = {
       smart_art_userID: this.smartArtUser.pk_userID,
       smartart_list: true,
@@ -170,9 +180,15 @@ export class OrderDashboardComponent implements OnInit, OnDestroy {
       }
       this.isLoading = false;
       this.isFilterLoader = false;
+      if (type == 'update') {
+        this.isBulkLoader = false;
+        this._smartartService.snackBar(msg);
+        this._changeDetectorRef.markForCheck();
+      }
       // this.isLoadingChange.emit(false);
       this._changeDetectorRef.markForCheck();
     }, err => {
+      this.isBulkLoader = false;
       this.isFilterLoader = false;
       this.isLoading = false;
       // this.isLoadingChange.emit(false);
@@ -189,6 +205,7 @@ export class OrderDashboardComponent implements OnInit, OnDestroy {
     this._smartartService.getSmartArtData(params).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
       if (res["data"].length > 0) {
         item.lastProof = res["data"][0].proofSentDate;
+        item.lastProofName = res["data"][0].firstName + ' ' + res["data"][0].lastName;
       } else {
         item.lastProof = 'N/A';
       }
@@ -207,7 +224,7 @@ export class OrderDashboardComponent implements OnInit, OnDestroy {
     } else {
       this.page--;
     };
-    this.getSmartArtList(this.page, 'get');
+    this.getSmartArtList(this.page, 'get', '');
   };
   onOrderStatusChange(ev) {
     this.isLoading = true;
@@ -224,7 +241,7 @@ export class OrderDashboardComponent implements OnInit, OnDestroy {
     } else {
       this.ngFilterField = ev;
     }
-    this.getSmartArtList(1, 'get');
+    this.getSmartArtList(1, 'get', '');
   }
   filterSmartArtList() {
     this.isFilterLoader = true;
@@ -246,7 +263,7 @@ export class OrderDashboardComponent implements OnInit, OnDestroy {
       }
     }
     this._changeDetectorRef.markForCheck();
-    this.getSmartArtList(1, 'get');
+    this.getSmartArtList(1, 'get', '');
   }
   // Order Details
   orderDetails(item) {
@@ -287,11 +304,11 @@ export class OrderDashboardComponent implements OnInit, OnDestroy {
   HideUnhideCart(item, check) {
     item.isHiddenLoader = true;
     this._changeDetectorRef.markForCheck();
-    let payload: HideUnhideCart = {
+    let payload: HideUnhideOrder = {
       blnHidden: check,
       orderline_id: item.pk_orderLineID,
       imprint_id: Number(item.fk_imprintID),
-      hide_unhide_cart: true
+      hide_unhide_order: true
     }
     this._smartartService.UpdateSmartArtData(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
       this._smartartService.snackBar(res["message"]);
@@ -300,6 +317,71 @@ export class OrderDashboardComponent implements OnInit, OnDestroy {
       this._changeDetectorRef.markForCheck();
     }, err => {
       item.isHiddenLoader = false;
+      this._changeDetectorRef.markForCheck();
+    });
+  }
+  // Update Claim
+  updateClaim(item, check) {
+    item.isClaimLoader = true;
+    let claimID = null;
+    if (check) {
+      claimID = Number(this.smartArtUser.adminUserID)
+    } else {
+      claimID = null;
+    }
+    this._changeDetectorRef.markForCheck();
+    let payload: UpdateOrderLineClaim = {
+      orderLineID: Number(item.pk_orderLineID),
+      blnClaim: check,
+      fk_smartArtDesignerClaimID: claimID,
+      update_orderline_claim: true
+    }
+    this._smartartService.UpdateSmartArtData(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+      if (res["success"]) {
+        this._smartartService.snackBar(res["message"]);
+        item.fk_smartArtDesignerClaimID = claimID;
+      }
+      item.isClaimLoader = false;
+      // item.blnAttention = check;
+      this._changeDetectorRef.markForCheck();
+    }, err => {
+      item.isClaimLoader = false;
+      this._changeDetectorRef.markForCheck();
+    });
+  }
+  // Update checked
+  OrderSelectionChange(ev, order) {
+    order.checked = ev.checked
+  }
+  bulkUploadStatus() {
+    let orders = [];
+    this.dataSource.forEach(element => {
+      if (element.checked) {
+        orders.push({
+          imprint_id: Number(element.fk_imprintID),
+          ordeLine_id: Number(element.pk_orderLineID)
+        });
+      }
+    });
+    if (orders.length == 0) {
+      this._smartartService.snackBar('Pleas check at least 1 order');
+      return;
+    }
+    this.isBulkLoader = true;
+    let payload: updateOrderBulkStatusUpdate = {
+      status_id: this.status_id,
+      orders: orders,
+      update_order_bulk_status: true
+    }
+    this._smartartService.UpdateSmartArtData(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+      if (res["success"]) {
+        this.getSmartArtList(1, 'update', res["message"]);
+      } else {
+        this.isBulkLoader = false;
+        this._changeDetectorRef.markForCheck();
+      }
+    }, err => {
+      this.isBulkLoader = false;
       this._changeDetectorRef.markForCheck();
     });
   }
