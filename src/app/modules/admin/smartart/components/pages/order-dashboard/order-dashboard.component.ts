@@ -8,10 +8,35 @@ import { debounceTime, distinctUntilChanged, filter, finalize, switchMap, takeUn
 import { SmartArtService } from '../../smartart.service';
 import { HideUnhideCart, HideUnhideOrder, UpdateOrderLineClaim, updateAttentionFlagOrder, updateOrderBulkStatusUpdate } from '../../smartart.types';
 import { AuthService } from 'app/core/auth/auth.service';
+import { trigger, state, style, transition, animate } from '@angular/animations';
 @Component({
   selector: 'app-order-dashboard',
   templateUrl: './order-dashboard.component.html',
-  styles: [".mat-paginator  {border-radius: 16px !important} .mat-drawer-container {border-radius: 16px !important} ::-webkit-scrollbar {height: 3px !important}"]
+  styles: [".mat-paginator  {border-radius: 16px !important} .mat-drawer-container {border-radius: 16px !important} ::-webkit-scrollbar {height: 3px !important}"],
+  animations: [
+    trigger('modalAnimation', [
+      state('void', style({
+        opacity: 0,
+        transform: 'translateY(4rem) scale(0.95)'
+      })),
+      state('*', style({
+        opacity: 1,
+        transform: 'translateY(0) scale(1)'
+      })),
+      transition(':enter', animate('300ms ease-out')),
+      transition(':leave', animate('200ms ease-in'))
+    ]),
+    trigger('backdropAnimation', [
+      state('void', style({
+        opacity: 0
+      })),
+      state('*', style({
+        opacity: 1
+      })),
+      transition(':enter', animate('300ms ease-out')),
+      transition(':leave', animate('200ms ease-in'))
+    ])
+  ]
 })
 export class OrderDashboardComponent implements OnInit, OnDestroy {
   @ViewChild('paginator') paginator: MatPaginator;
@@ -50,6 +75,9 @@ export class OrderDashboardComponent implements OnInit, OnDestroy {
   // BUlk Update
   status_id = 2;
   isBulkLoader: boolean = false;
+  isClaimedModal: boolean = false;
+  claimCheck: boolean = false;
+  claimItem: any;
   constructor(
     private _changeDetectorRef: ChangeDetectorRef,
     private _smartartService: SmartArtService,
@@ -322,30 +350,44 @@ export class OrderDashboardComponent implements OnInit, OnDestroy {
   }
   // Update Claim
   updateClaim(item, check) {
-    item.isClaimLoader = true;
-    let claimID = null;
+    this.claimItem = item;
+    this.claimCheck = check;
     if (check) {
+      this.isClaimedModal = true;
+      this._changeDetectorRef.markForCheck();
+    } else {
+      this.ClaimUnClaimItem();
+    }
+  }
+  cancelClaim() {
+    this.isClaimedModal = false;
+    this._changeDetectorRef.markForCheck();
+  }
+  ClaimUnClaimItem() {
+    this.claimItem.isClaimLoader = true;
+    let claimID = null;
+    if (this.claimCheck) {
       claimID = Number(this.smartArtUser.adminUserID)
     } else {
       claimID = null;
     }
     this._changeDetectorRef.markForCheck();
     let payload: UpdateOrderLineClaim = {
-      orderLineID: Number(item.pk_orderLineID),
-      blnClaim: check,
+      orderLineID: Number(this.claimItem.pk_orderLineID),
+      blnClaim: this.claimCheck,
       fk_smartArtDesignerClaimID: claimID,
       update_orderline_claim: true
     }
     this._smartartService.UpdateSmartArtData(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
       if (res["success"]) {
         this._smartartService.snackBar(res["message"]);
-        item.fk_smartArtDesignerClaimID = claimID;
+        this.claimItem.fk_smartArtDesignerClaimID = claimID;
       }
-      item.isClaimLoader = false;
-      // item.blnAttention = check;
+      this.claimItem.isClaimLoader = false;
+      this.isClaimedModal = false;
       this._changeDetectorRef.markForCheck();
     }, err => {
-      item.isClaimLoader = false;
+      this.claimItem.isClaimLoader = false;
       this._changeDetectorRef.markForCheck();
     });
   }
