@@ -409,6 +409,9 @@ export interface UpdateCompany {
     freeRandomSamples: string;
     specSamples: string;
     production: string;
+    notes: string;
+    customerAccountNumber: string;
+    shippingComment: string;
     update_company: boolean;
 };
 export interface UpdateWebsiteLoginInfo {

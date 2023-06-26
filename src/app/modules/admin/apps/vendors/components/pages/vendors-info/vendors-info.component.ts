@@ -84,7 +84,10 @@ export class VendorsInfoComponent implements OnInit, OnDestroy {
       ltm: new FormControl(''),
       freeRandomSamples: new FormControl(''),
       specSamples: new FormControl(''),
-      production: new FormControl('')
+      production: new FormControl(''),
+      customerAccountNumber: new FormControl(''),
+      shippingComment: new FormControl(''),
+      notes: new FormControl('')
     });
   }
   ngOnInit(): void {
@@ -185,14 +188,14 @@ export class VendorsInfoComponent implements OnInit, OnDestroy {
   }
   // Update New Company
   updateCompany() {
-    const { pk_companyID, companyName, address, city, state, zipCode, phone, fax, ASI, PPAI, artworkEmail, ordersEmail, websiteURL, outsideRep, insideRep, outsideRepPhone, outsideRepEmail, insideRepPhone, insideRepEmail, samplesContactEmail, additionalOrderEmails, vendorRelation, screenprintEmail, embroideryEmail, coopPricing, netSetup, ltm, freeRandomSamples, specSamples, production } = this.updateCompnayForm.getRawValue();
+    const { pk_companyID, companyName, address, city, state, zipCode, phone, fax, ASI, PPAI, artworkEmail, ordersEmail, websiteURL, outsideRep, insideRep, outsideRepPhone, outsideRepEmail, insideRepPhone, insideRepEmail, samplesContactEmail, additionalOrderEmails, vendorRelation, screenprintEmail, embroideryEmail, coopPricing, netSetup, ltm, freeRandomSamples, specSamples, production, customerAccountNumber, shippingComment, notes } = this.updateCompnayForm.getRawValue();
     if (companyName == '' || address == '' || city == '' || phone == '' || zipCode == '') {
       this._vendorService.snackBar('Please fill out the required fields');
       return;
     }
 
     let payload: UpdateCompany = {
-      company_id: pk_companyID, companyName, address, city, state, zipCode, phone, fax, ASI, PPAI, artworkEmail, ordersEmail, websiteURL, outsideRep, insideRep, outsideRepPhone, outsideRepEmail, insideRepPhone, insideRepEmail, samplesContactEmail, vendorRelation, screenprintEmail, embroideryEmail, coopPricing, netSetup, ltm, freeRandomSamples, specSamples, production, update_company: true, additionalOrderEmails: this.additionalOrderEmails.toString()
+      company_id: pk_companyID, companyName, address, city, state, zipCode, phone, fax, ASI, PPAI, artworkEmail, ordersEmail, websiteURL, outsideRep, insideRep, outsideRepPhone, outsideRepEmail, insideRepPhone, insideRepEmail, samplesContactEmail, vendorRelation, screenprintEmail, embroideryEmail, coopPricing, netSetup, ltm, freeRandomSamples, specSamples, production, update_company: true, additionalOrderEmails: this.additionalOrderEmails.toString(), customerAccountNumber, shippingComment, notes
     }
     this.isUpdateLoader = true;
     this._vendorService.putVendorsData(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {

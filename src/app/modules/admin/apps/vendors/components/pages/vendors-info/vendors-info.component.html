@@ -155,6 +155,19 @@
                         formControlName="samplesContactEmail">
                 </mat-form-field>
             </div>
+            <div class="col-12 col-md-6">
+                <mat-form-field class="w-full">
+                    <mat-label>Customer Account #:</mat-label>
+                    <input matInput placeholder="Customer Account #:" maxlength="500"
+                        formControlName="customerAccountNumber">
+                </mat-form-field>
+            </div>
+            <div class="col-12 col-md-6">
+                <mat-form-field class="w-full">
+                    <mat-label>Shipping comment:</mat-label>
+                    <textarea matInput placeholder="Shipping Comment" formControlName="shippingComment"></textarea>
+                </mat-form-field>
+            </div>
             <div class="col-12">
                 <mat-form-field class="w-full">
                     <mat-label>Additional Order Emails</mat-label>
@@ -201,6 +214,11 @@
             <div class="col-12 mb-2">
                 <mat-label>Production</mat-label>
                 <quill-editor [formControlName]="'production'" placeholder="Production" [modules]="quillModules">
+                </quill-editor>
+            </div>
+            <div class="col-12 mb-2">
+                <mat-label>Notes</mat-label>
+                <quill-editor [formControlName]="'notes'" placeholder="Notes" [modules]="quillModules">
                 </quill-editor>
             </div>
             <div class="col-12 text-right ">
