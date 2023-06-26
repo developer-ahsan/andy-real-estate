@@ -297,7 +297,7 @@ export class OrderDashboardComponent implements OnInit, OnDestroy {
   orderDetails(item) {
     this._smartartService.routeData = item;
     const queryParams: NavigationExtras = {
-      queryParams: { pfk_userID: item.pfk_userID, fk_orderID: item.fk_orderID, fk_imprintID: item.fk_imprintID, pk_orderLineID: item.pk_orderLineID, statusName: item.statusName }
+      queryParams: { pfk_userID: item.pfk_userID, fk_orderID: item.fk_orderID, fk_imprintID: item.fk_imprintID, pk_orderLineID: item.pk_orderLineID, statusName: item.statusName, statusID: item.pk_statusID }
     };
     this.router.navigate(['/smartart/order-details'], queryParams);
   }

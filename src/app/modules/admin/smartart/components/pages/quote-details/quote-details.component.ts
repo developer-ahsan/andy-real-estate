@@ -121,17 +121,24 @@ export class QuoteDashboardDetailsComponent implements OnInit, OnDestroy {
     this._smartartService.getSmartArtData(params).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
       this.quoteData = res["data"][0];
       this.approvalHistoryData = res["approvalHistory"];
-      let tags = this.quoteData.artworkTags.split(',');
-      tags.forEach(element => {
-        let tag = element.split(':');
-        this.artworktags.push({ id: tag[0], name: tag[1] });
-      });
-      let selectedTags = this.quoteData.cartlineArtworkTags.split(',');
+      let tags = [];
+      if (this.quoteData.artworkTags) {
+        tags = this.quoteData.artworkTags.split(',');
+        tags.forEach(element => {
+          let tag = element.split(':');
+          this.artworktags.push({ id: tag[0], name: tag[1] });
+        });
+      }
       this.selectedMultipleTags = [];
-      selectedTags.forEach(element => {
-        let tag = element.split(':');
-        this.selectedMultipleTags.push(tag[0]);
-      });
+      let selectedTags = [];
+      if (this.quoteData.cartlineArtworkTags) {
+        selectedTags = this.quoteData.cartlineArtworkTags.split(',');
+        selectedTags.forEach(element => {
+          let tag = element.split(':');
+          this.selectedMultipleTags.push(tag[0]);
+        });
+      }
+
       // this.isLoading = false;
       this.getQuoteImpritData();
       this._changeDetectorRef.markForCheck();

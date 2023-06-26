@@ -163,7 +163,7 @@ export class OrderDashboardDetailsComponent implements OnInit, OnDestroy {
           }
           imprint.poSent = null;
           if (res["poSent"].length) {
-            if (this.paramData.statusName == 'In Production') {
+            if (imprint.statusName == 'In Production') {
               imprint.poSent = res["poSent"][0];
             } else {
               imprint.poSent = null;
@@ -172,15 +172,15 @@ export class OrderDashboardDetailsComponent implements OnInit, OnDestroy {
         });
       }
 
-      const checkFileExistObservable = of(this.checkFileExist(`https://assets.consolidus.com/globalAssets/Stores/BrandGuide/${this.orderData.pk_storeID}.pdf`, 'brand'));
-      const checkFinalArtworkObservable = of(this.checkFileExist(`https://assets.consolidus.com/artwork/finalArt/${this.paramData.pfk_userID}/${this.paramData.fk_orderID}/${this.paramData.pk_orderLineID}/${this.paramData.fk_imprintID}.eps`, 'finalArtwork'));
+      // const checkFileExistObservable = of(this.checkFileExist(`https://assets.consolidus.com/globalAssets/Stores/BrandGuide/${this.orderData.pk_storeID}.pdf`, 'brand'));
+      // const checkFinalArtworkObservable = of(this.checkFileExist(`https://assets.consolidus.com/artwork/finalArt/${this.paramData.pfk_userID}/${this.paramData.fk_orderID}/${this.paramData.pk_orderLineID}/${this.paramData.fk_imprintID}.eps`, 'finalArtwork'));
       const getArtworkOtherObservable = of(this.getArtworkOther());
-      const checkIfImageExistsObservable = of(this.checkIfImageExists(`https://assets.consolidus.com/artwork/Proof/${this.paramData.pfk_userID}/${this.paramData.fk_orderID}/${this.paramData.pk_orderLineID}/${this.paramData.fk_imprintID}.jpg`));
+      // const checkIfImageExistsObservable = of(this.checkIfImageExists(`https://assets.consolidus.com/artwork/Proof/${this.paramData.pfk_userID}/${this.paramData.fk_orderID}/${this.paramData.pk_orderLineID}/${this.paramData.fk_imprintID}.jpg`));
       forkJoin([
-        checkFileExistObservable,
-        checkFinalArtworkObservable,
+        // checkFileExistObservable,
+        // checkFinalArtworkObservable,
         getArtworkOtherObservable,
-        checkIfImageExistsObservable
+        // checkIfImageExistsObservable
       ])
       // this.checkFileExist(`https://assets.consolidus.com/globalAssets/Stores/BrandGuide/${this.orderData.pk_storeID}.pdf`, 'brand');
       // this.checkFileExist(`https://assets.consolidus.com/artwork/finalArt/${this.paramData.pfk_userID}/${this.paramData.fk_orderID}/${this.paramData.pk_orderLineID}/${this.paramData.fk_imprintID}.eps`, 'finalArtwork');
@@ -216,21 +216,33 @@ export class OrderDashboardDetailsComponent implements OnInit, OnDestroy {
         this.artworkTags = res["storeArtworkTag"];
         this.selectedArtworkTags = [];
         res["orderLineArtworkTag"].forEach(element => {
-          this.selectedArtworkTags.push(element);
+          this.selectedArtworkTags.push(element.fk_artworkTagID);
         });
       }
       // Assign email recipients
       this.imprintdata.forEach(imprint => {
         if (!imprint?.fk_artApprovalContactID && !imprint?.fk_storeUserApprovalContactID && !imprint?.blnStoreUserApprovalDone) {
           imprint.selectedContact = 0;
-          if (res["contactProofs"].length > 0) {
-            imprint.selectedContactEmail = this.orderData.email;
+          if (imprint.decorationName.toLowerCase().includes('screen')) {
+            imprint.selectedContactEmail = imprint.screenprintEmail;
+            this.orderData.artworkEmail = imprint
+          } else if (imprint.decorationName.toLowerCase().includes('embroid')) {
+            imprint.selectedContactEmail = imprint.embroideryEmail;
           } else {
-            imprint.selectedContactEmail = this.orderData.artworkEmail;
+            imprint.selectedContactEmail = imprint.artworkEmail;
           }
+          this.orderData.artworkEmail = imprint.selectedContactEmail;
         } else {
           imprint.selectedContact = null;
-          imprint.selectedContactEmail = this.orderData.artworkEmail;
+          if (imprint.decorationName.toLowerCase().includes('screen')) {
+            imprint.selectedContactEmail = imprint.screenprintEmail;
+            this.orderData.artworkEmail = imprint
+          } else if (imprint.decorationName.toLowerCase().includes('embroid')) {
+            imprint.selectedContactEmail = imprint.embroideryEmail;
+          } else {
+            imprint.selectedContactEmail = imprint.artworkEmail;
+          }
+          this.orderData.artworkEmail = imprint.selectedContactEmail;
         }
       });
       // Contact Proof

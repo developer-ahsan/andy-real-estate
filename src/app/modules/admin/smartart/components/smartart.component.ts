@@ -101,6 +101,7 @@ export class SmartArtComponent {
                     } else {
                         this.ngDashboardCheck = 1;
                     }
+                    console.log(this.ngDashboardCheck)
                     this.ngSearchField = '';
                     this.ngCustomerField = '';
                     this.ngFilterProduct = '';
