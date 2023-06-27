@@ -199,9 +199,16 @@ export class VendorsInfoComponent implements OnInit, OnDestroy {
     }
     this.isUpdateLoader = true;
     this._vendorService.putVendorsData(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
-      this._vendorService.snackBar(res["message"]);
-      this.isUpdateLoader = false;
-      this._changeDetectorRef.markForCheck();
+      if (res["success"]) {
+        this._vendorService.getVendorsSupplierById(payload.company_id).pipe(takeUntil(this._unsubscribeAll)).subscribe(data => {
+          this._vendorService.snackBar(res["message"]);
+          this.isUpdateLoader = false;
+          this._changeDetectorRef.markForCheck();
+        })
+      } else {
+        this.isUpdateLoader = false;
+        this._changeDetectorRef.markForCheck();
+      }
     }, err => {
       this._vendorService.snackBar('Something went wrong');
       this.isUpdateLoader = false;
