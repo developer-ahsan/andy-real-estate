@@ -92,33 +92,36 @@ export class SmartArtComponent {
 
     ngOnInit(): void {
         if (this.loginCheck) {
-            this._router.events.subscribe((event) => {
-                if (event instanceof NavigationEnd) {
-                    this.selectedScreeen = this.route.children[0].snapshot.data.title;
-                    this.selectedRoute = this.route.children[0].snapshot.data.url;
-                    if (this.selectedScreeen == 'Orders Dashboard' || this.selectedScreeen == 'Order Details' || this.selectedScreeen == 'Order Scheduler' || this.selectedScreeen == 'Order Emails') {
-                        this.ngDashboardCheck = 0;
-                    } else {
-                        this.ngDashboardCheck = 1;
-                    }
-                    console.log(this.ngDashboardCheck)
-                    this.ngSearchField = '';
-                    this.ngCustomerField = '';
-                    this.ngFilterProduct = '';
-                }
-            })
-            this.selectedScreeen = this.route.children[0].snapshot.data.title;
-            this.selectedRoute = this.route.children[0].snapshot.data.url;
-            if (this.selectedScreeen == 'Orders Dashboard' || this.selectedScreeen == 'Order Details' || this.selectedScreeen == 'Order Scheduler') {
-                this.ngDashboardCheck = 0;
-            } else {
-                this.ngDashboardCheck = 1;
-            }
+            this.checkDashboard();
         }
 
         this.searchableFields();
         this.isLoading = false;
         this.sideDrawer();
+    }
+    checkDashboard() {
+        this._router.events.subscribe((event) => {
+            if (event instanceof NavigationEnd) {
+                this.selectedScreeen = this.route.children[0].snapshot.data.title;
+                this.selectedRoute = this.route.children[0].snapshot.data.url;
+                if (this.selectedScreeen == 'Orders Dashboard' || this.selectedScreeen == 'Order Details' || this.selectedScreeen == 'Order Scheduler' || this.selectedScreeen == 'Order Emails') {
+                    this.ngDashboardCheck = 0;
+                } else {
+                    this.ngDashboardCheck = 1;
+                }
+                console.log(this.ngDashboardCheck)
+                this.ngSearchField = '';
+                this.ngCustomerField = '';
+                this.ngFilterProduct = '';
+            }
+        })
+        this.selectedScreeen = this.route.children[0].snapshot.data.title;
+        this.selectedRoute = this.route.children[0].snapshot.data.url;
+        if (this.selectedScreeen == 'Orders Dashboard' || this.selectedScreeen == 'Order Details' || this.selectedScreeen == 'Order Scheduler') {
+            this.ngDashboardCheck = 0;
+        } else {
+            this.ngDashboardCheck = 1;
+        }
     }
     searchableFields() {
         this._commonService.storesData$.pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
@@ -271,6 +274,7 @@ export class SmartArtComponent {
         }
         this._smartartService.AddSmartArtData(payload).pipe(takeUntil(this._unsubscribeAll),
             finalize(() => {
+                this.checkDashboard();
                 this.isLoginLoader = false;
                 this._changeDetectorRef.markForCheck();
             })).subscribe(res => {
