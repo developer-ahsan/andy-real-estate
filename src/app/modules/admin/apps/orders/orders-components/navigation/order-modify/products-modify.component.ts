@@ -240,7 +240,19 @@ export class ProductsOrderModifyComponent implements OnInit, OnDestroy {
           let imprintColors = element.imprintColors.split(',');
           imprintColors.forEach(color => {
             let imprintColorsData = color.split(':');
-            element.imprintColorsData.push({ name: imprintColorsData[0], id: imprintColorsData[1], code: imprintColorsData[2] });
+            element.imprintColorsData.push({ id: imprintColorsData[0], name: imprintColorsData[1], code: imprintColorsData[2] });
+          });
+          element.imprintColorsData.sort((a, b) => {
+            const nameA = a.name.toUpperCase();
+            const nameB = b.name.toUpperCase();
+
+            if (nameA < nameB) {
+              return -1;
+            }
+            if (nameA > nameB) {
+              return 1;
+            }
+            return 0;
           });
         } else {
           element.imprintColorsData = [];

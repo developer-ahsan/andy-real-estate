@@ -172,15 +172,15 @@ export class OrderDashboardDetailsComponent implements OnInit, OnDestroy {
         });
       }
 
-      // const checkFileExistObservable = of(this.checkFileExist(`https://assets.consolidus.com/globalAssets/Stores/BrandGuide/${this.orderData.pk_storeID}.pdf`, 'brand'));
-      // const checkFinalArtworkObservable = of(this.checkFileExist(`https://assets.consolidus.com/artwork/finalArt/${this.paramData.pfk_userID}/${this.paramData.fk_orderID}/${this.paramData.pk_orderLineID}/${this.paramData.fk_imprintID}.eps`, 'finalArtwork'));
+      const checkFileExistObservable = of(this.checkFileExist(`https://assets.consolidus.com/globalAssets/Stores/BrandGuide/${this.orderData.pk_storeID}.pdf`, 'brand'));
+      const checkFinalArtworkObservable = of(this.checkFileExist(`https://assets.consolidus.com/artwork/finalArt/${this.paramData.pfk_userID}/${this.paramData.fk_orderID}/${this.paramData.pk_orderLineID}/${this.paramData.fk_imprintID}.eps`, 'finalArtwork'));
       const getArtworkOtherObservable = of(this.getArtworkOther());
-      // const checkIfImageExistsObservable = of(this.checkIfImageExists(`https://assets.consolidus.com/artwork/Proof/${this.paramData.pfk_userID}/${this.paramData.fk_orderID}/${this.paramData.pk_orderLineID}/${this.paramData.fk_imprintID}.jpg`));
+      const checkIfImageExistsObservable = of(this.checkIfImageExists(`https://assets.consolidus.com/artwork/Proof/${this.paramData.pfk_userID}/${this.paramData.fk_orderID}/${this.paramData.pk_orderLineID}/${this.paramData.fk_imprintID}.jpg`));
       forkJoin([
-        // checkFileExistObservable,
-        // checkFinalArtworkObservable,
+        checkFileExistObservable,
+        checkFinalArtworkObservable,
         getArtworkOtherObservable,
-        // checkIfImageExistsObservable
+        checkIfImageExistsObservable
       ])
       // this.checkFileExist(`https://assets.consolidus.com/globalAssets/Stores/BrandGuide/${this.orderData.pk_storeID}.pdf`, 'brand');
       // this.checkFileExist(`https://assets.consolidus.com/artwork/finalArt/${this.paramData.pfk_userID}/${this.paramData.fk_orderID}/${this.paramData.pk_orderLineID}/${this.paramData.fk_imprintID}.eps`, 'finalArtwork');
@@ -535,9 +535,9 @@ export class OrderDashboardDetailsComponent implements OnInit, OnDestroy {
   // Customer Eamils
   customerEmail(item) {
     const queryParams: NavigationExtras = {
-      queryParams: { pfk_userID: this.paramData.pfk_userID, fk_orderID: this.paramData.fk_orderID, fk_imprintID: this.paramData.fk_imprintID, pk_orderLineID: this.paramData.pk_orderLineID, statusName: this.paramData.statusName }
+      queryParams: { pk_orderLineID: this.paramData.pk_orderLineID, store_id: this.orderData.pk_storeID }
     };
-    this.router.navigate(['/smartart/email-customer'], queryParams);
+    this.router.navigate(['/smartart/order-emails'], queryParams);
   }
   checkIfImageExists(url) {
     const img = new Image();

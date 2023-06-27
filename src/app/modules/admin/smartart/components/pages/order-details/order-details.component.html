@@ -505,7 +505,8 @@
                                     <mat-select [(ngModel)]="selectedImprint">
                                         <mat-option *ngFor="let imprint of imprintdata"
                                             [value]="imprint.pk_imprintID">({{imprint.pk_imprintID}})
-                                            {{imprint.locationName}}/{{imprint.decorationName}}</mat-option>
+                                            <span
+                                                [innerHTML]="imprint.locationName"></span>/{{imprint.decorationName}}</mat-option>
                                     </mat-select>
                                 </mat-form-field>
 
@@ -526,7 +527,8 @@
                         <mat-expansion-panel [expanded]="true" *ngFor="let imprint of imprintdata;let i=index">
                             <mat-expansion-panel-header>
                                 <mat-panel-title>
-                                    Imprint {{i+1}} of {{imprintdata.length}} for {{orderData.productName}} -
+                                    Imprint {{i+1}} of {{imprintdata.length}} for <span
+                                        [innerHTML]="orderData.productName"></span> -
                                     ({{imprint.locationName}}/{{imprint.decorationName}})
                                 </mat-panel-title>
                             </mat-expansion-panel-header>

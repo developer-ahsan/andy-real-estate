@@ -68,13 +68,17 @@
                             </div>
                             <div class="flex">
                                 <b class="text-secondary text-sm">Store:</b>
-                                <p class="ml-3 text-sm">
+                                <div class="flex ml-3 text-sm">
                                     <a class="float-right text-sm"
                                         style="color: #959595; text-decoration: underline; cursor: pointer;"
-                                        href="{{selectedProduct?.storeURL}}" target="_blank">
-                                        {{selectedProduct?.storeURL || not_available}}
+                                        href="{{seletedProduct?.protocol}}{{selectedProduct?.storeURL}}"
+                                        target="_blank">
+                                        {{selectedProduct?.storeName || not_available}}
                                     </a>
-                                </p>
+                                    <a class="float-right text-sm ml-2"
+                                        style="color: #959595; text-decoration: underline; cursor: pointer;"
+                                        href="{{selectedProduct?.supplierLink}}" target="_blank">(Site)</a>
+                                </div>
                             </div>
                         </div>
                         <div class="col-12 col-lg-5">

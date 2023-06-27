@@ -9,6 +9,7 @@ import { QuoteOrderEmailComponent } from './components/pages/quote-order-emails/
 import { QuoteSchedulerComponent } from './components/pages/quote-scheduler/quote-scheduler.component';
 import { SmartArtComponent } from './components/smartart.component';
 import { SmartArtStoresResolver, SmartArtUsersResolver } from './components/smartart.resolvers';
+import { SmartartOrderEmailComponent } from './components/pages/order-emails/order-emails.component';
 
 export const smartartRoutes: Route[] = [
     {
@@ -70,6 +71,14 @@ export const smartartRoutes: Route[] = [
                 data: {
                     title: 'Quote Details',
                     url: 'quote-details'
+                }
+            },
+            {
+                path: 'order-emails',
+                component: SmartartOrderEmailComponent,
+                data: {
+                    title: 'Order Emails',
+                    url: 'order-emails'
                 }
             },
             {

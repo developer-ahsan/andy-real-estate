@@ -304,9 +304,9 @@ export class OrderDashboardComponent implements OnInit, OnDestroy {
   // Customer Email
   customerEmail(item) {
     const queryParams: NavigationExtras = {
-      queryParams: { pfk_userID: item.pfk_userID, fk_orderID: item.fk_orderID, fk_imprintID: item.fk_imprintID, pk_orderLineID: item.pk_orderLineID, statusName: item.statusName }
+      queryParams: { pk_orderLineID: item.pk_orderLineID, store_id: item.pk_storeID }
     };
-    this.router.navigate(['/smartart/email-customer'], queryParams);
+    this.router.navigate(['/smartart/order-emails'], queryParams);
   }
   // Update order Attention
   updateAttentionFlagOrder(item, check) {

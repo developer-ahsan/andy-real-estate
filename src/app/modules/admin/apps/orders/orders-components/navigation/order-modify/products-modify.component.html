@@ -448,7 +448,8 @@
                                     <mat-select placeholder="Colors" [(ngModel)]="imprint.colorsList" multiple>
                                         <mat-option class="font-bold text-white p-2"
                                             *ngFor="let colors of ngSelectedProduct.imprintColorsData; let i =index"
-                                            [value]="colors.name" [ngStyle]="{'background': '#'+colors.code}">
+                                            [value]="colors.name" [ngStyle]="{'background': '#'+colors.code}"
+                                            [ngClass]="{'text-gray-900': colors.code == 'FFFFFF'}">
                                             {{colors.name}}
                                         </mat-option>
                                     </mat-select>

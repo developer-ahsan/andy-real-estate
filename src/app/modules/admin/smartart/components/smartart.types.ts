@@ -169,3 +169,19 @@ export interface updateOrderProofContact {
     imprint_id: number;
     update_order_proof_contact: boolean;
 };
+
+export interface sendOrderCustomerEmail {
+    to_email: string;
+    from: string;
+    subject: string;
+    message: string;
+    storeName: string;
+    store_id: number;
+    userID: number;
+    storeURL: string;
+    orderLineID: number;
+    orderID: number;
+    orderLineImprintID: number;
+    productName: string;
+    send_order_customer_email: boolean;
+};
