@@ -163,7 +163,7 @@ export class OrderDashboardDetailsComponent implements OnInit, OnDestroy {
           }
           imprint.poSent = null;
           if (res["poSent"].length) {
-            if (imprint.statusName == 'In Production') {
+            if (imprint.pk_statusID >= 5) {
               imprint.poSent = res["poSent"][0];
             } else {
               imprint.poSent = null;
@@ -171,7 +171,6 @@ export class OrderDashboardDetailsComponent implements OnInit, OnDestroy {
           }
         });
       }
-
       const checkFileExistObservable = of(this.checkFileExist(`https://assets.consolidus.com/globalAssets/Stores/BrandGuide/${this.orderData.pk_storeID}.pdf`, 'brand'));
       const checkFinalArtworkObservable = of(this.checkFileExist(`https://assets.consolidus.com/artwork/finalArt/${this.paramData.pfk_userID}/${this.paramData.fk_orderID}/${this.paramData.pk_orderLineID}/${this.paramData.fk_imprintID}.eps`, 'finalArtwork'));
       const getArtworkOtherObservable = of(this.getArtworkOther());

@@ -171,7 +171,7 @@ export interface updateOrderProofContact {
 };
 
 export interface sendOrderCustomerEmail {
-    to_email: string;
+    to_email: string[];
     from: string;
     subject: string;
     message: string;

@@ -71,11 +71,11 @@ export class SmartartOrderEmailComponent implements OnInit, OnDestroy {
       return;
     }
     this.sendEmailLoader = true;
-    let email = '';
+    let email = [];
     if (this.ngTo != '') {
-      email = this.ngTo;
+      email.push(this.ngTo);
     } else {
-      email = this.selectedContact;
+      email.push(this.selectedContact);
     }
     this._changeDetectorRef.markForCheck();
     let payload: sendOrderCustomerEmail = {
@@ -97,7 +97,6 @@ export class SmartartOrderEmailComponent implements OnInit, OnDestroy {
       this._smartartService.snackBar(res["message"]);
       this.ngFrom = '';
       this.ngMessage = '';
-
       this.sendEmailLoader = false;
       this._changeDetectorRef.markForCheck();
     }, err => {
