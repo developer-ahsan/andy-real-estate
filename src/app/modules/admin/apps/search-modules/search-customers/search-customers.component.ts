@@ -66,8 +66,13 @@ export class SearchCustomersComponents implements OnInit, OnDestroy {
      * On init
      */
     ngOnInit(): void {
-        this.isProductLoader = true;
-        this.getCustomersData(1);
+        this._activatedRoute.params.subscribe(params => {
+            this.searchKeyword = params.value;
+            this.isProductLoader = true;
+            this._changeDetectorRef.markForCheck();
+            this.getCustomersData(1);
+        })
+
 
         // Subscribe to MatDrawer opened change
         this.matDrawer.openedChange.subscribe((opened) => {
@@ -124,7 +129,7 @@ export class SearchCustomersComponents implements OnInit, OnDestroy {
     }
     getCustomersData(page) {
         let params = {
-            keyword: this._searchService.customerKeyword,
+            keyword: this.searchKeyword,
             page: page,
             list: true,
             size: 20

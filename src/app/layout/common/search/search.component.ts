@@ -139,15 +139,15 @@ export class SearchComponent implements OnChanges, OnInit, OnDestroy {
     }
     searchProduct(event) {
         const val = event.target.value;
-        if (val != '') {
-            this._searchService.productKeyword = val;
-            // this._productService.productSearchFilter.term = val;
-            // this.router.navigateByUrl('/', { skipLocationChange: true }).then(() => {
-            //     this.router.navigate(['/apps/ecommerce/inventory'])
-            // });
-            // this.router.navigateByUrl('/apps/ecommerce/inventory', { skipLocationChange: true });
-            this.router.navigateByUrl('/apps/search/products');
-        }
+        // if (val != '') {
+        //     this._searchService.productKeyword = val;
+        //     // this._productService.productSearchFilter.term = val;
+        //     // this.router.navigateByUrl('/', { skipLocationChange: true }).then(() => {
+        //     //     this.router.navigate(['/apps/ecommerce/inventory'])
+        //     // });
+        //     // this.router.navigateByUrl('/apps/ecommerce/inventory', { skipLocationChange: true });
+        this.router.navigateByUrl('/apps/search/products/' + val);
+        // }
         this.close();
     }
     searchStore(event) {
@@ -176,7 +176,7 @@ export class SearchComponent implements OnChanges, OnInit, OnDestroy {
             // this.router.navigateByUrl('/', { skipLocationChange: true }).then(() => {
             //     this.router.navigate(['/apps/ecommerce/inventory'])
             // });
-            this.router.navigateByUrl('/apps/search/customers');
+            this.router.navigateByUrl('/apps/search/customers/' + val);
         }
         this.close();
     }

@@ -108,7 +108,7 @@
                             currentPage: page,
                             totalItems: totalRecords
                           };">
-                            <div class="px-6">
+                            <div class="px-6" *ngIf="category.productsCountPerCategory > 0 ">
                                 <div class="p-5 text-secondary pb-0 mb-2 text-lg">
                                     <b>
                                         <span class="badge badge-secondary">{{category.productsCountPerCategory}}
@@ -117,7 +117,8 @@
                                     </b>
                                 </div>
                             </div>
-                            <table class="table table-striped overflow-x-auto">
+                            <table class="table table-striped overflow-x-auto"
+                                *ngIf="category.productsCountPerCategory > 0 ">
                                 <thead>
                                     <tr>
                                         <td width="1%">SPID</td>

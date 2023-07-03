@@ -66,9 +66,12 @@ export class SearchProductsComponents implements OnInit, OnDestroy {
      * On init
      */
     ngOnInit(): void {
-        this.isProductLoader = true;
-        this.getProductsData(1);
-
+        this._activatedRoute.params.subscribe(param => {
+            this.searchKeyword = param.value;
+            this.isProductLoader = true;
+            this._changeDetectorRef.markForCheck();
+            this.getProductsData(1);
+        });
         // Subscribe to MatDrawer opened change
         this.matDrawer.openedChange.subscribe((opened) => {
             if (!opened) {
@@ -124,7 +127,7 @@ export class SearchProductsComponents implements OnInit, OnDestroy {
     }
     getProductsData(page) {
         let params = {
-            keyword: this._searchService.productKeyword,
+            keyword: this.searchKeyword,
             page: page,
             search_product: true
         }

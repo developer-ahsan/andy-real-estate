@@ -384,7 +384,7 @@ export class VendorCoopComponent implements OnInit, OnDestroy {
         });
       }
     });
-
+    console.log(this.file)
   }
   onRemove(ev) {
     this.file.splice(this.file.indexOf(ev), 1);

@@ -102,9 +102,11 @@ export class RapidBuildUsersComponent implements OnInit, OnDestroy {
     this.mainScreen = value;
     if (this.mainScreen == 'Current Users') {
       this.dataSource = this.tempDataSource;
+      this.totalUsers = this.tempRecords;
       this.page = 1;
       this._changeDetectorRef.markForCheck();
       if (this.dataSource.length == 0) {
+        this.paginator.pageIndex = 0;
         this.getAdminRapidUsers(1, 'get');
       }
     } else {
@@ -172,6 +174,11 @@ export class RapidBuildUsersComponent implements OnInit, OnDestroy {
       this.updateUserData = data;
       this.updateUserForm.patchValue(data);
       this.getAllStores();
+    } else {
+      setTimeout(() => {
+        this.paginator.pageIndex = this.page - 1;
+        this._changeDetectorRef.markForCheck();
+      }, 200);
     }
 
   }

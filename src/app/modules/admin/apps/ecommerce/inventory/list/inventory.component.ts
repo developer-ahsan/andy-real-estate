@@ -2765,6 +2765,7 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
 
     searchKeyword(event): void {
         let keyword = event ? event : '';
+
         if (!keyword) {
             this._inventoryService.productSearchFilter.term = null;
             this._snackBar.open("Enter text to search", '', {
@@ -2774,29 +2775,32 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
             });
             return;
         };
-        this.isLoading = true;
-        this._inventoryService.productSearchFilter.term = keyword;
+        this._inventoryService.productSearchFilter.term = null;
+        this._router.navigateByUrl('/apps/search/products/' + keyword);
 
-        this._inventoryService.searchProductKeywords(keyword)
-            .pipe(takeUntil(this._unsubscribeAll))
-            .subscribe((products) => {
-                this.products = products["data"];
-                this.productsCount = products["totalRecords"];
-                this.isLoading = false;
+        // this.isLoading = true;
+        // this._inventoryService.productSearchFilter.term = keyword;
 
-                // Mark for check
-                this._changeDetectorRef.markForCheck();
-            }, err => {
-                this._snackBar.open("Some error occured", '', {
-                    horizontalPosition: 'center',
-                    verticalPosition: 'bottom',
-                    duration: 3500
-                });
-                this.isLoading = false;
+        // this._inventoryService.searchProductKeywords(keyword)
+        //     .pipe(takeUntil(this._unsubscribeAll))
+        //     .subscribe((products) => {
+        //         this.products = products["data"];
+        //         this.productsCount = products["totalRecords"];
+        //         this.isLoading = false;
 
-                // Mark for check
-                this._changeDetectorRef.markForCheck();
-            });
+        //         // Mark for check
+        //         this._changeDetectorRef.markForCheck();
+        //     }, err => {
+        //         this._snackBar.open("Some error occured", '', {
+        //             horizontalPosition: 'center',
+        //             verticalPosition: 'bottom',
+        //             duration: 3500
+        //         });
+        //         this.isLoading = false;
+
+        //         // Mark for check
+        //         this._changeDetectorRef.markForCheck();
+        //     });
     };
 
     resetSearch(): void {

@@ -119,7 +119,7 @@
                     <ngx-dropzone [multiple]="true" (change)="onSelect($event)">
                         <ngx-dropzone-label>Choose Image</ngx-dropzone-label>
                         <ngx-dropzone-preview *ngFor="let f of file" [removable]="true" (removed)="onRemove(f)">
-                            <ngx-dropzone-label>{{ f.name }} ({{ f.type }})</ngx-dropzone-label>
+                            <ngx-dropzone-label>{{ f.name }}</ngx-dropzone-label>
                         </ngx-dropzone-preview>
                     </ngx-dropzone>
                 </div>
@@ -224,7 +224,7 @@
                 <ngx-dropzone (change)="onSelect($event)">
                     <ngx-dropzone-label>Choose Image</ngx-dropzone-label>
                     <ngx-dropzone-preview *ngFor="let f of file" [removable]="true" (removed)="onRemove(f)">
-                        <ngx-dropzone-label>{{ f.name }} ({{ f.type }})</ngx-dropzone-label>
+                        <ngx-dropzone-label>{{ f.name }} </ngx-dropzone-label>
                     </ngx-dropzone-preview>
                 </ngx-dropzone>
             </div>

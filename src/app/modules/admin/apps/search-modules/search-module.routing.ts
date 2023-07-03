@@ -19,7 +19,7 @@ export const searchRoutes: Route[] = [
                 pathMatch: 'full'
             },
             {
-                path: 'products',
+                path: 'products/:value',
                 component: SearchProductsComponents
             },
             {
@@ -27,7 +27,7 @@ export const searchRoutes: Route[] = [
                 component: SearchOrdersComponents
             },
             {
-                path: 'customers',
+                path: 'customers/:value',
                 component: SearchCustomersComponents
             }
         ]
