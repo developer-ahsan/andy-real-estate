@@ -272,7 +272,10 @@
                     <div class="row" [formGroup]="paymentForm">
                         <div class="col-md-8 col-12 flex justify-between">
                             <div class="text-secondary font-bold">Payment Status:</div>
-                            <div class="text-secondary">ON HOLD: Pending payment method approval</div>
+                            <div class="text-red-600" *ngIf="!selectedOrder.paymentDate">ON HOLD: Pending payment method
+                                approval</div>
+                            <div class="text-green-600" *ngIf="selectedOrder.paymentDate">Active: Approved on
+                                {{selectedOrder.paymentDate | date}}</div>
                         </div>
                         <div class="col-md-4 col-12 text-right">
                             <mat-checkbox formControlName="blnTaxable">Taxable</mat-checkbox>

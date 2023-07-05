@@ -113,9 +113,16 @@
   </div>
 
   <div *ngIf="isConsolidatedBill && !isApplyLoader">
-
-    <div class="inline-block text-left print:p-0 w-full" id="htmltable" #htmltable>
-
+    <div *ngIf="consolidatedData.length == 0">
+      <div class="text-center">No Data Found</div>
+    </div>
+    <div class="inline-block text-left print:p-0 w-full" id="htmltable" #htmltable *ngIf="consolidatedData.length > 0">
+      <div>
+        <button mat-button mat-flat-button color="primary" class="min-w-40">Finalize This Bill</button>
+        <br>
+        <span class="text-red-500">Finalizing the bill will flag all orders on this bill as "finalized."</span>
+        <br>
+      </div>
       <!-- Invoice -->
       <div
         class="p-5 rounded-2xl mb-5 shadow bg-card print:w-auto print:p-0 print:rounded-none print:shadow-none print:bg-transparent"

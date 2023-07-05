@@ -185,3 +185,9 @@ export interface sendOrderCustomerEmail {
     productName: string;
     send_order_customer_email: boolean;
 };
+export interface updateQuoteProofContact {
+    artApproval_contact_id: number;
+    cartline_id: number;
+    imprint_id: number;
+    update_quote_proof_contact: boolean;
+};

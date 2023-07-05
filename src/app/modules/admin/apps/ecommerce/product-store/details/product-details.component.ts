@@ -31,7 +31,7 @@ export class StoreProductDetailsComponent implements OnInit, OnDestroy {
   isLoading: boolean = true;
   isProductFetched: boolean = true;
   ordersCount: number = 0;
-  selectedProduct: ProductsDetails = null;
+  selectedProduct: any = null;
   storeData: any = null;
   private _unsubscribeAll: Subject<any> = new Subject<any>();
   routes = [];
@@ -72,6 +72,27 @@ export class StoreProductDetailsComponent implements OnInit, OnDestroy {
   getStoreProductDetail(id) {
     this._storeProductService.product$.pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
       this.selectedProduct = res["data"][0];
+      if (this.selectedProduct.temp) {
+        if (this.selectedProduct.blnEProcurement) {
+          if (this.selectedProduct.blnProductNumbers) {
+            this.selectedProduct["siteLink"] = `https://${this.selectedProduct.storeName}/${this.selectedProduct.categoryPermalink}/${this.selectedProduct.subCategoryPermalink}/${this.selectedProduct.permalink}/${this.selectedProduct.pk_storeProductID}`;
+          } else {
+            this.selectedProduct["siteLink"] = `https://${this.selectedProduct.storeName}/${this.selectedProduct.categoryPermalink}/${this.selectedProduct.subCategoryPermalink}/${this.selectedProduct.permalink}`;
+          }
+        } else {
+          if (this.selectedProduct.blnProductNumbers) {
+            this.selectedProduct["siteLink"] = `http://${this.selectedProduct.storeName}/${this.selectedProduct.categoryPermalink}/${this.selectedProduct.subCategoryPermalink}/${this.selectedProduct.permalink}/${this.selectedProduct.pk_storeProductID}`;
+          } else {
+            this.selectedProduct["siteLink"] = `http://${this.selectedProduct.storeName}/${this.selectedProduct.categoryPermalink}/${this.selectedProduct.subCategoryPermalink}/${this.selectedProduct.permalink}`;
+          }
+        }
+      } else {
+        if (this.selectedProduct.blnEProcurement) {
+          this.selectedProduct["siteLink"] = `https://${this.selectedProduct.storeName}/dspProductDetails.cfm/${this.selectedProduct.fk_productID}/${this.selectedProduct.pk_storeProductID}`;
+        } else {
+          this.selectedProduct["siteLink"] = `http://${this.selectedProduct.storeName}/dspProductDetails.cfm/${this.selectedProduct.fk_productID}/${this.selectedProduct.pk_storeProductID}`;
+        }
+      }
       if (!this.selectedProduct["blnStoreActive"]) {
         let index = this.routes.findIndex(item => item.id == 212);
         if (index == -1) {

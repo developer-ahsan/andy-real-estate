@@ -115,9 +115,9 @@
                     </mat-form-field>
                 </div>
                 <div class="col-12 mb-2">
-                    <mat-label>Attach Documents: </mat-label>
+                    <mat-label>Attach All Documents: </mat-label>
                     <ngx-dropzone [multiple]="true" (change)="onSelect($event)">
-                        <ngx-dropzone-label>Choose Image</ngx-dropzone-label>
+                        <ngx-dropzone-label>Choose Documents</ngx-dropzone-label>
                         <ngx-dropzone-preview *ngFor="let f of file" [removable]="true" (removed)="onRemove(f)">
                             <ngx-dropzone-label>{{ f.name }}</ngx-dropzone-label>
                         </ngx-dropzone-preview>
@@ -220,9 +220,9 @@
                 </mat-form-field>
             </div>
             <div class="col-12 mb-2">
-                <mat-label>Attach Documents: </mat-label>
+                <mat-label>Attach All Documents: </mat-label>
                 <ngx-dropzone (change)="onSelect($event)">
-                    <ngx-dropzone-label>Choose Image</ngx-dropzone-label>
+                    <ngx-dropzone-label>Choose Documents</ngx-dropzone-label>
                     <ngx-dropzone-preview *ngFor="let f of file" [removable]="true" (removed)="onRemove(f)">
                         <ngx-dropzone-label>{{ f.name }} </ngx-dropzone-label>
                     </ngx-dropzone-preview>

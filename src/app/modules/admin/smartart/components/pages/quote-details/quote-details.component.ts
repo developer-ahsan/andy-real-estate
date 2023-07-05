@@ -5,10 +5,10 @@ import { MatDrawer } from '@angular/material/sidenav';
 import { ActivatedRoute, NavigationExtras, Router } from '@angular/router';
 import { AuthService } from 'app/core/auth/auth.service';
 import moment from 'moment';
-import { Subject } from 'rxjs';
+import { Subject, forkJoin, of } from 'rxjs';
 import { debounceTime, distinctUntilChanged, filter, finalize, switchMap, takeUntil, tap } from 'rxjs/operators';
 import { SmartArtService } from '../../smartart.service';
-import { sendAutoRequest, UpdateArtworkTgas, UpdateQuoteOptions, updateQuotePurchaseOrderComment, updateReorderNumber } from '../../smartart.types';
+import { sendAutoRequest, UpdateArtworkTgas, UpdateQuoteOptions, updateQuoteProofContact, updateQuotePurchaseOrderComment, updateReorderNumber } from '../../smartart.types';
 @Component({
   selector: 'app-quote-details',
   templateUrl: './quote-details.component.html',
@@ -94,6 +94,12 @@ export class QuoteDashboardDetailsComponent implements OnInit, OnDestroy {
   isAutoRequestLoader: boolean = false;
   isManualProofLoader: boolean = false;
   imageValue: any;
+  virtualProofData = [];
+  artworkTags = [];
+  selectedArtworkTags = [];
+  contactProofs = [];
+  smartArtUser: any;
+
   constructor(
     private _changeDetectorRef: ChangeDetectorRef,
     private _authService: AuthService,
@@ -103,6 +109,7 @@ export class QuoteDashboardDetailsComponent implements OnInit, OnDestroy {
   ) { }
 
   ngOnInit(): void {
+    this.smartArtUser = JSON.parse(sessionStorage.getItem('smartArt'));
     this.userData = this._authService.parseJwt(this._authService.accessToken);
     this._activeRoute.queryParams.subscribe(res => {
       this.paramData = res;
@@ -151,7 +158,8 @@ export class QuoteDashboardDetailsComponent implements OnInit, OnDestroy {
     let params = {
       quote_imprint_details: true,
       cartLine_id: this.paramData.pk_cartLineID,
-      product_id: this.paramData.fk_productID
+      product_id: this.paramData.fk_productID,
+      imprint_id: this.paramData.fk_imprintID
     }
     this._smartartService.getSmartArtData(params).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
       this.quoteImprintdata = res["data"];
@@ -175,10 +183,98 @@ export class QuoteDashboardDetailsComponent implements OnInit, OnDestroy {
         //   }
       }
       // this.getArtworkOther();
+      const getArtworkOtherObservable = of(this.getArtworkOther());
+      forkJoin([
+        getArtworkOtherObservable,
+      ])
+
+    }, err => {
+      this.isLoading = false;
+      this._changeDetectorRef.markForCheck();
+    });
+  }
+  getArtworkOther() {
+    this.artWorkLoader = true;
+    let params = {
+      quote_imprint_details_artApproval: true,
+      cartLine_id: this.paramData.pk_cartLineID,
+      imprint_id: this.paramData.fk_imprintID,
+      product_id: this.paramData.fk_productID,
+      store_id: this.quoteData.pk_storeID,
+      store_product_id: this.quoteData.productID
+    }
+    this.artworktemplatesData = [];
+    this._smartartService.getSmartArtData(params).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+      if (res["artworkTemplate"]) {
+        this.artworktemplatesData = res["artworkTemplate"];
+      }
+      if (res["virtualProof"]) {
+        this.virtualProofData = res["virtualProof"];
+      }
+      if (res["storeArtworkTag"]) {
+        this.artworkTags = res["storeArtworkTag"];
+        this.selectedArtworkTags = [];
+        res["cartLineArtworkTags"].forEach(element => {
+          this.selectedArtworkTags.push(element.fk_artworkTagID);
+        });
+      }
+      // Assign email recipients
+      this.quoteImprintdata.forEach(imprint => {
+        if ((imprint?.fk_artApprovalContactID || imprint?.fk_storeUserApprovalContactID) && !imprint?.blnStoreUserApprovalDone) {
+          imprint.emailRecipients = this.quoteData.email;
+        }
+        if (!imprint?.fk_artApprovalContactID && !imprint?.fk_storeUserApprovalContactID && !imprint?.blnStoreUserApprovalDone) {
+          imprint.selectedContact = 0;
+          if (imprint.methodName.toLowerCase().includes('screen')) {
+            imprint.selectedContactEmail = this.quoteData.supplierInformationScreenprintEmail;
+            this.quoteData.artworkEmail = imprint
+          } else if (imprint.methodName.toLowerCase().includes('embroid')) {
+            imprint.selectedContactEmail = this.quoteData.supplierInformationEmbroideryEmail;
+          } else {
+            imprint.selectedContactEmail = this.quoteData.supplierInformationArtworkEmail;
+          }
+          this.quoteData.artworkEmail = imprint.selectedContactEmail;
+        } else {
+          imprint.selectedContact = null;
+          if (imprint.methodName.toLowerCase().includes('screen')) {
+            imprint.selectedContactEmail = this.quoteData.supplierInformationScreenprintEmail;
+          } else if (imprint.methodName.toLowerCase().includes('embroid')) {
+            imprint.selectedContactEmail = this.quoteData.supplierInformationEmbroideryEmail;
+          } else {
+            imprint.selectedContactEmail = this.quoteData.supplierInformationArtworkEmail;
+          }
+          this.quoteData.artworkEmail = imprint.selectedContactEmail;
+        }
+      });
+      // Contact Proof
+      if (res["contactProofs"]) {
+        res["contactProofs"].forEach(element => {
+          if (element.blnStoreUserApprovalContact) {
+            element.value = element.pk_artApprovalContactID;
+          } else {
+            element.value = element.pk_artApprovalContactID;
+          }
+          this.quoteImprintdata.forEach(imprint => {
+            if (imprint?.fk_storeUserApprovalContactID && !imprint?.blnStoreUserApprovalDone) {
+              if (imprint?.fk_storeUserApprovalContactID == element.pk_artApprovalContactID) {
+                imprint.selectedContact = element;
+                imprint.selectedContactEmail = element.email;
+              }
+            } else if (imprint?.fk_artApprovalContactID && imprint?.fk_artApprovalContactID == element.pk_artApprovalContactID) {
+              imprint.selectedContact = element;
+              imprint.selectedContactEmail = element.email;
+            }
+          });
+          element.blnStoreUserApproval = element.blnStoreUserApprovalContacts ? 1 : 0;
+        });
+        this.contactProofs = res["contactProofs"];
+      }
+      this.artWorkLoader = false;
       this.isLoading = false;
       this._changeDetectorRef.markForCheck();
     }, err => {
       this.isLoading = false;
+      this.artWorkLoader = false;
       this._changeDetectorRef.markForCheck();
     });
   }
@@ -189,13 +285,13 @@ export class QuoteDashboardDetailsComponent implements OnInit, OnDestroy {
   lastProof() {
     let params = {
       art_proof: true,
-      orderLine_id: this.paramData.pk_orderLineID,
+      cartLine_id: this.paramData.pk_cartLineID,
       imprint_id: this.paramData.fk_imprintID
     }
     this.lastProofLoader = true;
     this._smartartService.getSmartArtData(params).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
       if (res["data"].length > 0) {
-        this.lastProofData = res["data"][0].proofSentDate;
+        this.lastProofData = res["data"][0];
       } else {
         this.lastProofData = 'N/A';
       }
@@ -425,6 +521,65 @@ export class QuoteDashboardDetailsComponent implements OnInit, OnDestroy {
       this.isManualProofLoader = false;
       this._changeDetectorRef.markForCheck();
     });
+  }
+  // Update Proof Contact
+  updateProofContact(imprint) {
+    let artAprrovalID;
+    if (imprint.selectedContact == 0) {
+      artAprrovalID = 0;
+    } else {
+      artAprrovalID = imprint.selectedContact.pk_artApprovalContactID;
+    }
+    imprint.isProofLoader = true;
+    let payload: updateQuoteProofContact = {
+      artApproval_contact_id: artAprrovalID,
+      cartline_id: Number(this.paramData.pk_cartLineID),
+      imprint_id: Number(imprint.pk_imprintID),
+      update_quote_proof_contact: true
+    }
+    this._smartartService.UpdateSmartArtData(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+      if (res["success"]) {
+        this._smartartService.snackBar(res["message"]);
+        if (imprint.selectedContact == 0) {
+          imprint.selectedContactEmail = this.quoteData.email;
+        } else {
+          imprint.selectedContactEmail = imprint.selectedContact.email;
+        }
+      }
+      imprint.isProofLoader = false;
+      this._changeDetectorRef.markForCheck();
+    }, err => {
+      imprint.isProofLoader = false;
+      this._changeDetectorRef.markForCheck();
+    })
+  }
+  // // Update Claim
+  updateClaim(item, check) {
+    // item.isClaimLoader = true;
+    // let claimID = null;
+    // if (check) {
+    //   claimID = Number(this.smartArtUser.adminUserID)
+    // } else {
+    //   claimID = null;
+    // }
+    // this._changeDetectorRef.markForCheck();
+    // let payload: UpdateOrderLineClaim = {
+    //   orderLineID: Number(this.paramData.pk_orderLineID),
+    //   blnClaim: check,
+    //   fk_smartArtDesignerClaimID: claimID,
+    //   update_orderline_claim: true
+    // }
+    // this._smartartService.UpdateSmartArtData(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+    //   if (res["success"]) {
+    //     this._smartartService.snackBar(res["message"]);
+    //     item.fk_smartArtDesignerClaimID = claimID;
+    //   }
+    //   item.isClaimLoader = false;
+    //   this._changeDetectorRef.markForCheck();
+    // }, err => {
+    //   item.isClaimLoader = false;
+    //   this._changeDetectorRef.markForCheck();
+    // });
   }
   /**
      * On destroy

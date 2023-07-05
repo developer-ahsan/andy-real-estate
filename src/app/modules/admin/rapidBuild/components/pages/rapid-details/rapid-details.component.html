@@ -139,13 +139,13 @@
                                         </tr>
                                         <tr>
                                             <td valign="top"><b>Product name:</b></td>
-                                            <td valign="top"><a
+                                            <td valign="top"><a class="text-blue-500"
                                                     routerLink="/apps/ecommerce/inventory/{{buildDetails.pk_productID}}"
                                                     target="_blank">{{buildDetails.productName}}</a></td>
                                         </tr>
                                         <tr>
                                             <td valign="top"><b>Product number:</b></td>
-                                            <td valign="top"><a
+                                            <td valign="top"><a class="text-blue-500"
                                                     routerLink="/apps/ecommerce/inventory/{{buildDetails.pk_productID}}"
                                                     target="_blank">{{buildDetails.productNumber}}</a></td>
                                         </tr>
@@ -170,17 +170,18 @@
                                                 <span *ngIf="buildDetails.sex == 4">Unisex</span>
                                             </td>
                                         </tr>
-                                        <!-- <tr>
+                                        <tr>
                                             <td valign="top"><b>Supplier Link:</b></td>
                                             <td valign="top">
-                                                <a href="https://www.sanmar.com/p/10183_BlkHthr"
-                                                    target="_blank">Supplier product link</a>
+                                                <a class="text-blue-500" href="{{buildDetails.supplierLink}}"
+                                                    target="_blank">Supplier product
+                                                    link</a>
                                             </td>
-                                        </tr> -->
+                                        </tr>
                                         <tr>
                                             <td valign="top"><b>Supplier:</b></td>
                                             <td valign="top">
-                                                <a href="{{buildDetails.websiteURL}}"
+                                                <a class="text-blue-500" href="{{buildDetails.websiteURL}}"
                                                     target="_blank">{{buildDetails.companyName}}</a>
                                             </td>
                                         </tr>

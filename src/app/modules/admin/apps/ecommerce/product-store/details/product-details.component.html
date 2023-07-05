@@ -71,13 +71,12 @@
                                 <div class="flex ml-3 text-sm">
                                     <a class="float-right text-sm"
                                         style="color: #959595; text-decoration: underline; cursor: pointer;"
-                                        href="{{seletedProduct?.protocol}}{{selectedProduct?.storeURL}}"
-                                        target="_blank">
+                                        [routerLink]="['/apps/stores/',selectedProduct.fk_storeID]" target="_blank">
                                         {{selectedProduct?.storeName || not_available}}
                                     </a>
-                                    <a class="float-right text-sm ml-2"
+                                    <a class="float-right text-sm ml-2" *ngIf="selectedProduct.siteLink"
                                         style="color: #959595; text-decoration: underline; cursor: pointer;"
-                                        href="{{selectedProduct?.supplierLink}}" target="_blank">(Site)</a>
+                                        href="{{selectedProduct?.siteLink}}" target="_blank">(Site)</a>
                                 </div>
                             </div>
                         </div>

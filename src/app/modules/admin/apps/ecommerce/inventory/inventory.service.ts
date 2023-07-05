@@ -175,6 +175,7 @@ export class InventoryService {
         return this._httpClient.get<ProductsList[]>(environment.products, {
             params: {
                 list: true,
+                is_details: true,
                 product_id: productId
             }
         }).pipe(

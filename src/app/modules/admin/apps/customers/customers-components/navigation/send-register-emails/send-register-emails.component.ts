@@ -133,7 +133,7 @@ export class SendRegisterEmailsComponent implements OnInit, OnDestroy {
       store_name: this.selectedStore.storeName,
       storeURL: this.selectedStore.storeURL,
       additionalEmails: this.selectedCustomer.additionalEmails,
-      user_email: this.selectedCustomer.email,
+      user_email: [this.selectedCustomer.email],
       send_registration_email: true,
     }
     this._customerService.PostApiData(payload).pipe(takeUntil(this._unsubscribeAll), finalize(() => {
