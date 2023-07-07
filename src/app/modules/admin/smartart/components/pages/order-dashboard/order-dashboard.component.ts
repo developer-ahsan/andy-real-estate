@@ -200,6 +200,13 @@ export class OrderDashboardComponent implements OnInit, OnDestroy {
       if (this.isFilterLoader) {
         this.drawer.toggle();
       }
+      res["data"].forEach(element => {
+        if (element.viewProofDetails) {
+          element.proofDetails = element.viewProofDetails.split(',');
+        } else {
+          element.proofDetails = null;
+        }
+      });
       this.dataSource = res["data"];
       this.totalRecords = res["totalRecords"];
       if (this.tempDataSource.length == 0) {
@@ -353,8 +360,12 @@ export class OrderDashboardComponent implements OnInit, OnDestroy {
     this.claimItem = item;
     this.claimCheck = check;
     if (check) {
-      this.isClaimedModal = true;
-      this._changeDetectorRef.markForCheck();
+      if (!item.fk_smartArtDesignerClaimID) {
+        this.ClaimUnClaimItem();
+      } else {
+        this.isClaimedModal = true;
+        this._changeDetectorRef.markForCheck();
+      }
     } else {
       this.ClaimUnClaimItem();
     }

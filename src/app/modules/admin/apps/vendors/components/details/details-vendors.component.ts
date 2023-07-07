@@ -5,6 +5,7 @@ import { FuseMediaWatcherService } from '@fuse/services/media-watcher';
 import { Subject } from 'rxjs';
 import { debounceTime, distinctUntilChanged, filter, finalize, switchMap, takeUntil, tap } from 'rxjs/operators';
 import { VendorsService } from '../vendors.service';
+import { DashboardsService } from 'app/modules/admin/dashboards/dashboard.service';
 @Component({
   selector: 'app-details-vendors',
   templateUrl: './details-vendors.component.html',
@@ -32,12 +33,14 @@ export class VendorsDetailsComponent implements OnInit, OnDestroy {
   searchSupplierCtrl = new FormControl();
   selectedSupplier: any;
   isSearchingSupplier = false;
+  allVendors = [];
   /**
    * Constructor
    */
   constructor(
     private _changeDetectorRef: ChangeDetectorRef,
     private _vendorsService: VendorsService,
+    private _commonService: DashboardsService,
     private _router: Router,
     private route: ActivatedRoute,
     private _fuseMediaWatcherService: FuseMediaWatcherService,
@@ -55,6 +58,7 @@ export class VendorsDetailsComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.getSupplierData();
+    this.getAllSuppliers();
     let params;
     this.searchSupplierCtrl.valueChanges.pipe(
       filter((res: any) => {
@@ -95,13 +99,23 @@ export class VendorsDetailsComponent implements OnInit, OnDestroy {
     this.isLoading = false;
     this.sideDrawer();
   }
+  getAllSuppliers() {
+    this._commonService.suppliersData$
+      .pipe(takeUntil(this._unsubscribeAll))
+      .subscribe((supplier) => {
+        this.allVendors = supplier["data"];
+        this._changeDetectorRef.markForCheck();
+      }, err => {
+        this._changeDetectorRef.markForCheck();
+      });
+  }
   onSelected(ev) {
-    this.selectedSupplier = ev.option.value;
+    // this.selectedSupplier = ev.option.value;
     this.selectedRoute = 'information';
     setTimeout(() => {
       this.topScroll.nativeElement.scrollIntoView({ behavior: 'smooth' });
     }, 300);
-    this._router.navigate([`apps/vendors/${this.selectedSupplier.pk_companyID}/information`]);
+    this._router.navigate([`apps/vendors/${this.selectedSupplier}/information`]);
     this.selectedScreeen = 'Vendor Information';
   }
   routesInitialization() {
@@ -280,6 +294,7 @@ export class VendorsDetailsComponent implements OnInit, OnDestroy {
   getSupplierData() {
     this._vendorsService.Single_Suppliers$.pipe(takeUntil(this._unsubscribeAll)).subscribe(supplier => {
       this.supplierData = supplier["data"][0];
+      this.selectedSupplier = this.supplierData.pk_companyID;
       this.routesInitialization();
     });
   }

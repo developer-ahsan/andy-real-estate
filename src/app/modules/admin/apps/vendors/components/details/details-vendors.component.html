@@ -22,7 +22,11 @@
                 <p class="text-seconday"></p>
             </h2>
             <mat-form-field class="w-100">
-                <input matInput placeholder="Search Vendors" matTooltip="Search Vendors by name"
+                <mat-select matInput [(ngModel)]="selectedSupplier" (selectionChange)="onSelected($event)">
+                    <mat-option *ngFor="let item of allVendors"
+                        [value]="item.pk_companyID">{{item.companyName}}</mat-option>
+                </mat-select>
+                <!-- <input matInput placeholder="Search Vendors" matTooltip="Search Vendors by name"
                     [matAutocomplete]="auto" [formControl]="searchSupplierCtrl">
                 <mat-autocomplete class="w-full" #auto="matAutocomplete" (optionSelected)="onSelected($event)"
                     [displayWith]="displayWith">
@@ -32,7 +36,7 @@
                             <span>{{item.companyName}}</span>
                         </mat-option>
                     </ng-container>
-                </mat-autocomplete>
+                </mat-autocomplete> -->
             </mat-form-field>
         </div>
 

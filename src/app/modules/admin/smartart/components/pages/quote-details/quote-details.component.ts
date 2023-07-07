@@ -534,7 +534,7 @@ export class QuoteDashboardDetailsComponent implements OnInit, OnDestroy {
     let payload: updateQuoteProofContact = {
       artApproval_contact_id: artAprrovalID,
       cartline_id: Number(this.paramData.pk_cartLineID),
-      imprint_id: Number(imprint.pk_imprintID),
+      imprint_id: Number(imprint.imprintID),
       update_quote_proof_contact: true
     }
     this._smartartService.UpdateSmartArtData(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {

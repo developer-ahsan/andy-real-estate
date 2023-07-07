@@ -24,8 +24,8 @@
                 <!-- Current Comments -->
                 <div *ngIf="mainScreen == 'Current Comments'" class="mt-5">
                     <div *ngIf="adminComment;else other_content">
-                        <div *ngFor="let item of adminComment">
-                            <span [innerHTML]="item.adminComments">
+                        <div>
+                            <span [innerHTML]="adminComment">
                             </span>
                         </div>
                     </div>

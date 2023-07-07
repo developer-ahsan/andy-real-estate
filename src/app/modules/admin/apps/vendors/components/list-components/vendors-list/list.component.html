@@ -13,9 +13,8 @@
                     </div>
                     <div class="col-12 col-md-6">
                         <mat-form-field class="w-full">
-                            <input [disabled]="isSearching" matInput matTooltip="Press enter for search"
-                                placeholder="Search by Keyword" [(ngModel)]="keyword"
-                                (keyup.enter)="searchSuppliersByKeyword()">
+                            <input [disabled]="isSearching" matInput placeholder="Search by Keyword"
+                                [(ngModel)]="keyword" (input)="onKeywordChange()">
                         </mat-form-field>
                     </div>
                     <div class="text-right col-12">
@@ -69,10 +68,10 @@
                     (click)="ViewDetails(row)">
                 </tr>
             </table>
-            <mat-paginator #paginator class="border-b sm:border-t sm:border-b-0 z-10 bg-gray-50 dark:bg-transparent"
+            <!-- <mat-paginator #paginator class="border-b sm:border-t sm:border-b-0 z-10 bg-gray-50 dark:bg-transparent"
                 [ngClass]="{'pointer-events-none': isLoading}" [length]="totalSupplier" [pageIndex]="0" [pageSize]="20"
                 (page)="getNextSupplierData($event)" [hidePageSize]="true">
-            </mat-paginator>
+            </mat-paginator> -->
         </div>
         <!-- No color Found -->
         <ng-template #other_content>

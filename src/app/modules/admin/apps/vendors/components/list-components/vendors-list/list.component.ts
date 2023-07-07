@@ -34,6 +34,8 @@ export class VendorsListComponent implements OnInit, OnDestroy {
   keyword: string = '';
   blnActive = 1;
 
+  allVendros = [];
+
   constructor(
     private _changeDetectorRef: ChangeDetectorRef,
     private _UsersService: UsersService,
@@ -44,87 +46,59 @@ export class VendorsListComponent implements OnInit, OnDestroy {
   ) { }
 
   ngOnInit(): void {
+    this.getAllSuppliers();
     if (this._vendorService.vendorsSearchKeyword == '') {
-      this.getAllSuppliers();
     } else {
       this.isLoading = true;
       this.keyword = this._vendorService.vendorsSearchKeyword;
-      this.getSuppliers(1);
+      this.getSuppliers();
     }
   };
+
   getAllSuppliers() {
-    // this._commonService.suppliersData$.pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
-    //   res["data"].forEach(element => {
-    //     if (element.blnActive) {
-    //       this.dataSourceSupplier.push(element);
-    //       this.tempDataSourceSupplier.push(element);
-    //       this.totalSupplier++;
-    //       this.temptotalSupplier++;
-    //     }
-    //   });
-    //   console.log(res);
-    // });
-    this._vendorService.Suppliers$.pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
-      this.dataSourceSupplier = res["data"];
-      this.totalSupplier = res["totalRecords"];
-      this.tempDataSourceSupplier = res["data"];
-      this.temptotalSupplier = res["totalRecords"];
-    });
+    this.dataSourceSupplier = [];
+    this.tempDataSourceSupplier = [];
+    this._commonService.suppliersData$
+      .pipe(takeUntil(this._unsubscribeAll))
+      .subscribe((supplier) => {
+        this.allVendros = supplier["data"];
+        supplier["data"].forEach(element => {
+          if (element.blnActiveVendor) {
+            this.dataSourceSupplier.push(element);
+            this.tempDataSourceSupplier.push(element);
+          }
+        });
+        this._changeDetectorRef.markForCheck();
+      }, err => {
+        this._changeDetectorRef.markForCheck();
+      });
   }
-  getNextSupplierData(event) {
-    const { previousPageIndex, pageIndex } = event;
-    if (pageIndex > previousPageIndex) {
-      this.pageSupplier++;
+  getSuppliers() {
+    if (this.blnNotDisable == 0) {
+      this.dataSourceSupplier = this.allVendros.filter(supplier => {
+        return supplier.companyName.toLowerCase().includes(this.keyword.toLowerCase())
+      });
     } else {
-      this.pageSupplier--;
-    };
-    this.getSuppliers(this.pageSupplier);
-  };
-  getSuppliers(page) {
-    let params = {
-      supplier: true,
-      bln_active: this.blnActive,
-      size: 20,
-      page: page,
-      keyword: this.keyword
+      this.dataSourceSupplier = this.tempDataSourceSupplier.filter(supplier => {
+        return supplier.companyName.toLowerCase().includes(this.keyword.toLowerCase())
+      });
     }
-    this._vendorService.getVendorsData(params).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
-      this.isSearching = false;
-      this.isLoading = false;
-      this.dataSourceSupplier = res["data"];
-      this.totalSupplier = res["totalRecords"];
-      this._vendorService.vendorsSearchKeyword = '';
-      this._changeDetectorRef.markForCheck();
-    }, err => {
-      this.isLoading = false;
-      this.isSearching = false;
-      this._changeDetectorRef.markForCheck();
-    });
   }
   ViewDetails(item) {
     this._router.navigate([item.pk_companyID + '/information'], { relativeTo: this.route });
   }
-  searchSuppliersByKeyword() {
-    // if (!this.keyword) {
-    //   this._vendorService.snackBar('Keyword is required');
-    // } else {
-    this.isSearching = true;
-    this.blnActive = this.blnNotDisable;
-    if (this.blnNotDisable == 0) {
-      this.blnActive = null;
+  onKeywordChange() {
+    if (!this.keyword) {
+      this.getAllSuppliers();
+    } else {
+      this.getSuppliers();
     }
-    this.getSuppliers(1);
-    // }
   }
   resetSearch() {
-    if (this.dataSourceSupplier.length > 0) {
-      this.paginator.firstPage();
-    }
+    this.getAllSuppliers();
     this.keyword = '';
     this.blnNotDisable = 1;
     this.blnActive = 1;
-    this.dataSourceSupplier = this.tempDataSourceSupplier;
-    this.totalSupplier = this.temptotalSupplier;
   }
   /**
      * On destroy

@@ -164,3 +164,11 @@ export interface UserUpdateObject {
     user_type: string;
     user_id: number
 }
+
+export interface userComment {
+    admin_comment: string;
+    user_id: number;
+    user_name: string;
+    emails: string[];
+    user_comment: boolean;
+};

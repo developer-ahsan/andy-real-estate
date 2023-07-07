@@ -40,10 +40,10 @@
                     (click)="ViewDetails(row)">
                 </tr>
             </table>
-            <mat-paginator #paginator class="border-b sm:border-t sm:border-b-0 z-10 bg-gray-50 dark:bg-transparent"
+            <!-- <mat-paginator #paginator class="border-b sm:border-t sm:border-b-0 z-10 bg-gray-50 dark:bg-transparent"
                 [ngClass]="{'pointer-events-none': isLoading}" [length]="totalSupplier" [pageIndex]="0" [pageSize]="20"
                 (page)="getNextSupplierData($event)" [hidePageSize]="true">
-            </mat-paginator>
+            </mat-paginator> -->
         </div>
         <!-- No color Found -->
         <ng-template #other_content>

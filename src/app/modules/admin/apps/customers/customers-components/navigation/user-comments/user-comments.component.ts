@@ -7,6 +7,7 @@ import { environment } from 'environments/environment';
 import { Subject, Subscription } from 'rxjs';
 import { finalize, takeUntil } from 'rxjs/operators';
 import { CustomersService } from '../../orders.service';
+import { userComment } from '../../customers.types';
 
 @Component({
   selector: 'app-user-comments',
@@ -75,7 +76,7 @@ export class UserCommentsComponent implements OnInit {
           this.isLoadComments = false;
           this._changeDetectorRef.markForCheck();
         })).subscribe(comments => {
-          this.adminComment = comments["data"];
+          this.adminComment = comments["data"][0].adminComments;
           this.totalComments = comments["totalRecords"];
           if (this.commentsPage == 1) {
             this.getCommentators();
@@ -167,10 +168,11 @@ export class UserCommentsComponent implements OnInit {
     });
     this.isAddCommentLoader = true;
 
-    const { pk_userID } = this.selectedCustomer;
-    const payload = {
+    const { pk_userID, userName } = this.selectedCustomer;
+    const payload: userComment = {
       admin_comment: this.ngComment,
       user_id: pk_userID,
+      user_name: userName,
       emails: emailArr,
       user_comment: true
     };
@@ -198,7 +200,7 @@ export class UserCommentsComponent implements OnInit {
             this.commentUpdateLoader = false;
             this.isAddCommentLoader = false;
             this._changeDetectorRef.markForCheck();
-            this.adminComment = comments["data"];
+            this.adminComment = comments["data"][0].adminComments;
             this.mainScreen = 'Current Comments';
             this._snackBar.open("Comment added successfully", '', {
               horizontalPosition: 'center',

@@ -58,7 +58,13 @@
                     <!-- Panel title -->
                     <div class="ml-2 lg:ml-0 text-3xl font-bold tracking-tight leading-none">
                         {{getPanelInfo(selectedPanel).title}}
+                        <p class="text-sm font-medium text-secondary mt-1" *ngIf="selectedPanel=='disabled'">Total
+                            Disabled
+                            Vendors: <b>{{disabledVendors}}</b></p>
+                        <p class="text-sm font-medium text-secondary mt-1" *ngIf="selectedPanel=='list'">Total Active
+                            Vendors: <b>{{totalVendors}}</b></p>
                     </div>
+
                 </div>
 
                 <!-- Load settings panel -->

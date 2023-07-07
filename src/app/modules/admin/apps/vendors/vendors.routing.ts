@@ -32,7 +32,7 @@ export const vendorsRoutes: Route[] = [
         path: '',
         component: VendorsComponent,
         resolve: {
-            suppliers: SuppliersListsResolver
+            // suppliers: SuppliersListsResolver
         }
     },
     {

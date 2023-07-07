@@ -6,6 +6,7 @@ import { Router } from '@angular/router';
 import { FuseMediaWatcherService } from '@fuse/services/media-watcher';
 import { VendorsService } from './vendors.service';
 import { MatDrawer } from '@angular/material/sidenav';
+import { DashboardsService } from 'app/modules/admin/dashboards/dashboard.service';
 
 @Component({
     selector: 'app-vendors-list',
@@ -27,6 +28,8 @@ export class VendorsComponent {
     panels: any[] = [];
     selectedPanel: string = 'list';
 
+    disabledVendors: any = 0;
+    totalVendors = 0;
 
     // 
     /**
@@ -35,6 +38,7 @@ export class VendorsComponent {
     constructor(
         private _changeDetectorRef: ChangeDetectorRef,
         private _router: Router,
+        private _commonService: DashboardsService,
         private _vendorService: VendorsService,
         private _fuseMediaWatcherService: FuseMediaWatcherService,
     ) {
@@ -101,10 +105,26 @@ export class VendorsComponent {
                 // Mark for check
                 this._changeDetectorRef.markForCheck();
             });
+        this.getSuppliers();
     }
 
 
-
+    getSuppliers() {
+        this._commonService.suppliersData$
+            .pipe(takeUntil(this._unsubscribeAll))
+            .subscribe((supplier) => {
+                supplier["data"].forEach(element => {
+                    if (!element.blnActiveVendor) {
+                        this.disabledVendors++;
+                    } else {
+                        this.totalVendors++;
+                    }
+                });
+                this._changeDetectorRef.markForCheck();
+            }, err => {
+                this._changeDetectorRef.markForCheck();
+            });
+    }
 
 
     /**
