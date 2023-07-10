@@ -46,6 +46,12 @@ export class SearchService {
             params: params
         }).pipe(retry(3));
     };
+    // Vendors
+    getVendorsSearchData(params): Observable<any[]> {
+        return this._httpClient.get<any[]>(environment.vendors, {
+            params: params
+        }).pipe(retry(3));
+    };
     // -----------------------------------------------------------------------------------------------------
     // @ Accessors
     // -----------------------------------------------------------------------------------------------------

@@ -162,10 +162,19 @@ export class SearchComponent implements OnChanges, OnInit, OnDestroy {
         this.close();
     }
     searchVendor(event) {
+        // const val = event.target.value;
+        // if (val != '') {
+        //     this._vendorService.vendorsSearchKeyword = val;
+        //     this.router.navigateByUrl('/apps/vendors');
+        // }
+        // this.close();
         const val = event.target.value;
         if (val != '') {
-            this._vendorService.vendorsSearchKeyword = val;
-            this.router.navigateByUrl('/apps/vendors');
+            // this._searchService.customerKeyword = val;
+            // this.router.navigateByUrl('/', { skipLocationChange: true }).then(() => {
+            //     this.router.navigate(['/apps/ecommerce/inventory'])
+            // });
+            this.router.navigateByUrl('/apps/search/vendors/' + val);
         }
         this.close();
     }

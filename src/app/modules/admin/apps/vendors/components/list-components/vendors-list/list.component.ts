@@ -48,6 +48,7 @@ export class VendorsListComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.getAllSuppliers();
     if (this._vendorService.vendorsSearchKeyword == '') {
+      this.onKeywordChange();
     } else {
       this.isLoading = true;
       this.keyword = this._vendorService.vendorsSearchKeyword;

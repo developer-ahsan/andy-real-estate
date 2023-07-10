@@ -7,6 +7,7 @@ import { SearchComponents } from './search.component';
 import { SearchProductsComponents } from './search-products/search-products.component';
 import { SearchOrdersComponents } from './search-orders/search-orders.component';
 import { SearchCustomersComponents } from './search-customers/search-customers.component';
+import { SearchVendorsComponents } from './search-vendors/search-vendors.component';
 
 export const searchRoutes: Route[] = [
     {
@@ -29,6 +30,10 @@ export const searchRoutes: Route[] = [
             {
                 path: 'customers/:value',
                 component: SearchCustomersComponents
+            },
+            {
+                path: 'vendors/:value',
+                component: SearchVendorsComponents
             }
         ]
     }
