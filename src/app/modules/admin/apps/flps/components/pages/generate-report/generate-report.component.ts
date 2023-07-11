@@ -76,9 +76,10 @@ export class GenerateReportComponent implements OnInit {
     groupByStoresData: any;
     reportSummaryData: any;
     isUpdateCommissionLoader: boolean = false;
-    blnSendEmail: boolean = false;
+    blnSendEmail: boolean = true;
     @ViewChild('topScrollAnchor') topScroll: ElementRef;
     @ViewChild('summaryScrollAnchor') summaryScrollAnchor: ElementRef;
+    storeTotals: { Sales: number; Revenue: number; Num_Sales: number; EST_Profit: number; orderCommission: number; };
 
     /**
      * Constructor
@@ -302,8 +303,23 @@ export class GenerateReportComponent implements OnInit {
                     }
                 });
             });
-            console.log(this.groupByStoresData)
+            this.storeTotals = {
+                Sales: 0,
+                Revenue: 0,
+                Num_Sales: 0,
+                EST_Profit: 0,
+                orderCommission: 0
+            };
+            res["storesData"].forEach(element => {
+                this.storeTotals.Sales += element.Sales;
+                this.storeTotals.Revenue += element.Revenue;
+                this.storeTotals.Num_Sales += element.Num_Sales;
+                this.storeTotals.EST_Profit += element.EST_Profit;
+                this.storeTotals.orderCommission += element.orderCommission;
+            });
             this.reportSummaryData = res["storesData"];
+
+            console.log(this.storeTotals);
             setTimeout(() => {
                 this.topScroll.nativeElement.scrollIntoView({ behavior: 'smooth' });
             }, 100);

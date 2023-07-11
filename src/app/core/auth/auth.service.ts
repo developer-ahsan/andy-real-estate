@@ -156,7 +156,6 @@ export class AuthService {
 
                     // Store the access token in the local storage
                     this.accessToken = payload.accessToken;
-
                     // Set the authenticated flag to true
                     this._authenticated = true;
 

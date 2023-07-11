@@ -141,7 +141,7 @@
             <div class="p-6 pb-2 sm:p-8 dm:pb-2 lg:p-10 lg:pb-2">
                 <div class="text-secondary pb-0 mb-2 text-lg flex justify-between">
                     <b>{{item.store}}</b>
-                    <mat-checkbox (change)="checkOrUncheckStoresOrders($event)"></mat-checkbox>
+                    <mat-checkbox (change)="checkOrUncheckStoresOrders($event,item)"></mat-checkbox>
                 </div>
             </div>
             <div *ngFor="let data of item.date_data">
@@ -224,6 +224,15 @@
                         <td> {{item.Margin}}%</td>
                         <td>{{item.EST_Profit | currency}}</td>
                         <td>{{item.orderCommission | currency}}</td>
+                    </tr>
+                    <tr class="font-bold">
+                        <td>Grand Total</td>
+                        <td>{{storeTotals?.Sales | currency}}</td>
+                        <td>{{storeTotals?.Revenue | currency}}</td>
+                        <td>{{storeTotals?.Num_Sales}}</td>
+                        <td></td>
+                        <td>{{storeTotals?.EST_Profit | currency}}</td>
+                        <td>{{storeTotals?.orderCommission | currency}}</td>
                     </tr>
                 </tbody>
             </table>

@@ -527,6 +527,15 @@
               <a class="mt-3"
                 href="https://assets.consolidus.com/globalAssets/Stores/LogoBank2/{{selectedStore.pk_storeID}}/{{item.pk_logoBankID}}.{{item.extension}}"><u>View
                   vector file</u> </a>
+              <br>
+              <div class="space-x-2 mt-2 flex align-items-center font-bold text-green-700" *ngIf="item.blnInternal">
+                <mat-icon svgIcon="heroicons_outline:exclamation-circle" class="text-green-700 icon-size-4"></mat-icon>
+                <span class="text-md">Internal</span>
+              </div>
+              <div class="space-x-2 mt-2 flex align-items-center font-bold text-red-600" *ngIf="!item.blnInternal">
+                <mat-icon svgIcon="heroicons_outline:exclamation-circle" class="text-red-600 icon-size-4"></mat-icon>
+                <span class="text-md">Client</span>
+              </div>
               <div class="flex justify-end">
                 <button class="min-w-30 mr-2" mat-flat-button [color]="'primary'" [disabled]="item.updateLoader"
                   (click)="updateLogoBank(item)">
