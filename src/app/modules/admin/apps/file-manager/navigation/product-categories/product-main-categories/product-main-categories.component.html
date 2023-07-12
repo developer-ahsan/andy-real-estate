@@ -226,7 +226,7 @@
                         </fuse-alert>
                     </div>
                     <div class="col-12 my-2">
-                        <input type="file" (change)="uploadImage($event)">
+                        <input #featurImageInput type="file" (change)="uploadImage($event)">
                     </div>
                     <div class="col-12">
                         <mat-label>
@@ -390,11 +390,11 @@
                         </mat-form-field>
                     </div>
                 </div>
-                <div class="flex justify-between">
+                <div class="flex justify-end">
                     <button mat-button mat-stroked-button class="my-2 min-w-20 mr-2" (click)="closeEditFeatureImage()">
-                        <span>Cancel</span>
+                        <span>Back</span>
                     </button>
-                    <button class="min-w-30 mb-2" (click)="updateFeatureImage()" mat-button mat-stroked-button
+                    <button class="min-w-30" (click)="updateFeatureImage()" mat-button mat-stroked-button
                         [disabled]="isUpdateFeatureImageLoader">
                         <mat-progress-spinner *ngIf="isUpdateFeatureImageLoader" [diameter]="24"
                             [mode]="'indeterminate'">
@@ -429,7 +429,7 @@
                 </fuse-alert>
             </div>
             <div class="col-12 my-2">
-                <input type="file" (change)="uploadImage($event)">
+                <input type="file" #featurImageInput (change)="uploadImage($event)">
             </div>
             <div class="col-12">
                 <mat-label>

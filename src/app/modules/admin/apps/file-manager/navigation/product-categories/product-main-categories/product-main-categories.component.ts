@@ -1,4 +1,4 @@
-import { Component, Input, Output, OnInit, EventEmitter, ChangeDetectorRef, ViewEncapsulation, ChangeDetectionStrategy, OnDestroy } from '@angular/core';
+import { Component, Input, Output, OnInit, EventEmitter, ChangeDetectorRef, ViewEncapsulation, ChangeDetectionStrategy, OnDestroy, ViewChild, ElementRef } from '@angular/core';
 import { Subject } from 'rxjs';
 import { FileManagerService } from 'app/modules/admin/apps/file-manager/store-manager.service';
 import { debounceTime, distinctUntilChanged, filter, finalize, switchMap, takeUntil, tap } from 'rxjs/operators';
@@ -16,6 +16,8 @@ import { AddCategoryKeyword, AddFeatureImage, RemoveCategory, RemoveCategoryFeat
 })
 
 export class ProductMainCategoriesComponent implements OnInit, OnDestroy {
+  @ViewChild('featurImageInput') featurImageInput: ElementRef;
+
   @Input() mainCatData: any;
   selectedStore: any;
   isLoading: boolean;
@@ -373,6 +375,7 @@ export class ProductMainCategoriesComponent implements OnInit, OnDestroy {
             verticalPosition: 'bottom',
             duration: 3500
           });
+          this.featurImageInput.nativeElement.value = '';
           this.featureImageValue = null;
           this._changeDetectorRef.markForCheck();
           return;
@@ -393,7 +396,9 @@ export class ProductMainCategoriesComponent implements OnInit, OnDestroy {
     };
     this._storeManagerService.addMedia(payload)
       .subscribe((response) => {
+        this.featurImageInput.nativeElement.value = '';
         this.featureImageValue = null;
+        this.isUpdateFeatureImageLoader = false;
         this.addFeatureForm.reset();
         this.getFeatureImages();
         this.featureScreen = 'Current Images';
@@ -452,7 +457,6 @@ export class ProductMainCategoriesComponent implements OnInit, OnDestroy {
       if (this.featureImageValue) {
         this.uploadFeatureImage(this.isEditFeatureImageData.pk_categoryFeatureImageID);
       }
-      this.isUpdateFeatureImageLoader = false;
       this._changeDetectorRef.markForCheck();
     }, err => {
       this.isUpdateFeatureImageLoader = false;

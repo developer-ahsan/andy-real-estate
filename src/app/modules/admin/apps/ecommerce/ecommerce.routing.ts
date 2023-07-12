@@ -497,24 +497,24 @@ export const ecommerceRoutes: Route[] = [
             },
         ]
     },
-    {
-        path: 'customers',
-        component: CustomersComponent,
-        children: [
-            {
-                path: '',
-                component: CustomersListComponent,
-                resolve: {
-                    customers: GetCustomersList
-                }
-            },
-            {
-                path: ':id',
-                component: CustomersTabComponent,
-                resolve: {
-                    customer: GetCustomer
-                }
-            },
-        ]
-    }
+    // {
+    //     path: 'customers',
+    //     component: CustomersComponent,
+    //     children: [
+    //         {
+    //             path: '',
+    //             component: CustomersListComponent,
+    //             resolve: {
+    //                 customers: GetCustomersList
+    //             }
+    //         },
+    //         {
+    //             path: ':id',
+    //             component: CustomersTabComponent,
+    //             resolve: {
+    //                 customer: GetCustomer
+    //             }
+    //         },
+    //     ]
+    // }
 ];
