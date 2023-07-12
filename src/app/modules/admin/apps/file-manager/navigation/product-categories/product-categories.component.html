@@ -40,8 +40,8 @@
                                         CATEGORY
                                     </th>
                                     <td mat-cell *matCellDef="let element" (click)="toggleEditMainCategory(element)"> {{
-                                        element.RowNumber }}. {{
-                                        element.categoryName }}</td>
+                                        element.RowNumber }}. <span class="underline text-blue-500">{{
+                                            element.categoryName }}</span></td>
                                 </ng-container>
 
                                 <!-- isRecommended Column -->
