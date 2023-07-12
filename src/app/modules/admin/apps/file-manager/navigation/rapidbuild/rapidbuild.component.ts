@@ -45,6 +45,8 @@ export class RapidbuildComponent implements OnInit, OnDestroy {
   imprintsDisplayedColumns: string[] = ['number', 'methodName', 'locationName', 'area'];
   imprintsDataSource = [];
   imprintsDataSourceLoading = true;
+
+  ngStatus = 'all';
   constructor(
     private _storeManagerService: FileManagerService,
     private _changeDetectorRef: ChangeDetectorRef,
@@ -99,7 +101,7 @@ export class RapidbuildComponent implements OnInit, OnDestroy {
         });
       return;
     };
-
+    console.log(obj)
     const { pk_statusID } = obj;
     this.statusID = pk_statusID;
 

@@ -13,8 +13,8 @@ export const royalitiesRoutes: Route[] = [
         resolve: {
             // employees: EmployeesListsResolver,
             // flpsLogin: FlpsLoginResolver,
-            stores: AdminStoresResolver,
-            companies: AdminCompaniesResolver
+            // stores: AdminStoresResolver,
+            // companies: AdminCompaniesResolver
         },
         children: [
             {

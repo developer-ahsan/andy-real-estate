@@ -8,6 +8,7 @@ import { RoyaltyService } from '../../royalities.service';
 import * as Excel from 'exceljs/dist/exceljs.min.js';
 
 import { applyBlanketCustomerPercentage, newFLPSUser, newOrderManageUser, removeFLPSUser, RemoveUser, updateFLPSUser, updateOrderManageUser, updateOrderManageUserStores } from '../../royalities.types';
+import { DashboardsService } from 'app/modules/admin/dashboards/dashboard.service';
 @Component({
   selector: 'app-royality-reports',
   templateUrl: './royality-reports.component.html',
@@ -98,10 +99,11 @@ export class RoyaltyReportsComponent implements OnInit, OnDestroy {
   reportParams: any;
   report_type = '';
   fileDownloadLoader: boolean;
-
+  downloadFile: boolean = false;
   constructor(
     private _changeDetectorRef: ChangeDetectorRef,
-    private _RoyaltyService: RoyaltyService
+    private _RoyaltyService: RoyaltyService,
+    private _commonService: DashboardsService
   ) { }
 
   initForm() {
@@ -170,8 +172,20 @@ export class RoyaltyReportsComponent implements OnInit, OnDestroy {
   }
   ngOnInit(): void {
     this.initForm();
+    this.getStores();
     this.isLoading = true;
   };
+  getStores() {
+    this._commonService.storesData$.pipe(takeUntil(this._unsubscribeAll)).subscribe(stores => {
+      console.log(stores);
+      stores["data"].forEach(element => {
+        if (element.blnActive) {
+          this.storesList.push(element);
+        }
+      });
+      this.selectedStore = this.storesList[0];
+    });
+  }
   onSelected(ev) {
     this.selectedStore = ev.option.value;
   }
@@ -183,6 +197,7 @@ export class RoyaltyReportsComponent implements OnInit, OnDestroy {
       this._RoyaltyService.snackBar('Please select any store');
       return;
     }
+    this.downloadFile = false;
     this.generateReportLoader = true;
     this.reportParams = {
       page: this.page,
@@ -233,7 +248,10 @@ export class RoyaltyReportsComponent implements OnInit, OnDestroy {
         this.generateReportLoader = false;
         this._RoyaltyService.snackBar('No data have been found in the specified range that match your criteria.');
       } else {
-        this.downloadExcelWorkSheet(res["data"]);
+        this.downloadFile = true;
+        this.generateReportLoader = false;
+        this._changeDetectorRef.markForCheck();
+        // this.downloadExcelWorkSheet();
       }
       this.isGenerateReport = true;
       this.dataSource = res["data"];
@@ -244,14 +262,14 @@ export class RoyaltyReportsComponent implements OnInit, OnDestroy {
       this._changeDetectorRef.markForCheck();
     })
   }
-  downloadExcelWorkSheet(data) {
+  downloadExcelWorkSheet() {
     const fileName = `${this.selectedStore.storeName}-${moment(new Date()).format('MM-DD-yy-hh-mm-ss')}`;
     const workbook = new Excel.Workbook();
     const worksheet = workbook.addWorksheet("Customers");
 
     // Columns
     worksheet.columns = [
-      { header: "License_Code", key: "License_Code", width: 30 },
+      { header: "License_Code", key: "License_Code", width: 20 },
       { header: "Institution_Short_Code", key: "Institution_Short_Code", width: 30 },
       { header: "Category_SubCategory_Code", key: "Category_SubCategory_Code", width: 30 },
       { header: "Prod_Description", key: "Prod_Description", width: 30 },
@@ -260,9 +278,9 @@ export class RoyaltyReportsComponent implements OnInit, OnDestroy {
       { header: "Royalty_Sales", key: "Royalty_Sales", width: 10 },
       { header: "MRU_Units", key: "MRU_Units", width: 10 },
       { header: "Associated_Inst", key: "Associated_Inst", width: 10 },
-      { header: "Retailer_Name", key: "Retailer_Name", width: 10 },
+      { header: "Retailer_Name", key: "Retailer_Name", width: 30 },
       { header: "IMGCL_Retailer_Code", key: "IMGCL_Retailer_Code", width: 10 },
-      { header: "Address", key: "Address", width: 10 },
+      { header: "Address", key: "Address", width: 30 },
       { header: "City", key: "City", width: 10 },
       { header: "State", key: "State", width: 10 },
       { header: "Zip", key: "Zip", width: 10 },
@@ -270,7 +288,8 @@ export class RoyaltyReportsComponent implements OnInit, OnDestroy {
       { header: "Invoice_Number", key: "Invoice_Number", width: 10 },
       { header: "UPI", key: "UPI", width: 10 },
     ];
-    for (const obj of data) {
+    for (const obj of this.dataSource) {
+      obj.Invoice_Date = moment(obj.Invoice_Date).format('yyyy-MM-DD')
       worksheet.addRow(obj);
     }
     setTimeout(() => {
@@ -292,7 +311,9 @@ export class RoyaltyReportsComponent implements OnInit, OnDestroy {
         this._changeDetectorRef.markForCheck();
       });
     }, 500);
-
+  }
+  backToSearch() {
+    this.downloadFile = false;
   }
   /**
      * On destroy

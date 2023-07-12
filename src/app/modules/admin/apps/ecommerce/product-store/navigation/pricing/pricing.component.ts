@@ -93,6 +93,11 @@ export class PricingComponent implements OnInit, OnDestroy {
       store_product_id: this.selectedProduct.pk_storeProductID,
       store_id: this.selectedProduct.fk_storeID
     }
+    this.priceData = [];
+    this.quantityData = [];
+    this.costData = [];
+    this.blankCostData = [];
+    this.blankData = [];
     this._storeService.getStoreProducts(params).pipe(takeUntil(this._unsubscribeAll)).subscribe((res: any) => {
       this.pricingData = res;
       res.current_pricing[0].forEach(element => {
@@ -394,7 +399,17 @@ export class PricingComponent implements OnInit, OnDestroy {
         this._changeDetectorRef.markForCheck();
       });
   }
-
+  selectUnselectAll(ev) {
+    if (ev.checked) {
+      this.stores.forEach(element => {
+        element.checked = true;
+      });
+    } else {
+      this.stores.forEach(element => {
+        element.checked = false;
+      });
+    }
+  }
   getNextStore() {
     this.storePage++;
     this.getStoresVersions(this.storePage);

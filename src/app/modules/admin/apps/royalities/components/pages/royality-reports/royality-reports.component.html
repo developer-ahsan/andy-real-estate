@@ -9,18 +9,12 @@
         <!-- Section -->
         <div class="w-full">
             <mat-form-field class="w-full">
-                <mat-label>Search a store</mat-label>
-                <input matInput placeholder="Search Store Name" [matAutocomplete]="auto"
-                    [formControl]="searchStoreCtrl">
-                <mat-autocomplete class="w-full" #auto="matAutocomplete" (optionSelected)="onSelected($event)"
-                    [displayWith]="displayWith">
-                    <mat-option *ngIf="isSearching" class="is-loading">Loading...</mat-option>
-                    <ng-container *ngIf="!isSearching">
-                        <mat-option *ngFor="let item of storesList" [value]="item">
-                            <span>{{item.storeName}}</span>
-                        </mat-option>
-                    </ng-container>
-                </mat-autocomplete>
+                <mat-label>Select a store</mat-label>
+                <mat-select matInput [(ngModel)]="selectedStore">
+                    <mat-option *ngFor="let item of storesList" [value]="item">
+                        <span>{{item.storeName}}</span>
+                    </mat-option>
+                </mat-select>
             </mat-form-field>
         </div>
         <div class="grid sm:grid-cols-2 gap-4 w-full mt-8">
@@ -110,5 +104,13 @@
                 </mat-progress-spinner>
             </button>
         </div>
+        <!-- Divider -->
+        <div class="mt-5 mb-5 border-t"></div>
+        <div *ngIf="downloadFile" class="text-lg font-medium tracking-tight leading-6 truncate cursor-pointer my-2">
+            <fuse-alert [appearance]="'soft'" [dismissed]="false" [name]="'alertBox1'" [type]="'success'">
+                <span (click)="downloadExcelWorkSheet()">Click here to download report Excel export file.</span>
+            </fuse-alert>
+        </div>
     </div>
+
 </div>
