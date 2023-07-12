@@ -95,14 +95,14 @@ export class UploadImagesComponent implements OnInit, OnDestroy {
       delete_image: true
     }
     image.delLoader = true;
-    this._systemService.UpdateSystemData(payload)
+    this._systemService.removeMedia(payload)
       .subscribe((response) => {
         this._systemService.snackBar('Image Removed Successfully');
         this.images.splice(index, 1);
-        image.delLoader = true;
+        image.delLoader = false;
         this._changeDetectorRef.markForCheck();
       }, err => {
-        image.delLoader = true;
+        image.delLoader = false;
         this._changeDetectorRef.markForCheck();
       })
   }

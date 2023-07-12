@@ -23,7 +23,7 @@ import { environment } from "environments/environment";
 import moment from "moment";
 import { MatSnackBar } from "@angular/material/snack-bar";
 import { LogoBankNotesUpdate } from "./presentation.types";
-import { RemoveStoreLogoBank, addStoreLogoBank, updateStoreLogoBank } from "../../stores.types";
+import { DeleteImage, RemoveStoreLogoBank, addStoreLogoBank, updateStoreLogoBank } from "../../stores.types";
 @Component({
   selector: "app-presentation",
   templateUrl: "./presentation.component.html",
@@ -1164,6 +1164,23 @@ export class PresentationComponent implements OnInit, OnDestroy {
       }, err => {
         // Mark for check
         this.favUploadLoader = false;
+        this._changeDetectorRef.markForCheck();
+      })
+  }
+  removeImage() {
+    let payload: DeleteImage = {
+      image_path: `/Stores/orderOptionsHeaders/${this.selectedStore.pk_storeID}.jpg`,
+      delete_image: true
+    }
+    this.orderOptions.delLoader = true;
+    this._storeManagerService.removeMedia(payload)
+      .subscribe((response) => {
+        this._storeManagerService.snackBar('Image Removed Successfully');
+        this.orderOptions.check = false;
+        this.orderOptions.delLoader = false;
+        this._changeDetectorRef.markForCheck();
+      }, err => {
+        this.orderOptions.delLoader = false;
         this._changeDetectorRef.markForCheck();
       })
   }

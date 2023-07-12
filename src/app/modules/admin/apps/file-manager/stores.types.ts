@@ -610,3 +610,7 @@ export interface attachment {
     template_id: string;
     image_extension: string;
 }
+export interface DeleteImage {
+    image_path: string;
+    delete_image: boolean;
+};

@@ -645,10 +645,10 @@
             <img src="{{orderOptions.image}}" (error)="checkImageExist('options')">
             <div class="text-right w-full py-4">
               <button class="min-w-40" mat-stroked-button [matTooltip]="'Remove image'"
-                [disabled]="quickGuideImageLoader">
-                <mat-progress-spinner *ngIf="quickGuideImageLoader" [diameter]="24" [mode]="'indeterminate'">
+                [disabled]="orderOptions.delLoader" (click)="removeImage()">
+                <mat-progress-spinner *ngIf="orderOptions.delLoader" [diameter]="24" [mode]="'indeterminate'">
                 </mat-progress-spinner>
-                <mat-icon *ngIf="!quickGuideImageLoader" svgIcon="heroicons_outline:trash"></mat-icon>
+                <mat-icon *ngIf="!orderOptions.delLoader" svgIcon="heroicons_outline:trash"></mat-icon>
                 <span class="px-2">Remove image</span>
               </button>
             </div>
