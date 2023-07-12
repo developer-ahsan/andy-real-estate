@@ -32,7 +32,12 @@
                                 src="https://assets.consolidus.com/globalAssets/Uploads/{{item.FILENAME}}">
                         </a>
                         <p class="text-lg font-bold text-secondary mt-1">{{item.FILENAME}}</p>
-                        <p class="text-mg text-gray-300 hover:text-gray-900 mt-1 cursor-pointer">Remove</p>
+                        <p class="text-mg text-gray-300 hover:text-gray-900 mt-1 cursor-pointer"
+                            (click)="removeImage(i,item)">
+                            <span class="ml-2" *ngIf="!item.delLoader"> Remove </span>
+                            <mat-progress-spinner *ngIf="item.delLoader" [diameter]="24" [mode]="'indeterminate'">
+                            </mat-progress-spinner>
+                        </p>
                     </div>
 
                 </div>

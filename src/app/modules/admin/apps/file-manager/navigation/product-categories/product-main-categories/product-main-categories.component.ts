@@ -324,38 +324,39 @@ export class ProductMainCategoriesComponent implements OnInit, OnDestroy {
   }
   // Feature Images
   addFeatureImage() {
-    this.isAddFeatureLoader = true;
-    const { buttonURL, displayOrder, blnNewWindow, headerCopy, buttonCopy, align, headerCopyColor, buttonBackgroundColor, buttonColor, arrowColor } = this.addFeatureForm.getRawValue();
-    let payload: createCategoryFeatureImage = {
-      category_id: Number(this.mainCatData.pk_categoryID),
-      buttonURL: buttonURL,
-      displayOrder: Number(displayOrder),
-      blnNewWindow: blnNewWindow,
-      headerCopy: headerCopy,
-      buttonCopy: buttonCopy,
-      align: Number(align),
-      headerCopyColor: headerCopyColor,
-      buttonBackgroundColor: buttonBackgroundColor,
-      buttonColor: buttonColor,
-      arrowColor: arrowColor,
-      add_category_feature_image: true
-    }
-    this._storeManagerService.postStoresData(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
-      if (res["success"]) {
-        this._storeManagerService.snackBar(res["message"]);
-        this.addFeatureForm.reset();
-        this.featureScreen = 'Current Images';
-        if (this.featureImageValue) {
-          this.uploadFeatureImage(res["newFeatureImageID"]);
-        }
-        this.getFeatureImages();
+    if (this.featureImageValue) {
+      this.isAddFeatureLoader = true;
+      const { buttonURL, displayOrder, blnNewWindow, headerCopy, buttonCopy, align, headerCopyColor, buttonBackgroundColor, buttonColor, arrowColor } = this.addFeatureForm.getRawValue();
+      let payload: createCategoryFeatureImage = {
+        category_id: Number(this.mainCatData.pk_categoryID),
+        buttonURL: buttonURL,
+        displayOrder: Number(displayOrder),
+        blnNewWindow: blnNewWindow,
+        headerCopy: headerCopy,
+        buttonCopy: buttonCopy,
+        align: Number(align),
+        headerCopyColor: headerCopyColor,
+        buttonBackgroundColor: buttonBackgroundColor,
+        buttonColor: buttonColor,
+        arrowColor: arrowColor,
+        add_category_feature_image: true
       }
-      this.isAddFeatureLoader = false;
-      this._changeDetectorRef.markForCheck();
-    }, err => {
-      this.isAddFeatureLoader = false;
-      this._changeDetectorRef.markForCheck();
-    });
+      this._storeManagerService.postStoresData(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+        if (res["success"]) {
+          this._storeManagerService.snackBar(res["message"]);
+
+          if (this.featureImageValue) {
+            this.uploadFeatureImage(res["newFeatureImageID"]);
+          }
+        }
+        this._changeDetectorRef.markForCheck();
+      }, err => {
+        this.isAddFeatureLoader = false;
+        this._changeDetectorRef.markForCheck();
+      });
+    } else {
+      this._storeManagerService.snackBar('Please choose any featue image');
+    }
   }
   uploadImage(event): void {
     const file = event.target.files[0];
@@ -393,6 +394,10 @@ export class ProductMainCategoriesComponent implements OnInit, OnDestroy {
     this._storeManagerService.addMedia(payload)
       .subscribe((response) => {
         this.featureImageValue = null;
+        this.addFeatureForm.reset();
+        this.getFeatureImages();
+        this.featureScreen = 'Current Images';
+        this.isAddFeatureLoader = false;
         // Mark for check
         this._changeDetectorRef.markForCheck();
       })

@@ -403,3 +403,7 @@ interface Products {
     list_order: number;
     productID: number;
 }
+export interface DeleteImage {
+    image_path: string;
+    delete_image: boolean;
+};

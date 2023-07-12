@@ -662,7 +662,8 @@
             </p>
             <p style="color: red">(1500px X 300px, JPG ONLY!)</p>
             <div class="row">
-              <input type="file" class="file-upload my-3 ml-3" accept=".jpg" (change)="uploadFile($event,'options')" />
+              <input #fileInput type="file" class="file-upload my-3 ml-3" accept=".jpg"
+                (change)="uploadFile($event,'options')" />
             </div>
             <div class="row">
               <div class="col-md-12 text-right">

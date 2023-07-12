@@ -6,6 +6,8 @@ import {
   EventEmitter,
   ChangeDetectorRef,
   OnDestroy,
+  ElementRef,
+  ViewChild,
 } from "@angular/core";
 import {
   FormBuilder,
@@ -32,6 +34,7 @@ export class PresentationComponent implements OnInit, OnDestroy {
   isLoading: boolean;
   @Output() isLoadingChange = new EventEmitter<boolean>();
   private _unsubscribeAll: Subject<any> = new Subject<any>();
+  @ViewChild('fileInput') fileInput: ElementRef;
 
   presentationScreen: string = "Look & Feel";
   selected = "YES";
@@ -852,6 +855,7 @@ export class PresentationComponent implements OnInit, OnDestroy {
               verticalPosition: 'bottom',
               duration: 3500
             });
+            this.fileInput.nativeElement.value = '';
             this.orderOptions.imageValue = null;
             this._changeDetectorRef.markForCheck();
             return;
@@ -869,12 +873,13 @@ export class PresentationComponent implements OnInit, OnDestroy {
     let img_path = '';
     let url;
     if (check == 'options') {
-      if (!this.orderOptions.imageValue) {
+      if (this.orderOptions.imageValue.imageUpload == "") {
         this._snackBar.open("File is required", '', {
           horizontalPosition: 'center',
           verticalPosition: 'bottom',
           duration: 3000
         });
+        this.fileInput.nativeElement.value = '';
         return;
       } else {
         this.orderOptions.loader = true;

@@ -3,6 +3,7 @@ import { MatPaginator } from '@angular/material/paginator';
 import { Subject } from 'rxjs';
 import { SystemService } from '../../system.service';
 import { takeUntil } from 'rxjs/operators';
+import { DeleteImage } from '../../system.types';
 
 @Component({
   selector: 'app-upload-images',
@@ -85,6 +86,23 @@ export class UploadImagesComponent implements OnInit, OnDestroy {
         this._changeDetectorRef.markForCheck();
       }, err => {
         this.isAddLoader = false;
+        this._changeDetectorRef.markForCheck();
+      })
+  }
+  removeImage(index, image) {
+    let payload: DeleteImage = {
+      image_path: `/Uploads/${image.FILENAME}`,
+      delete_image: true
+    }
+    image.delLoader = true;
+    this._systemService.UpdateSystemData(payload)
+      .subscribe((response) => {
+        this._systemService.snackBar('Image Removed Successfully');
+        this.images.splice(index, 1);
+        image.delLoader = true;
+        this._changeDetectorRef.markForCheck();
+      }, err => {
+        image.delLoader = true;
         this._changeDetectorRef.markForCheck();
       })
   }
