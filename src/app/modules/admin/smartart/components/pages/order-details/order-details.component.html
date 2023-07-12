@@ -641,13 +641,14 @@
                                         <div *ngIf="imprint.pk_statusID == 2" class="rounded-2xl shadow bg-card p-4 ">
                                             <div *ngIf="viewProofCheck || viewFinalArtworkCheck">
                                                 <b>
-                                                    <div class="flex space-x-1">
+                                                    <div class="flex space-x-1 text-lg">
                                                         <p>Upload Artwork Proof | </p>
                                                         <br>
-                                                        <a target="_blank" class="text-underline" *ngIf="viewProofCheck"
+                                                        <a target="_blank" class="underline" class="underline"
+                                                            *ngIf="viewProofCheck"
                                                             href="https://assets.consolidus.com/artwork/Proof/{{this.paramData.pfk_userID}}/{{this.paramData.fk_orderID}}/{{this.paramData.pk_orderLineID}}/{{this.paramData.fk_imprintID}}.jpg">(Click
                                                             here to view proof)</a>
-                                                        <a target="_blank" class="text-underline"
+                                                        <a target="_blank" class="underline"
                                                             *ngIf="viewFinalArtworkCheck"
                                                             href="https://assets.consolidus.com/artwork/finalArt/{{this.paramData.pfk_userID}}/{{this.paramData.fk_orderID}}/{{this.paramData.pk_orderLineID}}/{{this.paramData.fk_imprintID}}.eps">(Download
                                                             final artwork)</a>
@@ -752,7 +753,7 @@
                                                     <div class="flex space-x-1">
                                                         <p>Send Follow-Up | </p>
                                                         <br>
-                                                        <a target="_blank" class="text-underline" *ngIf="viewProofCheck"
+                                                        <a target="_blank" class="underline" *ngIf="viewProofCheck"
                                                             href="https://assets.consolidus.com/artwork/Proof/{{this.paramData.pfk_userID}}/{{this.paramData.fk_orderID}}/{{this.paramData.pk_orderLineID}}/{{this.paramData.fk_imprintID}}.jpg">(Click
                                                             here to view proof)</a>
                                                     </div>
@@ -860,7 +861,7 @@
                                                     <div class="flex space-x-1">
                                                         <p>Acknowledge Changes</p>
                                                         <br>
-                                                        <a target="_blank" class="text-underline" *ngIf="viewProofCheck"
+                                                        <a target="_blank" class="underline" *ngIf="viewProofCheck"
                                                             href="https://assets.consolidus.com/artwork/Proof/{{this.paramData.pfk_userID}}/{{this.paramData.fk_orderID}}/{{this.paramData.pk_orderLineID}}/{{this.paramData.fk_imprintID}}.jpg">(Click
                                                             here to view proof)</a>
                                                     </div>
@@ -936,10 +937,10 @@
                                                     <div class="flex space-x-1">
                                                         <p>Send Art To Decorator</p>
                                                         <br>
-                                                        <a target="_blank" class="text-underline" *ngIf="viewProofCheck"
+                                                        <a target="_blank" class="underline" *ngIf="viewProofCheck"
                                                             href="https://assets.consolidus.com/artwork/Proof/{{this.paramData.pfk_userID}}/{{this.paramData.fk_orderID}}/{{this.paramData.pk_orderLineID}}/{{this.paramData.fk_imprintID}}.jpg">(Click
                                                             here to view proof)</a>
-                                                        <a target="_blank" class="text-underline"
+                                                        <a target="_blank" class="underline"
                                                             *ngIf="viewFinalArtworkCheck"
                                                             href="https://assets.consolidus.com/artwork/finalArt/{{this.paramData.pfk_userID}}/{{this.paramData.fk_orderID}}/{{this.paramData.pk_orderLineID}}/{{this.paramData.fk_imprintID}}.eps">(Download
                                                             final artwork)</a>
@@ -1054,7 +1055,7 @@
                                                     <div class="flex space-x-1">
                                                         <p>Send Art To Decorator</p>
                                                         <br>
-                                                        <a target="_blank" class="text-underline" *ngIf="viewProofCheck"
+                                                        <a target="_blank" class="underline" *ngIf="viewProofCheck"
                                                             href="https://assets.consolidus.com/artwork/Proof/{{this.paramData.pfk_userID}}/{{this.paramData.fk_orderID}}/{{this.paramData.pk_orderLineID}}/{{this.paramData.fk_imprintID}}.jpg">(Click
                                                             here to view proof)</a>
                                                     </div>
@@ -1165,10 +1166,10 @@
                                                     <div class="flex space-x-1">
                                                         <p>Re-Send Art To Decorator | </p>
                                                         <br>
-                                                        <a target="_blank" class="text-underline" *ngIf="viewProofCheck"
+                                                        <a target="_blank" class="underline" *ngIf="viewProofCheck"
                                                             href="https://assets.consolidus.com/artwork/Proof/{{this.paramData.pfk_userID}}/{{this.paramData.fk_orderID}}/{{this.paramData.pk_orderLineID}}/{{this.paramData.fk_imprintID}}.jpg">(Click
                                                             here to view proof)</a>
-                                                        <a target="_blank" class="text-underline"
+                                                        <a target="_blank" class="underline"
                                                             *ngIf="viewFinalArtworkCheck"
                                                             href="https://assets.consolidus.com/artwork/finalArt/{{this.paramData.pfk_userID}}/{{this.paramData.fk_orderID}}/{{this.paramData.pk_orderLineID}}/{{this.paramData.fk_imprintID}}.eps">(Download
                                                             final artwork)</a>
@@ -1248,7 +1249,7 @@
                                                     <div class="flex space-x-1">
                                                         <p>Send Follow-Up | </p>
                                                         <br>
-                                                        <a target="_blank" class="text-underline" *ngIf="viewProofCheck"
+                                                        <a target="_blank" class="underline" *ngIf="viewProofCheck"
                                                             href="https://assets.consolidus.com/artwork/Proof/{{this.paramData.pfk_userID}}/{{this.paramData.fk_orderID}}/{{this.paramData.pk_orderLineID}}/{{this.paramData.fk_imprintID}}.jpg">(Click
                                                             here to view proof)</a>
                                                     </div>
@@ -1350,7 +1351,7 @@
                                             <div *ngIf="viewProofCheck || viewFinalArtworkCheck">
                                                 <b>
                                                     <div class="flex space-x-1">
-                                                        <a target="_blank" class="text-underline" *ngIf="viewProofCheck"
+                                                        <a target="_blank" class="underline" *ngIf="viewProofCheck"
                                                             href="https://assets.consolidus.com/artwork/Proof/{{this.paramData.pfk_userID}}/{{this.paramData.fk_orderID}}/{{this.paramData.pk_orderLineID}}/{{this.paramData.fk_imprintID}}.jpg">(Click
                                                             here to view proof)</a>
                                                     </div>
@@ -1435,7 +1436,7 @@
                                                 <b>
                                                     <div class="flex space-x-1">
                                                         <p>Send Art To Decorator | </p>
-                                                        <a target="_blank" class="text-underline" *ngIf="viewProofCheck"
+                                                        <a target="_blank" class="underline" *ngIf="viewProofCheck"
                                                             href="https://assets.consolidus.com/artwork/Proof/{{this.paramData.pfk_userID}}/{{this.paramData.fk_orderID}}/{{this.paramData.pk_orderLineID}}/{{this.paramData.fk_imprintID}}.jpg">(Click
                                                             here to view proof)</a>
                                                     </div>
