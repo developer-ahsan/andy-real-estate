@@ -268,7 +268,7 @@ export class ImprintComponent implements OnInit, OnDestroy {
     })
   }
   ngOnInit(): void {
-    this.getMethodsAndLocations();
+    // this.getMethodsAndLocations();
 
     this.showImprintScreen = 'Imprints';
     this.isContentLoading = true;
