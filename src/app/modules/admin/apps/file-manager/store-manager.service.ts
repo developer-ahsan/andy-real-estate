@@ -262,7 +262,11 @@ export class FileManagerService {
       },
     });
   }
-
+  getRapidBuildData(params): Observable<any[]> {
+    return this._httpClient.get<any[]>(environment.storeNewUrlRapidBuild, {
+      params: params,
+    });
+  }
   getRapidBuildImages(storeID, statusId): Observable<any[]> {
     return this._httpClient.get<any[]>(environment.storeNewUrlRapidBuild, {
       params: {

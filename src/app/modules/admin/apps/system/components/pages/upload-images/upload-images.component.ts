@@ -33,7 +33,7 @@ export class UploadImagesComponent implements OnInit, OnDestroy {
   getImages() {
     let payload = {
       files_fetch: true,
-      path: `/Uploads`
+      path: `/globalAssets/Uploads`
     }
     this._changeDetectorRef.markForCheck();
     this._systemService.getSystemFiles(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(files => {

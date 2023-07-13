@@ -524,7 +524,9 @@
                 </div>
                 <div class="col-12 col-md-8 mt-3">
                     <mat-accordion multi>
-                        <mat-expansion-panel [expanded]="true" *ngFor="let imprint of imprintdata;let i=index">
+                        <mat-expansion-panel [expanded]="isFirst"
+                            *ngFor="let imprint of imprintdata;let i=index;first as isFirst"
+                            (opened)="openExpansion(imprint,i)">
                             <mat-expansion-panel-header>
                                 <mat-panel-title>
                                     Imprint {{i+1}} of {{imprintdata.length}} for <span
@@ -631,6 +633,15 @@
                                             </p>
                                         </div>
                                     </div>
+                                    <!-- Arwork Templates -->
+                                    <div class="col-12" *ngIf="imprint.artworkFiles.length">
+                                        <div *ngFor="let artwork of imprint.artworkFiles; let i=index"
+                                            class="text-blue-500">
+                                            <a href="https://assets.consolidus.com/artwork/{{orderData.pk_storeID}}/{{paramData.pfk_userID}}/{{paramData.fk_orderID}}/{{imprint.fk_orderLineID[0]}}/{{artwork.ID}}.{{artwork.EXTENSION}}"
+                                                target="_blank">Download Artwork
+                                                Template File {{i+1}}</a>
+                                        </div>
+                                    </div>
                                     <div class="col-12 mt-2">
                                         <fuse-alert class="mb-2" [appearance]="'outline'" [type]="'warning'"
                                             [showIcon]="false">
@@ -639,7 +650,7 @@
                                         </fuse-alert>
                                         <!-- NEW PENDING -->
                                         <div *ngIf="imprint.pk_statusID == 2" class="rounded-2xl shadow bg-card p-4 ">
-                                            <div *ngIf="viewProofCheck || viewFinalArtworkCheck">
+                                            <div *ngIf="viewProofCheck || imprint.viewFinalArtworkCheck">
                                                 <b>
                                                     <div class="flex space-x-1 text-lg">
                                                         <p>Upload Artwork Proof | </p>
@@ -649,7 +660,7 @@
                                                             href="https://assets.consolidus.com/artwork/Proof/{{this.paramData.pfk_userID}}/{{this.paramData.fk_orderID}}/{{this.paramData.pk_orderLineID}}/{{this.paramData.fk_imprintID}}.jpg">(Click
                                                             here to view proof)</a>
                                                         <a target="_blank" class="underline"
-                                                            *ngIf="viewFinalArtworkCheck"
+                                                            *ngIf="imprint.viewFinalArtworkCheck"
                                                             href="https://assets.consolidus.com/artwork/finalArt/{{this.paramData.pfk_userID}}/{{this.paramData.fk_orderID}}/{{this.paramData.pk_orderLineID}}/{{this.paramData.fk_imprintID}}.eps">(Download
                                                             final artwork)</a>
                                                     </div>
@@ -748,7 +759,7 @@
                                         </div>
                                         <!--- AWAITING ARTWORK APPROVAL --->
                                         <div *ngIf="imprint.pk_statusID == 3" class="rounded-2xl shadow bg-card p-4 ">
-                                            <div *ngIf="viewProofCheck || viewFinalArtworkCheck">
+                                            <div *ngIf="viewProofCheck || imprint.viewFinalArtworkCheck">
                                                 <b>
                                                     <div class="flex space-x-1">
                                                         <p>Send Follow-Up | </p>
@@ -856,7 +867,7 @@
                                         </div>
                                         <!--- ARTWORK REVISION --->
                                         <div *ngIf="imprint.pk_statusID == 4" class="rounded-2xl shadow bg-card p-4 ">
-                                            <div *ngIf="viewProofCheck || viewFinalArtworkCheck">
+                                            <div *ngIf="viewProofCheck || imprint.viewFinalArtworkCheck">
                                                 <b>
                                                     <div class="flex space-x-1">
                                                         <p>Acknowledge Changes</p>
@@ -932,7 +943,7 @@
                                         </div>
                                         <!--- DECORATOR NOTIFIED --->
                                         <div *ngIf="imprint.pk_statusID == 5" class="rounded-2xl shadow bg-card p-4 ">
-                                            <div *ngIf="viewProofCheck || viewFinalArtworkCheck">
+                                            <div *ngIf="viewProofCheck || imprint.viewFinalArtworkCheck">
                                                 <b>
                                                     <div class="flex space-x-1">
                                                         <p>Send Art To Decorator</p>
@@ -941,7 +952,7 @@
                                                             href="https://assets.consolidus.com/artwork/Proof/{{this.paramData.pfk_userID}}/{{this.paramData.fk_orderID}}/{{this.paramData.pk_orderLineID}}/{{this.paramData.fk_imprintID}}.jpg">(Click
                                                             here to view proof)</a>
                                                         <a target="_blank" class="underline"
-                                                            *ngIf="viewFinalArtworkCheck"
+                                                            *ngIf="imprint.viewFinalArtworkCheck"
                                                             href="https://assets.consolidus.com/artwork/finalArt/{{this.paramData.pfk_userID}}/{{this.paramData.fk_orderID}}/{{this.paramData.pk_orderLineID}}/{{this.paramData.fk_imprintID}}.eps">(Download
                                                             final artwork)</a>
                                                     </div>
@@ -1025,7 +1036,7 @@
                                                 <div class="col-md-4 col-12">
                                                     <p class="text-lg font-bold">Make Manual Updates to this Imprint
                                                         Status</p>
-                                                    <div>
+                                                    <div class="space-y-2">
                                                         <button type="button"
                                                             class="min-w-30 rounded-md bg-indigo-600 px-2.5 py-1.5 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">New
                                                             pending</button>
@@ -1050,7 +1061,7 @@
                                         </div>
                                         <!--- ARTWORK APPROVED --->
                                         <div *ngIf="imprint.pk_statusID == 9" class="rounded-2xl shadow bg-card p-4 ">
-                                            <div *ngIf="viewProofCheck || viewFinalArtworkCheck">
+                                            <div *ngIf="viewProofCheck || imprint.viewFinalArtworkCheck">
                                                 <b>
                                                     <div class="flex space-x-1">
                                                         <p>Send Art To Decorator</p>
@@ -1161,7 +1172,7 @@
                                         </div>
                                         <!--- IN PRODUCTION --->
                                         <div *ngIf="imprint.pk_statusID == 11" class="rounded-2xl shadow bg-card p-4 ">
-                                            <div *ngIf="viewProofCheck || viewFinalArtworkCheck">
+                                            <div *ngIf="viewProofCheck || imprint.viewFinalArtworkCheck">
                                                 <b>
                                                     <div class="flex space-x-1">
                                                         <p>Re-Send Art To Decorator | </p>
@@ -1170,7 +1181,7 @@
                                                             href="https://assets.consolidus.com/artwork/Proof/{{this.paramData.pfk_userID}}/{{this.paramData.fk_orderID}}/{{this.paramData.pk_orderLineID}}/{{this.paramData.fk_imprintID}}.jpg">(Click
                                                             here to view proof)</a>
                                                         <a target="_blank" class="underline"
-                                                            *ngIf="viewFinalArtworkCheck"
+                                                            *ngIf="imprint.viewFinalArtworkCheck"
                                                             href="https://assets.consolidus.com/artwork/finalArt/{{this.paramData.pfk_userID}}/{{this.paramData.fk_orderID}}/{{this.paramData.pk_orderLineID}}/{{this.paramData.fk_imprintID}}.eps">(Download
                                                             final artwork)</a>
                                                     </div>
@@ -1244,7 +1255,7 @@
                                         </div>
                                         <!--- ON HOLD --->
                                         <div *ngIf="imprint.pk_statusID == 12" class="rounded-2xl shadow bg-card p-4 ">
-                                            <div *ngIf="viewProofCheck || viewFinalArtworkCheck">
+                                            <div *ngIf="viewProofCheck || imprint.viewFinalArtworkCheck">
                                                 <b>
                                                     <div class="flex space-x-1">
                                                         <p>Send Follow-Up | </p>
@@ -1348,7 +1359,7 @@
                                         </div>
                                         <!--- FOLLOW UP FOR APPROVAL --->
                                         <div *ngIf="imprint.pk_statusID == 13" class="rounded-2xl shadow bg-card p-4 ">
-                                            <div *ngIf="viewProofCheck || viewFinalArtworkCheck">
+                                            <div *ngIf="viewProofCheck || imprint.viewFinalArtworkCheck">
                                                 <b>
                                                     <div class="flex space-x-1">
                                                         <a target="_blank" class="underline" *ngIf="viewProofCheck"
@@ -1432,7 +1443,7 @@
                                         </div>
                                         <!--- PO Sent --->
                                         <div *ngIf="imprint.pk_statusID == 16" class="rounded-2xl shadow bg-card p-4 ">
-                                            <div *ngIf="viewProofCheck || viewFinalArtworkCheck">
+                                            <div *ngIf="viewProofCheck || imprint.viewFinalArtworkCheck">
                                                 <b>
                                                     <div class="flex space-x-1">
                                                         <p>Send Art To Decorator | </p>
@@ -1524,14 +1535,14 @@
                                                 </div>
                                             </div>
                                         </div>
-                                        <!-- <div *ngIf="viewProofCheck || viewFinalArtworkCheck">
+                                        <!-- <div *ngIf="viewProofCheck || imprint.viewFinalArtworkCheck">
                                             <b>
                                                 <div class="flex space-x-1">
                                                     <p>Re-Send Art To Decorator</p>
                                                     <a target="_blank" *ngIf="viewProofCheck"
                                                         href="https://assets.consolidus.com/artwork/Proof/{{this.paramData.pfk_userID}}/{{this.paramData.fk_orderID}}/{{this.paramData.pk_orderLineID}}/{{this.paramData.fk_imprintID}}.jpg">(Click
                                                         here to view proof)</a>
-                                                    <a target="_blank" *ngIf="viewFinalArtworkCheck"
+                                                    <a target="_blank" *ngIf="imprint.viewFinalArtworkCheck"
                                                         href="https://assets.consolidus.com/artwork/finalArt/{{this.paramData.pfk_userID}}/{{this.paramData.fk_orderID}}/{{this.paramData.pk_orderLineID}}/{{this.paramData.fk_imprintID}}.eps">(Download
                                                         final artwork)</a>
                                                 </div>

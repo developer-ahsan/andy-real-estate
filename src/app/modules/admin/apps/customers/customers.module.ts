@@ -115,7 +115,7 @@ import { CustomerDetailsComponent } from './customers-components/details/details
         MatAutocompleteModule,
         MatSnackBarModule,
         FuseCardModule,
-        NgxStripeModule
+        NgxStripeModule,
     ],
 })
 export class CustomersModule {

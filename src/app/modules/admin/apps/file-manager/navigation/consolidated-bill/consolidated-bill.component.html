@@ -137,35 +137,35 @@
                 </div>
               </div>
               <div class="pl-6 border-l text-md">
-                <div class="font-medium">Dept: {{item.name}}</div>
-                <div>Charge Code: {{item.accountChargeCode == '' ? 'N/A' : item.accountChargeCode }}</div>
-                <div>Contact: {{item.name}}</div>
-                <div>Email: {{item.shippingEmail}}</div>
+                <div class="font-medium">Dept: {{item.DEPT}}</div>
+                <div>Charge Code: {{item.CHARGE_CODE == '' ? 'N/A' : item.CHARGE_CODE }}</div>
+                <div>Contact: {{item.CONTACT}}</div>
+                <div>Email: {{item.EMAIL}}</div>
               </div>
             </div>
           </div>
           <div class="grid grid-cols-2 gap-x-4 gap-y-1 ml-auto">
             <div class="justify-self-start font-semibold text-3xl tracking-tight">INVOICE</div>
-            <div class="justify-self-start text-3xl font-semibold">#{{item.pk_orderID}}</div>
+            <div class="justify-self-start text-3xl font-semibold">#{{item.pk_orderLineID}}</div>
             <div class="justify-self-start font-medium tracking-tight text-secondary">INVOICE DATE
             </div>
-            <div class="font-medium">{{item.orderDate | date}}</div>
-            <div class="justify-self-start font-medium tracking-tight text-secondary">TOTAL</div>
-            <div class="font-medium">{{item.total | currency }}</div>
+            <div class="font-medium">{{item.INVOICE_DATE | date}}</div>
             <div class="justify-self-start font-medium tracking-tight text-secondary">TOTAL DUE
             </div>
-            <div class="font-medium">{{item.cashbackCredit | currency}}</div>
+            <div class="font-medium">{{item.TOTAL_DUE | currency}}</div>
+            <div class="justify-self-start font-medium tracking-tight text-secondary">TOTAL PAID</div>
+            <div class="font-medium">{{item.TOTAL_PAID | currency }}</div>
           </div>
         </div>
-        <div *ngIf="!item.loader" class="text-center mt-5">
+        <!-- <div *ngIf="!item.loader" class="text-center mt-5">
           <button (click)="getConsolidatedBillDetail(item)" *ngIf="!item?.hide"
             class="font-medium text-md text-secondary">View Details</button>
         </div>
         <div *ngIf="item.loader" class="mt-16">
           <ngx-skeleton-loader count="8" appearance="line" animation="pulse">
           </ngx-skeleton-loader>
-        </div>
-        <div *ngIf="item?.productsData">
+        </div> -->
+        <div *ngIf="item?.Prducts">
           <div class="row mt-16">
             <div class="col-1 font-medium text-md text-secondary">ITEM</div>
             <div class="col-4 font-medium text-md text-secondary">DESCRIPTION</div>
@@ -175,16 +175,15 @@
             <div class="col-1 font-medium text-md text-secondary">TOTAL</div>
             <div class="col-12 my-4 border-b"></div>
           </div>
-          <div class="row" *ngFor="let product of item?.productsData">
-            <div class="col-1 text-secondary">{{product.pk_storeProductID ? product.pk_storeProductID : 'N/A' }}</div>
-            <div class="col-4 text-secondary">{{product.productName + ' (' + product.sizeName + '/' + product.colorName
-              + ')'}}</div>
+          <div class="row" *ngFor="let product of item?.Prducts">
+            <div class="col-1 text-secondary">{{product.id ? product.id : 'N/A' }}</div>
+            <div class="col-4 text-secondary">{{product.name}}</div>
             <!-- <div class="col-2 text-secondary">{{product.runPrice | currency}}</div> -->
-            <div class="col-4 text-secondary">{{(product.runPrice * product.quantity) | currency}}</div>
+            <div class="col-4 text-secondary">{{( product.QTY) | currency}}</div>
             <!-- <div class="col-1  text-secondary">{{product.quantity}}</div> -->
-            <div class="col-1 text-secondary">{{product.setupPrice | currency}}</div>
+            <div class="col-1 text-secondary">{{product.setups | currency}}</div>
             <div class="col-1 text-secondary">$0.00</div>
-            <div class="col-1 text-secondary font-bold">{{((product.runPrice * product.quantity) + product.setupPrice) |
+            <div class="col-1 text-secondary font-bold">{{((product?.runPrice * product.quantity) + product.setups) |
               currency}}</div>
             <div class="col-12 my-4 border-b"></div>
           </div>

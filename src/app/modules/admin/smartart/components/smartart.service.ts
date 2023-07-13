@@ -148,4 +148,8 @@ export class SmartArtService {
     getIPAddress() {
         return this._httpClient.get("http://api.ipify.org/?format=json");
     }
+    getFiles(payload) {
+        return this._httpClient.post(environment.products,
+            payload);
+    };
 }

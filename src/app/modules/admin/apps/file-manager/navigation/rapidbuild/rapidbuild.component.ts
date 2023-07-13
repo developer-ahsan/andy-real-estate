@@ -19,6 +19,7 @@ export class RapidbuildComponent implements OnInit, OnDestroy {
   dataSourceLoading = true;
   statusID: number = 2;
   duplicatedDataSource = [];
+  tempTotalRecords = [];
   dropdown = [];
   dropdownLoader = true;
   selectedStatus = null;
@@ -47,6 +48,9 @@ export class RapidbuildComponent implements OnInit, OnDestroy {
   imprintsDataSourceLoading = true;
 
   ngStatus = 'all';
+  ngPID: any;
+  ngProduct: any = '';
+  searchPayload: any;
   constructor(
     private _storeManagerService: FileManagerService,
     private _changeDetectorRef: ChangeDetectorRef,
@@ -70,15 +74,50 @@ export class RapidbuildComponent implements OnInit, OnDestroy {
             this.dropdown = response["data"];
             this.selectedStatus = this.dropdown[1];
             this.dropdownLoader = false;
-
             // Mark for check
             this._changeDetectorRef.markForCheck();
           });
-
-        this.getRapidBuildImages(2);
+        this.searchPayload = {
+          dashboard: true,
+          store_id: pk_storeID,
+          page: 1,
+          size: 20,
+        }
+        this.getRapidBuildImagesData();
       });
   }
+  getRapidBuildImagesData() {
+    let payload = this.searchPayload;
+    this._storeManagerService.getRapidBuildData(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+      console.log(res)
+      this.dataSource = res["data"];
+      this.dataSourceTotalRecord = res["totalRecords"];
+      if (this.searchPayload.page == 1 && this.ngStatus == 'all') {
+        this.duplicatedDataSource = this.dataSource;
+        this.tempTotalRecords = res["totalRecords"];
+      }
+      this.dataSourceLoading = false;
+      this.dropdownFetchLoader = false;
+      this.filterLoader = false;
 
+      // Mark for check
+      this._changeDetectorRef.markForCheck();
+    }, err => {
+      this.dataSourceLoading = false;
+      this.filterLoader = false;
+      this.dropdownFetchLoader = false;
+      this._changeDetectorRef.markForCheck();
+    });
+  }
+  getNextData(event) {
+    const { previousPageIndex, pageIndex } = event;
+    if (pageIndex > previousPageIndex) {
+      this.searchPayload.page++;
+    } else {
+      this.searchPayload.page++;
+    };
+    this.getRapidBuildImagesData();
+  };
   calledScreen(screenName): void {
     this.mainScreen = screenName;
   };
@@ -86,43 +125,29 @@ export class RapidbuildComponent implements OnInit, OnDestroy {
   changeStatus(obj): void {
     this.filterLoader = true;
     const { pk_storeID } = this.selectedStore;
-
     if (obj === 'all') {
-      this._storeManagerService.getAllRapidBuildImages(pk_storeID)
-        .pipe(takeUntil(this._unsubscribeAll))
-        .subscribe((response: any) => {
-          this.dataSource = response["data"];
-          this.dataSourceTotalRecord = response["totalRecords"];
-          this.dataSourceLoading = false;
-          this.dropdownFetchLoader = false;
-
-          // Mark for check
-          this._changeDetectorRef.markForCheck();
-        });
-      return;
-    };
-    console.log(obj)
-    const { pk_statusID } = obj;
-    this.statusID = pk_statusID;
-
-    this._storeManagerService.getRapidBuildImages(pk_storeID, pk_statusID)
-      .pipe(takeUntil(this._unsubscribeAll))
-      .subscribe((response: any) => {
-        this.dataSource = response["data"];
-        this.dataSourceTotalRecord = response["totalRecords"];
-        this.dataSourceLoading = false;
-        this.dropdownFetchLoader = false;
-
-        // Mark for check
-        this._changeDetectorRef.markForCheck();
-      });
-
+      this.searchPayload = {
+        dashboard: true,
+        store_id: pk_storeID,
+        page: 1,
+        size: 20,
+      }
+    } else {
+      this.searchPayload = {
+        dashboard: true,
+        store_id: pk_storeID,
+        page: 1,
+        size: 20,
+        search_image_status_id: obj.pk_statusID,
+      }
+    }
+    this.getRapidBuildImagesData();
   }
 
-  getRapidBuildImages(statusId): void {
+  getRapidBuildImages(): void {
     const { pk_storeID } = this.selectedStore;
 
-    this._storeManagerService.getRapidBuildImages(pk_storeID, statusId)
+    this._storeManagerService.getRapidBuildImages(pk_storeID, this.ngStatus)
       .pipe(takeUntil(this._unsubscribeAll))
       .subscribe((response: any) => {
         this.dataSource = response["data"];
@@ -138,7 +163,10 @@ export class RapidbuildComponent implements OnInit, OnDestroy {
 
   resetSearch(): void {
     this.dataSource = this.duplicatedDataSource;
-
+    this.dataSourceTotalRecord = this.tempTotalRecords;
+    this.ngPID = '';
+    this.ngProduct = '';
+    this.ngStatus = 'all';
     // Mark for check
     this._changeDetectorRef.markForCheck();
   };
@@ -161,9 +189,7 @@ export class RapidbuildComponent implements OnInit, OnDestroy {
 
   searchId(event): void {
     const { pk_storeID } = this.selectedStore;
-    this.filterLoader = true;
     let keyword = event.target.value;
-
     if (!keyword) {
       this._snackBar.open("Please enter text to search", '', {
         horizontalPosition: 'center',
@@ -172,25 +198,20 @@ export class RapidbuildComponent implements OnInit, OnDestroy {
       });
       return;
     };
-
-    this._storeManagerService.getAllRapidBuildImagesById(pk_storeID, keyword)
-      .pipe(takeUntil(this._unsubscribeAll))
-      .subscribe((response: any) => {
-        this.dataSource = response["data"];
-        this.dataSourceTotalRecord = response["totalRecords"];
-        this.dataSourceLoading = false;
-        this.filterLoader = false;
-
-        // Mark for check
-        this._changeDetectorRef.markForCheck();
-      });
+    this.searchPayload = {
+      dashboard: true,
+      store_id: pk_storeID,
+      page: 1,
+      id: keyword,
+      size: 20,
+    }
+    this.filterLoader = true;
+    this.getRapidBuildImagesData();
   }
 
   searchKeyword(event): void {
     const { pk_storeID } = this.selectedStore;
-    this.filterLoader = true;
     let keyword = event.target.value;
-
     if (!keyword) {
       this._snackBar.open("Please enter text to search", '', {
         horizontalPosition: 'center',
@@ -199,18 +220,15 @@ export class RapidbuildComponent implements OnInit, OnDestroy {
       });
       return;
     };
-
-    this._storeManagerService.getAllRapidBuildImagesByKeyword(pk_storeID, keyword)
-      .pipe(takeUntil(this._unsubscribeAll))
-      .subscribe((response: any) => {
-        this.dataSource = response["data"];
-        this.dataSourceTotalRecord = response["totalRecords"];
-        this.dataSourceLoading = false;
-        this.filterLoader = false;
-
-        // Mark for check
-        this._changeDetectorRef.markForCheck();
-      });
+    this.searchPayload = {
+      dashboard: true,
+      store_id: pk_storeID,
+      keyword: keyword,
+      page: 1,
+      size: 20,
+    }
+    this.filterLoader = true;
+    this.getRapidBuildImagesData();
   }
   ngOnDestroy(): void {
     // Unsubscribe from all subscriptions

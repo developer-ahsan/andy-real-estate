@@ -305,7 +305,7 @@ export class VendorCoopComponent implements OnInit, OnDestroy {
   getCoopFiles() {
     let payload = {
       files_fetch: true,
-      path: `/Companies/Coops/${this.supplierData.pk_companyID}/${this.updateData.coOp_id}`
+      path: `/globalAssets/Companies/Coops/${this.supplierData.pk_companyID}/${this.updateData.coOp_id}`
     }
     this._changeDetectorRef.markForCheck();
     this._vendorService.getVendorsFiles(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(files => {

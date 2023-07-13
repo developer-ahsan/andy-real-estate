@@ -125,17 +125,28 @@ export class ConsolidatedBillComponent implements OnInit, OnDestroy {
     this.isConsolidatedBill = true;
     this.isApplyLoader = true;
     let payload = {
-      consolidated_bill: true,
+      get_consolidated_bill: true,
       store_id: this.selectedStore.pk_storeID,
       order_date: this.date,
       order_type: this.ngOrder,
       attribute_id: this.slectedLocation
     }
     this._storeManagerService.getStoresData(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+      res["data"].forEach(element => {
+        element.Prducts = [];
+        if (element.products) {
+          let products = element.products.split(',');
+          products.forEach(item => {
+            let prods = item.split(':');
+            element.Prducts.push({ id: prods[0], name: prods[1], QTY: 1, setups: 1, shipping: 1, total: 1 });
+          });
+        }
+      });
       this.consolidatedData = res["data"];
       this.consolidatedData.forEach(element => {
         this.totalAmount += element.total;
       });
+      console.log(this.consolidatedData)
       this.isApplyLoader = false;
       this._changeDetectorRef.markForCheck();
     }, err => {

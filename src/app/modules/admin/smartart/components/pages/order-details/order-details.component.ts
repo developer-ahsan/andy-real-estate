@@ -150,6 +150,8 @@ export class OrderDashboardDetailsComponent implements OnInit, OnDestroy {
         this.selectedImprint = this.imprintdata[0].pk_imprintID;
         this.selectedProofImprint = this.imprintdata[0].imprintID;
         this.imprintdata.forEach(imprint => {
+          imprint.artworkFiles = [];
+          imprint.viewFinalArtworkCheck = null;
           if (imprint.allColors) {
             let colors = imprint.allColors;
             let colorsArr = colors.split(',');
@@ -171,15 +173,17 @@ export class OrderDashboardDetailsComponent implements OnInit, OnDestroy {
           }
         });
       }
-      const checkFileExistObservable = of(this.checkFileExist(`https://assets.consolidus.com/globalAssets/Stores/BrandGuide/${this.orderData.pk_storeID}.pdf`, 'brand'));
-      const checkFinalArtworkObservable = of(this.checkFileExist(`https://assets.consolidus.com/artwork/finalArt/${this.paramData.pfk_userID}/${this.paramData.fk_orderID}/${this.paramData.pk_orderLineID}/${this.paramData.fk_imprintID}.eps`, 'finalArtwork'));
+      const checkFileExistObservable = of(this.checkFileExist(`https://assets.consolidus.com/globalAssets/Stores/BrandGuide/${this.orderData.pk_storeID}.pdf`, 'brand', 0));
+      const checkFinalArtworkObservable = of(this.checkFileExist(`https://assets.consolidus.com/artwork/finalArt/${this.paramData.pfk_userID}/${this.paramData.fk_orderID}/${this.paramData.pk_orderLineID}/${this.paramData.fk_imprintID}.eps`, 'finalArtwork', 0));
       const getArtworkOtherObservable = of(this.getArtworkOther());
       const checkIfImageExistsObservable = of(this.checkIfImageExists(`https://assets.consolidus.com/artwork/Proof/${this.paramData.pfk_userID}/${this.paramData.fk_orderID}/${this.paramData.pk_orderLineID}/${this.paramData.fk_imprintID}.jpg`));
+      const getArtworkFiles = of(this.getArtworkFiles(0));
       forkJoin([
         checkFileExistObservable,
         checkFinalArtworkObservable,
         getArtworkOtherObservable,
-        checkIfImageExistsObservable
+        checkIfImageExistsObservable,
+        getArtworkFiles
       ])
       // this.checkFileExist(`https://assets.consolidus.com/globalAssets/Stores/BrandGuide/${this.orderData.pk_storeID}.pdf`, 'brand');
       // this.checkFileExist(`https://assets.consolidus.com/artwork/finalArt/${this.paramData.pfk_userID}/${this.paramData.fk_orderID}/${this.paramData.pk_orderLineID}/${this.paramData.fk_imprintID}.eps`, 'finalArtwork');
@@ -275,6 +279,30 @@ export class OrderDashboardDetailsComponent implements OnInit, OnDestroy {
       this.artWorkLoader = false;
       this._changeDetectorRef.markForCheck();
     });
+  }
+  getArtworkFiles(index) {
+    let imprint = this.imprintdata[index];
+    if (imprint.artworkFiles.length == 0) {
+      let payload = {
+        files_fetch: true,
+        path: `artwork/${this.orderData.pk_storeID}/${this.paramData.pfk_userID}/${this.paramData.fk_orderID}/${imprint.fk_orderLineID[0]}/`
+      }
+      this._changeDetectorRef.markForCheck();
+      this._smartartService.getFiles(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(files => {
+        this.imprintdata[index].artworkFiles = files["data"];
+        this._changeDetectorRef.markForCheck();
+      }, err => {
+        this._changeDetectorRef.markForCheck();
+      });
+    }
+  }
+  openExpansion(imprint, index) {
+    if (imprint.artworkFiles.length == 0) {
+      this.getArtworkFiles(index);
+    }
+    if (!imprint.viewFinalArtworkCheck) {
+      this.checkFileExist(`https://assets.consolidus.com/artwork/finalArt/${this.paramData.pfk_userID}/${this.paramData.fk_orderID}/${this.paramData.pk_orderLineID}/${this.paramData.fk_imprintID}.eps`, 'finalArtwork', index)
+    }
   }
   backToList() {
     this.router.navigate(['/smartart/orders-dashboard']);
@@ -555,7 +583,7 @@ export class OrderDashboardDetailsComponent implements OnInit, OnDestroy {
       };
     }
   };
-  checkFileExist(url, type) {
+  checkFileExist(url, type, index) {
     let params = {
       file_check: true,
       url: url
@@ -564,7 +592,7 @@ export class OrderDashboardDetailsComponent implements OnInit, OnDestroy {
       if (type == 'brand') {
         this.brandGuideExist = res["isFileExist"];
       } else if (type == 'finalArtwork') {
-        this.viewFinalArtworkCheck = res["isFileExist"];
+        this.imprintdata[index].viewFinalArtworkCheck = res["isFileExist"];
       }
     })
   }
