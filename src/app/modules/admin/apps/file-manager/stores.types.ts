@@ -614,3 +614,7 @@ export interface DeleteImage {
     image_path: string;
     delete_image: boolean;
 };
+export interface FinalizeBill {
+    orderIDs: number[];
+    finalize_bill: true;
+};

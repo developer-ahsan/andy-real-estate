@@ -7,6 +7,7 @@ import { takeUntil } from 'rxjs/operators';
 import { HttpClient } from '@angular/common/http';
 import { debounceTime, tap, switchMap, finalize, distinctUntilChanged, filter } from 'rxjs/operators';
 import moment from 'moment';
+import { FinalizeBill } from '../../stores.types';
 const API_KEY = "e8067b53"
 
 @Component({
@@ -138,15 +139,11 @@ export class ConsolidatedBillComponent implements OnInit, OnDestroy {
           let products = element.products.split(',');
           products.forEach(item => {
             let prods = item.split(':');
-            element.Prducts.push({ id: prods[0], name: prods[1], QTY: 1, setups: 1, shipping: 1, total: 1 });
+            element.Prducts.push({ id: prods[0], name: prods[1], unit: prods[2], qty: prods[3], extended: prods[4], setup: prods[5], shipping: prods[6], total: prods[7] });
           });
         }
       });
       this.consolidatedData = res["data"];
-      this.consolidatedData.forEach(element => {
-        this.totalAmount += element.total;
-      });
-      console.log(this.consolidatedData)
       this.isApplyLoader = false;
       this._changeDetectorRef.markForCheck();
     }, err => {
@@ -172,6 +169,27 @@ export class ConsolidatedBillComponent implements OnInit, OnDestroy {
   }
   backToSearch() {
     this.isConsolidatedBill = false;
+  }
+  finalizeBill() {
+    let orders = [];
+    this.consolidatedData.forEach(element => {
+      orders.push(element.INVOICE);
+    });
+    let payload: FinalizeBill = {
+      orderIDs: orders,
+      finalize_bill: true
+    }
+    this.consolidatedData.finalizeLoader = true;
+    this._changeDetectorRef.markForCheck();
+    this._storeManagerService.putStoresData(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+      this._storeManagerService.snackBar(res["message"]);
+      this.consolidatedData.finalizeLoader = false;
+      this.isConsolidatedBill = false;
+      this._changeDetectorRef.markForCheck();
+    }, err => {
+      this.consolidatedData.finalizeLoader = false;
+      this._changeDetectorRef.markForCheck();
+    })
   }
 
 }

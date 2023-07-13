@@ -123,6 +123,16 @@
                         </ngx-dropzone-preview>
                     </ngx-dropzone>
                 </div>
+                <div class="col-12 text-right">
+                    <button [disabled]="isUpdateLoader" mat-stroked-button class="min-w-40 mr-2 my-2"
+                        (click)="updateCoop()">
+                        <mat-icon *ngIf="!isUpdateLoader" class="mr-1"
+                            svgIcon="heroicons_outline:pencil-alt"></mat-icon>
+                        <span *ngIf="!isUpdateLoader">Update Coop</span>
+                        <mat-progress-spinner *ngIf="isUpdateLoader" [diameter]="24" [mode]="'indeterminate'">
+                        </mat-progress-spinner>
+                    </button>
+                </div>
                 <div class="col-12" *ngIf="updateData.files.length > 0">
                     <p class="text-green-900">Current Documents</p>
                     <div class="flex flex-wrap -m-2 mt-2">
@@ -158,14 +168,6 @@
                             </div>
                         </a><!---->
                     </div>
-                    <button [disabled]="isUpdateLoader" mat-stroked-button class="min-w-40 mr-2 my-2"
-                        (click)="updateCoop()">
-                        <mat-icon *ngIf="!isUpdateLoader" class="mr-1"
-                            svgIcon="heroicons_outline:pencil-alt"></mat-icon>
-                        <span *ngIf="!isUpdateLoader">Update Coop</span>
-                        <mat-progress-spinner *ngIf="isUpdateLoader" [diameter]="24" [mode]="'indeterminate'">
-                        </mat-progress-spinner>
-                    </button>
                 </div>
             </div>
         </div>
