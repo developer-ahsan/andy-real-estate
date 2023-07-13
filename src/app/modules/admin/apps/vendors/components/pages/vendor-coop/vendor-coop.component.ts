@@ -344,6 +344,7 @@ export class VendorCoopComponent implements OnInit, OnDestroy {
         this.coopData.productionTime = productionTime;
         this.mainScreen = 'Current';
       }
+      this.getCoopFiles();
       this.isUpdateLoader = false;
       this._vendorService.snackBar(res["message"]);
       this._changeDetectorRef.markForCheck();
@@ -353,6 +354,7 @@ export class VendorCoopComponent implements OnInit, OnDestroy {
       this._changeDetectorRef.markForCheck();
     })
   }
+
   onSelected(ev) {
     this.selectedState = ev.option.value;
   }
@@ -400,6 +402,23 @@ export class VendorCoopComponent implements OnInit, OnDestroy {
         });
       }
     });
+  }
+  removeFiles(obj, index) {
+    let payload = {
+      image_path: `/Companies/Coops/${this.supplierData.pk_companyID}/${this.updateData.coOp_id}/${obj.FILENAME}`,
+      delete_image: true
+    }
+    obj.delLoader = true;
+    this._vendorService.removeMedia(payload)
+      .subscribe((response) => {
+        this._vendorService.snackBar('Files Removed Successfully');
+        this.updateData.files.splice(index, 1);
+        obj.delLoader = false;
+        this._changeDetectorRef.markForCheck();
+      }, err => {
+        obj.delLoader = false;
+        this._changeDetectorRef.markForCheck();
+      })
   }
   /**
      * On destroy

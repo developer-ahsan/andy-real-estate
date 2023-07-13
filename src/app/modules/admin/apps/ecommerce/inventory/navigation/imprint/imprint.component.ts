@@ -268,6 +268,8 @@ export class ImprintComponent implements OnInit, OnDestroy {
     })
   }
   ngOnInit(): void {
+    this.getMethodsAndLocations();
+
     this.showImprintScreen = 'Imprints';
     this.isContentLoading = true;
 
@@ -1351,7 +1353,14 @@ export class ImprintComponent implements OnInit, OnDestroy {
     }
     this.showImprintScreen = screenName;
   };
-
+  getMethodsAndLocations() {
+    let params = {
+      locations_methods: true
+    }
+    this._inventoryService.getProductsData(params).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+      console.log(res);
+    })
+  }
   addArea(value: string): void {
     this.areaValue = value;
   }

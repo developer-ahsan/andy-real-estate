@@ -136,37 +136,46 @@
                 <div class="col-12" *ngIf="updateData.files.length > 0">
                     <p class="text-green-900">Current Documents</p>
                     <div class="flex flex-wrap -m-2 mt-2">
-                        <a class="flex flex-col w-40 h-40 m-2 p-4 shadow rounded-2xl cursor-pointer bg-card ng-star-inserted"
-                            href="https://assets.consolidus.com/globalAssets/Companies/Coops/{{supplierData.pk_companyID}}/{{updateData.coOp_id}}/{{item.FILENAME}}"
-                            target="_blank" *ngFor="let item of updateData.files">
-                            <div class="aspect-[9/6]">
-                                <div class="flex items-center justify-center h-full">
-                                    <div class="relative"><mat-icon role="img"
-                                            class="mat-icon notranslate icon-size-14 text-hint opacity-50 mat-icon-no-color"
-                                            aria-hidden="true" data-mat-icon-type="svg" data-mat-icon-name="document"
-                                            data-mat-icon-namespace="heroicons_solid"><svg
-                                                xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"
-                                                fill="currentColor" aria-hidden="true" fit="" height="100%" width="100%"
-                                                preserveAspectRatio="xMidYMid meet" focusable="false">
-                                                <path
-                                                    d="M5.625 1.5c-1.036 0-1.875.84-1.875 1.875v17.25c0 1.035.84 1.875 1.875 1.875h12.75c1.035 0 1.875-.84 1.875-1.875V12.75A3.75 3.75 0 0016.5 9h-1.875a1.875 1.875 0 01-1.875-1.875V5.25A3.75 3.75 0 009 1.5H5.625z">
-                                                </path>
-                                                <path
-                                                    d="M12.971 1.816A5.23 5.23 0 0114.25 5.25v1.875c0 .207.168.375.375.375H16.5a5.23 5.23 0 013.434 1.279 9.768 9.768 0 00-6.963-6.963z">
-                                                </path>
-                                            </svg></mat-icon>
-                                        <div
-                                            class="absolute left-0 bottom-0 px-1.5 rounded text-sm font-semibold leading-5 text-white bg-red-600">
-                                            {{item.EXTENSION}} </div>
+                        <div *ngFor="let item of updateData.files; let i=index"
+                            class="flex flex-col w-40 h-40 m-2 p-4 shadow rounded-2xl cursor-pointer bg-card ng-star-inserted">
+                            <a href="https://assets.consolidus.com/globalAssets/Companies/Coops/{{supplierData.pk_companyID}}/{{updateData.coOp_id}}/{{item.FILENAME}}"
+                                target="_blank">
+                                <div class="aspect-[9/6]">
+                                    <div class="flex items-center justify-center h-full">
+                                        <div class="relative"><mat-icon role="img"
+                                                class="mat-icon notranslate icon-size-14 text-hint opacity-50 mat-icon-no-color"
+                                                aria-hidden="true" data-mat-icon-type="svg"
+                                                data-mat-icon-name="document"
+                                                data-mat-icon-namespace="heroicons_solid"><svg
+                                                    xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"
+                                                    fill="currentColor" aria-hidden="true" fit="" height="100%"
+                                                    width="100%" preserveAspectRatio="xMidYMid meet" focusable="false">
+                                                    <path
+                                                        d="M5.625 1.5c-1.036 0-1.875.84-1.875 1.875v17.25c0 1.035.84 1.875 1.875 1.875h12.75c1.035 0 1.875-.84 1.875-1.875V12.75A3.75 3.75 0 0016.5 9h-1.875a1.875 1.875 0 01-1.875-1.875V5.25A3.75 3.75 0 009 1.5H5.625z">
+                                                    </path>
+                                                    <path
+                                                        d="M12.971 1.816A5.23 5.23 0 0114.25 5.25v1.875c0 .207.168.375.375.375H16.5a5.23 5.23 0 013.434 1.279 9.768 9.768 0 00-6.963-6.963z">
+                                                    </path>
+                                                </svg></mat-icon>
+                                            <div
+                                                class="absolute left-0 bottom-0 px-1.5 rounded text-sm font-semibold leading-5 text-white bg-red-600">
+                                                {{item.EXTENSION}} </div>
+                                        </div>
                                     </div>
                                 </div>
-                            </div>
-                            <div class="flex flex-col flex-auto justify-center text-center text-sm font-medium">
-                                <div class="mat-mdc-tooltip-trigger truncate"
-                                    aria-describedby="cdk-describedby-message-ng-1-17" cdk-describedby-host="ng-1">
-                                    {{item.FILENAME}}</div><!----><!---->
-                            </div>
-                        </a><!---->
+                                <div class="flex flex-col flex-auto justify-center text-center text-sm font-medium">
+                                    <div class="mat-mdc-tooltip-trigger truncate"
+                                        aria-describedby="cdk-describedby-message-ng-1-17" cdk-describedby-host="ng-1">
+                                        {{item.FILENAME}}</div><!----><!---->
+                                </div>
+                            </a>
+                            <p class="text-center text-gray-300 hover:text-gray-900 cursor-pointer"
+                                (click)="removeFiles(item,i)">
+                                <span class="ml-2" *ngIf="!item.delLoader"> Remove </span>
+                                <mat-progress-spinner *ngIf="item.delLoader" [diameter]="24" [mode]="'indeterminate'">
+                                </mat-progress-spinner>
+                            </p>
+                        </div>
                     </div>
                 </div>
             </div>
