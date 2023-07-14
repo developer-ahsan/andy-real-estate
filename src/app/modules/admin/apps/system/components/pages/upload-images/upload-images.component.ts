@@ -1,6 +1,6 @@
 import { Component, Input, OnInit, Output, EventEmitter, ChangeDetectorRef, OnDestroy, ViewChild, ElementRef } from '@angular/core';
 import { MatPaginator } from '@angular/material/paginator';
-import { Subject } from 'rxjs';
+import { Subject, forkJoin, of } from 'rxjs';
 import { SystemService } from '../../system.service';
 import { takeUntil } from 'rxjs/operators';
 import { DeleteImage } from '../../system.types';
@@ -89,6 +89,7 @@ export class UploadImagesComponent implements OnInit, OnDestroy {
         this._changeDetectorRef.markForCheck();
       })
   }
+
   removeImage(index, image) {
     let payload: DeleteImage = {
       image_path: `/Uploads/${image.FILENAME}`,

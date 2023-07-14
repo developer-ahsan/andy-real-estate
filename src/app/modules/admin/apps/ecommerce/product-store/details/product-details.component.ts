@@ -49,6 +49,9 @@ export class StoreProductDetailsComponent implements OnInit, OnDestroy {
   selectedScreeen = '';
   selectedRoute = '';
 
+
+  hiresImage = '';
+  thumbImage = '';
   /**
    * Constructor
    */
@@ -73,6 +76,8 @@ export class StoreProductDetailsComponent implements OnInit, OnDestroy {
     this._storeProductService.product$.pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
       if (res["data"].length) {
         this.selectedProduct = res["data"][0];
+        this.hiresImage = `https://assets.consolidus.com/globalAssets/products/HiRes/${this.selectedProduct?.pk_storeProductID}.jpg?${Math.random()}`;
+        this.thumbImage = `https://assets.consolidus.com/globalAssets/products/thumbnails/${this.selectedProduct?.pk_storeProductID}.jpg?${Math.random()}`;
         if (this.selectedProduct.temp) {
           if (this.selectedProduct.blnEProcurement) {
             if (this.selectedProduct.blnProductNumbers) {

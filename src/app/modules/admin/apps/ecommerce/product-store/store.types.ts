@@ -189,3 +189,8 @@ export interface StatusUpdate {
     blnAddToRapidBuild: boolean;
     update_status: boolean;
 };
+export interface AddRapidBuildStoreProduct {
+    storeProductID: number;
+    comments: string;
+    add_rapidBuild_storeProduct: boolean;
+};

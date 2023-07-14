@@ -584,7 +584,7 @@ export class InventoryService {
             params: {
                 imprint: true,
                 product_id: productId,
-                size: 20,
+                size: 100,
                 page: page
             }
         });
@@ -617,7 +617,7 @@ export class InventoryService {
                 imprint: true,
                 paginated_location: true,
                 keyword: keyword,
-                size: 30
+                size: 100
             }
         });
     };
@@ -642,7 +642,7 @@ export class InventoryService {
                 imprint: true,
                 paginated_method: true,
                 keyword: keyword,
-                size: 30
+                size: 100
             }
         });
     };
@@ -678,7 +678,7 @@ export class InventoryService {
             params: {
                 imprint: true,
                 digitizer: true,
-                size: 30
+                size: 50
             }
         });
     };
