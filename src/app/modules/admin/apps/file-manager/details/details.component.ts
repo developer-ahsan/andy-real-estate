@@ -88,10 +88,16 @@ export class StoresDetailsComponent implements OnInit, OnDestroy {
       .pipe(takeUntil(this._unsubscribeAll))
       .subscribe((items: any) => {
         this.stores = items["data"];
-        this.selectedStore = items["data"][0]
+        this.selectedStore = items["data"][0];
         this.launchDate = this.selectedStore?.launchDate
           ? moment.utc(this.selectedStore?.launchDate).format("lll")
           : "N/A";
+        let title = '';
+        if (items.rapidBuildCount > 0) {
+          title = ` (${items.rapidBuildCount})`;
+        }
+        this.routes[2].children[4].title = this.routes[2].children[4].title + title;
+        console.log(this.routes)
         this.isLoading = false;
 
         // Mark for check
