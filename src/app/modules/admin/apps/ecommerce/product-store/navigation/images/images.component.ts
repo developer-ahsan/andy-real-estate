@@ -110,7 +110,6 @@ export class StoreImagesComponent implements OnInit, OnDestroy {
       }
     }
   }
-
   onRemoveMain() {
     this.file = null;
   }

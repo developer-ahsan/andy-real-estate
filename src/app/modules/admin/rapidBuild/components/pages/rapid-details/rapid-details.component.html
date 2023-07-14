@@ -56,7 +56,7 @@
                             <div>
                                 <div class="py-2">
                                     <img *ngIf="ngProofCheck"
-                                        src="https://assets.consolidus.com/globalAssets/rapidBuild/{{buildDetails.pk_rapidBuildID}}.jpg"
+                                        src="https://assets.consolidus.com/globalAssets/rapidBuild/{{buildDetails.pk_rapidBuildID}}.jpg?{{date}}"
                                         class="w-full" (error)="checkProof($event)">
                                     <fuse-alert *ngIf="!ngProofCheck" class="my-2" [appearance]="'soft'"
                                         [type]="'warning'" [showIcon]="false">
@@ -72,7 +72,7 @@
                                 </mat-panel-title>
                             </mat-expansion-panel-header>
                             <div class="mt-2">
-                                <input type="file" accept=".jpg" id="myfile" (change)="uploadFile($event)">
+                                <input #fileInput type="file" accept=".jpg" id="myfile" (change)="uploadFile($event)">
                                 <br>
                                 <mat-form-field class="w-full mt-2">
                                     <mat-label>Proof Comments</mat-label>

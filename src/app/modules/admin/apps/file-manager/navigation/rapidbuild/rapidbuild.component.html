@@ -143,7 +143,9 @@
                                     Last Proof By
                                 </th>
                                 <td mat-cell *matCellDef="let element" (click)="editToggle(element)">
-                                    {{ element.rapidBuildUserFirstName }} {{ element.rapidBuildUserLastName }}
+                                    <span *ngIf="!element.rapidBuildUserFirstName">N/A</span>
+                                    <span *ngIf="element.rapidBuildUserFirstName">{{ element.rapidBuildUserFirstName }}
+                                        {{ element.rapidBuildUserLastName }}</span>
                                 </td>
                             </ng-container>
                         </div>

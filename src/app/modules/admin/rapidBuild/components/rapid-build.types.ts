@@ -32,13 +32,13 @@ export interface updateStatus {
 export interface uploadProof {
     rbid: number;
     comments: string;
-    upload_proof: boolean;
     blnAdmin: boolean;
     fk_imageStatusID: number;
     blnStatusUpdate: boolean;
     status_name: string;
     rapidbuild_userId: number;
     rapidbuild_username: string;
+    upload_proof: boolean;
 };
 export interface updateProof {
     rbid: number;

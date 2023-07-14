@@ -113,6 +113,9 @@ export class RapidBuildDetailsComponent implements OnInit, OnDestroy {
   isUploadProofLoader: boolean = false;
 
   brandGuideExist: boolean = false;
+  date = new Date().toLocaleString();
+  @ViewChild('fileInput') fileInput: ElementRef;
+
   constructor(
     private _changeDetectorRef: ChangeDetectorRef,
     private _authService: AuthService,
@@ -287,13 +290,13 @@ export class RapidBuildDetailsComponent implements OnInit, OnDestroy {
     if (!this.ngProofCheck) {
       let payload: uploadProof = {
         rbid: this.buildDetails.pk_rapidBuildID,
-        comments: this.ngProofComment,
+        comments: this.ngProofComment || '',
         blnAdmin: this.userData.blnMaster,
         fk_imageStatusID: this.buildDetails.fk_imageStatusID,
         blnStatusUpdate: true,
         status_name: this.buildDetails.statusName,
-        rapidbuild_userId: Number(this.buildDetails.pk_userID),
-        rapidbuild_username: this.buildDetails.userName,
+        rapidbuild_userId: Number(this.userData.pk_userID),
+        rapidbuild_username: this.userData.userName,
         upload_proof: true
       };
       this._rapidService.PostApiData(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
@@ -302,6 +305,8 @@ export class RapidBuildDetailsComponent implements OnInit, OnDestroy {
         this.imageValue = null;
         this.ngProofCheck = true;
         this.isUploadProofLoader = false;
+        this.fileInput.nativeElement.value = '';
+        this.date = new Date().toLocaleString();
         this._changeDetectorRef.markForCheck();
       }, err => {
         this.isUploadProofLoader = false;
@@ -310,13 +315,13 @@ export class RapidBuildDetailsComponent implements OnInit, OnDestroy {
     } else {
       let payload: updateProof = {
         rbid: this.buildDetails.pk_rapidBuildID,
-        comments: this.ngProofComment,
+        comments: this.ngProofComment || '',
         blnAdmin: this.userData.blnMaster,
         fk_imageStatusID: this.buildDetails.fk_imageStatusID,
         blnStatusUpdate: true,
         status_name: this.buildDetails.statusName,
-        rapidbuild_userId: Number(this.buildDetails.pk_userID),
-        rapidbuild_username: this.buildDetails.userName,
+        rapidbuild_userId: Number(this.userData.pk_userID),
+        rapidbuild_username: this.userData.userName,
         update_proof: true
       };
       this._rapidService.UpdateAPIData(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
@@ -324,6 +329,8 @@ export class RapidBuildDetailsComponent implements OnInit, OnDestroy {
         this.ngProofComment = '';
         this.imageValue = null;
         this.isUploadProofLoader = false;
+        this.fileInput.nativeElement.value = '';
+        this.date = new Date().toLocaleString();
         this._changeDetectorRef.markForCheck();
       }, err => {
         this.isUploadProofLoader = false;
