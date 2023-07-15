@@ -240,6 +240,11 @@ export class RapidBuildDetailsComponent implements OnInit, OnDestroy {
       update_status: true
     };
     this._rapidService.UpdateAPIData(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+      this.allStatus.forEach(element => {
+        if (element.pk_statusID == this.buildDetails.pk_statusID) {
+          this.buildDetails.statusName = element.statusName;
+        }
+      });
       this._rapidService.snackBar(res["message"]);
       this.isUpdateLoader = false;
       this._changeDetectorRef.markForCheck();

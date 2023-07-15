@@ -177,7 +177,7 @@ export class OrderDashboardDetailsComponent implements OnInit, OnDestroy {
       const checkFinalArtworkObservable = of(this.checkFileExist(`https://assets.consolidus.com/artwork/finalArt/${this.paramData.pfk_userID}/${this.paramData.fk_orderID}/${this.paramData.pk_orderLineID}/${this.paramData.fk_imprintID}.eps`, 'finalArtwork', 0));
       const getArtworkOtherObservable = of(this.getArtworkOther());
       const checkIfImageExistsObservable = of(this.checkIfImageExists(`https://assets.consolidus.com/artwork/Proof/${this.paramData.pfk_userID}/${this.paramData.fk_orderID}/${this.paramData.pk_orderLineID}/${this.paramData.fk_imprintID}.jpg`));
-      const getArtworkFiles = of(this.getArtworkFiles(0));
+      const getArtworkFiles = of(this.getArtworkFiles());
       forkJoin([
         checkFileExistObservable,
         checkFinalArtworkObservable,
@@ -280,26 +280,30 @@ export class OrderDashboardDetailsComponent implements OnInit, OnDestroy {
       this._changeDetectorRef.markForCheck();
     });
   }
-  getArtworkFiles(index) {
-    let imprint = this.imprintdata[index];
-    if (imprint.artworkFiles.length == 0) {
-      let payload = {
-        files_fetch: true,
-        path: `artwork/${this.orderData.pk_storeID}/${this.paramData.pfk_userID}/${this.paramData.fk_orderID}/${imprint.fk_orderLineID[0]}/`
-      }
-      this._changeDetectorRef.markForCheck();
-      this._smartartService.getFiles(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(files => {
-        this.imprintdata[index].artworkFiles = files["data"];
-        this._changeDetectorRef.markForCheck();
-      }, err => {
-        this._changeDetectorRef.markForCheck();
-      });
+  getArtworkFiles() {
+    let payload = {
+      files_fetch: true,
+      path: `artwork/${this.orderData.pk_storeID}/${this.paramData.pfk_userID}/${this.paramData.fk_orderID}/${this.paramData.pk_orderLineID}/`
     }
+    this._changeDetectorRef.markForCheck();
+    this._smartartService.getFiles(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(files => {
+      this.imprintdata.forEach(element => {
+        files["data"].forEach(file => {
+          if (file.ID.includes(element.pk_imprintID)) {
+            element.artworkFiles.push(file);
+          }
+        });
+      });
+      // this.imprintdata[index].artworkFiles = files["data"];
+      this._changeDetectorRef.markForCheck();
+    }, err => {
+      this._changeDetectorRef.markForCheck();
+    });
   }
   openExpansion(imprint, index) {
-    if (imprint.artworkFiles.length == 0) {
-      this.getArtworkFiles(index);
-    }
+    // if (imprint.artworkFiles.length == 0) {
+    //   this.getArtworkFiles(index);
+    // }
     if (!imprint.viewFinalArtworkCheck) {
       this.checkFileExist(`https://assets.consolidus.com/artwork/finalArt/${this.paramData.pfk_userID}/${this.paramData.fk_orderID}/${this.paramData.pk_orderLineID}/${this.paramData.fk_imprintID}.eps`, 'finalArtwork', index)
     }
