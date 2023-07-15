@@ -525,6 +525,10 @@ export class FileManagerService {
       .get<any[]>(environment.storeNewUrl, { params: params })
       .pipe(retry(3));
   }
+  putStoresRapidData(payload) {
+    const headers = { 'Authorization': `Bearer ${this._authService.accessToken}` };
+    return this._httpClient.put(environment.storeNewUrlRapidBuild, payload, { headers }).pipe(retry(3));
+  }
 
   putStoresData(payload) {
     const headers = { 'Authorization': `Bearer ${this._authService.accessToken}` };

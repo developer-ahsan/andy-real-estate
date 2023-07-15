@@ -1,9 +1,12 @@
 import { Component, Input, Output, OnInit, EventEmitter, ChangeDetectorRef, OnDestroy } from '@angular/core';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { Subject } from 'rxjs';
+import { Observable, Subject, forkJoin } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { FileManagerService } from '../../store-manager.service';
 import { environment } from 'environments/environment';
+import { UpdateRapidbuildStatus } from '../../stores.types';
+import { StoreProductService } from '../../../ecommerce/product-store/store.service';
+import { RapidBuildService } from 'app/modules/admin/rapidBuild/components/rapid-build.service';
 @Component({
   selector: 'app-rapidbuild',
   templateUrl: './rapidbuild.component.html'
@@ -43,16 +46,22 @@ export class RapidbuildComponent implements OnInit, OnDestroy {
   currentProof: boolean = false;
 
   imgUrl = environment.rapidBuildMedia;
-  imprintsDisplayedColumns: string[] = ['number', 'methodName', 'locationName', 'area'];
+  imprintsDisplayedColumns: string[] = ['number', 'methodName', 'area'];
   imprintsDataSource = [];
   imprintsDataSourceLoading = true;
 
-  ngStatus = 'all';
+  ngStatus: any = 2;
   ngPID: any;
   ngProduct: any = '';
   searchPayload: any;
+  imageStatusID: any;
+  buildComments: any;
+
+  imprintData: any;
   constructor(
     private _storeManagerService: FileManagerService,
+    private _storeService: StoreProductService,
+    private _rapidBuildService: RapidBuildService,
     private _changeDetectorRef: ChangeDetectorRef,
     private _snackBar: MatSnackBar
   ) { }
@@ -80,6 +89,7 @@ export class RapidbuildComponent implements OnInit, OnDestroy {
         this.searchPayload = {
           dashboard: true,
           store_id: pk_storeID,
+          search_image_status_id: 2,
           page: 1,
           size: 20,
         }
@@ -239,26 +249,27 @@ export class RapidbuildComponent implements OnInit, OnDestroy {
     this.currentProof = false;
     this.isDetailOpen = true;
     this.editItemData = item;
+    let date = new Date().toLocaleString();
     this.getRebuildDetails()
-    this.getImageOrFallback('https://assets.consolidus.com/globalAssets/rapidBuild/rbid.jpg').then(res => {
-      this.currentProof = true;
-    }, err => {
-    });
+    this.checkIfImageExists(`https://assets.consolidus.com/globalAssets/rapidBuild/${this.editItemData.pk_rapidBuildID}.jpg?${date}`);
   }
   getRebuildDetails() {
     this.isRebuildDetailLoader = true;
     let params = {
       rapidbuild_details: true,
       rbid: this.editItemData.pk_rapidBuildID,
-      spid: this.editItemData.fk_storeProductID
+      spid: this.editItemData.fk_storeProductID,
+      productID: this.editItemData.pk_productID
     }
     this._storeManagerService.getRapidData(params).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
       this.buildDetailData = res["data"];
+      this.imageStatusID = this.editItemData.pk_statusID
       let arr = [];
       res["colors"].forEach(element => {
         arr.push(element.colorName);
       });
       this.buildDetailColors = arr.toString();
+      this.imprintsDataSource = res["imprints"];
       this.isRebuildDetailLoader = false;
       this._changeDetectorRef.markForCheck();
     }, err => {
@@ -270,28 +281,107 @@ export class RapidbuildComponent implements OnInit, OnDestroy {
     this.isDetailOpen = false;
     this.editItemData = null;
   }
-  getImageOrFallback(path) {
-    return new Promise(resolve => {
-      const img = new Image();
-      img.src = path;
-      img.onload = () => resolve(path);
-    });
+  checkIfImageExists(url) {
+    const img = new Image();
+    img.src = url;
+
+    if (img.complete) {
+
+    } else {
+      img.onload = () => {
+        this.currentProof = true;
+        this.imgUrl = url;
+        this._changeDetectorRef.markForCheck();
+      };
+
+      img.onerror = () => {
+        this.currentProof = false;
+        return;
+      };
+    }
   };
   getImprints() {
-    if (this.imprintsDataSource.length == 0) {
-      this.imprintsDataSourceLoading = true;
-      let params = {
-        imprint: true,
-        product_id: this.editItemData.pk_productID,
+    // if (this.imprintsDataSource.length == 0) {
+    //   this.imprintsDataSourceLoading = true;
+    //   let params = {
+    //     imprint: true,
+    //     product_id: this.editItemData.pk_productID,
+    //   }
+    //   this._storeManagerService.getProductsData(params).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+    //     this.imprintsDataSource = res["data"];
+    //     this.imprintsDataSourceLoading = false;
+    //     this._changeDetectorRef.markForCheck();
+    //   }, err => {
+    //     this.imprintsDataSourceLoading = false;
+    //     this._changeDetectorRef.markForCheck();
+    //   })
+    // }
+  }
+
+
+  uploadMainImages() {
+    if (this.imageStatusID == 4) {
+      this.buildDetailData.submitLoader = true;
+      let payload = {
+        path: this.imgUrl,
+        convert_store_image_64: true
       }
-      this._storeManagerService.getProductsData(params).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
-        this.imprintsDataSource = res["data"];
-        this.imprintsDataSourceLoading = false;
-        this._changeDetectorRef.markForCheck();
-      }, err => {
-        this.imprintsDataSourceLoading = false;
-        this._changeDetectorRef.markForCheck();
-      })
+      this._storeService.postStoresProductsData(payload).subscribe(res => {
+        const paths: string[] = [`/globalAssets/Products/Images/${this.editItemData.pk_storeProductID}.jpg`, `/globalAssets/Products/HiRes/${this.editItemData.pk_storeProductID}.jpg`, `/globalAssets/Products/Thumbnails/${this.editItemData.fk_storeProductID}.jpg`];
+        const uploadObservables: Observable<any>[] = paths.map(path => {
+          return this.uploadMediMainBase64(path, res["base64"]);
+        });
+        forkJoin(uploadObservables).subscribe(
+          () => {
+            this.submitRapidBuild();
+          })
+      });
+    } else {
+      this.submitRapidBuild();
     }
+  }
+  uploadMediMainBase64(path, base64) {
+    const payload = {
+      file_upload: true,
+      image_file: base64,
+      image_path: path
+    };
+    return this._storeService.addMedia(payload);
+  }
+
+  submitRapidBuild() {
+    this.buildDetailData.submitLoader = true;
+    let imprints = [];
+    this.imprintsDataSource.forEach(element => {
+      imprints.push(element.imprints);
+    });
+    let paylaod: UpdateRapidbuildStatus = {
+      rbid: this.editItemData.pk_rapidBuildID,
+      imageStatusID: this.imageStatusID,
+      comments: this.buildDetailData.proofComments,
+      rbid_userID: this.editItemData.pk_userID,
+      rbid_firstName: this.editItemData.rapidBuildUserFirstName,
+      rbid_lastName: this.editItemData.rapidBuildUserLastName,
+      storeProductID: this.editItemData.fk_storeProductID,
+      available_colors: this.buildDetailColors,
+      imprint_list: imprints.toString(),
+      productID: this.editItemData.pk_productID,
+      productNumber: this.editItemData.productNumber,
+      productDesc: this.editItemData.productDesc,
+      companyName: this.editItemData.companyName,
+      supplierLink: this.editItemData.supplierLink,
+      blnStoreActive: this.editItemData.blnStoreActive,
+      update_rapidbuild_status: true
+    }
+    this._storeManagerService.putStoresRapidData(paylaod).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+      if (res["messge"]) {
+        this._storeManagerService.snackBar(res["message"]);
+      }
+      this.buildDetailData.submitLoader = false;
+      this._changeDetectorRef.markForCheck();
+    }, err => {
+      this.buildDetailData.submitLoader = false;
+      this._changeDetectorRef.markForCheck();
+    });
   }
 }

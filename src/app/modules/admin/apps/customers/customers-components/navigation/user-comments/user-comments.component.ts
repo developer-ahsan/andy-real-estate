@@ -166,6 +166,14 @@ export class UserCommentsComponent implements OnInit {
         emailArr.push(element.email);
       }
     });
+    if (emailArr.length == 0) {
+      this._snackBar.open("Please add an email to notify", '', {
+        horizontalPosition: 'center',
+        verticalPosition: 'bottom',
+        duration: 3500
+      });
+      return;
+    }
     this.isAddCommentLoader = true;
 
     const { pk_userID, userName } = this.selectedCustomer;

@@ -618,3 +618,22 @@ export interface FinalizeBill {
     orderIDs: number[];
     finalize_bill: true;
 };
+
+export interface UpdateRapidbuildStatus {
+    rbid: number;
+    imageStatusID: number;
+    comments: string;
+    rbid_userID: number;
+    rbid_firstName: string;
+    rbid_lastName: string;
+    storeProductID: number;
+    available_colors: string;
+    imprint_list: string;
+    productID: number;
+    productNumber: string;
+    productDesc: string;
+    companyName: string;
+    supplierLink: string;
+    blnStoreActive: boolean;
+    update_rapidbuild_status: boolean;
+};

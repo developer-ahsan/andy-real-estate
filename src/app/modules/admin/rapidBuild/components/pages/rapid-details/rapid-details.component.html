@@ -173,9 +173,13 @@
                                         <tr>
                                             <td valign="top"><b>Supplier Link:</b></td>
                                             <td valign="top">
-                                                <a class="text-blue-500" href="{{buildDetails.supplierLink}}"
+                                                <a *ngIf="buildDetails.supplierLink != 'null' && buildDetails.supplierLink != null"
+                                                    class="text-blue-500" href="{{buildDetails.supplierLink}}"
                                                     target="_blank">Supplier product
                                                     link</a>
+                                                <p
+                                                    *ngIf="buildDetails.supplierLink == 'null' || buildDetails.supplierLink == null">
+                                                    N/A</p>
                                             </td>
                                         </tr>
                                         <tr>

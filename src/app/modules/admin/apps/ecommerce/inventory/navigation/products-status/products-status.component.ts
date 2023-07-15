@@ -40,6 +40,8 @@ export class ProductsStatusComponent implements OnInit {
   loadAssignedStores: boolean = false;
   totalAssignedStores = 0;
   assignedStorePage = 1;
+  tempDate = new Date().toLocaleString();
+  ngSelectedStoreToCopy: any;
   constructor(
     private _changeDetectorRef: ChangeDetectorRef,
     private _inventoryService: InventoryService,
@@ -144,12 +146,11 @@ export class ProductsStatusComponent implements OnInit {
     this.allStoresSelected.forEach(element => {
       pk_storeID.push(element.pk_storeID);
     });
-    if (!this.isRapidBuild) {
+    if (this.ngComment == '') {
       this.ngComment = null;
-    } else {
-      if (this.ngComment == '') {
-        this.ngComment = null;
-      }
+    }
+    if (!this.isCopyImage) {
+      this.ngSelectedStoreToCopy = null;
     }
     this.selectedTermUpdateLoader = true;
     let payload: AddStoreProduct = {

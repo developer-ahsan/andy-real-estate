@@ -267,6 +267,7 @@ export class RapidBuildDetailsComponent implements OnInit, OnDestroy {
       image.onload = () => {
         if (image.width != 600 || image.height != 600) {
           this._rapidService.snackBar("Dimensions allowed are 600px x 600px");
+          this.fileInput.nativeElement.value = '';
           this.imageValue = null;
           this._changeDetectorRef.markForCheck();
           return;
@@ -274,6 +275,7 @@ export class RapidBuildDetailsComponent implements OnInit, OnDestroy {
 
         if (type != "image/jpeg") {
           this._rapidService.snackBar("Image extensions are allowed in JPG");
+          this.fileInput.nativeElement.value = '';
           this.imageValue = null;
           this._changeDetectorRef.markForCheck();
           return;
@@ -306,6 +308,7 @@ export class RapidBuildDetailsComponent implements OnInit, OnDestroy {
         this.ngProofCheck = true;
         this.isUploadProofLoader = false;
         this.fileInput.nativeElement.value = '';
+        this.buildDetails.pk_statusID = 2;
         this.date = new Date().toLocaleString();
         this._changeDetectorRef.markForCheck();
       }, err => {
@@ -330,6 +333,7 @@ export class RapidBuildDetailsComponent implements OnInit, OnDestroy {
         this.imageValue = null;
         this.isUploadProofLoader = false;
         this.fileInput.nativeElement.value = '';
+        this.buildDetails.pk_statusID = 2;
         this.date = new Date().toLocaleString();
         this._changeDetectorRef.markForCheck();
       }, err => {
