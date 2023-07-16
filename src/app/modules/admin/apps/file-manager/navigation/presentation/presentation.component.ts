@@ -35,6 +35,8 @@ export class PresentationComponent implements OnInit, OnDestroy {
   @Output() isLoadingChange = new EventEmitter<boolean>();
   private _unsubscribeAll: Subject<any> = new Subject<any>();
   @ViewChild('fileInput') fileInput: ElementRef;
+  @ViewChild('fileInputLogo') fileInputLogo: ElementRef;
+
 
   presentationScreen: string = "Look & Feel";
   selected = "YES";
@@ -175,7 +177,7 @@ export class PresentationComponent implements OnInit, OnDestroy {
   logoBanksTotal = 0;
   logoBanksPage = 1;
   logoBanksLoadMore: boolean = false;
-  ngLogoBank = 3;
+  ngLogoBank = 0;
   ngLogoKeyword = '';
 
   // FavICon
@@ -998,6 +1000,7 @@ export class PresentationComponent implements OnInit, OnDestroy {
       type = 'ai';
     } else {
       this.logoBankImageValue = null;
+      this.fileInputLogo.nativeElement.value = '';
       this._storeManagerService.snackBar('Please select only AI or Eps file');
       return;
     }
@@ -1024,6 +1027,7 @@ export class PresentationComponent implements OnInit, OnDestroy {
       .subscribe((response) => {
         // Mark for check
         this.logoBankImageValue = null;
+        this.fileInputLogo.nativeElement.value = '';
         this._changeDetectorRef.markForCheck();
       }, err => {
         this.masHeadLoader = false;

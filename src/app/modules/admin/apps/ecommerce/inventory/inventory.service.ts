@@ -1395,7 +1395,7 @@ export class InventoryService {
         return this._httpClient.post(
             environment.products, payload, { headers });
     };
-    AddStoreProduct(payload: AddStoreProduct) {
+    AddStoreProduct(payload) {
         const headers = { 'Authorization': `Bearer ${this._authService.accessToken}` };
         return this._httpClient.post(
             environment.products, payload, { headers });

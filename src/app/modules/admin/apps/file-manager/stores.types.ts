@@ -637,3 +637,8 @@ export interface UpdateRapidbuildStatus {
     blnStoreActive: boolean;
     update_rapidbuild_status: boolean;
 };
+export interface RemoveRapidbuild {
+    rbid: number;
+    rbid_userID: number;
+    remove_rapidbuild: boolean;
+};

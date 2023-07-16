@@ -766,14 +766,27 @@ export interface AddDuplicateImprint {
     location_name: string;
     duplicate_imprint: boolean;
 };
+// export interface AddStoreProduct {
+//     store_id: number[];
+//     product_id: number;
+//     blnAddToRapidBuild: boolean;
+//     rapidBuildComments: string;
+//     add_store_product: boolean;
+// };
 export interface AddStoreProduct {
     store_id: number[];
     product_id: number;
     blnAddToRapidBuild: boolean;
     rapidBuildComments: string;
+    blnCopy: boolean;
+    copyImageStoreProductID: number;
     add_store_product: boolean;
 };
 
+export interface addRapidBuildStoreProduct {
+    store_product_ids: number[];
+    addRapidBuildStoreProduct: boolean;
+};
 export interface addRapidBuildStoreProduct {
     store_product_ids: number[];
     addRapidBuildStoreProduct: boolean;

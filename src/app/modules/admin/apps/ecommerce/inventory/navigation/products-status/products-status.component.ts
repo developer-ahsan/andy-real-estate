@@ -1,7 +1,7 @@
 import { Component, Input, OnInit, Output, EventEmitter, ChangeDetectorRef, ViewChild, ElementRef } from '@angular/core';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { InventoryService } from 'app/modules/admin/apps/ecommerce/inventory/inventory.service';
-import { AddStoreProduct, ProductsDetails } from 'app/modules/admin/apps/ecommerce/inventory/inventory.types';
+import { AddStoreProduct, ProductsDetails, addRapidBuildStoreProduct } from 'app/modules/admin/apps/ecommerce/inventory/inventory.types';
 import { environment } from 'environments/environment';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
@@ -146,9 +146,6 @@ export class ProductsStatusComponent implements OnInit {
     this.allStoresSelected.forEach(element => {
       pk_storeID.push(element.pk_storeID);
     });
-    if (this.ngComment == '') {
-      this.ngComment = null;
-    }
     if (!this.isCopyImage) {
       this.ngSelectedStoreToCopy = null;
     }
@@ -157,8 +154,25 @@ export class ProductsStatusComponent implements OnInit {
       store_id: pk_storeID,
       product_id: this.selectedProduct.pk_productID,
       blnAddToRapidBuild: this.isRapidBuild,
-      rapidBuildComments: this.ngComment,
+      rapidBuildComments: this.ngComment || null,
+      blnCopy: this.isCopyImage,
+      copyImageStoreProductID: this.ngSelectedStoreToCopy,
       add_store_product: true
+    }
+    this._inventoryService.AddStoreProduct(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+      this.ngComment = null;
+      console.log(res)
+      // this.addRapidStoreProduct(res);
+      this._changeDetectorRef.markForCheck();
+    }, err => {
+      this.selectedTermUpdateLoader = false;
+      this._changeDetectorRef.markForCheck();
+    })
+  }
+  addRapidStoreProduct(ids) {
+    let payload = {
+      store_product_ids: ids,
+      addRapidBuildStoreProduct: true
     }
     this._inventoryService.AddStoreProduct(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
       this.ngComment = null;

@@ -412,7 +412,7 @@
             <mat-select formControlName="bank_type">
               <mat-option [value]="1">Internal</mat-option>
               <mat-option [value]="2">Client</mat-option>
-              <mat-option [value]="3">Both</mat-option>
+              <mat-option [value]="0">Both</mat-option>
             </mat-select>
           </mat-form-field>
           <p class="fa fa-info-circle" style="color: rgb(101, 124, 174)">
@@ -431,7 +431,8 @@
         <div class="col-12">
           <p>Vector Image:</p>
           <p style="color: red">AI and EPS formats only!</p>
-          <input type="file" class="file-upload my-3" accept=".eps,.ai" (change)="uploadLogoBankFile($event)" />
+          <input type="file" #fileInputLogo class="file-upload my-3" accept=".eps,.ai"
+            (change)="uploadLogoBankFile($event)" />
         </div>
 
         <div class="col-12">
@@ -478,7 +479,7 @@
               <mat-form-field appearance="fill" class="w-full">
                 <mat-label>Select which logo bank to display below? </mat-label>
                 <mat-select [(ngModel)]="ngLogoBank" (selectionChange)="getLogoBanks(1)">
-                  <mat-option [value]="3">All</mat-option>
+                  <mat-option [value]="0">All</mat-option>
                   <mat-option [value]="1">Internal</mat-option>
                   <mat-option [value]="2">Client</mat-option>
                 </mat-select>

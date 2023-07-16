@@ -334,8 +334,12 @@
                                 <div class="text-lg font-bold">
                                     Approve/request changes
                                 </div>
-                                <button mat-button mat-stroked-button [disabled]="" class="min-w-20">
-                                    <span>Remove Entry</span>
+                                <button mat-button mat-flat-button color="primary"
+                                    [disabled]="buildDetailData.deleteLoader" class="min-w-30"
+                                    (click)="removeRapidBuild()">
+                                    <span *ngIf="!buildDetailData.deleteLoader">Remove Entry</span>
+                                    <mat-progress-spinner *ngIf="buildDetailData.deleteLoader" [diameter]="24"
+                                        [mode]="'indeterminate'"></mat-progress-spinner>
                                 </button>
                             </div>
                             <mat-radio-group aria-label="Select an option" [(ngModel)]="imageStatusID">

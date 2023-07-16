@@ -138,7 +138,7 @@
                                 <div><b>Rush:</b> {{orderData.blnRushFlexibility? 'YES' : 'NO'}}</div>
                             </div>
                             <div *ngIf="smartArtUser.blnMaster">
-                                <div><b>Order:</b> <a [routerLink]="['/apps/orders',orderData.fk_storeUserID,'summary']"
+                                <div><b>Order:</b> <a [routerLink]="['/apps/orders',orderData.fk_orderID,'summary']"
                                         target="_blank">{{orderData.fk_orderID}}</a>
                                 </div>
                                 <div><b>Quote ID:</b> {{orderData.quoteID}}-{{paramData?.fk_imprintID}}</div>
@@ -179,8 +179,8 @@
                                     <mat-form-field class="fuse-mat-dense fuse-mat-no-subscript w-full min-w-50">
                                         <mat-label>Additional Contacts</mat-label>
                                         <mat-select matInput [(ngModel)]="orderData.blnAdditionalApprovalOverride">
-                                            <mat-option [value]="false">ENABLED</mat-option>
-                                            <mat-option [value]="true">DISABLED</mat-option>
+                                            <mat-option [value]="false">ACTIVE</mat-option>
+                                            <mat-option [value]="true">Disabled</mat-option>
                                         </mat-select>
                                     </mat-form-field>
                                 </div>
@@ -634,6 +634,9 @@
                                         </div>
                                     </div>
                                     <!-- Arwork Templates -->
+                                    <div class="col-12" *ngIf="imprint.artworkFiles.length == 0">
+                                        <p class="text-red-500">No artwork supplied for this order</p>
+                                    </div>
                                     <div class="col-12" *ngIf="imprint.artworkFiles.length">
                                         <div *ngFor="let artwork of imprint.artworkFiles; let i=index"
                                             class="text-blue-500">

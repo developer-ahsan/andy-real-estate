@@ -1,10 +1,10 @@
 import { Component, Input, Output, OnInit, EventEmitter, ChangeDetectorRef, OnDestroy } from '@angular/core';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { Observable, Subject, forkJoin } from 'rxjs';
-import { takeUntil } from 'rxjs/operators';
+import { elementAt, takeUntil } from 'rxjs/operators';
 import { FileManagerService } from '../../store-manager.service';
 import { environment } from 'environments/environment';
-import { UpdateRapidbuildStatus } from '../../stores.types';
+import { RemoveRapidbuild, UpdateRapidbuildStatus } from '../../stores.types';
 import { StoreProductService } from '../../../ecommerce/product-store/store.service';
 import { RapidBuildService } from 'app/modules/admin/rapidBuild/components/rapid-build.service';
 @Component({
@@ -139,6 +139,7 @@ export class RapidbuildComponent implements OnInit, OnDestroy {
       this.searchPayload = {
         dashboard: true,
         store_id: pk_storeID,
+        search_image_status_id: -1,
         page: 1,
         size: 20,
       }
@@ -374,7 +375,7 @@ export class RapidbuildComponent implements OnInit, OnDestroy {
       update_rapidbuild_status: true
     }
     this._storeManagerService.putStoresRapidData(paylaod).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
-      if (res["messge"]) {
+      if (res["message"]) {
         this._storeManagerService.snackBar(res["message"]);
       }
       this.buildDetailData.submitLoader = false;
@@ -384,4 +385,30 @@ export class RapidbuildComponent implements OnInit, OnDestroy {
       this._changeDetectorRef.markForCheck();
     });
   }
+  removeRapidBuild() {
+    this.buildDetailData.deleteLoader = true;
+    let imprints = [];
+    this.imprintsDataSource.forEach(element => {
+      imprints.push(element.imprints);
+    });
+    let paylaod: RemoveRapidbuild = {
+      rbid: this.editItemData.pk_rapidBuildID,
+      rbid_userID: this.editItemData.pk_userID,
+      remove_rapidbuild: true
+    }
+    this._storeManagerService.putStoresRapidData(paylaod).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+      if (res["message"]) {
+        this._storeManagerService.snackBar(res["message"]);
+        this.dataSource = this.dataSource.filter(element => element.pk_rapidBuildID != this.editItemData.pk_rapidBuildID)
+        this.dataSourceTotalRecord--;
+        this.backToList();
+      }
+      this.buildDetailData.deleteLoader = false;
+      this._changeDetectorRef.markForCheck();
+    }, err => {
+      this.buildDetailData.deleteLoader = false;
+      this._changeDetectorRef.markForCheck();
+    });
+  }
 }
+
