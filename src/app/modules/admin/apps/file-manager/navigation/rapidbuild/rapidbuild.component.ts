@@ -359,7 +359,7 @@ export class RapidbuildComponent implements OnInit, OnDestroy {
     let paylaod: UpdateRapidbuildStatus = {
       rbid: this.editItemData.pk_rapidBuildID,
       imageStatusID: this.imageStatusID,
-      comments: this.buildDetailData.proofComments,
+      comments: this.buildComments,
       rbid_userID: this.editItemData.pk_userID,
       rbid_firstName: this.editItemData.rapidBuildUserFirstName,
       rbid_lastName: this.editItemData.rapidBuildUserLastName,
@@ -377,6 +377,7 @@ export class RapidbuildComponent implements OnInit, OnDestroy {
     this._storeManagerService.putStoresRapidData(paylaod).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
       if (res["message"]) {
         this._storeManagerService.snackBar(res["message"]);
+        this.backToList();
       }
       this.buildDetailData.submitLoader = false;
       this._changeDetectorRef.markForCheck();
