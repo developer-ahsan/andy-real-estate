@@ -4,7 +4,7 @@
 # https://docs.microsoft.com/azure/devops/pipelines/languages/javascript
 
 trigger:
-- production-release-frontend
+- production-release-frontend-1.0
 
 pool:
   vmImage: ubuntu-latest
