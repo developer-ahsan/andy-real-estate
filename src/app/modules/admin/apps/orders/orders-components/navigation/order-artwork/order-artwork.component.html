@@ -52,11 +52,11 @@
                         <div class="flex items-center justify-between">
                             <div class="flex flex-col mr-6">
                                 <div class="text-2xl font-semibold leading-tight">
-                                    ({{item.products[0]?.pk_productID}})
-                                    {{item.products[0]?.productNumber}}:
-                                    {{item.products[0]?.productName}}</div>
+                                    {{item?.fk_orderID}}-
+                                    {{item?.pk_orderLineID}}:
+                                    {{item?.productName}}</div>
                                 <div class="text-secondary font-medium text-md">
-                                    <p>Quantity: {{item.totalQuantity}}</p>
+                                    <p>Quantity: {{item?.products[0].QUANTITY}}</p>
                                     <p>Supplier: {{item.products[0]?.supplier_name}}</p>
                                 </div>
                             </div>
@@ -65,6 +65,15 @@
                                 onError="this.src='https://assets.consolidus.com/globalAssets/Products/coming_soon.jpg'"
                                 alt="Product Image">
                         </div>
+                        <!-- <div>
+                            <table class="table table-stiped border-t-0"
+                                *ngFor="let imprint of item.imprints;let last=last">
+                                <tr>
+                                    <td class="font-bold">({{imprint.pk_imprintID}})
+                                        {{imprint.locationName}}/{{imprint.methodName}}</td>
+                                </tr>
+                            </table>
+                        </div> -->
                         <div class="grid grid-cols-12 w-full mt-5">
                             <!-- Columns -->
                             <div class="col-span-6 font-medium text-md text-secondary">Imprint</div>
@@ -84,21 +93,23 @@
                                     </div>
                                     <div
                                         class="col-span-1 text-md text-left text-secondary cursor-pointer hover:text-gray-700">
-                                        ---
-                                        <!-- <a *ngIf="imprint?.logoBankID" class="text-decoration-none"
-                                            href="https://assets.consolidus.com/globalAssets/Stores/logoBank2/{{orderDetail.fk_storeID}}/Thumbs/{{imprint?.logoBankID}}.jpg"                          target="_blank">View</a>
-                                            <a *ngIf="imprint?.customerLogoBankID" class="text-decoration-none"
-                                            href="https://assets.consolidus.com/globalAssets/StoreUser/LogoBank/#qryOrder.fk_storeUserID#/{{orderDetail.fk_storeID}}/Thumbs/{{imprint?.customerLogoBankID}}.jpg"
-                                            target="_blank">View</a>
-                                            <a *ngIf="imprint?.locationLogoBankID" class="text-decoration-none"
-                                            href="https://assets.consolidus.com/globalAssets/Stores/locationLogoBank/{{imprint.pk_locationID}}/Thumbs/{{imprint?.locationLogoBankID}}.jpg     https://assets.consolidus.com/artwork/{{orderDetail.fk_storeID}}/{{orderDetail.fk_storeUserID}}/{{orderDetail.pk_orderID}}/{{item.order_line_id}}/{{imprint.pk_imprintID}}.jpg"
-                                            target="_blank">View</a> -->
+                                        <div *ngIf="imprint.artworkFiles.length > 0">
+                                            <div *ngFor="let artwork of imprint.artworkFiles; let i=index"
+                                                class="text-blue-500 flex justify-between">
+                                                <a href="https://assets.consolidus.com/artwork/{{orderDetail.fk_storeID}}/{{orderDetail.fk_storeUserID}}/{{orderDetail.pk_orderID}}/{{item.pk_orderLineID}}/{{artwork.ID}}.{{artwork.EXTENSION}}?{{tempDate}}"
+                                                    target="_blank">Artwork File #{{i+1}}</a>
+                                                <mat-icon svgIcon="heroicons_outline:trash"
+                                                    matTooltip="Delete File"></mat-icon>
+                                            </div>
+                                        </div>
+                                        <span *ngIf="imprint.artworkFiles.length == 0">---</span>
                                     </div>
                                     <div
                                         class="col-span-1 text-md text-left text-secondary cursor-pointer hover:text-gray-700">
-                                        <a class="text-decoration-none"
+                                        <a class="text-decoration-none" *ngIf="imprint.proofImg"
                                             href="https://assets.consolidus.com/artwork/Proof/{{orderDetail.fk_storeUserID}}/{{orderDetail.pk_orderID}}/{{item.order_line_id}}/{{imprint.pk_imprintID}}.jpg"
                                             target="_blank">View</a>
+                                        <span *ngIf="!imprint.proofImg">---</span>
                                     </div>
                                     <div class="col-span-2 text-md text-left text-secondary cursor-pointer hover:text-gray-700"
                                         (click)="openSideNav(imprint)">

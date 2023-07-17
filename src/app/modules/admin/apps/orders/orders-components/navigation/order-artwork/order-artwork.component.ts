@@ -25,7 +25,7 @@ export class OrderArtWorkComponent implements OnInit, OnDestroy {
   imgUrl = environment.productMedia;
   @ViewChild('drawer', { static: true }) sidenav: MatDrawer;
   sideNavData: any;
-
+  tempDate = new Date().toLocaleString();
   constructor(
     private _changeDetectorRef: ChangeDetectorRef,
     private _orderService: OrdersService
@@ -43,14 +43,18 @@ export class OrderArtWorkComponent implements OnInit, OnDestroy {
   }
   getOrderProducts() {
     this._orderService.orderProducts$.pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+      console.log(res);
       let value = [];
       res["data"].forEach((element, index) => {
+        element.products = [];
+        element.imprints = [];
+        this.orderProducts.push(element);
+        this.getArtworkFiles(element.pk_orderLineID, index);
         value.push(element.pk_orderLineID);
         if (index == res["data"].length - 1) {
           this.getLineProducts(value.toString());
         }
       });
-      this.orderProducts = res["data"];
     })
   }
   getLineProducts(value) {
@@ -60,51 +64,22 @@ export class OrderArtWorkComponent implements OnInit, OnDestroy {
     }
     this._orderService.getOrderLineProducts(params).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
       let products = [];
-
       res["data"].forEach(element => {
-        let prod = [];
-        if (products.length == 0) {
-          let cost = (element.cost * element.quantity) + element.shippingCost;
-          let price = (element.price * element.quantity) + element.shippingPrice;
-          prod.push(element);
-          products.push({ products: prod, order_line_id: element.fk_orderLineID, accessories: [], imprints: [], totalQuantity: element.quantity, totalMercandiseCost: cost, totalMerchendisePrice: price });
+        const index = this.orderProducts.findIndex(item => item.pk_orderLineID == element.fk_orderLineID);
+        if (this.orderProducts[index].products.length > 0) {
+          this.orderProducts[index].products.push(element);
         } else {
-          const index = products.findIndex(item => item.order_line_id == element.fk_orderLineID);
-          if (index < 0) {
-            let cost = (element.cost * element.quantity) + element.shippingCost;
-            let price = (element.price * element.quantity) + element.shippingPrice;
-            prod.push(element);
-            products.push({ products: prod, order_line_id: element.fk_orderLineID, accessories: [], imprints: [], totalQuantity: element.quantity, totalMercandiseCost: cost, totalMerchendisePrice: price });
-          } else {
-            let cost = (element.cost * element.quantity);
-            let price = (element.price * element.quantity);
-            prod = products[index].products;
-            prod.push(element);
-            products[index].products = prod;
-            products[index].totalQuantity = products[index].totalQuantity + element.quantity;
-            products[index].totalMercandiseCost = products[index].totalMercandiseCost + cost;
-            products[index].totalMerchendisePrice = products[index].totalMerchendisePrice + price;
-          }
+          this.orderProducts[index].products = [element];
         }
       });
-      if (res["accessories"].length > 0) {
-        res["accessories"].forEach(element => {
-          let cost = (element.runCost * element.quantity);
-          let price = (element.runPrice * element.quantity);
-          const index = products.findIndex(item => item.order_line_id == element.orderLineID);
-          products[index].accessories.push(element);
-          products[index].totalMercandiseCost = products[index].totalMercandiseCost + cost;
-          products[index].totalMerchendisePrice = products[index].totalMerchendisePrice + price;
-        });
-      }
-      this.getProductImprints(value, products);
+      this.getProductImprints(value);
     }, err => {
       this.isLoading = false;
       this.isLoadingChange.emit(false);
       this._changeDetectorRef.markForCheck();
     })
   }
-  getProductImprints(value, data) {
+  getProductImprints(value) {
     let params = {
       imprint_report: true,
       order_line_id: value
@@ -113,23 +88,28 @@ export class OrderArtWorkComponent implements OnInit, OnDestroy {
       let tempArr = [];
       let imprintIds = [];
       res["data"].forEach(element => {
+        const index = this.orderProducts.findIndex(item => item.pk_orderLineID == element.fk_orderLineID);
+        element.artworkFiles = [];
         imprintIds.push(element.pk_imprintID);
-        let cost = (element.runCost * element.quantity) + element.setupCost;
-        let price = (element.runPrice * element.quantity) + element.setupPrice;
-        const index = data.findIndex(item => item.order_line_id == element.fk_orderLineID);
-        data[index].imprints.push(element);
-        data[index].totalMercandiseCost = data[index].totalMercandiseCost + cost;
-        data[index].totalMerchendisePrice = data[index].totalMerchendisePrice + price;
+        this.checkIfImageExists(element, `https://assets.consolidus.com/artwork/Proof/${this.orderDetail.fk_storeUserID}/${this.orderDetail.pk_orderID}/${element.fk_orderLineID}/${element.pk_imprintID}.jpg`);
+        if (this.orderProducts[index].artworkFiles.length > 0) {
+          this.orderProducts[index].artworkFiles.forEach(file => {
+            if (file.ID.includes(element.pk_imprintID)) {
+              element.artworkFiles.push(file);
+            }
+          });
+        }
+        this.orderProducts[index].imprints.push(element);
       });
-
-      this.getImprintsStatus(imprintIds.toString(), value.toString(), data);
+      console.log(this.orderProducts);
+      this.getImprintsStatus(imprintIds.toString(), value.toString());
     }, err => {
       this.isLoading = false;
       this.isLoadingChange.emit(false);
       this._changeDetectorRef.markForCheck();
     });
   }
-  getImprintsStatus(value, orders, data) {
+  getImprintsStatus(value, orders) {
     let params = {
       imprint_status: true,
       order_line_id: orders,
@@ -137,14 +117,13 @@ export class OrderArtWorkComponent implements OnInit, OnDestroy {
     }
     this._orderService.getOrder(params).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
       res["data"].forEach(element => {
-        data.forEach(item => {
+        this.orderProducts.forEach(item => {
           const index = item.imprints.findIndex(imprint => element.fk_imprintID == imprint.pk_imprintID);
           if (index >= 0) {
             item.imprints[index].status = element;
           }
         });
       });
-      this.orderProducts = data;
       // console.log(this.orderProducts)
       this.isLoading = false;
       this.isLoadingChange.emit(false);
@@ -154,8 +133,40 @@ export class OrderArtWorkComponent implements OnInit, OnDestroy {
       this.isLoadingChange.emit(false);
       this._changeDetectorRef.markForCheck();
     })
-
   }
+  getArtworkFiles(pk_orderLineID, index) {
+    let payload = {
+      files_fetch: true,
+      path: `artwork/${this.orderDetail.fk_storeID}/${this.orderDetail.fk_storeUserID}/${this.orderDetail.pk_orderID}/${pk_orderLineID}/`
+    }
+    this._changeDetectorRef.markForCheck();
+    this._orderService.getFiles(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(files => {
+      this.orderProducts[index].artworkFiles = files["data"];
+      this._changeDetectorRef.markForCheck();
+    }, err => {
+      this._changeDetectorRef.markForCheck();
+    });
+  }
+  checkIfImageExists(imprint, url) {
+    const img = new Image();
+    img.src = url;
+
+    if (img.complete) {
+
+    } else {
+      img.onload = () => {
+        imprint.proofImg = true;
+        this._changeDetectorRef.markForCheck();
+        // return true;
+      };
+
+      img.onerror = () => {
+        imprint.proofImg = false;
+        this._changeDetectorRef.markForCheck();
+        return;
+      };
+    }
+  };
   openSideNav(item) {
     // console.log(item)
     this.sideNavData = item;

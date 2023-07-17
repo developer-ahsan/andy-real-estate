@@ -366,4 +366,9 @@ export class OrdersService {
         return this._httpClient.post(
             environment.orders, payload, { headers });
     };
+    // get All Files
+    getFiles(payload) {
+        return this._httpClient.post(environment.products,
+            payload);
+    };
 }

@@ -38,7 +38,6 @@ export class ArtworkComponent implements OnInit, OnDestroy {
     this.isLoading = true;
     this._changeDetectorRef.markForCheck();
     this.getProductDetail();
-
   }
   getProductDetail() {
     this._inventoryService.product$.pipe(takeUntil(this._unsubscribeAll)).subscribe((details) => {

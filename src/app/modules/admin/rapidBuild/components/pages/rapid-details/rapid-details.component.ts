@@ -114,6 +114,7 @@ export class RapidBuildDetailsComponent implements OnInit, OnDestroy {
 
   brandGuideExist: boolean = false;
   date = new Date().toLocaleString();
+  params: any;
   @ViewChild('fileInput') fileInput: ElementRef;
 
   constructor(
@@ -130,6 +131,7 @@ export class RapidBuildDetailsComponent implements OnInit, OnDestroy {
     this.userData = JSON.parse(sessionStorage.getItem('rapidBuild'));
     this._activeRoute.params.subscribe(res => {
       this.isLoading = true;
+      this.params = res;
       this.getRapidBuildDetails(res.id, res.store);
     });
     this._rapidService.rapidBuildStatuses$.pipe(takeUntil(this._unsubscribeAll)).subscribe(statuses => {
@@ -293,11 +295,15 @@ export class RapidBuildDetailsComponent implements OnInit, OnDestroy {
     if (this.imageValue) {
       this.uploadMedia();
     }
+    let comment = '';
+    if (!this.ngProofComment) {
+      comment = this.ngProofComment;
+    }
     this.isUploadProofLoader = true;
     if (!this.ngProofCheck) {
       let payload: uploadProof = {
         rbid: this.buildDetails.pk_rapidBuildID,
-        comments: this.ngProofComment || '',
+        comments: comment,
         blnAdmin: this.userData.blnMaster,
         fk_imageStatusID: this.buildDetails.fk_imageStatusID,
         blnStatusUpdate: true,
@@ -307,6 +313,8 @@ export class RapidBuildDetailsComponent implements OnInit, OnDestroy {
         upload_proof: true
       };
       this._rapidService.PostApiData(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+        this.isLoading = true;
+        this.getRapidBuildDetails(this.params.id, this.params.store);
         this._rapidService.snackBar(res["message"]);
         this.ngProofComment = '';
         this.imageValue = null;
@@ -333,6 +341,8 @@ export class RapidBuildDetailsComponent implements OnInit, OnDestroy {
         update_proof: true
       };
       this._rapidService.UpdateAPIData(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+        this.isLoading = true;
+        this.getRapidBuildDetails(this.params.id, this.params.store);
         this._rapidService.snackBar(res["message"]);
         this.ngProofComment = '';
         this.imageValue = null;

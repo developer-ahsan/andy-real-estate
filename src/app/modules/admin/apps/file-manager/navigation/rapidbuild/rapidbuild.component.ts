@@ -99,7 +99,6 @@ export class RapidbuildComponent implements OnInit, OnDestroy {
   getRapidBuildImagesData() {
     let payload = this.searchPayload;
     this._storeManagerService.getRapidBuildData(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
-      console.log(res)
       this.dataSource = res["data"];
       this.dataSourceTotalRecord = res["totalRecords"];
       if (this.searchPayload.page == 1 && this.ngStatus == 'all') {
@@ -250,9 +249,9 @@ export class RapidbuildComponent implements OnInit, OnDestroy {
     this.currentProof = false;
     this.isDetailOpen = true;
     this.editItemData = item;
-    let date = new Date().toLocaleString();
+    let random = Math.random();
     this.getRebuildDetails()
-    this.checkIfImageExists(`https://assets.consolidus.com/globalAssets/rapidBuild/${this.editItemData.pk_rapidBuildID}.jpg?${date}`);
+    this.checkIfImageExists(`https://assets.consolidus.com/globalAssets/rapidBuild/${this.editItemData.pk_rapidBuildID}.jpg?${random}`);
   }
   getRebuildDetails() {
     this.isRebuildDetailLoader = true;
@@ -377,6 +376,18 @@ export class RapidbuildComponent implements OnInit, OnDestroy {
     this._storeManagerService.putStoresRapidData(paylaod).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
       if (res["message"]) {
         this._storeManagerService.snackBar(res["message"]);
+        this.searchPayload = {
+          dashboard: true,
+          store_id: this.selectedStore.pk_storeID,
+          search_image_status_id: 2,
+          page: 1,
+          size: 20,
+        }
+        this.dataSourceLoading = true;
+        this.ngStatus = 2;
+        this.ngPID = '';
+        this.ngProduct = '';
+        this.getRapidBuildImagesData();
         this.backToList();
       }
       this.buildDetailData.submitLoader = false;
