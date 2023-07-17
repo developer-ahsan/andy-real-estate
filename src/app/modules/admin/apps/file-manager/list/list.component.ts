@@ -164,7 +164,11 @@ export class StoresListComponent implements OnInit, OnDestroy {
         this._commonService.storesData$
             .pipe(takeUntil(this._unsubscribeAll))
             .subscribe((stores: any) => {
-                this.stores = stores["data"];
+                stores["data"].forEach(element => {
+                    if (element.blnActive) {
+                        this.stores.push(element);
+                    }
+                });
                 this.dataSource = new MatTableDataSource(this.stores);
                 this.duplicateStores = this.stores;
                 this.isStoreNotReceived = false;

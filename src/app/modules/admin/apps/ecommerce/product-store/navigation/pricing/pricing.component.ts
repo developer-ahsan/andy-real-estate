@@ -208,6 +208,7 @@ export class PricingComponent implements OnInit, OnDestroy {
         });
       }
       this.netCostForm.patchValue(quantity)
+      this.disablePriceOverrideFields(quantity);
       this.isLoading = false;
       this.isLoadingChange.emit(false);
       this._changeDetectorRef.markForCheck();
@@ -217,7 +218,27 @@ export class PricingComponent implements OnInit, OnDestroy {
       this._changeDetectorRef.markForCheck();
     })
   }
+  disablePriceOverrideFields(quantity) {
+    if (quantity.priceOverrideOne) {
+      this.netCostForm.get('quantityOne').disable();
+    }
+    if (quantity.priceOverrideTwo) {
+      this.netCostForm.get('quantityTwo').disable();
+    }
+    if (quantity.priceOverrideThree) {
+      this.netCostForm.get('quantityThree').disable();
+    }
+    if (quantity.priceOverrideFour) {
+      this.netCostForm.get('quantityFour').disable();
+    }
+    if (quantity.priceOverrideFive) {
+      this.netCostForm.get('quantityFive').disable();
+    }
+    if (quantity.priceOverrideSix) {
+      this.netCostForm.get('quantitySix').disable();
+    }
 
+  }
   updateQuantity(str: string) {
     const netCostFormValues = this.netCostForm.getRawValue();
     if (str == "quantityTwo") {
@@ -269,39 +290,129 @@ export class PricingComponent implements OnInit, OnDestroy {
     })
   }
   setMarginValues(val) {
+    const { quantityOne, quantityTwo, quantityThree, quantityFour, quantityFive, quantitySix } = this.netCostForm.getRawValue();
     const { margin1, margin2, margin3, margin4, margin5, margin6, apparelMargin1, apparelMargin2, apparelMargin3, apparelMargin4, apparelMargin5, apparelMargin6, printMargin1, printMargin2, printMargin3, printMargin4, printMargin5, printMargin6 } = this.pricingData.current_pricing[1][0];
     if (val == 1) {
-      this.netCostForm.patchValue({
-        marginOne: margin1 * 100,
-        marginTwo: margin2 * 100,
-        marginThree: margin3 * 100,
-        marginFour: margin4 * 100,
-        marginFive: margin5 * 100,
-        marginSix: margin6 * 100
-      })
+      if (quantityOne != 0) {
+        this.netCostForm.patchValue({
+          marginOne: margin1 * 100,
+        });
+      }
+      if (quantityTwo != 0) {
+        this.netCostForm.patchValue({
+          marginTwo: margin2 * 100,
+        });
+      }
+      if (quantityThree != 0) {
+        this.netCostForm.patchValue({
+          marginThree: margin3 * 100,
+        });
+      }
+      if (quantityFour != 0) {
+        this.netCostForm.patchValue({
+          marginFour: margin4 * 100,
+        });
+      }
+      if (quantityFive != 0) {
+        this.netCostForm.patchValue({
+          marginFive: margin5 * 100,
+        });
+      }
+      if (quantitySix != 0) {
+        this.netCostForm.patchValue({
+          marginSix: margin6 * 100,
+        });
+      }
+      // this.netCostForm.patchValue({
+      //   marginOne: margin1 * 100,
+      //   marginTwo: margin2 * 100,
+      //   marginThree: margin3 * 100,
+      //   marginFour: margin4 * 100,
+      //   marginFive: margin5 * 100,
+      //   marginSix: margin6 * 100
+      // })
     } else if (val == 2) {
-      this.netCostForm.patchValue({
-        marginOne: apparelMargin1 * 100,
-        marginTwo: apparelMargin2 * 100,
-        marginThree: apparelMargin3 * 100,
-        marginFour: apparelMargin4 * 100,
-        marginFive: apparelMargin5 * 100,
-        marginSix: apparelMargin6 * 100
-      })
+      if (quantityOne != 0) {
+        this.netCostForm.patchValue({
+          marginOne: apparelMargin1 * 100,
+        });
+      }
+      if (quantityTwo != 0) {
+        this.netCostForm.patchValue({
+          marginTwo: apparelMargin2 * 100,
+        });
+      }
+      if (quantityThree != 0) {
+        this.netCostForm.patchValue({
+          marginThree: apparelMargin3 * 100,
+        });
+      }
+      if (quantityFour != 0) {
+        this.netCostForm.patchValue({
+          marginFour: apparelMargin4 * 100,
+        });
+      }
+      if (quantityFive != 0) {
+        this.netCostForm.patchValue({
+          marginFive: apparelMargin5 * 100,
+        });
+      }
+      if (quantitySix != 0) {
+        this.netCostForm.patchValue({
+          marginSix: apparelMargin6 * 100,
+        });
+      }
+      // this.netCostForm.patchValue({
+      //   marginOne: apparelMargin1 * 100,
+      //   marginTwo: apparelMargin2 * 100,
+      //   marginThree: apparelMargin3 * 100,
+      //   marginFour: apparelMargin4 * 100,
+      //   marginFive: apparelMargin5 * 100,
+      //   marginSix: apparelMargin6 * 100
+      // })
     } else if (val == 3) {
-      this.netCostForm.patchValue({
-        marginOne: printMargin1 * 100,
-        marginTwo: printMargin2 * 100,
-        marginThree: printMargin3 * 100,
-        marginFour: printMargin4 * 100,
-        marginFive: printMargin5 * 100,
-        marginSix: printMargin6 * 100
-      })
+      if (quantityOne != 0) {
+        this.netCostForm.patchValue({
+          marginOne: printMargin1 * 100,
+        });
+      }
+      if (quantityTwo != 0) {
+        this.netCostForm.patchValue({
+          marginTwo: printMargin2 * 100,
+        });
+      }
+      if (quantityThree != 0) {
+        this.netCostForm.patchValue({
+          marginThree: printMargin3 * 100,
+        });
+      }
+      if (quantityFour != 0) {
+        this.netCostForm.patchValue({
+          marginFour: printMargin4 * 100,
+        });
+      }
+      if (quantityFive != 0) {
+        this.netCostForm.patchValue({
+          marginFive: printMargin5 * 100,
+        });
+      }
+      if (quantitySix != 0) {
+        this.netCostForm.patchValue({
+          marginSix: printMargin6 * 100,
+        });
+      }
+      // this.netCostForm.patchValue({
+      //   marginOne: printMargin1 * 100,
+      //   marginTwo: printMargin2 * 100,
+      //   marginThree: printMargin3 * 100,
+      //   marginFour: printMargin4 * 100,
+      //   marginFive: printMargin5 * 100,
+      //   marginSix: printMargin6 * 100
+      // })
     }
   }
   UpdatePricing() {
-    this.isUpdateLoading = true;
-    const { quantityOne, quantityTwo, quantityThree, quantityFour, quantityFive, quantitySix, marginOne, marginTwo, marginThree, marginFour, marginFive, marginSix, priceOverrideOne, priceOverrideTwo, priceOverrideThree, priceOverrideFour, priceOverrideFive, priceOverrideSix, tccdPriceOne, tccdPriceTwo, tccdPriceThree, tccdPriceFour, tccdPriceFive, tccdPriceSix } = this.netCostForm.getRawValue();
+    const { quantityOne, quantityTwo, quantityThree, quantityFour, quantityFive, quantitySix, marginOne, marginTwo, marginThree, marginFour, marginFive, marginSix, priceOverrideOne, priceOverrideTwo, priceOverrideThree, priceOverrideFour, priceOverrideFive, priceOverrideSix, tccdPriceOne, tccdPriceTwo, tccdPriceThree, tccdPriceFour, tccdPriceFive, tccdPriceSix, targetOne, targetTwo, targetThree, targetFour, targetFive, targetSix } = this.netCostForm.getRawValue();
     const m1 = Number(marginOne) / 100;
     const m2 = Number(marginTwo) / 100;
     const m3 = Number(marginThree) / 100;
@@ -326,6 +437,141 @@ export class PricingComponent implements OnInit, OnDestroy {
     const t4 = Number(tccdPriceFour);
     const t5 = Number(tccdPriceFive);
     const t6 = Number(tccdPriceSix);
+    const tt1 = Number(targetOne);
+    const tt2 = Number(targetTwo);
+    const tt3 = Number(targetThree);
+    const tt4 = Number(targetFour);
+    const tt5 = Number(targetFive);
+    const tt6 = Number(targetSix);
+    let checkQuantities = [];
+    if (q1 != 0) {
+      checkQuantities.push(q1);
+    }
+    if (q2 != 0) {
+      checkQuantities.push(q2);
+    }
+    if (q3 != 0) {
+      checkQuantities.push(q3);
+    }
+    if (q4 != 0) {
+      checkQuantities.push(q4);
+    }
+    if (q5 != 0) {
+      checkQuantities.push(q5);
+    }
+    if (q6 != 0) {
+      checkQuantities.push(q6);
+    }
+    let checkMargins = [];
+    if (m1 != 0) {
+      checkMargins.push(m1);
+    }
+    if (m2 != 0) {
+      checkMargins.push(m2);
+    }
+    if (m3 != 0) {
+      checkMargins.push(m3);
+    }
+    if (m4 != 0) {
+      checkMargins.push(m4);
+    }
+    if (m5 != 0) {
+      checkMargins.push(m5);
+    }
+    if (m6 != 0) {
+      checkMargins.push(m6);
+    }
+    let tPrice = [];
+    if (tt1 != 0) {
+      tPrice.push(tt1);
+    }
+    if (tt2 != 0) {
+      tPrice.push(tt2);
+    }
+    if (tt3 != 0) {
+      tPrice.push(tt3);
+    }
+    if (tt4 != 0) {
+      tPrice.push(tt4);
+    }
+    if (tt5 != 0) {
+      tPrice.push(tt5);
+    }
+    if (tt6 != 0) {
+      tPrice.push(tt6);
+    }
+    let checkOverride = [];
+    if (p1 != 0) {
+      checkOverride.push(p1);
+    }
+    if (p2 != 0) {
+      checkOverride.push(p2);
+    }
+    if (p3 != 0) {
+      checkOverride.push(p3);
+    }
+    if (p4 != 0) {
+      checkOverride.push(p4);
+    }
+    if (p5 != 0) {
+      checkOverride.push(p5);
+    }
+    if (p6 != 0) {
+      checkOverride.push(p6);
+    }
+    let tcdPrice = [];
+    if (t1 != 0) {
+      tcdPrice.push(t1);
+    }
+    if (t2 != 0) {
+      tcdPrice.push(t2);
+    }
+    if (t3 != 0) {
+      tcdPrice.push(t3);
+    }
+    if (t4 != 0) {
+      tcdPrice.push(t4);
+    }
+    if (t5 != 0) {
+      tcdPrice.push(t5);
+    }
+    if (t6 != 0) {
+      tcdPrice.push(t6);
+    }
+    const isAscendingOrderQuantity = this.isAscending(checkQuantities);
+    if (!isAscendingOrderQuantity) {
+      this._storeService.snackBar('Enter the quantities in ascending order.');
+      return;
+    }
+    if (tPrice.length != 0 && checkMargins.length != 0) {
+      this._storeService.snackBar('Define either margins or target prices, not both. Click the X to clear.');
+      return;
+    }
+    if (checkMargins.length > 0) {
+      if (checkMargins.length != checkQuantities.length) {
+        this._storeService.snackBar('A value is missing.');
+        return;
+      }
+    }
+    if (tPrice.length > 0) {
+      if (tPrice.length != checkQuantities.length) {
+        this._storeService.snackBar('A value is missing.');
+        return;
+      }
+    }
+    if (checkOverride.length > 0) {
+      if (checkOverride.length != checkQuantities.length) {
+        this._storeService.snackBar('If you are defining price overrides, you must define a price override for each quantity break defined.');
+        return;
+      }
+    }
+    if (tcdPrice.length > 0) {
+      if (tcdPrice.length != checkQuantities.length) {
+        this._storeService.snackBar('A value is missing.');
+        return;
+      }
+    }
+
     let Quantities = [];
     Quantities.push({ quantity: q1, margin: m1 });
     Quantities.push({ quantity: q2, margin: m2 });
@@ -347,6 +593,9 @@ export class PricingComponent implements OnInit, OnDestroy {
       storeName: storeName,
       pricesMargins: prices
     });
+    console.log(Quantities);
+    return;
+    this.isUpdateLoading = true;
     this.stores.forEach(element => {
       if (element.checked) {
         pricing_store_products.push({
@@ -376,6 +625,14 @@ export class PricingComponent implements OnInit, OnDestroy {
       this.isUpdateLoading = false;
       this._changeDetectorRef.markForCheck();
     })
+  }
+  isAscending(arr: any[]): boolean {
+    for (let i = 0; i < arr.length - 1; i++) {
+      if (arr[i] > arr[i + 1]) {
+        return false;
+      }
+    }
+    return true;
   }
   getStoresVersions(page) {
     this.storeLoader = true;

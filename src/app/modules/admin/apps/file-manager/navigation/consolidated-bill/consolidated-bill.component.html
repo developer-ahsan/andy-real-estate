@@ -117,21 +117,31 @@
       <div class="text-center font-bold text-lg">No Data Found</div>
     </div>
     <div class="inline-block text-left print:p-0 w-full" id="htmltable" #htmltable *ngIf="consolidatedData.length > 0">
-      <div>
-        <button mat-button mat-flat-button color="primary" [disabled]="consolidatedData.finalizeLoader" class="min-w-40"
-          (click)="finalizeBill()">
-          <span *ngIf="!consolidatedData.finalizeLoader">Finalize This Bill</span>
-          <mat-progress-spinner *ngIf="consolidatedData.finalizeLoader" [diameter]="24" [mode]="'indeterminate'">
-          </mat-progress-spinner>
-        </button>
-        <br>
-        <span class="text-red-500">Finalizing the bill will flag all orders on this bill as "finalized."</span>
-        <br>
+      <div class="flex justify-between">
+        <div>
+          <button mat-button mat-flat-button color="primary" [disabled]="consolidatedData.finalizeLoader"
+            class="min-w-40" (click)="finalizeBill()">
+            <span *ngIf="!consolidatedData.finalizeLoader">Finalize This Bill</span>
+            <mat-progress-spinner *ngIf="consolidatedData.finalizeLoader" [diameter]="24" [mode]="'indeterminate'">
+            </mat-progress-spinner>
+          </button>
+          <br>
+          <span class="text-red-500">Finalizing the bill will flag all orders on this bill as "finalized."</span>
+          <br>
+        </div>
+        <div>
+          <button mat-button mat-flat-button color="primary" [disabled]="consolidatedData.pdfLoader" class="min-w-20"
+            (click)="exportHtmlToPDF()">
+            <span *ngIf="!consolidatedData.pdfLoader">PDF</span>
+            <mat-progress-spinner *ngIf="consolidatedData.pdfLoader" [diameter]="24" [mode]="'indeterminate'">
+            </mat-progress-spinner>
+          </button>
+        </div>
       </div>
       <!-- Invoice -->
       <div
         class="p-5 rounded-2xl mb-5 shadow bg-card print:w-auto print:p-0 print:rounded-none print:shadow-none print:bg-transparent"
-        *ngFor="let item of consolidatedData">
+        *ngFor="let item of consolidatedData" id="printPDf" #printPDf>
 
         <div class="flex items-start">
           <div class="grid place-items-start gap-y-12 mt-5">

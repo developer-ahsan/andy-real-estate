@@ -501,7 +501,7 @@
           <ngx-skeleton-loader count="8" appearance="line" animation="pulse">
           </ngx-skeleton-loader>
         </div>
-        <div *ngIf="logoBanks.length == 0" class="text-center my-2">
+        <div *ngIf="logoBanks.length == 0 && !logoBanksLoader" class="text-center my-2">
           No Logo Bank Found
         </div>
         <div class="col-12 bg-card sm:p-6 md:p-6 lg:p-10 rounded-2xl shadow my-2" *ngFor="let item of logoBanks">

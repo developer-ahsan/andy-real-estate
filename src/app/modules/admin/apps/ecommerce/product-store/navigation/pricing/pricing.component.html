@@ -32,18 +32,20 @@
                         </div>
                     </div>
                     <div class="row">
-                        <div class="col-2">Standard Price</div>
+                        <div class="col-2 text-blue-500">Standard Price</div>
                         <div class="col-10">
                             <div class="row mb-2">
-                                <div class="col-2 text-center" *ngFor="let item of priceData">{{item | currency}}</div>
+                                <div class="col-2 text-center text-blue-500" *ngFor="let item of priceData">{{item |
+                                    currency}}</div>
                             </div>
                         </div>
                     </div>
                     <div class="row">
-                        <div class="col-2">Standard Cost</div>
+                        <div class="col-2 text-red-500">Standard Cost</div>
                         <div class="col-10">
                             <div class="row mb-2" *ngIf="costData.length > 0">
-                                <div class="col-2 text-center" *ngFor="let item of costData">{{item | currency}}</div>
+                                <div class="col-2 text-center text-red-500" *ngFor="let item of costData">{{item |
+                                    currency}}</div>
                             </div>
                             <div class="row mb-2" *ngIf="costData.length == 0">
                                 <div class="col-10 text-center text-red-600 font-bold">NO MARGINS HAVE BEEN SET YET
@@ -199,7 +201,7 @@
                                     <b>Target Price</b>
                                     <p>
                                         <span class="underline font-semibold cursor-pointer mr-2"
-                                            (click)="clearTargets()">Clear</span>
+                                            (click)="clearTargets()">X</span>
                                     </p>
                                 </div>
                                 <div class="col-lg-2 col-4">
