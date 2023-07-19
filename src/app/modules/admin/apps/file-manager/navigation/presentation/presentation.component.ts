@@ -965,6 +965,8 @@ export class PresentationComponent implements OnInit, OnDestroy {
       this._storeManagerService.snackBar('Please select any file');
       return;
     }
+    const { imageUpload, type } = this.logoBankImageValue;
+    const base64 = imageUpload.split(",")[1];
     const { name, description, displayOrder, bank_type, color_list } = this.addLogoBankForm.getRawValue();
     let payload: addStoreLogoBank = {
       store_id: this.selectedStore.pk_storeID,
@@ -974,6 +976,7 @@ export class PresentationComponent implements OnInit, OnDestroy {
       bank_type: bank_type,
       file_extension: this.logoBankImageValue.type,
       color_list: color_list,
+      base64File: base64,
       add_store_logoBank: true
     }
     this.isAddLogoBankLoader = true;
@@ -982,10 +985,10 @@ export class PresentationComponent implements OnInit, OnDestroy {
         this._storeManagerService.snackBar(res["message"]);
         this.uploadMediaLogoBank(res["newFeatureImageID"]);
         this.addLogoBankForm.reset();
-        this.getLogoBanks(1);
+      } else {
+        this.isAddLogoBankLoader = false;
+        this._changeDetectorRef.markForCheck();
       }
-      this.isAddLogoBankLoader = false;
-      this._changeDetectorRef.markForCheck();
     }, err => {
       this.isAddLogoBankLoader = false;
       this._changeDetectorRef.markForCheck();
@@ -1026,6 +1029,7 @@ export class PresentationComponent implements OnInit, OnDestroy {
     this._storeManagerService.addPresentationMedia(payload)
       .subscribe((response) => {
         // Mark for check
+        this.getLogoBanks(1);
         this.logoBankImageValue = null;
         this.fileInputLogo.nativeElement.value = '';
         this._changeDetectorRef.markForCheck();
@@ -1056,10 +1060,12 @@ export class PresentationComponent implements OnInit, OnDestroy {
         this.logoBanksTotal = response["totalRecords"];
         this.logoBanksLoader = false;
         this.logoBanksLoadMore = false;
+        this.isAddLogoBankLoader = false;
         this._changeDetectorRef.markForCheck();
       }, err => {
         this.logoBanksLoader = false;
         this.logoBanksLoadMore = false;
+        this.isAddLogoBankLoader = false;
         this._changeDetectorRef.markForCheck();
       });
   };

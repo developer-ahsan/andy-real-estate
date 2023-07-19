@@ -1,127 +1,140 @@
 <div class="w-full">
     <ngx-skeleton-loader count="8" appearance="line" animation="pulse" *ngIf="isLoading">
     </ngx-skeleton-loader>
-    <div class="row my-3">
-        <div class="col-12">
-            <mat-drawer-container class="example-container w-full bg-light" [hasBackdrop]="true">
-                <mat-drawer #drawer [mode]="'over'" position="end" style="width: 400px !important;">
-                    <div class="row p-5">
-                        <div class="col-9">
-                            <div class="text-2xl font-extrabold tracking-tight leading-none"> Imprint Details
-                            </div>
-                        </div>
-                        <div class="col-3 text-right">
-                            <mat-icon (click)="closeSideNav()" class="mr-2 cursor-pointer"
-                                [svgIcon]="'mat_outline:close'">
-                            </mat-icon>
-                        </div>
-                        <div class="col-12 my-2" *ngIf="sideNavData?.status.fk_storeUserApprovalContactID">
-                            <p class="text-lg text-secondary tracking-tight font-bold leading-none my-2 border-b py-2">
-                                Approval
-                                History
-                            </p>
-                            <div class="row">
-                                <div class="col-12 col-md-6">
-                                    <p class="text-secondary text-md font-bold">Name</p>
-                                    <p class="text-secondary text-md">{{sideNavData?.status.approvalName ||
-                                        not_available}}
-                                    </p>
-                                </div>
-                                <div class="col-12 col-md-6">
-                                    <p class="text-secondary text-md font-bold">Date</p>
-                                    <p class="text-secondary text-md">{{(sideNavData?.status.statusDate | date) ||
-                                        not_available}}
-                                    </p>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-12 my-2">
-                            <p class="text-lg text-secondary tracking-tight font-bold leading-none my-2 border-b py-2">
-                                Comments
-                            </p>
-                            <p class="hv-100 overflow-y-auto text-secondary" *ngIf="sideNavData?.customerArtworkComment"
-                                [innerHtml]="sideNavData?.customerArtworkComment"></p>
-                            <p *ngIf="!sideNavData?.customerArtworkComment" class="text-secondary">No Comments Available
-                            </p>
-                        </div>
+    <div class="row my-3 p-5" *ngIf="!isLoading">
+        <div class="col-12 mb-4 bg-card rounded-2xl w-full p-8 pb-4" *ngFor="let item of orderProducts; let j=index">
+            <div class="flex items-center justify-between">
+                <div class="flex flex-col mr-6">
+                    <div class="text-2xl font-semibold leading-tight">
+                        {{item?.fk_orderID}}-
+                        {{item?.pk_orderLineID}}:
+                        {{item?.productName}}</div>
+                    <div class="text-secondary font-medium text-md">
+                        <p>Quantity: {{item?.products[0].QUANTITY}}</p>
+                        <p>Supplier: {{item.products[0]?.supplier_name}}</p>
                     </div>
-                </mat-drawer>
-                <mat-drawer-content *ngIf="!isLoading" class="p-2">
-                    <fuse-card class="flex flex-col w-full p-8 pb-4 filter-article my-4"
-                        *ngFor="let item of orderProducts">
-                        <div class="flex items-center justify-between">
-                            <div class="flex flex-col mr-6">
-                                <div class="text-2xl font-semibold leading-tight">
-                                    {{item?.fk_orderID}}-
-                                    {{item?.pk_orderLineID}}:
-                                    {{item?.productName}}</div>
-                                <div class="text-secondary font-medium text-md">
-                                    <p>Quantity: {{item?.products[0].QUANTITY}}</p>
-                                    <p>Supplier: {{item.products[0]?.supplier_name}}</p>
-                                </div>
-                            </div>
-                            <img class="w-20 rounded-lg object-cover"
-                                src="{{imgUrl}}/thumbnails/{{item.products[0].pk_storeProductID}}.jpg"
-                                onError="this.src='https://assets.consolidus.com/globalAssets/Products/coming_soon.jpg'"
-                                alt="Product Image">
-                        </div>
-                        <!-- <div>
-                            <table class="table table-stiped border-t-0"
-                                *ngFor="let imprint of item.imprints;let last=last">
-                                <tr>
-                                    <td class="font-bold">({{imprint.pk_imprintID}})
-                                        {{imprint.locationName}}/{{imprint.methodName}}</td>
-                                </tr>
-                            </table>
-                        </div> -->
-                        <div class="grid grid-cols-12 w-full mt-5">
-                            <!-- Columns -->
-                            <div class="col-span-6 font-medium text-md text-secondary">Imprint</div>
-                            <div class="col-span-2 font-medium text-md text-left text-secondary">Status</div>
-                            <div class="col-span-1 font-medium text-md text-left text-secondary">Attachments</div>
-                            <div class="col-span-1 font-medium text-md text-left text-secondary">Proof</div>
-                            <div class="col-span-2 font-medium text-md text-left text-secondary">Details</div>
-                            <!-- Divider -->
-                            <div class="col-span-12 my-2 border-b"></div>
-                            <div class="col-span-12" *ngFor="let imprint of item.imprints;let last=last">
-                                <div class="grid grid-cols-12 w-full mt-2">
-                                    <div class="col-span-6 text-md text-secondary">
-                                        ({{imprint.pk_imprintID}}) {{imprint.locationName}}/{{imprint.methodName}}
-                                    </div>
-                                    <div class="col-span-2 text-md text-left text-secondary">
-                                        {{imprint?.status.statusName || not_available}}
-                                    </div>
-                                    <div
-                                        class="col-span-1 text-md text-left text-secondary cursor-pointer hover:text-gray-700">
-                                        <div *ngIf="imprint.artworkFiles.length > 0">
-                                            <div *ngFor="let artwork of imprint.artworkFiles; let i=index"
-                                                class="text-blue-500 flex justify-between">
-                                                <a href="https://assets.consolidus.com/artwork/{{orderDetail.fk_storeID}}/{{orderDetail.fk_storeUserID}}/{{orderDetail.pk_orderID}}/{{item.pk_orderLineID}}/{{artwork.ID}}.{{artwork.EXTENSION}}?{{tempDate}}"
-                                                    target="_blank">Artwork File #{{i+1}}</a>
-                                                <mat-icon svgIcon="heroicons_outline:trash"
-                                                    matTooltip="Delete File"></mat-icon>
-                                            </div>
-                                        </div>
-                                        <span *ngIf="imprint.artworkFiles.length == 0">---</span>
-                                    </div>
-                                    <div
-                                        class="col-span-1 text-md text-left text-secondary cursor-pointer hover:text-gray-700">
-                                        <a class="text-decoration-none" *ngIf="imprint.proofImg"
-                                            href="https://assets.consolidus.com/artwork/Proof/{{orderDetail.fk_storeUserID}}/{{orderDetail.pk_orderID}}/{{item.order_line_id}}/{{imprint.pk_imprintID}}.jpg"
-                                            target="_blank">View</a>
-                                        <span *ngIf="!imprint.proofImg">---</span>
-                                    </div>
-                                    <div class="col-span-2 text-md text-left text-secondary cursor-pointer hover:text-gray-700"
-                                        (click)="openSideNav(imprint)">
-                                        View Details
-                                    </div>
-                                </div>
-                                <div class="col-span-12 my-2 border-b" *ngIf="!last"></div>
-                            </div>
-                        </div>
-                    </fuse-card>
-                </mat-drawer-content>
-            </mat-drawer-container>
+                </div>
+                <img class="w-20 rounded-lg object-cover"
+                    src="{{imgUrl}}/thumbnails/{{item.products[0].pk_storeProductID}}.jpg"
+                    onError="this.src='https://assets.consolidus.com/globalAssets/Products/coming_soon.jpg'"
+                    alt="Product Image">
+            </div>
+            <div class="my-2 border-b"></div>
+            <div>
+                <table class="table table-condensed table-striped table-hover padding-1x"
+                    *ngFor="let imprint of item.imprints;let k = index">
+                    <tbody>
+                        <tr>
+                            <td width="30%">
+                                <b>({{imprint.pk_imprintID}}) {{imprint.locationName}}/{{imprint.methodName}}</b>
+                            </td>
+                            <td width="10%">
+                                <a class="text-decoration-none" *ngIf="imprint.proofImg"
+                                    href="https://assets.consolidus.com/artwork/Proof/{{orderDetail.fk_storeUserID}}/{{orderDetail.pk_orderID}}/{{imprint.fk_orderLineID}}/{{imprint.pk_imprintID}}.jpg"
+                                    target="_blank">View Proof</a>
+                                <span *ngIf="!imprint.proofImg">---</span>
+                            </td>
+                            <td width="40%">
+                                {{imprint?.status.statusName || not_available}}
+                                <button type="button"
+                                    class="ml-2 inline-flex items-center gap-x-1.5 rounded-md bg-orange-600 px-2.5 py-1.5 text-sm font-semibold text-white shadow-sm hover:bg-orange-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-orange-600">
+                                    <span class="fa fa-exclamation-circle"></span>
+                                    Mark Revision Needed
+                                </button>
+                            </td>
+
+                            <td width="1%" align="center" valign="top">
+                                <span class="fa fa-comments fa-lg clickable cursor-pointer" data-toggle="modal"
+                                    title="View artwork comments" (click)="openCommentModal(imprint)"></span>
+                            </td>
+                        </tr>
+                        <tr *ngFor="let artwork of imprint.artworkFiles; let i=index">
+                            <td width="30%"></td>
+                            <td width="10%"></td>
+                            <td width="40%">
+                                <a class="text-blue-500" *ngIf="imprint.artworkFiles.length > 0"
+                                    href="https://assets.consolidus.com/artwork/{{orderDetail.fk_storeID}}/{{orderDetail.fk_storeUserID}}/{{orderDetail.pk_orderID}}/{{item.pk_orderLineID}}/{{artwork.ID}}.{{artwork.EXTENSION}}?{{tempDate}}"
+                                    target="_blank">Artwork File #{{i+1}}</a>
+                                <span *ngIf="imprint.artworkFiles.length == 0">---</span>
+                            </td>
+                            <td width="1%" align="center" valign="top" *ngIf="imprint.artworkFiles.length > 0">
+                                <mat-icon svgIcon="heroicons_outline:trash"
+                                    class="icon-size-4 cursor-pointer text-red-500" matTooltip="Delete File"
+                                    (click)="openRemoveModal(j,k,i,artwork.FILENAME)"
+                                    *ngIf="!artwork?.delLoader"></mat-icon>
+                                <mat-progress-spinner *ngIf="artwork?.delLoader" [diameter]="24"
+                                    [mode]="'indeterminate'">
+                                </mat-progress-spinner>
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <td width="30%"></td>
+                            <td width="10%"></td>
+                            <td colspan="2" valign="top">
+                                <b>Upload new artwork file:</b><br>
+                                <form class="flex justify-between align-items-center">
+                                    <input type="file" #fileInput name="newArtworkFile" class="inline"
+                                        (change)="uploadFile($event)">&nbsp;&nbsp;&nbsp;
+                                    <button type="submit" class="mat-button mat-stroked-button"
+                                        [disabled]="imprint.uploadLoader" (click)="uploadArtworkMedia(imprint)">
+                                        <span *ngIf="!imprint.uploadLoader" class="fa fa-upload"> Upload</span>
+                                        <mat-progress-spinner *ngIf="imprint.uploadLoader" [diameter]="24"
+                                            [mode]="'indeterminate'">
+                                        </mat-progress-spinner>
+                                    </button>
+                                </form>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Comment Modal -->
+<div #commentModal class="modal fade" id="exampleModalLong" tabindex="-1" role="dialog"
+    aria-labelledby="exampleModalLongTitle" aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLongTitle">COMMENTS FOR FULL COVERAGE / FULL COLOR</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="h-60 overflow-y-auto border p-5 mb-2" [innerHTML]="modalContent?.customerArtworkComment">
+                </div>
+                <mat-form-field class="w-full">
+                    <mat-label>Leave a comment</mat-label>
+                    <textarea matInput cols="30" rows="10" [(ngModel)]="artworkComment"></textarea>
+                </mat-form-field>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-secondary">Add Comment</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Remove Artwork File -->
+<div class="modal" tabindex="-1" role="dialog" #removeArtwork>
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Remove Artwork File</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <p>Are you sure you want to remove this artwork file? This cannot be undone.</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" (click)="removeImage()">Yes</button>
+                <button type="button" class="btn btn-danger" data-dismiss="modal">Cancel</button>
+            </div>
         </div>
     </div>
 </div>

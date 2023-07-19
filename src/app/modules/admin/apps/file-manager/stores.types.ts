@@ -581,6 +581,7 @@ export interface addStoreLogoBank {
     bank_type: number; // [1,2,3]
     file_extension: string;
     color_list: string;
+    base64File: string;
     add_store_logoBank: boolean;
 };
 export interface RemoveStoreLogoBank {

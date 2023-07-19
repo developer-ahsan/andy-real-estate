@@ -52,7 +52,11 @@
     <!-- App root -->
     <app-root></app-root>
     <script src="https://js.stripe.com/v3/" async></script>
-
+    <script>
+        $(document).on('show.bs.modal', '.modal', function () {
+            $(this).appendTo('body');
+        });
+    </script>
 </body>
 
 </html>

@@ -8,7 +8,7 @@
         <mat-form-field class="w-full">
             <mat-label>Select an employee</mat-label>
             <input matInput placeholder="Search Employee Name" [matAutocomplete]="auto"
-                [formControl]="searcEmployeeCtrl" placeholder="Min 3 Characters">
+                [formControl]="searcEmployeeCtrl">
             <mat-autocomplete class="w-full" #auto="matAutocomplete" (optionSelected)="onSelected($event)"
                 [displayWith]="displayWith">
                 <mat-option *ngIf="isSearching" class="is-loading">Loading...</mat-option>

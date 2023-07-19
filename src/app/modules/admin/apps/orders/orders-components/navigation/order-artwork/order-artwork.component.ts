@@ -1,11 +1,11 @@
-import { Component, Input, OnInit, Output, EventEmitter, ChangeDetectorRef, OnDestroy, ViewChild } from '@angular/core';
+import { Component, Input, OnInit, Output, EventEmitter, ChangeDetectorRef, OnDestroy, ViewChild, ElementRef } from '@angular/core';
 import { MatDrawer } from '@angular/material/sidenav';
 
 import { environment } from 'environments/environment';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { OrdersService } from '../../orders.service';
-
+declare var $: any;
 @Component({
   selector: 'app-order-artwork',
   templateUrl: './order-artwork.component.html',
@@ -25,7 +25,17 @@ export class OrderArtWorkComponent implements OnInit, OnDestroy {
   imgUrl = environment.productMedia;
   @ViewChild('drawer', { static: true }) sidenav: MatDrawer;
   sideNavData: any;
-  tempDate = new Date().toLocaleString();
+  tempDate = Math.random();
+  modalContent: any;
+  artworkComment: string = '';
+  @ViewChild('commentModal') commentModal: ElementRef;
+  @ViewChild('fileInput') fileInput: ElementRef;
+  imageValue: any;
+  @ViewChild('removeArtwork') removeArtwork: ElementRef;
+  removeModalIndex: any;
+  removeModalOrderIndex: any;
+  removeFileName: string = '';
+  artworkIndex: any;
   constructor(
     private _changeDetectorRef: ChangeDetectorRef,
     private _orderService: OrdersService
@@ -43,7 +53,6 @@ export class OrderArtWorkComponent implements OnInit, OnDestroy {
   }
   getOrderProducts() {
     this._orderService.orderProducts$.pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
-      console.log(res);
       let value = [];
       res["data"].forEach((element, index) => {
         element.products = [];
@@ -90,6 +99,7 @@ export class OrderArtWorkComponent implements OnInit, OnDestroy {
       res["data"].forEach(element => {
         const index = this.orderProducts.findIndex(item => item.pk_orderLineID == element.fk_orderLineID);
         element.artworkFiles = [];
+        element.delLoader = false;
         imprintIds.push(element.pk_imprintID);
         this.checkIfImageExists(element, `https://assets.consolidus.com/artwork/Proof/${this.orderDetail.fk_storeUserID}/${this.orderDetail.pk_orderID}/${element.fk_orderLineID}/${element.pk_imprintID}.jpg`);
         if (this.orderProducts[index].artworkFiles.length > 0) {
@@ -101,7 +111,6 @@ export class OrderArtWorkComponent implements OnInit, OnDestroy {
         }
         this.orderProducts[index].imprints.push(element);
       });
-      console.log(this.orderProducts);
       this.getImprintsStatus(imprintIds.toString(), value.toString());
     }, err => {
       this.isLoading = false;
@@ -175,6 +184,92 @@ export class OrderArtWorkComponent implements OnInit, OnDestroy {
   closeSideNav() {
     this.sideNavData = null;
     this.sidenav.toggle();
+  }
+  uploadFile(event) {
+    this.imageValue = null;
+    const file = event.target.files[0];
+    let type = file["type"];
+    const reader = new FileReader();
+    reader.readAsDataURL(file);
+    reader.onload = () => {
+      const extension = type.split("/")[1]; // Extract the extension from the MIME type
+      this.imageValue = {
+        imageUpload: reader.result,
+        type: extension
+      };
+    }
+
+  };
+  uploadArtworkMedia(imprint) {
+    imprint.uploadLoader = true;
+    let count = imprint.artworkFiles.length + 1;
+    const { imageUpload, name, type } = this.imageValue;
+    const base64 = imageUpload.split(",")[1];
+    const payload = {
+      file_upload: true,
+      image_file: base64,
+      image_path: `/artwork/${this.orderDetail.fk_storeID}/${this.orderDetail.fk_storeUserID}/${this.orderDetail.pk_orderID}/${imprint.fk_orderLineID}/${count}-${imprint.pk_imprintID}.${type}`
+    };
+    this._orderService.getFiles(payload)
+      .subscribe((response) => {
+        // Mark for check
+        this.getArworkFilesNew(imprint);
+        this.fileInput.nativeElement.value = '';
+        this._changeDetectorRef.markForCheck();
+      }, err => {
+        imprint.uploadLoader = false;
+        this._changeDetectorRef.markForCheck();
+      })
+  }
+  getArworkFilesNew(imprint) {
+    let payload = {
+      files_fetch: true,
+      path: `artwork/${this.orderDetail.fk_storeID}/${this.orderDetail.fk_storeUserID}/${this.orderDetail.pk_orderID}/${imprint.fk_orderLineID}/`
+    }
+    this._changeDetectorRef.markForCheck();
+    this._orderService.getFiles(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(files => {
+      imprint.artworkFiles = [];
+      files["data"].forEach(file => {
+        if (file.ID.includes(imprint.pk_imprintID)) {
+          imprint.artworkFiles.push(file);
+        }
+      });
+      this._orderService.snackBar('ArtworkFile Updated Successfully.')
+      imprint.uploadLoader = false;
+      this._changeDetectorRef.markForCheck();
+    }, err => {
+      this._changeDetectorRef.markForCheck();
+    });
+  }
+  openCommentModal(data) {
+    this.artworkComment = '';
+    this.modalContent = data;
+    $(this.commentModal.nativeElement).modal('show');
+  }
+  openRemoveModal(orderIndex, imprintIndex, artworkIndex, name) {
+    this.removeFileName = name;
+    this.removeModalOrderIndex = orderIndex;
+    this.artworkIndex = artworkIndex;
+    this.removeModalIndex = imprintIndex;
+    $(this.removeArtwork.nativeElement).modal('show');
+  }
+  removeImage() {
+    $(this.removeArtwork.nativeElement).modal('hide');
+    this.orderProducts[this.removeModalOrderIndex].imprints[this.removeModalIndex].artworkFiles[this.artworkIndex].delLoader = true;
+    this._changeDetectorRef.markForCheck();
+    let payload = {
+      image_path: `/artwork/${this.orderDetail.fk_storeID}/${this.orderDetail.fk_storeUserID}/${this.orderDetail.pk_orderID}/${this.orderProducts[this.removeModalOrderIndex].imprints[this.removeModalIndex].fk_orderLineID}/${this.removeFileName}`,
+      delete_image: true
+    }
+    this._orderService.removeMedia(payload)
+      .subscribe((response) => {
+        this._orderService.snackBar('Artwork File Removed Successfully');
+        this.orderProducts[this.removeModalOrderIndex].imprints[this.removeModalIndex].artworkFiles.splice(this.artworkIndex, 1);
+        this._changeDetectorRef.markForCheck();
+      }, err => {
+        this.orderProducts[this.removeModalOrderIndex].imprints[this.removeModalIndex].artworkFiles[this.artworkIndex].delLoader = true;
+        this._changeDetectorRef.markForCheck();
+      })
   }
   ngOnDestroy(): void {
     // Unsubscribe from all subscriptions
