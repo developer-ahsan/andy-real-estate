@@ -59,6 +59,8 @@ export class FLPSService {
                 if (response["success"]) {
                     sessionStorage.setItem('flpsAccessToken', 'userLoggedIn');
                     sessionStorage.setItem('FullName', response["data"][0].firstName + ' ' + response["data"][0].lastName);
+                    sessionStorage.setItem('flpsLoginAdmin', response["data"][0].blnAdmin);
+                    sessionStorage.setItem('flpsUserID', response["data"][0].pk_userID);
                 }
             })
         );
@@ -100,8 +102,7 @@ export class FLPSService {
         return this._httpClient.get<any[]>(environment.flps, {
             params: {
                 // view_store_all_admins: true,
-                flps_users: true,
-                size: 10
+                flps_users_list: true
             }
         }).pipe(
             tap((response: any) => {

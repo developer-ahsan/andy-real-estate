@@ -112,8 +112,13 @@
                 </mat-form-field>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
-                <button type="button" class="btn btn-secondary">Add Comment</button>
+                <button type="button" class="mr-2" mat-button mat-stroked-button data-dismiss="modal">Close</button>
+                <button type="button" class="min-w-30" mat-button mat-stroked-button (click)="addNewComment()"
+                    [disabled]="modalContent?.commentLoader">
+                    <span *ngIf="!modalContent?.commentLoader">Add Comment</span>
+                    <mat-progress-spinner *ngIf="modalContent?.commentLoader" [diameter]="24" [mode]="'indeterminate'">
+                    </mat-progress-spinner>
+                </button>
             </div>
         </div>
     </div>

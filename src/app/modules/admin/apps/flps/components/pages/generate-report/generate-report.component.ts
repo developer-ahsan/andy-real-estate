@@ -80,7 +80,9 @@ export class GenerateReportComponent implements OnInit {
     @ViewChild('topScrollAnchor') topScroll: ElementRef;
     @ViewChild('summaryScrollAnchor') summaryScrollAnchor: ElementRef;
     storeTotals: { Sales: number; Revenue: number; Num_Sales: number; EST_Profit: number; orderCommission: number; };
-
+    flpsLoginAdmin = Boolean(sessionStorage.getItem('flpsLoginAdmin'));
+    flpsLoginName = sessionStorage.getItem('FullName');
+    flpsLoginID = sessionStorage.getItem('flpsUserID');
     /**
      * Constructor
      */
@@ -102,7 +104,11 @@ export class GenerateReportComponent implements OnInit {
         for (let index = 0; index < 17; index++) {
             this.years.push(this.currentYear - index);
         }
-        this.getEmployees();
+        if (this.flpsLoginAdmin) {
+            this.getEmployees();
+        } else {
+            this.selectedEmployee.push({ pk_userID: Number(this.flpsLoginID), fullName: this.flpsLoginName });
+        }
         // Create the form
         this.planBillingForm = this._formBuilder.group({
             plan: ['team'],
@@ -147,37 +153,6 @@ export class GenerateReportComponent implements OnInit {
                 price: '40'
             }
         ];
-        let params;
-        this.searcEmployeeCtrl.valueChanges.pipe(
-            filter(res => {
-                params = {
-                    view_store_all_admins: true,
-                    keyword: res
-                }
-                if (res.length == 0) {
-                    this.getEmployees();
-                }
-                return res !== null && res.length >= this.minLengthTerm
-            }),
-            distinctUntilChanged(),
-            debounceTime(500),
-            tap(() => {
-                this.employeeAdmins = [];
-                this.isSearching = true;
-                this._changeDetectorRef.markForCheck();
-            }),
-            switchMap(value => this._flpsService.getFlpsData(params)
-                .pipe(
-                    finalize(() => {
-                        this.isSearching = false
-                        this._changeDetectorRef.markForCheck();
-                    }),
-                )
-            )
-        )
-            .subscribe((data: any) => {
-                this.employeeAdmins = data['data'];
-            });
     }
     onSelected(ev) {
         this.selectedEmployee = ev.option.value;
@@ -189,7 +164,15 @@ export class GenerateReportComponent implements OnInit {
 
     getEmployees() {
         this._flpsService.reportUsers$.pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
-            this.employeeAdmins = res["data"];
+            let employees = res["data"][0].flpsUsers;
+            if (employees) {
+                let employee = employees.split(',');
+                employee.forEach(emp => {
+                    let colonEmp = emp.split(':');
+                    this.employeeAdmins.push({ pk_userID: Number(colonEmp[0]), fullName: colonEmp[2] });
+                });
+            }
+            this.selectedEmployee = this.employeeAdmins[0];
         })
     }
     generateReport() {

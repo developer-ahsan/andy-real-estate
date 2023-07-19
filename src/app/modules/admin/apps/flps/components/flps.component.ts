@@ -166,6 +166,8 @@ export class FLPSComponent {
                     this.flpsToken = 'userLoggedIn';
                     sessionStorage.setItem('flpsAccessToken', 'userLoggedIn');
                     sessionStorage.setItem('FullName', res["data"][0].firstName + ' ' + res["data"][0].lastName);
+                    sessionStorage.setItem('flpsLoginAdmin', res["data"][0].blnAdmin);
+                    sessionStorage.setItem('flpsUserID', res["data"][0].pk_userID);
                     this._flpsService.snackBar(res["message"]);
                 } else {
                     this._flpsService.snackBar(res["message"]);

@@ -1,0 +1,153 @@
+<div class="absolute inset-0 flex flex-col min-w-0 overflow-y-auto bg-light dark:bg-transparent">
+    <!-- Header -->
+    <div
+        class="relative bg-light flex flex-col sm:flex-row flex-0 sm:items-center sm:justify-between py-4 px-6 md:px-8 border-b">
+        <!-- Loader -->
+        <!-- <div class="absolute inset-x-0 bottom-1" *ngIf="isLoading">
+            <mat-progress-bar [mode]="'indeterminate'"></mat-progress-bar>
+        </div> -->
+        <!-- Title -->
+        <div class="text-3xl font-extrabold tracking-tight">Quote Details</div>
+        <!-- Actions -->
+        <div class="flex flex-shrink-0 items-center mt-6 sm:mt-0 sm:ml-4">
+            <!-- Back to Customers Page button -->
+            <button class="ml-4" mat-flat-button [color]="'primary'" (click)="backToQuotesScreen()"
+                [matTooltip]="'Go to orders list'">
+                <mat-icon [svgIcon]="'heroicons_outline:arrow-narrow-left'"></mat-icon>
+                <span class="ml-2 mr-1">Back to Quotes</span>
+            </button>
+        </div>
+    </div>
+
+    <mat-drawer-container class="sub-nav-component bg-light" autosize>
+        <mat-drawer #drawer class="sub-sidenav bg-white pt-5" [mode]="drawerMode" [opened]="drawerOpened">
+            <div *ngFor="let route of routes;let i = index">
+                <mat-expansion-panel class="bg-white" [class.mat-elevation-z0]="true" dense hideToggle
+                    (click)="clicked(route)">
+                    <mat-expansion-panel-header
+                        [style.background-color]="route.title === selectedScreeen ? '#d4d7dd' : 'transparent'"
+                        [ngClass]="route.title === selectedScreeen ? 'opacity-100' : 'opacity-80'">
+                        <mat-icon svgIcon="{{route.icon}}" class="icon-size-5 text-primary"></mat-icon>
+                        <span style="font-size: 13px; font-weight: bold; margin-left: 10px;"> {{route.title}} </span>
+                    </mat-expansion-panel-header>
+                </mat-expansion-panel>
+            </div>
+        </mat-drawer>
+
+        <div class="sub-sidenav-content bg-light p-2" #topScrollAnchor>
+            <mat-icon class="subnav-menu-icon ml-1" svgIcon="heroicons_outline:menu" (click)="toggleDrawer()">
+            </mat-icon>
+            <ng-template #myCard>
+                <div class="bg-card shadow p-4" *ngIf="selectedQuoteDetail">
+                    <div class="flex mr-7" style="justify-content: space-between;">
+                        <div class="text-2xl font-bold">Quote: <span
+                                class="text-xl">{{selectedQuoteDetail.pk_orderID}}</span></div>
+                        <div>
+                            <span *ngIf="selectedQuoteDetail?.OrderStatus == 'Processing'"
+                                class="text-xs px-2.5 py-0.5 rounded-full tracking-wide bg-red-200 text-red-800 dark:bg-red-600 dark:text-red-50">
+                                <span
+                                    class="leading-relaxed whitespace-nowrap">{{selectedQuoteDetail?.OrderStatus}}</span>
+                            </span>
+                            <span *ngIf="selectedQuoteDetail?.OrderStatus == 'Shipped'"
+                                class="text-xs px-2.5 py-0.5 rounded-full tracking-wide bg-blue-200 text-blue-800 dark:bg-blue-600 dark:text-blue-50"><span
+                                    class="leading-relaxed whitespace-nowrap">{{selectedQuoteDetail?.OrderStatus}}</span></span>
+                            <span *ngIf="selectedQuoteDetail?.OrderStatus == 'Delivered'"
+                                class="text-xs px-2.5 py-0.5 rounded-full tracking-wide bg-green-200 text-green-800 dark:bg-green-600 dark:text-green-50"><span
+                                    class="leading-relaxed whitespace-nowrap">{{selectedQuoteDetail?.OrderStatus}}</span></span>
+                            <span *ngIf="selectedQuoteDetail?.OrderStatus == 'P.O. Needed'"
+                                class="text-xs px-2.5 py-0.5 rounded-full tracking-wide bg-green-200 text-green-800 dark:bg-green-600 dark:text-green-50"><span
+                                    class="leading-relaxed whitespace-nowrap">{{selectedQuoteDetail?.OrderStatus}}</span></span>
+                            <span *ngIf="selectedQuoteDetail?.OrderStatus == 'Picked up'"
+                                class="text-xs px-2.5 py-0.5 rounded-full tracking-wide bg-green-200 text-green-800 dark:bg-green-600 dark:text-green-50"><span
+                                    class="leading-relaxed whitespace-nowrap">{{selectedQuoteDetail?.OrderStatus}}</span></span>
+                            <span *ngIf="selectedQuoteDetail?.OrderStatus == 'Awaiting Group Order'"
+                                class="text-xs px-2.5 py-0.5 rounded-full tracking-wide bg-green-200 text-green-800 dark:bg-green-600 dark:text-green-50"><span
+                                    class="leading-relaxed whitespace-nowrap">{{selectedQuoteDetail?.OrderStatus}}</span></span>
+                            <span *ngIf="selectedQuoteDetail?.OrderStatus == false"
+                                class="text-xs px-2.5 py-0.5 rounded-full tracking-wide bg-red-200 text-red-800 dark:bg-red-600 dark:text-red-50"><span
+                                    class="leading-relaxed whitespace-nowrap">Cancelled</span></span>
+                            <span *ngIf="selectedQuoteDetail?.OrderStatus == 'N/A'"
+                                class="text-xs px-2.5 py-0.5 rounded-full tracking-wide bg-red-200 text-red-800 dark:bg-red-600 dark:text-red-50"><span
+                                    class="leading-relaxed whitespace-nowrap">N/A</span></span>
+                        </div>
+                    </div>
+                    <div class="row w-full">
+                        <div class="col-lg-4 col-md-6 col-12">
+                            <b class="text-secondary text-sm">Order Date:</b>
+                            <p class="float-right text-sm">{{selectedQuoteDetail?.orderDate?
+                                (selectedQuoteDetail?.orderDate | date: 'MM-dd-yyyy'):
+                                not_available}}</p>
+                        </div>
+                        <div class="col-lg-4 col-md-6 col-12">
+                            <b class="text-secondary text-sm">Payment Date:</b>
+                            <p class="float-right text-sm">{{selectedQuoteDetail?.paymentDate ?
+                                (selectedQuoteDetail.paymentDate |
+                                date) :
+                                not_available }}</p>
+                        </div>
+                        <div class="col-lg-4 col-md-6 col-12">
+                            <b class="text-secondary text-sm">Manager:</b>
+                            <p class="float-right text-sm">{{selectedQuoteDetail?.managerFirstName + ' ' +
+                                selectedQuoteDetail?.managerLastName}}</p>
+                        </div>
+                        <div class="col-lg-4 col-md-6 col-12">
+                            <b class="text-secondary text-sm">Total:</b>
+                            <p class="float-right text-sm">{{(selectedQuoteDetail?.orderTotal | currency) ||
+                                not_available}}
+                            </p>
+                        </div>
+                        <div class="col-lg-4 col-md-6 col-12">
+                            <b class="text-secondary text-sm">Customer:</b>
+                            <p class="float-right text-sm">
+                                <a style="color: #959595; text-decoration: underline; cursor: pointer;" target="_blank"
+                                    routerLink="/apps/customers/{{selectedQuoteDetail?.fk_storeUserID}}">
+                                    {{selectedQuoteDetail?.userFirstName + ' ' +
+                                    selectedQuoteDetail?.userLastName}}</a>
+                            </p>
+                        </div>
+                        <div class="col-lg-4 col-md-6 col-12">
+                            <b class="text-secondary text-sm">Company:</b>
+                            <p class="float-right text-sm">{{selectedQuoteDetail?.billingCompanyName ||
+                                not_available}}
+                            </p>
+                        </div>
+                        <div class="col-lg-4 col-md-6 col-12">
+                            <b class="text-secondary text-sm">Store:</b>
+                            <p class="float-right text-sm">
+                                <a style="color: #959595; text-decoration: underline; cursor: pointer;" target="_blank"
+                                    routerLink="/apps/stores/{{selectedQuoteDetail.fk_storeID}}">
+                                    {{selectedQuoteDetail?.storeName ||
+                                    not_available}}</a>
+                            </p>
+                        </div>
+                        <div class="col-lg-4 col-md-6 col-12">
+                            <b class="text-secondary text-sm">Location:</b>
+                            <p class="float-right text-sm">{{selectedQuoteDetail?.locationName ||
+                                not_available}}</p>
+                        </div>
+                        <div *ngIf="selectedQuoteDetail.fk_groupOrderID" class="col-lg-4 col-md-6 col-12">
+                            <b class="text-secondary text-sm">Group Order ID:</b>
+                            <p class="float-right text-sm">{{selectedQuoteDetail?.fk_groupOrderID || not_available}}
+                            </p>
+                        </div>
+                        <div class="col-lg-4 col-md-6 col-12">
+                            <b class="text-secondary text-sm">Cart/Quote ID:</b>
+                            <p class="float-right text-sm">{{selectedQuoteDetail?.fk_cartID || not_available}}
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </ng-template>
+            <div class="row">
+                <div class="col-12 my-3">
+                    <ng-container *ngTemplateOutlet="myCard"></ng-container>
+                </div>
+                <div class="col-12">
+                    <router-outlet></router-outlet>
+                </div>
+            </div>
+        </div>
+
+    </mat-drawer-container>
+
+</div>

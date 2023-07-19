@@ -67,6 +67,13 @@ export const defaultNavigation: FuseNavigationItem[] = [
                 link: '/apps/orders'
             },
             {
+                id: 'quotes',
+                title: 'Quotes',
+                icon: 'heroicons_outline:archive',
+                type: 'basic',
+                link: '/apps/quotes',
+            },
+            {
                 id: 'vendors',
                 title: 'Vendors',
                 icon: 'heroicons_outline:briefcase',

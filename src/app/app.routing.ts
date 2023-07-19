@@ -109,6 +109,7 @@ export const appRoutes: Route[] = [
                     { path: 'tasks', loadChildren: () => import('app/modules/admin/apps/tasks/tasks.module').then(m => m.TasksModule) },
                     // { path: 'customers', loadChildren: () => import('app/modules/admin/apps/ecommerce/ecommerce.module').then(m => m.ECommerceModule) },
                     { path: 'orders', loadChildren: () => import('app/modules/admin/apps/orders/orders.module').then(m => m.OrdersModule) },
+                    { path: 'quotes', loadChildren: () => import('app/modules/admin/apps/quotes/quotes.module').then(m => m.QuotesModule) },
                     { path: 'customers', loadChildren: () => import('app/modules/admin/apps/customers/customers.module').then(m => m.CustomersModule) },
                     { path: 'companies', loadChildren: () => import('app/modules/admin/apps/company-profile/company-profile.module').then(m => m.CompanyProfileModule) },
                 ]

@@ -5,9 +5,16 @@
 
     <!-- Section -->
     <div class="w-full">
-        <mat-form-field class="w-full">
+        <p *ngIf="!flpsLoginAdmin" class="font-bold">
+            Selected Employee: {{selectedEmployee.fullName}}
+            <br>
+        </p>
+        <mat-form-field class="w-full" *ngIf="flpsLoginAdmin">
             <mat-label>Select an employee</mat-label>
-            <input matInput placeholder="Search Employee Name" [matAutocomplete]="auto"
+            <mat-select matInput [(ngModel)]="selectedEmployee">
+                <mat-option *ngFor="let item of employeeAdmins" [value]="item">{{item.fullName}}</mat-option>
+            </mat-select>
+            <!-- <input matInput placeholder="Search Employee Name" [matAutocomplete]="auto"
                 [formControl]="searcEmployeeCtrl">
             <mat-autocomplete class="w-full" #auto="matAutocomplete" (optionSelected)="onSelected($event)"
                 [displayWith]="displayWith">
@@ -17,7 +24,7 @@
                         <span>{{item.firstName +' ' + item.lastName}}</span>
                     </mat-option>
                 </ng-container>
-            </mat-autocomplete>
+            </mat-autocomplete> -->
         </mat-form-field>
         <mat-form-field class="w-full">
             <mat-label>Report Type</mat-label>

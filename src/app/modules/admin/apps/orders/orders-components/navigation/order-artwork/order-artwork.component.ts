@@ -5,6 +5,8 @@ import { environment } from 'environments/environment';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { OrdersService } from '../../orders.service';
+import { AddArtworkComment } from '../../orders.types';
+import moment from 'moment';
 declare var $: any;
 @Component({
   selector: 'app-order-artwork',
@@ -244,7 +246,42 @@ export class OrderArtWorkComponent implements OnInit, OnDestroy {
   openCommentModal(data) {
     this.artworkComment = '';
     this.modalContent = data;
+    console.log(this.modalContent);
     $(this.commentModal.nativeElement).modal('show');
+  }
+  addNewComment() {
+    if (!this.artworkComment) {
+      this._orderService.snackBar('Please add any comment');
+      return
+    }
+    this.modalContent.commentLoader = true;
+    this._changeDetectorRef.markForCheck();
+    let payload: AddArtworkComment = {
+      orderID: this.orderDetail.pk_orderID,
+      orderLineID: this.modalContent.fk_orderLineID,
+      imprintID: this.modalContent.pk_imprintID,
+      productName: this.modalContent.productName,
+      locationName: this.modalContent.locationName,
+      methodName: this.modalContent.methodName,
+      storeName: this.orderDetail.storeName,
+      userFirstName: this.orderDetail.userFirstName,
+      userLastName: this.orderDetail.userLastName,
+      userEmail: this.orderDetail.userEmail,
+      comment: this.artworkComment,
+      add_artwork_comment: true
+    }
+    this._orderService.orderPostCalls(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+      if (res["success"]) {
+        this._orderService.snackBar(res["message"]);
+      }
+      this.modalContent.commentLoader = false;
+      this.modalContent.customerArtworkComment = `${this.modalContent.customerArtworkComment}<br /><br /> - Denise Cline Added A Comment ${moment().format('MM/DD/YY')} - <br /><br /> ${this.artworkComment}`;
+      this.artworkComment = '';
+      this._changeDetectorRef.markForCheck();
+    }, err => {
+      this.modalContent.commentLoader = false;
+      this._changeDetectorRef.markForCheck();
+    });
   }
   openRemoveModal(orderIndex, imprintIndex, artworkIndex, name) {
     this.removeFileName = name;

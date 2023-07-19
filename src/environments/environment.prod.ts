@@ -7,6 +7,7 @@ export const environment = {
     customerList1: "https://consolidus.azurewebsites.net/api/users",
     customer: "https://consolidus.azurewebsites.net/api/user",
     orders: "https://consolidus.azurewebsites.net/api/orders",
+    quotes: "https://consolidus.azurewebsites.net/api/quotes",
     stores: "https://consolidus.azurewebsites.net/api/stores",
     storeNewUrl: "https://consolidus-store.azurewebsites.net/api/stores",
     storeNewUrlRapidBuild: "https://consolidus-store.azurewebsites.net/api/rapid_build",

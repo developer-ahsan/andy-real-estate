@@ -444,3 +444,18 @@ interface Accessory {
     setupPrice: number;
     bln_decorator: boolean;
 };
+
+export interface AddArtworkComment {
+    orderID: number;
+    orderLineID: number;
+    imprintID: number;
+    productName: string;
+    locationName: string;
+    methodName: string;
+    storeName: string;
+    userFirstName: string;
+    userLastName: string;
+    userEmail: string;
+    comment: string;
+    add_artwork_comment: boolean;
+};
