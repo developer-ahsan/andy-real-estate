@@ -44,7 +44,7 @@ export class QuoteComments implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.user = this._authService.parseJwt(this._authService.accessToken);
     this.isLoading = true;
-    this.getOrderComments();
+    // this.getOrderComments();
     this.isCommentatorLoader = true;
     this.getCommentators();
   };

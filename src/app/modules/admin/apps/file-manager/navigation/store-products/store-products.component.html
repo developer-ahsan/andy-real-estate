@@ -24,9 +24,9 @@
                         <div class="col-6 col-md-4">
                             <mat-form-field class="w-full">
                                 <mat-select matInput [(ngModel)]="status">
-                                    <mat-option value="all">All</mat-option>
-                                    <mat-option value="active">Active/Online</mat-option>
-                                    <mat-option value="disabled">Disble/Offline</mat-option>
+                                    <mat-option [value]="1">All</mat-option>
+                                    <mat-option [value]="2">Active/Online</mat-option>
+                                    <mat-option [value]="3">Disble/Offline</mat-option>
                                 </mat-select>
                             </mat-form-field>
                         </div>
@@ -42,18 +42,18 @@
                         <div class="col-6 col-md-4">
                             <mat-form-field class="w-full">
                                 <mat-select matInput [(ngModel)]="hasDescription">
-                                    <mat-option value="all">All descriptions</mat-option>
-                                    <mat-option value="yes">Has descriptions</mat-option>
-                                    <mat-option value="no">Does not have descriptions</mat-option>
+                                    <mat-option [value]="0">All descriptions</mat-option>
+                                    <mat-option [value]="1">Has descriptions</mat-option>
+                                    <mat-option [value]="2">Does not have descriptions</mat-option>
                                 </mat-select>
                             </mat-form-field>
                         </div>
                         <div class="col-6 col-md-4">
                             <mat-form-field class="w-full">
                                 <mat-select matInput [(ngModel)]="hasOrdered">
-                                    <mat-option [value]="-1">Products ordered & not ordered</mat-option>
+                                    <mat-option [value]="0">Products ordered & not ordered</mat-option>
                                     <mat-option [value]="1">Products ordered</mat-option>
-                                    <mat-option [value]="0">Products not ordered</mat-option>
+                                    <mat-option [value]="2">Products not ordered</mat-option>
                                 </mat-select>
                             </mat-form-field>
                         </div>
@@ -70,9 +70,9 @@
                         <div class="col-6 col-md-4">
                             <mat-form-field class="w-full">
                                 <mat-select matInput [(ngModel)]="hasVideo">
-                                    <mat-option value="all">All videos</mat-option>
-                                    <mat-option value="yes">Has video</mat-option>
-                                    <mat-option value="no">Does not have video</mat-option>
+                                    <mat-option [value]="0">All videos</mat-option>
+                                    <mat-option [value]="1">Has video</mat-option>
+                                    <mat-option [value]="2">Does not have video</mat-option>
                                 </mat-select>
                             </mat-form-field>
                         </div>

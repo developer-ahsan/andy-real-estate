@@ -41,9 +41,10 @@ export class AuthInterceptor implements HttpInterceptor {
                         const lastFetched = token.claims.exp;
                         const duration = moment.duration(moment.unix(lastFetched).diff(moment.unix(now)));
                         const getMinutes = duration.asMinutes();
-                        if (getMinutes <= 30) {
+                        if (getMinutes <= 55) {
                             user.getIdToken(true).then(res => {
                                 this._authService.accessToken = res;
+                                localStorage.setItem('accessToken', res);
                             });
                         }
                     });

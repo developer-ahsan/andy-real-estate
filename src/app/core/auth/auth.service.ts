@@ -196,7 +196,16 @@ export class AuthService {
         this._authenticated = true;
         return of(true);
     }
-
+    // refresh Token
+    refreshToken(): Promise<string> {
+        return this.afAuth.currentUser.then((user) => {
+            if (user) {
+                return user.getIdToken(true);
+            } else {
+                throw new Error("User not logged in.");
+            }
+        });
+    }
     /**
      * Sign out
      */

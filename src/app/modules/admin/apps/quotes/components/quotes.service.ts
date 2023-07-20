@@ -98,7 +98,7 @@ export class QuotesService {
 
     // Common get Calls
     getQuoteData(params): Observable<any[]> {
-        return this._httpClient.get<any[]>(environment.orders, {
+        return this._httpClient.get<any[]>(environment.quotes, {
             params: params
         });
     };
@@ -106,18 +106,18 @@ export class QuotesService {
     AddQuoteData(payload) {
         const headers = { 'Authorization': `Bearer ${this._authService.accessToken}` };
         return this._httpClient.post(
-            environment.orders, payload, { headers });
+            environment.quotes, payload, { headers });
     };
     // Common put Call
     UpdateQuoteData(payload) {
         const headers = { 'Authorization': `Bearer ${this._authService.accessToken}` };
         return this._httpClient.put(
-            environment.orders, payload, { headers });
+            environment.quotes, payload, { headers });
     };
     // Quote Details
     // Order Detail
     getQuoteMainDetail(params): Observable<any> {
-        return this._httpClient.get<any>(environment.orders, { params: params }).pipe(
+        return this._httpClient.get<any>(environment.quotes, { params: params }).pipe(
             tap((quote) => {
                 this._quoteDetails.next(quote);
             })

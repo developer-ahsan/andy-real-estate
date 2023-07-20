@@ -40,11 +40,11 @@ export class StoreProductsComponent implements OnInit, OnDestroy {
 
   keyword = '';
   category = 0;
-  status = 'all';
-  hasDescription = 'all';
-  hasOrdered = -1;
+  status = 1;
+  hasDescription = 0;
+  hasOrdered = 0;
   vendorRelation = 0;
-  hasVideo = 'all';
+  hasVideo = 0;
   constructor(
     private _storeManagerService: FileManagerService,
     private _changeDetectorRef: ChangeDetectorRef,

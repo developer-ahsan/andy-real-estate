@@ -11,14 +11,13 @@ export const quotesRoutes: Route[] = [
         path: '',
         component: QuotesComponent,
         resolve: {
-            // suppliers: SuppliersListsResolver
         }
     },
     {
         path: ':id',
         component: QuotesDetailsComponent,
         resolve: {
-            suplier: QuoteDetailsResolver
+            // suplier: QuoteDetailsResolver
         },
         children: [
             {

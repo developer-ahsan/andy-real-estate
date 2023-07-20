@@ -23,7 +23,7 @@ import { environment } from "environments/environment";
 import moment from "moment";
 import { MatSnackBar } from "@angular/material/snack-bar";
 import { LogoBankNotesUpdate } from "./presentation.types";
-import { DeleteImage, RemoveStoreLogoBank, addStoreLogoBank, updateStoreLogoBank } from "../../stores.types";
+import { DeleteImage, RemoveStoreLogoBank, addStoreLogoBank, updateStoreLogoBank, uploadImage } from "../../stores.types";
 @Component({
   selector: "app-presentation",
   templateUrl: "./presentation.component.html",
@@ -943,6 +943,10 @@ export class PresentationComponent implements OnInit, OnDestroy {
     })
   }
   updateLogoBankNotes() {
+    if (!this.settings.logoBankNotes) {
+      this._storeManagerService.snackBar('Please add some notes');
+      return;
+    }
     let payload: LogoBankNotesUpdate = {
       notes: this.settings.logoBankNotes,
       fk_storeID: this.selectedStore.pk_storeID,
@@ -983,7 +987,7 @@ export class PresentationComponent implements OnInit, OnDestroy {
     this._storeManagerService.postStoresData(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
       if (res["success"]) {
         this._storeManagerService.snackBar(res["message"]);
-        this.uploadMediaLogoBank(res["newFeatureImageID"]);
+        this.uploadMediaLogoBank(res["newId"]);
         this.addLogoBankForm.reset();
       } else {
         this.isAddLogoBankLoader = false;
@@ -1020,9 +1024,15 @@ export class PresentationComponent implements OnInit, OnDestroy {
   uploadMediaLogoBank(id) {
     const { imageUpload, type } = this.logoBankImageValue;
     const base64 = imageUpload.split(",")[1];
-    const payload = {
+    let eps = {
+      storeID: Number(this.selectedStore.pk_storeID),
+      logiBankId: Number(id),
+      type: type
+    }
+    const payload: uploadImage = {
       file_upload: true,
       image_file: base64,
+      epsAI: eps,
       image_path: `/globalAssets/Stores/LogoBank/${this.selectedStore.pk_storeID}/${id}.${type}`
     };
 

@@ -643,3 +643,16 @@ export interface RemoveRapidbuild {
     rbid_userID: number;
     remove_rapidbuild: boolean;
 };
+
+export interface uploadImage {
+    image_file: string;
+    image_path: string;
+    epsAI?: EpsAI;
+    file_upload: boolean;
+};
+
+interface EpsAI {
+    storeID: number;
+    logiBankId: number;
+    type: string;
+};

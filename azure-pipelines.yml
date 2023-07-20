@@ -10,12 +10,12 @@ steps:
     versionSpec: '16.17.0'
   displayName: 'Install Node.js'
   env:
-    NODE_OPTIONS: --max_old_space_size=8192
+    NODE_OPTIONS: --max_old_space_size=10240
 
 - script: |
     npm install -g @angular/cli
     npm install
-    node --max_old_space_size=8192 node_modules/@angular/cli/bin/ng build --configuration production
+    node --max_old_space_size=10240 node_modules/@angular/cli/bin/ng build --configuration production
   displayName: 'npm install, memory allocation and build'
 
 - task: AzureStaticWebApp@0
