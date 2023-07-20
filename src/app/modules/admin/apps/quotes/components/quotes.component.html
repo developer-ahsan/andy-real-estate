@@ -8,6 +8,10 @@
                 Quotes
                 <p class="text-seconday"></p>
             </h2>
+            <mat-form-field class="w-100">
+                <mat-label>Restore Quote ID</mat-label>
+                <input matInput placeholder="Restore Quote ID" [(ngModel)]="quoteID">
+            </mat-form-field>
         </div>
 
 
@@ -15,15 +19,6 @@
         <div>
             <h2 class="text-sm font-medium text-gray-500">Total: {{totalRecords}}</h2>
             <ul role="list" class="mt-3 grid grid-cols-1 gap-5 sm:grid-cols-2 sm:gap-6 lg:grid-cols-4">
-                <li class="col-span-1 flex rounded-md"></li>
-                <li class="col-span-1 flex rounded-md"></li>
-                <li class="col-span-1 flex rounded-md"></li>
-                <li class="col-span-1 flex rounded-md">
-                    <mat-form-field class="w-full">
-                        <mat-label>Restore Quote ID</mat-label>
-                        <input matInput placeholder="Restore Quote ID" [(ngModel)]="quoteID">
-                    </mat-form-field>
-                </li>
                 <li class="col-span-1 flex rounded-md">
                     <mat-form-field class="w-full">
                         <mat-label>Store</mat-label>
