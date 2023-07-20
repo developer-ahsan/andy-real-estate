@@ -41,58 +41,23 @@
                 <div class="bg-card shadow p-4" *ngIf="selectedQuoteDetail">
                     <div class="flex mr-7" style="justify-content: space-between;">
                         <div class="text-2xl font-bold">Quote: <span
-                                class="text-xl">{{selectedQuoteDetail.pk_orderID}}</span></div>
-                        <div>
-                            <span *ngIf="selectedQuoteDetail?.OrderStatus == 'Processing'"
-                                class="text-xs px-2.5 py-0.5 rounded-full tracking-wide bg-red-200 text-red-800 dark:bg-red-600 dark:text-red-50">
-                                <span
-                                    class="leading-relaxed whitespace-nowrap">{{selectedQuoteDetail?.OrderStatus}}</span>
-                            </span>
-                            <span *ngIf="selectedQuoteDetail?.OrderStatus == 'Shipped'"
-                                class="text-xs px-2.5 py-0.5 rounded-full tracking-wide bg-blue-200 text-blue-800 dark:bg-blue-600 dark:text-blue-50"><span
-                                    class="leading-relaxed whitespace-nowrap">{{selectedQuoteDetail?.OrderStatus}}</span></span>
-                            <span *ngIf="selectedQuoteDetail?.OrderStatus == 'Delivered'"
-                                class="text-xs px-2.5 py-0.5 rounded-full tracking-wide bg-green-200 text-green-800 dark:bg-green-600 dark:text-green-50"><span
-                                    class="leading-relaxed whitespace-nowrap">{{selectedQuoteDetail?.OrderStatus}}</span></span>
-                            <span *ngIf="selectedQuoteDetail?.OrderStatus == 'P.O. Needed'"
-                                class="text-xs px-2.5 py-0.5 rounded-full tracking-wide bg-green-200 text-green-800 dark:bg-green-600 dark:text-green-50"><span
-                                    class="leading-relaxed whitespace-nowrap">{{selectedQuoteDetail?.OrderStatus}}</span></span>
-                            <span *ngIf="selectedQuoteDetail?.OrderStatus == 'Picked up'"
-                                class="text-xs px-2.5 py-0.5 rounded-full tracking-wide bg-green-200 text-green-800 dark:bg-green-600 dark:text-green-50"><span
-                                    class="leading-relaxed whitespace-nowrap">{{selectedQuoteDetail?.OrderStatus}}</span></span>
-                            <span *ngIf="selectedQuoteDetail?.OrderStatus == 'Awaiting Group Order'"
-                                class="text-xs px-2.5 py-0.5 rounded-full tracking-wide bg-green-200 text-green-800 dark:bg-green-600 dark:text-green-50"><span
-                                    class="leading-relaxed whitespace-nowrap">{{selectedQuoteDetail?.OrderStatus}}</span></span>
-                            <span *ngIf="selectedQuoteDetail?.OrderStatus == false"
-                                class="text-xs px-2.5 py-0.5 rounded-full tracking-wide bg-red-200 text-red-800 dark:bg-red-600 dark:text-red-50"><span
-                                    class="leading-relaxed whitespace-nowrap">Cancelled</span></span>
-                            <span *ngIf="selectedQuoteDetail?.OrderStatus == 'N/A'"
-                                class="text-xs px-2.5 py-0.5 rounded-full tracking-wide bg-red-200 text-red-800 dark:bg-red-600 dark:text-red-50"><span
-                                    class="leading-relaxed whitespace-nowrap">N/A</span></span>
-                        </div>
+                                class="text-xl">{{selectedQuoteDetail.pk_cartID}}</span></div>
                     </div>
                     <div class="row w-full">
                         <div class="col-lg-4 col-md-6 col-12">
                             <b class="text-secondary text-sm">Order Date:</b>
-                            <p class="float-right text-sm">{{selectedQuoteDetail?.orderDate?
-                                (selectedQuoteDetail?.orderDate | date: 'MM-dd-yyyy'):
+                            <p class="float-right text-sm">{{selectedQuoteDetail?.dateCreated?
+                                (selectedQuoteDetail?.dateCreated | date: 'MM-dd-yyyy'):
                                 not_available}}</p>
                         </div>
                         <div class="col-lg-4 col-md-6 col-12">
-                            <b class="text-secondary text-sm">Payment Date:</b>
-                            <p class="float-right text-sm">{{selectedQuoteDetail?.paymentDate ?
-                                (selectedQuoteDetail.paymentDate |
-                                date) :
-                                not_available }}</p>
-                        </div>
-                        <div class="col-lg-4 col-md-6 col-12">
-                            <b class="text-secondary text-sm">Manager:</b>
-                            <p class="float-right text-sm">{{selectedQuoteDetail?.managerFirstName + ' ' +
-                                selectedQuoteDetail?.managerLastName}}</p>
+                            <b class="text-secondary text-sm">Program Manager:</b>
+                            <p class="float-right text-sm">{{selectedQuoteDetail?.firstName + ' ' +
+                                selectedQuoteDetail?.lastName}}</p>
                         </div>
                         <div class="col-lg-4 col-md-6 col-12">
                             <b class="text-secondary text-sm">Total:</b>
-                            <p class="float-right text-sm">{{(selectedQuoteDetail?.orderTotal | currency) ||
+                            <p class="float-right text-sm">{{(selectedQuoteDetail?.cartTotal | currency) ||
                                 not_available}}
                             </p>
                         </div>
@@ -101,13 +66,13 @@
                             <p class="float-right text-sm">
                                 <a style="color: #959595; text-decoration: underline; cursor: pointer;" target="_blank"
                                     routerLink="/apps/customers/{{selectedQuoteDetail?.fk_storeUserID}}">
-                                    {{selectedQuoteDetail?.userFirstName + ' ' +
-                                    selectedQuoteDetail?.userLastName}}</a>
+                                    {{selectedQuoteDetail?.billingFirstName + ' ' +
+                                    selectedQuoteDetail?.billingLastName}}</a>
                             </p>
                         </div>
                         <div class="col-lg-4 col-md-6 col-12">
                             <b class="text-secondary text-sm">Company:</b>
-                            <p class="float-right text-sm">{{selectedQuoteDetail?.billingCompanyName ||
+                            <p class="float-right text-sm">{{selectedQuoteDetail?.companyName ||
                                 not_available}}
                             </p>
                         </div>
@@ -115,25 +80,46 @@
                             <b class="text-secondary text-sm">Store:</b>
                             <p class="float-right text-sm">
                                 <a style="color: #959595; text-decoration: underline; cursor: pointer;" target="_blank"
-                                    routerLink="/apps/stores/{{selectedQuoteDetail.fk_storeID}}">
+                                    routerLink="/apps/stores/{{selectedQuoteDetail.storeID}}">
                                     {{selectedQuoteDetail?.storeName ||
                                     not_available}}</a>
                             </p>
                         </div>
                         <div class="col-lg-4 col-md-6 col-12">
                             <b class="text-secondary text-sm">Location:</b>
-                            <p class="float-right text-sm">{{selectedQuoteDetail?.locationName ||
-                                not_available}}</p>
-                        </div>
-                        <div *ngIf="selectedQuoteDetail.fk_groupOrderID" class="col-lg-4 col-md-6 col-12">
-                            <b class="text-secondary text-sm">Group Order ID:</b>
-                            <p class="float-right text-sm">{{selectedQuoteDetail?.fk_groupOrderID || not_available}}
+                            <p class="float-right text-sm">{{(selectedQuoteDetail?.locationName | currency) ||
+                                not_available}}
                             </p>
                         </div>
+
                         <div class="col-lg-4 col-md-6 col-12">
-                            <b class="text-secondary text-sm">Cart/Quote ID:</b>
-                            <p class="float-right text-sm">{{selectedQuoteDetail?.fk_cartID || not_available}}
-                            </p>
+                            <b class="text-secondary text-sm">Status:</b>
+                            <span *ngIf="selectedQuoteDetail?.OrderStatus == 'Processing'"
+                                class="float-right text-sm text-xs px-2.5 py-0.5 rounded-full tracking-wide bg-red-200 text-red-800 dark:bg-red-600 dark:text-red-50">
+                                <span
+                                    class="leading-relaxed whitespace-nowrap">{{selectedQuoteDetail?.OrderStatus}}</span>
+                            </span>
+                            <span *ngIf="selectedQuoteDetail?.OrderStatus == 'Shipped'"
+                                class="float-right text-sm text-xs px-2.5 py-0.5 rounded-full tracking-wide bg-blue-200 text-blue-800 dark:bg-blue-600 dark:text-blue-50"><span
+                                    class="leading-relaxed whitespace-nowrap">{{selectedQuoteDetail?.OrderStatus}}</span></span>
+                            <span *ngIf="selectedQuoteDetail?.OrderStatus == 'Delivered'"
+                                class="float-right text-sm text-xs px-2.5 py-0.5 rounded-full tracking-wide bg-green-200 text-green-800 dark:bg-green-600 dark:text-green-50"><span
+                                    class="leading-relaxed whitespace-nowrap">{{selectedQuoteDetail?.OrderStatus}}</span></span>
+                            <span *ngIf="selectedQuoteDetail?.OrderStatus == 'P.O. Needed'"
+                                class="float-right text-sm text-xs px-2.5 py-0.5 rounded-full tracking-wide bg-green-200 text-green-800 dark:bg-green-600 dark:text-green-50"><span
+                                    class="leading-relaxed whitespace-nowrap">{{selectedQuoteDetail?.OrderStatus}}</span></span>
+                            <span *ngIf="selectedQuoteDetail?.OrderStatus == 'Picked up'"
+                                class="float-right text-sm text-xs px-2.5 py-0.5 rounded-full tracking-wide bg-green-200 text-green-800 dark:bg-green-600 dark:text-green-50"><span
+                                    class="leading-relaxed whitespace-nowrap">{{selectedQuoteDetail?.OrderStatus}}</span></span>
+                            <span *ngIf="selectedQuoteDetail?.OrderStatus == 'Awaiting Group Order'"
+                                class="float-right text-sm text-xs px-2.5 py-0.5 rounded-full tracking-wide bg-green-200 text-green-800 dark:bg-green-600 dark:text-green-50"><span
+                                    class="leading-relaxed whitespace-nowrap">{{selectedQuoteDetail?.OrderStatus}}</span></span>
+                            <span *ngIf="selectedQuoteDetail?.OrderStatus == false"
+                                class="float-right text-sm text-xs px-2.5 py-0.5 rounded-full tracking-wide bg-red-200 text-red-800 dark:bg-red-600 dark:text-red-50"><span
+                                    class="leading-relaxed whitespace-nowrap">Cancelled</span></span>
+                            <span *ngIf="selectedQuoteDetail?.OrderStatus == 'N/A'"
+                                class="float-right text-sm text-xs px-2.5 py-0.5 rounded-full tracking-wide bg-red-200 text-red-800 dark:bg-red-600 dark:text-red-50"><span
+                                    class="leading-relaxed whitespace-nowrap">N/A</span></span>
                         </div>
                     </div>
                 </div>

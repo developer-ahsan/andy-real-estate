@@ -1,10 +1,9 @@
 import { Route } from '@angular/router';
 import { QuotesDetailsComponent } from './components/details/details-quote.component';
-import { VendorTopOrderComponent } from './components/pages/modify-quote/modify-quote.component';
 import { QuoteComments } from './components/pages/comments/comments.component';
 import { QuoteSummaryComponent } from './components/pages/summary/summary.component';
 import { QuotesComponent } from './components/quotes.component';
-import { QuoteDetailsResolver, SuppliersByIdResolver, SuppliersListsResolver } from './components/quotes.resolvers';
+import { QuoteDetailsResolver } from './components/quotes.resolvers';
 export const quotesRoutes: Route[] = [
 
     {
@@ -17,7 +16,7 @@ export const quotesRoutes: Route[] = [
         path: ':id',
         component: QuotesDetailsComponent,
         resolve: {
-            // suplier: QuoteDetailsResolver
+            suplier: QuoteDetailsResolver
         },
         children: [
             {

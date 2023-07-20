@@ -1,7 +1,6 @@
-import { Component, Input, OnInit, Output, EventEmitter, ChangeDetectorRef, OnDestroy } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef, OnDestroy } from '@angular/core';
 import { Subject } from 'rxjs';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { add_setup_charge } from '../../quotes.types';
 import { QuotesService } from '../../quotes.service';
 
 @Component({

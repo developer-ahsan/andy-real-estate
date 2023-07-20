@@ -1,12 +1,9 @@
 import { ENTER, COMMA } from '@angular/cdk/keycodes';
 import { Component, Input, OnInit, ChangeDetectorRef, OnDestroy, ViewChild } from '@angular/core';
 import { FormControl, FormGroup } from '@angular/forms';
-import { MatChipInputEvent } from '@angular/material/chips';
 import { MatPaginator } from '@angular/material/paginator';
 import { Subject } from 'rxjs';
-import { debounceTime, distinctUntilChanged, filter, finalize, switchMap, takeUntil, tap } from 'rxjs/operators';
 import { QuotesService } from '../../quotes.service';
-import { AddCompany, UpdateCompany, UpdateWebsiteLoginInfo } from '../../quotes.types';
 @Component({
   selector: 'app-summary',
   templateUrl: './summary.component.html',

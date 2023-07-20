@@ -1,4 +1,5 @@
 <div *ngIf="!isLoading">
+  <input type="file" (change)="onFileChange($event)" accept=".eps,.ai" />
   <div class="col-12 overflow-x-auto pb-2">
     <mat-button-toggle-group #group="matButtonToggleGroup" [value]="presentationScreen"
       (change)="calledScreen(group.value)">

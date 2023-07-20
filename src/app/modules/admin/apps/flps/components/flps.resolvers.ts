@@ -53,12 +53,17 @@ export class FlpsLoginResolver implements Resolve<any>
      * @param state
      */
     resolve(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<any[]> {
-        let user = this._authService.parseJwt(this._authService.accessToken);
-        let params = {
-            login_check: true,
-            email: user.email
+        if (!sessionStorage.getItem('flpsAccessToken')) {
+            let user = this._authService.parseJwt(this._authService.accessToken);
+            let params = {
+                login_check: true,
+                email: user.email
+            }
+            return this._flpsService.checkFLPSLogin(params);
+        } else {
+            return
         }
-        return this._flpsService.checkFLPSLogin(params);
+
     }
 }
 @Injectable({

@@ -5,11 +5,11 @@
 
     <!-- Section -->
     <div class="w-full">
-        <p *ngIf="!flpsLoginAdmin" class="font-bold">
+        <p *ngIf="flpsLoginAdmin == 'false'" class="font-bold">
             Selected Employee: {{selectedEmployee.fullName}}
             <br>
         </p>
-        <mat-form-field class="w-full" *ngIf="flpsLoginAdmin">
+        <mat-form-field class="w-full" *ngIf="flpsLoginAdmin == 'true'">
             <mat-label>Select an employee</mat-label>
             <mat-select matInput [(ngModel)]="selectedEmployee">
                 <mat-option *ngFor="let item of employeeAdmins" [value]="item">{{item.fullName}}</mat-option>

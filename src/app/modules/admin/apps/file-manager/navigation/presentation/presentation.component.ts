@@ -24,6 +24,8 @@ import moment from "moment";
 import { MatSnackBar } from "@angular/material/snack-bar";
 import { LogoBankNotesUpdate } from "./presentation.types";
 import { DeleteImage, RemoveStoreLogoBank, addStoreLogoBank, updateStoreLogoBank, uploadImage } from "../../stores.types";
+import * as imageConversion from 'image-conversion';
+
 @Component({
   selector: "app-presentation",
   templateUrl: "./presentation.component.html",
@@ -1204,4 +1206,43 @@ export class PresentationComponent implements OnInit, OnDestroy {
         this._changeDetectorRef.markForCheck();
       })
   }
+  async convertFileToBase64(file: File): Promise<string | null> {
+    try {
+      // Read the uploaded file as an ArrayBuffer
+      const fileReader = new FileReader();
+      const promise = new Promise<ArrayBuffer>((resolve) => {
+        fileReader.onload = () => resolve(fileReader.result as ArrayBuffer);
+        fileReader.readAsArrayBuffer(file);
+      });
+      const arrayBuffer = await promise;
+
+      // Perform the conversion using image-conversion
+      // const convertedImage = await imageConversion. convertToJpg(new Uint8Array(arrayBuffer));
+
+      // Convert the binary image to base64 encoded string
+      // const base64String = Buffer.from(convertedImage).toString('base64');
+      const base64String = '';
+      console.log('Conversion to base64 done');
+      return base64String;
+    } catch (error) {
+      console.error('Error converting the image:', error);
+      return null;
+    }
+  }
+
+  onFileChange(event: Event): void {
+    const inputElement = event.target as HTMLInputElement;
+    const file = inputElement?.files?.[0];
+    if (file) {
+      this.convertFileToBase64(file).then((base64String) => {
+        if (base64String) {
+          console.log('Base64 encoded string:', base64String);
+          // You can use the base64String as needed, for example, send it to the server or display an image.
+        } else {
+          console.log('Conversion failed.');
+        }
+      });
+    }
+  }
+
 }

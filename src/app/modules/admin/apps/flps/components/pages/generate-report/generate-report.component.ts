@@ -80,7 +80,7 @@ export class GenerateReportComponent implements OnInit {
     @ViewChild('topScrollAnchor') topScroll: ElementRef;
     @ViewChild('summaryScrollAnchor') summaryScrollAnchor: ElementRef;
     storeTotals: { Sales: number; Revenue: number; Num_Sales: number; EST_Profit: number; orderCommission: number; };
-    flpsLoginAdmin = Boolean(sessionStorage.getItem('flpsLoginAdmin'));
+    flpsLoginAdmin = sessionStorage.getItem('flpsLoginAdmin');
     flpsLoginName = sessionStorage.getItem('FullName');
     flpsLoginID = sessionStorage.getItem('flpsUserID');
     /**
@@ -91,6 +91,7 @@ export class GenerateReportComponent implements OnInit {
         private _changeDetectorRef: ChangeDetectorRef,
         private _flpsService: FLPSService
     ) {
+        console.log(this.flpsLoginAdmin)
     }
 
     // -----------------------------------------------------------------------------------------------------
@@ -104,10 +105,10 @@ export class GenerateReportComponent implements OnInit {
         for (let index = 0; index < 17; index++) {
             this.years.push(this.currentYear - index);
         }
-        if (this.flpsLoginAdmin) {
+        if (this.flpsLoginAdmin == 'true') {
             this.getEmployees();
         } else {
-            this.selectedEmployee.push({ pk_userID: Number(this.flpsLoginID), fullName: this.flpsLoginName });
+            this.selectedEmployee = { pk_userID: Number(this.flpsLoginID), fullName: this.flpsLoginName };
         }
         // Create the form
         this.planBillingForm = this._formBuilder.group({

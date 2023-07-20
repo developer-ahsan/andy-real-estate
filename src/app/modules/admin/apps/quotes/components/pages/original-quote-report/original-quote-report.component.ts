@@ -2,11 +2,8 @@ import { ScrollStrategy, ScrollStrategyOptions } from '@angular/cdk/overlay';
 import { Component, Input, OnInit, Output, EventEmitter, ChangeDetectorRef, OnDestroy } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { InventoryService } from 'app/modules/admin/apps/ecommerce/inventory/inventory.service';
-import { ImprintRunComponent } from 'app/modules/admin/apps/ecommerce/inventory/navigation/imprint/imprint-run/imprint-run.component';
 import { Subject } from 'rxjs';
-import { takeUntil } from 'rxjs/operators';
 import { QuotesService } from '../../quotes.service';
-import { UpdateCharge } from '../../quotes.types';
 
 @Component({
   selector: 'app-original-quote-report',
