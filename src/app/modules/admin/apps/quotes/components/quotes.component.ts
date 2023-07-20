@@ -9,6 +9,7 @@ import { MatDrawer } from '@angular/material/sidenav';
 import { DashboardsService } from 'app/modules/admin/dashboards/dashboard.service';
 import { MatPaginator } from '@angular/material/paginator';
 import moment from 'moment';
+import { restoreQuote } from './quotes.types';
 
 @Component({
     selector: 'app-quotes-list',
@@ -50,6 +51,8 @@ export class QuotesComponent {
     dateEnd = '';
     size = 20;
     quoteID = '';
+    restoreQuoteID = '';
+    restoreLoader: boolean = false;
     // 
     /**
      * Constructor
@@ -59,7 +62,7 @@ export class QuotesComponent {
         private _changeDetectorRef: ChangeDetectorRef,
         private _router: Router,
         private _commonService: DashboardsService,
-        private _vendorService: QuotesService,
+        private _quoteService: QuotesService,
         private _fuseMediaWatcherService: FuseMediaWatcherService,
     ) {
     }
@@ -112,7 +115,7 @@ export class QuotesComponent {
             start_date: start,
             end_date: end
         }
-        this._vendorService.getQuoteData(params).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+        this._quoteService.getQuoteData(params).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
             this.quotesData = res["data"];
             this.totalRecords = res["totalRecords"]
             this.isLoading = false;
@@ -145,6 +148,33 @@ export class QuotesComponent {
     }
     quoteDetails(id) {
         this._router.navigateByUrl('apps/quotes/' + id);
+    }
+    restoreQuote() {
+        if (!this.restoreQuoteID) {
+            this._quoteService.snackBar('Please enter quote id to restore.');
+            return;
+        }
+        this.restoreLoader = true;
+        this._changeDetectorRef.markForCheck();
+        let payload: restoreQuote = {
+            cartID: Number(this.restoreQuoteID),
+            restore_quote: true
+        }
+        this._quoteService.UpdateQuoteData(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+            if (res["success"]) {
+                this._quoteService.snackBar(res["message"]);
+                this.restoreQuoteID = '';
+            } else {
+                this._quoteService.snackBar(res["message"]);
+                this.restoreQuoteID = '';
+            }
+            this.restoreLoader = false;
+            this._changeDetectorRef.markForCheck();
+        }, err => {
+            this.restoreLoader = false;
+            this._changeDetectorRef.markForCheck();
+        })
+
     }
     /**
      * On destroy

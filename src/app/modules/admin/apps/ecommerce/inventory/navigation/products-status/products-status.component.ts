@@ -161,7 +161,8 @@ export class ProductsStatusComponent implements OnInit {
     }
     this._inventoryService.AddStoreProduct(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
       this.ngComment = null;
-      console.log(res)
+      this.getAssignedStores('add', 1);
+      // this.selectedTermUpdateLoader = false;
       // this.addRapidStoreProduct(res);
       this._changeDetectorRef.markForCheck();
     }, err => {

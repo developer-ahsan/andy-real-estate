@@ -40,8 +40,11 @@
             <ng-template #myCard>
                 <div class="bg-card shadow p-4" *ngIf="selectedQuoteDetail">
                     <div class="flex mr-7" style="justify-content: space-between;">
-                        <div class="text-2xl font-bold">Quote: <span
-                                class="text-xl">{{selectedQuoteDetail.pk_cartID}}</span></div>
+                        <a [routerLink]="['/apps/quotes',selectedQuoteDetail.pk_cartID]">
+                            <div class="text-2xl font-bold">Quote: <span
+                                    class="text-xl">{{selectedQuoteDetail.pk_cartID}}</span>
+                            </div>
+                        </a>
                     </div>
                     <div class="row w-full">
                         <div class="col-lg-4 col-md-6 col-12">

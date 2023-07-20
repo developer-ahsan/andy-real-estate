@@ -44,7 +44,7 @@ export class QuoteComments implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.user = this._authService.parseJwt(this._authService.accessToken);
     this.isLoading = true;
-    // this.getOrderComments();
+    this.getOrderComments();
     this.isCommentatorLoader = true;
     this.getCommentators();
   };
@@ -145,7 +145,7 @@ export class QuoteComments implements OnInit, OnDestroy {
   // Get Commentators
   getCommentators() {
     let params = {
-      get_commentators_emails: true,
+      commentator_emails: true,
       page: this.commentatorPage
     }
     this._quoteService.getQuoteData(params).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
