@@ -13,6 +13,7 @@ steps:
     NODE_OPTIONS: --max_old_space_size=10240
 
 - script: |
+    npm cache clean --force
     npm install -g @angular/cli
     npm install --legacy-peer-deps
     node --max_old_space_size=10240 node_modules/@angular/cli/bin/ng build --configuration production
