@@ -7,14 +7,14 @@ pool:
 steps:
 - task: NodeTool@0
   inputs:
-    versionSpec: '16.17.0'
+    versionSpec: '16.14.0'
   displayName: 'Install Node.js'
   env:
     NODE_OPTIONS: --max_old_space_size=8192
 
 - script: |
     npm install -g @angular/cli
-    npm install
+    npm install --f
     node --max_old_space_size=8192 node_modules/@angular/cli/bin/ng build --configuration production
   displayName: 'npm install , memory allocation and build'
 
