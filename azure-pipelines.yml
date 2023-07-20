@@ -14,9 +14,9 @@ steps:
 
 - script: |
     npm install -g @angular/cli
-    npm install
+    npm install --legacy-peer-deps
     node --max_old_space_size=10240 node_modules/@angular/cli/bin/ng build --configuration production
-  displayName: 'npm install, memory allocation and build'
+  displayName: 'npm install , memory allocation and build'
 
 - task: AzureStaticWebApp@0
   inputs:
