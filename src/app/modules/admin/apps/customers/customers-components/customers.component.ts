@@ -127,6 +127,8 @@ export class CustomersListComponent implements OnInit, OnDestroy {
             list: true,
             size: 20,
             keyword: this.keywordSearch,
+            sort_by: 'storeName',
+            sort_order: 'ASC'
         }
         this._customerService.GetApiData(params).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
             this.customers$ = res["data"];

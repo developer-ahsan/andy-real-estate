@@ -99,7 +99,7 @@ export class OrderCommentsComponent implements OnInit, OnDestroy {
 
   addComment() {
     let emailArr = this.emails;
-    if (this.ngComment! == '') {
+    if (this.ngComment == '') {
       this._snackBar.open("Comment is required", '', {
         horizontalPosition: 'center',
         verticalPosition: 'bottom',

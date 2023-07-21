@@ -384,183 +384,234 @@
     </div>
     <!------------- Logo Bank --------------->
     <div *ngIf="presentationScreen == 'Logo bank'">
-      <!-- Add Logo Bank -->
-      <div class="row mb-2 bg-card sm:p-6 md:p-6 lg:p-10 rounded-2xl shadow" [formGroup]="addLogoBankForm">
-        <div class="text-2xl font-extrabold tracking-tight leading-none my-3">
-          Add A Logo File
-        </div>
-        <div class="mt-4 col-12">
-          <mat-form-field appearance="fill" class="w-full">
-            <mat-label>Logo name:</mat-label>
-            <input matInput formControlName="name" />
-          </mat-form-field>
-        </div>
-        <div class="mt-4 col-12">
-          <mat-form-field appearance="fill" class="w-full">
-            <mat-label>Description(500):</mat-label>
-            <textarea matInput formControlName="description"></textarea>
-          </mat-form-field>
-        </div>
-        <div class="mt-4 col-12">
-          <mat-form-field appearance="fill" class="w-full">
-            <mat-label>Imprint colors: (800, optional, comma-separated list of color names or PMS colors):</mat-label>
-            <textarea matInput formControlName="color_list"></textarea>
-          </mat-form-field>
-        </div>
-        <div class="col-12 col-md-6">
-          <mat-form-field appearance="fill" class="w-full">
-            <mat-label>Select which logo bank to display below?</mat-label>
-            <mat-select formControlName="bank_type">
-              <mat-option [value]="1">Internal</mat-option>
-              <mat-option [value]="2">Client</mat-option>
-              <mat-option [value]="0">Both</mat-option>
-            </mat-select>
-          </mat-form-field>
-          <p class="fa fa-info-circle" style="color: rgb(101, 124, 174)">
-            The internal logo bank is what will appear in rapidBuild, and
-            is used for us internally. The client logo bank is what the
-            clients will see on their stores during checkout.
-          </p>
-        </div>
-        <div class="col-12 col-md-6">
-          <mat-form-field appearance="fill" class="w-full">
-            <mat-label>Display order:</mat-label>
-            <input matInput formControlName="displayOrder" type="number">
-          </mat-form-field>
-        </div>
-
-        <div class="col-12">
-          <p>Vector Image:</p>
-          <p style="color: red">AI and EPS formats only!</p>
-          <input type="file" #fileInputLogo class="file-upload my-3" accept=".eps,.ai"
-            (change)="uploadLogoBankFile($event)" />
-        </div>
-
-        <div class="col-12">
-          <button class="min-w-30" mat-flat-button [color]="'primary'" [disabled]="isAddLogoBankLoader"
-            (click)="uploadLogoBank()">
-            <span class="px-2" *ngIf="!isAddLogoBankLoader">Upload</span>
-            <mat-progress-spinner *ngIf="isAddLogoBankLoader" [diameter]="24" [mode]="'indeterminate'">
-            </mat-progress-spinner>
-          </button>
-        </div>
-      </div>
-
-      <!-- Logo bank notes -->
-      <div class="row mb-2">
-        <div class="col-12 bg-card sm:p-6 md:p-6 lg:p-10 rounded-2xl shadow">
+      <mat-button-toggle-group class="mb-3" #group="matButtonToggleGroup" [value]="logoBankScreens"
+        (change)="nextLogoBankScreen(group.value)">
+        <mat-button-toggle [value]="'Current Logos'">
+          Current Logos
+        </mat-button-toggle>
+        <mat-button-toggle [value]="'Display Order'">
+          Display Order
+        </mat-button-toggle>
+      </mat-button-toggle-group>
+      <div *ngIf="logoBankScreens == 'Current Logos'">
+        <!-- Add Logo Bank -->
+        <div class="row mb-2 bg-card sm:p-6 md:p-6 lg:p-10 rounded-2xl shadow" [formGroup]="addLogoBankForm">
           <div class="text-2xl font-extrabold tracking-tight leading-none my-3">
-            Logo bank notes
+            Add A Logo File
           </div>
-          <p>
-            These notes will appear in RapidBuild as a descriptor for the
-            internal logo bank.
-          </p>
-          <mat-form-field class="w-full">
-            <textarea matInput [(ngModel)]="settings.logoBankNotes"></textarea>
-          </mat-form-field>
-          <button class="min-w-30" mat-flat-button [color]="'primary'" [disabled]="isLogoBankNotesLoader"
-            (click)="updateLogoBankNotes()">
-            <span class="px-2" *ngIf="!isLogoBankNotesLoader">Update</span>
-            <mat-progress-spinner *ngIf="isLogoBankNotesLoader" [diameter]="24" [mode]="'indeterminate'">
+          <div class="mt-4 col-12">
+            <mat-form-field appearance="fill" class="w-full">
+              <mat-label>Logo name:</mat-label>
+              <input matInput formControlName="name" />
+            </mat-form-field>
+          </div>
+          <div class="mt-4 col-12">
+            <mat-form-field appearance="fill" class="w-full">
+              <mat-label>Description(500):</mat-label>
+              <textarea matInput formControlName="description"></textarea>
+            </mat-form-field>
+          </div>
+          <div class="mt-4 col-12">
+            <mat-form-field appearance="fill" class="w-full">
+              <mat-label>Imprint colors: (800, optional, comma-separated list of color names or PMS colors):</mat-label>
+              <textarea matInput formControlName="color_list"></textarea>
+            </mat-form-field>
+          </div>
+          <div class="col-12 col-md-6">
+            <mat-form-field appearance="fill" class="w-full">
+              <mat-label>Select which logo bank to display below?</mat-label>
+              <mat-select formControlName="bank_type">
+                <mat-option [value]="1">Internal</mat-option>
+                <mat-option [value]="2">Client</mat-option>
+                <mat-option [value]="0">Both</mat-option>
+              </mat-select>
+            </mat-form-field>
+            <p class="fa fa-info-circle" style="color: rgb(101, 124, 174)">
+              The internal logo bank is what will appear in rapidBuild, and
+              is used for us internally. The client logo bank is what the
+              clients will see on their stores during checkout.
+            </p>
+          </div>
+          <div class="col-12 col-md-6">
+            <mat-form-field appearance="fill" class="w-full">
+              <mat-label>Display order:</mat-label>
+              <input matInput formControlName="displayOrder" type="number">
+            </mat-form-field>
+          </div>
+
+          <div class="col-12">
+            <p>Vector Image:</p>
+            <p style="color: red">AI and EPS formats only!</p>
+            <input type="file" #fileInputLogo class="file-upload my-3" accept=".eps,.ai"
+              (change)="uploadLogoBankFile($event)" />
+          </div>
+
+          <div class="col-12">
+            <button class="min-w-30" mat-flat-button [color]="'primary'" [disabled]="isAddLogoBankLoader"
+              (click)="uploadLogoBank()">
+              <span class="px-2" *ngIf="!isAddLogoBankLoader">Upload</span>
+              <mat-progress-spinner *ngIf="isAddLogoBankLoader" [diameter]="24" [mode]="'indeterminate'">
+              </mat-progress-spinner>
+            </button>
+          </div>
+        </div>
+
+        <!-- Logo bank notes -->
+        <div class="row mb-2">
+          <div class="col-12 bg-card sm:p-6 md:p-6 lg:p-10 rounded-2xl shadow">
+            <div class="text-2xl font-extrabold tracking-tight leading-none my-3">
+              Logo bank notes
+            </div>
+            <p>
+              These notes will appear in RapidBuild as a descriptor for the
+              internal logo bank.
+            </p>
+            <mat-form-field class="w-full">
+              <textarea matInput [(ngModel)]="settings.logoBankNotes"></textarea>
+            </mat-form-field>
+            <button class="min-w-30" mat-flat-button [color]="'primary'" [disabled]="isLogoBankNotesLoader"
+              (click)="updateLogoBankNotes()">
+              <span class="px-2" *ngIf="!isLogoBankNotesLoader">Update</span>
+              <mat-progress-spinner *ngIf="isLogoBankNotesLoader" [diameter]="24" [mode]="'indeterminate'">
+              </mat-progress-spinner>
+            </button>
+          </div>
+        </div>
+
+        <!-- Current logo bank -->
+
+        <div class="row mb-2">
+          <div class="col-12 bg-card sm:p-6 md:p-6 lg:p-10 rounded-2xl shadow">
+            <div class="text-2xl font-extrabold tracking-tight leading-none my-3">
+              Current logo bank
+            </div>
+            <div class="row mt-4">
+              <div class="col-md-6">
+                <mat-form-field appearance="fill" class="w-full">
+                  <mat-label>Select which logo bank to display below? </mat-label>
+                  <mat-select [(ngModel)]="ngLogoBank" (selectionChange)="getLogoBanks(1)">
+                    <mat-option [value]="0">All</mat-option>
+                    <mat-option [value]="1">Internal</mat-option>
+                    <mat-option [value]="2">Client</mat-option>
+                  </mat-select>
+                </mat-form-field>
+              </div>
+              <div class="col-md-6">
+                <mat-form-field appearance="fill" class="w-full">
+                  <mat-label> Search: </mat-label>
+                  <input matInput [(ngModel)]="ngLogoKeyword" matTooltip="Enter to search"
+                    (keyup.enter)="getLogoBanks(1)" />
+                </mat-form-field>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="row mb-2">
+          <div class="col-12" *ngIf="logoBanksLoader">
+            <ngx-skeleton-loader count="8" appearance="line" animation="pulse">
+            </ngx-skeleton-loader>
+          </div>
+          <div *ngIf="logoBanks.length == 0 && !logoBanksLoader" class="text-center my-2">
+            No Logo Bank Found
+          </div>
+          <div class="col-12 bg-card sm:p-6 md:p-6 lg:p-10 rounded-2xl shadow my-2" *ngFor="let item of logoBanks">
+            <div class="row">
+              <div class="col-md-2">
+                <img
+                  src="https://assets.consolidus.com/globalAssets/Stores/LogoBank2/{{selectedStore.pk_storeID}}/Thumbs/{{item.pk_logoBankID}}.jpg"
+                  alt="img" />
+              </div>
+              <div class="col-md-10" style="height: 100%">
+                <p class="font-bold">ID: {{item.pk_logoBankID}}</p>
+                <mat-form-field appearance="fill" class="w-full">
+                  <mat-label> Name: </mat-label>
+                  <input [(ngModel)]="item.name" matInput />
+                </mat-form-field>
+                <mat-form-field appearance="fill" class="w-full">
+                  <mat-label> Description(500): </mat-label>
+                  <textarea [(ngModel)]="item.description" matInput></textarea>
+                </mat-form-field>
+                <mat-form-field appearance="fill" class="w-full">
+                  <mat-label> Imprint colors: (800, optional, comma-separated list of color names or PMS colors)
+                  </mat-label>
+                  <textarea [(ngModel)]="item.color_list" matInput></textarea>
+                </mat-form-field>
+                <a class="mt-3"
+                  href="https://assets.consolidus.com/globalAssets/Stores/LogoBank2/{{selectedStore.pk_storeID}}/{{item.pk_logoBankID}}.{{item.extension}}"><u>View
+                    vector file</u> </a>
+                <br>
+                <div class="space-x-2 mt-2 flex align-items-center font-bold text-green-700" *ngIf="item.blnInternal">
+                  <mat-icon svgIcon="heroicons_outline:exclamation-circle"
+                    class="text-green-700 icon-size-4"></mat-icon>
+                  <span class="text-md">Internal</span>
+                </div>
+                <div class="space-x-2 mt-2 flex align-items-center font-bold text-red-600" *ngIf="!item.blnInternal">
+                  <mat-icon svgIcon="heroicons_outline:exclamation-circle" class="text-red-600 icon-size-4"></mat-icon>
+                  <span class="text-md">Client</span>
+                </div>
+                <div class="flex justify-end">
+                  <button class="min-w-30 mr-2" mat-flat-button [color]="'primary'" [disabled]="item.updateLoader"
+                    (click)="updateLogoBank(item)">
+                    <span class="px-2" *ngIf="!item.updateLoader">Update</span>
+                    <mat-progress-spinner *ngIf="item.updateLoader" [diameter]="24" [mode]="'indeterminate'">
+                    </mat-progress-spinner>
+                  </button>
+                  <button class="min-w-30" mat-flat-button [color]="'primary'" [disabled]="item.removeLoader"
+                    (click)="removeLogoBank(item)">
+                    <span class="px-2" *ngIf="!item.removeLoader">Remove</span>
+                    <mat-progress-spinner *ngIf="item.removeLoader" [diameter]="24" [mode]="'indeterminate'">
+                    </mat-progress-spinner>
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="col-12 flex justify-center cursor-pointer my-2"
+            *ngIf="(logoBanksTotal > logoBanks.length) && !logoBanksLoader">
+            <p *ngIf="!logoBanksLoadMore" class="text-lg font-bold" (click)="nextLogoBanks()">Load More</p>
+            <mat-progress-spinner *ngIf="logoBanksLoadMore" [diameter]="24" [mode]="'indeterminate'">
             </mat-progress-spinner>
-          </button>
-        </div>
-      </div>
-
-      <!-- Current logo bank -->
-
-      <div class="row mb-2">
-        <div class="col-12 bg-card sm:p-6 md:p-6 lg:p-10 rounded-2xl shadow">
-          <div class="text-2xl font-extrabold tracking-tight leading-none my-3">
-            Current logo bank
-          </div>
-          <div class="row mt-4">
-            <div class="col-md-6">
-              <mat-form-field appearance="fill" class="w-full">
-                <mat-label>Select which logo bank to display below? </mat-label>
-                <mat-select [(ngModel)]="ngLogoBank" (selectionChange)="getLogoBanks(1)">
-                  <mat-option [value]="0">All</mat-option>
-                  <mat-option [value]="1">Internal</mat-option>
-                  <mat-option [value]="2">Client</mat-option>
-                </mat-select>
-              </mat-form-field>
-            </div>
-            <div class="col-md-6">
-              <mat-form-field appearance="fill" class="w-full">
-                <mat-label> Search: </mat-label>
-                <input matInput [(ngModel)]="ngLogoKeyword" matTooltip="Enter to search"
-                  (keyup.enter)="getLogoBanks(1)" />
-              </mat-form-field>
-            </div>
           </div>
         </div>
       </div>
-
-      <div class="row mb-2">
-        <div class="col-12" *ngIf="logoBanksLoader">
-          <ngx-skeleton-loader count="8" appearance="line" animation="pulse">
-          </ngx-skeleton-loader>
-        </div>
+      <div *ngIf="logoBankScreens == 'Display Order'">
         <div *ngIf="logoBanks.length == 0 && !logoBanksLoader" class="text-center my-2">
           No Logo Bank Found
         </div>
-        <div class="col-12 bg-card sm:p-6 md:p-6 lg:p-10 rounded-2xl shadow my-2" *ngFor="let item of logoBanks">
-          <div class="row">
-            <div class="col-md-2">
-              <img
-                src="https://assets.consolidus.com/globalAssets/Stores/LogoBank2/{{selectedStore.pk_storeID}}/Thumbs/{{item.pk_logoBankID}}.jpg"
-                alt="img" />
+        <div class="my-2">
+          <div class="row space-y-2">
+            <div class="col-12 text-right mr-2">
+              <button mat-button mat-flat-button color="primary" class="min-w-30" [disabled]="isUpdateLogoDisplayLoader"
+                (click)="updateLogoDisplayOrder()">
+                <span *ngIf="!isUpdateLogoDisplayLoader">Update Display Order</span>
+                <mat-progress-spinner *ngIf="isUpdateLogoDisplayLoader" [diameter]="24" [mode]="'indeterminate'">
+                </mat-progress-spinner>
+              </button>
             </div>
-            <div class="col-md-10" style="height: 100%">
-              <mat-form-field appearance="fill" class="w-full">
-                <mat-label> Name: </mat-label>
-                <input [(ngModel)]="item.name" matInput />
-              </mat-form-field>
-              <mat-form-field appearance="fill" class="w-full">
-                <mat-label> Description(500): </mat-label>
-                <textarea [(ngModel)]="item.description" matInput></textarea>
-              </mat-form-field>
-              <mat-form-field appearance="fill" class="w-full">
-                <mat-label> Imprint colors: (800, optional, comma-separated list of color names or PMS colors)
-                </mat-label>
-                <textarea [(ngModel)]="item.color_list" matInput></textarea>
-              </mat-form-field>
-              <a class="mt-3"
-                href="https://assets.consolidus.com/globalAssets/Stores/LogoBank2/{{selectedStore.pk_storeID}}/{{item.pk_logoBankID}}.{{item.extension}}"><u>View
-                  vector file</u> </a>
-              <br>
-              <div class="space-x-2 mt-2 flex align-items-center font-bold text-green-700" *ngIf="item.blnInternal">
-                <mat-icon svgIcon="heroicons_outline:exclamation-circle" class="text-green-700 icon-size-4"></mat-icon>
-                <span class="text-md">Internal</span>
+            <div class="col-md-4 col-12" *ngFor="let item of logoBanks">
+              <div class="bg-card col-12 rounded-2xl shadow p-2">
+                <div class="font-bold text-lg">{{item.name}}</div>
+                <div class="flex justify-between">
+                  <img class="w-20"
+                    src="https://assets.consolidus.com/globalAssets/Stores/LogoBank2/{{selectedStore.pk_storeID}}/Thumbs/{{item.pk_logoBankID}}.jpg"
+                    alt="img" />
+                  <mat-form-field appearance="fill">
+                    <mat-label> Display Order: </mat-label>
+                    <input [(ngModel)]="item.displayOrder" type="number" matInput />
+                  </mat-form-field>
+                </div>
               </div>
-              <div class="space-x-2 mt-2 flex align-items-center font-bold text-red-600" *ngIf="!item.blnInternal">
-                <mat-icon svgIcon="heroicons_outline:exclamation-circle" class="text-red-600 icon-size-4"></mat-icon>
-                <span class="text-md">Client</span>
-              </div>
-              <div class="flex justify-end">
-                <button class="min-w-30 mr-2" mat-flat-button [color]="'primary'" [disabled]="item.updateLoader"
-                  (click)="updateLogoBank(item)">
-                  <span class="px-2" *ngIf="!item.updateLoader">Update</span>
-                  <mat-progress-spinner *ngIf="item.updateLoader" [diameter]="24" [mode]="'indeterminate'">
-                  </mat-progress-spinner>
-                </button>
-                <button class="min-w-30" mat-flat-button [color]="'primary'" [disabled]="item.removeLoader"
-                  (click)="removeLogoBank(item)">
-                  <span class="px-2" *ngIf="!item.removeLoader">Remove</span>
-                  <mat-progress-spinner *ngIf="item.removeLoader" [diameter]="24" [mode]="'indeterminate'">
-                  </mat-progress-spinner>
-                </button>
-              </div>
+            </div>
+            <div class="col-12 flex justify-center cursor-pointer my-2"
+              *ngIf="(logoBanksTotal > logoBanks.length) && !logoBanksLoader">
+              <p *ngIf="!logoBanksLoadMore" class="text-lg font-bold" (click)="nextLogoBanks()">Load More</p>
+              <mat-progress-spinner *ngIf="logoBanksLoadMore" [diameter]="24" [mode]="'indeterminate'">
+              </mat-progress-spinner>
             </div>
           </div>
         </div>
-        <div class="col-12 flex justify-center cursor-pointer my-2"
-          *ngIf="(logoBanksTotal > logoBanks.length) && !logoBanksLoader">
-          <p *ngIf="!logoBanksLoadMore" class="text-lg font-bold" (click)="nextLogoBanks()">Load More</p>
-          <mat-progress-spinner *ngIf="logoBanksLoadMore" [diameter]="24" [mode]="'indeterminate'">
-          </mat-progress-spinner>
-        </div>
+
       </div>
     </div>
     <!------------- Home Page Scrollers --------------->

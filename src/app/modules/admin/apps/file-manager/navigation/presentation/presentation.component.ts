@@ -23,7 +23,7 @@ import { environment } from "environments/environment";
 import moment from "moment";
 import { MatSnackBar } from "@angular/material/snack-bar";
 import { LogoBankNotesUpdate } from "./presentation.types";
-import { DeleteImage, RemoveStoreLogoBank, addStoreLogoBank, updateStoreLogoBank, uploadImage } from "../../stores.types";
+import { DeleteImage, RemoveStoreLogoBank, addStoreLogoBank, updateLogoBankOrder, updateStoreLogoBank, uploadImage } from "../../stores.types";
 import * as imageConversion from 'image-conversion';
 
 @Component({
@@ -187,6 +187,8 @@ export class PresentationComponent implements OnInit, OnDestroy {
   favImageCheck: boolean = true;
   favimageValue: any;
   favUploadLoader: boolean = false;
+  logoBankScreens = 'Current Logos';
+  isUpdateLogoDisplayLoader: boolean = false;
   constructor(
     private _storeManagerService: FileManagerService,
     private _changeDetectorRef: ChangeDetectorRef,
@@ -1244,5 +1246,29 @@ export class PresentationComponent implements OnInit, OnDestroy {
       });
     }
   }
+  nextLogoBankScreen(screenName) {
+    this.logoBankScreens = screenName;
+  }
 
+  updateLogoDisplayOrder() {
+    this.isUpdateLogoDisplayLoader = true;
+    let logos = [];
+    this.logoBanks.forEach(element => {
+      logos.push({ logo_bank_id: element.pk_logoBankID, displayOrder: element.displayOrder })
+    });
+    let payload: updateLogoBankOrder = {
+      logoBanks: logos,
+      update_logoBank_order: true
+    }
+    this._storeManagerService.putStoresData(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+      if (res["success"]) {
+        this._storeManagerService.snackBar(res["message"]);
+      }
+      this.isUpdateLogoDisplayLoader = false;
+      this._changeDetectorRef.markForCheck();
+    }, err => {
+      this.isUpdateLogoDisplayLoader = false;
+      this._changeDetectorRef.markForCheck();
+    });
+  }
 }

@@ -27,12 +27,16 @@ export class InternalNotesComponent implements OnInit, OnDestroy {
   commentator_emails: string[];
   commentatoLoader: boolean = true;
   allSelected = false;
-  commentators: [];
   loader = false;
   user: User;
 
   deleteLoader = false;
 
+  commentators = [];
+  isCommentatorLoader: boolean = false;
+  totalCommentator = 0;
+  commentatorPage = 1;
+  isLoadMore: boolean = false;
   constructor(
     private _changeDetectorRef: ChangeDetectorRef,
     private _inventoryService: InventoryService,
@@ -93,25 +97,53 @@ export class InternalNotesComponent implements OnInit, OnDestroy {
         this.isLoading = false;
         this._changeDetectorRef.markForCheck();
       });
-
-    this._inventoryService.getCommentators()
-      .subscribe((commentators) => {
-        this.commentators = commentators["data"];
-        this.commentatoLoader = false;
-        this._changeDetectorRef.markForCheck();
-      }, err => {
-        this._snackBar.open("Some error occured, Unable to fetch commentators", '', {
-          horizontalPosition: 'center',
-          verticalPosition: 'bottom',
-          duration: 3500
-        });
-        this.commentatoLoader = false;
-        this._changeDetectorRef.markForCheck();
-      });
+    this.isCommentatorLoader = true;
+    this.getCommentators();
+    // this._inventoryService.getCommentators()
+    //   .subscribe((commentators) => {
+    //     this.commentators = commentators["data"];
+    //     this.commentatoLoader = false;
+    //     this._changeDetectorRef.markForCheck();
+    //   }, err => {
+    //     this._snackBar.open("Some error occured, Unable to fetch commentators", '', {
+    //       horizontalPosition: 'center',
+    //       verticalPosition: 'bottom',
+    //       duration: 3500
+    //     });
+    //     this.commentatoLoader = false;
+    //     this._changeDetectorRef.markForCheck();
+    //   });
   }
   selectOption(list) {
     this.commentator_emails = list.selectedOptions.selected.map(item => item.value)
   };
+
+
+  getCommentators() {
+    this._inventoryService.getCommentators(this.commentatorPage).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+      this.commentators = this.commentators.concat(res["data"]);
+      this.totalCommentator = res["totalRecords"];
+      this.isCommentatorLoader = false;
+      this.isLoadMore = false;
+      this._changeDetectorRef.markForCheck();
+    }, err => {
+      this.isCommentatorLoader = false;
+      this.isLoadMore = false;
+      this._changeDetectorRef.markForCheck();
+    })
+  }
+  getNexCommentator() {
+    this.commentatorPage++;
+    this.isLoadMore = true;
+    this._changeDetectorRef.markForCheck();
+    this.getCommentators();
+  }
+  checkAllCommentators() {
+    this.commentators.forEach(element => {
+      element.checked = true;
+    });
+  }
+
 
   /**
  * Show flash message
@@ -142,22 +174,28 @@ export class InternalNotesComponent implements OnInit, OnDestroy {
 
   addComment(): void {
     const { comment } = this.internalNote.getRawValue();
-    const { pk_productID } = this.selectedProduct;
+    const { pk_productID, fk_addedByAdminUserID } = this.selectedProduct;
 
+    let emailArr = [];
     if (!comment) {
-      this.isCommentNull = true;
-      setTimeout(() => {
-        this.isCommentNull = false;
-      }, 1500);
+      this._snackBar.open("Comment is required", '', {
+        horizontalPosition: 'center',
+        verticalPosition: 'bottom',
+        duration: 3500
+      });
       return;
     }
-
+    this.commentators.forEach(element => {
+      if (element.checked) {
+        emailArr.push(element.email);
+      }
+    });
     const payload = {
       product_id: pk_productID,
       comment: comment,
-      admin_user_id: 196,
+      admin_user_id: fk_addedByAdminUserID,
       name: this.user?.name,
-      emails: this.commentator_emails || [],
+      emails: emailArr,
       call_type: "post",
       internal_comment: true,
     }

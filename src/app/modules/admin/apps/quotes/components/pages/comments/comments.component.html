@@ -16,12 +16,32 @@
         <fuse-card class="rounded-2xl shadow bg-card flex flex-col lg:flex-row w-full">
             <div class="p-6 sm:p-8 lg:p-10 w-full">
                 <div class="text-2xl font-bold">
-                    Comments
+                    Quote Comments
                 </div>
 
                 <div *ngIf="mainScreen == 'Current Comments'" class="mt-5">
-                    <div [innerHtml]="currentComments"></div>
-                    <div *ngIf="!currentComments" class="alert alert-warning mx-5">There are no comments for this quote.
+                    <div *ngIf="currentComment.length > 0">
+                        <table class="table table-striped">
+                            <tr *ngFor="let item of currentComment; let i=index">
+                                <td width="95%">
+                                    <b>{{item.firstName + ' ' + item.lastName}}</b> said on {{item.dateCreated |
+                                    date: 'medium'}} <span *ngIf="item.recipients"
+                                        class="fa fa-exclamation-circle clickable"
+                                        title="Recipients: {{item.recipients}}"></span><br><span
+                                        [innerHTML]="item.comment"></span>
+                                </td>
+                                <td width="1%">
+                                    <mat-icon *ngIf="!item.delLoader" matTooltip="Remove Comment"
+                                        svgIcon="mat_outline:close" class="text-red-900 cursor-pointer"
+                                        (click)="removeCartComment(item,i)"></mat-icon>
+                                    <mat-progress-spinner *ngIf="item.delLoader" [diameter]="24"
+                                        [mode]="'indeterminate'"></mat-progress-spinner>
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+                    <div *ngIf="currentComment.length ==0" class="alert alert-warning mx-5">There are no comments for
+                        this quote.
                     </div>
                 </div>
                 <div *ngIf="mainScreen == 'Add New Comment'" class="mt-5">
@@ -73,7 +93,7 @@
                                     </div>
                                 </div>
                                 <div class="w-full alert alert-warning  mt-2 border rounded-lg p-2 pt-3">
-                                    <mat-checkbox><b>Urgent</b></mat-checkbox>
+                                    <mat-checkbox [(ngModel)]="blnUrgent"><b>Urgent</b></mat-checkbox>
                                 </div>
                                 <div class="text-right mt-2">
                                     <button class="min-w-40" mat-stroked-button [disabled]="isAddCommentLoader"

@@ -656,3 +656,12 @@ interface EpsAI {
     logiBankId: number;
     type: string;
 };
+export interface updateLogoBankOrder {
+    logoBanks: LogoBank[];
+    update_logoBank_order: boolean;
+};
+
+interface LogoBank {
+    logo_bank_id: number;
+    displayOrder: number;
+};

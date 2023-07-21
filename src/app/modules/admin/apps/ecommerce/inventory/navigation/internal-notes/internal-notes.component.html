@@ -1,8 +1,8 @@
 <div class="w-full">
-    <ngx-skeleton-loader count="8" appearance="line" animation="pulse" *ngIf="isLoading || commentatoLoader">
+    <ngx-skeleton-loader count="8" appearance="line" animation="pulse" *ngIf="isLoading">
     </ngx-skeleton-loader>
 
-    <div class="row" *ngIf="!isLoading && !commentatoLoader">
+    <div class="row" *ngIf="!isLoading">
         <div class="col-12 my-2">
             <fuse-card class="rounded-2xl shadow bg-card flex flex-col lg:flex-row w-full">
                 <div class="p-6 sm:p-8 lg:p-10 w-full">
@@ -20,7 +20,45 @@
                                     </mat-form-field>
                                 </form>
                             </div>
-                            <div class="col-lg-5 col-12">
+                            <div class="col-12 col-md-5">
+                                <div class="flex justify-between mb-2">
+                                    <div class="text-lg font-bold">Commentators</div>
+                                    <div class="cursor-pointer text-gray-600 hover:text-gray-900"
+                                        (click)="checkAllCommentators()">
+                                        Check All</div>
+                                </div>
+                                <div class="border rounded-lg p-3  h-50 overflow-y-auto overflow-x-hidden">
+                                    <div class="w-full" *ngIf="isCommentatorLoader">
+                                        <ngx-skeleton-loader count="8" appearance="line" animation="pulse">
+                                        </ngx-skeleton-loader>
+                                    </div>
+                                    <div class="row" *ngIf="!isCommentatorLoader">
+                                        <div class="col-12" *ngFor="let item of commentators">
+                                            <mat-checkbox [(ngModel)]="item.checked">{{item.email}}</mat-checkbox>
+                                        </div>
+                                        <div class="col-12 flex justify-end mr-2"
+                                            *ngIf="totalCommentator > commentators.length">
+                                            <span *ngIf="!isLoadMore" (click)="getNexCommentator()"
+                                                class="cursor-pointer text-gray-600 hover:text-gray-900">Load
+                                                More</span>
+                                            <mat-progress-spinner *ngIf="isLoadMore" [diameter]="24"
+                                                [mode]="'indeterminate'"></mat-progress-spinner>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="text-right mt-2">
+                                    <button class="min-w-40" mat-stroked-button [disabled]="loader"
+                                        [matTooltip]="'Add Comment'" (click)="addComment()">
+                                        <mat-progress-spinner *ngIf="loader" [diameter]="24"
+                                            [mode]="'indeterminate'"></mat-progress-spinner>
+                                        <mat-icon *ngIf="!loader" [svgIcon]="'heroicons_outline:plus'">
+                                        </mat-icon>
+                                        <span *ngIf="!loader" class="ml-1 mr-1">Add Comment</span>
+                                    </button>
+                                </div>
+                            </div>
+
+                            <!-- <div class="col-lg-5 col-12">
                                 <mat-selection-list #list>
                                     <mat-list-option *ngFor="let commentator of commentators"
                                         (click)="selectOption(list)" [value]="commentator.email"
@@ -31,10 +69,10 @@
                                         <p class="font-medium font-semibold text-secondary">Select All</p>
                                     </mat-list-option>
                                 </mat-selection-list>
-                            </div>
+                            </div> -->
                         </div>
                     </div>
-                    <div class="flex items-center justify-end w-full mr-2">
+                    <!-- <div class="flex items-center justify-end w-full mr-2">
                         <div class="flex items-center mt-2">
                             <div class="flex items-center mr-4" *ngIf="isCommentNull">
                                 <ng-container>
@@ -61,7 +99,7 @@
                                 <span *ngIf="!loader" class="ml-1 mr-1">Add Comment</span>
                             </button>
                         </div>
-                    </div>
+                    </div> -->
                 </div>
             </fuse-card>
         </div>

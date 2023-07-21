@@ -765,10 +765,12 @@ export class InventoryService {
         });
     };
 
-    getCommentators() {
+    getCommentators(page) {
         return this._httpClient.get(environment.customerList, {
             params: {
-                commentor: true
+                commentor: true,
+                page: page,
+                size: 20
             }
         })
     };

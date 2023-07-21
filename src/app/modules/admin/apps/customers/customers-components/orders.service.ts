@@ -81,7 +81,9 @@ export class CustomersService {
                 list: true,
                 size: this.pageSize,
                 page: this.pageNumber,
-                keyword: search
+                keyword: search,
+                sort_by: 'storeName',
+                sort_order: 'ASC'
             }
         }).pipe(
             tap((customers) => {

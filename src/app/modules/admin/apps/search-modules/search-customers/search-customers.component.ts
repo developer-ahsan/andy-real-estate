@@ -132,7 +132,9 @@ export class SearchCustomersComponents implements OnInit, OnDestroy {
             keyword: this.searchKeyword,
             page: page,
             list: true,
-            size: 20
+            size: 20,
+            sort_by: 'storeName',
+            sort_order: 'ASC'
         }
         this._searchService.getCustomersSearchData(params).pipe(takeUntil(this._unsubscribeAll),
             finalize(() => {

@@ -7,7 +7,8 @@ import { QuotesService } from '../../quotes.service';
 import { COMMA, ENTER } from '@angular/cdk/keycodes';
 import { AuthService } from 'app/core/auth/auth.service';
 import { MatChipInputEvent } from '@angular/material/chips';
-import { RemoveCartComment } from '../../quotes.types';
+import { AddCartComment, RemoveCartComment } from '../../quotes.types';
+import moment from 'moment';
 
 @Component({
   selector: 'app-comments',
@@ -20,7 +21,7 @@ export class QuoteComments implements OnInit, OnDestroy {
   @Output() isLoadingChange = new EventEmitter<boolean>();
   private _unsubscribeAll: Subject<any> = new Subject<any>();
 
-  mainScreen: string = 'Add New Comment';
+  mainScreen: string = 'Current Comments';
   currentComments: any;
   addOnBlur = true;
   readonly separatorKeysCodes = [ENTER, COMMA] as const;
@@ -36,6 +37,8 @@ export class QuoteComments implements OnInit, OnDestroy {
   totalCommentator = 0;
   commentatorPage = 1;
   isLoadMore: boolean = false;
+  currentComment: any = [];
+  blnUrgent: boolean = false;
   constructor(
     private _changeDetectorRef: ChangeDetectorRef,
     private _quoteService: QuotesService,
@@ -46,6 +49,7 @@ export class QuoteComments implements OnInit, OnDestroy {
     this.user = this._authService.parseJwt(this._authService.accessToken);
     this.isLoading = true;
     this.getQuotesDetails();
+    this.getQuoteComments();
     this.isCommentatorLoader = true;
     this.getCommentators();
   };
@@ -74,16 +78,27 @@ export class QuoteComments implements OnInit, OnDestroy {
   }
   getQuoteComments() {
     this._quoteService.qoutesComments$.pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
-
-    })
+      this.currentComment = res["data"];
+    });
+  }
+  getQuoteCommentsData() {
+    let params = {
+      cart_comments: true,
+      cart_id: this.selectedQuote.pk_cartID
+    }
+    this._quoteService.getQuoteComments(params).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+      this.currentComment = res["data"];
+      this._quoteService.snackBar('Quote Comment Added Successfully.');
+      this.blnUrgent = false;
+      this.ngComment = '';
+      this.emails = [];
+      this.mainScreen = 'Current Comments';
+      this.isAddCommentLoader = false;
+      this._changeDetectorRef.markForCheck();
+    });
   }
   calledScreen(value) {
     this.mainScreen = value;
-    if (value == 'Current Comments') {
-      if (this.currentComments) {
-        // this.getCurrentRelatedProducts(1);
-      }
-    }
   }
 
   add(event: MatChipInputEvent): void {
@@ -103,6 +118,7 @@ export class QuoteComments implements OnInit, OnDestroy {
 
   addComment() {
     let emailArr = this.emails;
+
     if (this.ngComment! == '') {
       this._quoteService.snackBar('Comment is required');
       return;
@@ -112,46 +128,27 @@ export class QuoteComments implements OnInit, OnDestroy {
         emailArr.push(element.email);
       }
     });
+    if (emailArr.length == 0) {
+      this._quoteService.snackBar('Please add any email');
+      return;
+    }
     this.isAddCommentLoader = true;
-    let payload = {
-      order_id: Number(this.selectedQuote.pk_orderID),
+    let payload: AddCartComment = {
+      fk_cartID: Number(this.selectedQuote.pk_cartID),
       comment: this.ngComment,
+      fk_adminUserID: Number(this.selectedQuote.storeUserID),
+      dateCreated: moment().format('yyyy-MM-dd hh:mm:ss'),
       emails: emailArr,
-      company_name: this.selectedQuote.billingCompanyName,
-      store_id: Number(this.selectedQuote.fk_storeID),
-      store_userId: Number(this.selectedQuote.fk_storeUserID),
-      store_name: this.selectedQuote.storeName,
-      internalComments: this.selectedQuote.internalComments,
-      add_comment: true
+      blnUrgent: this.blnUrgent,
+      storeName: this.selectedQuote.storeName,
+      add_cart_comment: true
     }
     this._quoteService.AddQuoteData(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
-      this.getOrderDetail(this.selectedQuote.pk_orderID);
+      this.getQuoteCommentsData();
     }, err => {
       this.isAddCommentLoader = false;
       this._changeDetectorRef.markForCheck();
     })
-  }
-  getOrderDetail(orderId) {
-    // let params = {
-    //   main: true,
-    //   order_id: orderId
-    // }
-    // this._orderService.getOrderMainDetail(params).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
-    //   this._snackBar.open("Comment added successfully", '', {
-    //     horizontalPosition: 'center',
-    //     verticalPosition: 'bottom',
-    //     duration: 3500
-    //   });
-    //   this.ngComment = '';
-    //   this.emails = [];
-    //   this.commentators.forEach(element => { element.checked = false });
-    //   this.mainScreen = 'Current Comments';
-    //   this.isAddCommentLoader = false;
-    //   this._changeDetectorRef.markForCheck();
-    // }, err => {
-    //   this.isAddCommentLoader = false;
-    //   this._changeDetectorRef.markForCheck();
-    // })
   }
   // Get Commentators
   getCommentators() {
@@ -182,11 +179,24 @@ export class QuoteComments implements OnInit, OnDestroy {
       element.checked = true;
     });
   }
-  removeCartComment(id) {
+  removeCartComment(item, index) {
+    item.delLoader = true;
+    this._changeDetectorRef.markForCheck();
     let payload: RemoveCartComment = {
-      commentID: Number(id),
+      commentID: Number(item.pk_cartCommentID),
       remove_cart_comment: true
     }
+    this._quoteService.UpdateQuoteData(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+      if (res["success"]) {
+        this._quoteService.snackBar(res["message"]);
+        this.currentComment.splice(index, 1);
+      }
+      item.delLoader = false;
+      this._changeDetectorRef.markForCheck();
+    }, err => {
+      item.delLoader = false;
+      this._changeDetectorRef.markForCheck();
+    })
   }
   /**
      * On destroy
