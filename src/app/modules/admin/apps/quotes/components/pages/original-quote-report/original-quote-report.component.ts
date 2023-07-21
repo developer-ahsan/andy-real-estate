@@ -36,7 +36,7 @@ export class QuoteOriginalComponent implements OnInit, OnDestroy {
   getQuoteDetails() {
     this._QuotesService.qoutesDetails$.pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
       this.selectedQuote = res["data"][0];
-      this.url = `https://assets.consolidus.com/globalAssets/Quotes/originalQuoteReport/${this.selectedQuote.}.html`;
+      this.url = `https://assets.consolidus.com/globalAssets/Quotes/originalQuoteReport/${this.selectedQuote.pk_cartID}.html`;
       this.urlSafe = this.sanitizer.bypassSecurityTrustResourceUrl(this.url);
       setTimeout(() => {
         this.isLoading = false;
