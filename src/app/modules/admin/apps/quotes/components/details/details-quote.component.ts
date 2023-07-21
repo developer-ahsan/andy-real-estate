@@ -6,6 +6,7 @@ import { Subject } from 'rxjs';
 import { debounceTime, distinctUntilChanged, filter, finalize, switchMap, takeUntil, tap } from 'rxjs/operators';
 import { QuotesService } from '../quotes.service';
 import { DashboardsService } from 'app/modules/admin/dashboards/dashboard.service';
+import { RemoveCartComment } from '../quotes.types';
 @Component({
   selector: 'app-details-quote',
   templateUrl: './details-quote.component.html',
@@ -86,6 +87,13 @@ export class QuotesDetailsComponent implements OnInit, OnDestroy {
       .pipe(takeUntil(this._unsubscribeAll))
       .subscribe((quote) => {
         this.selectedQuoteDetail = quote["data"][0];
+        if (this.selectedQuoteDetail.artworkStatus.includes('7') || this.selectedQuoteDetail.artworkStatus.includes('9')) {
+          this.selectedQuoteDetail.statusName = 'All artwork approved';
+          this.selectedQuoteDetail.statusColor = 'text-green-600';
+        } else {
+          this.selectedQuoteDetail.statusName = 'Artwork pending';
+          this.selectedQuoteDetail.statusColor = 'text-red-600';
+        }
         this._changeDetectorRef.markForCheck();
       });
   }
@@ -129,4 +137,5 @@ export class QuotesDetailsComponent implements OnInit, OnDestroy {
     this.isLoading = true;
     this._router.navigate(['/apps/quotes']);
   }
+
 }

@@ -3,7 +3,8 @@ import { QuotesDetailsComponent } from './components/details/details-quote.compo
 import { QuoteComments } from './components/pages/comments/comments.component';
 import { QuoteSummaryComponent } from './components/pages/summary/summary.component';
 import { QuotesComponent } from './components/quotes.component';
-import { QuoteDetailsResolver } from './components/quotes.resolvers';
+import { QuoteCommentResolver, QuoteDetailsResolver } from './components/quotes.resolvers';
+import { QuoteOriginalComponent } from './components/pages/original-quote-report/original-quote-report.component';
 export const quotesRoutes: Route[] = [
 
     {
@@ -16,7 +17,8 @@ export const quotesRoutes: Route[] = [
         path: ':id',
         component: QuotesDetailsComponent,
         resolve: {
-            suplier: QuoteDetailsResolver
+            suplier: QuoteDetailsResolver,
+            comment: QuoteCommentResolver
         },
         children: [
             {
@@ -38,6 +40,14 @@ export const quotesRoutes: Route[] = [
                 data: {
                     title: 'Comments',
                     url: 'comments'
+                }
+            },
+            {
+                path: 'original-quotes-reports',
+                component: QuoteOriginalComponent,
+                data: {
+                    title: 'Quote Original Report',
+                    url: 'original-quotes-reports'
                 }
             },
         ]

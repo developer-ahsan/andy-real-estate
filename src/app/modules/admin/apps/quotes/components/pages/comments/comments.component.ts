@@ -7,6 +7,7 @@ import { QuotesService } from '../../quotes.service';
 import { COMMA, ENTER } from '@angular/cdk/keycodes';
 import { AuthService } from 'app/core/auth/auth.service';
 import { MatChipInputEvent } from '@angular/material/chips';
+import { RemoveCartComment } from '../../quotes.types';
 
 @Component({
   selector: 'app-comments',
@@ -44,11 +45,11 @@ export class QuoteComments implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.user = this._authService.parseJwt(this._authService.accessToken);
     this.isLoading = true;
-    this.getOrderComments();
+    this.getQuotesDetails();
     this.isCommentatorLoader = true;
     this.getCommentators();
   };
-  getOrderComments() {
+  getQuotesDetails() {
     this._quoteService.qoutesDetails$.pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
       this.selectedQuote = res["data"][0];
       this.commentators.push(
@@ -58,12 +59,22 @@ export class QuoteComments implements OnInit, OnDestroy {
         { email: `service@${this.selectedQuote.storeName}`, checked: false },
         { email: `content@consolidus.com`, checked: false }
       )
+      let comments = this.selectedQuote.comments;
+      if (comments) {
+        let split_comment = comments.split(',,');
+
+      }
       this.currentComments = res["data"][0].internalComments;
       this.isLoading = false;
       this._changeDetectorRef.markForCheck();
     }, err => {
       this.isLoading = false;
       this._changeDetectorRef.markForCheck();
+    })
+  }
+  getQuoteComments() {
+    this._quoteService.qoutesComments$.pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+
     })
   }
   calledScreen(value) {
@@ -170,6 +181,12 @@ export class QuoteComments implements OnInit, OnDestroy {
     this.commentators.forEach(element => {
       element.checked = true;
     });
+  }
+  removeCartComment(id) {
+    let payload: RemoveCartComment = {
+      commentID: Number(id),
+      remove_cart_comment: true
+    }
   }
   /**
      * On destroy

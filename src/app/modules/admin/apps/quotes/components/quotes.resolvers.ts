@@ -28,9 +28,40 @@ export class QuoteDetailsResolver implements Resolve<any>
     resolve(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<any[]> {
         let params = {
             single_cart: true,
-            order_id: route.params.id
+            cart_id: route.params.id
         }
         return this._qouteService.getQuoteMainDetail(params);
+    }
+}
+
+// Quote By ID Details
+@Injectable({
+    providedIn: 'root'
+})
+export class QuoteCommentResolver implements Resolve<any>
+{
+    /**
+     * Constructor
+     */
+    constructor(private _qouteService: QuotesService) {
+    }
+
+    // -----------------------------------------------------------------------------------------------------
+    // @ Public methods
+    // -----------------------------------------------------------------------------------------------------
+
+    /**
+     * Resolver
+     *
+     * @param route
+     * @param state
+     */
+    resolve(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<any[]> {
+        let params = {
+            cart_comments: true,
+            cart_id: route.params.id
+        }
+        return this._qouteService.getQuoteComments(params);
     }
 }
 

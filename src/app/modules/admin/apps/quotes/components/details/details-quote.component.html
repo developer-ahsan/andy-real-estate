@@ -97,32 +97,8 @@
 
                         <div class="col-lg-4 col-md-6 col-12">
                             <b class="text-secondary text-sm">Status:</b>
-                            <span *ngIf="selectedQuoteDetail?.OrderStatus == 'Processing'"
-                                class="float-right text-sm text-xs px-2.5 py-0.5 rounded-full tracking-wide bg-red-200 text-red-800 dark:bg-red-600 dark:text-red-50">
-                                <span
-                                    class="leading-relaxed whitespace-nowrap">{{selectedQuoteDetail?.OrderStatus}}</span>
-                            </span>
-                            <span *ngIf="selectedQuoteDetail?.OrderStatus == 'Shipped'"
-                                class="float-right text-sm text-xs px-2.5 py-0.5 rounded-full tracking-wide bg-blue-200 text-blue-800 dark:bg-blue-600 dark:text-blue-50"><span
-                                    class="leading-relaxed whitespace-nowrap">{{selectedQuoteDetail?.OrderStatus}}</span></span>
-                            <span *ngIf="selectedQuoteDetail?.OrderStatus == 'Delivered'"
-                                class="float-right text-sm text-xs px-2.5 py-0.5 rounded-full tracking-wide bg-green-200 text-green-800 dark:bg-green-600 dark:text-green-50"><span
-                                    class="leading-relaxed whitespace-nowrap">{{selectedQuoteDetail?.OrderStatus}}</span></span>
-                            <span *ngIf="selectedQuoteDetail?.OrderStatus == 'P.O. Needed'"
-                                class="float-right text-sm text-xs px-2.5 py-0.5 rounded-full tracking-wide bg-green-200 text-green-800 dark:bg-green-600 dark:text-green-50"><span
-                                    class="leading-relaxed whitespace-nowrap">{{selectedQuoteDetail?.OrderStatus}}</span></span>
-                            <span *ngIf="selectedQuoteDetail?.OrderStatus == 'Picked up'"
-                                class="float-right text-sm text-xs px-2.5 py-0.5 rounded-full tracking-wide bg-green-200 text-green-800 dark:bg-green-600 dark:text-green-50"><span
-                                    class="leading-relaxed whitespace-nowrap">{{selectedQuoteDetail?.OrderStatus}}</span></span>
-                            <span *ngIf="selectedQuoteDetail?.OrderStatus == 'Awaiting Group Order'"
-                                class="float-right text-sm text-xs px-2.5 py-0.5 rounded-full tracking-wide bg-green-200 text-green-800 dark:bg-green-600 dark:text-green-50"><span
-                                    class="leading-relaxed whitespace-nowrap">{{selectedQuoteDetail?.OrderStatus}}</span></span>
-                            <span *ngIf="selectedQuoteDetail?.OrderStatus == false"
-                                class="float-right text-sm text-xs px-2.5 py-0.5 rounded-full tracking-wide bg-red-200 text-red-800 dark:bg-red-600 dark:text-red-50"><span
-                                    class="leading-relaxed whitespace-nowrap">Cancelled</span></span>
-                            <span *ngIf="selectedQuoteDetail?.OrderStatus == 'N/A'"
-                                class="float-right text-sm text-xs px-2.5 py-0.5 rounded-full tracking-wide bg-red-200 text-red-800 dark:bg-red-600 dark:text-red-50"><span
-                                    class="leading-relaxed whitespace-nowrap">N/A</span></span>
+                            <span
+                                class="float-right text-sm text-xs {{selectedQuoteDetail.statusColor}}">{{selectedQuoteDetail.statusName}}</span>
                         </div>
                     </div>
                 </div>

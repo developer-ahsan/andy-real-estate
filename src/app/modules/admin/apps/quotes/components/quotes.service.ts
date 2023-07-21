@@ -38,6 +38,7 @@ export class QuotesService {
     private _imprintDigitizer: BehaviorSubject<any[] | null> = new BehaviorSubject<any[]>(null);
     private _distributionCodes: BehaviorSubject<any | null> = new BehaviorSubject(null);
     private _quoteDetails: BehaviorSubject<any | null> = new BehaviorSubject(null);
+    private _quoteComments: BehaviorSubject<any | null> = new BehaviorSubject(null);
 
     opts = [];
 
@@ -67,6 +68,9 @@ export class QuotesService {
      */
     get qoutesDetails$(): Observable<InventoryVendor[]> {
         return this._quoteDetails.asObservable();
+    };
+    get qoutesComments$(): Observable<InventoryVendor[]> {
+        return this._quoteComments.asObservable();
     };
     get vendors$(): Observable<InventoryVendor[]> {
         return this._vendors.asObservable();
@@ -115,11 +119,18 @@ export class QuotesService {
             environment.quotes, payload, { headers });
     };
     // Quote Details
-    // Order Detail
     getQuoteMainDetail(params): Observable<any> {
         return this._httpClient.get<any>(environment.quotes, { params: params }).pipe(
             tap((quote) => {
                 this._quoteDetails.next(quote);
+            })
+        );
+    }
+    // Quote Commment
+    getQuoteComments(params): Observable<any> {
+        return this._httpClient.get<any>(environment.quotes, { params: params }).pipe(
+            tap((quote) => {
+                this._quoteComments.next(quote);
             })
         );
     }

@@ -10,7 +10,7 @@ export const navigations = [
         id: 2,
         title: 'Quote Original Report',
         icon: 'mat_outline:document_scanner',
-        route: 'quote-original-reports',
+        route: 'original-quotes-reports',
         children: []
     },
     {

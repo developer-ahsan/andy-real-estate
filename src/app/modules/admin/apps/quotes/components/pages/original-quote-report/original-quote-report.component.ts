@@ -4,46 +4,46 @@ import { MatDialog } from '@angular/material/dialog';
 import { InventoryService } from 'app/modules/admin/apps/ecommerce/inventory/inventory.service';
 import { Subject } from 'rxjs';
 import { QuotesService } from '../../quotes.service';
+import { takeUntil } from 'rxjs/operators';
+import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 
 @Component({
   selector: 'app-original-quote-report',
   templateUrl: './original-quote-report.component.html',
   styles: ['.col-width {width: 11.11%} .data-width {width: 100px}']
 })
-export class ImprintChargesComponent implements OnInit, OnDestroy {
+export class QuoteOriginalComponent implements OnInit, OnDestroy {
   @Input() isLoading: boolean;
   @Output() isLoadingChange = new EventEmitter<boolean>();
   private _unsubscribeAll: Subject<any> = new Subject<any>();
 
-  isSearching: boolean = false;
-  ngChargeID = '';
-  scrollStrategy: ScrollStrategy;
+  url: string = '';
+  urlSafe: SafeResourceUrl;
 
-  chargeData: any;
-  chargeUsedData: any;
-  page = 0;
-  totalRecords = 0;
-  isViewMoreLoader: boolean = false;
-  processQuantities = new Array(30);
-  productQuantities = new Array(8);
-  horizontalArray = new Array(8);
-  mainScreen: string = 'Update Charges';
-  isUpdateChargeLoader: boolean = false;
-
+  selectedQuote: any;
   constructor(
     private _changeDetectorRef: ChangeDetectorRef,
-    public dialog: MatDialog,
-    private readonly sso: ScrollStrategyOptions,
     private _QuotesService: QuotesService,
-    private _inventoryService: InventoryService
+    public sanitizer: DomSanitizer
   ) {
-    this.scrollStrategy = this.sso.noop();
+
   }
 
   ngOnInit(): void {
-
+    this.isLoading = true;
+    this.getQuoteDetails();
   };
-
+  getQuoteDetails() {
+    this._QuotesService.qoutesDetails$.pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+      this.selectedQuote = res["data"][0];
+      this.url = `https://assets.consolidus.com/globalAssets/Quotes/originalQuoteReport/${this.selectedQuote.}.html`;
+      this.urlSafe = this.sanitizer.bypassSecurityTrustResourceUrl(this.url);
+      setTimeout(() => {
+        this.isLoading = false;
+        this._changeDetectorRef.markForCheck();
+      }, 100);
+    });
+  }
   /**
      * On destroy
      */

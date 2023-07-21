@@ -41,7 +41,7 @@ import { quotesRoutes } from './quotes.routing';
 import { QuotesComponent } from './components/quotes.component';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { SystemImprintRunComponent } from './components/pages/quote-report/quote-report.component';
-import { ImprintChargesComponent } from './components/pages/original-quote-report/original-quote-report.component';
+import { QuoteOriginalComponent } from './components/pages/original-quote-report/original-quote-report.component';
 import { QuotesDetailsComponent } from './components/details/details-quote.component';
 import { QuoteSummaryComponent } from './components/pages/summary/summary.component';
 import { VendorBlanketCoopComponent } from './components/pages/artwork-details/artwork-details.component';
@@ -50,7 +50,7 @@ import { VendorStatusGuard } from './quotes-status.guard';
 
 @NgModule({
     declarations: [
-        QuotesComponent, QuotesDetailsComponent, QuoteSummaryComponent, SystemImprintRunComponent, ImprintChargesComponent, VendorBlanketCoopComponent, QuoteComments,
+        QuotesComponent, QuotesDetailsComponent, QuoteSummaryComponent, SystemImprintRunComponent, QuoteOriginalComponent, VendorBlanketCoopComponent, QuoteComments,
     ],
     imports: [
         RouterModule.forChild(quotesRoutes),

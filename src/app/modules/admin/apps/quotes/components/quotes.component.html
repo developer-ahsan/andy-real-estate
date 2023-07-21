@@ -4,10 +4,18 @@
         #topScrollAnchor>
         <!-- Loader -->
         <div class="flex justify-between">
-            <h2 class="text-3xl md:text-4xl font-extrabold tracking-tight leading-7 sm:leading-10 truncate">
+            <div>
+                <div class="text-4xl font-extrabold tracking-tight leading-none">Quotes</div>
+                <div class="ml-0.5 font-medium text-secondary">
+                    <span *ngIf="totalRecords > 0 && !isLoading">{{totalRecords}} records
+                        found</span>
+                    <span *ngIf="totalRecords < 1 && !isLoading">No records found</span>
+                </div>
+            </div>
+            <!-- <h2 class="text-3xl md:text-4xl font-extrabold tracking-tight leading-7 sm:leading-10 truncate">
                 Quotes
                 <p class="text-md font-medium text-gray-500 p-0">{{totalRecords}} records found</p>
-            </h2>
+            </h2> -->
             <div>
                 <mat-form-field class="w-100">
                     <mat-label class="font-bold text-lg">Restore Quote ID </mat-label>
