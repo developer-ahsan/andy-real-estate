@@ -67,7 +67,7 @@ export class RapidImageManagementComponent implements OnInit, OnDestroy {
       keyword = this.parameters.keyword;
     }
     let params = {
-      store_list: this.userData.storesList,
+      store_list: this.userData.storesList.replace(/ /g, ''),
       status: status,
       store_id: store_id,
       productName: productName,
