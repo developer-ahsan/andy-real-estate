@@ -19,6 +19,58 @@
                 </mat-progress-spinner>
             </button>
         </div>
+        <div class="px-8">
+            <ul role="list" class="mt-3 grid grid-cols-1 gap-5 sm:grid-cols-2 sm:gap-6 lg:grid-cols-4">
+                <li class="col-span-1 flex rounded-md">
+                    <mat-form-field class="w-full">
+                        <mat-label>Keyword (PID/SPID/RBID):</mat-label>
+                        <input matInput [(ngModel)]="ngKeyword" type="number">
+                    </mat-form-field>
+                </li>
+                <li class="col-span-1 flex rounded-md">
+                    <mat-form-field class="w-full">
+                        <mat-label>Product Name:</mat-label>
+                        <input matInput [(ngModel)]="ngProductName">
+                    </mat-form-field>
+                </li>
+                <li class="col-span-1 flex rounded-md">
+                    <mat-form-field class="w-full">
+                        <mat-label>Stores:</mat-label>
+                        <mat-select matInput [(ngModel)]="selectedStore">
+                            <mat-option *ngFor="let item of allStores" [value]="item">{{item.storeName}}</mat-option>
+                        </mat-select>
+                        <!-- <input matInput placeholder="Search Stores" matTooltip="Search Stores by name"
+                            [matAutocomplete]="auto" [formControl]="searchStoreCtrl">
+                        <mat-autocomplete class="w-full" #auto="matAutocomplete" (optionSelected)="onSelected($event)"
+                            [displayWith]="displayWith">
+                            <mat-option *ngIf="isSearchingStore" class="is-loading">Loading...</mat-option>
+                            <ng-container *ngIf="!isSearchingStore">
+                                <mat-option *ngFor="let item of allStores" [value]="item">
+                                    <span>{{item.storeName}}</span>
+                                </mat-option>
+                            </ng-container>
+                        </mat-autocomplete> -->
+                    </mat-form-field>
+                </li>
+                <li class="col-span-1 flex rounded-md">
+                    <mat-form-field class="w-full">
+                        <mat-label>Statuses:</mat-label>
+                        <mat-select matInput [(ngModel)]="ngStatus">
+                            <mat-option *ngFor="let item of allStatus"
+                                [value]="item.pk_statusID">{{item.statusName}}</mat-option>
+                        </mat-select>
+                    </mat-form-field>
+                </li>
+            </ul>
+            <div class="text-right">
+                <button (click)="filterBuildData()" class="min-w-40" [color]="'primary'" [disabled]="isLoading"
+                    mat-button mat-flat-button>
+                    <span *ngIf="!isLoading">Filter</span>
+                    <mat-progress-spinner *ngIf="isLoading" [diameter]="24" [mode]="'indeterminate'">
+                    </mat-progress-spinner>
+                </button>
+            </div>
+        </div>
 
         <div *ngIf="isLoading" class="px-4 py-4">
             <ngx-skeleton-loader count="8" appearance="line" animation="pulse" [theme]="{ 

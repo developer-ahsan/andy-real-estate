@@ -25,7 +25,7 @@
 
 
         <!-- Filters -->
-        <div *ngIf="loginCheck">
+        <!-- <div *ngIf="loginCheck">
             <ul role="list" class="mt-3 grid grid-cols-1 gap-5 sm:grid-cols-2 sm:gap-6 lg:grid-cols-4">
                 <li class="col-span-1 flex rounded-md">
                     <mat-form-field class="w-full">
@@ -45,17 +45,6 @@
                         <mat-select matInput [(ngModel)]="selectedStore">
                             <mat-option *ngFor="let item of allStores" [value]="item">{{item.storeName}}</mat-option>
                         </mat-select>
-                        <!-- <input matInput placeholder="Search Stores" matTooltip="Search Stores by name"
-                            [matAutocomplete]="auto" [formControl]="searchStoreCtrl">
-                        <mat-autocomplete class="w-full" #auto="matAutocomplete" (optionSelected)="onSelected($event)"
-                            [displayWith]="displayWith">
-                            <mat-option *ngIf="isSearchingStore" class="is-loading">Loading...</mat-option>
-                            <ng-container *ngIf="!isSearchingStore">
-                                <mat-option *ngFor="let item of allStores" [value]="item">
-                                    <span>{{item.storeName}}</span>
-                                </mat-option>
-                            </ng-container>
-                        </mat-autocomplete> -->
                     </mat-form-field>
                 </li>
                 <li class="col-span-1 flex rounded-md">
@@ -73,7 +62,7 @@
                     <span>Filter</span>
                 </button>
             </div>
-        </div>
+        </div> -->
     </div>
     <div class="flex-auto p-6 sm:p-6 space-y-2" *ngIf="loginCheck">
         <mat-button-toggle-group #group="matButtonToggleGroup" [value]="selectedRoute"

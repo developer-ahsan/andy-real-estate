@@ -7,6 +7,7 @@ import { Subject } from 'rxjs';
 import { debounceTime, distinctUntilChanged, filter, finalize, switchMap, takeUntil, tap } from 'rxjs/operators';
 import { RapidBuildService } from '../../rapid-build.service';
 import { HideUnhideCart, bulkRemoveRapidBuildEntry, updateAttentionFlagOrder } from '../../rapid-build.types';
+import { DashboardsService } from 'app/modules/admin/dashboards/dashboard.service';
 @Component({
   selector: 'app-image-management',
   templateUrl: './image-management.component.html',
@@ -28,15 +29,32 @@ export class RapidImageManagementComponent implements OnInit, OnDestroy {
   userData: any;
 
   isRemoveLoader: boolean = false;
+  // Statuses
+  allStatus = [];
+  ngStatus = 0;
+  ngProductName = '';
+  ngKeyword = '';
+  allStores: any = [];
+  selectedStore: any;
   constructor(
     private _changeDetectorRef: ChangeDetectorRef,
     private _RapidBuildService: RapidBuildService,
     private router: Router,
-    private _route: ActivatedRoute
+    private _route: ActivatedRoute,
+    private _commonService: DashboardsService
 
   ) { }
   ngOnInit(): void {
     this.userData = JSON.parse(sessionStorage.getItem('rapidBuild'));
+    this._commonService.storesData$.pipe(takeUntil(this._unsubscribeAll)).subscribe(stores => {
+      this.allStores.push({ storeName: 'All Stores', pk_storeID: 0 });
+      this.allStores = this.allStores.concat(stores['data']);
+      this.selectedStore = this.allStores[0];
+    });
+    this._RapidBuildService.rapidBuildStatuses$.pipe(takeUntil(this._unsubscribeAll)).subscribe(statuses => {
+      this.allStatus.push({ statusName: 'All statuses', pk_statusID: 0 });
+      this.allStatus = this.allStatus.concat(statuses['data']);
+    });
     this._route.queryParams.subscribe(res => {
       if (this.dataSource.length > 0) {
         this.paginator.pageIndex = 0;
@@ -133,6 +151,17 @@ export class RapidImageManagementComponent implements OnInit, OnDestroy {
       this.isRemoveLoader = false;
       this._changeDetectorRef.markForCheck();
     });
+  }
+  filterBuildData() {
+    let store_id = 0;
+    if (this.selectedStore) {
+      store_id = this.selectedStore.pk_storeID;
+    }
+    const queryParams: NavigationExtras = {
+      queryParams: { status: this.ngStatus, store_id: store_id, productName: this.ngProductName, keyword: this.ngKeyword }
+    };
+    // this.toggleDrawer();
+    this.router.navigate(['rapidbuild/image-management'], queryParams);
   }
   /**
      * On destroy
