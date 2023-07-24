@@ -8,6 +8,7 @@ import { User } from 'app/core/user/user.model';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import moment from 'moment';
 import { AuthService } from 'app/core/auth/auth.service';
+import { commentObj } from '../../inventory.types';
 
 @Component({
   selector: 'app-internal-notes',
@@ -174,7 +175,7 @@ export class InternalNotesComponent implements OnInit, OnDestroy {
 
   addComment(): void {
     const { comment } = this.internalNote.getRawValue();
-    const { pk_productID, fk_addedByAdminUserID } = this.selectedProduct;
+    const { pk_productID, fk_addedByAdminUserID, productNumber, productName } = this.selectedProduct;
 
     let emailArr = [];
     if (!comment) {
@@ -190,8 +191,11 @@ export class InternalNotesComponent implements OnInit, OnDestroy {
         emailArr.push(element.email);
       }
     });
-    const payload = {
+    const payload: commentObj = {
+      comment_id: 0,
       product_id: pk_productID,
+      product_name: productName,
+      product_number: productNumber,
       comment: comment,
       admin_user_id: fk_addedByAdminUserID,
       name: this.user?.name,

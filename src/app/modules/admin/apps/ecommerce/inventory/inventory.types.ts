@@ -806,3 +806,16 @@ export interface UpdateChart {
     product_id: number;
     update_chart: boolean;
 };
+
+export interface commentObj {
+    comment_id: number;
+    product_id: number;
+    product_name: string;
+    product_number: string;
+    comment: string;
+    admin_user_id: number;
+    name: string;
+    emails: string[];
+    call_type: string;
+    internal_comment: boolean;
+}

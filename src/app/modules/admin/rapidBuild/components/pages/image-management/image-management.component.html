@@ -1,10 +1,17 @@
 <div class=" w-full">
     <div class="w-full rounded-2xl shadow bg-card mb-15">
         <div class="px-4 flex justify-between sm:px-4 lg:px-8 py-4">
-            <h2 class="text-xl sm:text-xl font-extrabold tracking-tight leading-7 sm:leading-10 truncate">
-                Image Management
-            </h2>
-            <button *ngIf="!isLoading" [disabled]="isRemoveLoader" mat-flat-button class="min-w-40" [color]="'primary'"
+            <div>
+                <h2 class="text-xl sm:text-xl font-extrabold tracking-tight leading-7 sm:leading-10 truncate">
+                    Image Management
+                </h2>
+                <div class="font-medium text-secondary">
+                    <span *ngIf="totalRecords > 0 && !isLoading">{{totalRecords}} records
+                        found</span>
+                    <span *ngIf="totalRecords < 1 && !isLoading">No records found</span>
+                </div>
+            </div>
+            <button *ngIf="!isLoading" [disabled]="isRemoveLoader" mat-stroked-button class="min-w-40"
                 (click)="removeBulkBuilds()">
                 <mat-icon *ngIf="!isRemoveLoader" svgIcon="heroicons_outline:trash"></mat-icon>
                 <span *ngIf="!isRemoveLoader">Remove Selected Entries</span>
@@ -12,6 +19,7 @@
                 </mat-progress-spinner>
             </button>
         </div>
+
         <div *ngIf="isLoading" class="px-4 py-4">
             <ngx-skeleton-loader count="8" appearance="line" animation="pulse" [theme]="{ 
                 'background-color': '#dedede'
