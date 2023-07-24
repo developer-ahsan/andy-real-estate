@@ -1,0 +1,29 @@
+<ngx-skeleton-loader count="8" appearance="line" animation="pulse" *ngIf="isLoading">
+</ngx-skeleton-loader>
+<div class="row my-3 w-full" *ngIf="!isLoading">
+    <div class="col-12 my-2">
+        <mat-button-toggle-group #group="matButtonToggleGroup" [value]="mainScreen"
+            (change)="calledScreen(group.value)">
+            <mat-button-toggle value="Contact Information">
+                Contact Information
+            </mat-button-toggle>
+            <mat-button-toggle value="Quote Details">
+                Quote Details
+            </mat-button-toggle>
+            <mat-button-toggle value="Products">
+                Products
+            </mat-button-toggle>
+        </mat-button-toggle-group>
+    </div>
+    <div class="col-12">
+        <div *ngIf="mainScreen=='Contact Information'">
+            <app-quote-contact-info></app-quote-contact-info>
+        </div>
+        <div *ngIf="mainScreen=='Quote Details'">
+            <app-quote-order-details></app-quote-order-details>
+        </div>
+        <div *ngIf="mainScreen == 'Products'" class="text-center">
+            <b>Under Development</b>
+        </div>
+    </div>
+</div>

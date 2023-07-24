@@ -4,13 +4,14 @@ import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { QuotesService } from '../../quotes.service';
 import * as Excel from 'exceljs/dist/exceljs.min.js';
+import { FormGroup, FormControl, Validators } from '@angular/forms';
 
 @Component({
   selector: 'app-modify-quote',
   templateUrl: './modify-quote.component.html',
   styles: [".mat-paginator {border-radius: 16px !important}"]
 })
-export class VendorTopOrderComponent implements OnInit, OnDestroy {
+export class QuoteModifyComponent implements OnInit, OnDestroy {
   @ViewChild('paginator') paginator: MatPaginator;
   @Input() isLoading: boolean;
   @Output() isLoadingChange = new EventEmitter<boolean>();
@@ -25,13 +26,19 @@ export class VendorTopOrderComponent implements OnInit, OnDestroy {
   supplierData: any;
   fileDownloadLoader: boolean;
 
+  mainScreen = 'Contact Information';
+
   constructor(
     private _changeDetectorRef: ChangeDetectorRef,
-    private _vendorService: QuotesService
+    private _quoteService: QuotesService
   ) { }
 
   ngOnInit(): void {
   };
+  calledScreen(screen) {
+    this.mainScreen = screen;
+  }
+
   /**
      * On destroy
      */

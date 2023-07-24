@@ -5,6 +5,8 @@ import { QuoteSummaryComponent } from './components/pages/summary/summary.compon
 import { QuotesComponent } from './components/quotes.component';
 import { QuoteCommentResolver, QuoteDetailsResolver } from './components/quotes.resolvers';
 import { QuoteOriginalComponent } from './components/pages/original-quote-report/original-quote-report.component';
+import { QuoteModifyComponent } from './components/pages/modify-quote/modify-quote.component';
+import { QuoteOrderDetailsComponent } from './components/pages/modify-quote/quote-details/quote-order-details.component';
 export const quotesRoutes: Route[] = [
 
     {
@@ -50,6 +52,14 @@ export const quotesRoutes: Route[] = [
                     url: 'original-quotes-reports'
                 }
             },
+            {
+                path: 'modify-reports',
+                component: QuoteModifyComponent,
+                data: {
+                    title: 'Modify Report',
+                    url: 'modify-reports'
+                }
+            }
         ]
     }
 

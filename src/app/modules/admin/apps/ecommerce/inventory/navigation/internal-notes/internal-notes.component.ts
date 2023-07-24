@@ -192,7 +192,7 @@ export class InternalNotesComponent implements OnInit, OnDestroy {
       }
     });
     const payload: commentObj = {
-      comment_id: 0,
+      comment_id: null,
       product_id: pk_productID,
       product_name: productName,
       product_number: productNumber,
@@ -244,14 +244,20 @@ export class InternalNotesComponent implements OnInit, OnDestroy {
   }
 
   deleteComment(comment): void {
-    const { pk_productID } = this.selectedProduct;
+    const { pk_productID, fk_addedByAdminUserID, productNumber, productName } = this.selectedProduct;
     const { pk_commentID } = comment;
 
     const payload = {
       comment_id: pk_commentID,
-      call_type: "delete",
+      product_id: pk_productID,
+      product_name: productName,
+      product_number: productNumber,
+      comment: pk_commentID,
+      admin_user_id: fk_addedByAdminUserID,
+      name: this.user?.name,
       emails: [],
-      internal_comment: true
+      call_type: "delete",
+      internal_comment: true,
     };
 
     this.deleteLoader = true;
@@ -269,7 +275,6 @@ export class InternalNotesComponent implements OnInit, OnDestroy {
               verticalPosition: 'bottom',
               duration: 3500
             });
-
             // Mark for check
             this._changeDetectorRef.markForCheck();
           });

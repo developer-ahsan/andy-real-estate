@@ -1,0 +1,315 @@
+<div class="my-3 w-full">
+    <ngx-skeleton-loader count="8" appearance="line" animation="pulse" *ngIf="isLoading">
+    </ngx-skeleton-loader>
+    <div *ngIf="!isLoading">
+        <div class="row">
+            <div class="col-lg-4 col-md-6 col-12 my-2">
+                <div class="rounded-2xl shadow bg-card flex items-center  w-full p-6 filter-info  "
+                    style="height: 8rem;">
+                    <mat-icon role="img" class="icon-size-10 mr-6 {{selectedQuoteDetail.statusColor}}"
+                        svgIcon="heroicons_outline:clock"></mat-icon>
+                    <div class="flex flex-col ">
+                        <div class="text-xl font-semibold leading-tight">Artwork Status</div>
+                        <div class="text-md text-secondary font-bold {{selectedQuoteDetail.statusColor}}">
+                            <p>{{(selectedQuoteDetail?.statusName) ||
+                                not_available}}</p>
+                            <span></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-4 col-md-6 col-12 my-2">
+                <div class="rounded-2xl shadow bg-card flex items-center  w-full p-6 filter-info" style="height: 8rem;"
+                    matTooltip="{{selectedQuoteDetail.rushFlexibilityComment}}">
+                    <mat-icon role="img" class="icon-size-10 mr-6" svgIcon="mat_outline:date_range"></mat-icon>
+                    <div class="flex flex-col w-full">
+                        <div class="text-xl font-semibold leading-tight">In-Hands Date</div>
+                        <div class="text-md text-secondary h-10 overflow-y-auto">
+                            <p class="font-bold" *ngIf="selectedQuoteDetail.inHandsDate">
+                                {{(selectedQuoteDetail?.inHandsDate.substr(0,10)
+                                | date:
+                                'MM-dd-yyyy')}}</p>
+                            <p *ngIf="!selectedQuoteDetail.inHandsDate">{{not_available}}</p>
+                            <span class="font-bold">Rush Flexibility: </span>
+                            <span *ngIf="!selectedQuoteDetail.blnRushFlexibility" class="text-red-500">NO</span>
+                            <span *ngIf="selectedQuoteDetail.blnRushFlexibility" class="text-green-500">YES</span>
+                            <br>
+                            <span class="font-bold">Comment: </span>
+                            <span>{{selectedQuoteDetail.rushFlexibilityComment || not_available}}</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-4 col-md-6 col-12 my-2">
+                <div class="rounded-2xl shadow bg-card flex items-center  w-full p-6 filter-info  "
+                    style="height: 8rem;">
+                    <mat-icon role="img" class="icon-size-10 mr-6" svgIcon="mat_outline:money"></mat-icon>
+                    <div class="flex flex-col ">
+                        <div class="text-xl font-semibold leading-tight">Total</div>
+                        <div class="text-md text-secondary font-bold">
+                            <p>{{(selectedQuoteDetail?.price | currency) ||
+                                not_available}}</p>
+                            <span></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- Quote Comments -->
+            <div class="my-2 col-md-6 col-12">
+                <div class=" flex flex-col lg:flex-row w-full rounded-2xl shadow bg-card">
+                    <div class="p-4 w-full">
+                        <div class="text-lg font-medium tracking-tight leading-6 truncate ">
+                            Quote comments
+                        </div>
+                        <div *ngIf="currentComment.length == 0">
+                            <fuse-alert [appearance]="'border'" [type]="'warning'">
+                                There are no comments for this Quote.
+                            </fuse-alert>
+                        </div>
+                        <div class="max-h-80 overflow-auto" *ngIf="currentComment.length > 0">
+                            <table class="table table-striped">
+                                <tr *ngFor="let item of currentComment; let i=index">
+                                    <td width="95%">
+                                        <b>{{item.firstName + ' ' + item.lastName}}</b> said on
+                                        {{item.dateCreated |
+                                        date: 'medium'}} <span *ngIf="item.recipients"
+                                            class="fa fa-exclamation-circle clickable"
+                                            title="Recipients: {{item.recipients}}"></span><br><span
+                                            [innerHTML]="item.comment"></span>
+                                    </td>
+                                </tr>
+                            </table>
+                        </div>
+                        <div class="text-right">
+                            <button mat-stroked-button (click)="goToComments()">
+                                <span>Add Comment</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- Customer Information -->
+            <div class="col-12 col-md-6">
+                <div class="my-2 mx-4">
+                    <div class="row">
+                        <!-- Quote Tracker -->
+                        <div class="col-12 rounded-2xl shadow bg-card items-center w-full px-6 py-6 filter-info">
+                            <div class="text-xl font-semibold leading-tight pb-3">Quote Tracker</div>
+                            <div *ngIf="ngStatus == 0" class="mt-2">
+                                <ngx-skeleton-loader count="4" appearance="line" animation="pulse">
+                                </ngx-skeleton-loader>
+                            </div>
+                            <div class="row text-center font-medium" *ngIf="ngStatus != 0">
+                                <div class="col-md-2 col-6 p-1 ">
+                                    <div class="h-20 p-2 tracker" [ngClass]="{'tracker-active': ngStatus >= 1}">
+                                        <h1>1</h1>
+                                        Quote Placed
+                                    </div>
+                                </div>
+
+                                <div class="col-md-2 col-6 p-1 ">
+                                    <div class="h-20 p-2 tracker" [ngClass]="{'tracker-active': ngStatus >= 2}">
+                                        <h1>2</h1>
+                                        Proofing
+                                    </div>
+
+                                </div>
+
+                                <div class="col-md-2 col-6 p-1 ">
+                                    <div class="h-20 p-2 tracker" [ngClass]="{'tracker-active': ngStatus >= 3}">
+                                        <h1>3</h1>
+                                        Your Art Approval Received
+                                    </div>
+
+                                </div>
+
+                                <div class="col-md-2 col-6 p-1 ">
+                                    <div class="h-20 p-2 tracker" [ngClass]="{'tracker-active': ngStatus >= 4}">
+                                        <h1>4</h1>
+                                        All Approvals Received
+                                    </div>
+
+                                </div>
+
+                                <div class="col-md-2 col-6 p-1">
+                                    <div class="h-20 p-2 tracker" [ngClass]="{'tracker-active': ngStatus >= 5}">
+                                        <h1>5</h1>
+                                        Ready to be Converted to Order
+                                    </div>
+                                </div>
+
+                                <div class="col-md-2 col-6 p-1">
+                                    <div class="h-20 p-2 tracker" [ngClass]="{'tracker-active': ngStatus >= 6}">
+                                        <h1>6</h1>
+                                        Converted
+                                    </div>
+                                </div>
+                                <div class="col-12 text-center">
+                                    <div [innerHTML]="statusText"></div>
+                                </div>
+                            </div>
+
+                            <!-- <div class="flex">
+                                    <mat-radio-group class="invisible absolute w-0 h-0 pointer-events-none" [(ngModel)]="ngStatus"
+                                        #planRadioGroup="matRadioGroup">
+                                        <ng-container *ngFor="let plan of status; trackBy: trackByFn">
+                                            <mat-radio-button [value]="plan.value"></mat-radio-button>
+                                        </ng-container>
+                                    </mat-radio-group>
+                                    <ng-container *ngFor="let plan of status; trackBy: trackByFn">
+                                        <div class="text-center relative flex flex-col items-start justify-start p-6 rounded-md shadow cursor-pointer bg-card"
+                                            [ngClass]="{'ring ring-inset ring-primary': ngStatus === plan.value}">
+                                            <ng-container *ngIf="ngStatus === plan.value">
+                                                <mat-icon class="absolute top-0 right-0 mt-3 mr-3 icon-size-7 text-primary"
+                                                    [svgIcon]="'heroicons_solid:check-circle'"></mat-icon>
+                                            </ng-container>
+                                            <div class="w-full font-medium text-xl font-bold">{{plan.value}}</div>
+                                            <div class="mt-1 text-sm text-secondary">{{plan.label}}</div>
+                                            
+                                        </div>
+                                    </ng-container>
+                                </div> -->
+                        </div>
+                        <div class="col-12 my-2 py-2 rounded-2xl shadow bg-card">
+                            <div class=" flex flex-col lg:flex-row w-full">
+                                <div class="p-4 w-full">
+                                    <div class="text-lg font-medium tracking-tight leading-6 truncate ">
+                                        Customer Information
+                                    </div>
+                                    <div class="py-2">
+                                        <span class="flex">
+                                            <h2>
+                                                <mat-icon svgIcon="mat_solid:person"></mat-icon>
+                                            </h2>
+                                            <h2 class="ml-2">{{selectedQuoteDetail?.CustomerName}}
+                                            </h2>
+                                        </span>
+                                        <span class="flex">
+                                            <h2>
+                                                <mat-icon svgIcon="mat_solid:local_phone"></mat-icon>
+                                            </h2>
+                                            <h2 class="ml-2">{{selectedQuoteDetail?.billingPhone || not_available}}
+                                            </h2>
+                                        </span>
+                                        <span class="flex">
+                                            <h2>
+                                                <mat-icon svgIcon="mat_solid:email"></mat-icon>
+                                            </h2>
+                                            <h2 class="ml-2">{{selectedQuoteDetail?.billingEmail || not_available}}
+                                            </h2>
+                                        </span>
+                                        <span class="flex mt-1">
+                                            <h2 class="font-bold">
+                                                Company:
+                                            </h2>
+                                            <h2 class="ml-2">{{selectedQuoteDetail?.billingCompanyName ||
+                                                not_available}}
+                                            </h2>
+                                        </span>
+                                        <span class="flex  mt-1">
+                                            <h2 class="font-bold">
+                                                Location:
+                                            </h2>
+                                            <h2 class="ml-2">{{selectedQuoteDetail?.billingLocation || not_available}}
+                                            </h2>
+                                        </span>
+                                        <span class="flex  mt-1">
+                                            <h2 class="font-bold">
+                                                Address:
+                                            </h2>
+                                            <h2 class="ml-2">{{(selectedQuoteDetail?.billingAddress + ', ' +
+                                                selectedQuoteDetail?.billingCity + ', '
+                                                +selectedQuoteDetail?.billingState + ' '
+                                                +selectedQuoteDetail?.billingZip) || not_available}}
+                                            </h2>
+                                        </span>
+                                        <span class="flex  mt-1">
+                                            <h2 class="font-bold">
+                                                Account Charge Code:
+                                            </h2>
+                                            <h2 class="ml-2">{{selectedQuoteDetail?.accountChargeCode || not_available}}
+                                            </h2>
+                                        </span>
+                                    </div>
+                                    <div class="text-right">
+                                        <a mat-stroked-button
+                                            [routerLink]="['/apps/customers', selectedQuoteDetail?.storeUserID]"
+                                            target="_blank">
+                                            <mat-icon svgIcon="heroicons_outline:eye"></mat-icon>
+                                            <span class="ml-2">View Customer</span>
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-12 my-2 py-2 rounded-2xl shadow bg-card">
+                            <div class=" flex flex-col lg:flex-row w-full">
+                                <div class="p-4 w-full">
+                                    <div class="text-lg font-medium tracking-tight leading-6 truncate ">
+                                        Additional Information
+                                    </div>
+                                    <div class="row w-full pt-2">
+                                        <div class="col-lg-6 col-md-6 col-12 my-1">
+                                            <div class="row">
+                                                <div class="col-12">
+                                                    <b>Instructions</b>
+                                                </div>
+                                                <div class="col-12">
+                                                    {{selectedQuoteDetail?.instructions || not_available}}
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-lg-6 col-md-6 col-12 my-1">
+                                            <div class="row">
+                                                <div class="col-12">
+                                                    <b>Promocode</b>
+                                                </div>
+                                                <div class="col-12">
+                                                    {{selectedQuoteDetail?.discountCode || not_available}}
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row w-full">
+                                        <div class="col-lg-6 col-md-6 col-12 my-1">
+                                            <div class="row">
+                                                <div class="col-12">
+                                                    <b>Purchase Order</b>
+                                                </div>
+                                                <div class="col-6">
+                                                    {{selectedQuoteDetail?.purchaseOrderNum || not_available}}
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-lg-6 col-md-6 col-12 my-1">
+                                            <div class="row">
+                                                <div class="col-12">
+                                                    <b>Account/charge Code</b>
+                                                </div>
+                                                <div class="col-12">
+                                                    N/A
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-lg-6 col-md-6 col-12 my-1">
+                                            <div class="row">
+                                                <div class="col-12">
+                                                    <b>Shipping</b>
+                                                </div>
+                                                <div class="col-12">
+                                                    {{(selectedQuoteDetail?.shippingCarrierName + '/' +
+                                                    selectedQuoteDetail?.shippingServiceName) || not_available}}
+                                                    {{selectedQuoteDetail?.shippingCustomerAccountNumber}}
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

@@ -47,10 +47,13 @@ import { QuoteSummaryComponent } from './components/pages/summary/summary.compon
 import { VendorBlanketCoopComponent } from './components/pages/artwork-details/artwork-details.component';
 import { QuoteComments } from './components/pages/comments/comments.component';
 import { VendorStatusGuard } from './quotes-status.guard';
+import { QuoteModifyComponent } from './components/pages/modify-quote/modify-quote.component';
+import { QuoteContactInfoComponent } from './components/pages/modify-quote/quote-contact-info/quote-contact-info.component';
+import { QuoteOrderDetailsComponent } from './components/pages/modify-quote/quote-details/quote-order-details.component';
 
 @NgModule({
     declarations: [
-        QuotesComponent, QuotesDetailsComponent, QuoteSummaryComponent, SystemImprintRunComponent, QuoteOriginalComponent, VendorBlanketCoopComponent, QuoteComments,
+        QuotesComponent, QuotesDetailsComponent, QuoteSummaryComponent, SystemImprintRunComponent, QuoteOriginalComponent, VendorBlanketCoopComponent, QuoteComments, QuoteModifyComponent, QuoteContactInfoComponent, QuoteOrderDetailsComponent
     ],
     imports: [
         RouterModule.forChild(quotesRoutes),
