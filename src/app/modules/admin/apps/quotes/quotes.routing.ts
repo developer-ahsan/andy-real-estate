@@ -6,7 +6,8 @@ import { QuotesComponent } from './components/quotes.component';
 import { QuoteCommentResolver, QuoteDetailsResolver } from './components/quotes.resolvers';
 import { QuoteOriginalComponent } from './components/pages/original-quote-report/original-quote-report.component';
 import { QuoteModifyComponent } from './components/pages/modify-quote/modify-quote.component';
-import { QuoteOrderDetailsComponent } from './components/pages/modify-quote/quote-details/quote-order-details.component';
+import { QuoteArtworkDetailsComponent } from './components/pages/artwork-details/artwork-details.component';
+import { QuoteReportsComponent } from './components/pages/quote-report/quote-report.component';
 export const quotesRoutes: Route[] = [
 
     {
@@ -58,6 +59,22 @@ export const quotesRoutes: Route[] = [
                 data: {
                     title: 'Modify Report',
                     url: 'modify-reports'
+                }
+            },
+            {
+                path: 'artwork-details',
+                component: QuoteArtworkDetailsComponent,
+                data: {
+                    title: 'Artwork Details',
+                    url: 'artwork-details'
+                }
+            },
+            {
+                path: 'quote-reports',
+                component: QuoteReportsComponent,
+                data: {
+                    title: 'Quote Report',
+                    url: 'quote-reports'
                 }
             }
         ]

@@ -1,39 +1,53 @@
-import { Component, Input, OnInit, Output, EventEmitter, ChangeDetectorRef, OnDestroy } from '@angular/core';
+import { Component, Input, OnInit, Output, EventEmitter, ChangeDetectorRef, OnDestroy, ViewChild, ElementRef } from '@angular/core';
 import { FormControl } from '@angular/forms';
 import { Subject } from 'rxjs';
 import { QuotesService } from '../../quotes.service';
+import { environment } from 'environments/environment';
+import { takeUntil } from 'rxjs/operators';
 
 @Component({
   selector: 'app-artwork-details',
   templateUrl: './artwork-details.component.html',
   styles: [".mat-paginator {border-radius: 16px !important}"]
 })
-export class VendorBlanketCoopComponent implements OnInit, OnDestroy {
-  @Input() isLoading: boolean;
+export class QuoteArtworkDetailsComponent implements OnInit, OnDestroy {
   @Output() isLoadingChange = new EventEmitter<boolean>();
   private _unsubscribeAll: Subject<any> = new Subject<any>();
 
-  blnSettings: boolean = true;
-  isUpdateLoader: boolean = false;
-  supplierData: any;
+  isLoading: boolean = false;
+  selectedOrder: any;
 
-  searchCoopCtrl = new FormControl();
-  selectedCoop: any;
-  isSearchingCoop = false;
-
-  allCoops = [];
-
+  orderParticipants = [];
+  quoteDetail: any;
+  orderProducts = [];
+  not_available = 'N/A';
+  imgUrl = environment.productMedia;
+  sideNavData: any;
+  tempDate = Math.random();
+  modalContent: any;
+  artworkComment: string = '';
+  @ViewChild('commentModal') commentModal: ElementRef;
+  @ViewChild('fileInput') fileInput: ElementRef;
+  imageValue: any;
+  @ViewChild('removeArtwork') removeArtwork: ElementRef;
+  removeModalIndex: any;
+  removeModalOrderIndex: any;
+  removeFileName: string = '';
+  artworkIndex: any;
   constructor(
     private _changeDetectorRef: ChangeDetectorRef,
     private _quoteService: QuotesService
   ) { }
 
   ngOnInit(): void {
-
-  };
-  /**
-     * On destroy
-     */
+    this.isLoading = false;
+    this._changeDetectorRef.markForCheck();
+    this._quoteService.qoutesDetails$.pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+      if (res["data"].length) {
+        this.quoteDetail = res["data"][0];
+      }
+    })
+  }
   ngOnDestroy(): void {
     // Unsubscribe from all subscriptions
     this._unsubscribeAll.next();

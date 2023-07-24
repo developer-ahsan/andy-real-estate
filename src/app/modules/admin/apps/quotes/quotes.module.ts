@@ -40,11 +40,11 @@ import { MatDialogModule } from '@angular/material/dialog';
 import { quotesRoutes } from './quotes.routing';
 import { QuotesComponent } from './components/quotes.component';
 import { MatDatepickerModule } from '@angular/material/datepicker';
-import { SystemImprintRunComponent } from './components/pages/quote-report/quote-report.component';
+import { QuoteReportsComponent } from './components/pages/quote-report/quote-report.component';
 import { QuoteOriginalComponent } from './components/pages/original-quote-report/original-quote-report.component';
 import { QuotesDetailsComponent } from './components/details/details-quote.component';
 import { QuoteSummaryComponent } from './components/pages/summary/summary.component';
-import { VendorBlanketCoopComponent } from './components/pages/artwork-details/artwork-details.component';
+import { QuoteArtworkDetailsComponent } from './components/pages/artwork-details/artwork-details.component';
 import { QuoteComments } from './components/pages/comments/comments.component';
 import { VendorStatusGuard } from './quotes-status.guard';
 import { QuoteModifyComponent } from './components/pages/modify-quote/modify-quote.component';
@@ -53,7 +53,7 @@ import { QuoteOrderDetailsComponent } from './components/pages/modify-quote/quot
 
 @NgModule({
     declarations: [
-        QuotesComponent, QuotesDetailsComponent, QuoteSummaryComponent, SystemImprintRunComponent, QuoteOriginalComponent, VendorBlanketCoopComponent, QuoteComments, QuoteModifyComponent, QuoteContactInfoComponent, QuoteOrderDetailsComponent
+        QuotesComponent, QuotesDetailsComponent, QuoteSummaryComponent, QuoteReportsComponent, QuoteOriginalComponent, QuoteArtworkDetailsComponent, QuoteComments, QuoteModifyComponent, QuoteContactInfoComponent, QuoteOrderDetailsComponent
     ],
     imports: [
         RouterModule.forChild(quotesRoutes),

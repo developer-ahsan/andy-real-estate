@@ -8,7 +8,7 @@ import { QuotesService } from '../../quotes.service';
   templateUrl: './quote-report.component.html',
   styles: ['.col-width {width: 11.11%} .data-width {width: 100px}']
 })
-export class SystemImprintRunComponent implements OnInit, OnDestroy {
+export class QuoteReportsComponent implements OnInit, OnDestroy {
 
   private _unsubscribeAll: Subject<any> = new Subject<any>();
 
