@@ -1,11 +1,13 @@
 import { ENTER, COMMA } from '@angular/cdk/keycodes';
-import { Component, Input, OnInit, ChangeDetectorRef, OnDestroy, ViewChild } from '@angular/core';
+import { Component, Input, OnInit, ChangeDetectorRef, OnDestroy, ViewChild, ElementRef } from '@angular/core';
 import { FormControl, FormGroup } from '@angular/forms';
 import { MatPaginator } from '@angular/material/paginator';
 import { Subject } from 'rxjs';
 import { QuotesService } from '../../quotes.service';
 import { takeUntil } from 'rxjs/operators';
 import { Router } from '@angular/router';
+import { deleteCart } from '../../quotes.types';
+declare var $: any;
 @Component({
   selector: 'app-summary',
   templateUrl: './summary.component.html',
@@ -21,6 +23,9 @@ export class QuoteSummaryComponent implements OnInit, OnDestroy {
   currentComment: any = [];
   ngStatus = 0;
   statusText = '';
+  isRemoveQuote: boolean = false;
+  @ViewChild('removeQuote') removeQuote: ElementRef;
+
   constructor(
     private _changeDetectorRef: ChangeDetectorRef,
     private _quoteService: QuotesService,
@@ -67,6 +72,43 @@ export class QuoteSummaryComponent implements OnInit, OnDestroy {
   }
   goToComments() {
     this._router.navigateByUrl(`apps/quotes/${this.selectedQuoteDetail.pk_cartID}/comments`);
+  }
+  openRemoveModal() {
+    $(this.removeQuote.nativeElement).modal('show');
+  }
+  removeCart() {
+    $(this.removeQuote.nativeElement).modal('hide');
+    this.isRemoveQuote = true;
+    let payload: deleteCart = {
+      cartID: this.selectedQuoteDetail.pk_cartID,
+      blnQuote: true,
+      siteName: this.selectedQuoteDetail.storeName,
+      storeId: this.selectedQuoteDetail.storeID,
+      calledFrom: null,
+      customerName: this.selectedQuoteDetail.CustomerName,
+      customerEmail: this.selectedQuoteDetail.customerEmail,
+      pk_userID: this.selectedQuoteDetail.pk_userID,
+      customerDayPhone: this.selectedQuoteDetail.customerDayPhone,
+      discountCode: this.selectedQuoteDetail.discountCode,
+      discountAmount: this.selectedQuoteDetail.discountAmount,
+      cartLineSumAmount: this.selectedQuoteDetail.cartTotal,
+      shipping: 0,
+      delete_cart: true
+    }
+    this._quoteService.UpdateQuoteData(payload)
+      .subscribe((response) => {
+        if (response["success"]) {
+          this._quoteService.snackBar(response["message"]);
+          this._router.navigate([`/apps/quotes/${this.selectedQuoteDetail.pk_cartID}`]);
+        } else {
+          this._quoteService.snackBar(response["message"]);
+        }
+        this.isRemoveQuote = false;
+        this._changeDetectorRef.markForCheck();
+      }, err => {
+        this.isRemoveQuote = false;
+        this._changeDetectorRef.markForCheck();
+      })
   }
   /**
      * On destroy

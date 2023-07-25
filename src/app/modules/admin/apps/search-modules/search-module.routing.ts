@@ -8,6 +8,7 @@ import { SearchProductsComponents } from './search-products/search-products.comp
 import { SearchOrdersComponents } from './search-orders/search-orders.component';
 import { SearchCustomersComponents } from './search-customers/search-customers.component';
 import { SearchVendorsComponents } from './search-vendors/search-vendors.component';
+import { SearchQuotesComponents } from './search-quotes/search-quotes.component';
 
 export const searchRoutes: Route[] = [
     {
@@ -34,6 +35,11 @@ export const searchRoutes: Route[] = [
             {
                 path: 'vendors/:value',
                 component: SearchVendorsComponents
+            }
+            ,
+            {
+                path: 'quotes/:value',
+                component: SearchQuotesComponents
             }
         ]
     }

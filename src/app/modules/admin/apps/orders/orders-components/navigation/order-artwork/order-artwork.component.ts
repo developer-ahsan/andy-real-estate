@@ -5,7 +5,7 @@ import { environment } from 'environments/environment';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { OrdersService } from '../../orders.service';
-import { AddArtworkComment } from '../../orders.types';
+import { AddArtworkComment, updateArtworkStatus } from '../../orders.types';
 import moment from 'moment';
 declare var $: any;
 @Component({
@@ -148,7 +148,7 @@ export class OrderArtWorkComponent implements OnInit, OnDestroy {
   getArtworkFiles(pk_orderLineID, index) {
     let payload = {
       files_fetch: true,
-      path: `artwork/${this.orderDetail.fk_storeID}/${this.orderDetail.fk_storeUserID}/${this.orderDetail.pk_orderID}/${pk_orderLineID}/`
+      path: `/artwork/${this.orderDetail.fk_storeID}/${this.orderDetail.fk_storeUserID}/${this.orderDetail.pk_orderID}/${pk_orderLineID}/`
     }
     this._changeDetectorRef.markForCheck();
     this._orderService.getFiles(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(files => {
@@ -246,7 +246,7 @@ export class OrderArtWorkComponent implements OnInit, OnDestroy {
   openCommentModal(data) {
     this.artworkComment = '';
     this.modalContent = data;
-    console.log(this.modalContent);
+    console.log(data);
     $(this.commentModal.nativeElement).modal('show');
   }
   addNewComment() {
@@ -307,6 +307,26 @@ export class OrderArtWorkComponent implements OnInit, OnDestroy {
         this.orderProducts[this.removeModalOrderIndex].imprints[this.removeModalIndex].artworkFiles[this.artworkIndex].delLoader = true;
         this._changeDetectorRef.markForCheck();
       })
+  }
+  updateMarkRevisionNeeded(data) {
+    data.revisionLoader = true;
+    let payload: updateArtworkStatus = {
+      orderLineID: data.fk_orderLineID,
+      imprintID: data.pk_imprintID,
+      blnRespond: data.status.blnRespond,
+      update_artwork_status: true
+    }
+    this._orderService.updateOrderCalls(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+      if (res["success"]) {
+        this._orderService.snackBar(res["message"]);
+        data.status.statusName = 'Artwork Revision';
+      }
+      data.revisionLoader = false;
+      this._changeDetectorRef.markForCheck();
+    }, err => {
+      data.revisionLoader = false;
+      this._changeDetectorRef.markForCheck();
+    });
   }
   ngOnDestroy(): void {
     // Unsubscribe from all subscriptions

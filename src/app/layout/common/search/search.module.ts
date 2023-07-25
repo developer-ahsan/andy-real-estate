@@ -8,31 +8,32 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { SharedModule } from 'app/shared/shared.module';
 import { SearchComponent } from 'app/layout/common/search/search.component';
+import { MatSelectModule } from '@angular/material/select';
 
 @NgModule({
     declarations: [
         SearchComponent
     ],
-    imports     : [
+    imports: [
         RouterModule.forChild([]),
         MatAutocompleteModule,
         MatButtonModule,
+        MatSelectModule,
         MatFormFieldModule,
         MatIconModule,
         MatInputModule,
         SharedModule
     ],
-    exports     : [
+    exports: [
         SearchComponent
     ],
-    providers   : [
+    providers: [
         {
-            provide   : MAT_AUTOCOMPLETE_SCROLL_STRATEGY,
+            provide: MAT_AUTOCOMPLETE_SCROLL_STRATEGY,
             useFactory: (overlay: Overlay) => () => overlay.scrollStrategies.block(),
-            deps      : [Overlay]
+            deps: [Overlay]
         }
     ]
 })
-export class SearchModule
-{
+export class SearchModule {
 }

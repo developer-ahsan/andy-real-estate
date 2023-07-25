@@ -11,13 +11,15 @@ import { FileManagerService } from 'app/modules/admin/apps/file-manager/store-ma
 import { OrdersService } from 'app/modules/admin/apps/orders/orders-components/orders.service';
 import { SearchService } from 'app/modules/admin/apps/search-modules/search.service';
 import { CustomersService } from 'app/modules/admin/apps/customers/customers-components/orders.service';
+import { DashboardsService } from 'app/modules/admin/dashboards/dashboard.service';
 
 @Component({
     selector: 'search',
     templateUrl: './search.component.html',
     encapsulation: ViewEncapsulation.None,
     exportAs: 'fuseSearch',
-    animations: fuseAnimations
+    animations: fuseAnimations,
+    styleUrls: ['./search.scss']
 })
 export class SearchComponent implements OnChanges, OnInit, OnDestroy {
     @Input() appearance: 'basic' | 'bar' = 'basic';
@@ -30,6 +32,8 @@ export class SearchComponent implements OnChanges, OnInit, OnDestroy {
     searchControl: FormControl = new FormControl();
 
     private _unsubscribeAll: Subject<any> = new Subject<any>();
+    allStores: any = [];
+    suppliers: any = [];
 
     /**
      * Constructor
@@ -44,7 +48,8 @@ export class SearchComponent implements OnChanges, OnInit, OnDestroy {
         private _orderService: OrdersService,
         private _storeService: FileManagerService,
         private _vendorService: VendorsService,
-        private router: Router
+        private router: Router,
+        private _commonService: DashboardsService
     ) {
     }
 
@@ -104,38 +109,54 @@ export class SearchComponent implements OnChanges, OnInit, OnDestroy {
      * On init
      */
     ngOnInit(): void {
-        // Subscribe to the search field value changes
-        this.searchControl.valueChanges
-            .pipe(
-                debounceTime(this.debounce),
-                takeUntil(this._unsubscribeAll),
-                map((value) => {
+        this.getAllStores();
+        this.getAllVendors();
+        // // Subscribe to the search field value changes
+        // this.searchControl.valueChanges
+        //     .pipe(
+        //         debounceTime(this.debounce),
+        //         takeUntil(this._unsubscribeAll),
+        //         map((value) => {
 
-                    // Set the search results to null if there is no value or
-                    // the length of the value is smaller than the minLength
-                    // so the autocomplete panel can be closed
-                    if (!value || value.length < this.minLength) {
-                        this.results = null;
-                    }
+        //             // Set the search results to null if there is no value or
+        //             // the length of the value is smaller than the minLength
+        //             // so the autocomplete panel can be closed
+        //             if (!value || value.length < this.minLength) {
+        //                 this.results = null;
+        //             }
 
-                    // Continue
-                    return value;
-                }),
-                // Filter out undefined/null/false statements and also
-                // filter out the values that are smaller than minLength
-                filter(value => value && value.length >= this.minLength)
-            )
-            .subscribe((value) => {
-                this._httpClient.post('api/common/search', { query: value })
-                    .subscribe((response: any) => {
+        //             // Continue
+        //             return value;
+        //         }),
+        //         // Filter out undefined/null/false statements and also
+        //         // filter out the values that are smaller than minLength
+        //         filter(value => value && value.length >= this.minLength)
+        //     )
+        //     .subscribe((value) => {
+        //         this._httpClient.post('api/common/search', { query: value })
+        //             .subscribe((response: any) => {
 
-                        // Store the results
-                        this.results = response.results;
+        //                 // Store the results
+        //                 this.results = response.results;
 
-                        // Execute the event
-                        this.search.next(this.results);
-                    });
+        //                 // Execute the event
+        //                 this.search.next(this.results);
+        //             });
+        //     });
+    }
+    getAllStores() {
+        this._commonService.storesData$.pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+            res["data"].forEach(element => {
+                if (element.blnActive) {
+                    this.allStores.push(element);
+                }
             });
+        })
+    }
+    getAllVendors() {
+        this._commonService.suppliersData$.pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+            this.suppliers = res["data"];
+        })
     }
     searchProduct(event) {
         const val = event.target.value;
@@ -150,32 +171,17 @@ export class SearchComponent implements OnChanges, OnInit, OnDestroy {
         // }
         this.close();
     }
-    searchStore(event) {
+    searchQuote(event) {
         const val = event.target.value;
-        if (val != '') {
-            this._storeService._storeSearchKeyword = val;
-            // this.router.navigateByUrl('/', { skipLocationChange: true }).then(() => {
-            //     this.router.navigate(['/apps/ecommerce/inventory'])
-            // });
-            this.router.navigateByUrl('/apps/stores');
-        }
+        this.router.navigateByUrl('/apps/search/quotes/' + val);
+        this.close();
+    }
+    searchStore(event) {
+        this.router.navigateByUrl(`/apps/stores/${event.value}`);
         this.close();
     }
     searchVendor(event) {
-        // const val = event.target.value;
-        // if (val != '') {
-        //     this._vendorService.vendorsSearchKeyword = val;
-        //     this.router.navigateByUrl('/apps/vendors');
-        // }
-        // this.close();
-        const val = event.target.value;
-        if (val != '') {
-            // this._searchService.customerKeyword = val;
-            // this.router.navigateByUrl('/', { skipLocationChange: true }).then(() => {
-            //     this.router.navigate(['/apps/ecommerce/inventory'])
-            // });
-            this.router.navigateByUrl('/apps/search/vendors/' + val);
-        }
+        this.router.navigateByUrl('/apps/vendors/' + event.value);
         this.close();
     }
     searchCustomer(event) {

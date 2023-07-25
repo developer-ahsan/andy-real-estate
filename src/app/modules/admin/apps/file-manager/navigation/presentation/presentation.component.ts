@@ -1193,7 +1193,7 @@ export class PresentationComponent implements OnInit, OnDestroy {
   }
   removeImage() {
     let payload: DeleteImage = {
-      image_path: `/Stores/orderOptionsHeaders/${this.selectedStore.pk_storeID}.jpg`,
+      image_path: `/globalAssets/Stores/orderOptionsHeaders/${this.selectedStore.pk_storeID}.jpg`,
       delete_image: true
     }
     this.orderOptions.delLoader = true;

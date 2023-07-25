@@ -52,6 +52,12 @@ export class SearchService {
             params: params
         }).pipe(retry(3));
     };
+    // Quotes
+    getQuoteSearchData(params): Observable<any[]> {
+        return this._httpClient.get<any[]>(environment.quotes, {
+            params: params
+        }).pipe(retry(3));
+    };
     // -----------------------------------------------------------------------------------------------------
     // @ Accessors
     // -----------------------------------------------------------------------------------------------------

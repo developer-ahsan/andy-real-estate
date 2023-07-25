@@ -459,3 +459,9 @@ export interface AddArtworkComment {
     comment: string;
     add_artwork_comment: boolean;
 };
+export interface updateArtworkStatus {
+    orderLineID: number;
+    imprintID: number;
+    blnRespond: boolean;
+    update_artwork_status: boolean;
+};

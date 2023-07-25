@@ -3,6 +3,14 @@
     </ngx-skeleton-loader>
     <div *ngIf="!isLoading">
         <div class="row">
+            <div class="col-12">
+                <button class="min-w-30" [diabled]="isRemoveQuote" mat-button mat-flat-button color="primary"
+                    (click)="openRemoveModal()">
+                    <span *ngIf="!isRemoveQuote">Remove Quote</span>
+                    <mat-progress-spinner *ngIf="isRemoveQuote" [diameter]="24" [mode]="'indeterminate'">
+                    </mat-progress-spinner>
+                </button>
+            </div>
             <div class="col-lg-4 col-md-6 col-12 my-2">
                 <div class="rounded-2xl shadow bg-card flex items-center  w-full p-6 filter-info  "
                     style="height: 8rem;">
@@ -61,7 +69,7 @@
                         <div class="text-lg font-medium tracking-tight leading-6 truncate ">
                             Quote comments
                         </div>
-                        <div *ngIf="currentComment.length == 0">
+                        <div *ngIf="currentComment.length == 0" class="my-2">
                             <fuse-alert [appearance]="'border'" [type]="'warning'">
                                 There are no comments for this Quote.
                             </fuse-alert>
@@ -309,6 +317,25 @@
                         </div>
                     </div>
                 </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal" tabindex="-1" role="dialog" #removeQuote>
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Remove Quote</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <p>Are you sure you want to remove this quote? This cannot be undone.</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" (click)="removeCart()">Yes</button>
+                <button type="button" class="btn btn-danger" data-dismiss="modal">Cancel</button>
             </div>
         </div>
     </div>

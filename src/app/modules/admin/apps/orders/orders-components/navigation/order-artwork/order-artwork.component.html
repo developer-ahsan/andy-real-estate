@@ -37,9 +37,13 @@
                             <td width="40%">
                                 {{imprint?.status.statusName || not_available}}
                                 <button type="button"
-                                    class="ml-2 inline-flex items-center gap-x-1.5 rounded-md bg-orange-600 px-2.5 py-1.5 text-sm font-semibold text-white shadow-sm hover:bg-orange-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-orange-600">
-                                    <span class="fa fa-exclamation-circle"></span>
-                                    Mark Revision Needed
+                                    class="ml-2 min-w-40 inline-flex items-center gap-x-1.5 rounded-md bg-orange-600 px-2.5 py-1.5 text-sm font-semibold text-white shadow-sm hover:bg-orange-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-orange-600"
+                                    (click)="updateMarkRevisionNeeded(imprint)" [disabled]="imprint.revisionLoader">
+                                    <span class="fa fa-exclamation-circle" *ngIf="!imprint.revisionLoader"></span>
+                                    <span *ngIf="!imprint.revisionLoader">Mark Revision Needed</span>
+                                    <mat-progress-spinner *ngIf="imprint.revisionLoader" [diameter]="24"
+                                        [mode]="'indeterminate'">
+                                    </mat-progress-spinner>
                                 </button>
                             </td>
 
@@ -98,7 +102,9 @@
     <div class="modal-dialog modal-lg" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="exampleModalLongTitle">COMMENTS FOR FULL COVERAGE / FULL COLOR</h5>
+                <h5 class="modal-title" id="exampleModalLongTitle">COMMENTS FOR {{modalContent?.locationName
+                    }} / {{modalContent?.methodName
+                    }}</h5>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>

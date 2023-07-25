@@ -58,3 +58,19 @@ export interface updateCartShipping {
     purchase_order_num: string;
     modify_cart_shipping_details: boolean;
 };
+export interface deleteCart {
+    cartID: number;
+    blnQuote: boolean;
+    siteName: string;
+    storeId: number;
+    calledFrom: string;
+    customerName: string;
+    customerEmail: string;
+    pk_userID: number;
+    customerDayPhone: string;
+    discountCode: string;
+    discountAmount: number;
+    cartLineSumAmount: number;
+    shipping: number;
+    delete_cart: boolean;
+};

@@ -324,7 +324,7 @@ export class StoreImagesComponent implements OnInit, OnDestroy {
 
     if (type == 'blank') {
       this.blankLoader = true;
-      path = `Products/BlankImages/${this.selectedProduct.pk_storeProductID}.jpg`
+      path = `/globalAssets/Products/BlankImages/${this.selectedProduct.pk_storeProductID}.jpg`
     }
     let payload = {
       image_path: path,

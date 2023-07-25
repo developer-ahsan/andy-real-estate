@@ -1,0 +1,97 @@
+<div class="flex-auto">
+
+    <!-- Header -->
+    <div class="flex flex-col sm:flex-row md:flex-col flex-auto justify-between py-8 px-6 md:px-8 border-b">
+        <!-- Title -->
+        <div>
+            <div class="text-4xl font-extrabold tracking-tight leading-none">
+                Quotes</div>
+        </div>
+
+        <!-- Main actions -->
+        <div class="flex items-center mt-4 sm:mt-0 md:mt-4">
+            <!-- Search -->
+            <div class="flex-auto">
+                <mat-form-field class="fuse-mat-dense fuse-mat-no-subscript w-full min-w-50">
+                    <mat-icon class="icon-size-5" matPrefix [svgIcon]="'heroicons_solid:search'"></mat-icon>
+                    <input (keyup.enter)="searchProduct()" matInput [(ngModel)]="searchKeyword" [autocomplete]="'off'"
+                        [placeholder]="'Search Quote'">
+                </mat-form-field>
+            </div>
+            <!-- Add contact button -->
+            <button class="ml-4 min-w-30" [disabled]="isSearchLaoder || isQuoteLoader" mat-flat-button
+                [color]="'primary'" (click)="searchProduct()">
+                <mat-icon [svgIcon]="'heroicons_outline:search'" *ngIf="!isSearchLaoder"></mat-icon>
+                <span class="ml-2 mr-1" *ngIf="!isSearchLaoder">Search</span>
+                <mat-progress-spinner *ngIf="isSearchLaoder" [diameter]="24" [mode]="'indeterminate'">
+                </mat-progress-spinner>
+            </button>
+        </div>
+    </div>
+
+    <!-- Contacts list -->
+    <div class="relative">
+        <div class="p-5" *ngIf="isQuoteLoader">
+            <ngx-skeleton-loader count="8" appearance="line" animation="pulse" [theme]="{ 
+                    'background-color': '#dedede'
+                  }">
+            </ngx-skeleton-loader>
+        </div>
+        <div *ngIf="!isQuoteLoader">
+            <div *ngIf="quotesData.length > 0;else other_content" class="w-full">
+                <table mat-table [dataSource]="quotesData" class="w-full border-t">
+                    <ng-container matColumnDef="date">
+                        <th mat-header-cell *matHeaderCellDef class="w-20 min-w-10">
+                            Date
+                        </th>
+                        <td mat-cell *matCellDef="let element">
+                            {{element?.dateCreated | date}}
+                        </td>
+                    </ng-container>
+                    <ng-container matColumnDef="name">
+                        <th mat-header-cell *matHeaderCellDef class="w-60 min-w-40">
+                            Name
+                        </th>
+                        <td mat-cell *matCellDef="let element">
+                            <b>{{element?.firstName + ' ' + element?.lastName}}</b>
+                            <p>{{element?.storeName}} <span *ngIf="element?.locationName">-
+                                    {{element?.locationName}}</span><span *ngIf="element?.storeCode"> -
+                                    {{element?.storeCode}}</span></p>
+                            <span><b>{{element?.pk_cartID}}</b> - {{element?.companyName}}</span>
+                        </td>
+                    </ng-container>
+                    <ng-container matColumnDef="price">
+                        <th mat-header-cell *matHeaderCellDef class="w-20 min-w-10">
+                            Price
+                        </th>
+                        <td mat-cell *matCellDef="let element">
+                            <b>{{element?.cartTotal | currency}}</b>
+                            <br>
+                            <mat-icon svgIcon="mat_solid:format_quote" class="text-green-900"></mat-icon>
+                            <mat-icon *ngIf="element.blnGroupOrder" class="ml-2"
+                                [svgIcon]="'heroicons_outline:user-group'" matTooltip="This is group order"></mat-icon>
+                            <mat-icon *ngIf="!element.blnGroupOrder" class="ml-2"
+                                [svgIcon]="'heroicons_outline:user-group'"
+                                matTooltip="This is not group order"></mat-icon>
+                        </td>
+                    </ng-container>
+                    <tr mat-header-row *matHeaderRowDef="displayedColumns;" class="h-18 bg-light"></tr>
+                    <tr mat-row *matRowDef="let row; columns: displayedColumns;" (click)="quoteDetails(row.pk_cartID)"
+                        class="h-14 hover:bg-gray-100 dark:hover:bg-hover" style="cursor: pointer;">
+                    </tr>
+                </table>
+                <mat-paginator #paginator class="border-b sm:border-t sm:border-b-0 z-10 bg-gray-50 dark:bg-transparent"
+                    [ngClass]="{'pointer-events-none': isLoading}" [length]="totalRecords" [pageIndex]="0"
+                    [pageSize]="20" (page)="getNextProductData($event)" [hidePageSize]="true">
+                </mat-paginator>
+            </div>
+            <!-- No product Found -->
+            <ng-template #other_content>
+                <div class="text-secondary font-semibold p-5 text-center">
+                    Your search did not return any results.
+                </div>
+            </ng-template>
+        </div>
+    </div>
+
+</div>

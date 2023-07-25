@@ -32,6 +32,7 @@ import { NgxPaginationModule } from 'ngx-pagination';
 import { SearchOrdersComponents } from './search-orders/search-orders.component';
 import { SearchCustomersComponents } from './search-customers/search-customers.component';
 import { SearchVendorsComponents } from './search-vendors/search-vendors.component';
+import { SearchQuotesComponents } from './search-quotes/search-quotes.component';
 
 @NgModule({
     declarations: [
@@ -41,7 +42,8 @@ import { SearchVendorsComponents } from './search-vendors/search-vendors.compone
         ContactsListComponents,
         SearchCustomersComponents,
         SearchVendorsComponents,
-        ContactsDetailsComponents
+        ContactsDetailsComponents,
+        SearchQuotesComponents
     ],
     imports: [
         RouterModule.forChild(searchRoutes),

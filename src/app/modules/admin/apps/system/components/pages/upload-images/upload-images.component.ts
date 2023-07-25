@@ -92,7 +92,7 @@ export class UploadImagesComponent implements OnInit, OnDestroy {
 
   removeImage(index, image) {
     let payload: DeleteImage = {
-      image_path: `/Uploads/${image.FILENAME}`,
+      image_path: `/globalAssets/Uploads/${image.FILENAME}`,
       delete_image: true
     }
     image.delLoader = true;

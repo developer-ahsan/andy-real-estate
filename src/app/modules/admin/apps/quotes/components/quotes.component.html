@@ -116,7 +116,7 @@
                         <td mat-cell *matCellDef="let element">
                             <b>{{element?.cartTotal | currency}}</b>
                             <br>
-                            <mat-icon svgIcon="mat_outline:format_quote" class="text-green-900"></mat-icon>
+                            <mat-icon svgIcon="mat_solid:format_quote" class="text-green-900"></mat-icon>
                             <mat-icon *ngIf="element.blnGroupOrder" class="ml-2"
                                 [svgIcon]="'heroicons_outline:user-group'" matTooltip="This is group order"></mat-icon>
                             <mat-icon *ngIf="!element.blnGroupOrder" class="ml-2"

@@ -57,6 +57,7 @@ export class VendorsDetailsComponent implements OnInit, OnDestroy {
    */
 
   ngOnInit(): void {
+    console.log('here');
     this.getSupplierData();
     this.getAllSuppliers();
     let params;
