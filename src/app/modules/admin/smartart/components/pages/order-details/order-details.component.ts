@@ -283,7 +283,7 @@ export class OrderDashboardDetailsComponent implements OnInit, OnDestroy {
   getArtworkFiles() {
     let payload = {
       files_fetch: true,
-      path: `artwork/${this.orderData.pk_storeID}/${this.paramData.pfk_userID}/${this.paramData.fk_orderID}/${this.paramData.pk_orderLineID}/`
+      path: `/artwork/${this.orderData.pk_storeID}/${this.paramData.pfk_userID}/${this.paramData.fk_orderID}/${this.paramData.pk_orderLineID}/`
     }
     this._changeDetectorRef.markForCheck();
     this._smartartService.getFiles(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(files => {

@@ -7,6 +7,7 @@ import { takeUntil } from 'rxjs/operators';
 import { OrdersService } from '../../orders.service';
 import { AddArtworkComment, updateArtworkStatus } from '../../orders.types';
 import moment from 'moment';
+import { AuthService } from 'app/core/auth/auth.service';
 declare var $: any;
 @Component({
   selector: 'app-order-artwork',
@@ -38,12 +39,16 @@ export class OrderArtWorkComponent implements OnInit, OnDestroy {
   removeModalOrderIndex: any;
   removeFileName: string = '';
   artworkIndex: any;
+  user: any;
   constructor(
     private _changeDetectorRef: ChangeDetectorRef,
+    private _authService: AuthService,
     private _orderService: OrdersService
   ) { }
 
   ngOnInit(): void {
+    this.user = this._authService.parseJwt(this._authService.accessToken);
+    console.log(this.user);
     this.isLoading = true;
     this._changeDetectorRef.markForCheck();
     this._orderService.orderDetail$.pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
@@ -200,7 +205,6 @@ export class OrderArtWorkComponent implements OnInit, OnDestroy {
         type: extension
       };
     }
-
   };
   uploadArtworkMedia(imprint) {
     imprint.uploadLoader = true;
@@ -236,7 +240,7 @@ export class OrderArtWorkComponent implements OnInit, OnDestroy {
           imprint.artworkFiles.push(file);
         }
       });
-      this._orderService.snackBar('ArtworkFile Updated Successfully.')
+      this._orderService.snackBar('Artwork File Updated Successfully.')
       imprint.uploadLoader = false;
       this._changeDetectorRef.markForCheck();
     }, err => {
@@ -274,7 +278,7 @@ export class OrderArtWorkComponent implements OnInit, OnDestroy {
         this._orderService.snackBar(res["message"]);
       }
       this.modalContent.commentLoader = false;
-      this.modalContent.customerArtworkComment = `${this.modalContent.customerArtworkComment}<br /><br /> - Denise Cline Added A Comment ${moment().format('MM/DD/YY')} - <br /><br /> ${this.artworkComment}`;
+      this.modalContent.customerArtworkComment = `${this.modalContent.customerArtworkComment}<br /><br /> - ${this.user.name} Added A Comment ${moment().format('MM/DD/YY')} - <br /><br /> ${this.artworkComment}`;
       this.artworkComment = '';
       this._changeDetectorRef.markForCheck();
     }, err => {
