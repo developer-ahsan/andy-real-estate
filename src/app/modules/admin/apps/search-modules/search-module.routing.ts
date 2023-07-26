@@ -35,8 +35,7 @@ export const searchRoutes: Route[] = [
             {
                 path: 'vendors/:value',
                 component: SearchVendorsComponents
-            }
-            ,
+            },
             {
                 path: 'quotes/:value',
                 component: SearchQuotesComponents
