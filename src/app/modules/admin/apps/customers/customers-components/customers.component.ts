@@ -8,6 +8,7 @@ import { fuseAnimations } from '@fuse/animations';
 import { CustomersBrand, CustomersCategory, CustomersPagination, CustomersProduct, CustomersTag, CustomersVendor } from 'app/modules/admin/apps/ecommerce/customers/customers.types';
 import { Router } from '@angular/router';
 import { CustomersService } from './orders.service';
+import { DashboardsService } from 'app/modules/admin/dashboards/dashboard.service';
 
 @Component({
     selector: 'customers',
@@ -35,6 +36,7 @@ export class CustomersListComponent implements OnInit, OnDestroy {
     pageNo: number = 1;;
     keywordSearch: string = '';
     allStores: any = [];
+    ngKeyword = '';
     ngSelectedStore = 0;
     ngSelectedStatus = -1;
     ngSelectedReminder = 'all';
@@ -45,7 +47,9 @@ export class CustomersListComponent implements OnInit, OnDestroy {
         private _changeDetectorRef: ChangeDetectorRef,
         private _formBuilder: FormBuilder,
         private _customerService: CustomersService,
-        private _router: Router
+        private _router: Router,
+        private _commonService: DashboardsService
+
     ) {
     }
 
@@ -88,8 +92,15 @@ export class CustomersListComponent implements OnInit, OnDestroy {
                 // Mark for check
                 this._changeDetectorRef.markForCheck();
             });
+        this.getStoresList();
     };
-
+    getStoresList() {
+        this.allStores = [];
+        this._commonService.storesData$.pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+            this.allStores.push({ pk_storeID: 0, storeName: 'All Stores' });
+            this.allStores = this.allStores.concat(res["data"]);
+        });
+    }
     /**
      * On destroy
      */
@@ -129,7 +140,10 @@ export class CustomersListComponent implements OnInit, OnDestroy {
             page: this.pageNo,
             list: true,
             size: 20,
-            keyword: this.keywordSearch,
+            keyword: this.ngKeyword,
+            store_id: this.ngSelectedStore,
+            user_status: this.ngSelectedStatus,
+            bln_reminder: this.ngSelectedReminder,
             sort_by: 'storeName',
             sort_order: 'ASC'
         }
@@ -141,10 +155,10 @@ export class CustomersListComponent implements OnInit, OnDestroy {
         });
     }
 
-    searchKeyword(event): void {
+    searchKeyword(): void {
         this.pageNo = 1;
         this.isLoading = true;
-        this.keywordSearch = event.target.value ? event.target.value : '';
+        // this.keywordSearch = event.target.value ? event.target.value : '';
         this.getCustomersLists();
     };
 
