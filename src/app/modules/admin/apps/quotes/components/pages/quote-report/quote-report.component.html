@@ -11,7 +11,37 @@
                         </div>
                         <button class="min-w-30" mat-button mat-stroked-button (click)="openPDF()">PDF</button>
                     </div>
+                    <div class="row" *ngFor="let quote of quoteReportData">
+                        <div class="col-12 col-md-3">
+                            <img style="display: inline;width:50%"
+                                src="https://assets.consolidus.com/globalAssets/products/HiRes/{{quote.productID}}.jpg"
+                                onError="this.src='https://assets.consolidus.com/globalAssets/Products/coming_soon.jpg'">
+                        </div>
+                        <div class="col-12 col-md-9">
+                            <div class="grid grid-cols-12 gap-x-1 mt-1">
+                                <div class="col-span-12 pb-2 border-b font-medium text-lg text-secondary">
+                                    ({{quote.storeCode
+                                    + '-' +
+                                    quote.productID}}) {{quote.productName}}</div>
+                                <div class="col-span-12 my-2 font-bold">{{quote.pk_cartID + '-' + quote.pk_cartLineID}}
+                                </div>
+                                <div class="col-span-12 pb-2 mb-2 border-b font-medium text-md text-secondary">
+                                    Colors</div>
+                                <!-- Colors -->
+                                <div class="col-span-12">
+                                    <div class="grid grid-cols-12">
+                                        <div class="col-span-6"></div>
+                                        <div class="col-span-3 font-bold text-center">Unit</div>
+                                        <div class="col-span-3 font-bold text-center">Total</div>
+                                    </div>
+                                </div>
 
+                            </div>
+                            <div class="grid grid-cols-12 gap-x-1">
+                            </div>
+
+                        </div>
+                    </div>
                 </div>
             </fuse-card>
         </div>

@@ -84,7 +84,7 @@ export class QuoteSummaryComponent implements OnInit, OnDestroy {
       blnQuote: true,
       siteName: this.selectedQuoteDetail.storeName,
       storeId: this.selectedQuoteDetail.storeID,
-      calledFrom: null,
+      calledFrom: 'cart',
       customerName: this.selectedQuoteDetail.CustomerName,
       customerEmail: this.selectedQuoteDetail.customerEmail,
       pk_userID: this.selectedQuoteDetail.pk_userID,

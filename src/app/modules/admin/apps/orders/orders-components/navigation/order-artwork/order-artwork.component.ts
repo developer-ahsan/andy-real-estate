@@ -246,7 +246,6 @@ export class OrderArtWorkComponent implements OnInit, OnDestroy {
   openCommentModal(data) {
     this.artworkComment = '';
     this.modalContent = data;
-    console.log(data);
     $(this.commentModal.nativeElement).modal('show');
   }
   addNewComment() {

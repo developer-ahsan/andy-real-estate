@@ -57,7 +57,7 @@ export const quotesRoutes: Route[] = [
                 path: 'modify-reports',
                 component: QuoteModifyComponent,
                 data: {
-                    title: 'Modify Report',
+                    title: 'Modify Quote',
                     url: 'modify-reports'
                 }
             },

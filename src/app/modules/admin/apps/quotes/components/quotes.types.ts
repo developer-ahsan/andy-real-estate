@@ -74,3 +74,23 @@ export interface deleteCart {
     shipping: number;
     delete_cart: boolean;
 };
+export interface updateCartArtworkStatus {
+    cartLineID: number;
+    imprintID: number;
+    blnRespond: boolean;
+    update_cartLine_artwork_status: boolean;
+};
+export interface AddCartArtworkComment {
+    cartID: number;
+    cartLineID: number;
+    imprintID: number;
+    productName: string;
+    locationName: string;
+    methodName: string;
+    storeName: string;
+    userFirstName: string;
+    userLastName: string;
+    userEmail: string;
+    comment: string;
+    add_cartLine_artwork_comment: boolean;
+};

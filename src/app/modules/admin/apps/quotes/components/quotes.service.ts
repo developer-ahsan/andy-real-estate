@@ -134,6 +134,10 @@ export class QuotesService {
             })
         );
     }
+    getFiles(payload) {
+        return this._httpClient.post(environment.products,
+            payload);
+    };
     addMedia(payload) {
         const headers = { 'Authorization': `Bearer ${this._authService.accessToken}` };
         return this._httpClient.post(

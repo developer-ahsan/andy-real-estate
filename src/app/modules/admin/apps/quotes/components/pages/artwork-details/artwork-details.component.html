@@ -2,35 +2,33 @@
     <ngx-skeleton-loader count="8" appearance="line" animation="pulse" *ngIf="isLoading">
     </ngx-skeleton-loader>
     <div class="row my-3 p-5" *ngIf="!isLoading">
-        <div class="col-12 mb-4 bg-card rounded-2xl w-full p-8 pb-4">
+        <div class="col-12 mb-4 bg-card rounded-2xl w-full p-8 pb-4" *ngFor="let item of artworkData">
             <div class="flex items-center justify-between">
                 <div class="flex flex-col mr-6">
                     <div class="text-2xl font-semibold leading-tight">
-                        123-
-                        45678:
-                        Test Product</div>
-                    <div class="text-secondary font-medium text-md">
-                        <p>Quantity: 10</p>
-                        <p>Supplier: Test Supplier</p>
-                    </div>
+                        {{item.pk_cartID}}-{{item.pk_cartLineID}}: {{item.productName}}</div>
                 </div>
-                <img class="w-20 rounded-lg object-cover" src="{{imgUrl}}/thumbnails/123.jpg"
+                <img class="w-20 rounded-lg object-cover" src="{{imgUrl}}/HiRes/{{item.productID}}.jpg"
                     onError="this.src='https://assets.consolidus.com/globalAssets/Products/coming_soon.jpg'"
                     alt="Product Image">
             </div>
             <div class="my-2 border-b"></div>
-            <div>
-                <table class="table table-condensed table-striped table-hover padding-1x">
+            <div *ngIf="item.imprints.length == 0" class="px-3">
+                <div class="alert alert-warning">This itemis blank</div>
+            </div>
+            <div *ngIf="item.imprints.length > 0">
+                <table class="table table-condensed table-striped table-hover padding-1x"
+                    *ngFor="let imprint of item.imprints">
                     <tbody>
                         <tr>
                             <td width="30%">
-                                <b>(12345) tes Location/test paymentMethod</b>
+                                <b>({{imprint.id}}) {{imprint.locationName}} / {{imprint.methodName}}</b>
                             </td>
                             <td width="10%">
-                                <a class="text-decoration-none"
-                                    href="https://assets.consolidus.com/artwork/Proof/{{quoteDetail?.fk_storeUserID}}/{{quoteDetail?.pk_orderID}}/{{quoteDetail?.fk_orderLineID}}/{{quoteDetail?.pk_imprintID}}.jpg"
+                                <a class="text-decoration-none" *ngIf="imprint.proofImg"
+                                    href="https://assets.consolidus.com/artwork/Proof/Quotes/{{quoteDetail.storeUserID}}/{{quoteDetail.pk_cartID}}/{{item.pk_cartLineID}}/{{imprint.id}}.jpg"
                                     target="_blank">View Proof</a>
-                                <!-- <span *ngIf="!imprint.proofImg">---</span> -->
+                                <span *ngIf="!imprint.proofImg">---</span>
                             </td>
                             <td width="40%">
                                 {{quoteDetail?.status || not_available}}
@@ -43,27 +41,45 @@
 
                             <td width="1%" align="center" valign="top">
                                 <span class="fa fa-comments fa-lg clickable cursor-pointer" data-toggle="modal"
-                                    title="View artwork comments"></span>
+                                    title="View artwork comments" (click)="openCommentModal(imprint)"></span>
                             </td>
                         </tr>
-                        <tr>
+                        <tr *ngFor="let artwork of imprint.artworkFiles; let i=index" #artworkFiles>
                             <td width="30%"></td>
                             <td width="10%"></td>
                             <td width="40%">
-                                <a class="text-blue-500"
-                                    href="https://assets.consolidus.com/artwork/{{quoteDetail?.fk_storeID}}/{{orderDetail?.fk_storeUserID}}/{{quoteDetail?.pk_orderID}}/{{quoteDetail?.pk_orderLineID}}/{{quoteDetail?.ID}}?.{{quoteDetail?.EXTENSION}}?{{quoteDetail}}"
+                                <a class="text-blue-500" *ngIf="imprint.artworkFiles.length > 0"
+                                    href="https://assets.consolidus.com/artwork/quotes/{{quoteDetail.storeID}}/{{this.quoteDetail.storeUserID}}/{{quoteDetail.pk_cartID}}/{{imprint.pk_cartLineID}}/{{artwork?.ID}}.{{artwork?.EXTENSION}}?{{tempDate}}"
                                     target="_blank">Artwork File #{{i+1}}</a>
-                                <!-- <span *ngIf="imprint.artworkFiles.length == 0">---</span> -->
+                                <span *ngIf="imprint.artworkFiles.length == 0">---</span>
                             </td>
-                            <!-- <td width="1%" align="center" valign="top" *ngIf="imprint.artworkFiles.length > 0">
+                            <td width="1%" align="center" valign="top" *ngIf="imprint.artworkFiles.length > 0">
                                 <mat-icon svgIcon="heroicons_outline:trash"
                                     class="icon-size-4 cursor-pointer text-red-500" matTooltip="Delete File"
-                                    (click)="openRemoveModal(j,k,i,artwork.FILENAME)"
+                                    (click)="openRemoveModal(artwork.FILENAME,i,imprint)"
                                     *ngIf="!artwork?.delLoader"></mat-icon>
                                 <mat-progress-spinner *ngIf="artwork?.delLoader" [diameter]="24"
                                     [mode]="'indeterminate'">
                                 </mat-progress-spinner>
-                            </td> -->
+                            </td>
+                        </tr>
+                        <tr
+                            *ngIf="imprint.customerLogoBankID != 0 || imprint.locationLogoBankID != 0 || imprint.logoBankID != 0;else artworkFiles">
+                            <td width="30%"></td>
+                            <td width="10%"></td>
+                            <td width="40%">
+                                <a *ngIf="imprint.logoBankID != 0"
+                                    href="https://assets.consolidus.com/globalAssets/Stores/logoBank2/{{quoteDetail.storeUserID}}/{{quoteDetail.storeID}}/Thumbs/{{imprint.logoBankID}}.jpg">Artwork
+                                    File #1</a>
+                                <a *ngIf="imprint.customerLogoBankID != 0"
+                                    href="https://assets.consolidus.com/globalAssets/StoreUser/LogoBank/{{quoteDetail.storeUserID}}/{{quoteDetail.storeID}}/Thumbs/{{imprint.customerLogoBankID}}.jpg">Artwork
+                                    File #1</a>
+                                <a *ngIf="imprint.locationLogoBankID != 0"
+                                    href="https://assets.consolidus.com/globalAssets/Stores/locationLogoBank/{{quoteDetail.pk_locationID}}/Thumbs/{{imprint.locationLogoBankID}}.jpg">Artwork
+                                    File #1</a>
+                            </td>
+                            <td width="1%" align="center" valign="top">
+                            </td>
                         </tr>
 
                         <tr>
@@ -71,7 +87,7 @@
                             <td width="10%"></td>
                             <td colspan="2" valign="top">
                                 <b>Upload new artwork file:</b><br>
-                                <!-- <form class="flex justify-between align-items-center">
+                                <form class="flex justify-between align-items-center">
                                     <input type="file" #fileInput name="newArtworkFile" class="inline"
                                         (change)="uploadFile($event)">&nbsp;&nbsp;&nbsp;
                                     <button type="submit" class="mat-button mat-stroked-button"
@@ -81,7 +97,7 @@
                                             [mode]="'indeterminate'">
                                         </mat-progress-spinner>
                                     </button>
-                                </form> -->
+                                </form>
                             </td>
                         </tr>
                     </tbody>
@@ -96,13 +112,14 @@
     <div class="modal-dialog modal-lg" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="exampleModalLongTitle">COMMENTS FOR FULL COVERAGE / FULL COLOR</h5>
+                <h5 class="modal-title" id="exampleModalLongTitle">COMMENTS FOR {{modalContent?.locationName}} /
+                    {{modalContent?.methodName}}</h5>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>
             <div class="modal-body">
-                <div class="h-60 overflow-y-auto border p-5 mb-2" [innerHTML]="modalContent?.customerArtworkComment">
+                <div class="h-60 overflow-y-auto border p-5 mb-2" [innerHTML]="modalContent?.comments">
                 </div>
                 <mat-form-field class="w-full">
                     <mat-label>Leave a comment</mat-label>
@@ -135,7 +152,7 @@
                 <p>Are you sure you want to remove this artwork file? This cannot be undone.</p>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary">Yes</button>
+                <button type="button" class="btn btn-secondary" (click)="removeImage()">Yes</button>
                 <button type="button" class="btn btn-danger" data-dismiss="modal">Cancel</button>
             </div>
         </div>

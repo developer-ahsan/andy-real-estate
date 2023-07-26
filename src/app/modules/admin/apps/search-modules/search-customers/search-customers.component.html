@@ -1,244 +1,208 @@
-<div class="absolute inset-0 flex flex-col min-w-0 overflow-hidden">
+<div class="flex-auto">
 
-    <mat-drawer-container class="flex-auto h-full bg-card dark:bg-transparent" (backdropClick)="onBackdropClicked()">
+    <!-- Header -->
+    <div class="flex flex-col sm:flex-row md:flex-col flex-auto justify-between py-8 px-6 md:px-8 border-b bg-white">
 
-        <!-- Drawer -->
-        <mat-drawer class="w-full md:w-160 dark:bg-gray-900" [mode]="'over'" [opened]="false" [position]="'end'"
-            [disableClose]="true" #drawer>
-            <div class="flex justify-between my-5 align-items-center px-8 ">
-                <div>
-                    <div class="text-xl font-semibold tracking-tight leading-8">
-                        Product Details
-                    </div>
-                    <div class="font-medium tracking-tight text-secondary">
-                        <!-- PDF, EPS, AI, PSD, and JPG file formats only! -->
-                    </div>
+        <!-- Title -->
+        <div>
+            <div class="text-4xl font-extrabold tracking-tight leading-none">
+                Customers</div>
+            <!-- <div class="ml-0.5 font-medium text-secondary">
+                <ng-container *ngIf="totalRecords > 0">
+                    {{totalRecords}}
+                </ng-container>
+            </div> -->
+        </div>
+
+        <!-- Main actions -->
+        <div class="flex items-center mt-4 sm:mt-0 md:mt-4">
+            <!-- Search -->
+            <div class="row w-full">
+                <div class="col-12 col-md-3">
+                    <mat-form-field class="fuse-mat-dense fuse-mat-no-subscript w-full  min-w-50">
+                        <mat-label>Keyword</mat-label>
+                        <input (keyup.enter)="searchProduct()" matInput [(ngModel)]="searchKeyword"
+                            [autocomplete]="'off'" [placeholder]="'Search Customers'">
+                    </mat-form-field>
                 </div>
-                <svg (click)="drawer.toggle()" [matTooltip]="'Close'" xmlns="http://www.w3.org/2000/svg" width="16"
-                    height="16" fill="currentColor" class="bi bi-x-lg cursor-pointer" viewBox="0 0 16 16">
-                    <path
-                        d="M2.146 2.854a.5.5 0 1 1 .708-.708L8 7.293l5.146-5.147a.5.5 0 0 1 .708.708L8.707 8l5.147 5.146a.5.5 0 0 1-.708.708L8 8.707l-5.146 5.147a.5.5 0 0 1-.708-.708L7.293 8 2.146 2.854Z" />
-                </svg>
+                <div class="col-12 col-md-3">
+                    <mat-form-field class="fuse-mat-dense fuse-mat-no-subscript w-full min-w-50">
+                        <mat-label>Store</mat-label>
+                        <mat-select matInput [(ngModel)]="ngSelectedStore">
+                            <mat-option *ngFor="let item of allStores"
+                                [value]="item.pk_storeID">{{item.storeName}}</mat-option>
+                        </mat-select>
+                    </mat-form-field>
+                </div>
+                <div class="col-12 col-md-3">
+                    <mat-form-field class="fuse-mat-dense fuse-mat-no-subscript w-full min-w-50">
+                        <mat-label>Status</mat-label>
+                        <mat-select matInput [(ngModel)]="ngSelectedStatus">
+                            <mat-option [value]="-1">All</mat-option>
+                            <mat-option [value]="0">Active</mat-option>
+                            <mat-option [value]="1">Disabled</mat-option>
+                        </mat-select>
+                    </mat-form-field>
+                </div>
+                <div class="col-12 col-md-3">
+                    <mat-form-field class="fuse-mat-dense fuse-mat-no-subscript w-full min-w-50">
+                        <mat-label>Reminders</mat-label>
+                        <mat-select matInput [(ngModel)]="ngSelectedReminder">
+                            <mat-option value="all">All</mat-option>
+                            <mat-option [value]="true">Has Reminder</mat-option>
+                            <mat-option [value]="false">No Reminder</mat-option>
+                        </mat-select>
+                    </mat-form-field>
+                </div>
+                <div class="col-12 text-right my-2">
+                    <button class="ml-4 min-w-30" [disabled]="isSearchLaoder || isProductLoader" mat-flat-button
+                        [color]="'primary'" (click)="searchProduct()">
+                        <mat-icon [svgIcon]="'heroicons_outline:search'" *ngIf="!isSearchLaoder"></mat-icon>
+                        <span class="ml-2 mr-1" *ngIf="!isSearchLaoder">Search</span>
+                        <mat-progress-spinner *ngIf="isSearchLaoder" [diameter]="24" [mode]="'indeterminate'">
+                        </mat-progress-spinner>
+                    </button>
+                </div>
             </div>
-            <div class="px-8">
-                <!-- Cost -->
-                <ngx-skeleton-loader *ngIf="costLoader" count="3" appearance="line" animation="pulse" [theme]="{ 
-                    'background-color': '#dedede'
-                  }">
-                </ngx-skeleton-loader>
-                <div *ngIf="tempProdData && !costLoader">
-                    <div class="text-xl font-semibold tracking-tight leading-8">Cost</div>
-                    <table class="table table-striped" *ngIf="tempProdData.costs.length > 0">
-                        <thead>
-                            <tr>
-                                <th *ngFor="let cost of tempProdData.costs">{{cost.quantity}}</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td *ngFor="let cost of tempProdData.costs">{{cost.cost | currency}}</td>
-                            </tr>
-                        </tbody>
-                    </table>
-                    <div *ngIf="tempProdData.costs.length == 0">No cost found for this product.</div>
-                </div>
-                <!-- Imprints -->
-                <div class="text-xl font-semibold tracking-tight leading-8">Imprints</div>
-                <ngx-skeleton-loader *ngIf="imprintLoader" count="8" appearance="line" animation="pulse" [theme]="{ 
-                    'background-color': '#dedede'
-                  }">
-                </ngx-skeleton-loader>
-                <div *ngIf="tempProdData && !imprintLoader">
-                    <ul *ngIf="tempProdData.imprints.length > 0">
-                        <li *ngFor="let item of tempProdData.imprints | paginate : {
-                            itemsPerPage: 10,
-                            currentPage: tempProdData.page,
-                            totalItems: tempProdData.totalImprints
-                          };let i=index">
-                            {{i+1}}. {{item.methodName}}/{{item.locationName}}-({{item.companyName}})
-                        </li>
-                    </ul>
-                    <div *ngIf="tempProdData.imprints.length < tempProdData.totalImprints" class="text-center mt-2">
-                        <pagination-controls previousLabel="Prev" nextLabel="Next"
-                            (pageChange)="getNextImprintsForProduct($event)">
-                        </pagination-controls>
-                    </div>
-                    <div *ngIf="tempProdData.imprints.length == 0">No imprints found for this product.</div>
-                </div>
+            <!-- <div class="flex-auto">
+                <mat-form-field class="fuse-mat-dense fuse-mat-no-subscript  min-w-50">
+                    <mat-icon class="icon-size-5" matPrefix [svgIcon]="'heroicons_solid:search'"></mat-icon>
+                    <input (keyup.enter)="searchProduct()" matInput [(ngModel)]="searchKeyword" [autocomplete]="'off'"
+                        [placeholder]="'Search Customers'">
+                </mat-form-field>
+                <mat-form-field class="fuse-mat-dense fuse-mat-no-subscript  min-w-50">
+                    <mat-icon class="icon-size-5" matPrefix [svgIcon]="'heroicons_solid:search'"></mat-icon>
+                    <input (keyup.enter)="searchProduct()" matInput [(ngModel)]="searchKeyword" [autocomplete]="'off'"
+                        [placeholder]="'Search Customers'">
+                </mat-form-field>
+            </div> -->
+            <!-- Add contact button -->
 
+        </div>
+    </div>
+
+    <!-- Contacts list -->
+    <div class="relative">
+        <div class="p-5" *ngIf="isProductLoader">
+            <ngx-skeleton-loader count="8" appearance="line" animation="pulse" [theme]="{ 
+                'background-color': '#dedede'
+              }">
+            </ngx-skeleton-loader>
+        </div>
+        <div *ngIf="!isProductLoader">
+            <div *ngIf="productsData.length > 0;else other_content" class="w-full">
+                <table class="w-full min-w-320 table-fixed bg-transparent" mat-table [dataSource]="productsData"
+                    [trackBy]="trackByFn">
+
+                    <!-- id -->
+                    <ng-container matColumnDef="_id">
+                        <th class="w-5 bg-gray-50 dark:bg-black dark:bg-opacity-5" mat-header-cell *matHeaderCellDef
+                            mat-sort-header disableClear>
+                            ID
+                        </th>
+                        <td class="pr-2" mat-cell *matCellDef="let product" style="cursor: pointer;">
+                            {{product?.pk_userID || not_available}}
+                        </td>
+                    </ng-container>
+
+                    <!-- First Name -->
+                    <ng-container matColumnDef="first_name">
+                        <th class="w-5 bg-gray-50 dark:bg-black dark:bg-opacity-5" mat-header-cell *matHeaderCellDef
+                            mat-sort-header disableClear>
+                            First Name
+                        </th>
+                        <td class="pr-2" mat-cell *matCellDef="let product" style="cursor: pointer;">
+                            {{product?.firstName || not_available}}
+                        </td>
+                    </ng-container>
+
+                    <!-- Last Name -->
+                    <ng-container matColumnDef="last_name">
+                        <th class="w-5 bg-gray-50 dark:bg-black dark:bg-opacity-5" mat-header-cell *matHeaderCellDef
+                            mat-sort-header disableClear>
+                            Last Name
+                        </th>
+                        <td class="pr-2" mat-cell *matCellDef="let product" style="cursor: pointer;">
+                            {{product?.lastName || not_available}}
+                        </td>
+                    </ng-container>
+
+                    <!-- Email -->
+                    <ng-container matColumnDef="customer_email">
+                        <th class="w-10 bg-gray-50 dark:bg-black dark:bg-opacity-5" mat-header-cell *matHeaderCellDef
+                            mat-sort-header disableClear>
+                            Email
+                        </th>
+                        <td class="pr-2 truncate" mat-cell *matCellDef="let product" style="cursor: pointer;">
+                            {{product?.email || not_available}}
+                        </td>
+                    </ng-container>
+
+                    <!-- Store -->
+                    <ng-container matColumnDef="customer_store">
+                        <th class="w-10 bg-gray-50 dark:bg-black dark:bg-opacity-5" mat-header-cell *matHeaderCellDef
+                            mat-sort-header disableClear>
+                            Store
+                        </th>
+                        <td mat-cell *matCellDef="let product" style="cursor: pointer;">
+                            {{product?.storeName || not_available}}
+                        </td>
+                    </ng-container>
+
+                    <!-- Price -->
+                    <ng-container matColumnDef="customer_company">
+                        <th class="w-10 bg-gray-50 dark:bg-black dark:bg-opacity-5" mat-header-cell *matHeaderCellDef
+                            mat-sort-header disableClear>
+                            Company
+                        </th>
+                        <td class="pr-4" mat-cell *matCellDef="let product" style="cursor: pointer;">
+                            {{product?.companyName || not_available}}
+                        </td>
+                    </ng-container>
+                    <ng-container matColumnDef="mrp">
+                        <th class="w-10 bg-gray-50 dark:bg-black dark:bg-opacity-5" mat-header-cell *matHeaderCellDef
+                            mat-sort-header disableClear>
+                            MRP
+                        </th>
+                        <td class="pr-4" mat-cell *matCellDef="let product" style="cursor: pointer;">
+                            {{product?.MRP | date:'MM/dd/yyyy'}}
+                        </td>
+                    </ng-container>
+                    <!-- Details -->
+                    <ng-container matColumnDef="details">
+                        <th class="w-10 pr-8 bg-gray-50 dark:bg-black dark:bg-opacity-5" mat-header-cell
+                            *matHeaderCellDef>
+                            Details
+                        </th>
+                        <td class="pr-8" mat-cell *matCellDef="let product">
+                            <button class="min-w-10 min-h-7 h-7 px-2 leading-6" mat-stroked-button
+                                (click)="toggleDetails(product.pk_userID)">
+                                <mat-icon class="icon-size-5"
+                                    [svgIcon]="selectedCustomer?.pk_userID === product.pk_userID ? 'heroicons_solid:chevron-up' : 'heroicons_solid:chevron-down'">
+                                </mat-icon>
+                            </button>
+                        </td>
+                    </ng-container>
+
+                    <tr class="shadow" mat-header-row *matHeaderRowDef="displayedColumns; sticky: true">
+                    </tr>
+                    <tr class="h-16 hover:bg-gray-100 dark:hover:bg-hover" mat-row
+                        *matRowDef="let product; columns: displayedColumns;"
+                        [routerLink]="['/apps/customers',product.pk_userID]">
+                    </tr>
+                </table>
+                <mat-paginator #paginator class="border-b sm:border-t sm:border-b-0 z-10 bg-gray-50 dark:bg-transparent"
+                    [length]="totalRecords" [pageIndex]="0" [pageSize]="20" (page)="getNextProductData($event)"
+                    [hidePageSize]="true">
+                </mat-paginator>
             </div>
-        </mat-drawer>
-
-        <mat-drawer-content class="flex flex-col">
-
-            <!-- Main -->
-            <div class="flex-auto">
-
-                <!-- Header -->
-                <div class="flex flex-col sm:flex-row md:flex-col flex-auto justify-between py-8 px-6 md:px-8 border-b">
-
-                    <!-- Title -->
-                    <div>
-                        <div class="text-4xl font-extrabold tracking-tight leading-none">
-                            Customers</div>
-                        <!-- <div class="ml-0.5 font-medium text-secondary">
-                            <ng-container *ngIf="totalRecords > 0">
-                                {{totalRecords}}
-                            </ng-container>
-                        </div> -->
-                    </div>
-
-                    <!-- Main actions -->
-                    <div class="flex items-center mt-4 sm:mt-0 md:mt-4">
-                        <!-- Search -->
-                        <div class="flex-auto">
-                            <mat-form-field class="fuse-mat-dense fuse-mat-no-subscript w-full min-w-50">
-                                <mat-icon class="icon-size-5" matPrefix [svgIcon]="'heroicons_solid:search'"></mat-icon>
-                                <input (keyup.enter)="searchProduct()" matInput [(ngModel)]="searchKeyword"
-                                    [autocomplete]="'off'" [placeholder]="'Search Customers'">
-                            </mat-form-field>
-                        </div>
-                        <!-- Add contact button -->
-                        <button class="ml-4 min-w-30" [disabled]="isSearchLaoder || isProductLoader" mat-flat-button
-                            [color]="'primary'" (click)="searchProduct()">
-                            <mat-icon [svgIcon]="'heroicons_outline:search'" *ngIf="!isSearchLaoder"></mat-icon>
-                            <span class="ml-2 mr-1" *ngIf="!isSearchLaoder">Search</span>
-                            <mat-progress-spinner *ngIf="isSearchLaoder" [diameter]="24" [mode]="'indeterminate'">
-                            </mat-progress-spinner>
-                        </button>
-                    </div>
+            <!-- No product Found -->
+            <ng-template #other_content>
+                <div class="text-secondary font-semibold p-5 text-center">
+                    Your search did not return any results.
                 </div>
-
-                <!-- Contacts list -->
-                <div class="relative">
-                    <div class="p-5" *ngIf="isProductLoader">
-                        <ngx-skeleton-loader count="8" appearance="line" animation="pulse" [theme]="{ 
-                            'background-color': '#dedede'
-                          }">
-                        </ngx-skeleton-loader>
-                    </div>
-                    <div *ngIf="!isProductLoader">
-                        <div *ngIf="productsData.length > 0;else other_content" class="w-full">
-                            <table class="w-full min-w-320 table-fixed bg-transparent" mat-table
-                                [dataSource]="productsData" [trackBy]="trackByFn">
-
-                                <!-- id -->
-                                <ng-container matColumnDef="_id">
-                                    <th class="w-5 bg-gray-50 dark:bg-black dark:bg-opacity-5" mat-header-cell
-                                        *matHeaderCellDef mat-sort-header disableClear>
-                                        ID
-                                    </th>
-                                    <td class="pr-2" mat-cell *matCellDef="let product" style="cursor: pointer;">
-                                        {{product?.pk_userID || not_available}}
-                                    </td>
-                                </ng-container>
-
-                                <!-- First Name -->
-                                <ng-container matColumnDef="first_name">
-                                    <th class="w-5 bg-gray-50 dark:bg-black dark:bg-opacity-5" mat-header-cell
-                                        *matHeaderCellDef mat-sort-header disableClear>
-                                        First Name
-                                    </th>
-                                    <td class="pr-2" mat-cell *matCellDef="let product" style="cursor: pointer;">
-                                        {{product?.firstName || not_available}}
-                                    </td>
-                                </ng-container>
-
-                                <!-- Last Name -->
-                                <ng-container matColumnDef="last_name">
-                                    <th class="w-5 bg-gray-50 dark:bg-black dark:bg-opacity-5" mat-header-cell
-                                        *matHeaderCellDef mat-sort-header disableClear>
-                                        Last Name
-                                    </th>
-                                    <td class="pr-2" mat-cell *matCellDef="let product" style="cursor: pointer;">
-                                        {{product?.lastName || not_available}}
-                                    </td>
-                                </ng-container>
-
-                                <!-- Email -->
-                                <ng-container matColumnDef="customer_email">
-                                    <th class="w-10 bg-gray-50 dark:bg-black dark:bg-opacity-5" mat-header-cell
-                                        *matHeaderCellDef mat-sort-header disableClear>
-                                        Email
-                                    </th>
-                                    <td class="pr-2 truncate" mat-cell *matCellDef="let product"
-                                        style="cursor: pointer;">
-                                        {{product?.email || not_available}}
-                                    </td>
-                                </ng-container>
-
-                                <!-- Store -->
-                                <ng-container matColumnDef="customer_store">
-                                    <th class="w-10 bg-gray-50 dark:bg-black dark:bg-opacity-5" mat-header-cell
-                                        *matHeaderCellDef mat-sort-header disableClear>
-                                        Store
-                                    </th>
-                                    <td mat-cell *matCellDef="let product" style="cursor: pointer;">
-                                        {{product?.storeName || not_available}}
-                                    </td>
-                                </ng-container>
-
-                                <!-- Price -->
-                                <ng-container matColumnDef="customer_company">
-                                    <th class="w-10 bg-gray-50 dark:bg-black dark:bg-opacity-5" mat-header-cell
-                                        *matHeaderCellDef mat-sort-header disableClear>
-                                        Company
-                                    </th>
-                                    <td class="pr-4" mat-cell *matCellDef="let product" style="cursor: pointer;">
-                                        {{product?.companyName || not_available}}
-                                    </td>
-                                </ng-container>
-                                <ng-container matColumnDef="mrp">
-                                    <th class="w-10 bg-gray-50 dark:bg-black dark:bg-opacity-5" mat-header-cell
-                                        *matHeaderCellDef mat-sort-header disableClear>
-                                        MRP
-                                    </th>
-                                    <td class="pr-4" mat-cell *matCellDef="let product" style="cursor: pointer;">
-                                        {{product?.MRP | date:'MM/dd/yyyy'}}
-                                    </td>
-                                </ng-container>
-                                <!-- Details -->
-                                <ng-container matColumnDef="details">
-                                    <th class="w-10 pr-8 bg-gray-50 dark:bg-black dark:bg-opacity-5" mat-header-cell
-                                        *matHeaderCellDef>
-                                        Details
-                                    </th>
-                                    <td class="pr-8" mat-cell *matCellDef="let product">
-                                        <button class="min-w-10 min-h-7 h-7 px-2 leading-6" mat-stroked-button
-                                            (click)="toggleDetails(product.pk_userID)">
-                                            <mat-icon class="icon-size-5"
-                                                [svgIcon]="selectedCustomer?.pk_userID === product.pk_userID ? 'heroicons_solid:chevron-up' : 'heroicons_solid:chevron-down'">
-                                            </mat-icon>
-                                        </button>
-                                    </td>
-                                </ng-container>
-
-                                <tr class="shadow" mat-header-row *matHeaderRowDef="displayedColumns; sticky: true">
-                                </tr>
-                                <tr class="h-16 hover:bg-gray-100 dark:hover:bg-hover" mat-row
-                                    *matRowDef="let product; columns: displayedColumns;"
-                                    [routerLink]="['/apps/customers',product.pk_userID]">
-                                </tr>
-                            </table>
-                            <mat-paginator #paginator
-                                class="border-b sm:border-t sm:border-b-0 z-10 bg-gray-50 dark:bg-transparent"
-                                [length]="totalRecords" [pageIndex]="0" [pageSize]="20"
-                                (page)="getNextProductData($event)" [hidePageSize]="true">
-                            </mat-paginator>
-                        </div>
-                        <!-- No product Found -->
-                        <ng-template #other_content>
-                            <div class="text-secondary font-semibold p-5 text-center">
-                                Your search did not return any results.
-                            </div>
-                        </ng-template>
-                    </div>
-                </div>
-
-            </div>
-
-        </mat-drawer-content>
-
-    </mat-drawer-container>
+            </ng-template>
+        </div>
+    </div>
 
 </div>

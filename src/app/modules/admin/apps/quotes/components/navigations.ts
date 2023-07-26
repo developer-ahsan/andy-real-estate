@@ -22,7 +22,7 @@ export const navigations = [
     },
     {
         id: 2,
-        title: 'Modify Report',
+        title: 'Modify Quote',
         icon: 'heroicons_outline:document-report',
         route: 'modify-reports',
         children: []

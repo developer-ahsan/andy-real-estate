@@ -10,6 +10,7 @@ import { Contact, Country } from 'app/modules/admin/apps/contacts/contacts.types
 import { ContactsService } from 'app/modules/admin/apps/contacts/contacts.service';
 import { SearchService } from '../search.service';
 import { MatPaginator } from '@angular/material/paginator';
+import { DashboardsService } from 'app/modules/admin/dashboards/dashboard.service';
 
 @Component({
     selector: 'search-customers',
@@ -45,6 +46,10 @@ export class SearchCustomersComponents implements OnInit, OnDestroy {
     tempProdData: any;
     imprintLoader: boolean = false;
     costLoader: boolean = false;
+    allStores: any = [];
+    ngSelectedStore = 0;
+    ngSelectedStatus = -1;
+    ngSelectedReminder = 'all';
     /**
      * Constructor
      */
@@ -54,7 +59,7 @@ export class SearchCustomersComponents implements OnInit, OnDestroy {
         private _searchService: SearchService,
         @Inject(DOCUMENT) private _document: any,
         private _router: Router,
-        private _fuseMediaWatcherService: FuseMediaWatcherService
+        private _commonService: DashboardsService
     ) {
     }
 
@@ -67,53 +72,20 @@ export class SearchCustomersComponents implements OnInit, OnDestroy {
      */
     ngOnInit(): void {
         this._activatedRoute.params.subscribe(params => {
+            this.allStores = [];
             this.searchKeyword = params.value;
             this.isProductLoader = true;
             this._changeDetectorRef.markForCheck();
+            this.getStoresList();
             this.getCustomersData(1);
-        })
-
-
-        // Subscribe to MatDrawer opened change
-        this.matDrawer.openedChange.subscribe((opened) => {
-            if (!opened) {
-                // Remove the selected contact when drawer closed
-                this.selectedContact = null;
-
-                // Mark for check
-                this._changeDetectorRef.markForCheck();
-            }
         });
-
-        // Subscribe to media changes
-        this._fuseMediaWatcherService.onMediaChange$
-            .pipe(takeUntil(this._unsubscribeAll))
-            .subscribe(({ matchingAliases }) => {
-
-                // Set the drawerMode if the given breakpoint is active
-                if (matchingAliases.includes('lg')) {
-                    this.drawerMode = 'side';
-                }
-                else {
-                    this.drawerMode = 'over';
-                }
-
-                // Mark for check
-                this._changeDetectorRef.markForCheck();
-            });
-
-        // Listen for shortcuts
-        fromEvent(this._document, 'keydown')
-            .pipe(
-                takeUntil(this._unsubscribeAll),
-                filter<KeyboardEvent>(event =>
-                    (event.ctrlKey === true || event.metaKey) // Ctrl or Cmd
-                    && (event.key === '/') // '/'
-                )
-            )
-            .subscribe(() => {
-                this.createContact();
-            });
+    }
+    getStoresList() {
+        this.allStores = [];
+        this._commonService.storesData$.pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+            this.allStores.push({ pk_storeID: 0, storeName: 'All Stores' });
+            this.allStores = this.allStores.concat(res["data"]);
+        });
     }
     searchProduct() {
         if (this.searchKeyword == '') {
@@ -131,6 +103,9 @@ export class SearchCustomersComponents implements OnInit, OnDestroy {
         let params = {
             keyword: this.searchKeyword,
             page: page,
+            store_id: this.ngSelectedStore,
+            user_status: this.ngSelectedStatus,
+            bln_reminder: this.ngSelectedReminder,
             list: true,
             size: 20,
             sort_by: 'storeName',
@@ -165,57 +140,7 @@ export class SearchCustomersComponents implements OnInit, OnDestroy {
         };
         this.getCustomersData(this.page);
     };
-    toggleDrawer(product) {
-        this.imprintLoader = false;
-        this.costLoader = false;
-        this.matDrawer.toggle();
-        product.page = 1;
-        product.totalImprints = 0;
-        this.getImprintsForProduct(product)
-        if (!product.costs) {
-            this.getProductNetCost(product);
-        }
-        this.tempProdData = product;
-        this._changeDetectorRef.markForCheck();
-    }
-    getNextImprintsForProduct(event) {
-        this.tempProdData.page = event;
-        this.getImprintsForProduct(this.tempProdData);
-    };
-    getImprintsForProduct(product) {
-        product.imprints = [];
-        this.imprintLoader = true;
-        let params = {
-            imprint: true,
-            product_id: product.pk_productID,
-            page: product.page,
-            size: 10
-        }
-        this._searchService.getCustomersSearchData(params).pipe(takeUntil(this._unsubscribeAll), finalize(() => {
-            this.imprintLoader = false;
-            this._changeDetectorRef.markForCheck();
-        })).subscribe(res => {
-            product.imprints = res["data"];
-            product.totalImprints = res["totalRecords"];
-            this.tempProdData = product;
-        })
-    }
-    getProductNetCost(product) {
-        product.costs = [];
-        this.costLoader = true;
-        let params = {
-            net_cost: true,
-            cost: true,
-            product_id: product.pk_productID
-        }
-        this._searchService.getCustomersSearchData(params).pipe(takeUntil(this._unsubscribeAll), finalize(() => {
-            this.costLoader = false;
-            this._changeDetectorRef.markForCheck();
-        })).subscribe(res => {
-            product.costs = res["data"];
-            this.tempProdData = product;
-        })
-    }
+
     /**
     * On destroy
     */
