@@ -226,7 +226,7 @@ export class OrderArtWorkComponent implements OnInit, OnDestroy {
   getArworkFilesNew(imprint) {
     let payload = {
       files_fetch: true,
-      path: `artwork/${this.orderDetail.fk_storeID}/${this.orderDetail.fk_storeUserID}/${this.orderDetail.pk_orderID}/${imprint.fk_orderLineID}/`
+      path: `/artwork/${this.orderDetail.fk_storeID}/${this.orderDetail.fk_storeUserID}/${this.orderDetail.pk_orderID}/${imprint.fk_orderLineID}/`
     }
     this._changeDetectorRef.markForCheck();
     this._orderService.getFiles(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(files => {

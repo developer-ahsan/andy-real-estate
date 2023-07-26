@@ -34,7 +34,10 @@ export class CustomersListComponent implements OnInit, OnDestroy {
     pageSize: number;
     pageNo: number = 1;;
     keywordSearch: string = '';
-
+    allStores: any = [];
+    ngSelectedStore = 0;
+    ngSelectedStatus = -1;
+    ngSelectedReminder = 'all';
     /**
      * Constructor
      */
