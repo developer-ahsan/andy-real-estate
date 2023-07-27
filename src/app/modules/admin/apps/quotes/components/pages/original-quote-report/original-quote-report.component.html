@@ -8,9 +8,11 @@
                     <div class="text-2xl font-bold">
                         Quote Original Report
                     </div>
-                    <div *ngIf="url">
+                    <div *ngIf="!isOriginalReport" class="alert alert-warning m-5 ">
+                        An original quote report does not exist for this quote.
                     </div>
-                    <iframe class="w-full " style="height: 100vh" frameborder="0" [src]="urlSafe"></iframe>
+                    <iframe *ngIf="isOriginalReport" class="w-full " style="height: 100vh" frameborder="0"
+                        [src]="urlSafe"></iframe>
                 </div>
             </fuse-card>
         </div>

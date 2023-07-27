@@ -56,22 +56,28 @@ export class QuoteReportsComponent implements OnInit, OnDestroy {
       cart_id: this.selectedQuote.pk_cartID
     }
     this._quotesService.getQuoteData(params).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
-      console.log(res);
       res["data"].forEach(element => {
+        element.subTotal = Number(element.royaltyPrice) + Number(element.shippingGroundPrice);
+        element.setupPriceTotal = 0;
         element.decorators = [];
         element.colors = [];
+        element.artworkFiles = [];
         if (element.Decoration) {
-          let decoration = element.Decoration.split("::");
-          decoration.forEach(imprint => {
+          let decoration = element.Decoration.split("#_");
+          decoration.forEach((imprint, index) => {
             let splitImprint = imprint.split('||');
-            element.decorators.push({ locationName: splitImprint[0], methodName: splitImprint[1], price: splitImprint[3], setupPrice: splitImprint[2] });
+            element.decorators.push({ artworkFiles: [], pk_cartLineID: element.pk_cartLineID, id: splitImprint[0], locationName: splitImprint[1], methodName: splitImprint[2], setupPrice: Number(splitImprint[3]), runningPrice: Number(splitImprint[4]), colors: splitImprint[5], price: Number(splitImprint[7]) });
+            element.subTotal += Number(splitImprint[7]);
+            element.setupPriceTotal += Number(splitImprint[3]);
+            this.getArworkFiles(element, Number(splitImprint[0]));
           });
         }
         if (element.Colors) {
-          let colors = element.Colors.split("::");
+          let colors = element.Colors.split("#_");
           colors.forEach(color => {
             let splitColor = color.split('||');
             element.colors.push({ colorName: splitColor[0], unitPrice: splitColor[1], totalPrice: splitColor[2] });
+            element.subTotal += Number(splitColor[2]);
           });
         }
       });
@@ -87,6 +93,22 @@ export class QuoteReportsComponent implements OnInit, OnDestroy {
     const quoteFileName = `${this.selectedQuote.storeName}-Quote-${this.selectedQuote.pk_cartID}.pdf`;
     let url = `https://assets.consolidus.com/globalAssets/Stores/quoteExports/${quoteFileName}`;
     window.open(url, '_blank');
+  }
+  getArworkFiles(data, imprintID) {
+    let payload = {
+      files_fetch: true,
+      path: `/artwork/temp/${this.selectedQuote.pk_cartID}/${data.pk_cartLineID}/${imprintID}/`
+    }
+    this._changeDetectorRef.markForCheck();
+    this._quotesService.getFiles(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(files => {
+      files["data"].forEach(file => {
+        file.imprintID = imprintID;
+        data.artworkFiles.push(file);
+      });
+      this._changeDetectorRef.markForCheck();
+    }, err => {
+      this._changeDetectorRef.markForCheck();
+    });
   }
   /**
      * On destroy

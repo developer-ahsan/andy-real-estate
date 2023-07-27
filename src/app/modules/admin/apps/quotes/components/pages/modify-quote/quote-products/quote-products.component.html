@@ -1,6 +1,24 @@
 <div class="mx-3 bg-card rounded-2xl shadow p-5">
-    <div class="text-lg font-bold text-secondary border-b mb-2">Shipping Information</div>
-    <div class="alert alert-primary text-secondary text-sm" role="alert">
-        <p> This is how the delivery information currently appears to the customer.</p>
+    <ngx-skeleton-loader count="8" appearance="line" animation="pulse" *ngIf="isLoading">
+    </ngx-skeleton-loader>
+    <div *ngIf="!isLoading">
+        <div class="text-lg font-bold text-secondary mb-2">Quote Products</div>
+        <div class="alert alert-primary text-secondary text-sm" role="alert">
+            <p> This is how the delivery information currently appears to the customer.</p>
+        </div>
+        <mat-form-field class="w-full">
+            <mat-label>Prducts</mat-label>
+            <input matInput placeholder="Search Products" matTooltip="Search Products by name" [matAutocomplete]="auto"
+                [formControl]="searchProductCtrl">
+            <mat-autocomplete class="w-full" #auto="matAutocomplete" (optionSelected)="onSelected($event)"
+                [displayWith]="displayWith">
+                <mat-option *ngIf="isSearchingProduct" class="is-loading">Loading...</mat-option>
+                <ng-container *ngIf="!isSearchingProduct">
+                    <mat-option *ngFor="let item of allProducts" [value]="item">
+                        <span>{{item.productName}}</span>
+                    </mat-option>
+                </ng-container>
+            </mat-autocomplete>
+        </mat-form-field>
     </div>
 </div>

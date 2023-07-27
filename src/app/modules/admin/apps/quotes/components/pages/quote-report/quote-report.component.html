@@ -31,15 +31,15 @@
                                 <div class="col-span-12">
                                     <div class="grid grid-cols-12">
                                         <div class="col-span-6"></div>
-                                        <div class="col-span-3 font-bold text-center">Unit</div>
-                                        <div class="col-span-3 font-bold text-center">Total</div>
+                                        <div class="col-span-3 font-bold ">Unit</div>
+                                        <div class="col-span-3 font-bold ">Total</div>
                                     </div>
                                     <div class="grid grid-cols-12" *ngFor="let color of quote.colors">
                                         <div class="col-span-6 text-sm">{{color.colorName}}</div>
-                                        <div class="col-span-3 font-bold text-sm text-center">{{color.unitPrice |
+                                        <div class="col-span-3 font-bold text-sm ">{{color.unitPrice |
                                             currency}}
                                         </div>
-                                        <div class="text-sm col-span-3 font-bold text-center">{{color.totalPrice |
+                                        <div class="text-sm col-span-3 font-bold ">{{color.totalPrice |
                                             currency}}
                                         </div>
                                     </div>
@@ -52,15 +52,27 @@
                                     <div class="grid grid-cols-12" *ngFor="let decoration of quote.decorators">
                                         <div class="col-span-6 text-sm">
                                             {{decoration.locationName}} / {{decoration.methodName}}</div>
-                                        <div class="col-span-3 font-bold text-sm text-center">
+                                        <div class="col-span-3 font-bold text-sm ">
                                         </div>
-                                        <div class="text-sm col-span-3 font-bold text-center">{{decoration.price |
+                                        <div class="text-sm col-span-3 font-bold ">{{decoration.price |
                                             currency}}
                                         </div>
-                                        <div class="col-span-6 text-sm"> Setup</div>
-                                        <div class="col-span-3 font-bold text-sm text-center"></div>
-                                        <div class="text-sm col-span-3 font-bold text-center">{{decoration.setupPrice |
-                                            currency}}
+                                        <div class="col-span-6 text-sm"> Setup: {{decoration.setupPrice |
+                                            currency}}</div>
+                                        <div class="col-span-3 font-bold text-sm "></div>
+                                        <div class="text-sm col-span-3 font-bold ">
+                                        </div>
+                                        <div class="col-span-6 text-sm" *ngIf="runningPrice > 0"> Add Running:
+                                            {{decoration.runningPrice |
+                                            currency}}</div>
+                                        <div class="col-span-3 font-bold text-sm " *ngIf="runningPrice > 0">
+                                        </div>
+                                        <div class="text-sm col-span-3 font-bold " *ngIf="runningPrice > 0">
+
+                                        </div>
+                                        <div class="col-span-6 text-sm">Colors: {{decoration.colors}}</div>
+                                        <div class="col-span-3 font-bold text-sm "></div>
+                                        <div class="text-sm col-span-3 font-bold ">
                                         </div>
                                     </div>
                                 </div>
@@ -69,13 +81,57 @@
                                     <div class="grid grid-cols-12">
                                         <div class="col-span-6 font-medium text-secondary">
                                             {{quote.royaltyName}}</div>
-                                        <div class="col-span-3 font-bold text-sm text-center">
+                                        <div class="col-span-3 font-bold text-sm ">
                                         </div>
-                                        <div class="text-secondary col-span-3 font-bold font-medium text-center">
+                                        <div class="text-secondary col-span-3 font-bold font-medium ">
                                             {{quote.royaltyPrice |
                                             currency}}
                                         </div>
                                     </div>
+                                </div>
+                                <!-- Shipping -->
+                                <div class="col-span-12 my-2">
+                                    <div class="grid grid-cols-12">
+                                        <div class="col-span-6 font-medium text-secondary">
+                                            Shipping</div>
+                                        <div class="col-span-3 font-bold text-sm ">
+                                        </div>
+                                        <div class="text-secondary col-span-3 font-bold font-medium ">
+                                            {{quote.shippingGroundPrice | currency}}
+                                        </div>
+                                    </div>
+                                </div>
+                                <!-- SubTotal -->
+                                <div class="col-span-12 my-2 border-b pb-2">
+                                    <div class="grid grid-cols-12">
+                                        <div class="col-span-6 font-medium text-secondary">
+                                            SubTotal</div>
+                                        <div class="col-span-3 font-bold text-sm ">
+                                        </div>
+                                        <div class="text-secondary col-span-3 font-bold font-medium ">
+                                            {{quote.subTotal | currency}}
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-span-12 my-2">
+                                    <div class="grid grid-cols-12">
+                                        <div class="col-span-6 font-medium text-secondary">
+                                            Setup: {{quote.setupPriceTotal | currency}}</div>
+                                        <div class="col-span-3 font-bold text-sm ">
+                                        </div>
+                                        <div class="text-secondary col-span-3 font-bold font-medium ">
+
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-span-12 my-2 border-b pb-2">
+                                    <div *ngFor="let file of quote.artworkFiles;let i=index">
+                                        <a href="https://assets.consolidus.com/artwork/temp/{{quote.pk_cartID}}/{{quote.pk_cartLineID}}/{{file.imprintID}}/{{file.FILENAME}}"
+                                            target="_blank">View
+                                            Artwork File #{{i+1}}</a>
+                                        <br />
+                                    </div>
+
                                 </div>
                             </div>
                         </div>

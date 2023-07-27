@@ -6,6 +6,7 @@ import { Subject } from 'rxjs';
 import { QuotesService } from '../../quotes.service';
 import { takeUntil } from 'rxjs/operators';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
+import { SmartArtService } from 'app/modules/admin/smartart/components/smartart.service';
 
 @Component({
   selector: 'app-original-quote-report',
@@ -21,9 +22,11 @@ export class QuoteOriginalComponent implements OnInit, OnDestroy {
   urlSafe: SafeResourceUrl;
 
   selectedQuote: any;
+  isOriginalReport: boolean = false
   constructor(
     private _changeDetectorRef: ChangeDetectorRef,
     private _QuotesService: QuotesService,
+    private _smartartService: SmartArtService,
     public sanitizer: DomSanitizer
   ) {
 
@@ -37,12 +40,28 @@ export class QuoteOriginalComponent implements OnInit, OnDestroy {
     this._QuotesService.qoutesDetails$.pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
       this.selectedQuote = res["data"][0];
       this.url = `https://assets.consolidus.com/globalAssets/Quotes/originalQuoteReport/${this.selectedQuote.pk_cartID}.html`;
-      this.urlSafe = this.sanitizer.bypassSecurityTrustResourceUrl(this.url);
-      setTimeout(() => {
-        this.isLoading = false;
-        this._changeDetectorRef.markForCheck();
-      }, 100);
+      this.checkFileExist(this.url)
+
     });
+  }
+  checkFileExist(url) {
+    let params = {
+      file_check: true,
+      url: url
+    }
+    this._smartartService.getSmartArtData(params).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+      this.isLoading = false;
+      if (res["isFileExist"]) {
+        this.isOriginalReport = true;
+        this.urlSafe = this.sanitizer.bypassSecurityTrustResourceUrl(this.url);
+      } else {
+        this.isOriginalReport = false;
+      }
+      this._changeDetectorRef.markForCheck();
+    }, err => {
+      this.isLoading = false;
+      this._changeDetectorRef.markForCheck();
+    })
   }
   /**
      * On destroy

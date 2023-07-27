@@ -4,7 +4,9 @@ import { Subject } from 'rxjs';
 import { QuotesService } from '../../quotes.service';
 import { environment } from 'environments/environment';
 import { takeUntil } from 'rxjs/operators';
-import { AddCartArtworkComment } from '../../quotes.types';
+import { AddCartArtworkComment, updateCartArtworkStatus } from '../../quotes.types';
+import moment from 'moment';
+import { AuthService } from 'app/core/auth/auth.service';
 declare var $: any;
 @Component({
   selector: 'app-artwork-details',
@@ -38,16 +40,34 @@ export class QuoteArtworkDetailsComponent implements OnInit, OnDestroy {
 
   artworkData: any = [];
   removeContent: any;
+  user: any
   constructor(
     private _changeDetectorRef: ChangeDetectorRef,
-    private _quoteService: QuotesService
+    private _quoteService: QuotesService,
+    private _authService: AuthService,
   ) { }
 
   ngOnInit(): void {
+    this.user = this._authService.parseJwt(this._authService.accessToken);
     this.isLoading = true;
     this._changeDetectorRef.markForCheck();
     this._quoteService.qoutesDetails$.pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
       this.quoteDetail = res["data"][0];
+      if (this.quoteDetail.programManagerDetails) {
+        let program_manager = this.quoteDetail.programManagerDetails.split('||');
+        this.quoteDetail.ManagerName = program_manager[0];
+        this.quoteDetail.ManagerEmail = program_manager[1];
+        this.quoteDetail.ManagerID = program_manager[2];
+      }
+      if (this.quoteDetail.artworkStatus.includes('7') || this.quoteDetail.artworkStatus.includes('9')) {
+        this.quoteDetail.mainStatus = true;
+        this.quoteDetail.statusName = 'All artwork approved';
+        this.quoteDetail.statusColor = 'text-green-600';
+      } else {
+        this.quoteDetail.mainStatus = false;
+        this.quoteDetail.statusName = 'Artwork pending';
+        this.quoteDetail.statusColor = 'text-red-600';
+      }
       this.getArtworkDetails();
     })
   }
@@ -60,11 +80,14 @@ export class QuoteArtworkDetailsComponent implements OnInit, OnDestroy {
       res["data"].forEach(element => {
         element.imprints = [];
         if (element.imprintDetails) {
-          let imprints = element.imprintDetails.split(';');
+          let imprints = element.imprintDetails.split('#_');
           imprints.forEach((imprint, index) => {
             let splitImprint = imprint.split('||');
-            element.imprints.push({ artworkFiles: [], productName: element.productName, pk_cartLineID: element.pk_cartLineID, id: splitImprint[0], locationName: splitImprint[5], methodName: splitImprint[6], comments: splitImprint[7], customerLogoBankID: splitImprint[3], locationLogoBankID: splitImprint[4], logoBankID: splitImprint[8] });
-            this.checkIfImageExists(element.imprints[index], `https://assets.consolidus.com/artwork/Proof/Quotes/${this.quoteDetail.storeUserID}/${this.quoteDetail.pk_cartID}/${element.pk_cartLineID}/${splitImprint[0]}.jpg`);
+            let find = element.imprints.find(elem => elem.id == splitImprint[0]);
+            if (!find) {
+              element.imprints.push({ artworkFiles: [], productName: element.productName, pk_cartLineID: element.pk_cartLineID, id: Number(splitImprint[0]), locationName: splitImprint[5], methodName: splitImprint[6], comments: splitImprint[7], customerLogoBankID: splitImprint[3], locationLogoBankID: splitImprint[4], logoBankID: splitImprint[8], statusName: splitImprint[9], blnRespond: splitImprint[10] });
+              this.checkIfImageExists(element.imprints[index], `https://assets.consolidus.com/artwork/Proof/Quotes/${this.quoteDetail.storeUserID}/${this.quoteDetail.pk_cartID}/${element.pk_cartLineID}/${splitImprint[0]}.jpg`);
+            }
             if (imprints.length == index + 1) {
               if (splitImprint[3] == 0 && splitImprint[4] == 0 && splitImprint[8] == 0) {
                 this.getArworkFilesNew(element);
@@ -215,45 +238,57 @@ export class QuoteArtworkDetailsComponent implements OnInit, OnDestroy {
     }
     this.modalContent.commentLoader = true;
     this._changeDetectorRef.markForCheck();
-    // let payload: AddCartArtworkComment = {
-    //   cartID: this.quoteDetail.pk_cartID,
-    //   cartLineID: this.modalContent.pk_cartLineID,
-    //   imprintID: this.modalContent.id,
-    //   productName: this.modalContent.productName,
-    //   locationName: this.modalContent.locationName,
-    //   methodName: this.modalContent.methodName,
-    //   storeName: this.quoteDetail.storeName,
-    //   userFirstName: string;
-    //   userLastName: string;
-    //   userEmail: string;
-    //   comment: this.artworkComment,
-    //   add_cartLine_artwork_comment: true
-
-    //   orderID: this.orderDetail.pk_orderID,
-    //   orderLineID: this.modalContent.fk_orderLineID,
-    //   imprintID: this.modalContent.pk_imprintID,
-    //   productName: this.modalContent.productName,
-    //   locationName: this.modalContent.locationName,
-    //   methodName: this.modalContent.methodName,
-    //   storeName: this.orderDetail.storeName,
-    //   userFirstName: this.orderDetail.userFirstName,
-    //   userLastName: this.orderDetail.userLastName,
-    //   userEmail: this.orderDetail.userEmail,
-    //   comment: this.artworkComment,
-    //   add_artwork_comment: true
-    // }
-    // this._orderService.orderPostCalls(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
-    //   if (res["success"]) {
-    //     this._orderService.snackBar(res["message"]);
-    //   }
-    //   this.modalContent.commentLoader = false;
-    //   this.modalContent.customerArtworkComment = `${this.modalContent.customerArtworkComment}<br /><br /> - Denise Cline Added A Comment ${moment().format('MM/DD/YY')} - <br /><br /> ${this.artworkComment}`;
-    //   this.artworkComment = '';
-    //   this._changeDetectorRef.markForCheck();
-    // }, err => {
-    //   this.modalContent.commentLoader = false;
-    //   this._changeDetectorRef.markForCheck();
-    // });
+    let payload: AddCartArtworkComment = {
+      cartID: this.quoteDetail.pk_cartID,
+      cartLineID: this.modalContent.pk_cartLineID,
+      imprintID: this.modalContent.id,
+      productName: this.modalContent.productName,
+      locationName: this.modalContent.locationName,
+      methodName: this.modalContent.methodName,
+      storeName: this.quoteDetail.storeName,
+      userName: this.quoteDetail.ManagerName,
+      userEmail: this.quoteDetail.ManagerEmail,
+      comment: this.artworkComment,
+      add_cartLine_artwork_comment: true
+    }
+    this._quoteService.AddQuoteData(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+      if (res["success"]) {
+        this._quoteService.snackBar(res["message"]);
+      }
+      this.modalContent.commentLoader = false;
+      this.modalContent.comments = `${this.modalContent.comments}<br /><br /> - ${this.user.name} Added A Comment (${moment().format('MM/DD/YY')} @ ${moment().format('LT')}) - <br /><br /> ${this.artworkComment}`;
+      this.artworkComment = '';
+      this._changeDetectorRef.markForCheck();
+    }, err => {
+      this.modalContent.commentLoader = false;
+      this._changeDetectorRef.markForCheck();
+    });
+  }
+  updateMarkRevisionNeeded(imprint) {
+    imprint.revisionLoader = true;
+    let respond = true;
+    if (imprint.blnRespond == 0) {
+      respond = false;
+    }
+    let payload: updateCartArtworkStatus = {
+      cartLineID: imprint.pk_cartLineID,
+      imprintID: imprint.id,
+      blnRespond: respond,
+      update_cartLine_artwork_status: true
+    }
+    this._quoteService.UpdateQuoteData(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+      if (res["success"]) {
+        this._quoteService.snackBar(res["message"]);
+        imprint.statusName = 'Artwork Revision';
+        this.quoteDetail.artworkStatus = 4;
+        this.quoteDetail.mainStatus = false;
+      }
+      imprint.revisionLoader = false;
+      this._changeDetectorRef.markForCheck();
+    }, err => {
+      imprint.revisionLoader = false;
+      this._changeDetectorRef.markForCheck();
+    });
   }
   ngOnDestroy(): void {
     // Unsubscribe from all subscriptions

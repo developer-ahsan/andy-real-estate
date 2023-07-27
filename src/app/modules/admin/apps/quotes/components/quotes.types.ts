@@ -88,8 +88,7 @@ export interface AddCartArtworkComment {
     locationName: string;
     methodName: string;
     storeName: string;
-    userFirstName: string;
-    userLastName: string;
+    userName: string;
     userEmail: string;
     comment: string;
     add_cartLine_artwork_comment: boolean;
