@@ -49,7 +49,7 @@ export class SearchCustomersComponents implements OnInit, OnDestroy {
     allStores: any = [];
     ngSelectedStore = 0;
     ngSelectedStatus = -1;
-    ngSelectedReminder = 'all';
+    ngSelectedReminder = -1;
     /**
      * Constructor
      */

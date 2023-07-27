@@ -39,7 +39,7 @@ export class CustomersListComponent implements OnInit, OnDestroy {
     ngKeyword = '';
     ngSelectedStore = 0;
     ngSelectedStatus = -1;
-    ngSelectedReminder = 'all';
+    ngSelectedReminder = -1;
     /**
      * Constructor
      */

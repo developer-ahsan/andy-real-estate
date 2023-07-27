@@ -48,7 +48,6 @@ export class OrderArtWorkComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.user = this._authService.parseJwt(this._authService.accessToken);
-    console.log(this.user);
     this.isLoading = true;
     this._changeDetectorRef.markForCheck();
     this._orderService.orderDetail$.pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
@@ -56,7 +55,7 @@ export class OrderArtWorkComponent implements OnInit, OnDestroy {
         this.orderDetail = res["data"][0];
         this.getOrderProducts();
       }
-    })
+    });
   }
   getOrderProducts() {
     this._orderService.orderProducts$.pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {

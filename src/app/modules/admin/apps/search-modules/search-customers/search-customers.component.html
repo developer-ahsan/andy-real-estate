@@ -48,9 +48,9 @@
                     <mat-form-field class="fuse-mat-dense fuse-mat-no-subscript w-full min-w-50">
                         <mat-label>Reminders</mat-label>
                         <mat-select matInput [(ngModel)]="ngSelectedReminder">
-                            <mat-option value="all">All</mat-option>
-                            <mat-option [value]="true">Has Reminder</mat-option>
-                            <mat-option [value]="false">No Reminder</mat-option>
+                            <mat-option [value]="-1">All</mat-option>
+                            <mat-option [value]="1">Has Reminder</mat-option>
+                            <mat-option [value]="2">No Reminder</mat-option>
                         </mat-select>
                     </mat-form-field>
                 </div>
