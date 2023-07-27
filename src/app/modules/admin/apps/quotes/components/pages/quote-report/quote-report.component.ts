@@ -64,7 +64,7 @@ export class QuoteReportsComponent implements OnInit, OnDestroy {
           let decoration = element.Decoration.split("::");
           decoration.forEach(imprint => {
             let splitImprint = imprint.split('||');
-            element.decorators.push({ locationName: splitImprint[0], methodName: splitImprint[1] });
+            element.decorators.push({ locationName: splitImprint[0], methodName: splitImprint[1], price: splitImprint[3], setupPrice: splitImprint[2] });
           });
         }
         if (element.Colors) {

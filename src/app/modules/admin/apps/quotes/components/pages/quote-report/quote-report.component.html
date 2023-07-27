@@ -34,12 +34,50 @@
                                         <div class="col-span-3 font-bold text-center">Unit</div>
                                         <div class="col-span-3 font-bold text-center">Total</div>
                                     </div>
+                                    <div class="grid grid-cols-12" *ngFor="let color of quote.colors">
+                                        <div class="col-span-6 text-sm">{{color.colorName}}</div>
+                                        <div class="col-span-3 font-bold text-sm text-center">{{color.unitPrice |
+                                            currency}}
+                                        </div>
+                                        <div class="text-sm col-span-3 font-bold text-center">{{color.totalPrice |
+                                            currency}}
+                                        </div>
+                                    </div>
                                 </div>
-
+                                <div class="col-span-12 text-sm font-bold">Total Quantity: {{quote.orderQuantity}}</div>
+                                <!-- Decorations -->
+                                <div class="col-span-12 pb-2 my-2 border-b font-medium text-md text-secondary">
+                                    Decoration</div>
+                                <div class="col-span-12">
+                                    <div class="grid grid-cols-12" *ngFor="let decoration of quote.decorators">
+                                        <div class="col-span-6 text-sm">
+                                            {{decoration.locationName}} / {{decoration.methodName}}</div>
+                                        <div class="col-span-3 font-bold text-sm text-center">
+                                        </div>
+                                        <div class="text-sm col-span-3 font-bold text-center">{{decoration.price |
+                                            currency}}
+                                        </div>
+                                        <div class="col-span-6 text-sm"> Setup</div>
+                                        <div class="col-span-3 font-bold text-sm text-center"></div>
+                                        <div class="text-sm col-span-3 font-bold text-center">{{decoration.setupPrice |
+                                            currency}}
+                                        </div>
+                                    </div>
+                                </div>
+                                <!-- Royalities -->
+                                <div class="col-span-12 my-2">
+                                    <div class="grid grid-cols-12">
+                                        <div class="col-span-6 font-medium text-secondary">
+                                            {{quote.royaltyName}}</div>
+                                        <div class="col-span-3 font-bold text-sm text-center">
+                                        </div>
+                                        <div class="text-secondary col-span-3 font-bold font-medium text-center">
+                                            {{quote.royaltyPrice |
+                                            currency}}
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
-                            <div class="grid grid-cols-12 gap-x-1">
-                            </div>
-
                         </div>
                     </div>
                 </div>

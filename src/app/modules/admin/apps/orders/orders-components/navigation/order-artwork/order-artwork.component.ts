@@ -277,7 +277,7 @@ export class OrderArtWorkComponent implements OnInit, OnDestroy {
         this._orderService.snackBar(res["message"]);
       }
       this.modalContent.commentLoader = false;
-      this.modalContent.customerArtworkComment = `${this.modalContent.customerArtworkComment}<br /><br /> - ${this.user.name} Added A Comment ${moment().format('MM/DD/YY')} - <br /><br /> ${this.artworkComment}`;
+      this.modalContent.customerArtworkComment = `${this.modalContent.customerArtworkComment}<br /><br /> - ${this.user.name} Added A Comment (${moment().format('MM/DD/YY')} @ ${moment().format('LT')}) - <br /><br /> ${this.artworkComment}`;
       this.artworkComment = '';
       this._changeDetectorRef.markForCheck();
     }, err => {

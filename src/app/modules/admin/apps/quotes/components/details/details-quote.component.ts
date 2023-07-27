@@ -87,6 +87,12 @@ export class QuotesDetailsComponent implements OnInit, OnDestroy {
       .pipe(takeUntil(this._unsubscribeAll))
       .subscribe((quote) => {
         this.selectedQuoteDetail = quote["data"][0];
+        if (this.selectedQuoteDetail.programManagerDetails) {
+          let program_manager = this.selectedQuoteDetail.programManagerDetails.split('||');
+          this.selectedQuoteDetail.ManagerName = program_manager[0];
+          this.selectedQuoteDetail.ManagerEmail = program_manager[1];
+          this.selectedQuoteDetail.ManagerID = program_manager[2];
+        }
         if (this.selectedQuoteDetail.artworkStatus.includes('7') || this.selectedQuoteDetail.artworkStatus.includes('9')) {
           this.selectedQuoteDetail.statusName = 'All artwork approved';
           this.selectedQuoteDetail.statusColor = 'text-green-600';

@@ -50,10 +50,11 @@ import { VendorStatusGuard } from './quotes-status.guard';
 import { QuoteModifyComponent } from './components/pages/modify-quote/modify-quote.component';
 import { QuoteContactInfoComponent } from './components/pages/modify-quote/quote-contact-info/quote-contact-info.component';
 import { QuoteOrderDetailsComponent } from './components/pages/modify-quote/quote-details/quote-order-details.component';
+import { QuoteProductsComponent } from './components/pages/modify-quote/quote-products/quote-products.component';
 
 @NgModule({
     declarations: [
-        QuotesComponent, QuotesDetailsComponent, QuoteSummaryComponent, QuoteReportsComponent, QuoteOriginalComponent, QuoteArtworkDetailsComponent, QuoteComments, QuoteModifyComponent, QuoteContactInfoComponent, QuoteOrderDetailsComponent
+        QuotesComponent, QuotesDetailsComponent, QuoteSummaryComponent, QuoteReportsComponent, QuoteOriginalComponent, QuoteArtworkDetailsComponent, QuoteComments, QuoteModifyComponent, QuoteContactInfoComponent, QuoteOrderDetailsComponent, QuoteProductsComponent
     ],
     imports: [
         RouterModule.forChild(quotesRoutes),
