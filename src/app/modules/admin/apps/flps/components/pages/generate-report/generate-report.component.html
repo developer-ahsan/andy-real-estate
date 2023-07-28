@@ -125,7 +125,7 @@
 <div class="w-full" *ngIf="isGenerateReport">
     <div class="w-full bg-card p-5">
         <div class="flex justify-between mb-1">
-            <p class="text-xl font-semibold">{{selectedEmployee.firstName + ' ' + selectedEmployee.lastName}} - <span
+            <p class="text-xl font-semibold">{{selectedEmployee.fullName}} - <span
                     class="text-secondary">{{report_type}}</span></p>
             <button matTooltip="Back to filters" class="min-w-30" mat-stroked-button
                 (click)="backToFilters()">Back</button>
@@ -144,14 +144,50 @@
         <div class="text-right px-5" *ngIf="groupByStoresData.length > 0">
             <p class="cursor-pointer" (click)="goToSummary()">Go To Report Summary</p>
         </div>
-        <div *ngFor="let item of groupByStoresData">
-            <div class="p-6 pb-2 sm:p-8 dm:pb-2 lg:p-10 lg:pb-2">
-                <div class="text-secondary pb-0 mb-2 text-lg flex justify-between">
-                    <b>{{item.store}}</b>
-                    <mat-checkbox (change)="checkOrUncheckStoresOrders($event,item)"></mat-checkbox>
-                </div>
-            </div>
-            <div *ngFor="let data of item.date_data">
+        <div *ngFor="let item of groupByStoresData;let l = last">
+            <!-- <div class="p-6 pb-2 sm:p-8 dm:pb-2 lg:p-10 lg:pb-2"> -->
+            <table class="table table-striped overflow-x-auto">
+                <tr class="columnHeader2">
+                    <th>Date</th>
+                    <th>ID</th>
+                    <th>Customer</th>
+                    <th>Sales</th>
+                    <th>Revenue</th>
+                    <th>Margin</th>
+                    <th>Profit</th>
+                    <th>Commission</th>
+                    <th>
+                        <span>CPD</span> <span class="fa fa-question-circle" matTooltip="Commission paid date"></span>
+                    </th>
+                    <th>Amount Paid</th>
+                    <th class="no-wrap">MCP <span class="fa fa-question-circle" title="Mark commission paid"></span>
+                    </th>
+                </tr>
+                <tbody>
+                    <tr>
+                        <td colspan="3">
+                            <div class="text-secondary pb-0 mb-2 text-lg flex justify-between">
+                                <b>{{item.store}}</b>
+                            </div>
+                        </td>
+                        <td>
+                            {{item.storeTotals.Sales | currency}}
+                        </td>
+                        <td>{{item.storeTotals.Revenue | currency}}</td>
+                        <td>{{item.storeTotals.Margin}}%</td>
+                        <td>{{item.storeTotals.EST_Profit | currency}}</td>
+                        <td>{{item.storeTotals.orderCommission | currency}}</td>
+                        <td></td>
+                        <td></td>
+                        <td>
+                            <mat-checkbox (change)="checkOrUncheckStoresOrders($event,item)"></mat-checkbox>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <!-- </div> -->
+            <div *ngFor="let data of item.date_data;let ll = last">
                 <div class="text-center font-bold mb-2">
                     {{data.date}}
                 </div>
@@ -188,6 +224,19 @@
                             <td>
                                 <mat-checkbox [disabled]="order.disabled" [(ngModel)]="order.checked"></mat-checkbox>
                             </td>
+                        </tr>
+                        <tr class="font-bold ng-gray-200" *ngIf="l && ll">
+                            <td>Totals</td>
+                            <td></td>
+                            <td></td>
+                            <td>{{storeTotals?.Sales | currency}}</td>
+                            <td>{{storeTotals?.Revenue | currency}}</td>
+                            <td></td>
+                            <td>{{storeTotals?.EST_Profit | currency}}</td>
+                            <td>{{storeTotals?.orderCommission | currency}}</td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
                         </tr>
                     </tbody>
                 </table>

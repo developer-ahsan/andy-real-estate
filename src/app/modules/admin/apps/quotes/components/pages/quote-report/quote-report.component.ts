@@ -34,6 +34,7 @@ export class QuoteReportsComponent implements OnInit, OnDestroy {
   selectedQuote: any;
 
   quoteReportData: any;
+  totalPrice = 0;
   constructor(
     private _changeDetectorRef: ChangeDetectorRef,
     private _quotesService: QuotesService,
@@ -80,6 +81,7 @@ export class QuoteReportsComponent implements OnInit, OnDestroy {
             element.subTotal += Number(splitColor[2]);
           });
         }
+        this.totalPrice += element.subTotal;
       });
       this.quoteReportData = res["data"];
       this.isLoading = false;
