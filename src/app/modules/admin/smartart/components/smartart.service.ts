@@ -124,7 +124,7 @@ export class SmartArtService {
         return this._httpClient.get<any[]>(environment.smartart, {
             params: {
                 smart_art_users: true,
-                logged_in_userID: Number(smartArtUser.pk_userID),
+                // logged_in_userID: Number(smartArtUser.pk_userID),
                 size: 20
             }
         }).pipe(

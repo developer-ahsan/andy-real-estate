@@ -16,7 +16,8 @@ export const smartartRoutes: Route[] = [
         path: '',
         component: SmartArtComponent,
         resolve: {
-            SmartArtStoresResolver, SmartArtUsersResolver
+            // SmartArtStoresResolver, 
+            SmartArtUsersResolver
         },
         children: [
             {

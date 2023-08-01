@@ -228,7 +228,11 @@ export class GenerateReportComponent implements OnInit {
         }
         this._flpsService.getFlpsData(this.reportParams).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
             if (res["data"].length == 0) {
+                this.groupByStoresData = null;
+                this.generateReportLoader = false;
+                this._changeDetectorRef.markForCheck();
                 this._flpsService.snackBar('No orders have been found in the specified range that match your criteria.');
+                return;
             }
             this.isGenerateReport = true;
             this.dataSource = res["data"];
