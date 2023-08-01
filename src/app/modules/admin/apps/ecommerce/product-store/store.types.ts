@@ -177,10 +177,13 @@ interface PricingStoreProducts {
 };
 interface PricesMargins {
     quantity: number;
+    standard_cost: number;
+    target_price: number;
     margin: number;
     priceOverride: number;
     tccdPrice: number;
 };
+
 export interface StatusUpdate {
     bln_active: boolean;
     store_name: string;

@@ -94,7 +94,6 @@ export class SmartArtComponent {
         if (this.loginCheck) {
             this.checkDashboard();
         }
-
         this.searchableFields();
         this.isLoading = false;
         this.sideDrawer();
@@ -109,7 +108,6 @@ export class SmartArtComponent {
                 } else {
                     this.ngDashboardCheck = 1;
                 }
-                console.log(this.ngDashboardCheck)
                 this.ngSearchField = '';
                 this.ngCustomerField = '';
                 this.ngFilterProduct = '';

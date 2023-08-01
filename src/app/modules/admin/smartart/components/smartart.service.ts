@@ -120,9 +120,11 @@ export class SmartArtService {
     };
     // Get getSmartArtUsers
     getSmartArtUsers(): Observable<any[]> {
+        let smartArtUser: any = JSON.parse(sessionStorage.getItem('smartArt'));
         return this._httpClient.get<any[]>(environment.smartart, {
             params: {
                 smart_art_users: true,
+                logged_in_userID: Number(smartArtUser.pk_userID),
                 size: 20
             }
         }).pipe(

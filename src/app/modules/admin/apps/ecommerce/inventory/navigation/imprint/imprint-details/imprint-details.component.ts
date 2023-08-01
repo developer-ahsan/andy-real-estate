@@ -8,13 +8,16 @@ import { User } from 'app/core/user/user.model';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import moment from 'moment';
 import { AuthService } from 'app/core/auth/auth.service';
-import { AddDuplicateImprint } from '../../../inventory.types';
+import { AddDuplicateImprint, DeleteProductImprint } from '../../../inventory.types';
+import { stringify } from 'crypto-js/enc-base64';
 
 @Component({
   selector: 'app-imprint-details',
   templateUrl: './imprint-details.component.html',
 })
 export class ImprintDetailsComponent implements OnInit, OnDestroy {
+  @Output() dataEvent = new EventEmitter<string>();
+
   @Input() imprint: any;
   isLoading: boolean = false;
   private _unsubscribeAll: Subject<any> = new Subject<any>();
@@ -64,6 +67,7 @@ export class ImprintDetailsComponent implements OnInit, OnDestroy {
   minLengthTerm = 3;
 
   not_available = 'N/A';
+  isDeleteLoader: boolean = false;
   constructor(
     private _changeDetectorRef: ChangeDetectorRef,
     private _inventoryService: InventoryService,
@@ -292,6 +296,44 @@ export class ImprintDetailsComponent implements OnInit, OnDestroy {
       this.isAddDuplicateLoader = false;
       this._changeDetectorRef.markForCheck();
     })
+  }
+  deleteImprintById() {
+    this.isDeleteLoader = true;
+    let payload: DeleteProductImprint = {
+      imprintID: [this.imprint.pk_imprintID],
+      productID: this.imprint.fk_productID,
+      delete_product_imprint: true
+    }
+    this._inventoryService.updateProductsData(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+      if (res["success"] == 'true') {
+        this._snackBar.open(res["message"], '', {
+          horizontalPosition: 'center',
+          verticalPosition: 'bottom',
+          duration: 3500
+        });
+        let data = {
+          id: this.imprint.pk_imprintID,
+          type: 'delete'
+        }
+        const dataToSend = JSON.stringify(data);
+        this.dataEvent.emit(dataToSend);
+      } else {
+        this._snackBar.open(res["message"], '', {
+          horizontalPosition: 'center',
+          verticalPosition: 'bottom',
+          duration: 3500
+        });
+      }
+      this.isDeleteLoader = false;
+      this._changeDetectorRef.markForCheck();
+    }, err => {
+      this.isDeleteLoader = false;
+      this._changeDetectorRef.markForCheck();
+    });
+  }
+  updateImprint() {
+    const dataToSend = JSON.stringify(this.imprint);
+    this.dataEvent.emit(dataToSend);
   }
   /**
      * On destroy

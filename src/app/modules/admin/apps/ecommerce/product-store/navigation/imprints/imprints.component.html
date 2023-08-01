@@ -28,7 +28,7 @@
                                 <div class="col-md-6 col-12">
                                     <mat-form-field class="w-full">
                                         <mat-label>Decorator</mat-label>
-                                        <mat-select matInput [(ngModel)]="editImprintData.fk_decoratorID">
+                                        <mat-select matInput [(ngModel)]="EditImprintData.fk_decoratorID">
                                             <mat-option *ngFor="let item of suppliers" [value]="item.pk_companyID">
                                                 {{item.companyName}}</mat-option>
                                         </mat-select>
@@ -37,19 +37,19 @@
                                 <div class="col-md-6 col-12">
                                     <mat-form-field class="w-full">
                                         <mat-label>Imprint Color Collection</mat-label>
-                                        <input matInput [(ngModel)]="editImprintData.fk_collectionID">
+                                        <input matInput [(ngModel)]="EditImprintData.fk_collectionID">
                                     </mat-form-field>
                                 </div>
                                 <div class="col-md-6 col-12">
                                     <mat-form-field class="w-full">
                                         <mat-label>Setup</mat-label>
-                                        <input matInput [(ngModel)]="editImprintData.fk_setupChargeID">
+                                        <input matInput [(ngModel)]="EditImprintData.fk_setupChargeID">
                                     </mat-form-field>
                                 </div>
                                 <div class="col-md-6 col-12">
                                     <mat-form-field class="w-full">
                                         <mat-label>Run</mat-label>
-                                        <input matInput [(ngModel)]="editImprintData.fk_runChargeID">
+                                        <input matInput [(ngModel)]="EditImprintData.fk_runChargeID">
                                     </mat-form-field>
                                 </div>
                                 <div class="col-12 text-right">
@@ -105,15 +105,41 @@
                                 </ng-container>
                                 <ng-container matColumnDef="setup">
                                     <th mat-header-cell *matHeaderCellDef class="w-10"> Setup </th>
-                                    <td mat-cell *matCellDef="let element"> {{element.fk_setupChargeID}} </td>
+                                    <td mat-cell *matCellDef="let element">
+                                        <div *ngIf="!element.storeProductSetupChargeID">
+                                            <p>{{element.fk_setupChargeID}}</p>
+                                            <p class="text-red-600">(From master product)</p>
+                                        </div>
+                                        <div *ngIf="element.storeProductSetupChargeID">
+                                            <p>{{element.storeProductSetupChargeID}}</p>
+                                            <p class="text-green-600">(From store product)</p>
+                                        </div>
+                                    </td>
                                 </ng-container>
                                 <ng-container matColumnDef="run">
                                     <th mat-header-cell *matHeaderCellDef class="w-10"> Run </th>
-                                    <td mat-cell *matCellDef="let element"> {{element.fk_runChargeID}} </td>
+                                    <td mat-cell *matCellDef="let element">
+                                        <div *ngIf="!element.storeProductRunChargeID">
+                                            <p>{{element.fk_runChargeID}}</p>
+                                            <p class="text-red-600">(From master product)</p>
+                                        </div>
+                                        <div *ngIf="element.storeProductRunChargeID">
+                                            <p>{{element.storeProductRunChargeID}}</p>
+                                            <p class="text-green-600">(From store product)</p>
+                                        </div>
+                                    </td>
                                 </ng-container>
                                 <ng-container matColumnDef="decorator">
                                     <th mat-header-cell *matHeaderCellDef class="w-40"> Decorator </th>
-                                    <td mat-cell *matCellDef="let element"> {{checkSupplier(element.fk_decoratorID)}}
+                                    <td mat-cell *matCellDef="let element">
+                                        <div *ngIf="!element.storeProductDecoratorID">
+                                            <p>{{checkSupplier(element.fk_decoratorID)}}</p>
+                                            <p class="text-red-600">(From master product)</p>
+                                        </div>
+                                        <div *ngIf="element.storeProductDecoratorID">
+                                            <p>{{checkSupplier(element.storeProductDecoratorID)}}</p>
+                                            <p class="text-green-600">(From store product)</p>
+                                        </div>
                                     </td>
                                 </ng-container>
                                 <ng-container matColumnDef="action">

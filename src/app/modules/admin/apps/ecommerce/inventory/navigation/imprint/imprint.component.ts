@@ -12,6 +12,7 @@ import { MatDialog } from '@angular/material/dialog';
 import { ImprintRunComponent } from './imprint-run/imprint-run.component';
 import { ScrollStrategy, ScrollStrategyOptions } from '@angular/cdk/overlay';
 import { DashboardsService } from 'app/modules/admin/dashboards/dashboard.service';
+import { DeleteProductImprint } from '../../inventory.types';
 
 @Component({
   selector: 'app-imprint',
@@ -2186,7 +2187,18 @@ export class ImprintComponent implements OnInit, OnDestroy {
       this.selectedDigitizer = digitizer[0];
     }
   }
+  receiveDataFromChild(data: any) {
+    let d = JSON.parse(data);
+    if (d.type == 'delete') {
+      this.dataSource = this.dataSource.filter(imprint => imprint.pk_imprintID != Number(d.id));
+      this.dataSourceLength--;
+      this.backToImprintList()
+    } else {
+      this.backToImprintList()
+      this.editImprint(d);
+    }
 
+  }
   /**
      * On destroy
      */

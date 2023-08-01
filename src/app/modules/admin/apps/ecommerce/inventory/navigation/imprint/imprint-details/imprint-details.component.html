@@ -109,11 +109,25 @@
                             (click)="getMultiColorRestricton()">Fetch Colors</div>
                     </div>
                 </div>
-                <div class="row" *ngIf="!isDuplicateImprint">
-                    <div class="col-12 text-right">
+                <div class="row justify-end space-x-2" *ngIf="!isDuplicateImprint">
+                    <div class="">
+                        <button class="min-w-40" mat-stroked-button [matTooltip]="'Update Imprint'"
+                            (click)="updateImprint()">
+                            <span>Update Imprint</span>
+                        </button>
+                    </div>
+                    <div class="">
                         <button class="min-w-40" mat-stroked-button [matTooltip]="'Duplicate Imprint'"
                             (click)="duplicateImprint()">
                             <span>Duplicate Imprint</span>
+                        </button>
+                    </div>
+                    <div class="">
+                        <button class="min-w-40" color="primary" mat-stroked-button [matTooltip]="'Delete Imprint'"
+                            (click)="deleteImprintById()" [disabled]="isDeleteLoader">
+                            <mat-progress-spinner *ngIf="isDeleteLoader" [diameter]="24" [mode]="'indeterminate'">
+                            </mat-progress-spinner>
+                            <span *ngIf="!isDeleteLoader">Delete Imprint</span>
                         </button>
                     </div>
                 </div>

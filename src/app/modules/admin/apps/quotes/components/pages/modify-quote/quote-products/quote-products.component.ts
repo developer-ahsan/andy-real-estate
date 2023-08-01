@@ -19,6 +19,8 @@ export class QuoteProductsComponent implements OnInit {
   searchProductCtrl = new FormControl();
   isSearchingProduct: boolean = false;
   selectedProduct: any;
+
+  orderProducts: any = [];
   constructor(
     private _quoteService: QuotesService,
     private _changeDetectorRef: ChangeDetectorRef,
@@ -37,6 +39,23 @@ export class QuoteProductsComponent implements OnInit {
         this.getAllProducts();
         this._changeDetectorRef.markForCheck();
       });
+  }
+  getSelectedProducts() {
+    let params = {
+      modify_cart_current_products: true,
+      cart_id: this.selectedQuoteDetail.pk_cartID
+    }
+    this._quoteService.getQuoteData(params).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+      this.orderProducts = res["data"];
+      this.selectedProduct = this.allProducts[0];
+      this.searchProductCtrl.setValue(this.selectedProduct)
+      this.isLoading = false;
+      this._changeDetectorRef.markForCheck();
+      console.log(res);
+    }, err => {
+      this.isLoading = false;
+      this._changeDetectorRef.markForCheck();
+    })
   }
   getAllProducts() {
     let params = {

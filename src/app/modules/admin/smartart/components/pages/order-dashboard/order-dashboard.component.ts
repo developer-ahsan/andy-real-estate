@@ -46,7 +46,7 @@ export class OrderDashboardComponent implements OnInit, OnDestroy {
 
   dataSource = [];
   tempDataSource = [];
-  displayedColumns: string[] = ['check', 'date', 'inhands', 'order', 'line', 'customer', 'product', 'supplier', 'status', 'store', 'proof', 'action'];
+  displayedColumns: string[] = ['check', 'date', 'inhands', 'order', 'line', 'customer', 'product', 'supplier', 'status', 'age', 'store', 'proof', 'action'];
   totalRecords = 0;
   tempRecords = 0;
   page = 1;
@@ -78,6 +78,9 @@ export class OrderDashboardComponent implements OnInit, OnDestroy {
   isClaimedModal: boolean = false;
   claimCheck: boolean = false;
   claimItem: any;
+  isSortingLoader: boolean = false;
+  sortBy = '';
+  sortDirection = '';
   constructor(
     private _changeDetectorRef: ChangeDetectorRef,
     private _smartartService: SmartArtService,
@@ -194,7 +197,9 @@ export class OrderDashboardComponent implements OnInit, OnDestroy {
       filter_field: this.ngFilterField,
       search_field: this.paramsData.search ? this.paramsData.search : '',
       user_search_field: this.paramsData.customer ? this.paramsData.customer : '',
-      product_search: this.paramsData.product ? this.paramsData.product : ''
+      product_search: this.paramsData.product ? this.paramsData.product : '',
+      sort_by: this.sortBy,
+      sort_direction: this.sortDirection
     }
     this._smartartService.getSmartArtData(params).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
       if (this.isFilterLoader) {
@@ -214,6 +219,7 @@ export class OrderDashboardComponent implements OnInit, OnDestroy {
         this.tempRecords = res["totalRecords"];
       }
       this.isLoading = false;
+      this.isSortingLoader = false;
       this.isFilterLoader = false;
       if (type == 'update') {
         this.isBulkLoader = false;
@@ -224,6 +230,7 @@ export class OrderDashboardComponent implements OnInit, OnDestroy {
       this._changeDetectorRef.markForCheck();
     }, err => {
       this.isBulkLoader = false;
+      this.isSortingLoader = false;
       this.isFilterLoader = false;
       this.isLoading = false;
       // this.isLoadingChange.emit(false);
@@ -437,6 +444,28 @@ export class OrderDashboardComponent implements OnInit, OnDestroy {
       this.isBulkLoader = false;
       this._changeDetectorRef.markForCheck();
     });
+  }
+  sortData(event) {
+    this.isSortingLoader = true;
+    this.sortDirection = event.direction;
+    if (event.active == 'date') {
+      this.sortBy = 'orderDate';
+    } else if (event.active == 'inhands') {
+      this.sortBy = 'inHandsDate';
+    } else if (event.active == 'order') {
+      this.sortBy = 'fk_orderID';
+    } else if (event.active == 'customer') {
+      this.sortBy = 'firstName';
+    } else if (event.active == 'product') {
+      this.sortBy = 'productName';
+    } else if (event.active == 'supplier') {
+      this.sortBy = 'supplierCompanyName';
+    } else if (event.active == 'store') {
+      this.sortBy = 'storeCode';
+    } else if (event.active == 'age') {
+      this.sortBy = 'age';
+    }
+    this.getSmartArtList(1, 'get', '');
   }
   /**
      * On destroy

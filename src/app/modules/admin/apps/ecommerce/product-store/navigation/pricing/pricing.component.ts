@@ -87,6 +87,7 @@ export class PricingComponent implements OnInit, OnDestroy {
 
   getPricing() {
     this.isLoading = true;
+    this.initialize();
     this.isLoadingChange.emit(true);
     let params = {
       pricing: true,
@@ -581,20 +582,27 @@ export class PricingComponent implements OnInit, OnDestroy {
     Quantities.push({ quantity: q6, margin: m6 });
     let prices = [];
     const { pk_storeProductID, storeName } = this.selectedProduct;
-    prices.push({ quantity: q1, margin: m1, priceOverride: p1, tccdPrice: t1 });
-    prices.push({ quantity: q2, margin: m2, priceOverride: p2, tccdPrice: t2 });
-    prices.push({ quantity: q3, margin: m3, priceOverride: p3, tccdPrice: t3 });
-    prices.push({ quantity: q4, margin: m4, priceOverride: p4, tccdPrice: t4 });
-    prices.push({ quantity: q5, margin: m5, priceOverride: p5, tccdPrice: t5 });
-    prices.push({ quantity: q6, margin: m6, priceOverride: p6, tccdPrice: t6 });
+    if (this.costData.length < 6) {
+      // Calculate the number of missing values
+      let missingValuesCount = 6 - this.costData.length;
+
+      // Add 0 to the missing values
+      for (let i = 0; i < missingValuesCount; i++) {
+        this.costData.push(0);
+      }
+    }
+    prices.push({ quantity: q1, margin: m1, priceOverride: p1, tccdPrice: t1, target_price: tt1, standard_cost: this.costData[0] });
+    prices.push({ quantity: q2, margin: m2, priceOverride: p2, tccdPrice: t2, target_price: tt2, standard_cost: this.costData[1] });
+    prices.push({ quantity: q3, margin: m3, priceOverride: p3, tccdPrice: t3, target_price: tt3, standard_cost: this.costData[2] });
+    prices.push({ quantity: q4, margin: m4, priceOverride: p4, tccdPrice: t4, target_price: tt4, standard_cost: this.costData[3] });
+    prices.push({ quantity: q5, margin: m5, priceOverride: p5, tccdPrice: t5, target_price: tt5, standard_cost: this.costData[4] });
+    prices.push({ quantity: q6, margin: m6, priceOverride: p6, tccdPrice: t6, target_price: tt6, standard_cost: this.costData[5] });
     let pricing_store_products = [];
     pricing_store_products.push({
       storeProductID: pk_storeProductID,
       storeName: storeName,
       pricesMargins: prices
     });
-    console.log(Quantities);
-    return;
     this.isUpdateLoading = true;
     this.stores.forEach(element => {
       if (element.checked) {
@@ -610,11 +618,6 @@ export class PricingComponent implements OnInit, OnDestroy {
       pricing_store_products: pricing_store_products,
       product_id: Number(this.selectedProduct.fk_productID),
       update_pricing: true
-      // storeProductID: Number(this.selectedProduct.pk_storeProductID),
-      // update_pricing: true,
-      // product_id: Number(this.selectedProduct.fk_productID),
-      // storeName: this.selectedProduct.storeName,
-      // list: Quantities
     }
     this._storeService.UpdatePricing(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
       this.isUpdateLoading = false;
