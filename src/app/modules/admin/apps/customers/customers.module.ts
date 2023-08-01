@@ -55,6 +55,7 @@ import { UserMetricsComponent } from './customers-components/navigation/user-met
 import { CustomersListComponent } from './customers-components/customers.component';
 import { customersRoutes } from './customers.routing';
 import { CustomerDetailsComponent } from './customers-components/details/details.customers.component';
+import { CKEditorModule } from 'ckeditor4-angular';
 
 @NgModule({
     declarations: [
@@ -116,6 +117,7 @@ import { CustomerDetailsComponent } from './customers-components/details/details
         MatSnackBarModule,
         FuseCardModule,
         NgxStripeModule,
+        CKEditorModule
     ],
 })
 export class CustomersModule {

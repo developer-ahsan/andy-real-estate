@@ -106,7 +106,8 @@
                                 <div><b>Phone:</b> {{orderData.billingPhone}}</div>
                                 <div><b>Email:</b> {{orderData.billingEmail}}</div>
                                 <div><b>Designer notes:</b>
-                                    <div [innerHTML]="orderData.designerNotes || 'None'"></div>
+                                    <a target="_blank"
+                                        [routerLink]="['/apps/customers',orderData.fk_storeUserID,'user-info']"></a>
                                 </div>
                                 <div class="space-y-1">
                                     <button class="min-w-60 btn buttonComment hover:bg-gray-200"

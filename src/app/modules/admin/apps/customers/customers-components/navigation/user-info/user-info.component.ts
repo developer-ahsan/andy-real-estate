@@ -3,6 +3,8 @@ import { FormBuilder, FormControl, FormGroup } from '@angular/forms';
 import { takeUntil } from 'rxjs/operators';
 import { merge, Observable, Subject } from 'rxjs';
 import { CustomersService } from '../../orders.service';
+import { COMMA, ENTER } from '@angular/cdk/keycodes';
+import { MatChipInputEvent } from '@angular/material/chips';
 
 @Component({
   selector: 'app-user-info',
@@ -19,6 +21,22 @@ export class UserInfoComponent implements OnInit {
   flashMessage: 'success' | 'error' | null = null;
 
   selectedCustomer: any;
+  addOnBlur = true;
+  readonly separatorKeysCodes = [ENTER, COMMA] as const;
+  emails = [];
+
+  editorConfig = {
+    toolbar: [
+      { name: 'clipboard', items: ['Undo', 'Redo'] },
+      { name: 'styles', items: ['Format'] },
+      { name: 'basicstyles', items: ['Bold', 'Italic', 'Underline', 'Strike'] },
+      { name: 'align', items: ['JustifyLeft', 'JustifyCenter', 'JustifyRight', 'JustifyBlock'] },
+      { name: 'links', items: ['Link', 'Unlink'] },
+      { name: 'insert', items: ['Table'] },
+      { name: 'tools', items: ['Maximize'] },
+    ],
+  };
+
   constructor(
     private _customerService: CustomersService,
     private _changeDetectorRef: ChangeDetectorRef,
@@ -57,6 +75,7 @@ export class UserInfoComponent implements OnInit {
       shippingZipCodeExt: new FormControl(''),
       billingStudentOrgName: new FormControl(''),
       billingStudentOrgCode: new FormControl(''),
+      designerNotes: new FormControl('')
     });
 
 
@@ -68,6 +87,9 @@ export class UserInfoComponent implements OnInit {
         this.selectedCustomerForm.patchValue({
           new_email: response.email
         })
+        if (this.selectedCustomer.additionalEmails) {
+          this.emails = this.selectedCustomer.additionalEmails.split(',');
+        }
 
         // Mark for check
         this._changeDetectorRef.markForCheck();
@@ -95,7 +117,7 @@ export class UserInfoComponent implements OnInit {
       shippingZipCode,
       shippingZipCodeExt,
       billingStudentOrgName,
-      billingStudentOrgCode, } = this.selectedCustomerForm.getRawValue();
+      billingStudentOrgCode, designerNotes } = this.selectedCustomerForm.getRawValue();
 
     const payload = {
       update_user: true,
@@ -127,7 +149,9 @@ export class UserInfoComponent implements OnInit {
       shippingState: shippingState,
       shippingZip: shippingZipCode,
       shippingZipExt: shippingZipCodeExt,
-      shippingPhone: shippingDayPhone
+      shippingPhone: shippingDayPhone,
+      designerNotes: designerNotes,
+      additionalEmails: this.emails.toString()
     };
 
     this.updateUserLoader = true;
@@ -142,7 +166,20 @@ export class UserInfoComponent implements OnInit {
         this._changeDetectorRef.markForCheck();
       });
   }
+  add(event: MatChipInputEvent): void {
+    const value = (event.value || '').trim();
+    if (value) {
+      this.emails.push(value);
+    }
+    event.chipInput!.clear();
+  }
 
+  remove(email): void {
+    const index = this.emails.indexOf(email);
+    if (index >= 0) {
+      this.emails.splice(index, 1);
+    }
+  }
   /**
        * Show flash message
        */
