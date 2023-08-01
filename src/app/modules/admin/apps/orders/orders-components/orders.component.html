@@ -152,7 +152,7 @@
                                         </th>
                                         <td class="pr-4" mat-cell *matCellDef="let order"
                                             (click)="orderDetails(order.pk_orderID)" style="cursor: pointer;">
-                                            ${{order.total}}
+                                            {{order.total | currency}}
                                         </td>
                                     </ng-container>
 
