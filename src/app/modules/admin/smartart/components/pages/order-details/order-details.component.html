@@ -105,7 +105,9 @@
                                 <div><b>Address:</b> {{orderData.billingAddress}} {{orderData.billingCity}}</div>
                                 <div><b>Phone:</b> {{orderData.billingPhone}}</div>
                                 <div><b>Email:</b> {{orderData.billingEmail}}</div>
-                                <div><b>Designer notes:</b> {{orderData.designerNotes || 'None'}}</div>
+                                <div><b>Designer notes:</b>
+                                    <div [innerHTML]="orderData.designerNotes || 'None'"></div>
+                                </div>
                                 <div class="space-y-1">
                                     <button class="min-w-60 btn buttonComment hover:bg-gray-200"
                                         (click)="customerEmail()">Email Customer</button>

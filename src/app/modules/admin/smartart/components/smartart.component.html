@@ -35,7 +35,8 @@
                 </li>
                 <li class="col-span-1 flex rounded-md">
                     <mat-form-field class="w-full">
-                        <input matInput placeholder="Search Customer">
+                        <input matInput placeholder="Search Customer" (keyup.enter)="filterSmartArtList(0)"
+                            [(ngModel)]="ngCustomerField">
                     </mat-form-field>
                 </li>
                 <li class="col-span-1 flex rounded-md" *ngIf="ngDashboardCheck == 0">
