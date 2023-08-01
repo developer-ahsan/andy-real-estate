@@ -227,7 +227,6 @@ export class GenerateReportComponent implements OnInit {
             this.report_type = 'Range Sales';
         }
         this._flpsService.getFlpsData(this.reportParams).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
-            console.log(res["data"]);
             if (res["data"].length == 0) {
                 this.groupByStoresData = null;
                 this.generateReportLoader = false;

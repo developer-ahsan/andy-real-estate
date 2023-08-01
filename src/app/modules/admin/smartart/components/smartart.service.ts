@@ -123,8 +123,8 @@ export class SmartArtService {
         let smartArtUser: any = JSON.parse(sessionStorage.getItem('smartArt'));
         return this._httpClient.get<any[]>(environment.smartart, {
             params: {
-                smart_art_users: true,
-                // logged_in_userID: Number(smartArtUser.pk_userID),
+                smart_art_designers: true,
+                role_id: 1,
                 size: 20
             }
         }).pipe(

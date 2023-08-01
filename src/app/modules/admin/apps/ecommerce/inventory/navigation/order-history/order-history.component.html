@@ -11,7 +11,7 @@
                     <!-- Update history -->
                     <div class="gap-y-4">
                         <div class="row" *ngIf="orderHistoryLength > 0;else other_content">
-                            <table mat-table [dataSource]="order_history" class="w-full my-3">
+                            <table mat-table [dataSource]="order_history" class="w-full mt-3">
                                 <!-- Item Column -->
                                 <ng-container matColumnDef="pk_orderID">
                                     <th mat-header-cell *matHeaderCellDef> Order Id </th>
@@ -55,6 +55,11 @@
                                 <tr mat-row *matRowDef="let row; columns: displayedColumns;" class="h-12"></tr>
                                 <!-- <tr mat-footer-row *matFooterRowDef="displayedColumns" class="bg-light"></tr> -->
                             </table>
+                            <mat-paginator
+                                class="border-b w-full sm:border-t sm:border-b-0 z-10 bg-gray-50 dark:bg-transparent"
+                                [length]="orderHistoryLength" [pageIndex]="0" [pageSize]="20"
+                                (page)="getNextData($event)" [hidePageSize]="true">
+                            </mat-paginator>
                         </div>
 
                         <ng-template #other_content>

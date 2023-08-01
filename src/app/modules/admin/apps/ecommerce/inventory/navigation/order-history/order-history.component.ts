@@ -31,6 +31,7 @@ export class OrderHistoryComponent implements OnInit, OnDestroy {
     { item: 'Cooler', cost: 25 },
     { item: 'Swim suit', cost: 15 },
   ];
+  page = 1;
 
   constructor(
     private _changeDetectorRef: ChangeDetectorRef,
@@ -46,13 +47,19 @@ export class OrderHistoryComponent implements OnInit, OnDestroy {
     this._inventoryService.product$.pipe(takeUntil(this._unsubscribeAll)).subscribe((details) => {
       if (details) {
         this.selectedProduct = details["data"][0];
-        this.getOrderHistory();
+        this.getOrderHistory(1);
       }
     });
   }
-  getOrderHistory() {
+  getOrderHistory(page) {
     const { pk_productID } = this.selectedProduct;
-    this._inventoryService.getOrderHistoryByProductId(pk_productID)
+    let params = {
+      page: page,
+      size: 20,
+      order_history: true,
+      product_id: pk_productID
+    }
+    this._inventoryService.getProductsData(params)
       .pipe(takeUntil(this._unsubscribeAll))
       .subscribe((history) => {
 
@@ -72,6 +79,15 @@ export class OrderHistoryComponent implements OnInit, OnDestroy {
         // Mark for check
         this._changeDetectorRef.markForCheck();
       });
+  }
+  getNextData(event) {
+    const { previousPageIndex, pageIndex } = event;
+    if (pageIndex > previousPageIndex) {
+      this.page++;
+    } else {
+      this.page--;
+    };
+    this.getOrderHistory(this.page);
   }
   /** Gets the total cost of all transactions. */
   getTotalCost() {

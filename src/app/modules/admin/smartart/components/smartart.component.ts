@@ -170,7 +170,8 @@ export class SmartArtComponent {
         this.searchDesignerCtrl.valueChanges.pipe(
             filter((res: any) => {
                 params1 = {
-                    smart_art_users: true,
+                    smart_art_designers: true,
+                    role_id: 1,
                     keyword: res
                 }
                 return res !== null && res.length >= 3

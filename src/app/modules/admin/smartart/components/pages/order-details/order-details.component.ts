@@ -311,6 +311,9 @@ export class OrderDashboardDetailsComponent implements OnInit, OnDestroy {
   backToList() {
     this.router.navigate(['/smartart/orders-dashboard']);
   }
+  backToListBySearch() {
+    this.router.navigateByUrl(`/smartart/orders-dashboard?search=${this.paramData.fk_orderID}&customer=&product=`);
+  }
   // Last Proof
   lastProof() {
     let params = {
