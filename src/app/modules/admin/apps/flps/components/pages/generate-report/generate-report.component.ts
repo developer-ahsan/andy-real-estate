@@ -227,6 +227,7 @@ export class GenerateReportComponent implements OnInit {
             this.report_type = 'Range Sales';
         }
         this._flpsService.getFlpsData(this.reportParams).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+            console.log(res["data"]);
             if (res["data"].length == 0) {
                 this.groupByStoresData = null;
                 this.generateReportLoader = false;
@@ -238,58 +239,58 @@ export class GenerateReportComponent implements OnInit {
             this.dataSource = res["data"];
             this.totalUsers = res["totalRecords"];
             let groupByStores = [];
-            // this.dataSource.forEach(element => {
-            //     element.checked = false;
-            //     element.disabled = false;
-            //     if (element.paymentDate) {
-            //         let paymentDate = moment(element.paymentDate);
-            //         let start_date = moment(this.reportParams.start_date);
-            //         let end_date = moment(this.reportParams.end_date);
-            //         if (paymentDate.diff(start_date, 'days') > 0 && paymentDate.diff(end_date, 'days') < 0) {
-            //             element.color = 'green';
-            //         }
-            //     } else {
-            //         element.color = null;
-            //     }
-            //     if (element.commissionPaidDate) {
-            //         element.checked = true;
-            //         element.disabled = true;
-            //     } else if (element.paymentDate) {
-            //         let paymentDate = moment(element.paymentDate);
-            //         let start_date = moment(this.reportParams.start_date);
-            //         let end_date = moment(this.reportParams.end_date);
-            //         if (paymentDate.diff(start_date, 'days') > 0 && paymentDate.diff(end_date, 'days') < 0) {
-            //             element.checked = true;
-            //         }
-            //     }
-            //     if (groupByStores.length == 0) {
-            //         groupByStores.push({ store: element.storeName, data: [element] });
-            //     } else {
-            //         let index = groupByStores.findIndex(store => store.store == element.storeName);
-            //         if (index == -1) {
-            //             groupByStores.push({ store: element.storeName, data: [element] });
-            //         } else {
-            //             groupByStores[index].data.push(element);
-            //         }
-            //     }
-            // });
-            // this.groupByStoresData = groupByStores;
-            // this.groupByStoresData.forEach((store) => {
-            //     store.date_data = [];
-            //     store.data.forEach(element => {
-            //         let date_check = moment(element.orderDate).format('MMM,yyyy');
-            //         if (store.date_data.length == 0) {
-            //             store.date_data.push({ date: moment(element.orderDate).format('MMM,yyyy'), data: [element] });
-            //         } else {
-            //             const d_index = store.date_data.findIndex(date => date.date == date_check);
-            //             if (d_index < 0) {
-            //                 store.date_data.push({ date: moment(element.orderDate).format('MMM,yyyy'), data: [element] });
-            //             } else {
-            //                 store.date_data[d_index].data.push(element);
-            //             }
-            //         }
-            //     });
-            // });
+            this.dataSource.forEach(element => {
+                element.checked = false;
+                element.disabled = false;
+                if (element.paymentDate) {
+                    let paymentDate = moment(element.paymentDate);
+                    let start_date = moment(this.reportParams.start_date);
+                    let end_date = moment(this.reportParams.end_date);
+                    if (paymentDate.diff(start_date, 'days') > 0 && paymentDate.diff(end_date, 'days') < 0) {
+                        element.color = 'green';
+                    }
+                } else {
+                    element.color = null;
+                }
+                if (element.commissionPaidDate) {
+                    element.checked = true;
+                    element.disabled = true;
+                } else if (element.paymentDate) {
+                    let paymentDate = moment(element.paymentDate);
+                    let start_date = moment(this.reportParams.start_date);
+                    let end_date = moment(this.reportParams.end_date);
+                    if (paymentDate.diff(start_date, 'days') > 0 && paymentDate.diff(end_date, 'days') < 0) {
+                        element.checked = true;
+                    }
+                }
+                if (groupByStores.length == 0) {
+                    groupByStores.push({ store: element.storeName, data: [element] });
+                } else {
+                    let index = groupByStores.findIndex(store => store.store == element.storeName);
+                    if (index == -1) {
+                        groupByStores.push({ store: element.storeName, data: [element] });
+                    } else {
+                        groupByStores[index].data.push(element);
+                    }
+                }
+            });
+            this.groupByStoresData = groupByStores;
+            this.groupByStoresData.forEach((store) => {
+                store.date_data = [];
+                store.data.forEach(element => {
+                    let date_check = moment(element.orderDate).format('MMM,yyyy');
+                    if (store.date_data.length == 0) {
+                        store.date_data.push({ date: moment(element.orderDate).format('MMM,yyyy'), data: [element] });
+                    } else {
+                        const d_index = store.date_data.findIndex(date => date.date == date_check);
+                        if (d_index < 0) {
+                            store.date_data.push({ date: moment(element.orderDate).format('MMM,yyyy'), data: [element] });
+                        } else {
+                            store.date_data[d_index].data.push(element);
+                        }
+                    }
+                });
+            });
             this.storeTotals = {
                 Sales: 0,
                 Revenue: 0,
@@ -303,63 +304,10 @@ export class GenerateReportComponent implements OnInit {
                 this.storeTotals.Num_Sales += store.Num_Sales;
                 this.storeTotals.EST_Profit += store.EST_Profit;
                 this.storeTotals.orderCommission += store.orderCommission;
-                this.dataSource.forEach(element => {
-                    element.checked = false;
-                    element.disabled = false;
-                    if (element.paymentDate) {
-                        let paymentDate = moment(element.paymentDate);
-                        let start_date = moment(this.reportParams.start_date);
-                        let end_date = moment(this.reportParams.end_date);
-                        if (paymentDate.diff(start_date, 'days') > 0 && paymentDate.diff(end_date, 'days') < 0) {
-                            element.color = 'green';
-                        }
-                    } else {
-                        element.color = null;
+                this.groupByStoresData.forEach(element => {
+                    if (element.store == store.storeName) {
+                        element.storeTotals = { Sales: store.Sales, Revenue: store.Revenue, Num_Sales: store.Num_Sales, EST_Profit: store.EST_Profit, orderCommission: store.orderCommission, Margin: store.Margin }
                     }
-                    if (element.commissionPaidDate) {
-                        element.checked = true;
-                        element.disabled = true;
-                    } else if (element.paymentDate) {
-                        let paymentDate = moment(element.paymentDate);
-                        let start_date = moment(this.reportParams.start_date);
-                        let end_date = moment(this.reportParams.end_date);
-                        if (paymentDate.diff(start_date, 'days') > 0 && paymentDate.diff(end_date, 'days') < 0) {
-                            element.checked = true;
-                        }
-                    }
-                    if (groupByStores.length == 0) {
-                        groupByStores.push({
-                            store: element.storeName, data: [element], storeTotals:
-                                { Sales: store.Sales, Revenue: store.Revenue, Num_Sales: store.Num_Sales, EST_Profit: store.EST_Profit, orderCommission: store.orderCommission, Margin: store.Margin }
-                        });
-                    } else {
-                        let index = groupByStores.findIndex(store => store.store == element.storeName);
-                        if (index == -1) {
-                            groupByStores.push({
-                                store: element.storeName, data: [element], storeTotals:
-                                    { Sales: store.Sales, Revenue: store.Revenue, Num_Sales: store.Num_Sales, EST_Profit: store.EST_Profit, orderCommission: store.orderCommission, Margin: store.Margin }
-                            });
-                        } else {
-                            groupByStores[index].data.push(element);
-                        }
-                    }
-                });
-                this.groupByStoresData = groupByStores;
-                this.groupByStoresData.forEach((store) => {
-                    store.date_data = [];
-                    store.data.forEach(element => {
-                        let date_check = moment(element.orderDate).format('MMM,yyyy');
-                        if (store.date_data.length == 0) {
-                            store.date_data.push({ date: moment(element.orderDate).format('MMM,yyyy'), data: [element] });
-                        } else {
-                            const d_index = store.date_data.findIndex(date => date.date == date_check);
-                            if (d_index < 0) {
-                                store.date_data.push({ date: moment(element.orderDate).format('MMM,yyyy'), data: [element] });
-                            } else {
-                                store.date_data[d_index].data.push(element);
-                            }
-                        }
-                    });
                 });
             });
             this.reportSummaryData = res["storesData"];

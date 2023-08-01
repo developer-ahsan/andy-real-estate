@@ -169,12 +169,12 @@
                             </div>
                         </td>
                         <td>
-                            {{item.storeTotals.Sales | currency}}
+                            {{item?.storeTotals?.Sales | currency}}
                         </td>
-                        <td>{{item.storeTotals.Revenue | currency}}</td>
-                        <td>{{item.storeTotals.Margin}}%</td>
-                        <td>{{item.storeTotals.EST_Profit | currency}}</td>
-                        <td>{{item.storeTotals.orderCommission | currency}}</td>
+                        <td>{{item?.storeTotals?.Revenue | currency}}</td>
+                        <td>{{item?.storeTotals?.Margin}}%</td>
+                        <td>{{item?.storeTotals?.EST_Profit | currency}}</td>
+                        <td>{{item?.storeTotals?.orderCommission | currency}}</td>
                         <td></td>
                         <td></td>
                         <td>
@@ -212,13 +212,13 @@
                             <td>{{order.orderDate | date:'MM/dd/yyyy'}}</td>
                             <td>{{order.pk_orderID}}</td>
                             <td>{{order.companyName}}</td>
-                            <td>{{order.Sales | currency}}</td>
-                            <td>{{order.Revenue | currency}}</td>
-                            <td>{{order.Margin}} %</td>
-                            <td>{{order.Profit | currency}}</td>
-                            <td>{{order.CommissionPercentage | currency}}({{order.orderCommission}}%)</td>
-                            <td>{{order.commissionPaidDate | date:'MM/dd/yyyy'}}</td>
-                            <td>{{order.amountPaid | currency}}</td>
+                            <td>{{order?.Sales | currency}}</td>
+                            <td>{{order?.Revenue | currency}}</td>
+                            <td>{{order?.Margin}} %</td>
+                            <td>{{order?.Profit | currency}}</td>
+                            <td>{{order?.CommissionPercentage | currency}}({{order.orderCommission}}%)</td>
+                            <td>{{order?.commissionPaidDate | date:'MM/dd/yyyy'}}</td>
+                            <td>{{order?.amountPaid | currency}}</td>
                             <td>
                                 <mat-checkbox [disabled]="order.disabled" [(ngModel)]="order.checked"></mat-checkbox>
                             </td>
@@ -271,13 +271,13 @@
                     </tr>
 
                     <tr *ngFor="let item of reportSummaryData">
-                        <td>{{item.storeName}}</td>
-                        <td>{{item.Sales | currency}}</td>
-                        <td>{{item.Revenue | currency}}</td>
-                        <td>{{item.Num_Sales}}</td>
-                        <td> {{item.Margin}}%</td>
-                        <td>{{item.EST_Profit | currency}}</td>
-                        <td>{{item.orderCommission | currency}}</td>
+                        <td>{{item?.storeName}}</td>
+                        <td>{{item?.Sales | currency}}</td>
+                        <td>{{item?.Revenue | currency}}</td>
+                        <td>{{item?.Num_Sales}}</td>
+                        <td> {{item?.Margin}}%</td>
+                        <td>{{item?.EST_Profit | currency}}</td>
+                        <td>{{item?.orderCommission | currency}}</td>
                     </tr>
                     <tr class="font-bold">
                         <td>Grand Total</td>
