@@ -71,11 +71,11 @@
                                                 *ngIf="orderData.fk_smartArtDesignerClaimID == smartArtUser.adminUserID && !orderData?.isClaimLoader"
                                                 (click)="updateClaim(orderData, false)">Unclaim</span>
                                             <!-- if already claimed but not by samrt art logged in user -->
-                                            <span
+                                            <!-- <span
                                                 *ngIf="orderData.fk_smartArtDesignerClaimID != smartArtUser.adminUserID && !orderData?.isClaimLoader">
                                                 Claimed: {{orderData.claimedUserName}}
                                                 <br>
-                                            </span>
+                                            </span> -->
                                             <span matTooltip="Claim this item"
                                                 *ngIf="orderData.fk_smartArtDesignerClaimID != smartArtUser.adminUserID && !orderData?.isClaimLoader"
                                                 (click)="updateClaim(orderData, true)">Claimed:
@@ -657,8 +657,13 @@
                                     <div class="col-12" *ngIf="imprint.artworkFiles.length">
                                         <div *ngFor="let artwork of imprint.artworkFiles; let i=index"
                                             class="text-blue-500">
-                                            <a href="https://assets.consolidus.com/artwork/{{orderData.pk_storeID}}/{{paramData.pfk_userID}}/{{paramData.fk_orderID}}/{{imprint.fk_orderLineID[0]}}/{{artwork.ID}}.{{artwork.EXTENSION}}"
-                                                target="_blank">Download Artwork File {{i+1}}</a>
+                                            <div class="flex  py-1">
+                                                <a href="https://assets.consolidus.com/artwork/{{orderData.pk_storeID}}/{{paramData.pfk_userID}}/{{paramData.fk_orderID}}/{{imprint.fk_orderLineID[0]}}/{{artwork.ID}}.{{artwork.EXTENSION}}"
+                                                    target="_blank"
+                                                    matTooltip="Download Artwork File">{{artwork.FILENAME}}
+                                                </a>
+                                                <mat-icon svgIcon="mat_outline:download"></mat-icon>
+                                            </div>
                                         </div>
                                     </div>
                                     <div class="col-12 mt-2">

@@ -125,7 +125,7 @@
                                         <td class="px-8" mat-cell *matCellDef="let order"
                                             (click)="orderDetails(order.pk_orderID)" style="cursor: pointer;">
                                             <div class="flex items-center">
-                                                <span class="truncate">{{order.orderDate}}</span>
+                                                <span class="truncate">{{order.orderDate | date: 'MM/dd/yyyy'}}</span>
                                             </div>
                                         </td>
                                     </ng-container>
