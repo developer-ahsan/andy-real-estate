@@ -1344,6 +1344,7 @@ export class ImprintComponent implements OnInit, OnDestroy {
       this.getSuppliers();
       this.getAddImprintLocations();
       this.getAddImprintMethods();
+      this.getAddImprintDigitizers();
     }
 
     if (screenName === "Standard Imprints") {
@@ -1622,7 +1623,7 @@ export class ImprintComponent implements OnInit, OnDestroy {
       decorator_id: this.selectedSupplier.pk_companyID || null,
       method_id: this.selectedMethod.pk_methodID || null,
       location_id: this.selectedLocation.pk_locationID || null,
-      digitizer_id: this.selectedDigitizer.pfk_digitizerID || null,
+      digitizer_id: this.selectedDigitizer?.pfk_digitizerID || null,
       setup_charge_id: setup || 17,
       run_charge_id: run || 17,
       bln_includable: this.priceInclusionSelected.value === 'Yes' ? 1 : 0,
