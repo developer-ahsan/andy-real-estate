@@ -227,9 +227,11 @@ export class QuoteArtworkDetailsComponent implements OnInit, OnDestroy {
       })
   }
   openCommentModal(data) {
-    this.artworkComment = '';
     this.modalContent = data;
+    this.artworkComment = '';
+    this.modalContent.comments = this.unescapeHtml(data.comments);
     $(this.commentModal.nativeElement).modal('show');
+
   }
   addNewComment() {
     if (!this.artworkComment) {
@@ -289,6 +291,11 @@ export class QuoteArtworkDetailsComponent implements OnInit, OnDestroy {
       imprint.revisionLoader = false;
       this._changeDetectorRef.markForCheck();
     });
+  }
+  unescapeHtml(html: string): string {
+    const txt = document.createElement('textarea');
+    txt.innerHTML = html;
+    return txt.value;
   }
   ngOnDestroy(): void {
     // Unsubscribe from all subscriptions
