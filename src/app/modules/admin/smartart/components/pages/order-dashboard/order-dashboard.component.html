@@ -94,7 +94,7 @@
                                     <mat-label>Filter By Status</mat-label>
                                     <mat-select matInput [(ngModel)]="ngFilterField"
                                         (selectionChange)="onOrderStatusChange($event.value)">
-                                        <mat-option value="">All Orders</mat-option>
+                                        <mat-option [value]="0">All Orders</mat-option>
                                         <mat-option value="2">New Pending</mat-option>
                                         <mat-option value="3">Awaiting Approval</mat-option>
                                         <mat-option value="12">On Hold</mat-option>
