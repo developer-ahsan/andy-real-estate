@@ -106,8 +106,10 @@
                                 <div><b>Phone:</b> {{orderData.billingPhone}}</div>
                                 <div><b>Email:</b> {{orderData.billingEmail}}</div>
                                 <div><b>Designer notes:</b>
-                                    <a target="_blank"
-                                        [routerLink]="['/apps/customers',orderData.fk_storeUserID,'user-info']"></a>
+                                    <a target="_blank" *ngIf="orderData?.designerNotes"
+                                        [routerLink]="['/apps/customers',orderData.fk_storeUserID,'user-info']">Designer
+                                        Notes</a>
+                                    <span *ngIf="!orderData?.designerNotes">None</span>
                                 </div>
                                 <div class="space-y-1">
                                     <button class="min-w-60 btn buttonComment hover:bg-gray-200"
