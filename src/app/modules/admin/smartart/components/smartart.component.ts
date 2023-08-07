@@ -58,8 +58,10 @@ export class SmartArtComponent {
     ngSearchStore = '';
     ngSearchDesigner = '';
     ngFilterProduct = '';
+    ngFilterField = 2;
 
     ngDashboardCheck = 0;
+
     /**
      * Constructor
      */
@@ -296,7 +298,7 @@ export class SmartArtComponent {
     filterSmartArtList(check) {
         if (check == 0) {
             const queryParams: NavigationExtras = {
-                queryParams: { search: this.ngSearchField, store: this.selectedStore.pk_storeID, customer: this.ngCustomerField, designer: this.selectedDesigner.pk_userID, product: this.ngFilterProduct }
+                queryParams: { search: this.ngSearchField, store: this.selectedStore.pk_storeID, customer: this.ngCustomerField, designer: this.selectedDesigner.pk_userID, product: this.ngFilterProduct, filterField: this.ngFilterField }
             };
             this._router.navigate(['/smartart/orders-dashboard'], queryParams);
         } else {

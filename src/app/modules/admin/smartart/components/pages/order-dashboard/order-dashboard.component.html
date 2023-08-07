@@ -87,7 +87,7 @@
                             <button mat-stroked-button mat-button class="min-w-40">Filter</button>
                         </div> -->
                     </div>
-                    <div class="px-8">
+                    <!-- <div class="px-8">
                         <div class="row">
                             <div class="col-12">
                                 <mat-form-field class="w-full">
@@ -95,24 +95,24 @@
                                     <mat-select matInput [(ngModel)]="ngFilterField"
                                         (selectionChange)="onOrderStatusChange($event.value)">
                                         <mat-option [value]="0">All Orders</mat-option>
-                                        <mat-option value="2">New Pending</mat-option>
-                                        <mat-option value="3">Awaiting Approval</mat-option>
-                                        <mat-option value="12">On Hold</mat-option>
-                                        <mat-option value="13">Follow up for approval</mat-option>
-                                        <mat-option value="4">Artwork Revision</mat-option>
-                                        <mat-option value="5">Devorator Notified</mat-option>
-                                        <mat-option value="7">No Proof Needed</mat-option>
-                                        <mat-option value="9">Artwork Approved</mat-option>
-                                        <mat-option value="16">PO Sent</mat-option>
-                                        <mat-option value="11">In Production</mat-option>
-                                        <mat-option value="17">Hidden</mat-option>
-                                        <mat-option value="99">Waiting for GroupBuy</mat-option>
-                                        <mat-option value="999">In-Hands Date</mat-option>
+                                        <mat-option [value]="2">New Pending</mat-option>
+                                        <mat-option [value]="3">Awaiting Approval</mat-option>
+                                        <mat-option [value]="12">On Hold</mat-option>
+                                        <mat-option [value]="13">Follow up for approval</mat-option>
+                                        <mat-option [value]="4">Artwork Revision</mat-option>
+                                        <mat-option [value]="5">Decorator Notified</mat-option>
+                                        <mat-option [value]="7">No Proof Needed</mat-option>
+                                        <mat-option [value]="9">Artwork Approved</mat-option>
+                                        <mat-option [value]="16">PO Sent</mat-option>
+                                        <mat-option [value]="11">In Production</mat-option>
+                                        <mat-option [value]="17">Hidden</mat-option>
+                                        <mat-option [value]="99">Waiting for GroupBuy</mat-option>
+                                        <mat-option [value]="999">In-Hands Date</mat-option>
                                     </mat-select>
                                 </mat-form-field>
                             </div>
                         </div>
-                    </div>
+                    </div> -->
                     <div class="px-8 flex space-x-2 overflow-x-auto">
                         <div>
                             <p>Rush Orders (not flexible)</p>

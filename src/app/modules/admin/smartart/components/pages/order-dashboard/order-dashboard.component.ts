@@ -194,7 +194,7 @@ export class OrderDashboardComponent implements OnInit, OnDestroy {
       size: 20,
       store_id: this.paramsData.store ? this.paramsData?.store : '',
       designerID: this.paramsData.designer ? this.paramsData.designer : '',
-      filter_field: this.ngFilterField,
+      filter_field: this.paramsData ? this.paramsData.filterField : '2',
       search_field: this.paramsData.search ? this.paramsData.search : '',
       user_search_field: this.paramsData.customer ? this.paramsData.customer : '',
       product_search: this.paramsData.product ? this.paramsData.product : '',

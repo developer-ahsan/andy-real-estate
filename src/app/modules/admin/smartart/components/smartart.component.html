@@ -21,8 +21,29 @@
 
         <!-- Filters -->
         <div *ngIf="loginCheck">
-            <h2 class="text-sm font-medium text-gray-500">Search Filters</h2>
-            <ul role="list" class="mt-3 grid grid-cols-1 gap-5 sm:grid-cols-2 sm:gap-6 lg:grid-cols-5">
+            <!-- <h2 class="text-sm font-medium text-gray-500">Search Filters</h2> -->
+            <ul role="list" class="mt-3 grid grid-cols-1 gap-2 sm:grid-cols-2 sm:gap-2 lg:grid-cols-5">
+                <li class="col-span-5" *ngIf="ngDashboardCheck == 0">
+                    <mat-form-field class="w-full">
+                        <mat-label>Filter By Status</mat-label>
+                        <mat-select matInput [(ngModel)]="ngFilterField" (selectionChange)="filterSmartArtList(0)">
+                            <mat-option [value]="0">All Orders</mat-option>
+                            <mat-option [value]="2">New Pending</mat-option>
+                            <mat-option [value]="3">Awaiting Approval</mat-option>
+                            <mat-option [value]="12">On Hold</mat-option>
+                            <mat-option [value]="13">Follow up for approval</mat-option>
+                            <mat-option [value]="4">Artwork Revision</mat-option>
+                            <mat-option [value]="5">Decorator Notified</mat-option>
+                            <mat-option [value]="7">No Proof Needed</mat-option>
+                            <mat-option [value]="9">Artwork Approved</mat-option>
+                            <mat-option [value]="16">PO Sent</mat-option>
+                            <mat-option [value]="11">In Production</mat-option>
+                            <mat-option [value]="17">Hidden</mat-option>
+                            <mat-option [value]="99">Waiting for GroupBuy</mat-option>
+                            <mat-option [value]="999">In-Hands Date</mat-option>
+                        </mat-select>
+                    </mat-form-field>
+                </li>
                 <li class="col-span-1 flex rounded-md">
                     <mat-form-field class="w-full" *ngIf="ngDashboardCheck == 0">
                         <input matInput placeholder="Search Order" [(ngModel)]="ngSearchField"
