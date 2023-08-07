@@ -129,6 +129,10 @@ export class OrderDashboardDetailsComponent implements OnInit, OnDestroy {
     }
     this._smartartService.getSmartArtData(params).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
       this.orderData = res["data"][0];
+      if (this.orderData.sessionArtwork_artworkEmail) {
+        let decoratorEmails = this.orderData.sessionArtwork_artworkEmail.split(',')
+        this.orderData.sessionDecoratorEmails = decoratorEmails;
+      }
       this.getImpritData();
       this._changeDetectorRef.markForCheck();
     }, err => {
@@ -224,6 +228,9 @@ export class OrderDashboardDetailsComponent implements OnInit, OnDestroy {
       }
       // Assign email recipients
       this.imprintdata.forEach(imprint => {
+
+
+
         if (!imprint?.fk_artApprovalContactID && !imprint?.fk_storeUserApprovalContactID && !imprint?.blnStoreUserApprovalDone) {
           imprint.selectedContact = 0;
           if (imprint.decorationName.toLowerCase().includes('screen')) {
@@ -257,6 +264,48 @@ export class OrderDashboardDetailsComponent implements OnInit, OnDestroy {
             element.value = element.pk_artApprovalContactID;
           }
           this.imprintdata.forEach(imprint => {
+            imprint.emailRecipients = '';
+            // NEW PENDING
+            if (imprint.pk_statusID == 2) {
+              if (imprint?.fk_artApprovalContactID && !imprint?.blnStoreUserApprovalDone) {
+                imprint.emailRecipients = element.email;
+              } else {
+                // session.artwork.email
+                imprint.emailRecipients = this.orderData.sessionArtworkEmail;
+              }
+            }
+            // AWAITING ARTWORK APPROVAL || ON-HOLD || FOLLOW UP FOR APPROVAL
+            else if (imprint.pk_statusID == 3 || imprint.pk_statusID == 12 || imprint.pk_statusID == 13) {
+              if ((imprint?.fk_artApprovalContactID || imprint?.fk_storeUserApprovalContactID) && !imprint?.blnStoreUserApprovalDone) {
+                imprint.emailRecipients = element.email;
+              } else {
+                // session.artwork.email
+                imprint.emailRecipients = this.orderData.sessionArtworkEmail;
+              }
+            }
+            // ARTWORK REVISION 
+            else if (imprint.pk_statusID == 4) {
+            }
+            // DECORATOR NOTIFIED || IN PRODUCTION || PO Sent
+            else if (imprint.pk_statusID == 5 || imprint.pk_statusID == 11 || imprint.pk_statusID == 16) {
+              // session.artwork.decoratorEmail#
+              imprint.emailRecipients = this.orderData.sessionArtwork_artworkEmail;
+            }
+            // NO PROOF NEEDED
+            else if (imprint.pk_statusID == 7) {
+            }
+            // ARTWORK APPROVED
+            else if (imprint.pk_statusID == 9) {
+
+            }
+            // IN PRODUCTION
+            else if (imprint.pk_statusID == 11) {
+            }
+            // WAITING FOR GROUP ORDER
+            else if (imprint.pk_statusID == 17) {
+            }
+
+
             if (imprint?.fk_storeUserApprovalContactID && !imprint?.blnStoreUserApprovalDone) {
               if (imprint?.fk_storeUserApprovalContactID == element.pk_approvalContactID) {
                 imprint.selectedContact = element;

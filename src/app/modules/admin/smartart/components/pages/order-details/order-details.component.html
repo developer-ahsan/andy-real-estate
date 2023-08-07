@@ -219,21 +219,20 @@
                                 </mat-panel-title>
                             </mat-expansion-panel-header>
                             <div>
-                                <div><b>SKU:</b>{{orderData.SKU}}
-                                    <p>{{orderData.supplierCompanyName}}</p>
-                                    <p>{{orderData.companyPhone}}</p>
+                                <div><b>SKU:</b>{{orderData.sessionArtwork_productNumber}}
+                                    <p>{{orderData.sessionArtwork_sessionSupplierName}}</p>
+                                    <p>{{orderData.sessionArtwork_sessionSupplierPhone}}</p>
                                 </div>
-                                <div><b>ASI:</b>{{orderData.ASI}}</div>
-                                <div><b>PPAI:</b> {{orderData.PPAI}}</div>
-                                <div><b>Order Placed:</b> {{orderData.orderDate | date: 'MM/dd/yyyy'}}</div>
-                                <div>
-                                    <a href="{{orderData.companyWebsite}}"
-                                        target="_blank">{{orderData.companyWebsite}}</a>
+                                <p *ngIf="orderData.sessionArtwork_decoratorASI">ASI:
+                                    {{orderData.sessionArtwork_decoratorASI}}</p>
+                                <p *ngIf="orderData.sessionArtwork_decoratorPPAI">PPAI:
+                                    {{orderData.sessionArtwork_decoratorPPAI}}</p>
+                                <a href="{{orderData.sessionArtwork_sessionSupplierSite}}"
+                                    target="_blank">{{orderData.sessionArtwork_sessionSupplierSite}}</a>
+                                <div *ngIf="orderData.sessionDecoratorEmails.length > 0">
+                                    <p *ngFor="let item of orderData.sessionDecoratorEmails">{{item}}</p>
                                 </div>
-                                <div>
-                                    <span *ngIf="orderData.artworkEmail">{{orderData.artworkEmail}}</span>
-                                    <span *ngIf="!orderData.artworkEmail">None Provided</span>
-                                </div>
+                                <p *ngIf="orderData.sessionDecoratorEmails.length == 0">NONE Provided</p>
                                 <div *ngIf="orderData?.supplierLink"><b>Product Link:</b><a
                                         href="{{orderData.supplierLink}}" target="_blank">Click here</a></div>
                                 <div>
@@ -269,9 +268,18 @@
                                 </mat-panel-title>
                             </mat-expansion-panel-header>
                             <div>
-                                <p>{{imprintdata[0].decorationName || 'NONE'}}</p>
-                                <p>{{imprintdata[0].phone}}</p>
-                                <a href="{{orderData.companyWebsite}}" target="_blank">{{orderData.companyWebsite}}</a>
+                                <p>{{orderData.decorationName || 'NONE'}}</p>
+                                <p>{{orderData.phone}}</p>
+                                <p *ngIf="orderData.sessionArtwork_decoratorASI">ASI:
+                                    {{orderData.sessionArtwork_decoratorASI}}</p>
+                                <p *ngIf="orderData.sessionArtwork_decoratorPPAI">PPAI:
+                                    {{orderData.sessionArtwork_decoratorPPAI}}</p>
+                                <div *ngIf="orderData.sessionDecoratorEmails.length > 0">
+                                    <p *ngFor="let item of orderData.sessionDecoratorEmails">{{item}}</p>
+                                </div>
+                                <p *ngIf="orderData.sessionDecoratorEmails.length == 0">NONE Provided</p>
+                                <a href="{{orderData.sessionArtwork_decoratorSite}}"
+                                    target="_blank">{{orderData.sessionArtwork_decoratorSite}}</a>
                             </div>
                         </mat-expansion-panel>
                         <!-- Comments -->
@@ -807,7 +815,7 @@
                                                 <div class="col-md-8 col-12">
                                                     <mat-form-field class="w-full">
                                                         <mat-label>Email recipients (comma-separated)</mat-label>
-                                                        <input matInput [(ngModel)]="imprint.selectedContactEmail"
+                                                        <input matInput [(ngModel)]="imprint.emailRecipients"
                                                             id="email-{{imprint.pk_imprintID}}">
                                                     </mat-form-field>
                                                     <mat-form-field class="w-full">
@@ -916,17 +924,6 @@
                                             </div>
                                             <div class="row">
                                                 <div class="col-md-8 col-12">
-                                                    <mat-form-field class="w-full">
-                                                        <mat-label>Email recipients (comma-separated)</mat-label>
-                                                        <input matInput [(ngModel)]="imprint.selectedContactEmail"
-                                                            id="email-{{imprint.pk_imprintID}}">
-                                                    </mat-form-field>
-                                                    <mat-form-field class="w-full">
-                                                        <mat-label>Please enter any comments:
-                                                        </mat-label>
-                                                        <textarea matInput
-                                                            id="comment-{{imprint.pk_imprintID}}"></textarea>
-                                                    </mat-form-field>
                                                     <mat-checkbox [(ngModel)]="imprint.blnRespond">Respond to
                                                         designer</mat-checkbox>
                                                     <div>
@@ -1003,7 +1000,7 @@
                                                         dashes, or letters)</h3>
                                                     <mat-form-field class="w-full">
                                                         <mat-label>Email recipients (comma-separated)</mat-label>
-                                                        <input matInput [(ngModel)]="imprint.selectedContactEmail"
+                                                        <input matInput [(ngModel)]="imprint.emailRecipients"
                                                             id="email-{{imprint.pk_imprintID}}">
                                                     </mat-form-field>
                                                     <mat-form-field class="w-full">
@@ -1122,17 +1119,6 @@
                                                     <h3>Please enter the artwork's PO Number: (enter only numbers,
                                                         dashes, or letters)</h3>
                                                     <br>
-                                                    <mat-form-field class="w-full">
-                                                        <mat-label>Email recipients (comma-separated)</mat-label>
-                                                        <input matInput [(ngModel)]="imprint.selectedContactEmail"
-                                                            id="email-{{imprint.pk_imprintID}}">
-                                                    </mat-form-field>
-                                                    <mat-form-field class="w-full">
-                                                        <mat-label>Please enter any comments:
-                                                        </mat-label>
-                                                        <textarea matInput
-                                                            id="comment-{{imprint.pk_imprintID}}"></textarea>
-                                                    </mat-form-field>
                                                     <div>
                                                         <label>Select the final artwork file:</label>
                                                         <input type="file">
@@ -1242,7 +1228,7 @@
                                                     <br>
                                                     <mat-form-field class="w-full">
                                                         <mat-label>Email recipients (comma-separated)</mat-label>
-                                                        <input matInput [(ngModel)]="imprint.selectedContactEmail"
+                                                        <input matInput [(ngModel)]="imprint.emailRecipients"
                                                             id="email-{{imprint.pk_imprintID}}">
                                                     </mat-form-field>
                                                     <mat-form-field class="w-full">
@@ -1324,7 +1310,7 @@
                                                     <br>
                                                     <mat-form-field class="w-full">
                                                         <mat-label>Email recipients (comma-separated)</mat-label>
-                                                        <input matInput [(ngModel)]="imprint.selectedContactEmail"
+                                                        <input matInput [(ngModel)]="imprint.emailRecipients"
                                                             id="email-{{imprint.pk_imprintID}}">
                                                     </mat-form-field>
                                                     <div *ngIf="orderData?.inHandsDate"></div>
@@ -1426,7 +1412,7 @@
                                                 <div class="col-md-8 col-12">
                                                     <mat-form-field class="w-full">
                                                         <mat-label>Email recipients (comma-separated)</mat-label>
-                                                        <input matInput [(ngModel)]="imprint.selectedContactEmail"
+                                                        <input matInput [(ngModel)]="imprint.emailRecipients"
                                                             id="email-{{imprint.pk_imprintID}}">
                                                     </mat-form-field>
                                                     <div *ngIf="orderData?.inHandsDate"></div>
@@ -1517,7 +1503,7 @@
                                                     <br>
                                                     <mat-form-field class="w-full">
                                                         <mat-label>Email recipients (comma-separated)</mat-label>
-                                                        <input matInput [(ngModel)]="imprint.selectedContactEmail"
+                                                        <input matInput [(ngModel)]="imprint.emailRecipients"
                                                             id="email-{{imprint.pk_imprintID}}">
                                                     </mat-form-field>
                                                     <label for="">Select the final artwork file</label>
@@ -1618,7 +1604,7 @@
                                                     <div class="text-md font-bold">Upload Artwork Proof</div>
                                                     <mat-form-field class="w-full">
                                                         <mat-label>Email recipients (comma-separated)</mat-label>
-                                                        <input matInput [(ngModel)]="imprint.selectedContactEmail"
+                                                        <input matInput [(ngModel)]="imprint.emailRecipients"
                                                             id="email-{{imprint.pk_imprintID}}">
                                                     </mat-form-field>
                                                     <mat-form-field class="w-full">
