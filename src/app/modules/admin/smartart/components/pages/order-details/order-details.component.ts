@@ -9,7 +9,7 @@ import { Subject, forkJoin, of } from 'rxjs';
 import { debounceTime, distinctUntilChanged, filter, finalize, switchMap, takeUntil, tap } from 'rxjs/operators';
 import { SmartArtService } from '../../smartart.service';
 import { interval } from 'rxjs';
-import { AddOrderComment, UpdateOrderLineArtworkTags, UpdateArtworkTgas, UpdateOrderInformation, sendAutoRequest, sendAutoRequestOrder, updateOrderLineImprintColors, updateReorderNumberOrder, UpdateOrderLineClaim, updateOrderProofContact } from '../../smartart.types';
+import { AddOrderComment, UpdateOrderLineArtworkTags, UpdateArtworkTgas, UpdateOrderInformation, sendAutoRequest, sendAutoRequestOrder, updateOrderLineImprintColors, updateReorderNumberOrder, UpdateOrderLineClaim, updateOrderProofContact, SmartartImprintStatusUpdate } from '../../smartart.types';
 
 @Component({
   selector: 'app-order-details',
@@ -129,6 +129,11 @@ export class OrderDashboardDetailsComponent implements OnInit, OnDestroy {
     }
     this._smartartService.getSmartArtData(params).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
       this.orderData = res["data"][0];
+      this.orderData.sessionProofEmails = [];
+      if (this.orderData.proofEmail) {
+        let proofEmails = this.orderData.proofEmail.split(',');
+        this.orderData.sessionProofEmails = proofEmails;
+      }
       this.orderData.sessionDecoratorEmails = [];
       if (this.orderData.sessionArtwork_artworkEmail) {
         let decoratorEmails = this.orderData.sessionArtwork_artworkEmail.split(',')
@@ -229,11 +234,13 @@ export class OrderDashboardDetailsComponent implements OnInit, OnDestroy {
       }
       // Assign email recipients
       this.imprintdata.forEach(imprint => {
+        // let status = imprint.pk_statusID;
+        imprint.statusID = 9;
         imprint.emailRecipients = '';
         // NEW PENDING
         if (imprint.pk_statusID == 2) {
           if (imprint.fk_artApprovalContactID && !imprint.blnStoreUserApprovalDone) {
-            imprint.emailRecipients = imprint.approvalEmail;
+            imprint.emailRecipients = imprint.proofContactEmail;
           } else {
             // session.artwork.email
             imprint.emailRecipients = this.orderData.sessionArtworkEmail;
@@ -242,7 +249,7 @@ export class OrderDashboardDetailsComponent implements OnInit, OnDestroy {
         // AWAITING ARTWORK APPROVAL || ON-HOLD || FOLLOW UP FOR APPROVAL
         else if (imprint.pk_statusID == 3 || imprint.pk_statusID == 12 || imprint.pk_statusID == 13) {
           if ((imprint?.fk_artApprovalContactID || imprint?.fk_storeUserApprovalContactID) && !imprint?.blnStoreUserApprovalDone) {
-            imprint.emailRecipients = imprint.approvalEmail;
+            imprint.emailRecipients = imprint.proofContactEmail;
           } else {
             // session.artwork.email
             imprint.emailRecipients = this.orderData.sessionArtworkEmail;
@@ -269,7 +276,6 @@ export class OrderDashboardDetailsComponent implements OnInit, OnDestroy {
         // WAITING FOR GROUP ORDER
         else if (imprint.pk_statusID == 17) {
         }
-
 
         if (!imprint?.fk_artApprovalContactID && !imprint?.fk_storeUserApprovalContactID && !imprint?.blnStoreUserApprovalDone) {
           imprint.selectedContact = 0;
@@ -706,6 +712,38 @@ export class OrderDashboardDetailsComponent implements OnInit, OnDestroy {
       this._changeDetectorRef.markForCheck();
     }, err => {
       imprint.isProofLoader = false;
+      this._changeDetectorRef.markForCheck();
+    })
+  }
+
+  applyStatusChangeImprint(imprint, statusID) {
+    imprint.applyStatusLoader = true;
+    let payload: SmartartImprintStatusUpdate = {
+      orderLineID: Number(this.paramData.pk_orderLineID),
+      imprintID: Number(imprint.pk_imprintID),
+      userID: Number(this.paramData.pfk_userID),
+      orderLineImprintID: Number(this.paramData.fk_imprintID),
+      orderID: Number(this.paramData.fk_orderID),
+      statusID: Number(statusID),
+      blnGroupRun: this.orderData.blnGroupRun,
+      update_smart_imprint_status: true
+    }
+
+    this._smartartService.UpdateSmartArtData(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+      if (res["success"]) {
+        this._smartartService.snackBar(res["message"]);
+        if (statusID == 9) {
+          imprint.statusName = 'Artwork Approved';
+        } else {
+          imprint.statusName = 'NEW PENDING';
+        }
+        imprint.pk_statusID = statusID;
+        imprint.statusDate = moment().format('yyyy-MM-DD');
+      }
+      imprint.applyStatusLoader = false;
+      this._changeDetectorRef.markForCheck();
+    }, err => {
+      imprint.applyStatusLoader = false;
       this._changeDetectorRef.markForCheck();
     })
   }

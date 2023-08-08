@@ -130,6 +130,10 @@ export class OrderModifyComponent implements OnInit, OnDestroy {
     this._orderService.orderDetail$.pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
       if (res["data"].length) {
         this.selectedOrder = res["data"][0];
+        if (this.selectedOrder.proofEmail) {
+          let emails = this.selectedOrder.proofEmail.split(',');
+          this.emails = emails;
+        }
         this.billingShippingForm.patchValue(this.selectedOrder);
         this.shippingForm.patchValue(this.selectedOrder);
         this.paymentForm.patchValue(this.selectedOrder);
@@ -138,6 +142,13 @@ export class OrderModifyComponent implements OnInit, OnDestroy {
   };
   calledScreen(screen) {
     this.mainScreen = screen;
+  }
+  add(event: MatChipInputEvent): void {
+    const value = (event.value || '').trim();
+    if (value) {
+      this.emails.push(value);
+    }
+    event.chipInput!.clear();
   }
   updateContactInformation() {
     if (!this.billingShippingForm.valid) {
@@ -171,7 +182,7 @@ export class OrderModifyComponent implements OnInit, OnDestroy {
       shipping_phone: shippingPhone,
       shipping_email: shippingEmail,
       account_charge_code: accountChargeCode,
-      proof_email: '',
+      proof_email: this.emails.toString(),
       alternate_proof_emails: this.emails,
       billing_location: billingLocation,
       shipping_location: shippingLocation,
@@ -179,6 +190,7 @@ export class OrderModifyComponent implements OnInit, OnDestroy {
       bill_to_deliver_to: billToDeliverTo,
       modify_contact_info: true
     };
+    this.selectedOrder.proofEmail = this.emails.toString();
     this._orderService.updateOrderCalls(payload).pipe(takeUntil(this._unsubscribeAll), finalize(() => {
       this.isBillingLoader = false;
       this._changeDetectorRef.markForCheck();

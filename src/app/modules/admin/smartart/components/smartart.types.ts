@@ -191,3 +191,14 @@ export interface updateQuoteProofContact {
     imprint_id: number;
     update_quote_proof_contact: boolean;
 };
+
+export interface SmartartImprintStatusUpdate {
+    orderLineID: number;
+    imprintID: number;
+    userID: number;
+    orderLineImprintID: number;
+    orderID: number;
+    statusID: number;
+    blnGroupRun: boolean;
+    update_smart_imprint_status: boolean;
+};
