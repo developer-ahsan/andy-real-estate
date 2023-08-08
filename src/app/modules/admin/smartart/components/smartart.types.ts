@@ -53,16 +53,34 @@ export interface sendQuoteCustomerEmail {
     productName: string;
     send_customer_email: boolean;
 };
+// export interface sendAutoRequestOrder {
+//     customer_email: string;
+//     customer_name: string;
+//     storeName: string;
+//     store_id: number;
+//     storeURL: string;
+//     orderLineImprintID: number;
+//     userID: number;
+//     orderLineID: number;
+//     productName: string;
+//     orderID: number;
+//     auto_order_art_request: boolean;
+// };
 export interface sendAutoRequestOrder {
     customer_email: string;
     customer_name: string;
+    toEmails: string;
+    blnAdditionalArtApproval: boolean;
+    protocol: string;
     storeName: string;
     store_id: number;
     storeURL: string;
     orderLineImprintID: number;
     userID: number;
     orderLineID: number;
+    productNumber: string;
     productName: string;
+    smartArtLoggedInUserName: string;
     orderID: number;
     auto_order_art_request: boolean;
 };
@@ -200,5 +218,24 @@ export interface SmartartImprintStatusUpdate {
     orderID: number;
     statusID: number;
     blnGroupRun: boolean;
+    update_smart_imprint_status: boolean;
+};
+
+export interface SmartartImprintStatusUpdate {
+    orderLineID: number;
+    imprintID: number;
+    userID: number;
+    orderLineImprintID: number;
+    orderID: number;
+    orderDate: string;
+    inHandsDate: string;
+    statusID: number;
+    storeID: number;
+    storeName: string;
+    blnRespond: boolean;
+    blnGroupRun: boolean;
+    proofComments: string;
+    blnApproved: number; // Check fk_statusID for all orderLineImprintID's in the orderline 1 if statusID of imprint is "5,6,7,9,11,16" else 0
+    smartArtLoggedInUserName: string;
     update_smart_imprint_status: boolean;
 };
