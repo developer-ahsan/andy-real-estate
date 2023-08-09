@@ -275,8 +275,8 @@
                                 </mat-panel-title>
                             </mat-expansion-panel-header>
                             <div>
-                                <p>{{orderData.decorationName || 'NONE'}}</p>
-                                <p>{{orderData.phone}}</p>
+                                <p>{{orderData.sessionArtwork_decoratorName || 'NONE'}}</p>
+                                <p>{{orderData.sessionArtwork_decoratorPhone}}</p>
                                 <p *ngIf="orderData.sessionArtwork_decoratorASI">ASI:
                                     {{orderData.sessionArtwork_decoratorASI}}</p>
                                 <p *ngIf="orderData.sessionArtwork_decoratorPPAI">PPAI:
@@ -730,14 +730,15 @@
                                                         <div>
                                                             <label>Select File</label>
                                                             <br>
-                                                            <input type="file">
+                                                            <input type="file" #artworkFileInput
+                                                                (change)="uploadArtworkFile($event)">
                                                         </div>
                                                         <mat-checkbox
                                                             matTooltip="Requires that the customer respond to the graphics team.  This removes the option for the customer to simply approve the artwork until this option is unchecked."
                                                             [(ngModel)]="imprint.blnRespond">Respond to
                                                             designer</mat-checkbox>
                                                     </div>
-                                                    <div>
+                                                    <div *ngIf="orderData.inHandsDate">
                                                         <label for="">Approve-By Date (mm/dd/yyyy)</label>
                                                         <div class="flex space-x-1">
                                                             <!-- <input type="checkbox"> -->
@@ -752,9 +753,15 @@
                                                         </div>
                                                     </div>
                                                     <div>
-                                                        <button
-                                                            class="min-w-30 mt-2 btn buttonComment hover:bg-gray-200">Update
-                                                            Artwork Proof</button>
+                                                        <button (click)="uploadArtworkProof(imprint)"
+                                                            class="min-w-30 mt-2 btn buttonComment hover:bg-gray-200">
+                                                            <span *ngIf="!imprint?.artworkProofLoader">Update Artwork
+                                                                Proof</span>
+                                                            <mat-progress-spinner [color]="'light'"
+                                                                *ngIf="imprint?.artworkProofLoader" [diameter]="24"
+                                                                [mode]="'indeterminate'">
+                                                            </mat-progress-spinner>
+                                                        </button>
                                                     </div>
                                                 </div>
                                                 <div class="col-md-4 col-12">
@@ -794,7 +801,7 @@
                                                         <br>
                                                         <button type="button"
                                                             (click)="applyStatusChangeImprint(imprint,7,'status')"
-                                                            class="min-w-30 rounded-md bg-indigo-600 px-2.5 py-1.5 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+                                                            class="min-w-30 rounded-md bg-orange-600 px-2.5 py-1.5 text-sm font-semibold text-white shadow-sm hover:bg-orange-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-orange-600"
                                                             [disabled]="imprint.proofStatusLoader">
                                                             <span *ngIf="!imprint?.proofStatusLoader">No
                                                                 proof needed</span>
@@ -970,7 +977,7 @@
                                                         <br>
                                                         <button type="button"
                                                             (click)="applyStatusChangeImprint(imprint,7,'status')"
-                                                            class="min-w-30 rounded-md bg-indigo-600 px-2.5 py-1.5 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+                                                            class="min-w-30 rounded-md bg-orange-600 px-2.5 py-1.5 text-sm font-semibold text-white shadow-sm hover:bg-orange-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-orange-600"
                                                             [disabled]="imprint.proofStatusLoader">
                                                             <span *ngIf="!imprint?.proofStatusLoader">No
                                                                 proof needed</span>
@@ -1113,7 +1120,7 @@
                                                         <br>
                                                         <button type="button"
                                                             (click)="applyStatusChangeImprint(imprint,7,'status')"
-                                                            class="min-w-30 rounded-md bg-indigo-600 px-2.5 py-1.5 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+                                                            class="min-w-30 rounded-md bg-orange-600 px-2.5 py-1.5 text-sm font-semibold text-white shadow-sm hover:bg-orange-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-orange-600"
                                                             [disabled]="imprint.proofStatusLoader">
                                                             <span *ngIf="!imprint?.proofStatusLoader">No
                                                                 proof needed</span>
@@ -1257,7 +1264,7 @@
                                                         <br>
                                                         <button type="button"
                                                             (click)="applyStatusChangeImprint(imprint,7,'status')"
-                                                            class="min-w-30 rounded-md bg-indigo-600 px-2.5 py-1.5 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+                                                            class="min-w-30 rounded-md bg-orange-600 px-2.5 py-1.5 text-sm font-semibold text-white shadow-sm hover:bg-orange-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-orange-600"
                                                             [disabled]="imprint.proofStatusLoader">
                                                             <span *ngIf="!imprint?.proofStatusLoader">No
                                                                 proof needed</span>
@@ -1452,7 +1459,7 @@
                                                         <br>
                                                         <button type="button"
                                                             (click)="applyStatusChangeImprint(imprint,7,'status')"
-                                                            class="min-w-30 rounded-md bg-indigo-600 px-2.5 py-1.5 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+                                                            class="min-w-30 rounded-md bg-orange-600 px-2.5 py-1.5 text-sm font-semibold text-white shadow-sm hover:bg-orange-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-orange-600"
                                                             [disabled]="imprint.proofStatusLoader">
                                                             <span *ngIf="!imprint?.proofStatusLoader">No
                                                                 proof needed</span>
@@ -1586,7 +1593,7 @@
                                                         <br>
                                                         <button type="button"
                                                             (click)="applyStatusChangeImprint(imprint,7,'status')"
-                                                            class="min-w-30 rounded-md bg-indigo-600 px-2.5 py-1.5 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+                                                            class="min-w-30 rounded-md bg-orange-600 px-2.5 py-1.5 text-sm font-semibold text-white shadow-sm hover:bg-orange-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-orange-600"
                                                             [disabled]="imprint.proofStatusLoader">
                                                             <span *ngIf="!imprint?.proofStatusLoader">No
                                                                 proof needed</span>
@@ -1735,7 +1742,7 @@
                                                         <br>
                                                         <button type="button"
                                                             (click)="applyStatusChangeImprint(imprint,7,'status')"
-                                                            class="min-w-30 rounded-md bg-indigo-600 px-2.5 py-1.5 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+                                                            class="min-w-30 rounded-md bg-orange-600 px-2.5 py-1.5 text-sm font-semibold text-white shadow-sm hover:bg-orange-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-orange-600"
                                                             [disabled]="imprint.proofStatusLoader">
                                                             <span *ngIf="!imprint?.proofStatusLoader">No
                                                                 proof needed</span>
@@ -1862,7 +1869,7 @@
                                                         <br>
                                                         <button type="button"
                                                             (click)="applyStatusChangeImprint(imprint,7,'status')"
-                                                            class="min-w-30 rounded-md bg-indigo-600 px-2.5 py-1.5 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+                                                            class="min-w-30 rounded-md bg-orange-600 px-2.5 py-1.5 text-sm font-semibold text-white shadow-sm hover:bg-orange-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-orange-600"
                                                             [disabled]="imprint.proofStatusLoader">
                                                             <span *ngIf="!imprint?.proofStatusLoader">No
                                                                 proof needed</span>

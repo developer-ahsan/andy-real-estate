@@ -20,6 +20,7 @@ import { AddOrderComment, UpdateOrderLineArtworkTags, UpdateArtworkTgas, UpdateO
 export class OrderDashboardDetailsComponent implements OnInit, OnDestroy {
   @ViewChild('paginator') paginator: MatPaginator;
   @ViewChild('drawer', { static: true }) drawer: MatDrawer;
+  @ViewChild('artworkFileInput') artworkFileInput: ElementRef;
   @Input() isLoading: boolean;
   private _unsubscribeAll: Subject<any> = new Subject<any>();
 
@@ -104,6 +105,8 @@ export class OrderDashboardDetailsComponent implements OnInit, OnDestroy {
   contactProofs = [];
   selectedContact: any;
   selectedContactEmail = '';
+
+  imageArtworkValue: any;
   constructor(
     private _changeDetectorRef: ChangeDetectorRef,
     private _authService: AuthService,
@@ -862,6 +865,38 @@ export class OrderDashboardDetailsComponent implements OnInit, OnDestroy {
       this._changeDetectorRef.markForCheck();
     }, err => {
       item.isFlagLoader = false;
+      this._changeDetectorRef.markForCheck();
+    });
+  }
+  uploadArtworkFile(event) {
+    this.imageArtworkValue = null;
+    const file = event.target.files[0];
+    let type = file["type"];
+    const reader = new FileReader();
+    reader.readAsDataURL(file);
+    reader.onload = () => {
+      const extension = type.split("/")[1]; // Extract the extension from the MIME type
+      this.imageArtworkValue = {
+        imageUpload: reader.result,
+        type: extension
+      };
+    }
+  };
+  uploadArtworkProof(imprint) {
+    if (imprint.emailRecipients == '') {
+      this._smartartService.snackBar('Please enter recipient email');
+      return;
+    }
+    imprint.artworkProofLoader = true;
+    this.artworkFileInput.nativeElement.value = '';
+    let payload = {
+
+    }
+    this._smartartService.UpdateSmartArtData(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+      imprint.artworkProofLoader = false;
+      this._changeDetectorRef.markForCheck();
+    }, err => {
+      imprint.artworkProofLoader = false;
       this._changeDetectorRef.markForCheck();
     });
   }
