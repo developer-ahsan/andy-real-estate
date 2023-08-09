@@ -9,7 +9,7 @@ import { Subject, forkJoin, of } from 'rxjs';
 import { debounceTime, distinctUntilChanged, filter, finalize, switchMap, takeUntil, tap } from 'rxjs/operators';
 import { SmartArtService } from '../../smartart.service';
 import { interval } from 'rxjs';
-import { AddOrderComment, UpdateOrderLineArtworkTags, UpdateArtworkTgas, UpdateOrderInformation, sendAutoRequest, updateOrderLineImprintColors, updateReorderNumberOrder, UpdateOrderLineClaim, updateOrderProofContact, SmartartImprintStatusUpdate, sendAutoRequestOrder } from '../../smartart.types';
+import { AddOrderComment, UpdateOrderLineArtworkTags, UpdateArtworkTgas, UpdateOrderInformation, sendAutoRequest, updateOrderLineImprintColors, updateReorderNumberOrder, UpdateOrderLineClaim, updateOrderProofContact, SmartartImprintStatusUpdate, sendAutoRequestOrder, updateAttentionFlagOrder } from '../../smartart.types';
 
 @Component({
   selector: 'app-order-details',
@@ -844,6 +844,26 @@ export class OrderDashboardDetailsComponent implements OnInit, OnDestroy {
       imprint.waitingStatusLoader = false;
       this._changeDetectorRef.markForCheck();
     })
+  }
+  // Update order Attention
+  updateAttentionFlagOrder(item, check) {
+    item.isFlagLoader = true;
+    this._changeDetectorRef.markForCheck();
+    let payload: updateAttentionFlagOrder = {
+      bln_attention: check,
+      orderline_id: Number(this.paramData.pk_orderLineID),
+      imprint_id: Number(item.pk_imprintID),
+      update_order_attention_flag: true
+    }
+    this._smartartService.UpdateSmartArtData(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+      this._smartartService.snackBar(res["message"]);
+      item.isFlagLoader = false;
+      item.blnAttention = check;
+      this._changeDetectorRef.markForCheck();
+    }, err => {
+      item.isFlagLoader = false;
+      this._changeDetectorRef.markForCheck();
+    });
   }
   /**
      * On destroy
