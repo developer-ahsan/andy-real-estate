@@ -97,7 +97,6 @@ export class StoresDetailsComponent implements OnInit, OnDestroy {
           title = ` (${items.rapidBuildCount})`;
         }
         this.routes[2].children[4].title = 'RapidBuild' + title;
-        console.log(this.routes)
         this.isLoading = false;
 
         // Mark for check

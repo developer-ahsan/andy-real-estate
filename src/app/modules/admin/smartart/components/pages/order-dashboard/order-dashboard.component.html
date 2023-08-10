@@ -150,34 +150,6 @@
                         </ngx-skeleton-loader>
                     </div>
                     <div *ngIf="!isLoading" class="mt-2 overflow-hidden">
-                        <div class="px-8 mb-2">
-                            <mat-form-field class="w-full">
-                                <mat-label>Update bulk status</mat-label>
-                                <mat-select [(ngModel)]="status_id">
-                                    <mat-option [value]="2">New-Pending</mat-option>
-                                    <mat-option [value]="3">Awaiting Approval</mat-option>
-                                    <mat-option [value]="12">On Hold</mat-option>
-                                    <mat-option [value]="13">Follow Up For Approval</mat-option>
-                                    <mat-option [value]="4">Artwork Revision</mat-option>
-                                    <mat-option [value]="5">Decorator Notified</mat-option>
-                                    <mat-option [value]="7">No Proof Needed</mat-option>
-                                    <mat-option [value]="9">Artwork Approved</mat-option>
-                                    <mat-option [value]="16">PO Sent</mat-option>
-                                    <mat-option [value]="11">In Production</mat-option>
-                                    <mat-option [value]="17">Waiting For Group Order</mat-option>
-                                    <mat-option [value]="99">Hidden</mat-option>
-                                    <mat-option [value]="999">Unhidden</mat-option>
-                                </mat-select>
-                            </mat-form-field>
-                            <div class="text-right">
-                                <button class="min-w-40" mat-button mat-stroked-button [disabled]="isBulkLoader"
-                                    (click)="bulkUploadStatus()">
-                                    <span *ngIf="!isBulkLoader">Update</span>
-                                    <mat-progress-spinner *ngIf="isBulkLoader" [diameter]="24" [mode]="'indeterminate'">
-                                    </mat-progress-spinner>
-                                </button>
-                            </div>
-                        </div>
                         <div *ngIf="dataSource.length > 0;else other_content" class="w-full overflow-x-auto">
                             <div class="m-5 text-center" *ngIf="isSortingLoader">
                                 <div class="spinner-grow"></div>
@@ -481,6 +453,36 @@
                                 [ngClass]="{'pointer-events-none': isLoading}" [length]="totalRecords" [pageIndex]="0"
                                 [pageSize]="20" (page)="getNextData($event)" [hidePageSize]="true">
                             </mat-paginator>
+                            <!-- Update Bulk -->
+                            <div class="px-8 my-2">
+                                <mat-form-field class="w-full">
+                                    <mat-label>Update bulk status</mat-label>
+                                    <mat-select [(ngModel)]="status_id">
+                                        <mat-option [value]="2">New-Pending</mat-option>
+                                        <mat-option [value]="3">Awaiting Approval</mat-option>
+                                        <mat-option [value]="12">On Hold</mat-option>
+                                        <mat-option [value]="13">Follow Up For Approval</mat-option>
+                                        <mat-option [value]="4">Artwork Revision</mat-option>
+                                        <mat-option [value]="5">Decorator Notified</mat-option>
+                                        <mat-option [value]="7">No Proof Needed</mat-option>
+                                        <mat-option [value]="9">Artwork Approved</mat-option>
+                                        <mat-option [value]="16">PO Sent</mat-option>
+                                        <mat-option [value]="11">In Production</mat-option>
+                                        <mat-option [value]="17">Waiting For Group Order</mat-option>
+                                        <mat-option [value]="99">Hidden</mat-option>
+                                        <mat-option [value]="999">Unhidden</mat-option>
+                                    </mat-select>
+                                </mat-form-field>
+                                <div class="text-right">
+                                    <button class="min-w-40" mat-button mat-stroked-button [disabled]="isBulkLoader"
+                                        (click)="bulkUploadStatus()">
+                                        <span *ngIf="!isBulkLoader">Update</span>
+                                        <mat-progress-spinner *ngIf="isBulkLoader" [diameter]="24"
+                                            [mode]="'indeterminate'">
+                                        </mat-progress-spinner>
+                                    </button>
+                                </div>
+                            </div>
                         </div>
                         <!-- No color Found -->
                         <ng-template #other_content>

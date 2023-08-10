@@ -196,9 +196,9 @@ export class QuoteDashboardDetailsComponent implements OnInit, OnDestroy {
   getArtworkOther() {
     this.artWorkLoader = true;
     let params = {
-      quote_imprint_details_artApproval: true,
-      cartLine_id: this.paramData.pk_cartLineID,
-      imprint_id: this.paramData.fk_imprintID,
+      quote_order_common_details: true,
+      // cartLine_id: this.paramData.pk_cartLineID,
+      // imprint_id: this.paramData.fk_imprintID,
       product_id: this.paramData.fk_productID,
       store_id: this.quoteData.pk_storeID,
       store_product_id: this.quoteData.productID
@@ -212,11 +212,25 @@ export class QuoteDashboardDetailsComponent implements OnInit, OnDestroy {
         this.virtualProofData = res["virtualProof"];
       }
       if (res["storeArtworkTag"]) {
-        this.artworkTags = res["storeArtworkTag"];
-        this.selectedArtworkTags = [];
-        res["cartLineArtworkTags"].forEach(element => {
-          this.selectedArtworkTags.push(element.fk_artworkTagID);
-        });
+        if (res['storeArtworkTag'][0].storeArtworkTag) {
+          let storeArtworkTag = res['storeArtworkTag'][0].storeArtworkTag.split(',,');
+          storeArtworkTag.forEach(tag => {
+            let tags = tag.split('::');
+            this.artworkTags.push({ pk_artworkTagID: tags[0], name: tags[1] });
+          });
+          // this.artworkTags = res["storeArtworkTag"];
+          this.selectedArtworkTags = [];
+          if (this.quoteData['cartLineArtworkTags']) {
+            let cartTags = this.quoteData['cartLineArtworkTags'].split(',');
+            cartTags.forEach(tag => {
+              let tags = tag.split(':');
+              this.selectedArtworkTags.push(tags[0]);
+            });
+          }
+        }
+        // this.quoteData["cartLineArtworkTags"].forEach(element => {
+        //   this.selectedArtworkTags.push(element.fk_artworkTagID);
+        // });
       }
       // Assign email recipients
       this.quoteImprintdata.forEach(imprint => {

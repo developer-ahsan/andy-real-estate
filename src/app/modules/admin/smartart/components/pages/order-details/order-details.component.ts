@@ -213,9 +213,9 @@ export class OrderDashboardDetailsComponent implements OnInit, OnDestroy {
     // this.selectedContactEmail = this.orderData?.shippingEmail;
     this.artWorkLoader = true;
     let params = {
-      order_online_details_artApproval: true,
-      orderLine_id: this.paramData.pk_orderLineID,
-      imprint_id: this.paramData.fk_imprintID,
+      quote_order_common_details: true,
+      // orderLine_id: this.paramData.pk_orderLineID,
+      // imprint_id: this.paramData.fk_imprintID,
       product_id: this.orderData.fk_productID,
       store_id: this.orderData.pk_storeID,
       store_product_id: this.orderData.pk_storeProductID
@@ -229,11 +229,26 @@ export class OrderDashboardDetailsComponent implements OnInit, OnDestroy {
         this.virtualProofData = res["virtualProof"];
       }
       if (res["storeArtworkTag"]) {
-        this.artworkTags = res["storeArtworkTag"];
-        this.selectedArtworkTags = [];
-        res["orderLineArtworkTag"].forEach(element => {
-          this.selectedArtworkTags.push(element.fk_artworkTagID);
-        });
+        if (res['storeArtworkTag'][0].storeArtworkTag) {
+          let storeArtworkTag = res['storeArtworkTag'][0].storeArtworkTag.split(',,');
+          storeArtworkTag.forEach(tag => {
+            let tags = tag.split('::');
+            this.artworkTags.push({ pk_artworkTagID: tags[0], name: tags[1] });
+          });
+          // this.artworkTags = res["storeArtworkTag"];
+          this.selectedArtworkTags = [];
+          if (this.orderData['orderLineArtworkTag']) {
+            let cartTags = this.orderData['orderLineArtworkTag'].split(',');
+            cartTags.forEach(tag => {
+              let tags = tag.split(':');
+              this.selectedArtworkTags.push(tags[0]);
+            });
+          }
+        }
+
+        // res["orderLineArtworkTag"].forEach(element => {
+        //   this.selectedArtworkTags.push(element.fk_artworkTagID);
+        // });
       }
       // Assign email recipients
       this.imprintdata.forEach(imprint => {

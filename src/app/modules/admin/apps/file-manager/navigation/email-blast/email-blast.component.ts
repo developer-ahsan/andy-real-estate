@@ -84,7 +84,7 @@ export class EmailBlastComponent implements OnInit, OnDestroy {
 
   addOnBlur = true;
   readonly separatorKeysCodes = [ENTER, COMMA] as const;
-  fruits = [];
+  emailsData = [];
 
   mainScreen = 'blast';
   emailActivity: any = [];
@@ -93,6 +93,8 @@ export class EmailBlastComponent implements OnInit, OnDestroy {
   @ViewChild('chipList', { static: false }) chipList: ElementRef<HTMLInputElement>;
 
   ngEmailOptIn: boolean = false;
+
+  selectedRecipientValue: string = 'everyone';
   incomingfile(event) {
     const target: DataTransfer = <DataTransfer>(event.target);
     if (target.files.length !== 1) {
@@ -113,7 +115,7 @@ export class EmailBlastComponent implements OnInit, OnDestroy {
         const value = (element.email || '').trim();
         // Add our fruit
         if (value) {
-          this.fruits.push(value);
+          this.emailsData.push(value);
           this.chipList.nativeElement.focus();
         }
       });
@@ -124,7 +126,7 @@ export class EmailBlastComponent implements OnInit, OnDestroy {
     const value = (event.value || '').trim();
     // Add our fruit
     if (value) {
-      this.fruits.push(value);
+      this.emailsData.push(value);
     }
 
     // Clear the input value
@@ -132,10 +134,10 @@ export class EmailBlastComponent implements OnInit, OnDestroy {
   }
 
   remove(fruit): void {
-    const index = this.fruits.indexOf(fruit);
+    const index = this.emailsData.indexOf(fruit);
 
     if (index >= 0) {
-      this.fruits.splice(index, 1);
+      this.emailsData.splice(index, 1);
     }
   }
 
@@ -412,7 +414,7 @@ export class EmailBlastComponent implements OnInit, OnDestroy {
       });
       return;
     }
-    if (!this.fruits.length) {
+    if (!this.emailsData.length) {
       this._snackBar.open("Emails are needed", '', {
         horizontalPosition: 'center',
         verticalPosition: 'bottom',
@@ -437,7 +439,7 @@ export class EmailBlastComponent implements OnInit, OnDestroy {
       subject: heading,
       header: heading,
       message: message,
-      emails: this.fruits
+      emails: this.emailsData
     }
 
     this._fileManagerService.getEmailPriviewTemplate(payload)
@@ -495,7 +497,7 @@ export class EmailBlastComponent implements OnInit, OnDestroy {
     const { pk_storeID } = this.selectedStore;
     const { heading, campaign, message } = this.sendEmailForm.getRawValue();
 
-    if (!this.fruits.length) {
+    if (!this.emailsData.length) {
       this._snackBar.open("Emails are needed", '', {
         horizontalPosition: 'center',
         verticalPosition: 'bottom',
@@ -506,7 +508,7 @@ export class EmailBlastComponent implements OnInit, OnDestroy {
 
     this.sendEmailLoader = true;
     let payload = {
-      "email_list": this.fruits,
+      "email_list": this.emailsData,
       "subject": heading,
       "store_id": pk_storeID,
       "campaign_id": campaign.pk_campaignID,
@@ -525,6 +527,11 @@ export class EmailBlastComponent implements OnInit, OnDestroy {
           verticalPosition: 'bottom',
           duration: 3000
         });
+        this.getActivitydata();
+        this.mainScreen = 'actvity';
+        this.emailsData = [];
+        this.sendEmailForm.reset();
+        this.presentationScreen = 'Dropdowns';
         this._changeDetectorRef.markForCheck();
       }, err => {
         this._snackBar.open("Error occured while sending email", '', {
@@ -540,16 +547,16 @@ export class EmailBlastComponent implements OnInit, OnDestroy {
   changeEmailCheckBox(ev) {
     if (ev.checked) {
       this.OptInEmails.forEach(element => {
-        let index = this.fruits.indexOf(element.email);
+        let index = this.emailsData.indexOf(element.email);
         if (index == -1) {
-          this.fruits.push(element.email);
+          this.emailsData.push(element.email);
         }
       });
     } else {
       this.OptInEmails.forEach(element => {
-        let index = this.fruits.indexOf(element.email);
+        let index = this.emailsData.indexOf(element.email);
         if (index > -1) {
-          this.fruits.splice(index, 1);
+          this.emailsData.splice(index, 1);
         }
       });
     }
