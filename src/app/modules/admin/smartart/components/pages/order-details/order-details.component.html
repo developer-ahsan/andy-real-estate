@@ -593,12 +593,14 @@
                                             </mat-progress-spinner>
                                         </button>
                                     </div>
-                                    <div class="col-12 col-md-6"
+                                    <!-- Proof Contact -->
+                                    <!-- <div class="col-12 col-md-6"
                                         *ngIf="smartArtUser.blnMaster && orderData.blnAdditionalArtApproval">
                                         <mat-form-field class="w-full">
                                             <mat-label>Proof Contact</mat-label>
                                             <mat-select matInput [(ngModel)]="imprint.selectedContact">
-                                                <mat-option [value]="0">{{orderData.billingName}}</mat-option>
+                                                <mat-option [value]="0">{{orderData.sessionArtworkFirstName[0] + ' '
+                                                    +orderData.sessionArtworkFirstName[1]}}</mat-option>
                                                 <mat-option *ngFor="let contact of contactProofs" [value]="contact"
                                                     [attr.data-blnStoreUserApproval]="contact.blnStoreUserApproval">{{contact.firstName
                                                     + ' ' +
@@ -612,8 +614,7 @@
                                                 [mode]="'indeterminate'">
                                             </mat-progress-spinner>
                                         </button>
-                                        <!-- <button class="min-w-30" mat-button mat-stroked-button>Update</button> -->
-                                    </div>
+                                    </div> -->
                                     <div class="col-md-8 col-12 mt-3">
                                         <div class="row">
                                             <div class="col-6 font-bold">Quantity:</div>
@@ -688,7 +689,6 @@
                                         </div>
                                     </div>
                                     <div class="col-12 mt-2">
-
                                         <!-- NEW PENDING -->
                                         <div *ngIf="imprint.pk_statusID == 2" class="rounded-2xl shadow bg-card p-4 ">
                                             <fuse-alert class="mb-2" [appearance]="'outline'" [type]="'warning'"
@@ -715,6 +715,36 @@
                                             </div>
                                             <div class="row">
                                                 <div class="col-md-8 col-12">
+                                                    <!-- Proof Contact -->
+                                                    <div class="flex space-x-2 align-items-center"
+                                                        *ngIf="smartArtUser.blnMaster && orderData.blnAdditionalArtApproval">
+                                                        <mat-form-field class="w-full">
+                                                            <mat-label>Proof Contact</mat-label>
+                                                            <mat-select matInput [(ngModel)]="imprint.selectedContact">
+                                                                <mat-option
+                                                                    [value]="0">{{orderData.sessionArtworkFirstName[0] +
+                                                                    ' '
+                                                                    +orderData.sessionArtworkFirstName[1]}}</mat-option>
+                                                                <mat-option *ngFor="let contact of contactProofs"
+                                                                    [value]="contact"
+                                                                    [attr.data-blnStoreUserApproval]="contact.blnStoreUserApproval">{{contact.firstName
+                                                                    + ' ' +
+                                                                    contact.lastName}}</mat-option>
+                                                            </mat-select>
+                                                        </mat-form-field>
+                                                        <button
+                                                            class="min-w-30 h-10 rounded-md bg-green-600 px-2.5 py-1.5 text-sm font-semibold text-white shadow-sm hover:bg-green-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-green-600 "
+                                                            type="button" (click)="updateProofContact(imprint)"
+                                                            [disabled]="imprint?.isProofLoader">
+                                                            <span *ngIf="!imprint?.isProofLoader">Update</span>
+                                                            <div class="flex justify-center"
+                                                                *ngIf="imprint?.isProofLoader">
+                                                                <mat-progress-spinner [diameter]="24"
+                                                                    [mode]="'indeterminate'">
+                                                                </mat-progress-spinner>
+                                                            </div>
+                                                        </button>
+                                                    </div>
                                                     <mat-form-field class="w-full">
                                                         <mat-label>Email recipients (comma-separated)</mat-label>
                                                         <input matInput [(ngModel)]="imprint.emailRecipients"
@@ -741,7 +771,6 @@
                                                     <div *ngIf="orderData.inHandsDate">
                                                         <label for="">Approve-By Date (mm/dd/yyyy)</label>
                                                         <div class="flex space-x-1">
-                                                            <!-- <input type="checkbox"> -->
                                                             <mat-checkbox class="mt-2"
                                                                 [(ngModel)]="imprint.blnIncludeApproveByDate"></mat-checkbox>
                                                             <input class="form-control" type="date">
@@ -908,6 +937,36 @@
                                             </div>
                                             <div class="row">
                                                 <div class="col-md-8 col-12">
+                                                    <!-- Proof Contact -->
+                                                    <div class="flex space-x-2 align-items-center"
+                                                        *ngIf="smartArtUser.blnMaster && orderData.blnAdditionalArtApproval">
+                                                        <mat-form-field class="w-full">
+                                                            <mat-label>Proof Contact</mat-label>
+                                                            <mat-select matInput [(ngModel)]="imprint.selectedContact">
+                                                                <mat-option
+                                                                    [value]="0">{{orderData.sessionArtworkFirstName[0] +
+                                                                    ' '
+                                                                    +orderData.sessionArtworkFirstName[1]}}</mat-option>
+                                                                <mat-option *ngFor="let contact of contactProofs"
+                                                                    [value]="contact"
+                                                                    [attr.data-blnStoreUserApproval]="contact.blnStoreUserApproval">{{contact.firstName
+                                                                    + ' ' +
+                                                                    contact.lastName}}</mat-option>
+                                                            </mat-select>
+                                                        </mat-form-field>
+                                                        <button
+                                                            class="min-w-30 h-10 rounded-md bg-green-600 px-2.5 py-1.5 text-sm font-semibold text-white shadow-sm hover:bg-green-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-green-600 "
+                                                            type="button" (click)="updateProofContact(imprint)"
+                                                            [disabled]="imprint?.isProofLoader">
+                                                            <span *ngIf="!imprint?.isProofLoader">Update</span>
+                                                            <div class="flex justify-center"
+                                                                *ngIf="imprint?.isProofLoader">
+                                                                <mat-progress-spinner [diameter]="24"
+                                                                    [mode]="'indeterminate'">
+                                                                </mat-progress-spinner>
+                                                            </div>
+                                                        </button>
+                                                    </div>
                                                     <mat-form-field class="w-full">
                                                         <mat-label>Email recipients (comma-separated)</mat-label>
                                                         <input matInput [(ngModel)]="imprint.emailRecipients"
@@ -1050,9 +1109,15 @@
                                                     </mat-form-field>
                                                     <div class="tex-right">
                                                         <button
-                                                            class="min-w-30 mt-2 btn buttonComment hover:bg-gray-200">Apply
-                                                            Status
-                                                            Change</button>
+                                                            class="min-w-30 mt-2 btn buttonComment hover:bg-gray-200"
+                                                            (click)="applyStatusChangeImprint(imprint, imprint.statusID,'apply')"
+                                                            [disabled]="imprint.applyStatusLoader">
+                                                            <span *ngIf="!imprint?.applyStatusLoader">Apply Status
+                                                                Change</span>
+                                                            <mat-progress-spinner *ngIf="imprint?.applyStatusLoader"
+                                                                [diameter]="24" [mode]="'indeterminate'">
+                                                            </mat-progress-spinner>
+                                                        </button>
                                                     </div>
                                                 </div>
                                             </div>
@@ -1192,6 +1257,36 @@
                                             </div>
                                             <div class="row">
                                                 <div class="col-md-8 col-12">
+                                                    <!-- Proof Contact -->
+                                                    <div class="flex space-x-2 align-items-center"
+                                                        *ngIf="smartArtUser.blnMaster && orderData.blnAdditionalArtApproval">
+                                                        <mat-form-field class="w-full">
+                                                            <mat-label>Proof Contact</mat-label>
+                                                            <mat-select matInput [(ngModel)]="imprint.selectedContact">
+                                                                <mat-option
+                                                                    [value]="0">{{orderData.sessionArtworkFirstName[0] +
+                                                                    ' '
+                                                                    +orderData.sessionArtworkFirstName[1]}}</mat-option>
+                                                                <mat-option *ngFor="let contact of contactProofs"
+                                                                    [value]="contact"
+                                                                    [attr.data-blnStoreUserApproval]="contact.blnStoreUserApproval">{{contact.firstName
+                                                                    + ' ' +
+                                                                    contact.lastName}}</mat-option>
+                                                            </mat-select>
+                                                        </mat-form-field>
+                                                        <button
+                                                            class="min-w-30 h-10 rounded-md bg-green-600 px-2.5 py-1.5 text-sm font-semibold text-white shadow-sm hover:bg-green-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-green-600 "
+                                                            type="button" (click)="updateProofContact(imprint)"
+                                                            [disabled]="imprint?.isProofLoader">
+                                                            <span *ngIf="!imprint?.isProofLoader">Update</span>
+                                                            <div class="flex justify-center"
+                                                                *ngIf="imprint?.isProofLoader">
+                                                                <mat-progress-spinner [diameter]="24"
+                                                                    [mode]="'indeterminate'">
+                                                                </mat-progress-spinner>
+                                                            </div>
+                                                        </button>
+                                                    </div>
                                                     <h3>Please enter the artwork's PO Number: (enter only numbers,
                                                         dashes, or letters)</h3>
                                                     <mat-form-field class="w-full">
@@ -1531,6 +1626,36 @@
                                             </div>
                                             <div class="row">
                                                 <div class="col-md-8 col-12">
+                                                    <!-- Proof Contact -->
+                                                    <div class="flex space-x-2 align-items-center"
+                                                        *ngIf="smartArtUser.blnMaster && orderData.blnAdditionalArtApproval">
+                                                        <mat-form-field class="w-full">
+                                                            <mat-label>Proof Contact</mat-label>
+                                                            <mat-select matInput [(ngModel)]="imprint.selectedContact">
+                                                                <mat-option
+                                                                    [value]="0">{{orderData.sessionArtworkFirstName[0] +
+                                                                    ' '
+                                                                    +orderData.sessionArtworkFirstName[1]}}</mat-option>
+                                                                <mat-option *ngFor="let contact of contactProofs"
+                                                                    [value]="contact"
+                                                                    [attr.data-blnStoreUserApproval]="contact.blnStoreUserApproval">{{contact.firstName
+                                                                    + ' ' +
+                                                                    contact.lastName}}</mat-option>
+                                                            </mat-select>
+                                                        </mat-form-field>
+                                                        <button
+                                                            class="min-w-30 h-10 rounded-md bg-green-600 px-2.5 py-1.5 text-sm font-semibold text-white shadow-sm hover:bg-green-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-green-600 "
+                                                            type="button" (click)="updateProofContact(imprint)"
+                                                            [disabled]="imprint?.isProofLoader">
+                                                            <span *ngIf="!imprint?.isProofLoader">Update</span>
+                                                            <div class="flex justify-center"
+                                                                *ngIf="imprint?.isProofLoader">
+                                                                <mat-progress-spinner [diameter]="24"
+                                                                    [mode]="'indeterminate'">
+                                                                </mat-progress-spinner>
+                                                            </div>
+                                                        </button>
+                                                    </div>
                                                     <h3>Please enter the artwork's PO Number: (enter only numbers,
                                                         dashes, or letters)</h3>
                                                     <br>
@@ -1661,6 +1786,36 @@
                                             </div>
                                             <div class="row">
                                                 <div class="col-md-8 col-12">
+                                                    <!-- Proof Contact -->
+                                                    <div class="flex space-x-2 align-items-center"
+                                                        *ngIf="smartArtUser.blnMaster && orderData.blnAdditionalArtApproval">
+                                                        <mat-form-field class="w-full">
+                                                            <mat-label>Proof Contact</mat-label>
+                                                            <mat-select matInput [(ngModel)]="imprint.selectedContact">
+                                                                <mat-option
+                                                                    [value]="0">{{orderData.sessionArtworkFirstName[0] +
+                                                                    ' '
+                                                                    +orderData.sessionArtworkFirstName[1]}}</mat-option>
+                                                                <mat-option *ngFor="let contact of contactProofs"
+                                                                    [value]="contact"
+                                                                    [attr.data-blnStoreUserApproval]="contact.blnStoreUserApproval">{{contact.firstName
+                                                                    + ' ' +
+                                                                    contact.lastName}}</mat-option>
+                                                            </mat-select>
+                                                        </mat-form-field>
+                                                        <button
+                                                            class="min-w-30 h-10 rounded-md bg-green-600 px-2.5 py-1.5 text-sm font-semibold text-white shadow-sm hover:bg-green-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-green-600 "
+                                                            type="button" (click)="updateProofContact(imprint)"
+                                                            [disabled]="imprint?.isProofLoader">
+                                                            <span *ngIf="!imprint?.isProofLoader">Update</span>
+                                                            <div class="flex justify-center"
+                                                                *ngIf="imprint?.isProofLoader">
+                                                                <mat-progress-spinner [diameter]="24"
+                                                                    [mode]="'indeterminate'">
+                                                                </mat-progress-spinner>
+                                                            </div>
+                                                        </button>
+                                                    </div>
                                                     <mat-form-field class="w-full">
                                                         <mat-label>Email recipients (comma-separated)</mat-label>
                                                         <input matInput [(ngModel)]="imprint.emailRecipients"
@@ -1815,9 +1970,15 @@
                                                     </mat-form-field>
                                                     <div class="tex-right">
                                                         <button
-                                                            class="min-w-30 mt-2 btn buttonComment hover:bg-gray-200">Apply
-                                                            Status
-                                                            Change</button>
+                                                            class="min-w-30 mt-2 btn buttonComment hover:bg-gray-200"
+                                                            (click)="applyStatusChangeImprint(imprint, imprint.statusID,'apply')"
+                                                            [disabled]="imprint.applyStatusLoader">
+                                                            <span *ngIf="!imprint?.applyStatusLoader">Apply Status
+                                                                Change</span>
+                                                            <mat-progress-spinner *ngIf="imprint?.applyStatusLoader"
+                                                                [diameter]="24" [mode]="'indeterminate'">
+                                                            </mat-progress-spinner>
+                                                        </button>
                                                     </div>
                                                 </div>
                                             </div>
@@ -1840,6 +2001,36 @@
                                             </div>
                                             <div class="row">
                                                 <div class="col-md-8 col-12">
+                                                    <!-- Proof Contact -->
+                                                    <div class="flex space-x-2 align-items-center"
+                                                        *ngIf="smartArtUser.blnMaster && orderData.blnAdditionalArtApproval">
+                                                        <mat-form-field class="w-full">
+                                                            <mat-label>Proof Contact</mat-label>
+                                                            <mat-select matInput [(ngModel)]="imprint.selectedContact">
+                                                                <mat-option
+                                                                    [value]="0">{{orderData.sessionArtworkFirstName[0] +
+                                                                    ' '
+                                                                    +orderData.sessionArtworkFirstName[1]}}</mat-option>
+                                                                <mat-option *ngFor="let contact of contactProofs"
+                                                                    [value]="contact"
+                                                                    [attr.data-blnStoreUserApproval]="contact.blnStoreUserApproval">{{contact.firstName
+                                                                    + ' ' +
+                                                                    contact.lastName}}</mat-option>
+                                                            </mat-select>
+                                                        </mat-form-field>
+                                                        <button
+                                                            class="min-w-30 h-10 rounded-md bg-green-600 px-2.5 py-1.5 text-sm font-semibold text-white shadow-sm hover:bg-green-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-green-600 "
+                                                            type="button" (click)="updateProofContact(imprint)"
+                                                            [disabled]="imprint?.isProofLoader">
+                                                            <span *ngIf="!imprint?.isProofLoader">Update</span>
+                                                            <div class="flex justify-center"
+                                                                *ngIf="imprint?.isProofLoader">
+                                                                <mat-progress-spinner [diameter]="24"
+                                                                    [mode]="'indeterminate'">
+                                                                </mat-progress-spinner>
+                                                            </div>
+                                                        </button>
+                                                    </div>
                                                     <mat-form-field class="w-full">
                                                         <mat-label>Email recipients (comma-separated)</mat-label>
                                                         <input matInput [(ngModel)]="imprint.emailRecipients"
@@ -1942,9 +2133,15 @@
                                                     </mat-form-field>
                                                     <div class="tex-right">
                                                         <button
-                                                            class="min-w-30 mt-2 btn buttonComment hover:bg-gray-200">Apply
-                                                            Status
-                                                            Change</button>
+                                                            class="min-w-30 mt-2 btn buttonComment hover:bg-gray-200"
+                                                            (click)="applyStatusChangeImprint(imprint, imprint.statusID,'apply')"
+                                                            [disabled]="imprint.applyStatusLoader">
+                                                            <span *ngIf="!imprint?.applyStatusLoader">Apply Status
+                                                                Change</span>
+                                                            <mat-progress-spinner *ngIf="imprint?.applyStatusLoader"
+                                                                [diameter]="24" [mode]="'indeterminate'">
+                                                            </mat-progress-spinner>
+                                                        </button>
                                                     </div>
                                                 </div>
                                             </div>
@@ -1968,6 +2165,36 @@
                                             </div>
                                             <div class="row">
                                                 <div class="col-md-8 col-12">
+                                                    <!-- Proof Contact -->
+                                                    <div class="flex space-x-2 align-items-center"
+                                                        *ngIf="smartArtUser.blnMaster && orderData.blnAdditionalArtApproval">
+                                                        <mat-form-field class="w-full">
+                                                            <mat-label>Proof Contact</mat-label>
+                                                            <mat-select matInput [(ngModel)]="imprint.selectedContact">
+                                                                <mat-option
+                                                                    [value]="0">{{orderData.sessionArtworkFirstName[0] +
+                                                                    ' '
+                                                                    +orderData.sessionArtworkFirstName[1]}}</mat-option>
+                                                                <mat-option *ngFor="let contact of contactProofs"
+                                                                    [value]="contact"
+                                                                    [attr.data-blnStoreUserApproval]="contact.blnStoreUserApproval">{{contact.firstName
+                                                                    + ' ' +
+                                                                    contact.lastName}}</mat-option>
+                                                            </mat-select>
+                                                        </mat-form-field>
+                                                        <button
+                                                            class="min-w-30 h-10 rounded-md bg-green-600 px-2.5 py-1.5 text-sm font-semibold text-white shadow-sm hover:bg-green-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-green-600 "
+                                                            type="button" (click)="updateProofContact(imprint)"
+                                                            [disabled]="imprint?.isProofLoader">
+                                                            <span *ngIf="!imprint?.isProofLoader">Update</span>
+                                                            <div class="flex justify-center"
+                                                                *ngIf="imprint?.isProofLoader">
+                                                                <mat-progress-spinner [diameter]="24"
+                                                                    [mode]="'indeterminate'">
+                                                                </mat-progress-spinner>
+                                                            </div>
+                                                        </button>
+                                                    </div>
                                                     <h3>Please enter the artwork's PO Number: (enter only numbers,
                                                         dashes, or letters)</h3>
                                                     <br>

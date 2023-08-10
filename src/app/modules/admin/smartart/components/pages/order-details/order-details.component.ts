@@ -719,8 +719,10 @@ export class OrderDashboardDetailsComponent implements OnInit, OnDestroy {
         this._smartartService.snackBar(res["message"]);
         if (imprint.selectedContact == 0) {
           imprint.selectedContactEmail = this.orderData.email;
+          imprint.emailRecipients = this.orderData.email;
         } else {
           imprint.selectedContactEmail = imprint.selectedContact.email;
+          imprint.emailRecipients = imprint.selectedContact.email;
         }
       }
       imprint.isProofLoader = false;
@@ -732,6 +734,13 @@ export class OrderDashboardDetailsComponent implements OnInit, OnDestroy {
   }
 
   applyStatusChangeImprint(imprint, statusID, type) {
+    if (imprint.blnRespond) {
+      if (imprint.proofComments == '') {
+        this._smartartService.snackBar('Please enter comments regarding this communication.');
+        return;
+      }
+    }
+
     imprint.applyStatusLoader = false;
     if (type != 'apply') {
       if (statusID == 2) {
@@ -831,6 +840,8 @@ export class OrderDashboardDetailsComponent implements OnInit, OnDestroy {
       imprint.followStatusLoader = false;
       imprint.poStatusLoader = false;
       imprint.waitingStatusLoader = false;
+      imprint.blnRespond = false;
+      imprint.proofComments = '';
       this._changeDetectorRef.markForCheck();
     }, err => {
       imprint.applyStatusLoader = false;
