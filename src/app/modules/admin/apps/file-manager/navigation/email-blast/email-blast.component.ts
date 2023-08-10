@@ -64,6 +64,7 @@ export class EmailBlastComponent implements OnInit, OnDestroy {
   optInData: any;
   OptInEmails: any;
   OptOutEmails: any;
+  customerEmails: any;
 
 
   previewData: any;
@@ -152,7 +153,8 @@ export class EmailBlastComponent implements OnInit, OnDestroy {
     this.sendEmailForm = this._formBuilder.group({
       heading: ['', Validators.required],
       message: ['', Validators.required],
-      campaign: ['', Validators.required]
+      campaign: ['', Validators.required],
+      selectedRecipientValue: ['email', Validators.required]
     });
     this.isLoadingChange.emit(false);
     this.initAddForm();
@@ -163,7 +165,8 @@ export class EmailBlastComponent implements OnInit, OnDestroy {
       .pipe(takeUntil(this._unsubscribeAll))
       .subscribe((items: any) => {
         this.selectedStore = items["data"][0];
-        this.getOptInEmail('get');
+        // this.getOptInEmail('get');
+        this.getOptInOutEmail();
         this.getEmailTemplate('get');
       });
   }
@@ -300,6 +303,38 @@ export class EmailBlastComponent implements OnInit, OnDestroy {
         item.msg = false;
         item.loader = false;
         this._changeDetectorRef.markForCheck()
+      })
+  }
+  getOptInOutEmail() {
+    this.isPageLoading = true;
+    this.optInData = null;
+    let params = {
+      store_id: this.selectedStore.pk_storeID,
+      optIn_optOut: true
+    }
+
+    this._fileManagerService.getStoresData(params)
+      .pipe(takeUntil(this._unsubscribeAll))
+      .subscribe(res => {
+        console.log(res);
+        this.optInData = res["data"][0];
+        let optInEmails = this.optInData.optInEmails;
+        if (optInEmails) {
+          this.OptInEmails = optInEmails.split(',');
+        }
+        let optOutEmails = this.optInData.optOutEmails;
+        if (optOutEmails) {
+          this.OptOutEmails = optOutEmails.split(',');
+        }
+        let customerEmails = this.optInData.allActiveCustomers;
+        if (customerEmails) {
+          this.customerEmails = customerEmails.split(',');
+        }
+        this.isPageLoading = false;
+        this._changeDetectorRef.markForCheck();
+      }, err => {
+        this.isPageLoading = false;
+        this._changeDetectorRef.markForCheck();
       })
   }
   getOptInEmail(check) {
@@ -532,6 +567,7 @@ export class EmailBlastComponent implements OnInit, OnDestroy {
         this.emailsData = [];
         this.sendEmailForm.reset();
         this.presentationScreen = 'Dropdowns';
+        this.sendEmailForm.patchValue({ selectedRecipientValue: 'email' });
         this._changeDetectorRef.markForCheck();
       }, err => {
         this._snackBar.open("Error occured while sending email", '', {
@@ -545,21 +581,46 @@ export class EmailBlastComponent implements OnInit, OnDestroy {
 
   };
   changeEmailCheckBox(ev) {
-    if (ev.checked) {
+    this.emailsData = [];
+    if (ev.value == 'optIn') {
       this.OptInEmails.forEach(element => {
-        let index = this.emailsData.indexOf(element.email);
+        let index = this.emailsData.indexOf(element);
         if (index == -1) {
-          this.emailsData.push(element.email);
-        }
-      });
-    } else {
-      this.OptInEmails.forEach(element => {
-        let index = this.emailsData.indexOf(element.email);
-        if (index > -1) {
-          this.emailsData.splice(index, 1);
+          this.emailsData.push(element);
         }
       });
     }
+    if (ev.value == 'customers') {
+      this.customerEmails.forEach(element => {
+        let index = this.emailsData.indexOf(element);
+        if (index == -1) {
+          this.emailsData.push(element);
+        }
+      });
+    }
+    // if(ev.value == 'email') {
+    //   this.customerEmails.forEach(element => {
+    //     let index = this.emailsData.indexOf(element.email);
+    //     if (index == -1) {
+    //       this.emailsData.push(element.email);
+    //     }
+    //   });
+    // }
+    // if (ev.checked) {
+    //   this.OptInEmails.forEach(element => {
+    //     let index = this.emailsData.indexOf(element.email);
+    //     if (index == -1) {
+    //       this.emailsData.push(element.email);
+    //     }
+    //   });
+    // } else {
+    //   this.OptInEmails.forEach(element => {
+    //     let index = this.emailsData.indexOf(element.email);
+    //     if (index > -1) {
+    //       this.emailsData.splice(index, 1);
+    //     }
+    //   });
+    // }
   }
 
   ngOnDestroy(): void {
