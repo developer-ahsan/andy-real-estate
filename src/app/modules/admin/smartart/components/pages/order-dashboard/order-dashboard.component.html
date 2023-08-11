@@ -83,36 +83,7 @@
                         <div class="text-2xl font-bold">
                             Order Dashboard
                         </div>
-                        <!-- <div class="cursor-pointer" (click)="drawer.toggle()">
-                            <button mat-stroked-button mat-button class="min-w-40">Filter</button>
-                        </div> -->
                     </div>
-                    <!-- <div class="px-8">
-                        <div class="row">
-                            <div class="col-12">
-                                <mat-form-field class="w-full">
-                                    <mat-label>Filter By Status</mat-label>
-                                    <mat-select matInput [(ngModel)]="ngFilterField"
-                                        (selectionChange)="onOrderStatusChange($event.value)">
-                                        <mat-option [value]="0">All Orders</mat-option>
-                                        <mat-option [value]="2">New Pending</mat-option>
-                                        <mat-option [value]="3">Awaiting Approval</mat-option>
-                                        <mat-option [value]="12">On Hold</mat-option>
-                                        <mat-option [value]="13">Follow up for approval</mat-option>
-                                        <mat-option [value]="4">Artwork Revision</mat-option>
-                                        <mat-option [value]="5">Decorator Notified</mat-option>
-                                        <mat-option [value]="7">No Proof Needed</mat-option>
-                                        <mat-option [value]="9">Artwork Approved</mat-option>
-                                        <mat-option [value]="16">PO Sent</mat-option>
-                                        <mat-option [value]="11">In Production</mat-option>
-                                        <mat-option [value]="17">Hidden</mat-option>
-                                        <mat-option [value]="99">Waiting for GroupBuy</mat-option>
-                                        <mat-option [value]="999">In-Hands Date</mat-option>
-                                    </mat-select>
-                                </mat-form-field>
-                            </div>
-                        </div>
-                    </div> -->
                     <div class="px-8 flex space-x-2 overflow-x-auto">
                         <div>
                             <p>Rush Orders (not flexible)</p>
@@ -161,7 +132,9 @@
                                 (matSortChange)="sortData($event)">
                                 <ng-container matColumnDef="check" sticky>
                                     <th mat-header-cell *matHeaderCellDef class="w-15 min-w-15 fixed-col">
-                                        Check
+                                        <mat-checkbox class="mt-2" [(ngModel)]="checkAll"
+                                            matTooltip="Select all orders in this page"
+                                            (change)="selectAllOrders($event)"></mat-checkbox>
                                     </th>
                                     <td mat-cell *matCellDef="let element" class="text-xs fixed-col">
                                         <mat-checkbox [(ngModel)]="element.checked"
@@ -268,12 +241,6 @@
                                                     <p *ngIf="!element.proofDetails[2]">N/A</p>
                                                 </span>
                                                 <span *ngIf="!element.proofDetails">N/A</span>
-
-                                                <!-- <span *ngIf="!element.proofLoader"
-                                                    (click)="getSmartArtListProof(element)">View Proof</span>
-                                                <mat-progress-spinner *ngIf="element.proofLoader" [diameter]="24"
-                                                    [mode]="'indeterminate'">
-                                                </mat-progress-spinner> -->
                                             </div>
                                         </span>
                                         <span *ngIf="element.lastProof">
@@ -295,10 +262,6 @@
                                                 (click)="customerEmail(element)">
                                                 Email
                                             </button>
-                                            <!-- <mat-icon svgIcon="heroicons_outline:mail"
-                                                class="mr-1 cursor-pointer icon-size-4" matTooltip="Email"
-                                                (click)="customerEmail(element)"></mat-icon> -->
-                                            <!-- Hidden -->
                                             <div>
                                                 <button type="button"
                                                     class="inline-flex items-center gap-x-1.5 rounded-md bg-blue-400 px-2.5 py-1.5 text-sm font-semibold text-white shadow-sm hover:bg-blue-300 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-400"
@@ -316,19 +279,6 @@
                                                         [diameter]="24" [mode]="'indeterminate'">
                                                     </mat-progress-spinner>
                                                 </button>
-                                                <!-- <div *ngIf="!element?.isHiddenLoader">
-                                                    <mat-icon svgIcon="heroicons_outline:eye-off"
-                                                        class="mr-1 icon-size-4" matTooltip="Hide this item"
-                                                        (click)="HideUnhideCart(element, true)"
-                                                        *ngIf="!element.blnHidden"></mat-icon>
-                                                    <mat-icon svgIcon="heroicons_outline:eye" class="mr-1 icon-size-4"
-                                                        matTooltip="UnHide this item"
-                                                        (click)="HideUnhideCart(element, false)"
-                                                        *ngIf="element.blnHidden"></mat-icon>
-                                                </div>
-                                                <mat-progress-spinner *ngIf="element?.isHiddenLoader" [diameter]="24"
-                                                    [mode]="'indeterminate'">
-                                                </mat-progress-spinner> -->
                                             </div>
 
                                             <!-- Flag -->
@@ -350,20 +300,6 @@
                                                         [mode]="'indeterminate'">
                                                     </mat-progress-spinner>
                                                 </button>
-
-                                                <!-- <div *ngIf="!element?.isFlagLoader">
-                                                    <mat-icon (click)="updateAttentionFlagOrder(element, true)"
-                                                        *ngIf="!element.blnAttention" svgIcon="heroicons_outline:flag"
-                                                        class="mr-1 icon-size-4 text-red-500"
-                                                        matTooltip="Flag this item"></mat-icon>
-                                                    <mat-icon (click)="updateAttentionFlagOrder(element, false)"
-                                                        *ngIf="element.blnAttention" svgIcon="heroicons_outline:flag"
-                                                        class="mr-1 icon-size-4 text-green-500"
-                                                        matTooltip="Unflag this item"></mat-icon>
-                                                </div>
-                                                <mat-progress-spinner *ngIf="element?.isFlagLoader" [diameter]="24"
-                                                    [mode]="'indeterminate'">
-                                                </mat-progress-spinner> -->
                                             </div>
 
                                             <div>
@@ -381,63 +317,20 @@
                                                     <!-- spinner -->
                                                 </div>
                                                 <!-- If Already Claimed -->
-                                                <div *ngIf="element.fk_smartArtDesignerClaimID">
+                                                <div
+                                                    *ngIf="element.fk_smartArtDesignerClaimID == smartArtUser.adminUserID">
                                                     <button type="button"
-                                                        class="min-w-40 inline-flex items-center gap-x-1.5 rounded-md px-2.5 py-1.5 text-sm font-semibold text-white shadow-smfocus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
-                                                        [ngClass]="{ 'bg-red-400': element.fk_smartArtDesignerClaimID == smartArtUser.adminUserID, 'bg-green-400':element.fk_smartArtDesignerClaimID != smartArtUser.adminUserID}"
+                                                        class="inline-flex items-center gap-x-1.5 rounded-md px-2.5 py-1.5 text-sm font-semibold text-white shadow-smfocus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
+                                                        [ngClass]="{ 'bg-red-400': element.fk_smartArtDesignerClaimID == smartArtUser.adminUserID}"
                                                         [disabled]="element?.isClaimLoader">
-                                                        <!-- Claim -->
-                                                        <span matTooltip="Claim this item"
-                                                            *ngIf="!element.fk_smartArtDesignerClaimID && !element?.isClaimLoader"
-                                                            (click)="updateClaim(element, true)">Claim</span>
-                                                        <!-- Unclaim this item if  claimed iD == logged in smart-->
                                                         <span matTooltip="Unclaim this item"
                                                             *ngIf="element.fk_smartArtDesignerClaimID == smartArtUser.adminUserID && !element?.isClaimLoader"
                                                             (click)="updateClaim(element, false)">Unclaim</span>
-                                                        <!-- if already claimed but not by samrt art logged in user -->
-                                                        <span matTooltip="Claim this item"
-                                                            *ngIf="element.fk_smartArtDesignerClaimID != smartArtUser.adminUserID && !element?.isClaimLoader"
-                                                            (click)="updateClaim(element, true)">Claimed:
-                                                            {{element.claimedUserName}}</span>
-                                                        <!-- <p
-                                                            *ngIf="element.fk_smartArtDesignerClaimID != smartArtUser.adminUserID">
-                                                            {{element.claimedUserName}}</p> -->
-                                                        <!-- spinner -->
                                                         <mat-progress-spinner *ngIf="element?.isClaimLoader"
                                                             [diameter]="24" [mode]="'indeterminate'">
                                                         </mat-progress-spinner>
                                                     </button>
                                                 </div>
-
-                                                <!-- <div *ngIf="!element?.isClaimLoader">
-                                                    <div *ngIf="!element.fk_smartArtDesignerClaimID">
-                                                        <mat-icon svgIcon="heroicons_outline:exclamation"
-                                                            class="mr-1 icon-size-4" matTooltip="Claim this item"
-                                                            (click)="updateClaim(element, true)"></mat-icon>
-                                                    </div>
-                                                    <div *ngIf="element.fk_smartArtDesignerClaimID">
-                                                        <mat-icon *ngIf="!element.fk_smartArtDesignerClaimID"
-                                                            svgIcon="heroicons_outline:exclamation"
-                                                            class="mr-1 icon-size-4" matTooltip="Claim this item"
-                                                            (click)="updateClaim(element, true)"></mat-icon>
-                                                        <mat-icon svgIcon="heroicons_outline:exclamation"
-                                                            *ngIf="element.fk_smartArtDesignerClaimID == smartArtUser.adminUserID"
-                                                            class="mr-1 icon-size-4" matTooltip="Unclaim this item"
-                                                            (click)="updateClaim(element, false)"></mat-icon>
-                                                        <mat-icon
-                                                            *ngIf="element.fk_smartArtDesignerClaimID != smartArtUser.adminUserID"
-                                                            svgIcon="heroicons_outline:exclamation"
-                                                            class="mr-1 icon-size-4" matTooltip="Claim this item"
-                                                            (click)="updateClaim(element, true)"></mat-icon>
-                                                        <br>
-                                                        <p
-                                                            *ngIf="element.fk_smartArtDesignerClaimID != smartArtUser.adminUserID">
-                                                            {{element.claimedUserName}}</p>
-                                                    </div>
-                                                </div>
-                                                <mat-progress-spinner *ngIf="element?.isClaimLoader" [diameter]="24"
-                                                    [mode]="'indeterminate'">
-                                                </mat-progress-spinner> -->
                                             </div>
                                         </div>
                                     </td>
@@ -454,35 +347,47 @@
                                 [pageSize]="20" (page)="getNextData($event)" [hidePageSize]="true">
                             </mat-paginator>
                             <!-- Update Bulk -->
-                            <div class="px-8 my-2">
-                                <mat-form-field class="w-full">
-                                    <mat-label>Update bulk status</mat-label>
-                                    <mat-select [(ngModel)]="status_id">
-                                        <mat-option [value]="2">New-Pending</mat-option>
-                                        <mat-option [value]="3">Awaiting Approval</mat-option>
-                                        <mat-option [value]="12">On Hold</mat-option>
-                                        <mat-option [value]="13">Follow Up For Approval</mat-option>
-                                        <mat-option [value]="4">Artwork Revision</mat-option>
-                                        <mat-option [value]="5">Decorator Notified</mat-option>
-                                        <mat-option [value]="7">No Proof Needed</mat-option>
-                                        <mat-option [value]="9">Artwork Approved</mat-option>
-                                        <mat-option [value]="16">PO Sent</mat-option>
-                                        <mat-option [value]="11">In Production</mat-option>
-                                        <mat-option [value]="17">Waiting For Group Order</mat-option>
-                                        <mat-option [value]="99">Hidden</mat-option>
-                                        <mat-option [value]="999">Unhidden</mat-option>
-                                    </mat-select>
-                                </mat-form-field>
-                                <div class="text-right">
-                                    <button class="min-w-40" mat-button mat-stroked-button [disabled]="isBulkLoader"
-                                        (click)="bulkUploadStatus()">
-                                        <span *ngIf="!isBulkLoader">Update</span>
-                                        <mat-progress-spinner *ngIf="isBulkLoader" [diameter]="24"
-                                            [mode]="'indeterminate'">
-                                        </mat-progress-spinner>
-                                    </button>
+                            <div class="grid grid-cols-1 gap-4 md:grid-cols-3">
+                                <div class="col-span-2"></div>
+                                <!-- ... -->
+                                <div class="px-8 my-2 col-span-1">
+                                    <mat-form-field class="w-full">
+                                        <mat-label>Update bulk status</mat-label>
+                                        <mat-select [(ngModel)]="status_id">
+                                            <mat-option [value]="2">New-Pending</mat-option>
+                                            <mat-option [value]="3">Awaiting Approval</mat-option>
+                                            <mat-option [value]="12">On Hold</mat-option>
+                                            <mat-option [value]="13">Follow Up For Approval</mat-option>
+                                            <mat-option [value]="4">Artwork Revision</mat-option>
+                                            <mat-option [value]="5">Decorator Notified</mat-option>
+                                            <mat-option [value]="7">No Proof Needed</mat-option>
+                                            <mat-option [value]="9">Artwork Approved</mat-option>
+                                            <mat-option [value]="16">PO Sent</mat-option>
+                                            <mat-option [value]="11">In Production</mat-option>
+                                            <mat-option [value]="17">Waiting For Group Order</mat-option>
+                                            <mat-option [value]="99">Hidden</mat-option>
+                                            <mat-option [value]="999">Unhidden</mat-option>
+                                        </mat-select>
+                                    </mat-form-field>
+                                    <div class="flex justify-end space-x-2">
+                                        <button class="min-w-40" mat-button mat-flat-button color="primary"
+                                            [disabled]="isBulkLoader" (click)="bulkUploadStatus()">
+                                            <span *ngIf="!isBulkLoader">Resend Proof</span>
+                                            <mat-progress-spinner *ngIf="isBulkLoader" [diameter]="24"
+                                                [mode]="'indeterminate'">
+                                            </mat-progress-spinner>
+                                        </button>
+                                        <button class="min-w-40" mat-button mat-stroked-button [disabled]="isBulkLoader"
+                                            (click)="bulkUploadStatus()">
+                                            <span *ngIf="!isBulkLoader">Update</span>
+                                            <mat-progress-spinner *ngIf="isBulkLoader" [diameter]="24"
+                                                [mode]="'indeterminate'">
+                                            </mat-progress-spinner>
+                                        </button>
+                                    </div>
                                 </div>
                             </div>
+
                         </div>
                         <!-- No color Found -->
                         <ng-template #other_content>

@@ -67,11 +67,13 @@ export interface sendQuoteCustomerEmail {
 //     auto_order_art_request: boolean;
 // };
 export interface sendAutoRequestOrder {
-    customer_email: string;
-    customer_name: string;
-    toEmails: string;
+    firstName: string;
+    lastName: string;
+    email: string;
+    proofEmail: string;
+    fk_artApprovalContactID: number;
     blnAdditionalArtApproval: boolean;
-    protocol: string;
+    blnEProcurement: boolean;
     storeName: string;
     store_id: number;
     storeURL: string;
@@ -238,4 +240,17 @@ export interface SmartartImprintStatusUpdate {
     blnApproved: number; // Check fk_statusID for all orderLineImprintID's in the orderline 1 if statusID of imprint is "5,6,7,9,11,16" else 0
     smartArtLoggedInUserName: string;
     update_smart_imprint_status: boolean;
+};
+
+export interface sendOrderProofUpdate {
+    imprintLocationName: string;
+    imprintMethodName: string;
+    imprintID: number;
+    storeName: string;
+    orderID: number;
+    storeID: number;
+    productName: string;
+    storeUserID: number;
+    orderLineID: number;
+    send_order_proof_update: boolean;
 };

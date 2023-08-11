@@ -9,7 +9,7 @@ import { Subject, forkJoin, of } from 'rxjs';
 import { debounceTime, distinctUntilChanged, filter, finalize, switchMap, takeUntil, tap } from 'rxjs/operators';
 import { SmartArtService } from '../../smartart.service';
 import { interval } from 'rxjs';
-import { AddOrderComment, UpdateOrderLineArtworkTags, UpdateArtworkTgas, UpdateOrderInformation, sendAutoRequest, updateOrderLineImprintColors, updateReorderNumberOrder, UpdateOrderLineClaim, updateOrderProofContact, SmartartImprintStatusUpdate, sendAutoRequestOrder, updateAttentionFlagOrder } from '../../smartart.types';
+import { AddOrderComment, UpdateOrderLineArtworkTags, UpdateArtworkTgas, UpdateOrderInformation, sendAutoRequest, updateOrderLineImprintColors, updateReorderNumberOrder, UpdateOrderLineClaim, updateOrderProofContact, SmartartImprintStatusUpdate, sendAutoRequestOrder, updateAttentionFlagOrder, sendOrderProofUpdate } from '../../smartart.types';
 
 @Component({
   selector: 'app-order-details',
@@ -297,7 +297,7 @@ export class OrderDashboardDetailsComponent implements OnInit, OnDestroy {
         }
 
         if (!imprint?.fk_artApprovalContactID && !imprint?.fk_storeUserApprovalContactID && !imprint?.blnStoreUserApprovalDone) {
-          imprint.selectedContact = 0;
+          imprint.selectedContact = this.orderData.sessionArtwork_artApprovalContactID;
           if (imprint.decorationName.toLowerCase().includes('screen')) {
             imprint.selectedContactEmail = imprint.screenprintEmail;
             this.orderData.artworkEmail = imprint
@@ -476,34 +476,32 @@ export class OrderDashboardDetailsComponent implements OnInit, OnDestroy {
   // Put Calls
   // Auto Art Request
   senAutoArtRequest() {
-    let toEmails = '';
-    if (this.orderData.sessionProofEmails.length) {
-      toEmails = this.orderData.sessionProofEmails.toString();
-    } else {
-      toEmails = this.orderData.sessionArtworkEmail;
-    }
+    let index = this.imprintdata.findIndex(imp => imp.pk_imprintID == this.paramData.fk_imprintID)
     this.isAutoRequestLoader = true;
     this._changeDetectorRef.markForCheck();
     let payload: sendAutoRequestOrder = {
-      customer_email: '',
-      customer_name: '',
+      firstName: this.orderData?.firstName,
+      lastName: this.orderData?.lastName,
+      email: this.orderData.email,
+      proofEmail: this.orderData.proofEmail,
+      fk_artApprovalContactID: this.imprintdata[index].fk_artApprovalContactID,
       blnAdditionalArtApproval: this.orderData.blnAdditionalArtApproval,
-      toEmails: toEmails,
-      protocol: this.orderData.protocol,
+      blnEProcurement: this.orderData.blnEProcurement,
       storeName: this.orderData.storeName,
-      store_id: Number(this.orderData.pk_storeID),
-      storeURL: this.orderData?.storeURL,
+      store_id: this.orderData.pk_storeID,
+      storeURL: this.orderData.storeURL,
       orderLineImprintID: Number(this.paramData.fk_imprintID),
-      userID: Number(this.paramData.pfk_userID),
+      userID: Number(this.orderData.pfk_userID),
       orderLineID: Number(this.paramData.pk_orderLineID),
       productNumber: this.orderData.sessionArtwork_productNumber,
-      productName: this.orderData.productName,
+      productName: this.orderData.sessionArtwork_productName,
       smartArtLoggedInUserName: this.smartArtUser.firstName + ' ' + this.smartArtUser.lastName,
-      orderID: Number(this.paramData.fk_orderID),
+      orderID: this.orderData.pk_orderID,
       auto_order_art_request: true
     }
     this._smartartService.AddSmartArtData(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
       this._smartartService.snackBar(res["message"]);
+      this.imprintdata[index].imprintComments = this.imprintdata[index].imprintComments + ' <br>' + res["comment"];
       this.isAutoRequestLoader = false;
       this._changeDetectorRef.markForCheck();
     }, err => {
@@ -717,8 +715,8 @@ export class OrderDashboardDetailsComponent implements OnInit, OnDestroy {
   // Update Proof Contact
   updateProofContact(imprint) {
     let artAprrovalID;
-    if (imprint.selectedContact == 0) {
-      artAprrovalID = 0;
+    if (imprint.selectedContact == this.orderData.sessionArtwork_artApprovalContactID) {
+      artAprrovalID = this.orderData.sessionArtwork_artApprovalContactID;
     } else {
       artAprrovalID = imprint.selectedContact.pk_artApprovalContactID;
     }
@@ -732,7 +730,7 @@ export class OrderDashboardDetailsComponent implements OnInit, OnDestroy {
     this._smartartService.UpdateSmartArtData(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
       if (res["success"]) {
         this._smartartService.snackBar(res["message"]);
-        if (imprint.selectedContact == 0) {
+        if (imprint.selectedContact == this.orderData.sessionArtwork_artApprovalContactID) {
           imprint.selectedContactEmail = this.orderData.email;
           imprint.emailRecipients = this.orderData.email;
         } else {
@@ -923,6 +921,28 @@ export class OrderDashboardDetailsComponent implements OnInit, OnDestroy {
       this._changeDetectorRef.markForCheck();
     }, err => {
       imprint.artworkProofLoader = false;
+      this._changeDetectorRef.markForCheck();
+    });
+  }
+  sendOrderProofUpdates(imprint) {
+    let payload: sendOrderProofUpdate = {
+      imprintLocationName: imprint.locationName,
+      imprintMethodName: imprint.decorationName,
+      imprintID: Number(imprint.pk_imprintID),
+      storeName: this.orderData.storeName,
+      orderID: this.orderData.pk_orderID,
+      storeID: this.orderData.sessionArtworkStoreID,
+      productName: this.orderData.sessionArtwork_productName,
+      storeUserID: this.orderData.fk_storeUserID,
+      orderLineID: Number(this.paramData.pk_orderLineID),
+      send_order_proof_update: true
+    }
+    imprint.senOrderProofLoader = true;
+    this._smartartService.AddSmartArtData(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+      imprint.senOrderProofLoader = false;
+      this._changeDetectorRef.markForCheck();
+    }, err => {
+      imprint.senOrderProofLoader = false;
       this._changeDetectorRef.markForCheck();
     });
   }

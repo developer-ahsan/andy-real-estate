@@ -81,6 +81,7 @@ export class OrderDashboardComponent implements OnInit, OnDestroy {
   isSortingLoader: boolean = false;
   sortBy = '';
   sortDirection = '';
+  checkAll: boolean = false;
   constructor(
     private _changeDetectorRef: ChangeDetectorRef,
     private _smartartService: SmartArtService,
@@ -259,6 +260,7 @@ export class OrderDashboardComponent implements OnInit, OnDestroy {
     });
   }
   getNextData(event) {
+    this.checkAll = false;
     const { previousPageIndex, pageIndex } = event;
 
     if (pageIndex > previousPageIndex) {
@@ -411,7 +413,13 @@ export class OrderDashboardComponent implements OnInit, OnDestroy {
   }
   // Update checked
   OrderSelectionChange(ev, order) {
-    order.checked = ev.checked
+    order.checked = ev.checked;
+  }
+  selectAllOrders(ev) {
+    this.dataSource.forEach(order => {
+      order.checked = ev.checked;
+    });
+    this._changeDetectorRef.markForCheck();
   }
   bulkUploadStatus() {
     let orders = [];
