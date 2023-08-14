@@ -9,7 +9,7 @@ import { Subject, forkJoin, of } from 'rxjs';
 import { debounceTime, distinctUntilChanged, filter, finalize, switchMap, takeUntil, tap } from 'rxjs/operators';
 import { SmartArtService } from '../../smartart.service';
 import { interval } from 'rxjs';
-import { AddOrderComment, UpdateOrderLineArtworkTags, UpdateArtworkTgas, UpdateOrderInformation, sendAutoRequest, updateOrderLineImprintColors, updateReorderNumberOrder, UpdateOrderLineClaim, updateOrderProofContact, SmartartImprintStatusUpdate, sendAutoRequestOrder, updateAttentionFlagOrder, sendOrderProofUpdate } from '../../smartart.types';
+import { AddOrderComment, UpdateOrderLineArtworkTags, UpdateArtworkTgas, UpdateOrderInformation, sendAutoRequest, updateOrderLineImprintColors, updateReorderNumberOrder, UpdateOrderLineClaim, updateOrderProofContact, SmartartImprintStatusUpdate, sendAutoRequestOrder, updateAttentionFlagOrder, sendOrderProofUpdate, UploadOrderArtProof } from '../../smartart.types';
 
 @Component({
   selector: 'app-order-details',
@@ -253,6 +253,7 @@ export class OrderDashboardDetailsComponent implements OnInit, OnDestroy {
       // Assign email recipients
       this.imprintdata.forEach(imprint => {
         // let status = imprint.pk_statusID;
+        imprint.blnIncludeApproveByDate = false;
         imprint.proofComments = '';
         imprint.statusID = 9;
         imprint.emailRecipients = '';
@@ -907,16 +908,69 @@ export class OrderDashboardDetailsComponent implements OnInit, OnDestroy {
     }
   };
   uploadArtworkProof(imprint) {
+    let approvingStoreUserID = null;
+    if (imprint.fk_storeUserApprovalContactID) {
+      approvingStoreUserID = imprint.fk_storeUserApprovalContactID;
+    } else if (imprint.fk_artApprovalContactID) {
+      approvingStoreUserID = imprint.fk_artApprovalContactID;
+    } else {
+      approvingStoreUserID = imprint.fk_storeUserID;
+    }
+    let date = null;
+    if (imprint.blnIncludeApproveByDate) {
+      let datetime = new Date(imprint.artworkDate + ' ' + imprint.artworkTime);
+      if (imprint.artworkDate && imprint.artworkTime) {
+        date = moment(datetime).format('yyyy-MM-DD HH:mm:ss');
+      } else {
+        this._smartartService.snackBar('Please choose date & time');
+        return;
+      }
+    }
     if (imprint.emailRecipients == '') {
       this._smartartService.snackBar('Please enter recipient email');
       return;
     }
     imprint.artworkProofLoader = true;
     this.artworkFileInput.nativeElement.value = '';
-    let payload = {
-
+    let payload: UploadOrderArtProof = {
+      blnIncludeApproveByDate: imprint.blnIncludeApproveByDate,
+      approveByDate: date,
+      orderLineID: Number(this.paramData.pk_orderLineID),
+      orderID: this.orderData.pk_orderID,
+      imprintID: imprint.pk_imprintID,
+      emailRecipients: imprint.emailRecipients,
+      smartArtAdminEmail: this.smartArtUser.email,
+      storeID: this.orderData.pk_storeID,
+      storeName: this.orderData.storeName,
+      storeURL: this.orderData.storeURL.toLowerCase(),
+      storeCode: this.orderData.storeCode,
+      protocol: this.orderData.protocol,
+      productName: this.orderData.productName.replace(/'/g, "''"),
+      productNumber: this.orderData.sessionArtwork_productNumber.replace(/'/g, "''"),
+      storePrimaryHighlight: this.orderData.storePrimaryHighlight,
+      inHandsDate: this.orderData.inHandsDate,
+      blnGroupRun: this.orderData.blnGroupRun,
+      storeProductID: this.orderData.pk_storeProductID,
+      orderLineQuantity: this.orderData.quantity,
+      methodName: imprint.decorationName,
+      locationName: imprint.locationName,
+      imprintColors: imprint.imprintColors,
+      firstName: this.orderData?.firstName,
+      lastName: this.orderData?.lastName,
+      email: this.orderData.email,
+      comment: imprint.recipientsComment,
+      userID: Number(this.orderData.pfk_userID),
+      approvingStoreUserID: approvingStoreUserID,
+      companyName: this.orderData.sessionArtworkCompanyName,
+      blnIgnoreAdditionalArtEmails: this.orderData.blnIgnoreAdditionalArtEmails,
+      blnProofSent: imprint.blnProofSent,
+      fk_artApprovalContactID: imprint.fk_artApprovalContactID,
+      fk_storeUserApprovalContactID: imprint.fk_storeUserApprovalContactID,
+      blnRespond: imprint.blnRespond,
+      loggedInUserID: this.smartArtUser.pk_userID,
+      upload_order_art_proof: true
     }
-    this._smartartService.UpdateSmartArtData(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+    this._smartartService.AddSmartArtData(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
       imprint.artworkProofLoader = false;
       this._changeDetectorRef.markForCheck();
     }, err => {
