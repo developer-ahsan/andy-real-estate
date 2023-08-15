@@ -782,6 +782,8 @@ export class OrderDashboardDetailsComponent implements OnInit, OnDestroy {
       } else if (statusID == 17) {
         imprint.waitingStatusLoader = true;
       }
+    } else {
+      imprint.applyStatusLoader = true;
     }
     let inhands;
     let blnApprove = 0;

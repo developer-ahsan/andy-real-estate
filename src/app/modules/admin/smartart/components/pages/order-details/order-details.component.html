@@ -897,7 +897,7 @@
                                                             checked [value]="9">Customer Approved
                                                             Artwork with comments</mat-radio-button>
                                                         <mat-radio-button class="example-radio-button" value="request"
-                                                            [value]="2">Customer
+                                                            [value]="4">Customer
                                                             Requested Artwork Change</mat-radio-button>
                                                     </mat-radio-group>
                                                     <mat-checkbox [(ngModel)]="imprint.blnRespond"
@@ -1037,19 +1037,6 @@
                                                                 [mode]="'indeterminate'">
                                                             </mat-progress-spinner>
                                                         </button>
-                                                        <br
-                                                            *ngIf="(imprint.fk_artApprovalContactID || imprint.fk_storeUserApprovalContactID) && !imprint.blnStoreUserApprovalDone">
-                                                        <button type="button"
-                                                            (click)="applyStatusChangeImprint(imprint,7,'status')"
-                                                            class="min-w-30 rounded-md bg-orange-600 px-2.5 py-1.5 text-sm font-semibold text-white shadow-sm hover:bg-orange-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-orange-600"
-                                                            [disabled]="imprint.proofStatusLoader">
-                                                            <span *ngIf="!imprint?.proofStatusLoader">No
-                                                                proof needed</span>
-                                                            <mat-progress-spinner [color]="'light'"
-                                                                *ngIf="imprint?.proofStatusLoader" [diameter]="24"
-                                                                [mode]="'indeterminate'">
-                                                            </mat-progress-spinner>
-                                                        </button>
                                                         <br>
                                                         <button type="button"
                                                             (click)="applyStatusChangeImprint(imprint,7,'status')"
@@ -1160,9 +1147,20 @@
                                             <div class="row">
                                                 <div class="col-md-8 col-12">
                                                     <div>
-                                                        <button
+                                                        <button type="button"
+                                                            (click)="applyStatusChangeImprint(imprint,2,'status')"
+                                                            class="min-w-30 rounded-md bg-indigo-600 px-2.5 py-1.5 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+                                                            [disabled]="imprint.pendingStatusLoader">
+                                                            <span *ngIf="!imprint?.pendingStatusLoader">Acknowledge
+                                                                changes requested</span>
+                                                            <mat-progress-spinner [color]="'light'"
+                                                                *ngIf="imprint?.pendingStatusLoader" [diameter]="24"
+                                                                [mode]="'indeterminate'">
+                                                            </mat-progress-spinner>
+                                                        </button>
+                                                        <!-- <button
                                                             class="min-w-30 mt-2 btn buttonComment hover:bg-gray-200">Acknowledge
-                                                            changes requested</button>
+                                                            changes requested</button> -->
                                                     </div>
                                                 </div>
                                                 <div class="col-md-4 col-12">
