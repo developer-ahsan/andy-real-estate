@@ -784,7 +784,7 @@
                                                         </div>
                                                     </div>
                                                     <div>
-                                                        <button (click)="uploadArtworkProof(imprint)"
+                                                        <button (click)="uploadArtworkFileToServer(imprint)"
                                                             class="min-w-30 mt-2 btn buttonComment hover:bg-gray-200">
                                                             <span *ngIf="!imprint?.artworkProofLoader">Update Artwork
                                                                 Proof</span>
@@ -1370,19 +1370,6 @@
                                                                 Production</span>
                                                             <mat-progress-spinner [color]="'light'"
                                                                 *ngIf="imprint?.productionStatusLoader" [diameter]="24"
-                                                                [mode]="'indeterminate'">
-                                                            </mat-progress-spinner>
-                                                        </button>
-                                                        <br
-                                                            *ngIf="(imprint.fk_artApprovalContactID || imprint.fk_storeUserApprovalContactID) && !imprint.blnStoreUserApprovalDone">
-                                                        <button type="button"
-                                                            (click)="applyStatusChangeImprint(imprint,7,'status')"
-                                                            class="min-w-30 rounded-md bg-orange-600 px-2.5 py-1.5 text-sm font-semibold text-white shadow-sm hover:bg-orange-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-orange-600"
-                                                            [disabled]="imprint.proofStatusLoader">
-                                                            <span *ngIf="!imprint?.proofStatusLoader">No
-                                                                proof needed</span>
-                                                            <mat-progress-spinner [color]="'light'"
-                                                                *ngIf="imprint?.proofStatusLoader" [diameter]="24"
                                                                 [mode]="'indeterminate'">
                                                             </mat-progress-spinner>
                                                         </button>
@@ -2258,16 +2245,23 @@
                                                     <mat-form-field class="w-full">
                                                         <mat-label>Add any comments:
                                                         </mat-label>
-                                                        <textarea matInput
-                                                            id="comment-{{imprint.pk_imprintID}}"></textarea>
+                                                        <textarea matInput id="comment-{{imprint.pk_imprintID}}"
+                                                            [(ngModel)]="imprint.finalArtworkComments"></textarea>
                                                     </mat-form-field>
                                                     <label for="">Select the final artwork file</label>
                                                     <br>
-                                                    <input type="file">
+                                                    <input type="file" #finalArtworkFileInput
+                                                        (change)="uploadFinalArtworkFile($event)">
                                                     <div>
-                                                        <button
-                                                            class="min-w-30 mt-2 btn buttonComment hover:bg-gray-200">Send
-                                                            artwork to decorator</button>
+                                                        <button (click)="uploadFinalArtworkFileToServer(imprint)"
+                                                            class="min-w-30 mt-2 btn buttonComment hover:bg-gray-200">
+                                                            <span *ngIf="!imprint?.finalArtworkProofLoader">Send
+                                                                artwork to decorator</span>
+                                                            <mat-progress-spinner [color]="'light'"
+                                                                *ngIf="imprint?.finalArtworkProofLoader" [diameter]="24"
+                                                                [mode]="'indeterminate'">
+                                                            </mat-progress-spinner>
+                                                        </button>
                                                     </div>
                                                 </div>
                                                 <div class="col-md-4 col-12">

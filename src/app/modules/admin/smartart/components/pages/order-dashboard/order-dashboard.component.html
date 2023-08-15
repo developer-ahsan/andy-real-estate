@@ -371,11 +371,11 @@
                                     </mat-form-field>
                                     <div class="flex justify-end space-x-2">
                                         <button class="min-w-40" mat-button mat-flat-button color="primary"
-                                            [disabled]="isBulkLoader" (click)="bulkUploadStatus()">
-                                            <span *ngIf="!isBulkLoader">Resend Proof</span>
-                                            <mat-progress-spinner *ngIf="isBulkLoader" [diameter]="24"
+                                            [disabled]="isBulkLoader">
+                                            <span>Resend Proof</span>
+                                            <!-- <mat-progress-spinner *ngIf="isBulkLoader" [diameter]="24"
                                                 [mode]="'indeterminate'">
-                                            </mat-progress-spinner>
+                                            </mat-progress-spinner> -->
                                         </button>
                                         <button class="min-w-40" mat-button mat-stroked-button [disabled]="isBulkLoader"
                                             (click)="bulkUploadStatus()">

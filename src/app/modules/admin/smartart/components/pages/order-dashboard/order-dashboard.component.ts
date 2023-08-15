@@ -443,6 +443,7 @@ export class OrderDashboardComponent implements OnInit, OnDestroy {
     }
     this._smartartService.UpdateSmartArtData(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
       if (res["success"]) {
+        this.checkAll = false;
         this.getSmartArtList(1, 'update', res["message"]);
       } else {
         this.isBulkLoader = false;

@@ -287,8 +287,27 @@ export interface UploadOrderArtProof {
     blnProofSent: boolean;
     fk_artApprovalContactID: number;
     fk_storeUserApprovalContactID: number;
+    groupOrderID: number;
     comment: string;
     blnRespond: boolean;
     loggedInUserID: number;
     upload_order_art_proof: boolean;
+};
+export interface UploadOrderFinalArt {
+    decoratorEmail: string;
+    clientFileExt: string; // file extension that is uploaded
+    storeName: string;
+    storeID: number;
+    orderID: number;
+    orderLineID: number;
+    userID: number;
+    orderLineImprintID: number;
+    decorationName: string;
+    locationName: string;
+    productName: string;
+    artworkComments: string;
+    smartArtLoggedInName: string;
+    smartArtAdminEmail: string;
+    blnGroupRun: boolean;
+    upload_order_final_art: boolean;
 };

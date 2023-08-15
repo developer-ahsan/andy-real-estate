@@ -154,4 +154,14 @@ export class SmartArtService {
         return this._httpClient.post(environment.products,
             payload);
     };
+    addMedia(payload) {
+        const headers = { 'Authorization': `Bearer ${this._authService.accessToken}` };
+        return this._httpClient.post(
+            environment.products, payload, { headers });
+    };
+    removeMedia(payload) {
+        const headers = { 'Authorization': `Bearer ${this._authService.accessToken}` };
+        return this._httpClient.put(
+            environment.products, payload, { headers });
+    };
 }
