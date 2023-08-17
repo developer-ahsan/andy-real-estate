@@ -57,12 +57,15 @@
         </div>
         <div class="row" *ngIf="generateReportData && !isLoading">
             <div class="col-12 text-right mb-2">
-                <button (click)="exportHtmlToPDF()" mat-flat-button color="primary" [matTooltip]="'Save report as PDF'">
-                    <mat-icon svgIcon="mat_outline:picture_as_pdf"></mat-icon>
-                    <span class="ml-2 mr-1">PDF</span>
+                <button (click)="exportHtmlToPDF()" mat-flat-button color="primary" [disabled]="isPdfLoader"
+                    [matTooltip]="'Save report as PDF'">
+                    <mat-icon svgIcon="mat_outline:picture_as_pdf" *ngIf="!isPdfLoader"></mat-icon>
+                    <span class="ml-2 mr-1" *ngIf="!isPdfLoader">PDF</span>
+                    <mat-progress-spinner *ngIf="isPdfLoader" [diameter]="24" [mode]="'indeterminate'">
+                    </mat-progress-spinner>
                 </button>
             </div>
-            <div class="col-12" #htmltable>
+            <div class="col-12" #htmltable id="htmltable">
                 <div class="flex justify-between">
                     <div>
                         <p class="text-lg text-capitalize"><strong>{{_reportService.ngPlan}}</strong></p>
@@ -113,7 +116,8 @@
                                             <tr *ngFor="let data of dateData.data">
                                                 <td>{{data.date | date: 'MM/dd/yyyy'}}</td>
                                                 <td>{{data.id}}</td>
-                                                <td>{{data.company}}</td>
+                                                <td>{{data.company}}<span *ngIf="data.location">{{data.location}}</span>
+                                                </td>
                                                 <td>{{data.sale | currency}}</td>
                                                 <td>{{data.tax | currency}}</td>
                                                 <td>
@@ -139,6 +143,14 @@
                                             <td></td>
                                         </tr>
                                     </ng-container>
+                                    <tr class="columnHeader2" class="font-bold">
+                                        <th colspan="3">Grand Total</th>
+                                        <th>{{storeTotals?.Sales | currency}}</th>
+                                        <th>$0.00</th>
+                                        <th>{{(storeTotals?.MARGIN/generateReportData.length).toFixed(2)}}%</th>
+                                        <th></th>
+                                        <th></th>
+                                    </tr>
                                 </tbody>
                             </table>
                         </div>
@@ -210,12 +222,12 @@
                                     <td>{{item.PY | currency}}</td>
                                     <td>
                                         <div *ngIf="item.percent != 0">
-                                            <div class="flex" *ngIf="!item.blnPercent">
+                                            <div class="flex align-items-center" *ngIf="!item.blnPercent">
                                                 <mat-icon class="icon-size-5 text-red-500"
                                                     [svgIcon]="'heroicons_solid:trending-down'"></mat-icon>
                                                 <span class="text-red-500">{{item.percent.toFixed(2)}}%</span>
                                             </div>
-                                            <div class="flex" *ngIf="item.blnPercent">
+                                            <div class="flex align-items-center" *ngIf="item.blnPercent">
                                                 <mat-icon class="icon-size-5 text-green-500"
                                                     [svgIcon]="'heroicons_solid:trending-up'"></mat-icon>
                                                 <span class="text-green-500">{{item.percent.toFixed(2)}}%</span>
@@ -236,26 +248,26 @@
                                     <td>{{item.NS}}</td>
                                     <td>{{item.PYNS}}</td>
                                     <td>{{item.NS_DIFF}}</td>
-                                    <td>{{item.avg | currency}}</td>
+                                    <td>{{item.AVG | currency}}</td>
                                     <td>{{item.MARGIN}}%</td>
                                 </tr>
                                 <tr class="columnHeader2" class="font-bold">
                                     <th>Grand Total</th>
                                     <th>{{storeTotals?.Sales | currency}}</th>
                                     <th>{{storeTotals?.PY | currency}}</th>
-                                    <th>{{storeTotals?.percent/generateReportData.length}}%</th>
+                                    <th>{{(storeTotals?.percent/generateReportData.length).toFixed(2)}}%</th>
                                     <th>
                                         <span *ngIf="storeTotals.DIFF >= 0" class="text-green-500">
-                                            {{item.DIFF | currency}}
+                                            {{storeTotals.DIFF | currency}}
                                         </span>
                                         <span *ngIf="storeTotals.DIFF < 0" class="text-green-500">
-                                            ({{(item.DIFF * - 1) | currency}})</span>
+                                            ({{(storeTotals.DIFF * - 1) | currency}})</span>
                                     </th>
                                     <th>{{storeTotals?.NS}}</th>
                                     <th>{{storeTotals?.PYNS}}</th>
                                     <th></th>
                                     <th>{{(storeTotals?.AVG/generateReportData.length) | currency}}</th>
-                                    <th>{{(storeTotals?.MARGIN/generateReportData.length)}}%</th>
+                                    <th>{{(storeTotals?.MARGIN/generateReportData.length).toFixed(2)}}%</th>
                                 </tr>
                             </tbody>
                         </table>

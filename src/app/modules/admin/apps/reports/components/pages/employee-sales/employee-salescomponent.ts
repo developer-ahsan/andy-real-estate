@@ -10,6 +10,7 @@ import { FormControl } from '@angular/forms';
 import moment from 'moment';
 import { jsPDF } from "jspdf";
 import html2canvas from 'html2canvas';
+
 @Component({
   selector: 'app-employee-sales',
   templateUrl: './employee-sales.component.html',
@@ -35,7 +36,17 @@ export class ReportsEmployeeSalesComponent implements OnInit, OnDestroy {
   reportPage = 1;
   totalData = 0;
   displayedColumns: string[] = ['store', 'sales', 'py', 'percent', 'difference', 'n_sales', 'pyns', 'avg', 'margin'];
-  storeTotals: any;
+  storeTotals: any = {
+    Sales: 0,
+    PY: 0,
+    percent: 0,
+    DIFF: 0,
+    NS: 0,
+    PYNS: 0,
+    AVG: 0,
+    MARGIN: 0
+  };
+  isPdfLoader: boolean = false;
   @ViewChild('topScrollAnchor') topScroll: ElementRef;
   @ViewChild('summaryScrollAnchor') summaryScrollAnchor: ElementRef;
   constructor(
@@ -153,7 +164,7 @@ export class ReportsEmployeeSalesComponent implements OnInit, OnDestroy {
                   } else {
                     statusValue = 'N/A';
                   }
-                  element.storeDetails.push({ date: data[0], id: data[1], company: data[2], sale: data[4], tax: data[5], margin: Number(data[7]).toFixed(2), paid: paid, status: statusValue, statusColor: statusColor });
+                  element.storeDetails.push({ date: data[0], id: data[1], company: data[2], location: data[3], sale: data[4], tax: data[5], margin: Number(data[7]).toFixed(2), paid: paid, status: statusValue, statusColor: statusColor });
                 });
               }
             });
@@ -243,32 +254,37 @@ export class ReportsEmployeeSalesComponent implements OnInit, OnDestroy {
     }, 100);
   }
   public exportHtmlToPDF() {
+    this.isPdfLoader = true;
     let element = document.getElementById('htmltable');
     var positionInfo = element.getBoundingClientRect();
     var height = positionInfo.height;
     var width = positionInfo.width;
     var top_left_margin = 15;
+    var margin_top = 30; // Set the top margin value
+    var margin_bottom = 30; // Set the bottom margin value
     let PDF_Width = width + (top_left_margin * 2);
-    var PDF_Height = (PDF_Width * 1.5) + (top_left_margin * 2);
+    var PDF_Height = (PDF_Width * 1.5) + (margin_top + margin_bottom); // Apply the margins here
     var canvas_image_width = width;
     var canvas_image_height = height;
 
     var totalPDFPages = Math.ceil(height / PDF_Height) - 1;
     let data = document.getElementById('htmltable');
-    const file_name = `EmployeeSalesReport_${new Date().getTime}.pdf`;
+    const file_name = `EmployeeSalesReport_${new Date().getTime()}.pdf`;
     html2canvas(data, { useCORS: true }).then(canvas => {
       canvas.getContext('2d');
       var imgData = canvas.toDataURL("image/jpeg", 1.0);
       var pdf = new jsPDF('p', 'pt', [PDF_Width, PDF_Height]);
-      pdf.addImage(imgData, 'jpeg', top_left_margin, top_left_margin, canvas_image_width, canvas_image_height);
-
+      pdf.addImage(imgData, 'jpeg', top_left_margin, margin_top, canvas_image_width, canvas_image_height); // Apply top margin here
 
       for (var i = 1; i <= totalPDFPages; i++) {
         pdf.addPage([PDF_Width, PDF_Height]);
-        pdf.addImage(imgData, 'jpeg', top_left_margin, -(PDF_Height * i) + (top_left_margin * 4), canvas_image_width, canvas_image_height);
+        pdf.addImage(imgData, 'jpeg', top_left_margin, -(PDF_Height * i) + (margin_top * (2 * i + 1)), canvas_image_width, canvas_image_height); // Adjust the position calculation for the top margin
       }
       pdf.save(file_name);
+      this.isPdfLoader = false;
+      this._changeDetectorRef.markForCheck();
     });
+
   }
   /**
      * On destroy
