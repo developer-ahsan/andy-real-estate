@@ -56,7 +56,7 @@
             </div>
         </div>
         <div class="row" *ngIf="generateReportData && !isLoading">
-            <div class="col-12 text-right mb-2">
+            <!-- <div class="col-12 text-right mb-2">
                 <button (click)="exportHtmlToPDF()" mat-flat-button color="primary" [disabled]="isPdfLoader"
                     [matTooltip]="'Save report as PDF'">
                     <mat-icon svgIcon="mat_outline:picture_as_pdf" *ngIf="!isPdfLoader"></mat-icon>
@@ -64,7 +64,7 @@
                     <mat-progress-spinner *ngIf="isPdfLoader" [diameter]="24" [mode]="'indeterminate'">
                     </mat-progress-spinner>
                 </button>
-            </div>
+            </div> -->
             <div class="col-12" #htmltable id="htmltable">
                 <div class="flex justify-between">
                     <div>
@@ -116,7 +116,8 @@
                                             <tr *ngFor="let data of dateData.data">
                                                 <td>{{data.date | date: 'MM/dd/yyyy'}}</td>
                                                 <td>{{data.id}}</td>
-                                                <td>{{data.company}}<span *ngIf="data.location">{{data.location}}</span>
+                                                <td>{{data.company}}<span *ngIf="data.location != 'NULL'">
+                                                        {{data.location}}</span>
                                                 </td>
                                                 <td>{{data.sale | currency}}</td>
                                                 <td>{{data.tax | currency}}</td>
