@@ -61,6 +61,7 @@ import { QuoteGraphicsReportComponent } from './components/pages/quote-graphics-
 import { ReportFiltersComponent } from './components/common/report-filters/report-filters.component';
 import { ReportVendorRelationsComponent } from './components/pages/vendor-relations/vendor-relations.component';
 import { ReportSupportComponent } from './components/pages/support-report/support-report.component';
+import { CurrencyPipe } from '@angular/common';
 
 @NgModule({
     declarations: [
@@ -109,7 +110,8 @@ import { ReportSupportComponent } from './components/pages/support-report/suppor
         MatDatepickerModule,
         MatNativeDateModule
     ],
-    entryComponents: []
+    entryComponents: [],
+    providers: [CurrencyPipe]
 })
 export class ReportsModule {
 }

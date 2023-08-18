@@ -10,6 +10,11 @@ import { FormControl } from '@angular/forms';
 import moment from 'moment';
 import { jsPDF } from "jspdf";
 import html2canvas from 'html2canvas';
+import * as pdfMake from "pdfmake/build/pdfmake";
+import * as pdfFonts from "pdfmake/build/vfs_fonts";
+import { CurrencyPipe } from '@angular/common';
+
+pdfMake.vfs = pdfFonts.pdfMake.vfs;
 
 @Component({
   selector: 'app-employee-sales',
@@ -50,7 +55,7 @@ export class ReportsEmployeeSalesComponent implements OnInit, OnDestroy {
   @ViewChild('topScrollAnchor') topScroll: ElementRef;
   @ViewChild('summaryScrollAnchor') summaryScrollAnchor: ElementRef;
   constructor(
-    private _changeDetectorRef: ChangeDetectorRef,
+    private _changeDetectorRef: ChangeDetectorRef, private currencyPipe: CurrencyPipe,
     private _reportService: ReportsService
   ) { }
 
@@ -216,7 +221,6 @@ export class ReportsEmployeeSalesComponent implements OnInit, OnDestroy {
             this.storeTotals.AVG = Number(this.storeTotals.AVG) + Number(element.AVG);
             this.storeTotals.MARGIN = Number(this.storeTotals.MARGIN) + Number(element.MARGIN);
           });
-          console.log(this.storeTotals);
           this.backtoTop();
         } else {
           this.generateReportData = null;
@@ -253,38 +257,202 @@ export class ReportsEmployeeSalesComponent implements OnInit, OnDestroy {
       this.topScroll.nativeElement.scrollIntoView({ behavior: 'smooth' });
     }, 100);
   }
-  public exportHtmlToPDF() {
-    this.isPdfLoader = true;
-    let element = document.getElementById('htmltable');
-    var positionInfo = element.getBoundingClientRect();
-    var height = positionInfo.height;
-    var width = positionInfo.width;
-    var top_left_margin = 15;
-    var margin_top = 30; // Set the top margin value
-    var margin_bottom = 30; // Set the bottom margin value
-    let PDF_Width = width + (top_left_margin * 2);
-    var PDF_Height = (PDF_Width * 1.5) + (margin_top + margin_bottom); // Apply the margins here
-    var canvas_image_width = width;
-    var canvas_image_height = height;
-
-    var totalPDFPages = Math.ceil(height / PDF_Height) - 1;
-    let data = document.getElementById('htmltable');
-    const file_name = `EmployeeSalesReport_${new Date().getTime()}.pdf`;
-    html2canvas(data, { useCORS: true }).then(canvas => {
-      canvas.getContext('2d');
-      var imgData = canvas.toDataURL("image/jpeg", 1.0);
-      var pdf = new jsPDF('p', 'pt', [PDF_Width, PDF_Height]);
-      pdf.addImage(imgData, 'jpeg', top_left_margin, margin_top, canvas_image_width, canvas_image_height); // Apply top margin here
-
-      for (var i = 1; i <= totalPDFPages; i++) {
-        pdf.addPage([PDF_Width, PDF_Height]);
-        pdf.addImage(imgData, 'jpeg', top_left_margin, -(PDF_Height * i) + (margin_top * (2 * i + 1)), canvas_image_width, canvas_image_height); // Adjust the position calculation for the top margin
+  generatePdf() {
+    const documentDefinition: any = {
+      pageSize: 'A4',
+      pageOrientation: 'landscape',
+      pageMargins: [10, 10, 10, 10],
+      content: [
+        // Add a title for your PDF
+        { text: this._reportService.ngPlan.toUpperCase(), fontSize: 14 },
+        { text: this.selectedEmployees.firstName + ' ' + this.selectedEmployees.lastName, fontSize: 10 },
+        { text: 'Range: ' + this._reportService.startDate + ' - ' + this._reportService.endDate, fontSize: 10 },
+        // Add a spacer element to create a margin above the table
+        { text: '', margin: [0, 20, 0, 0] },
+      ],
+      styles: {
+        tableHeader: {
+          bold: true
+        }
       }
-      pdf.save(file_name);
-      this.isPdfLoader = false;
-      this._changeDetectorRef.markForCheck();
-    });
+    };
 
+    if (this.blnIndividualOrders == 1) {
+      documentDefinition.content.push(
+        {
+          table: {
+            widths: ['*', '*', '*', '*', '*', '*', '*', '*'],
+            body: [
+              [
+                { text: 'Date', bold: true },
+                { text: 'ID', bold: true },
+                { text: 'Company', bold: true },
+                { text: 'Sale', bold: true },
+                { text: 'Tax', bold: true },
+                { text: 'Margin', bold: true },
+                { text: 'Paid', bold: true },
+                { text: 'Status', bold: true }
+              ],
+            ]
+          },
+          fontSize: 8
+        },
+        { text: '', margin: [0, 20, 0, 0] },
+      );
+      // Add Report Data
+      documentDefinition.content.push(
+        { text: '', pageBreak: 'after' }
+      )
+      // Report Summary
+      documentDefinition.content.push(
+        { text: 'Report Summary', margin: [0, 2, 0, 5] },
+        {
+          table: {
+            widths: ['15%', '10%', '10%', '9%', '10%', '9%', '9%', '9%', '10%', '9%'],
+            body: [
+              [
+                { text: 'Store', bold: true },
+                { text: 'Sales', bold: true },
+                { text: 'PY', bold: true },
+                { text: '%', bold: true },
+                { text: 'Diff', bold: true },
+                { text: 'NS', bold: true },
+                { text: 'PYNS', bold: true },
+                { text: 'Diff', bold: true },
+                { text: 'Avg', bold: true },
+                { text: 'Margin', bold: true }
+              ],
+            ]
+          },
+          fontSize: 8
+        }
+      );
+      this.generateReportData.forEach(store => {
+        // First Table Data
+        documentDefinition.content[4].table.body.push(
+          [
+            { text: store.storeName, colSpan: 3, alignment: 'left', bold: true, margin: [0, 3, 0, 3], fontSize: 10 }, {}, {},
+            { text: this.currencyPipe.transform(Number(store.SALES), 'USD', 'symbol', '1.0-2', 'en-US'), bold: true, margin: [0, 3, 0, 3] },
+            { text: this.currencyPipe.transform(Number(store.tax), 'USD', 'symbol', '1.0-2', 'en-US'), bold: true, margin: [0, 3, 0, 3] },
+            { text: store.MARGIN.toFixed(2) + '%', bold: true, margin: [0, 3, 0, 3] },
+            { text: '', margin: [0, 3, 0, 3] },
+            { text: '', margin: [0, 3, 0, 3] }
+          ]
+        )
+        // date data
+        if (store.date_data) {
+          store.date_data.forEach(dateData => {
+            documentDefinition.content[4].table.body.push(
+              [
+                { text: dateData.date, fontSize: 10, colSpan: 8, alignment: 'center', bold: true, margin: [0, 3, 0, 3] }, {}, {}, {}, {}, {}, {}, {}
+              ]
+            )
+            dateData.data.forEach(d => {
+              let paid = 'No';
+              if (d.paid) {
+                paid = 'Yes';
+              }
+              documentDefinition.content[4].table.body.push(
+                [
+                  moment(d.date).format('MM/DD/yyyy'),
+                  d.id,
+                  d.company,
+                  this.currencyPipe.transform(Number(d.sale), 'USD', 'symbol', '1.0-2', 'en-US'),
+                  this.currencyPipe.transform(Number(d.tax), 'USD', 'symbol', '1.0-2', 'en-US'),
+                  d.margin + '%',
+                  paid,
+                  d.status
+                ]
+              )
+            });
+          });
+        }
+        // report Summary Data
+        documentDefinition.content[8].table.body.push(
+          [
+            store.storeName,
+            this.currencyPipe.transform(Number(store.SALES), 'USD', 'symbol', '1.0-2', 'en-US'),
+            this.currencyPipe.transform(Number(store.PY), 'USD', 'symbol', '1.0-2', 'en-US'),
+            `${store.percent.toFixed(2)}%`,
+            this.currencyPipe.transform(Number(store.DIFF), 'USD', 'symbol', '1.0-2', 'en-US'),
+            store.NS,
+            store.PYNS,
+            store.NS_DIFF,
+            this.currencyPipe.transform(Number(store.AVG), 'USD', 'symbol', '1.0-2', 'en-US'),
+            `${store.MARGIN.toFixed(2)}%`
+          ]
+        )
+      });
+      documentDefinition.content[8].table.body.push(
+        [
+          { text: 'Grand Total', bold: true },
+          { text: this.currencyPipe.transform(Number(this.storeTotals.Sales), 'USD', 'symbol', '1.0-2', 'en-US'), bold: true },
+          { text: this.currencyPipe.transform(Number(this.storeTotals.PY), 'USD', 'symbol', '1.0-2', 'en-US'), bold: true },
+          { text: `${(this.storeTotals?.percent / this.generateReportData.length).toFixed(2)}%`, bold: true },
+          { text: this.currencyPipe.transform(Number(this.storeTotals.DIFF), 'USD', 'symbol', '1.0-2', 'en-US'), bold: true },
+          { text: this.storeTotals.NS, bold: true },
+          { text: this.storeTotals.PYNS, bold: true },
+          { text: '', bold: true },
+          { text: this.currencyPipe.transform(Number((this.storeTotals?.AVG / this.generateReportData.length)), 'USD', 'symbol', '1.0-2', 'en-US'), bold: true },
+          { text: `${(this.storeTotals?.MARGIN / this.generateReportData.length).toFixed(2)}%`, bold: true }
+        ]
+      )
+    } else {
+      documentDefinition.content.push(
+        { text: 'Report Summary', margin: [0, 2, 0, 5] },
+        {
+          table: {
+            widths: ['15%', '10%', '10%', '9%', '10%', '9%', '9%', '9%', '10%', '9%'],
+            body: [
+              [
+                { text: 'Store', bold: true },
+                { text: 'Sales', bold: true },
+                { text: 'PY', bold: true },
+                { text: '%', bold: true },
+                { text: 'Diff', bold: true },
+                { text: 'NS', bold: true },
+                { text: 'PYNS', bold: true },
+                { text: 'Diff', bold: true },
+                { text: 'Avg', bold: true },
+                { text: 'Margin', bold: true }
+              ],
+            ]
+          },
+          fontSize: 8
+        }
+      );
+      this.generateReportData.forEach(store => {
+        documentDefinition.content[5].table.body.push(
+          [
+            store.storeName,
+            this.currencyPipe.transform(Number(store.SALES), 'USD', 'symbol', '1.0-2', 'en-US'),
+            this.currencyPipe.transform(Number(store.PY), 'USD', 'symbol', '1.0-2', 'en-US'),
+            `${store.percent.toFixed(2)}%`,
+            this.currencyPipe.transform(Number(store.DIFF), 'USD', 'symbol', '1.0-2', 'en-US'),
+            store.NS,
+            store.PYNS,
+            store.NS_DIFF,
+            this.currencyPipe.transform(Number(store.AVG), 'USD', 'symbol', '1.0-2', 'en-US'),
+            `${store.MARGIN.toFixed(2)}%`
+          ]
+        )
+      });
+      documentDefinition.content[5].table.body.push(
+        [
+          { text: 'Grand Total', bold: true },
+          { text: this.currencyPipe.transform(Number(this.storeTotals.Sales), 'USD', 'symbol', '1.0-2', 'en-US'), bold: true },
+          { text: this.currencyPipe.transform(Number(this.storeTotals.PY), 'USD', 'symbol', '1.0-2', 'en-US'), bold: true },
+          { text: `${(this.storeTotals?.percent / this.generateReportData.length).toFixed(2)}%`, bold: true },
+          { text: this.currencyPipe.transform(Number(this.storeTotals.DIFF), 'USD', 'symbol', '1.0-2', 'en-US'), bold: true },
+          { text: this.storeTotals.NS, bold: true },
+          { text: this.storeTotals.PYNS, bold: true },
+          { text: '', bold: true },
+          { text: this.currencyPipe.transform(Number((this.storeTotals?.AVG / this.generateReportData.length)), 'USD', 'symbol', '1.0-2', 'en-US'), bold: true },
+          { text: `${(this.storeTotals?.MARGIN / this.generateReportData.length).toFixed(2)}%`, bold: true }
+        ]
+      )
+    }
+    pdfMake.createPdf(documentDefinition).download(`${this.selectedEmployees.firstName + ' ' + this.selectedEmployees.lastName}-Sales-Report-${this._reportService.startDate}-${this._reportService.endDate}.pdf`);
   }
   /**
      * On destroy

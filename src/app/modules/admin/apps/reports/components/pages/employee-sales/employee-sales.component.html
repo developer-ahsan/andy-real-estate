@@ -56,15 +56,15 @@
             </div>
         </div>
         <div class="row" *ngIf="generateReportData && !isLoading">
-            <!-- <div class="col-12 text-right mb-2">
-                <button (click)="exportHtmlToPDF()" mat-flat-button color="primary" [disabled]="isPdfLoader"
+            <div class="col-12 text-right mb-2">
+                <button (click)="generatePdf()" mat-flat-button color="primary" [disabled]="isPdfLoader"
                     [matTooltip]="'Save report as PDF'">
                     <mat-icon svgIcon="mat_outline:picture_as_pdf" *ngIf="!isPdfLoader"></mat-icon>
                     <span class="ml-2 mr-1" *ngIf="!isPdfLoader">PDF</span>
                     <mat-progress-spinner *ngIf="isPdfLoader" [diameter]="24" [mode]="'indeterminate'">
                     </mat-progress-spinner>
                 </button>
-            </div> -->
+            </div>
             <div class="col-12" #htmltable id="htmltable">
                 <div class="flex justify-between">
                     <div>
@@ -250,7 +250,7 @@
                                     <td>{{item.PYNS}}</td>
                                     <td>{{item.NS_DIFF}}</td>
                                     <td>{{item.AVG | currency}}</td>
-                                    <td>{{item.MARGIN}}%</td>
+                                    <td>{{item.MARGIN.toFixed(2)}}%</td>
                                 </tr>
                                 <tr class="columnHeader2" class="font-bold">
                                     <th>Grand Total</th>
