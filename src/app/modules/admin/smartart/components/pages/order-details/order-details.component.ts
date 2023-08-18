@@ -179,11 +179,13 @@ export class OrderDashboardDetailsComponent implements OnInit, OnDestroy {
             this.selectedImprintColor = imprint.imprintColors;
           }
           imprint.poSent = null;
-          if (res["poSent"].length) {
-            if (imprint.pk_statusID >= 5) {
-              imprint.poSent = res["poSent"][0];
-            } else {
-              imprint.poSent = null;
+          if (res["poSent"]) {
+            if (res["poSent"].length) {
+              if (imprint.pk_statusID >= 5) {
+                imprint.poSent = res["poSent"][0];
+              } else {
+                imprint.poSent = null;
+              }
             }
           }
         });
