@@ -161,7 +161,7 @@ export class ReportsEmployeeSalesComponent implements OnInit, OnDestroy {
                     statusValue = 'P.O. Needed';
                     statusColor = 'text-purple-500';
                   } else if (status == 8) {
-                    statusValue = 'Picked up';
+                    statusValue = 'Picked up ';
                     statusColor = 'text-green-500';
                   } else if (status == 10) {
                     statusValue = 'Awaiting Group Order';
