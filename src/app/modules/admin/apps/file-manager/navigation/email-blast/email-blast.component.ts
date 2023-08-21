@@ -563,7 +563,7 @@ export class EmailBlastComponent implements OnInit, OnDestroy {
           duration: 3000
         });
         this.getActivitydata();
-        this.mainScreen = 'actvity';
+        this.mainScreen = 'blast';
         this.emailsData = [];
         this.sendEmailForm.reset();
         this.presentationScreen = 'Dropdowns';

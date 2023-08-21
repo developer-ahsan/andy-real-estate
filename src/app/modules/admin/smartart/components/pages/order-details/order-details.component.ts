@@ -305,7 +305,7 @@ export class OrderDashboardDetailsComponent implements OnInit, OnDestroy {
           imprint.selectedContact = this.orderData.sessionArtwork_artApprovalContactID;
           if (imprint.decorationName.toLowerCase().includes('screen')) {
             imprint.selectedContactEmail = imprint.screenprintEmail;
-            this.orderData.artworkEmail = imprint
+            this.orderData.artworkEmail = imprint;
           } else if (imprint.decorationName.toLowerCase().includes('embroid')) {
             imprint.selectedContactEmail = imprint.embroideryEmail;
           } else {
@@ -323,6 +323,7 @@ export class OrderDashboardDetailsComponent implements OnInit, OnDestroy {
             imprint.selectedContactEmail = imprint.artworkEmail;
           }
           this.orderData.artworkEmail = imprint.selectedContactEmail;
+          imprint.emailRecipients = imprint.selectedContactEmail;
         }
       });
       // Contact Proof

@@ -2150,36 +2150,6 @@
                                             <div class="row">
                                                 <div class="col-md-8 col-12">
                                                     <!-- Proof Contact -->
-                                                    <div class="flex space-x-2 align-items-center"
-                                                        *ngIf="smartArtUser.blnMaster && orderData.blnAdditionalArtApproval">
-                                                        <mat-form-field class="w-full">
-                                                            <mat-label>Proof Contact</mat-label>
-                                                            <mat-select matInput [(ngModel)]="imprint.selectedContact">
-                                                                <mat-option
-                                                                    [value]="orderData.sessionArtwork_artApprovalContactID">{{orderData.sessionArtworkFirstName[0]
-                                                                    +
-                                                                    ' '
-                                                                    +orderData.sessionArtworkFirstName[1]}}</mat-option>
-                                                                <mat-option *ngFor="let contact of contactProofs"
-                                                                    [value]="contact"
-                                                                    [attr.data-blnStoreUserApproval]="contact.blnStoreUserApproval">{{contact.firstName
-                                                                    + ' ' +
-                                                                    contact.lastName}}</mat-option>
-                                                            </mat-select>
-                                                        </mat-form-field>
-                                                        <button
-                                                            class="min-w-30 h-10 rounded-md bg-green-600 px-2.5 py-1.5 text-sm font-semibold text-white shadow-sm hover:bg-green-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-green-600 "
-                                                            type="button" (click)="updateProofContact(imprint)"
-                                                            [disabled]="imprint?.isProofLoader">
-                                                            <span *ngIf="!imprint?.isProofLoader">Update</span>
-                                                            <div class="flex justify-center"
-                                                                *ngIf="imprint?.isProofLoader">
-                                                                <mat-progress-spinner [diameter]="24"
-                                                                    [mode]="'indeterminate'">
-                                                                </mat-progress-spinner>
-                                                            </div>
-                                                        </button>
-                                                    </div>
                                                     <h3>Please enter the artwork's PO Number: (enter only numbers,
                                                         dashes, or letters)</h3>
                                                     <br>
