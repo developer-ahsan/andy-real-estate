@@ -1,4 +1,4 @@
-import { Component, Input, OnInit, Output, EventEmitter, ChangeDetectorRef, OnDestroy, ViewChild } from '@angular/core';
+import { Component, Input, OnInit, Output, EventEmitter, ChangeDetectorRef, OnDestroy, ViewChild, ElementRef } from '@angular/core';
 import { MatPaginator } from '@angular/material/paginator';
 import { Subject } from 'rxjs';
 import { debounceTime, distinctUntilChanged, filter, finalize, switchMap, takeUntil, tap } from 'rxjs/operators';
@@ -7,6 +7,7 @@ import * as Excel from 'exceljs/dist/exceljs.min.js';
 import { FormControl, FormGroup } from '@angular/forms';
 import { AddCoops, AddFOBLocation, DeleteCoops, RemoveFOBLocation, UpdateCoops } from '../../reports.types';
 import moment from 'moment';
+import { DashboardsService } from 'app/modules/admin/dashboards/dashboard.service';
 
 @Component({
   selector: 'app-sample-sale-report',
@@ -30,13 +31,14 @@ export class ReportSampleSaleComponent implements OnInit, OnDestroy {
   ngStore = 637;
 
   allStores = [];
-  searchStoresCtrl = new FormControl();
   selectedStores: any;
-  isSearchingStores = false;
-
+  todayDate = new Date();
+  @ViewChild('topScrollAnchor') topScroll: ElementRef;
+  @ViewChild('summaryScrollAnchor') summaryScrollAnchor: ElementRef;
   constructor(
     private _changeDetectorRef: ChangeDetectorRef,
-    private _reportService: ReportsService
+    private _reportService: ReportsService,
+    private _commonService: DashboardsService
   ) { }
 
   ngOnInit(): void {
@@ -44,49 +46,20 @@ export class ReportSampleSaleComponent implements OnInit, OnDestroy {
     this.getStores();
   };
   getStores() {
-    this._reportService.Stores$.pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
-      this.allStores.push({ storeName: 'All Stores', pk_storeID: '' });
-      this.allStores = this.allStores.concat(res["data"]);
+    this._commonService.storesData$.pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+      this.allStores.push({ storeName: 'All Stores', pk_storeID: 0 });
+      res["data"].forEach(store => {
+        if (store.blnActive) {
+          this.allStores.push(store);
+        }
+      });
       this.selectedStores = this.allStores[0];
-      this.searchStoresCtrl.setValue(this.selectedStores);
+      this.isLoading = false;
+      this._changeDetectorRef.markForCheck();
     }, err => {
       this.isLoading = false;
       this._changeDetectorRef.markForCheck();
     });
-    let params;
-    this.searchStoresCtrl.valueChanges.pipe(
-      filter((res: any) => {
-        params = {
-          stores: true,
-          keyword: res
-        }
-        return res !== null && res.length >= 2
-      }),
-      distinctUntilChanged(),
-      debounceTime(300),
-      tap(() => {
-        this.allStores = [];
-        this.isSearchingStores = true;
-        this._changeDetectorRef.markForCheck();
-      }),
-      switchMap(value => this._reportService.getAPIData(params)
-        .pipe(
-          finalize(() => {
-            this.isSearchingStores = false
-            this._changeDetectorRef.markForCheck();
-          }),
-        )
-      )
-    ).subscribe((data: any) => {
-      this.allStores.push({ storeName: 'All Stores', pk_storeID: '' });
-      this.allStores = this.allStores.concat(data["data"]);
-    });
-  }
-  onSelectedStores(ev) {
-    this.selectedStores = ev.option.value;
-  }
-  displayWithStores(value: any) {
-    return value?.storeName;
   }
   // Reports
   generateReport(page) {
@@ -105,13 +78,41 @@ export class ReportSampleSaleComponent implements OnInit, OnDestroy {
       bln_cancel: this.blnShowCancelled,
       start_date: this._reportService.startDate,
       end_date: this._reportService.endDate,
-      store_id: this.selectedStores.pk_storeID,
-      size: 20
+      store_id: this.selectedStores.pk_storeID
     }
     this._reportService.getAPIData(params).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
       if (res["data"].length > 0) {
+        res["data"].forEach(element => {
+          this.totalData += element.numSales;
+          element.storeDetails = [];
+          let details;
+          if (element.DETAILS) {
+            details = element.DETAILS.split(',,');
+            details.forEach(prod => {
+              let data = prod.split('===');
+              let sattusData = this._reportService.getStatusValue(data[4]);
+              element.storeDetails.push({ date: data[0], id: data[1], company: data[2], paid: data[3], status: sattusData.statusValue, statusColor: sattusData.statusColor, sa: data[5] });
+            });
+          }
+        });
+        res["data"].forEach((store) => {
+          store.date_data = [];
+          store.storeDetails.forEach(element => {
+            let date_check = moment(element.date).format('MMM,yyyy');
+            if (store.date_data.length == 0) {
+              store.date_data.push({ date: moment(element.date).format('MMM,yyyy'), data: [element] });
+            } else {
+              const d_index = store.date_data.findIndex(date => date.date == date_check);
+              if (d_index < 0) {
+                store.date_data.push({ date: moment(element.date).format('MMM,yyyy'), data: [element] });
+              } else {
+                store.date_data[d_index].data.push(element);
+              }
+            }
+          });
+        });
         this.generateReportData = res["data"];
-        this.totalData = res["totalRecords"];
+        this.backtoTop();
       } else {
         this.generateReportData = null;
         this._reportService.snackBar('No records found');
@@ -136,6 +137,16 @@ export class ReportSampleSaleComponent implements OnInit, OnDestroy {
     };
     this.generateReport(this.reportPage);
   };
+  goToSummary() {
+    setTimeout(() => {
+      this.summaryScrollAnchor.nativeElement.scrollIntoView({ behavior: 'smooth' });
+    }, 100);
+  }
+  backtoTop() {
+    setTimeout(() => {
+      this.topScroll.nativeElement.scrollIntoView({ behavior: 'smooth' });
+    }, 100);
+  }
   /**
      * On destroy
      */

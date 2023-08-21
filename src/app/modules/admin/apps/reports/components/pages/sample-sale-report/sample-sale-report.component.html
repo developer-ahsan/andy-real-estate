@@ -1,20 +1,15 @@
+<div #topScrollAnchor class="my-2"></div>
+
 <div class="w-full">
     <div class="px-8 pb-4">
         <div class="row" *ngIf="!generateReportData">
+            <div class="col-12 text-right font-bold">Today: {{todayDate | date: 'MM/dd/yyyy'}}</div>
             <div class="col-12 col-md-6">
                 <mat-form-field class="w-full">
                     <mat-label>Select Store</mat-label>
-                    <input matInput placeholder="Search stores" matTooltip="Search stores by name"
-                        [matAutocomplete]="auto" [formControl]="searchStoresCtrl">
-                    <mat-autocomplete class="w-full" #auto="matAutocomplete" (optionSelected)="onSelectedStores($event)"
-                        [displayWith]="displayWithStores">
-                        <mat-option *ngIf="isSearchingStores" class="is-loading">Loading...</mat-option>
-                        <ng-container *ngIf="!isSearchingStores">
-                            <mat-option *ngFor="let item of allStores" [value]="item">
-                                <span>{{item.storeName}}</span>
-                            </mat-option>
-                        </ng-container>
-                    </mat-autocomplete>
+                    <mat-select matInput [(ngModel)]="selectedStores">
+                        <mat-option *ngFor="let store of allStores" [value]="store">{{store.storeName}}</mat-option>
+                    </mat-select>
                 </mat-form-field>
             </div>
             <div class="col-12 col-md-6">
@@ -41,113 +36,102 @@
         <div class="row" *ngIf="generateReportData">
             <div class="col-12">
                 <div class="flex justify-between">
-                    <div class="text-lg font-medium tracking-tight leading-6 truncate">Samples Report Summary</div>
                     <div>
-                        <button class="min-w-50" mat-button mat-stroked-button (click)="backToList()">Back To
+                        <p class="text-lg text-capitalize"><strong>{{_reportService.ngPlan}}</strong></p>
+                        <p>Range: {{this._reportService.startDate | date: 'MM/dd/yyyy'}}-{{this._reportService.endDate |
+                            date: 'MM/dd/yyyy'}}</p>
+                    </div>
+                    <div class="spce-x-2">
+                        <button class="min-w-50 mr-2" mat-button mat-flat-button color="primary"
+                            (click)="backToList()">Back
+                            To
                             Search</button>
+                        <button class="min-w-50" mat-button mat-stroked-button (click)="goToSummary()">Go To Report
+                            Summary</button>
                     </div>
                 </div>
-                <table mat-table [dataSource]="generateReportData" class="w-full border-t mt-2">
-                    <ng-container matColumnDef="date">
-                        <th mat-header-cell *matHeaderCellDef>
-                            Date
-                        </th>
-                        <td mat-cell *matCellDef="let element">
-                            {{element.orderDate | date: 'MM/dd/yyyy'}}
-                        </td>
-                    </ng-container>
-                    <ng-container matColumnDef="id">
-                        <th mat-header-cell *matHeaderCellDef>
-                            ID
-                        </th>
-                        <td mat-cell *matCellDef="let element">
-                            {{element.pk_orderID}}
-                        </td>
-                    </ng-container>
+                <!-- Detail Report Table -->
+                <div class="overflow-x-auto my-2">
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>ID</th>
+                                <th>Company</th>
+                                <th>Paid</th>
+                                <th>Status</th>
+                                <th>
+                                    <span>SA</span>
+                                    <mat-icon class="icon-size-4 ml-1" matTooltip="Sample Acknowledgement"
+                                        [svgIcon]="'heroicons_solid:question-mark-circle'"></mat-icon>
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <ng-container *ngFor="let item of generateReportData">
+                                <tr>
+                                    <td colspan="3">
+                                        <div class="text-secondary pb-0 mb-2 text-lg flex justify-between">
+                                            <b>{{item.storeName}}</b>
+                                        </div>
+                                    </td>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                </tr>
+                                <ng-container *ngFor="let dateData of item.date_data">
+                                    <tr class="text-center">
+                                        <td colspan="6" class="font-bold">{{dateData.date}}</td>
+                                    </tr>
+                                    <tr *ngFor="let data of dateData.data">
+                                        <td>{{data.date | date: 'MM/dd/yyyy'}}</td>
+                                        <td>{{data.id}}</td>
+                                        <td>{{data.company}}</td>
+                                        <td>{{data.paid}}</td>
+                                        <td>
+                                            <span class="{{data.statusColor}}">{{data.status}}</span>
+                                        </td>
+                                        <td>
+                                            <mat-icon svgIcon="heroicons_outline:x-mark" *ngIf="data.sa == 'false'"
+                                                class="text-red-700"></mat-icon>
+                                            <mat-icon svgIcon="heroicons_outline:check" class="text-green-700"
+                                                *ngIf="data.sa == 'true'"></mat-icon>
+                                        </td>
+                                    </tr>
+                                </ng-container>
+                            </ng-container>
+                        </tbody>
+                    </table>
+                </div>
+                <!-- Summary Report -->
+                <div #summaryScrollAnchor class="p-6 pb-2 sm:p-8 dm:pb-2 lg:p-10 lg:pb-2">
+                    <div class="text-secondary pb-0 mb-2 text-lg flex justify-between">
+                        <b>Samples Report Summary</b>
+                        <p class="cursor-pointer" (click)="backtoTop()">Back to Top
+                        </p>
+                    </div>
+                </div>
+                <div class="overflow-x-auto">
+                    <table class="table table-striped w-full border-t mt-2">
+                        <thead>
+                            <tr>
+                                <th>Store</th>
+                                <th>Num. of samples</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr *ngFor="let item of generateReportData">
+                                <td>{{item.storeName}}</td>
+                                <td>{{item.numSales}}</td>
 
-                    <ng-container matColumnDef="company">
-                        <th mat-header-cell *matHeaderCellDef>
-                            Company
-                        </th>
-                        <td mat-cell *matCellDef="let element">
-                            {{element.companyName}}
-                        </td>
-                    </ng-container>
-
-                    <ng-container matColumnDef="paid">
-                        <th mat-header-cell *matHeaderCellDef>
-                            Paid
-                        </th>
-                        <td mat-cell *matCellDef="let element">
-                            <div>
-                                <div *ngIf="element.total == 0 && !element.blnWarehouse; else payment">
-                                    <span class="text-blue-500">SAMPLE</span>
-                                </div>
-                                <ng-template #payment>
-                                    <span *ngIf="element.paymentDate; else canceled" class="text-green-500">PAID</span>
-
-                                </ng-template>
-                                <ng-template #canceled>
-                                    <span *ngIf="element.blnCancelled; else paid" class="text-red-500">CANCELLED</span>
-                                </ng-template>
-                                <ng-template #paid>
-                                    <span *ngIf="element.total == 0 && element.blnWarehouse; else notPaid"
-                                        class="text-green-500">PAID</span>
-                                </ng-template>
-                                <ng-template #notPaid>
-                                    <span class="text-red-500">NOT
-                                        PAID</span>
-                                </ng-template>
-                            </div>
-                        </td>
-                    </ng-container>
-
-                    <ng-container matColumnDef="status">
-                        <th mat-header-cell *matHeaderCellDef>
-                            Status
-                        </th>
-                        <td mat-cell *matCellDef="let element">
-                            <div *ngIf="!element.blnCancelled">
-                                <span *ngIf="!element.statusID">N/A</span>
-                                <span *ngIf="element.statusID == 1">Processing</span>
-                                <span *ngIf="element.statusID == 2">Processing</span>
-                                <span *ngIf="element.statusID == 3">Processing</span>
-                                <span *ngIf="element.statusID == 4">Processing</span>
-                                <span *ngIf="element.statusID == 5" class="text-green-500">Shipped</span>
-                                <span *ngIf="element.statusID == 6" class="text-green-500">Delivered</span>
-                                <span *ngIf="element.statusID == 7" class="text-purple-500">P.O. Needed</span>
-                                <span *ngIf="element.statusID == 8" class="text-green-500">Picked up</span>
-                                <span *ngIf="element.statusID == 10" class="text-orange-500">Awaiting Group Order</span>
-                            </div>
-                            <div *ngIf="element.blnCancelled">
-                                <span>Cancelled</span>
-                            </div>
-                        </td>
-                    </ng-container>
-
-                    <!-- Remaining amount -->
-                    <ng-container matColumnDef="sa">
-                        <th mat-header-cell *matHeaderCellDef>
-                            <div class="flex">
-                                <span>SA</span>
-                                <mat-icon class="icon-size-4 ml-1" matTooltip="Sample acknowledgement"
-                                    [svgIcon]="'heroicons_solid:question-mark-circle'"></mat-icon>
-                            </div>
-                        </th>
-                        <td mat-cell *matCellDef="let element">
-                            <mat-icon svgIcon="heroicons_solid:check" *ngIf="element.SA == 1"
-                                class="text-green-500"></mat-icon>
-                            <mat-icon svgIcon="heroicons_solid:x" *ngIf="element.SA == 0"
-                                class="text-red-500"></mat-icon>
-                        </td>
-                    </ng-container>
-                    <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-                    <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
-                </table>
-                <mat-paginator #paginator class="border-b sm:border-t sm:border-b-0 z-10 bg-gray-50 dark:bg-transparent"
-                    [length]="totalData" [pageIndex]="0" [pageSize]="20" (page)="getNextReportData($event)"
-                    [hidePageSize]="true">
-                </mat-paginator>
+                            </tr>
+                            <tr class="columnHeader2" class="font-bold">
+                                <th>Grand Total</th>
+                                <th>{{totalData}}</th>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
             </div>
         </div>
     </div>

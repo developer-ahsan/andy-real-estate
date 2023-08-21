@@ -366,4 +366,40 @@ export class ReportsService {
             params: params
         });
     };
+
+    // Convert Value TO Status
+    getStatusValue(statusValues: any) {
+        let statusColor = '';
+        let statusValue = '';
+        let status = statusValues.split('|');
+        status.forEach(element => {
+            let status = Number(element);
+            if (status == 1 || status == 2 || status == 3 || status == 4) {
+                statusValue = 'Processing';
+                statusColor = 'text-gray-500';
+            } else if (status == 5) {
+                statusValue = 'Shipped';
+                statusColor = 'text-green-500';
+            } else if (status == 6) {
+                statusValue = 'Delivered';
+                statusColor = 'text-green-500';
+            } else if (status == 7) {
+                statusValue = 'P.O. Needed';
+                statusColor = 'text-purple-500';
+            } else if (status == 8) {
+                statusValue = 'Picked up ';
+                statusColor = 'text-green-500';
+            } else if (status == 10) {
+                statusValue = 'Awaiting Group Order';
+                statusColor = 'text-orange-500';
+            } else {
+                statusValue = 'N/A';
+            }
+        });
+        let result = {
+            statusColor: statusColor,
+            statusValue: statusValue
+        }
+        return result;
+    }
 }

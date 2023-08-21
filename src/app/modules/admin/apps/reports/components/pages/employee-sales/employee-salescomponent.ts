@@ -69,7 +69,17 @@ export class ReportsEmployeeSalesComponent implements OnInit, OnDestroy {
       size: 10
     }
     this._reportService.getAPIData(param).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
-      this.allEmployees = this.allEmployees.concat(res["data"]);
+      res["data"].forEach(element => {
+        let employees = [];
+        if (element.flpsUsers) {
+          let emp = element.flpsUsers.split(',');
+          emp.forEach(user => {
+            let data_emp = user.split(':');
+            this.allEmployees.push({ pk_userID: Number(data_emp[0]), name: data_emp[2] });
+          });
+        }
+      });
+      // this.allEmployees = this.allEmployees.concat(res["data"]);
       this.selectedEmployees = this.allEmployees[0];
       this.searchEmployeesCtrl.setValue(this.selectedEmployees);
       this.isLoading = false;
