@@ -256,7 +256,6 @@ export class OrderDashboardDetailsComponent implements OnInit, OnDestroy {
       }
       // Assign email recipients
       this.imprintdata.forEach(imprint => {
-        console.log(imprint);
         // let status = imprint.pk_statusID;
         imprint.blnIncludeApproveByDate = false;
         imprint.proofComments = '';
@@ -287,7 +286,6 @@ export class OrderDashboardDetailsComponent implements OnInit, OnDestroy {
         else if (imprint.pk_statusID == 5 || imprint.pk_statusID == 11 || imprint.pk_statusID == 16) {
           // session.artwork.decoratorEmail#
           imprint.emailRecipients = this.orderData.sessionArtwork_artworkEmail;
-          console.log('here');
         }
         // NO PROOF NEEDED
         else if (imprint.pk_statusID == 7) {
