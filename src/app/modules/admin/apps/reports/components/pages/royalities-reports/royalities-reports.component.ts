@@ -1,5 +1,5 @@
 import { ENTER, COMMA } from '@angular/cdk/keycodes';
-import { Component, Input, OnInit, Output, EventEmitter, ChangeDetectorRef, OnDestroy, ViewChild } from '@angular/core';
+import { Component, Input, OnInit, Output, EventEmitter, ChangeDetectorRef, OnDestroy, ViewChild, ElementRef } from '@angular/core';
 import { FormControl } from '@angular/forms';
 import { MatChipInputEvent } from '@angular/material/chips';
 import { MatPaginator } from '@angular/material/paginator';
@@ -8,13 +8,19 @@ import { debounceTime, distinctUntilChanged, filter, finalize, switchMap, takeUn
 import { ReportsService } from '../../reports.service';
 import { ApplyBlanketFOBlocation, updateCompanySettings } from '../../reports.types';
 import moment from 'moment';
+import * as pdfMake from "pdfmake/build/pdfmake";
+import * as pdfFonts from "pdfmake/build/vfs_fonts";
+import { CurrencyPipe } from '@angular/common';
 
+pdfMake.vfs = pdfFonts.pdfMake.vfs;
 @Component({
   selector: 'app-royalities-reports',
   templateUrl: './royalities-reports.component.html',
   styles: [".mat-paginator {border-radius: 16px !important}"]
 })
 export class RoyalitiesReportComponent implements OnInit, OnDestroy {
+  @ViewChild('topScrollAnchor') topScroll: ElementRef;
+
   @ViewChild('paginator') paginator: MatPaginator;
   isLoading: boolean = false;
   @Output() isLoadingChange = new EventEmitter<boolean>();
@@ -51,7 +57,7 @@ export class RoyalitiesReportComponent implements OnInit, OnDestroy {
   displayedColumns: string[] = ['order', 'payment', 'id', 'company', 'sale', 'royalty', 'paid', 'status'];
   constructor(
     private _changeDetectorRef: ChangeDetectorRef,
-    private _reportService: ReportsService
+    private _reportService: ReportsService, private currencyPipe: CurrencyPipe,
   ) { }
 
   ngOnInit(): void {
@@ -66,7 +72,6 @@ export class RoyalitiesReportComponent implements OnInit, OnDestroy {
       this.allStores.push({ storeName: 'Select a store', fk_storeID: '' });
       this.allStores = this.allStores.concat(res["data"]);
       this.selectedStores = this.allStores[0];
-      this.searchStoresCtrl.setValue(this.selectedStores);
       this.royaltiesPerStore = null;
       this.royaltiesPerStoreCheck = true;
       this.isLoading = false;
@@ -75,37 +80,9 @@ export class RoyalitiesReportComponent implements OnInit, OnDestroy {
       // this.isLoading = false;
       this._changeDetectorRef.markForCheck();
     });
-    let params;
-    this.searchStoresCtrl.valueChanges.pipe(
-      filter((res: any) => {
-        params = {
-          royalty_stores: true,
-          keyword: res
-        }
-        return res !== null && res.length >= 2
-      }),
-      distinctUntilChanged(),
-      debounceTime(300),
-      tap(() => {
-        this.allStores = [];
-        this.isSearchingStores = true;
-        this._changeDetectorRef.markForCheck();
-      }),
-      switchMap(value => this._reportService.getRoyaltyStores(params)
-        .pipe(
-          finalize(() => {
-            this.isSearchingStores = false
-            this._changeDetectorRef.markForCheck();
-          }),
-        )
-      )
-    ).subscribe((data: any) => {
-      this.allStores.push({ storeName: 'All Stores', fk_storeID: '' });
-      this.allStores = this.allStores.concat(data["data"]);
-    });
+
   }
-  onSelectedStores(ev) {
-    this.selectedStores = ev.option.value;
+  onSelectedStores() {
     this.royaltiesPerStoreCheck = true;
     this.royaltiesPerStore = null;
     if (this.selectedStores.fk_storeID != '') {
@@ -113,9 +90,6 @@ export class RoyalitiesReportComponent implements OnInit, OnDestroy {
     } else {
       this._reportService.snackBar('Please select any store');
     }
-  }
-  displayWithStores(value: any) {
-    return value?.storeName;
   }
   royaltiesPerStoreData() {
     this.isLoadingRoyalties = true;
@@ -140,37 +114,29 @@ export class RoyalitiesReportComponent implements OnInit, OnDestroy {
       this._reportService.snackBar('You must select a store and report type above before you can generate the report.');
       return;
     }
-    if (page == 1) {
-      this.reportPage = 1;
-      if (this.generateReportData) {
-        this.paginator.pageIndex = 0;
-      }
-      this.generateReportData = null;
-    }
+    this.generateReportData = null;
     this._reportService.setFiltersReport();
     this.isGenerateReportLoader = true;
     let params = {
-      page: page,
       royalty_reports: true,
       start_date: this._reportService.startDate,
       end_date: this._reportService.endDate,
       store_id: this.selectedStores.fk_storeID,
       blnIncludeFulfillment: this.blnIncludeFulfillment,
-      payment_status: this.paymentStatus,
-      size: 20
+      payment_status: this.paymentStatus
     }
     this._reportService.getAPIData(params).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
       if (res["data"].length > 0) {
         res["data"].forEach(element => {
-          element.royalty = (element.total * this.royaltyID.contractPercentage).toFixed(2);
           if (moment(new Date()).diff(moment(element.paymentDate)) >= 0) {
-            element.paid = 'Paid';
+            element.paid = true;
           } else {
-            element.paid = 'Not Paid';
+            element.paid = false;
           }
+          element.status = this._reportService.getStatusValue(element.orderLinesStatus);
         });
         this.generateReportData = res["data"];
-        this.totalData = res["totalRecords"];
+        this.topScroll.nativeElement.scrollIntoView({ behavior: 'smooth' });
       } else {
         this.generateReportData = null;
         this._reportService.snackBar('No records found');
@@ -186,15 +152,59 @@ export class RoyalitiesReportComponent implements OnInit, OnDestroy {
     this.generateReportData = null;
     this._changeDetectorRef.markForCheck();
   }
-  getNextReportData(event) {
-    const { previousPageIndex, pageIndex } = event;
-    if (pageIndex > previousPageIndex) {
-      this.reportPage++;
-    } else {
-      this.reportPage--;
+  generatePdf() {
+    const documentDefinition: any = {
+      pageSize: 'A4',
+      pageOrientation: 'portrait',
+      pageMargins: [10, 10, 10, 10],
+      content: [
+        // Add a title for your PDF
+        { text: this._reportService.ngPlan.toUpperCase(), fontSize: 14 },
+        { text: 'Range: ' + this._reportService.startDate + ' - ' + this._reportService.endDate, fontSize: 10 },
+        // Add a spacer element to create a margin above the table
+        { text: '', margin: [0, 20, 0, 0] },
+        {
+          table: {
+            widths: ['*', '*', '*', '*', '*', '*', '*', '*'],
+            body: [
+              [
+                { text: 'Order Date', bold: true },
+                { text: 'Payment Date', bold: true },
+                { text: 'ID', bold: true },
+                { text: 'Company', bold: true },
+                { text: 'Sales', bold: true },
+                { text: 'Royalties', bold: true },
+                { text: 'Paid', bold: true },
+                { text: 'Status', bold: true }
+              ]
+            ]
+          },
+          fontSize: 8
+        }
+      ],
+      styles: {
+        tableHeader: {
+          bold: true
+        }
+      }
     };
-    this.generateReport(this.reportPage);
-  };
+    this.generateReportData.forEach(element => {
+      documentDefinition.content[3].table.body.push(
+        [
+          moment(element.orderDate).format('MM-DD-yyyy'),
+          moment(element.paymentDate).format('MM-DD-yyyy'),
+          element.pk_orderID,
+          element.companyName,
+          { text: this.currencyPipe.transform(Number(element.thisOrderTotal), 'USD', 'symbol', '1.0-2', 'en-US'), bold: true, margin: [0, 3, 0, 3] },
+          { text: this.currencyPipe.transform(Number(element.Royalties), 'USD', 'symbol', '1.0-2', 'en-US'), bold: true, margin: [0, 3, 0, 3] },
+          element.paid ? 'Paid' : 'Not Paid',
+          element.status.statusValue
+        ]
+      )
+    });
+    pdfMake.createPdf(documentDefinition).download(`${this.selectedStores.storeName}-Royalty-Report-${this._reportService.startDate}-${this._reportService.endDate}.pdf`);
+  }
+
   /**
      * On destroy
      */

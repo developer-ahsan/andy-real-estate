@@ -1,5 +1,4 @@
-<div #topScrollAnchor class="my-2"></div>
-
+<div #topScrollAnchor></div>
 <div class="w-full">
     <div class="px-8 pb-4">
         <div class="row" *ngIf="!generateReportData">
@@ -33,7 +32,7 @@
                 </button>
             </div>
         </div>
-        <div class="row" *ngIf="generateReportData">
+        <div class="row mt-5" *ngIf="generateReportData">
             <div class="col-12">
                 <div class="flex justify-between">
                     <div>
@@ -68,7 +67,7 @@
                             </tr>
                         </thead>
                         <tbody>
-                            <ng-container *ngFor="let item of generateReportData">
+                            <ng-container *ngFor="let item of generateReportData;trackBy: trackById">
                                 <tr>
                                     <td colspan="3">
                                         <div class="text-secondary pb-0 mb-2 text-lg flex justify-between">
@@ -85,7 +84,8 @@
                                     </tr>
                                     <tr *ngFor="let data of dateData.data">
                                         <td>{{data.date | date: 'MM/dd/yyyy'}}</td>
-                                        <td>{{data.id}}</td>
+                                        <td><a [routerLink]="['/apps/orders',data.id]" target="_blank">{{data.id}}</a>
+                                        </td>
                                         <td>{{data.company}}</td>
                                         <td>{{data.paid}}</td>
                                         <td>

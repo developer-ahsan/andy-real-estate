@@ -171,25 +171,24 @@
               </div>
             </div>
             <div class="col-12">
-              <mat-form-field class="example-chip-list w-full" appearance="fill">
-                <mat-label>Emails Recipients(Comma-separated)</mat-label>
-                <mat-chip-list class="pt-1 max-h-40 overflow-y-auto overflow-x-hidden mi-h-20" #chipList1>
-                  <mat-chip [removable]="true" [selectable]="true" *ngFor="let email of emailsData"
-                    (removed)="remove(email)">
-                    {{email}}
-                    <mat-icon class="icon-size-5" matChipRemove [svgIcon]="'heroicons_solid:minus-circle'"></mat-icon>
-                  </mat-chip>
-                  <input #chipList [matChipInputFor]="chipList1" placeholder="Add Emails"
-                    [matChipInputSeparatorKeyCodes]="separatorKeysCodes" [matChipInputAddOnBlur]="addOnBlur"
-                    (matChipInputTokenEnd)="add($event)">
-                </mat-chip-list>
-              </mat-form-field>
-
               <mat-radio-group formControlName="selectedRecipientValue" aria-labelledby="example-radio-group-label"
                 class="example-radio-group" (change)="changeEmailCheckBox($event)">
                 <mat-radio-button class="example-radio-button" value="email">
                   Email
                 </mat-radio-button>
+                <mat-form-field class="example-chip-list w-full" appearance="fill">
+                  <mat-label>Emails Recipients(Comma-separated)</mat-label>
+                  <mat-chip-list class="pt-1 max-h-40 overflow-y-auto overflow-x-hidden mi-h-20" #chipList1>
+                    <mat-chip [removable]="true" [selectable]="true" *ngFor="let email of emailsData"
+                      (removed)="remove(email)">
+                      {{email}}
+                      <mat-icon class="icon-size-5" matChipRemove [svgIcon]="'heroicons_solid:minus-circle'"></mat-icon>
+                    </mat-chip>
+                    <input #chipList [matChipInputFor]="chipList1" placeholder="Add Emails"
+                      [matChipInputSeparatorKeyCodes]="separatorKeysCodes" [matChipInputAddOnBlur]="addOnBlur"
+                      (matChipInputTokenEnd)="add($event)">
+                  </mat-chip-list>
+                </mat-form-field>
                 <mat-radio-button class="example-radio-button text-red-500" value="optIn">
                   EVERYONE NOT OPTED OUT ({{optInData.qryAllOptInEmailsCount}} emails)
                 </mat-radio-button>

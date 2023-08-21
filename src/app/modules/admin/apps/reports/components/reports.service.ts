@@ -76,13 +76,13 @@ export class ReportsService {
     }
     setFiltersReport() {
         if (this.ngPlan == 'weekly') {
-            this.startDate = moment(this.WeekDate).startOf('week').format('MM/DD/yyyy');
-            this.endDate = moment(this.WeekDate).endOf('week').format('MM/DD/yyyy');
+            this.startDate = moment(this.WeekDate).startOf('week').format('yyyy-MM-DD');
+            this.endDate = moment(this.WeekDate).endOf('week').format('yyyy-MM-DD');
             this.reportType = 'Weekly Sales';
         } else if (this.ngPlan == 'monthly') {
             let d = new Date(this.monthlyYear, this.monthlyMonth - 1, 1);
-            this.startDate = moment(d).startOf('month').format('MM/DD/yyyy');
-            this.endDate = moment(d).endOf('month').format('MM/DD/yyyy');
+            this.startDate = moment(d).startOf('month').format('yyyy-MM-DD');
+            this.endDate = moment(d).endOf('month').format('yyyy-MM-DD');
             this.reportType = 'Monthly Sales';
         } else if (this.ngPlan == 'quarterly') {
             let s;
@@ -100,16 +100,16 @@ export class ReportsService {
                 s = new Date(this.quarterYear, 9, 1);
                 e = new Date(this.quarterYear, 11, 1);
             }
-            this.startDate = moment(s).startOf('month').format('MM/DD/yyyy');
-            this.endDate = moment(e).endOf('month').format('MM/DD/yyyy');
+            this.startDate = moment(s).startOf('month').format('yyyy-MM-DD');
+            this.endDate = moment(e).endOf('month').format('yyyy-MM-DD');
             this.reportType = 'Quarterly Sales';
         } else if (this.ngPlan == 'yearly') {
             let d = new Date(this.yearlyYear, 0, 1);
-            this.startDate = moment(d).startOf('year').format('MM/DD/yyyy');
-            this.endDate = moment(d).endOf('year').format('MM/DD/yyyy');
+            this.startDate = moment(d).startOf('year').format('yyyy-MM-DD');
+            this.endDate = moment(d).endOf('year').format('yyyy-MM-DD');
         } else if (this.ngPlan == 'range') {
-            this.startDate = moment(this.ngRangeStart).format('MM/DD/yyyy');
-            this.endDate = moment(this.ngRangeEnd).format('MM/DD/yyyy');
+            this.startDate = moment(this.ngRangeStart).format('yyyy-MM-DD');
+            this.endDate = moment(this.ngRangeEnd).format('yyyy-MM-DD');
             this.reportType = 'Range Sales';
         }
     }
@@ -376,7 +376,7 @@ export class ReportsService {
             let status = Number(element);
             if (status == 1 || status == 2 || status == 3 || status == 4) {
                 statusValue = 'Processing';
-                statusColor = 'text-gray-500';
+                statusColor = 'text-red-500';
             } else if (status == 5) {
                 statusValue = 'Shipped';
                 statusColor = 'text-green-500';

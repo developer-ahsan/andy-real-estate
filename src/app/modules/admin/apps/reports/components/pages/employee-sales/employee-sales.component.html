@@ -49,7 +49,7 @@
                 </button>
             </div>
         </div>
-        <div class="row" *ngIf="generateReportData && !isLoading">
+        <div class="row mt-5" *ngIf="generateReportData && !isLoading">
             <div class="col-12 text-right mb-2">
                 <button (click)="generatePdf()" mat-flat-button color="primary" [disabled]="isPdfLoader"
                     [matTooltip]="'Save report as PDF'">
@@ -90,7 +90,7 @@
                                     <th>Status</th>
                                 </tr>
                                 <tbody>
-                                    <ng-container *ngFor="let item of generateReportData">
+                                    <ng-container *ngFor="let item of generateReportData;">
                                         <tr>
                                             <td colspan="3">
                                                 <div class="text-secondary pb-0 mb-2 text-lg flex justify-between">
@@ -109,7 +109,8 @@
                                             </tr>
                                             <tr *ngFor="let data of dateData.data">
                                                 <td>{{data.date | date: 'MM/dd/yyyy'}}</td>
-                                                <td>{{data.id}}</td>
+                                                <td><a [routerLink]="['/apps/orders',data.id]"
+                                                        target="_blank">{{data.id}}</a> </td>
                                                 <td>{{data.company}}<span *ngIf="data.location != 'NULL'">
                                                         {{data.location}}</span>
                                                 </td>
@@ -247,7 +248,23 @@
                                     <th>Grand Total</th>
                                     <th>{{storeTotals?.Sales | currency}}</th>
                                     <th>{{storeTotals?.PY | currency}}</th>
-                                    <th>{{(storeTotals?.percent/generateReportData.length).toFixed(2)}}%</th>
+                                    <th>
+                                        <div *ngIf="storeTotals.percent != 0">
+                                            <div class="flex align-items-center" *ngIf="!storeTotals.blnPercent">
+                                                <mat-icon class="icon-size-5 text-red-500"
+                                                    [svgIcon]="'heroicons_solid:trending-down'"></mat-icon>
+                                                <span class="text-red-500">{{storeTotals.percent.toFixed(2)}}%</span>
+                                            </div>
+                                            <div class="flex align-items-center" *ngIf="storeTotals.blnPercent">
+                                                <mat-icon class="icon-size-5 text-green-500"
+                                                    [svgIcon]="'heroicons_solid:trending-up'"></mat-icon>
+                                                <span class="text-green-500">{{storeTotals.percent.toFixed(2)}}%</span>
+                                            </div>
+                                        </div>
+                                        <div class="flex" *ngIf="storeTotals.percent == 0">
+                                            <span>{{storeTotals.percent.toFixed(2)}}%</span>
+                                        </div>
+                                    </th>
                                     <th>
                                         <span *ngIf="storeTotals.DIFF >= 0" class="text-green-500">
                                             {{storeTotals.DIFF | currency}}

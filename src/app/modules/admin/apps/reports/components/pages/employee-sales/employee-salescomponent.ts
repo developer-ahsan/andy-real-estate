@@ -49,7 +49,8 @@ export class ReportsEmployeeSalesComponent implements OnInit, OnDestroy {
     NS: 0,
     PYNS: 0,
     AVG: 0,
-    MARGIN: 0
+    MARGIN: 0,
+    blnPercent: false
   };
   isPdfLoader: boolean = false;
   @ViewChild('topScrollAnchor') topScroll: ElementRef;
@@ -126,6 +127,17 @@ export class ReportsEmployeeSalesComponent implements OnInit, OnDestroy {
   // Reports
   generateReport() {
     this.generateReportData = null;
+    this.storeTotals = {
+      Sales: 0,
+      PY: 0,
+      percent: 0,
+      DIFF: 0,
+      NS: 0,
+      PYNS: 0,
+      AVG: 0,
+      MARGIN: 0,
+      blnPercent: false
+    };
     this._reportService.setFiltersReport();
     if (!this.selectedEmployees) {
       this._reportService.snackBar('Please select an employee');
@@ -209,7 +221,7 @@ export class ReportsEmployeeSalesComponent implements OnInit, OnDestroy {
               if (element.PY == 0) {
                 element.percent = 100;
               } else {
-                element.percent = (diff / element.PY) * 100;
+                element.percent = (diff / element.SALES) * 100;
               }
             } else if (element.SALES < element.PY) {
               element.blnPercent = false;
@@ -217,20 +229,38 @@ export class ReportsEmployeeSalesComponent implements OnInit, OnDestroy {
               if (element.SALES == 0) {
                 element.percent = 100;
               } else {
-                element.percent = (diff / element.SALES) * 100;
+                element.percent = (diff / element.PY) * 100;
               }
             } else {
               element.percent = 0;
             }
             this.storeTotals.Sales = Number(this.storeTotals.Sales) + Number(element.SALES);
             this.storeTotals.PY = Number(this.storeTotals.PY) + Number(element.PY);
-            this.storeTotals.percent = Number(this.storeTotals.percent) + Number(element.percent);
             this.storeTotals.DIFF = Number(this.storeTotals.DIFF) + Number(element.DIFF);
             this.storeTotals.NS = Number(this.storeTotals.NS) + Number(element.NS);
             this.storeTotals.PYNS = Number(this.storeTotals.PYNS) + Number(element.PYNS);
             this.storeTotals.AVG = Number(this.storeTotals.AVG) + Number(element.AVG);
             this.storeTotals.MARGIN = Number(this.storeTotals.MARGIN) + Number(element.MARGIN);
           });
+          if (this.storeTotals.Sales > this.storeTotals.PY) {
+            this.storeTotals.blnPercent = true;
+            const diff = this.storeTotals.Sales - this.storeTotals.PY;
+            if (this.storeTotals.PY == 0) {
+              this.storeTotals.percent = 100;
+            } else {
+              this.storeTotals.percent = (diff / this.storeTotals.Sales) * 100;
+            }
+          } else if (this.storeTotals.Sales < this.storeTotals.PY) {
+            this.storeTotals.blnPercent = false;
+            const diff = this.storeTotals.PY - this.storeTotals.Sales;
+            if (this.storeTotals.Sales == 0) {
+              this.storeTotals.percent = 100;
+            } else {
+              this.storeTotals.percent = (diff / this.storeTotals.PY) * 100;
+            }
+          } else {
+            this.storeTotals.percent = 0;
+          }
           this.backtoTop();
         } else {
           this.generateReportData = null;

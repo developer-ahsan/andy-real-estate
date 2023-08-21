@@ -63,17 +63,11 @@ export class ReportSampleSaleComponent implements OnInit, OnDestroy {
   }
   // Reports
   generateReport(page) {
-    if (page == 1) {
-      this.reportPage = 1;
-      if (this.generateReportData) {
-        this.paginator.pageIndex = 0;
-      }
-      this.generateReportData = null;
-    }
+    this.generateReportData = null;
+
     this._reportService.setFiltersReport();
     this.isGenerateReportLoader = true;
     let params = {
-      page: page,
       samples_report: true,
       bln_cancel: this.blnShowCancelled,
       start_date: this._reportService.startDate,
@@ -146,6 +140,9 @@ export class ReportSampleSaleComponent implements OnInit, OnDestroy {
     setTimeout(() => {
       this.topScroll.nativeElement.scrollIntoView({ behavior: 'smooth' });
     }, 100);
+  }
+  trackById(index: number, item: any): number {
+    return item.storeName;
   }
   /**
      * On destroy

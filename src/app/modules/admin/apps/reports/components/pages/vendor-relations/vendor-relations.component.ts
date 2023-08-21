@@ -56,7 +56,7 @@ export class ReportVendorRelationsComponent implements OnInit, OnDestroy {
     let params = {
       page: page,
       vendor_relations: true,
-      relations: this.vendorRelation,
+      relation: this.vendorRelation,
       keyword: this.keyword,
       size: 20
     }
