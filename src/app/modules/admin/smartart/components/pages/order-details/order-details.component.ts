@@ -261,8 +261,10 @@ export class OrderDashboardDetailsComponent implements OnInit, OnDestroy {
         imprint.proofComments = '';
         imprint.statusID = 9;
         imprint.emailRecipients = '';
+        imprint.recipientsComment = '';
         // NEW PENDING
         if (imprint.pk_statusID == 2) {
+          imprint.recipientsComment = 'Please double check all details of this proof for accuracy.  (ie. phone numbers, email/addresses, websites).';
           if (imprint.fk_artApprovalContactID && !imprint.blnStoreUserApprovalDone) {
             imprint.emailRecipients = imprint.proofContactEmail;
           } else {

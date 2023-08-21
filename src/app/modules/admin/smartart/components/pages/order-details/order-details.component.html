@@ -111,11 +111,11 @@
                                     <p *ngIf="orderData.sessionProofEmails.length == 0">
                                         {{orderData.sessionArtworkEmail}}</p>
                                 </div>
-                                <div><b>Designer notes:</b>
-                                    <a target="_blank" *ngIf="orderData?.designerNotes"
+                                <div><b>Designer notes: </b>
+                                    <a target="_blank" *ngIf="orderData.sessionArtworkDesignerNotes"
                                         [routerLink]="['/apps/customers',orderData.fk_storeUserID,'user-info']">Designer
                                         Notes</a>
-                                    <span *ngIf="!orderData?.designerNotes">None</span>
+                                    <span *ngIf="!orderData.sessionArtworkDesignerNotes">None</span>
                                 </div>
                                 <div class="space-y-1">
                                     <button class="min-w-60 btn buttonComment hover:bg-gray-200"
@@ -755,8 +755,7 @@
                                                         <mat-label>Please enter any comments relating to this artwork:
                                                         </mat-label>
                                                         <textarea matInput [(ngModel)]="imprint.recipientsComment"
-                                                            id="comment-{{imprint.pk_imprintID}}"
-                                                            placeholder="Please double check all details of this proof for accuracy.  (ie. phone numbers, email/addresses, websites)."></textarea>
+                                                            id="comment-{{imprint.pk_imprintID}}"></textarea>
                                                     </mat-form-field>
                                                     <div class="flex justify-between">
                                                         <div>
@@ -876,13 +875,13 @@
                                                         </button>
                                                     </div>
                                                     <div class="mt-3">
-                                                        <p class="text-md font-bold">Designer Notes:</p>
-                                                        <fuse-alert *ngIf="!imprint?.designerNotes" class="my-2"
+                                                        <p class="text-md font-bold">Designer Notes: </p>
+                                                        <fuse-alert *ngIf="!imprint.designerNotes" class="my-2"
                                                             [appearance]="'soft'" [type]="'warning'" [showIcon]="false">
                                                             No design notes defined for this decorator.
                                                         </fuse-alert>
                                                         <div class="h-40 border overflow-y-auto p-2"
-                                                            *ngIf="imprint?.designerNotes"
+                                                            *ngIf="imprint.designerNotes"
                                                             [innerHTML]="imprint?.designerNotes"></div>
                                                     </div>
                                                 </div>
