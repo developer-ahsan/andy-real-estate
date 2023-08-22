@@ -151,7 +151,7 @@
                                 <div><b>Customer Name:</b> {{orderData?.firstName + ' ' + orderData?.lastName}}</div>
                                 <div><b>PO:</b> {{orderData.fk_orderID}}-{{paramData?.pk_orderLineID}}</div>
                                 <div><b>Order Placed:</b> {{orderData.orderDate | date: 'MM/dd/yyyy'}}</div>
-                                <div><b>Store:</b> <a
+                                <div><b>Store: </b> <a
                                         href="{{orderData?.protocol}}{{orderData?.storeURL}}/{{orderData?.categoryPermalink}}/{{orderData?.subCategoryPermalink}}/{{orderData?.productPermaLink}}"
                                         target="_blank">{{orderData.storeName}}</a></div>
                                 <div><b>In-Hands:</b> {{orderData.inHandsDate | date: 'MM/dd/yyyy'}}</div>
@@ -164,10 +164,10 @@
                                 <div><b>Quote ID:</b> {{orderData.quoteID}}-{{paramData?.fk_imprintID}}</div>
                                 <div><b>PO:</b> {{orderData.fk_orderID}}-{{paramData?.pk_orderLineID}}</div>
                                 <div><b>Order Placed:</b> {{orderData.orderDate | date: 'MM/dd/yyyy'}}</div>
-                                <div><b>Store:</b> <a
+                                <div><b>Store: </b> <a
                                         href="{{orderData?.protocol}}{{orderData?.storeURL}}/{{orderData?.categoryPermalink}}/{{orderData?.subCategoryPermalink}}/{{orderData?.productPermaLink}}"
                                         target="_blank">{{orderData.storeName}}</a></div>
-                                <div><b>Brand Guide:</b>
+                                <div><b>Brand Guide: </b>
                                     <a *ngIf="brandGuideExist" target="_blank"
                                         href="https://assets.consolidus.com/globalAssets/Stores/BrandGuide/{{orderData.pk_storeID}}.pdf">Click
                                         here</a>
@@ -184,7 +184,7 @@
                                     </mat-form-field>
                                 </div>
                                 <div>
-                                    <b>Event:</b>
+                                    <b>Event: </b>
                                     <mat-form-field class="fuse-mat-dense fuse-mat-no-subscript w-full min-w-50">
                                         <input matInput [(ngModel)]="orderData.event">
                                     </mat-form-field>
@@ -240,7 +240,7 @@
                                     <p *ngFor="let item of orderData.sessionDecoratorEmails">{{item}}</p>
                                 </div>
                                 <p *ngIf="orderData.sessionDecoratorEmails.length == 0">NONE Provided</p>
-                                <div *ngIf="orderData?.supplierLink"><b>Product Link:</b><a
+                                <div *ngIf="orderData?.supplierLink"><b>Product Link: </b><a
                                         href="{{orderData.supplierLink}}" target="_blank">Click here</a></div>
                                 <div>
                                     <div *ngIf="artWorkLoader">
@@ -952,6 +952,11 @@
                                                         <mat-form-field class="w-full">
                                                             <mat-label>Proof Contact</mat-label>
                                                             <mat-select matInput [(ngModel)]="imprint.selectedContact">
+                                                                <!-- <mat-option
+                                                                    [value]="0">{{orderData.sessionArtworkFirstName[0]
+                                                                    +
+                                                                    ' '
+                                                                    +orderData.sessionArtworkFirstName[1]}}</mat-option> -->
                                                                 <mat-option
                                                                     [value]="orderData.sessionArtwork_artApprovalContactID">{{orderData.sessionArtworkFirstName[0]
                                                                     +
@@ -1297,6 +1302,10 @@
                                                     </div>
                                                     <h3>Please enter the artwork's PO Number: (enter only numbers,
                                                         dashes, or letters)</h3>
+                                                    <mat-form-field class="w-full">
+                                                        <mat-label>Artwork PO</mat-label>
+                                                        <input matInput [(ngModel)]="imprint.artworkPO">
+                                                    </mat-form-field>
                                                     <mat-form-field class="w-full">
                                                         <mat-label>Email recipients (comma-separated)</mat-label>
                                                         <input matInput [(ngModel)]="imprint.emailRecipients"
@@ -1654,6 +1663,10 @@
                                                     <h3>Please enter the artwork's PO Number: (enter only numbers,
                                                         dashes, or letters)</h3>
                                                     <br>
+                                                    <mat-form-field class="w-full">
+                                                        <mat-label>Artwork PO</mat-label>
+                                                        <input matInput [(ngModel)]="imprint.artworkPO">
+                                                    </mat-form-field>
                                                     <mat-form-field class="w-full">
                                                         <mat-label>Email recipients (comma-separated)</mat-label>
                                                         <input matInput [(ngModel)]="imprint.emailRecipients"
@@ -2148,10 +2161,13 @@
                                             </div>
                                             <div class="row">
                                                 <div class="col-md-8 col-12">
-                                                    <!-- Proof Contact -->
                                                     <h3>Please enter the artwork's PO Number: (enter only numbers,
                                                         dashes, or letters)</h3>
                                                     <br>
+                                                    <mat-form-field class="w-full">
+                                                        <mat-label>Artwork PO</mat-label>
+                                                        <input matInput [(ngModel)]="imprint.artworkPO">
+                                                    </mat-form-field>
                                                     <mat-form-field class="w-full">
                                                         <mat-label>Email recipients (comma-separated)</mat-label>
                                                         <input matInput [(ngModel)]="imprint.emailRecipients"

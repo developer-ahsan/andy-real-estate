@@ -318,7 +318,7 @@
                                                 </div>
                                                 <!-- If Already Claimed -->
                                                 <div
-                                                    *ngIf="element.fk_smartArtDesignerClaimID == smartArtUser.adminUserID">
+                                                    *ngIf="(element.fk_smartArtDesignerClaimID == smartArtUser.adminUserID) && smartArtUser.adminUserID">
                                                     <button type="button"
                                                         class="inline-flex items-center gap-x-1.5 rounded-md px-2.5 py-1.5 text-sm font-semibold text-white shadow-smfocus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
                                                         [ngClass]="{ 'bg-red-400': element.fk_smartArtDesignerClaimID == smartArtUser.adminUserID}"
