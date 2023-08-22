@@ -210,12 +210,33 @@ export class EmailBlastComponent implements OnInit, OnDestroy {
     this.mainScreen = screenName;
     if (screenName == 'actvity') {
       this.getActivitydata();
+      this.getEmailTemplate('get');
     }
   }
   getActivitydata() {
+    let date = this.getDateArray();
+    this.processDataLoader = true;
+    let statsParams = {
+      email_stats: true,
+      start_date: date.from,
+      end_date: date.to
+    }
+    this._fileManagerService.getStoresData(statsParams)
+      .pipe(takeUntil(this._unsubscribeAll))
+      .subscribe(statsRes => {
+        this.processData = statsRes["data"];
+        this.processDataLoader = false;
+        this._changeDetectorRef.markForCheck();
+      }, err => {
+        this.processDataLoader = false;
+        this._changeDetectorRef.markForCheck();
+      })
+
+
     let params = {
       email_recipient_stats: true,
-      email: "info@" + this.selectedStore.storeName
+      email: "service@" + this.selectedStore.storeName,
+      size: 30
     }
     this.isActivityLoader = true;
     this._fileManagerService.getStoresData(params).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
@@ -392,29 +413,18 @@ export class EmailBlastComponent implements OnInit, OnDestroy {
     let params = {
       emails: true
     }
-    let date = this.getDateArray();
+
     this._fileManagerService.getStoresData(params)
       .pipe(takeUntil(this._unsubscribeAll))
       .subscribe(res => {
-        let statsParams = {
-          email_stats: true,
-          start_date: date.from,
-          end_date: date.to
-        }
-        this._fileManagerService.getStoresData(statsParams)
-          .pipe(takeUntil(this._unsubscribeAll))
-          .subscribe(statsRes => {
-            this.processData = statsRes["data"]
-            this.mainDataSource = res["data"].result;
+        this.mainDataSource = res["data"].result;
 
-            if (check == 'get') {
-              this.mainDataLoader = false;
-            }
-            this._changeDetectorRef.markForCheck();
-          }, err => {
-            this.processDataLoader = false;
-            this._changeDetectorRef.markForCheck();
-          })
+        if (check == 'get') {
+          this.mainDataLoader = false;
+        }
+        this._changeDetectorRef.markForCheck();
+
+
 
       }, err => {
         this.mainDataLoader = false;
@@ -563,7 +573,7 @@ export class EmailBlastComponent implements OnInit, OnDestroy {
           duration: 3000
         });
         this.getActivitydata();
-        this.mainScreen = 'blast';
+        this.mainScreen = 'actvity';
         this.emailsData = [];
         this.sendEmailForm.reset();
         this.presentationScreen = 'Dropdowns';

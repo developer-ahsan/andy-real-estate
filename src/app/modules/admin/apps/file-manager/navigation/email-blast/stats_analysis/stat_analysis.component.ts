@@ -65,8 +65,6 @@ export class StatAnalysisComponent implements OnInit, OnDestroy {
     this.statsAnalysisFormation();
   }
   initialize() {
-
-
     this.chartOptions = {
       series: [
         {
