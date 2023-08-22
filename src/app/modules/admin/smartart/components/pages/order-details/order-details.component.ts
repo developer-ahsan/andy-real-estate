@@ -749,6 +749,8 @@ export class OrderDashboardDetailsComponent implements OnInit, OnDestroy {
   }
 
   applyStatusChangeImprint(imprint, statusID, type) {
+    let index = this.imprintdata.findIndex(imp => imp.pk_imprintID == imprint.pk_imprintID)
+
     if (imprint.blnRespond) {
       if (imprint.proofComments == '') {
         this._smartartService.snackBar('Please enter comments regarding this communication.');
@@ -860,6 +862,10 @@ export class OrderDashboardDetailsComponent implements OnInit, OnDestroy {
       imprint.blnRespond = false;
       imprint.proofComments = '';
       this.orderData.internalComments = this.orderData.internalComments + res["orderComment"];
+      if (res["customerArtworkComment"]) {
+        // this.imprintdata[index].imprintComments = this.imprintdata[index].imprintComments + ' <br>' + res["customerArtworkComment"];
+      }
+
       this.updateImprintsData();
       this._changeDetectorRef.markForCheck();
     }, err => {
@@ -1007,6 +1013,7 @@ export class OrderDashboardDetailsComponent implements OnInit, OnDestroy {
       this.imprintdata[index].pk_statusID = 3;
       this.imprintdata[index].imprintComments = this.imprintdata[index].imprintComments + ' <br>' + res["customerComment"];
       this.orderData.internalComments = this.orderData.internalComments + res["orderComment"];
+      this._smartartService.snackBar(res["message"]);
       this.updateImprintsData();
       this._changeDetectorRef.markForCheck();
     }, err => {
