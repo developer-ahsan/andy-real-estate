@@ -943,7 +943,7 @@ export class OrderDashboardDetailsComponent implements OnInit, OnDestroy {
     } else if (imprint.fk_artApprovalContactID) {
       approvingStoreUserID = imprint.fk_artApprovalContactID;
     } else {
-      approvingStoreUserID = imprint.fk_storeUserID;
+      approvingStoreUserID = this.orderData.fk_storeUserID;
     }
     let date = null;
     if (imprint.blnIncludeApproveByDate) {
