@@ -423,11 +423,34 @@ export class OrderDashboardComponent implements OnInit, OnDestroy {
   }
   bulkUploadStatus() {
     let orders = [];
+    const approvedStatusIDs = [5, 6, 7, 9, 11, 16];
     this.dataSource.forEach(element => {
       if (element.checked) {
+        let blnApprove = 0;
+        if (approvedStatusIDs.includes(element.pk_statusID)) {
+          blnApprove = 1;
+        }
         orders.push({
           imprint_id: Number(element.fk_imprintID),
-          ordeLine_id: Number(element.pk_orderLineID)
+          ordeLine_id: Number(element.pk_orderLineID),
+          blnGroupRun: element.blnGroupRun,
+          fk_groupOrderID: element.fk_groupOrderID,
+          product_id: element.pk_productID,
+          productName: element.productName.replace(/'/g, "''"),
+          productNumber: element.productNumber.replace(/'/g, "''"),
+          blnApproved: blnApprove, // Check pk_statusID in the orderline 1 if statusID of imprint is "5,6,7,9,11,16" else 0
+          storeID: element.pk_storeID,
+          orderID: element.fk_orderID,
+          storeName: element.storeName,
+          firstName: element.firstName,
+          lastName: element.lastName,
+          email: element.email,
+          orderDate: element.orderDate,
+          inHandsDate: element.inHandsDate,
+          blnRespond: element.blnRespond,
+          companyName: element.companyName.replace(/'/g, "''"),
+          tblLocationName: element.tblLocationName,
+          methodName: element.methodName
         });
       }
     });
@@ -437,8 +460,9 @@ export class OrderDashboardComponent implements OnInit, OnDestroy {
     }
     this.isBulkLoader = true;
     let payload: updateOrderBulkStatusUpdate = {
-      status_id: this.status_id,
+      status_id: Number(this.status_id),
       orders: orders,
+      smartArtLoggedInUserName: this.smartArtUser.firstName + ' ' + this.smartArtUser.lastName,
       update_order_bulk_status: true
     }
     this._smartartService.UpdateSmartArtData(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {

@@ -173,14 +173,36 @@ interface Quote {
     imprint_id: number;
     cartLine_id: number;
 };
+
+
 export interface updateOrderBulkStatusUpdate {
     status_id: number;
     orders: Order[];
+    smartArtLoggedInUserName: string;
     update_order_bulk_status: boolean;
 };
+
 interface Order {
     imprint_id: number;
     ordeLine_id: number;
+    blnGroupRun: boolean;
+    fk_groupOrderID: number;
+    product_id: number;
+    productNumber: string;
+    productName: string;
+    blnApproved: boolean; // Check pk_statusID in the orderline 1 if statusID of imprint is "5,6,7,9,11,16" else 0
+    storeID: number;
+    orderID: number;
+    storeName: string;
+    firstName: string;
+    lastName: string;
+    email: string;
+    orderDate: string;
+    inHandsDate: string;
+    blnRespond: boolean;
+    companyName: string;
+    tblLocationName: string;
+    methodName: string;
 };
 
 export interface updateOrderProofContact {
