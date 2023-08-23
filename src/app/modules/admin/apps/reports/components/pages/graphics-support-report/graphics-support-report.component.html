@@ -106,7 +106,7 @@
                                     <td colspan="2">TOTAL</td>
                                     <td>{{employee.totalRevenue | currency}}</td>
                                     <td>{{employee.annual | currency}}</td>
-                                    <td>{{((item.totalRevenue/grandTotal.revenue) * 100).toFixed(2)}}</td>
+                                    <td>{{((employee.totalRevenue/grandTotal.revenue) * 100).toFixed(2)}}</td>
                                     <td>{{employee.uniqueImprints}}</td>
                                     <td>{{employee.proofSent}}</td>
                                     <td>{{employee.NumSales}}</td>
