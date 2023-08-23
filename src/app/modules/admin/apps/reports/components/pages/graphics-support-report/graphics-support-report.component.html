@@ -18,7 +18,7 @@
             </div>
         </div>
         <!-- Reports Data -->
-        <div class="row mt-5" *ngIf="!generateReportData">
+        <div class="row mt-5" *ngIf="generateReportData">
             <div class="col-12">
                 <div class="flex justify-between">
                     <div>
@@ -43,12 +43,12 @@
             </div>
             <div class="col-12">
                 <div class="overflow-x-auto">
-                    <table class="table table-striped">
+                    <table class="table table-striped table-hover">
                         <thead>
                             <th>Employee</th>
                             <th>Store</th>
                             <th>Revenue</th>
-                            <th>Anuual Equiv.</th>
+                            <th>Annual Equiv.</th>
                             <th>% of business</th>
                             <th>
                                 <div class="flex text-align-center">
@@ -87,7 +87,47 @@
                                 </div>
                             </th>
                         </thead>
-                        <tbody></tbody>
+                        <tbody>
+                            <ng-container *ngFor="let employee of generateReportData;">
+                                <tr *ngFor="let data of employee.detailsData">
+                                    <td>{{employee.employeeName}}</td>
+                                    <td>{{data.storeName}}</td>
+                                    <td>{{data.revenue | currency}}</td>
+                                    <td>{{data.annual | currency}}</td>
+                                    <td>{{((data.revenue/grandTotal.revenue) * 100).toFixed(2)}}</td>
+                                    <td>{{data.ui}}</td>
+                                    <td>{{data.ps}}</td>
+                                    <td>{{data.ns}}</td>
+                                    <td>{{data.ir}}</td>
+                                    <td>{{data.coi}}</td>
+                                    <td>{{data.tt}}</td>
+                                </tr>
+                                <tr class="font-bold">
+                                    <td colspan="2">TOTAL</td>
+                                    <td>{{employee.totalRevenue | currency}}</td>
+                                    <td>{{employee.annual | currency}}</td>
+                                    <td>{{((item.totalRevenue/grandTotal.revenue) * 100).toFixed(2)}}</td>
+                                    <td>{{employee.uniqueImprints}}</td>
+                                    <td>{{employee.proofSent}}</td>
+                                    <td>{{employee.NumSales}}</td>
+                                    <td>{{employee.ir}}</td>
+                                    <td>{{employee.coi}}</td>
+                                    <td>{{employee.totalTime}}</td>
+                                </tr>
+                            </ng-container>
+                            <tr class="font-bold">
+                                <td colspan="2">GRAND TOTAL</td>
+                                <td>{{grandTotal.revenue | currency}}</td>
+                                <td>{{grandTotal.annual | currency}}</td>
+                                <td></td>
+                                <td>{{grandTotal.ui}}</td>
+                                <td>{{grandTotal.ps}}</td>
+                                <td>{{grandTotal.ns}}</td>
+                                <td>{{grandTotal.ir}}</td>
+                                <td>{{grandTotal.coi}}</td>
+                                <td>{{grandTotal.tt}}</td>
+                            </tr>
+                        </tbody>
                     </table>
                 </div>
             </div>
@@ -101,7 +141,7 @@
                     </div>
                 </div>
                 <div class="overflow-x-auto">
-                    <table class="table table-striped">
+                    <table class="table table-striped table-hover">
                         <thead>
                             <th>Employee</th>
                             <th>Total Revenue</th>
@@ -109,9 +149,19 @@
                             <th>% of Imprints</th>
                             <th>Unique Imprints</th>
                             <th>Proof Sent</th>
-                            <th>Tota Time</th>
+                            <th>Total Time</th>
                         </thead>
-                        <tbody></tbody>
+                        <tbody>
+                            <tr *ngFor="let item of generateReportData">
+                                <td>{{item.employeeName}}</td>
+                                <td>{{item.totalRevenue | currency}}</td>
+                                <td>{{((item.totalRevenue/totalRevenue) * 100).toFixed(2)}}%</td>
+                                <td>{{((item.uniqueImprints/totalImprints) * 100).toFixed(2)}}%</td>
+                                <td>{{item.uniqueImprints}}</td>
+                                <td>{{item.proofSent}}</td>
+                                <td>{{item.totalTime}}</td>
+                            </tr>
+                        </tbody>
                     </table>
                 </div>
             </div>

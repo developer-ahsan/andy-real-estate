@@ -26,8 +26,7 @@ export class ReportVendorRelationsComponent implements OnInit, OnDestroy {
   vendorRelation = 1;
   isGenerateReportLoader: boolean;
 
-  isSearching: boolean = false;
-  keyword = '';
+  sortOrder: boolean = true;
   constructor(
     private _changeDetectorRef: ChangeDetectorRef,
     private _reportService: ReportsService
@@ -36,48 +35,32 @@ export class ReportVendorRelationsComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
   };
   // Reports
-  generateReport(page) {
-    if (page == 1) {
-      this.reportPage = 1;
-      if (this.generateReportData) {
-        this.paginator.pageIndex = 0;
-      }
-      if (this.keyword == '') {
-        this.generateReportData = null;
-      }
-      if (this.keyword != '') {
-        this.isSearching = true;
-        this._changeDetectorRef.markForCheck();
-      }
-    }
-    if (this.keyword == '') {
-      this.isGenerateReportLoader = true;
-    }
+  generateReport() {
+    this.isGenerateReportLoader = true;
     let params = {
-      page: page,
       vendor_relations: true,
       relation: this.vendorRelation,
-      keyword: this.keyword,
-      size: 20
     }
-    this._reportService.getAPIData(params).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
-      if (res["data"].length > 0) {
-        this.generateReportData = res["data"];
-        this.totalData = res["totalRecords"];
-        if (this.keyword == '') {
-          this.tempgenerateReportData = res["data"];
-          this.temptotalData = res["totalRecords"];
-        }
+    this._reportService.getAPIData(params).pipe(takeUntil(this._unsubscribeAll)).subscribe((res: any) => {
+      const { data } = res;
+
+      if (data.length && data[0].vendorRelations) {
+        const vendors = data[0].vendorRelations.split(',,');
+        this.generateReportData = vendors.map(vendor => {
+          const [companyName, pk_companyID, vendorRelation, productsCount] = vendor.split('::');
+          return {
+            pk_companyID: Number(pk_companyID),
+            companyName,
+            vendorRelation: Number(vendorRelation),
+            productsCount: Number(productsCount)
+          };
+        });
       } else {
-        this.generateReportData = null;
-        this.tempgenerateReportData = null;
         this._reportService.snackBar('No records found');
       }
-      this.isSearching = false;
       this.isGenerateReportLoader = false;
       this._changeDetectorRef.markForCheck();
     }, err => {
-      this.isSearching = false;
       this.isGenerateReportLoader = false;
       this._changeDetectorRef.markForCheck();
     });
@@ -86,23 +69,15 @@ export class ReportVendorRelationsComponent implements OnInit, OnDestroy {
     this.generateReportData = null;
     this._changeDetectorRef.markForCheck();
   }
-  getNextReportData(event) {
-    const { previousPageIndex, pageIndex } = event;
-    if (pageIndex > previousPageIndex) {
-      this.reportPage++;
-    } else {
-      this.reportPage--;
-    };
-    this.generateReport(this.reportPage);
-  };
-  resetSearch() {
-    this._reportService.Stores$.pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
-      this.reportPage = 1;
-      this.keyword = '';
-      this.paginator.pageIndex = 0;
-      this.generateReportData = this.tempgenerateReportData;
-      this.totalData = this.temptotalData;
+  sortVendors() {
+    this.generateReportData.sort((a, b) => {
+      if (this.sortOrder) {
+        return a.companyName.localeCompare(b.companyName);
+      } else {
+        return b.companyName.localeCompare(a.companyName);
+      }
     });
+    this.sortOrder = !this.sortOrder; // Toggle the sorting order for the next click
   }
   /**
      * On destroy
