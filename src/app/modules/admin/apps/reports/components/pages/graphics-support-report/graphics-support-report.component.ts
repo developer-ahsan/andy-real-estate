@@ -1,12 +1,12 @@
-import { ENTER, COMMA } from '@angular/cdk/keycodes';
-import { Component, Input, OnInit, Output, EventEmitter, ChangeDetectorRef, OnDestroy, ViewChild } from '@angular/core';
-import { MatChipInputEvent } from '@angular/material/chips';
+import { Component, Input, OnInit, Output, EventEmitter, ChangeDetectorRef, OnDestroy, ViewChild, ElementRef } from '@angular/core';
 import { MatPaginator } from '@angular/material/paginator';
 import { Subject } from 'rxjs';
 import { finalize, takeUntil } from 'rxjs/operators';
 import { ReportsService } from '../../reports.service';
-import { AddColor, AddImprintColor, DeleteColor, DeleteImprintColor, UpdateColor, UpdateImprintColor } from '../../reports.types';
+import * as pdfMake from "pdfmake/build/pdfmake";
+import * as pdfFonts from "pdfmake/build/vfs_fonts";
 
+pdfMake.vfs = pdfFonts.pdfMake.vfs;
 @Component({
   selector: 'app-graphics-support-report',
   templateUrl: './graphics-support-report.component.html',
@@ -17,39 +17,46 @@ export class GraphicsSupportReportComponent implements OnInit, OnDestroy {
   @Input() isLoading: boolean;
   @Output() isLoadingChange = new EventEmitter<boolean>();
   private _unsubscribeAll: Subject<any> = new Subject<any>();
-
-  dataSource = [];
-  tempDataSource = [];
-  displayedColumns: string[] = ['name', 'rgb', 'action'];
-  totalUsers = 0;
-  tempRecords = 0;
-  page = 1;
-
-  mainScreen: string = 'Current Colors';
-  keyword = '';
-  not_available = 'N/A';
-
-
-  isSearching: boolean = false;
-
-  // AddColor
-  ngName: string = '';
-  ngRGB: string = '#000000';
-  isAddColorLoader: boolean = false;
-
-  // Update Color
-  isUpdateColorLoader: boolean = false;
-  isUpdateColors: boolean = false;
-  updateColorData: any;
-  ngRGBUpdate = '';
+  @ViewChild('topScrollAnchor') topScroll: ElementRef;
+  @ViewChild('summaryScrollAnchor') summaryScrollAnchor: ElementRef;
+  generateReportData: any;
+  isGenerateReportLoader: boolean = false;
+  isPdfLoader: boolean = false;
   constructor(
     private _changeDetectorRef: ChangeDetectorRef,
-    private _ReportsService: ReportsService
+    private _reportService: ReportsService
   ) { }
 
   ngOnInit(): void {
   };
 
+  generateReport() {
+    this.isGenerateReportLoader = true;
+    let params = {
+      employee_sales_report: true,
+    }
+    this._reportService.getAPIData(params).pipe(takeUntil(this._unsubscribeAll), finalize(() => {
+      this.isGenerateReportLoader = false;
+      this._changeDetectorRef.markForCheck();
+    })).subscribe(res => {
+      console.log(res);
+    }, err => { });
+  }
+  backToList() {
+    this.generateReportData = null;
+    this._changeDetectorRef.markForCheck();
+  }
+  goToSummary() {
+    setTimeout(() => {
+      this.summaryScrollAnchor.nativeElement.scrollIntoView({ behavior: 'smooth' });
+    }, 100);
+  }
+  backtoTop() {
+    setTimeout(() => {
+      this.topScroll.nativeElement.scrollIntoView({ behavior: 'smooth' });
+    }, 100);
+  }
+  generatePdf() { }
   ngOnDestroy(): void {
     // Unsubscribe from all subscriptions
     this._unsubscribeAll.next();
