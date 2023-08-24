@@ -9,6 +9,7 @@ import { MatChipInputEvent } from '@angular/material/chips';
 import { ENTER, COMMA } from '@angular/cdk/keycodes';
 import { vendorComment } from '../../reports.types';
 import moment from 'moment';
+import { DashboardsService } from 'app/modules/admin/dashboards/dashboard.service';
 
 @Component({
   selector: 'app-report-incident-report',
@@ -56,6 +57,7 @@ export class ReportIncidentComponent implements OnInit, OnDestroy {
 
   constructor(
     private _changeDetectorRef: ChangeDetectorRef,
+    private commonService: DashboardsService,
     private _reportService: ReportsService
   ) { }
 
@@ -69,49 +71,14 @@ export class ReportIncidentComponent implements OnInit, OnDestroy {
     this.getIncidentReportData(1);
   };
   getStores() {
-    this._reportService.Stores$.pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
-      this.allStores.push({ storeName: 'All Stores', pk_storeID: '' });
-      this.allStores = this.allStores.concat(res["data"]);
-      this.selectedStores = this.allStores[0];
-      this.searchStoresCtrl.setValue(this.selectedStores);
-    }, err => {
-      this.isLoading = false;
-      this._changeDetectorRef.markForCheck();
-    });
-    let params;
-    this.searchStoresCtrl.valueChanges.pipe(
-      filter((res: any) => {
-        params = {
-          stores: true,
-          keyword: res
-        }
-        return res !== null && res.length >= 2
-      }),
-      distinctUntilChanged(),
-      debounceTime(300),
-      tap(() => {
-        this.allStores = [];
-        this.isSearchingStores = true;
-        this._changeDetectorRef.markForCheck();
-      }),
-      switchMap(value => this._reportService.getAPIData(params)
-        .pipe(
-          finalize(() => {
-            this.isSearchingStores = false
-            this._changeDetectorRef.markForCheck();
-          }),
-        )
-      )
-    ).subscribe((data: any) => {
-      this.allStores.push({ storeName: 'All Stores', pk_storeID: '' });
-      this.allStores = this.allStores.concat(data["data"]);
-    });
-  }
-  onSelectedStores(ev) {
-    this.selectedStores = ev.option.value;
-  }
-  displayWithStores(value: any) {
-    return value?.storeName;
+    this.commonService.storesData$
+      .pipe(takeUntil(this._unsubscribeAll))
+      .subscribe(res => {
+        const activeStores = res["data"].filter(element => element.blnActive);
+        this.allStores.push({ storeName: 'All Stores', pk_storeID: '' });
+        this.allStores.push(...activeStores);
+        this.selectedStores = this.allStores[0];
+      });
   }
   // Employees
   getEmployees() {
@@ -209,54 +176,14 @@ export class ReportIncidentComponent implements OnInit, OnDestroy {
   }
   // Suppliers
   getSuppliers() {
-    let param = {
-      suppliers: true,
-      size: 10
-    }
-    this._reportService.getAPIData(param).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
-      this.allSuppliers.push({ pk_companyID: '', companyName: 'All Suppliers' });
-      this.allSuppliers = this.allSuppliers.concat(res["data"]);
-      this.selectedSuppliers = this.allSuppliers[0];
-      this.searchSuppliersCtrl.setValue(this.selectedSuppliers);
-      this.isLoading = false;
-      this._changeDetectorRef.markForCheck();
-    }, err => {
-      this.isLoading = false;
-      this._changeDetectorRef.markForCheck();
-    });
-    let params;
-    this.searchSuppliersCtrl.valueChanges.pipe(
-      filter((res: any) => {
-        params = {
-          suppliers: true,
-          keyword: res
-        }
-        return res !== null && res.length >= 2
-      }),
-      distinctUntilChanged(),
-      debounceTime(300),
-      tap(() => {
-        this.allSuppliers = [];
-        this.isSearchingSuppliers = true;
-        this._changeDetectorRef.markForCheck();
-      }),
-      switchMap(value => this._reportService.getAPIData(params)
-        .pipe(
-          finalize(() => {
-            this.isSearchingSuppliers = false
-            this._changeDetectorRef.markForCheck();
-          }),
-        )
-      )
-    ).subscribe((data: any) => {
-      this.allSuppliers = data['data'];
-    });
-  }
-  onSelectedSuppliers(ev) {
-    this.selectedSuppliers = ev.option.value;
-  }
-  displayWithSuppliers(value: any) {
-    return value?.companyName;
+    this.commonService.suppliersData$
+      .pipe(takeUntil(this._unsubscribeAll))
+      .subscribe(suppliers => {
+        const activeSuppliers = suppliers["data"].filter(element => element.blnActiveVendor);
+        this.allSuppliers.push({ pk_companyID: '', companyName: 'All Suppliers' });
+        this.allSuppliers.push(...activeSuppliers);
+        this.selectedSuppliers = this.allSuppliers[0];
+      });
   }
 
   getIncidentReportData(page) {
@@ -273,14 +200,24 @@ export class ReportIncidentComponent implements OnInit, OnDestroy {
     if (!this.selectedSuppliers) {
       this.selectedSuppliers = { pk_companyID: '' };
     }
+    let start_date = '';
+    let end_date = '';
+    if (this.ngRangeStart) {
+      start_date = moment(this.ngRangeStart).format('MM/DD/yyyy');
+    }
+    if (this.ngRangeEnd) {
+      end_date = moment(this.ngRangeEnd).format('MM/DD/yyyy');
+    }
     let params = {
       incident_reports: true,
       store_list: this.selectedStores.pk_storeID,
       supplier_list: this.selectedSuppliers.pk_companyID,
       source_employee_list: this.selectedEmployeesSource.pk_userID,
       submittedBy_employee_list: this.selectedEmployees.pk_userID,
-      startDate: moment(this.ngRangeStart).format('MM/DD/yyyy'),
-      endDate: moment(this.ngRangeEnd).format('MM/DD/yyyy'),
+      startDate: start_date,
+      endDate: end_date,
+      size: 20,
+      page: page
     }
     this._reportService.getAPIData(params).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
       this.dataSource = res["data"];
