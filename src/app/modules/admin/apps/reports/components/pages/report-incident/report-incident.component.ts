@@ -1,15 +1,12 @@
-import { Component, Input, OnInit, Output, EventEmitter, ChangeDetectorRef, OnDestroy, ViewChild } from '@angular/core';
+import { Component, OnInit, Output, EventEmitter, ChangeDetectorRef, OnDestroy, ViewChild } from '@angular/core';
 import { MatPaginator } from '@angular/material/paginator';
 import { Subject } from 'rxjs';
 import { debounceTime, distinctUntilChanged, filter, finalize, switchMap, takeUntil, tap } from 'rxjs/operators';
 import { ReportsService } from '../../reports.service';
 import { FormControl } from '@angular/forms';
-import { AuthService } from 'app/core/auth/auth.service';
-import { MatChipInputEvent } from '@angular/material/chips';
-import { ENTER, COMMA } from '@angular/cdk/keycodes';
-import { vendorComment } from '../../reports.types';
 import moment from 'moment';
 import { DashboardsService } from 'app/modules/admin/dashboards/dashboard.service';
+import * as Excel from 'exceljs/dist/exceljs.min.js';
 
 @Component({
   selector: 'app-report-incident-report',
@@ -54,6 +51,7 @@ export class ReportIncidentComponent implements OnInit, OnDestroy {
   ngRangeEnd: any;
 
   isIncidentReportLoader: boolean = false;
+  isExcelLoader: boolean = false;
 
   constructor(
     private _changeDetectorRef: ChangeDetectorRef,
@@ -187,12 +185,8 @@ export class ReportIncidentComponent implements OnInit, OnDestroy {
   }
 
   getIncidentReportData(page) {
-    if (page == 1) {
-      if (this.dataSource.length > 0) {
-        this.paginator.pageIndex = 0;
-      }
-      this.isIncidentReportLoader = true;
-    }
+    this.dataSource = [];
+    this.isIncidentReportLoader = true;
     if (!this.selectedEmployees) {
       this.selectedEmployees = { pk_userID: '' };
       this.selectedEmployeesSource = { pk_userID: '' };
@@ -238,6 +232,73 @@ export class ReportIncidentComponent implements OnInit, OnDestroy {
     };
     this.getIncidentReportData(this.page);
   };
+  // Genereate Excel Sheet
+  downloadExcelWorkSheet() {
+    this.isExcelLoader = true;
+    // Define filename with the current date-time format
+    const fileName = `IncidentReport_${moment().format('MM-DD-yy-hh-mm-ss')}`;
+    const workbook = new Excel.Workbook();
+    const worksheet = workbook.addWorksheet("Items");
+
+    // Basic columns
+    let columns = [
+      { header: "PK_INCIDENTREPORTID", key: "pk_incidentReportID", width: 10 },
+      { header: "FK_STOREID", key: "FK_STOREID", width: 30 },
+      { header: "FK_ORDERID", key: "fk_orderID", width: 30 },
+      { header: "DATE", key: "date", width: 30 },
+      { header: "FK_STOREUSERID", key: "FK_STOREUSERID", width: 30 },
+      { header: "PRIORITY1", key: "priority1", width: 20 },
+      { header: "PRIORITY2", key: "priority2", width: 20 },
+      { header: "PRIORITY3", key: "priority3", width: 20 },
+      { header: "PRIORITY4", key: "priority4", width: 20 },
+      { header: "EXPLANATION", key: "EXPLANATION", width: 80 },
+      { header: "RECOMMEND", key: "RECOMMENDED", width: 20 },
+      { header: "FK_COMPANYID", key: "fk_companyID", width: 20 },
+      { header: "FK_ADMINUSERID", key: "fk_adminUserID", width: 20 },
+      { header: "FK_SOURCEADMINUSERID", key: "fk_sourceAdminUserID", width: 20 },
+      { header: "DATEMODIFIED", key: "dateModified", width: 20 },
+      { header: "BLNFINALIZED", key: "BLNFINALIZED", width: 20 },
+      { header: "STORENAME", key: "storeName", width: 20 },
+      { header: "STORECODE", key: "storeCode", width: 20 },
+      { header: "STOREUSERFIRSTNAME", key: "STOREUSERFIRSTNAME", width: 20 },
+      { header: "STOREUSERLASTNAME", key: "STOREUSERLASTNAME", width: 20 },
+      { header: "STOREUSERCOMPANYNAME", key: "STOREUSERCOMPANYNAME", width: 20 }
+    ];
+
+    worksheet.columns = columns;
+
+    // Format and add data to the worksheet
+    for (const obj of this.dataSource) {
+      obj.DATE = moment(obj.DATE).format('yyyy-MM-DD');
+      obj.DATEMODIFIED = moment(obj.DATEMODIFIED).format('yyyy-MM-DD');
+      const row = worksheet.addRow(obj);
+      row.eachCell(cell => {
+        cell.alignment = { horizontal: 'left' };
+      });
+    }
+
+    // Save the worksheet to a file after a short delay
+    setTimeout(() => {
+      workbook.xlsx.writeBuffer().then((data: any) => {
+        const blob = new Blob([data], {
+          type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+        });
+        let url = window.URL.createObjectURL(blob);
+        let a = document.createElement("a");
+        document.body.appendChild(a);
+        a.style.display = 'none';
+        a.href = url;
+        a.download = `${fileName}.xlsx`;
+        a.click();
+        window.URL.revokeObjectURL(url);
+        a.remove();
+        this.isExcelLoader = false;
+        this._changeDetectorRef.markForCheck();
+      });
+    }, 500);
+
+
+  }
   /**
      * On destroy
      */

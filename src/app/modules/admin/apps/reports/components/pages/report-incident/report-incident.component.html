@@ -70,8 +70,15 @@
                     </mat-select>
                 </mat-form-field>
             </div>
-            <div class="col-12 text-right">
-                <button mat-flat-button class="min-w-60" [color]="'primary'" [disabled]="isIncidentReportLoader"
+            <div class="col-12 flex justify-end">
+                <button mat-flat-button class="min-w-40 mr-1" [color]="'primary'"
+                    [disabled]="isExcelLoader || isIncidentReportLoader" (click)="downloadExcelWorkSheet()">
+                    <mat-icon *ngIf="!isExcelLoader" svgIcon="mat_outline:file_download"></mat-icon>
+                    <span *ngIf="!isExcelLoader">Download Excel</span>
+                    <mat-progress-spinner *ngIf="isExcelLoader" [diameter]="24" [mode]="'indeterminate'">
+                    </mat-progress-spinner>
+                </button>
+                <button mat-flat-button class="min-w-40" [color]="'primary'" [disabled]="isIncidentReportLoader"
                     (click)="getIncidentReportData(1)">
                     <span>Filter</span>
                 </button>
@@ -85,92 +92,56 @@
         </div>
     </div>
     <div *ngIf="dataSource.length > 0 && !isIncidentReportLoader;else other_content" class="w-full mt-2">
-        <table mat-table [dataSource]="dataSource" class="w-full border-t">
-            <ng-container matColumnDef="id">
-                <th mat-header-cell *matHeaderCellDef class="">
-                    ID
-                </th>
-                <td mat-cell *matCellDef="let element">
-                    <a [routerLink]="['/apps/orders',element.fk_orderID]" target="_blank"
-                        class="text-blue-600">{{element?.fk_orderID}}</a>
-                </td>
-            </ng-container>
-            <ng-container matColumnDef="created">
-                <th mat-header-cell *matHeaderCellDef class="">
-                    Created
-                </th>
-                <td mat-cell *matCellDef="let element">
-                    {{element?.date | date: 'MM-dd-yyyy'}}
-                </td>
-            </ng-container>
-            <ng-container matColumnDef="modified">
-                <th mat-header-cell *matHeaderCellDef class="">
-                    Modified
-                </th>
-                <td mat-cell *matCellDef="let element">
-                    {{element?.dateModified | date: 'MM-dd-yyyy @ hh-mm a'}}
-                </td>
-            </ng-container>
-            <ng-container matColumnDef="submitted">
-                <th mat-header-cell *matHeaderCellDef class="">
-                    Submitted
-                </th>
-                <td mat-cell *matCellDef="let element">
-                    {{element?.submittedBy}}
-                </td>
-            </ng-container>
-            <ng-container matColumnDef="store">
-                <th mat-header-cell *matHeaderCellDef class="">
-                    Store
-                </th>
-                <td mat-cell *matCellDef="let element">
-                    {{element?.storeName}}
-                </td>
-            </ng-container>
-            <ng-container matColumnDef="cost">
-                <th mat-header-cell *matHeaderCellDef class="">
-                    Cost
-                </th>
-                <td mat-cell *matCellDef="let element">
-                    {{element?.rerunCost}}
-                </td>
-            </ng-container>
-            <ng-container matColumnDef="source">
-                <th mat-header-cell *matHeaderCellDef class="">
-                    Source(s)
-                </th>
-                <td mat-cell *matCellDef="let element">
-                    {{element?.sourceNames}}
-                </td>
-            </ng-container>
-            <ng-container matColumnDef="entities">
-                <th mat-header-cell *matHeaderCellDef class="">
-                    Source Entities
-                </th>
-                <td mat-cell *matCellDef="let element">
-                    {{element?.sourceEntity}}
-                </td>
-            </ng-container>
-            <ng-container matColumnDef="action">
-                <th mat-header-cell *matHeaderCellDef class="">
-                    Action
-                </th>
-                <td mat-cell *matCellDef="let element">
-                    <a class="text-blue-600" [routerLink]="['/apps/orders',element.fk_orderID,'incident-reports']"
-                        target="_blank">
-                        <span class="cursor-pointer">View</span>
-                    </a>
-                </td>
-            </ng-container>
-            <tr mat-header-row *matHeaderRowDef="displayedColumns;" class="h-18 bg-light"></tr>
-            <tr mat-row *matRowDef="let row; columns: displayedColumns;"
-                class="h-14 hover:bg-gray-100 dark:hover:bg-hover" style="cursor: pointer;">
-            </tr>
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <td>ID</td>
+                    <td>Created</td>
+                    <td>Modified</td>
+                    <td>Submitted</td>
+                    <td>Store</td>
+                    <td>Cost</td>
+                    <td>Source(s)</td>
+                    <td>Source Entities</td>
+                    <td>Action</td>
+                </tr>
+            </thead>
+            <tbody>
+                <tr *ngFor="let item of dataSource">
+                    <td>
+                        <a [routerLink]="['/apps/orders',item.fk_orderID]" target="_blank"
+                            class="text-blue-600">{{item?.fk_orderID}}</a>
+                    </td>
+                    <td>
+                        {{item?.date | date: 'MM-dd-yyyy'}}
+                    </td>
+                    <td>
+                        {{item?.dateModified | date: 'MM-dd-yyyy @ hh-mm a'}}
+                    </td>
+                    <td>
+                        {{item?.submittedBy}}
+                    </td>
+                    <td>
+                        {{item?.storeName}}
+                    </td>
+                    <td>
+                        {{item?.rerunCost}}
+                    </td>
+                    <td>
+                        {{item?.sourceNames}}
+                    </td>
+                    <td>
+                        {{item?.sourceEntity}}
+                    </td>
+                    <td>
+                        <a class="text-blue-600" [routerLink]="['/apps/orders',item.fk_orderID,'incident-reports']"
+                            target="_blank">
+                            <span class="cursor-pointer">View</span>
+                        </a>
+                    </td>
+                </tr>
+            </tbody>
         </table>
-        <mat-paginator #paginator class="border-b sm:border-t sm:border-b-0 z-10 bg-gray-50 dark:bg-transparent"
-            [ngClass]="{'pointer-events-none': isLoading}" [length]="totalData" [pageIndex]="0" [pageSize]="20"
-            (page)="getNextPageData($event)" [hidePageSize]="true">
-        </mat-paginator>
     </div>
     <ng-template #other_content>
         <div class="text-secondary font-semibold p-5 text-center" *ngIf="!isIncidentReportLoader">

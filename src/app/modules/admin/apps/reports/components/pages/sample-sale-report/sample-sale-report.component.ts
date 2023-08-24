@@ -84,7 +84,10 @@ export class ReportSampleSaleComponent implements OnInit, OnDestroy {
             details = element.DETAILS.split(',,');
             details.forEach(prod => {
               let data = prod.split('===');
-              let sattusData;
+              let sattusData = {
+                statusColor: '',
+                statusValue: ''
+              };
               if (data[6] == 1) {
                 sattusData.statusColor = 'text-red-700';
                 sattusData.statusValue = 'Cancelled';
@@ -127,6 +130,7 @@ export class ReportSampleSaleComponent implements OnInit, OnDestroy {
       this._changeDetectorRef.markForCheck();
     });
   }
+
   backToList() {
     this.generateReportData = null;
     this._changeDetectorRef.markForCheck();
