@@ -84,7 +84,16 @@ export class ReportSampleSaleComponent implements OnInit, OnDestroy {
             details = element.DETAILS.split(',,');
             details.forEach(prod => {
               let data = prod.split('===');
-              let sattusData = this._reportService.getStatusValue(data[4]);
+              let sattusData;
+              if (data[6] == 1) {
+                sattusData.statusColor = 'text-red-700';
+                sattusData.statusValue = 'Cancelled';
+              } else if (data[7] == 1) {
+                sattusData.statusColor = 'text-red-700';
+                sattusData.statusValue = 'Closed';
+              } else {
+                sattusData = this._reportService.getStatusValue(data[4]);
+              }
               element.storeDetails.push({ date: data[0], id: data[1], company: data[2], paid: data[3], status: sattusData.statusValue, statusColor: sattusData.statusColor, sa: data[5] });
             });
           }

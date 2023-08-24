@@ -90,7 +90,7 @@ export class EmailBlastComponent implements OnInit, OnDestroy {
   mainScreen = 'blast';
   emailActivity: any = [];
   isActivityLoader: boolean = false;
-  displayedActivityColumns: string[] = ['status', 'subject', 'from_email', 'to_email', 'opens', 'clicks'];
+  displayedActivityColumns: string[] = ['last_event_time', 'status', 'subject', 'from_email', 'to_email', 'opens', 'clicks'];
   @ViewChild('chipList', { static: false }) chipList: ElementRef<HTMLInputElement>;
 
   ngEmailOptIn: boolean = false;
@@ -337,7 +337,6 @@ export class EmailBlastComponent implements OnInit, OnDestroy {
     this._fileManagerService.getStoresData(params)
       .pipe(takeUntil(this._unsubscribeAll))
       .subscribe(res => {
-        console.log(res);
         this.optInData = res["data"][0];
         let optInEmails = this.optInData.optInEmails;
         if (optInEmails) {

@@ -13,13 +13,13 @@ export class QuotesComponent implements OnInit, OnDestroy {
   isLoading: boolean = false;
   private _unsubscribeAll: Subject<any> = new Subject<any>();
 
-  displayedColumns: string[] = ['position', 'name', 'weight', 'symbol'];
+  displayedColumns: string[] = ['id', 'created', 'modified', 'ihd', 'store', 'total', 'action'];
   dataSource = [];
   quotesLength = 0;
 
   pageSize = 10;
   pageSizeOptions: number[] = [5, 10, 25, 100];
-
+  page = 1;
   constructor(
     private _customerService: CustomersService,
     private _changeDetectorRef: ChangeDetectorRef
@@ -27,9 +27,9 @@ export class QuotesComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.isLoading = true;
-    this.getCustomer();
+    this.getQuotes(1);
   }
-  getCustomer() {
+  getQuotes(page) {
     this._customerService.customer$
       .pipe(takeUntil(this._unsubscribeAll))
       .subscribe((response) => {
@@ -37,12 +37,15 @@ export class QuotesComponent implements OnInit, OnDestroy {
         let params = {
           cart: true,
           user_id: this.selectedCustomer.pk_userID,
-          bln_quote: 1
+          bln_quote: 1,
+          size: 20,
+          page: page
         }
         this._customerService.GetApiData(params).pipe(takeUntil(this._unsubscribeAll), finalize(() => {
           this.isLoading = false;
           this._changeDetectorRef.markForCheck();
         })).subscribe(quotes => {
+          console.log(quotes)
           this.dataSource = quotes["data"];
           this.quotesLength = quotes["totalRecords"];
         }, err => {
@@ -51,6 +54,16 @@ export class QuotesComponent implements OnInit, OnDestroy {
         })
       });
   }
+  getNextData(event) {
+    const { previousPageIndex, pageIndex } = event;
+
+    if (pageIndex > previousPageIndex) {
+      this.page++;
+    } else {
+      this.page--;
+    };
+    this.getQuotes(this.page);
+  };
   ngOnDestroy(): void {
     // Unsubscribe from all subscriptions
     this._unsubscribeAll.next();

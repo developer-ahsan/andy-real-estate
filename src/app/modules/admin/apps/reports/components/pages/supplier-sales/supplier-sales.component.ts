@@ -5,6 +5,7 @@ import { debounceTime, distinctUntilChanged, filter, finalize, switchMap, takeUn
 import { ReportsService } from '../../reports.service';
 import * as Excel from 'exceljs/dist/exceljs.min.js';
 import { FormControl } from '@angular/forms';
+import { DashboardsService } from 'app/modules/admin/dashboards/dashboard.service';
 
 @Component({
   selector: 'app-supplier-sales',
@@ -37,61 +38,21 @@ export class ReportsSupplierSalesComponent implements OnInit, OnDestroy {
 
   constructor(
     private _changeDetectorRef: ChangeDetectorRef,
-    private _reportService: ReportsService
+    private _reportService: ReportsService,
+    private commonService: DashboardsService
   ) { }
 
   ngOnInit(): void {
-    this.isLoading = true;
     this.getSuppliers();
   };
   getSuppliers() {
-    let param = {
-      suppliers: true,
-      size: 10
-    }
-    this._reportService.getAPIData(param).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
-      this.allSuppliers = this.allSuppliers.concat(res["data"]);
-      this.selectedSuppliers = this.allSuppliers[0];
-      this.searchSuppliersCtrl.setValue(this.selectedSuppliers);
-      this.isLoading = false;
-      this._changeDetectorRef.markForCheck();
-    }, err => {
-      this.isLoading = false;
-      this._changeDetectorRef.markForCheck();
-    });
-    let params;
-    this.searchSuppliersCtrl.valueChanges.pipe(
-      filter((res: any) => {
-        params = {
-          suppliers: true,
-          keyword: res
-        }
-        return res !== null && res.length >= 2
-      }),
-      distinctUntilChanged(),
-      debounceTime(300),
-      tap(() => {
-        this.allSuppliers = [];
-        this.isSearchingSuppliers = true;
-        this._changeDetectorRef.markForCheck();
-      }),
-      switchMap(value => this._reportService.getAPIData(params)
-        .pipe(
-          finalize(() => {
-            this.isSearchingSuppliers = false
-            this._changeDetectorRef.markForCheck();
-          }),
-        )
-      )
-    ).subscribe((data: any) => {
-      this.allSuppliers = data['data'];
-    });
-  }
-  onSelectedSuppliers(ev) {
-    this.selectedSuppliers = ev.option.value;
-  }
-  displayWithSuppliers(value: any) {
-    return value?.companyName;
+    this.commonService.suppliersData$
+      .pipe(takeUntil(this._unsubscribeAll))
+      .subscribe(suppliers => {
+        const activeSuppliers = suppliers["data"].filter(element => element.blnActiveVendor);
+        this.allSuppliers.push(...activeSuppliers);
+        this.selectedSuppliers = activeSuppliers[0];
+      });
   }
   // Reports
   generateReport(page) {
@@ -103,23 +64,14 @@ export class ReportsSupplierSalesComponent implements OnInit, OnDestroy {
       this.generateReportData = null;
     }
     this._reportService.setFiltersReport();
-    let selectedStores = [];
-    this.allSuppliers.forEach(element => {
-      if (element.isChecked) {
-        selectedStores.push(element.pk_storeID);
-      }
-    });
-    if (selectedStores.length == 0) {
-      this._reportService.snackBar('Please select at least 1 store');
-      return;
-    }
+
     this.isGenerateReportLoader = true;
     let params = {
       page: page,
       store_sales__report: true,
       start_date: this._reportService.startDate,
       end_date: this._reportService.endDate,
-      stores_list: selectedStores.toString(),
+      // stores_list: selectedStores.toString(),
       size: 20
     }
     this._reportService.getAPIData(params).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {

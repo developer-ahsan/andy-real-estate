@@ -25,7 +25,7 @@ export const searchRoutes: Route[] = [
                 component: SearchProductsComponents
             },
             {
-                path: 'orders',
+                path: 'orders/:value',
                 component: SearchOrdersComponents
             },
             {

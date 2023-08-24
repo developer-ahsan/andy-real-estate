@@ -53,10 +53,12 @@
         <button mat-icon-button (click)="toggleNavigation('mainNavigation')">
             <mat-icon [svgIcon]="'heroicons_outline:menu'"></mat-icon>
         </button>
+        <search [appearance]="'bar'"></search>
+
         <!-- Components -->
         <div class="flex items-center pl-2 ml-auto space-x-2">
-            <fuse-fullscreen></fuse-fullscreen>
-            <search [appearance]="'bar'"></search>
+            <!-- <fuse-fullscreen></fuse-fullscreen> -->
+            <!-- <search [appearance]="'bar'"></search> -->
             <!-- <shortcuts [shortcuts]="data.shortcuts"></shortcuts> -->
         </div>
     </div>

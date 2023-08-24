@@ -9,15 +9,11 @@
                             (click)="selectedUnSelected(false)">Unselect all</span>
                     </div>
                 </div>
-                <div class="row">
-                    <div class="col-6 col-md-4" *ngFor="let item of storesList">
-                        <mat-checkbox [(ngModel)]="item.isChecked">{{item.storeName}}</mat-checkbox>
-                    </div>
-                    <div class="col-12 flex justify-end mt-2" *ngIf="storesList.length < totalStores">
-                        <span class="cursor-pointer" (click)="getNextStoresList()" *ngIf="!storesLoader">Load
-                            More</span>
-                        <mat-progress-spinner *ngIf="storesLoader" [diameter]="24" [mode]="'indeterminate'">
-                        </mat-progress-spinner>
+                <div class="border p-3 my-2">
+                    <div class="row h-60 overflow-y-auto">
+                        <div class="col-6 col-md-4" *ngFor="let item of storesList">
+                            <mat-checkbox [(ngModel)]="item.isChecked">{{item.storeName}}</mat-checkbox>
+                        </div>
                     </div>
                 </div>
             </div>

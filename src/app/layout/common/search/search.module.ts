@@ -9,6 +9,7 @@ import { MatInputModule } from '@angular/material/input';
 import { SharedModule } from 'app/shared/shared.module';
 import { SearchComponent } from 'app/layout/common/search/search.component';
 import { MatSelectModule } from '@angular/material/select';
+import { FormsModule } from '@angular/forms';
 
 @NgModule({
     declarations: [
@@ -22,7 +23,8 @@ import { MatSelectModule } from '@angular/material/select';
         MatFormFieldModule,
         MatIconModule,
         MatInputModule,
-        SharedModule
+        SharedModule,
+        FormsModule
     ],
     exports: [
         SearchComponent

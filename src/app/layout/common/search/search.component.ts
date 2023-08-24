@@ -1,17 +1,11 @@
-import { Component, ElementRef, EventEmitter, HostBinding, Input, OnChanges, OnDestroy, OnInit, Output, Renderer2, SimpleChanges, ViewChild, ViewEncapsulation } from '@angular/core';
+import { Component, ElementRef, EventEmitter, HostBinding, Input, OnChanges, OnDestroy, OnInit, Output, SimpleChanges, ViewChild, ViewEncapsulation } from '@angular/core';
 import { FormControl } from '@angular/forms';
-import { HttpClient } from '@angular/common/http';
 import { Subject } from 'rxjs';
-import { debounceTime, filter, map, takeUntil } from 'rxjs/operators';
+import { takeUntil } from 'rxjs/operators';
 import { fuseAnimations } from '@fuse/animations/public-api';
-import { InventoryService } from 'app/modules/admin/apps/ecommerce/inventory/inventory.service';
 import { Router } from '@angular/router';
-import { VendorsService } from 'app/modules/admin/apps/vendors/components/vendors.service';
-import { FileManagerService } from 'app/modules/admin/apps/file-manager/store-manager.service';
-import { OrdersService } from 'app/modules/admin/apps/orders/orders-components/orders.service';
-import { SearchService } from 'app/modules/admin/apps/search-modules/search.service';
-import { CustomersService } from 'app/modules/admin/apps/customers/customers-components/orders.service';
 import { DashboardsService } from 'app/modules/admin/dashboards/dashboard.service';
+import { FuseNavigationService } from '@fuse/components/navigation';
 
 @Component({
     selector: 'search',
@@ -34,20 +28,14 @@ export class SearchComponent implements OnChanges, OnInit, OnDestroy {
     private _unsubscribeAll: Subject<any> = new Subject<any>();
     allStores: any = [];
     suppliers: any = [];
+    ngStore: any;
+    ngVendor: any;
 
     /**
      * Constructor
      */
     constructor(
-        private _elementRef: ElementRef,
-        private _httpClient: HttpClient,
-        private _renderer2: Renderer2,
-        private _searchService: SearchService,
-        private _productService: InventoryService,
-        private _customerService: CustomersService,
-        private _orderService: OrdersService,
-        private _storeService: FileManagerService,
-        private _vendorService: VendorsService,
+        private _fuseNavigationService: FuseNavigationService,
         private router: Router,
         private _commonService: DashboardsService
     ) {
@@ -99,8 +87,6 @@ export class SearchComponent implements OnChanges, OnInit, OnDestroy {
     ngOnChanges(changes: SimpleChanges): void {
         // Appearance
         if ('appearance' in changes) {
-            // To prevent any issues, close the
-            // search after changing the appearance
             this.close();
         }
     }
@@ -111,38 +97,6 @@ export class SearchComponent implements OnChanges, OnInit, OnDestroy {
     ngOnInit(): void {
         this.getAllStores();
         this.getAllVendors();
-        // // Subscribe to the search field value changes
-        // this.searchControl.valueChanges
-        //     .pipe(
-        //         debounceTime(this.debounce),
-        //         takeUntil(this._unsubscribeAll),
-        //         map((value) => {
-
-        //             // Set the search results to null if there is no value or
-        //             // the length of the value is smaller than the minLength
-        //             // so the autocomplete panel can be closed
-        //             if (!value || value.length < this.minLength) {
-        //                 this.results = null;
-        //             }
-
-        //             // Continue
-        //             return value;
-        //         }),
-        //         // Filter out undefined/null/false statements and also
-        //         // filter out the values that are smaller than minLength
-        //         filter(value => value && value.length >= this.minLength)
-        //     )
-        //     .subscribe((value) => {
-        //         this._httpClient.post('api/common/search', { query: value })
-        //             .subscribe((response: any) => {
-
-        //                 // Store the results
-        //                 this.results = response.results;
-
-        //                 // Execute the event
-        //                 this.search.next(this.results);
-        //             });
-        //     });
     }
     getAllStores() {
         this._commonService.storesData$.pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
@@ -160,53 +114,39 @@ export class SearchComponent implements OnChanges, OnInit, OnDestroy {
     }
     searchProduct(event) {
         const val = event.target.value;
-        // if (val != '') {
-        //     this._searchService.productKeyword = val;
-        //     // this._productService.productSearchFilter.term = val;
-        //     // this.router.navigateByUrl('/', { skipLocationChange: true }).then(() => {
-        //     //     this.router.navigate(['/apps/ecommerce/inventory'])
-        //     // });
-        //     // this.router.navigateByUrl('/apps/ecommerce/inventory', { skipLocationChange: true });
         this.router.navigateByUrl('/apps/search/products/' + val);
-        // }
-        this.close();
+        event.target.value = '';
     }
     searchQuote(event) {
         const val = event.target.value;
         this.router.navigateByUrl('/apps/search/quotes/' + val);
-        this.close();
+        event.target.value = '';
     }
     searchStore(event) {
         this.router.navigateByUrl(`/apps/stores/${event.value}`);
-        this.close();
+        setTimeout(() => {
+            this.ngStore = null;
+        }, 2000);
     }
     searchVendor(event) {
         this.router.navigateByUrl('/apps/vendors/' + event.value);
-        this.close();
+        setTimeout(() => {
+            this.ngVendor = null;
+        }, 2000);
     }
     searchCustomer(event) {
         const val = event.target.value;
         if (val != '') {
-            this._searchService.customerKeyword = val;
-            // this.router.navigateByUrl('/', { skipLocationChange: true }).then(() => {
-            //     this.router.navigate(['/apps/ecommerce/inventory'])
-            // });
             this.router.navigateByUrl('/apps/search/customers/' + val);
         }
-        this.close();
+        event.target.value = '';
     }
     searchOrder(event) {
         const val = event.target.value;
         if (val != '') {
-            // this._orderService._searchKeyword = val;
-            this._searchService.orderKeyword.next(val);
-            // this.router.navigateByUrl('/', { skipLocationChange: true }).then(() => {
-            //     this.router.navigate(['/apps/ecommerce/inventory'])
-            // });
-            // this.router.navigateByUrl('/apps/orders');
-            this.router.navigateByUrl('/apps/search/orders');
+            this.router.navigateByUrl('/apps/search/orders/' + val);
         }
-        this.close();
+        event.target.value = '';
     }
     /**
      * On destroy
@@ -267,5 +207,14 @@ export class SearchComponent implements OnChanges, OnInit, OnDestroy {
 
         // Close the search
         this.opened = false;
+    }
+    toggleNavigation(name: string): void {
+        // Get the navigation
+        const navigation = this._fuseNavigationService.getComponent(name);
+
+        if (navigation) {
+            // Toggle the opened status
+            navigation.toggle();
+        }
     }
 }

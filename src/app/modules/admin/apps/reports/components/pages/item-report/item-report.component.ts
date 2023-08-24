@@ -7,6 +7,7 @@ import * as Excel from 'exceljs/dist/exceljs.min.js';
 import { FormControl, FormGroup } from '@angular/forms';
 import { AddFOBLocation, RemoveFOBLocation } from '../../reports.types';
 import moment from 'moment';
+import { DashboardsService } from 'app/modules/admin/dashboards/dashboard.service';
 
 @Component({
   selector: 'app-item-report',
@@ -38,40 +39,20 @@ export class ReportItemsComponent implements OnInit, OnDestroy {
   ngSelectedColumns = ['setups', 'shipping', 'subtotal', 'paid', 'price', 'runs', 'zip', 'internalRoyalty'];
   constructor(
     private _changeDetectorRef: ChangeDetectorRef,
-    private _reportService: ReportsService
+    private _reportService: ReportsService,
+    private commonService: DashboardsService
   ) { }
 
   ngOnInit(): void {
     this.getStores();
   };
   getStores() {
-    this._reportService.Stores$.pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
-      res["data"].forEach(element => {
-        element.isChecked = true;
-        this.storesList.push(element);
+    this.commonService.storesData$
+      .pipe(takeUntil(this._unsubscribeAll))
+      .subscribe(res => {
+        const activeStores = res["data"].filter(element => element.blnActive);
+        this.storesList.push(...activeStores);
       });
-      this.totalStores = res["totalRecords"];
-    });
-  }
-  getNextStoresList() {
-    this.storesPage++;
-    let params = {
-      stores: true,
-      size: 20,
-      page: this.storesPage
-    }
-    this.storesLoader = true;
-    this._reportService.getAPIData(params).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
-      res["data"].forEach(element => {
-        element.isChecked = true;
-        this.storesList.push(element);
-      });
-      this.storesLoader = false;
-      this._changeDetectorRef.markForCheck();
-    }, err => {
-      this.storesLoader = false;
-      this._changeDetectorRef.markForCheck();
-    });
   }
   selectedUnSelected(check) {
     if (check) {
@@ -85,13 +66,7 @@ export class ReportItemsComponent implements OnInit, OnDestroy {
     }
   }
   generateReport(page) {
-    if (page == 1) {
-      this.reportPage = 1;
-      if (this.generateReportData) {
-        this.paginator.pageIndex = 0;
-      }
-      this.generateReportData = null;
-    }
+    this.generateReportData = null;
     this._reportService.setFiltersReport();
     let selectedStores = [];
     this.storesList.forEach(element => {
@@ -105,7 +80,6 @@ export class ReportItemsComponent implements OnInit, OnDestroy {
     }
     this.isGenerateReportLoader = true;
     let params = {
-      page: page,
       itemized_report: true,
       payment_status: this.paymentStatus,
       start_date: this._reportService.startDate,
@@ -128,85 +102,72 @@ export class ReportItemsComponent implements OnInit, OnDestroy {
     });
   }
   downloadExcelWorkSheet(data) {
-    const fileName = `ItemReport_${moment(new Date()).format('MM-DD-yy-hh-mm-ss')}`;
+    // Define filename with the current date-time format
+    const fileName = `ItemReport_${moment().format('MM-DD-yy-hh-mm-ss')}`;
     const workbook = new Excel.Workbook();
     const worksheet = workbook.addWorksheet("Items");
 
-    // Columns
+    // Basic columns
     let columns = [
-      { header: "ID", key: "ID", width: 30 },
-      { header: "Store", key: "storeName", width: 30 },
+      { header: "ID", key: "ID", width: 10 },
+      { header: "Store", key: "Store", width: 30 },
       { header: "InvoiceDate", key: "InvoiceDate", width: 30 },
-      { header: "Customer", key: "CUSTOMER", width: 30 },
-      { header: "Location", key: "Location", width: 30 },
+      { header: "Customer", key: "Customer", width: 30 },
+      { header: "Location", key: "LocationName", width: 30 },
       { header: "Item", key: "Item", width: 20 },
       { header: "Description", key: "Description", width: 60 },
-      { header: "Quantity", key: "Quantity", width: 20 },
-      { header: "ExtendedPrice", key: "ExtendedPrice", width: 20 }
-    ]
-    this.ngSelectedColumns.filter(item => {
-      if (item == 'price') {
-        columns.push(
-          { header: "Price", key: "UnitPrice", width: 20 },
-        )
-      }
-      if (item == 'setups') {
-        columns.push(
-          { header: "Setups", key: "setupPrice", width: 20 }
-        )
-      }
-      if (item == 'shipping') {
-        columns.push(
-          { header: "Shipping", key: "shippingPrice", width: 20 }
-        )
-      }
-      if (item == 'subtotal') {
-        columns.push(
-          { header: "Subtotal", key: "subTotal", width: 20 }
-        )
-      }
-      if (item == 'paid') {
-        columns.push(
-          { header: "Paid", key: "paymentDate", width: 30 }
-        )
-      }
+      { header: "Quantity", key: "Quantity", width: 10 },
+      { header: "ExtendedPrice", key: "ExentdedPrice", width: 20 }
+    ];
 
-      if (item == 'runs') {
-        columns.push(
-          { header: "Runs", key: "Runs", width: 20 }
-        )
-      }
+    // Column map for the dynamic columns
+    const columnMap = {
+      price: { header: "Price", key: "UnitPrice", width: 10 },
+      setups: { header: "Setups", key: "Setups", width: 10 },
+      shipping: { header: "Shipping", key: "Shipping", width: 10 },
+      subtotal: { header: "Subtotal", key: "Subtotal", width: 10 },
+      paid: { header: "Paid", key: "Paid", width: 10 },
+      runs: { header: "Runs", key: "Runs", width: 10 },
+      internalRoyalty: { header: "InternalRoyalty", key: "InternalRoyalty", width: 20 },
+      zip: { header: "BillingZip", key: "BillingZip", width: 20 }
+    };
 
-      if (item == 'internalRoyalty') {
-        columns.push(
-          { header: "InternalRoyalty", key: "InternalRoyalty", width: 20 }
-        )
-      }
-      if (item == 'zip') {
-        columns.push(
-          { header: "BillingZip", key: "billingZip", width: 20 }
-        )
+    // Push the selected columns based on the map
+    this.ngSelectedColumns.forEach(item => {
+      if (columnMap[item]) {
+        columns.push(columnMap[item]);
       }
     });
+
+    // Additional static columns
     columns.push(
       { header: "CustomerPO", key: "CustomerPO", width: 20 },
-      { header: "AccountChargeCode", key: "accountChargeCode", width: 20 },
-      { header: "CostCenterCode", key: "CostCenterCode", width: 20 }
+      { header: "AccountChargeCode", key: "AccountChargeCode", width: 20 },
+      { header: "CostCenterCode", key: "CostCenterCode", width: 20 },
+      { header: "GovMVMTContractNumber", key: "GovMVMTContractNumber", width: 20 }
     );
+
     worksheet.columns = columns;
+
+    // Format and add data to the worksheet
     for (const obj of data) {
-      worksheet.addRow(obj);
+      obj.InvoiceDate = moment(obj.InvoiceDate).format('yyyy-MM-DD');
+      const row = worksheet.addRow(obj);
+      row.eachCell(cell => {
+        cell.alignment = { horizontal: 'left' };
+      });
     }
+
+    // Save the worksheet to a file after a short delay
     setTimeout(() => {
       workbook.xlsx.writeBuffer().then((data: any) => {
         const blob = new Blob([data], {
-          type:
-            "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+          type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
         });
         let url = window.URL.createObjectURL(blob);
         let a = document.createElement("a");
         document.body.appendChild(a);
-        a.setAttribute("style", "display: none");
+        a.style.display = 'none';
         a.href = url;
         a.download = `${fileName}.xlsx`;
         a.click();
@@ -216,6 +177,7 @@ export class ReportItemsComponent implements OnInit, OnDestroy {
         this._changeDetectorRef.markForCheck();
       });
     }, 500);
+
 
   }
   /**

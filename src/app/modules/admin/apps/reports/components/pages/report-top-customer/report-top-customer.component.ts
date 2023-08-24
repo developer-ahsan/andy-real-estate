@@ -7,6 +7,7 @@ import { debounceTime, distinctUntilChanged, filter, finalize, switchMap, takeUn
 import { ReportsService } from '../../reports.service';
 import { AddColor, AddImprintColor, AddImprintMethod, DeleteColor, DeleteImprintColor, UpdateColor, UpdateImprintColor, UpdateImprintMethod, UpdateLocation } from '../../reports.types';
 import { FormControl } from '@angular/forms';
+import { DashboardsService } from 'app/modules/admin/dashboards/dashboard.service';
 
 @Component({
   selector: 'app-report-top-customer',
@@ -38,60 +39,23 @@ export class ReportTopCustomerComponent implements OnInit, OnDestroy {
 
   constructor(
     private _changeDetectorRef: ChangeDetectorRef,
-    private _reportService: ReportsService
+    private _reportService: ReportsService,
+    private commonService: DashboardsService
   ) { }
-
   ngOnInit(): void {
-    this.isLoading = true;
     this.getStores();
   };
   getStores() {
-    this._reportService.Stores$.pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
-      this.allStores.push({ storeName: 'All Stores', pk_storeID: '' });
-      this.allStores = this.allStores.concat(res["data"]);
-      this.selectedStores = this.allStores[0];
-      this.searchStoresCtrl.setValue(this.selectedStores);
-      this.isLoading = false;
-      this._changeDetectorRef.markForCheck();
-    }, err => {
-      this.isLoading = false;
-      this._changeDetectorRef.markForCheck();
-    });
-    let params;
-    this.searchStoresCtrl.valueChanges.pipe(
-      filter((res: any) => {
-        params = {
-          stores: true,
-          keyword: res
-        }
-        return res !== null && res.length >= 2
-      }),
-      distinctUntilChanged(),
-      debounceTime(300),
-      tap(() => {
-        this.allStores = [];
-        this.isSearchingStores = true;
-        this._changeDetectorRef.markForCheck();
-      }),
-      switchMap(value => this._reportService.getAPIData(params)
-        .pipe(
-          finalize(() => {
-            this.isSearchingStores = false
-            this._changeDetectorRef.markForCheck();
-          }),
-        )
-      )
-    ).subscribe((data: any) => {
-      this.allStores.push({ storeName: 'All Stores', pk_storeID: '' });
-      this.allStores = this.allStores.concat(data["data"]);
-    });
+    this.commonService.storesData$
+      .pipe(takeUntil(this._unsubscribeAll))
+      .subscribe(res => {
+        this.allStores.push({ storeName: 'All Stores', pk_storeID: 0 });
+        const activeStores = res["data"].filter(element => element.blnActive);
+        this.allStores.push(...activeStores);
+        this.selectedStores = this.allStores[0];
+      });
   }
-  onSelectedStores(ev) {
-    this.selectedStores = ev.option.value;
-  }
-  displayWithStores(value: any) {
-    return value?.storeName;
-  }
+
   // Reports
   generateReport(page) {
     if (page == 1) {

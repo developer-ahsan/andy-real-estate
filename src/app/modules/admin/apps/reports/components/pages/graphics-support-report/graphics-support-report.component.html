@@ -94,7 +94,7 @@
                                     <td>{{data.storeName}}</td>
                                     <td>{{data.revenue | currency}}</td>
                                     <td>{{data.annual | currency}}</td>
-                                    <td>{{((data.revenue/grandTotal.revenue) * 100).toFixed(2)}}</td>
+                                    <td>{{((data.revenue/grandTotal.revenue) * 100).toFixed(2)}}%</td>
                                     <td>{{data.ui}}</td>
                                     <td>{{data.ps}}</td>
                                     <td>{{data.ns}}</td>
@@ -106,7 +106,7 @@
                                     <td colspan="2">TOTAL</td>
                                     <td>{{employee.totalRevenue | currency}}</td>
                                     <td>{{employee.annual | currency}}</td>
-                                    <td>{{((employee.totalRevenue/grandTotal.revenue) * 100).toFixed(2)}}</td>
+                                    <td>{{((employee.totalRevenue/grandTotal.revenue) * 100).toFixed(2)}}%</td>
                                     <td>{{employee.uniqueImprints}}</td>
                                     <td>{{employee.proofSent}}</td>
                                     <td>{{employee.NumSales}}</td>
