@@ -92,9 +92,9 @@
                                             <span class="{{data.statusColor}}">{{data.status}}</span>
                                         </td>
                                         <td>
-                                            <mat-icon svgIcon="heroicons_outline:x-mark" *ngIf="data.sa == 'false'"
-                                                class="text-red-700"></mat-icon>
-                                            <mat-icon svgIcon="heroicons_outline:check" class="text-green-700"
+                                            <mat-icon svgIcon="mat_outline:close" class="text-red-600"
+                                                *ngIf="data.sa == 'false'"></mat-icon>
+                                            <mat-icon svgIcon="mat_outline:check" class="text-green-600"
                                                 *ngIf="data.sa == 'true'"></mat-icon>
                                         </td>
                                     </tr>

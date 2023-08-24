@@ -64,7 +64,7 @@ export class ReportSampleSaleComponent implements OnInit, OnDestroy {
   // Reports
   generateReport(page) {
     this.generateReportData = null;
-
+    this.totalData = 0;
     this._reportService.setFiltersReport();
     this.isGenerateReportLoader = true;
     let params = {
