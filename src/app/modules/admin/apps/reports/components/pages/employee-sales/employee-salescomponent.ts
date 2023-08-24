@@ -146,7 +146,6 @@ export class ReportsEmployeeSalesComponent implements OnInit, OnDestroy {
     this.isGenerateReportLoader = true;
     setTimeout(() => {
       let params = {
-        range_type: this._reportService.ngPlan,
         employee_sales_report: true,
         start_date: this._reportService.startDate,
         end_date: this._reportService.endDate,

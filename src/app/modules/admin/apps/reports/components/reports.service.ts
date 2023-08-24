@@ -104,9 +104,15 @@ export class ReportsService {
             this.endDate = moment(e).endOf('month').format('yyyy-MM-DD');
             this.reportType = 'Quarterly Sales';
         } else if (this.ngPlan == 'yearly') {
+            const currentYear = moment().year();
             let d = new Date(this.yearlyYear, 0, 1);
             this.startDate = moment(d).startOf('year').format('yyyy-MM-DD');
             this.endDate = moment(d).endOf('year').format('yyyy-MM-DD');
+            if (this.yearlyYear < currentYear) {
+                this.endDate = moment(d).endOf('year').format('YYYY-MM-DD');
+            } else {
+                this.endDate = moment().format('YYYY-MM-DD');
+            }
         } else if (this.ngPlan == 'range') {
             this.startDate = moment(this.ngRangeStart).format('yyyy-MM-DD');
             this.endDate = moment(this.ngRangeEnd).format('yyyy-MM-DD');
