@@ -1,4 +1,4 @@
-import { Component, Input, OnInit, Output, EventEmitter, ChangeDetectorRef, OnDestroy, ViewChild } from '@angular/core';
+import { Component, Input, OnInit, Output, EventEmitter, ChangeDetectorRef, OnDestroy, ViewChild, ElementRef } from '@angular/core';
 import { MatPaginator } from '@angular/material/paginator';
 import { Subject } from 'rxjs';
 import { debounceTime, distinctUntilChanged, filter, finalize, switchMap, takeUntil, tap } from 'rxjs/operators';
@@ -14,6 +14,8 @@ import { FormControl } from '@angular/forms';
   styles: [".mat-paginator {border-radius: 16px !important}"]
 })
 export class ReportsLocationSalesComponent implements OnInit, OnDestroy {
+  @ViewChild('topScrollAnchor') topScroll: ElementRef;
+
   @ViewChild('paginator') paginator: MatPaginator;
   isLoading: boolean;
   @Output() isLoadingChange = new EventEmitter<boolean>();
@@ -30,7 +32,8 @@ export class ReportsLocationSalesComponent implements OnInit, OnDestroy {
   paymentStatus = 1;
   blnYTD = 0;
   blnIndividualOrders = 0;
-
+  attribute_id: any;
+  location_id = 0;
 
   allStores = [];
   searchStoresCtrl = new FormControl();
@@ -48,51 +51,49 @@ export class ReportsLocationSalesComponent implements OnInit, OnDestroy {
     this.getStores();
   };
   getStores() {
-    this._reportService.Stores$.pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
-      this.allStores.push({ storeName: 'Select a store', pk_storeID: 0 });
-      this.allStores = this.allStores.concat(res["data"]);
-      this.selectedStores = this.allStores[0];
-      this.searchStoresCtrl.setValue(this.selectedStores);
+    let params = {
+      location_stores: true
+    }
+    this._reportService.getAPIData(params).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+      res["data"].forEach(stores => {
+        let details = stores.details;
+        stores.Locations = [{ id: 0, name: 'All top level locations', subLocations: [{ id: 0, name: 'All sub level locations' }] }];
+        if (details) {
+          let top_locations = details.split(',,');
+          top_locations.forEach((top_location, index) => {
+            let locations = top_location?.split('||');
+            let t_location = locations[0].split('::');
+            stores.Locations.push({ id: Number(t_location[0]), name: t_location[1], subLocations: [{ id: 0, name: 'All sub level locations' }] });
+            let subLocations;
+            if (locations.length > 1) {
+              subLocations = locations[1].split('##');
+              subLocations.forEach(subLocation => {
+                let S_location = subLocation.split('::');
+                stores.Locations[index + 1].subLocations.push({ id: Number(S_location[0]), name: S_location[1] });
+              });
+            }
+          });
+        }
+      });
       this.isLoading = false;
+      this.allStores = res["data"];
+      this.selectedStores = this.allStores[0];
+      this.attribute_id = this.selectedStores.Locations[0];
       this._changeDetectorRef.markForCheck();
     }, err => {
       this.isLoading = false;
       this._changeDetectorRef.markForCheck();
     });
-    let params;
-    this.searchStoresCtrl.valueChanges.pipe(
-      filter((res: any) => {
-        params = {
-          stores: true,
-          keyword: res
-        }
-        return res !== null && res.length >= 2
-      }),
-      distinctUntilChanged(),
-      debounceTime(300),
-      tap(() => {
-        this.allStores = [];
-        this.isSearchingStores = true;
-        this._changeDetectorRef.markForCheck();
-      }),
-      switchMap(value => this._reportService.getAPIData(params)
-        .pipe(
-          finalize(() => {
-            this.isSearchingStores = false
-            this._changeDetectorRef.markForCheck();
-          }),
-        )
-      )
-    ).subscribe((data: any) => {
-      this.allStores.push({ storeName: 'Select a store', pk_storeID: 0 });
-      this.allStores = this.allStores.concat(data["data"]);
-    });
   }
   onSelectedStores(ev) {
-    this.selectedStores = ev.option.value;
+    this.selectedStores = ev.value;
+    this.attribute_id = this.selectedStores.Locations[0];
+    this.location_id = 0;
   }
-  displayWithStores(value: any) {
-    return value?.storeName;
+  backtoTop() {
+    setTimeout(() => {
+      this.topScroll.nativeElement.scrollIntoView({ behavior: 'smooth' });
+    }, 100);
   }
   // Reports
   generateReport(page) {
@@ -110,54 +111,109 @@ export class ReportsLocationSalesComponent implements OnInit, OnDestroy {
     }
     this.isGenerateReportLoader = true;
     let params = {
-      page: page,
       location_sales_report: true,
       start_date: this._reportService.startDate,
       end_date: this._reportService.endDate,
-      store_id: this.selectedStores.pk_storeID,
-      size: 20
+      store_list: this.selectedStores.pk_storeID,
+      payment_status: this.paymentStatus,
+      report_type: this.reportType,
+      show_cancelled_order: this.blnShowCancelled,
+      attribute_id: this.attribute_id.id,
+      location_id: this.location_id,
+      is_individual: this.blnIndividualOrders,
+      is_ytd: this.blnYTD
     }
     this._reportService.getAPIData(params).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
-      if (res["data"].length > 0) {
-        this.generateReportData = res["data"];
-        this.totalData = res["totalRecords"];
-        this.generateReportData.forEach(element => {
-          if (element.previousYearSales == 0) {
-            element.percent = 0
+      console.log(res);
+      this.generateReportData = res;
+      this.generateReportData["report_summary"].forEach(element => {
+        if (element.SALES > element.PY) {
+          element.blnPercent = true;
+          const diff = element.SALES - element.PY;
+          if (element.PY == 0) {
+            element.percent = 100;
           } else {
-            element.percent = Number(100 - (element.monthlyEarnings / element.previousYearSales) * 100);
+            element.percent = (diff / element.SALES) * 100;
           }
-          if (element.percent == 0) {
+        } else if (element.SALES < element.PY) {
+          element.blnPercent = false;
+          const diff = element.PY - element.SALES;
+          if (element.SALES == 0) {
+            element.percent = 100;
+          } else {
+            element.percent = (diff / element.PY) * 100;
+          }
+        } else {
+          element.percent = 0;
+        }
+
+      });
+      if (this.generateReportData["lastYear_report_summary"].length > 0) {
+        this.generateReportData["lastYear_report_summary"].forEach(element => {
+          if (element.SALES > element.PY) {
+            element.blnPercent = true;
+            const diff = element.SALES - element.PY;
+            if (element.PY == 0) {
+              element.percent = 100;
+            } else {
+              element.percent = (diff / element.SALES) * 100;
+            }
+          } else if (element.SALES < element.PY) {
+            element.blnPercent = false;
+            const diff = element.PY - element.SALES;
+            if (element.SALES == 0) {
+              element.percent = 100;
+            } else {
+              element.percent = (diff / element.PY) * 100;
+            }
+          } else {
             element.percent = 0;
-            element.color = 'gray';
-          }
-          if (element.percent < 0) {
-            element.color = 'red';
-          } else if (element.percent > 0) {
-            element.color = 'green'
-          } else {
-            element.color = 'gray';
-          }
-          element.difference = Number(element.monthlyEarnings - element.previousYearSales);
-          if (!element.difference) {
-            element.difference = 0;
-          }
-          if (element.difference < 0) {
-            element.difference = Math.abs(element.difference);
-          }
-          element.avg = Number(element.monthlyEarnings / element.NS);
-          if (!element.avg) {
-            element.avg = 0;
-          }
-          element.margin = Number(((element.price - element.cost) / element.price) * 100);
-          if (!element.margin) {
-            element.margin = 0;
           }
         });
       } else {
-        this.generateReportData = null;
-        this._reportService.snackBar('No records found');
+        this.generateReportData["lastYear_report_summary"].push({ storeName: this.selectedStores.storeName, SALES: 0, PY: 0, percent: 0, NS: 0, PYNS: 0 });
       }
+      // if (res.length > 0) {
+      //   this.generateReportData = res;
+      //   this.totalData = res["totalRecords"];
+      //   this.generateReportData.forEach(element => {
+      //     if (element.previousYearSales == 0) {
+      //       element.percent = 0
+      //     } else {
+      //       element.percent = Number(100 - (element.monthlyEarnings / element.previousYearSales) * 100);
+      //     }
+      //     if (element.percent == 0) {
+      //       element.percent = 0;
+      //       element.color = 'gray';
+      //     }
+      //     if (element.percent < 0) {
+      //       element.color = 'red';
+      //     } else if (element.percent > 0) {
+      //       element.color = 'green'
+      //     } else {
+      //       element.color = 'gray';
+      //     }
+      //     element.difference = Number(element.monthlyEarnings - element.previousYearSales);
+      //     if (!element.difference) {
+      //       element.difference = 0;
+      //     }
+      //     if (element.difference < 0) {
+      //       element.difference = Math.abs(element.difference);
+      //     }
+      //     element.avg = Number(element.monthlyEarnings / element.NS);
+      //     if (!element.avg) {
+      //       element.avg = 0;
+      //     }
+      //     element.margin = Number(((element.price - element.cost) / element.price) * 100);
+      //     if (!element.margin) {
+      //       element.margin = 0;
+      //     }
+      //   });
+      // } else {
+      //   this.generateReportData = null;
+      //   this._reportService.snackBar('No records found');
+      // }
+      this.backtoTop();
       this.isGenerateReportLoader = false;
       this._changeDetectorRef.markForCheck();
     }, err => {

@@ -120,17 +120,6 @@ export class SearchVendorsComponents implements OnInit, OnDestroy {
     /**
      * Create contact
      */
-    createContact(): void {
-        // Create the contact
-        this._searchService.createContact().subscribe((newContact) => {
-
-            // Go to the new contact
-            this._router.navigate(['./', newContact.id], { relativeTo: this._activatedRoute });
-
-            // Mark for check
-            this._changeDetectorRef.markForCheck();
-        });
-    }
 
     /**
      * Track by function for ngFor loops

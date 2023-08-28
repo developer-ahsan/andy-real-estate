@@ -23,7 +23,6 @@ import { FuseFindByKeyPipeModule } from '@fuse/pipes/find-by-key';
 import { SharedModule } from 'app/shared/shared.module';
 import { tasksRoutes } from 'app/modules/admin/apps/promostandards/promostandards.routing';
 import { PromostandardsComponent } from 'app/modules/admin/apps/promostandards/promostandards.component';
-import { PromostandardsDetailsComponent } from 'app/modules/admin/apps/promostandards/details/details.component';
 import { PromostandardsListComponent } from 'app/modules/admin/apps/promostandards/list/list.component';
 import { MatTableModule } from '@angular/material/table';
 import { MatPaginatorModule } from '@angular/material/paginator';
@@ -34,7 +33,6 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 @NgModule({
     declarations: [
         PromostandardsComponent,
-        PromostandardsDetailsComponent,
         PromostandardsListComponent
     ],
     imports: [

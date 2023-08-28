@@ -221,7 +221,7 @@ export class ReportsEmployeeSalesComponent implements OnInit, OnDestroy {
               if (element.PY == 0) {
                 element.percent = 100;
               } else {
-                element.percent = (diff / element.SALES) * 100;
+                element.percent = Math.round((diff / element.PY) * 100);
               }
             } else if (element.SALES < element.PY) {
               element.blnPercent = false;
@@ -229,7 +229,7 @@ export class ReportsEmployeeSalesComponent implements OnInit, OnDestroy {
               if (element.SALES == 0) {
                 element.percent = 100;
               } else {
-                element.percent = (diff / element.PY) * 100;
+                element.percent = Math.round((diff / element.PY) * 100);
               }
             } else {
               element.percent = 0;
@@ -248,7 +248,7 @@ export class ReportsEmployeeSalesComponent implements OnInit, OnDestroy {
             if (this.storeTotals.PY == 0) {
               this.storeTotals.percent = 100;
             } else {
-              this.storeTotals.percent = (diff / this.storeTotals.Sales) * 100;
+              this.storeTotals.percent = Math.round((diff / this.storeTotals.PY) * 100);
             }
           } else if (this.storeTotals.Sales < this.storeTotals.PY) {
             this.storeTotals.blnPercent = false;
@@ -256,7 +256,7 @@ export class ReportsEmployeeSalesComponent implements OnInit, OnDestroy {
             if (this.storeTotals.Sales == 0) {
               this.storeTotals.percent = 100;
             } else {
-              this.storeTotals.percent = (diff / this.storeTotals.PY) * 100;
+              this.storeTotals.percent = Math.round((diff / this.storeTotals.PY) * 100);
             }
           } else {
             this.storeTotals.percent = 0;

@@ -275,7 +275,7 @@
                                     <th>{{storeTotals?.NS}}</th>
                                     <th>{{storeTotals?.PYNS}}</th>
                                     <th></th>
-                                    <th>{{(storeTotals?.AVG/generateReportData.length) | currency}}</th>
+                                    <th>{{(storeTotals?.Sales/storeTotals?.NS) | currency}}</th>
                                     <th>{{(storeTotals?.MARGIN/generateReportData.length).toFixed(2)}}%</th>
                                 </tr>
                             </tbody>

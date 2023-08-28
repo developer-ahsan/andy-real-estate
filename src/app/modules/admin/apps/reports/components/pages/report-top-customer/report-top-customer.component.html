@@ -1,3 +1,5 @@
+<div #topScrollAnchor></div>
+
 <div class="w-full">
     <div class="px-8 pb-4">
         <div class="row" *ngIf="!generateReportData">
@@ -45,89 +47,85 @@
         <div class="row" *ngIf="generateReportData">
             <div class="col-12">
                 <div class="flex justify-between">
-                    <div class="text-lg font-medium tracking-tight leading-6 truncate">Report Summary</div>
+                    <div>
+                        <div class="text-lg mb-2 font-medium tracking-tight leading-6 truncate cursor-pointer">
+                            <fuse-alert [appearance]="'soft'" [dismissed]="false" [name]="'alertBox1'"
+                                [type]="'success'">
+                                <mat-progress-spinner *ngIf="generateExcelLoader" [diameter]="24"
+                                    [mode]="'indeterminate'">
+                                </mat-progress-spinner>
+                                <span (click)="downloadExcelWorkSheet()" *ngIf="!generateExcelLoader">Click here to
+                                    download Excel file.</span>
+                            </fuse-alert>
+                        </div>
+                        <p class="text-lg text-capitalize"><strong>{{_reportService.ngPlan}}</strong></p>
+                        <p>{{this.selectedStores.storeName}}</p>
+                        <p>Range: {{this._reportService.startDate | date: 'MM/dd/yyyy'}}-{{this._reportService.endDate |
+                            date: 'MM/dd/yyyy'}}</p>
+                        <div class="text-lg font-medium tracking-tight leading-6 truncate">Top Customers</div>
+                    </div>
                     <div>
                         <button class="min-w-50" mat-button mat-stroked-button (click)="backToList()">Back To
                             Search</button>
                     </div>
                 </div>
-                <table mat-table [dataSource]="generateReportData" class="w-full border-t mt-2">
-                    <!-- Type -->
-                    <ng-container matColumnDef="id">
-                        <th mat-header-cell *matHeaderCellDef>
-                            ID
-                        </th>
-                        <td mat-cell *matCellDef="let element">
-                            {{element.ID}}
-                        </td>
-                    </ng-container>
-
-                    <!-- Total -->
-                    <ng-container matColumnDef="customer">
-                        <th mat-header-cell *matHeaderCellDef>
-                            Customer
-                        </th>
-                        <td mat-cell *matCellDef="let element">
-                            <span class="font-medium text-right">
-                                {{element.CUSTOMER}}
-                            </span>
-                        </td>
-                    </ng-container>
-
-                    <!-- Expenses amount -->
-                    <ng-container matColumnDef="company">
-                        <th mat-header-cell *matHeaderCellDef>
-                            Company
-                        </th>
-                        <td mat-cell *matCellDef="let element">
-                            {{element.companyName}}
-                        </td>
-                    </ng-container>
-
-                    <!-- Expenses percentage -->
-                    <ng-container matColumnDef="phone">
-                        <th mat-header-cell *matHeaderCellDef>
-                            Phone
-                        </th>
-                        <td mat-cell *matCellDef="let element">
-                            {{element.dayPhone}}
-                        </td>
-                    </ng-container>
-
-                    <!-- Remaining amount -->
-                    <ng-container matColumnDef="address">
-                        <th mat-header-cell *matHeaderCellDef>
-                            Address
-                        </th>
-                        <td mat-cell *matCellDef="let element">
-                            {{element.address}}
-                        </td>
-                    </ng-container>
-
-                    <!-- Remaining percentage -->
-                    <ng-container matColumnDef="sale">
-                        <th mat-header-cell *matHeaderCellDef>
-                            Sales
-                        </th>
-                        <td mat-cell *matCellDef="let element">
-                            {{element.SALES | currency}}
-                        </td>
-                    </ng-container>
-                    <ng-container matColumnDef="#">
-                        <th mat-header-cell *matHeaderCellDef>
-                            Number of Sales
-                        </th>
-                        <td mat-cell *matCellDef="let element">
-                            {{element['#numSales']}}
-                        </td>
-                    </ng-container>
-                    <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-                    <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+                <table class="table table-striped" matSort (matSortChange)="customSort($event)">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>CUSTOMER</th>
+                            <th>COMPANY</th>
+                            <th>PHONE</th>
+                            <th>ADDRESS</th>
+                            <th mat-sort-header="sale">SALE</th>
+                            <th>#</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <ng-container *ngFor="let item of generateReportData;">
+                            <tr class="font-bold">
+                                <td colspan="7">{{item.storeName}}</td>
+                            </tr>
+                            <ng-container *ngFor="let customer of item.customers;">
+                                <tr>
+                                    <td>
+                                        <a [routerLink]="['/apps/customers',customer.id,'order-history']"
+                                            target="_blank" class="text-blue-500">{{customer.id}}</a>
+                                    </td>
+                                    <td>{{customer.name}}</td>
+                                    <td>{{customer.company}}</td>
+                                    <td>{{customer.phone}}</td>
+                                    <td>{{customer.address}}</td>
+                                    <td>{{customer.sale | currency}}</td>
+                                    <td>{{customer.counter}}</td>
+                                </tr>
+                            </ng-container>
+                        </ng-container>
+                    </tbody>
                 </table>
-                <mat-paginator #paginator class="border-b sm:border-t sm:border-b-0 z-10 bg-gray-50 dark:bg-transparent"
-                    [length]="totalData" [pageIndex]="0" [pageSize]="20" (page)="getNextReportData($event)"
-                    [hidePageSize]="true">
-                </mat-paginator>
+                <div class="text-lg font-medium tracking-tight leading-6 truncate">Report Summary</div>
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>STORE</th>
+                            <th>TOP SALES</th>
+                            <th>TOP NUM. SALES</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr *ngFor="let item of generateReportData">
+                            <td>{{item.storeName}}</td>
+                            <td>
+                                <a [routerLink]="['/apps/customers',item.topCustomer.id,'order-history']"
+                                    target="_blank" class="text-blue-500">{{item.topCustomer.name}}</a>
+                            </td>
+                            <td>
+                                <a [routerLink]="['/apps/customers',item.topSales.id,'order-history']" target="_blank"
+                                    class="text-blue-500">{{item.topSales.name}}</a>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
             </div>
         </div>
     </div>

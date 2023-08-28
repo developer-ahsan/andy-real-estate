@@ -20,8 +20,6 @@ import * as moment from 'moment';
 import { FuseAutogrowModule } from '@fuse/directives/autogrow';
 import { FuseFindByKeyPipeModule } from '@fuse/pipes/find-by-key';
 import { SharedModule } from 'app/shared/shared.module';
-import { ContactsListComponents } from './list/list.component';
-import { ContactsDetailsComponents } from './details/details.component';
 import { SearchComponents } from './search.component';
 import { SearchProductsComponents } from './search-products/search-products.component';
 import { searchRoutes } from './search-module.routing';
@@ -39,10 +37,8 @@ import { SearchQuotesComponents } from './search-quotes/search-quotes.component'
         SearchComponents,
         SearchProductsComponents,
         SearchOrdersComponents,
-        ContactsListComponents,
         SearchCustomersComponents,
         SearchVendorsComponents,
-        ContactsDetailsComponents,
         SearchQuotesComponents
     ],
     imports: [

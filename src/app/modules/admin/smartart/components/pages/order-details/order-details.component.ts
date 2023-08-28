@@ -503,7 +503,8 @@ export class OrderDashboardDetailsComponent implements OnInit, OnDestroy {
     }
     this._smartartService.AddSmartArtData(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
       this._smartartService.snackBar(res["message"]);
-      this.imprintdata[index].imprintComments = this.imprintdata[index].imprintComments + ' <br>' + res["comment"];
+      this.imprintdata[index].imprintComments = this.imprintdata[index].imprintComments + ' <br>' + res["customerComment"];
+      this.orderData.internalComments = this.orderData.internalComments + ' <br>' + res["comment"];
       this.isAutoRequestLoader = false;
       this._changeDetectorRef.markForCheck();
     }, err => {

@@ -108,7 +108,8 @@ import { CurrencyPipe } from '@angular/common';
         FuseAlertModule,
         MatDialogModule,
         MatDatepickerModule,
-        MatNativeDateModule
+        MatNativeDateModule,
+        MatSortModule
     ],
     entryComponents: [],
     providers: [CurrencyPipe]

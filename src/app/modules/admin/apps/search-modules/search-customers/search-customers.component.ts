@@ -6,8 +6,6 @@ import { MatDrawer } from '@angular/material/sidenav';
 import { fromEvent, Observable, Subject } from 'rxjs';
 import { filter, finalize, switchMap, takeUntil } from 'rxjs/operators';
 import { FuseMediaWatcherService } from '@fuse/services/media-watcher';
-import { Contact, Country } from 'app/modules/admin/apps/contacts/contacts.types';
-import { ContactsService } from 'app/modules/admin/apps/contacts/contacts.service';
 import { SearchService } from '../search.service';
 import { MatPaginator } from '@angular/material/paginator';
 import { DashboardsService } from 'app/modules/admin/dashboards/dashboard.service';
@@ -24,14 +22,11 @@ export class SearchCustomersComponents implements OnInit, OnDestroy {
 
     @ViewChild('drawer', { static: true }) matDrawer: MatDrawer;
 
-    contacts$: Observable<Contact[]>;
 
     contactsCount: number = 0;
     contactsTableColumns: string[] = ['name', 'email', 'phoneNumber', 'job'];
-    countries: Country[];
     drawerMode: 'side' | 'over';
     searchInputControl: FormControl = new FormControl();
-    selectedContact: Contact;
     private _unsubscribeAll: Subject<any> = new Subject<any>();
 
 
@@ -165,20 +160,6 @@ export class SearchCustomersComponents implements OnInit, OnDestroy {
         this._changeDetectorRef.markForCheck();
     }
 
-    /**
-     * Create contact
-     */
-    createContact(): void {
-        // Create the contact
-        this._searchService.createContact().subscribe((newContact) => {
-
-            // Go to the new contact
-            this._router.navigate(['./', newContact.id], { relativeTo: this._activatedRoute });
-
-            // Mark for check
-            this._changeDetectorRef.markForCheck();
-        });
-    }
 
     /**
      * Track by function for ngFor loops

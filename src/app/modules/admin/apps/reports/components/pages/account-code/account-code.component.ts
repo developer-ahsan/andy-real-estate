@@ -6,6 +6,8 @@ import { ReportsService } from '../../reports.service';
 import { FormControl } from '@angular/forms';
 import * as Excel from 'exceljs/dist/exceljs.min.js';
 import moment from 'moment';
+import { DashboardsService } from 'app/modules/admin/dashboards/dashboard.service';
+import { Sort } from '@angular/material/sort';
 
 @Component({
   selector: 'app-account-code',
@@ -29,17 +31,16 @@ export class ReportAccountCodeComponent implements OnInit, OnDestroy {
   ngStore = 637;
 
   allStores = [];
-  searchStoresCtrl = new FormControl();
   selectedStores: any;
-  isSearchingStores = false;
   isGenerateReportLoader: boolean;
 
 
   totalDataCalculations: any;
-
+  initialData: any;
   constructor(
     private _changeDetectorRef: ChangeDetectorRef,
-    private _reportService: ReportsService
+    private _reportService: ReportsService,
+    private commonService: DashboardsService
   ) { }
 
   ngOnInit(): void {
@@ -47,51 +48,13 @@ export class ReportAccountCodeComponent implements OnInit, OnDestroy {
     this.getStores();
   };
   getStores() {
-    this._reportService.Stores$.pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
-      this.allStores.push({ storeName: 'Select a store', pk_storeID: 0 });
-      this.allStores = this.allStores.concat(res["data"]);
-      this.selectedStores = this.allStores[0];
-      this.searchStoresCtrl.setValue(this.selectedStores);
-      this.isLoading = false;
-      this._changeDetectorRef.markForCheck();
-    }, err => {
-      this.isLoading = false;
-      this._changeDetectorRef.markForCheck();
-    });
-    let params;
-    this.searchStoresCtrl.valueChanges.pipe(
-      filter((res: any) => {
-        params = {
-          stores: true,
-          keyword: res
-        }
-        return res !== null && res.length >= 2
-      }),
-      distinctUntilChanged(),
-      debounceTime(300),
-      tap(() => {
-        this.allStores = [];
-        this.isSearchingStores = true;
-        this._changeDetectorRef.markForCheck();
-      }),
-      switchMap(value => this._reportService.getAPIData(params)
-        .pipe(
-          finalize(() => {
-            this.isSearchingStores = false
-            this._changeDetectorRef.markForCheck();
-          }),
-        )
-      )
-    ).subscribe((data: any) => {
-      this.allStores.push({ storeName: 'Select a store', pk_storeID: 0 });
-      this.allStores = this.allStores.concat(data["data"]);
-    });
-  }
-  onSelectedStores(ev) {
-    this.selectedStores = ev.option.value;
-  }
-  displayWithStores(value: any) {
-    return value?.storeName;
+    this.commonService.storesData$
+      .pipe(takeUntil(this._unsubscribeAll))
+      .subscribe(res => {
+        const activeStores = res["data"].filter(element => element.blnActive);
+        this.allStores.push(...activeStores);
+        this.selectedStores = this.allStores[0];
+      });
   }
   // Reports
   generateReport() {
@@ -99,23 +62,33 @@ export class ReportAccountCodeComponent implements OnInit, OnDestroy {
       this._reportService.snackBar('Please select a store');
       return;
     }
+    this.generateReportData = null;
+    this.initialData = null;
+    this.totalDataCalculations = { total: 0, totalSales: 0 };
+    this._reportService.setFiltersReport();
     this.isGenerateReportLoader = true;
     let params = {
       account_code: true,
-      store_list: this.selectedStores.pk_storeID
+      store_id: this.selectedStores.pk_storeID,
+      start_date: this._reportService.startDate,
+      end_date: this._reportService.endDate,
+      payment_status: this.paymentStatus,
+      report_type: this.reportType
     }
     this._reportService.getAPIData(params).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
       if (res["data"].length > 0) {
         this.generateReportData = res["data"];
-        let total = this.generateReportData[0].NO_Charge_Total;
-        let totalSales = this.generateReportData[0].NO_Charge_Num_Sales;
-        this.generateReportData.forEach(element => {
-          total = total + element.SALES;
-          totalSales = totalSales + element.Num_Sales;
-        });
+        let total = this.generateReportData[0].GRAND_SALES;
+        let totalSales = this.generateReportData[0].GRAND_NUM_SALES;
+        this.initialData = res["data"];
+        // this.generateReportData.forEach(element => {
+        //   total = total + element.SALES;
+        //   totalSales = totalSales + element.NUM_SALES;
+        // });
         this.totalDataCalculations = { total: total, totalSales: totalSales };
       } else {
         this.generateReportData = null;
+        this.initialData = null;
         this._reportService.snackBar('No records found');
       }
       this.isGenerateReportLoader = false;
@@ -125,23 +98,76 @@ export class ReportAccountCodeComponent implements OnInit, OnDestroy {
       this._changeDetectorRef.markForCheck();
     });
   }
+  sortData(event: Sort): void {
+    // const data = this.generateReportData.slice(); // Create a copy of the data array
+
+    // if (!sort.active || sort.direction === '') {
+    //   this.generateReportData = data;
+    //   return;
+    // }
+
+    // this.generateReportData = data.sort((a, b) => {
+    //   const isAsc = sort.direction === 'asc';
+    //   switch (sort.active) {
+    //     case 'SALES':
+    //       return this.compare(a.SALES, b.SALES, isAsc);
+    //     default:
+    //       return 0;
+    //   }
+    // });
+
+
+    const sortHeaderId = event.active;
+    const sortDirection = event.direction;
+
+    if (sortDirection === '') {
+      // Reset sorting, use your initial data here
+      this.generateReportData = [...this.initialData];
+      return;
+    }
+
+    // Perform sorting based on sortHeaderId and sortDirection
+    // For example, using Array.sort() method:
+    this.generateReportData.sort((a, b) => {
+      const valueA = a[sortHeaderId];
+      const valueB = b[sortHeaderId];
+
+      if (typeof valueA === 'number' && typeof valueB === 'number') {
+        if (sortDirection === 'asc') {
+          return valueA - valueB;
+        } else {
+          return valueB - valueA;
+        }
+      } else {
+        if (sortDirection === 'asc') {
+          return valueA.toString().localeCompare(valueB.toString());
+        } else {
+          return valueB.toString().localeCompare(valueA.toString());
+        }
+      }
+    });
+  }
+
+  compare(a: number | string, b: number | string, isAsc: boolean): number {
+    return (a < b ? -1 : 1) * (isAsc ? 1 : -1);
+  }
   backToList() {
     this.generateReportData = null;
     this._changeDetectorRef.markForCheck();
   }
   downloadExcelWorkSheet() {
-    let data = [{ purchaseOrderNum: 'No Charge Code', CUSTOMER: '---', SALES: this.generateReportData[0].NO_Charge_Total, Num_Orders: this.generateReportData[0].NO_Charge_Num_Sales }];
-    this.generateReportData = data.concat(this.generateReportData);
+    // let data = [{ purchaseOrderNum: 'No Charge Code', CUSTOMER: '---', SALES: this.generateReportData[0].NO_Charge_Total, Num_Orders: this.generateReportData[0].NO_Charge_Num_Sales }];
+    // this.generateReportData = data.concat(this.generateReportData);
     const fileName = `AccountChargeCode_${moment(new Date()).format('MM-DD-yy-hh-mm-ss')}`;
     const workbook = new Excel.Workbook();
     const worksheet = workbook.addWorksheet("AccountChargeCode");
 
     // Columns
     let columns = [
-      { header: "AccountChargeCode", key: "purchaseOrderNum", width: 30 },
+      { header: "AccountChargeCode", key: "ACCOUNTCODE", width: 30 },
       { header: "CUSTOMER", key: "CUSTOMER", width: 50 },
       { header: "Total", key: "SALES", width: 40 },
-      { header: "Num_Orders", key: "Num_Sales", width: 30 }
+      { header: "Num_Orders", key: "NUM_SALES", width: 30 }
     ]
     worksheet.columns = columns;
     for (const obj of this.generateReportData) {

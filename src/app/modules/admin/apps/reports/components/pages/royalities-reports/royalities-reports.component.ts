@@ -53,7 +53,8 @@ export class RoyalitiesReportComponent implements OnInit, OnDestroy {
   isGenerateReportLoader: boolean;
   generateReportData: any;
   reportPage = 1;
-  totalData = 0;
+  totalSales = 0;
+  totalRoyalities = 0;
   displayedColumns: string[] = ['order', 'payment', 'id', 'company', 'sale', 'royalty', 'paid', 'status'];
   constructor(
     private _changeDetectorRef: ChangeDetectorRef,
@@ -114,6 +115,8 @@ export class RoyalitiesReportComponent implements OnInit, OnDestroy {
       this._reportService.snackBar('You must select a store and report type above before you can generate the report.');
       return;
     }
+    this.totalRoyalities = 0;
+    this.totalSales = 0;
     this.generateReportData = null;
     this._reportService.setFiltersReport();
     this.isGenerateReportLoader = true;
@@ -128,6 +131,8 @@ export class RoyalitiesReportComponent implements OnInit, OnDestroy {
     this._reportService.getAPIData(params).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
       if (res["data"].length > 0) {
         res["data"].forEach(element => {
+          this.totalSales += Number(element.thisOrderTotal);
+          this.totalRoyalities += Number(element.Royalties);
           if (moment(new Date()).diff(moment(element.paymentDate)) >= 0) {
             element.paid = true;
           } else {

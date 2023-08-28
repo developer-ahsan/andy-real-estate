@@ -8,9 +8,6 @@ import { Subject } from 'rxjs';
 import { debounceTime, filter, takeUntil, tap } from 'rxjs/operators';
 import { assign } from 'lodash-es';
 import * as moment from 'moment';
-import { Tag, Task } from 'app/modules/admin/apps/tasks/tasks.types';
-import { TasksListComponent } from 'app/modules/admin/apps/tasks/list/list.component';
-import { TasksService } from 'app/modules/admin/apps/tasks/tasks.service';
 
 @Component({
     selector: 'tasks-details',
@@ -23,9 +20,7 @@ export class PromostandardsDetailsComponent implements OnInit, AfterViewInit, On
     @ViewChild('tagsPanel') private _tagsPanel: TemplateRef<any>;
     @ViewChild('titleField') private _titleField: ElementRef;
 
-    tags: Tag[];
     tagsEditMode: boolean = false;
-    filteredTags: Tag[];
     task: Task;
     taskForm: FormGroup;
     tasks: Task[];
@@ -41,8 +36,6 @@ export class PromostandardsDetailsComponent implements OnInit, AfterViewInit, On
         private _formBuilder: FormBuilder,
         private _renderer2: Renderer2,
         private _router: Router,
-        private _tasksListComponent: TasksListComponent,
-        private _tasksService: TasksService,
         private _overlay: Overlay,
         private _viewContainerRef: ViewContainerRef
     ) {
@@ -57,7 +50,6 @@ export class PromostandardsDetailsComponent implements OnInit, AfterViewInit, On
      */
     ngOnInit(): void {
         // Open the drawer
-        this._tasksListComponent.matDrawer.open();
 
         // Create the task form
         this.taskForm = this._formBuilder.group({
@@ -72,64 +64,6 @@ export class PromostandardsDetailsComponent implements OnInit, AfterViewInit, On
             order: [0]
         });
 
-        // Get the tags
-        this._tasksService.tags$
-            .pipe(takeUntil(this._unsubscribeAll))
-            .subscribe((tags: Tag[]) => {
-                this.tags = tags;
-                this.filteredTags = tags;
-
-                // Mark for check
-                this._changeDetectorRef.markForCheck();
-            });
-
-        // Get the tasks
-        this._tasksService.tasks$
-            .pipe(takeUntil(this._unsubscribeAll))
-            .subscribe((tasks: Task[]) => {
-                this.tasks = tasks;
-
-                // Mark for check
-                this._changeDetectorRef.markForCheck();
-            });
-
-        // Get the task
-        this._tasksService.task$
-            .pipe(takeUntil(this._unsubscribeAll))
-            .subscribe((task: Task) => {
-
-                // Open the drawer in case it is closed
-                this._tasksListComponent.matDrawer.open();
-
-                // Get the task
-                this.task = task;
-
-                // Patch values to the form from the task
-                this.taskForm.patchValue(task, { emitEvent: false });
-
-                // Mark for check
-                this._changeDetectorRef.markForCheck();
-            });
-
-        // Update task when there is a value change on the task form
-        this.taskForm.valueChanges
-            .pipe(
-                tap((value) => {
-
-                    // Update the task object
-                    this.task = assign(this.task, value);
-                }),
-                debounceTime(300),
-                takeUntil(this._unsubscribeAll)
-            )
-            .subscribe((value) => {
-
-                // Update the task on the server
-                this._tasksService.updateTask(value.id, value).subscribe();
-
-                // Mark for check
-                this._changeDetectorRef.markForCheck();
-            });
 
         // Listen for NavigationEnd event to focus on the title field
         this._router.events
@@ -149,16 +83,7 @@ export class PromostandardsDetailsComponent implements OnInit, AfterViewInit, On
      */
     ngAfterViewInit(): void {
         // Listen for matDrawer opened change
-        this._tasksListComponent.matDrawer.openedChange
-            .pipe(
-                takeUntil(this._unsubscribeAll),
-                filter(opened => opened)
-            )
-            .subscribe(() => {
 
-                // Focus on the title element
-                this._titleField.nativeElement.focus();
-            });
     }
 
     /**
@@ -182,10 +107,6 @@ export class PromostandardsDetailsComponent implements OnInit, AfterViewInit, On
     /**
      * Close the drawer
      */
-    closeDrawer(): Promise<MatDrawerToggleResult> {
-        return this._tasksListComponent.matDrawer.close();
-    }
-
     /**
      * Toggle the completed status
      */
@@ -243,7 +164,6 @@ export class PromostandardsDetailsComponent implements OnInit, AfterViewInit, On
                 this._tagsPanelOverlayRef.detach();
 
                 // Reset the tag filter
-                this.filteredTags = this.tags;
 
                 // Toggle the edit mode off
                 this.tagsEditMode = false;
@@ -274,7 +194,6 @@ export class PromostandardsDetailsComponent implements OnInit, AfterViewInit, On
         const value = event.target.value.toLowerCase();
 
         // Filter the tags
-        this.filteredTags = this.tags.filter(tag => tag.title.toLowerCase().includes(value));
     }
 
     /**
@@ -289,30 +208,7 @@ export class PromostandardsDetailsComponent implements OnInit, AfterViewInit, On
         }
 
         // If there is no tag available...
-        if (this.filteredTags.length === 0) {
-            // Create the tag
-            this.createTag(event.target.value);
 
-            // Clear the input
-            event.target.value = '';
-
-            // Return
-            return;
-        }
-
-        // If there is a tag...
-        const tag = this.filteredTags[0];
-        const isTagApplied = this.task.tags.find(id => id === tag.id);
-
-        // If the found tag is already applied to the task...
-        if (isTagApplied) {
-            // Remove the tag from the task
-            this.deleteTagFromTask(tag);
-        }
-        else {
-            // Otherwise add the tag to the task
-            this.addTagToTask(tag);
-        }
     }
 
     /**
@@ -321,17 +217,7 @@ export class PromostandardsDetailsComponent implements OnInit, AfterViewInit, On
      * @param title
      */
     createTag(title: string): void {
-        const tag = {
-            title
-        };
 
-        // Create tag on the server
-        this._tasksService.createTag(tag)
-            .subscribe((response) => {
-
-                // Add the tag to the task
-                this.addTagToTask(response);
-            });
     }
 
     /**
@@ -340,17 +226,8 @@ export class PromostandardsDetailsComponent implements OnInit, AfterViewInit, On
      * @param tag
      * @param event
      */
-    updateTagTitle(tag: Tag, event): void {
-        // Update the title on the tag
-        tag.title = event.target.value;
+    updateTagTitle(tag, event): void {
 
-        // Update the tag on the server
-        this._tasksService.updateTag(tag.id, tag)
-            .pipe(debounceTime(300))
-            .subscribe();
-
-        // Mark for check
-        this._changeDetectorRef.markForCheck();
     }
 
     /**
@@ -358,12 +235,8 @@ export class PromostandardsDetailsComponent implements OnInit, AfterViewInit, On
      *
      * @param tag
      */
-    deleteTag(tag: Tag): void {
-        // Delete the tag from the server
-        this._tasksService.deleteTag(tag.id).subscribe();
+    deleteTag(tag): void {
 
-        // Mark for check
-        this._changeDetectorRef.markForCheck();
     }
 
     /**
@@ -371,15 +244,8 @@ export class PromostandardsDetailsComponent implements OnInit, AfterViewInit, On
      *
      * @param tag
      */
-    addTagToTask(tag: Tag): void {
-        // Add the tag
-        this.task.tags.unshift(tag.id);
+    addTagToTask(tag): void {
 
-        // Update the task form
-        this.taskForm.get('tags').patchValue(this.task.tags);
-
-        // Mark for check
-        this._changeDetectorRef.markForCheck();
     }
 
     /**
@@ -387,15 +253,7 @@ export class PromostandardsDetailsComponent implements OnInit, AfterViewInit, On
      *
      * @param tag
      */
-    deleteTagFromTask(tag: Tag): void {
-        // Remove the tag
-        this.task.tags.splice(this.task.tags.findIndex(item => item === tag.id), 1);
-
-        // Update the task form
-        this.taskForm.get('tags').patchValue(this.task.tags);
-
-        // Mark for check
-        this._changeDetectorRef.markForCheck();
+    deleteTagFromTask(tag): void {
     }
 
     /**
@@ -403,13 +261,8 @@ export class PromostandardsDetailsComponent implements OnInit, AfterViewInit, On
      *
      * @param tag
      */
-    toggleTaskTag(tag: Tag): void {
-        if (this.task.tags.includes(tag.id)) {
-            this.deleteTagFromTask(tag);
-        }
-        else {
-            this.addTagToTask(tag);
-        }
+    toggleTaskTag(tag): void {
+
     }
 
     /**
@@ -418,7 +271,7 @@ export class PromostandardsDetailsComponent implements OnInit, AfterViewInit, On
      * @param inputValue
      */
     shouldShowCreateTagButton(inputValue: string): boolean {
-        return !!!(inputValue === '' || this.tags.findIndex(tag => tag.title.toLowerCase() === inputValue.toLowerCase()) > -1);
+        return
     }
 
     /**
@@ -435,42 +288,14 @@ export class PromostandardsDetailsComponent implements OnInit, AfterViewInit, On
      * Check if the task is overdue or not
      */
     isOverdue(): boolean {
-        return moment(this.task.dueDate, moment.ISO_8601).isBefore(moment(), 'days');
+        return
     }
 
     /**
      * Delete the task
      */
     deleteTask(): void {
-        // Get the current task's id
-        const id = this.task.id;
 
-        // Get the next/previous task's id
-        const currentTaskIndex = this.tasks.findIndex(item => item.id === id);
-        const nextTaskIndex = currentTaskIndex + ((currentTaskIndex === (this.tasks.length - 1)) ? -1 : 1);
-        const nextTaskId = (this.tasks.length === 1 && this.tasks[0].id === id) ? null : this.tasks[nextTaskIndex].id;
-
-        // Delete the task
-        this._tasksService.deleteTask(id)
-            .subscribe((isDeleted) => {
-
-                // Return if the task wasn't deleted...
-                if (!isDeleted) {
-                    return;
-                }
-
-                // Navigate to the next task if available
-                if (nextTaskId) {
-                    this._router.navigate(['../', nextTaskId], { relativeTo: this._activatedRoute });
-                }
-                // Otherwise, navigate to the parent
-                else {
-                    this._router.navigate(['../'], { relativeTo: this._activatedRoute });
-                }
-            });
-
-        // Mark for check
-        this._changeDetectorRef.markForCheck();
     }
 
     /**

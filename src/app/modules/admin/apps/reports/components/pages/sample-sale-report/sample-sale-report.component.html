@@ -54,15 +54,17 @@
                     <table class="table table-striped">
                         <thead>
                             <tr>
-                                <th>Date</th>
+                                <th>DATE</th>
                                 <th>ID</th>
-                                <th>Company</th>
-                                <th>Paid</th>
-                                <th>Status</th>
+                                <th>COMPANY</th>
+                                <th>PAID</th>
+                                <th>STATUS</th>
                                 <th>
-                                    <span>SA</span>
-                                    <mat-icon class="icon-size-4 ml-1" matTooltip="Sample Acknowledgement"
-                                        [svgIcon]="'heroicons_solid:question-mark-circle'"></mat-icon>
+                                    <div class="flex">
+                                        <span>SA</span>
+                                        <mat-icon class="icon-size-4 ml-1" matTooltip="Sample Acknowledgement"
+                                            [svgIcon]="'heroicons_solid:question-mark-circle'"></mat-icon>
+                                    </div>
                                 </th>
                             </tr>
                         </thead>
@@ -84,10 +86,37 @@
                                     </tr>
                                     <tr *ngFor="let data of dateData.data">
                                         <td>{{data.date | date: 'MM/dd/yyyy'}}</td>
-                                        <td><a [routerLink]="['/apps/orders',data.id]" target="_blank">{{data.id}}</a>
+                                        <td><a class="text-blue-600" [routerLink]="['/apps/orders',data.id]"
+                                                target="_blank">{{data.id}}</a>
                                         </td>
                                         <td>{{data.company}}</td>
-                                        <td>{{data.paid}}</td>
+                                        <td>
+                                            <ng-container
+                                                *ngIf="data.total == 0 && !data.blnWarehouse; else paymentDateSection">
+                                                <span class="text-blue-500">SAMPLE</span>
+                                            </ng-container>
+                                            <ng-template #paymentDateSection>
+                                                <ng-container *ngIf="data.paymentDate; else cancelledSection">
+                                                    <span class="text-green-600">PAID</span>
+                                                </ng-container>
+                                            </ng-template>
+                                            <ng-template #cancelledSection>
+                                                <ng-container *ngIf="data.blnCancelled; else paidSection">
+                                                    <span class="text-red-600">CANCELLED</span>
+                                                </ng-container>
+                                            </ng-template>
+                                            <ng-template #paidSection>
+                                                <ng-container
+                                                    *ngIf="data.total == 0 && data.blnWarehouse; else notPaidSection">
+                                                    <span class="text-green-500">PAID</span>
+                                                </ng-container>
+                                            </ng-template>
+                                            <ng-template #notPaidSection>
+                                                <ng-container>
+                                                    <span class="text-red-500">NOT PAID</span>
+                                                </ng-container>
+                                            </ng-template>
+                                        </td>
                                         <td>
                                             <span class="{{data.statusColor}}">{{data.status}}</span>
                                         </td>
@@ -95,7 +124,7 @@
                                             <mat-icon svgIcon="mat_outline:close" class="text-red-600"
                                                 *ngIf="data.sa == 'false'"></mat-icon>
                                             <mat-icon svgIcon="mat_outline:check" class="text-green-600"
-                                                *ngIf="data.sa == 'true'"></mat-icon>
+                                                *ngIf="data.sa != 'false'"></mat-icon>
                                         </td>
                                     </tr>
                                 </ng-container>

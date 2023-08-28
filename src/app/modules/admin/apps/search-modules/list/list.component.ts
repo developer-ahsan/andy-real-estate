@@ -6,8 +6,6 @@ import { MatDrawer } from '@angular/material/sidenav';
 import { fromEvent, Observable, Subject } from 'rxjs';
 import { filter, switchMap, takeUntil } from 'rxjs/operators';
 import { FuseMediaWatcherService } from '@fuse/services/media-watcher';
-import { Contact, Country } from 'app/modules/admin/apps/contacts/contacts.types';
-import { ContactsService } from 'app/modules/admin/apps/contacts/contacts.service';
 
 @Component({
     selector: 'contacts-list',
@@ -18,14 +16,10 @@ import { ContactsService } from 'app/modules/admin/apps/contacts/contacts.servic
 export class ContactsListComponents implements OnInit, OnDestroy {
     @ViewChild('matDrawer', { static: true }) matDrawer: MatDrawer;
 
-    contacts$: Observable<Contact[]>;
-
     contactsCount: number = 0;
     contactsTableColumns: string[] = ['name', 'email', 'phoneNumber', 'job'];
-    countries: Country[];
     drawerMode: 'side' | 'over';
     searchInputControl: FormControl = new FormControl();
-    selectedContact: Contact;
     private _unsubscribeAll: Subject<any> = new Subject<any>();
 
     /**
@@ -34,7 +28,6 @@ export class ContactsListComponents implements OnInit, OnDestroy {
     constructor(
         private _activatedRoute: ActivatedRoute,
         private _changeDetectorRef: ChangeDetectorRef,
-        private _contactsService: ContactsService,
         @Inject(DOCUMENT) private _document: any,
         private _router: Router,
         private _fuseMediaWatcherService: FuseMediaWatcherService
@@ -49,60 +42,10 @@ export class ContactsListComponents implements OnInit, OnDestroy {
      * On init
      */
     ngOnInit(): void {
-        // Get the contacts
-        this.contacts$ = this._contactsService.contacts$;
-        this._contactsService.contacts$
-            .pipe(takeUntil(this._unsubscribeAll))
-            .subscribe((contacts: Contact[]) => {
-
-                // Update the counts
-                this.contactsCount = contacts.length;
-
-                // Mark for check
-                this._changeDetectorRef.markForCheck();
-            });
-
-        // Get the contact
-        this._contactsService.contact$
-            .pipe(takeUntil(this._unsubscribeAll))
-            .subscribe((contact: Contact) => {
-
-                // Update the selected contact
-                this.selectedContact = contact;
-
-                // Mark for check
-                this._changeDetectorRef.markForCheck();
-            });
-
-        // Get the countries
-        this._contactsService.countries$
-            .pipe(takeUntil(this._unsubscribeAll))
-            .subscribe((countries: Country[]) => {
-
-                // Update the countries
-                this.countries = countries;
-
-                // Mark for check
-                this._changeDetectorRef.markForCheck();
-            });
-
-        // Subscribe to search input field value changes
-        this.searchInputControl.valueChanges
-            .pipe(
-                takeUntil(this._unsubscribeAll),
-                switchMap(query =>
-
-                    // Search
-                    this._contactsService.searchContacts(query)
-                )
-            )
-            .subscribe();
-
         // Subscribe to MatDrawer opened change
         this.matDrawer.openedChange.subscribe((opened) => {
             if (!opened) {
                 // Remove the selected contact when drawer closed
-                this.selectedContact = null;
 
                 // Mark for check
                 this._changeDetectorRef.markForCheck();
@@ -136,7 +79,6 @@ export class ContactsListComponents implements OnInit, OnDestroy {
                 )
             )
             .subscribe(() => {
-                this.createContact();
             });
     }
 
@@ -167,17 +109,7 @@ export class ContactsListComponents implements OnInit, OnDestroy {
     /**
      * Create contact
      */
-    createContact(): void {
-        // Create the contact
-        this._contactsService.createContact().subscribe((newContact) => {
 
-            // Go to the new contact
-            this._router.navigate(['./', newContact.id], { relativeTo: this._activatedRoute });
-
-            // Mark for check
-            this._changeDetectorRef.markForCheck();
-        });
-    }
 
     /**
      * Track by function for ngFor loops

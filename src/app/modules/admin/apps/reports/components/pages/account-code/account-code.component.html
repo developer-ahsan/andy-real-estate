@@ -8,17 +8,11 @@
             </div>
             <div class="col-12 col-md-4">
                 <mat-form-field class="w-full">
-                    <input matInput placeholder="Search stores" matTooltip="Search stores by name"
-                        [matAutocomplete]="auto" [formControl]="searchStoresCtrl">
-                    <mat-autocomplete class="w-full" #auto="matAutocomplete" (optionSelected)="onSelectedStores($event)"
-                        [displayWith]="displayWithStores">
-                        <mat-option *ngIf="isSearchingStores" class="is-loading">Loading...</mat-option>
-                        <ng-container *ngIf="!isSearchingStores">
-                            <mat-option *ngFor="let item of allStores" [value]="item">
-                                <span>{{item.storeName}}</span>
-                            </mat-option>
-                        </ng-container>
-                    </mat-autocomplete>
+                    <mat-select matInput [(ngModel)]="selectedStores">
+                        <mat-option *ngFor="let item of allStores" [value]="item">
+                            <span>{{item.storeName}}</span>
+                        </mat-option>
+                    </mat-select>
                 </mat-form-field>
             </div>
             <div class="col-12 col-md-4">
@@ -54,17 +48,48 @@
         <div class="row" *ngIf="generateReportData">
             <div class="col-12">
                 <div class="flex justify-between">
-                    <div class="text-lg font-medium tracking-tight leading-6 truncate cursor-pointer">
-                        <fuse-alert [appearance]="'soft'" [dismissed]="false" [name]="'alertBox1'" [type]="'success'">
-                            <span (click)="downloadExcelWorkSheet()">Click here to download Excel file.</span>
-                        </fuse-alert>
+                    <div>
+                        <div class="text-lg font-medium mb-2 tracking-tight leading-6 truncate cursor-pointer">
+                            <fuse-alert [appearance]="'soft'" [dismissed]="false" [name]="'alertBox1'"
+                                [type]="'success'">
+                                <span (click)="downloadExcelWorkSheet()">Click here to download Excel file.</span>
+                            </fuse-alert>
+                        </div>
+                        <p class="text-lg text-capitalize"><strong>{{_reportService.ngPlan}}</strong></p>
+                        <p>Range: {{this._reportService.startDate | date: 'MM/dd/yyyy'}}-{{this._reportService.endDate |
+                            date: 'MM/dd/yyyy'}}</p>
                     </div>
+
                     <div>
                         <button class="min-w-50" mat-button mat-stroked-button (click)="backToList()">Back To
                             Search</button>
                     </div>
                 </div>
-                <table mat-table [dataSource]="generateReportData" class="w-full border-t mt-2">
+                <table class="table table-striped" matSort (matSortChange)="sortData($event)">
+                    <thead>
+                        <tr>
+                            <th mat-sort-header="ACCOUNTCODE">Account Code</th>
+                            <th mat-sort-header="CUSTOMER">Customer</th>
+                            <th mat-sort-header="SALES">Sales</th>
+                            <th mat-sort-header="NUM_SALES">Number of Sales</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr *ngFor="let element of generateReportData;let i=index" [ngClass]="{'font-bold': i==0}">
+                            <td>{{element.ACCOUNTCODE}}</td>
+                            <td> {{element.CUSTOMER}}</td>
+                            <td>{{element.SALES | currency}}</td>
+                            <td>{{element.NUM_SALES}}</td>
+                        </tr>
+                        <tr class="font-bold">
+                            <td>Total</td>
+                            <td></td>
+                            <td>{{totalDataCalculations.total | currency}}</td>
+                            <td>{{totalDataCalculations.totalSales}}</td>
+                        </tr>
+                    </tbody>
+                </table>
+                <!-- <table mat-table [dataSource]="generateReportData" class="w-full border-t mt-2">
                     <ng-container matColumnDef="code">
                         <th mat-header-cell *matHeaderCellDef>
                             Account Code
@@ -127,7 +152,7 @@
                     <tr mat-header-row *matHeaderRowDef="['codes', 'customers','saless','nu_sales']"></tr>
                     <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
                     <tr mat-footer-row *matFooterRowDef="displayedColumns"></tr>
-                </table>
+                </table> -->
             </div>
         </div>
     </div>

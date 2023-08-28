@@ -60,13 +60,13 @@
                             "budgets": [
                                 {
                                     "type": "initial",
-                                    "maximumWarning": "100mb",
-                                    "maximumError": "100mb"
+                                    "maximumWarning": "5mb",
+                                    "maximumError": "8mb"
                                 },
                                 {
                                     "type": "anyComponentStyle",
-                                    "maximumWarning": "100mb",
-                                    "maximumError": "100mb"
+                                    "maximumWarning": "100kb",
+                                    "maximumError": "150kb"
                                 }
                             ],
                             "fileReplacements": [
@@ -75,15 +75,18 @@
                                     "with": "src/environments/environment.prod.ts"
                                 }
                             ],
-                            "outputHashing": "all"
+                            "outputHashing": "none"
                         },
                         "development": {
                             "buildOptimizer": false,
                             "optimization": false,
                             "vendorChunk": true,
                             "extractLicenses": false,
-                            "sourceMap": true,
-                            "namedChunks": true
+                            "sourceMap": false,
+                            "aot": true,
+                            "statsJson": false,
+                            "progress": false,
+                            "namedChunks": false
                         }
                     },
                     "defaultConfiguration": "production"

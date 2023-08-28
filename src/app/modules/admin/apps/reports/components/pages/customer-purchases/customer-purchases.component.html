@@ -1,3 +1,5 @@
+<div #topScrollAnchor></div>
+
 <div class="w-full">
     <div class="px-8 pb-4">
         <div class="row" *ngIf="!generateReportData">
@@ -26,122 +28,116 @@
         <div class="row" *ngIf="generateReportData">
             <div class="col-12">
                 <div class="flex justify-between">
-                    <div class="text-lg font-medium tracking-tight leading-6 truncate">Report Summary</div>
+                    <div>
+                        <div class="text-lg font-medium mb-2 tracking-tight leading-6 truncate cursor-pointer">
+                            <fuse-alert [appearance]="'soft'" [dismissed]="false" [name]="'alertBox1'"
+                                [type]="'success'">
+                                <mat-progress-spinner *ngIf="generateExcelLoader" [diameter]="24"
+                                    [mode]="'indeterminate'">
+                                </mat-progress-spinner>
+                                <span (click)="downloadExcelWorkSheet()" *ngIf="!generateExcelLoader">Click here to
+                                    download Excel file.</span>
+                            </fuse-alert>
+                        </div>
+                        <p class="text-lg text-capitalize"><strong>{{_reportService.ngPlan}}</strong></p>
+                        <p>{{this.selectedStores.storeName}}</p>
+                        <p>Range: {{this._reportService.startDate | date: 'MM/dd/yyyy'}}-{{this._reportService.endDate |
+                            date: 'MM/dd/yyyy'}}</p>
+                        <div class="text-lg font-medium tracking-tight leading-6 truncate">Customer Purchases</div>
+                    </div>
                     <div>
                         <button class="min-w-50" mat-button mat-stroked-button (click)="backToList()">Back To
                             Search</button>
                     </div>
                 </div>
-                <table mat-table [dataSource]="generateReportData" class="w-full border-t mt-2">
-                    <!-- Type -->
-                    <ng-container matColumnDef="id">
-                        <th mat-header-cell *matHeaderCellDef>
-                            ID
-                        </th>
-                        <td mat-cell *matCellDef="let element">
-                            {{element.fk_storeUserID}}
-                        </td>
-                    </ng-container>
-
-                    <!-- Total -->
-                    <ng-container matColumnDef="fName">
-                        <th mat-header-cell *matHeaderCellDef>
-                            First Name
-                        </th>
-                        <td mat-cell *matCellDef="let element">
-                            {{element.firstName}}
-                        </td>
-                    </ng-container>
-
-                    <!-- Expenses amount -->
-                    <ng-container matColumnDef="lName">
-                        <th mat-header-cell *matHeaderCellDef>
-                            Last Name
-                        </th>
-                        <td mat-cell *matCellDef="let element">
-                            {{element.lastName}}
-                        </td>
-                    </ng-container>
-
-                    <!-- Expenses percentage -->
-                    <ng-container matColumnDef="company">
-                        <th mat-header-cell *matHeaderCellDef>
-                            Company
-                        </th>
-                        <td mat-cell *matCellDef="let element">
-                            {{element.companyName}}
-                        </td>
-                    </ng-container>
-
-                    <!-- Remaining amount -->
-                    <ng-container matColumnDef="no">
-                        <th mat-header-cell *matHeaderCellDef>
-                            <div class="flex">
-                                <span>NO</span>
-                                <mat-icon class="icon-size-4 ml-1" matTooltip="Number of orders in range"
-                                    [svgIcon]="'heroicons_solid:question-mark-circle'"></mat-icon>
-                            </div>
-                        </th>
-                        <td mat-cell *matCellDef="let element">
-                            {{element.orderNum}}
-                        </td>
-                    </ng-container>
-
-                    <!-- Remaining percentage -->
-                    <ng-container matColumnDef="pv">
-                        <th mat-header-cell *matHeaderCellDef>
-                            <div class="flex">
-                                <span>PV</span>
-                                <mat-icon class="icon-size-4 ml-1" matTooltip="Purchase value in range"
-                                    [svgIcon]="'heroicons_solid:question-mark-circle'"></mat-icon>
-                            </div>
-                        </th>
-                        <td mat-cell *matCellDef="let element">
-                            {{element.purchaseValue | currency}}
-                        </td>
-                    </ng-container>
-                    <ng-container matColumnDef="tno">
-                        <th mat-header-cell *matHeaderCellDef>
-                            <div class="flex">
-                                <span>TNO</span>
-                                <mat-icon class="icon-size-4 ml-1" matTooltip="total number of purchases all time"
-                                    [svgIcon]="'heroicons_solid:question-mark-circle'"></mat-icon>
-                            </div>
-                        </th>
-                        <td mat-cell *matCellDef="let element">
-                            {{element.TNO}}
-                        </td>
-                    </ng-container>
-                    <ng-container matColumnDef="tpv">
-                        <th mat-header-cell *matHeaderCellDef>
-                            <div class="flex">
-                                <span>TPV</span>
-                                <mat-icon class="icon-size-4 ml-1" matTooltip="total purchase value all time"
-                                    [svgIcon]="'heroicons_solid:question-mark-circle'"></mat-icon>
-                            </div>
-                        </th>
-                        <td mat-cell *matCellDef="let element">
-                            {{element.TPV | currency}}
-                        </td>
-                    </ng-container>
-                    <ng-container matColumnDef="nc">
-                        <th mat-header-cell *matHeaderCellDef>
-                            <div class="flex">
-                                <span>NC</span>
-                                <mat-icon class="icon-size-4 ml-1" matTooltip="New Customer"
-                                    [svgIcon]="'heroicons_solid:question-mark-circle'"></mat-icon>
-                            </div>
-                        </th>
-                        <td mat-cell *matCellDef="let element">
-                        </td>
-                    </ng-container>
-                    <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-                    <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+                <table class="table table-striped" matSort (matSortChange)="customSort($event)">
+                    <thead>
+                        <tr>
+                            <td></td>
+                            <th mat-sort-header="fk_storeUserID">ID</th>
+                            <th mat-sort-header="firstName">First Name</th>
+                            <th mat-sort-header="lastName">Last Name</th>
+                            <th mat-sort-header="email">Email</th>
+                            <th mat-sort-header="companyName">Customer</th>
+                            <th mat-sort-header="NO">
+                                <div class="flex">
+                                    <span>NO</span>
+                                    <mat-icon class="icon-size-4 ml-1" matTooltip="Number of orders in range"
+                                        [svgIcon]="'heroicons_solid:question-mark-circle'"></mat-icon>
+                                </div>
+                            </th>
+                            <th mat-sort-header="PV">
+                                <div class="flex">
+                                    <span>PV</span>
+                                    <mat-icon class="icon-size-4 ml-1" matTooltip="Purchase value in range"
+                                        [svgIcon]="'heroicons_solid:question-mark-circle'"></mat-icon>
+                                </div>
+                            </th>
+                            <th>
+                                <div class="flex">
+                                    <span>TNO</span>
+                                    <mat-icon class="icon-size-4 ml-1" matTooltip="Total number of purchases, all time"
+                                        [svgIcon]="'heroicons_solid:question-mark-circle'"></mat-icon>
+                                </div>
+                            </th>
+                            <th>
+                                <div class="flex">
+                                    <span>TPV</span>
+                                    <mat-icon class="icon-size-4 ml-1" matTooltip="Total purchase value, all time"
+                                        [svgIcon]="'heroicons_solid:question-mark-circle'"></mat-icon>
+                                </div>
+                            </th>
+                            <th>
+                                <div class="flex">
+                                    <span>NC</span>
+                                    <mat-icon class="icon-size-4 ml-1" matTooltip="New Customer"
+                                        [svgIcon]="'heroicons_solid:question-mark-circle'"></mat-icon>
+                                </div>
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr *ngFor="let item of generateReportData;let i=index;">
+                            <td>{{i+1}}</td>
+                            <td>
+                                <a class="text-blue-700" [routerLink]="['apps/customers',item.fk_storeUserID]"
+                                    target="_blank">{{item.fk_storeUserID}}</a>
+                            </td>
+                            <td>
+                                <a class="text-blue-700" [routerLink]="['apps/customers',item.fk_storeUserID]"
+                                    target="_blank">{{item.firstName}}</a>
+                            </td>
+                            <td>
+                                <a class="text-blue-700" [routerLink]="['apps/customers',item.fk_storeUserID]"
+                                    target="_blank">{{item.lastName}}</a>
+                            </td>
+                            <td>
+                                <a class="text-blue-700" [routerLink]="['apps/customers',item.fk_storeUserID]"
+                                    target="_blank"> {{item.email}}</a>
+                            </td>
+                            <td>
+                                <a class="text-blue-700"
+                                    [routerLink]="['apps/customers',item.fk_storeUserID]">{{item.companyName}}</a>
+                            </td>
+                            <td>{{item.NO}}</td>
+                            <td>{{item.PV | currency}}</td>
+                            <td>{{item.TNO}}</td>
+                            <td>{{item.TPV | currency}}</td>
+                            <td>
+                                <span class="text-red-500" *ngIf="item.PV != item.TPV">NO</span>
+                                <span class="text-green-500" *ngIf="item.PV == item.TPV">YES</span>
+                            </td>
+                        </tr>
+                        <tr class="font-bold">
+                            <td colspan="6">TOTALS</td>
+                            <td>{{totalsData.NO}}</td>
+                            <td>{{totalsData.PV | currency}}</td>
+                            <td>{{totalsData.TNO}}</td>
+                            <td>{{totalsData.TPV | currency}}</td>
+                            <td>{{totalsData.NC}}</td>
+                        </tr>
+                    </tbody>
                 </table>
-                <mat-paginator #paginator class="border-b sm:border-t sm:border-b-0 z-10 bg-gray-50 dark:bg-transparent"
-                    [length]="totalData" [pageIndex]="0" [pageSize]="20" (page)="getNextReportData($event)"
-                    [hidePageSize]="true">
-                </mat-paginator>
             </div>
         </div>
     </div>

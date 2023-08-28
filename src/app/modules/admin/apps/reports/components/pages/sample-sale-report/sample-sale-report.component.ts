@@ -97,7 +97,7 @@ export class ReportSampleSaleComponent implements OnInit, OnDestroy {
               } else {
                 sattusData = this._reportService.getStatusValue(data[4]);
               }
-              element.storeDetails.push({ date: data[0], id: data[1], company: data[2], paid: data[3], status: sattusData.statusValue, statusColor: sattusData.statusColor, sa: data[5] });
+              element.storeDetails.push({ date: data[0], id: data[1], company: data[2], paid: data[3], status: sattusData.statusValue, statusColor: sattusData.statusColor, sa: data[5], blnCancelled: Number(data[6]), blnClosed: Number(data[7]), total: Number(data[8]), paymentDate: data[9], blnWarehouse: Number(data[10]) });
             });
           }
         });
