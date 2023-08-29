@@ -65,7 +65,6 @@ export class ReportIncidentComponent implements OnInit, OnDestroy {
     this.getStores();
     this.getSuppliers();
     this.getEmployees();
-    this.getSourceEmployee();
     this.getIncidentReportData(1);
   };
   getStores() {
@@ -81,96 +80,25 @@ export class ReportIncidentComponent implements OnInit, OnDestroy {
   // Employees
   getEmployees() {
     let param = {
-      incident_reports_employees: true,
-      size: 10
+      incident_reports_employees: true
     }
     this._reportService.getAPIData(param).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
       this.allEmployees.push({ pk_userID: '', employeeName: 'All Employees' });
-      this.allEmployees = this.allEmployees.concat(res["data"]);
-      this.selectedEmployees = this.allEmployees[0];
-      this.searchEmployeesCtrl.setValue(this.selectedEmployees);
       this.allEmployeesSource.push({ pk_userID: '', employeeName: 'All Employees' });
-      this.allEmployeesSource = this.allEmployeesSource.concat(res["data"]);
+      let employees = res["data"][0].employees.split(',,');
+      employees.forEach(element => {
+        let employee = element.split('::');
+        this.allEmployees.push({ pk_userID: Number(employee[0]), employeeName: employee[1] });
+        this.allEmployeesSource.push({ pk_userID: Number(employee[0]), employeeName: employee[1] });
+      });
+      this.selectedEmployees = this.allEmployees[0];
       this.selectedEmployeesSource = this.allEmployeesSource[0];
-      this.searchEmployeesCtrlSource.setValue(this.selectedEmployeesSource);
       this.isLoading = false;
       this._changeDetectorRef.markForCheck();
     }, err => {
       this.isLoading = false;
       this._changeDetectorRef.markForCheck();
     });
-    let params;
-    this.searchEmployeesCtrl.valueChanges.pipe(
-      filter((res: any) => {
-        params = {
-          incident_reports_employees: true,
-          keyword: res
-        }
-        return res !== null && res.length >= 2
-      }),
-      distinctUntilChanged(),
-      debounceTime(300),
-      tap(() => {
-        this.allEmployees = [];
-        this.isSearchingEmployees = true;
-        this._changeDetectorRef.markForCheck();
-      }),
-      switchMap(value => this._reportService.getAPIData(params)
-        .pipe(
-          finalize(() => {
-            this.isSearchingEmployees = false
-            this._changeDetectorRef.markForCheck();
-          }),
-        )
-      )
-    ).subscribe((data: any) => {
-      this.allEmployees.push({ pk_userID: '', employeeName: 'All Employees' });
-      this.allEmployees = data['data'];
-    });
-  }
-  onSelectedEmployees(ev) {
-    this.selectedEmployees = ev.option.value;
-  }
-  displayWithEmployees(value: any) {
-    let name = value?.employeeName;
-    return name;
-  }
-  getSourceEmployee() {
-    let params;
-    this.searchEmployeesCtrlSource.valueChanges.pipe(
-      filter((res: any) => {
-        params = {
-          incident_reports_employees: true,
-          keyword: res
-        }
-        return res !== null && res.length >= 2
-      }),
-      distinctUntilChanged(),
-      debounceTime(300),
-      tap(() => {
-        this.allEmployeesSource = [];
-        this.isSearchingEmployeesSource = true;
-        this._changeDetectorRef.markForCheck();
-      }),
-      switchMap(value => this._reportService.getAPIData(params)
-        .pipe(
-          finalize(() => {
-            this.isSearchingEmployeesSource = false
-            this._changeDetectorRef.markForCheck();
-          }),
-        )
-      )
-    ).subscribe((data: any) => {
-      this.allEmployeesSource.push({ pk_userID: '', employeeName: 'All Employees' });
-      this.allEmployeesSource = data['data'];
-    });
-  }
-  onSelectedEmployeesSource(ev) {
-    this.selectedEmployeesSource = ev.option.value;
-  }
-  displayWithEmployeesSource(value: any) {
-    let name = value?.employeeName;
-    return name;
   }
   // Suppliers
   getSuppliers() {
@@ -178,7 +106,7 @@ export class ReportIncidentComponent implements OnInit, OnDestroy {
       .pipe(takeUntil(this._unsubscribeAll))
       .subscribe(suppliers => {
         const activeSuppliers = suppliers["data"].filter(element => element.blnActiveVendor);
-        this.allSuppliers.push({ pk_companyID: '', companyName: 'All Suppliers' });
+        this.allSuppliers.push({ pk_companyID: '', companyName: 'All Vendors' });
         this.allSuppliers.push(...activeSuppliers);
         this.selectedSuppliers = this.allSuppliers[0];
       });

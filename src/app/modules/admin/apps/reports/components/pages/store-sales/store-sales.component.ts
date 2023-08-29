@@ -8,6 +8,10 @@ import { debounceTime, distinctUntilChanged, filter, finalize, map, switchMap, t
 import { ReportsService } from '../../reports.service';
 import { AddCompany, UpdateCompany, UpdateWebsiteLoginInfo } from '../../reports.types';
 import { DashboardsService } from 'app/modules/admin/dashboards/dashboard.service';
+import moment from 'moment';
+import * as pdfMake from "pdfmake/build/pdfmake";
+import * as pdfFonts from "pdfmake/build/vfs_fonts";
+import { CurrencyPipe } from '@angular/common';
 @Component({
   selector: 'app-store-sales',
   templateUrl: './store-sales.component.html',
@@ -16,7 +20,9 @@ import { DashboardsService } from 'app/modules/admin/dashboards/dashboard.servic
 export class ReportsStoreSalesComponent implements OnInit, OnDestroy {
   @ViewChild('paginator') paginator: MatPaginator;
   @ViewChild('topScrollAnchor') topScroll: ElementRef;
-  @ViewChild('summaryScrollAnchor') summaryScrollAnchor: ElementRef;
+  @ViewChild('storesSummary') storesSummary: ElementRef;
+  @ViewChild('employeeSummary') employeeSummary: ElementRef;
+  @ViewChild('ytdSummary') ytdSummary: ElementRef;
   @Input() isLoading: boolean;
   // @Output() isLoadingChange = new EventEmitter<boolean>();
   private _unsubscribeAll: Subject<any> = new Subject<any>();
@@ -50,13 +56,22 @@ export class ReportsStoreSalesComponent implements OnInit, OnDestroy {
   totalStores = 0;
 
   generateReportData: any;
+  totalStoreSummary: any;
+  employeesReportData: any;
+  lastYear_report_summary: any;
+  lastYearTotal: any;
+
   reportPage = 1;
   totalData = 0;
   displayedColumns: string[] = ['store', 'sales', 'py', 'percent', 'difference', 'n_sales', 'pyns', 'avg', 'margin'];
 
+  currentYear = moment().format('yyyy');
+  currentDate = moment().subtract(1, 'years').format('mm/DD/yyyy');
+  currentYearCheck = false;
   constructor(
     private _changeDetectorRef: ChangeDetectorRef,
-    private _reportService: ReportsService,
+    public _reportService: ReportsService,
+    private currencyPipe: CurrencyPipe,
     private commonService: DashboardsService
   ) { }
 
@@ -80,8 +95,8 @@ export class ReportsStoreSalesComponent implements OnInit, OnDestroy {
 
   getStates() {
     this._reportService.States$.pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
-      this.searchStatesCtrl.setValue({ name: 'All States', pk_stateID: 0 });
-      this.allStates.push({ name: 'All States', pk_stateID: 0 });
+      this.searchStatesCtrl.setValue({ name: 'All States', pk_stateID: '' });
+      this.allStates.push({ name: 'All States', pk_stateID: '' });
       this.allStates = this.allStates.concat(res["data"]);
       this.selectedStates = this.allStates[0];
     });
@@ -173,7 +188,34 @@ export class ReportsStoreSalesComponent implements OnInit, OnDestroy {
   }
   generateReport(page) {
     this.generateReportData = null;
+    this.employeesReportData = null;
+    this.lastYear_report_summary = null;
+    this.totalStoreSummary = {
+      TAX: 0,
+      SALES: 0,
+      PY: 0,
+      percent: 0,
+      DIFF: 0,
+      NS: 0,
+      PYNS: 0,
+      AVG: 0,
+      MARGIN: 0,
+      COST: 0,
+      PRICE: 0,
+      blnPercent: false
+    }
+    this.lastYearTotal = {
+      SALES: 0,
+      PY: 0,
+      PERCENT: 0,
+      NS: 0,
+      PYNS: 0,
+      blnPercent: false
+    }
     this._reportService.setFiltersReport();
+    if (this.currentYear == moment(this._reportService.endDate).format('yyyy')) {
+      this.currentYearCheck = true;
+    }
     let selectedStores = [];
     this.storesList.forEach(element => {
       if (element.isChecked) {
@@ -185,68 +227,193 @@ export class ReportsStoreSalesComponent implements OnInit, OnDestroy {
       return;
     }
     this.isGenerateReportLoader = true;
+    let state = '';
+    if (this.selectedStates.name != 'All States') {
+      state = this.selectedPromoCodes.promocode;
+    }
+    let promo = '';
+    if (this.selectedPromoCodes.promocode != 'Any Promocode') {
+      promo = this.selectedStates.name;
+    }
     let params = {
       store_sales_report: true,
       start_date: this._reportService.startDate,
       end_date: this._reportService.endDate,
-      stores_list: selectedStores.toString(),
+      store_list: selectedStores.toString(),
       payment_status: this.paymentStatus,
       report_type: this.reportType,
       show_cancelled_order: this.blnShowCancelled,
       is_individual: this.blnIndividualOrders,
       is_ytd: this.blnYTD,
-      state: this.selectedStates.pk_stateID,
-      promoCode: this.selectedPromoCodes.promocode
+      state: state,
+      promo_code: promo
     }
     this._reportService.getAPIData(params).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
-      console.log(res);
-      if (res["data"].length > 0) {
-        this.generateReportData = res["data"];
-        this.totalData = res["totalRecords"];
-        this.generateReportData.forEach(element => {
-          if (element.previousYearSales == 0) {
-            element.percent = 0
-          } else {
-            element.percent = Number(100 - (element.monthlyEarnings / element.previousYearSales) * 100);
+      if (res["report_summary"].length > 0) {
+        res["report_summary"].forEach(element => {
+          if (this.blnIndividualOrders == 1) {
+            if (element.DETAILS) {
+              element.storeDetails = [];
+              let details;
+              if (element.DETAILS) {
+                details = element.DETAILS.split(',,');
+                details.forEach(prod => {
+                  let data = prod.split('===');
+                  let paid = false;
+                  if (data[6]) {
+                    paid = true;
+                  }
+
+                  let sattusData = {
+                    statusColor: '',
+                    statusValue: ''
+                  };
+                  if (data[8] == 1) {
+                    sattusData.statusColor = 'text-red-700';
+                    sattusData.statusValue = 'Cancelled';
+                  } else if (data[9] == 1) {
+                    sattusData.statusColor = 'text-red-700';
+                    sattusData.statusValue = 'Closed';
+                  } else {
+                    sattusData = this._reportService.getStatusValue(data[7]);
+                  }
+                  element.storeDetails.push({ date: data[0], id: data[1], company: data[2], sale: data[3], tax: data[4], margin: Number(data[5]).toFixed(2), paid: paid, status: sattusData.statusValue, statusColor: sattusData.statusColor });
+                });
+              }
+            }
           }
-          if (element.percent == 0) {
+
+          if (element.SALES > element.PY) {
+            element.blnPercent = true;
+            const diff = element.SALES - element.PY;
+            if (element.PY == 0) {
+              element.percent = 100;
+            } else {
+              element.percent = Math.round((diff / element.PY) * 100);
+            }
+          } else if (element.SALES < element.PY) {
+            element.blnPercent = false;
+            const diff = element.PY - element.SALES;
+            if (element.SALES == 0) {
+              element.percent = 100;
+            } else {
+              element.percent = Math.round((diff / element.PY) * 100);
+            }
+          } else {
             element.percent = 0;
-            element.color = 'gray';
           }
-          if (element.percent < 0) {
-            element.color = 'red';
-          } else if (element.percent > 0) {
-            element.color = 'green'
-          } else {
-            element.color = 'gray';
-          }
-          element.difference = Number(element.monthlyEarnings - element.previousYearSales);
-          if (!element.difference) {
-            element.difference = 0;
-          }
-          if (element.difference < 0) {
-            element.difference = Math.abs(element.difference);
-          }
-          element.avg = Number(element.monthlyEarnings / element.NS);
-          if (!element.avg) {
-            element.avg = 0;
-          }
-          element.margin = Number(((element.price - element.cost) / element.price) * 100);
-          if (!element.margin) {
-            element.margin = 0;
-          }
+          this.totalStoreSummary.SALES += element.SALES;
+          this.totalStoreSummary.PY += element.PY;
+          this.totalStoreSummary.NS += element.NS;
+          this.totalStoreSummary.PYNS += element.PYNS;
+          this.totalStoreSummary.COST += element.cost;
+          this.totalStoreSummary.PRICE += element.price;
+          this.totalStoreSummary.TAX += element.tax;
         });
+        if (this.blnIndividualOrders) {
+          res["report_summary"].forEach((store) => {
+            store.date_data = [];
+            store.storeDetails.forEach(element => {
+              let date_check = moment(element.date).format('MMM,yyyy');
+              if (store.date_data.length == 0) {
+                store.date_data.push({ date: moment(element.date).format('MMM,yyyy'), data: [element] });
+              } else {
+                const d_index = store.date_data.findIndex(date => date.date == date_check);
+                if (d_index < 0) {
+                  store.date_data.push({ date: moment(element.date).format('MMM,yyyy'), data: [element] });
+                } else {
+                  store.date_data[d_index].data.push(element);
+                }
+              }
+            });
+          });
+        }
+        if (this.totalStoreSummary.SALES > this.totalStoreSummary.PY) {
+          this.totalStoreSummary.blnPercent = true;
+          const diff = this.totalStoreSummary.SALES - this.totalStoreSummary.PY;
+          if (this.totalStoreSummary.PY == 0) {
+            this.totalStoreSummary.PERCENT = 100;
+          } else {
+            this.totalStoreSummary.PERCENT = Math.round((diff / this.totalStoreSummary.PY) * 100);
+          }
+        } else if (this.totalStoreSummary.SALES < this.totalStoreSummary.PY) {
+          this.totalStoreSummary.blnPercent = false;
+          const diff = this.totalStoreSummary.PY - this.totalStoreSummary.SALES;
+          if (this.totalStoreSummary.SALES == 0) {
+            this.totalStoreSummary.PERCENT = 100;
+          } else {
+            this.totalStoreSummary.PERCENT = Math.round((diff / this.totalStoreSummary.PY) * 100);
+          }
+        } else {
+          this.totalStoreSummary.PERCENT = 0;
+        }
+        this.totalStoreSummary.AVG = Math.ceil((this.totalStoreSummary.SALES / this.totalStoreSummary.NS) * 10000) / 100;
+        this.totalStoreSummary.MARGIN = Math.ceil(((this.totalStoreSummary.PRICE - this.totalStoreSummary.COST) / this.totalStoreSummary.PRICE) * 10000) / 100;
+        this.totalStoreSummary.DIFF = this.totalStoreSummary.SALES - this.totalStoreSummary.PY;
+
+        this.generateReportData = res["report_summary"];
+        this.employeesReportData = res["employee_summary"];
+        console.log(this.generateReportData)
+
+        // Last Year
+        if (this.blnYTD) {
+          res["lastYear_report_summary"].forEach(element => {
+            if (element.SALES > element.PY) {
+              element.blnPercent = true;
+              const diff = element.SALES - element.PY;
+              if (element.PY == 0) {
+                element.percent = 100;
+              } else {
+                element.percent = Math.round((diff / element.PY) * 100);
+              }
+            } else if (element.SALES < element.PY) {
+              element.blnPercent = false;
+              const diff = element.PY - element.SALES;
+              if (element.SALES == 0) {
+                element.percent = 100;
+              } else {
+                element.percent = Math.round((diff / element.PY) * 100);
+              }
+            } else {
+              element.percent = 0;
+            }
+            this.lastYearTotal.SALES += element.SALES;
+            this.lastYearTotal.PY += element.PY;
+            this.lastYearTotal.NS += element.NS;
+            this.lastYearTotal.PYNS += element.PYNS;
+          });
+          if (this.lastYearTotal.SALES > this.lastYearTotal.PY) {
+            this.lastYearTotal.blnPercent = true;
+            const diff = this.lastYearTotal.SALES - this.lastYearTotal.PY;
+            if (this.lastYearTotal.PY == 0) {
+              this.lastYearTotal.PERCENT = 100;
+            } else {
+              this.lastYearTotal.PERCENT = Math.round((diff / this.lastYearTotal.PY) * 100);
+            }
+          } else if (this.lastYearTotal.SALES < this.lastYearTotal.PY) {
+            this.lastYearTotal.blnPercent = false;
+            const diff = this.lastYearTotal.PY - this.lastYearTotal.SALES;
+            if (this.lastYearTotal.SALES == 0) {
+              this.lastYearTotal.PERCENT = 100;
+            } else {
+              this.lastYearTotal.PERCENT = Math.round((diff / this.lastYearTotal.PY) * 100);
+            }
+          } else {
+            this.lastYearTotal.PERCENT = 0;
+          }
+          this.lastYear_report_summary = res["lastYear_report_summary"];
+        }
       } else {
         this.generateReportData = null;
         this._reportService.snackBar('No records found');
       }
+      this.backtoTop();
       this.isGenerateReportLoader = false;
       this._changeDetectorRef.markForCheck();
     }, err => {
       this.isGenerateReportLoader = false;
       this._changeDetectorRef.markForCheck();
     });
-    this.backtoTop();
   }
   backToList() {
     this.generateReportData = null;
@@ -254,7 +421,17 @@ export class ReportsStoreSalesComponent implements OnInit, OnDestroy {
   }
   goToSummary() {
     setTimeout(() => {
-      this.summaryScrollAnchor.nativeElement.scrollIntoView({ behavior: 'smooth' });
+      this.storesSummary.nativeElement.scrollIntoView({ behavior: 'smooth' });
+    }, 100);
+  }
+  goToEmployeeSummary() {
+    setTimeout(() => {
+      this.employeeSummary.nativeElement.scrollIntoView({ behavior: 'smooth' });
+    }, 100);
+  }
+  goToYTDSummary() {
+    setTimeout(() => {
+      this.ytdSummary.nativeElement.scrollIntoView({ behavior: 'smooth' });
     }, 100);
   }
   backtoTop() {
@@ -263,7 +440,225 @@ export class ReportsStoreSalesComponent implements OnInit, OnDestroy {
     }, 100);
   }
   generatePdf() {
+    const documentDefinition: any = {
+      pageSize: 'A4',
+      pageOrientation: 'landscape',
+      pageMargins: [10, 10, 10, 10],
+      content: [
+        // Add a title for your PDF
+        { text: this._reportService.ngPlan.toUpperCase(), fontSize: 14 },
+        { text: 'Range: ' + this._reportService.startDate + ' - ' + this._reportService.endDate, fontSize: 10 },
+        // Add a spacer element to create a margin above the table
+        { text: '', margin: [0, 20, 0, 0] },
+      ],
+      styles: {
+        tableHeader: {
+          bold: true
+        }
+      }
+    };
+    let summaryIndex = 4;
+    let employeeIndex = 6;
+    let ytDIndex = 8;
+    // Forn Individual Orders
+    if (this.blnIndividualOrders == 1) {
+      summaryIndex = 7;
+      employeeIndex = 9;
+      ytDIndex = 11;
+      documentDefinition.content.push(
+        {
+          table: {
+            widths: ['*', '*', '*', '*', '*', '*', '*', '*'],
+            body: [
+              [
+                { text: 'Date', bold: true },
+                { text: 'ID', bold: true },
+                { text: 'Company', bold: true },
+                { text: 'Sale', bold: true },
+                { text: 'Tax', bold: true },
+                { text: 'Margin', bold: true },
+                { text: 'Paid', bold: true },
+                { text: 'Status', bold: true }
+              ],
+            ]
+          },
+          fontSize: 8
+        },
+        { text: '', margin: [0, 20, 0, 0] },
+      );
+      // Add Report Data
+      documentDefinition.content.push(
+        { text: '', pageBreak: 'after' }
+      )
+      this.generateReportData.forEach(store => {
+        // First Table Data
+        documentDefinition.content[3].table.body.push(
+          [
+            { text: store.storeName, colSpan: 3, alignment: 'left', bold: true, margin: [0, 3, 0, 3], fontSize: 10 }, {}, {},
+            { text: this.currencyPipe.transform(Number(store.SALES), 'USD', 'symbol', '1.0-2', 'en-US'), bold: true, margin: [0, 3, 0, 3] },
+            { text: this.currencyPipe.transform(Number(store.tax), 'USD', 'symbol', '1.0-2', 'en-US'), bold: true, margin: [0, 3, 0, 3] },
+            { text: store.MARGIN + '%', bold: true, margin: [0, 3, 0, 3] },
+            { text: '', margin: [0, 3, 0, 3] },
+            { text: '', margin: [0, 3, 0, 3] }
+          ]
+        )
+        // date data
+        if (store.date_data) {
+          store.date_data.forEach(dateData => {
+            documentDefinition.content[3].table.body.push(
+              [
+                { text: dateData.date, fontSize: 10, colSpan: 8, alignment: 'center', bold: true, margin: [0, 3, 0, 3] }, {}, {}, {}, {}, {}, {}, {}
+              ]
+            )
+            dateData.data.forEach(d => {
+              let paid = 'No';
+              if (d.paid) {
+                paid = 'Yes';
+              }
+              documentDefinition.content[3].table.body.push(
+                [
+                  moment(d.date).format('MM/DD/yyyy'),
+                  d.id,
+                  d.company,
+                  this.currencyPipe.transform(Number(d.sale), 'USD', 'symbol', '1.0-2', 'en-US'),
+                  this.currencyPipe.transform(Number(d.tax), 'USD', 'symbol', '1.0-2', 'en-US'),
+                  d.margin + '%',
+                  paid,
+                  d.status
+                ]
+              )
+            });
+          });
+        }
+      });
+    }
+    // Store Summary
+    documentDefinition.content.push(
+      { text: 'Report Summary', margin: [0, 2, 0, 5] },
+      {
+        table: {
+          widths: ['24%', '10%', '10%', '9%', '10%', '9%', '9%', '9%', '10%'],
+          body: [
+            [
+              { text: 'Store', bold: true },
+              { text: 'Sales', bold: true },
+              { text: 'PY', bold: true },
+              { text: '%', bold: true },
+              { text: 'Diff', bold: true },
+              { text: 'NS', bold: true },
+              { text: 'PYNS', bold: true },
+              { text: 'Avg', bold: true },
+              { text: 'Margin', bold: true }
+            ],
+          ]
+        },
+        fontSize: 8
+      }
+    );
+    this.generateReportData.forEach(store => {
+      documentDefinition.content[summaryIndex].table.body.push(
+        [
+          store.storeName,
+          this.currencyPipe.transform(Number(store.SALES), 'USD', 'symbol', '1.0-2', 'en-US'),
+          this.currencyPipe.transform(Number(store.PY), 'USD', 'symbol', '1.0-2', 'en-US'),
+          `${store.percent.toFixed(2)}%`,
+          this.currencyPipe.transform(Number(store.DIFF), 'USD', 'symbol', '1.0-2', 'en-US'),
+          store.NS,
+          store.PYNS,
+          this.currencyPipe.transform(Number(store.AVG), 'USD', 'symbol', '1.0-2', 'en-US'),
+          `${store.MARGIN.toFixed(2)}%`
+        ]
+      )
+    });
+    documentDefinition.content[summaryIndex].table.body.push(
+      [
+        { text: 'Grand Total', bold: true },
+        { text: this.currencyPipe.transform(Number(this.totalStoreSummary.SALES), 'USD', 'symbol', '1.0-2', 'en-US'), bold: true },
+        { text: this.currencyPipe.transform(Number(this.totalStoreSummary.PY), 'USD', 'symbol', '1.0-2', 'en-US'), bold: true },
+        { text: `${this.totalStoreSummary?.percent}%`, bold: true },
+        { text: this.currencyPipe.transform(Number(this.totalStoreSummary.DIFF), 'USD', 'symbol', '1.0-2', 'en-US'), bold: true },
+        { text: this.totalStoreSummary.NS, bold: true },
+        { text: this.totalStoreSummary.PYNS, bold: true },
+        { text: this.currencyPipe.transform(Number(this.totalStoreSummary?.AVG), 'USD', 'symbol', '1.0-2', 'en-US'), bold: true },
+        { text: `${this.totalStoreSummary?.MARGIN}%`, bold: true }
+      ]
+    )
+    // Employee Summary
+    documentDefinition.content.push(
+      // 5 index
+      { text: 'Employee Sales Summary', margin: [0, 2, 0, 5] },
+      // 6 Index
+      {
+        table: {
+          widths: ['25%', '25%', '25%', '25%'],
+          body: [
+            [
+              { text: 'EMPLOYEE', bold: true },
+              { text: 'TOTAL SALES', bold: true },
+              { text: 'NUM. SALES', bold: true },
+              { text: 'AVG SALE', bold: true }
+            ],
+          ]
+        },
+        fontSize: 8
+      }
+    );
+    this.employeesReportData.forEach(employee => {
+      documentDefinition.content[employeeIndex].table.body.push(
+        [
+          employee.EMPLOYEE,
+          this.currencyPipe.transform(Number(employee.TOTAL_SALES), 'USD', 'symbol', '1.0-2', 'en-US'),
+          employee.NUM_SALES,
+          this.currencyPipe.transform(Number(employee.AVG), 'USD', 'symbol', '1.0-2', 'en-US'),
+        ]
+      )
+    });
 
+    // YTD SALE
+    if (this.blnYTD) {
+      documentDefinition.content.push(
+        { text: 'YTD Summary', margin: [0, 2, 0, 5] },
+        {
+          table: {
+            widths: ['30%', '20%', '15%', '15%', '10%', '10%'],
+            body: [
+              [
+                { text: 'Store', bold: true },
+                { text: 'Sales', bold: true },
+                { text: 'PY', bold: true },
+                { text: '%', bold: true },
+                { text: 'NS', bold: true },
+                { text: 'PYNS', bold: true }
+              ],
+            ]
+          },
+          fontSize: 8
+        }
+      );
+      this.lastYear_report_summary.forEach(store => {
+        documentDefinition.content[ytDIndex].table.body.push(
+          [
+            store.storeName,
+            this.currencyPipe.transform(Number(store.SALES), 'USD', 'symbol', '1.0-2', 'en-US'),
+            this.currencyPipe.transform(Number(store.PY), 'USD', 'symbol', '1.0-2', 'en-US'),
+            `${store.percent.toFixed(2)}%`,
+            store.NS,
+            store.PYNS,
+          ]
+        )
+      });
+      documentDefinition.content[ytDIndex].table.body.push(
+        [
+          { text: 'Grand Total', bold: true },
+          { text: this.currencyPipe.transform(Number(this.lastYearTotal.SALES), 'USD', 'symbol', '1.0-2', 'en-US'), bold: true },
+          { text: this.currencyPipe.transform(Number(this.lastYearTotal.PY), 'USD', 'symbol', '1.0-2', 'en-US'), bold: true },
+          { text: `${this.lastYearTotal?.PERCENT}%`, bold: true },
+          { text: this.lastYearTotal.NS, bold: true },
+          { text: this.lastYearTotal.PYNS, bold: true }
+        ]
+      )
+    }
+    pdfMake.createPdf(documentDefinition).download(`Store-Sales-Report-${this._reportService.startDate}-${this._reportService.endDate}.pdf`);
   }
   /**
      * On destroy

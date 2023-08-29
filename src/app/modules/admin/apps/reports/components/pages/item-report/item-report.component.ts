@@ -36,7 +36,7 @@ export class ReportItemsComponent implements OnInit, OnDestroy {
   blnShowCancelled = 0;
   paymentStatus = 1;
   ngStore = 637;
-  ngSelectedColumns = ['setups', 'shipping', 'subtotal', 'paid', 'price', 'runs', 'zip', 'internalRoyalty'];
+  ngSelectedColumns = ['price', 'setups', 'shipping', 'subtotal', 'paid', 'runs', 'internalRoyalty', 'zip'];
   constructor(
     private _changeDetectorRef: ChangeDetectorRef,
     private _reportService: ReportsService,
@@ -116,13 +116,19 @@ export class ReportItemsComponent implements OnInit, OnDestroy {
       { header: "Location", key: "LocationName", width: 30 },
       { header: "Item", key: "Item", width: 20 },
       { header: "Description", key: "Description", width: 60 },
-      { header: "Quantity", key: "Quantity", width: 10 },
-      { header: "ExtendedPrice", key: "ExentdedPrice", width: 20 }
+
     ];
 
+    const unitPriceColumn = {
+      price: { header: "UnitPrice", key: "UnitPrice", width: 10 }
+    }
+    this.ngSelectedColumns.forEach(item => {
+      if (unitPriceColumn[item]) {
+        columns.push(unitPriceColumn[item]);
+      }
+    });
     // Column map for the dynamic columns
     const columnMap = {
-      price: { header: "Price", key: "UnitPrice", width: 10 },
       setups: { header: "Setups", key: "Setups", width: 10 },
       shipping: { header: "Shipping", key: "Shipping", width: 10 },
       subtotal: { header: "Subtotal", key: "Subtotal", width: 10 },
@@ -131,7 +137,10 @@ export class ReportItemsComponent implements OnInit, OnDestroy {
       internalRoyalty: { header: "InternalRoyalty", key: "InternalRoyalty", width: 20 },
       zip: { header: "BillingZip", key: "BillingZip", width: 20 }
     };
-
+    columns.push(
+      { header: "Quantity", key: "Quantity", width: 10 },
+      { header: "ExtendedPrice", key: "ExentdedPrice", width: 20 }
+    );
     // Push the selected columns based on the map
     this.ngSelectedColumns.forEach(item => {
       if (columnMap[item]) {

@@ -104,7 +104,6 @@ export class GraphicsSupportReportComponent implements OnInit, OnDestroy {
         });
         this.generateReportData = res["data"];
         this.backtoTop();
-        console.log(this.generateReportData);
       } else {
         this.generateReportData = null;
         this._reportService.snackBar('No records found');

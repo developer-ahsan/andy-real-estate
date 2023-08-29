@@ -170,31 +170,21 @@ export class ReportsEmployeeSalesComponent implements OnInit, OnDestroy {
                   if (data[6]) {
                     paid = true;
                   }
-                  let statusColor = '';
-                  let statusValue = '';
-                  let status = Number(data[8]);
-                  if (status == 1 || status == 2 || status == 3 || status == 4) {
-                    statusValue = 'Processing';
-                    statusColor = 'text-gray-500';
-                  } else if (status == 5) {
-                    statusValue = 'Shipped';
-                    statusColor = 'text-green-500';
-                  } else if (status == 6) {
-                    statusValue = 'Delivered';
-                    statusColor = 'text-green-500';
-                  } else if (status == 7) {
-                    statusValue = 'P.O. Needed';
-                    statusColor = 'text-purple-500';
-                  } else if (status == 8) {
-                    statusValue = 'Picked up ';
-                    statusColor = 'text-green-500';
-                  } else if (status == 10) {
-                    statusValue = 'Awaiting Group Order';
-                    statusColor = 'text-orange-500';
-                  } else {
-                    statusValue = 'N/A';
-                  }
-                  element.storeDetails.push({ date: data[0], id: data[1], company: data[2], location: data[3], sale: data[4], tax: data[5], margin: Number(data[7]).toFixed(2), paid: paid, status: statusValue, statusColor: statusColor });
+                  let sattusData = {
+                    statusColor: '',
+                    statusValue: ''
+                  };
+                  // if (data[8] == 1) {
+                  //   sattusData.statusColor = 'text-red-700';
+                  //   sattusData.statusValue = 'Cancelled';
+                  // } else if (data[9] == 1) {
+                  //   sattusData.statusColor = 'text-red-700';
+                  //   sattusData.statusValue = 'Closed';
+                  // } else {
+                  sattusData = this._reportService.getStatusValue(data[8]);
+                  // }
+
+                  element.storeDetails.push({ date: data[0], id: data[1], company: data[2], location: data[3], sale: data[4], tax: data[5], margin: Number(data[7]).toFixed(2), paid: paid, status: sattusData.statusValue, statusColor: sattusData.statusColor });
                 });
               }
             });

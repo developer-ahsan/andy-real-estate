@@ -125,7 +125,7 @@
             </div>
         </div>
         <div class="row" *ngIf="generateReportData">
-            <div class="col-12 text-right mb-2">
+            <div class="col-12 mb-2">
                 <button (click)="generatePdf()" mat-flat-button color="primary" [disabled]="isPdfLoader"
                     [matTooltip]="'Save report as PDF'">
                     <mat-icon svgIcon="mat_outline:picture_as_pdf" *ngIf="!isPdfLoader"></mat-icon>
@@ -140,17 +140,29 @@
                         <p class="text-lg text-capitalize"><strong>{{_reportService.ngPlan}}</strong></p>
                         <p>Range: {{this._reportService.startDate | date: 'MM/dd/yyyy'}}-{{this._reportService.endDate |
                             date: 'MM/dd/yyyy'}}</p>
+                        <div class="flex space-x-2">
+                            <p class="cursor-pointer hover:text-blue-500 mt-2" *ngIf="blnIndividualOrders == 1"
+                                (click)="goToSummary()">Go
+                                To Report Summary | </p>
+                            <p class="cursor-pointer hover:text-blue-500 mt-2" (click)="goToEmployeeSummary()">Go
+                                To Employee Summary</p>
+                            <p class="cursor-pointer hover:text-blue-500 mt-2" *ngIf="blnYTD == 1"
+                                (click)="goToYTDSummary()"> | YTD Summary</p>
+                        </div>
                     </div>
                     <div>
                         <button class="min-w-50" mat-button mat-stroked-button (click)="backToList()">Back To
                             Search</button>
-                        <p class="cursor-pointer mt-2" *ngIf="blnIndividualOrders == 1" (click)="goToSummary()">Go To
-                            Report
-                            Summary</p>
                     </div>
                 </div>
                 <!-- Tables -->
                 <div>
+                    <!-- Indvidual Reporst -->
+                    <div #individualSummary class="py-2" *ngIf="blnIndividualOrders == 1">
+                        <div class="text-secondary pb-0 mb-2 text-lg ">
+                            <b>Store Sales Reports</b>
+                        </div>
+                    </div>
                     <div *ngIf="blnIndividualOrders == 1">
                         <div class="overflow-x-auto">
                             <table class="table table-striped">
@@ -186,8 +198,7 @@
                                                 <td>{{data.date | date: 'MM/dd/yyyy'}}</td>
                                                 <td><a [routerLink]="['/apps/orders',data.id]"
                                                         target="_blank">{{data.id}}</a> </td>
-                                                <td>{{data.company}}<span *ngIf="data.location != 'NULL'">
-                                                        {{data.location}}</span>
+                                                <td>{{data.company}}
                                                 </td>
                                                 <td>{{data.sale | currency}}</td>
                                                 <td>{{data.tax | currency}}</td>
@@ -212,10 +223,10 @@
                                         </ng-container>
                                     </ng-container>
                                     <tr class="columnHeader2" class="font-bold">
-                                        <th colspan="3">Grand Total</th>
-                                        <th>{{storeTotals?.Sales | currency}}</th>
-                                        <th>{{storeTotals?.tax | currency}}</th>
-                                        <th>{{storeTotals?.MARGIN}}%</th>
+                                        <th colspan="3">Total Sales</th>
+                                        <th>{{totalStoreSummary?.SALES | currency}}</th>
+                                        <th>{{totalStoreSummary?.TAX | currency}}</th>
+                                        <th>{{totalStoreSummary?.MARGIN}}%</th>
                                         <th></th>
                                         <th></th>
                                     </tr>
@@ -223,11 +234,12 @@
                             </table>
                         </div>
                     </div>
-                    <div #summaryScrollAnchor class="p-6 pb-2 sm:p-8 dm:pb-2 lg:p-10 lg:pb-2">
-                        <div class="text-secondary pb-0 mb-2 text-lg flex justify-between">
-                            <b>Report Summary</b>
-                            <p class="cursor-pointer" *ngIf="blnIndividualOrders == 1" (click)="backtoTop()">Back to Top
-                            </p>
+                    <!-- Stores Summary -->
+                    <div #storesSummary class="py-2">
+                        <div class="text-secondary pb-0 mb-2 ">
+                            <b class="text-lg">Report Summary</b>
+                            <p class="cursor-pointer hover:text-blue-500 mt-2" *ngIf="blnIndividualOrders == 1"
+                                (click)="backtoTop()">Back to Top</p>
                         </div>
                     </div>
                     <div class="overflow-x-auto">
@@ -268,13 +280,6 @@
                                     </th>
                                     <th>
                                         <div class="flex">
-                                            <span>Diff</span>
-                                            <mat-icon class="icon-size-4 ml-1" matTooltip="Number of sales difference"
-                                                [svgIcon]="'heroicons_solid:question-mark-circle'"></mat-icon>
-                                        </div>
-                                    </th>
-                                    <th>
-                                        <div class="flex">
                                             <span>AVG</span>
                                             <mat-icon class="icon-size-4 ml-1" matTooltip="Average Sale"
                                                 [svgIcon]="'heroicons_solid:question-mark-circle'"></mat-icon>
@@ -306,62 +311,69 @@
                                         </div>
                                     </td>
                                     <td>
-                                        <span *ngIf="item.DIFF >= 0" class="text-green-500">
-                                            {{item.DIFF | currency}}
+                                        <span *ngIf="item?.DIFF >= 0" class="text-green-500">
+                                            {{item?.DIFF | currency}}
                                         </span>
-                                        <span *ngIf="item.DIFF < 0" class="text-red-500">
-                                            ({{(item.DIFF * - 1) | currency}})
+                                        <span *ngIf="item?.DIFF < 0" class="text-red-500">
+                                            ({{(item?.DIFF * - 1) | currency}})
                                         </span>
                                     </td>
                                     <td>{{item.NS}}</td>
                                     <td>{{item.PYNS}}</td>
-                                    <td>{{item.NS_DIFF}}</td>
-                                    <td>{{item.AVG | currency}}</td>
+                                    <td>{{item.AVG | currency}} (AVG)</td>
                                     <td>{{item.MARGIN || '0.00'}}%</td>
                                 </tr>
                                 <tr class="columnHeader2" class="font-bold">
                                     <th>Grand Total</th>
-                                    <th>{{storeTotals?.Sales | currency}}</th>
-                                    <th>{{storeTotals?.PY | currency}}</th>
+                                    <th>{{totalStoreSummary?.SALES | currency}}</th>
+                                    <th>{{totalStoreSummary?.PY | currency}}</th>
                                     <th>
-                                        <div *ngIf="storeTotals.percent != 0">
-                                            <div class="flex align-items-center" *ngIf="!storeTotals.blnPercent">
+                                        <div *ngIf="totalStoreSummary.PERCENT != 0">
+                                            <div class="flex align-items-center" *ngIf="!totalStoreSummary.blnPercent">
                                                 <mat-icon class="icon-size-5 text-red-500"
                                                     [svgIcon]="'heroicons_solid:trending-down'"></mat-icon>
-                                                <span class="text-red-500">{{storeTotals.percent}}%</span>
+                                                <span class="text-red-500">{{totalStoreSummary.PERCENT}}%</span>
                                             </div>
-                                            <div class="flex align-items-center" *ngIf="storeTotals.blnPercent">
+                                            <div class="flex align-items-center" *ngIf="totalStoreSummary.blnPercent">
                                                 <mat-icon class="icon-size-5 text-green-500"
                                                     [svgIcon]="'heroicons_solid:trending-up'"></mat-icon>
-                                                <span class="text-green-500">{{storeTotals.percent}}%</span>
+                                                <span class="text-green-500">{{totalStoreSummary.PERCENT}}%</span>
                                             </div>
                                         </div>
-                                        <div class="flex" *ngIf="storeTotals.percent == 0">
-                                            <span>{{storeTotals.percent}}%</span>
+                                        <div class="flex" *ngIf="totalStoreSummary.PERCENT == 0">
+                                            <span>{{totalStoreSummary.PERCENT}}%</span>
                                         </div>
                                     </th>
                                     <th>
-                                        <span *ngIf="storeTotals.DIFF >= 0" class="text-green-500">
-                                            {{storeTotals.DIFF | currency}}
+                                        <span *ngIf="totalStoreSummary?.DIFF >= 0" class="text-green-500">
+                                            {{totalStoreSummary?.DIFF | currency}}
                                         </span>
-                                        <span *ngIf="storeTotals.DIFF < 0" class="text-green-500">
-                                            ({{(storeTotals.DIFF * - 1) | currency}})</span>
+                                        <span *ngIf="totalStoreSummary?.DIFF < 0" class="text-red-500">
+                                            ({{(totalStoreSummary?.DIFF * - 1) | currency}})
+                                        </span>
                                     </th>
-                                    <th>{{storeTotals?.NS}}</th>
-                                    <th>{{storeTotals?.PYNS}}</th>
-                                    <th></th>
-                                    <th>{{(storeTotals?.Sales/storeTotals?.NS) | currency}}</th>
-                                    <th>{{storeTotals?.MARGIN}}%</th>
+                                    <th>{{totalStoreSummary?.NS}}</th>
+                                    <th>{{totalStoreSummary?.PYNS}}</th>
+                                    <th>{{(totalStoreSummary?.AVG) | currency}} (AVG)</th>
+                                    <th>{{totalStoreSummary?.MARGIN}}%</th>
+                                </tr>
+                                <tr *ngIf="_reportService.ngPlan == 'yearly' && currentYearCheck">
+                                    <td colspan="9">
+                                        <div class="alert alert-warning no-bottom-margin">
+                                            <span class="fa fa-exclamation-circle fa-lg"></span> For yearly reports, the
+                                            range for the "Previous Year" column <b><u>IS <i>YEAR-TO-DATE</i></u></b>,
+                                            meaning totals are in the range 01/01/{{currentYear - 1}} - {{currentDate}}
+                                        </div>
+                                    </td>
                                 </tr>
                             </tbody>
                         </table>
                     </div>
                     <!-- Employee Sales -->
-                    <div class="text-lg font-medium tracking-tight leading-6 truncate border-b">
-                        <div class="text-secondary pb-0 mb-2 text-lg flex justify-between">
-                            <b>Employee Sales</b>
-                            <p class="cursor-pointer" (click)="backtoTop()">Back to Top
-                            </p>
+                    <div #employeeSummary class="text-lg pt-4 font-medium tracking-tight leading-6 truncate border-b">
+                        <div class="text-secondary pb-0 mb-2 ">
+                            <b class="text-lg">Employee Sales</b>
+                            <p class="cursor-pointer hover:text-blue-500 mt-2" (click)="backtoTop()">Back to Top</p>
                         </div>
                     </div>
                     <table class="table table-striped">
@@ -374,7 +386,7 @@
                             </tr>
                         </thead>
                         <tbody>
-                            <tr *ngFor="let item of generateReportData.employee_summary">
+                            <tr *ngFor="let item of employeesReportData">
                                 <td>{{item.EMPLOYEE}}</td>
                                 <td>{{item.TOTAL_SALES | currency}}</td>
                                 <td>{{item.NUM_SALES}}</td>
@@ -382,6 +394,96 @@
                             </tr>
                         </tbody>
                     </table>
+                    <!-- Last Year Summary -->
+                    <div #ytdSummary class="py-2" *ngIf="blnYTD == 1">
+                        <div class="text-secondary pb-0 mb-2 ">
+                            <b class="text-lg">YTD Summary</b>
+                            <p class="cursor-pointer hover:text-blue-500 mt-2" (click)="backtoTop()">Back to Top</p>
+                        </div>
+                    </div>
+                    <div class="overflow-x-auto" *ngIf="blnYTD == 1">
+                        <table class="table table-striped w-full border-t mt-2">
+                            <thead>
+                                <tr>
+                                    <th>Store</th>
+                                    <th>Sales</th>
+                                    <th>
+                                        <div class="flex">
+                                            <span>PY</span>
+                                            <mat-icon class="icon-size-4 ml-1" matTooltip="Previous year sales"
+                                                [svgIcon]="'heroicons_solid:question-mark-circle'"></mat-icon>
+                                        </div>
+                                    </th>
+                                    <th>%</th>
+                                    <th>
+                                        <div class="flex">
+                                            <span>NS</span>
+                                            <mat-icon class="icon-size-4 ml-1" matTooltip="Number of sales"
+                                                [svgIcon]="'heroicons_solid:question-mark-circle'"></mat-icon>
+                                        </div>
+                                    </th>
+                                    <th>
+                                        <div class="flex">
+                                            <span>PYNS</span>
+                                            <mat-icon class="icon-size-4 ml-1"
+                                                matTooltip="Previous year number of sales"
+                                                [svgIcon]="'heroicons_solid:question-mark-circle'"></mat-icon>
+                                        </div>
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr *ngFor="let item of lastYear_report_summary">
+                                    <td>{{item.storeName}}</td>
+                                    <td>{{item.SALES | currency}}</td>
+                                    <td>{{item.PY | currency}}</td>
+                                    <td>
+                                        <div *ngIf="item.percent != 0">
+                                            <div class="flex align-items-center" *ngIf="!item.blnPercent">
+                                                <mat-icon class="icon-size-5 text-red-500"
+                                                    [svgIcon]="'heroicons_solid:trending-down'"></mat-icon>
+                                                <span class="text-red-500">{{item.percent}}%</span>
+                                            </div>
+                                            <div class="flex align-items-center" *ngIf="item.blnPercent">
+                                                <mat-icon class="icon-size-5 text-green-500"
+                                                    [svgIcon]="'heroicons_solid:trending-up'"></mat-icon>
+                                                <span class="text-green-500">{{item.percent}}%</span>
+                                            </div>
+                                        </div>
+                                        <div class="flex" *ngIf="item.percent == 0">
+                                            <span>{{item.percent}}%</span>
+                                        </div>
+                                    </td>
+                                    <td>{{item.NS}}</td>
+                                    <td>{{item.PYNS}}</td>
+                                </tr>
+                                <tr class="columnHeader2" class="font-bold">
+                                    <th>Grand Total</th>
+                                    <th>{{lastYearTotal?.SALES | currency}}</th>
+                                    <th>{{lastYearTotal?.PY | currency}}</th>
+                                    <th>
+                                        <div *ngIf="lastYearTotal.PERCENT != 0">
+                                            <div class="flex align-items-center" *ngIf="!lastYearTotal.blnPercent">
+                                                <mat-icon class="icon-size-5 text-red-500"
+                                                    [svgIcon]="'heroicons_solid:trending-down'"></mat-icon>
+                                                <span class="text-red-500">{{lastYearTotal.PERCENT}}%</span>
+                                            </div>
+                                            <div class="flex align-items-center" *ngIf="lastYearTotal.blnPercent">
+                                                <mat-icon class="icon-size-5 text-green-500"
+                                                    [svgIcon]="'heroicons_solid:trending-up'"></mat-icon>
+                                                <span class="text-green-500">{{lastYearTotal.PERCENT}}%</span>
+                                            </div>
+                                        </div>
+                                        <div class="flex" *ngIf="lastYearTotal.PERCENT == 0">
+                                            <span>{{lastYearTotal.PERCENT}}%</span>
+                                        </div>
+                                    </th>
+                                    <th>{{lastYearTotal?.NS}}</th>
+                                    <th>{{lastYearTotal?.PYNS}}</th>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
             </div>
         </div>

@@ -20,17 +20,11 @@
             <div class="col-12 col-md-4">
                 <mat-form-field class="w-full">
                     <mat-label>Submitted by</mat-label>
-                    <input matInput placeholder="Search employees" matTooltip="Search employees by name"
-                        [matAutocomplete]="employee" [formControl]="searchEmployeesCtrl">
-                    <mat-autocomplete class="w-full" #employee="matAutocomplete"
-                        (optionSelected)="onSelectedEmployees($event)" [displayWith]="displayWithEmployees">
-                        <mat-option *ngIf="isSearchingEmployees" class="is-loading">Loading...</mat-option>
-                        <ng-container *ngIf="!isSearchingEmployees">
-                            <mat-option *ngFor="let item of allEmployees" [value]="item">
-                                <span>{{item.employeeName}}</span>
-                            </mat-option>
-                        </ng-container>
-                    </mat-autocomplete>
+                    <mat-select matInput [(ngModel)]="selectedEmployees">
+                        <mat-option *ngFor="let item of allEmployees" [value]="item">
+                            <span>{{item.employeeName}}</span>
+                        </mat-option>
+                    </mat-select>
                 </mat-form-field>
             </div>
             <div class="col-12 col-md-4">
@@ -47,17 +41,11 @@
             <div class="col-12 col-md-6">
                 <mat-form-field class="w-full">
                     <mat-label>Source Employee</mat-label>
-                    <input matInput placeholder="Search employees" matTooltip="Search employees by name"
-                        [matAutocomplete]="source" [formControl]="searchEmployeesCtrlSource">
-                    <mat-autocomplete class="w-full" #source="matAutocomplete"
-                        (optionSelected)="onSelectedEmployeesSource($event)" [displayWith]="displayWithEmployeesSource">
-                        <mat-option *ngIf="isSearchingEmployeesSource" class="is-loading">Loading...</mat-option>
-                        <ng-container *ngIf="!isSearchingEmployeesSource">
-                            <mat-option *ngFor="let item of allEmployeesSource" [value]="item">
-                                <span>{{item.employeeName}}</span>
-                            </mat-option>
-                        </ng-container>
-                    </mat-autocomplete>
+                    <mat-select matInput [(ngModel)]="selectedEmployeesSource">
+                        <mat-option *ngFor="let item of allEmployeesSource" [value]="item">
+                            <span>{{item.employeeName}}</span>
+                        </mat-option>
+                    </mat-select>
                 </mat-form-field>
             </div>
             <div class="col-12 col-md-6">

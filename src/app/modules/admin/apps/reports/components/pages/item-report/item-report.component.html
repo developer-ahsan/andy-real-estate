@@ -40,14 +40,14 @@
                 <mat-form-field class="w-full">
                     <mat-label>Select columns</mat-label>
                     <mat-select matInput multiple="true" [(ngModel)]="ngSelectedColumns">
+                        <mat-option [value]="'price'">Unit price</mat-option>
                         <mat-option [value]="'setups'">Setups</mat-option>
                         <mat-option [value]="'shipping'">Shipping</mat-option>
                         <mat-option [value]="'subtotal'">Subtotal</mat-option>
                         <mat-option [value]="'paid'">Paid/unpaid</mat-option>
-                        <mat-option [value]="'price'">Unit price</mat-option>
                         <mat-option [value]="'runs'">Runs</mat-option>
-                        <mat-option [value]="'zip'">Zip code</mat-option>
                         <mat-option [value]="'internalRoyalty'">Internal royalty</mat-option>
+                        <mat-option [value]="'zip'">Zip code</mat-option>
                     </mat-select>
                 </mat-form-field>
             </div>
