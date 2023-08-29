@@ -1,3 +1,5 @@
+<div #topScrollAnchor></div>
+
 <div class="w-full">
     <div class="px-8 pb-4">
         <div class="row" *ngIf="!generateReportData">
@@ -90,7 +92,14 @@
                             (click)="selectedUnSelected(false)">Unselect all</span>
                     </div>
                 </div>
-                <div class="row">
+                <div class="border p-3 my-2">
+                    <div class="row h-60 overflow-y-auto">
+                        <div class="col-6 col-md-4" *ngFor="let item of storesList">
+                            <mat-checkbox [(ngModel)]="item.isChecked">{{item.storeName}}</mat-checkbox>
+                        </div>
+                    </div>
+                </div>
+                <!-- <div class="row">
                     <div class="col-6 col-md-4" *ngFor="let item of storesList">
                         <mat-checkbox [(ngModel)]="item.isChecked">{{item.storeName}}</mat-checkbox>
                     </div>
@@ -100,7 +109,7 @@
                         <mat-progress-spinner *ngIf="storesLoader" [diameter]="24" [mode]="'indeterminate'">
                         </mat-progress-spinner>
                     </div>
-                </div>
+                </div> -->
 
             </div>
             <div class="col-12">
@@ -116,145 +125,264 @@
             </div>
         </div>
         <div class="row" *ngIf="generateReportData">
-            <div class="col-12">
+            <div class="col-12 text-right mb-2">
+                <button (click)="generatePdf()" mat-flat-button color="primary" [disabled]="isPdfLoader"
+                    [matTooltip]="'Save report as PDF'">
+                    <mat-icon svgIcon="mat_outline:picture_as_pdf" *ngIf="!isPdfLoader"></mat-icon>
+                    <span class="ml-2 mr-1" *ngIf="!isPdfLoader">PDF</span>
+                    <mat-progress-spinner *ngIf="isPdfLoader" [diameter]="24" [mode]="'indeterminate'">
+                    </mat-progress-spinner>
+                </button>
+            </div>
+            <div class="col-12" #htmltable id="htmltable">
                 <div class="flex justify-between">
-                    <div class="text-lg font-medium tracking-tight leading-6 truncate">Report Summary</div>
+                    <div>
+                        <p class="text-lg text-capitalize"><strong>{{_reportService.ngPlan}}</strong></p>
+                        <p>Range: {{this._reportService.startDate | date: 'MM/dd/yyyy'}}-{{this._reportService.endDate |
+                            date: 'MM/dd/yyyy'}}</p>
+                    </div>
                     <div>
                         <button class="min-w-50" mat-button mat-stroked-button (click)="backToList()">Back To
                             Search</button>
+                        <p class="cursor-pointer mt-2" *ngIf="blnIndividualOrders == 1" (click)="goToSummary()">Go To
+                            Report
+                            Summary</p>
                     </div>
                 </div>
-                <table mat-table [dataSource]="generateReportData" class="w-full border-t mt-2">
-                    <!-- Type -->
-                    <ng-container matColumnDef="store">
-                        <th mat-header-cell *matHeaderCellDef>
-                            Store
-                        </th>
-                        <td mat-cell *matCellDef="let element">
-                            {{element.storeName}}
-                        </td>
-                    </ng-container>
-
-                    <!-- Total -->
-                    <ng-container matColumnDef="sales">
-                        <th mat-header-cell *matHeaderCellDef>
-                            Sales
-                        </th>
-                        <td mat-cell *matCellDef="let element">
-                            <span class="font-medium text-right">
-                                {{element.monthlyEarnings | currency}}
-                            </span>
-                        </td>
-                    </ng-container>
-
-                    <!-- Expenses amount -->
-                    <ng-container matColumnDef="py">
-                        <th mat-header-cell *matHeaderCellDef>
-                            <div class="flex">
-                                <span>PY</span>
-                                <mat-icon class="icon-size-4 ml-1" matTooltip="Previous year sales"
-                                    [svgIcon]="'heroicons_solid:question-mark-circle'"></mat-icon>
-                            </div>
-                        </th>
-                        <td mat-cell *matCellDef="let element">
-                            {{element.previousYearSales | currency}}
-                        </td>
-                    </ng-container>
-
-                    <!-- Expenses percentage -->
-                    <ng-container matColumnDef="percent">
-                        <th mat-header-cell *matHeaderCellDef>
-                            (%)
-                        </th>
-                        <td mat-cell *matCellDef="let element">
-                            <div class="flex" *ngIf="element.color == 'red'">
-                                <mat-icon class="icon-size-5 text-red-500"
-                                    [svgIcon]="'heroicons_solid:trending-down'"></mat-icon>
-                                <span class="text-red-500">{{element.percent.toFixed(2)}}%</span>
-                            </div>
-                            <div class="flex" *ngIf="element.color == 'green'">
-                                <mat-icon class="icon-size-5 text-green-500"
-                                    [svgIcon]="'heroicons_solid:trending-up'"></mat-icon>
-                                <span class="text-green-500">{{element.percent.toFixed(2)}}%</span>
-                            </div>
-                            <div class="flex" *ngIf="element.color == 'gray'">
-                                <span>{{element.percent.toFixed(2)}}%</span>
-                            </div>
-                        </td>
-                    </ng-container>
-
-                    <!-- Remaining amount -->
-                    <ng-container matColumnDef="difference">
-                        <th mat-header-cell *matHeaderCellDef>
-                            <div class="flex">
-                                <span>Diff</span>
-                                <mat-icon class="icon-size-4 ml-1" matTooltip="Sales Difference"
-                                    [svgIcon]="'heroicons_solid:question-mark-circle'"></mat-icon>
-                            </div>
-                        </th>
-                        <td mat-cell *matCellDef="let element">
-                            <span *ngIf="element.color == 'green'"
-                                class="text-green-500">{{element.difference.toFixed(2) |
-                                currency}}</span>
-                            <span *ngIf="element.color == 'red'" class="text-red-500">({{element.difference.toFixed(2) |
-                                currency}})</span>
-                            <span *ngIf="element.color == 'gray'">{{element.difference.toFixed(2) |
-                                currency}}</span>
-                        </td>
-                    </ng-container>
-
-                    <!-- Remaining percentage -->
-                    <ng-container matColumnDef="n_sales">
-                        <th mat-header-cell *matHeaderCellDef>
-                            <div class="flex">
-                                <span>NS</span>
-                                <mat-icon class="icon-size-4 ml-1" matTooltip="Number of sales"
-                                    [svgIcon]="'heroicons_solid:question-mark-circle'"></mat-icon>
-                            </div>
-                        </th>
-                        <td mat-cell *matCellDef="let element">
-                            {{element.NS}}
-                        </td>
-                    </ng-container>
-                    <ng-container matColumnDef="pyns">
-                        <th mat-header-cell *matHeaderCellDef>
-                            <div class="flex">
-                                <span>PYNS</span>
-                                <mat-icon class="icon-size-4 ml-1" matTooltip="previous year number of sales"
-                                    [svgIcon]="'heroicons_solid:question-mark-circle'"></mat-icon>
-                            </div>
-                        </th>
-                        <td mat-cell *matCellDef="let element">
-                            {{element.PYNS.toFixed(2)}}
-                        </td>
-                    </ng-container>
-                    <ng-container matColumnDef="avg">
-                        <th mat-header-cell *matHeaderCellDef>
-                            <div class="flex">
-                                <span>AVG</span>
-                                <mat-icon class="icon-size-4 ml-1" matTooltip="Average sales"
-                                    [svgIcon]="'heroicons_solid:question-mark-circle'"></mat-icon>
-                            </div>
-                        </th>
-                        <td mat-cell *matCellDef="let element">
-                            {{element.avg.toFixed(2) | currency}}
-                        </td>
-                    </ng-container>
-                    <ng-container matColumnDef="margin">
-                        <th mat-header-cell *matHeaderCellDef>
-                            Margin
-                        </th>
-                        <td mat-cell *matCellDef="let element">
-                            {{element.margin.toFixed(2)}}%
-                        </td>
-                    </ng-container>
-                    <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-                    <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
-                </table>
-                <mat-paginator #paginator class="border-b sm:border-t sm:border-b-0 z-10 bg-gray-50 dark:bg-transparent"
-                    [length]="totalData" [pageIndex]="0" [pageSize]="20" (page)="getNextReportData($event)"
-                    [hidePageSize]="true">
-                </mat-paginator>
+                <!-- Tables -->
+                <div>
+                    <div *ngIf="blnIndividualOrders == 1">
+                        <div class="overflow-x-auto">
+                            <table class="table table-striped">
+                                <tr class="columnHeader2">
+                                    <th>Date</th>
+                                    <th>ID</th>
+                                    <th>Company</th>
+                                    <th>Sale</th>
+                                    <th>Tax</th>
+                                    <th>Margin</th>
+                                    <th>Paid</th>
+                                    <th>Status</th>
+                                </tr>
+                                <tbody>
+                                    <ng-container *ngFor="let item of generateReportData;">
+                                        <tr>
+                                            <td colspan="3">
+                                                <div class="text-secondary pb-0 mb-2 text-lg flex justify-between">
+                                                    <b>{{item.storeName}}</b>
+                                                </div>
+                                            </td>
+                                            <td><b>{{item?.SALES | currency}}</b></td>
+                                            <td><b>{{item?.tax | currency}}</b></td>
+                                            <td><b>{{item?.MARGIN}} %</b></td>
+                                            <td></td>
+                                            <td></td>
+                                        </tr>
+                                        <ng-container *ngFor="let dateData of item.date_data">
+                                            <tr class="text-center">
+                                                <td colspan="8" class="font-bold">{{dateData.date}}</td>
+                                            </tr>
+                                            <tr *ngFor="let data of dateData.data">
+                                                <td>{{data.date | date: 'MM/dd/yyyy'}}</td>
+                                                <td><a [routerLink]="['/apps/orders',data.id]"
+                                                        target="_blank">{{data.id}}</a> </td>
+                                                <td>{{data.company}}<span *ngIf="data.location != 'NULL'">
+                                                        {{data.location}}</span>
+                                                </td>
+                                                <td>{{data.sale | currency}}</td>
+                                                <td>{{data.tax | currency}}</td>
+                                                <td>
+                                                    <span *ngIf="data.margin >= 0">
+                                                        {{data.margin}}%
+                                                    </span>
+                                                    <span class="text-red-500" *ngIf="data.margin < 0">
+                                                        ({{data.margin}}%)
+                                                    </span>
+                                                </td>
+                                                <td>
+                                                    <mat-icon svgIcon="heroicons_outline:x-mark" *ngIf="!data.paid"
+                                                        class="text-red-700"></mat-icon>
+                                                    <mat-icon svgIcon="heroicons_outline:check" class="text-green-700"
+                                                        *ngIf="data.paid"></mat-icon>
+                                                </td>
+                                                <td>
+                                                    <span class="{{data.statusColor}}">{{data.status}}</span>
+                                                </td>
+                                            </tr>
+                                        </ng-container>
+                                    </ng-container>
+                                    <tr class="columnHeader2" class="font-bold">
+                                        <th colspan="3">Grand Total</th>
+                                        <th>{{storeTotals?.Sales | currency}}</th>
+                                        <th>{{storeTotals?.tax | currency}}</th>
+                                        <th>{{storeTotals?.MARGIN}}%</th>
+                                        <th></th>
+                                        <th></th>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <div #summaryScrollAnchor class="p-6 pb-2 sm:p-8 dm:pb-2 lg:p-10 lg:pb-2">
+                        <div class="text-secondary pb-0 mb-2 text-lg flex justify-between">
+                            <b>Report Summary</b>
+                            <p class="cursor-pointer" *ngIf="blnIndividualOrders == 1" (click)="backtoTop()">Back to Top
+                            </p>
+                        </div>
+                    </div>
+                    <div class="overflow-x-auto">
+                        <table class="table table-striped w-full border-t mt-2">
+                            <thead>
+                                <tr>
+                                    <th>Store</th>
+                                    <th>Sales</th>
+                                    <th>
+                                        <div class="flex">
+                                            <span>PY</span>
+                                            <mat-icon class="icon-size-4 ml-1" matTooltip="Previous year sales"
+                                                [svgIcon]="'heroicons_solid:question-mark-circle'"></mat-icon>
+                                        </div>
+                                    </th>
+                                    <th>%</th>
+                                    <th>
+                                        <div class="flex">
+                                            <span>Diff</span>
+                                            <mat-icon class="icon-size-4 ml-1" matTooltip="Sales the difference"
+                                                [svgIcon]="'heroicons_solid:question-mark-circle'"></mat-icon>
+                                        </div>
+                                    </th>
+                                    <th>
+                                        <div class="flex">
+                                            <span>NS</span>
+                                            <mat-icon class="icon-size-4 ml-1" matTooltip="Number of sales"
+                                                [svgIcon]="'heroicons_solid:question-mark-circle'"></mat-icon>
+                                        </div>
+                                    </th>
+                                    <th>
+                                        <div class="flex">
+                                            <span>PYNS</span>
+                                            <mat-icon class="icon-size-4 ml-1"
+                                                matTooltip="Previous year number of sales"
+                                                [svgIcon]="'heroicons_solid:question-mark-circle'"></mat-icon>
+                                        </div>
+                                    </th>
+                                    <th>
+                                        <div class="flex">
+                                            <span>Diff</span>
+                                            <mat-icon class="icon-size-4 ml-1" matTooltip="Number of sales difference"
+                                                [svgIcon]="'heroicons_solid:question-mark-circle'"></mat-icon>
+                                        </div>
+                                    </th>
+                                    <th>
+                                        <div class="flex">
+                                            <span>AVG</span>
+                                            <mat-icon class="icon-size-4 ml-1" matTooltip="Average Sale"
+                                                [svgIcon]="'heroicons_solid:question-mark-circle'"></mat-icon>
+                                        </div>
+                                    </th>
+                                    <th>Margin</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr *ngFor="let item of generateReportData">
+                                    <td>{{item.storeName}}</td>
+                                    <td>{{item.SALES | currency}}</td>
+                                    <td>{{item.PY | currency}}</td>
+                                    <td>
+                                        <div *ngIf="item.percent != 0">
+                                            <div class="flex align-items-center" *ngIf="!item.blnPercent">
+                                                <mat-icon class="icon-size-5 text-red-500"
+                                                    [svgIcon]="'heroicons_solid:trending-down'"></mat-icon>
+                                                <span class="text-red-500">{{item.percent}}%</span>
+                                            </div>
+                                            <div class="flex align-items-center" *ngIf="item.blnPercent">
+                                                <mat-icon class="icon-size-5 text-green-500"
+                                                    [svgIcon]="'heroicons_solid:trending-up'"></mat-icon>
+                                                <span class="text-green-500">{{item.percent}}%</span>
+                                            </div>
+                                        </div>
+                                        <div class="flex" *ngIf="item.percent == 0">
+                                            <span>{{item.percent}}%</span>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <span *ngIf="item.DIFF >= 0" class="text-green-500">
+                                            {{item.DIFF | currency}}
+                                        </span>
+                                        <span *ngIf="item.DIFF < 0" class="text-red-500">
+                                            ({{(item.DIFF * - 1) | currency}})
+                                        </span>
+                                    </td>
+                                    <td>{{item.NS}}</td>
+                                    <td>{{item.PYNS}}</td>
+                                    <td>{{item.NS_DIFF}}</td>
+                                    <td>{{item.AVG | currency}}</td>
+                                    <td>{{item.MARGIN || '0.00'}}%</td>
+                                </tr>
+                                <tr class="columnHeader2" class="font-bold">
+                                    <th>Grand Total</th>
+                                    <th>{{storeTotals?.Sales | currency}}</th>
+                                    <th>{{storeTotals?.PY | currency}}</th>
+                                    <th>
+                                        <div *ngIf="storeTotals.percent != 0">
+                                            <div class="flex align-items-center" *ngIf="!storeTotals.blnPercent">
+                                                <mat-icon class="icon-size-5 text-red-500"
+                                                    [svgIcon]="'heroicons_solid:trending-down'"></mat-icon>
+                                                <span class="text-red-500">{{storeTotals.percent}}%</span>
+                                            </div>
+                                            <div class="flex align-items-center" *ngIf="storeTotals.blnPercent">
+                                                <mat-icon class="icon-size-5 text-green-500"
+                                                    [svgIcon]="'heroicons_solid:trending-up'"></mat-icon>
+                                                <span class="text-green-500">{{storeTotals.percent}}%</span>
+                                            </div>
+                                        </div>
+                                        <div class="flex" *ngIf="storeTotals.percent == 0">
+                                            <span>{{storeTotals.percent}}%</span>
+                                        </div>
+                                    </th>
+                                    <th>
+                                        <span *ngIf="storeTotals.DIFF >= 0" class="text-green-500">
+                                            {{storeTotals.DIFF | currency}}
+                                        </span>
+                                        <span *ngIf="storeTotals.DIFF < 0" class="text-green-500">
+                                            ({{(storeTotals.DIFF * - 1) | currency}})</span>
+                                    </th>
+                                    <th>{{storeTotals?.NS}}</th>
+                                    <th>{{storeTotals?.PYNS}}</th>
+                                    <th></th>
+                                    <th>{{(storeTotals?.Sales/storeTotals?.NS) | currency}}</th>
+                                    <th>{{storeTotals?.MARGIN}}%</th>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <!-- Employee Sales -->
+                    <div class="text-lg font-medium tracking-tight leading-6 truncate border-b">
+                        <div class="text-secondary pb-0 mb-2 text-lg flex justify-between">
+                            <b>Employee Sales</b>
+                            <p class="cursor-pointer" (click)="backtoTop()">Back to Top
+                            </p>
+                        </div>
+                    </div>
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>EMPLOYEE</th>
+                                <th>TOTAL SALES </th>
+                                <th>NUM. SALES</th>
+                                <th>AVG SALE</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr *ngFor="let item of generateReportData.employee_summary">
+                                <td>{{item.EMPLOYEE}}</td>
+                                <td>{{item.TOTAL_SALES | currency}}</td>
+                                <td>{{item.NUM_SALES}}</td>
+                                <td>{{item.AVG | currency}}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
             </div>
         </div>
     </div>

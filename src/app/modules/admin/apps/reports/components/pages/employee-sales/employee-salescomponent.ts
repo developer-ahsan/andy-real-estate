@@ -128,10 +128,13 @@ export class ReportsEmployeeSalesComponent implements OnInit, OnDestroy {
   generateReport() {
     this.generateReportData = null;
     this.storeTotals = {
+      COST: 0,
+      Price: 0,
       Sales: 0,
       PY: 0,
       percent: 0,
       DIFF: 0,
+      tax: 0,
       NS: 0,
       PYNS: 0,
       AVG: 0,
@@ -215,6 +218,7 @@ export class ReportsEmployeeSalesComponent implements OnInit, OnDestroy {
           this.generateReportData = res["data"];
           this.totalData = res["totalRecords"];
           this.generateReportData.forEach(element => {
+
             if (element.SALES > element.PY) {
               element.blnPercent = true;
               const diff = element.SALES - element.PY;
@@ -236,11 +240,13 @@ export class ReportsEmployeeSalesComponent implements OnInit, OnDestroy {
             }
             this.storeTotals.Sales = Number(this.storeTotals.Sales) + Number(element.SALES);
             this.storeTotals.PY = Number(this.storeTotals.PY) + Number(element.PY);
+            this.storeTotals.tax = Number(this.storeTotals.tax) + Number(element.tax);
             this.storeTotals.DIFF = Number(this.storeTotals.DIFF) + Number(element.DIFF);
             this.storeTotals.NS = Number(this.storeTotals.NS) + Number(element.NS);
             this.storeTotals.PYNS = Number(this.storeTotals.PYNS) + Number(element.PYNS);
             this.storeTotals.AVG = Number(this.storeTotals.AVG) + Number(element.AVG);
-            this.storeTotals.MARGIN = Number(this.storeTotals.MARGIN) + Number(element.MARGIN);
+            this.storeTotals.COST += Number(element.cost);
+            this.storeTotals.Price += Number(element.price);
           });
           if (this.storeTotals.Sales > this.storeTotals.PY) {
             this.storeTotals.blnPercent = true;
@@ -261,6 +267,10 @@ export class ReportsEmployeeSalesComponent implements OnInit, OnDestroy {
           } else {
             this.storeTotals.percent = 0;
           }
+          var p = Math.pow(10, 2);
+          // this.storeTotals.MARGIN = parseFloat(((this.storeTotals.Price - this.storeTotals.COST) / this.storeTotals.Price * 100).toFixed(2));
+          this.storeTotals.MARGIN = Math.ceil(((this.storeTotals.Price - this.storeTotals.COST) / this.storeTotals.Price) * 10000) / 100;
+
           this.backtoTop();
         } else {
           this.generateReportData = null;

@@ -40,6 +40,7 @@ export class ReportsLocationSalesComponent implements OnInit, OnDestroy {
   selectedStores: any;
   isSearchingStores = false;
   isGenerateReportLoader: boolean;
+  lastYearTotal: any;
 
   constructor(
     private _changeDetectorRef: ChangeDetectorRef,
@@ -97,13 +98,15 @@ export class ReportsLocationSalesComponent implements OnInit, OnDestroy {
   }
   // Reports
   generateReport(page) {
-    if (page == 1) {
-      this.reportPage = 1;
-      if (this.generateReportData) {
-        this.paginator.pageIndex = 0;
-      }
-      this.generateReportData = null;
+    this.lastYearTotal = {
+      blnPercent: false,
+      Sales: 0,
+      PY: 0,
+      Percent: 0,
+      NS: 0,
+      PYNS: 0
     }
+    this.generateReportData = null;
     this._reportService.setFiltersReport();
     if (this.selectedStores.pk_storeID == 0) {
       this._reportService.snackBar('Please select a store');
@@ -124,7 +127,6 @@ export class ReportsLocationSalesComponent implements OnInit, OnDestroy {
       is_ytd: this.blnYTD
     }
     this._reportService.getAPIData(params).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
-      console.log(res);
       this.generateReportData = res;
       this.generateReportData["report_summary"].forEach(element => {
         if (element.SALES > element.PY) {
@@ -133,7 +135,7 @@ export class ReportsLocationSalesComponent implements OnInit, OnDestroy {
           if (element.PY == 0) {
             element.percent = 100;
           } else {
-            element.percent = (diff / element.SALES) * 100;
+            element.percent = Math.round((diff / element.PY) * 100);
           }
         } else if (element.SALES < element.PY) {
           element.blnPercent = false;
@@ -141,7 +143,7 @@ export class ReportsLocationSalesComponent implements OnInit, OnDestroy {
           if (element.SALES == 0) {
             element.percent = 100;
           } else {
-            element.percent = (diff / element.PY) * 100;
+            element.percent = Math.round((diff / element.PY) * 100);
           }
         } else {
           element.percent = 0;
@@ -156,7 +158,7 @@ export class ReportsLocationSalesComponent implements OnInit, OnDestroy {
             if (element.PY == 0) {
               element.percent = 100;
             } else {
-              element.percent = (diff / element.SALES) * 100;
+              element.percent = Math.round((diff / element.PY) * 100);
             }
           } else if (element.SALES < element.PY) {
             element.blnPercent = false;
@@ -164,55 +166,38 @@ export class ReportsLocationSalesComponent implements OnInit, OnDestroy {
             if (element.SALES == 0) {
               element.percent = 100;
             } else {
-              element.percent = (diff / element.PY) * 100;
+              element.percent = Math.round((diff / element.PY) * 100);
             }
           } else {
             element.percent = 0;
           }
+          this.lastYearTotal.Sales += element.Sale;
+          this.lastYearTotal.PY += element.PY;
+          this.lastYearTotal.NS += element.NS;
+          this.lastYearTotal.PYNS += element.PYNS;
         });
+        if (this.lastYearTotal.Sales > this.lastYearTotal.PY) {
+          this.lastYearTotal.blnPercent = true;
+          const diff = this.lastYearTotal.Sales - this.lastYearTotal.PY;
+          if (this.lastYearTotal.PY == 0) {
+            this.lastYearTotal.Percent = 100;
+          } else {
+            this.lastYearTotal.Percent = Math.round((diff / this.lastYearTotal.PY) * 100);
+          }
+        } else if (this.lastYearTotal.Sales < this.lastYearTotal.PY) {
+          this.lastYearTotal.blnPercent = false;
+          const diff = this.lastYearTotal.PY - this.lastYearTotal.Sales;
+          if (this.lastYearTotal.Sales == 0) {
+            this.lastYearTotal.Percent = 100;
+          } else {
+            this.lastYearTotal.Percent = Math.round((diff / this.lastYearTotal.PY) * 100);
+          }
+        } else {
+          this.lastYearTotal.Percent = 0;
+        }
       } else {
         this.generateReportData["lastYear_report_summary"].push({ storeName: this.selectedStores.storeName, SALES: 0, PY: 0, percent: 0, NS: 0, PYNS: 0 });
       }
-      // if (res.length > 0) {
-      //   this.generateReportData = res;
-      //   this.totalData = res["totalRecords"];
-      //   this.generateReportData.forEach(element => {
-      //     if (element.previousYearSales == 0) {
-      //       element.percent = 0
-      //     } else {
-      //       element.percent = Number(100 - (element.monthlyEarnings / element.previousYearSales) * 100);
-      //     }
-      //     if (element.percent == 0) {
-      //       element.percent = 0;
-      //       element.color = 'gray';
-      //     }
-      //     if (element.percent < 0) {
-      //       element.color = 'red';
-      //     } else if (element.percent > 0) {
-      //       element.color = 'green'
-      //     } else {
-      //       element.color = 'gray';
-      //     }
-      //     element.difference = Number(element.monthlyEarnings - element.previousYearSales);
-      //     if (!element.difference) {
-      //       element.difference = 0;
-      //     }
-      //     if (element.difference < 0) {
-      //       element.difference = Math.abs(element.difference);
-      //     }
-      //     element.avg = Number(element.monthlyEarnings / element.NS);
-      //     if (!element.avg) {
-      //       element.avg = 0;
-      //     }
-      //     element.margin = Number(((element.price - element.cost) / element.price) * 100);
-      //     if (!element.margin) {
-      //       element.margin = 0;
-      //     }
-      //   });
-      // } else {
-      //   this.generateReportData = null;
-      //   this._reportService.snackBar('No records found');
-      // }
       this.backtoTop();
       this.isGenerateReportLoader = false;
       this._changeDetectorRef.markForCheck();

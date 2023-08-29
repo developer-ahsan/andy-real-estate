@@ -139,8 +139,8 @@
                                     <tr class="columnHeader2" class="font-bold">
                                         <th colspan="3">Grand Total</th>
                                         <th>{{storeTotals?.Sales | currency}}</th>
-                                        <th>$0.00</th>
-                                        <th>{{(storeTotals?.MARGIN/generateReportData.length).toFixed(2)}}%</th>
+                                        <th>{{storeTotals?.tax | currency}}</th>
+                                        <th>{{storeTotals?.MARGIN}}%</th>
                                         <th></th>
                                         <th></th>
                                     </tr>
@@ -218,23 +218,23 @@
                                             <div class="flex align-items-center" *ngIf="!item.blnPercent">
                                                 <mat-icon class="icon-size-5 text-red-500"
                                                     [svgIcon]="'heroicons_solid:trending-down'"></mat-icon>
-                                                <span class="text-red-500">{{item.percent.toFixed(2)}}%</span>
+                                                <span class="text-red-500">{{item.percent}}%</span>
                                             </div>
                                             <div class="flex align-items-center" *ngIf="item.blnPercent">
                                                 <mat-icon class="icon-size-5 text-green-500"
                                                     [svgIcon]="'heroicons_solid:trending-up'"></mat-icon>
-                                                <span class="text-green-500">{{item.percent.toFixed(2)}}%</span>
+                                                <span class="text-green-500">{{item.percent}}%</span>
                                             </div>
                                         </div>
                                         <div class="flex" *ngIf="item.percent == 0">
-                                            <span>{{item.percent.toFixed(2)}}%</span>
+                                            <span>{{item.percent}}%</span>
                                         </div>
                                     </td>
                                     <td>
                                         <span *ngIf="item.DIFF >= 0" class="text-green-500">
                                             {{item.DIFF | currency}}
                                         </span>
-                                        <span *ngIf="item.DIFF < 0" class="text-green-500">
+                                        <span *ngIf="item.DIFF < 0" class="text-red-500">
                                             ({{(item.DIFF * - 1) | currency}})
                                         </span>
                                     </td>
@@ -242,7 +242,7 @@
                                     <td>{{item.PYNS}}</td>
                                     <td>{{item.NS_DIFF}}</td>
                                     <td>{{item.AVG | currency}}</td>
-                                    <td>{{item.MARGIN.toFixed(2)}}%</td>
+                                    <td>{{item.MARGIN || '0.00'}}%</td>
                                 </tr>
                                 <tr class="columnHeader2" class="font-bold">
                                     <th>Grand Total</th>
@@ -253,16 +253,16 @@
                                             <div class="flex align-items-center" *ngIf="!storeTotals.blnPercent">
                                                 <mat-icon class="icon-size-5 text-red-500"
                                                     [svgIcon]="'heroicons_solid:trending-down'"></mat-icon>
-                                                <span class="text-red-500">{{storeTotals.percent.toFixed(2)}}%</span>
+                                                <span class="text-red-500">{{storeTotals.percent}}%</span>
                                             </div>
                                             <div class="flex align-items-center" *ngIf="storeTotals.blnPercent">
                                                 <mat-icon class="icon-size-5 text-green-500"
                                                     [svgIcon]="'heroicons_solid:trending-up'"></mat-icon>
-                                                <span class="text-green-500">{{storeTotals.percent.toFixed(2)}}%</span>
+                                                <span class="text-green-500">{{storeTotals.percent}}%</span>
                                             </div>
                                         </div>
                                         <div class="flex" *ngIf="storeTotals.percent == 0">
-                                            <span>{{storeTotals.percent.toFixed(2)}}%</span>
+                                            <span>{{storeTotals.percent}}%</span>
                                         </div>
                                     </th>
                                     <th>
@@ -276,7 +276,7 @@
                                     <th>{{storeTotals?.PYNS}}</th>
                                     <th></th>
                                     <th>{{(storeTotals?.Sales/storeTotals?.NS) | currency}}</th>
-                                    <th>{{(storeTotals?.MARGIN/generateReportData.length).toFixed(2)}}%</th>
+                                    <th>{{storeTotals?.MARGIN}}%</th>
                                 </tr>
                             </tbody>
                         </table>

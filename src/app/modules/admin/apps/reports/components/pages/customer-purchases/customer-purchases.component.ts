@@ -194,7 +194,6 @@ export class ReportCustomerPurchaseComponent implements OnInit, OnDestroy {
         this.generateExcelLoader = false;
         this._changeDetectorRef.markForCheck();
       });
-
   }
   /**
      * On destroy

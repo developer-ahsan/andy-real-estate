@@ -1,12 +1,13 @@
 import { ENTER, COMMA } from '@angular/cdk/keycodes';
-import { Component, Input, OnInit, ChangeDetectorRef, OnDestroy, ViewChild } from '@angular/core';
+import { Component, Input, OnInit, ChangeDetectorRef, OnDestroy, ViewChild, ElementRef } from '@angular/core';
 import { FormControl, FormGroup } from '@angular/forms';
 import { MatChipInputEvent } from '@angular/material/chips';
 import { MatPaginator } from '@angular/material/paginator';
 import { Subject } from 'rxjs';
-import { debounceTime, distinctUntilChanged, filter, finalize, switchMap, takeUntil, tap } from 'rxjs/operators';
+import { debounceTime, distinctUntilChanged, filter, finalize, map, switchMap, takeUntil, tap } from 'rxjs/operators';
 import { ReportsService } from '../../reports.service';
 import { AddCompany, UpdateCompany, UpdateWebsiteLoginInfo } from '../../reports.types';
+import { DashboardsService } from 'app/modules/admin/dashboards/dashboard.service';
 @Component({
   selector: 'app-store-sales',
   templateUrl: './store-sales.component.html',
@@ -14,6 +15,8 @@ import { AddCompany, UpdateCompany, UpdateWebsiteLoginInfo } from '../../reports
 })
 export class ReportsStoreSalesComponent implements OnInit, OnDestroy {
   @ViewChild('paginator') paginator: MatPaginator;
+  @ViewChild('topScrollAnchor') topScroll: ElementRef;
+  @ViewChild('summaryScrollAnchor') summaryScrollAnchor: ElementRef;
   @Input() isLoading: boolean;
   // @Output() isLoadingChange = new EventEmitter<boolean>();
   private _unsubscribeAll: Subject<any> = new Subject<any>();
@@ -53,7 +56,8 @@ export class ReportsStoreSalesComponent implements OnInit, OnDestroy {
 
   constructor(
     private _changeDetectorRef: ChangeDetectorRef,
-    private _reportService: ReportsService
+    private _reportService: ReportsService,
+    private commonService: DashboardsService
   ) { }
 
   ngOnInit(): void {
@@ -62,40 +66,24 @@ export class ReportsStoreSalesComponent implements OnInit, OnDestroy {
     this.getPromoCodes();
   };
   getStores() {
-    this._reportService.Stores$.pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
-      res["data"].forEach(element => {
+    this.commonService.storesData$.pipe(
+      takeUntil(this._unsubscribeAll),
+      map(res => res["data"].filter(element => element.blnActive))
+    ).subscribe(filteredData => {
+      filteredData.forEach(element => {
         element.isChecked = true;
-        this.storesList.push(element);
       });
-      this.totalStores = res["totalRecords"];
+      this.storesList.push(...filteredData);
     });
+
   }
-  getNextStoresList() {
-    this.storesPage++;
-    let params = {
-      stores: true,
-      size: 20,
-      page: this.storesPage
-    }
-    this.storesLoader = true;
-    this._reportService.getAPIData(params).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
-      res["data"].forEach(element => {
-        element.isChecked = true;
-        this.storesList.push(element);
-      });
-      this.storesLoader = false;
-      this._changeDetectorRef.markForCheck();
-    }, err => {
-      this.storesLoader = false;
-      this._changeDetectorRef.markForCheck();
-    });
-  }
+
   getStates() {
     this._reportService.States$.pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
       this.searchStatesCtrl.setValue({ name: 'All States', pk_stateID: 0 });
       this.allStates.push({ name: 'All States', pk_stateID: 0 });
       this.allStates = this.allStates.concat(res["data"]);
-      this.state = this.allStates[0];
+      this.selectedStates = this.allStates[0];
     });
     let params;
     this.searchStatesCtrl.valueChanges.pipe(
@@ -147,7 +135,7 @@ export class ReportsStoreSalesComponent implements OnInit, OnDestroy {
       this.searchPromoCodesCtrl.setValue({ promocode: 'Any Promocode' });
       this.allPromoCodes.push({ promocode: 'Any Promocode' });
       this.allPromoCodes = this.allPromoCodes.concat(res["data"]);
-      this.promocode = this.allPromoCodes[0];
+      this.selectedPromoCodes = this.allPromoCodes[0];
     });
     let params;
     this.searchPromoCodesCtrl.valueChanges.pipe(
@@ -184,13 +172,7 @@ export class ReportsStoreSalesComponent implements OnInit, OnDestroy {
     return value?.promocode;
   }
   generateReport(page) {
-    if (page == 1) {
-      this.reportPage = 1;
-      if (this.generateReportData) {
-        this.paginator.pageIndex = 0;
-      }
-      this.generateReportData = null;
-    }
+    this.generateReportData = null;
     this._reportService.setFiltersReport();
     let selectedStores = [];
     this.storesList.forEach(element => {
@@ -204,14 +186,20 @@ export class ReportsStoreSalesComponent implements OnInit, OnDestroy {
     }
     this.isGenerateReportLoader = true;
     let params = {
-      page: page,
-      store_sales__report: true,
+      store_sales_report: true,
       start_date: this._reportService.startDate,
       end_date: this._reportService.endDate,
       stores_list: selectedStores.toString(),
-      size: 20
+      payment_status: this.paymentStatus,
+      report_type: this.reportType,
+      show_cancelled_order: this.blnShowCancelled,
+      is_individual: this.blnIndividualOrders,
+      is_ytd: this.blnYTD,
+      state: this.selectedStates.pk_stateID,
+      promoCode: this.selectedPromoCodes.promocode
     }
     this._reportService.getAPIData(params).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+      console.log(res);
       if (res["data"].length > 0) {
         this.generateReportData = res["data"];
         this.totalData = res["totalRecords"];
@@ -258,20 +246,25 @@ export class ReportsStoreSalesComponent implements OnInit, OnDestroy {
       this.isGenerateReportLoader = false;
       this._changeDetectorRef.markForCheck();
     });
+    this.backtoTop();
   }
   backToList() {
     this.generateReportData = null;
     this._changeDetectorRef.markForCheck();
   }
-  getNextReportData(event) {
-    const { previousPageIndex, pageIndex } = event;
-    if (pageIndex > previousPageIndex) {
-      this.reportPage++;
-    } else {
-      this.reportPage--;
-    };
-    this.generateReport(this.reportPage);
-  };
+  goToSummary() {
+    setTimeout(() => {
+      this.summaryScrollAnchor.nativeElement.scrollIntoView({ behavior: 'smooth' });
+    }, 100);
+  }
+  backtoTop() {
+    setTimeout(() => {
+      this.topScroll.nativeElement.scrollIntoView({ behavior: 'smooth' });
+    }, 100);
+  }
+  generatePdf() {
+
+  }
   /**
      * On destroy
      */

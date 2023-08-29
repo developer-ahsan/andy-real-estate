@@ -131,8 +131,8 @@ export class RoyalitiesReportComponent implements OnInit, OnDestroy {
     this._reportService.getAPIData(params).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
       if (res["data"].length > 0) {
         res["data"].forEach(element => {
-          this.totalSales += Number(element.thisOrderTotal);
-          this.totalRoyalities += Number(element.Royalties);
+          this.totalSales = element.grandTotalThisOrderTotal;
+          this.totalRoyalities = element.grandTotalRoyalties;
           if (moment(new Date()).diff(moment(element.paymentDate)) >= 0) {
             element.paid = true;
           } else {
