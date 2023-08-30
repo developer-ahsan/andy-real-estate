@@ -71,7 +71,13 @@
                     <tr>
                         <th>Action</th>
                         <th mat-sort-header="orderDate">Date</th>
-                        <th mat-sort-header="shippingDate">ESD</th>
+                        <th mat-sort-header="shippingDate">
+                            <div class="flex">
+                                <span>ESD</span>
+                                <mat-icon class="icon-size-4 ml-1" matTooltip="Estimated Shipping Date"
+                                    [svgIcon]="'heroicons_solid:question-mark-circle'"></mat-icon>
+                            </div>
+                        </th>
                         <th mat-sort-header="inHandsDate">In-Hands</th>
                         <th mat-sort-header="fk_orderID">Order</th>
                         <th mat-sort-header="pk_orderLineID">PO Number</th>
@@ -79,13 +85,24 @@
                         <th mat-sort-header="productName">Product</th>
                         <th mat-sort-header="supplierName">Vendor</th>
                         <th mat-sort-header="statusName">Status</th>
-                        <th mat-sort-header="FIELD9">Age</th>
-                        <th mat-sort-header="storeName">Store</th>
-                        <th mat-sort-header="orderDate">CPO</th>
-                        <th mat-sort-header="orderDate">CC</th>
+                        <th mat-sort-header="Age">Age</th>
+                        <th mat-sort-header="storeCode">Store</th>
+                        <th mat-sort-header="orderDate">
+                            <div class="flex">
+                                <span>CPO</span>
+                                <mat-icon class="icon-size-4 ml-1" matTooltip="Customer PO Number"
+                                    [svgIcon]="'heroicons_solid:question-mark-circle'"></mat-icon>
+                            </div>
+                        </th>
+                        <th mat-sort-header="orderDate">
+                            <div class="flex">
+                                <span>CC</span>
+                                <mat-icon class="icon-size-4 ml-1" matTooltip="Charge Code"
+                                    [svgIcon]="'heroicons_solid:question-mark-circle'"></mat-icon>
+                            </div>
+                        </th>
                         <th mat-sort-header="paymentDate">Paid</th>
                         <th mat-sort-header="trackingNumber">TRX</th>
-                        <th>Proof</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -132,13 +149,13 @@
                                 {{item?.statusName}}
                             </td>
                             <td>
-                                ---
+                                {{(item?.Age + 'hrs') || '---'}}
                             </td>
                             <td>
-                                {{item?.storeName}}
+                                {{item?.storeCode}}
                             </td>
-                            <td>---</td>
-                            <td>---</td>
+                            <td>{{item?.CPO || '---'}}</td>
+                            <td>{{item?.CC || '---'}}</td>
                             <td>
                                 <mat-icon svgIcon="heroicons_outline:x" class="text-red-500"
                                     *ngIf="!item.paymentDate"></mat-icon>
@@ -151,7 +168,6 @@
                                 <mat-icon svgIcon="heroicons_outline:check" class="text-green-500"
                                     *ngIf="item.trackingNumber"></mat-icon>
                             </td>
-                            <td></td>
                         </tr>
                     </ng-container>
                 </tbody>

@@ -1,6 +1,5 @@
 import { Component, OnInit, ChangeDetectorRef, OnDestroy, ViewChild, ElementRef } from '@angular/core';
 import { MatPaginator } from '@angular/material/paginator';
-import { MatDrawer } from '@angular/material/sidenav';
 import { ActivatedRoute, NavigationExtras, Router } from '@angular/router';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
@@ -12,17 +11,12 @@ import { OrderManageService } from '../../order-manage.service';
 })
 export class OrderManageDashboardComponent implements OnInit, OnDestroy {
   @ViewChild('paginator') paginator: MatPaginator;
-  @ViewChild('drawer', { static: true }) sidenav: MatDrawer;
   isLoading: boolean = false;
   private _unsubscribeAll: Subject<any> = new Subject<any>();
-  // Sidebar stuff
-  @ViewChild('drawer') drawer: MatDrawer;
-  drawerMode: 'over' | 'side' = 'over';
 
 
   mainScreen = 'Artwork Approved';
   dataSource = [];
-  displayedColumns: string[] = ['date', 'esd', 'inhands', 'order', 'po', 'customer', 'product', 'vendor', 'status', 'store', 'paid', 'trx', 'action'];
   totalRecords = 0;
   page = 1;
 
@@ -35,7 +29,7 @@ export class OrderManageDashboardComponent implements OnInit, OnDestroy {
   orderID: any = '';
   ngstatusID = 1;
   userData: any;
-  sort_by = '';
+  sort_by = 'fk_orderID';
   sort_order = ''
   statusOptions = [
     { value: 1, label: 'New Order' },
@@ -96,9 +90,6 @@ export class OrderManageDashboardComponent implements OnInit, OnDestroy {
     });
 
   };
-  toggleDrawer() {
-    this.sidenav.toggle();
-  }
   getOrderManage(page) {
     let params = {
       user_id: this.userData.pk_userID,
@@ -119,7 +110,6 @@ export class OrderManageDashboardComponent implements OnInit, OnDestroy {
         element.styles = this.getRowStyles(element);
       });
       this.dataSource = res["data"];
-      console.log(this.dataSource);
       this.totalRecords = res["totalRecords"];
       if (this.isPaginatedLoader) {
         this.backtoTop();
