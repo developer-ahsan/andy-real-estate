@@ -138,7 +138,18 @@ export class RoyalitiesReportComponent implements OnInit, OnDestroy {
           } else {
             element.paid = false;
           }
-          element.status = this._reportService.getStatusValue(element.orderLinesStatus);
+          let status = '5';
+          let orderLinesStatus = element.orderLinesStatus.split('|');
+          orderLinesStatus.forEach(_status => {
+            if (_status == 1 || _status == 2 || _status == 3 || _status == 4) {
+              status = '7';
+            } else if (_status == 7) {
+              status = '1';
+            } else {
+              status = '5';
+            }
+          });
+          element.status = this._reportService.getStatusValue(status);
         });
         this.generateReportData = res["data"];
         this.topScroll.nativeElement.scrollIntoView({ behavior: 'smooth' });

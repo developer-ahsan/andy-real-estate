@@ -52,6 +52,7 @@ export class ReportIncidentComponent implements OnInit, OnDestroy {
 
   isIncidentReportLoader: boolean = false;
   isExcelLoader: boolean = false;
+  GrandTotal = 0;
 
   constructor(
     private _changeDetectorRef: ChangeDetectorRef,
@@ -114,6 +115,7 @@ export class ReportIncidentComponent implements OnInit, OnDestroy {
 
   getIncidentReportData(page) {
     this.dataSource = [];
+    this.GrandTotal = 0;
     this.isIncidentReportLoader = true;
     if (!this.selectedEmployees) {
       this.selectedEmployees = { pk_userID: '' };
@@ -142,6 +144,7 @@ export class ReportIncidentComponent implements OnInit, OnDestroy {
       page: page
     }
     this._reportService.getAPIData(params).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+      this.GrandTotal = res["grandTotal"];
       this.dataSource = res["data"];
       this.totalData = res["totalRecords"];
       this.isIncidentReportLoader = false;

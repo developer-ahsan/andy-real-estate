@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, OnDestroy, OnInit, ViewChild, ViewEncapsulation } from '@angular/core';
-import { debounceTime, distinctUntilChanged, filter, finalize, switchMap, takeUntil, tap } from 'rxjs/operators';
+import { debounceTime, distinctUntilChanged, filter, finalize, map, switchMap, takeUntil, tap } from 'rxjs/operators';
 import { fuseAnimations } from '@fuse/animations';
 import { ActivatedRoute, NavigationEnd, NavigationExtras, Router } from '@angular/router';
 import { FuseMediaWatcherService } from '@fuse/services/media-watcher';
@@ -14,6 +14,8 @@ import { FormControl } from '@angular/forms';
 import { MatDrawer } from '@angular/material/sidenav';
 import { AuthService } from 'app/core/auth/auth.service';
 import { CatalogService } from '../../apps/catalog/components/catalog.service';
+import { DashboardsService } from '../../dashboards/dashboard.service';
+import moment from 'moment';
 
 
 
@@ -44,6 +46,15 @@ export class OrderManageComponent {
     ngEmail = '';
     ngPassword = '';
     userData: any;
+
+    status = 2;
+    storesList: any = [];
+    selectedStore: any;
+    rangeStart: any = '';
+    rangeEnd: any = '';
+    customerKeyword = '';
+    ngOrderID = '';
+    maxDate = new Date();
     /**
      * Constructor
      */
@@ -51,6 +62,7 @@ export class OrderManageComponent {
         private _changeDetectorRef: ChangeDetectorRef,
         private _router: Router,
         public _rapidService: OrderManageService,
+        private commonService: DashboardsService,
         private route: ActivatedRoute,
     ) {
         if (sessionStorage.getItem('orderManage')) {
@@ -61,14 +73,6 @@ export class OrderManageComponent {
         }
         this.routes = this._rapidService.navigationLabels;
     }
-
-    // -----------------------------------------------------------------------------------------------------
-    // @ Lifecycle hooks
-    // -----------------------------------------------------------------------------------------------------
-
-    /**
-     * On init
-     */
 
     ngOnInit(): void {
         if (this.loginCheck) {
@@ -81,9 +85,17 @@ export class OrderManageComponent {
             this.selectedScreeen = this.route.children[0].snapshot.data.title;
             this.selectedRoute = this.route.children[0].snapshot.data.url;
         }
+        this.getStores();
     }
-    toggleDrawer() {
-        this.sidenav.toggle();
+    getStores() {
+        this.commonService.storesData$.pipe(
+            takeUntil(this._unsubscribeAll),
+            map(res => res["data"].filter(element => element.blnActive))
+        ).subscribe(filteredData => {
+            this.storesList.push({ storeName: 'All Stores', pk_storeID: '' });
+            this.storesList.push(...filteredData);
+            this.selectedStore = this.storesList[0];
+        });
     }
     calledScreen(route) {
         if (this.selectedRoute != route) {
@@ -91,18 +103,31 @@ export class OrderManageComponent {
             this._router.navigate([`ordermanage/${route}`]);
         }
     }
-    searchOrder() {
+    filterOrderManageData() {
         const queryParams: NavigationExtras = {
-            queryParams: { orderID: this.orderID }
+            queryParams: {}
         };
-        this.customerID = '';
-        this._router.navigate(['/ordermanage/dashboard'], queryParams);
-    }
-    searchCustomer() {
-        const queryParams: NavigationExtras = {
-            queryParams: { keyword: this.customerID }
+        let start: any = '';
+        let end: any = '';
+        if (this.rangeStart) {
+            start = moment(this.rangeStart).format('MM-DD-yyyy');
+        }
+        if (this.rangeEnd) {
+            end = moment(this.rangeStart).format('MM-DD-yyyy');
+        }
+        const parameters = {
+            orderID: this.ngOrderID,
+            keyword: this.customerKeyword,
+            status: this.status,
+            storeID: this.selectedStore.pk_storeID,
+            range_start: start,
+            range_end: end
         };
-        this.orderID = '';
+        for (const [param, value] of Object.entries(parameters)) {
+            if (value) {
+                queryParams.queryParams[param] = value;
+            }
+        }
         this._router.navigate(['/ordermanage/dashboard'], queryParams);
     }
     loginorderManage() {
@@ -118,7 +143,6 @@ export class OrderManageComponent {
         const secretKey = 'order_manage_login';
         const objectString = JSON.stringify(obj);
         const encryptedObject = CryptoJS.AES.encrypt(objectString, secretKey).toString();
-        // const token = sign(obj, 'smart_art_login');
         let payload = {
             payload: encryptedObject,
             order_manage_login_v2: true
@@ -145,9 +169,7 @@ export class OrderManageComponent {
         this.loginCheck = false;
         sessionStorage.removeItem('orderManage');
     }
-    /**
-     * On destroy
-     */
+
     ngOnDestroy(): void {
         // Unsubscribe from all subscriptions
         this._unsubscribeAll.next();

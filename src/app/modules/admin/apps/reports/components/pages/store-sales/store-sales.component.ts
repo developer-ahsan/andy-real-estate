@@ -347,13 +347,12 @@ export class ReportsStoreSalesComponent implements OnInit, OnDestroy {
         } else {
           this.totalStoreSummary.PERCENT = 0;
         }
-        this.totalStoreSummary.AVG = Math.ceil((this.totalStoreSummary.SALES / this.totalStoreSummary.NS) * 10000) / 100;
+        this.totalStoreSummary.AVG = this.totalStoreSummary.SALES / this.totalStoreSummary.NS;
         this.totalStoreSummary.MARGIN = Math.ceil(((this.totalStoreSummary.PRICE - this.totalStoreSummary.COST) / this.totalStoreSummary.PRICE) * 10000) / 100;
         this.totalStoreSummary.DIFF = this.totalStoreSummary.SALES - this.totalStoreSummary.PY;
 
         this.generateReportData = res["report_summary"];
         this.employeesReportData = res["employee_summary"];
-        console.log(this.generateReportData)
 
         // Last Year
         if (this.blnYTD) {

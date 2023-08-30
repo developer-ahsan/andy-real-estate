@@ -1,6 +1,6 @@
 <div class="rounded-2xl shadow bg-card flex flex-col lg:flex-row w-full">
 
-    <div class="w-full">
+    <div class="w-full" #tableTop>
         <div class="px-4 flex justify-between sm:px-4 lg:px-8 py-4">
             <h2 class="text-xl sm:text-xl font-extrabold tracking-tight leading-7 sm:leading-10 truncate">
                 Dashboard
@@ -36,115 +36,10 @@
                 <hr class="m-0 h-2" style="background: #fca769;">
             </div>
             <div>
-                <p>Semi-rush</p>
+                <p>Duplicated</p>
                 <hr class="m-0 h-2" style="background: #4512de;">
             </div>
         </div>
-        <div class="row px-4 sm:px-4 lg:px-8 py-2">
-            <div class="col-12 col-md-4">
-                <mat-form-field class="w-full mr-2">
-                    <mat-select [(ngModel)]="status" matInput>
-                        <mat-option [value]="1">New Order</mat-option>
-                        <mat-option [value]="2">Artwork Approved</mat-option>
-                        <mat-option [value]="3">PO Sent</mat-option>
-                        <mat-option [value]="4">PO Acknowledged</mat-option>
-                        <mat-option [value]="5">Shipped</mat-option>
-                        <mat-option [value]="6">Delivered</mat-option>
-                        <mat-option [value]="8">Picked up</mat-option>
-                        <mat-option [value]="9">Backorder</mat-option>
-                        <mat-option [value]="16">Not on backorder</mat-option>
-                        <mat-option [value]="10">Waiting For GroupBuy</mat-option>
-                        <mat-option [value]="11">Hidden</mat-option>
-                        <mat-option [value]="12">Unhidden</mat-option>
-                        <mat-option [value]="14">Semi-rush</mat-option>
-                        <mat-option [value]="15">Un-semi-rush</mat-option>
-                    </mat-select>
-                </mat-form-field>
-            </div>
-            <div class="col-12 col-md-4">
-                <mat-form-field class="w-full mr-2">
-                    <mat-select matInput [(ngModel)]="store_id">
-                        <mat-option [value]="0">All Stores</mat-option>
-                        <mat-option [value]="142">10ksbPromosAndPrint.com</mat-option>
-                        <mat-option [value]="187">2ndFamilyShop.com</mat-option>
-                        <mat-option [value]="60">AirForceROTCShop.com</mat-option>
-                        <mat-option [value]="64">ArmyROTCShop.com</mat-option>
-                        <mat-option [value]="177">AZPromoShop.com</mat-option>
-                        <mat-option [value]="159">BrandItShop.com</mat-option>
-                        <mat-option [value]="163">CCUPromos.com</mat-option>
-                        <mat-option [value]="122">ChurchPromoShop.com</mat-option>
-                        <mat-option [value]="190">ConsolidusDemoSite.com</mat-option>
-                        <mat-option [value]="160">ConsolidusPromos.com</mat-option>
-                        <mat-option [value]="146">ConsolidusShop.com</mat-option>
-                        <mat-option [value]="66">CUpromos.com</mat-option>
-                        <mat-option [value]="164">FitNationPromos.com</mat-option>
-                        <mat-option [value]="174">FloridaPolyShop.com</mat-option>
-                        <mat-option [value]="192">GovMVMTPromos.com</mat-option>
-                        <mat-option [value]="153">HCHPromosAndPrint.com</mat-option>
-                        <mat-option [value]="189">IrreverentWarriorsStore.com</mat-option>
-                        <mat-option [value]="129">IUCshop.com</mat-option>
-                        <mat-option [value]="182">JDogShop.com</mat-option>
-                        <mat-option [value]="80">LeadingAgeOhioShop.com</mat-option>
-                        <mat-option [value]="167">MemberPromos.com</mat-option>
-                        <mat-option [value]="131">MiamiOHshop.com</mat-option>
-                        <mat-option [value]="76">MicrobrewMarketing.com</mat-option>
-                        <mat-option [value]="109">MyGymPromos.com</mat-option>
-                        <mat-option [value]="91">MySBDCshop.com</mat-option>
-                        <mat-option [value]="74">MySummaShop.com</mat-option>
-                        <mat-option [value]="180">MyTexasRealtorsStore.com</mat-option>
-                        <mat-option [value]="171">NJCCPromos.com</mat-option>
-                        <mat-option [value]="145">OHIOPromoShop.com</mat-option>
-                        <mat-option [value]="152">PHCPromosAndPrint.com</mat-option>
-                        <mat-option [value]="156">Promos4NonProfits.com</mat-option>
-                        <mat-option [value]="128">PromosAndPrint.com</mat-option>
-                        <mat-option [value]="158">S4LPromoShop.com</mat-option>
-                        <mat-option [value]="105">ShopAkronChildrens.com</mat-option>
-                        <mat-option [value]="126">ShopCharterSchools.com</mat-option>
-                        <mat-option [value]="188">ShopMySalonSuite.com</mat-option>
-                        <mat-option [value]="168">SummaHealthShop.com</mat-option>
-                        <mat-option [value]="178">SwagByConsolidus.com</mat-option>
-                        <mat-option [value]="181">TCCDpromos.com</mat-option>
-                        <mat-option [value]="175">TexasRealtorsStore.com</mat-option>
-                        <mat-option [value]="140">thebbbspromoshop.com</mat-option>
-                        <mat-option [value]="179">theCHCstore.com</mat-option>
-                        <mat-option [value]="123">theJCUShop.com</mat-option>
-                        <mat-option [value]="184">theKSUshop.com</mat-option>
-                        <mat-option [value]="103">theUAshop.com</mat-option>
-                        <mat-option [value]="125">theYSUshop.com</mat-option>
-                        <mat-option [value]="127">Tri-Cshop.com</mat-option>
-                        <mat-option [value]="96">TuffyShop.com</mat-option>
-                        <mat-option [value]="169">UDPromos.com</mat-option>
-                        <mat-option [value]="157">UMFSPromoShop.com</mat-option>
-                        <mat-option [value]="191">UNFPromos.com</mat-option>
-                        <mat-option [value]="139">universitypromosandprint.com</mat-option>
-                        <mat-option [value]="173">utdpromos.com</mat-option>
-                        <mat-option [value]="161">UWSPromos.com</mat-option>
-                        <mat-option [value]="183">vsbswag.com</mat-option>
-                        <mat-option [value]="165">WrightStatePromos.com</mat-option>
-                        <mat-option [value]="172">Ypromoshop.com</mat-option>
-                    </mat-select>
-                </mat-form-field>
-            </div>
-            <div class="col-12 col-md-4">
-                <mat-form-field class="w-full">
-                    <mat-date-range-input [rangePicker]="picker1" (click)="picker1.open()">
-                        <input matStartDate placeholder="Start date" readonly [(ngModel)]="rangeStart">
-                        <input matEndDate placeholder="End date" readonly [(ngModel)]="rangeEnd">
-                    </mat-date-range-input>
-                    <mat-datepicker-toggle matIconSuffix [for]="picker1"></mat-datepicker-toggle>
-                    <mat-date-range-picker #picker1></mat-date-range-picker>
-                </mat-form-field>
-            </div>
-            <div class="col-12 text-right">
-                <button mat-flat-button [color]="'primary'" [disabled]="isLoading" class="min-w-40"
-                    (click)="filterOrderManageData()">
-                    <span>Filter</span>
-                    <!-- <mat-progress-spinner *ngIf="isLoading" [diameter]="24" [mode]="'indeterminate'">
-                    </mat-progress-spinner> -->
-                </button>
-            </div>
-        </div>
-
         <div *ngIf="isLoading" class="px-4 py-4">
             <ngx-skeleton-loader count="8" appearance="line" animation="pulse" [theme]="{ 
                 'background-color': '#dedede'
@@ -155,20 +50,9 @@
             <div class="flex">
                 <mat-form-field class="min-w-100 mr-2">
                     <mat-select [(ngModel)]="ngstatusID" matInput>
-                        <mat-option [value]="1">New Order</mat-option>
-                        <mat-option [value]="2">Artwork Approved</mat-option>
-                        <mat-option [value]="3">PO Sent</mat-option>
-                        <mat-option [value]="4">PO Acknowledged</mat-option>
-                        <mat-option [value]="5">Shipped</mat-option>
-                        <mat-option [value]="6">Delivered</mat-option>
-                        <mat-option [value]="8">Picked up</mat-option>
-                        <mat-option [value]="9">Backorder</mat-option>
-                        <mat-option [value]="16">Not on backorder</mat-option>
-                        <mat-option [value]="10">Waiting For GroupBuy</mat-option>
-                        <mat-option [value]="11">Hidden</mat-option>
-                        <mat-option [value]="12">Unhidden</mat-option>
-                        <mat-option [value]="14">Semi-rush</mat-option>
-                        <mat-option [value]="15">Un-semi-rush</mat-option>
+                        <mat-option *ngFor="let option of statusOptions" [value]="option.value">
+                            {{ option.label }}
+                        </mat-option>
                     </mat-select>
                 </mat-form-field>
                 <mat-form-field class="min-w-100 mr-2">
@@ -176,137 +60,105 @@
                 </mat-form-field>
                 <button mat-stroked-button class="min-w-30">Update</button>
             </div>
+            <div *ngIf="!isLoading" class="font-bold">
+                <p>Showing Orders ({{totalRecords}} Total)</p>
+            </div>
         </div>
-        <div class="mt-2 overflow-x-auto" *ngIf="!isLoading">
-            <table mat-table [dataSource]="dataSource" class="w-full border-t">
-                <ng-container matColumnDef="date">
-                    <th mat-header-cell *matHeaderCellDef class="w-20 min-w-20 px-2">
-                        Date
-                    </th>
-                    <td mat-cell *matCellDef="let element" class="text-sm px-2" (click)="goToOrderDetails(element)">
-                        {{element.orderDate | date}}
-                    </td>
-                </ng-container>
-                <ng-container matColumnDef="esd">
-                    <th mat-header-cell *matHeaderCellDef class="w-20 min-w-20 px-2">
-                        ESD
-                    </th>
-                    <td mat-cell *matCellDef="let element" class="text-sm px-2" (click)="goToOrderDetails(element)">
-                        {{(element.shippingDate | date) || '---'}}
-                    </td>
-                </ng-container>
-                <ng-container matColumnDef="inhands">
-                    <th mat-header-cell *matHeaderCellDef class="w-20 min-w-20 px-2">
-                        In-Hands
-                    </th>
-                    <td (click)="goToOrderDetails(element)" mat-cell *matCellDef="let element" class="text-sm px-2">
-                        {{(element.inHandsDate | date)|| 'N/A'}}
-                    </td>
-                </ng-container>
-                <ng-container matColumnDef="order">
-                    <th mat-header-cell *matHeaderCellDef class="w-10 min-w-10 px-2">
-                        Order
-                    </th>
-                    <td mat-cell *matCellDef="let element" class="text-sm px-2" (click)="goToOrderDetails(element)">
-                        {{element.fk_orderID}}
-                    </td>
-                </ng-container>
-                <ng-container matColumnDef="po">
-                    <th mat-header-cell *matHeaderCellDef class="w-20 min-w-20 px-2">
-                        PO Number
-                    </th>
-                    <td mat-cell *matCellDef="let element" class="text-sm px-2" (click)="goToOrderDetails(element)">
-                        {{element.fk_orderID
-                        +'-'+element.pk_orderLineID}}
-                    </td>
-                </ng-container>
-                <ng-container matColumnDef="customer">
-                    <th mat-header-cell *matHeaderCellDef class="w-30 min-w-30 px-2">
-                        Customer
-                    </th>
-                    <td mat-cell *matCellDef="let element" class="text-sm px-2" (click)="goToOrderDetails(element)">
-                        {{element?.firstName + ' ' +
-                        element?.lastName}}
-                    </td>
-                </ng-container>
-                <ng-container matColumnDef="product">
-                    <th mat-header-cell *matHeaderCellDef class="w-40 min-w-40 px-2">
-                        Product
-                    </th>
-                    <td mat-cell *matCellDef="let element" class="text-sm px-2" (click)="goToOrderDetails(element)">
-                        {{element?.productName}}
-                    </td>
-                </ng-container>
-                <ng-container matColumnDef="vendor">
-                    <th mat-header-cell *matHeaderCellDef class="w-20 min-w-20 px-2">
-                        Vendor
-                    </th>
-                    <td mat-cell *matCellDef="let element" class="text-sm px-2" (click)="goToOrderDetails(element)">
-                        {{element?.supplierName}}
-                    </td>
-                </ng-container>
-                <ng-container matColumnDef="status">
-                    <th mat-header-cell *matHeaderCellDef class="w-20 min-w-20 px-2">
-                        Status
-                    </th>
-                    <td mat-cell *matCellDef="let element" class="text-sm px-2" (click)="goToOrderDetails(element)">
-                        {{element?.statusName}}
-                    </td>
-                </ng-container>
-                <ng-container matColumnDef="age">
-                    <th mat-header-cell *matHeaderCellDef class="w-20 min-w-20 px-2">
-                        Age
-                    </th>
-                    <td mat-cell *matCellDef="let element" class="text-sm px-2" (click)="goToOrderDetails(element)">
-                        {{element.FIELD9}}
-                    </td>
-                </ng-container>
-                <ng-container matColumnDef="store">
-                    <th mat-header-cell *matHeaderCellDef class="w-30 min-w-30 px-2">
-                        Store
-                    </th>
-                    <td mat-cell *matCellDef="let element" class="text-sm px-2" (click)="goToOrderDetails(element)">
-                        {{element?.storeName}}
-                    </td>
-                </ng-container>
-                <ng-container matColumnDef="paid">
-                    <th mat-header-cell *matHeaderCellDef class="w-10 min-w-10 px-2">
-                        Paid
-                    </th>
-                    <td mat-cell *matCellDef="let element" class="text-sm px-2" (click)="goToOrderDetails(element)">
-                        <mat-icon svgIcon="heroicons_outline:x" class="text-red-500"
-                            *ngIf="!element.paymentDate"></mat-icon>
-                        <mat-icon svgIcon="heroicons_outline:check" class="text-green-500"
-                            *ngIf="element.paymentDate"></mat-icon>
-                    </td>
-                </ng-container>
-                <ng-container matColumnDef="trx">
-                    <th mat-header-cell *matHeaderCellDef class="w-10 min-w-10 px-2">
-                        TRX
-                    </th>
-                    <td mat-cell *matCellDef="let element" class="text-sm px-2" (click)="goToOrderDetails(element)">
-                        <mat-icon svgIcon="heroicons_outline:x" class="text-red-500"
-                            *ngIf="!element.trackingNumber"></mat-icon>
-                        <mat-icon svgIcon="heroicons_outline:check" class="text-green-500"
-                            *ngIf="element.trackingNumber"></mat-icon>
-                    </td>
-                </ng-container>
-                <ng-container matColumnDef="action">
-                    <th mat-header-cell *matHeaderCellDef class="w-10 min-w-10 px-2">
-                        Action
-                    </th>
-                    <td mat-cell *matCellDef="let element" class="text-sm px-2">
-                        <mat-checkbox></mat-checkbox>
-                    </td>
-                </ng-container>
-                <tr mat-header-row *matHeaderRowDef="displayedColumns;" class="h-18 bg-light"></tr>
-                <tr mat-row *matRowDef="let row; columns: displayedColumns;"
-                    class="h-14 hover:bg-gray-100 dark:hover:bg-hover" style="cursor: pointer;">
-                </tr>
+
+        <div class="mt-2 table-responsive" *ngIf="!isLoading">
+            <table class="table table-striped" matSort (matSortChange)="customSort($event)">
+                <thead>
+                    <tr>
+                        <th>Action</th>
+                        <th mat-sort-header="orderDate">Date</th>
+                        <th mat-sort-header="shippingDate">ESD</th>
+                        <th mat-sort-header="inHandsDate">In-Hands</th>
+                        <th mat-sort-header="fk_orderID">Order</th>
+                        <th mat-sort-header="pk_orderLineID">PO Number</th>
+                        <th mat-sort-header="firstName">Customer</th>
+                        <th mat-sort-header="productName">Product</th>
+                        <th mat-sort-header="supplierName">Vendor</th>
+                        <th mat-sort-header="statusName">Status</th>
+                        <th mat-sort-header="FIELD9">Age</th>
+                        <th mat-sort-header="storeName">Store</th>
+                        <th mat-sort-header="orderDate">CPO</th>
+                        <th mat-sort-header="orderDate">CC</th>
+                        <th mat-sort-header="paymentDate">Paid</th>
+                        <th mat-sort-header="trackingNumber">TRX</th>
+                        <th>Proof</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr *ngIf="isPaginatedLoader">
+                        <td colspan="17">
+                            <div class="px-4 py-4">
+                                <ngx-skeleton-loader count="8" appearance="line" animation="pulse" [theme]="{ 
+                                    'background-color': '#dedede'
+                                  }">
+                                </ngx-skeleton-loader>
+                            </div>
+                        </td>
+                    </tr>
+                    <ng-container *ngIf="!isPaginatedLoader">
+                        <tr *ngFor="let item of dataSource" [ngStyle]="item.styles">
+                            <td>
+                                <mat-checkbox></mat-checkbox>
+                            </td>
+                            <td>
+                                {{item.orderDate | date: 'MM/dd/yyyy'}}
+                            </td>
+                            <td>
+                                {{(item.shippingDate | date: 'MM/dd/yyyy')|| '---'}}
+                            </td>
+                            <td>
+                                {{(item.inHandsDate | date: 'MM/dd/yyyy')|| 'N/A'}}
+                            </td>
+                            <td>
+                                {{item.fk_orderID}}
+                            </td>
+                            <td>
+                                {{item.fk_orderID+'-'+item.pk_orderLineID}}
+                            </td>
+                            <td>
+                                {{item?.firstName + ' ' + item?.lastName}}
+                            </td>
+                            <td>
+                                {{item?.productName}}
+                            </td>
+                            <td>
+                                {{item?.supplierName}}
+                            </td>
+                            <td>
+                                {{item?.statusName}}
+                            </td>
+                            <td>
+                                ---
+                            </td>
+                            <td>
+                                {{item?.storeName}}
+                            </td>
+                            <td>---</td>
+                            <td>---</td>
+                            <td>
+                                <mat-icon svgIcon="heroicons_outline:x" class="text-red-500"
+                                    *ngIf="!item.paymentDate"></mat-icon>
+                                <mat-icon svgIcon="heroicons_outline:check" class="text-green-500"
+                                    *ngIf="item.paymentDate"></mat-icon>
+                            </td>
+                            <td>
+                                <mat-icon svgIcon="heroicons_outline:x" class="text-red-500"
+                                    *ngIf="!item.trackingNumber"></mat-icon>
+                                <mat-icon svgIcon="heroicons_outline:check" class="text-green-500"
+                                    *ngIf="item.trackingNumber"></mat-icon>
+                            </td>
+                            <td></td>
+                        </tr>
+                    </ng-container>
+                </tbody>
             </table>
             <mat-paginator #paginator class="border-b sm:border-t sm:border-b-0 z-10 bg-gray-50 dark:bg-transparent"
-                [length]="totalRecords" [pageIndex]="0" [pageSize]="20" (page)="getNextData($event)"
-                [hidePageSize]="true">
+                [disabled]="isPaginatedLoader" [length]="totalRecords" [pageIndex]="0" [pageSize]="20"
+                (page)="getNextData($event)" [hidePageSize]="true">
             </mat-paginator>
         </div>
     </div>

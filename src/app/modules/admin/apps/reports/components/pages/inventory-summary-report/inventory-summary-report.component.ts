@@ -2,8 +2,9 @@ import { Component, Input, OnInit, Output, EventEmitter, ChangeDetectorRef, OnDe
 import { FormBuilder, FormControl, Validators } from '@angular/forms';
 import { MatPaginator } from '@angular/material/paginator';
 import { Subject } from 'rxjs';
-import { debounceTime, distinctUntilChanged, filter, finalize, switchMap, takeUntil, tap } from 'rxjs/operators';
+import { debounceTime, distinctUntilChanged, filter, finalize, map, switchMap, takeUntil, tap } from 'rxjs/operators';
 import { ReportsService } from '../../reports.service';
+import { DashboardsService } from 'app/modules/admin/dashboards/dashboard.service';
 
 @Component({
   selector: 'app-inventory-summary-report',
@@ -33,7 +34,8 @@ export class ReportInventorySummaryComponent implements OnInit, OnDestroy {
   generateReportData: any;
   constructor(
     private _changeDetectorRef: ChangeDetectorRef,
-    private _reportService: ReportsService
+    private _reportService: ReportsService,
+    private commonService: DashboardsService
   ) { }
 
   ngOnInit(): void {
@@ -41,51 +43,18 @@ export class ReportInventorySummaryComponent implements OnInit, OnDestroy {
     this.getStores();
   };
   getStores() {
-    this._reportService.Stores$.pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+    this.commonService.storesData$.pipe(
+      takeUntil(this._unsubscribeAll),
+      map(res => res["data"].filter(element => element.blnActive))
+    ).subscribe(filteredData => {
       this.allStores.push({ storeName: 'All Stores', pk_storeID: '' });
-      this.allStores = this.allStores.concat(res["data"]);
+      this.allStores.push(...filteredData);
       this.selectedStores = this.allStores[0];
-      this.searchStoresCtrl.setValue(this.selectedStores);
       this.generateReport(1);
-    }, err => {
-      this.isLoading = false;
-      this._changeDetectorRef.markForCheck();
-    });
-    let params;
-    this.searchStoresCtrl.valueChanges.pipe(
-      filter((res: any) => {
-        params = {
-          stores: true,
-          keyword: res
-        }
-        return res !== null && res.length >= 2
-      }),
-      distinctUntilChanged(),
-      debounceTime(300),
-      tap(() => {
-        this.allStores = [];
-        this.isSearchingStores = true;
-        this._changeDetectorRef.markForCheck();
-      }),
-      switchMap(value => this._reportService.getAPIData(params)
-        .pipe(
-          finalize(() => {
-            this.isSearchingStores = false
-            this._changeDetectorRef.markForCheck();
-          }),
-        )
-      )
-    ).subscribe((data: any) => {
-      this.allStores.push({ storeName: 'All Stores', pk_storeID: '' });
-      this.allStores = this.allStores.concat(data["data"]);
     });
   }
-  onSelectedStores(ev) {
-    this.selectedStores = ev.option.value;
-  }
-  displayWithStores(value: any) {
-    return value?.storeName;
-  }
+
+
   generateReport(page) {
     if (page == 1) {
       this.page = 1;

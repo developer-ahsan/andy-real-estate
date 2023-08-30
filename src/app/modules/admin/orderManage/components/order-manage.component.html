@@ -17,14 +17,70 @@
                 <a class="whitespace-nowrap text-primary-500" *ngIf="!isLoading">Welcome, {{userData?.firstName + ' ' +
                     userData?.lastName}}</a>
             </div>
-            <div class="text-center " *ngIf="loginCheck">
-                <mat-form-field class="w-100 mr-1" matTooltip="Enter to search">
-                    <input matInput placeholder="Search Order ID" [(ngModel)]="orderID" (keyup.enter)="searchOrder()">
-                </mat-form-field>
-                <mat-form-field class="w-100" matTooltip="Enter to search">
-                    <input matInput placeholder="Search Customer" [(ngModel)]="customerID"
-                        (keyup.enter)="searchCustomer()">
-                </mat-form-field>
+            <div *ngIf="loginCheck">
+                <ul role="list" class="mt-3 grid grid-cols-1 gap-2 sm:grid-cols-2 sm:gap-2 lg:grid-cols-5">
+                    <li class="col-span-1">
+                        <mat-form-field class="w-full">
+                            <mat-label>Order/PO</mat-label>
+                            <input matInput [(ngModel)]="ngOrderID" placeholder="Order/PO">
+                        </mat-form-field>
+                    </li>
+                    <li class="col-span-1">
+                        <mat-form-field class="w-full">
+                            <mat-label>Customer/Product/Vendor</mat-label>
+                            <input matInput placeholder="Customer/Product/Vendor" [(ngModel)]="customerKeyword">
+                        </mat-form-field>
+                    </li>
+                    <li class="col-span-1">
+                        <mat-form-field class="w-full">
+                            <mat-label>Filter By Status</mat-label>
+                            <mat-select [(ngModel)]="status" matInput>
+                                <mat-option [value]="1">New Order</mat-option>
+                                <mat-option [value]="2">Artwork Approved</mat-option>
+                                <mat-option [value]="3">PO Sent</mat-option>
+                                <mat-option [value]="4">PO Acknowledged</mat-option>
+                                <mat-option [value]="5">Shipped</mat-option>
+                                <mat-option [value]="6">Delivered</mat-option>
+                                <mat-option [value]="8">Picked up</mat-option>
+                                <mat-option [value]="9">Backorder</mat-option>
+                                <mat-option [value]="16">Not on backorder</mat-option>
+                                <mat-option [value]="10">Waiting For GroupBuy</mat-option>
+                                <mat-option [value]="11">Hidden</mat-option>
+                                <mat-option [value]="12">Unhidden</mat-option>
+                                <mat-option [value]="14">Semi-rush</mat-option>
+                                <mat-option [value]="15">Un-semi-rush</mat-option>
+                            </mat-select>
+                        </mat-form-field>
+                    </li>
+                    <li class="col-span-1">
+                        <mat-form-field class="w-full">
+                            <mat-label>Select a Store</mat-label>
+                            <mat-select matInput [(ngModel)]="selectedStore">
+                                <mat-option *ngFor="let item of storesList"
+                                    [value]="item">{{item.storeName}}</mat-option>
+                            </mat-select>
+                        </mat-form-field>
+                    </li>
+                    <li class="col-span-1">
+                        <mat-form-field class="w-full">
+                            <mat-label>Select a date</mat-label>
+                            <mat-date-range-input [max]="maxDate" [rangePicker]="picker1" (click)="picker1.open()">
+                                <input matStartDate placeholder="Start date" readonly [(ngModel)]="rangeStart">
+                                <input matEndDate placeholder="End date" readonly [(ngModel)]="rangeEnd">
+                            </mat-date-range-input>
+                            <mat-datepicker-toggle matIconSuffix [for]="picker1"></mat-datepicker-toggle>
+                            <mat-date-range-picker #picker1></mat-date-range-picker>
+                        </mat-form-field>
+                    </li>
+                </ul>
+                <div class="text-right">
+                    <button mat-flat-button [color]="'primary'" [disabled]="isLoading" class="min-w-40"
+                        (click)="filterOrderManageData()">
+                        <span>Filter</span>
+                        <!-- <mat-progress-spinner *ngIf="isLoading" [diameter]="24" [mode]="'indeterminate'">
+                        </mat-progress-spinner> -->
+                    </button>
+                </div>
             </div>
         </div>
     </div>

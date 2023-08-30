@@ -159,7 +159,16 @@ export class ReportItemsComponent implements OnInit, OnDestroy {
     worksheet.columns = columns;
 
     // Format and add data to the worksheet
+    const lastIDs = [];
     for (const obj of data) {
+      const index = lastIDs.findIndex(id => id == obj.ID);
+      if (index > -1) {
+        obj.Setups = 0;
+        obj.Shipping = 0;
+        obj.Runs = 0;
+      } else {
+        lastIDs.push(obj.ID);
+      }
       obj.InvoiceDate = moment(obj.InvoiceDate).format('yyyy-MM-DD');
       const row = worksheet.addRow(obj);
       row.eachCell(cell => {
