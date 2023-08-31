@@ -36,7 +36,7 @@ export class ReportItemsComponent implements OnInit, OnDestroy {
   blnShowCancelled = 0;
   paymentStatus = 1;
   ngStore = 637;
-  ngSelectedColumns = ['price', 'setups', 'shipping', 'subtotal', 'paid', 'runs', 'internalRoyalty', 'zip'];
+  ngSelectedColumns = ['price', 'setups', 'runs', 'shipping', 'subtotal', 'paid', 'internalRoyalty', 'zip'];
   constructor(
     private _changeDetectorRef: ChangeDetectorRef,
     private _reportService: ReportsService,
@@ -130,10 +130,10 @@ export class ReportItemsComponent implements OnInit, OnDestroy {
     // Column map for the dynamic columns
     const columnMap = {
       setups: { header: "Setups", key: "Setups", width: 10 },
+      runs: { header: "Runs", key: "Runs", width: 10 },
       shipping: { header: "Shipping", key: "Shipping", width: 10 },
       subtotal: { header: "Subtotal", key: "Subtotal", width: 10 },
       paid: { header: "Paid", key: "Paid", width: 10 },
-      runs: { header: "Runs", key: "Runs", width: 10 },
       internalRoyalty: { header: "InternalRoyalty", key: "InternalRoyalty", width: 20 },
       zip: { header: "BillingZip", key: "BillingZip", width: 20 }
     };
@@ -157,17 +157,23 @@ export class ReportItemsComponent implements OnInit, OnDestroy {
     );
 
     worksheet.columns = columns;
-
     // Format and add data to the worksheet
+
     const lastIDs = [];
+
     for (const obj of data) {
-      const index = lastIDs.findIndex(id => id == obj.ID);
-      if (index > -1) {
-        obj.Setups = 0;
-        obj.Shipping = 0;
-        obj.Runs = 0;
+      if (obj.Description.includes('ACCESSORY:')) {
+        obj.Runs = '';
+        obj.Item = '';
       } else {
-        lastIDs.push(obj.ID);
+        const index = lastIDs.findIndex(idObj => idObj.ID == obj.ID && idObj.Item === obj.Item);
+        if (index > -1) {
+          obj.Setups = 0;
+          obj.Shipping = 0;
+          obj.Runs = 0;
+        } else {
+          lastIDs.push({ ID: obj.ID, Item: obj.Item });
+        }
       }
       obj.InvoiceDate = moment(obj.InvoiceDate).format('yyyy-MM-DD');
       const row = worksheet.addRow(obj);
@@ -175,7 +181,6 @@ export class ReportItemsComponent implements OnInit, OnDestroy {
         cell.alignment = { horizontal: 'left' };
       });
     }
-
     // Save the worksheet to a file after a short delay
     setTimeout(() => {
       workbook.xlsx.writeBuffer().then((data: any) => {

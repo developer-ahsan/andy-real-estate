@@ -101,6 +101,7 @@ export class OrderManageDashboardComponent implements OnInit, OnDestroy {
       range_end: this.rangeEnd,
       sort_by: this.sort_by,
       sort_order: this.sort_order,
+      bln_fulfillment: this.userData.blnFulfillment,
       size: 20,
       page: page,
       view_dashboard: true

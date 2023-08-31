@@ -59,14 +59,18 @@
                 </mat-form-field>
             </div>
             <div class="col-12 flex justify-end">
-                <button mat-flat-button class="min-w-40 mr-1" [color]="'primary'"
+                <button mat-flat-button class="min-w-30 mr-1" [color]="'primary'" [disabled]="isIncidentReportLoader"
+                    (click)="clearFilters()">
+                    <span>Clear Filters</span>
+                </button>
+                <button mat-flat-button class="min-w-30 mr-1" [color]="'primary'"
                     [disabled]="isExcelLoader || isIncidentReportLoader" (click)="downloadExcelWorkSheet()">
                     <mat-icon *ngIf="!isExcelLoader" svgIcon="mat_outline:file_download"></mat-icon>
                     <span *ngIf="!isExcelLoader">Download Excel</span>
                     <mat-progress-spinner *ngIf="isExcelLoader" [diameter]="24" [mode]="'indeterminate'">
                     </mat-progress-spinner>
                 </button>
-                <button mat-flat-button class="min-w-40" [color]="'primary'" [disabled]="isIncidentReportLoader"
+                <button mat-flat-button class="min-w-30" [color]="'primary'" [disabled]="isIncidentReportLoader"
                     (click)="getIncidentReportData(1)">
                     <span>Filter</span>
                 </button>
@@ -83,6 +87,7 @@
         <table class="table table-striped">
             <thead>
                 <tr>
+                    <td></td>
                     <td>ID</td>
                     <td>Created</td>
                     <td>Modified</td>
@@ -95,7 +100,8 @@
                 </tr>
             </thead>
             <tbody>
-                <tr *ngFor="let item of dataSource">
+                <tr *ngFor="let item of dataSource; let i=index;">
+                    <td>{{i + 1}}</td>
                     <td>
                         <a [routerLink]="['/apps/orders',item.fk_orderID]" target="_blank"
                             class="text-blue-600">{{item?.fk_orderID}}</a>

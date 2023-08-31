@@ -48,7 +48,7 @@ export class ReportsStoreSalesComponent implements OnInit, OnDestroy {
   blnIndividualOrders = 0;
   state = '';
   promocode = '';
-  blnCost = 0;
+  blnCost = false;
 
   storesList = [];
   storesLoader: boolean = false;
@@ -277,7 +277,7 @@ export class ReportsStoreSalesComponent implements OnInit, OnDestroy {
                   } else {
                     sattusData = this._reportService.getStatusValue(data[7]);
                   }
-                  element.storeDetails.push({ date: data[0], id: data[1], company: data[2], sale: data[3], tax: data[4], margin: Number(data[5]).toFixed(2), paid: paid, status: sattusData.statusValue, statusColor: sattusData.statusColor });
+                  element.storeDetails.push({ date: data[0], id: data[1], company: data[2], sale: data[3], tax: data[4], margin: Number(data[5]).toFixed(2), paid: paid, status: sattusData.statusValue, statusColor: sattusData.statusColor, cost: Number(data[10]) });
                 });
               }
             }
@@ -313,19 +313,21 @@ export class ReportsStoreSalesComponent implements OnInit, OnDestroy {
         if (this.blnIndividualOrders) {
           res["report_summary"].forEach((store) => {
             store.date_data = [];
-            store.storeDetails.forEach(element => {
-              let date_check = moment(element.date).format('MMM,yyyy');
-              if (store.date_data.length == 0) {
-                store.date_data.push({ date: moment(element.date).format('MMM,yyyy'), data: [element] });
-              } else {
-                const d_index = store.date_data.findIndex(date => date.date == date_check);
-                if (d_index < 0) {
+            if (store?.storeDetails) {
+              store.storeDetails.forEach(element => {
+                let date_check = moment(element.date).format('MMM,yyyy');
+                if (store.date_data.length == 0) {
                   store.date_data.push({ date: moment(element.date).format('MMM,yyyy'), data: [element] });
                 } else {
-                  store.date_data[d_index].data.push(element);
+                  const d_index = store.date_data.findIndex(date => date.date == date_check);
+                  if (d_index < 0) {
+                    store.date_data.push({ date: moment(element.date).format('MMM,yyyy'), data: [element] });
+                  } else {
+                    store.date_data[d_index].data.push(element);
+                  }
                 }
-              }
-            });
+              });
+            }
           });
         }
         if (this.totalStoreSummary.SALES > this.totalStoreSummary.PY) {

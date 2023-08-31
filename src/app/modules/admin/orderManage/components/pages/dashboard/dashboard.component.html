@@ -149,7 +149,8 @@
                                 {{item?.statusName}}
                             </td>
                             <td>
-                                {{(item?.Age + 'hrs') || '---'}}
+                                <span *ngIf="item?.Age">{{item?.Age }} hrs</span>
+                                <span *ngIf="!item?.Age">---</span>
                             </td>
                             <td>
                                 {{item?.storeCode}}

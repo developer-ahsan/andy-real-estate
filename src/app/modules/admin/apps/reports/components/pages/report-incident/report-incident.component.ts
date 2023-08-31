@@ -163,6 +163,15 @@ export class ReportIncidentComponent implements OnInit, OnDestroy {
     };
     this.getIncidentReportData(this.page);
   };
+  clearFilters() {
+    this.selectedStores = this.allStores[0];
+    this.selectedSuppliers = this.allSuppliers[0];
+    this.selectedEmployees = this.allEmployees[0];
+    this.selectedEmployeesSource = this.allEmployeesSource[0];
+    this.ngRangeStart = '';
+    this.ngRangeEnd = '';
+    this.getIncidentReportData(1);
+  }
   // Genereate Excel Sheet
   downloadExcelWorkSheet() {
     this.isExcelLoader = true;
@@ -200,8 +209,12 @@ export class ReportIncidentComponent implements OnInit, OnDestroy {
 
     // Format and add data to the worksheet
     for (const obj of this.dataSource) {
-      obj.DATE = moment(obj.DATE).format('yyyy-MM-DD');
-      obj.DATEMODIFIED = moment(obj.DATEMODIFIED).format('yyyy-MM-DD');
+      if (obj.DATE) {
+        obj.DATE = moment(obj.DATE).format('yyyy-MM-DD');
+      }
+      if (obj.DATEMODIFIED) {
+        obj.DATEMODIFIED = moment(obj.DATEMODIFIED).format('yyyy-MM-DD');
+      }
       const row = worksheet.addRow(obj);
       row.eachCell(cell => {
         cell.alignment = { horizontal: 'left' };
@@ -227,7 +240,6 @@ export class ReportIncidentComponent implements OnInit, OnDestroy {
         this._changeDetectorRef.markForCheck();
       });
     }, 500);
-
 
   }
   /**

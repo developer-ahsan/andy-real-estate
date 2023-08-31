@@ -19,20 +19,14 @@ export class ReportsSupplierSalesComponent implements OnInit, OnDestroy {
   private _unsubscribeAll: Subject<any> = new Subject<any>();
 
   generateReportData: any;
-  reportPage = 1;
-  totalData = 0;
-  displayedColumns: string[] = ['store', 'cost', 'py', 'percent', 'difference', 'n_sales', 'pyns', 'avg', 'margin'];
-
+  totalStoreSummary: any;
   // ReportDropdowns
   reportType = 0;
   blnShowCancelled = 0;
   paymentStatus = 1;
-  ngStore = 637;
 
   allSuppliers = [];
-  searchSuppliersCtrl = new FormControl();
   selectedSuppliers: any;
-  isSearchingSuppliers = false;
   isGenerateReportLoader: boolean;
 
 
@@ -55,19 +49,22 @@ export class ReportsSupplierSalesComponent implements OnInit, OnDestroy {
       });
   }
   // Reports
-  generateReport(page) {
-    if (page == 1) {
-      this.reportPage = 1;
-      if (this.generateReportData) {
-        this.paginator.pageIndex = 0;
-      }
-      this.generateReportData = null;
+  generateReport() {
+    this.generateReportData = null;
+    this.totalStoreSummary = {
+      PY: 0,
+      percent: 0,
+      DIFF: 0,
+      NS: 0,
+      PYNS: 0,
+      COST: 0,
+      PRICE: 0,
+      blnPercent: false
     }
     this._reportService.setFiltersReport();
 
     this.isGenerateReportLoader = true;
     let params = {
-      page: page,
       store_sales__report: true,
       start_date: this._reportService.startDate,
       end_date: this._reportService.endDate,
@@ -76,41 +73,33 @@ export class ReportsSupplierSalesComponent implements OnInit, OnDestroy {
     }
     this._reportService.getAPIData(params).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
       if (res["data"].length > 0) {
-        this.generateReportData = res["data"];
-        this.totalData = res["totalRecords"];
-        this.generateReportData.forEach(element => {
-          if (element.previousYearSales == 0) {
-            element.percent = 0
+        res["data"].forEach(element => {
+          if (element.COST > element.PY) {
+            element.blnPercent = true;
+            const diff = element.COST - element.PY;
+            if (element.PY == 0) {
+              element.percent = 100;
+            } else {
+              element.percent = Math.round((diff / element.PY) * 100);
+            }
+          } else if (element.COST < element.PY) {
+            element.blnPercent = false;
+            const diff = element.PY - element.COST;
+            if (element.COST == 0) {
+              element.percent = 100;
+            } else {
+              element.percent = Math.round((diff / element.PY) * 100);
+            }
           } else {
-            element.percent = Number(100 - (element.monthlyEarnings / element.previousYearSales) * 100);
-          }
-          if (element.percent == 0) {
             element.percent = 0;
-            element.color = 'gray';
           }
-          if (element.percent < 0) {
-            element.color = 'red';
-          } else if (element.percent > 0) {
-            element.color = 'green'
-          } else {
-            element.color = 'gray';
-          }
-          element.difference = Number(element.monthlyEarnings - element.previousYearSales);
-          if (!element.difference) {
-            element.difference = 0;
-          }
-          if (element.difference < 0) {
-            element.difference = Math.abs(element.difference);
-          }
-          element.avg = Number(element.monthlyEarnings / element.NS);
-          if (!element.avg) {
-            element.avg = 0;
-          }
-          element.margin = Number(((element.price - element.cost) / element.price) * 100);
-          if (!element.margin) {
-            element.margin = 0;
-          }
+          this.totalStoreSummary.COST += element.COST;
+          this.totalStoreSummary.PY += element.PY;
+          this.totalStoreSummary.NS += element.NS;
+          this.totalStoreSummary.PYNS += element.PYNS;
         });
+        this.generateReportData = res["data"];
+        this.totalStoreSummary.DIFF = this.totalStoreSummary.COST - this.totalStoreSummary.PY;
       } else {
         this.generateReportData = null;
         this._reportService.snackBar('No records found');
@@ -126,15 +115,6 @@ export class ReportsSupplierSalesComponent implements OnInit, OnDestroy {
     this.generateReportData = null;
     this._changeDetectorRef.markForCheck();
   }
-  getNextReportData(event) {
-    const { previousPageIndex, pageIndex } = event;
-    if (pageIndex > previousPageIndex) {
-      this.reportPage++;
-    } else {
-      this.reportPage--;
-    };
-    this.generateReport(this.reportPage);
-  };
   /**
      * On destroy
      */
