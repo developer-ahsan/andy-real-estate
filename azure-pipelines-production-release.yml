@@ -19,7 +19,7 @@ steps:
 
 - script: |
     npm install -g @angular/cli
-    npm install
+    npm install --legacy-peer-deps
     node --max_old_space_size=8192 node_modules/@angular/cli/bin/ng build --configuration production --prod
   displayName: 'npm install and build'
 
