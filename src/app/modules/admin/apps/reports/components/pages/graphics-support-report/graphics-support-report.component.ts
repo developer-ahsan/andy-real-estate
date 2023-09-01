@@ -27,6 +27,12 @@ export class GraphicsSupportReportComponent implements OnInit, OnDestroy {
   totalRevenue = 0;
   totalImprints = 0;
   grandTotal: any;
+
+
+  totalMinutes = 0
+  totalSeconds = 0;
+  totalHours = 0;
+
   constructor(
     private _changeDetectorRef: ChangeDetectorRef,
     private _reportService: ReportsService,
@@ -35,7 +41,14 @@ export class GraphicsSupportReportComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
   };
+  calculateTotalTime() {
+    this.totalMinutes += Math.floor(this.totalSeconds / 60);
+    this.totalSeconds %= 60;
+    this.totalHours += Math.floor(this.totalMinutes / 60);
+    this.totalMinutes %= 60;
 
+    return `${this.totalHours}:${this.totalMinutes}:${this.totalSeconds}`;
+  }
   generateReport() {
     let annual = 0;
     if (this._reportService.ngPlan == 'weekly') {
@@ -54,12 +67,13 @@ export class GraphicsSupportReportComponent implements OnInit, OnDestroy {
     this.grandTotal = {
       revenue: 0,
       annual: 0,
+      percent: 0,
       ui: 0,
       ps: 0,
       ns: 0,
       ir: 0,
       coi: 0,
-      tt: '00:00:00'
+      GTT: ''
     }
     this._reportService.setFiltersReport();
     let params = {
@@ -74,34 +88,50 @@ export class GraphicsSupportReportComponent implements OnInit, OnDestroy {
     })).subscribe(res => {
       if (res["data"].length > 0) {
         res["data"].forEach(element => {
+          const { TotalRevenue, UniqueImprints, Details, ProofSent, grandTotalRevenue, grandTotalUniqueImprints } = element;
+          this.grandTotal.ui = grandTotalUniqueImprints;
+          this.grandTotal.revenue = grandTotalRevenue;
+
+
+          const ttParts = element.TT.split(":");
+          this.totalHours += parseInt(ttParts[0]);
+          this.totalMinutes += parseInt(ttParts[1]);
+          this.totalSeconds += parseInt(ttParts[2]);
+
+
+          element.percent = ((Number(TotalRevenue) / grandTotalRevenue) * 100).toFixed(2);
+          element.roundedPercent = Math.round((Number(TotalRevenue) / grandTotalRevenue) * 100);
+          element.imprintPercent = Math.round((Number(UniqueImprints) / grandTotalUniqueImprints) * 100);
           element.coi = 0;
           element.ir = 0;
           element.annual = 0;
-          const { totalRevenue, uniqueImprints, details, proofSent, NumSales } = element;
+          element.ns = 0;
 
-          this.totalRevenue += totalRevenue;
-          this.totalImprints += uniqueImprints;
+          this.totalRevenue += TotalRevenue;
+          this.totalImprints += UniqueImprints;
 
 
-          if (details) {
-            element.detailsData = details.split(',,').map(d_data => {
+          if (Details) {
+            element.detailsData = Details.split(',,').map(d_data => {
               const [id, storeName, revenue, annual, ui, ps, ns, ir, coi, tt] = d_data.split('::');
               element.coi += Number(coi);
               element.annual += Number(annual);
               element.ir += Number(ir);
+              element.ns += Number(ns);
               this.grandTotal.annual += Number(annual);
               this.grandTotal.ir += Number(ir);
               this.grandTotal.coi += Number(coi);
-              return { id, storeName, revenue, annual, ui, ps, ns, ir, coi, tt };
+              this.grandTotal.ns += Number(ns);
+              let percent = 0;
+              percent = Math.round((Number(revenue) / element.grandTotalRevenue) * 100);
+              return { id, storeName, revenue, annual, ui, ps, ns, ir, coi, tt, percent };
             });
           } else {
             element.detailsData = [];
           }
-          this.grandTotal.ui += Number(uniqueImprints);
-          this.grandTotal.revenue += Number(totalRevenue);
-          this.grandTotal.ps += Number(proofSent);
-          this.grandTotal.ns += Number(NumSales);
+          this.grandTotal.ps += Number(ProofSent);
         });
+        this.grandTotal.GTT = this.calculateTotalTime();
         this.generateReportData = res["data"];
         this.backtoTop();
       } else {
@@ -187,16 +217,16 @@ export class GraphicsSupportReportComponent implements OnInit, OnDestroy {
       employee.detailsData.forEach(data => {
         documentDefinition.content[3].table.body.push(
           [
-            employee.employeeName,
+            employee.Employee,
             data.storeName,
             { text: this.currencyPipe.transform(Number(data.revenue), 'USD', 'symbol', '1.0-2', 'en-US'), bold: true, margin: [0, 3, 0, 3] },
             { text: this.currencyPipe.transform(Number(data.annual), 'USD', 'symbol', '1.0-2', 'en-US'), bold: true, margin: [0, 3, 0, 3] },
-            '%',
+            `${data.percent}`,
             data.ui,
             data.ps,
             data.ns,
             data.ir,
-            data.coi,
+            { text: this.currencyPipe.transform(Number(data.coi), 'USD', 'symbol', '1.0-2', 'en-US'), bold: true, margin: [0, 3, 0, 3] },
             data.tt
           ]
         );
@@ -207,15 +237,15 @@ export class GraphicsSupportReportComponent implements OnInit, OnDestroy {
         // ... [Your code for adding 'TOTAL' for each employee]
         [
           { text: 'TOTAL', colSpan: 2, bold: true }, {},
-          { text: this.currencyPipe.transform(Number(employee.totalRevenue), 'USD', 'symbol', '1.0-2', 'en-US'), bold: true, margin: [0, 3, 0, 3] },
+          { text: this.currencyPipe.transform(Number(employee.TotalRevenue), 'USD', 'symbol', '1.0-2', 'en-US'), bold: true, margin: [0, 3, 0, 3] },
           { text: this.currencyPipe.transform(Number(employee.annual), 'USD', 'symbol', '1.0-2', 'en-US'), bold: true, margin: [0, 3, 0, 3] },
-          '%',
-          employee.uniqueImprints,
-          employee.proofSent,
-          employee.NumSales,
+          `${employee.percent}`,
+          employee.UniqueImprints,
+          employee.ProofSent,
+          employee.ns,
           employee.ir,
-          employee.coi,
-          employee.totalTime
+          { text: this.currencyPipe.transform(Number(employee.coi), 'USD', 'symbol', '1.0-2', 'en-US'), bold: true, margin: [0, 3, 0, 3] },
+          employee.TT
         ]
       );
 
@@ -223,13 +253,13 @@ export class GraphicsSupportReportComponent implements OnInit, OnDestroy {
       documentDefinition.content[5].table.body.push(
         // ... [Your code for adding each employee's summary]
         [
-          employee.employeeName,
-          { text: this.currencyPipe.transform(Number(employee.totalRevenue), 'USD', 'symbol', '1.0-2', 'en-US'), bold: true, margin: [0, 3, 0, 3] },
-          ((employee.totalRevenue / this.totalRevenue) * 100).toFixed(2) + '%',
-          ((employee.uniqueImprints / this.totalImprints) * 100).toFixed(2) + '%',
-          employee.uniqueImprints,
-          employee.proofSent,
-          employee.totalTime
+          employee.Employee,
+          { text: this.currencyPipe.transform(Number(employee.TotalRevenue), 'USD', 'symbol', '1.0-2', 'en-US'), bold: true, margin: [0, 3, 0, 3] },
+          employee.roundedPercent + '%',
+          employee.imprintPercent + '%',
+          employee.UniqueImprints,
+          employee.ProofSent,
+          employee.TT
         ]
       );
     });
@@ -240,13 +270,13 @@ export class GraphicsSupportReportComponent implements OnInit, OnDestroy {
         { text: 'GRAND TOTAL', colSpan: 2, bold: true }, {},
         { text: this.currencyPipe.transform(Number(this.grandTotal.revenue), 'USD', 'symbol', '1.0-2', 'en-US'), bold: true, margin: [0, 3, 0, 3] },
         { text: this.currencyPipe.transform(Number(this.grandTotal.annual), 'USD', 'symbol', '1.0-2', 'en-US'), bold: true, margin: [0, 3, 0, 3] },
-        '%',
+        '',
         this.grandTotal.ui,
         this.grandTotal.ps,
         this.grandTotal.ns,
         this.grandTotal.ir,
-        this.grandTotal.coi,
-        this.grandTotal.tt
+        { text: this.currencyPipe.transform(Number(this.grandTotal.coi), 'USD', 'symbol', '1.0-2', 'en-US'), bold: true, margin: [0, 3, 0, 3] },
+        this.grandTotal.GTT
       ]
     );
 

@@ -32,21 +32,23 @@ export class OrderManageDashboardComponent implements OnInit, OnDestroy {
   sort_by = 'fk_orderID';
   sort_order = ''
   statusOptions = [
-    { value: 1, label: 'New Order' },
+    { value: 1, label: 'New Orders' },
     { value: 2, label: 'Artwork Approved' },
-    { value: 3, label: 'PO Sent' },
-    { value: 4, label: 'PO Acknowledged' },
+    { value: 3, label: 'Purchase Order Sent' },
+    { value: 4, label: 'Purchase Order Acknowledged' },
     { value: 5, label: 'Shipped' },
     { value: 6, label: 'Delivered' },
     { value: 8, label: 'Picked up' },
+    { value: 11, label: 'Billed' },
+    { value: 12, label: 'Paid' },
     { value: 9, label: 'Backorder' },
-    { value: 16, label: 'Not on backorder' },
-    { value: 10, label: 'Waiting For GroupBuy' },
-    { value: 11, label: 'Hidden' },
-    { value: 12, label: 'Unhidden' },
-    { value: 14, label: 'Semi-rush' },
-    { value: 15, label: 'Un-semi-rush' }
+    { value: 15, label: 'Rush Orders' },
+    { value: 16, label: 'Fulfillment Orders' },
+    { value: 13, label: 'Hidden' },
+    { value: 10, label: 'Waiting For Group Order' },
+    { value: 14, label: 'Semi-Rush' },
   ];
+
   isPaginatedLoader: boolean = false;
   @ViewChild('tableTop') tableTop: ElementRef;
 

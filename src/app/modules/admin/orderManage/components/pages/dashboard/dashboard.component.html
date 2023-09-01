@@ -117,53 +117,54 @@
                         </td>
                     </tr>
                     <ng-container *ngIf="!isPaginatedLoader">
-                        <tr *ngFor="let item of dataSource" [ngStyle]="item.styles">
+                        <tr *ngFor="let item of dataSource" [ngStyle]="item.styles" class="cursor-pointer">
                             <td>
                                 <mat-checkbox></mat-checkbox>
                             </td>
-                            <td>
+                            <td (click)="goToOrderDetails(item)">
                                 {{item.orderDate | date: 'MM/dd/yyyy'}}
                             </td>
-                            <td>
+                            <td (click)="goToOrderDetails(item)">
                                 {{(item.shippingDate | date: 'MM/dd/yyyy')|| '---'}}
                             </td>
-                            <td>
+                            <td (click)="goToOrderDetails(item)">
                                 {{(item.inHandsDate | date: 'MM/dd/yyyy')|| 'N/A'}}
                             </td>
                             <td>
-                                {{item.fk_orderID}}
+                                <a [routerLink]="['/apps/orders',item.fk_orderID]"
+                                    target="_blank">{{item.fk_orderID}}</a>
                             </td>
-                            <td>
+                            <td (click)="goToOrderDetails(item)">
                                 {{item.fk_orderID+'-'+item.pk_orderLineID}}
                             </td>
-                            <td>
+                            <td (click)="goToOrderDetails(item)">
                                 {{item?.firstName + ' ' + item?.lastName}}
                             </td>
-                            <td>
+                            <td (click)="goToOrderDetails(item)">
                                 {{item?.productName}}
                             </td>
-                            <td>
+                            <td (click)="goToOrderDetails(item)">
                                 {{item?.supplierName}}
                             </td>
-                            <td>
+                            <td (click)="goToOrderDetails(item)">
                                 {{item?.statusName}}
                             </td>
-                            <td>
+                            <td (click)="goToOrderDetails(item)">
                                 <span *ngIf="item?.Age">{{item?.Age }} hrs</span>
                                 <span *ngIf="!item?.Age">---</span>
                             </td>
-                            <td>
+                            <td (click)="goToOrderDetails(item)">
                                 {{item?.storeCode}}
                             </td>
-                            <td>{{item?.CPO || '---'}}</td>
-                            <td>{{item?.CC || '---'}}</td>
-                            <td>
+                            <td (click)="goToOrderDetails(item)">{{item?.CPO || '---'}}</td>
+                            <td (click)="goToOrderDetails(item)">{{item?.CC || '---'}}</td>
+                            <td (click)="goToOrderDetails(item)">
                                 <mat-icon svgIcon="heroicons_outline:x" class="text-red-500"
                                     *ngIf="!item.paymentDate"></mat-icon>
                                 <mat-icon svgIcon="heroicons_outline:check" class="text-green-500"
                                     *ngIf="item.paymentDate"></mat-icon>
                             </td>
-                            <td>
+                            <td (click)="goToOrderDetails(item)">
                                 <mat-icon svgIcon="heroicons_outline:x" class="text-red-500"
                                     *ngIf="!item.trackingNumber"></mat-icon>
                                 <mat-icon svgIcon="heroicons_outline:check" class="text-green-500"

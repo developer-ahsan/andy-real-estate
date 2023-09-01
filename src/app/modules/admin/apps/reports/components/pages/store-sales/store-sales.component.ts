@@ -1,16 +1,12 @@
-import { ENTER, COMMA } from '@angular/cdk/keycodes';
 import { Component, Input, OnInit, ChangeDetectorRef, OnDestroy, ViewChild, ElementRef } from '@angular/core';
-import { FormControl, FormGroup } from '@angular/forms';
-import { MatChipInputEvent } from '@angular/material/chips';
+import { FormControl } from '@angular/forms';
 import { MatPaginator } from '@angular/material/paginator';
 import { Subject } from 'rxjs';
 import { debounceTime, distinctUntilChanged, filter, finalize, map, switchMap, takeUntil, tap } from 'rxjs/operators';
 import { ReportsService } from '../../reports.service';
-import { AddCompany, UpdateCompany, UpdateWebsiteLoginInfo } from '../../reports.types';
 import { DashboardsService } from 'app/modules/admin/dashboards/dashboard.service';
 import moment from 'moment';
 import * as pdfMake from "pdfmake/build/pdfmake";
-import * as pdfFonts from "pdfmake/build/vfs_fonts";
 import { CurrencyPipe } from '@angular/common';
 @Component({
   selector: 'app-store-sales',
@@ -24,7 +20,6 @@ export class ReportsStoreSalesComponent implements OnInit, OnDestroy {
   @ViewChild('employeeSummary') employeeSummary: ElementRef;
   @ViewChild('ytdSummary') ytdSummary: ElementRef;
   @Input() isLoading: boolean;
-  // @Output() isLoadingChange = new EventEmitter<boolean>();
   private _unsubscribeAll: Subject<any> = new Subject<any>();
 
   allStates = [];
@@ -216,12 +211,9 @@ export class ReportsStoreSalesComponent implements OnInit, OnDestroy {
     if (this.currentYear == moment(this._reportService.endDate).format('yyyy')) {
       this.currentYearCheck = true;
     }
-    let selectedStores = [];
-    this.storesList.forEach(element => {
-      if (element.isChecked) {
-        selectedStores.push(element.pk_storeID);
-      }
-    });
+    const selectedStores = this.storesList
+      .filter(element => element.isChecked)
+      .map(element => element.pk_storeID);
     if (selectedStores.length == 0) {
       this._reportService.snackBar('Please select at least 1 store');
       return;

@@ -90,29 +90,29 @@
                         <tbody>
                             <ng-container *ngFor="let employee of generateReportData;">
                                 <tr *ngFor="let data of employee.detailsData">
-                                    <td>{{employee.employeeName}}</td>
+                                    <td>{{employee.Employee}}</td>
                                     <td>{{data.storeName}}</td>
                                     <td>{{data.revenue | currency}}</td>
                                     <td>{{data.annual | currency}}</td>
-                                    <td>{{((data.revenue/grandTotal.revenue) * 100).toFixed(2)}}%</td>
+                                    <td>{{data.percent}}%</td>
                                     <td>{{data.ui}}</td>
                                     <td>{{data.ps}}</td>
                                     <td>{{data.ns}}</td>
                                     <td>{{data.ir}}</td>
-                                    <td>{{data.coi}}</td>
+                                    <td>{{data.coi | currency}}</td>
                                     <td>{{data.tt}}</td>
                                 </tr>
                                 <tr class="font-bold">
                                     <td colspan="2">TOTAL</td>
-                                    <td>{{employee.totalRevenue | currency}}</td>
+                                    <td>{{employee.TotalRevenue | currency}}</td>
                                     <td>{{employee.annual | currency}}</td>
-                                    <td>{{((employee.totalRevenue/grandTotal.revenue) * 100).toFixed(2)}}%</td>
-                                    <td>{{employee.uniqueImprints}}</td>
-                                    <td>{{employee.proofSent}}</td>
-                                    <td>{{employee.NumSales}}</td>
+                                    <td>{{employee.percent}}%</td>
+                                    <td>{{employee.UniqueImprints}}</td>
+                                    <td>{{employee.ProofSent}}</td>
+                                    <td>{{employee.ns}}</td>
                                     <td>{{employee.ir}}</td>
-                                    <td>{{employee.coi}}</td>
-                                    <td>{{employee.totalTime}}</td>
+                                    <td>{{employee.coi | currency}}</td>
+                                    <td>{{employee.TT}}</td>
                                 </tr>
                             </ng-container>
                             <tr class="font-bold">
@@ -124,8 +124,8 @@
                                 <td>{{grandTotal.ps}}</td>
                                 <td>{{grandTotal.ns}}</td>
                                 <td>{{grandTotal.ir}}</td>
-                                <td>{{grandTotal.coi}}</td>
-                                <td>{{grandTotal.tt}}</td>
+                                <td>{{grandTotal.coi | currency}}</td>
+                                <td>{{grandTotal?.GTT}}</td>
                             </tr>
                         </tbody>
                     </table>
@@ -153,13 +153,13 @@
                         </thead>
                         <tbody>
                             <tr *ngFor="let item of generateReportData">
-                                <td>{{item.employeeName}}</td>
-                                <td>{{item.totalRevenue | currency}}</td>
-                                <td>{{((item.totalRevenue/totalRevenue) * 100).toFixed(2)}}%</td>
-                                <td>{{((item.uniqueImprints/totalImprints) * 100).toFixed(2)}}%</td>
-                                <td>{{item.uniqueImprints}}</td>
-                                <td>{{item.proofSent}}</td>
-                                <td>{{item.totalTime}}</td>
+                                <td>{{item.Employee}}</td>
+                                <td>{{item.TotalRevenue | currency}}</td>
+                                <td>{{item.roundedPercent}}%</td>
+                                <td>{{item.imprintPercent}}%</td>
+                                <td>{{item.UniqueImprints}}</td>
+                                <td>{{item.ProofSent}}</td>
+                                <td>{{item.TT}}</td>
                             </tr>
                         </tbody>
                     </table>
