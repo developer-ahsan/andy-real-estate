@@ -108,9 +108,10 @@ export class ReportBestSellerComponent implements OnInit, OnDestroy {
       res["data"].forEach(element => {
         element.isViewCustomer = false;
         element.customers = (element.CUSTOMERS || '').split(',').map(customer => {
-          const [id, name] = customer.split('::');
-          return { id, name };
+          const [id, name, counter] = customer.split('::');
+          return { id, name, counter };
         });
+        element.customers.sort((a, b) => b.counter - a.counter);
       });
 
       this.dataSource = res["data"];

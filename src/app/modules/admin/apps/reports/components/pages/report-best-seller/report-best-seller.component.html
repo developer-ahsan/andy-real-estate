@@ -89,7 +89,7 @@
             <tbody>
                 <tr *ngFor="let item of dataSource">
                     <td>{{item?.SALES }}</td>
-                    <td>{{item?.totalQuantity}}</td>
+                    <td>{{item?.totalQuantity | number}}</td>
                     <td>
                         <a [routerLink]="['apps/ecommerce/inventory',item.pk_productID]"
                             target="_blank">({{item.pk_productID}}) {{item.productNumber}}:{{item?.productName}}</a>
@@ -105,7 +105,7 @@
                         <ng-container *ngIf="item.isViewCustomer">
                             <p *ngFor="let customer of item.customers; let i=index">
                                 <a [routerLink]="['apps/customers',customer.id]" target="_blank">{{i+1 + '. '
-                                    +customer.name}}</a>
+                                    +customer.name + '(' + customer.counter + 'x)'}}</a>
                             </p>
                         </ng-container>
                     </td>
