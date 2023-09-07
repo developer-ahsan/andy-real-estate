@@ -2,8 +2,10 @@ import { Component, OnInit, ChangeDetectorRef, OnDestroy, ViewChild, ElementRef 
 import { MatPaginator } from '@angular/material/paginator';
 import { ActivatedRoute, NavigationExtras, Router } from '@angular/router';
 import { Subject } from 'rxjs';
-import { takeUntil } from 'rxjs/operators';
+import { finalize, takeUntil } from 'rxjs/operators';
 import { OrderManageService } from '../../order-manage.service';
+import { updateOrderManageBulkStatusUpdate } from '../../order-manage.types';
+import moment from 'moment';
 @Component({
   selector: 'app-ordermanage-dashboard',
   templateUrl: './dashboard.component.html',
@@ -29,7 +31,7 @@ export class OrderManageDashboardComponent implements OnInit, OnDestroy {
   orderID: any = '';
   ngstatusID = 1;
   userData: any;
-  sort_by = 'fk_orderID';
+  sort_by = 'pk_orderID';
   sort_order = ''
   statusOptions = [
     { value: 1, label: 'New Orders' },
@@ -52,6 +54,8 @@ export class OrderManageDashboardComponent implements OnInit, OnDestroy {
   isPaginatedLoader: boolean = false;
   @ViewChild('tableTop') tableTop: ElementRef;
 
+  ngBackDate: any;
+  isUpdateBulkLoader: boolean = false;
   constructor(
     private _changeDetectorRef: ChangeDetectorRef,
     private _orderService: OrderManageService,
@@ -110,6 +114,18 @@ export class OrderManageDashboardComponent implements OnInit, OnDestroy {
     }
     this._orderService.getAPIData(params).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
       res["data"].forEach(element => {
+        element.checked = false;
+        element.prducts = [];
+        if (element.productName) {
+          element.prducts = element.productName.split(',');
+        }
+        element.age = '---';
+        if (element.Age < 24) {
+          element.age = element.Age + ' hrs';
+        } else {
+          const calcAge = element.Age / 24;
+          element.age = Math.floor(calcAge) + ' days';
+        }
         element.styles = this.getRowStyles(element);
       });
       this.dataSource = res["data"];
@@ -138,7 +154,7 @@ export class OrderManageDashboardComponent implements OnInit, OnDestroy {
   }
   goToOrderDetails(item) {
     const queryParams: NavigationExtras = {
-      queryParams: { fk_orderID: item.fk_orderID, pk_orderLineID: item.pk_orderLineID, pk_orderLinePOID: item.pk_orderLinePOID }
+      queryParams: { fk_orderID: item.pk_orderID, pk_orderLineID: item.fk_orderLineID, pk_orderLinePOID: item.pk_orderLinePOID }
     };
     this.router.navigate(['/ordermanage/order-details'], queryParams);
   }
@@ -184,6 +200,46 @@ export class OrderManageDashboardComponent implements OnInit, OnDestroy {
     this.getOrderManage(1);
   }
 
+
+  // Bulk Update
+  bulkUpdateStatus() {
+    const checkedOrders = [];
+    this.dataSource.forEach(element => {
+      if (element.checked) {
+        checkedOrders.push({
+          orderLine_id: element.fk_orderLineID,
+          blnGroupRun: element.blnGroupRun,
+          pk_orderLinePOID: element.pk_orderLinePOID,
+          product_id: element.pk_productID,
+          productNumber: element.productNumber,
+          orderID: element.pk_orderID
+        })
+      }
+    });
+    if (checkedOrders.length == 0) {
+      this._orderService.snackBar('Please select atleast one order');
+      return;
+    }
+    this.isUpdateBulkLoader = true;
+    let payload: updateOrderManageBulkStatusUpdate = {
+      status_id: this.ngstatusID,
+      poOrders: checkedOrders,
+      backorderDate: this.ngBackDate ? moment(this.ngBackDate).format('L') : this.ngBackDate,
+      orderManageLoggedInUserName: this.userData.firstName + ' ' + this.userData.lastName,
+      orderManageUserID: Number(this.userData.pk_userID),
+      update_orderManage_bulk_status: true
+    }
+    this._orderService.PutAPIData(payload).pipe(takeUntil(this._unsubscribeAll), finalize(() => {
+      this.isUpdateBulkLoader = false;
+      this._changeDetectorRef.markForCheck();
+    })).subscribe(res => {
+      if (res["success"]) {
+        this._orderService.snackBar(res["message"]);
+        this.isLoading = true;
+        this.getOrderManage(1);
+      }
+    })
+  }
   /**
      * On destroy
      */

@@ -1,0 +1,288 @@
+<div class="w-full">
+    <div class=" rounded-2xl shadow bg-card flex flex-col lg:flex-row w-full">
+        <div class="w-full">
+            <div class="px-4 sm:px-4 lg:px-8 py-4">
+                <h2 class="text-xl md:text-xl font-extrabold tracking-tight leading-7 sm:leading-10 truncate">
+                    Create a new purchase order for order {{orderData.fk_orderID}}
+                </h2>
+                <div [formGroup]="createPOForm">
+                    <div class="flex justify-between border-b">
+                        <p class="text-secodary mb-2">Consolidus LLC<br />526 S.Main St.<br />Suite 804<br />Akron,
+                            OH
+                            44311<br />P:
+                            330-319-7203, F: 330-319-7213</p>
+                    </div>
+                    <div class="row border-b py-2">
+                        <div class="col-12 col-md-6">
+                            <mat-form-field class="w-full">
+                                <mat-label>Select a Vendor *</mat-label>
+                                <mat-select matInput formControlName="companyName">
+                                    <mat-option *ngFor="let supplier of allVendors"
+                                        (click)="getVendorsData(supplier.pk_companyID)"
+                                        [value]="supplier.companyName">{{supplier.companyName}}</mat-option>
+                                </mat-select>
+                            </mat-form-field>
+                        </div>
+                        <div class="col-12 col-md-6">
+                            <mat-form-field class="w-full">
+                                <mat-label>City *</mat-label>
+                                <input matInput disabled formControlName="vendorShippingCity">
+                            </mat-form-field>
+                        </div>
+                        <div class="col-12 col-md-6">
+                            <mat-form-field class="w-full">
+                                <mat-label>Address1 *</mat-label>
+                                <input matInput formControlName="vendorShippingAddress1">
+                            </mat-form-field>
+                        </div>
+                        <div class="col-6 col-md-3">
+                            <mat-form-field class="w-full">
+                                <mat-label>State *</mat-label>
+                                <mat-select matInput disabled formControlName="vendorShippingState">
+                                    <mat-option value="AL">AL</mat-option>
+                                    <mat-option value="AK">AK</mat-option>
+                                    <mat-option value="AZ">AZ</mat-option>
+                                    <mat-option value="AR">AR</mat-option>
+                                    <mat-option value="CA">CA</mat-option>
+                                    <mat-option value="CO">CO</mat-option>
+                                    <mat-option value="CT">CT</mat-option>
+                                    <mat-option value="DE">DE</mat-option>
+                                    <mat-option value="FL">FL</mat-option>
+                                    <mat-option value="GA">GA</mat-option>
+                                    <mat-option value="HI">HI</mat-option>
+                                    <mat-option value="ID">ID</mat-option>
+                                    <mat-option value="IL">IL</mat-option>
+                                    <mat-option value="IN">IN</mat-option>
+                                    <mat-option value="IA">IA</mat-option>
+                                    <mat-option value="KS">KS</mat-option>
+                                    <mat-option value="KY">KY</mat-option>
+                                    <mat-option value="LA">LA</mat-option>
+                                    <mat-option value="ME">ME</mat-option>
+                                    <mat-option value="MD">MD</mat-option>
+                                    <mat-option value="MA">MA</mat-option>
+                                    <mat-option value="MI">MI</mat-option>
+                                    <mat-option value="MN">MN</mat-option>
+                                    <mat-option value="MS">MS</mat-option>
+                                    <mat-option value="MO">MO</mat-option>
+                                    <mat-option value="MT">MT</mat-option>
+                                    <mat-option value="NE">NE</mat-option>
+                                    <mat-option value="NV">NV</mat-option>
+                                    <mat-option value="NH">NH</mat-option>
+                                    <mat-option value="NJ">NJ</mat-option>
+                                    <mat-option value="NM">NM</mat-option>
+                                    <mat-option value="NY">NY</mat-option>
+                                    <mat-option value="NC">NC</mat-option>
+                                    <mat-option value="ND">ND</mat-option>
+                                    <mat-option value="OH">OH</mat-option>
+                                    <mat-option value="OK">OK</mat-option>
+                                    <mat-option value="OR">OR</mat-option>
+                                    <mat-option value="PA">PA</mat-option>
+                                    <mat-option value="PR">PR</mat-option>
+                                    <mat-option value="RI">RI</mat-option>
+                                    <mat-option value="SC">SC</mat-option>
+                                    <mat-option value="SD">SD</mat-option>
+                                    <mat-option value="TN">TN</mat-option>
+                                    <mat-option value="TX">TX</mat-option>
+                                    <mat-option value="UT">UT</mat-option>
+                                    <mat-option value="VT">VT</mat-option>
+                                    <mat-option value="VI">VI</mat-option>
+                                    <mat-option value="VA">VA</mat-option>
+                                    <mat-option value="WA">WA</mat-option>
+                                    <mat-option value="DC">DC</mat-option>
+                                    <mat-option value="WV">WV</mat-option>
+                                    <mat-option value="WI">WI</mat-option>
+                                    <mat-option value="WY">WY</mat-option>
+                                </mat-select>
+                            </mat-form-field>
+                        </div>
+                        <div class="col-6 col-md-3">
+                            <mat-form-field class="w-full">
+                                <mat-label>Zip *</mat-label>
+                                <input matInput disabled formControlName="vendorShippingZip">
+                            </mat-form-field>
+                        </div>
+                        <div class="col-12 col-md-6">
+                            <mat-form-field class="w-full">
+                                <mat-label>Address2</mat-label>
+                                <input matInput disabled placeholder="Vendor address 2"
+                                    formControlName="vendorShippingAddress2">
+                            </mat-form-field>
+                        </div>
+                        <div class="col-12 col-md-6">
+                            <mat-form-field class="w-full">
+                                <mat-label>Phone *</mat-label>
+                                <input matInput disabled formControlName="vendorShippingPhone">
+                            </mat-form-field>
+                        </div>
+                        <div class="col-12 col-md-6">
+                            <mat-form-field class="w-full">
+                                <mat-label>Emails *</mat-label>
+                                <input matInput formControlName="vendorShippingEmail">
+                            </mat-form-field>
+                        </div>
+                        <div class="col-12 col-md-6">
+                            <mat-form-field class="w-full">
+                                <mat-label>Shipping Comment</mat-label>
+                                <input matInput formControlName="vendorShippingComment">
+                            </mat-form-field>
+                        </div>
+                    </div>
+                    <!-- Ship To -->
+                    <div class="row border-b py-2">
+                        <div class="col-12 mb-2">
+                            <p class="font-medium text-xl"><b>Ship To:</b></p>
+                        </div>
+                        <div class="col-12 col-md-6">
+                            <mat-form-field class="w-full">
+                                <mat-label>Shipping To Company *</mat-label>
+                                <input matInput formControlName="shipToCompanyName">
+                            </mat-form-field>
+                        </div>
+                        <div class="col-12 col-md-6">
+                            <mat-form-field class="w-full">
+                                <mat-label>Ship To City *</mat-label>
+                                <input matInput formControlName="shipToCity">
+                            </mat-form-field>
+                        </div>
+                        <div class="col-12 col-md-6">
+                            <mat-form-field class="w-full">
+                                <mat-label>Ship To Name *</mat-label>
+                                <input matInput formControlName="shipToCustomerName">
+                            </mat-form-field>
+                        </div>
+                        <div class="col-12 col-md-3">
+                            <mat-form-field class="w-full">
+                                <mat-label>Ship To State *</mat-label>
+                                <mat-select matInput formControlName="shipToState">
+                                    <mat-option value="AL">AL</mat-option>
+                                    <mat-option value="AK">AK</mat-option>
+                                    <mat-option value="AZ">AZ</mat-option>
+                                    <mat-option value="AR">AR</mat-option>
+                                    <mat-option value="CA">CA</mat-option>
+                                    <mat-option value="CO">CO</mat-option>
+                                    <mat-option value="CT">CT</mat-option>
+                                    <mat-option value="DE">DE</mat-option>
+                                    <mat-option value="FL">FL</mat-option>
+                                    <mat-option value="GA">GA</mat-option>
+                                    <mat-option value="HI">HI</mat-option>
+                                    <mat-option value="ID">ID</mat-option>
+                                    <mat-option value="IL">IL</mat-option>
+                                    <mat-option value="IN">IN</mat-option>
+                                    <mat-option value="IA">IA</mat-option>
+                                    <mat-option value="KS">KS</mat-option>
+                                    <mat-option value="KY">KY</mat-option>
+                                    <mat-option value="LA">LA</mat-option>
+                                    <mat-option value="ME">ME</mat-option>
+                                    <mat-option value="MD">MD</mat-option>
+                                    <mat-option value="MA">MA</mat-option>
+                                    <mat-option value="MI">MI</mat-option>
+                                    <mat-option value="MN">MN</mat-option>
+                                    <mat-option value="MS">MS</mat-option>
+                                    <mat-option value="MO">MO</mat-option>
+                                    <mat-option value="MT">MT</mat-option>
+                                    <mat-option value="NE">NE</mat-option>
+                                    <mat-option value="NV">NV</mat-option>
+                                    <mat-option value="NH">NH</mat-option>
+                                    <mat-option value="NJ">NJ</mat-option>
+                                    <mat-option value="NM">NM</mat-option>
+                                    <mat-option value="NY">NY</mat-option>
+                                    <mat-option value="NC">NC</mat-option>
+                                    <mat-option value="ND">ND</mat-option>
+                                    <mat-option value="OH">OH</mat-option>
+                                    <mat-option value="OK">OK</mat-option>
+                                    <mat-option value="OR">OR</mat-option>
+                                    <mat-option value="PA">PA</mat-option>
+                                    <mat-option value="PR">PR</mat-option>
+                                    <mat-option value="RI">RI</mat-option>
+                                    <mat-option value="SC">SC</mat-option>
+                                    <mat-option value="SD">SD</mat-option>
+                                    <mat-option value="TN">TN</mat-option>
+                                    <mat-option value="TX">TX</mat-option>
+                                    <mat-option value="UT">UT</mat-option>
+                                    <mat-option value="VT">VT</mat-option>
+                                    <mat-option value="VI">VI</mat-option>
+                                    <mat-option value="VA">VA</mat-option>
+                                    <mat-option value="WA">WA</mat-option>
+                                    <mat-option value="DC">DC</mat-option>
+                                    <mat-option value="WV">WV</mat-option>
+                                    <mat-option value="WI">WI</mat-option>
+                                    <mat-option value="WY">WY</mat-option>
+                                </mat-select>
+                            </mat-form-field>
+                        </div>
+                        <div class="col-12 col-md-3">
+                            <mat-form-field class="w-full">
+                                <mat-label>Ship To Zip *</mat-label>
+                                <input matInput formControlName="shipToZip">
+                            </mat-form-field>
+                        </div>
+                        <div class="col-12 col-md-6">
+                            <mat-form-field class="w-full">
+                                <mat-label>Ship To Address *</mat-label>
+                                <input matInput formControlName="shipToAddress">
+                            </mat-form-field>
+                        </div>
+                        <div class="col-12 col-md-6">
+                            <mat-form-field class="w-full">
+                                <mat-label>Purchase Order</mat-label>
+                                <input matInput formControlName="shipToPurchaseOrder">
+                            </mat-form-field>
+                        </div>
+                        <div class="col-12 col-md-6">
+                            <mat-form-field class="w-full">
+                                <mat-label>Ship To Location</mat-label>
+                                <input matInput formControlName="shipToLocation">
+                            </mat-form-field>
+                        </div>
+                        <div class="col-12 col-md-6">
+                            <mat-form-field class="w-full">
+                                <mat-label>Ship To Country</mat-label>
+                                <input matInput formControlName="shipToCountry">
+                            </mat-form-field>
+                        </div>
+                        <div class="col-12 col-md-6">
+                            <mat-form-field class="w-full">
+                                <mat-label>Deliver To</mat-label>
+                                <input matInput formControlName="shipToDeliverTo">
+                            </mat-form-field>
+                        </div>
+                    </div>
+                    <!-- Product Data -->
+                    <div class="row border-b py-2">
+                        <div class="col-12 col-md-9">
+                            <mat-form-field class="w-full">
+                                <mat-label>Product *</mat-label>
+                                <input matInput formControlName="productName">
+                            </mat-form-field>
+                        </div>
+                        <div class="col-12 col-md-3">
+                            <mat-form-field class="w-full">
+                                <mat-label>Quantity *</mat-label>
+                                <input matInput formControlName="quantity" type="number">
+                            </mat-form-field>
+                        </div>
+                        <div class="col-12">
+                            <mat-checkbox class="mr-3" formControlName="blnSupplier">Supplier</mat-checkbox>
+                            <mat-checkbox class="mr-3" formControlName="blnDecorator">Decorator</mat-checkbox>
+                        </div>
+                        <div class="col-12 mb-2">
+                            <fuse-alert [appearance]="'soft'" [type]="'warning'">
+                                Hit the "create purchase order" button below to add colors/sizes/imprints, etc.
+                            </fuse-alert>
+                        </div>
+                        <div class="col-12">
+                            <button class="min-w-40 btn buttonComment hover:bg-gray-200" (click)="CreatePurchaseOrder()"
+                                [disabled]="isCreateOrder || !createPOForm.valid">
+                                <span *ngIf="!isCreateOrder">Create Purchase Order</span>
+                                <mat-progress-spinner *ngIf="isCreateOrder" [diameter]="24" [mode]="'indeterminate'">
+                                </mat-progress-spinner>
+                            </button>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>

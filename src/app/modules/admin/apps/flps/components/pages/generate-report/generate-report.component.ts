@@ -79,7 +79,7 @@ export class GenerateReportComponent implements OnInit {
     blnSendEmail: boolean = true;
     @ViewChild('topScrollAnchor') topScroll: ElementRef;
     @ViewChild('summaryScrollAnchor') summaryScrollAnchor: ElementRef;
-    storeTotals: { Sales: number; Revenue: number; Num_Sales: number; EST_Profit: number; orderCommission: number; };
+    storeTotals: { Sales: number; Revenue: number; Num_Sales: number; EST_Profit: number; orderCommission: number; amountPaid: number };
     flpsLoginAdmin = sessionStorage.getItem('flpsLoginAdmin');
     flpsLoginName = sessionStorage.getItem('FullName');
     flpsLoginID = sessionStorage.getItem('flpsUserID');
@@ -180,6 +180,16 @@ export class GenerateReportComponent implements OnInit {
             this._flpsService.snackBar('Please select any flps user');
             return;
         }
+
+        this.storeTotals = {
+            Sales: 0,
+            Revenue: 0,
+            Num_Sales: 0,
+            EST_Profit: 0,
+            orderCommission: 0,
+            amountPaid: 0
+        };
+
         this.generateReportLoader = true;
         this.reportParams = {
             page: this.page,
@@ -235,82 +245,66 @@ export class GenerateReportComponent implements OnInit {
                 return;
             }
             this.isGenerateReport = true;
-            this.dataSource = res["data"];
-            this.totalUsers = res["totalRecords"];
-            let groupByStores = [];
-            this.dataSource.forEach(element => {
-                element.checked = false;
-                element.disabled = false;
-                if (element.paymentDate) {
-                    let paymentDate = moment(element.paymentDate);
-                    let start_date = moment(this.reportParams.start_date);
-                    let end_date = moment(this.reportParams.end_date);
-                    if (paymentDate.diff(start_date, 'days') > 0 && paymentDate.diff(end_date, 'days') < 0) {
-                        element.color = 'green';
-                    }
-                } else {
-                    element.color = null;
-                }
-                if (element.commissionPaidDate) {
-                    element.checked = true;
-                    element.disabled = true;
-                } else if (element.paymentDate) {
-                    let paymentDate = moment(element.paymentDate);
-                    let start_date = moment(this.reportParams.start_date);
-                    let end_date = moment(this.reportParams.end_date);
-                    if (paymentDate.diff(start_date, 'days') > 0 && paymentDate.diff(end_date, 'days') < 0) {
-                        element.checked = true;
-                    }
-                }
-                if (groupByStores.length == 0) {
-                    groupByStores.push({ store: element.storeName, data: [element] });
-                } else {
-                    let index = groupByStores.findIndex(store => store.store == element.storeName);
-                    if (index == -1) {
-                        groupByStores.push({ store: element.storeName, data: [element] });
-                    } else {
-                        groupByStores[index].data.push(element);
-                    }
+            res["data"].forEach(element => {
+                this.storeTotals.Sales = element.Grand_Sales;
+                this.storeTotals.Revenue = element.Grand_Revenue;
+                this.storeTotals.Num_Sales = element.Grand_Num_Sales;
+                this.storeTotals.EST_Profit = element.Grand_Profit;
+                this.storeTotals.orderCommission = element.Grand_Commission;
+                element.DetailsData = [];
+                if (element.Details) {
+                    let Details = element.Details.split('||');
+                    Details.forEach(item => {
+                        let [date, id, customer, sales, revenue, margin, profit, comission, commision_percentage, cpd, amount, paymentDate] = item.split('::');
+                        element.DetailsData.push({ date: date, id: Number(id), customer: customer, sales: Number(sales), revenue: Number(revenue), margin: margin, profit: profit, comission: comission, cpd: cpd, amount: amount, commision_percentage: commision_percentage, paymentDate: paymentDate });
+                        this.storeTotals.amountPaid += Number(amount);
+                        this.dataSource.push({ date: date, id: Number(id), customer: customer, sales: Number(sales), revenue: Number(revenue), margin: margin, profit: profit, comission: comission, cpd: cpd, amount: amount, commision_percentage: commision_percentage, storeName: element.storeName, paymentDate: paymentDate });
+                    });
                 }
             });
-            this.groupByStoresData = groupByStores;
-            this.groupByStoresData.forEach((store) => {
-                store.date_data = [];
-                store.data.forEach(element => {
-                    let date_check = moment(element.orderDate).format('MMM,yyyy');
-                    if (store.date_data.length == 0) {
-                        store.date_data.push({ date: moment(element.orderDate).format('MMM,yyyy'), data: [element] });
+            res["data"].forEach((element) => {
+                element.date_data = [];
+                element.DetailsData.forEach(item => {
+                    item.checked = false;
+                    item.disabled = false;
+
+                    if (item.paymentDate != "NULL") {
+                        let date = moment(item.paymentDate);
+                        let start_date = moment(this.reportParams.start_date);
+                        let end_date = moment(this.reportParams.end_date);
+                        if (date.isAfter(start_date) && date.isBefore(end_date)) {
+                            item.color = 'green';
+                        }
                     } else {
-                        const d_index = store.date_data.findIndex(date => date.date == date_check);
+                        item.color = null;
+                    }
+                    if (item.cpd != '---') {
+                        item.checked = true;
+                        item.disabled = true;
+                    } else if (item.paymentDate != "NULL") {
+                        let date = moment(item.paymentDate);
+                        let start_date = moment(this.reportParams.start_date);
+                        let end_date = moment(this.reportParams.end_date);
+                        if (date.isAfter(start_date) && date.isBefore(end_date)) {
+                            item.checked = true;
+                        }
+                    }
+
+                    let date_check = moment(item.date).format('MMM,yyyy');
+                    if (element.date_data.length == 0) {
+                        element.date_data.push({ date: moment(item.date).format('MMM,yyyy'), data: [item] });
+                    } else {
+                        const d_index = element.date_data.findIndex(date => date.date == date_check);
                         if (d_index < 0) {
-                            store.date_data.push({ date: moment(element.orderDate).format('MMM,yyyy'), data: [element] });
+                            element.date_data.push({ date: moment(item.date).format('MMM,yyyy'), data: [item] });
                         } else {
-                            store.date_data[d_index].data.push(element);
+                            element.date_data[d_index].data.push(item);
                         }
                     }
                 });
             });
-            this.storeTotals = {
-                Sales: 0,
-                Revenue: 0,
-                Num_Sales: 0,
-                EST_Profit: 0,
-                orderCommission: 0
-            };
-            res["storesData"].forEach(store => {
-                this.storeTotals.Sales += store.Sales;
-                this.storeTotals.Revenue += store.Revenue;
-                this.storeTotals.Num_Sales += store.Num_Sales;
-                this.storeTotals.EST_Profit += store.EST_Profit;
-                this.storeTotals.orderCommission += store.orderCommission;
-                this.groupByStoresData.forEach(element => {
-                    if (element.store == store.storeName) {
-                        element.storeTotals = { Sales: store.Sales, Revenue: store.Revenue, Num_Sales: store.Num_Sales, EST_Profit: store.EST_Profit, orderCommission: store.orderCommission, Margin: store.Margin }
-                    }
-                });
-            });
-            this.reportSummaryData = res["storesData"];
-
+            this.reportSummaryData = res["data"];
+            this.totalUsers = res["totalRecords"];
             setTimeout(() => {
                 this.topScroll.nativeElement.scrollIntoView({ behavior: 'smooth' });
             }, 100);
@@ -349,14 +343,17 @@ export class GenerateReportComponent implements OnInit {
         }, 100);
     }
     checkOrUncheckStoresOrders(ev, storeOrders) {
-        storeOrders.data.forEach(element => {
-            if (!element.disabled) {
-                if (ev.checked) {
-                    element.checked = true;
-                } else {
-                    element.checked = false;
+        storeOrders.forEach(element => {
+            element.data.forEach(item => {
+                if (!item.disabled) {
+                    if (ev.checked) {
+                        item.checked = true;
+                    } else {
+                        item.checked = false;
+                    }
                 }
-            }
+            });
+
         });
     }
     updateFlPSCommission() {
@@ -388,23 +385,22 @@ export class GenerateReportComponent implements OnInit {
     }
 
     downloadExcelWorkSheet() {
-        const fileName = `FLPS-Report-${this.selectedEmployee.firstName}-${this.selectedEmployee.lastName}-${this.reportParams.start_date}-${this.reportParams.end_date}`;
+        const fileName = `FLPS-Report-${this.selectedEmployee.fullName}-${this.reportParams.start_date}-${this.reportParams.end_date}`;
         const workbook = new Excel.Workbook();
         const worksheet = workbook.addWorksheet("FLPS-Reports");
-
         // Columns
         worksheet.columns = [
             { header: "store", key: "storeName", width: 30 },
-            { header: "Date", key: "orderDate", width: 30 },
-            { header: "OrderID", key: "pk_orderID", width: 30 },
-            { header: "Customer", key: "companyName", width: 50 },
-            { header: "Sales", key: "Sales", width: 30 },
-            { header: "Revenue", key: "Revenue", width: 10 },
-            { header: "Margin", key: "Margin", width: 10 },
-            { header: "Profit", key: "Profit", width: 10 },
-            { header: "Commission", key: "CommissionPercentage", width: 10 },
-            { header: "CommissionPaidDate", key: "commissionPaidDate", width: 10 },
-            { header: "AmountPaid", key: "amountPaid", width: 10 }
+            { header: "Date", key: "date", width: 30 },
+            { header: "OrderID", key: "id", width: 30 },
+            { header: "Customer", key: "customer", width: 50 },
+            { header: "Sales", key: "sales", width: 30 },
+            { header: "Revenue", key: "revenue", width: 10 },
+            { header: "Margin", key: "margin", width: 10 },
+            { header: "Profit", key: "profit", width: 10 },
+            { header: "Commission", key: "commision_percentage", width: 10 },
+            { header: "CommissionPaidDate", key: "cpd", width: 10 },
+            { header: "AmountPaid", key: "amount", width: 10 }
         ];
         for (const obj of this.dataSource) {
             worksheet.addRow(obj);

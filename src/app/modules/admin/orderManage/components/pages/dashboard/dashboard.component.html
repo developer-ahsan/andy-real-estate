@@ -56,9 +56,17 @@
                     </mat-select>
                 </mat-form-field>
                 <mat-form-field class="min-w-100 mr-2">
-                    <input matInput placeholder="Back to date">
+                    <input matInput placeholder="Back to date" [matDatepicker]="picker" readonly
+                        [(ngModel)]="ngBackDate" (click)="picker.open()">
+                    <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
+                    <mat-datepicker #picker></mat-datepicker>
                 </mat-form-field>
-                <button mat-stroked-button class="min-w-30">Update</button>
+                <button mat-stroked-button class="min-w-30" [disabled]="isUpdateBulkLoader"
+                    (click)="bulkUpdateStatus()">
+                    <span *ngIf="!isUpdateBulkLoader">Update</span>
+                    <mat-progress-spinner *ngIf="isUpdateBulkLoader" [diameter]="24" [mode]="'indeterminate'">
+                    </mat-progress-spinner>
+                </button>
             </div>
             <div *ngIf="!isLoading" class="font-bold">
                 <p>Showing Orders ({{totalRecords}} Total)</p>
@@ -79,7 +87,7 @@
                             </div>
                         </th>
                         <th mat-sort-header="inHandsDate">In-Hands</th>
-                        <th mat-sort-header="fk_orderID">Order</th>
+                        <th mat-sort-header="pk_orderID">Order</th>
                         <th mat-sort-header="pk_orderLineID">PO Number</th>
                         <th mat-sort-header="firstName">Customer</th>
                         <th mat-sort-header="productName">Product</th>
@@ -119,7 +127,7 @@
                     <ng-container *ngIf="!isPaginatedLoader">
                         <tr *ngFor="let item of dataSource" [ngStyle]="item.styles" class="cursor-pointer">
                             <td>
-                                <mat-checkbox></mat-checkbox>
+                                <mat-checkbox [(ngModel)]="item.checked"></mat-checkbox>
                             </td>
                             <td (click)="goToOrderDetails(item)">
                                 {{item.orderDate | date: 'MM/dd/yyyy'}}
@@ -131,32 +139,31 @@
                                 {{(item.inHandsDate | date: 'MM/dd/yyyy')|| 'N/A'}}
                             </td>
                             <td>
-                                <a [routerLink]="['/apps/orders',item.fk_orderID]"
-                                    target="_blank">{{item.fk_orderID}}</a>
+                                <a [routerLink]="['/apps/orders',item.pk_orderID]"
+                                    target="_blank">{{item.pk_orderID}}</a>
                             </td>
                             <td (click)="goToOrderDetails(item)">
-                                {{item.fk_orderID+'-'+item.pk_orderLineID}}
+                                {{item.purchaseOrderNumber}}
                             </td>
                             <td (click)="goToOrderDetails(item)">
-                                {{item?.firstName + ' ' + item?.lastName}}
+                                {{item?.companyName}}
                             </td>
                             <td (click)="goToOrderDetails(item)">
-                                {{item?.productName}}
+                                <p *ngFor="let prod of item.prducts">{{prod}}</p>
                             </td>
                             <td (click)="goToOrderDetails(item)">
-                                {{item?.supplierName}}
+                                {{item?.vendorShippingName}}
                             </td>
                             <td (click)="goToOrderDetails(item)">
                                 {{item?.statusName}}
                             </td>
                             <td (click)="goToOrderDetails(item)">
-                                <span *ngIf="item?.Age">{{item?.Age }} hrs</span>
-                                <span *ngIf="!item?.Age">---</span>
+                                <span>{{item?.age }}</span>
                             </td>
                             <td (click)="goToOrderDetails(item)">
                                 {{item?.storeCode}}
                             </td>
-                            <td (click)="goToOrderDetails(item)">{{item?.CPO || '---'}}</td>
+                            <td (click)="goToOrderDetails(item)">{{item?.purchaseOrderNum || '---'}}</td>
                             <td (click)="goToOrderDetails(item)">{{item?.CC || '---'}}</td>
                             <td (click)="goToOrderDetails(item)">
                                 <mat-icon svgIcon="heroicons_outline:x" class="text-red-500"

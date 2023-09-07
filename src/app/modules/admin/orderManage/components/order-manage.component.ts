@@ -110,10 +110,10 @@ export class OrderManageComponent {
         let start: any = '';
         let end: any = '';
         if (this.rangeStart) {
-            start = moment(this.rangeStart).format('MM-DD-yyyy');
+            start = moment(this.rangeStart).format('yyyy-MM-DD');
         }
         if (this.rangeEnd) {
-            end = moment(this.rangeStart).format('MM-DD-yyyy');
+            end = moment(this.rangeEnd).format('yyyy-MM-DD');
         }
         const parameters = {
             orderID: this.ngOrderID,

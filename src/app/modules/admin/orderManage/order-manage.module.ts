@@ -44,12 +44,13 @@ import { OrderManageComponent } from './components/order-manage.component';
 import { OrderManageDashboardComponent } from './components/pages/dashboard/dashboard.component';
 import { OrderManageDetailsComponent } from './components/pages/order-details/order-details.component';
 import { OrderExportComponent } from './components/pages/export/export.component';
+import { CreatePoComponent } from './components/pages/order-details/create-po/create-po.component';
 
 @NgModule({
     declarations: [
         OrderManageComponent,
         OrderManageDashboardComponent,
-        OrderManageDetailsComponent, OrderExportComponent
+        OrderManageDetailsComponent, OrderExportComponent, CreatePoComponent
     ],
     imports: [
         RouterModule.forChild(orderManageRoutes),

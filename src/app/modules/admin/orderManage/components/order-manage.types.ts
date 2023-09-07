@@ -293,3 +293,228 @@ export interface removePurchaseOrderItem {
     orderLineID: number;
     remove_purchase_order_item: boolean;
 };
+
+export interface DeletePurchaseOrder {
+    orderLinePOID: number;
+    orderId: number;
+    delete_purchase_order: boolean;
+};
+
+
+// Creat PO
+export interface createPurchaseOrder {
+    vendorPOID: number;
+    companyName: string;
+    vendorShippingAddress1: string;
+    vendorShippingAddress2: string;
+    vendorShippingCity: string;
+    vendorShippingState: string;
+    vendorShippingZip: string;
+    vendorShippingPhone: string;
+    vendorShippingEmail: string;
+    shippingComment: string;
+    shipToCompanyName: string;
+    shipToCustomerName: string;
+    shipToLocation: string;
+    shipToPurchaseOrder: string;
+    shipToAddress: string;
+    shipToCity: string;
+    shipToState: string;
+    shipToZip: string;
+    shipToCountry: string;
+    shipToDeliverTo: string;
+    productName: string;
+    quantity: string;
+    blnSupplier: boolean;
+    blnDecorator: boolean;
+    orderID: number;
+    create_purchase_order: boolean;
+};
+
+export interface DuplicatePO {
+    order_id: number;
+    orderLinePOID: number;
+    orderLinePO: OrderLinePO;
+    orderLineOptions: orderLineOption[];
+    orderLineImprints: orderLineImprint[];
+    orderLineAccessories: orderLineAccessory[];
+    orderLineAdjustments: orderLineAdjustments[];
+    duplicate_purchase_order: boolean;
+};
+
+interface orderLineOption {
+    productName: string;
+    optionName: string;
+    quantity: number;
+    unitCost: number;
+    total: number;
+    fk_optionID: number;
+};
+
+interface orderLineImprint {
+    imprintName: string;
+    quantity: number;
+    unitCost: number;
+    total: number;
+    colors: string;
+    setup: number;
+    totalImprintColors: number;
+    blnStitchProcess: boolean;
+    blnColorProcess: boolean;
+    blnSingleProcess: boolean;
+    processQuantity: number;
+    fk_imprintID: number;
+};
+
+interface orderLineAccessory {
+    accessoryName: string;
+    quantity: number;
+    unitCost: number;
+    totalCost: number;
+    setupCost: number;
+};
+
+interface orderLineAdjustments {
+    adjustmentName: string;
+    unitCost: number;
+};
+
+interface OrderLinePO {
+    fk_vendorID: number;
+    vendorShippingName: string;
+    vendorShippingAddress1: string;
+    vendorShippingAddress2: string;
+    vendorShippingCity: string;
+    vendorShippingState: string;
+    vendorShippingZip: string;
+    vendorShippingPhone: string;
+    vendorShippingEmail: string;
+    shippingComment: string;
+    shipToCompanyName: string;
+    shipToCustomerName: string;
+    shipToLocation: string;
+    shipToPurchaseOrder: string;
+    shipToAddress: string;
+    shipToCity: string;
+    shipToState: string;
+    shipToZip: string;
+    shipToCountry: string;
+    imprintComment: string;
+    POTotal: number;
+    shipToDeliverTo: string;
+    productName: string;
+    quantity: string;
+    purchaseOrderNumber: string;
+    purchaseOrderComments: string;
+    blnDuplicate: boolean;
+};
+
+// Save & Send PO
+export interface SaveAndSendPurchaseOrder {
+    orderLinePOID: number;
+    purchaseOrderNumber: string;
+    purchaseOrderComments: string;
+    POTotal: number;
+    vendorShippingName: string;
+    vendorShippingEmail: string;
+    shippingDate: string;
+    estimatedShippingDate: string;
+    trackingNumber: string;
+    total: number;
+    blnArtNeedsResent: boolean;
+    blnGroupRun: boolean;
+    productName: string;
+    storeName: string;
+    orderId: number;
+    blnSample: boolean;
+    orderLineID: number;
+    fk_vendorID: number;
+    customerAccountNumber: string;
+    shipToPurchaseOrder: string;
+    vendorShippingAddress1: string;
+    vendorShippingAddress2: string;
+    vendorShippingCity: string;
+    quantity: number;
+    orderManageLoggedInUserName: string;
+    vendorShippingState: string;
+    vendorShippingZip: string;
+    vendorShippingPhone: string;
+    shippingComment: string;
+    POinHandsDate: string;
+    shipToCompanyName: string;
+    shipToCustomerName: string;
+    shipToLocation: string;
+    shipToAddress: string;
+    shipToDeliverTo: string;
+    shipToCity: string;
+    shipToState: string;
+    shipToZip: string;
+    shipToCountry: string;
+    stockFrom: string;
+    blnDecorator: boolean;
+    blnSupplier: boolean;
+    poOptions: poOptions[];
+    poImprints: poImprints[];
+    poAccessories: poAccessories[];
+    poAdjustments: poAdjustments[];
+    save_send_purchase_order: boolean;
+};
+
+interface poOptions {
+    optionName: string;
+    quantity: number;
+    unit: number;
+    total: number;
+};
+
+
+interface poImprints {
+    imprintName: string;
+    quantity: number;
+    unitCost: number;
+    total: number;
+    reorderNumber: string;
+    setup: number;
+    processQuantity: number;
+    colors: string;
+    imprintComment: string;
+};
+
+
+interface poAccessories {
+    accessoryName: string;
+    quantity: number;
+    unitCost: number;
+    total: number;
+    setupCost: number;
+};
+
+interface poAdjustments {
+    adjustmentName: string;
+    unitCost: number;
+};
+
+export interface updatePurchaseOrderStatus {
+    orderLinePOID: number;
+    statusID: number;
+    update_purchase_order_status: boolean;
+};
+// Bulk Update
+export interface updateOrderManageBulkStatusUpdate {
+    status_id: number;
+    poOrders: poOrders[];
+    backorderDate: string;
+    orderManageLoggedInUserName: string;
+    orderManageUserID: number;
+    update_orderManage_bulk_status: boolean;
+};
+
+interface poOrders {
+    orderLine_id: number;
+    blnGroupRun: boolean;
+    pk_orderLinePOID: number;
+    product_id: number;
+    productNumber: string;
+    productName: string;
+    orderID: number;
+};

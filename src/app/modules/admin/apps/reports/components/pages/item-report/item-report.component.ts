@@ -89,7 +89,42 @@ export class ReportItemsComponent implements OnInit, OnDestroy {
     }
     this._reportService.getAPIData(params).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
       if (res["data"].length > 0) {
-        this.downloadExcelWorkSheet(res["data"]);
+        const resData = res["data"];
+
+        // Create IDsData object with unique IDs and sorted data
+        const IDsData = resData.reduce((acc, element) => {
+          const id = element.ID;
+          if (!acc[id]) {
+            acc[id] = { ID: id, data: [] };
+          }
+          acc[id].data.push(element);
+          return acc;
+        }, {});
+
+        // Sort the data in each group by pk_colorID in descending order
+        // for (const id in IDsData) {
+        //   IDsData[id].data.sort((a, b) => b.pk_colorID - a.pk_colorID);
+        // }
+        // for (const id in IDsData) {
+        //   IDsData[id].data.sort((a, b) => {
+        //     if (b.Item !== a.Item) {
+        //       return b.Item - a.Item; // Sort by Item in ascending order
+        //     }
+
+        //     if (b.pk_colorID !== a.pk_colorID) {
+        //       return b.pk_colorID - a.pk_colorID; // Sort by pk_colorID in descending order
+        //     }
+
+        //     // If pk_colorID is the same, sort by pk_sizeID in descending order
+        //     return a.pk_sizeID - b.pk_sizeID;
+        //   });
+        // }
+
+
+        // console.log(IDsData)
+        // Flatten the IDsData into excelData
+        const excelData = Object.values(IDsData).reduce((acc: any, { data }) => acc.concat(data), []);
+        this.downloadExcelWorkSheet(excelData);
       } else {
         this.generateReportData = null;
         this._reportService.snackBar('No records found');
@@ -168,6 +203,8 @@ export class ReportItemsComponent implements OnInit, OnDestroy {
       } else {
         const index = lastIDs.findIndex(idObj => idObj.ID == obj.ID && idObj.Item === obj.Item);
         if (index > -1) {
+          obj.Subtotal = obj.Subtotal - obj.Setups;
+          obj.Subtotal = obj.Subtotal - obj.Shipping;
           obj.Setups = 0;
           obj.Shipping = 0;
           obj.Runs = 0;

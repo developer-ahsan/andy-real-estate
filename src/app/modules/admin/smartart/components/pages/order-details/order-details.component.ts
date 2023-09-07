@@ -276,6 +276,7 @@ export class OrderDashboardDetailsComponent implements OnInit, OnDestroy {
         }
         // ARTWORK REVISION 
         else if (imprint.pk_statusID == 4) {
+          imprint.recipientsComment = 'Please double check all details of this proof for accuracy.  (ie. phone numbers, email/addresses, websites).';
         }
         // DECORATOR NOTIFIED || IN PRODUCTION || PO Sent
         else if (imprint.pk_statusID == 5 || imprint.pk_statusID == 11 || imprint.pk_statusID == 16) {
@@ -763,10 +764,12 @@ export class OrderDashboardDetailsComponent implements OnInit, OnDestroy {
     if (type != 'apply') {
       if (statusID == 2) {
         imprint.pendingStatusLoader = true;
+        imprint.recipientsComment = 'Please double check all details of this proof for accuracy.  (ie. phone numbers, email/addresses, websites).';
       } else if (statusID == 3) {
         imprint.awaitingStatusLoader = true;
       } else if (statusID == 4) {
         imprint.artworkStatusLoader = true;
+        imprint.recipientsComment = 'Please double check all details of this proof for accuracy.  (ie. phone numbers, email/addresses, websites).';
       } else if (statusID == 5) {
         imprint.decoratorStatusLoader = true;
       } else if (statusID == 7) {

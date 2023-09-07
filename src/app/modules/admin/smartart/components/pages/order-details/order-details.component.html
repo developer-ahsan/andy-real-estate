@@ -1150,6 +1150,86 @@
                                             </div>
                                             <div class="row">
                                                 <div class="col-md-8 col-12">
+                                                    <!-- Proof Contact -->
+                                                    <div class="flex space-x-2 align-items-center"
+                                                        *ngIf="smartArtUser.blnMaster && orderData.blnAdditionalArtApproval">
+                                                        <mat-form-field class="w-full">
+                                                            <mat-label>Proof Contact</mat-label>
+                                                            <mat-select matInput [(ngModel)]="imprint.selectedContact">
+                                                                <mat-option
+                                                                    [value]="orderData.sessionArtwork_artApprovalContactID">{{orderData.sessionArtworkFirstName[0]
+                                                                    +
+                                                                    ' '
+                                                                    +orderData.sessionArtworkFirstName[1]}}</mat-option>
+                                                                <mat-option *ngFor="let contact of contactProofs"
+                                                                    [value]="contact"
+                                                                    [attr.data-blnStoreUserApproval]="contact.blnStoreUserApproval">{{contact.firstName
+                                                                    + ' ' +
+                                                                    contact.lastName}}</mat-option>
+                                                            </mat-select>
+                                                        </mat-form-field>
+                                                        <button
+                                                            class="min-w-30 h-10 rounded-md bg-green-600 px-2.5 py-1.5 text-sm font-semibold text-white shadow-sm hover:bg-green-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-green-600 "
+                                                            type="button" (click)="updateProofContact(imprint)"
+                                                            [disabled]="imprint?.isProofLoader">
+                                                            <span *ngIf="!imprint?.isProofLoader">Update</span>
+                                                            <div class="flex justify-center"
+                                                                *ngIf="imprint?.isProofLoader">
+                                                                <mat-progress-spinner [diameter]="24"
+                                                                    [mode]="'indeterminate'">
+                                                                </mat-progress-spinner>
+                                                            </div>
+                                                        </button>
+                                                    </div>
+                                                    <mat-form-field class="w-full">
+                                                        <mat-label>Email recipients (comma-separated)</mat-label>
+                                                        <input matInput [(ngModel)]="imprint.emailRecipients"
+                                                            id="email-{{imprint.pk_imprintID}}">
+                                                    </mat-form-field>
+                                                    <mat-form-field class="w-full">
+                                                        <mat-label>Please enter any comments relating to this artwork:
+                                                        </mat-label>
+                                                        <textarea matInput [(ngModel)]="imprint.recipientsComment"
+                                                            id="comment-{{imprint.pk_imprintID}}"></textarea>
+                                                    </mat-form-field>
+                                                    <div class="flex justify-between">
+                                                        <div>
+                                                            <label>Select File</label>
+                                                            <br>
+                                                            <input type="file" #artworkFileInput
+                                                                (change)="uploadArtworkFile($event)">
+                                                        </div>
+                                                        <mat-checkbox
+                                                            matTooltip="Requires that the customer respond to the graphics team.  This removes the option for the customer to simply approve the artwork until this option is unchecked."
+                                                            [(ngModel)]="imprint.blnRespond">Respond to
+                                                            designer</mat-checkbox>
+                                                    </div>
+                                                    <div *ngIf="orderData.inHandsDate">
+                                                        <label for="">Approve-By Date (mm/dd/yyyy)</label>
+                                                        <div class="flex space-x-1">
+                                                            <mat-checkbox class="mt-2"
+                                                                [(ngModel)]="imprint.blnIncludeApproveByDate"></mat-checkbox>
+                                                            <input class="form-control" type="date"
+                                                                [(ngModel)]="imprint.artworkDate"
+                                                                [disabled]="!imprint.blnIncludeApproveByDate">
+                                                            <input class="form-control" type="time"
+                                                                [(ngModel)]="imprint.artworkTime"
+                                                                [disabled]="!imprint.blnIncludeApproveByDate">
+                                                        </div>
+                                                    </div>
+                                                    <div>
+                                                        <button (click)="uploadArtworkFileToServer(imprint)"
+                                                            class="min-w-30 mt-2 btn buttonComment hover:bg-gray-200">
+                                                            <span *ngIf="!imprint?.artworkProofLoader">Update Artwork
+                                                                Proof</span>
+                                                            <mat-progress-spinner [color]="'light'"
+                                                                *ngIf="imprint?.artworkProofLoader" [diameter]="24"
+                                                                [mode]="'indeterminate'">
+                                                            </mat-progress-spinner>
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                                <!-- <div class="col-md-8 col-12">
                                                     <div>
                                                         <button type="button"
                                                             (click)="applyStatusChangeImprint(imprint,2,'status')"
@@ -1162,11 +1242,8 @@
                                                                 [mode]="'indeterminate'">
                                                             </mat-progress-spinner>
                                                         </button>
-                                                        <!-- <button
-                                                            class="min-w-30 mt-2 btn buttonComment hover:bg-gray-200">Acknowledge
-                                                            changes requested</button> -->
                                                     </div>
-                                                </div>
+                                                </div> -->
                                                 <div class="col-md-4 col-12">
                                                     <p class="text-lg font-bold">Make Manual Updates to this Imprint
                                                         Status</p>
@@ -1241,6 +1318,46 @@
                                                         <div class="h-40 border overflow-y-auto p-2"
                                                             *ngIf="imprint?.designerNotes"
                                                             [innerHTML]="imprint?.designerNotes"></div>
+                                                    </div>
+                                                </div>
+
+                                            </div>
+                                            <p class="text-lg font-bold">Make Manual Updates to this Imprint Status
+                                            </p>
+                                            <div class="row">
+                                                <div class="col-md-6 col-12">
+                                                    <p class="text-md font-bold">Offline Customer Communication:</p>
+                                                    <mat-radio-group class="example-radio-group"
+                                                        [(ngModel)]="imprint.statusID">
+                                                        <mat-radio-button class="example-radio-button" value="approve"
+                                                            checked [value]="9">Customer Approved
+                                                            Artwork with comments</mat-radio-button>
+                                                        <mat-radio-button class="example-radio-button" value="request"
+                                                            [value]="4">Customer
+                                                            Requested Artwork Change</mat-radio-button>
+                                                    </mat-radio-group>
+                                                    <mat-checkbox [(ngModel)]="imprint.blnRespond"
+                                                        matTooltip="Requires that the customer respond to the graphics team.  This removes the option for the customer to simply approve the artwork until this option is unchecked.">Respond
+                                                        to designer</mat-checkbox>
+                                                </div>
+                                                <div class="col-md-6 col-12">
+                                                    <mat-form-field class="w-full">
+                                                        <mat-label>Please enter comments regarding this
+                                                            communication:</mat-label>
+                                                        <textarea matInput
+                                                            [(ngModel)]="imprint.proofComments"></textarea>
+                                                    </mat-form-field>
+                                                    <div class="tex-right">
+                                                        <button
+                                                            class="min-w-30 mt-2 btn buttonComment hover:bg-gray-200"
+                                                            (click)="applyStatusChangeImprint(imprint, imprint.statusID,'apply')"
+                                                            [disabled]="imprint.applyStatusLoader">
+                                                            <span *ngIf="!imprint?.applyStatusLoader">Apply Status
+                                                                Change</span>
+                                                            <mat-progress-spinner *ngIf="imprint?.applyStatusLoader"
+                                                                [diameter]="24" [mode]="'indeterminate'">
+                                                            </mat-progress-spinner>
+                                                        </button>
                                                     </div>
                                                 </div>
                                             </div>

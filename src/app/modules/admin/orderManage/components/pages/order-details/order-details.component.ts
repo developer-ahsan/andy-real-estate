@@ -1,4 +1,4 @@
-import { Component, Input, OnInit, ChangeDetectorRef, OnDestroy, ViewChild } from '@angular/core';
+import { Component, Input, OnInit, ChangeDetectorRef, OnDestroy, ViewChild, ElementRef } from '@angular/core';
 import { FormControl } from '@angular/forms';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatDrawer } from '@angular/material/sidenav';
@@ -6,9 +6,15 @@ import { ActivatedRoute, NavigationExtras, Router } from '@angular/router';
 import { Subject } from 'rxjs';
 import { debounceTime, distinctUntilChanged, filter, finalize, switchMap, takeUntil, tap } from 'rxjs/operators';
 import { OrderManageService } from '../../order-manage.service';
-import { AddAdjustment, AddComment, AddPOOption, Add_PO_Imprint, HideUnhideQuote, SavePurchaseOrder, SendPurchaseOrder, UpdateEstimatedShipping, UpdateInHandsDate, UpdateTracking, addAccessory, removePurchaseOrderItem, saveBillPay, saveVendorBill } from '../../order-manage.types';
+import { AddAdjustment, AddComment, AddPOOption, Add_PO_Imprint, DeletePurchaseOrder, DuplicatePO, HideUnhideQuote, SaveAndSendPurchaseOrder, SavePurchaseOrder, SendPurchaseOrder, UpdateEstimatedShipping, UpdateInHandsDate, UpdateTracking, addAccessory, createPurchaseOrder, removePurchaseOrderItem, saveBillPay, saveVendorBill, updatePurchaseOrderStatus } from '../../order-manage.types';
 import moment from 'moment';
 import { AuthService } from 'app/core/auth/auth.service';
+import { DashboardsService } from 'app/modules/admin/dashboards/dashboard.service';
+import { VendorsService } from 'app/modules/admin/apps/vendors/components/vendors.service';
+import { SmartArtService } from 'app/modules/admin/smartart/components/smartart.service';
+declare var $: any;
+
+
 @Component({
   selector: 'app-order-details-manage',
   templateUrl: './order-details.component.html',
@@ -79,6 +85,7 @@ export class OrderManageDetailsComponent implements OnInit, OnDestroy {
     blnInvoiced: false
   }
   // ColorsBreakdown
+  totalColorsListQuantity = 0;
   colorsList: any = [];
   accessoriesList: any = [];
   adjustmentsList: any = [];
@@ -114,6 +121,7 @@ export class OrderManageDetailsComponent implements OnInit, OnDestroy {
   isAddColorLoader: boolean = false;
   isDelColorLoader: boolean = false;
   colorsForm = {
+    product: '',
     name: '',
     quantity: '',
     cost: ''
@@ -125,21 +133,40 @@ export class OrderManageDetailsComponent implements OnInit, OnDestroy {
   isRemovePOLoader: boolean = false;
   ngImprint = '';
 
+  allVendors: any = []
+
+  isAddPOOder: boolean = false;
+  @ViewChild('removePO') removePO: ElementRef;
+  @ViewChild('sendPO') sendPO: ElementRef;
+
+  imprintInformation = [];
+  isDuplicatePOLoader: boolean = false;
+  ordermanageUserData: any;
   constructor(
     private _changeDetectorRef: ChangeDetectorRef,
     private _activeRoute: ActivatedRoute,
     private _OrderManageService: OrderManageService,
     private _authService: AuthService,
+    private _commonService: DashboardsService,
+    private _vendorService: VendorsService,
+    private _smartartService: SmartArtService,
     private router: Router
   ) { }
 
   ngOnInit(): void {
+    this.ordermanageUserData = JSON.parse(sessionStorage.getItem('orderManage'));
     this.userData = this._authService.parseJwt(this._authService.accessToken);
     this._activeRoute.queryParams.subscribe(res => {
       this.paramData = res;
       this.isLoading = true;
+      this.getVendorsData();
       this.getOrderDetails();
     });
+  }
+  getVendorsData() {
+    this._commonService.suppliersData$.pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+      this.allVendors = res["data"];
+    })
   }
   getOrderDetails() {
     let params = {
@@ -150,13 +177,22 @@ export class OrderManageDetailsComponent implements OnInit, OnDestroy {
     }
     this._OrderManageService.getAPIData(params).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
       this.orderData = res["data"][0];
+      this.imprintInformation = res["imprintInformation"];
       if (res["purchaseOrders"].length > 0) {
         this.orderDataPO = res["purchaseOrders"][0];
+        const { shippingCarrierName, shippingServiceName, shippingCustomerAccountNumber, blnSupplier, blnDecorator } = this.orderDataPO;
+        if (shippingCustomerAccountNumber) {
+          this.orderDataPO.shippingComment = `${shippingCarrierName}/${shippingServiceName}/ACCT## ${shippingCustomerAccountNumber}`;
+        }
+        // For PO Order Field
+        if ((blnSupplier && blnDecorator) || (!blnSupplier && blnDecorator)) {
+          this.orderDataPO.showPurchaseOrder = true;
+        }
         this.vendorBillData = {
           vendorInvoiceNumber: this.orderDataPO.vendorInvoiceNumber ? this.orderDataPO.vendorInvoiceNumber : null,
           vendorInvoiceDate: this.orderDataPO.vendorInvoiceDate ? this.orderDataPO.vendorInvoiceDate : null,
           vendorInvoiceNetTerms: this.orderDataPO.vendorInvoiceNetTerms ? this.orderDataPO.vendorInvoiceNetTerms : 0,
-          blnInvoiced: false
+          blnInvoiced: this.orderDataPO.blnInvoiced
         }
         this.BillData = {
           billPayPaymentMethod: this.orderDataPO.billPayPaymentMethod ? this.orderDataPO.billPayPaymentMethod : 0,
@@ -164,6 +200,7 @@ export class OrderManageDetailsComponent implements OnInit, OnDestroy {
           billPayReference: this.orderDataPO.billPayReference ? this.orderDataPO.billPayReference : null,
           blnPaid: this.orderDataPO.blnPaid
         }
+        this.getArtworkFiles();
       }
       this.getImprintData();
       this._changeDetectorRef.markForCheck();
@@ -184,6 +221,9 @@ export class OrderManageDetailsComponent implements OnInit, OnDestroy {
       this.adjustmentsList = res["adjustments"];
       this.accessoriesList = res["accessories"];
       this.attachmentsList = res["attachments"];
+      this.colorsList.forEach(color => {
+        this.totalColorsListQuantity += color.quantity;
+      });
       this.isAccessoriesLoader = false;
       this.isAdjustmentLoader = false;
       this.isAddImprintLoader = false;
@@ -207,6 +247,7 @@ export class OrderManageDetailsComponent implements OnInit, OnDestroy {
         imprint_color: ''
       }
       this.colorsForm = {
+        product: '',
         name: '',
         quantity: '',
         cost: ''
@@ -342,59 +383,68 @@ export class OrderManageDetailsComponent implements OnInit, OnDestroy {
       this._changeDetectorRef.markForCheck();
     });
   }
+  // Update Bill Pay
   updateBillPay() {
-    this.isBillLoader = true;
-    let date = null;
-    if (this.BillData.billPayPaymentDate) {
-      date = moment(this.BillData.billPayPaymentDate).format('L');
-    }
-    let payload: saveBillPay = {
+    const paymentDate = this.BillData.billPayPaymentDate ? moment(this.BillData.billPayPaymentDate).format('L') : null;
+
+    const payload: saveBillPay = {
       orderLinePOID: this.orderDataPO.pk_orderLinePOID,
       billPayPaymentMethod: this.BillData.billPayPaymentMethod,
       billPayReference: this.BillData.billPayReference,
-      billPayPaymentDate: date,
+      billPayPaymentDate: paymentDate,
       blnPaid: this.BillData.blnPaid,
       update_save_bill_pay: true
-    }
-    this._OrderManageService.PutAPIData(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
-      if (res["success"]) {
-        this._OrderManageService.snackBar(res["message"]);
-      }
-      this.isBillLoader = false;
-      this._changeDetectorRef.markForCheck();
-    }, err => {
-      this.isBillLoader = false;
-      this._changeDetectorRef.markForCheck();
-    });
+    };
+
+    this.isBillLoader = true;
+
+    this._OrderManageService.PutAPIData(payload)
+      .pipe(takeUntil(this._unsubscribeAll))
+      .subscribe(
+        (res: any) => {
+          if (res.success) {
+            this._OrderManageService.snackBar(res.message);
+          }
+          this.isBillLoader = false;
+          this._changeDetectorRef.markForCheck();
+        },
+        (err) => {
+          this.isBillLoader = false;
+          this._changeDetectorRef.markForCheck();
+        }
+      );
   }
+  // Update Vendor Bills
   updateVendorBills() {
-    this.isVendorBillLoader = true;
-    let date = null;
-    if (this.vendorBillData.vendorInvoiceDate) {
-      date = moment(this.vendorBillData.vendorInvoiceDate).format('L');
-    }
-    let term = this.vendorBillData.vendorInvoiceNetTerms;
-    if (this.vendorBillData.vendorInvoiceNetTerms == '0') {
-      term = null;
-    }
-    let payload: saveVendorBill = {
+    const invoiceDate = this.vendorBillData.vendorInvoiceDate ? moment(this.vendorBillData.vendorInvoiceDate).format('L') : null;
+    const invoiceNetTerms = this.vendorBillData.vendorInvoiceNetTerms === '0' ? null : this.vendorBillData.vendorInvoiceNetTerms;
+
+    const payload: saveVendorBill = {
       orderLinePOID: this.orderDataPO.pk_orderLinePOID,
       vendorInvoiceNumber: this.vendorBillData.vendorInvoiceNumber,
-      vendorInvoiceDate: date,
-      vendorInvoiceNetTerms: term,
+      vendorInvoiceDate: invoiceDate,
+      vendorInvoiceNetTerms: invoiceNetTerms,
       blnInvoiced: this.vendorBillData.blnInvoiced,
       update_save_vendor_bill: true
-    }
-    this._OrderManageService.PutAPIData(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
-      if (res["success"]) {
-        this._OrderManageService.snackBar(res["message"]);
-      }
-      this.isVendorBillLoader = false;
-      this._changeDetectorRef.markForCheck();
-    }, err => {
-      this.isVendorBillLoader = false;
-      this._changeDetectorRef.markForCheck();
-    });
+    };
+
+    this.isVendorBillLoader = true;
+
+    this._OrderManageService.PutAPIData(payload)
+      .pipe(takeUntil(this._unsubscribeAll))
+      .subscribe(
+        (res: any) => {
+          if (res.success) {
+            this._OrderManageService.snackBar(res.message);
+          }
+          this.isVendorBillLoader = false;
+          this._changeDetectorRef.markForCheck();
+        },
+        (err) => {
+          this.isVendorBillLoader = false;
+          this._changeDetectorRef.markForCheck();
+        }
+      );
   }
   addAccessories() {
     this.isAccessoriesLoader = true;
@@ -545,23 +595,114 @@ export class OrderManageDetailsComponent implements OnInit, OnDestroy {
       this._changeDetectorRef.markForCheck();
     })
   }
+  sendPOModal() {
+    $(this.sendPO.nativeElement).modal('show');
+  }
+  closeSendPOModal() {
+    $(this.sendPO.nativeElement).modal('hide');
+  }
   sendPoOrder() {
     this.isSentPOLoader = true;
-    let payload: SendPurchaseOrder = {
-      orderLinePOID: this.orderDataPO.pk_orderLinePOID,
-      fk_vendorID: this.orderData.pk_companyID,
-      purchaseOrderNumber: this.orderData.purchaseOrderNum,
-      vendorShippingName: this.orderDataPO.vendorShippingName,
-      shippingDate: this.orderData.shippingDate,
-      estimatedShippingDate: this.orderData.estimatedShippingDate,
-      trackingNumber: this.orderData.trackingNumber,
-      total: this.orderData.currentTotal,
+    const { } = this.orderData;
+    let poOptions = [];
+    let poImprints = [];
+    let poAccessories = [];
+    let poAdjustments = [];
+    const { fk_orderID, blnGroupRun, storeName } = this.orderData;
+    const { pk_orderLinePOID, shippingDate, estimatedShippingDate, trackingNumber, blnSample, fk_orderLineID, shippingCustomerAccountNumber, POinHandsDate, stockFrom, fk_vendorID, vendorShippingName, vendorShippingAddress1, vendorShippingAddress2, vendorShippingCity, vendorShippingState, vendorShippingZip, vendorShippingPhone, vendorShippingEmail, shippingComment, shipToCompanyName, shipToCustomerName, shipToLocation, shipToPurchaseOrder, shipToAddress, shipToCity, shipToState, shipToZip, shipToCountry, imprintComment, POTotal, shipToDeliverTo, productName, quantity, purchaseOrderNumber, purchaseOrderComments, blnDuplicate, blnDecorator, blnSupplier } = this.orderDataPO;
+
+    this.colorsList.forEach(element => {
+      poOptions.push({
+        optionName: element.optionName.replace(/'/g, "''"),
+        quantity: element.quantity,
+        unit: element.unitCost,
+        total: element.total
+      })
+    });
+    this.imprintdata.forEach(element => {
+      poImprints.push({
+        imprintName: element.imprintName.replace(/'/g, "''"),
+        quantity: element.quantity,
+        unitCost: element.unitCost,
+        total: element.total,
+        reorderNumber: element.reorderNumber,
+        setup: element.setup,
+        processQuantity: element.processQuantity,
+        colors: element.colors,
+        imprintComment: imprintComment
+      })
+    });
+
+    this.accessoriesList.forEach(element => {
+      poAccessories.push({
+        accessoryName: element.accessoryName.replace(/'/g, "''"),
+        quantity: element.quantity,
+        unitCost: element.unitCost,
+        totalCost: element.totalCost,
+        setupCost: element.setupCost
+      })
+    });
+    this.adjustmentsList.forEach(element => {
+      poAdjustments.push({
+        adjustmentName: element.adjustmentName.replace(/'/g, "''"),
+        unitCost: element.unitCost
+      })
+    });
+
+    let payload: SaveAndSendPurchaseOrder = {
+      orderLinePOID: pk_orderLinePOID,
+      purchaseOrderNumber: purchaseOrderNumber,
+      purchaseOrderComments: purchaseOrderComments,
+      POTotal: POTotal,
+      vendorShippingName: vendorShippingName,
+      vendorShippingEmail: vendorShippingEmail,
+      shippingDate: shippingDate ? moment(shippingDate).format('L') : shippingDate,
+      estimatedShippingDate: estimatedShippingDate ? moment(estimatedShippingDate).format('L') : estimatedShippingDate,
+      trackingNumber: trackingNumber,
+      total: POTotal,
       blnArtNeedsResent: this.blnArtNeedsResent,
-      send_purchase_order: true
+      blnGroupRun: blnGroupRun,
+      productName: productName.replace(/'/g, "''"),
+      storeName: storeName.replace(/'/g, "''"),
+      orderManageLoggedInUserName: this.ordermanageUserData.firstName + ' ' + this.ordermanageUserData.lastName,
+      orderId: fk_orderID,
+      blnSample: blnSample,
+      orderLineID: fk_orderLineID,
+      fk_vendorID: fk_vendorID,
+      customerAccountNumber: shippingCustomerAccountNumber,
+      shipToPurchaseOrder: shipToPurchaseOrder,
+      vendorShippingAddress1: vendorShippingAddress1,
+      vendorShippingAddress2: vendorShippingAddress2,
+      vendorShippingCity: vendorShippingCity,
+      quantity: quantity,
+      vendorShippingState: vendorShippingState,
+      vendorShippingZip: vendorShippingZip,
+      vendorShippingPhone: vendorShippingPhone,
+      shippingComment: shippingComment,
+      POinHandsDate: POinHandsDate ? moment(POinHandsDate).format('L') : POinHandsDate,
+      shipToCompanyName: shipToCompanyName,
+      shipToCustomerName: shipToCustomerName,
+      shipToLocation: shipToLocation,
+      shipToAddress: shipToAddress,
+      shipToDeliverTo: shipToDeliverTo,
+      shipToCity: shipToCity,
+      shipToState: shipToState,
+      shipToZip: shipToZip,
+      shipToCountry: shipToCountry,
+      stockFrom: stockFrom,
+      blnDecorator: blnDecorator,
+      blnSupplier: blnSupplier,
+      poOptions: poOptions,
+      poImprints: poImprints,
+      poAccessories: poAccessories,
+      poAdjustments: poAdjustments,
+      save_send_purchase_order: true
     }
     this._OrderManageService.PostAPIData(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
       if (res["success"]) {
         this._OrderManageService.snackBar(res["message"]);
+        this.orderDataPO.internalComments = this.orderDataPO.internalComments + '<br>' + res["newOrderComment"];
+        this.closeSendPOModal();
       }
       this.isSentPOLoader = false;
       this._changeDetectorRef.markForCheck();
@@ -569,14 +710,17 @@ export class OrderManageDetailsComponent implements OnInit, OnDestroy {
       this.isSentPOLoader = false;
       this._changeDetectorRef.markForCheck();
     });
+
   }
+
+
   savePoOrder() {
     this.isSavePOLoader = true;
     // Colors
     let OrderLinePOOptions = [];
     this.colorsList.forEach(element => {
       OrderLinePOOptions.push({
-        optionName: element.optionName,
+        optionName: element.optionName.replace(/'/g, "''"),
         quantity: element.quantity,
         unitCost: element.unitCost,
         total: element.total,
@@ -602,7 +746,7 @@ export class OrderManageDetailsComponent implements OnInit, OnDestroy {
     let orderLineAccessory = [];
     this.accessoriesList.forEach(element => {
       orderLineAccessory.push({
-        accessoryName: element.accessoryName,
+        accessoryName: element.accessoryName.replace(/'/g, "''"),
         quantity: element.quantity,
         unitCost: element.unitCost,
         totalCost: element.totalCost,
@@ -634,7 +778,7 @@ export class OrderManageDetailsComponent implements OnInit, OnDestroy {
       imprintComment: this.orderDataPO.imprintComment,
       POTotal: this.orderDataPO.POTotal,
       shipToDeliverTo: this.orderDataPO.shipToDeliverTo,
-      productName: this.orderData.productName,
+      productName: this.orderData.productName.replace(/'/g, "''"),
       quantity: this.orderData.quantity,
       purchaseOrderNumber: this.orderDataPO.purchaseOrderNumber,
       purchaseOrderComments: this.orderDataPO.purchaseOrderComments,
@@ -659,31 +803,216 @@ export class OrderManageDetailsComponent implements OnInit, OnDestroy {
       this._changeDetectorRef.markForCheck();
     });
   }
+  removePOModal() {
+    $(this.removePO.nativeElement).modal('show');
+  }
+  CloseremovePOModal() {
+    $(this.removePO.nativeElement).modal('hide');
+  }
+
   removePoOrder() {
     this.isRemovePOLoader = true;
     let orderID = this.orderData.fk_orderID;
-    let orderLineID = this.orderDataPO.fk_orderLineID;
-    if (orderLineID) {
-      orderID = 0;
-    } else {
-      orderLineID = 0;
-    }
-    let payload: removePurchaseOrderItem = {
-      orderID: orderID,
-      orderLineID: orderLineID,
-      remove_purchase_order_item: true
+    let orderLineID = this.orderDataPO.pk_orderLinePOID;
+    let payload: DeletePurchaseOrder = {
+      orderLinePOID: orderLineID,
+      orderId: orderID,
+      delete_purchase_order: true
     }
     this._OrderManageService.PutAPIData(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
       if (res["success"]) {
         this._OrderManageService.snackBar(res["message"]);
-        this.backToList();
+        this.CloseremovePOModal();
+        this.isRemovePOLoader = false;
+        this._changeDetectorRef.markForCheck();
+        let parameters = {
+          orderID: this.orderData.fk_orderID,
+          status: 0,
+        };
+        this.router.navigate(['/ordermanage/dashboard'], { queryParams: parameters });
       }
-      this.isRemovePOLoader = false;
-      this._changeDetectorRef.markForCheck();
+
     }, err => {
       this.isRemovePOLoader = false;
       this._changeDetectorRef.markForCheck();
     });
+  }
+  // CreatePurchaseOrder
+  goToPoOrder() {
+    this.isAddPOOder = true;
+  }
+
+  // Duplicate purchase order:
+  duplicatePOOrder() {
+    let orderLineOption = [];
+    let orderLineImprint = [];
+    let orderLineAccessory = [];
+    let orderLineAdjustments = [];
+    let OrderLinePO;
+
+    const { } = this.orderData;
+    const { fk_vendorID, vendorShippingName, vendorShippingAddress1, vendorShippingAddress2, vendorShippingCity, vendorShippingState, vendorShippingZip, vendorShippingPhone, vendorShippingEmail, shippingComment, shipToCompanyName, shipToCustomerName, shipToLocation, shipToPurchaseOrder, shipToAddress, shipToCity, shipToState, shipToZip, shipToCountry, imprintComment, POTotal, shipToDeliverTo, productName, quantity, purchaseOrderNumber, purchaseOrderComments, blnDuplicate } = this.orderDataPO;
+
+    OrderLinePO = {
+      fk_vendorID: fk_vendorID,
+      vendorShippingName: vendorShippingName,
+      vendorShippingAddress1: vendorShippingAddress1,
+      vendorShippingAddress2: vendorShippingAddress2,
+      vendorShippingCity: vendorShippingCity,
+      vendorShippingState: vendorShippingState,
+      vendorShippingZip: vendorShippingZip,
+      vendorShippingPhone: vendorShippingPhone,
+      vendorShippingEmail: vendorShippingEmail,
+      shippingComment: shippingComment.replace(/'/g, "''"),
+      shipToCompanyName: shipToCompanyName,
+      shipToCustomerName: shipToCustomerName,
+      shipToLocation: shipToLocation,
+      shipToPurchaseOrder: shipToPurchaseOrder,
+      shipToAddress: shipToAddress,
+      shipToCity: shipToCity,
+      shipToState: shipToState,
+      shipToZip: shipToZip,
+      shipToCountry: shipToCountry,
+      imprintComment: imprintComment,
+      POTotal: POTotal,
+      shipToDeliverTo: shipToDeliverTo,
+      productName: productName,
+      quantity: quantity,
+      purchaseOrderNumber: purchaseOrderNumber,
+      purchaseOrderComments: purchaseOrderComments,
+      blnDuplicate: blnDuplicate
+    }
+    const { pk_orderLinePOID } = this.orderDataPO;
+    const { fk_orderID } = this.orderData;
+
+    this.colorsList.forEach(element => {
+      orderLineOption.push({
+        productName: element.productName.replace(/'/g, "''"),
+        optionName: element.optionName.replace(/'/g, "''"),
+        quantity: element.quantity,
+        unitCost: element.unitCost,
+        total: element.total,
+        fk_optionID: element.fk_optionID
+      })
+    });
+    this.imprintdata.forEach(element => {
+      orderLineImprint.push({
+        imprintName: element.imprintName.replace(/'/g, "''"),
+        quantity: element.quantity,
+        unitCost: element.unitCost,
+        total: element.total,
+        colors: element.colors,
+        setup: element.setup,
+        totalImprintColors: element.totalImprintColors,
+        blnStitchProcess: element.blnStitchProcess,
+        blnColorProcess: element.blnColorProcess,
+        blnSingleProcess: element.blnSingleProcess,
+        processQuantity: element.processQuantity,
+        fk_imprintID: element.fk_imprintID
+      })
+    });
+
+    this.accessoriesList.forEach(element => {
+      orderLineAccessory.push({
+        accessoryName: element.accessoryName.replace(/'/g, "''"),
+        quantity: element.quantity,
+        unitCost: element.unitCost,
+        totalCost: element.totalCost,
+        setupCost: element.setupCost
+      })
+    });
+    this.adjustmentsList.forEach(element => {
+      orderLineAdjustments.push({
+        adjustmentName: element.adjustmentName.replace(/'/g, "''"),
+        unitCost: element.unitCost
+      })
+    });
+
+    let payload: DuplicatePO = {
+      order_id: fk_orderID,
+      orderLinePOID: pk_orderLinePOID,
+      orderLinePO: OrderLinePO,
+      orderLineOptions: orderLineOption,
+      orderLineImprints: orderLineImprint,
+      orderLineAccessories: orderLineAccessory,
+      orderLineAdjustments: orderLineAdjustments,
+      duplicate_purchase_order: true
+    }
+    this.isDuplicatePOLoader = true;
+    this._OrderManageService.PostAPIData(payload).pipe(takeUntil(this._unsubscribeAll), finalize(() => {
+      this.isDuplicatePOLoader = false;
+      this._changeDetectorRef.markForCheck();
+    })).subscribe(res => {
+      this._OrderManageService.snackBar(res["message"]);
+    })
+  }
+
+  getVendorsDataByID(id) {
+    this._vendorService.getVendorsSupplierById(id).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+      const vendor = res["data"][0];
+      this.orderDataPO.vendorShippingAddress1 = vendor.address;
+      this.orderDataPO.vendorShippingCity = vendor.city;
+      this.orderDataPO.vendorShippingState = vendor.state;
+      this.orderDataPO.vendorShippingZip = vendor.zipCode;
+      this.orderDataPO.vendorShippingEmail = vendor.artworkEmail;
+      this.orderDataPO.vendorShippingComment = vendor.shippingComment;
+      this.orderDataPO.vendorShippingPhone = vendor.phone;
+      this._changeDetectorRef.markForCheck();
+    });
+  }
+  receiveDataFromChild(data: any) {
+    let d = JSON.parse(data);
+    if (d == 'Po Created') {
+      this.isLoading = true;
+      this.isAddPOOder = false;
+      this.getVendorsData();
+      this.getOrderDetails();
+    }
+  }
+  checkFileExist(url) {
+    // let params = {
+    //   file_check: true,
+    //   url: url
+    // }
+    // this._smartartService.getSmartArtData(params).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+    //   if (type == 'brand') {
+    //     this.brandGuideExist = res["isFileExist"];
+    //   } else if (type == 'finalArtwork') {
+    //     this.imprintdata[index].viewFinalArtworkCheck = res["isFileExist"];
+    //   }
+    // })
+  }
+  getArtworkFiles() {
+    let payload = {
+      files_fetch: true,
+      path: `/artwork/POProof/${this.orderDataPO.fk_orderLineID}/`
+    }
+    this._changeDetectorRef.markForCheck();
+    this._smartartService.getFiles(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(files => {
+      this.orderDataPO.poProofFiles = files["data"];
+      this._changeDetectorRef.markForCheck();
+    }, err => {
+      this._changeDetectorRef.markForCheck();
+    });
+  }
+
+  // Modify Status
+  modifyStatus() {
+    this.orderDataPO.isStatusLoader = true;
+    const { pk_orderLinePOID, statusID } = this.orderDataPO;
+    let payload: updatePurchaseOrderStatus = {
+      orderLinePOID: pk_orderLinePOID,
+      statusID: statusID,
+      update_purchase_order_status: true
+    }
+    this._OrderManageService.PutAPIData(payload).pipe(takeUntil(this._unsubscribeAll), finalize(() => {
+      this.orderDataPO.isStatusLoader = false;
+      this._changeDetectorRef.markForCheck();
+    })).subscribe(res => {
+      if (res["success"]) {
+        this._OrderManageService.snackBar(res["message"]);
+      }
+    })
   }
   /**
      * On destroy

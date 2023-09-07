@@ -140,57 +140,14 @@
             royalties
         </fuse-alert>
     </div>
-    <div class="w-full bg-card pb-5" *ngIf="groupByStoresData;else other_content">
-        <div class="text-right px-5" *ngIf="groupByStoresData.length > 0">
+    <div class="w-full bg-card pb-5" *ngIf="reportSummaryData;else other_content">
+        <div class="text-right px-5" *ngIf="reportSummaryData.length > 0">
             <p class="cursor-pointer" (click)="goToSummary()">Go To Report Summary</p>
         </div>
-        <div *ngFor="let item of groupByStoresData;let l = last">
-            <!-- <div class="p-6 pb-2 sm:p-8 dm:pb-2 lg:p-10 lg:pb-2"> -->
-            <table class="table table-striped overflow-x-auto">
-                <tr class="columnHeader2">
-                    <th colspan="4">Store</th>
-                    <th>Sales</th>
-                    <th>Revenue</th>
-                    <th>Margin</th>
-                    <th>Profit</th>
-                    <th>Commission</th>
-                    <th>
-                        <span>CPD</span> <span class="fa fa-question-circle" matTooltip="Commission paid date"></span>
-                    </th>
-                    <th>Amount Paid</th>
-                    <th class="no-wrap">MCP <span class="fa fa-question-circle" title="Mark commission paid"></span>
-                    </th>
-                </tr>
-                <tbody>
+        <div>
+            <table class="table table-stiped overflow-x-auto">
+                <thead>
                     <tr>
-                        <td colspan="4">
-                            <div class="text-secondary pb-0 mb-2 text-lg flex justify-between">
-                                <b>{{item.store}}</b>
-                            </div>
-                        </td>
-                        <td>
-                            {{item?.storeTotals?.Sales | currency}}
-                        </td>
-                        <td>{{item?.storeTotals?.Revenue | currency}}</td>
-                        <td>{{item?.storeTotals?.Margin}}%</td>
-                        <td>{{item?.storeTotals?.EST_Profit | currency}}</td>
-                        <td>{{item?.storeTotals?.orderCommission | currency}}</td>
-                        <td></td>
-                        <td></td>
-                        <td>
-                            <mat-checkbox (change)="checkOrUncheckStoresOrders($event,item)"></mat-checkbox>
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
-
-            <!-- </div> -->
-            <div *ngFor="let data of item.date_data;let ll = last">
-                <div class="text-center font-bold mb-2">
-                    {{data.date}}
-                </div>
-                <table class="table table-striped overflow-x-auto">
-                    <tr class="columnHeader2">
                         <th>Date</th>
                         <th>ID</th>
                         <th>Customer</th>
@@ -207,41 +164,96 @@
                         <th class="no-wrap">MCP <span class="fa fa-question-circle" title="Mark commission paid"></span>
                         </th>
                     </tr>
-                    <tbody>
-                        <tr *ngFor="let order of data.data" [ngClass]="{'bg-green-300': order.color}">
-                            <td>{{order.orderDate | date:'MM/dd/yyyy'}}</td>
-                            <td>{{order.pk_orderID}}</td>
-                            <td>{{order.companyName}}</td>
-                            <td>{{order?.Sales | currency}}</td>
-                            <td>{{order?.Revenue | currency}}</td>
-                            <td>{{order?.Margin}} %</td>
-                            <td>{{order?.Profit | currency}}</td>
-                            <td>{{order?.CommissionPercentage | currency}}({{order.orderCommission}}%)</td>
-                            <td>{{order?.commissionPaidDate | date:'MM/dd/yyyy'}}</td>
-                            <td>{{order?.amountPaid | currency}}</td>
+                </thead>
+                <tbody>
+                    <ng-container *ngFor="let item of reportSummaryData;">
+                        <tr class="font-bold">
+                            <td colspan="3">
+                                <div class="text-secondary pb-0 mb-2 text-lg flex justify-between">
+                                    <b>{{item.storeName}}</b>
+                                </div>
+                            </td>
                             <td>
-                                <mat-checkbox [disabled]="order.disabled" [(ngModel)]="order.checked"></mat-checkbox>
+                                {{item?.Sales | currency}}
+                            </td>
+                            <td>{{item?.Revenue | currency}}</td>
+                            <td>{{item?.MARGIN}}%</td>
+
+                            <td>
+                                <span *ngIf="item.Profit > 0; else Profit">{{item?.Profit | currency}}</span>
+                                <ng-template #Profit>
+                                    <span>({{(item?.Profit * -1) | currency}})</span>
+                                </ng-template>
+                            </td>
+                            <td>
+                                <span *ngIf="item.Commission > 0; else Commission">{{item?.Commission |
+                                    currency}}</span>
+                                <ng-template #Commission>
+                                    <span>({{(item?.Commission * -1) | currency}})</span>
+                                </ng-template>
+                            </td>
+                            <td></td>
+                            <td></td>
+                            <td>
+                                <mat-checkbox
+                                    (change)="checkOrUncheckStoresOrders($event,item.date_data)"></mat-checkbox>
                             </td>
                         </tr>
-                        <tr class="font-bold ng-gray-200" *ngIf="l && ll">
-                            <td>Totals</td>
-                            <td></td>
-                            <td></td>
-                            <td>{{storeTotals?.Sales | currency}}</td>
-                            <td>{{storeTotals?.Revenue | currency}}</td>
-                            <td></td>
-                            <td>{{storeTotals?.EST_Profit | currency}}</td>
-                            <td>{{storeTotals?.orderCommission | currency}}</td>
-                            <td></td>
-                            <td></td>
-                            <td></td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
+                        <ng-container *ngFor="let data of item.date_data">
+                            <tr class="text-center">
+                                <td colspan="11" class="font-bold">{{data.date}}</td>
+                            </tr>
+                            <tr *ngFor="let order of data.data" [ngClass]="{'bg-green-300': order.color}">
+                                <td>{{order.date | date:'MM/dd/yyyy'}}</td>
+                                <td>{{order.id}}</td>
+                                <td>{{order.customer}}</td>
+                                <td>{{order?.sales | currency}}</td>
+                                <td>{{order?.revenue | currency}}</td>
+                                <td>{{order?.margin}} %</td>
+                                <td>
+                                    <span *ngIf="order.profit > 0; else profit">{{order?.profit | currency}}</span>
+                                    <ng-template #profit>
+                                        <span>({{(order?.profit * -1) | currency}})</span>
+                                    </ng-template>
+                                </td>
+                                <td>
+                                    <span *ngIf="order.comission > 0; else comission">{{order?.comission |
+                                        currency}}({{order.commision_percentage}}%)</span>
+                                    <ng-template #comission>
+                                        <span>({{(order?.comission * -1) |
+                                            currency}})({{order.commision_percentage}}%)</span>
+                                    </ng-template>
+                                </td>
+                                <td>
+                                    <span *ngIf="order.cpd != '---'">{{order?.cpd | date:'MM/dd/yyyy'}}</span>
+                                    <span *ngIf="order.cpd == '---'">{{order?.cpd}}</span>
+                                </td>
+                                <td>{{order?.amount | currency}}</td>
+                                <td>
+                                    <mat-checkbox [disabled]="order.disabled"
+                                        [(ngModel)]="order.checked"></mat-checkbox>
+                                </td>
+                            </tr>
+                        </ng-container>
+                    </ng-container>
+                    <tr class="font-bold ng-gray-200">
+                        <td>Totals</td>
+                        <td></td>
+                        <td></td>
+                        <td>{{storeTotals?.Sales | currency}}</td>
+                        <td>{{storeTotals?.Revenue | currency}}</td>
+                        <td></td>
+                        <td>{{storeTotals?.EST_Profit | currency}}</td>
+                        <td>{{storeTotals?.orderCommission | currency}}</td>
+                        <td></td>
+                        <td>{{storeTotals?.amountPaid | currency}}</td>
+                        <td></td>
+                    </tr>
+                </tbody>
+            </table>
         </div>
 
-        <div class="flex justify-end align-items-center" *ngIf="groupByStoresData.length > 0">
+        <div class="flex justify-end align-items-center" *ngIf="reportSummaryData.length > 0">
             <mat-checkbox class="mr-2" [(ngModel)]="blnSendEmail">Send commission paid email?</mat-checkbox>
             <button class="ml-4 min-w-60" mat-flat-button type="button" [color]="'primary'"
                 (click)="updateFlPSCommission()" [disabled]="isUpdateCommissionLoader">
@@ -251,7 +263,7 @@
             </button>
         </div>
         <!-- Report Summary -->
-        <div #summaryScrollAnchor *ngIf="groupByStoresData.length > 0">
+        <div #summaryScrollAnchor *ngIf="reportSummaryData.length > 0">
             <div class="p-6 pb-2 sm:p-8 dm:pb-2 lg:p-10 lg:pb-2">
                 <div class="text-secondary pb-0 mb-2 text-lg flex justify-between">
                     <b>Report Summary</b>
@@ -275,9 +287,20 @@
                         <td>{{item?.Sales | currency}}</td>
                         <td>{{item?.Revenue | currency}}</td>
                         <td>{{item?.Num_Sales}}</td>
-                        <td> {{item?.Margin}}%</td>
-                        <td>{{item?.EST_Profit | currency}}</td>
-                        <td>{{item?.orderCommission | currency}}</td>
+                        <td> {{item?.MARGIN}}%</td>
+                        <td>
+                            <span *ngIf="item.Profit > 0; else Profit">{{item?.Profit | currency}}</span>
+                            <ng-template #Profit>
+                                <span>({{(item?.Profit * -1) | currency}})</span>
+                            </ng-template>
+                        </td>
+                        <td>
+                            <span *ngIf="item.Commission > 0; else Commission">{{item?.Commission |
+                                currency}}</span>
+                            <ng-template #Commission>
+                                <span>({{(item?.Commission * -1) | currency}})</span>
+                            </ng-template>
+                        </td>
                     </tr>
                     <tr class="font-bold">
                         <td>Grand Total</td>
@@ -291,7 +314,7 @@
                 </tbody>
             </table>
         </div>
-        <div *ngIf="groupByStoresData.length == 0" class="text-secondary font-semibold p-5 text-center bg-card pb-5">
+        <div *ngIf="reportSummaryData.length == 0" class="text-secondary font-semibold p-5 text-center bg-card pb-5">
             There are currently no Orders.
         </div>
     </div>
