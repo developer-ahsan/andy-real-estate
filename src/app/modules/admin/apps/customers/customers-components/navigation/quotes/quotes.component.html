@@ -26,8 +26,15 @@
             <td>{{element.dateModified | date: 'yyyy-MM-dd'}}</td>
             <td>{{(element.inHandsDate | date: 'yyyy-MM-dd') || '---'}}</td>
             <td>
-              {{element.product}}
-              <p><b>Color:</b> {{element.color}}</p>
+              <div *ngFor="let item of element.items;let i=index">
+                <p>{{i+1}}.{{item.product}}</p>
+                <div>
+                  <b>Color:</b>
+                  <span *ngFor="let color of item.colors">{{color}}</span>
+                </div>
+                <p><b>Setup:</b> {{(item.setup | currency)}}</p>
+                <p><b>Add Run:</b> {{item.run | currency}}</p>
+              </div>
             </td>
             <td>{{element.storeName}}</td>
             <td>{{element.total | currency}}</td>
@@ -37,7 +44,7 @@
                 <mat-icon svgIcon="mat_outline:picture_as_pdf" class="cursor-pointer mr-1" matTooltip="PDF"></mat-icon>
               </a>
               <mat-icon svgIcon="mat_outline:remove_red_eye" class="cursor-pointer mr-1" matTooltip="View"
-                (click)="viewArtworkDetails(element)"></mat-icon>
+                (click)="viewArtworkDetails(element)" [disabled]="element.qryCartLineImprintsCount == 0"></mat-icon>
               <mat-icon *ngIf="!element?.removeLoader" (click)="removeCart(element)"
                 svgIcon="mat_outline:restore_from_trash" class="cursor-pointer" matTooltip="Remove"></mat-icon>
               <mat-progress-spinner *ngIf="element?.removeLoader" [diameter]="24" [mode]="'indeterminate'">

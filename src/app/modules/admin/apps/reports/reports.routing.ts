@@ -28,7 +28,7 @@ export const vendorsRoutes: Route[] = [
         component: ReportsDetailsComponent,
         resolve: {
             states: StatesResolver,
-            stores: StoresResolver,
+            // stores: StoresResolver,
             codes: PromoCodesResolver
         },
         children: [

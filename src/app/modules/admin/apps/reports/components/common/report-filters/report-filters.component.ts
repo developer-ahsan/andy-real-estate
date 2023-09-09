@@ -141,9 +141,9 @@ export class ReportFiltersComponent implements OnInit, OnDestroy {
       }
     ];
     this._reportsService.WeekDate = new Date();
-    this._reportsService.monthlyMonth = 1;
+    this._reportsService.monthlyMonth = moment().month() + 1;
     this._reportsService.monthlyYear = new Date().getFullYear();
-    this._reportsService.quarterMonth = 1;
+    this._reportsService.quarterMonth = moment().quarter();
     this._reportsService.quarterYear = new Date().getFullYear();
     this._reportsService.yearlyYear = new Date().getFullYear();
     this._reportsService.ngRangeStart = new Date();

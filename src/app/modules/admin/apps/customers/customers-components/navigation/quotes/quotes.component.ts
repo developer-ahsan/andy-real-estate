@@ -60,13 +60,19 @@ export class QuotesComponent implements OnInit, OnDestroy {
           this._changeDetectorRef.markForCheck();
         })).subscribe(quotes => {
           quotes["data"].forEach(element => {
-            element.product = '';
-            element.color = '';
+            element.items = [];
             if (element.Items) {
-              let items = element.Items.split('||');
-              element.product = items[0];
-              let colors = items[1].split('#');
-              element.color = `(${colors[0]}) X ${colors[1]} - ${colors[2]}`;
+              let colss = [];
+              let items = element.Items.split(',,');
+              items.forEach(item => {
+                const [product, colorss, setup, run] = item.split('||');
+                let colors = colorss.split('##');
+                colors.forEach(color => {
+                  let cols = color.split('#');
+                  colss.push(`(${cols[0]}) X ${cols[1]} - ${cols[2]}`);
+                });
+                element.items.push({ product: product, setup: setup, run: run, colors: colss });
+              });
             }
           });
           this.dataSource = quotes["data"];

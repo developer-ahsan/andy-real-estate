@@ -56,12 +56,12 @@
                 </button>
             </div>
         </div>
-        <div class="row" *ngIf="generateReportData && !isLoading">
+        <div class="row w-full" *ngIf="generateReportData && !isLoading">
             <div class="col-12">
                 <div class="flex justify-between">
                     <div>
                         <p class="text-lg text-capitalize"><strong>{{_reportService.ngPlan}}</strong></p>
-                        <p>{{this.selectedStores.storeName}}</p>
+                        <p>{{this.selectedSuppliers.companyName}}</p>
                         <p>Range: {{this._reportService.startDate | date: 'MM/dd/yyyy'}}-{{this._reportService.endDate |
                             date: 'MM/dd/yyyy'}}</p>
                         <div class="text-lg font-medium tracking-tight leading-6 truncate">Report Summary</div>
@@ -70,113 +70,112 @@
                         <button class="min-w-50" mat-button mat-stroked-button (click)="backToList()">Back To
                             Search</button>
                     </div>
-                    <!-- Table -->
-                    <div class="overflow-x-auto">
-                        <table class="table table-striped w-full border-t mt-2">
-                            <thead>
-                                <tr>
-                                    <th>Store</th>
-                                    <th>Cost</th>
-                                    <th>
-                                        <div class="flex">
-                                            <span>PY</span>
-                                            <mat-icon class="icon-size-4 ml-1" matTooltip="Previous year sales"
-                                                [svgIcon]="'heroicons_solid:question-mark-circle'"></mat-icon>
+                </div>
+                <!-- Table -->
+                <div class="overflow-x-auto">
+                    <table class="table table-striped w-full border-t mt-2">
+                        <thead>
+                            <tr>
+                                <th>Store</th>
+                                <th>Cost</th>
+                                <th>
+                                    <div class="flex">
+                                        <span>PY</span>
+                                        <mat-icon class="icon-size-4 ml-1" matTooltip="Previous year sales"
+                                            [svgIcon]="'heroicons_solid:question-mark-circle'"></mat-icon>
+                                    </div>
+                                </th>
+                                <th>%</th>
+                                <th>
+                                    <div class="flex">
+                                        <span>Diff</span>
+                                        <mat-icon class="icon-size-4 ml-1" matTooltip="Sales the difference"
+                                            [svgIcon]="'heroicons_solid:question-mark-circle'"></mat-icon>
+                                    </div>
+                                </th>
+                                <th>
+                                    <div class="flex">
+                                        <span>NS</span>
+                                        <mat-icon class="icon-size-4 ml-1" matTooltip="Number of sales"
+                                            [svgIcon]="'heroicons_solid:question-mark-circle'"></mat-icon>
+                                    </div>
+                                </th>
+                                <th>
+                                    <div class="flex">
+                                        <span>PYNS</span>
+                                        <mat-icon class="icon-size-4 ml-1" matTooltip="Previous year number of sales"
+                                            [svgIcon]="'heroicons_solid:question-mark-circle'"></mat-icon>
+                                    </div>
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr *ngFor="let item of generateReportData">
+                                <td>{{item.storeName}}</td>
+                                <th>{{item.COST | currency}}</th>
+                                <td>{{item.PY | currency}}</td>
+                                <td>
+                                    <div *ngIf="item.percent != 0">
+                                        <div class="flex align-items-center" *ngIf="!item.blnPercent">
+                                            <mat-icon class="icon-size-5 text-red-500"
+                                                [svgIcon]="'heroicons_solid:trending-down'"></mat-icon>
+                                            <span class="text-red-500">{{item.percent}}%</span>
                                         </div>
-                                    </th>
-                                    <th>%</th>
-                                    <th>
-                                        <div class="flex">
-                                            <span>Diff</span>
-                                            <mat-icon class="icon-size-4 ml-1" matTooltip="Sales the difference"
-                                                [svgIcon]="'heroicons_solid:question-mark-circle'"></mat-icon>
+                                        <div class="flex align-items-center" *ngIf="item.blnPercent">
+                                            <mat-icon class="icon-size-5 text-green-500"
+                                                [svgIcon]="'heroicons_solid:trending-up'"></mat-icon>
+                                            <span class="text-green-500">{{item.percent}}%</span>
                                         </div>
-                                    </th>
-                                    <th>
-                                        <div class="flex">
-                                            <span>NS</span>
-                                            <mat-icon class="icon-size-4 ml-1" matTooltip="Number of sales"
-                                                [svgIcon]="'heroicons_solid:question-mark-circle'"></mat-icon>
+                                    </div>
+                                    <div class="flex" *ngIf="item.percent == 0">
+                                        <span>{{item.percent}}%</span>
+                                    </div>
+                                </td>
+                                <td>
+                                    <span *ngIf="item?.DIFF >= 0" class="text-green-500">
+                                        {{item?.DIFF | currency}}
+                                    </span>
+                                    <span *ngIf="item?.DIFF < 0" class="text-red-500">
+                                        ({{(item?.DIFF * - 1) | currency}})
+                                    </span>
+                                </td>
+                                <td>{{item.NS}}</td>
+                                <td>{{item.PYNS}}</td>
+                            </tr>
+                            <tr class="columnHeader2" class="font-bold">
+                                <th>Grand Total</th>
+                                <th>{{totalStoreSummary?.COST | currency}}</th>
+                                <th>{{totalStoreSummary?.PY | currency}}</th>
+                                <th>
+                                    <div *ngIf="totalStoreSummary.percent != 0">
+                                        <div class="flex align-items-center" *ngIf="!totalStoreSummary.blnPercent">
+                                            <mat-icon class="icon-size-5 text-red-500"
+                                                [svgIcon]="'heroicons_solid:trending-down'"></mat-icon>
+                                            <span class="text-red-500">{{totalStoreSummary.percent}}%</span>
                                         </div>
-                                    </th>
-                                    <th>
-                                        <div class="flex">
-                                            <span>PYNS</span>
-                                            <mat-icon class="icon-size-4 ml-1"
-                                                matTooltip="Previous year number of sales"
-                                                [svgIcon]="'heroicons_solid:question-mark-circle'"></mat-icon>
+                                        <div class="flex align-items-center" *ngIf="totalStoreSummary.blnPercent">
+                                            <mat-icon class="icon-size-5 text-green-500"
+                                                [svgIcon]="'heroicons_solid:trending-up'"></mat-icon>
+                                            <span class="text-green-500">{{totalStoreSummary.percent}}%</span>
                                         </div>
-                                    </th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr *ngFor="let item of generateReportData">
-                                    <td>{{item.storeName}}</td>
-                                    <th>{{item.cost | currency}}</th>
-                                    <td>{{item.PY | currency}}</td>
-                                    <td>
-                                        <div *ngIf="item.percent != 0">
-                                            <div class="flex align-items-center" *ngIf="!item.blnPercent">
-                                                <mat-icon class="icon-size-5 text-red-500"
-                                                    [svgIcon]="'heroicons_solid:trending-down'"></mat-icon>
-                                                <span class="text-red-500">{{item.percent}}%</span>
-                                            </div>
-                                            <div class="flex align-items-center" *ngIf="item.blnPercent">
-                                                <mat-icon class="icon-size-5 text-green-500"
-                                                    [svgIcon]="'heroicons_solid:trending-up'"></mat-icon>
-                                                <span class="text-green-500">{{item.percent}}%</span>
-                                            </div>
-                                        </div>
-                                        <div class="flex" *ngIf="item.percent == 0">
-                                            <span>{{item.percent}}%</span>
-                                        </div>
-                                    </td>
-                                    <td>
-                                        <span *ngIf="item?.DIFF >= 0" class="text-green-500">
-                                            {{item?.DIFF | currency}}
-                                        </span>
-                                        <span *ngIf="item?.DIFF < 0" class="text-red-500">
-                                            ({{(item?.DIFF * - 1) | currency}})
-                                        </span>
-                                    </td>
-                                    <td>{{item.NS}}</td>
-                                    <td>{{item.PYNS}}</td>
-                                </tr>
-                                <tr class="columnHeader2" class="font-bold">
-                                    <th>Grand Total</th>
-                                    <th>{{totalStoreSummary?.COST | currency}}</th>
-                                    <th>{{totalStoreSummary?.PY | currency}}</th>
-                                    <th>
-                                        <div *ngIf="totalStoreSummary.PERCENT != 0">
-                                            <div class="flex align-items-center" *ngIf="!totalStoreSummary.blnPercent">
-                                                <mat-icon class="icon-size-5 text-red-500"
-                                                    [svgIcon]="'heroicons_solid:trending-down'"></mat-icon>
-                                                <span class="text-red-500">{{totalStoreSummary.PERCENT}}%</span>
-                                            </div>
-                                            <div class="flex align-items-center" *ngIf="totalStoreSummary.blnPercent">
-                                                <mat-icon class="icon-size-5 text-green-500"
-                                                    [svgIcon]="'heroicons_solid:trending-up'"></mat-icon>
-                                                <span class="text-green-500">{{totalStoreSummary.PERCENT}}%</span>
-                                            </div>
-                                        </div>
-                                        <div class="flex" *ngIf="totalStoreSummary.PERCENT == 0">
-                                            <span>{{totalStoreSummary.PERCENT}}%</span>
-                                        </div>
-                                    </th>
-                                    <th>
-                                        <span *ngIf="totalStoreSummary?.DIFF >= 0" class="text-green-500">
-                                            {{totalStoreSummary?.DIFF | currency}}
-                                        </span>
-                                        <span *ngIf="totalStoreSummary?.DIFF < 0" class="text-red-500">
-                                            ({{(totalStoreSummary?.DIFF * - 1) | currency}})
-                                        </span>
-                                    </th>
-                                    <th>{{totalStoreSummary?.NS}}</th>
-                                    <th>{{totalStoreSummary?.PYNS}}</th>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
+                                    </div>
+                                    <div class="flex" *ngIf="totalStoreSummary.percent == 0">
+                                        <span>{{totalStoreSummary.percent}}%</span>
+                                    </div>
+                                </th>
+                                <th>
+                                    <span *ngIf="totalStoreSummary?.DIFF >= 0" class="text-green-500">
+                                        {{totalStoreSummary?.DIFF | currency}}
+                                    </span>
+                                    <span *ngIf="totalStoreSummary?.DIFF < 0" class="text-red-500">
+                                        ({{(totalStoreSummary?.DIFF * - 1) | currency}})
+                                    </span>
+                                </th>
+                                <th>{{totalStoreSummary?.NS}}</th>
+                                <th>{{totalStoreSummary?.PYNS}}</th>
+                            </tr>
+                        </tbody>
+                    </table>
                 </div>
             </div>
         </div>

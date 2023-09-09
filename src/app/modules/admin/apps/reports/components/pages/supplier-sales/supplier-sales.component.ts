@@ -65,10 +65,13 @@ export class ReportsSupplierSalesComponent implements OnInit, OnDestroy {
 
     this.isGenerateReportLoader = true;
     let params = {
-      store_sales__report: true,
+      supplier_sales: true,
       start_date: this._reportService.startDate,
       end_date: this._reportService.endDate,
-      // stores_list: selectedStores.toString(),
+      company_id: this.selectedSuppliers.pk_companyID,
+      bln_cancel: this.blnShowCancelled,
+      payment_status: this.paymentStatus,
+      report_type: this.reportType,
       size: 20
     }
     this._reportService.getAPIData(params).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
@@ -98,6 +101,25 @@ export class ReportsSupplierSalesComponent implements OnInit, OnDestroy {
           this.totalStoreSummary.NS += element.NS;
           this.totalStoreSummary.PYNS += element.PYNS;
         });
+        if (this.totalStoreSummary.COST > this.totalStoreSummary.PY) {
+          this.totalStoreSummary.blnPercent = true;
+          const diff = this.totalStoreSummary.COST - this.totalStoreSummary.PY;
+          if (this.totalStoreSummary.PY == 0) {
+            this.totalStoreSummary.percent = 100;
+          } else {
+            this.totalStoreSummary.percent = Math.round((diff / this.totalStoreSummary.PY) * 100);
+          }
+        } else if (this.totalStoreSummary.COST < this.totalStoreSummary.PY) {
+          this.totalStoreSummary.blnPercent = false;
+          const diff = this.totalStoreSummary.PY - this.totalStoreSummary.COST;
+          if (this.totalStoreSummary.COST == 0) {
+            this.totalStoreSummary.percent = 100;
+          } else {
+            this.totalStoreSummary.percent = Math.round((diff / this.totalStoreSummary.PY) * 100);
+          }
+        } else {
+          this.totalStoreSummary.percent = 0;
+        }
         this.generateReportData = res["data"];
         this.totalStoreSummary.DIFF = this.totalStoreSummary.COST - this.totalStoreSummary.PY;
       } else {

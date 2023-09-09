@@ -59,9 +59,7 @@ export class ReportSupportComponent implements OnInit, OnDestroy {
   roleID = 0;
 
   allRoles = [];
-  searchRolesCtrl = new FormControl();
   selectedRoles: any;
-  isSearchingRoles = false;
   constructor(
     private _changeDetectorRef: ChangeDetectorRef,
     private _reportService: ReportsService
@@ -76,50 +74,20 @@ export class ReportSupportComponent implements OnInit, OnDestroy {
       roles: true
     }
     this._reportService.getAPIData(param).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
-      this.allRoles.push({ roleName: 'Select a role', pk_roleID: '' });
-      this.allRoles = this.allRoles.concat(res["data"]);
+      let roles = res["data"][0].roles.split(',,');
+      roles.forEach(element => {
+        const [roleName, pk_roleID] = element.split('::');
+        this.allRoles.push({ roleName: roleName, pk_roleID: Number(pk_roleID) });
+      });
+      console.log(this.allRoles)
+
       this.selectedRoles = this.allRoles[0];
-      this.searchRolesCtrl.setValue(this.selectedRoles);
       this.isLoading = false;
       this._changeDetectorRef.markForCheck();
     }, err => {
       this.isLoading = false;
       this._changeDetectorRef.markForCheck();
     });
-    let params;
-    this.searchRolesCtrl.valueChanges.pipe(
-      filter((res: any) => {
-        params = {
-          roles: true,
-          keyword: res
-        }
-        return res !== null && res.length >= 2
-      }),
-      distinctUntilChanged(),
-      debounceTime(300),
-      tap(() => {
-        this.allRoles = [];
-        this.isSearchingRoles = true;
-        this._changeDetectorRef.markForCheck();
-      }),
-      switchMap(value => this._reportService.getAPIData(params)
-        .pipe(
-          finalize(() => {
-            this.isSearchingRoles = false
-            this._changeDetectorRef.markForCheck();
-          }),
-        )
-      )
-    ).subscribe((data: any) => {
-      this.allRoles.push({ roleName: 'Select a role', pk_roleID: '' });
-      this.allRoles = this.allRoles.concat(data["data"]);
-    });
-  }
-  onSelectedRoles(ev) {
-    this.selectedRoles = ev.option.value;
-  }
-  displayWithRoles(value: any) {
-    return value?.roleName;
   }
   /**
      * On destroy

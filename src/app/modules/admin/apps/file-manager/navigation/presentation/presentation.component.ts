@@ -25,6 +25,7 @@ import { MatSnackBar } from "@angular/material/snack-bar";
 import { LogoBankNotesUpdate } from "./presentation.types";
 import { DeleteImage, RemoveStoreLogoBank, addStoreLogoBank, updateLogoBankOrder, updateStoreLogoBank, uploadImage } from "../../stores.types";
 import * as imageConversion from 'image-conversion';
+import html2canvas from 'html2canvas';
 
 @Component({
   selector: "app-presentation",
@@ -38,6 +39,7 @@ export class PresentationComponent implements OnInit, OnDestroy {
   private _unsubscribeAll: Subject<any> = new Subject<any>();
   @ViewChild('fileInput') fileInput: ElementRef;
   @ViewChild('fileInputLogo') fileInputLogo: ElementRef;
+  @ViewChild('svgElement') svgElement: ElementRef;
 
 
   presentationScreen: string = "Look & Feel";
@@ -991,7 +993,8 @@ export class PresentationComponent implements OnInit, OnDestroy {
     this._storeManagerService.postStoresData(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
       if (res["success"]) {
         this._storeManagerService.snackBar(res["message"]);
-        this.uploadMediaLogoBank(res["newId"]);
+        this.uploadMediaLogoBankVector(res["newId"], base64);
+        this.uploadMediaLogoBank(res["newId"], res["jpgBase64"]);
         this.addLogoBankForm.reset();
       } else {
         this.isAddLogoBankLoader = false;
@@ -1004,15 +1007,17 @@ export class PresentationComponent implements OnInit, OnDestroy {
   }
   uploadLogoBankFile(event): void {
     const file = event.target.files[0];
-    let type = '';
-    if (file.name.toLowerCase().endsWith('.eps')) {
-      type = 'eps';
-    } else if (file.type === 'application/postscript') {
-      type = 'ai';
-    } else {
+    let type = 'svg';
+    if (file.name.includes('svg')) {
+      type = 'svg';
+    }
+    // else if (file.type === 'application/pdf') {
+    //   type = 'pdf';
+    // } 
+    else {
       this.logoBankImageValue = null;
       this.fileInputLogo.nativeElement.value = '';
-      this._storeManagerService.snackBar('Please select only AI or Eps file');
+      this._storeManagerService.snackBar('Please select only SVG or PDF file');
       return;
     }
     const reader = new FileReader();
@@ -1025,9 +1030,8 @@ export class PresentationComponent implements OnInit, OnDestroy {
       };
     };
   };
-  uploadMediaLogoBank(id) {
+  uploadMediaLogoBankVector(id, base64) {
     const { imageUpload, type } = this.logoBankImageValue;
-    const base64 = imageUpload.split(",")[1];
     let eps = {
       storeID: Number(this.selectedStore.pk_storeID),
       logiBankId: Number(id),
@@ -1036,8 +1040,33 @@ export class PresentationComponent implements OnInit, OnDestroy {
     const payload: uploadImage = {
       file_upload: true,
       image_file: base64,
-      epsAI: eps,
-      image_path: `/globalAssets/Stores/LogoBank/${this.selectedStore.pk_storeID}/${id}.${type}`
+      image_path: `/globalAssets/Stores/LogoBank2/${this.selectedStore.pk_storeID}/${id}.svg`
+    };
+
+    this._storeManagerService.addPresentationMedia(payload)
+      .subscribe((response) => {
+        // Mark for check
+        this.getLogoBanks(1);
+        this.logoBankImageValue = null;
+        this.fileInputLogo.nativeElement.value = '';
+        this._changeDetectorRef.markForCheck();
+      }, err => {
+        this.masHeadLoader = false;
+        // Mark for check
+        this._changeDetectorRef.markForCheck();
+      })
+  }
+  uploadMediaLogoBank(id, base64) {
+    const { imageUpload, type } = this.logoBankImageValue;
+    let eps = {
+      storeID: Number(this.selectedStore.pk_storeID),
+      logiBankId: Number(id),
+      type: type
+    }
+    const payload: uploadImage = {
+      file_upload: true,
+      image_file: base64,
+      image_path: `/globalAssets/Stores/LogoBank2/${this.selectedStore.pk_storeID}/Thumbs/${id}.jpg`
     };
 
     this._storeManagerService.addPresentationMedia(payload)

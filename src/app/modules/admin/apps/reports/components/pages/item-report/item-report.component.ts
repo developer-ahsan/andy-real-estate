@@ -98,32 +98,60 @@ export class ReportItemsComponent implements OnInit, OnDestroy {
             acc[id] = { ID: id, data: [] };
           }
           acc[id].data.push(element);
+          acc[id].data.sort((a, b) => {
+            const aContainsWomen = a.Description.includes("Women");
+            const bContainsWomen = b.Description.includes("Women");
+            const aContainsMen = a.Description.includes("Men");
+            const bContainsMen = b.Description.includes("Men");
+
+            if (aContainsWomen && !bContainsWomen) {
+              return -1;
+            } else if (!aContainsWomen && bContainsWomen) {
+              return 1;
+            } else if (aContainsMen && !bContainsMen) {
+              return -1;
+            } else if (!aContainsMen && bContainsMen) {
+              return 1;
+            } else {
+              return 0;
+            }
+          });
           return acc;
         }, {});
 
-        // Sort the data in each group by pk_colorID in descending order
-        // for (const id in IDsData) {
-        //   IDsData[id].data.sort((a, b) => b.pk_colorID - a.pk_colorID);
-        // }
-        // for (const id in IDsData) {
-        //   IDsData[id].data.sort((a, b) => {
-        //     if (b.Item !== a.Item) {
-        //       return b.Item - a.Item; // Sort by Item in ascending order
-        //     }
+        const customSort = (a, b) => {
+          const aContainsWomen = a.Description.includes("Women");
+          const bContainsWomen = b.Description.includes("Women");
+          const aContainsMen = a.Description.includes("Men");
+          const bContainsMen = b.Description.includes("Men");
+          const aPkSizeID = a.pk_sizeID;
+          const bPkSizeID = b.pk_sizeID;
 
-        //     if (b.pk_colorID !== a.pk_colorID) {
-        //       return b.pk_colorID - a.pk_colorID; // Sort by pk_colorID in descending order
-        //     }
+          if (aContainsWomen && !bContainsWomen) {
+            return -1;
+          } else if (!aContainsWomen && bContainsWomen) {
+            return 1;
+          } else if (aContainsMen && !bContainsMen) {
+            return -1;
+          } else if (!aContainsMen && bContainsMen) {
+            return 1;
+          } else {
+            // Sort by pk_sizeID in ascending order for all other cases
+            return aPkSizeID - bPkSizeID;
+          }
+        };
 
-        //     // If pk_colorID is the same, sort by pk_sizeID in descending order
-        //     return a.pk_sizeID - b.pk_sizeID;
-        //   });
-        // }
+        // Iterate over each group and sort their data array
+        for (const id in IDsData) {
+          if (IDsData.hasOwnProperty(id)) {
+            IDsData[id].data.sort(customSort);
+          }
+        }
 
 
-        // console.log(IDsData)
         // Flatten the IDsData into excelData
         const excelData = Object.values(IDsData).reduce((acc: any, { data }) => acc.concat(data), []);
+        // console.log(IDsData)
         this.downloadExcelWorkSheet(excelData);
       } else {
         this.generateReportData = null;

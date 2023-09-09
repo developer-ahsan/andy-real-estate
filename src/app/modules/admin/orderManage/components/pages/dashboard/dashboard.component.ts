@@ -31,7 +31,7 @@ export class OrderManageDashboardComponent implements OnInit, OnDestroy {
   orderID: any = '';
   ngstatusID = 1;
   userData: any;
-  sort_by = 'pk_orderID';
+  sort_by = '';
   sort_order = ''
   statusOptions = [
     { value: 1, label: 'New Orders' },
@@ -108,7 +108,7 @@ export class OrderManageDashboardComponent implements OnInit, OnDestroy {
       sort_by: this.sort_by,
       sort_order: this.sort_order,
       bln_fulfillment: this.userData.blnFulfillment,
-      size: 20,
+      size: 50,
       page: page,
       view_dashboard: true
     }
