@@ -41,7 +41,7 @@ const routerConfig: ExtraOptions = {
 
         // Core
         CoreModule,
-        NgxStripeModule.forRoot('pk_test_51MW7XpKftHck147B5Rokid6Csvq6fNf8Tee690E3KuRzLd9P85yrvvQHpDK22ZTedK5WwzXAc2aVIY21Wyx4ia6V002R7AbvoW'),
+        NgxStripeModule.forRoot('pk_test_51NKr07JxVIK6KneHY2R9Y4GHzE6kmB4FHIcTaLAaOZeClR30ZgHiLmCWq7w9vzpuKqhc2NlPb8r8ZIGzqzBvZhDJ00qzMYf3GO'),
         // Layout
         LayoutModule,
         MatSnackBarModule,

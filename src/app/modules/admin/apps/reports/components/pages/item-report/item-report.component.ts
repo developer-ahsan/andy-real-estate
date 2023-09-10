@@ -92,67 +92,67 @@ export class ReportItemsComponent implements OnInit, OnDestroy {
         const resData = res["data"];
 
         // Create IDsData object with unique IDs and sorted data
-        const IDsData = resData.reduce((acc, element) => {
-          const id = element.ID;
-          if (!acc[id]) {
-            acc[id] = { ID: id, data: [] };
-          }
-          acc[id].data.push(element);
-          acc[id].data.sort((a, b) => {
-            const aContainsWomen = a.Description.includes("Women");
-            const bContainsWomen = b.Description.includes("Women");
-            const aContainsMen = a.Description.includes("Men");
-            const bContainsMen = b.Description.includes("Men");
+        // const IDsData = resData.reduce((acc, element) => {
+        //   const id = element.ID;
+        //   if (!acc[id]) {
+        //     acc[id] = { ID: id, data: [] };
+        //   }
+        //   acc[id].data.push(element);
+        //   acc[id].data.sort((a, b) => {
+        //     const aContainsWomen = a.Description.includes("Women");
+        //     const bContainsWomen = b.Description.includes("Women");
+        //     const aContainsMen = a.Description.includes("Men");
+        //     const bContainsMen = b.Description.includes("Men");
 
-            if (aContainsWomen && !bContainsWomen) {
-              return -1;
-            } else if (!aContainsWomen && bContainsWomen) {
-              return 1;
-            } else if (aContainsMen && !bContainsMen) {
-              return -1;
-            } else if (!aContainsMen && bContainsMen) {
-              return 1;
-            } else {
-              return 0;
-            }
-          });
-          return acc;
-        }, {});
+        //     if (aContainsWomen && !bContainsWomen) {
+        //       return -1;
+        //     } else if (!aContainsWomen && bContainsWomen) {
+        //       return 1;
+        //     } else if (aContainsMen && !bContainsMen) {
+        //       return -1;
+        //     } else if (!aContainsMen && bContainsMen) {
+        //       return 1;
+        //     } else {
+        //       return 0;
+        //     }
+        //   });
+        //   return acc;
+        // }, {});
 
-        const customSort = (a, b) => {
-          const aContainsWomen = a.Description.includes("Women");
-          const bContainsWomen = b.Description.includes("Women");
-          const aContainsMen = a.Description.includes("Men");
-          const bContainsMen = b.Description.includes("Men");
-          const aPkSizeID = a.pk_sizeID;
-          const bPkSizeID = b.pk_sizeID;
+        // const customSort = (a, b) => {
+        //   const aContainsWomen = a.Description.includes("Women");
+        //   const bContainsWomen = b.Description.includes("Women");
+        //   const aContainsMen = a.Description.includes("Men");
+        //   const bContainsMen = b.Description.includes("Men");
+        //   const aPkSizeID = a.pk_sizeID;
+        //   const bPkSizeID = b.pk_sizeID;
 
-          if (aContainsWomen && !bContainsWomen) {
-            return -1;
-          } else if (!aContainsWomen && bContainsWomen) {
-            return 1;
-          } else if (aContainsMen && !bContainsMen) {
-            return -1;
-          } else if (!aContainsMen && bContainsMen) {
-            return 1;
-          } else {
-            // Sort by pk_sizeID in ascending order for all other cases
-            return aPkSizeID - bPkSizeID;
-          }
-        };
+        //   if (aContainsWomen && !bContainsWomen) {
+        //     return -1;
+        //   } else if (!aContainsWomen && bContainsWomen) {
+        //     return 1;
+        //   } else if (aContainsMen && !bContainsMen) {
+        //     return -1;
+        //   } else if (!aContainsMen && bContainsMen) {
+        //     return 1;
+        //   } else {
+        //     // Sort by pk_sizeID in ascending order for all other cases
+        //     return aPkSizeID - bPkSizeID;
+        //   }
+        // };
 
-        // Iterate over each group and sort their data array
-        for (const id in IDsData) {
-          if (IDsData.hasOwnProperty(id)) {
-            IDsData[id].data.sort(customSort);
-          }
-        }
+        // // Iterate over each group and sort their data array
+        // for (const id in IDsData) {
+        //   if (IDsData.hasOwnProperty(id)) {
+        //     IDsData[id].data.sort(customSort);
+        //   }
+        // }
 
 
-        // Flatten the IDsData into excelData
-        const excelData = Object.values(IDsData).reduce((acc: any, { data }) => acc.concat(data), []);
+        // // Flatten the IDsData into excelData
+        // const excelData = Object.values(IDsData).reduce((acc: any, { data }) => acc.concat(data), []);
         // console.log(IDsData)
-        this.downloadExcelWorkSheet(excelData);
+        this.downloadExcelWorkSheet(resData);
       } else {
         this.generateReportData = null;
         this._reportService.snackBar('No records found');
@@ -228,18 +228,19 @@ export class ReportItemsComponent implements OnInit, OnDestroy {
       if (obj.Description.includes('ACCESSORY:')) {
         obj.Runs = '';
         obj.Item = '';
-      } else {
-        const index = lastIDs.findIndex(idObj => idObj.ID == obj.ID && idObj.Item === obj.Item);
-        if (index > -1) {
-          obj.Subtotal = obj.Subtotal - obj.Setups;
-          obj.Subtotal = obj.Subtotal - obj.Shipping;
-          obj.Setups = 0;
-          obj.Shipping = 0;
-          obj.Runs = 0;
-        } else {
-          lastIDs.push({ ID: obj.ID, Item: obj.Item });
-        }
       }
+      // else {
+      //   const index = lastIDs.findIndex(idObj => idObj.ID == obj.ID && idObj.Item === obj.Item);
+      //   if (index > -1) {
+      //     obj.Subtotal = obj.Subtotal - obj.Setups;
+      //     obj.Subtotal = obj.Subtotal - obj.Shipping;
+      //     obj.Setups = 0;
+      //     obj.Shipping = 0;
+      //     obj.Runs = 0;
+      //   } else {
+      //     lastIDs.push({ ID: obj.ID, Item: obj.Item });
+      //   }
+      // }
       obj.InvoiceDate = moment(obj.InvoiceDate).format('yyyy-MM-DD');
       const row = worksheet.addRow(obj);
       row.eachCell(cell => {
