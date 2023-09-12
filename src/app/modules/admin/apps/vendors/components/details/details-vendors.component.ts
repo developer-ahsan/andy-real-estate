@@ -57,16 +57,17 @@ export class VendorsDetailsComponent implements OnInit, OnDestroy {
    */
   filteredOptions: string[] = [];
   displayFn(value: any): string {
-    return value.companyName;
+    return value;
   }
-  private _filter(value: string): string[] {
+  private _filter(value: any): any[] {
     const filterValue = value.toLowerCase();
-    return this.allVendors.filter((option) => option.companyName.toLowerCase().includes(filterValue));
+    return this.allVendors.filter((option) =>
+      option.companyName.toLowerCase().includes(filterValue)
+    );
   }
   ngOnInit(): void {
     this.getSupplierData();
     this.getAllSuppliers();
-
     this.searchSupplierCtrl.valueChanges.pipe(
       startWith(''),
       map((value) => this._filter(value))
@@ -126,11 +127,12 @@ export class VendorsDetailsComponent implements OnInit, OnDestroy {
   }
   onSelected(ev) {
     // this.selectedSupplier = ev.option.value;
+    let selectedSupplier = this.allVendors.filter(vendor => vendor.companyName == ev.option.value);
     this.selectedRoute = 'information';
     setTimeout(() => {
       this.topScroll.nativeElement.scrollIntoView({ behavior: 'smooth' });
     }, 300);
-    this._router.navigate([`apps/vendors/${this.selectedSupplier}/information`]);
+    this._router.navigate([`apps/vendors/${selectedSupplier[0].pk_companyID}/information`]);
     this.selectedScreeen = 'Vendor Information';
   }
   routesInitialization() {

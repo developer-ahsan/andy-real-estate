@@ -149,8 +149,8 @@ export class ReportFiltersComponent implements OnInit, OnDestroy {
     this._reportsService.ngRangeStart = new Date();
     this._reportsService.ngRangeEnd = new Date();
     this._reportsService.ngPlan = 'weekly';
-    this._reportsService.startDate = moment(this.WeekDate).startOf('week').format('yyyy-MM-DD');
-    this._reportsService.endDate = moment(this.WeekDate).endOf('week').format('yyyy-MM-DD');
+    this._reportsService.startDate = moment(this.WeekDate).startOf('isoWeek').format('yyyy-MM-DD');
+    this._reportsService.endDate = moment(this.WeekDate).endOf('isoWeek').format('yyyy-MM-DD');
     this._reportsService.reportType = 'Weekly Sales';
   }
   ngOnInit(): void {
