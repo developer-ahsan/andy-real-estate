@@ -197,6 +197,12 @@
                             <mat-label>Add a comment:</mat-label>
                             <textarea matInput rows="5" [(ngModel)]="ngComment"></textarea>
                         </mat-form-field>
+                        <mat-form-field class="w-full">
+                            <mat-label>Select Recipients:</mat-label>
+                            <mat-select matInput multiple [(ngModel)]="selectedEmailRecipients">
+                                <mat-option *ngFor="let item of orderEmailRecipients" value="item">{{item}}</mat-option>
+                            </mat-select>
+                        </mat-form-field>
                         <button class="min-w-40 btn buttonComment hover:bg-gray-200" (click)="updateComments()"
                             [disabled]="isCommentsLoader">
                             <span *ngIf="!isCommentsLoader">Add Comment</span>

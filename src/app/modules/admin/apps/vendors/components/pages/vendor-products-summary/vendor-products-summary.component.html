@@ -36,7 +36,9 @@
                         Pricing Last Updated
                     </th>
                     <td mat-cell *matCellDef="let element" class="text-sm">
-                        <span>{{element.pricingLastUpdatedBy ||not_available}}</span>
+                        <span *ngIf="element.pricingLastUpdatedDate">{{ element.pricingLastUpdatedBy + ' on ' +
+                            (element.pricingLastUpdatedDate | date)}}</span>
+                        <span *ngIf="!element.pricingLastUpdatedDate">{{not_available}}</span>
                     </td>
                 </ng-container>
                 <ng-container matColumnDef="active">

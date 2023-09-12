@@ -200,8 +200,8 @@ export class GenerateReportComponent implements OnInit {
             options_report: true
         };
         if (this.ngPlan == 'weekly') {
-            this.reportParams.start_date = moment(this.WeekDate).startOf('week').format('yyyy-MM-DD');
-            this.reportParams.end_date = moment(this.WeekDate).endOf('week').format('yyyy-MM-DD');
+            this.reportParams.start_date = moment(this.WeekDate).startOf('isoWeek').format('yyyy-MM-DD');
+            this.reportParams.end_date = moment(this.WeekDate).endOf('isoWeek').format('yyyy-MM-DD');
             this.report_type = 'Weekly Sales';
         } else if (this.ngPlan == 'monthly') {
             let d = new Date(this.monthlyYear, this.monthlyMonth - 1, 1);
@@ -272,7 +272,8 @@ export class GenerateReportComponent implements OnInit {
                         let date = moment(item.paymentDate);
                         let start_date = moment(this.reportParams.start_date);
                         let end_date = moment(this.reportParams.end_date);
-                        if (date.isAfter(start_date) && date.isBefore(end_date)) {
+                        // console.log(date.isBefore(end_date));
+                        if (date.isSameOrAfter(start_date) && date.isSameOrBefore(end_date)) {
                             item.color = 'green';
                         }
                     } else {
@@ -285,7 +286,7 @@ export class GenerateReportComponent implements OnInit {
                         let date = moment(item.paymentDate);
                         let start_date = moment(this.reportParams.start_date);
                         let end_date = moment(this.reportParams.end_date);
-                        if (date.isAfter(start_date) && date.isBefore(end_date)) {
+                        if (date.isSameOrAfter(start_date) && date.isSameOrBefore(end_date)) {
                             item.checked = true;
                         }
                     }

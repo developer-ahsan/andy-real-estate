@@ -108,23 +108,24 @@ export interface HideUnhideCart {
 export interface UpdateInHandsDate {
     inHandsDate: string;
     order_id: number;
+    orderLinePOID: number;
     update_inHands_date: boolean;
 };
 export interface AddComment {
     comment: string;
     order_id: number;
+    recipients: string[];
     post_comment: boolean;
 };
 export interface UpdateTracking {
     orderLinePOID: number;
+    carrier: number;
+    trackingNumber: string;
     orderLineID: number;
     orderID: number;
     blnGroupRun: boolean;
     blnGroupOrder: boolean;
-    trackingNumber: string;
     shipDate: string;
-    carrier: number;
-    carrierName: string;
     blnSendShippingEmail: boolean;
     blnRevised: boolean;
     update_shipping_tracking: boolean;
@@ -150,8 +151,7 @@ export interface UpdateEstimatedShipping {
     orderLineID: number;
     orderID: number;
     blnGroupRun: boolean;
-    blnGroupOrder: boolean;
-    estimatedShippingDate: string;   // format: mm/dd/yy
+    estimatedShippingDate: string;   // format: mm/dd/yy
     update_estimated_shipping: boolean;
 };
 
@@ -225,69 +225,7 @@ export interface SendPurchaseOrder {
 };
 
 
-export interface SavePurchaseOrder {
-    orderLinePOID: number;
-    orderLinePO: OrderLinePO;
-    orderLineOptions: orderLineOption[];
-    orderLineImprints: orderLineImprint[];
-    orderLineAccessories: orderLineAccessory[];
-    save_purchase_order: boolean;
-};
-interface orderLineAccessory {
-    accessoryName: string;
-    quantity: number;
-    unitCost: number;
-    totalCost: number;
-    setupCost: number;
-    pk_orderLinePOAccessoryID: number;
-};
-interface orderLineOption {
-    optionName: string;
-    quantity: number;
-    unitCost: number;
-    total: number;
-    pk_orderLinePOOptionID: number;
-};
-interface orderLineImprint {
-    imprintName: string;
-    quantity: number;
-    unitCost: number;
-    total: number;
-    colors: string;
-    setup: number;
-    totalImprintColors: number;
-    processQuantity: number;
-    pk_orderLinePOImprintID: number;
-};
-interface OrderLinePO {
-    fk_vendorID: number;
-    vendorShippingName: string;
-    vendorShippingAddress1: string;
-    vendorShippingAddress2: string;
-    vendorShippingCity: string;
-    vendorShippingState: string;
-    vendorShippingZip: string;
-    vendorShippingPhone: string;
-    vendorShippingEmail: string;
-    shippingComment: string;
-    shipToCompanyName: string;
-    shipToCustomerName: string;
-    shipToLocation: string;
-    shipToPurchaseOrder: string;
-    shipToAddress: string;
-    shipToCity: string;
-    shipToState: string;
-    shipToZip: string;
-    shipToCountry: string;
-    imprintComment: string;
-    POTotal: number;
-    shipToDeliverTo: string;
-    productName: string;
-    quantity: string;
-    purchaseOrderNumber: string;
-    purchaseOrderComments: string;
-    blnDuplicate: boolean;
-};
+
 export interface removePurchaseOrderItem {
     orderID: number;
     orderLineID: number;
@@ -517,4 +455,100 @@ interface poOrders {
     productNumber: string;
     productName: string;
     orderID: number;
+};
+
+
+
+// SAVE PO
+export interface SavePurchaseOrder {
+    orderManageLoggedInUserName: string;
+    orderLinePOID: number;
+    orderLinePO: OrderLinePOSave;
+    orderLineOptions: orderLineOptionSave[];
+    orderLineImprints: orderLineImprintSave[];
+    orderLineAccessories: orderLineAccessorySave[];
+    orderLineAdjustments: orderLineAdjustmentsSave[];
+    blnArtNeedsResent: boolean;
+    save_purchase_order: boolean;
+};
+
+interface orderLineOptionSave {
+    optionName: string;
+    quantity: number;
+    unitCost: number;
+    productName: string;
+    total: number;
+    pk_orderLinePOOptionID: number;
+};
+
+interface orderLineImprintSave {
+    imprintName: string;
+    quantity: number;
+    unitCost: number;
+    total: number;
+    colors: string;
+    setup: number;
+    totalImprintColors: number;
+    imprintComment: string;
+    processQuantity: number;
+    reorderNumber: string;
+    pk_orderLinePOImprintID: number;
+};
+interface orderLineAccessorySave {
+    accessoryName: string;
+    quantity: number;
+    unitCost: number;
+    totalCost: number;
+    setupCost: number;
+    pk_orderLinePOAccessoryID: number;
+};
+interface orderLineAdjustmentsSave {
+    adjustmentName: string;
+    unitCost: number;
+    pk_orderLinePOAdjustmentID: number;
+};
+interface OrderLinePOSave {
+    fk_vendorID: number;
+    vendorShippingName: string;
+    vendorShippingAddress1: string;
+    vendorShippingAddress2: string;
+    vendorShippingCity: string;
+    vendorShippingState: string;
+    vendorShippingZip: string;
+    vendorShippingPhone: string;
+    vendorShippingEmail: string;
+    shippingComment: string;
+    shipToCompanyName: string;
+    shipToCustomerName: string;
+    shipToLocation: string;
+    shipToPurchaseOrder: string;
+    shipToAddress: string;
+    shipToCity: string;
+    shipToState: string;
+    shipToZip: string;
+    shipToCountry: string;
+    imprintComment: string;
+    POTotal: number;
+    shipToDeliverTo: string;
+    quantity: string;
+    purchaseOrderNumber: string;
+    productName: string;
+    purchaseOrderComments: string;
+    blnDuplicate: boolean;
+    POinHandsDate: string;
+    stockFrom: string;
+    imprintDetail: string;
+    coop: string;
+    shippingDate: string;
+    estimatedShippingDate: string;
+    trackingNumber: string;
+    total: number;
+    blnGroupRun: boolean;
+    orderId: number;
+    orderLineID: number;
+    storeName: string;
+    blnDecorator: boolean;
+    blnSupplier: boolean;
+    blnSample: boolean;
+    customerAccountNumber: string;
 };

@@ -22,10 +22,21 @@
                 <p class="text-seconday"></p>
             </h2>
             <mat-form-field class="w-100">
-                <mat-select matInput [(ngModel)]="selectedSupplier" (selectionChange)="onSelected($event)">
+
+                <mat-form-field>
+                    <input type="text" placeholder="Fruit" matInput [matAutocomplete]="auto">
+                    <mat-autocomplete #auto="matAutocomplete" [displayWith]="displayFn">
+                        <mat-option *ngFor="let item of allVendors"
+                            [value]="item.pk_companyID">{{item.companyName}}</mat-option>
+                    </mat-autocomplete>
+                </mat-form-field>
+
+
+
+                <!-- <mat-select matInput [(ngModel)]="selectedSupplier" (selectionChange)="onSelected($event)">
                     <mat-option *ngFor="let item of allVendors"
                         [value]="item.pk_companyID">{{item.companyName}}</mat-option>
-                </mat-select>
+                </mat-select> -->
                 <!-- <input matInput placeholder="Search Vendors" matTooltip="Search Vendors by name"
                     [matAutocomplete]="auto" [formControl]="searchSupplierCtrl">
                 <mat-autocomplete class="w-full" #auto="matAutocomplete" (optionSelected)="onSelected($event)"

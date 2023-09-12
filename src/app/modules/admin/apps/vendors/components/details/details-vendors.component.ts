@@ -3,7 +3,7 @@ import { FormControl } from '@angular/forms';
 import { ActivatedRoute, NavigationEnd, Router } from '@angular/router';
 import { FuseMediaWatcherService } from '@fuse/services/media-watcher';
 import { Subject } from 'rxjs';
-import { debounceTime, distinctUntilChanged, filter, finalize, switchMap, takeUntil, tap } from 'rxjs/operators';
+import { debounceTime, distinctUntilChanged, filter, finalize, map, startWith, switchMap, takeUntil, tap } from 'rxjs/operators';
 import { VendorsService } from '../vendors.service';
 import { DashboardsService } from 'app/modules/admin/dashboards/dashboard.service';
 @Component({
@@ -55,39 +55,53 @@ export class VendorsDetailsComponent implements OnInit, OnDestroy {
   /**
    * On init
    */
-
+  filteredOptions: string[] = [];
+  displayFn(value: any): string {
+    return value.companyName;
+  }
+  private _filter(value: string): string[] {
+    const filterValue = value.toLowerCase();
+    return this.allVendors.filter((option) => option.companyName.toLowerCase().includes(filterValue));
+  }
   ngOnInit(): void {
-    console.log('here');
     this.getSupplierData();
     this.getAllSuppliers();
-    let params;
+
     this.searchSupplierCtrl.valueChanges.pipe(
-      filter((res: any) => {
-        params = {
-          supplier: true,
-          bln_active: 1,
-          keyword: res
-        }
-        return res !== null && res.length >= 3
-      }),
-      distinctUntilChanged(),
-      debounceTime(300),
-      tap(() => {
-        this.allSuppliers = [];
-        this.isSearchingSupplier = true;
-        this._changeDetectorRef.markForCheck();
-      }),
-      switchMap(value => this._vendorsService.getVendorsData(params)
-        .pipe(
-          finalize(() => {
-            this.isSearchingSupplier = false
-            this._changeDetectorRef.markForCheck();
-          }),
-        )
-      )
-    ).subscribe((data: any) => {
-      this.allSuppliers = data['data'];
+      startWith(''),
+      map((value) => this._filter(value))
+    ).subscribe((filteredValues) => {
+      this.filteredOptions = filteredValues;
     });
+
+    // let params;
+    // this.searchSupplierCtrl.valueChanges.pipe(
+    //   filter((res: any) => {
+    //     params = {
+    //       supplier: true,
+    //       bln_active: 1,
+    //       keyword: res
+    //     }
+    //     return res !== null && res.length >= 3
+    //   }),
+    //   distinctUntilChanged(),
+    //   debounceTime(300),
+    //   tap(() => {
+    //     this.allSuppliers = [];
+    //     this.isSearchingSupplier = true;
+    //     this._changeDetectorRef.markForCheck();
+    //   }),
+    //   switchMap(value => this._vendorsService.getVendorsData(params)
+    //     .pipe(
+    //       finalize(() => {
+    //         this.isSearchingSupplier = false
+    //         this._changeDetectorRef.markForCheck();
+    //       }),
+    //     )
+    //   )
+    // ).subscribe((data: any) => {
+    //   this.allSuppliers = data['data'];
+    // });
     this._router.events.subscribe((event) => {
       if (event instanceof NavigationEnd) {
         this.selectedScreeen = this.route.children[0].snapshot.data.title;

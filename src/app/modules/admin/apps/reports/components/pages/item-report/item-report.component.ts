@@ -202,7 +202,7 @@ export class ReportItemsComponent implements OnInit, OnDestroy {
     };
     columns.push(
       { header: "Quantity", key: "Quantity", width: 10 },
-      { header: "ExtendedPrice", key: "ExentdedPrice", width: 20 }
+      { header: "ExtendedPrice", key: "ExtendedPrice", width: 20 }
     );
     // Push the selected columns based on the map
     this.ngSelectedColumns.forEach(item => {

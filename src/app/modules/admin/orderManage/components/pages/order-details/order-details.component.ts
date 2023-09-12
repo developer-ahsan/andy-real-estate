@@ -12,6 +12,7 @@ import { AuthService } from 'app/core/auth/auth.service';
 import { DashboardsService } from 'app/modules/admin/dashboards/dashboard.service';
 import { VendorsService } from 'app/modules/admin/apps/vendors/components/vendors.service';
 import { SmartArtService } from 'app/modules/admin/smartart/components/smartart.service';
+import { lowerCase } from 'lodash';
 declare var $: any;
 
 
@@ -142,6 +143,8 @@ export class OrderManageDetailsComponent implements OnInit, OnDestroy {
   imprintInformation = [];
   isDuplicatePOLoader: boolean = false;
   ordermanageUserData: any;
+  orderEmailRecipients = [];
+  selectedEmailRecipients = [];
   constructor(
     private _changeDetectorRef: ChangeDetectorRef,
     private _activeRoute: ActivatedRoute,
@@ -202,6 +205,17 @@ export class OrderManageDetailsComponent implements OnInit, OnDestroy {
         }
         this.getArtworkFiles();
       }
+      const { storeName } = this.orderData;
+      this.orderEmailRecipients.push(`orders@${storeName.toLowerCase()}`, `artwork@${storeName.toLowerCase()}`, `billing@consolidus.com`, `service@${storeName.toLowerCase()}`, `content@consolidus.com`);
+      let recipients;
+      if (res["recipients"]) {
+        recipients = res["recipients"][0].commentorsEmail.split(',,');
+        recipients.forEach(element => {
+          let [id, email] = element.split(',');
+          this.orderEmailRecipients.push(email);
+        });
+      }
+
       this.getImprintData();
       this._changeDetectorRef.markForCheck();
     }, err => {
@@ -279,9 +293,13 @@ export class OrderManageDetailsComponent implements OnInit, OnDestroy {
   updateInhandsDate() {
     if (this.orderData.inHandsDate) {
       this.isHandsDateLoader = true;
-      let date = moment(this.orderData.inHandsDate).format('L');
+      let date = null;
+      if (this.orderData.inHandsDate) {
+        date = moment(this.orderData.inHandsDate).format('L');
+      }
       let payload: UpdateInHandsDate = {
         inHandsDate: String(date),
+        orderLinePOID: this.orderDataPO.pk_orderLinePOID,
         order_id: this.orderData.fk_orderID,
         update_inHands_date: true
       }
@@ -306,9 +324,10 @@ export class OrderManageDetailsComponent implements OnInit, OnDestroy {
       let payload: AddComment = {
         comment: this.ngComment,
         order_id: this.orderData.fk_orderID,
+        recipients: this.selectedEmailRecipients,
         post_comment: true
       }
-      this._OrderManageService.PutAPIData(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+      this._OrderManageService.PostAPIData(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
         if (res["success"]) {
           let comment = `<b><span class="fa fa-circle disabled"></span> ${this.userData.name}</b> said on ${moment().format('MMM DD YYYY')} | ${moment().format('h:mm:ss')}<br>${this.ngComment}<br><br>`;
           this.orderData.internalComments = this.orderData.internalComments + comment;
@@ -333,15 +352,14 @@ export class OrderManageDetailsComponent implements OnInit, OnDestroy {
       date = moment(this.orderData.shippingDate).format('L');
     }
     let payload: UpdateTracking = {
-      orderLinePOID: this.orderData.fk_reOrderLineID,
-      orderLineID: this.orderData.fk_cartLineID,
-      orderID: this.orderData.fk_orderID,
+      orderLinePOID: this.orderDataPO.pk_orderLinePOID,
+      orderLineID: this.orderDataPO.fk_orderLineID,
+      orderID: this.orderDataPO.fk_orderID,
       blnGroupRun: this.orderData.blnGroupRun,
-      blnGroupOrder: this.orderData.blnGroupOrder,
+      blnGroupOrder: this.orderData.fk_groupOrderID ? true : false,
       trackingNumber: this.orderData.trackingNumber,
       shipDate: date,
       carrier: this.orderData.shippingCarrier,
-      carrierName: this.orderData.shippingCarrier,
       blnSendShippingEmail: this.blnblnSendShippingEmail,
       blnRevised: this.blnRevised,
       update_shipping_tracking: true
@@ -368,9 +386,8 @@ export class OrderManageDetailsComponent implements OnInit, OnDestroy {
       orderLineID: this.orderData.pk_orderLineID,
       orderID: this.orderData.pk_orderID,
       blnGroupRun: this.orderData.blnGroupRun,
-      blnGroupOrder: false,
-      estimatedShippingDate: date,   // format: mm/dd/yy
-      update_estimated_shipping: false
+      estimatedShippingDate: date,  // format: mm/dd/yy
+      update_estimated_shipping: true
     }
     this._OrderManageService.PutAPIData(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
       if (res["success"]) {
@@ -715,6 +732,8 @@ export class OrderManageDetailsComponent implements OnInit, OnDestroy {
 
 
   savePoOrder() {
+    const { fk_orderID, blnGroupRun, storeName, pk_companyID, currentTotal } = this.orderData;
+    const { pk_orderLinePOID, shippingDate, estimatedShippingDate, trackingNumber, blnSample, fk_orderLineID, shippingCustomerAccountNumber, POinHandsDate, stockFrom, fk_vendorID, vendorShippingName, vendorShippingAddress1, vendorShippingAddress2, vendorShippingCity, vendorShippingState, vendorShippingZip, vendorShippingPhone, vendorShippingEmail, shippingComment, shipToCompanyName, shipToCustomerName, shipToLocation, shipToPurchaseOrder, shipToAddress, shipToCity, shipToState, shipToZip, shipToCountry, imprintComment, POTotal, shipToDeliverTo, productName, quantity, purchaseOrderNumber, purchaseOrderComments, blnDuplicate, blnDecorator, blnSupplier, coop, imprintDetail } = this.orderDataPO;
     this.isSavePOLoader = true;
     // Colors
     let OrderLinePOOptions = [];
@@ -723,6 +742,7 @@ export class OrderManageDetailsComponent implements OnInit, OnDestroy {
         optionName: element.optionName.replace(/'/g, "''"),
         quantity: element.quantity,
         unitCost: element.unitCost,
+        productName: productName,
         total: element.total,
         pk_orderLinePOOptionID: element.pk_orderLinePOOptionID
       });
@@ -738,7 +758,9 @@ export class OrderManageDetailsComponent implements OnInit, OnDestroy {
         colors: element.colors,
         setup: element.setup,
         totalImprintColors: element.totalImprintColors,
+        imprintComment: imprintComment,
         processQuantity: element.processQuantity,
+        reorderNumber: element.reorderNumber,
         pk_orderLinePOImprintID: element.pk_orderLinePOImprintID,
       });
     });
@@ -754,42 +776,70 @@ export class OrderManageDetailsComponent implements OnInit, OnDestroy {
         pk_orderLinePOAccessoryID: element.pk_orderLinePOAccessoryID,
       });
     });
+    // Adjustments  
+    let orderLineAdjustments = [];
+    this.adjustmentsList.forEach(element => {
+      orderLineAdjustments.push({
+        adjustmentName: element.adjustmentName.replace(/'/g, "''"),
+        unitCost: element.unitCost,
+        pk_orderLinePOAdjustmentID: element.pk_orderLinePOAdjustmentID
+      })
+    });
     // OrderLinePO
     let OrderLinePO = {
-      fk_vendorID: this.orderData.pk_companyID,
-      vendorShippingName: this.orderDataPO.vendorShippingName,
-      vendorShippingAddress1: this.orderDataPO.vendorShippingAddress1,
-      vendorShippingAddress2: this.orderDataPO.vendorShippingAddress2,
-      vendorShippingCity: this.orderDataPO.vendorShippingCity,
-      vendorShippingState: this.orderDataPO.vendorShippingState,
-      vendorShippingZip: this.orderDataPO.vendorShippingZip,
-      vendorShippingPhone: this.orderDataPO.vendorShippingPhone,
-      vendorShippingEmail: this.orderDataPO.vendorShippingEmail,
-      shippingComment: this.orderDataPO.shippingComment,
-      shipToCompanyName: this.orderDataPO.shipToCompanyName,
-      shipToCustomerName: this.orderDataPO.shipToCustomerName,
-      shipToLocation: this.orderDataPO.shipToLocation,
-      shipToPurchaseOrder: this.orderDataPO.shipToPurchaseOrder,
-      shipToAddress: this.orderDataPO.shipToAddress,
-      shipToCity: this.orderDataPO.shipToCity,
-      shipToState: this.orderDataPO.shipToState,
-      shipToZip: this.orderDataPO.shipToZip,
-      shipToCountry: this.orderDataPO.shipToCountry,
-      imprintComment: this.orderDataPO.imprintComment,
-      POTotal: this.orderDataPO.POTotal,
-      shipToDeliverTo: this.orderDataPO.shipToDeliverTo,
-      productName: this.orderData.productName.replace(/'/g, "''"),
-      quantity: this.orderData.quantity,
-      purchaseOrderNumber: this.orderDataPO.purchaseOrderNumber,
-      purchaseOrderComments: this.orderDataPO.purchaseOrderComments,
-      blnDuplicate: true
+      fk_vendorID: fk_vendorID,
+      vendorShippingName: vendorShippingName,
+      vendorShippingAddress1: vendorShippingAddress1,
+      vendorShippingAddress2: vendorShippingAddress2,
+      vendorShippingCity: vendorShippingCity,
+      vendorShippingState: vendorShippingState,
+      vendorShippingZip: vendorShippingZip,
+      vendorShippingPhone: vendorShippingPhone,
+      vendorShippingEmail: vendorShippingEmail,
+      shippingComment: shippingComment,
+      shipToCompanyName: shipToCompanyName,
+      shipToCustomerName: shipToCustomerName,
+      shipToLocation: shipToLocation,
+      shipToPurchaseOrder: shipToPurchaseOrder,
+      shipToAddress: shipToAddress,
+      shipToCity: shipToCity,
+      shipToState: shipToState,
+      shipToZip: shipToZip,
+      shipToCountry: shipToCountry,
+      imprintComment: imprintComment,
+      POTotal: POTotal,
+      shipToDeliverTo: shipToDeliverTo,
+      quantity: quantity,
+      purchaseOrderNumber: purchaseOrderNumber,
+      productName: productName,
+      purchaseOrderComments: purchaseOrderComments,
+      blnDuplicate: blnDuplicate,
+      POinHandsDate: POinHandsDate,
+      stockFrom: stockFrom,
+      imprintDetail: imprintDetail,
+      coop: coop,
+      shippingDate: shippingDate,
+      estimatedShippingDate: estimatedShippingDate,
+      trackingNumber: trackingNumber,
+      total: currentTotal,
+      blnGroupRun: blnGroupRun,
+      orderId: fk_orderID,
+      orderLineID: fk_orderLineID,
+      storeName: storeName,
+      blnDecorator: blnDecorator,
+      blnSupplier: blnSupplier,
+      blnSample: blnSample,
+      customerAccountNumber: shippingCustomerAccountNumber
     }
     let payload: SavePurchaseOrder = {
+      orderManageLoggedInUserName: this.ordermanageUserData.firstName + ' ' + this.ordermanageUserData.lastName,
       orderLinePOID: this.orderDataPO.pk_orderLinePOID,
       orderLinePO: OrderLinePO,
       orderLineOptions: OrderLinePOOptions,
       orderLineImprints: orderLineImprint,
       orderLineAccessories: orderLineAccessory,
+      orderLineAdjustments: orderLineAdjustments,
+      blnArtNeedsResent: this.blnArtNeedsResent,
       save_purchase_order: true
     }
     this._OrderManageService.PutAPIData(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
