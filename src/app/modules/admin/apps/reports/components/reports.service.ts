@@ -76,8 +76,8 @@ export class ReportsService {
     }
     setFiltersReport() {
         if (this.ngPlan == 'weekly') {
-            this.startDate = moment(this.WeekDate).startOf('week').format('yyyy-MM-DD');
-            this.endDate = moment(this.WeekDate).endOf('week').format('yyyy-MM-DD');
+            this.startDate = moment(this.WeekDate).startOf('isoWeek').format('yyyy-MM-DD');
+            this.endDate = moment(this.WeekDate).endOf('isoWeek').format('yyyy-MM-DD');
             this.reportType = 'Weekly Sales';
         } else if (this.ngPlan == 'monthly') {
             let d = new Date(this.monthlyYear, this.monthlyMonth - 1, 1);
