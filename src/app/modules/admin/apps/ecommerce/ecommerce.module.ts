@@ -119,6 +119,7 @@ import { ProductLicensingTermsComponent } from './inventory/list/licensing-terms
 import { RemoveProductComponent } from './inventory/navigation/delete-product/delete-product.component';
 import { StoreProductStatusComponent } from './product-store/navigation/store-product-status/store-product-status.component';
 import { OptionsScrollDirective } from 'app/options-scroll.directive';
+import { ChunkPipe } from './inventory/navigation/products-status/chunk.pipe';
 
 @NgModule({
     declarations: [
@@ -204,7 +205,8 @@ import { OptionsScrollDirective } from 'app/options-scroll.directive';
         RemoveFromStoreComponent,
         ProductLicensingTermsComponent,
         RemoveProductComponent,
-        StoreProductStatusComponent
+        StoreProductStatusComponent,
+        ChunkPipe
     ],
     imports: [
         RouterModule.forChild(ecommerceRoutes),

@@ -356,6 +356,7 @@ export class OrderManageDetailsComponent implements OnInit, OnDestroy {
       orderLineID: this.orderDataPO.fk_orderLineID,
       orderID: this.orderDataPO.fk_orderID,
       blnGroupRun: this.orderData.blnGroupRun,
+      orderManageLoggedInName: this.ordermanageUserData.firstName + ' ' + this.ordermanageUserData.lastName,
       blnGroupOrder: this.orderData.fk_groupOrderID ? true : false,
       trackingNumber: this.orderData.trackingNumber,
       shipDate: date,
@@ -384,6 +385,7 @@ export class OrderManageDetailsComponent implements OnInit, OnDestroy {
     let payload: UpdateEstimatedShipping = {
       orderLinePOID: this.orderDataPO.pk_orderLinePOID,
       orderLineID: this.orderData.pk_orderLineID,
+      orderManageLoggedInName: this.ordermanageUserData.firstName + ' ' + this.ordermanageUserData.lastName,
       orderID: this.orderData.pk_orderID,
       blnGroupRun: this.orderData.blnGroupRun,
       estimatedShippingDate: date,  // format: mm/dd/yy

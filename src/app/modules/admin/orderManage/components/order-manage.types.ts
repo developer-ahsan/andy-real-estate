@@ -120,6 +120,7 @@ export interface AddComment {
 export interface UpdateTracking {
     orderLinePOID: number;
     carrier: number;
+    orderManageLoggedInName: string;
     trackingNumber: string;
     orderLineID: number;
     orderID: number;
@@ -149,6 +150,7 @@ export interface saveVendorBill {
 export interface UpdateEstimatedShipping {
     orderLinePOID: number;
     orderLineID: number;
+    orderManageLoggedInName: string;
     orderID: number;
     blnGroupRun: boolean;
     estimatedShippingDate: string;   // format: mm/dd/yy

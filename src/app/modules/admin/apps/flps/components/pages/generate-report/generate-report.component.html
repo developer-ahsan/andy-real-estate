@@ -243,8 +243,23 @@
                         <td>{{storeTotals?.Sales | currency}}</td>
                         <td>{{storeTotals?.Revenue | currency}}</td>
                         <td></td>
-                        <td>{{storeTotals?.EST_Profit | currency}}</td>
-                        <td>{{storeTotals?.orderCommission | currency}}</td>
+                        <td>
+                            <span *ngIf="storeTotals?.EST_Profit > 0; else EST_Profit">{{storeTotals?.EST_Profit
+                                |
+                                currency}}</span>
+                            <ng-template #EST_Profit>
+                                <span>({{(storeTotals?.EST_Profit * -1) | currency}})</span>
+                            </ng-template>
+                        </td>
+                        <td>
+                            <span
+                                *ngIf="storeTotals?.orderCommission > 0; else Commission">{{storeTotals?.orderCommission
+                                |
+                                currency}}</span>
+                            <ng-template #Commission>
+                                <span>({{(storeTotals?.orderCommission * -1) | currency}})</span>
+                            </ng-template>
+                        </td>
                         <td></td>
                         <td>{{storeTotals?.amountPaid | currency}}</td>
                         <td></td>
@@ -308,8 +323,23 @@
                         <td>{{storeTotals?.Revenue | currency}}</td>
                         <td>{{storeTotals?.Num_Sales}}</td>
                         <td></td>
-                        <td>{{storeTotals?.EST_Profit | currency}}</td>
-                        <td>{{storeTotals?.orderCommission | currency}}</td>
+                        <td>
+                            <span *ngIf="storeTotals?.EST_Profit > 0; else EST_Profit">{{storeTotals?.EST_Profit
+                                |
+                                currency}}</span>
+                            <ng-template #EST_Profit>
+                                <span>({{(storeTotals?.EST_Profit * -1) | currency}})</span>
+                            </ng-template>
+                        </td>
+                        <td>
+                            <span
+                                *ngIf="storeTotals?.orderCommission > 0; else Commission">{{storeTotals?.orderCommission
+                                |
+                                currency}}</span>
+                            <ng-template #Commission>
+                                <span>({{(storeTotals?.orderCommission * -1) | currency}})</span>
+                            </ng-template>
+                        </td>
                     </tr>
                 </tbody>
             </table>

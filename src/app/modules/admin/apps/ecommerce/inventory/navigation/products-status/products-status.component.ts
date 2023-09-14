@@ -111,7 +111,7 @@ export class ProductsStatusComponent implements OnInit {
     let params = {
       stores_list: true,
       bln_active: 1,
-      size: 20,
+      size: 100,
       page: this.page,
       exclude_list: exlcude_list_product.toString()
     }

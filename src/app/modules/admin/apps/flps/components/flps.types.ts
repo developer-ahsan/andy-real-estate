@@ -65,15 +65,54 @@ export interface FlpsLogin {
     flps_login_v2: boolean;
 };
 
+
 export interface updateReport {
     flps_userID: number;
-    flpsOrders: FlpsOrders[];
+    flpsName: string;
+    flpsUserEmail: string;
     blnSendEmail: boolean;
+    rangeStart: string;
+    rangeEnd: string;
+    flpsOrders: FlpsOrders[];
+    markPaidList: markPaidList[];
+    reportSummary: reportSummary[];
+    grandSalesTotal: number;
+    grandNumSalesTotal: number;
+    grandEstimatedProfitTotal: number;
+    grandCommissionTotal: number;
+    userTotalCommission: number; // totalCommission * Profit
     update_flps_report: boolean;
 };
 
 interface FlpsOrders {
     order_id: number;
-    commissionPaidDate: string;
     amountPaid: number;
 };
+interface reportSummary {
+    storeName: string;
+    sales: number;
+    num_sales: number;
+    profit: number;
+    commission: number;
+};
+interface markPaidList {
+    orderID: number;
+    customer: string;
+    sale: number;
+    profit: number;
+    commission: number;
+    commissionPercent: number;
+};
+
+// export interface updateReport {
+//     flps_userID: number;
+//     flpsOrders: FlpsOrders[];
+//     blnSendEmail: boolean;
+//     update_flps_report: boolean;
+// };
+
+// interface FlpsOrders {
+//     order_id: number;
+//     commissionPaidDate: string;
+//     amountPaid: number;
+// };

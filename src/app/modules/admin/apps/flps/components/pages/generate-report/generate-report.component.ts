@@ -169,7 +169,7 @@ export class GenerateReportComponent implements OnInit {
                 let employee = employees.split(',');
                 employee.forEach(emp => {
                     let colonEmp = emp.split(':');
-                    this.employeeAdmins.push({ pk_userID: Number(colonEmp[0]), fullName: colonEmp[2] });
+                    this.employeeAdmins.push({ pk_userID: Number(colonEmp[0]), fullName: colonEmp[2], email: colonEmp[5] });
                 });
             }
             this.selectedEmployee = this.employeeAdmins[0];
@@ -360,17 +360,47 @@ export class GenerateReportComponent implements OnInit {
     updateFlPSCommission() {
         this.isUpdateCommissionLoader = true;
         let FlpsOrders = [];
-        this.groupByStoresData.forEach(element => {
-            element.data.forEach(order => {
-                if (!order.disabled && order.checked) {
-                    FlpsOrders.push({ order_id: order.pk_orderID, commissionPaidDate: order.commissionPaidDate, amountPaid: order.amountPaid });
+        let reportSummary = [];
+        let markPaidList = [];
+
+        this.reportSummaryData.forEach(element => {
+            element.DetailsData.forEach(order => {
+                FlpsOrders.push({ order_id: order.id, amountPaid: order.amount });
+                if (order.paymentDate != 'NULL') {
+                    markPaidList.push({
+                        orderID: order.id,
+                        customer: order.customer,
+                        sale: order.sales,
+                        profit: order.profit,
+                        commission: order.comission,
+                        commissionPercent: order.commision_percentage
+                    })
                 }
             });
+            reportSummary.push({
+                storeName: element.storeName,
+                sales: element.Sales,
+                num_sales: element.Num_Sales,
+                profit: element.Profit,
+                commission: element.Commission
+            });
         });
+
         let payload: updateReport = {
             flps_userID: this.selectedEmployee.pk_userID,
-            flpsOrders: FlpsOrders,
+            flpsName: this.selectedEmployee.fullName,
+            flpsUserEmail: 'ahsanayoub2017@gmail.com',
             blnSendEmail: this.blnSendEmail,
+            rangeStart: this.reportParams.start_date,
+            rangeEnd: this.reportParams.end_date,
+            flpsOrders: FlpsOrders,
+            markPaidList: markPaidList,
+            reportSummary: reportSummary,
+            grandSalesTotal: this.storeTotals.Sales,
+            grandNumSalesTotal: this.storeTotals.Num_Sales,
+            grandEstimatedProfitTotal: this.storeTotals.EST_Profit,
+            grandCommissionTotal: this.storeTotals.orderCommission,
+            userTotalCommission: this.storeTotals.orderCommission * this.storeTotals.EST_Profit, // totalCommission * Profit
             update_flps_report: true
         }
         this._flpsService.UpdateFlpsData(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {

@@ -159,7 +159,7 @@
                                             </td>
                                             <td>
                                                 <div class="flex align-items-center" *ngIf="product.relation == 3">
-                                                    <p>{{product.vendor}}</p>
+                                                    <p [innerHTML]="product.vendor"></p>
                                                     <mat-icon svgIcon="heroicons_solid:star"
                                                         class="icon-size-4 text-green-700"></mat-icon>
                                                 </div>
