@@ -6,7 +6,7 @@ import { ActivatedRoute, NavigationExtras, Router } from '@angular/router';
 import { Subject } from 'rxjs';
 import { debounceTime, distinctUntilChanged, filter, finalize, switchMap, takeUntil, tap } from 'rxjs/operators';
 import { OrderManageService } from '../../order-manage.service';
-import { AddAdjustment, AddComment, AddPOOption, Add_PO_Imprint, DeletePurchaseOrder, DuplicatePO, HideUnhideQuote, SaveAndSendPurchaseOrder, SavePurchaseOrder, SendPurchaseOrder, UpdateEstimatedShipping, UpdateInHandsDate, UpdateTracking, addAccessory, createPurchaseOrder, removePurchaseOrderItem, saveBillPay, saveVendorBill, updatePurchaseOrderStatus } from '../../order-manage.types';
+import { AddAdjustment, AddAttachment, AddComment, AddPOOption, Add_PO_Imprint, DeletePurchaseOrder, DuplicatePO, HideUnhideQuote, SaveAndSendPurchaseOrder, SavePurchaseOrder, SendPurchaseOrder, UpdateEstimatedShipping, UpdateInHandsDate, UpdateTracking, addAccessory, createPurchaseOrder, removePurchaseOrderItem, saveBillPay, saveVendorBill, updatePurchaseOrderStatus } from '../../order-manage.types';
 import moment from 'moment';
 import { AuthService } from 'app/core/auth/auth.service';
 import { DashboardsService } from 'app/modules/admin/dashboards/dashboard.service';
@@ -145,6 +145,11 @@ export class OrderManageDetailsComponent implements OnInit, OnDestroy {
   ordermanageUserData: any;
   orderEmailRecipients = [];
   selectedEmailRecipients = [];
+  imageAttachmentValue: any;
+
+  isAttachmentLoader: boolean = false;
+  attachmentName: string = '';
+  @ViewChild('attachmentFile') attachmentFile: ElementRef;
   constructor(
     private _changeDetectorRef: ChangeDetectorRef,
     private _activeRoute: ActivatedRoute,
@@ -324,6 +329,7 @@ export class OrderManageDetailsComponent implements OnInit, OnDestroy {
       let payload: AddComment = {
         comment: this.ngComment,
         order_id: this.orderData.fk_orderID,
+        orderManageLoggedInUserName: this.ordermanageUserData.firstName + ' ' + this.ordermanageUserData.lastName,
         recipients: this.selectedEmailRecipients,
         post_comment: true
       }
@@ -1065,6 +1071,111 @@ export class OrderManageDetailsComponent implements OnInit, OnDestroy {
         this._OrderManageService.snackBar(res["message"]);
       }
     })
+  }
+  uploadAttachmentFile(event) {
+    this.imageAttachmentValue = null;
+    const file = event.target.files[0];
+    let type = file["type"];
+    const reader = new FileReader();
+    reader.readAsDataURL(file);
+    reader.onload = () => {
+      const extension = type.split("/")[1]; // Extract the extension from the MIME type
+      this.imageAttachmentValue = {
+        imageUpload: reader.result,
+        type: extension,
+        mime: type
+      };
+      console.log(this.imageAttachmentValue);
+    }
+  };
+  addAttachmentFile() {
+    if (!this.imageAttachmentValue) {
+      this._OrderManageService.snackBar('Please choose any file');
+      return;
+    }
+    const { imageUpload, type, mime } = this.imageAttachmentValue;
+    this.isAttachmentLoader = true;
+    let payload: AddAttachment = {
+      orderLinePOID: this.orderDataPO.pk_orderLinePOID,
+      extension: type,
+      name: this.attachmentName,
+      mimeType: mime,
+      add_attachment: true
+    }
+    this._OrderManageService.PostAPIData(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+      if (res) {
+        this.uploadAttachemnetFileToServer(res["newAttachmentID"]);
+      } else {
+        this.isAttachmentLoader = false;
+        this._changeDetectorRef.markForCheck();
+      }
+    }, err => {
+      this.isAttachmentLoader = false;
+      this._changeDetectorRef.markForCheck();
+    });
+  }
+  uploadAttachemnetFileToServer(id) {
+    const { imageUpload, type, mime } = this.imageAttachmentValue;
+    const path = `/globalAssets/Orders/PurchaseOrders/attachments/${this.orderDataPO.pk_orderLinePOID}/${id}.${type}`;
+    const base64 = imageUpload.split(",")[1];
+    const payload = {
+      file_upload: true,
+      image_file: base64,
+      image_path: path
+    };
+    this._OrderManageService.addMedia(payload)
+      .subscribe((response) => {
+        this.attachmentsList.push({
+          pk_purchaseOrderAttachmentID: id,
+          fk_orderLinePOID: this.orderDataPO.pk_orderLinePOID,
+          extension: type,
+          name: this.attachmentName
+        });
+        this._smartartService.snackBar('Attachement File Uploaded Successfully');
+        this.attachmentFile.nativeElement.value = '';
+        this.attachmentName = '';
+        this.isAttachmentLoader = false;
+        this._changeDetectorRef.markForCheck();
+      }, err => {
+        this.isAttachmentLoader = false;
+        this._changeDetectorRef.markForCheck();
+      })
+  }
+  deleteAttachment(item) {
+    item.delLoader = true;
+    let payload = {
+      attachmentID: item.pk_purchaseOrderAttachmentID,
+      delete_attachment: true
+    }
+    this._OrderManageService.PutAPIData(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+      if (res) {
+        this.attachmentsList = this.attachmentsList.filter(files => files.pk_purchaseOrderAttachmentID != item.pk_purchaseOrderAttachmentID);
+        this.deleteFileFromServer(item);
+      } else {
+        item.delLoader = false;
+        this._changeDetectorRef.markForCheck();
+      }
+    }, err => {
+      item.delLoader = false;
+      this._changeDetectorRef.markForCheck();
+    });
+  }
+  deleteFileFromServer(item) {
+    const path = `/globalAssets/Orders/PurchaseOrders/attachments/${this.orderDataPO.pk_orderLinePOID}/${item.pk_purchaseOrderAttachmentID}.${item.extension.replace(/ /g, '')}`;
+    let payload = {
+      files: path,
+      delete_files: true
+    }
+    this._OrderManageService.removeMedia(payload)
+      .subscribe((response) => {
+        this._OrderManageService.snackBar('Attachment Removed Successfully');
+        this.attachmentsList = this.attachmentsList.filter(files => files.pk_purchaseOrderAttachmentID != item.pk_purchaseOrderAttachmentID);
+        item.delLoader = false;
+        this._changeDetectorRef.markForCheck();
+      }, err => {
+        item.delLoader = false;
+        this._changeDetectorRef.markForCheck();
+      })
   }
   /**
      * On destroy

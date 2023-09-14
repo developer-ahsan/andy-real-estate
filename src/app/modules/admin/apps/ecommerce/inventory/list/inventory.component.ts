@@ -1384,7 +1384,7 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
         };
 
         const description = {
-            name: productName,
+            name: productName?.replace(/'/g, "''"),
             product_number: productNumber,
             description: true,
             product_desc: mainDescription?.replace(/'/g, "''") || null,
@@ -3154,7 +3154,7 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
         };
 
         const description = {
-            name: String(productName.replace(/'/g, '"')),
+            name: String(productName.replace(/'/g, "''")),
             product_number: String(productNumber),
             product_desc: String(mainDescription?.replace(/'/g, "''")) || null,
             mini_desc: String(miniDescription?.replace(/'/g, "''")) || null,
@@ -3234,8 +3234,8 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
                 });
         } else {
             let payload = {
-                name: String(productName.replace(/'/g, '"')),
-                product_number: productNumber.replace(/'/g, '"'),
+                name: String(productName.replace(/'/g, "''")),
+                product_number: productNumber.replace(/'/g, "''"),
                 product_desc: String(mainDescription?.replace(/'/g, "''")) || null,
                 mini_desc: String(miniDescription?.replace(/'/g, "''")) || null,
                 keywords: String(keywordsString) ? String(keywordsString) : null,
@@ -3257,7 +3257,7 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
                 units_in_shipping_package: unitsInShippingPackage ? unitsInShippingPackage : 0,
                 bln_include_shipping: doChargesApply == "Yes" ? 1 : 0,
                 fob_locations: this.checkedFOBLocations,
-                dimensions: String(productDimensions).replace(/'/g, '"'),
+                dimensions: String(productDimensions).replace(/'/g, "''"),
                 weight: weight || null,
                 weight_in_units: Number(unitsInWeight) || null,
                 over_pack_charge: overPackageCharge || null,
@@ -3797,7 +3797,7 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
             setup_charge_id: setup || 17,
             run_charge_id: run || 17,
             bln_includable: this.priceInclusionSelected.value === 'Yes' ? 1 : 0,
-            area: this.areaValue.replace(/'/g, '"'),
+            area: this.areaValue.replace(/'/g, "''"),
             bln_user_color_selection: this.defaultImprintColorSpecification === 'Yes' ? 1 : 0,
             multi_color_min_id: 1,
             collection_id: Number(this.customColorId),
@@ -3919,7 +3919,7 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
                     setup_charge_id,
                     run_charge_id,
                     bln_includable,
-                    area: area.replace(/'/g, '"'),
+                    area: area.replace(/'/g, "''"),
                     bln_user_color_selection,
                     multi_color_min_id,
                     collection_id,

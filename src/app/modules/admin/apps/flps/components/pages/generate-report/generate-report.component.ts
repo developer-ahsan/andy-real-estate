@@ -389,7 +389,7 @@ export class GenerateReportComponent implements OnInit {
         let payload: updateReport = {
             flps_userID: this.selectedEmployee.pk_userID,
             flpsName: this.selectedEmployee.fullName,
-            flpsUserEmail: 'ahsanayoub2017@gmail.com',
+            flpsUserEmail: this.selectedEmployee.email,
             blnSendEmail: this.blnSendEmail,
             rangeStart: this.reportParams.start_date,
             rangeEnd: this.reportParams.end_date,

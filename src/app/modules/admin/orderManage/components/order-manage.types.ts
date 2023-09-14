@@ -115,6 +115,7 @@ export interface AddComment {
     comment: string;
     order_id: number;
     recipients: string[];
+    orderManageLoggedInUserName: string;
     post_comment: boolean;
 };
 export interface UpdateTracking {
@@ -553,4 +554,12 @@ interface OrderLinePOSave {
     blnSupplier: boolean;
     blnSample: boolean;
     customerAccountNumber: string;
+};
+
+export interface AddAttachment {
+    orderLinePOID: number;
+    extension: string;
+    name: string;
+    mimeType: string;
+    add_attachment: boolean;
 };

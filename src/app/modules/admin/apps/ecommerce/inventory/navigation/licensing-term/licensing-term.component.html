@@ -53,7 +53,7 @@
                                 <mat-form-field class="fuse-mat-dense fuse-mat-no-subscript w-full mt-3">
                                     <mat-icon matPrefix [svgIcon]="'heroicons_outline:search'"></mat-icon>
                                     <input class="h-6" matTooltip="Enter for search" matInput
-                                        (keyup.enter)="searchKeyword($event)" [autocomplete]="'off'"
+                                        (keyup)="searchKeyword($event)" [autocomplete]="'off'"
                                         [placeholder]="'Search Licensing Term...'">
                                 </mat-form-field>
                             </div>

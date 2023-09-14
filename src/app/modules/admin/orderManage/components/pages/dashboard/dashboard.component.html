@@ -182,7 +182,7 @@
                 </tbody>
             </table>
             <mat-paginator #paginator class="border-b sm:border-t sm:border-b-0 z-10 bg-gray-50 dark:bg-transparent"
-                [disabled]="isPaginatedLoader" [length]="totalRecords" [pageIndex]="0" [pageSize]="50"
+                [disabled]="isPaginatedLoader" [length]="totalRecords" [pageIndex]="0" [pageSize]="100"
                 (page)="getNextData($event)" [hidePageSize]="true">
             </mat-paginator>
         </div>

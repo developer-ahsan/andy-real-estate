@@ -226,16 +226,36 @@
                         <fuse-alert [appearance]="'soft'" [type]="'warning'" *ngIf="attachmentsList.length == 0">
                             There are no attachments on this purchase order.
                         </fuse-alert>
-                        <div *ngFor="let item of attachmentsList">
-                            <a href="https://assets.consolidus.com/globalAssets/Orders/PurchaseOrders/attachments/{{item.fk_orderLinePOID}}/{{item.pk_purchaseOrderAttachmentID}}.{{item.extension}}"
-                                target="_blank" rel="noopener noreferrer">{{item.name}}</a>
+                        <div *ngIf="attachmentsList.length > 0">
+                            <table class="table table-striped">
+                                <tr *ngFor="let item of attachmentsList">
+                                    <td>
+                                        <a href="https://assets.consolidus.com/globalAssets/Orders/PurchaseOrders/attachments/{{item.fk_orderLinePOID}}/{{item.pk_purchaseOrderAttachmentID}}.{{item.extension}}"
+                                            target="_blank" rel="noopener noreferrer">{{item.name}}</a>
+                                    </td>
+                                    <td class="flex justify-end">
+                                        <mat-progress-spinner *ngIf="item?.delLoader" [diameter]="24"
+                                            [mode]="'indeterminate'">
+                                        </mat-progress-spinner>
+                                        <mat-icon *ngIf="!item?.delLoader" (click)="deleteAttachment(item)"
+                                            svgIcon="mat_outline:delete"></mat-icon>
+
+                                    </td>
+                                </tr>
+                            </table>
+
                         </div>
                         <mat-form-field class="w-full">
                             <mat-label>Name</mat-label>
-                            <input matInput>
+                            <input matInput [(ngModel)]="attachmentName">
                         </mat-form-field>
-                        <input type="file">
-                        <button class="min-w-40 btn buttonComment hover:bg-gray-200">Add Attachment</button>
+                        <input type="file" #attachmentFile (change)="uploadAttachmentFile($event)">
+                        <button class="min-w-40 btn buttonComment hover:bg-gray-200" [disabled]="isAttachmentLoader"
+                            (click)="addAttachmentFile()">
+                            <span *ngIf="!isAttachmentLoader">Add Attachment</span>
+                            <mat-progress-spinner *ngIf="isAttachmentLoader" [diameter]="24" [mode]="'indeterminate'">
+                            </mat-progress-spinner>
+                        </button>
                     </div>
                 </div>
             </div>

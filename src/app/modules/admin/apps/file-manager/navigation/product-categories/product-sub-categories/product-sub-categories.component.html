@@ -159,6 +159,8 @@
                             <th>Active</th>
                             <th>Online</th>
                             <th>Product</th>
+                            <th>Last Ordered</th>
+                            <th>Last Updated</th>
                             <th>Image</th>
                         </tr>
                     </thead>
@@ -178,6 +180,8 @@
                                 <span class="text-red-500" *ngIf="!item.blnStoreActive">Offline</span>
                             </td>
                             <td>{{item.productName}}</td>
+                            <td>{{item.lastOrderedDate | date: 'MM/dd/YYYY'}}</td>
+                            <td>{{item.lastUpdatedDate | date: 'MM/dd/YYYY'}} by {{item.lastUpdatedBy}}</td>
                             <td>
                                 <img src="https://assets.consolidus.com/globalAssets/Products/HiRes/{{item.pk_storeProductID}}.jpg"
                                     style="width:30px; height:30px;">
