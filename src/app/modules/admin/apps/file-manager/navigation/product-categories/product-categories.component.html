@@ -150,8 +150,8 @@
                                                 <div class="row pb-1 border-b-1"
                                                     *ngFor="let item of subCategories; let last = last">
                                                     <div class="col-6 cursor-pointer">
-                                                        <a class="text-blue-500 text-underline"
-                                                            [routerLink]="['/apps/stores/',selectedStore.pk_storeID,'child-categories','parent-categories',item.fk_categoryID,item.pk_subCategoryID]">
+                                                        <a class="text-blue-500"
+                                                            [routerLink]="['/apps/stores/',selectedStore.pk_storeID,'product-categories','child-categories',item.fk_categoryID,item.pk_subCategoryID]">
                                                             {{item.subCategoryName}}
                                                         </a>
                                                     </div>
