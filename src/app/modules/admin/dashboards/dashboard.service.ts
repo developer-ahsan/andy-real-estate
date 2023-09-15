@@ -13,8 +13,8 @@ export class DashboardsService {
     private _porfolioData: BehaviorSubject<any> = new BehaviorSubject(null);
     private _employeeData: BehaviorSubject<any> = new BehaviorSubject(null);
     private _ytdData: BehaviorSubject<any> = new BehaviorSubject(null);
-    private _allStores: BehaviorSubject<any> = new BehaviorSubject(null);
-    private _allSuppliers: BehaviorSubject<any> = new BehaviorSubject(null);
+    public _allStores: BehaviorSubject<any> = new BehaviorSubject(null);
+    public _allSuppliers: BehaviorSubject<any> = new BehaviorSubject(null);
 
     /**
      * Constructor
@@ -113,21 +113,25 @@ export class DashboardsService {
         );
     }
     getStoresData(): Observable<any> {
+        sessionStorage.removeItem('storesdata');
         let params = {
             get_stores: true
         }
         return this._httpClient.get(environment.dashboard, { params: params }).pipe(
             tap((response: any) => {
+                sessionStorage.setItem('storesdata', JSON.stringify(response));
                 this._allStores.next(response);
             })
         );
     }
     getSuppliersData(): Observable<any> {
+        sessionStorage.removeItem('suppliersdata');
         let params = {
             get_suppliers: true
         }
         return this._httpClient.get(environment.dashboard, { params: params }).pipe(
             tap((response: any) => {
+                sessionStorage.setItem('suppliersdata', JSON.stringify(response));
                 this._allSuppliers.next(response);
             })
         );

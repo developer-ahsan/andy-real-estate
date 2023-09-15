@@ -112,7 +112,8 @@ export const storeRoutes: Route[] = [
             },
             {
                 path: 'product-categories',
-                component: ProductCategoriesComponent,
+                loadChildren: () => import('./navigation/product-categories/product-categories.module').then(m => m.ProductCategoriesModule),
+                // component: ProductCategoriesComponent,
                 data: {
                     title: 'Product Categories',
                     url: 'product-categories'

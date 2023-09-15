@@ -5,6 +5,7 @@ import { Subject } from 'rxjs';
 import { debounceTime, distinctUntilChanged, filter, finalize, switchMap, takeUntil, tap } from 'rxjs/operators';
 import { VendorsService } from '../../vendors.service';
 import { AddCompany } from '../../vendors.types';
+import { DashboardsService } from 'app/modules/admin/dashboards/dashboard.service';
 @Component({
   selector: 'app-new-vendors',
   templateUrl: './new-vendors.component.html',
@@ -32,7 +33,8 @@ export class NewVendorsComponent implements OnInit, OnDestroy {
   ngDigitizer = false;
   constructor(
     private _changeDetectorRef: ChangeDetectorRef,
-    private _vendorService: VendorsService
+    private _vendorService: VendorsService,
+    private _commonService: DashboardsService
   ) { }
 
   initForm() {
@@ -132,7 +134,7 @@ export class NewVendorsComponent implements OnInit, OnDestroy {
     this.isAddLoader = true;
     this._vendorService.postVendorsData(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
       if (res["success"]) {
-        this._vendorService.getAllvendorsSuppliers().pipe(finalize(() => {
+        this._commonService.getSuppliersData().pipe(finalize(() => {
           this._vendorService.snackBar(res["message"]);
           this.isAddLoader = false;
           this.initForm();

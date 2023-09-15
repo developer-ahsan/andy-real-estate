@@ -6,6 +6,7 @@ import { fuseAnimations } from '@fuse/animations';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { FormControl, FormGroup } from '@angular/forms';
 import { DeleteSubCategory, RemoveCategory } from '../../stores.types';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-product-categories',
@@ -55,7 +56,8 @@ export class ProductCategoriesComponent implements OnInit, OnDestroy {
   constructor(
     public _storeManagerService: FileManagerService,
     private _changeDetectorRef: ChangeDetectorRef,
-    private _snackBar: MatSnackBar
+    private _snackBar: MatSnackBar,
+    private _router: Router
   ) { }
 
   ngOnInit(): void {
@@ -309,12 +311,18 @@ export class ProductCategoriesComponent implements OnInit, OnDestroy {
     }
   }
   toggleEditMainCategory(item) {
-    this.mainCatData = item;
-    this._storeManagerService.isEditMainCategory = !this._storeManagerService.isEditMainCategory;
+    const category: string = JSON.stringify(item)
+    localStorage.setItem('MainCategory', category);
+    this._router.navigateByUrl(`/apps/stores/${this.selectedStore.pk_storeID}/product-categories/parent-categories`);
+    // this.mainCatData = item;
+    // this._storeManagerService.isEditMainCategory = !this._storeManagerService.isEditMainCategory;
   }
   toggleEditSubCategory(item) {
-    this.subCatData = item;
-    this._storeManagerService.isEditSubCategory = !this._storeManagerService.isEditSubCategory;
+    const category: string = JSON.stringify(item)
+    localStorage.setItem('SubCategory', category);
+    this._router.navigateByUrl(`/apps/stores/${this.selectedStore.pk_storeID}/product-categories/child-categories`);
+    // this.subCatData = item;
+    // this._storeManagerService.isEditSubCategory = !this._storeManagerService.isEditSubCategory;
   }
   deleteCategory(item) {
     let payload: RemoveCategory = {

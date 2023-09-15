@@ -6,6 +6,7 @@ import { fuseAnimations } from '@fuse/animations';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { AddSubCategoryKeyword, DeleteSubCategory, RemoveSubCategoryFeatureImage, RemoveSubCategoryKeyword, UpdateSubCategory, addSubCategoryProducts, createSubCategoryFeatureImage, removeSubCategoryProducts, updateSubCatProductDisplayOrder, updateSubCategoriesDisplayOrder, updateSubCategoriesStatus, updateSubCategoryFeatureImage } from '../../../stores.types';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-product-sub-categories',
@@ -88,12 +89,19 @@ export class ProductSubCategoriesComponent implements OnInit, OnDestroy {
   constructor(
     private _storeManagerService: FileManagerService,
     private _changeDetectorRef: ChangeDetectorRef,
+    private _router: Router,
     private _snackBar: MatSnackBar
   ) { }
 
   ngOnInit(): void {
-    this.initialize();
+    const catData = localStorage.getItem('SubCategory')
+    this.subCatData = JSON.parse(catData);
     this.getStoreDetails();
+    if (this.subCatData) {
+      this.initialize();
+    } else {
+      this.backToMainScreen();
+    }
   };
   initialize() {
     this.updateCatForm = new FormGroup({
@@ -166,15 +174,17 @@ export class ProductSubCategoriesComponent implements OnInit, OnDestroy {
     });
   }
   backToMainScreen() {
-    this._storeManagerService.isEditSubCategory = false;
+    this._router.navigateByUrl(`/apps/stores/${this.selectedStore.pk_storeID}/child-categories`);
+    // this._storeManagerService.isEditSubCategory = false;
   }
   getStoreDetails() {
     this._storeManagerService.storeDetail$
       .pipe(takeUntil(this._unsubscribeAll))
       .subscribe((items: any) => {
         this.selectedStore = items["data"][0];
-        this.getCategoryProducts();
-
+        if (this.subCatData) {
+          this.getCategoryProducts();
+        }
       });
   }
   calledScreen(screenName): void {

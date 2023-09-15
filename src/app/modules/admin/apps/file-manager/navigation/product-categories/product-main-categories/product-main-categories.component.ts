@@ -6,6 +6,7 @@ import { fuseAnimations } from '@fuse/animations';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { AddCategoryKeyword, AddFeatureImage, RemoveCategory, RemoveCategoryFeatureImage, RemoveCategoryKeyword, UpdateCategory, addToRecommended, createCategoryFeatureImage, updateCategoryFeatureImage, updateCategoryImage, updateRecommededProducts } from '../../../stores.types';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-product-main-categories',
@@ -97,17 +98,23 @@ export class ProductMainCategoriesComponent implements OnInit, OnDestroy {
   constructor(
     private _storeManagerService: FileManagerService,
     private _changeDetectorRef: ChangeDetectorRef,
-    private _snackBar: MatSnackBar
+    private _snackBar: MatSnackBar,
+    private _router: Router
   ) { }
 
   ngOnInit(): void {
+    const catData = localStorage.getItem('MainCategory')
+    this.mainCatData = JSON.parse(catData);
+    this.getStoreDetails();
     if (this.mainCatData) {
       this.initialize();
-      this.getStoreDetails();
+    } else {
+      this.backToMainScreen();
     }
   };
   backToMainScreen() {
-    this._storeManagerService.isEditMainCategory = false;
+    // this._storeManagerService.isEditMainCategory = false;
+    this._router.navigateByUrl(`/apps/stores/${this.selectedStore.pk_storeID}/product-categories`);
   }
   getStoreDetails() {
     this._storeManagerService.storeDetail$
@@ -115,7 +122,9 @@ export class ProductMainCategoriesComponent implements OnInit, OnDestroy {
       .subscribe((items: any) => {
         this.selectedStore = items["data"][0];
         this.dataSourceLoading = true;
-        this.getKeywords();
+        if (this.mainCatData) {
+          this.getKeywords();
+        }
       });
   }
   initialize() {

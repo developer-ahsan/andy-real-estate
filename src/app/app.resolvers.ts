@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { ActivatedRouteSnapshot, Resolve, RouterStateSnapshot } from '@angular/router';
-import { forkJoin, Observable } from 'rxjs';
+import { forkJoin, Observable, of } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { InitialData } from 'app/app.types';
 import { environment } from 'environments/environment';
@@ -76,7 +76,14 @@ export class StoresResolver implements Resolve<any>
      * @param state
      */
     resolve(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<any> {
-        return this._dashboardService.getStoresData();
+        const storedData = sessionStorage.getItem('storesdata');
+        if (storedData) {
+            const parsedData = JSON.parse(storedData);
+            this._dashboardService._allStores.next(parsedData);
+            return of(parsedData);
+        } else {
+            return this._dashboardService.getStoresData();
+        }
     }
 }
 @Injectable({
@@ -101,6 +108,13 @@ export class SuppliersResolver implements Resolve<any>
      * @param state
      */
     resolve(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<any> {
-        return this._dashboardService.getSuppliersData();
+        const supplierssData = sessionStorage.getItem('suppliersdata');
+        if (supplierssData) {
+            const parsedData = JSON.parse(supplierssData);
+            this._dashboardService._allSuppliers.next(parsedData);
+            return of(parsedData);
+        } else {
+            return this._dashboardService.getSuppliersData();
+        }
     }
 }

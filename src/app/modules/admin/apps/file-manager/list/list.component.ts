@@ -258,6 +258,7 @@ export class StoresListComponent implements OnInit, OnDestroy {
             this.createStoreLoader = true;
             this._fileManagerService.CreateNewStore(this.createStoreForm.value).subscribe(res => {
                 this.settingStoreForm.patchValue({ fk_storeID: res["message"].newStoreId });
+                this._commonService.getStoresData().pipe(takeUntil(this._unsubscribeAll)).subscribe();
                 this.createStoreLoader = false;
                 this.goForward();
                 this._changeDetectorRef.markForCheck();
