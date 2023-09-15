@@ -335,7 +335,7 @@ export class OrderManageDetailsComponent implements OnInit, OnDestroy {
       }
       this._OrderManageService.PostAPIData(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
         if (res["success"]) {
-          let comment = `<b><span class="fa fa-circle disabled"></span> ${this.userData.name}</b> said on ${moment().format('MMM DD YYYY')} | ${moment().format('h:mm:ss')}<br>${this.ngComment}<br><br>`;
+          let comment = res["newComment"];
           this.orderData.internalComments = this.orderData.internalComments + comment;
           this._OrderManageService.snackBar(res["message"]);
           this.ngComment = '';

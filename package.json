@@ -6,7 +6,7 @@
     "scripts": {
         "ng": "ng",
         "start": "set NODE_OPTIONS=--max_old_space_size=8192 && ng serve --proxy-config proxy.conf.json",
-        "build": "set NODE_OPTIONS=--max_old_space_size=8192 && ng build",
+        "build": "set NODE_OPTIONS=--max_old_space_size=8192 && ng build --output-hashing=all",
         "test": "ng test",
         "lint": "ng lint",
         "e2e": "ng e2e"
