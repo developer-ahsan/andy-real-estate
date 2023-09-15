@@ -97,7 +97,7 @@ export class ProductCategoriesComponent implements OnInit, OnDestroy {
     const { pk_storeID } = this.selectedStore;
 
     // Get the offline products
-    this._storeManagerService.getStoreCategory(pk_storeID, page)
+    this._storeManagerService.getStoreCategory(pk_storeID, page, 0)
       .pipe(takeUntil(this._unsubscribeAll))
       .subscribe((response: any) => {
         this.dataSource = response["data"];
@@ -142,7 +142,7 @@ export class ProductCategoriesComponent implements OnInit, OnDestroy {
     const { pk_storeID } = this.selectedStore;
 
     // Get the offline products
-    this._storeManagerService.getStoreCategory(pk_storeID, page)
+    this._storeManagerService.getStoreCategory(pk_storeID, page, 0)
       .pipe(takeUntil(this._unsubscribeAll))
       .subscribe((response: any) => {
         this.dataSource = response["data"];
@@ -207,7 +207,7 @@ export class ProductCategoriesComponent implements OnInit, OnDestroy {
     this.subCategoriesLoader = true;
 
     // Get the offline products
-    this._storeManagerService.getStoreSubCategory(pk_categoryID)
+    this._storeManagerService.getStoreSubCategory(pk_categoryID, 0)
       .pipe(takeUntil(this._unsubscribeAll))
       .subscribe((response: any) => {
         this.subCategories = response["data"];

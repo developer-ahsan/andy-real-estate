@@ -6,7 +6,7 @@ import { fuseAnimations } from '@fuse/animations';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { AddCategoryKeyword, AddFeatureImage, RemoveCategory, RemoveCategoryFeatureImage, RemoveCategoryKeyword, UpdateCategory, addToRecommended, createCategoryFeatureImage, updateCategoryFeatureImage, updateCategoryImage, updateRecommededProducts } from '../../../stores.types';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 
 @Component({
   selector: 'app-product-main-categories',
@@ -95,23 +95,36 @@ export class ProductMainCategoriesComponent implements OnInit, OnDestroy {
   recommendedKeywordLoader: boolean = false;
   isAddRecommendeProdsLoader: boolean = false;
   isUpdateRecommendeProdsLoader: boolean = false;
+  catID: any;
   constructor(
     private _storeManagerService: FileManagerService,
     private _changeDetectorRef: ChangeDetectorRef,
     private _snackBar: MatSnackBar,
-    private _router: Router
+    private _router: Router,
+    private rotue: ActivatedRoute
   ) { }
 
   ngOnInit(): void {
-    const catData = localStorage.getItem('MainCategory')
-    this.mainCatData = JSON.parse(catData);
-    this.getStoreDetails();
-    if (this.mainCatData) {
+    this.rotue.params.subscribe(res => {
+      this.isLoading = true;
+      this.catID = Number(res.id);
+      this.getStoreDetails();
       this.initialize();
-    } else {
-      this.backToMainScreen();
-    }
+    });
   };
+  getMainCategory() {
+    const { pk_storeID } = this.selectedStore;
+
+    // Get the offline products
+    this._storeManagerService.getStoreCategory(pk_storeID, 1, this.catID)
+      .pipe(takeUntil(this._unsubscribeAll))
+      .subscribe((response: any) => {
+        this.isLoading = false;
+        this.mainCatData = response["data"][0];
+        this.initialize();
+        this._changeDetectorRef.markForCheck();
+      });
+  }
   backToMainScreen() {
     // this._storeManagerService.isEditMainCategory = false;
     this._router.navigateByUrl(`/apps/stores/${this.selectedStore.pk_storeID}/product-categories`);
@@ -122,9 +135,8 @@ export class ProductMainCategoriesComponent implements OnInit, OnDestroy {
       .subscribe((items: any) => {
         this.selectedStore = items["data"][0];
         this.dataSourceLoading = true;
-        if (this.mainCatData) {
-          this.getKeywords();
-        }
+        this.getMainCategory();
+        this.getKeywords();
       });
   }
   initialize() {
@@ -167,7 +179,7 @@ export class ProductMainCategoriesComponent implements OnInit, OnDestroy {
         params = {
           category_image_current_products: true,
           store_id: this.selectedStore.pk_storeID,
-          category_id: this.mainCatData.pk_categoryID,
+          category_id: this.catID,
           keyword: res
         }
         return res !== null && res.length >= 3
@@ -217,7 +229,7 @@ export class ProductMainCategoriesComponent implements OnInit, OnDestroy {
   updateCategory() {
     const { categoryName, categoryDesc, browserTitle, metaDesc, permalink, blnScroller } = this.updateCatForm.getRawValue();
     let payload: UpdateCategory = {
-      category_id: this.mainCatData.pk_categoryID,
+      category_id: this.catID,
       categoryName: categoryName,
       categoryDesc: categoryDesc,
       categoryMiniDesc: this.mainCatData.categoryMiniDesc,
@@ -241,7 +253,7 @@ export class ProductMainCategoriesComponent implements OnInit, OnDestroy {
   // Remove Category
   deleteCategory() {
     let payload: RemoveCategory = {
-      category_id: this.mainCatData.pk_categoryID,
+      category_id: this.catID,
       delete_category: true
     }
     this.mainCatData.deleteLoader = true;
@@ -262,7 +274,7 @@ export class ProductMainCategoriesComponent implements OnInit, OnDestroy {
     this.isKeywordLoader = true;
     let params = {
       categories_keywords: true,
-      category_id: this.mainCatData.pk_categoryID,
+      category_id: this.catID,
     }
     this._storeManagerService.getStoresData(params).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
       this.keywordsList = res["data"];
@@ -280,7 +292,7 @@ export class ProductMainCategoriesComponent implements OnInit, OnDestroy {
     }
     this.isAddKeyword = true;
     let payload: AddCategoryKeyword = {
-      category_id: this.mainCatData.pk_categoryID,
+      category_id: this.catID,
       keyword: this.ngKeyword,
       add_category_keyword: true
     }
@@ -321,7 +333,7 @@ export class ProductMainCategoriesComponent implements OnInit, OnDestroy {
     this.isCategoryImageLoader = true;
     let params = {
       featured_images: true,
-      category_id: this.mainCatData.pk_categoryID,
+      category_id: this.catID,
     }
     this._storeManagerService.getStoresData(params).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
       // console.log(res);
@@ -339,7 +351,7 @@ export class ProductMainCategoriesComponent implements OnInit, OnDestroy {
       this.isAddFeatureLoader = true;
       const { buttonURL, displayOrder, blnNewWindow, headerCopy, buttonCopy, align, headerCopyColor, buttonBackgroundColor, buttonColor, arrowColor } = this.addFeatureForm.getRawValue();
       let payload: createCategoryFeatureImage = {
-        category_id: Number(this.mainCatData.pk_categoryID),
+        category_id: Number(this.catID),
         buttonURL: buttonURL,
         displayOrder: Number(displayOrder),
         blnNewWindow: blnNewWindow,
@@ -401,7 +413,7 @@ export class ProductMainCategoriesComponent implements OnInit, OnDestroy {
     const payload = {
       file_upload: true,
       image_file: base64,
-      image_path: `/globalAssets/Stores/category/featureImages/${this.mainCatData.pk_categoryID}/${id}.jpg`
+      image_path: `/globalAssets/Stores/category/featureImages/${this.catID}/${id}.jpg`
     };
     this._storeManagerService.addMedia(payload)
       .subscribe((response) => {
@@ -484,7 +496,7 @@ export class ProductMainCategoriesComponent implements OnInit, OnDestroy {
     let params = {
       category_image_current_products: true,
       store_id: this.selectedStore.pk_storeID,
-      category_id: this.mainCatData.pk_categoryID
+      category_id: this.catID
     }
     this._storeManagerService.getStoresData(params).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
       let product = [{
@@ -508,7 +520,7 @@ export class ProductMainCategoriesComponent implements OnInit, OnDestroy {
     }
     let payload: updateCategoryImage = {
       store_product_category_image_id: storePID,
-      category_id: this.mainCatData.pk_categoryID,
+      category_id: this.catID,
       update_category_image: true
     }
     this.isCategoryUpdateLoader = true;
@@ -526,7 +538,7 @@ export class ProductMainCategoriesComponent implements OnInit, OnDestroy {
     this.isRecommendationsLoader = true;
     let params = {
       category_recommendations: true,
-      category_id: this.mainCatData.pk_categoryID
+      category_id: this.catID
     }
     this._storeManagerService.getStoresData(params).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
       this.selectedRecommendedProducts = res["data"];
@@ -539,7 +551,7 @@ export class ProductMainCategoriesComponent implements OnInit, OnDestroy {
   getRecommendationProducts(page) {
     let params = {
       category_recommendations_current_products: true,
-      category_id: this.mainCatData.pk_categoryID,
+      category_id: this.catID,
       keyword: this.recommededKeyword,
       page: page
     }
@@ -602,7 +614,7 @@ export class ProductMainCategoriesComponent implements OnInit, OnDestroy {
       this._storeManagerService.snackBar('Please select atleast 1 product');
     }
     let payload: addToRecommended = {
-      categoryID: this.mainCatData.pk_categoryID,
+      categoryID: this.catID,
       list: prods,
       add_category_recommended_products: true
     }
@@ -640,7 +652,7 @@ export class ProductMainCategoriesComponent implements OnInit, OnDestroy {
     let payload: updateRecommededProducts = {
       deleteRecommendationProducts: DeleteRecommendation,
       updateRecommendationProducts: UpdateRecommendation,
-      category_id: this.mainCatData.pk_categoryID,
+      category_id: this.catID,
       update_category_recommendations: true
     }
     this._storeManagerService.putStoresData(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {

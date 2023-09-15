@@ -355,22 +355,24 @@ export class FileManagerService {
     });
   }
 
-  getStoreCategory(storeID, pageNo): Observable<any[]> {
+  getStoreCategory(storeID, pageNo, catID): Observable<any[]> {
     return this._httpClient.get<any[]>(environment.storeNewUrl, {
       params: {
         category: true,
         store_id: storeID,
+        category_id: catID,
         size: 100,
         page: pageNo,
       },
     });
   }
 
-  getStoreSubCategory(storeID): Observable<any[]> {
+  getStoreSubCategory(catID, subCatId): Observable<any[]> {
     return this._httpClient.get<any[]>(environment.storeNewUrl, {
       params: {
         sub_category: true,
-        category_id: storeID,
+        category_id: catID,
+        sub_category_id: subCatId,
         size: 20,
       },
     });

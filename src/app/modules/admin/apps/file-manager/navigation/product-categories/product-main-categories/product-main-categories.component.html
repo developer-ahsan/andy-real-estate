@@ -8,9 +8,9 @@
         </mat-button-toggle-group>
     </div>
 </div>
-<!-- <ngx-skeleton-loader count="8" appearance="line" animation="pulse" *ngIf="dataSourceLoading">
-</ngx-skeleton-loader> -->
-<div *ngIf="mainCatData" class="rounded-2xl w-full shadow bg-card p-10">
+<ngx-skeleton-loader count="8" appearance="line" animation="pulse" *ngIf="isLoading">
+</ngx-skeleton-loader>
+<div *ngIf="mainCatData && !isLoading" class="rounded-2xl w-full shadow bg-card p-10">
     <div class="flex justify-between align-items-center w-full">
         <p class="font-bold text-xl">{{mainScreen}}</p>
         <button class="min-w-30" mat-button mat-stroked-button (click)="backToMainScreen()">Back to list</button>

@@ -50,19 +50,19 @@ const catRoutes: Route[] = [
     children: [
       {
         path: '',
-        redirectTo: 'dashboard',
+        redirectTo: 'categories',
         pathMatch: 'full'
       },
       {
-        path: 'dashboard',
+        path: 'categories',
         component: ProductCategoriesComponent,
       },
       {
-        path: 'parent-categories',
+        path: 'parent-categories/:id',
         component: ProductMainCategoriesComponent,
       },
       {
-        path: 'child-categories',
+        path: 'child-categories/:pid/:id',
         component: ProductSubCategoriesComponent,
       },
     ]

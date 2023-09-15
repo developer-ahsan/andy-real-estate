@@ -6,7 +6,7 @@ import { fuseAnimations } from '@fuse/animations';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { AddSubCategoryKeyword, DeleteSubCategory, RemoveSubCategoryFeatureImage, RemoveSubCategoryKeyword, UpdateSubCategory, addSubCategoryProducts, createSubCategoryFeatureImage, removeSubCategoryProducts, updateSubCatProductDisplayOrder, updateSubCategoriesDisplayOrder, updateSubCategoriesStatus, updateSubCategoryFeatureImage } from '../../../stores.types';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 
 @Component({
   selector: 'app-product-sub-categories',
@@ -85,23 +85,24 @@ export class ProductSubCategoriesComponent implements OnInit, OnDestroy {
   selectedProducts = [];
 
   isAddProductLoader: boolean = false;
-
+  catID: any;
+  subCatID: any;
   constructor(
     private _storeManagerService: FileManagerService,
     private _changeDetectorRef: ChangeDetectorRef,
     private _router: Router,
-    private _snackBar: MatSnackBar
+    private _snackBar: MatSnackBar,
+    private rotue: ActivatedRoute
   ) { }
 
   ngOnInit(): void {
-    const catData = localStorage.getItem('SubCategory')
-    this.subCatData = JSON.parse(catData);
-    this.getStoreDetails();
-    if (this.subCatData) {
+    this.rotue.params.subscribe(res => {
+      this.isLoading = true;
+      this.catID = Number(res.pid);
+      this.subCatID = Number(res.id);
+      this.getStoreDetails();
       this.initialize();
-    } else {
-      this.backToMainScreen();
-    }
+    });
   };
   initialize() {
     this.updateCatForm = new FormGroup({
@@ -115,8 +116,8 @@ export class ProductSubCategoriesComponent implements OnInit, OnDestroy {
     });
     this.updateCatForm.patchValue(this.subCatData);
     this.updateCatForm.patchValue({
-      category_id: this.subCatData.fk_categoryID,
-      subCategoryID: this.subCatData.pk_subCategoryID
+      category_id: this.catID,
+      subCategoryID: this.subCatID
     });
     this.addFeatureForm = new FormGroup({
       buttonURL: new FormControl(),
@@ -149,7 +150,7 @@ export class ProductSubCategoriesComponent implements OnInit, OnDestroy {
         params = {
           subcategory_available_products: true,
           store_id: this.selectedStore.pk_storeID,
-          sub_category_id: this.subCatData.pk_subCategoryID,
+          sub_category_id: this.subCatID,
           keyword: res
         }
         return res !== null && res.length >= 3
@@ -177,14 +178,26 @@ export class ProductSubCategoriesComponent implements OnInit, OnDestroy {
     this._router.navigateByUrl(`/apps/stores/${this.selectedStore.pk_storeID}/child-categories`);
     // this._storeManagerService.isEditSubCategory = false;
   }
+  getMainCategory() {
+    const { pk_storeID } = this.selectedStore;
+
+    // Get the offline products
+    this._storeManagerService.getStoreSubCategory(this.catID, this.subCatID)
+      .pipe(takeUntil(this._unsubscribeAll))
+      .subscribe((response: any) => {
+        this.isLoading = false;
+        this.subCatData = response["data"][0];
+        this.initialize();
+        this._changeDetectorRef.markForCheck();
+      });
+  }
   getStoreDetails() {
     this._storeManagerService.storeDetail$
       .pipe(takeUntil(this._unsubscribeAll))
       .subscribe((items: any) => {
         this.selectedStore = items["data"][0];
-        if (this.subCatData) {
-          this.getCategoryProducts();
-        }
+        this.getMainCategory();
+        this.getCategoryProducts();
       });
   }
   calledScreen(screenName): void {
@@ -276,7 +289,7 @@ export class ProductSubCategoriesComponent implements OnInit, OnDestroy {
     });
     let payload: updateSubCategoriesStatus = {
       subCategories: SubCategories,
-      category_id: this.subCatData.fk_categoryID,
+      category_id: this.catID,
       update_subCategory_status: true
     }
     this.subCatData.statusLoader = true;
@@ -294,7 +307,7 @@ export class ProductSubCategoriesComponent implements OnInit, OnDestroy {
     this.isKeywordLoader = true;
     let params = {
       categories_keywords: true,
-      subcategory_id: this.subCatData.pk_subCategoryID,
+      subcategory_id: this.subCatID,
     }
     this._storeManagerService.getStoresData(params).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
       this.keywordsList = res["data"];
@@ -312,7 +325,7 @@ export class ProductSubCategoriesComponent implements OnInit, OnDestroy {
     }
     this.isAddKeyword = true;
     let payload: AddSubCategoryKeyword = {
-      sub_category_id: this.subCatData.pk_subCategoryID,
+      sub_category_id: this.subCatID,
       keyword: this.ngKeyword,
       add_subcategory_keyword: true
     }
@@ -353,7 +366,7 @@ export class ProductSubCategoriesComponent implements OnInit, OnDestroy {
     this.isFeatureImageLoader = true;
     let params = {
       subCategory_feature_images: true,
-      subCategory_id: this.subCatData.pk_subCategoryID,
+      subCategory_id: this.subCatID,
     }
     this._storeManagerService.getStoresData(params).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
       this.featureImages = res["data"];
@@ -368,7 +381,7 @@ export class ProductSubCategoriesComponent implements OnInit, OnDestroy {
     this.isAddFeatureLoader = true;
     const { buttonURL, displayOrder, blnNewWindow, headerCopy, buttonCopy, align, headerCopyColor, buttonBackgroundColor, buttonColor, arrowColor } = this.addFeatureForm.getRawValue();
     let payload: createSubCategoryFeatureImage = {
-      subCategory_id: Number(this.subCatData.pk_subCategoryID),
+      subCategory_id: Number(this.subCatID),
       buttonURL: buttonURL,
       displayOrder: Number(displayOrder),
       blnNewWindow: blnNewWindow,
@@ -429,7 +442,7 @@ export class ProductSubCategoriesComponent implements OnInit, OnDestroy {
     const payload = {
       file_upload: true,
       image_file: base64,
-      image_path: `/globalAssets/Stores/subcategory/featureImages/${this.subCatData.pk_subCategoryID}/${id}.jpg`
+      image_path: `/globalAssets/Stores/subcategory/featureImages/${this.subCatID}/${id}.jpg`
     };
     this._storeManagerService.addMedia(payload)
       .subscribe((response) => {
@@ -499,7 +512,7 @@ export class ProductSubCategoriesComponent implements OnInit, OnDestroy {
   getProductDisplayList(page) {
     let params = {
       subcategory_products_display_order: true,
-      subcategory_id: this.subCatData.pk_subCategoryID,
+      subcategory_id: this.subCatID,
       page: page
     }
     if (page == 1) {
@@ -533,7 +546,7 @@ export class ProductSubCategoriesComponent implements OnInit, OnDestroy {
     });
     let payload: updateSubCatProductDisplayOrder = {
       storeProducts: storeProducts,
-      subCategory_id: this.subCatData.pk_subCategoryID,
+      subCategory_id: this.subCatID,
       update_display_order: true
     }
     this.isProductDisplayUpdate = true;
@@ -550,7 +563,7 @@ export class ProductSubCategoriesComponent implements OnInit, OnDestroy {
   getProductList(page) {
     let params = {
       subcategory_products: true,
-      sub_category_id: this.subCatData.pk_subCategoryID,
+      sub_category_id: this.subCatID,
       page: page
     }
     if (page == 1) {
@@ -582,8 +595,8 @@ export class ProductSubCategoriesComponent implements OnInit, OnDestroy {
     });
     let payload: removeSubCategoryProducts = {
       store_product_ids: store_product_ids,
-      category_id: this.subCatData.fk_categoryID,
-      subCategory_id: this.subCatData.pk_subCategoryID,
+      category_id: this.catID,
+      subCategory_id: this.subCatID,
       remove_subCategory_products: true
     }
     this.subCatData.removeLoader = true;
@@ -600,7 +613,7 @@ export class ProductSubCategoriesComponent implements OnInit, OnDestroy {
     let params = {
       subcategory_available_products: true,
       store_id: this.selectedStore.pk_storeID,
-      sub_category_id: this.subCatData.pk_subCategoryID
+      sub_category_id: this.subCatID
     }
     this._storeManagerService.getStoresData(params).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
       this.allCatProds = res['data'];
@@ -633,7 +646,7 @@ export class ProductSubCategoriesComponent implements OnInit, OnDestroy {
     });
     let payload: addSubCategoryProducts = {
       store_product_ids: storeProducts,
-      subCategory_id: this.subCatData.pk_subCategoryID,
+      subCategory_id: this.subCatID,
       add_subCategory_products: true
     }
     this.isAddProductLoader = true;
