@@ -175,7 +175,7 @@ export class ProductSubCategoriesComponent implements OnInit, OnDestroy {
     });
   }
   backToMainScreen() {
-    this._router.navigateByUrl(`/apps/stores/${this.selectedStore.pk_storeID}/child-categories`);
+    this._router.navigateByUrl(`/apps/stores/${this.selectedStore.pk_storeID}/product-categories`);
     // this._storeManagerService.isEditSubCategory = false;
   }
   getMainCategory() {
