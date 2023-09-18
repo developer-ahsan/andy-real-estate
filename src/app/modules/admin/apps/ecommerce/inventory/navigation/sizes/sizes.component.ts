@@ -53,6 +53,10 @@ export class SizesComponent implements OnInit, OnDestroy {
   selectedChart: any;
   ngSelectedChart: any;
   isChartUpdateLoader: boolean = false;
+
+  allSizes = [];
+  searchSizes = [];
+  selectedSizes = [];
   constructor(
     private _changeDetectorRef: ChangeDetectorRef,
     private _inventoryService: InventoryService,
@@ -90,68 +94,81 @@ export class SizesComponent implements OnInit, OnDestroy {
   }
   getSizes(page: number): void {
     const { pk_productID, fk_supplierID } = this.selectedProduct;
+    let params = {
+      product_id: pk_productID,
+      apparel_sizes: true
+    }
+    this._inventoryService.getProductsData(params).pipe(takeUntil(this._unsubscribeAll)).subscribe(sizes => {
+      this._inventoryService.getCharts(pk_productID, page, fk_supplierID)
+        .pipe(takeUntil(this._unsubscribeAll))
+        .subscribe((charts) => {
+          if (charts["selected_chart"].length > 0) {
+            this.ngSelectedChart = charts["selected_chart"][0].pk_chartID;
+          }
+          this.dataSourceCharts = charts["selected_chart"].concat(charts["data"]);
+          this.chartsLength = charts["totalRecords"];
 
-    this._inventoryService.getSizes(pk_productID, this.searchKeywordTerm, page)
-      .pipe(takeUntil(this._unsubscribeAll))
-      .subscribe((sizes) => {
-        this._inventoryService.getCharts(pk_productID, page, fk_supplierID)
-          .pipe(takeUntil(this._unsubscribeAll))
-          .subscribe((charts) => {
-            if (charts["selected_chart"].length > 0) {
-              this.ngSelectedChart = charts["selected_chart"][0].pk_chartID;
-            }
-            this.dataSourceCharts = charts["selected_chart"].concat(charts["data"]);
-            this.chartsLength = charts["totalRecords"];
-
-            const { selected, unSelected, frequentlyUsed } = sizes["data"];
-            let sizesArr;
-            if (page == 1 && this.searchKeywordTerm == '') {
-              sizesArr = frequentlyUsed.concat(unSelected);
-            } else {
-              sizesArr = unSelected;
-            }
-            for (const selectedObj of selected) {
-              selectedObj["isSelected"] = true;
-              const index = sizesArr.findIndex(elem => elem.pk_sizeID == selectedObj.fk_sizeID);
-              sizesArr.splice(index, 1);
-            }
-            sizesArr.forEach(element => {
-              element.run = Number(0.00)
+          let all_selected_sizes = [];
+          let all_sizes = [];
+          if (sizes["product_selected_sizes"][0].product_selected_sizes) {
+            let size = sizes["product_selected_sizes"][0].product_selected_sizes.split(',,');
+            size.forEach(element => {
+              const [name, order, id, setup, run, weight, unitsPerWeight] = element.split("::");
+              all_selected_sizes.push({ sizeName: name, run: Number(run), weight: Number(weight), unitsPerWeight: Number(unitsPerWeight), setup: Number(setup), pk_sizeID: Number(id), listOrder: Number(order), checked: true, is_delete: false });
             });
-            this.arrayToUpdate = selected;
-            this.dataSource = selected.concat(sizesArr);
-            this.sizesLength = sizes["totalRecords"];
-            if (this.searchKeywordTerm == '') {
-              this.tempDataSource = selected.concat(sizesArr);
-              this.tempDataCount = sizes["totalRecords"];
-            }
-            this.getColors();
+          }
+          if (sizes["all_sizes"][0].all_sizes) {
+            let size = sizes["all_sizes"][0].all_sizes.split(',,');
+            size.forEach(element => {
+              const [id, name, order] = element.split("::");
+              all_sizes.push({ sizeName: name, run: 0, pk_sizeID: Number(id), listOrder: Number(order), checked: false });
+            });
+          }
+          this.selectedSizes = all_selected_sizes;
+          this.allSizes = all_selected_sizes.concat(all_sizes);
+          this.searchSizes = all_selected_sizes.concat(all_sizes);
+          this.sizesLength = sizes["totalRecords"];
+          this.getColors();
 
-            this.isSearchLoading = false;
-            this.isLoading = false;
-
-
-            // Mark for check
-            this._changeDetectorRef.markForCheck();
-          }, err => {
-            this.isSearchLoading = false;
-            this.isLoading = false;
+          this.isSearchLoading = false;
+          this.isLoading = false;
 
 
-            // Mark for check
-            this._changeDetectorRef.markForCheck();
-          });
+          // Mark for check
+          this._changeDetectorRef.markForCheck();
+        }, err => {
+          this.isSearchLoading = false;
+          this.isLoading = false;
 
-      }, err => {
-        this.isSearchLoading = false;
-        this.isLoading = false;
 
-        this.isLoadingChange.emit(false);
-        // Mark for check
-        this._changeDetectorRef.markForCheck();
-      });
+          // Mark for check
+          this._changeDetectorRef.markForCheck();
+        });
+    }, err => {
+      this.isSearchLoading = false;
+      this.isLoading = false;
+
+      this.isLoadingChange.emit(false);
+      // Mark for check
+      this._changeDetectorRef.markForCheck();
+    });
   };
 
+  searchSizesData(event) {
+    if (event.target.value == '') {
+      this.allSizes = this.searchSizes;
+      return;
+    }
+    const results = [];
+
+    this.searchSizes.forEach(size => {
+      if (size.sizeName.toLowerCase().includes(event.target.value.toLowerCase())) {
+        results.push(size);
+      }
+    });
+
+    this.allSizes = results;
+  }
   getCharts(page: number): void {
     const { pk_productID, fk_supplierID } = this.selectedProduct;
 
@@ -211,35 +228,40 @@ export class SizesComponent implements OnInit, OnDestroy {
 
   updateSizes() {
     const { pk_productID } = this.selectedProduct;
-    let tempSizeArray = [];
-    for (const size of this.arrayToUpdate) {
-      const { run, weight, unitsPerWeight, fk_sizeID, pk_sizeID } = size;
-      if (isNaN(run) || isNaN(weight) || isNaN(unitsPerWeight)) {
-        return this._snackBar.open('A value appears to be missing', '', {
-          horizontalPosition: 'center',
-          verticalPosition: 'bottom',
-          duration: 3500
+    let productSizeObj = [];
+    this.allSizes.forEach(element => {
+      if (element.checked) {
+        productSizeObj.push({
+          size_id: element.pk_sizeID,
+          run: element.run,
+          weight: element.weight,
+          unit_per_weight: element.unitsPerWeight,
+          is_delete: false
         });
       }
-      let obj = {
-        size_id: pk_sizeID || fk_sizeID,
-        run: run,
-        weight: weight,
-        unit_per_weight: unitsPerWeight
-      };
-      tempSizeArray.push(obj);
-    };
-
-    const payload = {
+    });
+    this.selectedSizes.forEach(element => {
+      const check = productSizeObj.some(size => element.pk_sizeID == size.size_id);
+      if (!check) {
+        productSizeObj.push({
+          size_id: element.pk_sizeID,
+          run: element.run,
+          weight: element.weight,
+          unit_per_weight: element.unitsPerWeight,
+          is_delete: true
+        })
+      }
+    });
+    let payload = {
       product_id: pk_productID,
-      product_size: tempSizeArray,
+      product_size: productSizeObj,
       size: true
     };
-
     this.sizeUpdateLoader = true;
     this._inventoryService.updateSizes(payload)
       .subscribe((response) => {
-        this.getSizes(1);
+        this.isLoading = true;
+        this.getUpdatedSizes(1);
         this.sizeUpdateLoader = false;
         const message = response["success"] === true
           ? "Product sizes were updated successfully"
@@ -254,6 +276,44 @@ export class SizesComponent implements OnInit, OnDestroy {
         // Mark for check
         this._changeDetectorRef.markForCheck();
       });
+  };
+  getUpdatedSizes(page: number): void {
+    const { pk_productID, fk_supplierID } = this.selectedProduct;
+    let params = {
+      product_id: pk_productID,
+      apparel_sizes: true
+    }
+    this._inventoryService.getProductsData(params).pipe(takeUntil(this._unsubscribeAll)).subscribe(sizes => {
+      let all_selected_sizes = [];
+      let all_sizes = [];
+      if (sizes["product_selected_sizes"][0].product_selected_sizes) {
+        let size = sizes["product_selected_sizes"][0].product_selected_sizes.split(',,');
+        size.forEach(element => {
+          const [name, order, id, setup, run, weight, unitsPerWeight] = element.split("::");
+          all_selected_sizes.push({ sizeName: name, run: Number(run), weight: Number(weight), unitsPerWeight: Number(unitsPerWeight), setup: Number(setup), pk_sizeID: Number(id), listOrder: Number(order), checked: true, is_delete: false });
+        });
+      }
+      if (sizes["all_sizes"][0].all_sizes) {
+        let size = sizes["all_sizes"][0].all_sizes.split(',,');
+        size.forEach(element => {
+          const [id, name, order] = element.split("::");
+          all_sizes.push({ sizeName: name, run: 0, pk_sizeID: Number(id), listOrder: Number(order), checked: false });
+        });
+      }
+      this.selectedSizes = all_selected_sizes;
+      this.allSizes = all_selected_sizes.concat(all_sizes);
+      this.searchSizes = all_selected_sizes.concat(all_sizes);
+      this.sizesLength = sizes["totalRecords"];
+      this.isLoading = false;
+      this._changeDetectorRef.markForCheck();
+    }, err => {
+      this.isSearchLoading = false;
+      this.isLoading = false;
+
+      this.isLoadingChange.emit(false);
+      // Mark for check
+      this._changeDetectorRef.markForCheck();
+    });
   };
 
   rowUpdate(sizeObj, title, event) {

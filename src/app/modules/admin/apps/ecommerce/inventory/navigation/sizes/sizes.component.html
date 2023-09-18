@@ -20,7 +20,7 @@
                         </div>
                     </div>
                     <div class="col-lg-3 col-12">
-                        <button class="min-w-40 w-full" *ngIf="dataSource.length" mat-flat-button [color]="'primary'"
+                        <button class="min-w-40 w-full" *ngIf="allSizes.length" mat-flat-button [color]="'primary'"
                             [matTooltip]="'Update Selected Sizes'" (click)="updateSizes()"
                             [disabled]="sizeUpdateLoader">
                             <mat-progress-spinner *ngIf="sizeUpdateLoader" [diameter]="24" [mode]="'indeterminate'">
@@ -31,97 +31,53 @@
                     </div>
                 </div>
                 <div class="row p-5">
-                    <div class="col-12">
+                    <div class="col-md-6">
                         <mat-form-field class="fuse-mat-dense fuse-mat-no-subscript w-full mb-5">
                             <mat-icon matPrefix [svgIcon]="'heroicons_outline:search'"></mat-icon>
-                            <input class="h-6" matInput (keyup.enter)="searchKeyword($event)"
-                                [(ngModel)]="searchKeywordTerm" [autocomplete]="'off'"
-                                [placeholder]="'Search Sizes (Press Enter key to search)'">
+                            <input class="h-6" matInput (keyup)="searchSizesData($event)"
+                                [(ngModel)]="searchKeywordTerm" [autocomplete]="'off'" [placeholder]="'Search Sizes'">
                         </mat-form-field>
                         <ngx-skeleton-loader count="8" appearance="line" animation="pulse" *ngIf="isSearchLoading">
                         </ngx-skeleton-loader>
                     </div>
-                    <!-- <div class="mt-5" *ngIf="isSearchLoading"> -->
-
-                    <!-- </div> -->
-                </div>
-
-                <div *ngIf="dataSource.length > 0 && !isSearchLoading;else other_content">
-                    <table mat-table [dataSource]="dataSource" class="w-full border-t">
-
-                        <!-- Checkbox Column -->
-                        <ng-container matColumnDef="select">
-                            <th mat-header-cell *matHeaderCellDef class="w-15 min-w-15">
-                                Select
-                            </th>
-                            <td mat-cell *matCellDef="let row">
-                                <mat-checkbox (click)="$event.stopPropagation()"
-                                    (change)="$event ? selection.toggle(row) : null"
-                                    [checked]="selection.isSelected(row) || row.isSelected"
-                                    [aria-label]="checkboxLabel(row)">
-                                </mat-checkbox>
-                            </td>
-                        </ng-container>
-
-                        <!-- Size Column -->
-                        <ng-container matColumnDef="sizeName">
-                            <th mat-header-cell *matHeaderCellDef class="w-24 min-w-24"> Size </th>
-                            <td mat-cell *matCellDef="let element"> {{element.sizeName}} </td>
-                        </ng-container>
-
-                        <!-- Run Column -->
-                        <ng-container matColumnDef="run">
-                            <th mat-header-cell *matHeaderCellDef class="w-24 min-w-24"> Run </th>
-                            <td mat-cell *matCellDef="let element">
-                                <mat-form-field class="w-2/3 mt-2" appearance="fill">
-                                    <input matInput type="number" (mousewheel)="$event.preventDefault()" min="0.000"
-                                        placeholder="Run" value="{{element.run}}"
-                                        (input)="rowUpdate(element, 'run', $event)">
-                                </mat-form-field>
-                            </td>
-                        </ng-container>
-
-                        <!-- Weight Column -->
-                        <ng-container matColumnDef="weight">
-                            <th mat-header-cell *matHeaderCellDef class="w-24 min-w-24"> Weight </th>
-                            <td mat-cell *matCellDef="let element">
-                                <mat-form-field class="w-2/3 mt-2" appearance="fill">
-                                    <input matInput type="number" (mousewheel)="$event.preventDefault()" min="0"
-                                        placeholder="Weight" value="{{element.weight}}"
-                                        (input)="rowUpdate(element, 'weight', $event)">
-                                </mat-form-field>
-                            </td>
-                        </ng-container>
-
-                        <!-- Units Column -->
-                        <ng-container matColumnDef="unitsPerWeight">
-                            <th mat-header-cell *matHeaderCellDef class="w-40 min-w-40"> Weight per unit </th>
-                            <td mat-cell *matCellDef="let element">
-                                <mat-form-field class="w-2/3 mt-2" appearance="fill">
-                                    <input matInput type="number" (mousewheel)="$event.preventDefault()" min="0"
-                                        placeholder="Weight per unit" value="{{element.unitsPerWeight}}"
-                                        (input)="rowUpdate(element, 'unitsPerWeight', $event)">
-                                </mat-form-field>
-                            </td>
-                        </ng-container>
-
-                        <tr mat-header-row *matHeaderRowDef="displayedColumns;" class="h-18 bg-light"></tr>
-                        <tr mat-row *matRowDef="let row; columns: displayedColumns;"
-                            class="h-14 hover:bg-gray-100 dark:hover:bg-hover" style="cursor: pointer;"
-                            (click)="selection.select(row)">
-                        </tr>
-                    </table>
-                    <mat-paginator
-                        class="sm:absolute sm:inset-x-0 border-b sm:border-t sm:border-b-0 z-10 bg-gray-50 dark:bg-transparent"
-                        [ngClass]="{'pointer-events-none': isLoading}" [length]="sizesLength" [pageIndex]="0"
-                        [pageSize]="dataSource.length" (page)="getNextData($event)" [hidePageSize]="true">
-                    </mat-paginator>
-                </div>
-                <ng-template #other_content>
-                    <div class="text-secondary font-semibold p-5" *ngIf="!isSearchLoading">
-                        No sizes found.
+                    <!-- Sizes -->
+                    <div class="col-12 max-h-200 overflow-auto">
+                        <table class="table table-striped"
+                            *ngIf="allSizes.length > 0 && !isSearchLoading;else other_content">
+                            <thead>
+                                <tr>
+                                    <th>Select</th>
+                                    <th>Size</th>
+                                    <th>Run</th>
+                                    <th>Weight</th>
+                                    <th>Weight per unit</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr *ngFor="let size of allSizes">
+                                    <td>
+                                        <mat-checkbox [(ngModel)]="size.checked"></mat-checkbox>
+                                    </td>
+                                    <td>{{size.sizeName}}</td>
+                                    <td>
+                                        <input class="form-control" type="number" [(ngModel)]="size.run">
+                                    </td>
+                                    <td>
+                                        <input class="form-control" type="number" [(ngModel)]="size.weight">
+                                    </td>
+                                    <td>
+                                        <input class="form-control" type="number" [(ngModel)]="size.unitsPerWeight">
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        <ng-template #other_content>
+                            <div class="text-secondary font-semibold p-5" *ngIf="!isSearchLoading">
+                                No sizes found.
+                            </div>
+                        </ng-template>
                     </div>
-                </ng-template>
+                </div>
             </mat-card>
         </div>
     </div>
