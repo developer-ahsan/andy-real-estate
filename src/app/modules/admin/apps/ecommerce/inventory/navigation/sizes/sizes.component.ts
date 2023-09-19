@@ -227,56 +227,78 @@ export class SizesComponent implements OnInit, OnDestroy {
   };
 
   updateSizes() {
-    const { pk_productID } = this.selectedProduct;
     let productSizeObj = [];
-    this.allSizes.forEach(element => {
+    for (const element of this.allSizes) {
       if (element.checked) {
-        productSizeObj.push({
-          size_id: element.pk_sizeID,
-          run: element.run,
-          weight: element.weight,
-          unit_per_weight: element.unitsPerWeight,
-          is_delete: false
-        });
+        if (element.weight == '' || element.unitsPerWeight == '') {
+          this._snackBar.open('Please check sizes values it should be greater than 0', '', {
+            horizontalPosition: 'center',
+            verticalPosition: 'bottom',
+            duration: 3500
+          });
+          return; // This will exit the entire function or method
+        } else {
+          productSizeObj.push({
+            size_id: element.pk_sizeID,
+            run: element.run,
+            weight: element.weight,
+            unit_per_weight: element.unitsPerWeight,
+            is_delete: false
+          });
+        }
       }
-    });
-    this.selectedSizes.forEach(element => {
-      const check = productSizeObj.some(size => element.pk_sizeID == size.size_id);
-      if (!check) {
-        productSizeObj.push({
-          size_id: element.pk_sizeID,
-          run: element.run,
-          weight: element.weight,
-          unit_per_weight: element.unitsPerWeight,
-          is_delete: true
-        })
-      }
-    });
-    let payload = {
-      product_id: pk_productID,
-      product_size: productSizeObj,
-      size: true
-    };
-    this.sizeUpdateLoader = true;
-    this._inventoryService.updateSizes(payload)
-      .subscribe((response) => {
-        this.isLoading = true;
-        this.getUpdatedSizes(1);
-        this.sizeUpdateLoader = false;
-        const message = response["success"] === true
-          ? "Product sizes were updated successfully"
-          : "Some error occured. Please try again";
-
-        this._snackBar.open(message, '', {
-          horizontalPosition: 'center',
-          verticalPosition: 'bottom',
-          duration: 3500
-        });
-
-        // Mark for check
-        this._changeDetectorRef.markForCheck();
-      });
+    }
+    // Continue with your code here
+    this.updateSizesData(productSizeObj);
   };
+  updateSizesData(productSizeObj) {
+    const { pk_productID } = this.selectedProduct;
+    if (productSizeObj.length == 0) {
+      this._snackBar.open('Please select at-least one size', '', {
+        horizontalPosition: 'center',
+        verticalPosition: 'bottom',
+        duration: 3500
+      });
+      return;
+    } else {
+      this.selectedSizes.forEach(element => {
+        const check = productSizeObj.some(size => element.pk_sizeID == size.size_id);
+        if (!check) {
+          productSizeObj.push({
+            size_id: element.pk_sizeID,
+            run: element.run,
+            weight: element.weight,
+            unit_per_weight: element.unitsPerWeight,
+            is_delete: true
+          })
+        }
+      });
+      let payload = {
+        product_id: pk_productID,
+        product_size: productSizeObj,
+        size: true
+      };
+      this.sizeUpdateLoader = true;
+      this._inventoryService.updateSizes(payload)
+        .subscribe((response) => {
+          this.isLoading = true;
+          this.getUpdatedSizes(1);
+          this.sizeUpdateLoader = false;
+          const message = response["success"] === true
+            ? "Product sizes were updated successfully"
+            : "Some error occured. Please try again";
+
+          this._snackBar.open(message, '', {
+            horizontalPosition: 'center',
+            verticalPosition: 'bottom',
+            duration: 3500
+          });
+
+          // Mark for check
+          this._changeDetectorRef.markForCheck();
+        });
+    }
+  }
   getUpdatedSizes(page: number): void {
     const { pk_productID, fk_supplierID } = this.selectedProduct;
     let params = {

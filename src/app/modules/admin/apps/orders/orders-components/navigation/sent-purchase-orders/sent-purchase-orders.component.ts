@@ -6,6 +6,7 @@ import { takeUntil } from 'rxjs/operators';
 import { OrdersList } from 'app/modules/admin/apps/orders/orders-components/orders.types';
 import { Subject } from 'rxjs';
 import moment from 'moment';
+import { SmartArtService } from 'app/modules/admin/smartart/components/smartart.service';
 
 interface OrdersPurchases {
   company: string;
@@ -40,6 +41,7 @@ export class SentOrdersPurchasesComponent implements OnInit {
   purchases: any;
   constructor(
     private _orderService: OrdersService,
+    private _smartartService: SmartArtService,
     private _changeDetectorRef: ChangeDetectorRef
   ) { }
 
@@ -60,6 +62,7 @@ export class SentOrdersPurchasesComponent implements OnInit {
   getOrderDetail() {
     this._orderService.orderDetail$.pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
       this.orderDetail = res["data"][0];
+      this.getOrderFiles();
       this._orderService.orderProducts$.pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
         this.orderProducts = res["data"];
       });
@@ -83,6 +86,19 @@ export class SentOrdersPurchasesComponent implements OnInit {
         this.isLoading = false;
         this._changeDetectorRef.markForCheck();
       });
+  }
+  getOrderFiles() {
+    let payload = {
+      files_fetch: true,
+      path: `/globalAssets/Orders/purchaseOrders/${this.orderDetail.pk_orderID}`
+    }
+    this._changeDetectorRef.markForCheck();
+    this._smartartService.getFiles(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(files => {
+      console.log(files);
+      this._changeDetectorRef.markForCheck();
+    }, err => {
+      this._changeDetectorRef.markForCheck();
+    });
   }
   getLineProducts(value) {
     let params = {

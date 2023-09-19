@@ -260,28 +260,47 @@ export class OrderDashboardDetailsComponent implements OnInit, OnDestroy {
           imprint.recipientsComment = 'Please double check all details of this proof for accuracy.  (ie. phone numbers, email/addresses, websites).';
           if (imprint.fk_artApprovalContactID || (imprint.fk_artApprovalContactID && !imprint.blnStoreUserApprovalDone)) {
             imprint.emailRecipients = this.orderData.proofEmail;
+            this._changeDetectorRef.markForCheck();
           } else {
             // session.artwork.email
-            imprint.emailRecipients = this.orderData.sessionArtworkEmail;
+            if (this.orderData.sessionProofEmails.length > 0) {
+              imprint.emailRecipients = this.orderData.sessionProofEmails.toString();
+            this._changeDetectorRef.markForCheck();
+            } else {
+              imprint.emailRecipients = this.orderData.sessionArtworkEmail;
+            }
+
+            // imprint.emailRecipients = this.orderData.sessionArtworkEmail;
+            this._changeDetectorRef.markForCheck();
           }
         }
         // AWAITING ARTWORK APPROVAL || ON-HOLD || FOLLOW UP FOR APPROVAL
         else if (imprint.pk_statusID == 3 || imprint.pk_statusID == 12 || imprint.pk_statusID == 13) {
           if ((imprint?.fk_artApprovalContactID || imprint?.fk_storeUserApprovalContactID) && !imprint?.blnStoreUserApprovalDone) {
             imprint.emailRecipients = imprint.proofContactEmail;
+            this._changeDetectorRef.markForCheck();
           } else {
             // session.artwork.email
-            imprint.emailRecipients = this.orderData.sessionArtworkEmail;
+            if (this.orderData.sessionProofEmails.length > 0) {
+              imprint.emailRecipients = this.orderData.sessionProofEmails.toString();
+            this._changeDetectorRef.markForCheck();
+            } else {
+              imprint.emailRecipients = this.orderData.sessionArtworkEmail;
+            }
+            // imprint.emailRecipients = this.orderData.sessionArtworkEmail;
+            this._changeDetectorRef.markForCheck();
           }
         }
         // ARTWORK REVISION 
         else if (imprint.pk_statusID == 4) {
           imprint.recipientsComment = 'Please double check all details of this proof for accuracy.  (ie. phone numbers, email/addresses, websites).';
+          this._changeDetectorRef.markForCheck();
         }
         // DECORATOR NOTIFIED || IN PRODUCTION || PO Sent
         else if (imprint.pk_statusID == 5 || imprint.pk_statusID == 11 || imprint.pk_statusID == 16) {
           // session.artwork.decoratorEmail#
           imprint.emailRecipients = this.orderData.sessionArtwork_artworkEmail;
+          this._changeDetectorRef.markForCheck();
         }
         // NO PROOF NEEDED
         else if (imprint.pk_statusID == 7) {
@@ -308,6 +327,7 @@ export class OrderDashboardDetailsComponent implements OnInit, OnDestroy {
             imprint.selectedContactEmail = imprint.artworkEmail;
           }
           this.orderData.artworkEmail = imprint.selectedContactEmail;
+          this._changeDetectorRef.markForCheck();
         } else {
           imprint.selectedContact = null;
           if (imprint.decorationName.toLowerCase().includes('screen')) {
@@ -321,6 +341,7 @@ export class OrderDashboardDetailsComponent implements OnInit, OnDestroy {
             imprint.selectedContactEmail = imprint.artworkEmail;
           }
           this.orderData.artworkEmail = imprint.selectedContactEmail;
+          this._changeDetectorRef.markForCheck();
         }
       });
       // Contact Proof
@@ -343,6 +364,7 @@ export class OrderDashboardDetailsComponent implements OnInit, OnDestroy {
             }
           });
           element.blnStoreUserApproval = element.blnStoreUserApprovalContacts ? 1 : 0;
+          this._changeDetectorRef.markForCheck();
         });
         this.contactProofs = res["contactProofs"];
       }
@@ -1154,7 +1176,12 @@ export class OrderDashboardDetailsComponent implements OnInit, OnDestroy {
           imprint.emailRecipients = this.orderData.proofEmail;
         } else {
           // session.artwork.email
-          imprint.emailRecipients = this.orderData.sessionArtworkEmail;
+          if (this.orderData.sessionProofEmails.length > 0) {
+            imprint.emailRecipients = this.orderData.sessionProofEmails.toString();
+          } else {
+            imprint.emailRecipients = this.orderData.sessionArtworkEmail;
+          }
+          this._changeDetectorRef.markForCheck();
         }
       }
       // AWAITING ARTWORK APPROVAL || ON-HOLD || FOLLOW UP FOR APPROVAL
@@ -1163,7 +1190,12 @@ export class OrderDashboardDetailsComponent implements OnInit, OnDestroy {
           imprint.emailRecipients = imprint.proofContactEmail;
         } else {
           // session.artwork.email
-          imprint.emailRecipients = this.orderData.sessionArtworkEmail;
+          if (this.orderData.sessionProofEmails.length > 0) {
+            imprint.emailRecipients = this.orderData.sessionProofEmails.toString();
+          } else {
+            imprint.emailRecipients = this.orderData.sessionArtworkEmail;
+          }
+          this._changeDetectorRef.markForCheck();
         }
       }
       // ARTWORK REVISION 
@@ -1173,6 +1205,7 @@ export class OrderDashboardDetailsComponent implements OnInit, OnDestroy {
       else if (imprint.pk_statusID == 5 || imprint.pk_statusID == 11 || imprint.pk_statusID == 16) {
         // session.artwork.decoratorEmail#
         imprint.emailRecipients = this.orderData.sessionArtwork_artworkEmail;
+        this._changeDetectorRef.markForCheck();
       }
       // NO PROOF NEEDED
       else if (imprint.pk_statusID == 7) {
